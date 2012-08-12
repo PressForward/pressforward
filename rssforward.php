@@ -25,14 +25,18 @@ License: GPL2
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+//Set up some constants
+define( 'RSSPF_SLUG', 'rsspf' );
+define( 'RSSPF_TITLE', 'RSS to Press Forward' );
+define( 'RSSPF_MENU_SLUG', RSSPF_SLUG . '-menu' );
+define( 'RSSPF_NOM_EDITOR', 'edit.php?post_type=nomination' );
+define( 'RSSPF_NOM_POSTER', 'post-new.php?post_type=nomination' );
+define( 'RSSPF_ROOT', dirname(__FILE__) );
+define( 'RSSPF_FILE_PATH', RSSPF_ROOT . '/' . basename(__FILE__) );
+define( 'RSSPF_URL', plugins_url('/', __FILE__) );
+
 class rsspf {
 
-	//Set some variables for likely later re-use. Perhaps switch these to constants? 
-	$rsspf_slug = 'rsspf';
-	$rsspf_title = 'RSS to Press Forward';
-	$rsspf_menu_slug = $rsspf_slug . '-menu';
-	$rsspf_nominations_edit_posttype = 'edit.php?post_type=nomination';
-	$rsspf_nominations_add_posttype = 'post-new.php?post_type=nomination';
 	
 	// See http://php.net/manual/en/language.oop5.decon.php to get a better understanding of what's going on here. 
 	function __construct() {
@@ -48,8 +52,7 @@ class rsspf {
 
 	//Create the menus
 	function register_rsspf_custom_menu_pages() {
-		global $rsspf_slug, $rsspf_title, $rsspf_menu_slug, $rsspf_nominations_add_posttype, $rsspf_nominations_edit_posttype;
-
+		
 		/*
 			First create the plugin menu, with the following variables
 			The page title (in title tags)
@@ -60,23 +63,22 @@ class rsspf {
 			The icon URL.
 			The menu position (25 is Comments' menu position, so 24 should put it right above the Comments menu entry).
 		*/
-		add_menu_page ($rsspf_title, $rsspf_title, 'edit_posts', $rsspf_menu_slug, array($this, 'rsspf_reader_builder'), plugins_url('rss-to-pressforward/rss-forward-16.png'), 24);
+		add_menu_page (RSSPF_TITLE, RSSPF_TITLE, 'edit_posts', RSSPF_MENU_SLUG, array($this, 'rsspf_reader_builder'), plugins_url('rss-to-pressforward/rss-forward-16.png'), 24);
 
-		add_submenu_page($rsspf_menu_slug, 'Nominations', 'Nominations', 'edit_posts', $rsspf_nominations_edit_posttype);
+		add_submenu_page(RSSPF_MENU_SLUG, 'Nominations', 'Nominations', 'edit_posts', RSSPF_NOM_EDITOR);
 		
 		//Now create an options page for the plugin. This page is only accessable to Administrative level users. 
-		add_submenu_page($rsspf_menu_slug, $rsspf_title . ' Options', $rsspf_title . ' Options', 'manage_options', $rsspf_slug . '-options', array($this, 'rsspf_options_builder'));
+		add_submenu_page(RSSPF_MENU_SLUG, RSSPF_TITLE . ' Options', RSSPF_TITLE . ' Options', 'manage_options', RSSPF_SLUG . '-options', array($this, 'rsspf_options_builder'));
 		
 		//Now create an feed-listing page for the plugin, where the user can add feeds. This page is Editor level users and above. 
-		add_submenu_page($rsspf_menu_slug, $rsspf_title . ' Feeder', $rsspf_title . ' Feeder', 'edit_others_posts', $rsspf_slug . '-feeder', array($this, 'rsspf_feeder_builder'));
+		add_submenu_page(RSSPF_MENU_SLUG, RSSPF_TITLE . ' Feeder', RSSPF_TITLE . ' Feeder', 'edit_others_posts', RSSPF_SLUG . '-feeder', array($this, 'rsspf_feeder_builder'));
 		
-		add_submenu_page($rsspf_menu_slug, 'Add Nomination', 'Add Nomination', 'edit_posts', $rsspf_nominations_add_posttype);
+		add_submenu_page(RSSPF_MENU_SLUG, 'Add Nomination', 'Add Nomination', 'edit_posts', RSSPF_NOM_POSTER);
 		
 	}
 
 	//Create the post type
 	function create_rsspf_nomination_post_type() {
-		global $rsspf_slug, $rsspf_title, $rsspf_menu_slug;
 		$args = array(
 					'labels' => array(
 										'name' => __( 'Nominations' ),
@@ -114,10 +116,9 @@ class rsspf {
 	}
 	
 	function rsspf_reader_builder() {
-		global $rsspf_slug, $rsspf_title, $rsspf_menu_slug;
 		//Calling the feedlist within the rsspf class. 
 		$feedlist = $this::rsspf_feedlist();
-		echo '<h1>' . $rsspf_title . '</h1>';
+		echo '<h1>' . RSSPF_TITLE . '</h1>';
 		$theFeed = fetch_feed($feedlist);
 		//A testing method, to insure the feed is being received and processed. 
 		//print_r($theFeed);
