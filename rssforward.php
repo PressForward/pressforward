@@ -29,9 +29,12 @@ License: GPL2
 $rsspf_slug = 'rsspf';
 $rsspf_title = 'RSS to Press Forward';
 $rsspf_menu_slug = $rsspf_slug . '-menu';
+$rsspf_nominations_edit_posttype = 'edit.php?post_type=nomination';
+$rsspf_nominations_add_posttype = 'post-new.php?post_type=nomination';
+
 
 //Activate the admin menu creation function.
-add_action('admin_menu', 'register_rsspf_custom_menu_pages');
+add_action('admin_menu', 'register_rsspf_custom_menu_pages', 9);
 function register_rsspf_custom_menu_pages() {
 	global $rsspf_slug, $rsspf_title, $rsspf_menu_slug;
 
@@ -54,7 +57,38 @@ function register_rsspf_custom_menu_pages() {
 	//Now create an feed-listing page for the plugin, where the user can add feeds. This page is Editor level users and above. 
 	add_submenu_page($rsspf_menu_slug, $rsspf_title . ' Feeder', $rsspf_title . ' Feeder', 'edit_others_posts', $rsspf_slug . '-feeder', array('rsspf', 'rsspf_feeder_builder'));
 	
+//	add_submenu_page($rsspf_menu_slug, 'Nominated Posts', 'Nominated Posts', 'edit_posts', $rsspf_slug . '-nominated' ,$rsspf_nominations_edit_posttype);
+	
 }
+
+//Let's create the nominations post-type
+add_action('init', 'create_rsspf_nomination_post_type');
+function create_rsspf_nomination_post_type() {
+	global $rsspf_slug, $rsspf_title, $rsspf_menu_slug;
+	$args = array(
+				'labels' => array(
+									'name' => __( 'Nominations' ),
+									'singular_name' => __( 'Nomination' ),
+									'add_new' => __('Nominate'),
+									'add_new_item' => __('Add New Nomination'),
+									'edit_item' => __('Edit Nomination'),
+									'new_item' => __('New Nomination'),
+									'view_item' => __('View Nomination'),
+									'search_items' => __('Search Nominations'),
+									'not_found' => __('No nominations found'),
+									'not_found_in_trash' => __('No nominations found in Trash')
+								),
+				'description' => 'Posts from around the internet nominated for consideration to public posting',
+				'public' => false,
+				'show_ui' => true,
+				'show_in_menu' => $rsspf_menu_slug,
+				'has_archive' => false
+			);
+	
+	register_post_type('nomination', $args);
+
+}
+//A quick note for later, nomination count - perhaps stored as post_meta for each nomination? 
 
 class rsspf {
 
