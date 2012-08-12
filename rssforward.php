@@ -36,7 +36,7 @@ $rsspf_nominations_add_posttype = 'post-new.php?post_type=nomination';
 //Activate the admin menu creation function.
 add_action('admin_menu', 'register_rsspf_custom_menu_pages', 9);
 function register_rsspf_custom_menu_pages() {
-	global $rsspf_slug, $rsspf_title, $rsspf_menu_slug;
+	global $rsspf_slug, $rsspf_title, $rsspf_menu_slug, $rsspf_nominations_add_posttype;
 
 	/*
 		First create the plugin menu, with the following variables
@@ -57,7 +57,7 @@ function register_rsspf_custom_menu_pages() {
 	//Now create an feed-listing page for the plugin, where the user can add feeds. This page is Editor level users and above. 
 	add_submenu_page($rsspf_menu_slug, $rsspf_title . ' Feeder', $rsspf_title . ' Feeder', 'edit_others_posts', $rsspf_slug . '-feeder', array('rsspf', 'rsspf_feeder_builder'));
 	
-//	add_submenu_page($rsspf_menu_slug, 'Nominated Posts', 'Nominated Posts', 'edit_posts', $rsspf_slug . '-nominated' ,$rsspf_nominations_edit_posttype);
+	add_submenu_page($rsspf_menu_slug, 'Add Nomination', 'Add Nomination', 'add_posts', $rsspf_slug . '-nominate', $rsspf_nominations_add_posttype);
 	
 }
 
@@ -82,6 +82,8 @@ function create_rsspf_nomination_post_type() {
 				'public' => false,
 				'show_ui' => true,
 				'show_in_menu' => $rsspf_menu_slug,
+				'capability_type' => 'post',
+				'supports' => array('title', 'editor', 'thumbnail', 'revisions'),
 				'has_archive' => false
 			);
 	
