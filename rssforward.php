@@ -133,10 +133,13 @@ class rsspf {
 			echo '<br />';
 			echo '<hr />';
 			echo '<br />';
-		
+				
+			// So, we're going to need some AJAXery method of sending RSS data to a nominations post. 
+			// Best example I can think of? The editorial comments from EditFlow, see edit-flow/modules/editorial-comments/editorial-comments.php, esp ln 284
+			// But lets start simple and get the hang of AJAX in WP first. http://wp.tutsplus.com/articles/getting-started-with-ajax-wordpress-pagination/
 		}
 		
-
+		
 	}
 	
 	function rsspf_options_builder() {
