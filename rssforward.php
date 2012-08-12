@@ -131,6 +131,10 @@ class rsspf {
 			echo '<br />';
 			echo '<a target="_blank" href="' . $item->get_permalink() . '">Read More</a>';
 			echo '<br />';
+			echo '<p><input type="hidden" name="GreetingAll" id="GreetingAll" value="Hello Everyone!" />'
+				  . '<input type="submit" id="PleasePushMe" />'
+				  . '<div id="test-div1">'
+				  . '</div></p>';
 			echo '<hr />';
 			echo '<br />';
 				
@@ -152,8 +156,11 @@ class rsspf {
 	
 		echo 'Feeder';
 	
-	}	
+	}
 
+	//add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
+
+	
 
 
 }
