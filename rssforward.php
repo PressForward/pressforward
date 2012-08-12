@@ -31,29 +31,50 @@ $rsspf_title = 'RSS to Press Forward';
 $rsspf_menu_slug = $rsspf_slug . '-menu';
 
 //Activate the admin menu creation function.
-add_action('admin_menu', 'register_rsspf_custom_menu_page');
-/*First create the plugin menu, with the following variables
-The page title (in title tags)
-The menu title (on screen title)
-The permissions level required for access (edit_posts makes it accessable to Contrributor level users and above). 
-The menu's slug.
-The function to build the menu.
-The icon URL.
-The menu position (25 is Comments' menu position, so 24 should put it right above comments).
-*/
-function register_rsspf_custom_menu_page() {
+add_action('admin_menu', 'register_rsspf_custom_menu_pages');
+function register_rsspf_custom_menu_pages() {
 	global $rsspf_slug, $rsspf_title, $rsspf_menu_slug;
 
-	add_menu_page ($rsspf_title, $rsspf_title, 'edit_posts', $rsspf_menu_slug, array('rsspf', 'rsspf_menu_builder'), plugins_url('rss-to-pressforward/rss-forward-16.png'), 24);
+	/*
+		First create the plugin menu, with the following variables
+		The page title (in title tags)
+		The menu title (on screen title)
+		The permissions level required for access (edit_posts makes it accessable to Contributor level users and above). 
+		The menu's slug.
+		The function to build the menu.
+		The icon URL.
+		The menu position (25 is Comments' menu position, so 24 should put it right above the Comments menu entry).
+	*/
+	add_menu_page ($rsspf_title, $rsspf_title, 'edit_posts', $rsspf_menu_slug, array('rsspf', 'rsspf_reader_builder'), plugins_url('rss-to-pressforward/rss-forward-16.png'), 24);
+
+	
+	//Now create an options page for the plugin. This page is only accessable to Administrative level users. 
+	add_submenu_page($rsspf_menu_slug, $rsspf_title . ' Options', $rsspf_title . ' Options', 'manage_options', $rsspf_slug . '-options', array('rsspf', 'rsspf_options_builder'));
+	
+	//Now create an feed-listing page for the plugin, where the user can add feeds. This page is Editor level users and above. 
+	add_submenu_page($rsspf_menu_slug, $rsspf_title . ' Feeder', $rsspf_title . ' Feeder', 'edit_others_posts', $rsspf_slug . '-feeder', array('rsspf', 'rsspf_feeder_builder'));
 	
 }
 
 class rsspf {
 
-	function rsspf_menu_builder() {
+	function rsspf_feedlist() {
+	
+		$feedlist = 'http://feeds.feedburner.com/DHNowEditorsChoiceAndNews';
+		return $feedlist;
+	
+	}
+	
+	function rsspf_reader_builder() {
 		global $rsspf_slug, $rsspf_title, $rsspf_menu_slug;
 		echo $rsspf_title;
 
+	}
+	
+	function rsspf_options_builder() {
+	
+		echo 'Options';
+	
 	}
 
 
