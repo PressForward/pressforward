@@ -67,7 +67,19 @@ class rsspf {
 	
 	function rsspf_reader_builder() {
 		global $rsspf_slug, $rsspf_title, $rsspf_menu_slug;
-		echo $rsspf_title;
+		//Calling the feedlist within the rsspf class. 
+		$feedlist = rsspf::rsspf_feedlist();
+		echo '<h1>' . $rsspf_title . '</h1>';
+		$theFeed = fetch_feed($feedlist);
+		//A testing method, to insure the feed is being received and processed. 
+		//print_r($theFeed);
+		
+		foreach($theFeed->get_items() as $item) {
+		
+			
+		
+		}
+		
 
 	}
 	
@@ -76,6 +88,12 @@ class rsspf {
 		echo 'Options';
 	
 	}
+	
+	function rsspf_feeder_builder() {
+	
+		echo 'Feeder';
+	
+	}	
 
 
 
