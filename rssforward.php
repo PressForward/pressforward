@@ -34,9 +34,9 @@ $rsspf_nominations_add_posttype = 'post-new.php?post_type=nomination';
 
 
 //Activate the admin menu creation function.
-add_action('admin_menu', 'register_rsspf_custom_menu_pages', 9);
+add_action('admin_menu', 'register_rsspf_custom_menu_pages');
 function register_rsspf_custom_menu_pages() {
-	global $rsspf_slug, $rsspf_title, $rsspf_menu_slug, $rsspf_nominations_add_posttype;
+	global $rsspf_slug, $rsspf_title, $rsspf_menu_slug, $rsspf_nominations_add_posttype, $rsspf_nominations_edit_posttype;
 
 	/*
 		First create the plugin menu, with the following variables
@@ -50,6 +50,7 @@ function register_rsspf_custom_menu_pages() {
 	*/
 	add_menu_page ($rsspf_title, $rsspf_title, 'edit_posts', $rsspf_menu_slug, array('rsspf', 'rsspf_reader_builder'), plugins_url('rss-to-pressforward/rss-forward-16.png'), 24);
 
+	add_submenu_page($rsspf_menu_slug, 'Nominations', 'Nominations', 'edit_posts', $rsspf_nominations_edit_posttype);
 	
 	//Now create an options page for the plugin. This page is only accessable to Administrative level users. 
 	add_submenu_page($rsspf_menu_slug, $rsspf_title . ' Options', $rsspf_title . ' Options', 'manage_options', $rsspf_slug . '-options', array('rsspf', 'rsspf_options_builder'));
@@ -57,7 +58,7 @@ function register_rsspf_custom_menu_pages() {
 	//Now create an feed-listing page for the plugin, where the user can add feeds. This page is Editor level users and above. 
 	add_submenu_page($rsspf_menu_slug, $rsspf_title . ' Feeder', $rsspf_title . ' Feeder', 'edit_others_posts', $rsspf_slug . '-feeder', array('rsspf', 'rsspf_feeder_builder'));
 	
-	add_submenu_page($rsspf_menu_slug, 'Add Nomination', 'Add Nomination', 'add_posts', $rsspf_slug . '-nominate', $rsspf_nominations_add_posttype);
+	add_submenu_page($rsspf_menu_slug, 'Add Nomination', 'Add Nomination', 'edit_posts', $rsspf_nominations_add_posttype);
 	
 }
 
@@ -80,8 +81,10 @@ function create_rsspf_nomination_post_type() {
 								),
 				'description' => 'Posts from around the internet nominated for consideration to public posting',
 				'public' => false,
+				//'show_ui' => false,
 				'show_ui' => true,
-				'show_in_menu' => $rsspf_menu_slug,
+				//'show_in_menu' => $rsspf_menu_slug,
+				'show_in_menu' => false,
 				'capability_type' => 'post',
 				'supports' => array('title', 'editor', 'thumbnail', 'revisions'),
 				'has_archive' => false
