@@ -34,6 +34,20 @@ Ref to `feedwordpress.php` stuff
 -	It looks like FWP started working on OPML parsing in `feedfinder.class.php` on `ln 238` with `_opml_rss_uris()`.
 
 
+Stuff from MyCurator
+--------------------
+
+-	Perhaps worth considering the API key mechanism? 
+
+-	Simple category creation? `MyCurator.php` at `ln 466`. Look into `wp_insert_term`.
+
+-	Looks like it creates a seperate database table to store Releveance rating info. The `Relevance` class is located in `MyCurator_local_classify.php` at `ln 97`.
+
+-	It also seems to create a seperate table for the list of sources, `ln 789` of `MyCurator.php`. 
+
+-	Interesting use of Google Pie Chart API at `ln 1085` of `MyCurator.php`.
+
+
 Use WP Cron for pulling posts?
 ------------------------------
 Ref:
