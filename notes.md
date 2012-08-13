@@ -29,6 +29,10 @@ Ref to `feedwordpress.php` stuff
 
 -	Interesting notes on Magpie and SimplePie use at `ln 1544`.
 
+-	Do we need the `FeedFinder` class on `ln 13` of `feedfinder.class.php`? Doesn't SimplePie do that already? I'm pretty sure it does. Should we bother supplying support to pre-2.8 WP with Magpie? Prob. not. 
+
+-	It looks like FWP started working on OPML parsing in `feedfinder.class.php` on `ln 238` with `_opml_rss_uris()`.
+
 
 Use WP Cron for pulling posts?
 ------------------------------
@@ -63,3 +67,7 @@ Possible Issues
 -	Do we want to assign authorship of a post from the author property of the RSS feed item? Perhaps do that and also pass and display properties for **orig author**, **orig nominated**, and **editor who published**?
 
 	*	If so... how to handle inc. authors? A seperate options field? 
+	
+-	If the feed parsing happens on our side, how much functionality needs to be built in for figuring out an RSS feed if it isn't found via SimplePie? Just how good at finding RSS feeds is SimplePie? 
+
+-	If the feed parsing happens elsewhere, does the plugin need to have an API key? For each person, each site? 
