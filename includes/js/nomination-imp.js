@@ -2,7 +2,7 @@ jQuery(document).ready(function() {
 	var GreetingAll = jQuery("#GreetingAll").val();
 	jQuery("#PleasePushMe").click(function(){ jQuery.ajax({
 		type: 'POST',
-		url: 'localhost/xampp/wp-test/wp-admin/admin-ajax.php',
+		url: 'admin-ajax.php',
 		data: {
 			action: 'MyAjaxFunction',
 			GreetingAll: GreetingAll,
