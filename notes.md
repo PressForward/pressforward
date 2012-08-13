@@ -21,7 +21,7 @@ Ref to `feedwordpress.php` stuff
 	
 	*	Another: `munge_permalinks` at `ln 1405`.
 	
--	Do we want to match categories? Match tags?
+-	Do we want to match categories? Match tags? **Yes!**
 
 	*	Some of FWP's functions start at `ln 1422`.
 
