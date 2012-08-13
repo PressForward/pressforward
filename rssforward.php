@@ -47,6 +47,10 @@ class rsspf {
 		add_action('init', array($this, 'create_rsspf_nomination_post_type') );
 		
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
+		
+  // creating Ajax call for WordPress
+   add_action( 'wp_ajax_nopriv_ MyAjaxFunction', array( $this, 'MyAjaxFunction') );
+   add_action( 'wp_ajax_ MyAjaxFunction', array( $this, 'MyAjaxFunction') );	
 	
 	}
 
@@ -184,6 +188,15 @@ class rsspf {
 	
 	
 	}
+	
+function MyAjaxFunction(){
+	  //get the data from ajax() call
+	   $GreetingAll = $_POST['GreetingAll '];
+	   $results = "<h2>".$GreetingAll."</h2>";
+	  // Return the String
+	   die($results);
+  }
+
 
 
 }
