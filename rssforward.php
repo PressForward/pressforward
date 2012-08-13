@@ -200,6 +200,11 @@ class rsspf {
 		  // Return the String
 		   die($results);
 	 
+		//Ref for eventual building of nomination ajax:
+			//https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/editorial-comments.php
+			//https://github.com/danielbachhuber/Edit-Flow/blob/master/edit_flow.php
+			
+	 
 	}
 	
 	function build_a_nomination($postData) {
