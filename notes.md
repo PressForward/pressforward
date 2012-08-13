@@ -15,9 +15,19 @@ Ref to `feedwordpress.php` stuff
 	*	FWP's template API starts at `ln 305`
 	*	Good start with `is_syndicated` (`ln 317`)
 	
--	The function that FWP uses to have the origonal syndicated post's link used as the post link is `syndication_permalink` on `ln 547`.
+-	Should we create a similar functionality to FWP's replacing native permalink with RSS content permalink? 
+	
+	*	A function that FWP uses to have the origonal syndicated post's link used as the post link is `syndication_permalink` on `ln 547`.
+	
+	*	Another: `munge_permalinks` at `ln 1405`.
+	
+-	Do we want to match categories? Match tags?
+
+	*	Some of FWP's functions start at `ln 1422`.
 
 -	Should we worry about pings? See function set starting with `ln 742`.
+
+-	Interesting notes on Magpie and SimplePie use at `ln 1544`.
 
 
 Use WP Cron for pulling posts?
@@ -51,3 +61,5 @@ Possible Issues
 		+ `feedwordpress_post_edit_controls` at `ln 805`
 		
 -	Do we want to assign authorship of a post from the author property of the RSS feed item? Perhaps do that and also pass and display properties for **orig author**, **orig nominated**, and **editor who published**?
+
+	*	If so... how to handle inc. authors? A seperate options field? 
