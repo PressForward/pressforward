@@ -68,7 +68,7 @@ class rsspf {
 			The icon URL.
 			The menu position (25 is Comments' menu position, so 24 should put it right above the Comments menu entry).
 		*/
-		add_menu_page (RSSPF_TITLE, RSSPF_TITLE, 'edit_posts', RSSPF_MENU_SLUG, array($this, 'rsspf_reader_builder'), plugins_url('rss-to-pressforward/rss-forward-16.png'), 24);
+		add_menu_page (RSSPF_TITLE, RSSPF_TITLE, 'edit_posts', RSSPF_MENU_SLUG, array($this, 'rsspf_reader_builder'), RSSPF_URL . '/rss-forward-16.png', 24);
 
 		add_submenu_page(RSSPF_MENU_SLUG, 'Nominations', 'Nominations', 'edit_posts', RSSPF_NOM_EDITOR);
 		
