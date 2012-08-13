@@ -168,13 +168,17 @@ class rsspf {
 		echo 'Feeder';
 	
 	}
-
+	
+	//This function can add js and css that we need to specific admin pages. 
 	function add_admin_scripts() {
 	
+		//This gets the current page the user is on.
 		global $pagenow;
+		//This if loop will check to make sure we are on the right page for the js we are going to use.
 		if ((!in_array($pagenow, array('admin.php?page=rsspf-menu')))) {
-		
-			wp_enqueue_script('nomination-imp', RSSPF_ROOT . '/includes/js/nomination-imp.js', array( 'jquery' ));
+			//And now lets enqueue the script, ensuring that jQuery is already active. 
+			
+			wp_enqueue_script('nomination-imp', RSSPF_URL . 'includes/js/nomination-imp.js', array( 'jquery' ));
 		
 		}
 	
