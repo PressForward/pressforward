@@ -12,5 +12,5 @@ Ref to `feedwordpress.php` stuff
 -	**Good idea**: providing functions that can be used in the post template, make template aware of syndicated content vs non-syndicated? Get item source and include it, make format different depending on source. 
 
 	Ex:
-	--	FWP's template API starts at `ln 305`
-	--	Good start with `is_syndicated` (`ln 317`)
+	*	FWP's template API starts at `ln 305`
+	*	Good start with `is_syndicated` (`ln 317`)
