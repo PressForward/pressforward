@@ -48,6 +48,7 @@ class rsspf {
 		
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
 		
+		
   // creating Ajax call for WordPress
    add_action( 'wp_ajax_nopriv_MyAjaxFunction', array( $this, 'MyAjaxFunction') );
    add_action( 'wp_ajax_MyAjaxFunction', array( $this, 'MyAjaxFunction') );	
@@ -156,6 +157,9 @@ class rsspf {
 			// Best example I can think of? The editorial comments from EditFlow, see edit-flow/modules/editorial-comments/editorial-comments.php, esp ln 284
 			// But lets start simple and get the hang of AJAX in WP first. http://wp.tutsplus.com/articles/getting-started-with-ajax-wordpress-pagination/
 			// Eventually should use http://wpseek.com/wp_insert_post/ I think....
+			// So what to submit? I could store all the post data in hidden fields and submit it within seperate form docs, but that's a lot of data.
+			// Perhaps just an md5 hash of the ID of the post? Then use the retrieval function to find the matching post and submit it properly? 
+			// Something to experement with...
 		}
 		
 		
@@ -188,14 +192,41 @@ class rsspf {
 	
 	
 	}
+		
+	function MyAjaxFunction(){
+		  //get the data from ajax() call
+		   $GreetingAll = $_POST['GreetingAll'];
+		   $results = "<h2>".$GreetingAll."</h2>";
+		  // Return the String
+		   die($results);
+	 
+	}
 	
-function MyAjaxFunction(){
-	  //get the data from ajax() call
-	   $GreetingAll = $_POST['GreetingAll'];
-	   $results = "<h2>".$GreetingAll."</h2>";
-	  // Return the String
-	   die($results);
-  }
+	function build_a_nomination($postData) {
+		//ref http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields, http://wpseek.com/wp_insert_post/
+	
+		//@todo Play with post_exists (wp-admin/includes/post.php ln 493) to make sure that submissions have not already been submitted in some other method.
+			//Perhaps with some sort of "Are you sure you don't mean this... reddit style thing?
+			//Should also figure out if I can create a version that triggers on nomination publishing to send to main posts. 
+		
+		//No need to define every post arg right? I should only need the ones I'm pushing through. Well, I guess we will find out. 
+		$args = array(
+			'post_status' => 'draft',
+			'post_type' => 'nomination',
+			//'post_author' => $user_ID,   
+				//Hurm... what we really need is a way to pass the nominator's userID to this function to credit them as the author of the nomination.
+				//Then we could create a leaderboard. 
+			'post_date' => $_SESSION['cal_startdate'],
+				//Do we want this to be nomination date or origonal posted date? Prob. nomination date? Optimally we can store and later sort by both.			
+			'post_title' => 'This is a test nomination',
+			'post_content' => 'This is a test post'
+			
+		);
+		
+		wp_insert_post( $args );
+		
+	
+	}
 
 
 
