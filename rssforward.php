@@ -122,7 +122,7 @@ class rsspf {
 	
 	function rsspf_reader_builder() {
 		//Calling the feedlist within the rsspf class. 
-		$feedlist = $this::rsspf_feedlist();
+		$feedlist = call_user_func(array($this, 'rsspf_feedlist'));
 		echo '<h1>' . RSSPF_TITLE . '</h1>';
 		$theFeed = fetch_feed($feedlist);
 		//A testing method, to insure the feed is being received and processed. 
