@@ -85,3 +85,5 @@ Possible Issues
 -	If the feed parsing happens on our side, how much functionality needs to be built in for figuring out an RSS feed if it isn't found via SimplePie? Just how good at finding RSS feeds is SimplePie? 
 
 -	If the feed parsing happens elsewhere, does the plugin need to have an API key? For each person, each site? 
+
+-	A thought? If we want to maintain using the RSS feed to push down from the recommendation engine... why not use the `media:rating` node in RSS? SimplePie has a function to deal with it. I know it is not what it is made for, but this way we don't have to worry about build a whole bunch of extra stuff to parse the engine's output. 
