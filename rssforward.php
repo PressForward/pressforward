@@ -46,7 +46,7 @@ class rsspf {
 		//Activate the nominations post-type
 		add_action('init', array($this, 'create_rsspf_nomination_post_type') );
 		
-		//add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
 	
 	}
 
@@ -169,7 +169,17 @@ class rsspf {
 	
 	}
 
+	function add_admin_scripts() {
 	
+		global $pagenow;
+		if ((!in_array($pagenow, array('admin.php?page=rsspf-menu')))) {
+		
+			wp_enqueue_script('nomination-imp', RSSPF_ROOT . '/includes/js/nomination-imp.js', array( 'jquery' ));
+		
+		}
+	
+	
+	}
 
 
 }
