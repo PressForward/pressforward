@@ -53,6 +53,9 @@ Looking at ThreeWP Broadcast
 
 -	`save_post` function at `ln 1280` in `ThreeWP_Broadcast.php`.
 
+	*	`ln 1319` seems to be where it unsets the `comment_count` out of the array it is pushing out. 
+	*	If it grabs the post object, don't remove it from the object, how to set the now included comment count as the comment count for the post?
+
 
 Use WP Cron for pulling posts?
 ------------------------------
