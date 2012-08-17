@@ -272,14 +272,7 @@ class rsspf {
 		//@todo Play with post_exists (wp-admin/includes/post.php ln 493) to make sure that submissions have not already been submitted in some other method.
 			//Perhaps with some sort of "Are you sure you don't mean this... reddit style thing?
 			//Should also figure out if I can create a version that triggers on nomination publishing to send to main posts. 
-		
-		'item_title' 	=> 	$itemTitle,
-						'source_title' 	=>	$sourceTitle,
-						'item_date'		=>	$itemDate,
-						'item_author'	=>	$itemAuthor,
-						'item_content'	=>	$itemContent,
-						'item_link'		=>	$itemLink,
-						'item_feat_img'	=>	$itemFeatImg
+
 		
 		//No need to define every post arg right? I should only need the ones I'm pushing through. Well, I guess we will find out. 
 		$args = array(
