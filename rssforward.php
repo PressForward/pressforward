@@ -155,7 +155,7 @@ class rsspf {
 			$itemContent = $item->get_content();
 			$itemLink = $item->get_permalink();
 			
-			$rssObject['rss_' . $c++] => feed_object(
+			$rssObject['rss_' . $c++] = $this->feed_object(
 										$itemTitle,
 										$feedTitle,
 										$itemDate,
@@ -173,7 +173,7 @@ class rsspf {
 	
 	}	
 	
-	function rsspf_reader_builder() {
+	public function rsspf_reader_builder() {
 		//Calling the feedlist within the rsspf class. 
 		$feedlist = call_user_func(array($this, 'rsspf_feedlist'));
 		echo '<h1>' . RSSPF_TITLE . '</h1>';
@@ -184,20 +184,20 @@ class rsspf {
 		//Use this foreach loop to go through the overall feedlist, select each individual feed item (post) and do stuff with it.
 		//Based off SimplePie's tutorial at http://simplepie.org/wiki/tutorial/how_to_display_previous_feed_items_like_google_reader.
 		$c = 1;
-		foreach($rssObject as $item) {
+		foreach($this->rss_object() as $item) {
 		
 			echo $c++ . '. ';
 			//The following is a fix as described in http://simplepie.org/wiki/faq/typical_multifeed_gotchas
-			$iFeed = $item->get_feed();
-			echo '<strong>' . $iFeed->get_title() . '</strong>';
+			//$iFeed = $item->get_feed();
+			echo '<strong>' . $item['source_title'] . '</strong>';
 			echo ' : ';
-			echo $item->get_title();
+			echo $item['item_title'];
 			echo '<br />';
-			echo '<small>Published on ' . $item->get_date('r') . ' by ' . $item->get_author() . '</small>';
+			echo '<small>Published on ' . $item['item_date'] . ' by ' . $item['item_author'] . '</small>';
 			echo '<br />';
-			echo '<div>' . $item->get_content() . '</div>';
+			echo '<div>' . $item['item_content'] . '</div>';
 			echo '<br />';
-			echo '<a target="_blank" href="' . $item->get_permalink() . '">Read More</a>';
+			echo '<a target="_blank" href="' . $item['item_link'] . '">Read More</a>';
 			echo '<br />';
 			echo '<p><input type="hidden" name="GreetingAll" id="GreetingAll" value="Hello Everyone!" />'
 				  . '<input type="submit" id="PleasePushMe" />'
