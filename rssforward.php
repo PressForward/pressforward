@@ -266,12 +266,20 @@ class rsspf {
 	 
 	}
 	
-	function build_a_nomination($postData) {
+	function build_a_nomination($item) {
 		//ref http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields, http://wpseek.com/wp_insert_post/
 	
 		//@todo Play with post_exists (wp-admin/includes/post.php ln 493) to make sure that submissions have not already been submitted in some other method.
 			//Perhaps with some sort of "Are you sure you don't mean this... reddit style thing?
 			//Should also figure out if I can create a version that triggers on nomination publishing to send to main posts. 
+		
+		'item_title' 	=> 	$itemTitle,
+						'source_title' 	=>	$sourceTitle,
+						'item_date'		=>	$itemDate,
+						'item_author'	=>	$itemAuthor,
+						'item_content'	=>	$itemContent,
+						'item_link'		=>	$itemLink,
+						'item_feat_img'	=>	$itemFeatImg
 		
 		//No need to define every post arg right? I should only need the ones I'm pushing through. Well, I guess we will find out. 
 		$args = array(
@@ -282,8 +290,8 @@ class rsspf {
 				//Then we could create a leaderboard. 
 			'post_date' => $_SESSION['cal_startdate'],
 				//Do we want this to be nomination date or origonal posted date? Prob. nomination date? Optimally we can store and later sort by both.			
-			'post_title' => 'This is a test nomination',
-			'post_content' => 'This is a test post'
+			'post_title' => $item['source_title'],
+			'post_content' => $item['item_content'],
 			
 		);
 		
