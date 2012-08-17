@@ -171,13 +171,19 @@ class rsspf {
 		
 		return $rssObject;
 	
-	}	
+	}
+
+	public function assemble_public_stream() {
+	
+		//build a function with hooks to assemble a bunch of function that gather content into one coherent stream.
+	
+	}
 	
 	public function rsspf_reader_builder() {
 		//Calling the feedlist within the rsspf class. 
-		$feedlist = call_user_func(array($this, 'rsspf_feedlist'));
+		
 		echo '<h1>' . RSSPF_TITLE . '</h1>';
-		$theFeed = fetch_feed($feedlist);
+		
 		//A testing method, to insure the feed is being received and processed. 
 		//print_r($theFeed);
 		
