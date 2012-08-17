@@ -51,7 +51,7 @@ Stuff from MyCurator
 Looking at ThreeWP Broadcast
 ----------------------------
 
-
+-	`save_post` function at `ln 1280` in `ThreeWP_Broadcast.php`.
 
 
 Use WP Cron for pulling posts?
