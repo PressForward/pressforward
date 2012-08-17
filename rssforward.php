@@ -113,12 +113,65 @@ class rsspf {
 	}
 	//A quick note for later, nomination count - perhaps stored as post_meta for each nomination? 
 
-	function rsspf_feedlist() {
+	public function rsspf_feedlist() {
 	
 		$feedlist = 'http://feeds.feedburner.com/DHNowEditorsChoiceAndNews';
 		return $feedlist;
 	
 	}
+	
+	private function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='' ) {
+		
+		$itemArray = array(
+					
+						'item_title' 	=> 	$itemTitle,
+						'source_title' 	=>	$sourceTitle,
+						'item_date'		=>	$itemDate,
+						'item_author'	=>	$itemAuthor,
+						'item_content'	=>	$itemContent,
+						'item_link'		=>	$itemLink,
+						'item_feat_img'	=>	$itemFeatImg
+					
+					);
+		
+		return $itemArray;
+	
+	}
+	
+	public function rss_object() {
+	
+		$feedlist = call_user_func(array($this, 'rsspf_feedlist'));
+		$theFeed = fetch_feed($feedlist);
+		$rssObject = array();
+		$c = 0;
+		
+		foreach($theFeed->get_items() as $item) {
+		
+			$iFeed = $item->get_feed();
+			$feedTitle = $iFeed->get_title();
+			$itemTitle = $item->get_title();
+			$itemDate = $item->get_date('r');
+			$itemAuthor = $item->get_author();
+			$itemContent = $item->get_content();
+			$itemLink = $item->get_permalink();
+			
+			$rssObject['rss_' . $c++] => feed_object(
+										$itemTitle,
+										$feedTitle,
+										$itemDate,
+										$itemAuthor,
+										$itemContent,
+										$itemLink
+										);
+										
+			
+			
+		
+		}
+		
+		return $rssObject;
+	
+	}	
 	
 	function rsspf_reader_builder() {
 		//Calling the feedlist within the rsspf class. 
@@ -131,7 +184,7 @@ class rsspf {
 		//Use this foreach loop to go through the overall feedlist, select each individual feed item (post) and do stuff with it.
 		//Based off SimplePie's tutorial at http://simplepie.org/wiki/tutorial/how_to_display_previous_feed_items_like_google_reader.
 		$c = 1;
-		foreach($theFeed->get_items() as $item) {
+		foreach($rssObject as $item) {
 		
 			echo $c++ . '. ';
 			//The following is a fix as described in http://simplepie.org/wiki/faq/typical_multifeed_gotchas
