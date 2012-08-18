@@ -178,6 +178,18 @@ class rsspf {
 	
 	}
 	
+	private function prep_item_for_submit($item) {
+	
+		$item['item_content'] = htmlentities($item['item_content']);
+		
+		foreach ($item as $itemKey => $itemPart) {
+		
+			echo '<input type="hidden" name="' . $itemKey . '" id="' . $itemKey . '" value="' . $itemPart . '" />';
+		
+		}
+	
+	}
+	
 	public function rsspf_reader_builder() {
 		//Calling the feedlist within the rsspf class. 
 		
@@ -204,6 +216,10 @@ class rsspf {
 			echo '<br />';
 			echo '<a target="_blank" href="' . $item['item_link'] . '">Read More</a>';
 			echo '<br />';
+			//print_r($item);
+			//print_r($ent = htmlentities($item['item_content']));
+			//print_r(html_entity_decode($ent));
+			$this->prep_item_for_submit($item);
 			echo '<p><input type="hidden" name="GreetingAll" id="GreetingAll" value="Hello Everyone!" />'
 				  . '<input type="submit" id="PleasePushMe" />'
 				  . '<div id="test-div1">'
