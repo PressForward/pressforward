@@ -53,6 +53,9 @@ class rsspf {
    add_action( 'wp_ajax_nopriv_MyAjaxFunction', array( $this, 'MyAjaxFunction') );
    add_action( 'wp_ajax_MyAjaxFunction', array( $this, 'MyAjaxFunction') );	
 	
+		add_action( 'wp_ajax_nopriv_MyAjaxFunction', array( $this, 'build_a_nomination') );
+		add_action( 'wp_ajax_MyAjaxFunction', array( $this, 'build_a_nomination') );	
+	
 	}
 
 	//Create the menus
@@ -120,7 +123,7 @@ class rsspf {
 	
 	}
 	
-	private function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='' ) {
+	private function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='' ) {
 		
 		$itemArray = array(
 					
@@ -130,7 +133,8 @@ class rsspf {
 						'item_author'	=>	$itemAuthor,
 						'item_content'	=>	$itemContent,
 						'item_link'		=>	$itemLink,
-						'item_feat_img'	=>	$itemFeatImg
+						'item_feat_img'	=>	$itemFeatImg,
+						'item_id'		=>	$itemUID
 					
 					);
 		
@@ -158,7 +162,8 @@ class rsspf {
 											$item->get_date('r'),
 											$item->get_author(),
 											$item->get_content(),
-											$item->get_permalink()
+											$item->get_permalink(),
+											md5($item->get_id())
 											);
 												
 				set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
@@ -219,11 +224,14 @@ class rsspf {
 			//print_r($item);
 			//print_r($ent = htmlentities($item['item_content']));
 			//print_r(html_entity_decode($ent));
+			//This needs a nonce for security.
+			echo '<form name="form-' . $item['item_id'] . '"><p>';
 			$this->prep_item_for_submit($item);
-			echo '<p><input type="hidden" name="GreetingAll" id="GreetingAll" value="Hello Everyone!" />'
-				  . '<input type="submit" id="PleasePushMe" />'
-				  . '<div id="test-div1">'
-				  . '</div></p>';
+			echo '<input type="hidden" name="GreetingAll" id="GreetingAll" value="Hello Everyone!" />'
+					. '<input type="submit" id="PleasePushMe" />'
+					. '<div id="test-div1">'
+					. '</div></p>'
+				  . '</form>';
 			echo '<hr />';
 			echo '<br />';
 				
@@ -275,13 +283,13 @@ class rsspf {
 		   die($results);
 	 
 		//Ref for eventual building of nomination ajax:
-			//https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/editorial-comments.php
+			//https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/editorial-comments.php ln284	//https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/lib/editorial-comments.js
 			//https://github.com/danielbachhuber/Edit-Flow/blob/master/edit_flow.php
 			
 	 
 	}
 	
-	function build_a_nomination($item) {
+	function build_a_nomination() {
 		//ref http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields, http://wpseek.com/wp_insert_post/
 	
 		//@todo Play with post_exists (wp-admin/includes/post.php ln 493) to make sure that submissions have not already been submitted in some other method.
@@ -298,13 +306,13 @@ class rsspf {
 				//Then we could create a leaderboard. 
 			'post_date' => $_SESSION['cal_startdate'],
 				//Do we want this to be nomination date or origonal posted date? Prob. nomination date? Optimally we can store and later sort by both.			
-			'post_title' => $item['source_title'],
-			'post_content' => $item['item_content'],
+			'post_title' => $_POST['source_title'],
+			'post_content' => $_POST['item_content'],
 			
 		);
 		
 		wp_insert_post( $args );
-		
+		die($args);
 	
 	}
 
