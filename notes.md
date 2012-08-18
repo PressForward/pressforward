@@ -48,6 +48,16 @@ Stuff from MyCurator
 -	Interesting use of Google Pie Chart API at `ln 1085` of `MyCurator.php`.
 
 
+Transients API
+--------------
+
+-	Ref: 
+	*	http://codex.wordpress.org/Transients_API
+	*	https://github.com/livinglab/openlab/blob/1.1.x/wp-content/plugins/wds-citytech/includes/group-blogs.php#L990
+	
+-	
+
+
 Looking at ThreeWP Broadcast
 ----------------------------
 
