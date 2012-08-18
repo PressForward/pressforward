@@ -146,13 +146,13 @@ class rsspf {
 		$c = 0;
 		
 		foreach($theFeed->get_items() as $item) {
-		
+			
 			$id = md5($item->get_id());
-			if ( false === ( $rssObject = get_transient( 'rsspf_' . $id ) ) ) {
+			if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
 					
 				$iFeed = $item->get_feed();
 					
-				$rssObject['rss_' . $c++] = $this->feed_object(
+				$rssObject['rss_' . $c] = $this->feed_object(
 											$item->get_title(),
 											$iFeed->get_title(),
 											$item->get_date('r'),
@@ -161,9 +161,10 @@ class rsspf {
 											$item->get_permalink()
 											);
 												
-				set_transient( 'rsspf_' . $id, $rssObject, 60*10 );
+				set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
+				
 			}
-			
+			$c++;
 		
 		}
 		
