@@ -48,6 +48,18 @@ Stuff from MyCurator
 -	Interesting use of Google Pie Chart API at `ln 1085` of `MyCurator.php`.
 
 
+Possible Sortable Meta?
+-----------------------
+
+-	Comment count on item?
+	*	via RSS?
+	*	via http://snipplr.com/view/60022/
+
+-	Possibly use the HTTP API to pull other (non-RSS) content for review. 	
+	*	http://codex.wordpress.org/HTTP_API
+	*	http://codex.wordpress.org/Function_API/wp_remote_retrieve_body
+
+
 Transients API
 --------------
 
@@ -106,3 +118,5 @@ Possible Issues
 -	If the feed parsing happens elsewhere, does the plugin need to have an API key? For each person, each site? 
 
 -	A thought? If we want to maintain using the RSS feed to push down from the recommendation engine... why not use the `media:rating` node in RSS? SimplePie has a function to deal with it. I know it is not what it is made for, but this way we don't have to worry about build a whole bunch of extra stuff to parse the engine's output. 
+
+-	Do we want the nominate button to send people to the edit nominations page or allow people to go down a list nominating one item after another? 

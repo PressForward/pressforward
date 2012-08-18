@@ -148,20 +148,14 @@ class rsspf {
 		foreach($theFeed->get_items() as $item) {
 		
 			$iFeed = $item->get_feed();
-			$feedTitle = $iFeed->get_title();
-			$itemTitle = $item->get_title();
-			$itemDate = $item->get_date('r');
-			$itemAuthor = $item->get_author();
-			$itemContent = $item->get_content();
-			$itemLink = $item->get_permalink();
 			
 			$rssObject['rss_' . $c++] = $this->feed_object(
-										$itemTitle,
-										$feedTitle,
-										$itemDate,
-										$itemAuthor,
-										$itemContent,
-										$itemLink
+										$item->get_title(),
+										$iFeed->get_title(),
+										$item->get_date('r'),
+										$item->get_author(),
+										$item->get_content(),
+										$item->get_permalink()
 										);
 										
 			
