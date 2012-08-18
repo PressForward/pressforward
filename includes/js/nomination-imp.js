@@ -1,5 +1,7 @@
 jQuery(document).ready(function() {
-	var item_title 		= jQuery("#item_title").val();
+
+	jQuery("#PleasePushMe").click(function(){ 
+	var item_title 		= jQuery(this).jQuery("#item_title").val();
 	var source_title 	= jQuery("#source_title").val();
 	var item_date 		= jQuery("#item_date").val();
 	var item_author 	= jQuery("#item_author").val();
@@ -8,7 +10,8 @@ jQuery(document).ready(function() {
 	var item_feat_img 	= jQuery("#item_feat_img").val();
 	var item_id 		= jQuery("#item_id").val();
 	var errorThrown		= 'Broken';
-	jQuery("#PleasePushMe").click(function(){ jQuery.ajax({
+	
+	jQuery.ajax({
 		type: 'POST',
 		url: 'admin-ajax.php',
 		data: {
