@@ -316,29 +316,13 @@ class rsspf {
 				//Then we could create a leaderboard. 
 			'post_date' => $_SESSION['cal_startdate'],
 				//Do we want this to be nomination date or origonal posted date? Prob. nomination date? Optimally we can store and later sort by both.			
-			'post_title' => $item_title,
-			'post_content' => $item_content,
+			'post_title' => 'test',//$item_title,
+			'post_content' => 'test'//$item_content,
 			
 		);
 		
-		$response = new WP_Ajax_response();
-		
-		ob_start();
-			$nom_list_item = ob_get_contents();
-		ob_end_clean();
-		
-		$response->add( array(
-				'what' => 'comment',
-				'id' => $_POST['item_id'],
-				'data' => $nom_list_item,
-				//'action' => ($parent) ? 'reply' : 'new'
-		));
-		
-		//wp_insert_post( $data );
-		
-		$response->send();
-		
-		die($data);
+		wp_insert_post( $data );
+
 	
 	}
 

@@ -20,7 +20,8 @@ jQuery(document).ready(function() {
 			item_content: item_content,
 			item_link: item_link,
 			item_feat_img: item_feat_img,
-			item_id: item_id
+			item_id: item_id,
+			nonce: $.trim($('#rsspf_nomination_nonce').text())
 		},
 		success: function(data, textStatus, XMLHttpRequest){
 			jQuery("#test-div1").html('');
