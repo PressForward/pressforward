@@ -227,6 +227,7 @@ class rsspf {
 			//This needs a nonce for security.
 			echo '<form name="form-' . $item['item_id'] . '"><p>';
 			$this->prep_item_for_submit($item);
+			wp_nonce_field('nomination', 'rsspf_nomination_nonce', false);
 			echo '<input type="hidden" name="GreetingAll" id="GreetingAll" value="Hello Everyone!" />'
 					. '<input type="submit" id="PleasePushMe" />'
 					. '<div id="test-div1">'
@@ -234,7 +235,9 @@ class rsspf {
 				  . '</form>';
 			echo '<hr />';
 			echo '<br />';
-				
+			
+			//check out the built comment form from EditFlow at https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/editorial-comments.php
+			
 			// So, we're going to need some AJAXery method of sending RSS data to a nominations post. 
 			// Best example I can think of? The editorial comments from EditFlow, see edit-flow/modules/editorial-comments/editorial-comments.php, esp ln 284
 			// But lets start simple and get the hang of AJAX in WP first. http://wp.tutsplus.com/articles/getting-started-with-ajax-wordpress-pagination/
@@ -290,15 +293,22 @@ class rsspf {
 	}
 	
 	function build_a_nomination() {
+		
+		// Verify nonce
+		if ( !wp_verify_nonce( $_POST['_nonce'], 'nomination') )
+			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'rsspf' ) );
+
 		//ref http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields, http://wpseek.com/wp_insert_post/
-	
+		$time = current_time('mysql', $gmt = 0); 
 		//@todo Play with post_exists (wp-admin/includes/post.php ln 493) to make sure that submissions have not already been submitted in some other method.
 			//Perhaps with some sort of "Are you sure you don't mean this... reddit style thing?
 			//Should also figure out if I can create a version that triggers on nomination publishing to send to main posts. 
 
-		
+		//set up nomination data
+		$item_title = $_POST['source_title'];
+		$item_content = $_POST['item_content'];
 		//No need to define every post arg right? I should only need the ones I'm pushing through. Well, I guess we will find out. 
-		$args = array(
+		$data = array(
 			'post_status' => 'draft',
 			'post_type' => 'nomination',
 			//'post_author' => $user_ID,   
@@ -306,13 +316,29 @@ class rsspf {
 				//Then we could create a leaderboard. 
 			'post_date' => $_SESSION['cal_startdate'],
 				//Do we want this to be nomination date or origonal posted date? Prob. nomination date? Optimally we can store and later sort by both.			
-			'post_title' => $_POST['source_title'],
-			'post_content' => $_POST['item_content'],
+			'post_title' => $item_title,
+			'post_content' => $item_content,
 			
 		);
 		
-		wp_insert_post( $args );
-		die($args);
+		$response = new WP_Ajax_response();
+		
+		ob_start();
+			$nom_list_item = ob_get_contents();
+		ob_end_clean();
+		
+		$response->add( array(
+				'what' => 'comment',
+				'id' => $_POST['item_id'],
+				'data' => $nom_list_item,
+				//'action' => ($parent) ? 'reply' : 'new'
+		));
+		
+		//wp_insert_post( $data );
+		
+		$response->send();
+		
+		die($data);
 	
 	}
 
