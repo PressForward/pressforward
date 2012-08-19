@@ -77,6 +77,17 @@ Looking at ThreeWP Broadcast
 
 	*	`ln 1319` seems to be where it unsets the `comment_count` out of the array it is pushing out. 
 	*	If it grabs the post object, don't remove it from the object, how to set the now included comment count as the comment count for the post?
+	
+-	the insert post happens at `ln 1475`.
+
+-	if it is an update, that seems to happen around `ln 1468`.
+
+-	The problem then... it could possibly be hacked to pull the comment count on pull and on update, but that doesn't really happen enough to be useful. When a post is first submitted, it is unlikely to have any comments. Thap post may never be updated. If that's the case than Broadcast has no method (at least none already built in) to regularly update comments 
+
+	*	Finding the comment RSS feed and pulling a count of items from that might be a solution, but it is unlikely to hold more than 10 items at once in the feed. 
+		+	So if we used this method, the RSS feed would have to be checked continually and duplicated into the database. 
+	
+	*	The other method would be to, on a cron, check for the origonal blog with the origonal post ID, delve into the database, pull out a count of db entries in the comments table (`wp_comments`) associated with that ID (`comment_post_ID`) and read that count back into the theme, perhaps by filtering the comment count function, or something like that, based on if the post is broadcasted. 
 
 
 Use WP Cron for pulling posts?
