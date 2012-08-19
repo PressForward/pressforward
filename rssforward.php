@@ -186,10 +186,11 @@ class rsspf {
 	private function prep_item_for_submit($item) {
 	
 		$item['item_content'] = htmlentities($item['item_content']);
+		$itemid = $item['item_id'];
 		
 		foreach ($item as $itemKey => $itemPart) {
 		
-			echo '<input type="hidden" name="' . $itemKey . '" id="' . $itemKey . '" value="' . $itemPart . '" />';
+			echo '<input type="hidden" name="' . $itemKey . '" id="' . $itemKey . '_' . $itemid . '" value="' . $itemPart . '" />';
 		
 		}
 	
@@ -227,7 +228,7 @@ class rsspf {
 			//This needs a nonce for security.
 			echo '<form name="form-' . $item['item_id'] . '"><p>';
 			$this->prep_item_for_submit($item);
-			wp_nonce_field('nomination', 'rsspf_nomination_nonce', false);
+			wp_nonce_field('nomination', RSSPF_SLUG . '_nomination_nonce', false);
 			echo '<input type="hidden" name="GreetingAll" id="GreetingAll" value="Hello Everyone!" />'
 					. '<input type="submit" id="PleasePushMe" />'
 					. '<div id="test-div1">'
