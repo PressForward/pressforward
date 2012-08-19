@@ -88,6 +88,7 @@ Looking at ThreeWP Broadcast
 		+	So if we used this method, the RSS feed would have to be checked continually and duplicated into the database. 
 	
 	*	The other method would be to, on a cron, check for the origonal blog with the origonal post ID, delve into the database, pull out a count of db entries in the comments table (`wp_comments`) associated with that ID (`comment_post_ID`) and read that count back into the theme, perhaps by filtering the comment count function, or something like that, based on if the post is broadcasted. 
+		+	Perhaps can use `is_broadcasting` function? Unlikely by looking at it in `ThreeWP_Broadcast.php` on `ln 2185`.
 
 
 Use WP Cron for pulling posts?
