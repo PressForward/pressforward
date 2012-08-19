@@ -153,8 +153,9 @@ class rsspf {
 		
 		foreach($theFeed->get_items() as $item) {
 			
-			$id = md5($item->get_id());
-			if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
+			$id = md5($item->get_id()); //die();
+			//print_r($id);
+			//if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
 					
 				$iFeed = $item->get_feed();
 					
@@ -165,12 +166,13 @@ class rsspf {
 											$item->get_author(),
 											$item->get_content(),
 											$item->get_permalink(),
-											md5($item->get_id())
+											'',
+											$id
 											);
 												
-				set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
+			//	set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
 				
-			}
+			//}
 			$c++;
 		
 		}
@@ -186,13 +188,12 @@ class rsspf {
 	}
 	
 	private function prep_item_for_submit($item) {
-	
 		$item['item_content'] = htmlentities($item['item_content']);
 		$itemid = $item['item_id'];
-		
+	
 		foreach ($item as $itemKey => $itemPart) {
 		
-			echo '<input type="hidden" name="' . $itemKey . '" id="' . $itemKey . '_' . $itemid . '" value="' . $itemPart . '" />';
+			echo '<input type="hidden" name="' . $itemKey . '" id="' . $itemKey . '_' . $itemid . '" id="' . $itemKey . '" value="' . $itemPart . '" />';
 		
 		}
 	
@@ -231,9 +232,9 @@ class rsspf {
 			echo '<form name="form-' . $item['item_id'] . '"><p>';
 			$this->prep_item_for_submit($item);
 			wp_nonce_field('nomination', RSSPF_SLUG . '_nomination_nonce', false);
-			echo '<input type="hidden" name="GreetingAll" id="GreetingAll" value="Hello Everyone!" />'
-					. '<input type="submit" id="PleasePushMe" />'
-					. '<div id="test-div1">'
+			echo '<input type="hidden" name="GreetingAll" class="GreetingAll" value="Hello Everyone!" />'
+					. '<input type="submit" class="PleasePushMe" id="' . $item['item_id'] . '" />'
+					. '<div class="test-div1">'
 					. '</div></p>'
 				  . '</form>';
 			echo '<hr />';
@@ -319,7 +320,7 @@ class rsspf {
 				//Then we could create a leaderboard. 
 			'post_date' => $_SESSION['cal_startdate'],
 				//Do we want this to be nomination date or origonal posted date? Prob. nomination date? Optimally we can store and later sort by both.			
-			'post_title' => 'test',//$item_title,
+			'post_title' => $item_title,//$item_title,
 			'post_content' => 'test'//$item_content,
 			
 		);

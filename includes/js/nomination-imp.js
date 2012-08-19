@@ -1,7 +1,10 @@
 jQuery(document).ready(function() {
 
-	jQuery("#PleasePushMe").click(function (evt){ 
-//	var item_title 		= jQuery(this).jQuery("#item_title").val();
+	jQuery(".PleasePushMe").click(function (evt){ 
+		evt.preventDefault();
+		var element		= jQuery(this);
+		var itemID		= element.attr('id');
+	var itemTitle 		= jQuery("#item_title_"+itemID).val();
 //	var source_title 	= jQuery(this).jQuery("#source_title").val();
 //	var item_date 		= jQuery(this).jQuery("#item_date").val();
 //	var item_author 	= jQuery(this).jQuery("#item_author").val();
@@ -11,10 +14,10 @@ jQuery(document).ready(function() {
 //	var item_id 		= jQuery(this).jQuery("#item_id").val();
 //	var errorThrown		= 'Broken';
 //	var theNonce		= jQuery(this).trim(jQuery('#rsspf_nomination_nonce').text())
-	evt.preventDefault();
+	
 	jQuery.post(ajaxurl, {
 			action: 'build_a_nomination',
-//			item_title: item_title,
+			item_title: itemTitle,
 //			source_title: source_title,
 //			item_date: item_date,
 //			item_author: item_author,
@@ -25,7 +28,7 @@ jQuery(document).ready(function() {
 //			nonce: theNonce
 		},
 		function(response) {
-			jQuery("#test-div1").html('Submitted');
+			jQuery(".test-div1").html(itemTitle);
 			//jQuery("#test-div1").append(data);
 		});
 	  });
