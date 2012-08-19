@@ -2,14 +2,15 @@ jQuery(document).ready(function() {
 
 	jQuery("#PleasePushMe").click(function(){ 
 	var item_title 		= jQuery(this).jQuery("#item_title").val();
-	var source_title 	= jQuery("#source_title").val();
-	var item_date 		= jQuery("#item_date").val();
-	var item_author 	= jQuery("#item_author").val();
-	var item_content 	= jQuery("#item_content").val();
-	var item_link 		= jQuery("#item_link").val();
-	var item_feat_img 	= jQuery("#item_feat_img").val();
-	var item_id 		= jQuery("#item_id").val();
+	var source_title 	= jQuery(this).jQuery("#source_title").val();
+	var item_date 		= jQuery(this).jQuery("#item_date").val();
+	var item_author 	= jQuery(this).jQuery("#item_author").val();
+	var item_content 	= jQuery(this).jQuery("#item_content").val();
+	var item_link 		= jQuery(this).jQuery("#item_link").val();
+	var item_feat_img 	= jQuery(this).jQuery("#item_feat_img").val();
+	var item_id 		= jQuery(this).jQuery("#item_id").val();
 	var errorThrown		= 'Broken';
+	var theNonce		= jQuery(this).trim(jQuery('#rsspf_nomination_nonce').text())
 	
 	jQuery.ajax({
 		type: 'POST',
@@ -24,7 +25,7 @@ jQuery(document).ready(function() {
 			item_link: item_link,
 			item_feat_img: item_feat_img,
 			item_id: item_id,
-			nonce: $.trim($('#rsspf_nomination_nonce').text())
+			nonce: theNonce
 		},
 		success: function(data, textStatus, XMLHttpRequest){
 			jQuery("#test-div1").html('');
