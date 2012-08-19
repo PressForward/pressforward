@@ -298,8 +298,8 @@ class rsspf {
 	function build_a_nomination() {
 		
 		// Verify nonce
-		if ( !wp_verify_nonce( $_POST['_nonce'], 'nomination') )
-			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'rsspf' ) );
+		//if ( !wp_verify_nonce( $_POST['_nonce'], 'nomination') )
+		//	die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'rsspf' ) );
 
 		//ref http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields, http://wpseek.com/wp_insert_post/
 		$time = current_time('mysql', $gmt = 0); 
@@ -308,7 +308,7 @@ class rsspf {
 			//Should also figure out if I can create a version that triggers on nomination publishing to send to main posts. 
 
 		//set up nomination data
-		$item_title = $_POST['source_title'];
+		$item_title = $_POST['item_title'];
 		$item_content = $_POST['item_content'];
 		//No need to define every post arg right? I should only need the ones I'm pushing through. Well, I guess we will find out. 
 		$data = array(
