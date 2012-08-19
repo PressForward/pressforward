@@ -52,11 +52,12 @@ class rsspf {
   // creating Ajax call for WordPress
    add_action( 'wp_ajax_nopriv_MyAjaxFunction', array( $this, 'MyAjaxFunction') );
    add_action( 'wp_ajax_MyAjaxFunction', array( $this, 'MyAjaxFunction') );	
-	
+		if( is_admin() )
+		{
 		//add_action( 'wp_ajax_nopriv_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );	
-		//use wp_ajax_my_action instead?
-	
+		//http://codex.wordpress.org/AJAX_in_Plugins
+		}
 	}
 
 	//Create the menus
