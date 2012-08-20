@@ -156,7 +156,7 @@ class rsspf {
 			
 			$id = md5($item->get_id()); //die();
 			//print_r($id);
-			//if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
+			if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
 					
 				$iFeed = $item->get_feed();
 					
@@ -171,7 +171,7 @@ class rsspf {
 											$id
 											);
 												
-			//	set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
+				set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
 				
 			//}
 			$c++;
