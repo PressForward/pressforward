@@ -277,6 +277,8 @@ class rsspf {
 			//And now lets enqueue the script, ensuring that jQuery is already active. 
 			
 			wp_enqueue_script('nomination-imp', RSSPF_URL . 'includes/js/nomination-imp.js', array( 'jquery' ));
+			wp_register_style( RSSPF_SLUG . '-style', RSSPF_URL . 'includes/css/style.css');
+			wp_enqueue_style( RSSPF_SLUG . '-style' );
 		
 		}
 	
@@ -300,8 +302,8 @@ class rsspf {
 	function build_a_nomination() {
 		
 		// Verify nonce
-		//if ( !wp_verify_nonce( $_POST['_nonce'], 'nomination') )
-		//	die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'rsspf' ) );
+		if ( !wp_verify_nonce($_POST[RSSPF_SLUG . '_nomination_nonce'], 'nomination') )
+			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'rsspf' ) );
 
 		//ref http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields, http://wpseek.com/wp_insert_post/
 		$time = current_time('mysql', $gmt = 0); 

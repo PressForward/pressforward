@@ -13,7 +13,7 @@ jQuery(document).ready(function() {
 //	var item_feat_img 	= jQuery(this).jQuery("#item_feat_img").val();
 //	var item_id 		= jQuery(this).jQuery("#item_id").val();
 //	var errorThrown		= 'Broken';
-//	var theNonce		= jQuery(this).trim(jQuery('#rsspf_nomination_nonce').text())
+	var theNonce		= jQuery.trim(jQuery('#rsspf_nomination_nonce').val())
 	
 	jQuery.post(ajaxurl, {
 			action: 'build_a_nomination',
@@ -25,7 +25,7 @@ jQuery(document).ready(function() {
 //			item_link: item_link,
 //			item_feat_img: item_feat_img,
 //			item_id: item_id,
-//			nonce: theNonce
+			rsspf_nomination_nonce: theNonce
 		},
 		function(response) {
 			jQuery(".nominate-result-"+itemID).html(itemTitle + ' nominated.');
