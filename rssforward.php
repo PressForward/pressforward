@@ -58,6 +58,7 @@ class rsspf {
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );	
 		
 		}
+		add_action('edit_post', array( $this, 'send_nomination_for_publishing'));
 	}
 
 	//Create the menus
@@ -328,6 +329,25 @@ class rsspf {
 		
 		wp_insert_post( $data );
 
+	
+	}
+	
+	function send_nomination_for_publishing() {
+	
+		if (($_POST['post_status'] == 'publish') && ($_POST['post_type'] == 'nomination')){
+		
+			$item_title = $_POST['post_title'];
+			$item_content = $_POST['post_content'];
+			$data = array(
+				'post_status' => 'draft',
+				'post_type' => 'post',
+				'post_title' => $item_title,
+				'post_content' => $item_content,
+			);
+			//Will need to use a meta field to pass the content's md5 id around to check if it has already been posted. 
+			wp_insert_post( $data );
+		
+		}
 	
 	}
 
