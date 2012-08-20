@@ -173,7 +173,7 @@ class rsspf {
 												
 				set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
 				
-			//}
+			}
 			$c++;
 		
 		}
