@@ -188,7 +188,7 @@ class rsspf {
 	}
 	
 	private function prep_item_for_submit($item) {
-		$item['item_content'] = htmlentities($item['item_content']);
+		$item['item_content'] = htmlspecialchars($item['item_content']);
 		$itemid = $item['item_id'];
 	
 		foreach ($item as $itemKey => $itemPart) {
@@ -234,7 +234,7 @@ class rsspf {
 			wp_nonce_field('nomination', RSSPF_SLUG . '_nomination_nonce', false);
 			echo '<input type="hidden" name="GreetingAll" class="GreetingAll" value="Hello Everyone!" />'
 					. '<input type="submit" class="PleasePushMe" id="' . $item['item_id'] . '" />'
-					. '<div class="test-div1">'
+					. '<div class="nominate-result-' . $item['item_id'] . '">'
 					. '</div></p>'
 				  . '</form>';
 			echo '<hr />';
@@ -310,7 +310,8 @@ class rsspf {
 
 		//set up nomination data
 		$item_title = $_POST['item_title'];
-		$item_content = $_POST['item_content'];
+		$item_content = htmlspecialchars_decode($_POST['item_content']);
+		
 		//No need to define every post arg right? I should only need the ones I'm pushing through. Well, I guess we will find out. 
 		$data = array(
 			'post_status' => 'draft',
@@ -321,7 +322,7 @@ class rsspf {
 			'post_date' => $_SESSION['cal_startdate'],
 				//Do we want this to be nomination date or origonal posted date? Prob. nomination date? Optimally we can store and later sort by both.			
 			'post_title' => $item_title,//$item_title,
-			'post_content' => 'test'//$item_content,
+			'post_content' => $item_content,
 			
 		);
 		
