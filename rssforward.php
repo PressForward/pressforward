@@ -336,6 +336,9 @@ class rsspf {
 	
 	function send_nomination_for_publishing() {
 	
+		// verify if this is an auto save routine. 
+		// If it is our form has not been submitted, so we dont want to do anything
+		//if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) 
 		if (($_POST['post_status'] == 'publish') && ($_POST['post_type'] == 'nomination')){
 		
 			$item_title = $_POST['post_title'];

@@ -89,7 +89,12 @@ Looking at ThreeWP Broadcast
 	
 	*	The other method would be to, on a cron, check for the origonal blog with the origonal post ID, delve into the database, pull out a count of db entries in the comments table (`wp_comments`) associated with that ID (`comment_post_ID`) and read that count back into the theme, perhaps by filtering the comment count function, or something like that, based on if the post is broadcasted. 
 		+	Perhaps can use `is_broadcasting` function? Unlikely by looking at it in `ThreeWP_Broadcast.php` on `ln 2185`.
+		
+-	Useful function `get_comment_count` from `wp-includes\comment.php` at `ln 446`.
 
+-	The container that holds a list of blog IDs? `blogs` found at `ThreeWP_Broadcast.php ln 1869`.
+
+-	Can use `get_post_broadcast_data` (from `ThreeWP_Broadcast.php ln 2033`) on each blog ID? Do I have to rotate through each blog post to check and then send info?
 
 Use WP Cron for pulling posts?
 ------------------------------
