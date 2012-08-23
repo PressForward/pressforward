@@ -126,7 +126,7 @@ class rsspf {
 	
 	}
 	
-	private function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='' ) {
+	private function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='' ) {
 		
 		$itemArray = array(
 					
@@ -137,7 +137,8 @@ class rsspf {
 						'item_content'	=>	$itemContent,
 						'item_link'		=>	$itemLink,
 						'item_feat_img'	=>	$itemFeatImg,
-						'item_id'		=>	$itemUID
+						'item_id'		=>	$itemUID,
+						'item_wp_date'	=>  $itemWPDate,
 					
 					);
 		
@@ -168,7 +169,8 @@ class rsspf {
 											$item->get_content(),
 											$item->get_permalink(),
 											'',
-											$id
+											$id,
+											$item->get_date('Y-m-d')
 											);
 												
 				set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
@@ -299,6 +301,12 @@ class rsspf {
 	 
 	}
 	
+	function get_posts_after( $where = '', $theDate ) {
+		// posts for March 1 to March 15, 2010
+		$where .= " AND post_date >= ". $theDate;
+		return $where;
+	}	
+	
 	function build_a_nomination() {
 		
 		// Verify nonce
@@ -311,7 +319,16 @@ class rsspf {
 			//Perhaps with some sort of "Are you sure you don't mean this... reddit style thing?
 			//Should also figure out if I can create a version that triggers on nomination publishing to send to main posts. 
 
-		//set up nomination data
+		//set up nomination check
+		$item_WP_date = $_POST['item_wp_date'];
+		$item_id = $_POST['item_id'];
+		
+		add_filter();
+		$checkQuery = new WP_Query($query_args);
+		remove_filter();
+		
+		
+		//set up rest of nomination data
 		$item_title = $_POST['item_title'];
 		$item_content = htmlspecialchars_decode($_POST['item_content']);
 		
@@ -329,8 +346,9 @@ class rsspf {
 			
 		);
 		
-		wp_insert_post( $data );
+		$newPostID = wp_insert_post( $data );
 
+		add_post_meta($newPostID, 'origin_nom_ID', $item_id, true);
 	
 	}
 	
