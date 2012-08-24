@@ -143,9 +143,9 @@ class rsspf {
 				echo get_post_meta($post->ID, 'nomination_count', true);
 				break;
 			case 'nominatedby':
-				$nominatorString = get_post_meta($post->ID, 'submitted_by', true);
-				$nominatorArray = $this->explode_user_data($nominatorString);
-				echo $nominatorArray['user_name'];
+				$nominatorID = get_post_meta($post->ID, 'submitted_by', true);
+				$user = get_user_by('id', $nominatorID);
+				echo $user->display_name;
 				break;
 				
 		}
@@ -353,18 +353,6 @@ class rsspf {
 	 
 	}
 	
-	function explode_user_data($userDataString) {
-	
-		$array = explode(',', $userDataString);
-		$namedArray = array();
-		$namedArray['user_slug'] = $array[0];
-		$namedArray['user_name'] = $array[1];
-		$namedArray['user_ID'] = $array[2];
-		
-		return $namedArray;
-	
-	}
-	
 	//http://codex.wordpress.org/Class_Reference/WP_Query#Time_Parameters
 	function get_posts_after_for_check( $theDate, $post_type ) {
 		global $wpdb;
@@ -434,8 +422,6 @@ class rsspf {
 			$userID = 0;
 		} else {
 			// Logged in.
-			$userSlug = $current_user->get('user_nicename');
-			$userName = $current_user->get('display_name');
 			$userID = $current_user->ID;
 			if ($current_user->has_prop( 'nom_count' )){
 			
@@ -449,7 +435,7 @@ class rsspf {
 			
 			}
 		}
-		$userString = $userSlug . ',' . $userName . ',' . $userID;		
+		$userString = $userID;		
 		
 		//Filter not going to work? Guess the answer is http://codex.wordpress.org/Displaying_Posts_Using_a_Custom_Select_Query.
 		
