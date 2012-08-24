@@ -136,4 +136,6 @@ Possible Issues
 
 -	A thought? If we want to maintain using the RSS feed to push down from the recommendation engine... why not use the `media:rating` node in RSS? SimplePie has a function to deal with it. I know it is not what it is made for, but this way we don't have to worry about build a whole bunch of extra stuff to parse the engine's output. 
 
--	Do we want the nominate button to send people to the edit nominations page or allow people to go down a list nominating one item after another? 
+-	Do we want the nominate button to send people to the edit nominations page or allow people to go down a list nominating one item after another?
+
+-	Do we want to try and match authors to existing users on the blog?
