@@ -146,6 +146,20 @@ class rsspf {
 	
 	}
 	
+	function get_rss_authors($item) {
+	
+		$authorArray = ($item->get_authors());
+		foreach ($authorArray as $author) {
+			
+			$nameArray[] = $author->get_name();
+				
+		}
+		$authors = implode(', ', $nameArray);
+
+		return $authors;
+	
+	}
+	
 	public function rss_object() {
 	
 		$feedlist = call_user_func(array($this, 'rsspf_feedlist'));
@@ -160,8 +174,7 @@ class rsspf {
 			if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
 					
 				$iFeed = $item->get_feed();
-				$authorArray = ($item->get_authors());
-				$authors = implode(',', $authorArray);
+				$authors = $this->get_rss_authors($item);
 					
 				$rssObject['rss_' . $c] = $this->feed_object(
 											$item->get_title(),
