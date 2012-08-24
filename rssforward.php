@@ -241,6 +241,7 @@ class rsspf {
 			echo '<input type="hidden" name="GreetingAll" class="GreetingAll" value="Hello Everyone!" />'
 					. '<input type="submit" class="PleasePushMe" id="' . $item['item_id'] . '" />'
 					. '<div class="nominate-result-' . $item['item_id'] . '">'
+					. '<img class="loading-' . $item['item_id'] . '" src="' . RSSPF_URL . 'includes/images/ajax-loader.gif" alt="Loading..." style="display: none" />'
 					. '</div></p>'
 				  . '</form>';
 			echo '<hr />';

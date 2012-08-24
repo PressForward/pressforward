@@ -2,6 +2,7 @@ jQuery(document).ready(function() {
 
 	jQuery(".PleasePushMe").click(function (evt){ 
 		evt.preventDefault();
+		
 		var element		= jQuery(this);
 		var itemID		= element.attr('id');
 	var itemTitle 		= jQuery("#item_title_"+itemID).val();
@@ -15,7 +16,7 @@ jQuery(document).ready(function() {
 	var item_wp_date	= jQuery("#item_wp_date_"+itemID).val();
 //	var errorThrown		= 'Broken';
 	var theNonce		= jQuery.trim(jQuery('#rsspf_nomination_nonce').val())
-	
+	jQuery('.loading-'+itemID).show();
 	jQuery.post(ajaxurl, {
 			action: 'build_a_nomination',
 			item_title: itemTitle,
@@ -30,6 +31,7 @@ jQuery(document).ready(function() {
 			rsspf_nomination_nonce: theNonce
 		},
 		function(response) {
+			jQuery('.loading-'+itemID).hide();
 			jQuery(".nominate-result-"+itemID).html(response);
 			//jQuery("#test-div1").append(data);
 		});
