@@ -143,3 +143,5 @@ Possible Issues
 -	We can add the ability to sort nominations using http://yoast.com/custom-post-type-snippets/ but that's just a straight sort, we really need to sort by date and nominations. How? 
 
 -	The last modified column is also really narrow, I'll need to apply custom styling via an attached CSS sheet to that page. 
+
+-	Do we want a source link along with an item link? Prob. 

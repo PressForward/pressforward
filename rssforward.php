@@ -476,6 +476,9 @@ class rsspf {
 		add_post_meta($newNomID, 'origin_item_ID', $item_id, true);
 		add_post_meta($newNomID, 'nomination_count', 1, true);
 		add_post_meta($newNomID, 'submitted_by', $userString, true);
+		add_post_meta($newNomID, 'source_title', $_POST['source_title'], true);
+		add_post_meta($newNomID, 'posted_date', $_POST['item_date'], true);
+		add_post_meta($newNomID, 'authors', $_POST['item_author'], true);
 		
 		$result  = $item_title . ' nominated.';
 		die($result);
@@ -516,6 +519,8 @@ class rsspf {
 				add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
 				$nomCount = get_post_meta($_POST['ID'], 'nomination_count', true);
 				add_post_meta($newPostID, 'nomination_count', $nomCount, true);
+				$userID = get_post_meta($_POST['ID'], 'submitted_by', true);
+				add_post_meta($newPostID, 'submitted_by', $userID, true);
 			}
 		}
 	
