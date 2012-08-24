@@ -61,6 +61,10 @@ class rsspf {
 		add_action('edit_post', array( $this, 'send_nomination_for_publishing'));
 		add_filter( 'manage_edit-nomination_columns', array ($this, 'edit_nominations_columns') );
 		add_action( 'manage_nomination_posts_custom_column',  array ($this, 'nomination_custom_columns') );
+		
+		add_filter('the_author', array ($this, 'replace_author_presentation'));
+		add_filter( 'author_link', array ($this, 'replace_author_uri_presentation') );		
+		
 	}
 
 	//Create the menus
@@ -479,6 +483,7 @@ class rsspf {
 		add_post_meta($newNomID, 'source_title', $_POST['source_title'], true);
 		add_post_meta($newNomID, 'posted_date', $_POST['item_date'], true);
 		add_post_meta($newNomID, 'authors', $_POST['item_author'], true);
+		add_post_meta($newNomID, 'nomination_permalink', $_POST['item_link'], true);
 		
 		$result  = $item_title . ' nominated.';
 		die($result);
@@ -521,9 +526,34 @@ class rsspf {
 				add_post_meta($newPostID, 'nomination_count', $nomCount, true);
 				$userID = get_post_meta($_POST['ID'], 'submitted_by', true);
 				add_post_meta($newPostID, 'submitted_by', $userID, true);
+				$item_permalink = get_post_meta($_POST['ID'], 'nomination_permalink', true);
+				add_post_meta($newPostID, 'nomination_permalink', $item_permalink, true);
 			}
 		}
 	
+	}
+	
+	//Based on http://seoserpent.com/wordpress/custom-author-byline
+
+	function replace_author_presentation( $author ) {
+	
+		global $post;
+		$custom_author = get_post_meta($post->ID, 'submitted_by', TRUE);
+		if($custom_author)
+			return $custom_author;
+		return $author;
+	
+	}
+	
+	function replace_author_uri_presentation( $author_uri ) {
+	
+		//global $authordata;
+		global $post, $authordata;
+		$custom_author_uri = get_post_meta($post->ID, 'nomination_permalink', TRUE); 
+		if($custom_author_uri)
+			return $custom_author_uri;
+		return $author_uri;
+		
 	}
 
 
