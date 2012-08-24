@@ -412,9 +412,19 @@ class rsspf {
 				'post_content' => $item_content,
 			);
 			//Will need to use a meta field to pass the content's md5 id around to check if it has already been posted. 
-			$newPostID = wp_insert_post( $data );
+			
+			//We assume that it is already in nominations, so no need to check there. This might be why we can't use post_exists here.
+			//No need to origonate the check at the time of the feed item either. It can't become a post with the proper meta if it wasn't a nomination first. 
 			$item_id = get_post_meta($_POST['ID'], 'origin_item_ID', true);
-			add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
+			$nom_date = $_POST['aa'] . '-' . $_POST['mm'] . '-' . $_POST['jj'];
+			
+			$post_check = $this->get_post_nomination_status($nom_date, $item_id, 'post');
+			
+			//Alternative check with post_exists? or use same as above?
+			if ($post_check != true) {
+				$newPostID = wp_insert_post( $data );
+				add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
+			}
 		}
 	
 	}
