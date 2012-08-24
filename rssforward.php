@@ -386,9 +386,9 @@ class rsspf {
 			
 		);
 		
-		$newPostID = wp_insert_post( $data );
+		$newNomID = wp_insert_post( $data );
 
-		add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
+		add_post_meta($newNomID, 'origin_item_ID', $item_id, true);
 		
 		$result  = $item_title . ' nominated.';
 		die($result);
@@ -402,7 +402,7 @@ class rsspf {
 		// If it is our form has not been submitted, so we dont want to do anything
 		//if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) 
 		if (($_POST['post_status'] == 'publish') && ($_POST['post_type'] == 'nomination')){
-		
+		//print_r($_POST); die();
 			$item_title = $_POST['post_title'];
 			$item_content = $_POST['post_content'];
 			$data = array(
@@ -412,8 +412,9 @@ class rsspf {
 				'post_content' => $item_content,
 			);
 			//Will need to use a meta field to pass the content's md5 id around to check if it has already been posted. 
-			wp_insert_post( $data );
-		
+			$newPostID = wp_insert_post( $data );
+			$item_id = get_post_meta($_POST['ID'], 'origin_item_ID', true);
+			add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
 		}
 	
 	}
