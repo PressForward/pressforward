@@ -235,6 +235,9 @@ class rsspf {
 			echo '<form name="form-' . $item['item_id'] . '"><p>';
 			$this->prep_item_for_submit($item);
 			wp_nonce_field('nomination', RSSPF_SLUG . '_nomination_nonce', false);
+			//print_r($this->get_posts_after_for_check( 2011-01-03, 'nomination' ));
+			//if(!($this->get_post_nomination_status('2012-08-10', $item['item_id'], 'post'))){
+				//print_r( 'false < test.'); } else { print_r('true'); die();}
 			echo '<input type="hidden" name="GreetingAll" class="GreetingAll" value="Hello Everyone!" />'
 					. '<input type="submit" class="PleasePushMe" id="' . $item['item_id'] . '" />'
 					. '<div class="nominate-result-' . $item['item_id'] . '">'
@@ -300,14 +303,14 @@ class rsspf {
 			
 	 
 	}
-	
+	//http://codex.wordpress.org/Class_Reference/WP_Query#Time_Parameters
 	function get_posts_after_for_check( $theDate, $post_type ) {
 		global $wpdb;
 		$querystr = "
 			SELECT $wpdb->posts.* 
 			FROM $wpdb->posts, $wpdb->postmeta
-			WHERE $wpdb->posts.post_type = '" . $post_type . "'
-			$wpdb->posts.post_date >= ". $theDate . "
+			WHERE $wpdb->posts.post_type = '" . $post_type . "' 
+			AND $wpdb->posts.post_date >= '". $theDate . "' 
 			ORDER BY $wpdb->posts.post_date DESC
 			";
 
@@ -353,7 +356,7 @@ class rsspf {
 		//set up nomination check
 		$item_wp_date = $_POST['item_wp_date'];
 		$item_id = $_POST['item_id'];
-		
+		//die($item_wp_date);
 		//Filter not going to work? Guess the answer is http://codex.wordpress.org/Displaying_Posts_Using_a_Custom_Select_Query.
 		
 		//Going to check posts first on the assumption that there will be more nominations than posts. 
