@@ -126,7 +126,8 @@ class rsspf {
 			'cb' => '<input type="checkbox" />',
 			'title' => 'Title',
 			'date' => 'Last Modified',
-			'nomcount' => 'Nominations'
+			'nomcount' => 'Nominations',
+			'nominatedby' => 'Nominated By'
 		);
 
 		return $columns;
@@ -141,6 +142,12 @@ class rsspf {
 			case 'nomcount':
 				echo get_post_meta($post->ID, 'nomination_count', true);
 				break;
+			case 'nominatedby':
+				$nominatorString = get_post_meta($post->ID, 'submitted_by', true);
+				$nominatorArray = $this->explode_user_data($nominatorString);
+				echo $nominatorArray['user_name'];
+				break;
+				
 		}
 	
 	}	
