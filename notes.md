@@ -139,3 +139,7 @@ Possible Issues
 -	Do we want the nominate button to send people to the edit nominations page or allow people to go down a list nominating one item after another?
 
 -	Do we want to try and match authors to existing users on the blog?
+
+-	We can add the ability to sort nominations using http://yoast.com/custom-post-type-snippets/ but that's just a straight sort, we really need to sort by date and nominations. How? 
+
+-	The last modified column is also really narrow, I'll need to apply custom styling via an attached CSS sheet to that page. 
