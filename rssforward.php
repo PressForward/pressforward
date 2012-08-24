@@ -331,7 +331,9 @@ class rsspf {
 				$origin_item_id = get_post_meta($id, 'origin_item_ID', true);
 				if ($origin_item_id == $item_id) {
 					$check = true;
-					
+					$nomCount = get_post_meta($id, 'nomination_count', true);
+					$nomCount++;
+					update_post_meta($id, 'nomination_count', $nomCount);
 					return $check;
 					break;
 				}
@@ -353,6 +355,9 @@ class rsspf {
 			//Perhaps with some sort of "Are you sure you don't mean this... reddit style thing?
 			//Should also figure out if I can create a version that triggers on nomination publishing to send to main posts. 
 
+		
+		//There is some serious delay here while it goes through the database. We need some sort of loading bar. 
+		
 		//set up nomination check
 		$item_wp_date = $_POST['item_wp_date'];
 		$item_id = $_POST['item_id'];
@@ -361,7 +366,12 @@ class rsspf {
 		
 		//Going to check posts first on the assumption that there will be more nominations than posts. 
 		$post_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'post');
-		if ($post_check == true) { $result = 'This item has already been nominated'; die($result); }
+		if ($post_check == true) { 
+			//Run this function to increase the nomination count in the nomination, even if it is already a post. 
+			$this->get_post_nomination_status($item_wp_date, $item_id, 'nomination');
+			$result = 'This item has already been nominated'; 
+			die($result); 
+		}
 		else { 
 			$nom_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'nomination');
 				if ($nom_check == true) { $result = 'This item has already been nominated'; die($result); }
@@ -389,6 +399,7 @@ class rsspf {
 		$newNomID = wp_insert_post( $data );
 
 		add_post_meta($newNomID, 'origin_item_ID', $item_id, true);
+		add_post_meta($newNomID, 'nomination_count', 1, true);
 		
 		$result  = $item_title . ' nominated.';
 		die($result);
@@ -418,12 +429,17 @@ class rsspf {
 			$item_id = get_post_meta($_POST['ID'], 'origin_item_ID', true);
 			$nom_date = $_POST['aa'] . '-' . $_POST['mm'] . '-' . $_POST['jj'];
 			
+			//A quick note: This will increment the nomination count every time a post is updated,
+			//even ahead of the nomination count on the nomination itself. 
+			//is this a behaviour we want? 
 			$post_check = $this->get_post_nomination_status($nom_date, $item_id, 'post');
 			
 			//Alternative check with post_exists? or use same as above?
 			if ($post_check != true) {
 				$newPostID = wp_insert_post( $data );
 				add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
+				$nomCount = get_post_meta($_POST['ID'], 'nomination_count', true);
+				add_post_meta($newPostID, 'nomination_count', $nomCount, true);
 			}
 		}
 	
