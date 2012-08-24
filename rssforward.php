@@ -160,12 +160,14 @@ class rsspf {
 			if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
 					
 				$iFeed = $item->get_feed();
+				$authorArray = ($item->get_authors());
+				$authors = implode(',', $authorArray);
 					
 				$rssObject['rss_' . $c] = $this->feed_object(
 											$item->get_title(),
 											$iFeed->get_title(),
 											$item->get_date('r'),
-											$item->get_author(),
+											$authors,
 											$item->get_content(),
 											$item->get_permalink(),
 											'',
