@@ -35,6 +35,9 @@ define( 'RSSPF_ROOT', dirname(__FILE__) );
 define( 'RSSPF_FILE_PATH', RSSPF_ROOT . '/' . basename(__FILE__) );
 define( 'RSSPF_URL', plugins_url('/', __FILE__) );
 
+//This adds the library we're going to use to pull and parse Open Graph data from a page. 
+require_once("OpenGraph.php");
+
 class rsspf {
 
 	
@@ -165,6 +168,27 @@ class rsspf {
 	}
 	
 	private function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='' ) {
+		
+		if($itemFeatImg == ''){
+		
+			if ( false === ( $itemFeatImg = get_transient( 'feed_img_' . $itemUID ) ) ) {
+			
+				//If there is no featured image passed, let's try and grab the opengraph image. 
+				$node = OpenGraph::fetch($itemLink);
+				$itemFeatImg = $node->image;
+				if ($itemFeatImg == ''){
+					//Thinking of starting a method here to pull the first image from the body of a post.
+					//http://stackoverflow.com/questions/138313/how-to-extract-img-src-title-and-alt-from-html-using-php
+					//http://stackoverflow.com/questions/1513418/get-all-images-url-from-string
+					//http://stackoverflow.com/questions/7479835/getting-the-first-image-in-string-with-php
+					//preg_match_all('/<img[^>]+>/i',$itemContent, $imgResult); 
+					//$imgScript = $imgResult[0][0];
+				}
+				//Most RSS feed readers don't store the image locally. Should we? 
+				set_transient( 'feed_img_' . $itemUID, $itemFeatImg, 60*60*24 );
+			}
+		
+		}
 		
 		$itemArray = array(
 					
