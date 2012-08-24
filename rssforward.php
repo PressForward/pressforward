@@ -319,6 +319,19 @@ class rsspf {
 			
 	 
 	}
+	
+	function explode_user_data($userDataString) {
+	
+		$array = explode(',', $userDataString);
+		$namedArray = array();
+		$namedArray['user_slug'] = $array[0];
+		$namedArray['user_name'] = $array[1];
+		$namedArray['user_ID'] = $array[2];
+		
+		return $namedArray;
+	
+	}
+	
 	//http://codex.wordpress.org/Class_Reference/WP_Query#Time_Parameters
 	function get_posts_after_for_check( $theDate, $post_type ) {
 		global $wpdb;
@@ -378,26 +391,8 @@ class rsspf {
 		$item_wp_date = $_POST['item_wp_date'];
 		$item_id = $_POST['item_id'];
 		//die($item_wp_date);
-		//Filter not going to work? Guess the answer is http://codex.wordpress.org/Displaying_Posts_Using_a_Custom_Select_Query.
 		
-		//Going to check posts first on the assumption that there will be more nominations than posts. 
-		$post_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'post');
-		if ($post_check == true) { 
-			//Run this function to increase the nomination count in the nomination, even if it is already a post. 
-			$this->get_post_nomination_status($item_wp_date, $item_id, 'nomination');
-			$result = 'This item has already been nominated'; 
-			die($result); 
-		}
-		else { 
-			$nom_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'nomination');
-				if ($nom_check == true) { $result = 'This item has already been nominated'; die($result); }
-		}
-		
-		
-		//set up rest of nomination data
-		$item_title = $_POST['item_title'];
-		$item_content = htmlspecialchars_decode($_POST['item_content']);
-		//Record first nominator. 
+		//Record first nominator and/or add a nomination to the user's count.
 		$current_user = wp_get_current_user();
 		if ( 0 == $current_user->ID ) {
 			//Not logged in.
@@ -421,7 +416,27 @@ class rsspf {
 			
 			}
 		}
-		$userString = $userSlug . ',' . $userName . ',' . $userID;
+		$userString = $userSlug . ',' . $userName . ',' . $userID;		
+		
+		//Filter not going to work? Guess the answer is http://codex.wordpress.org/Displaying_Posts_Using_a_Custom_Select_Query.
+		
+		//Going to check posts first on the assumption that there will be more nominations than posts. 
+		$post_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'post');
+		if ($post_check == true) { 
+			//Run this function to increase the nomination count in the nomination, even if it is already a post. 
+			$this->get_post_nomination_status($item_wp_date, $item_id, 'nomination');
+			$result = 'This item has already been nominated'; 
+			die($result); 
+		}
+		else { 
+			$nom_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'nomination');
+				if ($nom_check == true) { $result = 'This item has already been nominated'; die($result); }
+		}
+		
+		
+		//set up rest of nomination data
+		$item_title = $_POST['item_title'];
+		$item_content = htmlspecialchars_decode($_POST['item_content']);
 		
 		//No need to define every post arg right? I should only need the ones I'm pushing through. Well, I guess we will find out. 
 		$data = array(
@@ -441,6 +456,7 @@ class rsspf {
 
 		add_post_meta($newNomID, 'origin_item_ID', $item_id, true);
 		add_post_meta($newNomID, 'nomination_count', 1, true);
+		add_post_meta($newNomID, 'submitted_by', $userString, true);
 		
 		$result  = $item_title . ' nominated.';
 		die($result);
