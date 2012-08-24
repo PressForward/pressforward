@@ -11,7 +11,7 @@ jQuery(document).ready(function() {
 	var item_author 	= jQuery("#item_author_"+itemID).val();
 	var item_content 	= jQuery("#item_content_"+itemID).val();
 	var item_link 		= jQuery("#item_link_"+itemID).val();
-//	var item_feat_img 	= jQuery(this).jQuery("#item_feat_img").val();
+	var item_feat_img 	= jQuery("#item_feat_img_"+itemID).val();
 	var item_id 		= jQuery("#item_id_"+itemID).val();
 	var item_wp_date	= jQuery("#item_wp_date_"+itemID).val();
 //	var errorThrown		= 'Broken';
@@ -25,7 +25,7 @@ jQuery(document).ready(function() {
 			item_author: item_author,
 			item_content: item_content,
 			item_link: item_link,
-//			item_feat_img: item_feat_img,
+			item_feat_img: item_feat_img,
 			item_id: item_id,
 			item_wp_date: item_wp_date,
 			rsspf_nomination_nonce: theNonce
