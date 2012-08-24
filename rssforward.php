@@ -301,10 +301,19 @@ class rsspf {
 	 
 	}
 	
-	function get_posts_after( $where = '', $theDate ) {
-		// posts for March 1 to March 15, 2010
-		$where .= " AND post_date >= ". $theDate;
-		return $where;
+	function get_posts_after_for_check( $theDate, $post_type ) {
+		
+		$querystr = "
+			SELECT $wpdb->posts.* 
+			FROM $wpdb->posts, $wpdb->postmeta
+			WHERE $wpdb->posts.post_type = '" . $post_type . "'
+			$wpdb->posts.post_date >= ". $theDate . "
+			ORDER BY $wpdb->posts.post_date DESC
+			";
+
+		$postsAfter = $wpdb->get_results($querystr, OBJECT);		
+		
+		return $postsAfter;
 	}	
 	
 	function build_a_nomination() {
@@ -320,12 +329,24 @@ class rsspf {
 			//Should also figure out if I can create a version that triggers on nomination publishing to send to main posts. 
 
 		//set up nomination check
-		$item_WP_date = $_POST['item_wp_date'];
+		$item_wp_date = $_POST['item_wp_date'];
 		$item_id = $_POST['item_id'];
 		
-		add_filter();
-		$checkQuery = new WP_Query($query_args);
-		remove_filter();
+		//Filter not going to work? Guess the answer is http://codex.wordpress.org/Displaying_Posts_Using_a_Custom_Select_Query.
+		$postsAfter = $this->get_posts_after_for_check( $item_wp_date, 'nomination');
+		$exists = false;
+		if ($postsAfter):
+			global $post;
+			foreach ($postsAfter as $post):
+				setup_postdata($post);
+				$origin_item_id = get_post_meta($post->ID, 'origin_item_ID', true);
+				if ($origin_item_id == $item_id) {
+					$check = true;
+					$result = 'This item has already been nominated';
+					die($result);
+				}
+			endforeach;
+		endif;
 		
 		
 		//set up rest of nomination data
@@ -348,7 +369,10 @@ class rsspf {
 		
 		$newPostID = wp_insert_post( $data );
 
-		add_post_meta($newPostID, 'origin_nom_ID', $item_id, true);
+		add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
+		
+		$result = $item_title . ' nominated.';
+		die($result);
 	
 	}
 	
