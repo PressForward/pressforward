@@ -138,7 +138,8 @@ class rsspf {
 	
 	}
 
-	//Via http://slides.helenhousandi.com/wcnyc2012.html#15 and http://svn.automattic.com/wordpress/tags/3.4/wp-admin/includes/class-wp-posts-list-table.php
+	//Via http://slides.helenhousandi.com/wcnyc2012.html#15 and http://svn.automattic.com/wordpress/tags/3.4/wp-admin/includes/class-wp-posts-list-table.php and 
+	//http://yoast.com/custom-post-type-snippets/
 	function nomination_custom_columns ( $column ) {
 	
 		global $post;
