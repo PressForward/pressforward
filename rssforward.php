@@ -397,7 +397,31 @@ class rsspf {
 		//set up rest of nomination data
 		$item_title = $_POST['item_title'];
 		$item_content = htmlspecialchars_decode($_POST['item_content']);
-		
+		//Record first nominator. 
+		$current_user = wp_get_current_user();
+		if ( 0 == $current_user->ID ) {
+			//Not logged in.
+			$userSlug = "external";
+			$userName = "External User";
+			$userID = 0;
+		} else {
+			// Logged in.
+			$userSlug = $current_user->get('user_nicename');
+			$userName = $current_user->get('display_name');
+			$userID = $current_user->ID;
+			if ($current_user->has_prop( 'nom_count' )){
+			
+				$nom_counter = $current_user->__get( 'nom_count' );
+				$nom_counter++;
+				$current_user->__set('nom_count', $nom_counter);
+			
+			} else {
+			
+				$current_user->__set('nom_count', 1);
+			
+			}
+		}
+		$userString = $userSlug . ',' . $userName . ',' . $userID;
 		
 		//No need to define every post arg right? I should only need the ones I'm pushing through. Well, I guess we will find out. 
 		$data = array(
