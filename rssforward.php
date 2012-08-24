@@ -302,7 +302,7 @@ class rsspf {
 	}
 	
 	function get_posts_after_for_check( $theDate, $post_type ) {
-		
+		global $wpdb;
 		$querystr = "
 			SELECT $wpdb->posts.* 
 			FROM $wpdb->posts, $wpdb->postmeta
@@ -314,7 +314,29 @@ class rsspf {
 		$postsAfter = $wpdb->get_results($querystr, OBJECT);		
 		
 		return $postsAfter;
-	}	
+	}
+
+	function get_post_nomination_status($date, $item_id, $post_type){
+	
+		$postsAfter = $this->get_posts_after_for_check( $date, $post_type );
+		$check = false;
+		if ($postsAfter):
+			global $post;
+			foreach ($postsAfter as $post):
+				setup_postdata($post);
+				$id = get_the_ID();
+				$origin_item_id = get_post_meta($id, 'origin_item_ID', true);
+				if ($origin_item_id == $item_id) {
+					$check = true;
+					
+					return $check;
+					break;
+				}
+			endforeach;
+		endif;
+		return $check;
+	
+	}
 	
 	function build_a_nomination() {
 		
@@ -333,20 +355,14 @@ class rsspf {
 		$item_id = $_POST['item_id'];
 		
 		//Filter not going to work? Guess the answer is http://codex.wordpress.org/Displaying_Posts_Using_a_Custom_Select_Query.
-		$postsAfter = $this->get_posts_after_for_check( $item_wp_date, 'nomination');
-		$exists = false;
-		if ($postsAfter):
-			global $post;
-			foreach ($postsAfter as $post):
-				setup_postdata($post);
-				$origin_item_id = get_post_meta($post->ID, 'origin_item_ID', true);
-				if ($origin_item_id == $item_id) {
-					$check = true;
-					$result = 'This item has already been nominated';
-					die($result);
-				}
-			endforeach;
-		endif;
+		
+		//Going to check posts first on the assumption that there will be more nominations than posts. 
+		$post_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'post');
+		if ($post_check == true) { $result = 'This item has already been nominated'; die($result); }
+		else { 
+			$nom_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'nomination');
+				if ($nom_check == true) { $result = 'This item has already been nominated'; die($result); }
+		}
 		
 		
 		//set up rest of nomination data
@@ -371,8 +387,9 @@ class rsspf {
 
 		add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
 		
-		$result = $item_title . ' nominated.';
+		$result  = $item_title . ' nominated.';
 		die($result);
+		
 	
 	}
 	

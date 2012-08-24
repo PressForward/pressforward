@@ -30,7 +30,7 @@ jQuery(document).ready(function() {
 			rsspf_nomination_nonce: theNonce
 		},
 		function(response) {
-			jQuery(".nominate-result-"+itemID).html(itemTitle + ' nominated.');
+			jQuery(".nominate-result-"+itemID).html(response);
 			//jQuery("#test-div1").append(data);
 		});
 	  });
