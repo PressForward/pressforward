@@ -59,6 +59,8 @@ class rsspf {
 		
 		}
 		add_action('edit_post', array( $this, 'send_nomination_for_publishing'));
+		add_filter( 'manage_edit-nomination_columns', array ($this, 'edit_nominations_columns') );
+		add_action( 'manage_nomination_posts_custom_column',  array ($this, 'nomination_custom_columns') );
 	}
 
 	//Create the menus
@@ -117,7 +119,31 @@ class rsspf {
 		register_post_type('nomination', $args);
 
 	}
-	//A quick note for later, nomination count - perhaps stored as post_meta for each nomination? 
+	
+	function edit_nominations_columns ( $columns ){
+	
+		$columns = array(
+			'cb' => '<input type="checkbox" />',
+			'title' => 'Title',
+			'date' => 'Last Modified',
+			'nomcount' => 'Nominations'
+		);
+
+		return $columns;
+	
+	}
+
+	//Via http://slides.helenhousandi.com/wcnyc2012.html#15 and http://svn.automattic.com/wordpress/tags/3.4/wp-admin/includes/class-wp-posts-list-table.php
+	function nomination_custom_columns ( $column ) {
+	
+		global $post;
+		switch ($column) {
+			case 'nomcount':
+				echo get_post_meta($post->ID, 'nomination_count', true);
+				break;
+		}
+	
+	}	
 
 	public function rsspf_feedlist() {
 	
