@@ -244,7 +244,7 @@ class rsspf {
 											$item->get_date('r'),
 											$authors,
 											$item->get_content(),
-											$item->get_permalink(),
+											$item->get_link(),
 											'',
 											$id,
 											$item->get_date('Y-m-d')
@@ -292,6 +292,7 @@ class rsspf {
 		$c = 1;
 		foreach($this->rss_object() as $item) {
 		
+			echo '<div style="float:left; margin-right: 10px; margin-bottom: 10px;"><img src="' . $item['item_feat_img'] . '"></div>';
 			echo $c++ . '. ';
 			//The following is a fix as described in http://simplepie.org/wiki/faq/typical_multifeed_gotchas
 			//$iFeed = $item->get_feed();
