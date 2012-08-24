@@ -616,7 +616,9 @@ class rsspf {
 				add_post_meta($newPostID, 'submitted_by', $userID, true);
 				$item_permalink = get_post_meta($_POST['ID'], 'nomination_permalink', true);
 				add_post_meta($newPostID, 'nomination_permalink', $item_permalink, true);
-
+				$item_permalink = get_post_meta($_POST['ID'], 'authors', true);
+				add_post_meta($newPostID, 'authors', $item_permalink, true);
+				
 				$already_has_thumb = has_post_thumbnail($_POST['ID']);
 				if ($already_has_thumb)  {
 					$post_thumbnail_id = get_post_thumbnail_id( $_POST['ID'] );
@@ -633,7 +635,7 @@ class rsspf {
 	function replace_author_presentation( $author ) {
 	
 		global $post;
-		$custom_author = get_post_meta($post->ID, 'submitted_by', TRUE);
+		$custom_author = get_post_meta($post->ID, 'authors', TRUE);
 		if($custom_author)
 			return $custom_author;
 		return $author;
