@@ -398,6 +398,7 @@ class rsspf {
 		$item_title = $_POST['item_title'];
 		$item_content = htmlspecialchars_decode($_POST['item_content']);
 		
+		
 		//No need to define every post arg right? I should only need the ones I'm pushing through. Well, I guess we will find out. 
 		$data = array(
 			'post_status' => 'draft',
