@@ -19,7 +19,7 @@ jQuery(document).ready(function() {
 	jQuery('.loading-'+itemID).show();
 	jQuery.post(ajaxurl, {
 			action: 'build_a_nomination',
-			item_title: itemTitle,
+			item_title: item_title,
 			source_title: source_title,
 			item_date: item_date,
 			item_author: item_author,
