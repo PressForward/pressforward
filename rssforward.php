@@ -136,7 +136,8 @@ class rsspf {
 			'date' => 'Last Modified',
 			'nomcount' => 'Nominations',
 			'nominatedby' => 'Nominated By',
-			'original_author' => 'Original Author'
+			'original_author' => 'Original Author',
+			'date_nominated' => 'Date Nominated'
 		);
 
 		return $columns;
@@ -160,6 +161,11 @@ class rsspf {
 				$orig_auth = get_post_meta($post->ID, 'authors', true);
 				echo $orig_auth;
 				break;
+			case 'date_nominated': 
+				$dateNomed = get_post_meta($post->ID, 'date_nominated', true);
+				echo $dateNomed;
+				break;
+				
 				
 		}
 	}	
@@ -169,9 +175,10 @@ class rsspf {
 	  return array(
 		'title' => 'title',
 		'date' => 'date',
-		'nomcount'      => 'nomcount',
+		'nomcount' => 'nomcount',
 		'nominatedby' => 'nominatedby',
-		'original_author'     => 'original_author'
+		'original_author' => 'original_author',
+		'date_nominated' => 'date_nominated'
 	  );
 	}
 	
@@ -589,6 +596,8 @@ class rsspf {
 		add_post_meta($newNomID, 'posted_date', $_POST['item_date'], true);
 		add_post_meta($newNomID, 'authors', $_POST['item_author'], true);
 		add_post_meta($newNomID, 'nomination_permalink', $_POST['item_link'], true);
+		add_post_meta($newNomID, 'date_nominated', date('c'), true);
+		
 		
 		$result  = $item_title . ' nominated.';
 		die($result);
@@ -635,6 +644,8 @@ class rsspf {
 				add_post_meta($newPostID, 'nomination_permalink', $item_permalink, true);
 				$item_permalink = get_post_meta($_POST['ID'], 'authors', true);
 				add_post_meta($newPostID, 'authors', $item_permalink, true);
+				$date_nom = get_post_meta($_POST['ID'], 'date_nominated', true);
+				add_post_meta($newPostID, 'date_nominated', $date_nom, true);
 				
 				$already_has_thumb = has_post_thumbnail($_POST['ID']);
 				if ($already_has_thumb)  {
