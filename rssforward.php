@@ -65,8 +65,11 @@ class rsspf {
 		add_filter( 'manage_edit-nomination_columns', array ($this, 'edit_nominations_columns') );
 		add_action( 'manage_nomination_posts_custom_column',  array ($this, 'nomination_custom_columns') );
 		
-		add_filter('the_author', array ($this, 'replace_author_presentation'));
-		add_filter( 'author_link', array ($this, 'replace_author_uri_presentation') );		
+		add_filter('the_author', array($this, 'replace_author_presentation'));
+		add_filter( 'author_link', array($this, 'replace_author_uri_presentation') );		
+		add_filter( "manage_edit-nomination_sortable_columns", array ($this, "nomination_sortable_columns") );
+		add_action( 'restrict_manage_posts', array($this, 'taxonomy_filter_restrict_manage_posts') );	
+		add_filter( 'parse_query', array($this, 'taxonomy_filter_post_type_request') );		
 		
 	}
 
@@ -134,15 +137,15 @@ class rsspf {
 			'title' => 'Title',
 			'date' => 'Last Modified',
 			'nomcount' => 'Nominations',
-			'nominatedby' => 'Nominated By'
+			'nominatedby' => 'Nominated By',
+			'original_author' => 'Original Author'
 		);
 
 		return $columns;
 	
 	}
 
-	//Via http://slides.helenhousandi.com/wcnyc2012.html#15 and http://svn.automattic.com/wordpress/tags/3.4/wp-admin/includes/class-wp-posts-list-table.php and 
-	//http://yoast.com/custom-post-type-snippets/
+	//Via http://slides.helenhousandi.com/wcnyc2012.html#15 and http://svn.automattic.com/wordpress/tags/3.4/wp-admin/includes/class-wp-posts-list-table.php 	
 	function nomination_custom_columns ( $column ) {
 	
 		global $post;
@@ -155,10 +158,72 @@ class rsspf {
 				$user = get_user_by('id', $nominatorID);
 				echo $user->display_name;
 				break;
+			case 'original_author':
+				$orig_auth = get_post_meta($post->ID, 'authors', true);
+				echo $orig_auth;
+				break;
 				
 		}
-	
 	}	
+	
+	// Make these columns sortable
+	function nomination_sortable_columns() {
+	  return array(
+		'title' => 'title',
+		'date' => 'date',
+		'nomcount'      => 'nomcount',
+		'nominatedby' => 'nominatedby',
+		'original_author'     => 'original_author'
+	  );
+	}
+	
+	//Next two functions direct from http://yoast.com/custom-post-type-snippets/
+	// Filter the request to just give posts for the given taxonomy, if applicable.
+	function taxonomy_filter_restrict_manage_posts() {
+		global $typenow;
+
+		// If you only want this to work for your specific post type,
+		// check for that $type here and then return.
+		// This function, if unmodified, will add the dropdown for each
+		// post type / taxonomy combination.
+
+		$post_types = get_post_types( array( '_builtin' => false ) );
+
+		if ( in_array( $typenow, $post_types ) ) {
+			$filters = get_object_taxonomies( $typenow );
+
+			foreach ( $filters as $tax_slug ) {
+				$tax_obj = get_taxonomy( $tax_slug );
+				wp_dropdown_categories( array(
+					'show_option_all' => __('Show All '.$tax_obj->label ),
+					'taxonomy' 	  => $tax_slug,
+					'name' 		  => $tax_obj->name,
+					'orderby' 	  => 'name',
+					'selected' 	  => $_GET[$tax_slug],
+					'hierarchical' 	  => $tax_obj->hierarchical,
+					'show_count' 	  => false,
+					'hide_empty' 	  => true
+				) );
+			}
+		}
+	}
+	
+	function taxonomy_filter_post_type_request( $query ) {
+	  global $pagenow, $typenow;
+
+	  if ( 'edit.php' == $pagenow ) {
+		$filters = get_object_taxonomies( $typenow );
+		foreach ( $filters as $tax_slug ) {
+		  $var = &$query->query_vars[$tax_slug];
+		  if ( isset( $var ) ) {
+			$term = get_term_by( 'id', $var, $tax_slug );
+			$var = $term->slug;
+		  }
+		}
+	  }
+	}
+
+	
 
 	public function rsspf_feedlist() {
 	
