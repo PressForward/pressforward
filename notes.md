@@ -140,6 +140,8 @@ Possible Issues
 
 -	Do we want to try and match authors to existing users on the blog?
 
+-	Should we be importing RSS tags or categories? If we import them into the nomination, should we import them into the post as well?
+
 -	We can add the ability to sort nominations using http://yoast.com/custom-post-type-snippets/ but that's just a straight sort, we really need to sort by date and nominations. How? 
 
 -	The last modified column is also really narrow, I'll need to apply custom styling via an attached CSS sheet to that page. 
