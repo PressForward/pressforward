@@ -291,8 +291,9 @@ class rsspf {
 		//Based off SimplePie's tutorial at http://simplepie.org/wiki/tutorial/how_to_display_previous_feed_items_like_google_reader.
 		$c = 1;
 		foreach($this->rss_object() as $item) {
-		
-			echo '<div style="float:left; margin-right: 10px; margin-bottom: 10px;"><img src="' . $item['item_feat_img'] . '"></div>';
+			
+			if ($item['item_feat_img'] != '')
+				echo '<div style="float:left; margin-right: 10px; margin-bottom: 10px;"><img src="' . $item['item_feat_img'] . '"></div>';
 			echo $c++ . '. ';
 			//The following is a fix as described in http://simplepie.org/wiki/faq/typical_multifeed_gotchas
 			//$iFeed = $item->get_feed();
