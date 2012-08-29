@@ -453,7 +453,7 @@ class rsspf {
 		return $postsAfter;
 	}
 
-	function get_post_nomination_status($date, $item_id, $post_type){
+	function get_post_nomination_status($date, $item_id, $post_type, $updateCount = true){
 	
 		$postsAfter = $this->get_posts_after_for_check( $date, $post_type );
 		$check = false;
@@ -465,9 +465,13 @@ class rsspf {
 				$origin_item_id = get_post_meta($id, 'origin_item_ID', true);
 				if ($origin_item_id == $item_id) {
 					$check = true;
-					$nomCount = get_post_meta($id, 'nomination_count', true);
-					$nomCount++;
-					update_post_meta($id, 'nomination_count', $nomCount);
+					
+					if ($updateCount){
+						$nomCount = get_post_meta($id, 'nomination_count', true);
+						$nomCount++;
+						update_post_meta($id, 'nomination_count', $nomCount);
+					}
+					
 					return $check;
 					break;
 				}
@@ -657,10 +661,8 @@ class rsspf {
 			$item_id = get_post_meta($_POST['ID'], 'origin_item_ID', true);
 			$nom_date = $_POST['aa'] . '-' . $_POST['mm'] . '-' . $_POST['jj'];
 			
-			//A quick note: This will increment the nomination count every time a post is updated,
-			//even ahead of the nomination count on the nomination itself. 
-			//is this a behaviour we want? 
-			$post_check = $this->get_post_nomination_status($nom_date, $item_id, 'post');
+			//Now function will not update nomination count when it pushes nomination to publication.
+			$post_check = $this->get_post_nomination_status($nom_date, $item_id, 'post', false);
 			
 			//Alternative check with post_exists? or use same as above?
 			if ($post_check != true) {
