@@ -119,6 +119,7 @@ class rsspf {
 					'show_ui' => true,
 					//'show_in_menu' => $rsspf_menu_slug,
 					'show_in_menu' => false,
+					'register_meta_box_cb' => array($this, 'nominations_meta_boxes'),
 					'capability_type' => 'post',
 					'supports' => array('title', 'editor', 'thumbnail', 'revisions'),
 					'has_archive' => false
@@ -182,6 +183,35 @@ class rsspf {
 	  );
 	}
 	
+	public function nominations_meta_boxes() {
+		global $post;
+		
+		add_meta_box('rsspf-nominations', 'Nomination Data', array($this, 'nominations_box_builder'), 'nomination', 'side', 'high' );
+
+	}
+	
+	public function nominations_box_builder() {
+		global $post;
+		//wp_nonce_field( 'nominate_meta', 'nominate_meta_nonce' );
+		$origin_item_ID = get_post_meta($post->ID, 'origin_item_ID', true);
+		$nomination_count = get_post_meta($post->ID, 'nomination_count', true);
+		$submitted_by = get_post_meta($post->ID, 'submitted_by', true);
+		$source_title = get_post_meta($post->ID, 'source_title', true);
+		$posted_date = get_post_meta($post->ID, 'posted_date', true);
+		$nom_authors = get_post_meta($post->ID, 'authors', true);
+		$nomination_permalink = get_post_meta($post->ID, 'nomination_permalink', true);
+		$date_nominated = get_post_meta($post->ID, 'date_nominated', true);
+		$user = get_user_by('id', $submitted_by);
+		echo '<strong>Item ID</strong>: ' . $origin_item_ID . '<br />'; 
+		echo '<strong>Nomination Count</strong>: ' . $nomination_count . '<br />'; 
+		echo '<strong>Submitted By</strong>: ' . $user->display_name . '<br />'; 
+		echo '<strong>Feed Title</strong>: ' . $source_title . '<br />'; 
+		echo '<strong>Source Posted</strong>: ' . $posted_date . '<br />'; 
+		echo '<strong>Source Authors</strong>: ' . $nom_authors . '<br />'; 
+		echo '<strong>Source Link</strong>: <a href="' . $nomination_permalink . '" target="_blank">Original Post</a><br />'; 
+		echo '<strong>Date Nominated</strong>: ' . $date_nominated . '<br />'; 
+		
+	}	
 
 	public function rsspf_feedlist() {
 	
