@@ -48,6 +48,7 @@ class rsspf {
 		add_action('admin_menu', array($this, 'register_rsspf_custom_menu_pages') );
 		//Activate the nominations post-type
 		add_action('init', array($this, 'create_rsspf_nomination_post_type') );
+		add_action('init', array($this, 'create_rsspf_archive_post_type') );
 		
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
 		
@@ -128,6 +129,47 @@ class rsspf {
 		register_post_type('nomination', $args);
 
 	}
+	
+	//Create the archive post type
+	function create_rsspf_archive_post_type() {
+		$args = array(
+					'labels' => array(
+										'name' => __( 'Archival' ),
+										'singular_name' => __( 'Archival' )
+									),
+					'description' => 'Archival posts for saving RSS',
+					'public' => false,
+					'show_ui' => false,
+					'show_in_menu' => false,
+					//'register_meta_box_cb' => array($this, 'nominations_meta_boxes'),
+					'capability_type' => 'post',
+					'supports' => array('title', 'editor', 'thumbnail', 'revisions'),
+					'has_archive' => true
+				);
+		
+		register_post_type('rss-archival', $args);
+
+	}
+
+	function scheduale_feed_in() {
+		if ( ! wp_next_scheduled( 'pull_feed_in' ) ) {
+		  wp_schedule_event( time(), 'hourly', 'pull_feed_in' );
+		}
+	}
+	//add_action( 'pull_feed_in', 'assemble_feed_for_pull' );
+	function assemble_feed_for_pull() {
+		//pull rss into post types
+	}
+	
+	function scheduale_feed_out() {
+		if ( ! wp_next_scheduled( 'take_feed_out' ) ) {
+		  wp_schedule_event( time(), 'hourly', 'take_feed_out' );
+		}
+	}
+	//add_action( 'take_feed_out', 'disassemble_feed_items' );
+	function disassemble_feed_items() {
+		//delete rss feed items with a date past a certian point. 
+	}	
 	
 	function edit_nominations_columns ( $columns ){
 	
