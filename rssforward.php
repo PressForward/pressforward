@@ -201,15 +201,38 @@ class rsspf {
 	
 	}
 	
+// Create a new filtering function that will add our where clause to the query
+	function filter_where_older_sixty_days( $where = '' ) {
+		// posts in the last 30 days
+		$where .= " AND post_date < '" . date('Y-m-d', strtotime('-60 days')) . "'";
+		return $where;
+	}	
+	
 	function scheduale_feed_out() {
 		if ( ! wp_next_scheduled( 'take_feed_out' ) ) {
-		  wp_schedule_event( time(), 'daily', 'take_feed_out' );
+		  wp_schedule_event( time(), 'monthly', 'take_feed_out' );
 		}
 	}
 	//add_action( 'take_feed_out', 'disassemble_feed_items' );
 	function disassemble_feed_items() {
 		//delete rss feed items with a date past a certian point. 
-	}	
+		add_filter( 'posts_where', array($this, 'filter_where_older_sixty_days') );
+		$queryForDel = new WP_Query( array( 'post_type' => 'rss-archival' ) );
+		remove_filter( 'posts_where', array($this, 'filter_where_older_sixty_days') );
+		
+		// The Loop
+		while ( $queryForDel->have_posts() ) : $queryForDel->the_post();
+			
+			$postid = get_the_ID();
+			wp_delete_post( $postid, true );
+			
+		endwhile;
+
+		// Reset Post Data
+		wp_reset_postdata();		
+		
+	}
+	
 	
 	function edit_nominations_columns ( $columns ){
 	
