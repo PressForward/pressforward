@@ -36,4 +36,16 @@ jQuery(document).ready(function() {
 			//jQuery("#test-div1").append(data);
 		});
 	  });
+	  
+	jQuery(".refreshfeed").click(function (evt){ 
+		evt.preventDefault();
+		jQuery.post(ajaxurl, {
+			action: 'assemble_feed_for_pull'
+		},
+		function(response) {
+			alert(response);
+			//jQuery("#test-div1").append(data);
+		});
+	
+	});
 });

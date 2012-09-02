@@ -60,7 +60,8 @@ class rsspf {
 		{
 		add_action( 'wp_ajax_nopriv_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );	
-		
+		add_action( 'wp_ajax_nopriv_assemble_feed_for_pull', array($this, 'assemble_feed_for_pull') );	
+		add_action( 'wp_ajax_assemble_feed_for_pull', array( $this, 'assemble_feed_for_pull') );	
 		}
 		add_action('edit_post', array( $this, 'send_nomination_for_publishing'));
 		add_filter( 'manage_edit-nomination_columns', array ($this, 'edit_nominations_columns') );
@@ -153,7 +154,7 @@ class rsspf {
 					'has_archive' => true
 				);
 		
-		register_post_type('rss-archival', $args);
+		register_post_type('rssarchival', $args);
 
 	}
 
@@ -163,7 +164,7 @@ class rsspf {
 		}
 	}
 	
-	function assemble_feed_for_pull() {
+	public function assemble_feed_for_pull() {
 		//pull rss into post types
 		$feedObj = $this->rss_object();
 		
@@ -185,7 +186,7 @@ class rsspf {
 			
 				$data = array(
 					'post_status' => 'published',
-					'post_type' => 'rss-archival',
+					'post_type' => 'rssarchival',
 					'post_date' => $_SESSION['cal_startdate'],		
 					'post_title' => $item_title,
 					'post_content' => $item_content,
@@ -206,6 +207,8 @@ class rsspf {
 			}
 		
 		}
+		
+		die('Refreshing...');
 	
 	}
 	
@@ -240,22 +243,25 @@ class rsspf {
 		wp_reset_postdata();		
 		
 	}
-	
-	function archive_feed_to_display() {
-		$args = array( 'posts_per_page' => '-1',
-						'post_type' => 'rss-archival'
-					);
+	//I don't think the duplication checking is working... among other things. 
+	public function archive_feed_to_display() {
+		//$args = array( 
+		//				'post_type' => array('any')
+		//			);
+		$args = 'post_type=rssarchival';
 		$archiveQuery = new WP_Query( $args );
-
+		print_r(archiveQuery->posts); die();
 		$rssObject = array();
 		$c = 0;
 		
 		while ( $archiveQuery->have_posts() ) : $archiveQuery->the_post();
-
+			
+			$post_id = get_the_ID();	
 			$id = get_post_meta($post_id, 'item_id', true); //die();
+			
 			//print_r($id);
-			if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
-				$post_id = get_the_ID();	
+			//if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
+				
 				$item_id = get_post_meta($post_id, 'item_id', true);
 				$source_title = get_post_meta($post_id, 'source_title', true);
 				$item_date = get_post_meta($post_id, 'item_date', true);
@@ -276,13 +282,13 @@ class rsspf {
 											$item_wp_date
 											);
 												
-				set_transient( 'rsspf_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
+				//set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
 				
-			}
+			//}
 			$c++;
 		
 		endwhile;
-		
+		wp_reset_postdata();
 		return $rssObject;	
 	}
 	
@@ -494,7 +500,7 @@ class rsspf {
 		//Calling the feedlist within the rsspf class. 
 		
 		echo '<h1>' . RSSPF_TITLE . '</h1>';
-		echo '<input type="submit" class="refreshfeed" id="refreshfeed" />'
+		echo '<input type="submit" class="refreshfeed" id="refreshfeed" value="Refresh" />';
 		//A testing method, to insure the feed is being received and processed. 
 		//print_r($theFeed);
 		
