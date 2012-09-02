@@ -167,7 +167,7 @@ class rsspf {
 	public function assemble_feed_for_pull() {
 		//pull rss into post types
 		$feedObj = $this->rss_object();
-		
+		global $wpdb;
 		foreach($feedObj as $item) {
 			
 			$item_id 		= $item['item_id'];
@@ -181,9 +181,11 @@ class rsspf {
 				AND $wpdb->posts.post_type = 'rssarchival'
 				AND $wpdb->posts.post_date < NOW()
 				ORDER BY $wpdb->posts.post_date DESC
-			 ";			
+			 ";
+			$checkposts = $wpdb->get_results($querystr, OBJECT);
 			
-			if ( ($queryForCheck->post_count) == 0) {
+			//print_r(count($checkposts)); die();
+			if ( (count($checkposts)) == 0) {
 				$item_title 	= $item['item_title'];
 				$item_content 	= $item['item_content'];
 				$item_feat_img 	= $item['item_feat_img'];
@@ -219,7 +221,7 @@ class rsspf {
 		
 		}
 		
-		die('Refreshing...');
+		//die('Refreshing...');
 	
 	}
 	
@@ -294,7 +296,7 @@ class rsspf {
 				$item_feat_img = get_post_meta($post_id, 'item_feat_img', true);
 				$item_wp_date = get_post_meta($post_id, 'item_wp_date', true);
 
-				$rssObject['rss_' . $c] = $this->feed_object(
+				$rssObject['rss_archive_' . $c] = $this->feed_object(
 											get_the_title(),
 											$$source_title,
 											$item_date,
