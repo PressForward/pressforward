@@ -304,7 +304,7 @@ class rsspf {
 
 				$rssObject['rss_archive_' . $c] = $this->feed_object(
 											get_the_title(),
-											$$source_title,
+											$source_title,
 											$item_date,
 											$item_author,
 											get_the_content(),
