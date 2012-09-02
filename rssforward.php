@@ -159,11 +159,47 @@ class rsspf {
 	//add_action( 'pull_feed_in', 'assemble_feed_for_pull' );
 	function assemble_feed_for_pull() {
 		//pull rss into post types
+		$feedObj = $this->rss_object();
+		foreach($this->rss_object() as $item) {
+			
+			$item_title 	= $item['item_title'];
+			$item_content 	= $item['item_content'];
+			$item_feat_img 	= $item['item_feat_img'];
+			$item_id 		= $item['item_id'];
+			$source_title 	= $item['source_title'];
+			$item_date 		= $item['item_date'];
+			$item_author 	= $item['item_author'];
+			$item_link 		= $item['item_link'];
+		
+			//This needs a check for existing posts.
+		
+			$data = array(
+				'post_status' => 'published',
+				'post_type' => 'rss-archival',
+				'post_date' => $_SESSION['cal_startdate'],		
+				'post_title' => $item_title,
+				'post_content' => $item_content,
+				
+			);
+			
+			$newNomID = wp_insert_post( $data );
+			
+			$this->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
+
+			add_post_meta($newNomID, 'item_id', $item_id, true);
+			add_post_meta($newNomID, 'source_title', $source_title, true);
+			add_post_meta($newNomID, 'item_date', $item_date, true);
+			add_post_meta($newNomID, 'item_author', $item_author, true);
+			add_post_meta($newNomID, 'item_link', $item_link, true);
+			add_post_meta($newNomID, 'item_feat_img', $item_feat_img, true);
+		
+		}
+	
 	}
 	
 	function scheduale_feed_out() {
 		if ( ! wp_next_scheduled( 'take_feed_out' ) ) {
-		  wp_schedule_event( time(), 'hourly', 'take_feed_out' );
+		  wp_schedule_event( time(), 'daily', 'take_feed_out' );
 		}
 	}
 	//add_action( 'take_feed_out', 'disassemble_feed_items' );
