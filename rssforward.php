@@ -160,38 +160,42 @@ class rsspf {
 	function assemble_feed_for_pull() {
 		//pull rss into post types
 		$feedObj = $this->rss_object();
+		
 		foreach($this->rss_object() as $item) {
 			
-			$item_title 	= $item['item_title'];
-			$item_content 	= $item['item_content'];
-			$item_feat_img 	= $item['item_feat_img'];
 			$item_id 		= $item['item_id'];
-			$source_title 	= $item['source_title'];
-			$item_date 		= $item['item_date'];
-			$item_author 	= $item['item_author'];
-			$item_link 		= $item['item_link'];
-		
-			//This needs a check for existing posts.
-		
-			$data = array(
-				'post_status' => 'published',
-				'post_type' => 'rss-archival',
-				'post_date' => $_SESSION['cal_startdate'],		
-				'post_title' => $item_title,
-				'post_content' => $item_content,
+			$queryForCheck = new WP_Query( array( 'post_type' => 'rss-archival', 'meta_key' => 'item_id', 'meta_value' => $item_id ) );
+			if ( ($queryForCheck->post_count) == 0) {
+				$item_title 	= $item['item_title'];
+				$item_content 	= $item['item_content'];
+				$item_feat_img 	= $item['item_feat_img'];
+				$source_title 	= $item['source_title'];
+				$item_date 		= $item['item_date'];
+				$item_author 	= $item['item_author'];
+				$item_link 		= $item['item_link'];
+			
+				//This needs a check for existing posts.
+			
+				$data = array(
+					'post_status' => 'published',
+					'post_type' => 'rss-archival',
+					'post_date' => $_SESSION['cal_startdate'],		
+					'post_title' => $item_title,
+					'post_content' => $item_content,
+					
+				);
 				
-			);
-			
-			$newNomID = wp_insert_post( $data );
-			
-			$this->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
+				$newNomID = wp_insert_post( $data );
+				
+				$this->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
 
-			add_post_meta($newNomID, 'item_id', $item_id, true);
-			add_post_meta($newNomID, 'source_title', $source_title, true);
-			add_post_meta($newNomID, 'item_date', $item_date, true);
-			add_post_meta($newNomID, 'item_author', $item_author, true);
-			add_post_meta($newNomID, 'item_link', $item_link, true);
-			add_post_meta($newNomID, 'item_feat_img', $item_feat_img, true);
+				add_post_meta($newNomID, 'item_id', $item_id, true);
+				add_post_meta($newNomID, 'source_title', $source_title, true);
+				add_post_meta($newNomID, 'item_date', $item_date, true);
+				add_post_meta($newNomID, 'item_author', $item_author, true);
+				add_post_meta($newNomID, 'item_link', $item_link, true);
+				add_post_meta($newNomID, 'item_feat_img', $item_feat_img, true);
+			}
 		
 		}
 	
