@@ -70,6 +70,12 @@ class rsspf {
 		add_filter( 'author_link', array($this, 'replace_author_uri_presentation') );		
 		add_filter( "manage_edit-nomination_sortable_columns", array ($this, "nomination_sortable_columns") );	
 		
+		add_action('init', array($this, 'scheduale_feed_in') );
+		//add_action('init', array($this, 'scheduale_feed_out') ); 
+		
+		//add_action( array($this, 'take_feed_out'), array($this, 'disassemble_feed_items') ); 
+		add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );		
+		
 	}
 
 	//Create the menus
@@ -156,12 +162,12 @@ class rsspf {
 		  wp_schedule_event( time(), 'hourly', 'pull_feed_in' );
 		}
 	}
-	//add_action( 'pull_feed_in', 'assemble_feed_for_pull' );
+	
 	function assemble_feed_for_pull() {
 		//pull rss into post types
 		$feedObj = $this->rss_object();
 		
-		foreach($this->rss_object() as $item) {
+		foreach($feedObj as $item) {
 			
 			$item_id 		= $item['item_id'];
 			$queryForCheck = new WP_Query( array( 'post_type' => 'rss-archival', 'meta_key' => 'item_id', 'meta_value' => $item_id ) );
@@ -173,6 +179,7 @@ class rsspf {
 				$item_date 		= $item['item_date'];
 				$item_author 	= $item['item_author'];
 				$item_link 		= $item['item_link'];
+				$item_wp_date	= $item['item_wp_date'];
 			
 				//This needs a check for existing posts.
 			
@@ -195,6 +202,7 @@ class rsspf {
 				add_post_meta($newNomID, 'item_author', $item_author, true);
 				add_post_meta($newNomID, 'item_link', $item_link, true);
 				add_post_meta($newNomID, 'item_feat_img', $item_feat_img, true);
+				add_post_meta($newNomID, 'item_wp_date', $item_wp_date, true);
 			}
 		
 		}
@@ -213,7 +221,7 @@ class rsspf {
 		  wp_schedule_event( time(), 'monthly', 'take_feed_out' );
 		}
 	}
-	//add_action( 'take_feed_out', 'disassemble_feed_items' );
+	
 	function disassemble_feed_items() {
 		//delete rss feed items with a date past a certian point. 
 		add_filter( 'posts_where', array($this, 'filter_where_older_sixty_days') );
@@ -231,6 +239,51 @@ class rsspf {
 		// Reset Post Data
 		wp_reset_postdata();		
 		
+	}
+	
+	function archive_feed_to_display() {
+		$args = array( 'posts_per_page' => '-1',
+						'post_type' => 'rss-archival'
+					);
+		$archiveQuery = new WP_Query( $args );
+
+		$rssObject = array();
+		$c = 0;
+		
+		while ( $archiveQuery->have_posts() ) : $archiveQuery->the_post();
+
+			$id = get_post_meta($post_id, 'item_id', true); //die();
+			//print_r($id);
+			if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
+				$post_id = get_the_ID();	
+				$item_id = get_post_meta($post_id, 'item_id', true);
+				$source_title = get_post_meta($post_id, 'source_title', true);
+				$item_date = get_post_meta($post_id, 'item_date', true);
+				$item_author = get_post_meta($post_id, 'item_author', true);
+				$item_link = get_post_meta($post_id, 'item_link', true);
+				$item_feat_img = get_post_meta($post_id, 'item_feat_img', true);
+				$item_wp_date = get_post_meta($post_id, 'item_wp_date', true);
+
+				$rssObject['rss_' . $c] = $this->feed_object(
+											get_the_title(),
+											$$source_title,
+											$item_date,
+											$item_author,
+											get_the_content(),
+											$item_link,
+											$item_feat_img,
+											$item_id,
+											$item_wp_date
+											);
+												
+				set_transient( 'rsspf_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
+				
+			}
+			$c++;
+		
+		endwhile;
+		
+		return $rssObject;	
 	}
 	
 	
@@ -441,14 +494,14 @@ class rsspf {
 		//Calling the feedlist within the rsspf class. 
 		
 		echo '<h1>' . RSSPF_TITLE . '</h1>';
-		
+		echo '<input type="submit" class="refreshfeed" id="refreshfeed" />'
 		//A testing method, to insure the feed is being received and processed. 
 		//print_r($theFeed);
 		
 		//Use this foreach loop to go through the overall feedlist, select each individual feed item (post) and do stuff with it.
 		//Based off SimplePie's tutorial at http://simplepie.org/wiki/tutorial/how_to_display_previous_feed_items_like_google_reader.
 		$c = 1;
-		foreach($this->rss_object() as $item) {
+		foreach($this->archive_feed_to_display() as $item) {
 			
 			if ($item['item_feat_img'] != '')
 				echo '<div style="float:left; margin-right: 10px; margin-bottom: 10px;"><img src="' . $item['item_feat_img'] . '"></div>';
