@@ -266,27 +266,26 @@ class rsspf {
 	}
 	
 	public function archive_feed_to_display() {
-		global $wpdb;
+		global $wpdb, $post;
 		//$args = array( 
 		//				'post_type' => array('any')
 		//			);
 		$args = 'post_type=rssarchival';
-		$archiveQuery = new WP_Query( $args );
-		 $querystr = "
+		//$archiveQuery = new WP_Query( $args );
+		 $dquerystr = "
 			SELECT $wpdb->posts.* 
 			FROM $wpdb->posts, $wpdb->postmeta
 			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
 			AND $wpdb->posts.post_type = 'rssarchival'
-			AND $wpdb->posts.post_date < NOW()
 			ORDER BY $wpdb->posts.post_date DESC
 		 ";	
-		$rssarchivalposts = $wpdb->get_results($querystr, OBJECT);
-		//print_r($rssarchivalposts); die();
+		$rssarchivalposts = $wpdb->get_results($dquerystr, OBJECT);
+		print_r($rssarchivalposts); die();
 		$rssObject = array();
 		$c = 0;
 		
 		if ($rssarchivalposts): 
-  			global $post;
+  			
 			foreach ($rssarchivalposts as $post) :
 			setup_postdata($post);
 			
@@ -294,7 +293,7 @@ class rsspf {
 			$id = get_post_meta($post_id, 'item_id', true); //die();
 			//wp_delete_post( $post_id, true );
 			//print_r($id);
-			if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
+			//if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
 				
 				$item_id = get_post_meta($post_id, 'item_id', true);
 				$source_title = get_post_meta($post_id, 'source_title', true);
@@ -316,9 +315,9 @@ class rsspf {
 											$item_wp_date
 											);
 												
-				set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
+				//set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
 				
-			}
+			//}
 			$c++;
 			endforeach;
 			
