@@ -171,7 +171,18 @@ class rsspf {
 		foreach($feedObj as $item) {
 			
 			$item_id 		= $item['item_id'];
-			$queryForCheck = new WP_Query( array( 'post_type' => 'rss-archival', 'meta_key' => 'item_id', 'meta_value' => $item_id ) );
+			//$queryForCheck = new WP_Query( array( 'post_type' => 'rssarchival', 'meta_key' => 'item_id', 'meta_value' => $item_id ) );
+			 $querystr = "
+				SELECT $wpdb->posts.* 
+				FROM $wpdb->posts, $wpdb->postmeta
+				WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id 
+				AND $wpdb->postmeta.meta_key = 'item_id' 
+				AND $wpdb->postmeta.meta_value = '" . $item_id . "' 
+				AND $wpdb->posts.post_type = 'rssarchival'
+				AND $wpdb->posts.post_date < NOW()
+				ORDER BY $wpdb->posts.post_date DESC
+			 ";			
+			
 			if ( ($queryForCheck->post_count) == 0) {
 				$item_title 	= $item['item_title'];
 				$item_content 	= $item['item_content'];
@@ -245,22 +256,35 @@ class rsspf {
 	}
 	//I don't think the duplication checking is working... among other things. 
 	public function archive_feed_to_display() {
+		global $wpdb;
 		//$args = array( 
 		//				'post_type' => array('any')
 		//			);
 		$args = 'post_type=rssarchival';
 		$archiveQuery = new WP_Query( $args );
-		print_r(archiveQuery->posts); die();
+		 $querystr = "
+			SELECT $wpdb->posts.* 
+			FROM $wpdb->posts, $wpdb->postmeta
+			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
+			AND $wpdb->posts.post_type = 'rssarchival'
+			AND $wpdb->posts.post_date < NOW()
+			ORDER BY $wpdb->posts.post_date DESC
+		 ";	
+		$rssarchivalposts = $wpdb->get_results($querystr, OBJECT);
+		//print_r($rssarchivalposts); die();
 		$rssObject = array();
 		$c = 0;
 		
-		while ( $archiveQuery->have_posts() ) : $archiveQuery->the_post();
+		if ($rssarchivalposts): 
+  			global $post;
+			foreach ($rssarchivalposts as $post) :
+			setup_postdata($post);
 			
 			$post_id = get_the_ID();	
 			$id = get_post_meta($post_id, 'item_id', true); //die();
 			
 			//print_r($id);
-			//if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
+			if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
 				
 				$item_id = get_post_meta($post_id, 'item_id', true);
 				$source_title = get_post_meta($post_id, 'source_title', true);
@@ -282,12 +306,14 @@ class rsspf {
 											$item_wp_date
 											);
 												
-				//set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
+				set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
 				
-			//}
+			}
 			$c++;
+			endforeach;
+			
 		
-		endwhile;
+		endif;
 		wp_reset_postdata();
 		return $rssObject;	
 	}
@@ -500,7 +526,7 @@ class rsspf {
 		//Calling the feedlist within the rsspf class. 
 		
 		echo '<h1>' . RSSPF_TITLE . '</h1>';
-		echo '<input type="submit" class="refreshfeed" id="refreshfeed" value="Refresh" />';
+		echo '<input type="submit" class="refreshfeed" id="refreshfeed" value="Refresh" /><br />';
 		//A testing method, to insure the feed is being received and processed. 
 		//print_r($theFeed);
 		
