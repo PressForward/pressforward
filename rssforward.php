@@ -169,7 +169,7 @@ class rsspf {
 		$feedObj = $this->rss_object();
 		global $wpdb;
 		foreach($feedObj as $item) {
-			
+			$thepostscheck = 0;
 			$item_id 		= $item['item_id'];
 			//$queryForCheck = new WP_Query( array( 'post_type' => 'rssarchival', 'meta_key' => 'item_id', 'meta_value' => $item_id ) );
 			 $querystr = "
@@ -182,10 +182,18 @@ class rsspf {
 				AND $wpdb->posts.post_date < NOW()
 				ORDER BY $wpdb->posts.post_date DESC
 			 ";
+			 
 			$checkposts = $wpdb->get_results($querystr, OBJECT);
+				if ($checkposts):
+					global $post;
+					foreach ($checkposts as $post):
+						setup_postdata($post);
+				if ((get_post_meta(get_the_ID(), 'item_id', $item_id, true)) == $item_id){ $thepostscheck++; }
+					endforeach;
+				endif;
 			
 			//print_r(count($checkposts)); die();
-			if ( (count($checkposts)) == 0) {
+			if ( $thepostscheck == 0) {
 				$item_title 	= $item['item_title'];
 				$item_content 	= $item['item_content'];
 				$item_feat_img 	= $item['item_feat_img'];
@@ -256,7 +264,7 @@ class rsspf {
 		wp_reset_postdata();		
 		
 	}
-	//I don't think the duplication checking is working... among other things. 
+	
 	public function archive_feed_to_display() {
 		global $wpdb;
 		//$args = array( 
@@ -284,7 +292,7 @@ class rsspf {
 			
 			$post_id = get_the_ID();	
 			$id = get_post_meta($post_id, 'item_id', true); //die();
-			
+			//wp_delete_post( $post_id, true );
 			//print_r($id);
 			if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
 				
