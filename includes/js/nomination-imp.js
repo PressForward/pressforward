@@ -41,10 +41,6 @@ jQuery(document).ready(function() {
 		evt.preventDefault();
 		jQuery.post(ajaxurl, {
 			action: 'assemble_feed_for_pull'
-		},
-		function(response) {
-			alert(response);
-			//jQuery("#test-div1").append(data);
 		});
 	
 	});
