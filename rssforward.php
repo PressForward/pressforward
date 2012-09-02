@@ -274,13 +274,12 @@ class rsspf {
 		//$archiveQuery = new WP_Query( $args );
 		 $dquerystr = "
 			SELECT $wpdb->posts.* 
-			FROM $wpdb->posts, $wpdb->postmeta
-			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-			AND $wpdb->posts.post_type = 'rssarchival'
+			FROM $wpdb->posts
+			WHERE $wpdb->posts.post_type = 'rssarchival'
 			ORDER BY $wpdb->posts.post_date DESC
 		 ";	
 		$rssarchivalposts = $wpdb->get_results($dquerystr, OBJECT);
-		print_r($rssarchivalposts); die();
+		//print_r(count($rssarchivalposts)); die();
 		$rssObject = array();
 		$c = 0;
 		
