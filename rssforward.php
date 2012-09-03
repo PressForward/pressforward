@@ -72,9 +72,9 @@ class rsspf {
 		add_filter( "manage_edit-nomination_sortable_columns", array ($this, "nomination_sortable_columns") );	
 		
 		add_action('init', array($this, 'scheduale_feed_in') );
-		//add_action('init', array($this, 'scheduale_feed_out') ); 
+		add_action('init', array($this, 'scheduale_feed_out') ); 
 		
-		//add_action( array($this, 'take_feed_out'), array($this, 'disassemble_feed_items') ); 
+		add_action( 'take_feed_out', array($this, 'disassemble_feed_items') ); 
 		add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );		
 		
 	}
