@@ -216,7 +216,8 @@ class rsspf {
 				
 				$newNomID = wp_insert_post( $data );
 				
-				$this->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
+				if ($_POST['item_feat_img'] != '')
+					$this->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
 
 				add_post_meta($newNomID, 'item_id', $item_id, true);
 				add_post_meta($newNomID, 'source_title', $source_title, true);
@@ -225,6 +226,9 @@ class rsspf {
 				add_post_meta($newNomID, 'item_link', $item_link, true);
 				add_post_meta($newNomID, 'item_feat_img', $item_feat_img, true);
 				add_post_meta($newNomID, 'item_wp_date', $item_wp_date, true);
+				//We can't just sort by the time the item came into the system (for when mult items come into the system at once)
+				//So we need to create a machine sortable date for use in the later query. 
+				add_post_meta($newNomID, 'sortable_item_date', strtotime($item_date), true);
 			}
 		
 		}
@@ -273,10 +277,12 @@ class rsspf {
 		$args = 'post_type=rssarchival';
 		//$archiveQuery = new WP_Query( $args );
 		 $dquerystr = "
-			SELECT $wpdb->posts.* 
-			FROM $wpdb->posts
-			WHERE $wpdb->posts.post_type = 'rssarchival'
-			ORDER BY $wpdb->posts.post_date DESC
+			SELECT $wpdb->posts.*, $wpdb->postmeta.* 
+			FROM $wpdb->posts, $wpdb->postmeta
+			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
+			AND $wpdb->posts.post_type = 'rssarchival'
+			AND $wpdb->postmeta.meta_key = 'sortable_item_date'
+			ORDER BY $wpdb->postmeta.meta_value DESC
 		 ";	
 		$rssarchivalposts = $wpdb->get_results($dquerystr, OBJECT);
 		//print_r(count($rssarchivalposts)); die();
@@ -292,7 +298,7 @@ class rsspf {
 			$id = get_post_meta($post_id, 'item_id', true); //die();
 			//wp_delete_post( $post_id, true );
 			//print_r($id);
-			//if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
+			if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
 				
 				$item_id = get_post_meta($post_id, 'item_id', true);
 				$source_title = get_post_meta($post_id, 'source_title', true);
@@ -314,9 +320,9 @@ class rsspf {
 											$item_wp_date
 											);
 												
-				//set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
+				set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
 				
-			//}
+			}
 			$c++;
 			endforeach;
 			
@@ -818,7 +824,8 @@ class rsspf {
 		
 		$newNomID = wp_insert_post( $data );
 		
-		$this->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
+		if ($_POST['item_feat_img'] != '')
+			$this->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
 		//die($_POST['item_feat_img']);
 
 		add_post_meta($newNomID, 'origin_item_ID', $item_id, true);
