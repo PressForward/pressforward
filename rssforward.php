@@ -188,7 +188,7 @@ class rsspf {
 					global $post;
 					foreach ($checkposts as $post):
 						setup_postdata($post);
-				if ((get_post_meta(get_the_ID(), 'item_id', $item_id, true)) == $item_id){ $thepostscheck++; }
+						if ((get_post_meta(get_the_ID(), 'item_id', $item_id, true)) == $item_id){ $thepostscheck++; }
 					endforeach;
 				endif;
 			
@@ -202,6 +202,7 @@ class rsspf {
 				$item_author 	= $item['item_author'];
 				$item_link 		= $item['item_link'];
 				$item_wp_date	= $item['item_wp_date'];
+				$item_tags		= $item['item_tags'];
 			
 				//This needs a check for existing posts.
 			
@@ -229,6 +230,7 @@ class rsspf {
 				//We can't just sort by the time the item came into the system (for when mult items come into the system at once)
 				//So we need to create a machine sortable date for use in the later query. 
 				add_post_meta($newNomID, 'sortable_item_date', strtotime($item_date), true);
+				add_post_meta($newNomID, 'item_tags', $item_tags, true);
 			}
 		
 		}
@@ -307,6 +309,7 @@ class rsspf {
 				$item_link = get_post_meta($post_id, 'item_link', true);
 				$item_feat_img = get_post_meta($post_id, 'item_feat_img', true);
 				$item_wp_date = get_post_meta($post_id, 'item_wp_date', true);
+				$item_tags = get_post_meta($post_id, 'item_tags', true);
 
 				$rssObject['rss_archive_' . $c] = $this->feed_object(
 											get_the_title(),
@@ -317,7 +320,8 @@ class rsspf {
 											$item_link,
 											$item_feat_img,
 											$item_id,
-											$item_wp_date
+											$item_wp_date,
+											$item_tags
 											);
 												
 				set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
@@ -406,13 +410,15 @@ class rsspf {
 		$nomination_permalink = get_post_meta($post->ID, 'nomination_permalink', true);
 		$date_nominated = get_post_meta($post->ID, 'date_nominated', true);
 		$user = get_user_by('id', $submitted_by);
+		$item_tags = get_post_meta($post->ID, 'item_tags', true);
 		echo '<strong>Item ID</strong>: ' . $origin_item_ID . '<br />'; 
 		echo '<strong>Nomination Count</strong>: ' . $nomination_count . '<br />'; 
 		echo '<strong>Submitted By</strong>: ' . $user->display_name . '<br />'; 
 		echo '<strong>Feed Title</strong>: ' . $source_title . '<br />'; 
 		echo '<strong>Source Posted</strong>: ' . $posted_date . '<br />'; 
 		echo '<strong>Source Authors</strong>: ' . $nom_authors . '<br />'; 
-		echo '<strong>Source Link</strong>: <a href="' . $nomination_permalink . '" target="_blank">Original Post</a><br />'; 
+		echo '<strong>Source Link</strong>: <a href="' . $nomination_permalink . '" target="_blank">Original Post</a><br />';
+		echo '<strong>Item Tags</strong>: ' . $item_tags . '<br />'; 
 		echo '<strong>Date Nominated</strong>: ' . $date_nominated . '<br />'; 
 		
 	}	
@@ -424,7 +430,7 @@ class rsspf {
 	
 	}
 	
-	private function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='' ) {
+	private function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='', $itemTags='' ) {
 		
 		if($itemFeatImg == ''){
 		
@@ -458,6 +464,7 @@ class rsspf {
 						'item_feat_img'	=>	$itemFeatImg,
 						'item_id'		=>	$itemUID,
 						'item_wp_date'	=>  $itemWPDate,
+						'item_tags'		=>	$itemTags,
 					
 					);
 		
@@ -489,11 +496,18 @@ class rsspf {
 		foreach($theFeed->get_items() as $item) {
 			
 			$id = md5($item->get_id()); //die();
+			//print_r($item_categories_string); die();
 			//print_r($id);
 			if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
 					
 				$iFeed = $item->get_feed();
 				$authors = $this->get_rss_authors($item);
+				$item_categories = $item->get_categories();
+				$itemTerms = array();
+				foreach ($item_categories as $item_category){
+					$itemTerms[] = $item_category->get_term();
+				}
+				$item_categories_string = implode(',',$itemTerms);				
 					
 				$rssObject['rss_' . $c] = $this->feed_object(
 											$item->get_title(),
@@ -504,7 +518,8 @@ class rsspf {
 											$item->get_link(),
 											'',
 											$id,
-											$item->get_date('Y-m-d')
+											$item->get_date('Y-m-d'),
+											$item_categories_string
 											);
 												
 				set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
@@ -563,6 +578,8 @@ class rsspf {
 			echo '<div>' . $item['item_content'] . '</div>';
 			echo '<br />';
 			echo '<a target="_blank" href="' . $item['item_link'] . '">Read More</a>';
+			echo '<br />';
+			echo '<strong class="item-tags">Item Tags: ' . $item['item_tags'] . '.';
 			echo '<br />';
 			//print_r($item);
 			//print_r($ent = htmlentities($item['item_content']));
@@ -836,7 +853,7 @@ class rsspf {
 		add_post_meta($newNomID, 'authors', $_POST['item_author'], true);
 		add_post_meta($newNomID, 'nomination_permalink', $_POST['item_link'], true);
 		add_post_meta($newNomID, 'date_nominated', date('c'), true);
-		
+		add_post_meta($newNomID, 'item_tags', $_POST['item_tags'], true);
 		
 		$result  = $item_title . ' nominated.';
 		die($result);
@@ -883,6 +900,9 @@ class rsspf {
 				add_post_meta($newPostID, 'authors', $item_permalink, true);
 				$date_nom = get_post_meta($_POST['ID'], 'date_nominated', true);
 				add_post_meta($newPostID, 'date_nominated', $date_nom, true);
+				$item_tags = get_post_meta($_POST['ID'], 'item_tags', true);
+				add_post_meta($newPostID, 'item_tags', $item_tags, true);
+				//If user wants to use tags, we'll create an option to use it.
 				
 				$already_has_thumb = has_post_thumbnail($_POST['ID']);
 				if ($already_has_thumb)  {
