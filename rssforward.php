@@ -526,12 +526,15 @@ class rsspf {
 		$urlParts = parse_url($url);
 		if (in_array('https', $urlParts)){
 			$urlParts['scheme'] = 'http';
+			$url = $urlParts['scheme'] . '://'. $urlParts['host'] . $urlParts['path'] . $urlParts['query'];
 		}
-		$url = $urlParts['scheme'] . '://'. $urlParts['host'] . $urlParts['path'] . $urlParts['query'];
+		
 		//$url = http_build_url($urlParts, HTTP_URL_STRIP_AUTH | HTTP_URL_JOIN_PATH | HTTP_URL_JOIN_QUERY | HTTP_URL_STRIP_FRAGMENT);		
 		//print_r($url);
-		$contentHtml = file_get_html($url);
-		
+		if (file_get_html($url)){
+			$contentHtml = file_get_html($url);
+			$domBool = true;
+		} else { $domBool = false; }
 		
 		$descrip = '';
 		$contentContainers = array(
@@ -545,13 +548,20 @@ class rsspf {
 								);
 		while (strlen($descrip) < 1){ 
 			foreach ($contentContainers as $contentContainer){
-				$content = $contentHtml->find($contentContainer);
-				$descrip = $content[0]->innertext;
+				if (($contentHtml->find($contentContainer)) && $domBool){
+					$content = $contentHtml->find($contentContainer);
+					$descrip = $content[0]->innertext;
+				}
 			}
-			$node = OpenGraph::fetch($url);
-			$descrip = $node->desciption;			
+			if (OpenGraph::fetch($url)){
+				$node = OpenGraph::fetch($url);
+				$descrip = $node->description;	
+			}
+			
 			$contentHtml = get_meta_tags($url);
-			$descrip = $contentHtml['description'];
+			if (!empty($contentHtml))
+				$descrip = $contentHtml['description'];
+				
 		//restore_error_handler();
 			$descrip = false;
 			//print_r($descrip);
@@ -574,12 +584,12 @@ class rsspf {
 			$id = md5($item->get_id()); //die();
 			//print_r($item_categories_string); die();
 
-			if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
+			//if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
 				$sourceObj = $item->get_source();		
-				//$source = $sourceObj->get_link(0,'alternate');
-				//$agStatus = $this->is_from_aggregator($source);
+				$source = $sourceObj->get_link(0,'alternate');
+				$agStatus = $this->is_from_aggregator($source);
 				//override while rest is not working. 
-				$agStatus = false;
+				//$agStatus = false;
 				if ($agStatus){
 					$realLink = $item->get_link();
 					$realContent = $this->get_content_through_aggregator($realLink);
@@ -617,9 +627,9 @@ class rsspf {
 											$item_categories_string
 											);
 												
-				set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
+				//set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
 				
-			}
+			//}
 			$c++;
 		
 		}
