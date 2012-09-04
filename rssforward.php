@@ -584,12 +584,12 @@ class rsspf {
 			$id = md5($item->get_id()); //die();
 			//print_r($item_categories_string); die();
 
-			//if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
-				$sourceObj = $item->get_source();		
-				$source = $sourceObj->get_link(0,'alternate');
-				$agStatus = $this->is_from_aggregator($source);
+			if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
+				//$sourceObj = $item->get_source();		
+				//$source = $sourceObj->get_link(0,'alternate');
+				//$agStatus = $this->is_from_aggregator($source);
 				//override while rest is not working. 
-				//$agStatus = false;
+				$agStatus = false;
 				if ($agStatus){
 					$realLink = $item->get_link();
 					$realContent = $this->get_content_through_aggregator($realLink);
@@ -627,9 +627,9 @@ class rsspf {
 											$item_categories_string
 											);
 												
-				//set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
+				set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
 				
-			//}
+			}
 			$c++;
 		
 		}
