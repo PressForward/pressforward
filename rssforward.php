@@ -37,6 +37,8 @@ define( 'RSSPF_URL', plugins_url('/', __FILE__) );
 
 //This adds the library we're going to use to pull and parse Open Graph data from a page. 
 require_once("OpenGraph.php");
+require_once(RSSPF_ROOT . "\includes\linkfinder\simple_html_dom.php");
+$dom = new simple_html_dom;
 
 class rsspf {
 
@@ -487,11 +489,14 @@ class rsspf {
 	
 	}
 	
-	function is_from_aggregator($xmlbase){
+	public function is_from_aggregator($xmlbase){
 		$c = 0;
 		$urlParts = parse_url($xmlbase);
+		
 		$aggregators = array (
-								'tweetedtimes'
+								'tweetedtimes',
+								'tweetedtimes.com',
+								'www.tweetedtimes.com'
 							);
 		foreach ($aggregators as $aggregator) {
 			if (in_array($aggregator, $urlParts)){
@@ -499,14 +504,61 @@ class rsspf {
 			}
 		}
 		if ($c > 0){
+			
 			return true;
+		
+		
 		} else {
 			return false;
 		}
 	
 	}
 	
-	function get_content_through_aggregator(){
+	public function customError($errno, $errstr)
+	{
+	  return false;
+
+	}	
+	
+	public function get_content_through_aggregator($url){
+	
+		//$this->set_error_handler("customError");
+		$urlParts = parse_url($url);
+		if (in_array('https', $urlParts)){
+			$urlParts['scheme'] = 'http';
+		}
+		$url = $urlParts['scheme'] . '://'. $urlParts['host'] . $urlParts['path'] . $urlParts['query'];
+		//$url = http_build_url($urlParts, HTTP_URL_STRIP_AUTH | HTTP_URL_JOIN_PATH | HTTP_URL_JOIN_QUERY | HTTP_URL_STRIP_FRAGMENT);		
+		//print_r($url);
+		$contentHtml = file_get_html($url);
+		
+		
+		$descrip = '';
+		$contentContainers = array(
+								'.entry-content',
+								'.article-body',
+								'article',
+								'section',
+								'#content',
+								'.page-content'
+								
+								);
+		while (strlen($descrip) < 1){ 
+			foreach ($contentContainers as $contentContainer){
+				$content = $contentHtml->find($contentContainer);
+				$descrip = $content[0]->innertext;
+			}
+			$node = OpenGraph::fetch($url);
+			$descrip = $node->desciption;			
+			$contentHtml = get_meta_tags($url);
+			$descrip = $contentHtml['description'];
+		//restore_error_handler();
+			$descrip = false;
+			//print_r($descrip);
+			break;
+			
+		}
+		//print_r('test');
 	
 	}
 	
@@ -521,27 +573,43 @@ class rsspf {
 			
 			$id = md5($item->get_id()); //die();
 			//print_r($item_categories_string); die();
-			//print_r($id);
+
 			if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
-				$xmlbase = get_base();
-				if (is_from_aggregator($xmlbase)){
+				$sourceObj = $item->get_source();		
+				//$source = $sourceObj->get_link(0,'alternate');
+				//$agStatus = $this->is_from_aggregator($source);
+				//override while rest is not working. 
+				$agStatus = false;
+				if ($agStatus){
 					$realLink = $item->get_link();
+					$realContent = $this->get_content_through_aggregator($realLink);
+					if (!$realContent){
+						$item_content = $item->get_content();
+					} else {
+						$item_content = $realContent;
+						//print_r($realContent);
+					}
+				} else {
+						$item_content = $item->get_content();
 				}
 				$iFeed = $item->get_feed();
 				$authors = $this->get_rss_authors($item);
+				$item_categories = array();
 				$item_categories = $item->get_categories();
 				$itemTerms = array();
-				foreach ($item_categories as $item_category){
-					$itemTerms[] = $item_category->get_term();
-				}
-				$item_categories_string = implode(',',$itemTerms);				
+				if (!empty($item_categories)){
+					foreach ($item_categories as $item_category){
+						$itemTerms[] = $item_category->get_term();
+					}
+					$item_categories_string = implode(',',$itemTerms);	
+				} else { $item_categories_string = ''; }
 					
 				$rssObject['rss_' . $c] = $this->feed_object(
 											$item->get_title(),
 											$iFeed->get_title(),
 											$item->get_date('r'),
 											$authors,
-											$item->get_content(),
+											$item_content,
 											$item->get_link(),
 											'',
 											$id,

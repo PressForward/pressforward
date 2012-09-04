@@ -120,6 +120,16 @@ $content = $contentHtml->find('.page-content');
 echo mb_convert_encoding($content[0]->innertext, 'UTF-8', 'UTF-8');
 echo '<hr />';
 
+//OG Check goes here. 
+
+$contentHtml = get_meta_tags('http://www.nytimes.com/2012/09/04/us/politics/democrats-say-us-is-better-off-than-4-years-ago.html?_r=1&hp');
+//set_error_handler("customError");
+$content = $contentHtml['description'];
+//echo $content;
+echo $content;
+
+echo '<hr />';
+
 //Case 1 - .hentry http://oha2012.thatcamp.org/
 //Case 2 - .entry-content  http://www.freshandnew.org/2012/08/museum-datasets-un-comprehensive-ness-data-mining/
 //Case 3 - .article-body p (for each p) https://chronicle.com/article/Historians-Ask-Public-to-Help/134054
