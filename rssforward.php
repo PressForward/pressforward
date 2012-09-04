@@ -425,8 +425,8 @@ class rsspf {
 
 	public function rsspf_feedlist() {
 	
-		$feedlist = 'http://feeds.feedburner.com/DHNowEditorsChoiceAndNews';
-		//http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations
+		$feedlist = 'http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations';
+		//http://feeds.feedburner.com/DHNowEditorsChoiceAndNews
 		return $feedlist;
 	
 	}
@@ -580,7 +580,7 @@ class rsspf {
 			echo '<br />';
 			echo '<a target="_blank" href="' . $item['item_link'] . '">Read More</a>';
 			echo '<br />';
-			echo '<strong class="item-tags">Item Tags: ' . $item['item_tags'] . '.';
+			echo '<strong class="item-tags">Item Tags</strong>: ' . $item['item_tags'] . '.';
 			echo '<br />';
 			//print_r($item);
 			//print_r($ent = htmlentities($item['item_content']));
