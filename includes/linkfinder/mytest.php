@@ -70,6 +70,7 @@ set_error_handler("customError");
 //Case 4 - section http://www.wordsinspace.net/urban-media-archaeology/2012-fall/?page_id=9
 //Case 5 - #content http://www.wordsinspace.net/urban-media-archaeology/2012-fall/?page_id=9
 //Case 6 - .page-content http://www.wordsinspace.net/urban-media-archaeology/2012-fall/?page_id=9
+//Last case - OG Description
 
 
 ?>
