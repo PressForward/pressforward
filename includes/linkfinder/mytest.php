@@ -1,8 +1,13 @@
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
 <?php
 //http://simplehtmldom.sourceforge.net/
 //http://simplehtmldom.sourceforge.net/manual.htm#section_traverse
 //http://simplehtmldom.sourceforge.net/manual_api.htm
 //error_reporting(E_ALL);
+mb_language('uni');
+mb_internal_encoding('UTF-8');
 require_once('simple_html_dom.php');
 $dom = new simple_html_dom;
 
@@ -16,7 +21,7 @@ function getTitle($str){
 
 function customError($errno, $errstr)
 {
-  return false;
+  return 'Nothing found';
 
 }
 
@@ -60,8 +65,60 @@ foreach ($html->find('h2') as $link){
 
 }
 
-$contentHtml = file_get_html('');
-set_error_handler("customError");
+$contentHtml = file_get_html('http://oha2012.thatcamp.org/');
+//set_error_handler("customError");
+$content = $contentHtml->find('.hentry');
+echo $content[0]->innertext;
+
+echo '<hr />';
+
+$contentHtml = file_get_html('http://www.freshandnew.org/2012/08/museum-datasets-un-comprehensive-ness-data-mining/');
+//set_error_handler("customError");
+$content = $contentHtml->find('.entry-content');
+echo $content[0]->innertext;
+
+echo '<hr />';
+
+$contentHtml = file_get_html('http://chronicle.com/article/Historians-Ask-Public-to-Help/134054');
+//set_error_handler("customError");
+$content = $contentHtml->find('.article-body');
+//foreach ($content[0]->find('p') as $p) {
+
+//	echo $p;
+
+//}
+echo $content[0]->innertext;
+
+echo '<hr />';
+
+$contentHtml = file_get_html('http://oha2012.thatcamp.org/');
+//set_error_handler("customError");
+$content = $contentHtml->find('article');
+echo $content[0]->innertext;
+
+echo '<hr />';
+
+$contentHtml = file_get_html('http://www.wordsinspace.net/urban-media-archaeology/2012-fall/?page_id=9');
+//set_error_handler("customError");
+$content = $contentHtml->find('section');
+echo $content[0]->innertext;
+
+echo '<hr />';
+
+$contentHtml = file_get_html('http://www.wordsinspace.net/urban-media-archaeology/2012-fall/?page_id=9');
+//set_error_handler("customError");
+$content = $contentHtml->find('#content');
+echo $content[0]->innertext;
+
+echo '<hr />';
+
+$contentHtml = file_get_html('http://www.wordsinspace.net/urban-media-archaeology/2012-fall/?page_id=9');
+//set_error_handler("customError");
+$content = $contentHtml->find('.page-content');
+//use to create it in html.
+//echo htmlspecialchars($content[0]->innertext);
+echo mb_convert_encoding($content[0]->innertext, 'UTF-8', 'UTF-8');
+echo '<hr />';
 
 //Case 1 - .hentry http://oha2012.thatcamp.org/
 //Case 2 - .entry-content  http://www.freshandnew.org/2012/08/museum-datasets-un-comprehensive-ness-data-mining/
@@ -72,5 +129,5 @@ set_error_handler("customError");
 //Case 6 - .page-content http://www.wordsinspace.net/urban-media-archaeology/2012-fall/?page_id=9
 //Last case - OG Description
 
-
+//We could also use this for getting featured imgs mby?
 ?>
