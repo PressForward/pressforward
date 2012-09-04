@@ -16,7 +16,7 @@ function getTitle($str){
 
 function customError($errno, $errstr)
 {
-  echo "Page no longer exists.";
+  return false;
 
 }
 
@@ -59,5 +59,17 @@ foreach ($html->find('h2') as $link){
 	}
 
 }
+
+$contentHtml = file_get_html('');
+set_error_handler("customError");
+
+//Case 1 - .hentry http://oha2012.thatcamp.org/
+//Case 2 - .entry-content  http://www.freshandnew.org/2012/08/museum-datasets-un-comprehensive-ness-data-mining/
+//Case 3 - .article-body p (for each p) https://chronicle.com/article/Historians-Ask-Public-to-Help/134054
+//Case 3 - article http://oha2012.thatcamp.org/
+//Case 4 - section http://www.wordsinspace.net/urban-media-archaeology/2012-fall/?page_id=9
+//Case 5 - #content http://www.wordsinspace.net/urban-media-archaeology/2012-fall/?page_id=9
+//Case 6 - .page-content http://www.wordsinspace.net/urban-media-archaeology/2012-fall/?page_id=9
+
 
 ?>

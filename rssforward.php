@@ -487,6 +487,29 @@ class rsspf {
 	
 	}
 	
+	function is_from_aggregator($xmlbase){
+		$c = 0;
+		$urlParts = parse_url($xmlbase);
+		$aggregators = array (
+								'tweetedtimes'
+							);
+		foreach ($aggregators as $aggregator) {
+			if (in_array($aggregator, $urlParts)){
+				$c++;
+			}
+		}
+		if ($c > 0){
+			return true;
+		} else {
+			return false;
+		}
+	
+	}
+	
+	function get_content_through_aggregator(){
+	
+	}
+	
 	public function rss_object() {
 	
 		$feedlist = call_user_func(array($this, 'rsspf_feedlist'));
@@ -500,7 +523,10 @@ class rsspf {
 			//print_r($item_categories_string); die();
 			//print_r($id);
 			if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
-					
+				$xmlbase = get_base();
+				if (is_from_aggregator($xmlbase)){
+					$realLink = $item->get_link();
+				}
 				$iFeed = $item->get_feed();
 				$authors = $this->get_rss_authors($item);
 				$item_categories = $item->get_categories();
