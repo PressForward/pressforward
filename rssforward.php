@@ -166,11 +166,7 @@ class rsspf {
 	public function full_text_rss_izer($url) {
 	
 		$local_full_text_rss = RSSPF_URL . "/includes/fivefilters-full-text-rss/makefulltextfeed.php";
-		$urlParts = parse_url($url);
-		$url = $urlParts['host'] . $urlParts['path'];
-		if (strlen($urlParts['query']) > 0){
-			$url .= '?' . $urlParts['query'];
-		}
+
 		$encodedurl = urlencode($url);
 		$queryString = '?url=' . $encodedurl;
 		$therss = $local_full_text_rss . $queryString;
@@ -318,7 +314,7 @@ class rsspf {
 			
 			$post_id = get_the_ID();	
 			$id = get_post_meta($post_id, 'item_id', true); //die();
-			wp_delete_post( $post_id, true );
+			//wp_delete_post( $post_id, true );
 			//print_r($id);
 			//if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
 				
