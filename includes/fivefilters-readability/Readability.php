@@ -414,14 +414,14 @@ class Readability
 		/* Clean out junk from the article content */
 		$this->cleanConditionally($articleContent, 'form');
 		$this->clean($articleContent, 'object');
-		$this->clean($articleContent, 'h1');
+		//$this->clean($articleContent, 'h1');
 
 		/**
 		* If there is only one h2, they are probably using it
 		* as a header and not a subheader, so remove it since we already have a header.
 		***/
 		if ($articleContent->getElementsByTagName('h2')->length == 1) {
-			$this->clean($articleContent, 'h2'); 
+			//$this->clean($articleContent, 'h2'); 
 		}
 		$this->clean($articleContent, 'iframe');
 
