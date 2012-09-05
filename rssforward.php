@@ -37,8 +37,9 @@ define( 'RSSPF_URL', plugins_url('/', __FILE__) );
 
 //This adds the library we're going to use to pull and parse Open Graph data from a page. 
 require_once("OpenGraph.php");
-require_once(RSSPF_ROOT . "\includes\htmlchecker.php");
-require_once(RSSPF_ROOT . "\includes\linkfinder\simple_html_dom.php");
+require_once(RSSPF_ROOT . "/includes/htmlchecker.php");
+require_once(RSSPF_ROOT . "/includes/fivefilters-readability/Readability.php");
+require_once(RSSPF_ROOT . "/includes/linkfinder/simple_html_dom.php");
 $dom = new simple_html_dom;
 $htmlchecker = new htmlchecker;
 
@@ -161,17 +162,6 @@ class rsspf {
 		
 		register_post_type('rssarchival', $args);
 
-	}
-	
-	public function full_text_rss_izer($url) {
-	
-		$local_full_text_rss = RSSPF_URL . "/includes/fivefilters-full-text-rss/makefulltextfeed.php";
-
-		$encodedurl = urlencode($url);
-		$queryString = '?url=' . $encodedurl;
-		$therss = $local_full_text_rss . $queryString;
-		return $therss;
-	
 	}
 
 	function scheduale_feed_in() {
@@ -314,7 +304,7 @@ class rsspf {
 			
 			$post_id = get_the_ID();	
 			$id = get_post_meta($post_id, 'item_id', true); //die();
-			//wp_delete_post( $post_id, true );
+			wp_delete_post( $post_id, true );
 			//print_r($id);
 			//if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
 				
@@ -544,37 +534,77 @@ class rsspf {
 		return $url;
 	}
 	
+	
+	public function readability_object($url) {
+	//ref: http://www.keyvan.net/2010/08/php-readability/
+		$url = $this->de_https($url);
+		$html = file_get_contents($url);
+		//check if tidy exists to clean up the input. 
+		if (function_exists('tidy_parse_string')) {
+			$tidy = tidy_parse_string($html, array(), 'UTF8');
+			$tidy->cleanRepair();
+			$html = $tidy->value;			
+		}
+		// give it to Readability
+		$readability = new Readability($html, $url);
+
+		// print debug output? 
+		// useful to compare against Arc90's original JS version - 
+		// simply click the bookmarklet with FireBug's 
+		// console window open
+		$readability->debug = false;
+
+		// convert links to footnotes?
+		$readability->convertLinksToFootnotes = false;
+
+		// process it
+		$result = $readability->init();
+		
+		if ($result){
+			$content = $readability->getContent()->innerHTML;
+				//if we've got tidy, let's use it. 
+				if (function_exists('tidy_parse_string')) {
+					$tidy = tidy_parse_string($content, 
+						array('indent'=>true, 'show-body-only'=>true), 
+						'UTF8');
+					$tidy->cleanRepair();
+					$content = $tidy->value;
+				}			
+
+		} else {
+			$content = false;
+		}
+		
+		return $content;
+	
+	}	
+	
 	public function get_content_through_aggregator($url){
 	
 		//$this->set_error_handler("customError");
 		$url = $this->de_https($url);
-		
+		$descrip = '';
 		//$url = http_build_url($urlParts, HTTP_URL_STRIP_AUTH | HTTP_URL_JOIN_PATH | HTTP_URL_JOIN_QUERY | HTTP_URL_STRIP_FRAGMENT);		
 		//print_r($url);
-		$fulltextrss = $this->full_text_rss_izer($url);
-		
-		$descrip = '';
+		$descrip = $this->readability_object($url);
+		//print_r($url);
+		if (!$descrip) {
 
+			if (OpenGraph::fetch($url)){
+				$node = OpenGraph::fetch($url);
+				$descrip = $node->description;	
+			} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
+			elseif ($contentHtml = @get_meta_tags($url)) {
+
+				$descrip = $contentHtml['description'];
 		
-		$newrss = fetch_feed($fulltextrss);
-		$singleitem = $newrss->get_item(0);
-		if ($singleitem->get_description()){
-			$descrip = $singleitem->get_description();
+			} 
+			else 
+			{		
+				$descrip = false;
+				break;
+			}	
 		}
-		elseif (OpenGraph::fetch($url)){
-			$node = OpenGraph::fetch($url);
-			$descrip = $node->description;	
-		} //Note the @ below. This is because get_meta_tags doesn't have a failure state to measure, it just throws errors. Thanks PHP...
-		elseif ($contentHtml = @get_meta_tags($url)) {
-
-			$descrip = $contentHtml['description'];
-	
-		} 
-		else 
-		{		
-			$descrip = false;
-		}	
-		
 		return $descrip;
 	
 	}
