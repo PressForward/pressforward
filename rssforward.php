@@ -37,8 +37,11 @@ define( 'RSSPF_URL', plugins_url('/', __FILE__) );
 
 //This adds the library we're going to use to pull and parse Open Graph data from a page. 
 require_once("OpenGraph.php");
+require_once(RSSPF_ROOT . "\includes\htmlchecker.php");
 require_once(RSSPF_ROOT . "\includes\linkfinder\simple_html_dom.php");
 $dom = new simple_html_dom;
+$htmlchecker = new htmlchecker;
+
 
 class rsspf {
 
@@ -158,6 +161,21 @@ class rsspf {
 		
 		register_post_type('rssarchival', $args);
 
+	}
+	
+	public function full_text_rss_izer($url) {
+	
+		$local_full_text_rss = RSSPF_URL . "/includes/fivefilters-full-text-rss/makefulltextfeed.php";
+		$urlParts = parse_url($url);
+		$url = $urlParts['host'] . $urlParts['path'];
+		if (strlen($urlParts['query']) > 0){
+			$url .= '?' . $urlParts['query'];
+		}
+		$encodedurl = urlencode($url);
+		$queryString = '?url=' . $encodedurl;
+		$therss = $local_full_text_rss . $queryString;
+		return $therss;
+	
 	}
 
 	function scheduale_feed_in() {
@@ -300,9 +318,9 @@ class rsspf {
 			
 			$post_id = get_the_ID();	
 			$id = get_post_meta($post_id, 'item_id', true); //die();
-			//wp_delete_post( $post_id, true );
+			wp_delete_post( $post_id, true );
 			//print_r($id);
-			if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
+			//if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
 				
 				$item_id = get_post_meta($post_id, 'item_id', true);
 				$source_title = get_post_meta($post_id, 'source_title', true);
@@ -326,9 +344,9 @@ class rsspf {
 											$item_tags
 											);
 												
-				set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
+				//set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
 				
-			}
+			//}
 			$c++;
 			endforeach;
 			
@@ -440,6 +458,7 @@ class rsspf {
 			if ( false === ( $itemFeatImg = get_transient( 'feed_img_' . $itemUID ) ) ) {
 			
 				//If there is no featured image passed, let's try and grab the opengraph image. 
+				$itemLink = $this->de_https($itemLink);
 				$node = OpenGraph::fetch($itemLink);
 				$itemFeatImg = $node->image;
 				if ($itemFeatImg == ''){
@@ -518,78 +537,73 @@ class rsspf {
 	{
 	  return false;
 
-	}	
-	
-	public function get_content_through_aggregator($url){
-	
-		//$this->set_error_handler("customError");
+	}
+
+	public function de_https($url) {
 		$urlParts = parse_url($url);
 		if (in_array('https', $urlParts)){
 			$urlParts['scheme'] = 'http';
 			$url = $urlParts['scheme'] . '://'. $urlParts['host'] . $urlParts['path'] . $urlParts['query'];
 		}
+		return $url;
+	}
+	
+	public function get_content_through_aggregator($url){
+	
+		//$this->set_error_handler("customError");
+		$url = $this->de_https($url);
 		
 		//$url = http_build_url($urlParts, HTTP_URL_STRIP_AUTH | HTTP_URL_JOIN_PATH | HTTP_URL_JOIN_QUERY | HTTP_URL_STRIP_FRAGMENT);		
 		//print_r($url);
-		if (file_get_html($url)){
-			$contentHtml = file_get_html($url);
-			$domBool = true;
-		} else { $domBool = false; }
+		$fulltextrss = $this->full_text_rss_izer($url);
 		
 		$descrip = '';
-		$contentContainers = array(
-								'.entry-content',
-								'.article-body',
-								'article',
-								'section',
-								'#content',
-								'.page-content'
-								
-								);
-		while (strlen($descrip) < 1){ 
-			foreach ($contentContainers as $contentContainer){
-				if (($contentHtml->find($contentContainer)) && $domBool){
-					$content = $contentHtml->find($contentContainer);
-					$descrip = $content[0]->innertext;
-				}
-			}
-			if (OpenGraph::fetch($url)){
-				$node = OpenGraph::fetch($url);
-				$descrip = $node->description;	
-			}
-			
-			$contentHtml = get_meta_tags($url);
-			if (!empty($contentHtml))
-				$descrip = $contentHtml['description'];
-				
-		//restore_error_handler();
-			$descrip = false;
-			//print_r($descrip);
-			break;
-			
+
+		
+		$newrss = fetch_feed($fulltextrss);
+		$singleitem = $newrss->get_item(0);
+		if ($singleitem->get_description()){
+			$descrip = $singleitem->get_description();
 		}
-		//print_r('test');
+		elseif (OpenGraph::fetch($url)){
+			$node = OpenGraph::fetch($url);
+			$descrip = $node->description;	
+		} //Note the @ below. This is because get_meta_tags doesn't have a failure state to measure, it just throws errors. Thanks PHP...
+		elseif ($contentHtml = @get_meta_tags($url)) {
+
+			$descrip = $contentHtml['description'];
+	
+		} 
+		else 
+		{		
+			$descrip = false;
+		}	
+		
+		return $descrip;
 	
 	}
 	
 	public function rss_object() {
-	
+		
 		$feedlist = call_user_func(array($this, 'rsspf_feedlist'));
 		$theFeed = fetch_feed($feedlist);
 		$rssObject = array();
 		$c = 0;
 		
 		foreach($theFeed->get_items() as $item) {
-			
+			global $htmlchecker;
 			$id = md5($item->get_id()); //die();
 			//print_r($item_categories_string); die();
 
-			if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
-				//$sourceObj = $item->get_source();		
-				//$source = $sourceObj->get_link(0,'alternate');
-				//$agStatus = $this->is_from_aggregator($source);
+			//if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
+				$sourceObj = $item->get_source();		
+				$source = $sourceObj->get_link(0,'alternate');
+				$agStatus = $this->is_from_aggregator($source);
+				if ((strlen($item->get_content())) < 160){
+					$agStatus = true;
+				}
 				//override while rest is not working. 
-				$agStatus = false;
+				//$agStatus = false;
 				if ($agStatus){
 					$realLink = $item->get_link();
 					$realContent = $this->get_content_through_aggregator($realLink);
@@ -613,7 +627,8 @@ class rsspf {
 					}
 					$item_categories_string = implode(',',$itemTerms);	
 				} else { $item_categories_string = ''; }
-					
+				
+				$item_content = $htmlchecker->closetags($item_content);
 				$rssObject['rss_' . $c] = $this->feed_object(
 											$item->get_title(),
 											$iFeed->get_title(),
@@ -627,9 +642,9 @@ class rsspf {
 											$item_categories_string
 											);
 												
-				set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
+				//set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
 				
-			}
+			//}
 			$c++;
 		
 		}
@@ -660,6 +675,7 @@ class rsspf {
 		//Calling the feedlist within the rsspf class. 
 		
 		echo '<h1>' . RSSPF_TITLE . '</h1>';
+		echo '<div id="errors"></div>';
 		echo '<input type="submit" class="refreshfeed" id="refreshfeed" value="Refresh" /><br />';
 		//A testing method, to insure the feed is being received and processed. 
 		//print_r($theFeed);

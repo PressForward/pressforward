@@ -43,7 +43,7 @@ jQuery(document).ready(function() {
 			action: 'assemble_feed_for_pull'
 		},
 		function(response) {
-			alert(response);
+			jQuery('#errors').html(response);
 			//jQuery("#test-div1").append(data);
 		});
 	
