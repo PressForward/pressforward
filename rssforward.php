@@ -326,13 +326,16 @@ class rsspf {
 				$item_feat_img = get_post_meta($post_id, 'item_feat_img', true);
 				$item_wp_date = get_post_meta($post_id, 'item_wp_date', true);
 				$item_tags = get_post_meta($post_id, 'item_tags', true);
+				
+				$contentObj = new htmlchecker(get_the_content());
+				$item_content = $contentObj->closetags(get_the_content());
 
 				$rssObject['rss_archive_' . $c] = $this->feed_object(
 											get_the_title(),
 											$source_title,
 											$item_date,
 											$item_author,
-											get_the_content(),
+											$item_content,
 											$item_link,
 											$item_feat_img,
 											$item_id,

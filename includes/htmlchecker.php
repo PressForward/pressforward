@@ -35,7 +35,7 @@ class htmlchecker {
   preg_match_all('#<(em|strong)*/>#', $html, $resultc);
   $malformedtags = $resultc[1];  
   //print_r('Count <br />');
-  foreach ($resultc as $tag){
+  foreach ($malformedtags as $tag){
 	if ($tag == 'em'){
 		$html .= '</em>';
 	}
