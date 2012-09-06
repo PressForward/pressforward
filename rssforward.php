@@ -852,7 +852,15 @@ class rsspf {
 						$nomCount = get_post_meta($id, 'nomination_count', true);
 						$nomCount++;
 						update_post_meta($id, 'nomination_count', $nomCount);
-					}
+						$current_user = wp_get_current_user();
+						if ( 0 == $current_user->ID ) {
+							//Not logged in.
+							//If we ever reveal this to non users and want to count nominations by all, here is where it will go. 
+						} else {
+							$nominators = get_post_meta($id, 'nominator_array', true);
+							$nominators .= ',' . $current_user->ID;
+							update_post_meta($id, 'nominator_array', $nominators);
+						}
 					
 					return $check;
 					break;
@@ -1009,6 +1017,7 @@ class rsspf {
 		add_post_meta($newNomID, 'origin_item_ID', $item_id, true);
 		add_post_meta($newNomID, 'nomination_count', 1, true);
 		add_post_meta($newNomID, 'submitted_by', $userString, true);
+		add_post_meta($newNomID, 'nominator_array', $userID, true);
 		add_post_meta($newNomID, 'source_title', $_POST['source_title'], true);
 		add_post_meta($newNomID, 'posted_date', $_POST['item_date'], true);
 		add_post_meta($newNomID, 'authors', $_POST['item_author'], true);
@@ -1064,6 +1073,8 @@ class rsspf {
 				$item_tags = get_post_meta($_POST['ID'], 'item_tags', true);
 				add_post_meta($newPostID, 'item_tags', $item_tags, true);
 				//If user wants to use tags, we'll create an option to use it.
+				$nominators = get_post_meta($_POST['ID'], 'nominator_array', true);
+				add_post_meta($newPostID, 'nominator_array', $nominators, true);
 				
 				$already_has_thumb = has_post_thumbnail($_POST['ID']);
 				if ($already_has_thumb)  {
