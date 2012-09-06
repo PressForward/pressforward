@@ -41,7 +41,7 @@ require_once(RSSPF_ROOT . "/includes/htmlchecker.php");
 require_once(RSSPF_ROOT . "/includes/fivefilters-readability/Readability.php");
 require_once(RSSPF_ROOT . "/includes/linkfinder/simple_html_dom.php");
 $dom = new simple_html_dom;
-$htmlchecker = new htmlchecker;
+
 
 
 class rsspf {
@@ -198,7 +198,7 @@ class rsspf {
 					endforeach;
 				endif;
 			
-			//print_r(count($checkposts)); die();
+			
 			if ( $thepostscheck == 0) {
 				$item_title 	= $item['item_title'];
 				$item_content 	= $item['item_content'];
@@ -210,8 +210,12 @@ class rsspf {
 				$item_wp_date	= $item['item_wp_date'];
 				$item_tags		= $item['item_tags'];
 			
-				//This needs a check for existing posts.
-			
+			$item_content = strip_tags($item_content, '<p> <strong> <bold> <i> <em> <emphasis> <del> <h1> <h2> <h3> <h4> <h5> <a> <img>'); 
+			//$item_content = wpautop($item_content);
+			//$postcontent = sanitize_post($item_content);
+			//If we use the @ to prevent showing errors, everything seems to work. But it is still dedicating crap to the database...
+			//Perhaps sanitize_post isn't the cause? What is then? 
+							
 				$data = array(
 					'post_status' => 'published',
 					'post_type' => 'rssarchival',
@@ -221,7 +225,13 @@ class rsspf {
 					
 				);
 				
+				//RIGHT HERE is where the content is getting assigned a bunch of screwed up tags.
+				//The content is coming in from the rss_object assembler a-ok. But something here saves them to the database screwy.
+				//It looks like sanitize post is screwing them up terribly. But what to do about it without removing the security measures which we need to apply?
+				
 				$newNomID = wp_insert_post( $data );
+				//$posttest = get_post($newNomID);
+				//print_r($posttest->post_content);
 				
 				if ($_POST['item_feat_img'] != '')
 					$this->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
@@ -304,7 +314,7 @@ class rsspf {
 			
 			$post_id = get_the_ID();	
 			$id = get_post_meta($post_id, 'item_id', true); //die();
-			wp_delete_post( $post_id, true );
+			//wp_delete_post( $post_id, true );
 			//print_r($id);
 			//if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
 				
@@ -617,7 +627,6 @@ class rsspf {
 		$c = 0;
 		
 		foreach($theFeed->get_items() as $item) {
-			global $htmlchecker;
 			$id = md5($item->get_id()); //die();
 			//print_r($item_categories_string); die();
 
@@ -653,8 +662,10 @@ class rsspf {
 					}
 					$item_categories_string = implode(',',$itemTerms);	
 				} else { $item_categories_string = ''; }
-				
-				$item_content = $htmlchecker->closetags($item_content);
+				//one final cleanup of the content. 
+				$contentObj = new htmlchecker($item_content);
+				$item_content = $contentObj->closetags($item_content);
+				print_r($item_content);
 				$rssObject['rss_' . $c] = $this->feed_object(
 											$item->get_title(),
 											$iFeed->get_title(),

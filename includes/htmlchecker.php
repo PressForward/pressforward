@@ -14,10 +14,12 @@
  
 class htmlchecker {
 
-
+ public function __construct(){
+	//$html = $this->closetags($html);
+ }
 
  public function closetags($html) {
-
+  
   #put all opened tags into an array
 
   preg_match_all('#<([a-z]+)(?: .*)?(?<![/|/ ])>#iU', $html, $result);
@@ -30,8 +32,20 @@ class htmlchecker {
 
   $len_opened = count($openedtags);
 
+  preg_match_all('#<(em|strong)*/>#', $html, $resultc);
+  $malformedtags = $resultc[1];  
+  //print_r('Count <br />');
+  foreach ($resultc as $tag){
+	if ($tag == 'em'){
+		$html .= '</em>';
+	}
+	if ($tag == 'strong'){
+		$html .= '</strong>';
+	}	
+  } 
+  
   # all tags are closed
-
+  
   if (count($closedtags) == $len_opened) {
 
     return $html;
@@ -52,6 +66,12 @@ class htmlchecker {
 
       unset($closedtags[array_search($openedtags[$i], $closedtags)]);    }
 
-  }  return $html;} 
+  }  
+
+
+  //print_r($html);
+  return $html;
+  
+  } 
 }  
 ?>
