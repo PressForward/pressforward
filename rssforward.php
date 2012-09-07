@@ -864,6 +864,7 @@ class rsspf {
 					
 					return $check;
 					break;
+					}
 				}
 			endforeach;
 		endif;
