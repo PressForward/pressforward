@@ -16,3 +16,28 @@ if ( current_user_can('edit_posts') ) : ?>
 </div>
 <?php
 endif;
+
+//Press This get_shortcut_link() from wp-includes/link-template.php
+//http://wpseek.com/get_shortcut_link/
+
+function get_shortcut_link() {
+	// In case of breaking changes, version this. #WP20071
+	$link = "javascript:
+			var d=document,
+			w=window,
+			e=w.getSelection,
+			k=d.getSelection,
+			x=d.selection,
+			s=(e?e():(k)?k():(x?x.createRange().text:0)),
+			f='" . admin_url('press-this.php') . "',
+			l=d.location,
+			e=encodeURIComponent,
+			u=f+'?u='+e(l.href)+'&t='+e(d.title)+'&s='+e(s)+'&v=4';
+			a=function(){if(!w.open(u,'t','toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=570'))l.href=u;};
+			if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0); else a();
+			void(0)";
+
+	$link = str_replace(array("\r", "\n", "\t"),  '', $link);
+
+	return apply_filters('shortcut_link', $link);
+}
