@@ -11,7 +11,7 @@
 define('IFRAME_REQUEST' , true);
 
 /** WordPress Administration Bootstrap */
-require_once('./admin.php');
+require_once( dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))) ) . '/wp-admin' . '/admin.php');
 
 header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset'));
 
@@ -39,6 +39,8 @@ function press_it() {
 	$post['post_category'] = isset($_POST['post_category']) ? $_POST['post_category'] : '';
 	$post['tax_input'] = isset($_POST['tax_input']) ? $_POST['tax_input'] : '';
 	$post['post_title'] = isset($_POST['title']) ? $_POST['title'] : '';
+	//RSSPF Addition: setting post type. 
+	//$post['post_type'] = 'nomination';
 	$content = isset($_POST['content']) ? $_POST['content'] : '';
 
 	$upload = false;
@@ -63,6 +65,9 @@ function press_it() {
 		$post['post_status'] = 'pending';
 	else
 		$post['post_status'] = 'draft';
+		
+	//RSSPF Addition - switch post type to nomination?
+	$post['post_type'] = 'nomination';
 
 	// error handling for media_sideload
 	if ( is_wp_error($upload) ) {
@@ -76,7 +81,7 @@ function press_it() {
 			elseif ( '0' == $_POST['post_format'] )
 				set_post_format( $post_ID, false );
 		}
-
+		//RSSPF Note - Here's where it creates the post. 
 		$post_ID = wp_update_post($post);
 	}
 

@@ -109,6 +109,15 @@ Using PressThis button.
 
 -	First 91 lines?
 
+-	wp_remote_fopen is a useful tool to remember. Something to play with later. 
+
+-	Looks like it pulls images only when it is an image only page that the bookmarklet is triggered on. 
+	*	Perhaps worthwhile to make it trigger on known img sites as well? Flickr, Imgur?
+	
+-	Handling of YouTube and Vimeo occuring at ln 360, fairly limited. 
+
+-	If nothing is selected, use readability to pull it all in? 
+
 
 Ideas for better visualization of syndicated content
 ----------------------------------------------------
