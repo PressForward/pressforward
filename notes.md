@@ -114,9 +114,11 @@ Using PressThis button.
 -	Looks like it pulls images only when it is an image only page that the bookmarklet is triggered on. 
 	*	Perhaps worthwhile to make it trigger on known img sites as well? Flickr, Imgur?
 	
--	Handling of YouTube and Vimeo occuring at ln 360, fairly limited. 
+-	Handling of YouTube and Vimeo occuring at `ln 360`, fairly limited. 
 
 -	If nothing is selected, use readability to pull it all in? 
+
+-	On `ln 455` are the hidden fields to add stuff to the post.
 
 
 Ideas for better visualization of syndicated content

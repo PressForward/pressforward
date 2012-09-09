@@ -306,7 +306,7 @@ die;
 	wp_enqueue_script( 'post' );
 	_wp_admin_html_begin();
 ?>
-<title><?php _e('Press This') ?></title>
+<title><?php _e('Nominate This') ?></title>
 <script type="text/javascript">
 //<![CDATA[
 addLoadEvent = function(func){if(typeof jQuery!="undefined")jQuery(document).ready(func);else if(typeof wpOnload!='function'){wpOnload=func;}else{var oldonload=wpOnload;wpOnload=function(){oldonload();func();}}};
@@ -463,7 +463,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 
 			<div id="submitdiv" class="postbox">
 				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
-				<h3 class="hndle"><?php _e('Press This') ?></h3>
+				<h3 class="hndle"><?php _e('Nominate This') ?></h3>
 				<div class="inside">
 					<p id="publishing-actions">
 					<?php
