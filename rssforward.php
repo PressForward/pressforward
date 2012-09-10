@@ -601,6 +601,7 @@ class rsspf {
 		//print_r($url);
 		$descrip = $this->readability_object($url);
 		//print_r($url);
+		//This should be a while?
 		if (!$descrip) {
 
 			if (OpenGraph::fetch($url)){
@@ -615,7 +616,7 @@ class rsspf {
 			else 
 			{		
 				$descrip = false;
-				break;
+				
 			}	
 		}
 		return $descrip;

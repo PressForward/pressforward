@@ -92,12 +92,17 @@ function press_it() {
 	}
 
 				//print_r($_POST['u']); die();
-				//Gets OG image
-				$itemLink = $rsspf_nt->de_https($_POST['nomination_permalink']);
-				$node = OpenGraph::fetch($itemLink);
-				$itemFeatImg = $node->image;	
-
-	$rsspf_nt->set_ext_as_featured($post_ID, $itemFeatImg);	
+				global $rsspf_nt;
+				if (($_POST['nomination_permalink']) != ''){
+					//Gets OG image
+					$itemLink = $rsspf_nt->de_https($_POST['nomination_permalink']);
+					$node = OpenGraph::fetch($itemLink);
+					$itemFeatImg = $node->image;
+				}
+	if (($_POST['nomination_permalink']) != ''){
+		$rsspf_nt->set_ext_as_featured($post_ID, $itemFeatImg);	
+	}
+	
 	return $post_ID;
 }
 
@@ -478,10 +483,13 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			<input type="hidden" id="original_post_status" name="original_post_status" value="draft" />
 			<input type="hidden" id="prev_status" name="prev_status" value="draft" />
 			<input type="hidden" id="post_id" name="post_id" value="<?php echo (int) $post_ID; ?>" />
+			<?php if ($url != '') { ?>
+			<?php print_r($url); ?>
 			<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr($title);?>" />
 			<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo date('c'); ?>" />
 			<input type="hidden" id="nomination_permalink" name="nomination_permalink" value="<?php echo esc_url( $url ); ?>" />
-
+			<?php } ?>
+			
 			<!-- This div holds the photo metadata -->
 			<div class="photolist"></div>
 
@@ -633,8 +641,12 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 		if ( $selection )
 			$content .= $selection;
 			
-		if ( !$selection )
-			$content .= $rsspf_nt->get_content_through_aggregator(esc_url( $url ));
+		if ( !$selection ){
+			if ($url != ''){
+				$content .= $rsspf_nt->get_content_through_aggregator(esc_url( $url ));
+			}
+		
+		}
 
 		if ( $url ) {
 			$content .= '<p>';
