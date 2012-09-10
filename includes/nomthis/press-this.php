@@ -91,6 +91,7 @@ function press_it() {
 	global $rsspf_nt;
 	$rsspf_nt = new rsspf();
 				//print_r($_POST['u']); die();
+				//Gets OG image
 				$itemLink = $rsspf_nt->de_https($_POST['nomination_permalink']);
 				$node = OpenGraph::fetch($itemLink);
 				$itemFeatImg = $node->image;	
