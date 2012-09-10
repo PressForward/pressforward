@@ -455,11 +455,15 @@ class rsspf {
 		if($itemFeatImg == ''){
 		
 			if ( false === ( $itemFeatImg = get_transient( 'feed_img_' . $itemUID ) ) ) {
-			
-				//If there is no featured image passed, let's try and grab the opengraph image. 
+				
 				$itemLink = $this->de_https($itemLink);
-				$node = OpenGraph::fetch($itemLink);
-				$itemFeatImg = $node->image;
+				
+				if (OpenGraph::fetch($itemLink)){
+					//If there is no featured image passed, let's try and grab the opengraph image. 
+					$node = OpenGraph::fetch($itemLink);
+					$itemFeatImg = $node->image;
+				}
+				
 				if ($itemFeatImg == ''){
 					//Thinking of starting a method here to pull the first image from the body of a post.
 					//http://stackoverflow.com/questions/138313/how-to-extract-img-src-title-and-alt-from-html-using-php
@@ -601,7 +605,7 @@ class rsspf {
 		//print_r($url);
 		$descrip = $this->readability_object($url);
 		//print_r($url);
-		if (!$descrip) {
+		while (!$descrip) {
 
 			if (OpenGraph::fetch($url)){
 				$node = OpenGraph::fetch($url);
