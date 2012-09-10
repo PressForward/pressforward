@@ -490,7 +490,7 @@ class rsspf {
 						'item_feat_img'	=>	$itemFeatImg,
 						'item_id'		=>	$itemUID,
 						'item_wp_date'	=>  $itemWPDate,
-						'item_tags'		=>	$itemTags,
+						'item_tags'		=>	$itemTags
 					
 					);
 		
