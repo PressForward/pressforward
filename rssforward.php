@@ -713,6 +713,10 @@ class rsspf {
 	
 		foreach ($item as $itemKey => $itemPart) {
 		
+			if ($itemKey == 'item_content'){
+				$itemPart = htmlspecialchars($itemPart);
+			}
+		
 			echo '<input type="hidden" name="' . $itemKey . '" id="' . $itemKey . '_' . $itemid . '" id="' . $itemKey . '" value="' . $itemPart . '" />';
 		
 		}
