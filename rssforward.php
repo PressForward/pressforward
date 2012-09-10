@@ -444,8 +444,9 @@ class rsspf {
 
 	public function rsspf_feedlist() {
 	
-		$feedlist = 'http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations';
+		$feedlist = 'http://feeds.feedburner.com/DHNowEditorsChoiceAndNews';
 		//http://feeds.feedburner.com/DHNowEditorsChoiceAndNews
+		//http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations
 		return $feedlist;
 	
 	}
@@ -675,7 +676,7 @@ class rsspf {
 				//one final cleanup of the content. 
 				$contentObj = new htmlchecker($item_content);
 				$item_content = $contentObj->closetags($item_content);
-				print_r($item_content);
+				print_r($c);
 				$rssObject['rss_' . $c] = $this->feed_object(
 											$item->get_title(),
 											$iFeed->get_title(),

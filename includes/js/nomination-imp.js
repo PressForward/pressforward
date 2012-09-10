@@ -14,6 +14,7 @@ jQuery(document).ready(function() {
 	var item_feat_img 	= jQuery("#item_feat_img_"+itemID).val();
 	var item_id 		= jQuery("#item_id_"+itemID).val();
 	var item_wp_date	= jQuery("#item_wp_date_"+itemID).val();
+	var item_tags		= jQuery("#item_tags_"+itemID).val();
 //	var errorThrown		= 'Broken';
 	var theNonce		= jQuery.trim(jQuery('#rsspf_nomination_nonce').val())
 	jQuery('.loading-'+itemID).show();
@@ -28,6 +29,7 @@ jQuery(document).ready(function() {
 			item_feat_img: item_feat_img,
 			item_id: item_id,
 			item_wp_date: item_wp_date,
+			item_tags: item_tags,
 			rsspf_nomination_nonce: theNonce
 		},
 		function(response) {
