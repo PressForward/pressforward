@@ -638,9 +638,12 @@ class rsspf {
 			//print_r($item_categories_string); die();
 
 			//if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
-				$sourceObj = $item->get_source();		
-				$source = $sourceObj->get_link(0,'alternate');
-				$agStatus = $this->is_from_aggregator($source);
+				if ($item->get_source()){
+					$sourceObj = $item->get_source();		
+					$source = $sourceObj->get_link(0,'alternate');
+					$agStatus = $this->is_from_aggregator($source);
+				} else { $agStatus = false; }
+				
 				if ((strlen($item->get_content())) < 160){
 					$agStatus = true;
 				}
