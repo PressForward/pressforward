@@ -14,7 +14,9 @@ define('IFRAME_REQUEST' , true);
 require_once( dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))) ) . '/wp-admin' . '/admin.php');
 	//RSSPF Correction - this will need to be changed to a constant later.
 require_once( dirname(dirname(dirname(__FILE__))) . "\OpenGraph.php");
-
+	global $rsspf_nt;
+	$rsspf_nt = new rsspf();
+	
 header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset'));
 
 if ( ! current_user_can('edit_posts') )
@@ -88,8 +90,7 @@ function press_it() {
 		//RSSPF Note - Here's where it creates the post. 
 		$post_ID = wp_update_post($post);
 	}
-	global $rsspf_nt;
-	$rsspf_nt = new rsspf();
+
 				//print_r($_POST['u']); die();
 				//Gets OG image
 				$itemLink = $rsspf_nt->de_https($_POST['nomination_permalink']);
@@ -631,13 +632,16 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 		$content = '';
 		if ( $selection )
 			$content .= $selection;
+			
+		if ( !$selection )
+			$content .= $rsspf_nt->get_content_through_aggregator(esc_url( $url ));
 
 		if ( $url ) {
 			$content .= '<p>';
 
 			if ( $selection )
 				$content .= __('via ');
-
+			//RSSPF Notes - Set content for an empty selection.
 			$content .= sprintf( "<a href='%s'>%s</a>.</p>", esc_url( $url ), esc_html( $title ) );
 		}
 
