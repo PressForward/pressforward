@@ -846,10 +846,29 @@ class rsspf {
 		
 		return $postsAfter;
 	}
+	
+	function get_posts_by_id_for_check( $theDate, $post_type, $item_id ) {
+		global $wpdb;
+		
+		 $querystr = "
+				SELECT $wpdb->posts.* 
+				FROM $wpdb->posts, $wpdb->postmeta
+				WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id 
+				AND $wpdb->postmeta.meta_key = 'item_id' 
+				AND $wpdb->postmeta.meta_value = '" . $item_id . "' 
+				AND $wpdb->posts.post_type = '" . $post_type . "'
+				AND $wpdb->posts.post_date >= '". $theDate . "'
+				ORDER BY $wpdb->posts.post_date DESC
+			 ";	
+
+		$postsAfter = $wpdb->get_results($querystr, OBJECT);		
+		
+		return $postsAfter;
+	}	
 
 	function get_post_nomination_status($date, $item_id, $post_type, $updateCount = true){
 	
-		$postsAfter = $this->get_posts_after_for_check( $date, $post_type );
+		$postsAfter = $this->get_posts_by_id_for_check( $date, $post_type, $item_id );
 		$check = false;
 		if ($postsAfter):
 			global $post;
@@ -891,6 +910,11 @@ class rsspf {
 				$imgParts = pathinfo($ogImage);
 				$imgExt = $imgParts['extension'];
 				$imgTitle = $imgParts['filename'];
+				
+				if ($imgExt != ('jpg'||'png'||'jrpg'||'bmp'||'gif')){
+					//print_r('bad og img');
+					return;
+				}
 
 				
 				//'/' . get_option(upload_path, 'wp-content/uploads') . '/' . date("o") 
