@@ -318,9 +318,10 @@ class rsspf {
 			
 			$post_id = get_the_ID();	
 			$id = get_post_meta($post_id, 'item_id', true); //die();
+			//Switch the delete on to wipe rss archive posts from the database for testing.
 			//wp_delete_post( $post_id, true );
 			//print_r($id);
-			//if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
+			if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
 				
 				$item_id = get_post_meta($post_id, 'item_id', true);
 				$source_title = get_post_meta($post_id, 'source_title', true);
@@ -347,9 +348,9 @@ class rsspf {
 											$item_tags
 											);
 												
-				//set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
+				set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
 				
-			//}
+			}
 			$c++;
 			endforeach;
 			
@@ -467,6 +468,7 @@ class rsspf {
 					//If there is no featured image passed, let's try and grab the opengraph image. 
 					$node = OpenGraph::fetch($itemLink);
 					$itemFeatImg = $node->image;
+					
 				}
 				
 				if ($itemFeatImg == ''){
@@ -523,7 +525,8 @@ class rsspf {
 		$aggregators = array (
 								'tweetedtimes',
 								'tweetedtimes.com',
-								'www.tweetedtimes.com'
+								'www.tweetedtimes.com',
+								'pipes.yahoo.com'
 							);
 		foreach ($aggregators as $aggregator) {
 			if (in_array($aggregator, $urlParts)){
@@ -559,6 +562,8 @@ class rsspf {
 	
 	public function readability_object($url) {
 	//ref: http://www.keyvan.net/2010/08/php-readability/
+		set_time_limit(0);
+		print_r($url); print_r('Readability<br />');
 		$url = $this->de_https($url);
 		$url = str_replace('&amp;','&', $url);
 		$html = file_get_contents($url);
@@ -596,6 +601,7 @@ class rsspf {
 
 		} else {
 			$content = false;
+			print_r($url . ' fails Readability.<br />');
 		}
 		
 		return $content;
@@ -620,10 +626,12 @@ class rsspf {
 			elseif ($contentHtml = @get_meta_tags($url)) {
 
 				$descrip = $contentHtml['description'];
+				print_r($url . ' has no meta OpenGraph description we can find.');
 		
 			} 
 			else 
 			{		
+				print_r($url . ' has no description we can find.');
 				$descrip = false;
 				break;
 			}	
@@ -643,7 +651,7 @@ class rsspf {
 			$id = md5($item->get_id()); //die();
 			//print_r($item_categories_string); die();
 
-			//if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
+			if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
 				if ($item->get_source()){
 					$sourceObj = $item->get_source();		
 					$source = $sourceObj->get_link(0,'alternate');
@@ -695,9 +703,9 @@ class rsspf {
 											$item_categories_string
 											);
 												
-				//set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
+				set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
 				
-			//}
+			}
 			$c++;
 		
 		}

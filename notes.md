@@ -158,3 +158,5 @@ Possible Issues
 -	What happens in a large database of posts? Can we split a query up in parts to prevent memory overflow? 
 
 -	Error exists at `ln 702`.
+
+-	Slideshares do not provide good data for the readability to parse. The OG tags for descrip are pretty mediocure as well. 
