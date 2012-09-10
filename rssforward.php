@@ -173,6 +173,7 @@ class rsspf {
 	public function assemble_feed_for_pull() {
 		//pull rss into post types
 		$feedObj = $this->rss_object();
+		
 		global $wpdb;
 		foreach($feedObj as $item) {
 			$thepostscheck = 0;
@@ -190,6 +191,7 @@ class rsspf {
 			 ";
 			 
 			$checkposts = $wpdb->get_results($querystr, OBJECT);
+			
 				if ($checkposts):
 					global $post;
 					foreach ($checkposts as $post):
@@ -232,6 +234,8 @@ class rsspf {
 				$newNomID = wp_insert_post( $data );
 				//$posttest = get_post($newNomID);
 				//print_r($posttest->post_content);
+				
+				$item_link = str_replace('&amp;','&', $item_link);
 				
 				if ($_POST['item_feat_img'] != '')
 					$this->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
@@ -458,7 +462,7 @@ class rsspf {
 			if ( false === ( $itemFeatImg = get_transient( 'feed_img_' . $itemUID ) ) ) {
 				
 				$itemLink = $this->de_https($itemLink);
-				
+				$itemLink = str_replace('&amp;','&', $itemLink);
 				if (OpenGraph::fetch($itemLink)){
 					//If there is no featured image passed, let's try and grab the opengraph image. 
 					$node = OpenGraph::fetch($itemLink);
@@ -556,6 +560,7 @@ class rsspf {
 	public function readability_object($url) {
 	//ref: http://www.keyvan.net/2010/08/php-readability/
 		$url = $this->de_https($url);
+		$url = str_replace('&amp;','&', $url);
 		$html = file_get_contents($url);
 		//check if tidy exists to clean up the input. 
 		if (function_exists('tidy_parse_string')) {
@@ -607,7 +612,7 @@ class rsspf {
 		$descrip = $this->readability_object($url);
 		//print_r($url);
 		while (!$descrip) {
-
+			$url = str_replace('&amp;','&', $url);
 			if (OpenGraph::fetch($url)){
 				$node = OpenGraph::fetch($url);
 				$descrip = $node->description;	
@@ -648,7 +653,7 @@ class rsspf {
 				if ((strlen($item->get_content())) < 160){
 					$agStatus = true;
 				}
-				//override while rest is not working. 
+				//override switch while rest is not working. 
 				//$agStatus = false;
 				if ($agStatus){
 					$realLink = $item->get_link();
@@ -907,6 +912,9 @@ class rsspf {
 		
 			if ( (strlen($ogImage)) > 0 ){
 			
+				//Remove Queries from the URL
+				$ogImage = preg_replace('/\?.*/', '', $ogImage);
+				
 				$imgParts = pathinfo($ogImage);
 				$imgExt = $imgParts['extension'];
 				$imgTitle = $imgParts['filename'];
