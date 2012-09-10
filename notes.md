@@ -152,3 +152,5 @@ Possible Issues
 -	The last modified column is also really narrow, I'll need to apply custom styling via an attached CSS sheet to that page. 
 
 -	Do we want a source link along with an item link? Prob. 
+
+-	The refresh button needs someway to stop users from hitting it while it is processing, otherwise it may create doubles.
