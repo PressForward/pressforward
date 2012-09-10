@@ -120,6 +120,10 @@ Using PressThis button.
 
 -	On `ln 455` are the hidden fields to add stuff to the post.
 
+-	Publish button in the new press this version doesn't do anything in nominations. Should remove anyway.
+
+
+
 
 Ideas for better visualization of syndicated content
 ----------------------------------------------------

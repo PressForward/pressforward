@@ -12,6 +12,8 @@ define('IFRAME_REQUEST' , true);
 
 /** WordPress Administration Bootstrap */
 require_once( dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))) ) . '/wp-admin' . '/admin.php');
+	//RSSPF Correction - this will need to be changed to a constant later.
+require_once( dirname(dirname(dirname(__FILE__))) . "\OpenGraph.php");
 
 header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset'));
 
@@ -68,6 +70,8 @@ function press_it() {
 		
 	//RSSPF Addition - switch post type to nomination?
 	$post['post_type'] = 'nomination';
+	
+	
 
 	// error handling for media_sideload
 	if ( is_wp_error($upload) ) {
@@ -84,7 +88,14 @@ function press_it() {
 		//RSSPF Note - Here's where it creates the post. 
 		$post_ID = wp_update_post($post);
 	}
+	global $rsspf_nt;
+	$rsspf_nt = new rsspf();
+				//print_r($_POST['u']); die();
+				$itemLink = $rsspf_nt->de_https($_POST['nomination_permalink']);
+				$node = OpenGraph::fetch($itemLink);
+				$itemFeatImg = $node->image;	
 
+	$rsspf_nt->set_ext_as_featured($post_ID, $itemFeatImg);	
 	return $post_ID;
 }
 
@@ -98,20 +109,25 @@ if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 }
 
 // Set Variables
+
+//RSSPF Notes - gets origin title.
 $title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( stripslashes( $_GET['t'] ) , ENT_QUOTES) ) ) : '';
 
 $selection = '';
+//RSSPF Notes - gets user selection. 
 if ( !empty($_GET['s']) ) {
 	$selection = str_replace('&apos;', "'", stripslashes($_GET['s']));
 	$selection = trim( htmlspecialchars( html_entity_decode($selection, ENT_QUOTES) ) );
 }
 
+//RSSPF Notes - Behaviour for user selection.
 if ( ! empty($selection) ) {
 	$selection = preg_replace('/(\r?\n|\r)/', '</p><p>', $selection);
 	$selection = '<p>' . str_replace('<p></p>', '', $selection) . '</p>';
 }
-
+//RSSPF Notes - Looks like this gets the URL.
 $url = isset($_GET['u']) ? esc_url($_GET['u']) : '';
+//RSSPF Notes - Looks like this gets the image page on image only links. 
 $image = isset($_GET['i']) ? $_GET['i'] : '';
 
 if ( !empty($_REQUEST['ajax']) ) {
@@ -451,12 +467,18 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 <div id="poststuff" class="metabox-holder">
 	<div id="side-sortables" class="press-this-sidebar">
 		<div class="sleeve">
-			<?php wp_nonce_field('press-this') ?>
+			<?php wp_nonce_field('press-this'); ?>
+			<?php 
+				
+			?>
 			<input type="hidden" name="post_type" id="post_type" value="text"/>
 			<input type="hidden" name="autosave" id="autosave" />
 			<input type="hidden" id="original_post_status" name="original_post_status" value="draft" />
 			<input type="hidden" id="prev_status" name="prev_status" value="draft" />
 			<input type="hidden" id="post_id" name="post_id" value="<?php echo (int) $post_ID; ?>" />
+			<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr($title);?>" />
+			<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo date('c'); ?>" />
+			<input type="hidden" id="nomination_permalink" name="nomination_permalink" value="<?php echo esc_url( $url ); ?>" />
 
 			<!-- This div holds the photo metadata -->
 			<div class="photolist"></div>
