@@ -744,7 +744,7 @@ class rsspf {
 		
 		echo '<h1>' . RSSPF_TITLE . '</h1>';
 		echo '<div id="errors"></div>';
-		echo '<input type="submit" class="refreshfeed" id="refreshfeed" value="Refresh" /><input type="submit" class="feedsort" id="sortbyitemdate" value="Sort by item date" /><input type="submit" class="feedsort" id="sortbyfeedindate" value="Sort by date entered RSS" /><br />';
+		echo '<input type="submit" class="refreshfeed" id="refreshfeed" value="Refresh" /><input type="submit" class="feedsort" id="sortbyitemdate" value="Sort by item date" /><input type="submit" class="feedsort" id="sortbyfeedindate" value="Sort by date entered RSS" /><br /><br />';
 		//A testing method, to insure the feed is being received and processed. 
 		//print_r($theFeed);
 		
