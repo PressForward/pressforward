@@ -37,8 +37,13 @@ define( 'RSSPF_URL', plugins_url('/', __FILE__) );
 
 //This adds the library we're going to use to pull and parse Open Graph data from a page. 
 require_once("OpenGraph.php");
+/** This is the function to check the HTML of each item for open tags and close them.
+ * I've altered it specifically for some odd HTML artifacts that occur when WP sanitizes the content input.
+**/
 require_once(RSSPF_ROOT . "/includes/htmlchecker.php");
+//A slightly altered version of the Readability library from Five Filters, who based it off readability.com's code.
 require_once(RSSPF_ROOT . "/includes/fivefilters-readability/Readability.php");
+//For reading through an HTML page. 
 require_once(RSSPF_ROOT . "/includes/linkfinder/simple_html_dom.php");
 $dom = new simple_html_dom;
 
@@ -54,8 +59,9 @@ class rsspf {
 		add_action('admin_menu', array($this, 'register_rsspf_custom_menu_pages') );
 		//Activate the nominations post-type
 		add_action('init', array($this, 'create_rsspf_nomination_post_type') );
+		//Activate the post-type that will archive the incoming RSS feed. 
 		add_action('init', array($this, 'create_rsspf_archive_post_type') );
-		
+		//Adding javascript and css to admin pages
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
 		
 		
@@ -77,10 +83,13 @@ class rsspf {
 		add_filter( 'author_link', array($this, 'replace_author_uri_presentation') );		
 		add_filter( "manage_edit-nomination_sortable_columns", array ($this, "nomination_sortable_columns") );	
 		
+		//Activate our cron actions
 		add_action('init', array($this, 'scheduale_feed_in') );
 		add_action('init', array($this, 'scheduale_feed_out') ); 
 		
+		//The take_feed_out action is now initiated, we should be able to attach our feed disassembly function. 
 		add_action( 'take_feed_out', array($this, 'disassemble_feed_items') ); 
+		//The pull_feed_in action is now initiated, we should be able to attach our feed assembly function. 
 		add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );		
 		
 	}
@@ -128,14 +137,18 @@ class rsspf {
 										'not_found_in_trash' => __('No nominations found in Trash')
 									),
 					'description' => 'Posts from around the internet nominated for consideration to public posting',
+					//Not available to non-users.
 					'public' => false,
-					//'show_ui' => false,
+					//I want a UI for users to use, so true.
 					'show_ui' => true,
-					//'show_in_menu' => $rsspf_menu_slug,
+					//But not the default UI, we want to attach it to the plugin menu.
 					'show_in_menu' => false,
+					//Linking in the metabox building function.
 					'register_meta_box_cb' => array($this, 'nominations_meta_boxes'),
 					'capability_type' => 'post',
+					//The type of input (besides the metaboxes) that it supports.
 					'supports' => array('title', 'editor', 'thumbnail', 'revisions'),
+					//I think this is set to false by the public argument, but better safe. 
 					'has_archive' => false
 				);
 		
@@ -143,7 +156,11 @@ class rsspf {
 
 	}
 	
-	//Create the archive post type
+	/**Create the archive post type. 
+	 * Until the CS folks build the 'pressbox' this will pull in RSS items. 
+	 * Elsewhere it is set up to store them for up to 2 months in the database.
+	 * We'll want to clean out anything older, because otherwise the database is likely to get heavy with items. 
+	**/
 	function create_rsspf_archive_post_type() {
 		$args = array(
 					'labels' => array(
@@ -154,31 +171,40 @@ class rsspf {
 					'public' => false,
 					'show_ui' => false,
 					'show_in_menu' => false,
-					//'register_meta_box_cb' => array($this, 'nominations_meta_boxes'),
 					'capability_type' => 'post',
 					'supports' => array('title', 'editor', 'thumbnail', 'revisions'),
+					//This might need to be switched to false? The documentation isn't really clear on what this does. 
 					'has_archive' => true
 				);
 		
 		register_post_type('rssarchival', $args);
 
 	}
-
+	
+	// Our first cron job. This scheduales hourly pulls of the rss feed(s).
 	function scheduale_feed_in() {
+		//Check to make sure it isn't already schedualed. 
 		if ( ! wp_next_scheduled( 'pull_feed_in' ) ) {
+		 //Scheduale the pull_feed_in action to go off every hour. 
 		  wp_schedule_event( time(), 'hourly', 'pull_feed_in' );
 		}
 	}
 	
 	public function assemble_feed_for_pull() {
-		//pull rss into post types
+		# This pulls the RSS feed into a set of predetermined objects.
+		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output. 
 		$feedObj = $this->rss_object();
-		
+		# We'll need this for our fancy query.
 		global $wpdb;
+		# Since rss_object places all the feed items into an array of arrays whose structure is standardized throughout,
+		# We can do stuff with it, using the same structure of items as we do everywhere else. 
 		foreach($feedObj as $item) {
 			$thepostscheck = 0;
 			$item_id 		= $item['item_id'];
 			//$queryForCheck = new WP_Query( array( 'post_type' => 'rssarchival', 'meta_key' => 'item_id', 'meta_value' => $item_id ) );
+			 # Originally this query tried to get every archive post earlier than 'now' to check.
+			 # But it occured to me that, since I'm doing a custom query anyway, I could just query for items with the ID I want.
+			 # Less query results, less time.
 			 $querystr = "
 				SELECT $wpdb->posts.* 
 				FROM $wpdb->posts, $wpdb->postmeta
@@ -189,7 +215,8 @@ class rsspf {
 				AND $wpdb->posts.post_date < NOW()
 				ORDER BY $wpdb->posts.post_date DESC
 			 ";
-			 
+			 # Since I've altered the query, I could change this to just see if there are any items in the query results
+			 # and check based on that. But I haven't yet. 
 			$checkposts = $wpdb->get_results($querystr, OBJECT);
 			
 				if ($checkposts):
@@ -199,7 +226,10 @@ class rsspf {
 						if ((get_post_meta(get_the_ID(), 'item_id', $item_id, true)) == $item_id){ $thepostscheck++; }
 					endforeach;
 				endif;
-			
+			# Why an increment here instead of a bool? 
+			# If I start getting errors, I can use this to check how many times an item is in the database.
+			# Potentially I could even use this to clean the database from duplicates that might occur if
+			# someone were to hit the refresh button at the same time as another person. 
 			
 			if ( $thepostscheck == 0) {
 				$item_title 	= $item['item_title'];
@@ -212,12 +242,14 @@ class rsspf {
 				$item_wp_date	= $item['item_wp_date'];
 				$item_tags		= $item['item_tags'];
 			
+			# Trying to prevent bad or malformed HTML from entering the database.
 			$item_content = strip_tags($item_content, '<p> <strong> <bold> <i> <em> <emphasis> <del> <h1> <h2> <h3> <h4> <h5> <a> <img>'); 
 			//$item_content = wpautop($item_content);
 			//$postcontent = sanitize_post($item_content);
 			//If we use the @ to prevent showing errors, everything seems to work. But it is still dedicating crap to the database...
 			//Perhaps sanitize_post isn't the cause? What is then? 
-							
+			
+			# Do we want or need the post_status to be published? 
 				$data = array(
 					'post_status' => 'published',
 					'post_type' => 'rssarchival',
@@ -231,21 +263,29 @@ class rsspf {
 				//The content is coming in from the rss_object assembler a-ok. But something here saves them to the database screwy.
 				//It looks like sanitize post is screwing them up terribly. But what to do about it without removing the security measures which we need to apply?
 				
+				# The post gets created here, the $newNomID variable contains the new post's ID. 
 				$newNomID = wp_insert_post( $data );
 				//$posttest = get_post($newNomID);
 				//print_r($posttest->post_content);
 				
+				# Somewhere in the process links with complex queries at the end (joined by ampersands) are getting encoded.
+				# I don't want that, so I turn it back here. 
+				# For some reason this is only happening to the ampersands, so that's the only thing I'm changing.  
 				$item_link = str_replace('&amp;','&', $item_link);
 				
+				# If it doesn't have a featured image assigned already, I use the set_ext_as_featured function to try and find one.
+				# It also, if it finds one, sets it as the featured image for that post. 
 				if ($_POST['item_feat_img'] != '')
 					$this->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
-
+				
+				# adding the meta info about the feed item to the post's meta. 
 				add_post_meta($newNomID, 'item_id', $item_id, true);
 				add_post_meta($newNomID, 'source_title', $source_title, true);
 				add_post_meta($newNomID, 'item_date', $item_date, true);
 				add_post_meta($newNomID, 'item_author', $item_author, true);
 				add_post_meta($newNomID, 'item_link', $item_link, true);
 				add_post_meta($newNomID, 'item_feat_img', $item_feat_img, true);
+				// The item_wp_date allows us to sort the items with a query. 
 				add_post_meta($newNomID, 'item_wp_date', $item_wp_date, true);
 				//We can't just sort by the time the item came into the system (for when mult items come into the system at once)
 				//So we need to create a machine sortable date for use in the later query. 
@@ -261,17 +301,19 @@ class rsspf {
 	
 // Create a new filtering function that will add our where clause to the query
 	function filter_where_older_sixty_days( $where = '' ) {
-		// posts in the last 30 days
+		// posts in the last 60 days
 		$where .= " AND post_date < '" . date('Y-m-d', strtotime('-60 days')) . "'";
 		return $where;
 	}	
 	
+	# Creating the action to, once a month, check for items older than two months and remove them from the database.
 	function scheduale_feed_out() {
 		if ( ! wp_next_scheduled( 'take_feed_out' ) ) {
 		  wp_schedule_event( time(), 'monthly', 'take_feed_out' );
 		}
 	}
 	
+	# The function we add to the action to clean our database. 
 	function disassemble_feed_items() {
 		//delete rss feed items with a date past a certian point. 
 		add_filter( 'posts_where', array($this, 'filter_where_older_sixty_days') );
