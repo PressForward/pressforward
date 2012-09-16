@@ -301,7 +301,7 @@ class rsspf {
 	
 // Create a new filtering function that will add our where clause to the query
 	function filter_where_older_sixty_days( $where = '' ) {
-		// posts in the last 60 days
+		// posts before the last 60 days
 		$where .= " AND post_date < '" . date('Y-m-d', strtotime('-60 days')) . "'";
 		return $where;
 	}	
@@ -322,7 +322,8 @@ class rsspf {
 		
 		// The Loop
 		while ( $queryForDel->have_posts() ) : $queryForDel->the_post();
-			
+			# All the posts in this loop are older than 60 days from 'now'.
+			# Delete them all. 
 			$postid = get_the_ID();
 			wp_delete_post( $postid, true );
 			
@@ -333,6 +334,9 @@ class rsspf {
 		
 	}
 	
+	# This function feeds items to our display feed function rsspf_reader_builder.
+	# It is just taking our database of rssarchival items and putting them into a 
+	# format that the builder understands. 
 	public function archive_feed_to_display() {
 		global $wpdb, $post;
 		//$args = array( 
@@ -348,7 +352,9 @@ class rsspf {
 			AND $wpdb->postmeta.meta_key = 'sortable_item_date'
 			ORDER BY $wpdb->postmeta.meta_value DESC
 		 ";	
+		 # DESC here because we are sorting by UNIX datestamp, where larger is later. 
 		 //Provide an alternative to load by feed date order.
+		# This is how we do a custom query, when WP_Query doesn't do what we want it to. 
 		$rssarchivalposts = $wpdb->get_results($dquerystr, OBJECT);
 		//print_r(count($rssarchivalposts)); die();
 		$rssObject = array();
@@ -357,13 +363,15 @@ class rsspf {
 		if ($rssarchivalposts): 
   			
 			foreach ($rssarchivalposts as $post) :
+			# This takes the $post objects and translates them into something I can do the standard WP functions on.
 			setup_postdata($post);
-			
+			# I need this data to check against existing transients.
 			$post_id = get_the_ID();	
 			$id = get_post_meta($post_id, 'item_id', true); //die();
 			//Switch the delete on to wipe rss archive posts from the database for testing.
 			//wp_delete_post( $post_id, true );
 			//print_r($id);
+			# If the transient exists than there is no reason to do any extra work.
 			if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
 				
 				$item_id = get_post_meta($post_id, 'item_id', true);
@@ -404,7 +412,7 @@ class rsspf {
 		return $rssObject;	
 	}
 	
-	
+	# This and the next few functions are to modify the table that shows up when you click "Nominations".
 	function edit_nominations_columns ( $columns ){
 	
 		$columns = array(
@@ -459,6 +467,7 @@ class rsspf {
 	  );
 	}
 	
+	# Meta boxes to show up in nomination editing pages.
 	public function nominations_meta_boxes() {
 		global $post;
 		
@@ -466,6 +475,7 @@ class rsspf {
 
 	}
 	
+	# The builder for the box that shows us the nomination metadata. 
 	public function nominations_box_builder() {
 		global $post;
 		//wp_nonce_field( 'nominate_meta', 'nominate_meta_nonce' );
@@ -491,6 +501,7 @@ class rsspf {
 		
 	}	
 
+	# Where we store a list of feeds to check. 
 	public function rsspf_feedlist() {
 	
 		$feedlist = 'http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations';
@@ -500,13 +511,16 @@ class rsspf {
 	
 	}
 	
+	# Here's where we build the core object that we use to pass everything around in a standardized way.
+	# Perhaps it should take this as an array? 
 	private function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='', $itemTags='', $addedDate='' ) {
 		
 		if($itemFeatImg == ''){
 		
 			if ( false === ( $itemFeatImg = get_transient( 'feed_img_' . $itemUID ) ) ) {
-				
+				# Because many systems can't process https through php, we try and remove it. 
 				$itemLink = $this->de_https($itemLink);
+				# if it forces the issue when we try and get the image, there's nothing we can do.
 				$itemLink = str_replace('&amp;','&', $itemLink);
 				if (OpenGraph::fetch($itemLink)){
 					//If there is no featured image passed, let's try and grab the opengraph image. 
@@ -528,7 +542,7 @@ class rsspf {
 			}
 		
 		}
-		
+		# Assemble all the needed variables into our fancy object! 
 		$itemArray = array(
 					
 						'item_title' 	=> 	$itemTitle,
@@ -549,6 +563,7 @@ class rsspf {
 	
 	}
 	
+	# Tries to get the RSS item author for the meta. 
 	function get_rss_authors($item) {
 	
 		$authorArray = ($item->get_authors());
@@ -563,6 +578,7 @@ class rsspf {
 	
 	}
 	
+	# Checks the URL against a list of aggregators. 
 	public function is_from_aggregator($xmlbase){
 		$c = 0;
 		$urlParts = parse_url($xmlbase);
@@ -594,7 +610,8 @@ class rsspf {
 	  return false;
 
 	}
-
+	
+	# Tries to turn any HTTPS URL into an HTTP URL for servers without ssl configured. 
 	public function de_https($url) {
 		$urlParts = parse_url($url);
 		if (in_array('https', $urlParts)){
@@ -604,7 +621,7 @@ class rsspf {
 		return $url;
 	}
 	
-	
+	# The function that runs a URL through Readability and attempts to give back the plain content. 
 	public function readability_object($url) {
 	//ref: http://www.keyvan.net/2010/08/php-readability/
 		set_time_limit(0);
@@ -645,7 +662,9 @@ class rsspf {
 				}			
 
 		} else {
+			# If Readability can't get the content, send back a FALSE to loop with.
 			$content = false;
+			# and let's throw up an error via AJAX as well, so we know what's going on.
 			print_r($url . ' fails Readability.<br />');
 		}
 		
@@ -653,6 +672,7 @@ class rsspf {
 	
 	}	
 	
+	# This function takes measures to try and get item content throguh methods of increasing reliability, but decreasing relevance.
 	public function get_content_through_aggregator($url){
 	
 		//$this->set_error_handler("customError");
@@ -660,23 +680,28 @@ class rsspf {
 		$descrip = '';
 		//$url = http_build_url($urlParts, HTTP_URL_STRIP_AUTH | HTTP_URL_JOIN_PATH | HTTP_URL_JOIN_QUERY | HTTP_URL_STRIP_FRAGMENT);		
 		//print_r($url);
+		# First run it through Readability.
 		$descrip = $this->readability_object($url);
 		//print_r($url);
+		# If that doesn't work...
 		while (!$descrip) {
 			$url = str_replace('&amp;','&', $url);
+			#Try and get the OpenGraph description. 
 			if (OpenGraph::fetch($url)){
 				$node = OpenGraph::fetch($url);
 				$descrip = $node->description;	
 			} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
-			elseif ($contentHtml = @get_meta_tags($url)) {
-
+			elseif ('' != ($contentHtml = @get_meta_tags($url))) {
+				# Try and get the HEAD > META DESCRIPTION tag. 
 				$descrip = $contentHtml['description'];
 				print_r($url . ' has no meta OpenGraph description we can find.');
 		
 			} 
 			else 
 			{		
+				# Ugh... we can't get anything huh?
 				print_r($url . ' has no description we can find.');
+				# We'll want to return a false to loop with. 
 				$descrip = false;
 				break;
 			}	
@@ -698,19 +723,28 @@ class rsspf {
 
 			if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
 				if ($item->get_source()){
-					$sourceObj = $item->get_source();		
+					$sourceObj = $item->get_source();
+					# Get the link of what created the RSS entry.
 					$source = $sourceObj->get_link(0,'alternate');
+					# Check if the feed item creator is an aggregator. 
 					$agStatus = $this->is_from_aggregator($source);
-				} else { $agStatus = false; }
-				
+				} else { 
+					# If we can't get source information then don't do anything. 
+					$agStatus = false; 
+				}
+				# If there is less than 160 characters of content, than it isn't really giving us meaningful information.
+				# So we'll want to get the good stuff from the source. 
 				if ((strlen($item->get_content())) < 160){
 					$agStatus = true;
 				}
 				//override switch while rest is not working. 
 				//$agStatus = false;
 				if ($agStatus){
+					# Get the origin post link.
 					$realLink = $item->get_link();
+					# Try and get the actual content of the post.
 					$realContent = $this->get_content_through_aggregator($realLink);
+					# If we can't get the actual content, then just use what we've got from the RSS feed. 
 					if (!$realContent){
 						$item_content = $item->get_content();
 					} else {
