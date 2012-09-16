@@ -59,9 +59,9 @@ class rsspf {
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
 		
 		
-  // creating Ajax call for WordPress
-   //add_action( 'wp_ajax_nopriv_MyAjaxFunction', array( $this, 'MyAjaxFunction') );
-   //add_action( 'wp_ajax_MyAjaxFunction', array( $this, 'MyAjaxFunction') );	
+		/** Some actions are only needed inside of the admin area.
+		* These are they.
+		*/
 		if( is_admin() )
 		{
 		add_action( 'wp_ajax_nopriv_build_a_nomination', array( $this, 'build_a_nomination') );
@@ -85,7 +85,7 @@ class rsspf {
 		
 	}
 
-	//Create the menus
+	//Create the menus for this plugin
 	function register_rsspf_custom_menu_pages() {
 		
 		/*
@@ -306,6 +306,7 @@ class rsspf {
 			AND $wpdb->postmeta.meta_key = 'sortable_item_date'
 			ORDER BY $wpdb->postmeta.meta_value DESC
 		 ";	
+		 //Provide an alternative to load by feed date order.
 		$rssarchivalposts = $wpdb->get_results($dquerystr, OBJECT);
 		//print_r(count($rssarchivalposts)); die();
 		$rssObject = array();
@@ -867,7 +868,7 @@ class rsspf {
 				SELECT $wpdb->posts.* 
 				FROM $wpdb->posts, $wpdb->postmeta
 				WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id 
-				AND $wpdb->postmeta.meta_key = 'item_id' 
+				AND $wpdb->postmeta.meta_key = 'origin_item_ID' 
 				AND $wpdb->postmeta.meta_value = '" . $item_id . "' 
 				AND $wpdb->posts.post_type = '" . $post_type . "'
 				AND $wpdb->posts.post_date >= '". $theDate . "'
@@ -880,8 +881,9 @@ class rsspf {
 	}	
 
 	function get_post_nomination_status($date, $item_id, $post_type, $updateCount = true){
-	
+		//Get the query object, limiting by date, type and metavalue ID. 
 		$postsAfter = $this->get_posts_by_id_for_check( $date, $post_type, $item_id );
+		//Assume that it will not find anything. 
 		$check = false;
 		if ($postsAfter):
 			global $post;
@@ -891,7 +893,7 @@ class rsspf {
 				$origin_item_id = get_post_meta($id, 'origin_item_ID', true);
 				if ($origin_item_id == $item_id) {
 					$check = true;
-					
+					//Only update the nomination count on request.
 					if ($updateCount){
 						$nomCount = get_post_meta($id, 'nomination_count', true);
 						$nomCount++;
@@ -1027,10 +1029,10 @@ class rsspf {
 		}
 		$userString = $userID;		
 		
-		//Filter not going to work? Guess the answer is http://codex.wordpress.org/Displaying_Posts_Using_a_Custom_Select_Query.
-		
 		//Going to check posts first on the assumption that there will be more nominations than posts. 
 		$post_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'post');
+		/** The system will only check for nominations of the item does not exist in posts. This will stop increasing the user and nomination count in nominations once they are sent to draft. 
+		**/
 		if ($post_check == true) { 
 			//Run this function to increase the nomination count in the nomination, even if it is already a post. 
 			$this->get_post_nomination_status($item_wp_date, $item_id, 'nomination');
