@@ -317,7 +317,7 @@ class rsspf {
 	function disassemble_feed_items() {
 		//delete rss feed items with a date past a certian point. 
 		add_filter( 'posts_where', array($this, 'filter_where_older_sixty_days') );
-		$queryForDel = new WP_Query( array( 'post_type' => 'rss-archival' ) );
+		$queryForDel = new WP_Query( array( 'post_type' => 'rssarchival' ) );
 		remove_filter( 'posts_where', array($this, 'filter_where_older_sixty_days') );
 		
 		// The Loop
