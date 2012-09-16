@@ -322,7 +322,7 @@ class rsspf {
 			//Switch the delete on to wipe rss archive posts from the database for testing.
 			//wp_delete_post( $post_id, true );
 			//print_r($id);
-			//if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
+			if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
 				
 				$item_id = get_post_meta($post_id, 'item_id', true);
 				$source_title = get_post_meta($post_id, 'source_title', true);
@@ -350,9 +350,9 @@ class rsspf {
 											//Manual ISO 8601 date for pre-PHP5 systems.
 											get_the_date('o-m-d\TH:i:sO')
 											);
-				//set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
+				set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
 				
-			//}
+			}
 			$c++;
 			endforeach;
 			
