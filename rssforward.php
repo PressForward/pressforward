@@ -322,7 +322,7 @@ class rsspf {
 			//Switch the delete on to wipe rss archive posts from the database for testing.
 			//wp_delete_post( $post_id, true );
 			//print_r($id);
-			if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
+			//if ( false === ( $rssObject['rss_archive_' . $c] = get_transient( 'rsspf_archive_' . $id ) ) ) {
 				
 				$item_id = get_post_meta($post_id, 'item_id', true);
 				$source_title = get_post_meta($post_id, 'source_title', true);
@@ -346,12 +346,13 @@ class rsspf {
 											$item_feat_img,
 											$item_id,
 											$item_wp_date,
-											$item_tags
+											$item_tags,
+											//Manual ISO 8601 date for pre-PHP5 systems.
+											get_the_date('o-m-d\TH:i:sO')
 											);
-												
-				set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
+				//set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
 				
-			}
+			//}
 			$c++;
 			endforeach;
 			
@@ -457,7 +458,7 @@ class rsspf {
 	
 	}
 	
-	private function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='', $itemTags='' ) {
+	private function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='', $itemTags='', $addedDate='' ) {
 		
 		if($itemFeatImg == ''){
 		
@@ -497,7 +498,8 @@ class rsspf {
 						'item_feat_img'	=>	$itemFeatImg,
 						'item_id'		=>	$itemUID,
 						'item_wp_date'	=>  $itemWPDate,
-						'item_tags'		=>	$itemTags
+						'item_tags'		=>	$itemTags,
+						'item_added_date' => $addedDate
 					
 					);
 		
@@ -742,7 +744,7 @@ class rsspf {
 		
 		echo '<h1>' . RSSPF_TITLE . '</h1>';
 		echo '<div id="errors"></div>';
-		echo '<input type="submit" class="refreshfeed" id="refreshfeed" value="Refresh" /><br />';
+		echo '<input type="submit" class="refreshfeed" id="refreshfeed" value="Refresh" /><input type="submit" class="feedsort" id="sortbyitemdate" value="Sort by item date" /><input type="submit" class="feedsort" id="sortbyfeedindate" value="Sort by date entered RSS" /><br />';
 		//A testing method, to insure the feed is being received and processed. 
 		//print_r($theFeed);
 		
@@ -750,7 +752,7 @@ class rsspf {
 		//Based off SimplePie's tutorial at http://simplepie.org/wiki/tutorial/how_to_display_previous_feed_items_like_google_reader.
 		$c = 1;
 		foreach($this->archive_feed_to_display() as $item) {
-			
+			echo '<div class="feed-item">';
 			if ($item['item_feat_img'] != '')
 				echo '<div style="float:left; margin-right: 10px; margin-bottom: 10px;"><img src="' . $item['item_feat_img'] . '"></div>';
 			echo $c++ . '. ';
@@ -760,8 +762,9 @@ class rsspf {
 			echo ' : ';
 			echo $item['item_title'];
 			echo '<br />';
-			echo '<small>Published on ' . $item['item_date'] . ' by ' . $item['item_author'] . '</small>';
+			echo '<small>Published on ' . $item['item_date'] . ' by ' . $item['item_author'] . '. Added to feed on ' . $item['item_added_date'] . '.</small>';
 			echo '<br />';
+			echo '<div style="display:none;">Unix timestamp for item date:<span class="sortableitemdate">' . strtotime($item['item_date']) . '</span> and for added to RSS date <span class="sortablerssdate">' . strtotime($item['item_added_date']) . '</span>.</div>';
 			echo '<div>' . $item['item_content'] . '</div>';
 			echo '<br />';
 			echo '<a target="_blank" href="' . $item['item_link'] . '">Read More</a>';
@@ -784,9 +787,10 @@ class rsspf {
 					. '<img class="loading-' . $item['item_id'] . '" src="' . RSSPF_URL . 'includes/images/ajax-loader.gif" alt="Loading..." style="display: none" />'
 					. '</div></p>'
 				  . '</form>';
+				  
 			echo '<hr />';
 			echo '<br />';
-			
+			echo '</div>';
 			//check out the built comment form from EditFlow at https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/editorial-comments.php
 			
 			// So, we're going to need some AJAXery method of sending RSS data to a nominations post. 
@@ -822,6 +826,8 @@ class rsspf {
 		if ((!in_array($pagenow, array('admin.php?page=rsspf-menu')))) {
 			//And now lets enqueue the script, ensuring that jQuery is already active. 
 			
+			wp_enqueue_script('tinysort', RSSPF_URL . 'includes/js/jquery.tinysort.js', array( 'jquery' ));
+			wp_enqueue_script('sort-imp', RSSPF_URL . 'includes/js/sort-imp.js', array( 'tinysort' ));
 			wp_enqueue_script('nomination-imp', RSSPF_URL . 'includes/js/nomination-imp.js', array( 'jquery' ));
 			wp_register_style( RSSPF_SLUG . '-style', RSSPF_URL . 'includes/css/style.css');
 			wp_enqueue_style( RSSPF_SLUG . '-style' );
