@@ -207,27 +207,32 @@ class rsspf {
 			 # Originally this query tried to get every archive post earlier than 'now' to check.
 			 # But it occured to me that, since I'm doing a custom query anyway, I could just query for items with the ID I want.
 			 # Less query results, less time.
+			 
+			 //Perhaps I should do this outside of the foreach? One query and search it for each item_id and then return those not in? 
 			 $querystr = "
-				SELECT $wpdb->posts.* 
+				SELECT $wpdb->posts.*, $wpdb->postmeta.* 
 				FROM $wpdb->posts, $wpdb->postmeta
 				WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id 
 				AND $wpdb->postmeta.meta_key = 'item_id' 
 				AND $wpdb->postmeta.meta_value = '" . $item_id . "' 
 				AND $wpdb->posts.post_type = 'rssarchival'
-				AND $wpdb->posts.post_date < NOW()
 				ORDER BY $wpdb->posts.post_date DESC
 			 ";
+			 // AND $wpdb->posts.post_date < NOW() <- perhaps by removing we can better prevent simultaneous duplications?
 			 # Since I've altered the query, I could change this to just see if there are any items in the query results
 			 # and check based on that. But I haven't yet. 
 			$checkposts = $wpdb->get_results($querystr, OBJECT);
-			
+			//print_r($checkposts);
 				if ($checkposts):
 					global $post;
 					foreach ($checkposts as $post):
 						setup_postdata($post);
+						//print_r(get_the_ID());
+						//print_r('< the ID');
 						if ((get_post_meta(get_the_ID(), 'item_id', $item_id, true)) == $item_id){ $thepostscheck++; }
 					endforeach;
 				endif;
+			wp_reset_query();
 			# Why an increment here instead of a bool? 
 			# If I start getting errors, I can use this to check how many times an item is in the database.
 			# Potentially I could even use this to clean the database from duplicates that might occur if
@@ -349,8 +354,6 @@ class rsspf {
 			FROM $wpdb->posts, $wpdb->postmeta
 			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
 			AND $wpdb->posts.post_type = 'rssarchival'
-			AND $wpdb->postmeta.meta_key = 'sortable_item_date'
-			ORDER BY $wpdb->postmeta.meta_value DESC
 		 ";	
 		# This is how we do a custom query, when WP_Query doesn't do what we want it to. 
 		$rssarchivalposts = $wpdb->get_results($dquerystr, OBJECT);
@@ -669,7 +672,12 @@ class rsspf {
 		print_r($url); print_r(' - Readability<br />');
 		$url = $this->de_https($url);
 		$url = str_replace('&amp;','&', $url);
-		$html = file_get_contents($url);
+		if (file_get_contents($url)){
+			$html = file_get_contents($url);
+		} else {
+			$content = false;
+			return $content;
+		}
 		//check if tidy exists to clean up the input. 
 		if (function_exists('tidy_parse_string')) {
 			$tidy = tidy_parse_string($html, array(), 'UTF8');
