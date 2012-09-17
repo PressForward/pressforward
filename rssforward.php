@@ -73,7 +73,9 @@ class rsspf {
 		add_action( 'wp_ajax_nopriv_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );	
 		add_action( 'wp_ajax_nopriv_assemble_feed_for_pull', array($this, 'assemble_feed_for_pull') );	
-		add_action( 'wp_ajax_assemble_feed_for_pull', array( $this, 'assemble_feed_for_pull') );	
+		add_action( 'wp_ajax_assemble_feed_for_pull', array( $this, 'assemble_feed_for_pull') );
+		add_action( 'wp_ajax_nopriv_reset_feed', array($this, 'reset_feed') );	
+		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );		
 		}
 		add_action('edit_post', array( $this, 'send_nomination_for_publishing'));
 		add_filter( 'manage_edit-nomination_columns', array ($this, 'edit_nominations_columns') );
@@ -331,6 +333,45 @@ class rsspf {
 
 		// Reset Post Data
 		wp_reset_postdata();		
+		
+	}
+	
+	# Method to manually delete rssarchival entries on user action. 
+	function reset_feed() {
+		global $wpdb, $post;
+		//$args = array( 
+		//				'post_type' => array('any')
+		//			);
+		$args = 'post_type=rssarchival';
+		//$archiveQuery = new WP_Query( $args );
+		$dquerystr = "
+			SELECT $wpdb->posts.*, $wpdb->postmeta.* 
+			FROM $wpdb->posts, $wpdb->postmeta
+			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
+			AND $wpdb->posts.post_type = 'rssarchival'
+			AND $wpdb->postmeta.meta_key = 'sortable_item_date'
+			ORDER BY $wpdb->postmeta.meta_value DESC
+		 ";	
+		# This is how we do a custom query, when WP_Query doesn't do what we want it to. 
+		$rssarchivalposts = $wpdb->get_results($dquerystr, OBJECT);
+		//print_r(count($rssarchivalposts)); die();
+		$rssObject = array();
+		$c = 0;
+		
+		if ($rssarchivalposts): 
+  			
+			foreach ($rssarchivalposts as $post) :
+			# This takes the $post objects and translates them into something I can do the standard WP functions on.
+			setup_postdata($post);
+			$post_id = get_the_ID();	
+			//Switch the delete on to wipe rss archive posts from the database for testing.
+			wp_delete_post( $post_id, true );	
+			endforeach;
+			
+		
+		endif;
+		wp_reset_postdata();
+		print_r('All archives deleted.');
 		
 	}
 	
@@ -625,7 +666,7 @@ class rsspf {
 	public function readability_object($url) {
 	//ref: http://www.keyvan.net/2010/08/php-readability/
 		set_time_limit(0);
-		print_r($url); print_r('Readability<br />');
+		print_r($url); print_r(' - Readability<br />');
 		$url = $this->de_https($url);
 		$url = str_replace('&amp;','&', $url);
 		$html = file_get_contents($url);
@@ -819,8 +860,9 @@ class rsspf {
 		//Calling the feedlist within the rsspf class. 
 		
 		echo '<h1>' . RSSPF_TITLE . '</h1>';
+		echo '<img class="loading-top" src="' . RSSPF_URL . 'includes/images/ajax-loader.gif" alt="Loading..." style="display: none" />';
 		echo '<div id="errors"></div>';
-		echo '<input type="submit" class="refreshfeed" id="refreshfeed" value="Refresh" /><input type="submit" class="feedsort" id="sortbyitemdate" value="Sort by item date" /><input type="submit" class="feedsort" id="sortbyfeedindate" value="Sort by date entered RSS" /><br /><br />';
+		echo '<input type="submit" class="refreshfeed" id="refreshfeed" value="Refresh" /><input type="submit" class="feedsort" id="sortbyitemdate" value="Sort by item date" /><input type="submit" class="feedsort" id="sortbyfeedindate" value="Sort by date entered RSS" /><input style="float:right;" type="submit" class="delete" id="deletefeedarchive" value="Delete entire feed archive" /><br /><br />';
 		//A testing method, to insure the feed is being received and processed. 
 		//print_r($theFeed);
 		

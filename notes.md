@@ -121,6 +121,10 @@ Ideas for better visualization of syndicated content
 
 	*	Looking at FWP, is it really pulling down the array of Dashboard widgets and adding to them (`ln 1186`)?! Isn't there a function for that? Like `wp_add_dashboard_widget`.
 	
+
+Bugs
+-----
+-	Something is going wrong around line 812 - it is not displaying all items. This is, in a general sense, the rss_object builder. It is going off when it is not supposed to be going off (on archive deletes) and it is not going off when it is supposed to. This may have something to do with the rssarchive check for pre-existing entries not working too. 	
 	
 Possible Issues
 ---------------
