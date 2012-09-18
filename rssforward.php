@@ -281,9 +281,36 @@ class rsspf {
 				$item_link = str_replace('&amp;','&', $item_link);
 				
 				# If it doesn't have a featured image assigned already, I use the set_ext_as_featured function to try and find one.
-				# It also, if it finds one, sets it as the featured image for that post. 
-				if ($_POST['item_feat_img'] != '')
-					$this->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
+				# It also, if it finds one, sets it as the featured image for that post.
+				
+				if ($_POST['item_feat_img'] != ''){
+					# Turned off set_ext_as_featured here, as that should only occur when items are nominated.
+					# Before nominations, the featured image should remain a meta field with an external link.
+					if ( false === ( $itemFeatImg = get_transient( 'feed_img_' . $itemUID ) ) ) {
+						set_time_limit(0);
+						# Because many systems can't process https through php, we try and remove it. 
+						$itemLink = $this->de_https($itemLink);
+						# if it forces the issue when we try and get the image, there's nothing we can do.
+						$itemLink = str_replace('&amp;','&', $itemLink);
+						if (OpenGraph::fetch($itemLink)){
+							//If there is no featured image passed, let's try and grab the opengraph image. 
+							$node = OpenGraph::fetch($itemLink);
+							$itemFeatImg = $node->image;
+							
+						}
+						
+						if ($itemFeatImg == ''){
+							//Thinking of starting a method here to pull the first image from the body of a post.
+							//http://stackoverflow.com/questions/138313/how-to-extract-img-src-title-and-alt-from-html-using-php
+							//http://stackoverflow.com/questions/1513418/get-all-images-url-from-string
+							//http://stackoverflow.com/questions/7479835/getting-the-first-image-in-string-with-php
+							//preg_match_all('/<img[^>]+>/i',$itemContent, $imgResult); 
+							//$imgScript = $imgResult[0][0];
+						}
+						//Most RSS feed readers don't store the image locally. Should we? 
+						set_transient( 'feed_img_' . $itemUID, $itemFeatImg, 60*60*24 );
+					}
+				}
 				
 				# adding the meta info about the feed item to the post's meta. 
 				add_post_meta($newNomID, 'item_id', $item_id, true);
@@ -559,34 +586,6 @@ class rsspf {
 	# Perhaps it should take this as an array? 
 	private function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='', $itemTags='', $addedDate='' ) {
 		
-		if($itemFeatImg == ''){
-		
-			if ( false === ( $itemFeatImg = get_transient( 'feed_img_' . $itemUID ) ) ) {
-				set_time_limit(0);
-				# Because many systems can't process https through php, we try and remove it. 
-				$itemLink = $this->de_https($itemLink);
-				# if it forces the issue when we try and get the image, there's nothing we can do.
-				$itemLink = str_replace('&amp;','&', $itemLink);
-				if (OpenGraph::fetch($itemLink)){
-					//If there is no featured image passed, let's try and grab the opengraph image. 
-					$node = OpenGraph::fetch($itemLink);
-					$itemFeatImg = $node->image;
-					
-				}
-				
-				if ($itemFeatImg == ''){
-					//Thinking of starting a method here to pull the first image from the body of a post.
-					//http://stackoverflow.com/questions/138313/how-to-extract-img-src-title-and-alt-from-html-using-php
-					//http://stackoverflow.com/questions/1513418/get-all-images-url-from-string
-					//http://stackoverflow.com/questions/7479835/getting-the-first-image-in-string-with-php
-					//preg_match_all('/<img[^>]+>/i',$itemContent, $imgResult); 
-					//$imgScript = $imgResult[0][0];
-				}
-				//Most RSS feed readers don't store the image locally. Should we? 
-				set_transient( 'feed_img_' . $itemUID, $itemFeatImg, 60*60*24 );
-			}
-		
-		}
 		# Assemble all the needed variables into our fancy object! 
 		$itemArray = array(
 					
@@ -819,7 +818,7 @@ class rsspf {
 				//one final cleanup of the content. 
 				$contentObj = new htmlchecker($item_content);
 				$item_content = $contentObj->closetags($item_content);
-				print_r($c);
+				print_r($c);				
 				$rssObject['rss_' . $c] = $this->feed_object(
 											$item->get_title(),
 											$iFeed->get_title(),
