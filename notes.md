@@ -109,6 +109,19 @@ Using PressThis button.
 
 -	First 91 lines?
 
+-	wp_remote_fopen is a useful tool to remember. Something to play with later. 
+
+-	Looks like it pulls images only when it is an image only page that the bookmarklet is triggered on. 
+	*	Perhaps worthwhile to make it trigger on known img sites as well? Flickr, Imgur?
+	
+-	Handling of YouTube and Vimeo occuring at `ln 360`, fairly limited. 
+
+-	If nothing is selected, use readability to pull it all in? 
+
+-	On `ln 455` are the hidden fields to add stuff to the post.
+
+-	Publish button in the new press this version doesn't do anything in nominations. Should remove anyway.
+
 Styling
 -------
 
@@ -117,6 +130,7 @@ Styling
 -	Larger titles
 -	Preview vs Whole showing (jQ to shorten?)
 -	Keep the Read More. 
+
 
 
 Ideas for better visualization of syndicated content
