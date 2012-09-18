@@ -109,6 +109,15 @@ Using PressThis button.
 
 -	First 91 lines?
 
+Styling
+-------
+
+-	half width of container
+-	500-600px wide?
+-	Larger titles
+-	Preview vs Whole showing (jQ to shorten?)
+-	Keep the Read More. 
+
 
 Ideas for better visualization of syndicated content
 ----------------------------------------------------
