@@ -562,6 +562,7 @@ class rsspf {
 		if($itemFeatImg == ''){
 		
 			if ( false === ( $itemFeatImg = get_transient( 'feed_img_' . $itemUID ) ) ) {
+				set_time_limit(0);
 				# Because many systems can't process https through php, we try and remove it. 
 				$itemLink = $this->de_https($itemLink);
 				# if it forces the issue when we try and get the image, there's nothing we can do.
@@ -723,7 +724,7 @@ class rsspf {
 	
 	# This function takes measures to try and get item content throguh methods of increasing reliability, but decreasing relevance.
 	public function get_content_through_aggregator($url){
-	
+		set_time_limit(0);
 		//$this->set_error_handler("customError");
 		$url = $this->de_https($url);
 		$descrip = '';
