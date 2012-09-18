@@ -1,9 +1,8 @@
 <?php
 /**
- * Press This Display and Handler.
+ * Nominate This Display and Handler.
  *
- * @package WordPress
- * @subpackage Press_This
+ * Based on the PressThis code.
  */
  
  //Orig. file called from wp-admin/ by the bookmarklet.
@@ -131,6 +130,8 @@ if ( !empty($_GET['s']) ) {
 if ( ! empty($selection) ) {
 	$selection = preg_replace('/(\r?\n|\r)/', '</p><p>', $selection);
 	$selection = '<p>' . str_replace('<p></p>', '', $selection) . '</p>';
+	# Blockquotes should really be applied for selections.
+	$selection = '<blockquote>' . $selection . '</blockquote>';
 }
 //RSSPF Notes - Looks like this gets the URL.
 $url = isset($_GET['u']) ? esc_url($_GET['u']) : '';
@@ -470,7 +471,7 @@ $admin_body_class = ( is_rtl() ) ? 'rtl' : '';
 $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( '_', '-', get_locale() ) ) );
 ?>
 <body class="press-this wp-admin <?php echo $admin_body_class; ?>">
-<form action="press-this.php?action=post" method="post">
+<form action="nominate-this.php?action=post" method="post">
 <div id="poststuff" class="metabox-holder">
 	<div id="side-sortables" class="press-this-sidebar">
 		<div class="sleeve">
@@ -484,7 +485,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			<input type="hidden" id="prev_status" name="prev_status" value="draft" />
 			<input type="hidden" id="post_id" name="post_id" value="<?php echo (int) $post_ID; ?>" />
 			<?php if ($url != '') { ?>
-			<?php print_r($url); ?>
+			<?php //print_r($url); ?>
 			<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr($title);?>" />
 			<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo date('c'); ?>" />
 			<input type="hidden" id="nomination_permalink" name="nomination_permalink" value="<?php echo esc_url( $url ); ?>" />
@@ -499,13 +500,13 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 				<div class="inside">
 					<p id="publishing-actions">
 					<?php
-						submit_button( __( 'Save Draft' ), 'button', 'draft', false, array( 'id' => 'save' ) );
-						if ( current_user_can('publish_posts') ) {
+						submit_button( __( 'Save Nomination' ), 'button', 'draft', false, array( 'id' => 'save' ) );
+/**						if ( current_user_can('publish_posts') ) {
 							submit_button( __( 'Publish' ), 'primary', 'publish', false );
 						} else {
 							echo '<br /><br />';
 							submit_button( __( 'Submit for Review' ), 'primary', 'review', false );
-						} ?>
+						} **/?>
 						<img src="<?php echo esc_url( admin_url( 'images/wpspin_light.gif' ) ); ?>" alt="" id="saving" style="display:none;" />
 					</p>
 					<?php if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) :

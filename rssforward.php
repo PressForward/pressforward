@@ -815,7 +815,7 @@ class rsspf {
 				k=d.getSelection,
 				x=d.selection,
 				s=(e?e():(k)?k():(x?x.createRange().text:0)),
-				f='" . RSSPF_URL . 'includes/nomthis/press-this.php' . "',
+				f='" . RSSPF_URL . 'includes/nomthis/nominate-this.php' . "',
 				l=d.location,
 				e=encodeURIComponent,
 				u=f+'?u='+e(l.href)+'&t='+e(d.title)+'&s='+e(s)+'&v=4';
