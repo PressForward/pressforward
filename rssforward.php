@@ -196,6 +196,8 @@ class rsspf {
 		# This pulls the RSS feed into a set of predetermined objects.
 		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output. 
 		$feedObj = $this->rss_object();
+		# We need to init $sourceRepeat so it can be if 0 if nothing is happening. 
+		$sourceRepeat = 0;
 		# We'll need this for our fancy query.
 		global $wpdb;
 		# Since rss_object places all the feed items into an array of arrays whose structure is standardized throughout,
@@ -230,37 +232,61 @@ class rsspf {
 						//print_r(get_the_ID());
 						//print_r('< the ID');
 						if ((get_post_meta(get_the_ID(), 'item_id', $item_id, true)) == $item_id){ $thepostscheck++; }
-						# UNTESTED
-						if ($thepostscheck == 0){
-							# Post comparative values.
-							$theTitle = get_the_title();
-							$postID = get_the_ID();
-							$postDate = get_the_date('U');
-							$postItemLink = get_post_meta($postID, 'item_link', true);
-							# Item comparative values.
-							$itemDate = strtotime($item['item_date']);
-							$itemTitle = $item['item_title'];
-							$itemLink = $item['item_link'];
-							
-							# First check if it more recent than the currently stored item.
-							if(($itemDate > $postDate) && (($theTitle == $itemTitle) || ($postItemLink == $itemLink))){
-								# If it is more recent, than this is the new dominant post.
-							} elseif (($itemDate <= $postDate) && (($theTitle == $itemTitle) || ($postItemLink == $itemLink))) {
-								# if it is less recent, then we need to increment the source count.
-							
-							} else {
-								# If it isn't duplicated at all, then we need to give it a source repeat count of 0
-								$sourceRepeat = 0;
-							}
-							
-						}
 					endforeach;
 				endif;
+				wp_reset_query();
+				if ($thepostscheck == 0){
+					$queryMoreStr = "
+						SELECT $wpdb->posts.*, $wpdb->postmeta.* 
+						FROM $wpdb->posts, $wpdb->postmeta
+						WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id 
+						AND $wpdb->postmeta.meta_key = 'item_link'
+						AND $wpdb->posts.post_type = 'rssarchival'
+						ORDER BY $wpdb->posts.post_date DESC
+					 ";
+					$checkpoststwo = $wpdb->get_results($queryMoreStr, OBJECT);
+					if ($checkpoststwo):
+						foreach ($checkpoststwo as $post):
+							setup_postdata($post);					
+							# UNTESTED
+							
+								# Post comparative values.
+								$theTitle = get_the_title();
+								$postID = get_the_ID();
+								$postDate = get_the_date('U');
+								$postItemLink = get_post_meta($postID, 'item_link', true);
+								# Item comparative values.
+								$itemDate = strtotime($item['item_date']);
+								$itemTitle = $item['item_title'];
+								$itemLink = $item['item_link'];
+								
+								# First check if it more recent than the currently stored item.
+								if(($itemDate > $postDate) && (($theTitle == $itemTitle) || ($postItemLink == $itemLink))){
+									# If it is more recent, than this is the new dominant post.
+									$sourceRepeat = get_post_meta($postID, 'source_repeat', true);
+									$sourceRepeat++;
+								} elseif (($itemDate <= $postDate) && (($theTitle == $itemTitle) || ($postItemLink == $itemLink))) {
+									# if it is less recent, then we need to increment the source count.
+									$sourceRepeat = get_post_meta($postID, 'source_repeat', true);
+									$sourceRepeat++;
+									update_post_meta($postID, 'source_repeat', $sourceRepeat);
+									$thepostscheck++;
+								} else {
+									# If it isn't duplicated at all, then we need to give it a source repeat count of 0
+									$sourceRepeat = 0;
+								}
+								
+							
+						endforeach;
+					endif;
+				}
 			wp_reset_query();
 			# Why an increment here instead of a bool? 
 			# If I start getting errors, I can use this to check how many times an item is in the database.
 			# Potentially I could even use this to clean the database from duplicates that might occur if
 			# someone were to hit the refresh button at the same time as another person. 
+			
+			
 			
 			if ( $thepostscheck == 0) {
 				$item_title 	= $item['item_title'];
@@ -272,6 +298,7 @@ class rsspf {
 				$item_link 		= $item['item_link'];
 				$item_wp_date	= $item['item_wp_date'];
 				$item_tags		= $item['item_tags'];
+				$source_repeat  = $sourceRepeat;
 			
 			# Trying to prevent bad or malformed HTML from entering the database.
 			$item_content = strip_tags($item_content, '<p> <strong> <bold> <i> <em> <emphasis> <del> <h1> <h2> <h3> <h4> <h5> <a> <img>'); 
@@ -349,6 +376,7 @@ class rsspf {
 				//So we need to create a machine sortable date for use in the later query. 
 				add_post_meta($newNomID, 'sortable_item_date', strtotime($item_date), true);
 				add_post_meta($newNomID, 'item_tags', $item_tags, true);
+				add_post_meta($newNomID, 'source_repeat', $source_repeat, true);
 			}
 		
 		}
@@ -584,6 +612,7 @@ class rsspf {
 		$date_nominated = get_post_meta($post->ID, 'date_nominated', true);
 		$user = get_user_by('id', $submitted_by);
 		$item_tags = get_post_meta($post->ID, 'item_tags', true);
+		$source_repeat = get_post_meta($post->ID, 'source_repeat', true);
 		echo '<strong>Item ID</strong>: ' . $origin_item_ID . '<br />'; 
 		echo '<strong>Nomination Count</strong>: ' . $nomination_count . '<br />'; 
 		echo '<strong>Submitted By</strong>: ' . $user->display_name . '<br />'; 
@@ -593,6 +622,7 @@ class rsspf {
 		echo '<strong>Source Link</strong>: <a href="' . $nomination_permalink . '" target="_blank">Original Post</a><br />';
 		echo '<strong>Item Tags</strong>: ' . $item_tags . '<br />'; 
 		echo '<strong>Date Nominated</strong>: ' . $date_nominated . '<br />'; 
+		echo '<strong>Repeated in Feed</strong>: ' . $source_repeat . '<br />';
 		
 	}	
 
@@ -608,7 +638,7 @@ class rsspf {
 	
 	# Here's where we build the core object that we use to pass everything around in a standardized way.
 	# Perhaps it should take this as an array? 
-	private function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='', $itemTags='', $addedDate='' ) {
+	private function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='', $itemTags='', $addedDate='', $sourceRepeat='' ) {
 		
 		# Assemble all the needed variables into our fancy object! 
 		$itemArray = array(
@@ -623,7 +653,8 @@ class rsspf {
 						'item_id'		=>	$itemUID,
 						'item_wp_date'	=>  $itemWPDate,
 						'item_tags'		=>	$itemTags,
-						'item_added_date' => $addedDate
+						'item_added_date' => $addedDate,
+						'source_repeat'	=>	$sourceRepeat
 					
 					);
 		
@@ -1277,6 +1308,7 @@ class rsspf {
 		add_post_meta($newNomID, 'nomination_permalink', $_POST['item_link'], true);
 		add_post_meta($newNomID, 'date_nominated', date('c'), true);
 		add_post_meta($newNomID, 'item_tags', $_POST['item_tags'], true);
+		add_post_meta($newNomID, 'source_repeat', $_POST['source_repeat'], true);
 		
 		$result  = $item_title . ' nominated.';
 		die($result);
@@ -1328,6 +1360,8 @@ class rsspf {
 				//If user wants to use tags, we'll create an option to use it.
 				$nominators = get_post_meta($_POST['ID'], 'nominator_array', true);
 				add_post_meta($newPostID, 'nominator_array', $nominators, true);
+				$source_repeat = get_post_meta($_POST['ID'], 'source_repeat', true);
+				add_post_meta($newPostID, 'source_repeat', $source_repeat, true);
 				
 				$already_has_thumb = has_post_thumbnail($_POST['ID']);
 				if ($already_has_thumb)  {
