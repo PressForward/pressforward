@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<!-- A Design by Matt Gentile - © Icondeposit.com -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>CSS3 UI Kit</title>
+    <link rel="stylesheet" href="css/style.css" />
+	<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.8.18.custom.min.js"></script>
+    <script>
+	  $(function() {
+		  $( "#slider" ).slider({
+			  range: "min",
+			  value: 5,
+			  min: 1,
+			  max: 50,
+			  slide: function( event, ui ) {
+			  	$( "#amount" ).val( "%" + ui.value );
+			  }
+		  });
+	    	$( "#amount" ).val( "%" + $( "#slider" ).slider( "value" ) );
+	  });
+	  $(function() {
+		  $( "#slider2" ).slider({
+			  range: "min",
+			  value: 46,
+			  min: 1,
+			  max: 50,
+			  slide: function( event, ui ) {
+			  	$( "#amount" ).val( "%" + ui.value );
+			  }
+		  });
+	    	$( "#amount" ).val( "%" + $( "#slider2" ).slider( "value" ) );
+	  });
+	  $(function() {
+		  $( "#slider3" ).slider({
+			  range: "min",
+			  value: 5,
+			  min: 1,
+			  max: 50,
+			  slide: function( event, ui ) {
+			  	$( "#amount" ).val( "%" + ui.value );
+			  }
+		  });
+	    	$( "#amount" ).val( "%" + $( "#slider3" ).slider( "value" ) );
+	  });
+	  $(function() {
+		  $( "#slider4" ).slider({
+			  range: "min",
+			  value: 46,
+			  min: 1,
+			  max: 50,
+			  slide: function( event, ui ) {
+			  	$( "#amount" ).val( "%" + ui.value );
+			  }
+		  });
+	    	$( "#amount" ).val( "%" + $( "#slider4" ).slider( "value" ) );
+	  });
+	</script>
+  </head>
+  <body>
+    <div id="search-box">
+      <form id="search-form" action="#">
+        <input type="text" id="search-input" name="search_text" placeholder="Search..." maxlength="140">
+        <input id="search-button" type="submit" name="search_button" value="&Alpha;&Omega;" />
+      </form>
+    </div>
+    <div id="file-upload">
+      <form id="file-form">
+        <input id="file-button" type="file" name="upload" />
+      </form>
+    </div>
+    <div id="r-b">
+      <button id="rectangular-button">Button</button>
+    </div>
+  <div id="c-b">
+      <button id="circular-button">Button</button>
+    </div>
+    <div id="dropdown">
+      <select name="select" id="dropdown-select">
+        <option class="dropdown-option">-- Please select --</option>
+        <option value="google" class="dropdown-option">Google</option>
+        <option value="facebook" class="dropdown-option">Facebook</option>
+        <option value="twitter" class="dropdown-option">Twitter</option>
+      </select>
+    </div>
+    <div id="pagination">
+      <table id="pagination-table">
+        <tbody id="pagination-body">
+          <tr id="pagination-text">
+            <td id="pagination-numbers">
+              <a href="#" class="pagination-number previous">Previous</a>
+              <a href="#" class="pagination-number">1</a>
+              <a href="#" class="pagination-number current" title="You are here">2</a>
+              <a href="#" class="pagination-number">3</a>
+              <a href="#" class="pagination-number">4</a>
+              <a href="#" class="pagination-number dots">...</a>
+              <a href="#" class="pagination-number">10</a>
+              <a href="#" class="pagination-number">11</a>
+              <a href="#" class="pagination-number next">Next</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="radio">
+      <label>
+        <input type="radio" class="radio-button">
+      </label>
+      <label>
+        <input type="radio" class="radio-button">
+      </label>
+      <label>
+        <input type="radio" class="radio-button" checked>
+      </label>
+    </div>
+    <div id="checkboxes">
+      <label>
+        <input type="checkbox" class="checkbox tick">
+      </label>
+      <label>
+        <input type="checkbox" class="checkbox tick" value="yes" checked>
+      </label>
+      <label>
+        <input type="checkbox" class="checkbox cross" value="yes" checked>
+      </label>
+      <label>
+        <input type="checkbox" class="checkbox add" value="yes" checked>
+      </label>
+    </div>
+    <div id="slider-block">
+      <div id="slider"></div>
+      <div id="slider2"></div>
+      <div id="slider3"></div>
+      <div id="slider4"></div>
+    </div>
+    <div id="media-buttons">
+      <button class="media-button previous"></button>
+      <button class="media-button pause"></button>
+      <button class="media-button play"></button>
+      <button class="media-button stop"></button>
+      <button class="media-button next"></button>
+    </div>
+    <div id="circle-buttons">
+      <button class="circle-button previous"></button>
+      <button class="circle-button next"></button>
+      <button class="circle-button add"></button>
+      <button class="circle-button tick"></button>
+      <button class="circle-button cross"></button>
+    </div>
+    <div id="square-buttons">
+      <button class="square-button previous"></button>
+      <button class="square-button next"></button>
+      <button class="square-button add"></button>
+      <button class="square-button tick"></button>
+      <button class="square-button cross"></button>
+    </div>
+    <div id="docs">
+      <a id="download" href="http://www.icondeposit.com/design:58">Download It</a>
+      <a id="documentation" href="http://www.icondeposit.com/code:3">View Source</a>
+    </div>
+  </body>
+</html>

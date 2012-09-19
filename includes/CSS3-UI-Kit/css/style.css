@@ -1,0 +1,248 @@
+/*
+Title: CSS3 UI Kit
+Author: Matt Gentile
+Author URL: http://icondeposit.com
+Documentation URL: http://icondeposit.com
+Download URL: http://icondeposit.com
+*/
+
+/* Start Reset CSS */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {margin: 0; padding: 0; border: 0; font-size: 100%; font: inherit; vertical-align: baseline;}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {display: block;}
+
+ol, ul {list-style: none;}
+
+blockquote, q {quotes: none;}
+
+blockquote:before, blockquote:after, q:before, q:after {content: ''; content: none;}
+
+table {border-collapse: collapse; border-spacing: 0;}
+/* End Reset CSS */
+
+/* Start Basic Elements */
+html {background: #f2f2f2 url(images/bg.png); width: 100%; height: 100%;}
+
+body {width: 400px; height: auto; position: relative; margin: 0 auto; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 17px; top: 150px;}
+
+a {cursor: pointer; outline: none; text-decoration: none;}
+
+::-moz-selection {color: #fff; background: rgba(191, 230, 251, .50); text-shadow: none;}
+
+::selection {color: #fff; background: rgba(191, 230, 251, .50); text-shadow: none;}
+/* End Basic Elements */
+
+/* Start Search Box */
+#search-box{width: 200px; height: 28px; margin: 0; position: absolute; display: block; top: 20px; left: 0px;}
+
+#search-form {width: 200px; height: 28px; margin: 0; position: relative;}
+
+#search-input {font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; position: relative; margin: 0; padding: 5px 35px 5px 5px; width: 158px; outline:none; color: #999; background: #ececec; border: 1px solid #d2d2d2; border-bottom: 1px solid #d8d8d8; border-radius: 3px; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 0px 6px rgba(0,0,0,0.07); -moz-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 0px 6px rgba(0,0,0,0.07); -o-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 0px 6px rgba(0,0,0,0.07); box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 0px 6px rgba(0,0,0,0.07);}
+
+#search-input:focus {background: #fcfcfc; color: #666; border: 1px solid #d2d2d2; border-bottom: 1px solid #d8d8d8;}
+
+#search-button {position: absolute; left: 172px; top: 0px; width: 28px; height: 28px; text-indent: -9999px; outline: none; border: 1px solid #ccc; border-bottom: 1px solid #d2d2d2; border-radius: 0px 3px 3px 0px; cursor: pointer; -webkit-box-shadow: -2px 0px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57); -moz-box-shadow: -2px 0px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57); -o-box-shadow: -2px 0px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57); box-shadow: -2px 0px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57); background: #ececec url(images/sb.png) 0 0 no-repeat;}
+
+#search-button:hover {-webkit-box-shadow: -2px 0px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75); -moz-box-shadow: -2px 0px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75); -o-box-shadow: -2px 0px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75); box-shadow: -2px 0px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75);}
+
+#search-button:active {-webkit-box-shadow: -2px 0px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.58), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px -14px 13px rgba(255,255,255,0.57); -moz-box-shadow: -2px 0px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.58), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px -14px 13px rgba(255,255,255,0.57); -o-box-shadow: -2px 0px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.58), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px -14px 13px rgba(255,255,255,0.57); box-shadow: -2px 0px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.58), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px -14px 13px rgba(255,255,255,0.57);}
+/* End Search Box */
+
+/* Start File Button */
+#file-upload {width: 244px; height: auto; margin: 0; position: absolute; display: block; top: 60px; left: 0px; padding-right: 6px;}
+
+#file-form {font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #666; text-shadow: 0px 1px 0px rgba(255,255,255,0.59); width: 80px; height: 31px; padding: 0; outline: none; background: #ececec; border: 1px solid #d8d8d8; border-bottom: 1px solid #ccc; border-radius: 3px; cursor: pointer; overflow: visible; -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 16px 15px rgba(255,255,255,0.57); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 16px 15px rgba(255,255,255,0.57); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 16px 15px rgba(255,255,255,0.57); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 16px 15px rgba(255,255,255,0.57);}
+
+#file-form:hover {-webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 16px 15px rgba(255,255,255,0.75); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 16px 15px rgba(255,255,255,0.75); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 16px 15px rgba(255,255,255,0.75); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 16px 15px rgba(255,255,255,0.75);}
+
+#file-form:active {border: 1px solid #d2d2d2; border-bottom: 1px solid #d8d8d8; border-radius: 3px; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -16px 15px rgba(255,255,255,0.20); -moz-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -16px 15px rgba(255,255,255,0.20); -o-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -16px 15px rgba(255,255,255,0.20); box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -16px 15px rgba(255,255,255,0.20);}
+
+#file-form::before {content: 'Upload'; position: absolute; left: 20px; top: 8px; color: #666; text-shadow: 0px 1px 0px rgba(255,255,255,0.59);}
+
+#file-form:hover::before {color: #888; text-shadow: 0px 1px 0px rgba(255,255,255,0.69);}
+
+#file-form:active::before {color: #696969; text-shadow: 0px 1px 0px rgba(255,255,255,0.53);}
+
+#file-button {font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #999; width: auto; height: auto; padding: 6px; text-indent: -9999px; position: absolute; top: 0; left; 0; margin: 0; display: block; cursor: pointer;}
+/* End File Button */
+
+/* Start Rectangular Button */
+#r-b {display: inline; position: absolute; margin: 0; width: 80px; height: 32px; top: 108px; left: 0px;}
+
+#rectangular-button {font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; margin: 0; position: relative; display: block; color: #666; text-shadow: 0px 1px 0px rgba(255,255,255,0.59); background: #ececec; padding: 6px 20px 7px 20px; outline: none; border: 1px solid #d8d8d8; border-bottom: 1px solid #ccc; border-radius: 3px; cursor: pointer; overflow: visible; -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 15px 14px rgba(255,255,255,0.57); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 15px 14px rgba(255,255,255,0.57); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 15px 14px rgba(255,255,255,0.57); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 15px 14px rgba(255,255,255,0.57);}
+
+#rectangular-button:hover {color: #888; text-shadow: 0px 1px 0px rgba(255,255,255,0.69); -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 15px 14px rgba(255,255,255,0.75); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 15px 14px rgba(255,255,255,0.75); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 15px 14px rgba(255,255,255,0.75); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 15px 14px rgba(255,255,255,0.75);}
+
+#rectangular-button:active {color: #696969; text-shadow: 0px 1px 0px rgba(255,255,255,0.53); border: 1px solid #d2d2d2; border-bottom: 1px solid #d8d8d8; border-radius: 3px; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -15px 14px rgba(255,255,255,0.20); -moz-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -15px 14px rgba(255,255,255,0.20); -o-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -15px 14px rgba(255,255,255,0.20); box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -15px 14pxpx rgba(255,255,255,0.20);}
+/* End Rectangular Button */
+
+/* Start Circular Button */
+#c-b {display: inline; position: absolute; margin: 0; width: 80px; height: 32px; top: 154px; left: 0px;}
+
+#circular-button {font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; margin: 0; position: relative; display: block; color: #666; text-shadow: 0px 1px 0px rgba(255,255,255,0.59); padding: 6px 20px 7px 20px; outline: none; background: #ececec; border: 1px solid #d8d8d8; border-bottom: 1px solid #ccc; border-radius: 30px; cursor: pointer; overflow: visible; -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 15px 14px rgba(255,255,255,0.57); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 15px 14px rgba(255,255,255,0.57); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 15px 14px rgba(255,255,255,0.57); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 15px 14px rgba(255,255,255,0.57);}
+
+#circular-button:hover {color: #888; text-shadow: 0px 1px 0px rgba(255,255,255,0.69); -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 15px 14px rgba(255,255,255,0.75); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 15px 14px rgba(255,255,255,0.75); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 15px 14px rgba(255,255,255,0.75); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 15px 14px rgba(255,255,255,0.75);}
+
+#circular-button:active {color: #696969; text-shadow: 0px 1px 0px rgba(255,255,255,0.53); border: 1px solid #d2d2d2; border-bottom: 1px solid #d8d8d8; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -15px 14px rgba(255,255,255,0.20); -moz-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -15px 14px rgba(255,255,255,0.20); -o-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -15px 14px rgba(255,255,255,0.20); box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -15px 14px rgba(255,255,255,0.20);}
+/* End Circular Button */
+
+/* Start Pagination */
+#pagination {display: block; position: absolute; margin: 0; width: auto; height: auto; left: 0px; top: 252px;}
+
+#pagination-table, #pagination-body, #pagination-text, #pagination-numbers {display: block; position: relative; margin: 0; width: auto; height: auto; padding: 0;}
+
+.pagination-number {color: #666; text-shadow: 0px 1px 0px rgba(255,255,255,0.59); font-size: 12px; display: inline; position: relative; margin: 0px 1px 0px 1px; width: auto; height: auto; background: #ececec; padding: 6px 10px 6px 10px; outline: none; border: 1px solid #d8d8d8; border-bottom: 1px solid #ccc; border-radius: 3px; cursor: pointer; -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57);}
+
+.pagination-number:hover {color: #888; text-shadow: 0px 1px 0px rgba(255,255,255,0.69); -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75);}
+
+.pagination-number:active {color: #696969; text-shadow: 0px 1px 0px rgba(255,255,255,0.53); border: 1px solid #d2d2d2; border-bottom: 1px solid #d8d8d8; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); -moz-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); -o-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20);}
+
+.pagination-number.dots, .pagination-number.dots:hover, .pagination-number.dots:active {color: #666; text-shadow: 0px 1px 0px rgba(255,255,255,0.59); background: none; border: none; border-radius: 0px; -webkit-box-shadow: none; -moz-box-shadow: none; -o-box-shadow: none; box-shadow: none; padding: 9px 2px 3px 2px; cursor: default;}
+
+.pagination-number.current {color: #696969; text-shadow: 0px 1px 0px rgba(255,255,255,0.53); border: 1px solid #d2d2d2; border-bottom: 1px solid #d8d8d8; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); -moz-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); -o-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20);}
+/* End Pagination */
+
+/* Start Dropdown Select */
+#dropdown {display: block; position: absolute; margin: 0; width: auto; height: auto; top: 199px; left: 0px;}
+
+#dropdown-select {font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-appearance: button; -webkit-user-select: none; font-size: 13px; overflow: visible; text-overflow: ellipsis; white-space: nowrap; color: #666; text-shadow: 0px 1px 0px rgba(255,255,255,0.59); display: inline; position: relative; margin: 0px 1px 0px 1px; width: auto; height: auto; background: #ececec url(images/ddui.png) 0 0 no-repeat; padding: 5px 69px 6px 13px; outline: none; border: 1px solid #d8d8d8; border-bottom: 1px solid #ccc; border-radius: 3px; cursor: pointer; -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 16px 15px rgba(255,255,255,0.57); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 16px 15px rgba(255,255,255,0.57); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 16px 15px rgba(255,255,255,0.57); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 16px 15px rgba(255,255,255,0.57);}
+
+#dropdown-select:hover {color: #888; text-shadow: 0px 1px 0px rgba(255,255,255,0.69); -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 16px 15px rgba(255,255,255,0.75); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 16px 15px rgba(255,255,255,0.75); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 16px 15px rgba(255,255,255,0.75); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 16px 15px rgba(255,255,255,0.75);}
+
+#dropdown-select:active {color: #696969; text-shadow: 0px 1px 0px rgba(255,255,255,0.53); border: 1px solid #d2d2d2; border-bottom: 1px solid #d8d8d8; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); -moz-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); -o-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20);}
+
+.dropdown-option {color: #666; background: #f9f9f9;}
+
+#dropdown-select::before {-webkit-margin-start: 3px; background: rgba(102, 102, 102, 0.74); border-radius: 100%; content: ''; display: inline-block; font-size: 12px; font-weight: 400; height: 6px; left: 0; margin-top: 3px; opacity: 1; position: absolute; top: 0; vertical-align: top; width: 6px; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.69), inset 0px 1px 3px rgba(0,0,0,0.35);}
+/* End Dropdown Select */
+
+/* Start Radio Buttons */
+#radio {display: inline; position: absolute; margin: 0; width: auto; height: auto; top: 20px; right: 31px;}
+
+.radio-button {cursor: pointer; margin: 0; -webkit-appearance: none; -webkit-margin-start: 0; -webkit-margin-end: 3px; display: inline-block; height: 14px; position: relative; vertical-align: baseline; width: 14px; background: #ececec; border-radius: 100%; border: 1px solid #d8d8d8; border-bottom: 1px solid #ccc; -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 6px 7px rgba(255,255,255,0.57); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 6px 7px rgba(255,255,255,0.57); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 6px 7px rgba(255,255,255,0.57); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 6px 7px rgba(255,255,255,0.57);}
+
+.radio-button:hover {color: #888; text-shadow: 0px 1px 0px rgba(255,255,255,0.69); -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 6px 7px rgba(255,255,255,0.78); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 6px 7px rgba(255,255,255,0.78); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 6px 7px rgba(255,255,255,0.78); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 6px 7px rgba(255,255,255,0.78);}
+
+.radio-button:active {color: #696969; text-shadow: 0px 1px 0px rgba(255,255,255,0.53); border: 1px solid #d2d2d2; border-bottom: 1px solid #d8d8d8; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -6px 7px rgba(255,255,255,0.20); -moz-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -6px 7px rgba(255,255,255,0.20); -o-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -6px 7px rgba(255,255,255,0.20); box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -6px 7px rgba(255,255,255,0.20);}
+
+.radio-button:checked::before {-webkit-margin-start: 3px; background: rgba(102, 102, 102, 0.74); border-radius: 100%; content: ''; display: inline-block; font-size: 12px; font-weight: 400; height: 6px; left: 0; margin-top: 3px; opacity: 1; position: absolute; top: 0; vertical-align: top; width: 6px; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.69), inset 0px 1px 3px rgba(0,0,0,0.35);}
+/* End Radio Buttons */
+
+/* Start Checkboxes */
+#checkboxes {display: inline; position: absolute; margin: 0; width: auto; height: auto; top: 50px; right: 31px;}
+
+.checkbox {cursor: pointer; margin: 0; -webkit-appearance: none; -webkit-margin-start: 0; -webkit-margin-end: 3px; display: inline-block; height: 14px; position: relative; vertical-align: baseline; width: 14px; background: #ececec; border-radius: 3px; border: 1px solid #d8d8d8; border-bottom: 1px solid #ccc; -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 6px 7px rgba(255,255,255,0.57); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 6px 7px rgba(255,255,255,0.57); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 6px 7px rgba(255,255,255,0.57); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 6px 7px rgba(255,255,255,0.57);}
+
+.checkbox:hover {color: #888; text-shadow: 0px 1px 0px rgba(255,255,255,0.69); -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 6px 7px rgba(255,255,255,0.78); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 6px 7px rgba(255,255,255,0.78); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 6px 7px rgba(255,255,255,0.78); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 6px 7px rgba(255,255,255,0.78);}
+
+.checkbox:active {color: #696969; text-shadow: 0px 1px 0px rgba(255,255,255,0.53); border: 1px solid #d2d2d2; border-bottom: 1px solid #d8d8d8; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -6px 7px rgba(255,255,255,0.20); -moz-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -6px 7px rgba(255,255,255,0.20); -o-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -6px 7px rgba(255,255,255,0.20); box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -6px 7px rgba(255,255,255,0.20);}
+
+.checkbox:checked::before {-webkit-margin-start: 0; content: ''; display: inline-block; font-size: 12px; font-weight: 400; height: 12px; left: 0; margin-top: 0; opacity: 1; position: absolute; top: 0; vertical-align: top; width: 12px;}
+
+.checkbox:checked.tick::before {background: transparent url(images/cbui.png) -1px -0px no-repeat; opacity: 1;}
+
+.checkbox:checked.cross::before {background: transparent url(images/cbui.png) -22px 0px no-repeat; opacity: 1;}
+
+.checkbox:checked.add::before {background: transparent url(images/cbui.png) -43px 0px no-repeat; opacity: 1;}
+/* End Checkboxes */
+
+/* Start Slider CSS */
+#slider-block {display: inline-block; position: absolute; right: 35px; width: auto; top: 82px; margin: 0; height: auto;}
+
+#slider, #slider2, #slider3, #slider4 {margin-bottom: 16px; width: 50px; height: 10px}
+
+.ui-widget-content {width: auto; background: #ececec; border-radius: 30px; color: #696969; border: 1px solid #d2d2d2; border-bottom: 1px solid #d8d8d8; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -7px 6px rgba(255,255,255,0.20); -moz-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -7px 6px rgba(255,255,255,0.20); -o-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -7px 6px rgba(255,255,255,0.20); box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -7px 6px rgba(255,255,255,0.20);}
+
+.ui-widget-header {border: none; background: rgba(191, 230, 251, .50); color: #ffffff; font-weight: bold; border-radius: 31px;}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {color: #666; text-shadow: 0px 1px 0px rgba(255,255,255,0.59); font-size: 12px; border: 1px solid #d8d8d8; border-bottom: 1px solid #ccc; border-radius: 100%; cursor: pointer; -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 7px 6px rgba(255,255,255,0.57); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 7px 6px rgba(255,255,255,0.57); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 7px 6px rgba(255,255,255,0.57); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 7px 6px rgba(255,255,255,0.57);}
+
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {outline:none; color: #888; text-shadow: 0px 1px 0px rgba(255,255,255,0.69); -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 7px 6px rgba(255,255,255,0.75); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 7px 6px rgba(255,255,255,0.75); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 7px 6px rgba(255,255,255,0.75); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 7px 6px rgba(255,255,255,0.75);}
+
+.ui-slider {position: relative; text-align: left;}
+
+.ui-slider .ui-slider-handle {position: absolute; width: 14px; height: 14px; cursor: default;}
+
+.ui-slider .ui-slider-range {position: absolute; font-size: .7em; display: block; border: 0; background-position: 0 0;}
+
+.ui-slider-horizontal {height: .8em;}
+
+.ui-slider-horizontal .ui-slider-handle {top: -.28em; margin-left: -.7em; background: #ececec; cursor: pointer !important;}
+
+.ui-slider-horizontal .ui-slider-handle::before {content: 'o'; width: 6px; height: 6px; background: rgba(102, 102, 102, 0.60); display: inline-block; text-indent: -9999px; position: absolute; top: 4px; left: 4px; border-radius: 100%; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.69), inset 0px 1px 3px rgba(0,0,0,0.35); -moz-box-shadow: 0px 1px 0px rgba(255,255,255,0.69), inset 0px 1px 3px rgba(0,0,0,0.35); -o-box-shadow: 0px 1px 0px rgba(255,255,255,0.69), inset 0px 1px 3px rgba(0,0,0,0.35); box-shadow: 0px 1px 0px rgba(255,255,255,0.69), inset 0px 1px 3px rgba(0,0,0,0.35);}
+
+.ui-slider-horizontal .ui-slider-range {top: 0; height: 100%;}
+
+.ui-slider-horizontal .ui-slider-range-min {left: 0;}
+
+.ui-slider-horizontal .ui-slider-range-max {right: 0;}
+/* End Slider CSS */
+
+/* Start Media Buttons */
+#media-buttons {display: inline; position: absolute; right: 33px; width: auto; top: 203px; margin: 0; height: auto; cursor: default;}
+
+.media-button {width: 24px; height: 24px; color: #666; text-shadow: 0px 1px 0px rgba(255,255,255,0.59); font-size: 12px; display: inline; position: relative; margin: 0px 1px 0px 1px; background: #ececec; outline: none; border: 1px solid #d8d8d8; border-bottom: 1px solid #ccc; border-radius: 3px; cursor: pointer; -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 12px 11px rgba(255,255,255,0.57); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 12px 11px rgba(255,255,255,0.57); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 12px 11px rgba(255,255,255,0.57); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 12px 11px rgba(255,255,255,0.57);}
+
+.media-button:hover {color: #888; text-shadow: 0px 1px 0px rgba(255,255,255,0.69); -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 12px 11px rgba(255,255,255,0.75); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 12px 11px rgba(255,255,255,0.75); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 12px 11px rgba(255,255,255,0.75); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 12px 11px rgba(255,255,255,0.75);}
+
+.media-button:active {color: #696969; text-shadow: 0px 1px 0px rgba(255,255,255,0.53); border: 1px solid #d2d2d2; border-bottom: 1px solid #d8d8d8; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -12px 11px rgba(255,255,255,0.20); -moz-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -12px 11px rgba(255,255,255,0.20); -o-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -12px 11px rgba(255,255,255,0.20); box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -12px 11px rgba(255,255,255,0.20);}
+
+.media-button.previous::before {content: 'mb'; text-indent: -9999px; display: block; position: relative; width: 16px; height: 16px; background: transparent url(images/mbui.png) -7px -4px no-repeat;}
+
+.media-button.pause::before {content: 'mb'; text-indent: -9999px; display: block; position: relative; width: 16px; height: 16px; background: transparent url(images/mbui.png) -37px -4px no-repeat;}
+
+.media-button.play::before {content: 'mb'; text-indent: -9999px; display: block; position: relative; width: 16px; height: 16px; background: transparent url(images/mbui.png) -67px -4px no-repeat;}
+
+.media-button.stop::before {content: 'mb'; text-indent: -9999px; display: block; position: relative; width: 16px; height: 16px; background: transparent url(images/mbui.png) -97px -4px no-repeat;}
+
+.media-button.next::before {content: 'mb'; text-indent: -9999px; display: block; position: relative; width: 16px; height: 16px; background: transparent url(images/mbui.png) -127px -4px no-repeat;}
+/* End Media Buttons */
+
+/* Start Circle Buttons */
+#circle-buttons {display: inline; position: absolute; left: 108px; width: auto; top: 105px; margin: 0; height: auto; cursor: default;}
+
+.circle-button {width: 28px; height: 28px; color: #666; text-shadow: 0px 1px 0px rgba(255,255,255,0.59); font-size: 12px; display: inline; position: relative; margin: 0px 2px 0px 2px; background: #ececec; outline: none; border: 1px solid #d8d8d8; border-bottom: 1px solid #ccc; border-radius: 100%; cursor: pointer; -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57);}
+
+.circle-button:hover {color: #888; text-shadow: 0px 1px 0px rgba(255,255,255,0.69); -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75);}
+
+.circle-button:active {color: #696969; text-shadow: 0px 1px 0px rgba(255,255,255,0.53); border: 1px solid #d2d2d2; border-bottom: 1px solid #d8d8d8; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); -moz-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); -o-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20);}
+
+.circle-button.previous::before {content: 'mb'; text-indent: -9999px; display: block; position: relative; width: 16px; height: 16px; background: transparent url(images/bui.png) -7px -6px no-repeat;}
+
+.circle-button.next::before {content: 'mb'; text-indent: -9999px; display: block; position: relative; width: 16px; height: 16px; background: transparent url(images/bui.png) -43px -6px no-repeat;}
+
+.circle-button.add::before {content: 'mb'; text-indent: -9999px; display: block; position: relative; width: 16px; height: 16px; background: transparent url(images/bui.png) -79px -6px no-repeat;}
+
+.circle-button.tick::before {content: 'mb'; text-indent: -9999px; display: block; position: relative; width: 16px; height: 16px; background: transparent url(images/bui.png) -115px -6px no-repeat;}
+
+.circle-button.cross::before {content: 'mb'; text-indent: -9999px; display: block; position: relative; width: 16px; height: 16px; background: transparent url(images/bui.png) -151px -6px no-repeat;}
+/* End Circle Buttons */
+
+/* Start Square Buttons */
+#square-buttons {display: inline; position: absolute; left: 108px; width: auto; top: 151px; margin: 0; height: auto; cursor: default;}
+
+.square-button {width: 28px; height: 28px; color: #666; text-shadow: 0px 1px 0px rgba(255,255,255,0.59); font-size: 12px; display: inline; position: relative; margin: 0px 2px 0px 2px; background: #ececec; outline: none; border: 1px solid #d8d8d8; border-bottom: 1px solid #ccc; border-radius: 3px; cursor: pointer; -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57);}
+
+.square-button:hover {color: #888; text-shadow: 0px 1px 0px rgba(255,255,255,0.69); -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75);}
+
+.square-button:active {color: #696969; text-shadow: 0px 1px 0px rgba(255,255,255,0.53); border: 1px solid #d2d2d2; border-bottom: 1px solid #d8d8d8; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); -moz-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); -o-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20);}
+
+.square-button.previous::before {content: 'mb'; text-indent: -9999px; display: block; position: relative; width: 16px; height: 16px; background: transparent url(images/bui.png) -7px -6px no-repeat;}
+
+.square-button.next::before {content: 'mb'; text-indent: -9999px; display: block; position: relative; width: 16px; height: 16px; background: transparent url(images/bui.png) -43px -6px no-repeat;}
+
+.square-button.add::before {content: 'mb'; text-indent: -9999px; display: block; position: relative; width: 16px; height: 16px; background: transparent url(images/bui.png) -79px -6px no-repeat;}
+
+.square-button.tick::before {content: 'mb'; text-indent: -9999px; display: block; position: relative; width: 16px; height: 16px; background: transparent url(images/bui.png) -115px -6px no-repeat;}
+
+.square-button.cross::before {content: 'mb'; text-indent: -9999px; display: block; position: relative; width: 16px; height: 16px; background: transparent url(images/bui.png) -151px -6px no-repeat;}
+/* End Square Buttons */
+
+/* docs */
+#docs {display: block; position: absolute; margin: 0; width: auto; height: auto; top: 340px; left: 91px;}
+
+#download, #documentation {color: #666; text-shadow: 0px 1px 0px rgba(255,255,255,0.59); font-size: 12px; display: inline; position: relative; margin: 0px 5px 0px 5px; width: auto; height: auto; background: #ececec; padding: 6px 10px 6px 10px; outline: none; border: 1px solid #d8d8d8; border-bottom: 1px solid #ccc; border-radius: 3px; cursor: pointer; -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.57);}
+
+#download:hover, #documentation:hover {color: #888; text-shadow: 0px 1px 0px rgba(255,255,255,0.69); -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75); -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75); -o-box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75); box-shadow: 0px 2px 2px rgba(0,0,0,0.027), inset 0px 1px 0px rgba(255,255,255,0.69), inset 0px -1px 0px rgba(0,0,0,0.0187), inset 0px 14px 13px rgba(255,255,255,0.75);}
+
+#download:active, #documentation:active {color: #696969; text-shadow: 0px 1px 0px rgba(255,255,255,0.53); border: 1px solid #d2d2d2; border-bottom: 1px solid #d8d8d8; -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); -moz-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); -o-box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20); box-shadow: 0px 1px 0px rgba(255,255,255,0.58), inset 0px 1px 6px rgba(0,0,0,0.07), inset 0px -14px 13px rgba(255,255,255,0.20);}

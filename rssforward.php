@@ -1052,7 +1052,10 @@ class rsspf {
 			wp_enqueue_script('tinysort', RSSPF_URL . 'includes/js/jquery.tinysort.js', array( 'jquery' ));
 			wp_enqueue_script('sort-imp', RSSPF_URL . 'includes/js/sort-imp.js', array( 'tinysort' ));
 			wp_enqueue_script('nomination-imp', RSSPF_URL . 'includes/js/nomination-imp.js', array( 'jquery' ));
+			wp_enqueue_script('twitter-bootstrap', RSSPF_URL . 'includes/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
 			wp_register_style( RSSPF_SLUG . '-style', RSSPF_URL . 'includes/css/style.css');
+			wp_register_style( 'bootstrap-style', RSSPF_URL . 'includes/twitter-bootstrap/css/bootstrap.css');
+			wp_register_style( 'bootstrap-responsive-style', RSSPF_URL . 'includes/twitter-bootstrap/css/bootstrap-responsive.css');
 			wp_enqueue_style( RSSPF_SLUG . '-style' );
 		
 		}
