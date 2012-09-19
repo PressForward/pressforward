@@ -10,7 +10,8 @@ h3 {
 	border-radius: 10px;
 	display:block;
     width: 100%;
-    height: 80px;
+    min-height: 80px;
+	height: 100%;
     padding: 6px;
 
 }
@@ -18,6 +19,22 @@ h3 {
 .tapped {
 	font-size: 13px;
 	font-weight: bold;
+	-webkit-transform: rotate(180deg);
+	-webkit-writing-mode: vertical-rl;
+	-moz-transform: rotate(180deg);
+	-moz-writing-mode: vertical-rl;
+	-o-transform: rotate(180deg);
+	-o-writing-mode: vertical-rl;
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+	-ms-transform: rotate(180deg);
+	-ms-writing-mode: vertical-rl;	
+	writing-mode: tb-rl;
+	white-space: nowrap;
+	line-height: 0;
+	margin: 0 auto;
+	padding-left: 4px;
+	padding-top: 6px;
+	padding-bottom: 6px;
 }
 
 .tapped:after
