@@ -131,6 +131,10 @@ Styling
 -	Preview vs Whole showing (jQ to shorten?)
 -	Keep the Read More. 
 
+Changes to the Under Review nominations section
+-----------------------------------------------
+
+-	"We also talked about the interface for the "Nominations/"Under Review" section. It would be most helpful for us if this area was for reading and commenting only, without the ability to modify the content of the item. Is it possible to make this more readable, but still allow for comments (through Edit Flow would be fine). Then if an item is Accepted, all content and comments should move to regular post section of Dashboard. If it is Rejected, then those posts could be cycled out of the database over time in order to save space."
 
 
 Ideas for better visualization of syndicated content

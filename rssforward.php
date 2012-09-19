@@ -111,7 +111,9 @@ class rsspf {
 		*/
 		add_menu_page (RSSPF_TITLE, RSSPF_TITLE, 'edit_posts', RSSPF_MENU_SLUG, array($this, 'rsspf_reader_builder'), RSSPF_URL . '/rss-forward-16.png', 24);
 
-		add_submenu_page(RSSPF_MENU_SLUG, 'Nominations', 'Nominations', 'edit_posts', RSSPF_NOM_EDITOR);
+		add_submenu_page(RSSPF_MENU_SLUG, 'All Content', 'All Content', 'edit_posts', RSSPF_MENU_SLUG, array($this, 'rsspf_reader_builder'));		
+		
+		add_submenu_page(RSSPF_MENU_SLUG, 'Under Review', 'Under Review', 'edit_posts', RSSPF_NOM_EDITOR);
 		
 		//Now create an options page for the plugin. This page is only accessable to Administrative level users. 
 		add_submenu_page(RSSPF_MENU_SLUG, RSSPF_TITLE . ' Options', RSSPF_TITLE . ' Options', 'manage_options', RSSPF_SLUG . '-options', array($this, 'rsspf_options_builder'));
@@ -1063,7 +1065,7 @@ class rsspf {
 							//if(!($this->get_post_nomination_status('2012-08-10', $item['item_id'], 'post'))){
 								//print_r( 'false < test.'); } else { print_r('true'); die();}
 							echo '<input type="hidden" name="GreetingAll" class="GreetingAll" value="Hello Everyone!" />'
-									. '<input type="submit" class="PleasePushMe" id="' . $item['item_id'] . '" />'
+									. '<input type="submit" class="PleasePushMe" id="' . $item['item_id'] . '" value="Nominate" />'
 									. '<div class="nominate-result-' . $item['item_id'] . '">'
 									. '<img class="loading-' . $item['item_id'] . '" src="' . RSSPF_URL . 'includes/images/ajax-loader.gif" alt="Loading..." style="display: none" />'
 									. '</div></p>'
