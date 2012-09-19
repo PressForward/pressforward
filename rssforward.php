@@ -1031,6 +1031,7 @@ class rsspf {
 						echo '</div><!-- End span8 or 10 -->';
 					echo '</a>';
 						echo '<div class="span1">';
+							# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
 							echo '<button class="btn btn-small itemInfobutton" id="' . $item['item_id'] . '"><i class="icon-info-sign"></i></button>';
 						echo '</div>';
 					echo '</div><!-- End row-fluid -->';
@@ -1093,6 +1094,16 @@ class rsspf {
 		echo '</div><!-- End feed-container span7 -->';
 		echo '<div class="span4 feed-widget-container">';
 			# Some widgets go here.
+				echo '<div class="rsspf-right-widget well">
+						<div class="widget-title">
+							Widget Title
+						</div>
+						<div class="widget-body">
+							Widget Body <br />
+							Widget Body
+						</div>
+				</div>
+				';
 		echo '</div><!-- End feed-widget-container span4 -->';
 	
 	echo '</div><!-- End row -->';

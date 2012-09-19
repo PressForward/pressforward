@@ -6,22 +6,18 @@ h3 {
 .deck .card {
 
 	background: #AFC459;
-	border: 1px solid #4C5B2C;
+	border-color: #4C5B2C;
 	border-radius: 10px;
 	display:block;
-	padding: 0;
+    width: 100%;
+    height: 80px;
+    padding: 6px;
 
 }
 
 .tapped {
-	font-size: 12px;
+	font-size: 13px;
 	font-weight: bold;
-	-webkit-transform: rotate(270deg);
-	-moz-transform: rotate(270deg);
-	-ms-transform: rotate(270deg);
-	-o-transform: rotate(270deg);
-	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
-	white-space: nowrap;
 }
 
 .tapped:after
@@ -30,11 +26,6 @@ content:".";
 display:block;
 clear:both;
 visibility:hidden;
-}
-
-.feedctrl {
-	width: auto;
-	
 }
 
 .main-container {
@@ -107,4 +98,18 @@ visibility:hidden;
 	border-color: whiteSmoke transparent;
 	display: block;
 	width: 0;
+}
+
+.feed-widget-container .well{
+	padding: 0;
+}
+
+.rsspf-right-widget .widget-title{
+	background-color: #F5EBBA;
+	padding: 8px;
+	border-bottom: 1px solid #CCBE8E
+}
+
+.rsspf-right-widget .widget-body {
+	padding: 8px;
 }
