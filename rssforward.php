@@ -985,7 +985,7 @@ class rsspf {
 							echo $c . '. ';
 							//The following is a fix as described in http://simplepie.org/wiki/faq/typical_multifeed_gotchas
 							//$iFeed = $item->get_feed();
-							echo '<strong>' . $item['source_title'] . '</strong>';
+							echo '<span class="source_title">' . $item['source_title'] . '</span>';
 							echo ' : ';
 							echo '<h3>' . $item['item_title'] . '</h3>';
 							//echo '<br />';
