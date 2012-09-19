@@ -3,6 +3,44 @@ h3 {
 	margin: 4px 0;
 }
 
+.deck .card {
+
+	background: #AFC459;
+	border: 1px solid #4C5B2C;
+	border-radius: 10px;
+	display:block;
+	padding: 0;
+
+}
+
+.tapped {
+	font-size: 12px;
+	font-weight: bold;
+	-webkit-transform: rotate(270deg);
+	-moz-transform: rotate(270deg);
+	-ms-transform: rotate(270deg);
+	-o-transform: rotate(270deg);
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+	white-space: nowrap;
+}
+
+.tapped:after
+{
+content:".";
+display:block;
+clear:both;
+visibility:hidden;
+}
+
+.feedctrl {
+	width: auto;
+	
+}
+
+.main-container {
+	margin-top: 10px;
+}
+
 .accordion-toggle {
 	color: black;
 }
@@ -38,4 +76,35 @@ h3 {
 
 .source_title {
 	font-weight: bold;
+}
+
+.feed-item .feed-item-info-box {
+	float: right;
+	width: 30%; /**320px;**/
+	font-size: 10px;
+	line-height: 13px;
+	padding: 8px!important;
+	display: block;
+	position: absolute;
+	left: 65.3%; /**720px;**/	
+	z-index: 1001;
+}
+
+.feed-item-info-box.leftarrow::after {
+	top: 25px;
+	left: -18px;
+	bottom: auto;
+	border-width: 10px 18px 10px 0;
+	border-color: transparent #E3E3E3;
+}
+.feed-item-info-box::after {
+	content: "";
+	position: absolute;
+	bottom: -15px;
+	left: 50px;
+	border-width: 15px 15px 0;
+	border-style: solid;
+	border-color: whiteSmoke transparent;
+	display: block;
+	width: 0;
 }

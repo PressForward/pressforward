@@ -950,7 +950,23 @@ class rsspf {
 		echo '<div class="row-fluid main-container">';
 		
 			# Some buttons to the left
-			echo '<div class="span1">';
+			echo '<div class="span1 deck">';
+					echo '<div class="row-fluid">
+							<div class="span12 main-card card well">
+								<div class="tapped">
+									Main Feed
+								</div>
+							</div>						
+						</div>
+					';
+					echo '<div class="row-fluid">
+							<div class="span12 sub-card card well">
+								<div class="tapped">
+									Module Feed
+								</div>
+							</div>						
+						</div>
+					';					
 			echo '</div><!-- End span1 -->';
 			
 		//Use this foreach loop to go through the overall feedlist, select each individual feed item (post) and do stuff with it.
@@ -961,9 +977,27 @@ class rsspf {
 		# http://twitter.github.com/bootstrap/javascript.html#collapse
 		foreach($this->archive_feed_to_display() as $item) {
 			echo '<div class="well accordion-group feed-item row-fluid ' . $item['source_title'] . ' ' . $item['item_tags'] . '" id="' . $item['item_id'] . '">';
+			
 				echo '<div class="span12">';
-				
+							# Let's build an info box!
+							//http://nicolasgallagher.com/pure-css-speech-bubbles/
+							
+							$urlArray = parse_url($item['item_link']);
+							$sourceLink = 'http://' . $urlArray['host'];
+							//http://nicolasgallagher.com/pure-css-speech-bubbles/demo/
+							echo '<div class="feed-item-info-box well leftarrow" id="info-box-' . $item['item_id'] . '" style="display:none;">';
+								echo '
+								Feed: <span class="feed_title">' . $item['source_title'] . '</span><br />
+								Posted on: <span class="feed_posted">' . $item['item_date'] . '</span><br />
+								Authors: <span class="item_authors">' . $item['item_author'] . '</span><br />
+								Origin: <span class="source_name"><a href="' . $sourceLink . '">' . $sourceLink . '</a></span><br />
+								Original Item: <span class="source_link"><a href="' . $item['item_link'] . '">' . $item['item_title'] . '</a></span><br />
+								Tags: <span class="item_tags">' . $item['item_tags'] . '</span><br />
+								Times repeated in source: <span class="feed_repeat">' . $item['source_repeat'] . '</span><br />								
+								';
+							echo '</div>';				
 					echo '<div class="row-fluid accordion-heading">';
+					//echo '<a name="' . $c . '" style="display:none;"></a>';
 					echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#feed-accordion" href="#collapse' . $c . '">';
 						if ($item['item_feat_img'] != ''){
 						echo '<div class="span3">';
@@ -982,6 +1016,7 @@ class rsspf {
 						echo '</div><!-- End span1 -->';			
 						echo '<div class="span10">';
 						}
+							
 							echo $c . '. ';
 							//The following is a fix as described in http://simplepie.org/wiki/faq/typical_multifeed_gotchas
 							//$iFeed = $item->get_feed();
@@ -996,7 +1031,7 @@ class rsspf {
 						echo '</div><!-- End span8 or 10 -->';
 					echo '</a>';
 						echo '<div class="span1">';
-							echo '<button class="btn btn-small"><i class="icon-info-sign"></i></button>';
+							echo '<button class="btn btn-small itemInfobutton" id="' . $item['item_id'] . '"><i class="icon-info-sign"></i></button>';
 						echo '</div>';
 					echo '</div><!-- End row-fluid -->';
 					
@@ -1039,8 +1074,9 @@ class rsspf {
 						echo '</div>';
 					echo '</div>';
 				echo '</div><!-- End span12 -->';
-				
-			echo '</div><!-- End row-fluid -->';
+								
+			echo '</div><!-- End row-fluid -->';			
+			
 			$c++;
 			
 			//check out the built comment form from EditFlow at https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/editorial-comments.php
@@ -1118,12 +1154,14 @@ class rsspf {
 	}
 	
 	//This function can add js and css that we need to specific admin pages. 
-	function add_admin_scripts() {
+	function add_admin_scripts($hook) {
 	
 		//This gets the current page the user is on.
 		global $pagenow;
+		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
-		if ((!in_array($pagenow, array('admin.php?page=rsspf-menu')))) {
+		if ('toplevel_page_rsspf-menu' != $hook) { return; }
+		else {
 			//And now lets enqueue the script, ensuring that jQuery is already active. 
 			
 			wp_enqueue_script('tinysort', RSSPF_URL . 'includes/js/jquery.tinysort.js', array( 'jquery' ));
