@@ -1,0 +1,18 @@
+h3 {
+	line-height: 25px;
+	margin: 4px 0;
+}
+
+.accordion-toggle {
+	color: black;
+}
+
+.feed-item {
+	width: 99%;
+	margin-top: 4px;
+	margin-bottom: 4px;
+}
+
+.accordion-heading {
+	margin: 8px auto;
+}

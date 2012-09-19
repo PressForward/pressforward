@@ -922,57 +922,119 @@ class rsspf {
 	
 	public function rsspf_reader_builder() {
 		//Calling the feedlist within the rsspf class. 
-		
-		echo '<h1>' . RSSPF_TITLE . '</h1>';
-		echo '<img class="loading-top" src="' . RSSPF_URL . 'includes/images/ajax-loader.gif" alt="Loading..." style="display: none" />';
-		echo '<div id="errors"></div>';
-		echo '<input type="submit" class="refreshfeed" id="refreshfeed" value="Refresh" /><input type="submit" class="feedsort" id="sortbyitemdate" value="Sort by item date" /><input type="submit" class="feedsort" id="sortbyfeedindate" value="Sort by date entered RSS" /><input style="float:right;" type="submit" class="delete" id="deletefeedarchive" value="Delete entire feed archive" /><br /><br />';
+	echo '<div class="container-fluid">';
+		echo '<div class="row-fluid">';
+			echo '<div class="span9 title-span">';
+				echo '<h1>' . RSSPF_TITLE . '</h1>';
+				echo '<img class="loading-top" src="' . RSSPF_URL . 'includes/images/ajax-loader.gif" alt="Loading..." style="display: none" />';
+				echo '<div id="errors"></div>';
+			echo '</div><!-- End title 9 span -->';
+		echo '</div><!-- End Row -->';		
+		echo '<div class="row-fluid">';
+			
+			echo 	'<div class="span6">
+						<div class="btn-group">
+							<button type="submit" class="refreshfeed btn btn-warning" id="refreshfeed" value="Refresh">Refresh</button>
+							<button type="submit" class="btn btn-info feedsort" id="sortbyitemdate" value="Sort by item date" >Sort by item date</button> 
+							<button type="submit" class="btn btn-info feedsort" id="sortbyfeedindate" value="Sort by date entered RSS">Sort by date entered RSS</button>
+						</div><!-- End btn-group -->
+					</div><!-- End span6 -->';
+			echo 	'<div class="span3 offset3">
+						<button style="float:right;" type="submit" class="delete btn btn-danger" id="deletefeedarchive" value="Delete entire feed archive" >Delete entire feed archive</button>
+					</div><!-- End span3 -->';
+			
+		echo '</div><!-- End Row -->';
 		//A testing method, to insure the feed is being received and processed. 
 		//print_r($theFeed);
+		echo '<div class="row-fluid main-container">';
 		
+			# Some buttons to the left
+			echo '<div class="span1">';
+			echo '</div><!-- End span1 -->';
+			
 		//Use this foreach loop to go through the overall feedlist, select each individual feed item (post) and do stuff with it.
 		//Based off SimplePie's tutorial at http://simplepie.org/wiki/tutorial/how_to_display_previous_feed_items_like_google_reader.
 		$c = 1;
+		
+			echo '<div class="span7 feed-container accordion" id="feed-accordion">';
+		# http://twitter.github.com/bootstrap/javascript.html#collapse
 		foreach($this->archive_feed_to_display() as $item) {
-			echo '<div class="feed-item">';
-			if ($item['item_feat_img'] != '')
-				echo '<div style="float:left; margin-right: 10px; margin-bottom: 10px;"><img src="' . $item['item_feat_img'] . '"></div>';
-			echo $c++ . '. ';
-			//The following is a fix as described in http://simplepie.org/wiki/faq/typical_multifeed_gotchas
-			//$iFeed = $item->get_feed();
-			echo '<strong>' . $item['source_title'] . '</strong>';
-			echo ' : ';
-			echo $item['item_title'];
-			echo '<br />';
-			echo '<small>Published on ' . $item['item_date'] . ' by ' . $item['item_author'] . '. Added to feed on ' . $item['item_added_date'] . '.</small>';
-			echo '<br />';
-			echo '<div style="display:none;">Unix timestamp for item date:<span class="sortableitemdate">' . strtotime($item['item_date']) . '</span> and for added to RSS date <span class="sortablerssdate">' . strtotime($item['item_added_date']) . '</span>.</div>';
-			echo '<div>' . $item['item_content'] . '</div>';
-			echo '<br />';
-			echo '<a target="_blank" href="' . $item['item_link'] . '">Read More</a>';
-			echo '<br />';
-			echo '<strong class="item-tags">Item Tags</strong>: ' . $item['item_tags'] . '.';
-			echo '<br />';
-			//print_r($item);
-			//print_r($ent = htmlentities($item['item_content']));
-			//print_r(html_entity_decode($ent));
-			//This needs a nonce for security.
-			echo '<form name="form-' . $item['item_id'] . '"><p>';
-			$this->prep_item_for_submit($item);
-			wp_nonce_field('nomination', RSSPF_SLUG . '_nomination_nonce', false);
-			//print_r($this->get_posts_after_for_check( 2011-01-03, 'nomination' ));
-			//if(!($this->get_post_nomination_status('2012-08-10', $item['item_id'], 'post'))){
-				//print_r( 'false < test.'); } else { print_r('true'); die();}
-			echo '<input type="hidden" name="GreetingAll" class="GreetingAll" value="Hello Everyone!" />'
-					. '<input type="submit" class="PleasePushMe" id="' . $item['item_id'] . '" />'
-					. '<div class="nominate-result-' . $item['item_id'] . '">'
-					. '<img class="loading-' . $item['item_id'] . '" src="' . RSSPF_URL . 'includes/images/ajax-loader.gif" alt="Loading..." style="display: none" />'
-					. '</div></p>'
-				  . '</form>';
-				  
-			echo '<hr />';
-			echo '<br />';
-			echo '</div>';
+			echo '<div class="accordion-group feed-item row-fluid ' . $item['source_title'] . ' ' . $item['item_tags'] . '" id="' . $item['item_id'] . '">';
+				echo '<div class="span12">';
+				
+					echo '<div class="row-fluid accordion-heading">';
+					echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#feed-accordion" href="#collapse' . $c . '">';
+						if ($item['item_feat_img'] != ''){
+						echo '<div class="span3">';
+							echo '<div style="float:left; margin-right: 10px; margin-bottom: 10px;"><img src="' . $item['item_feat_img'] . '"></div>';
+						echo '</div><!-- End span3 -->';
+						echo '<div class="span9">';
+						} else {
+						echo '<div class="span1">';
+								echo '<div style="float:left; margin: 10px auto;">
+										<img src="' . RSSPF_URL . 'includes/images/books.png">
+									</div>';
+						echo '</div><!-- End span1 -->';			
+						echo '<div class="span11">';
+						}
+							echo $c . '. ';
+							//The following is a fix as described in http://simplepie.org/wiki/faq/typical_multifeed_gotchas
+							//$iFeed = $item->get_feed();
+							echo '<strong>' . $item['source_title'] . '</strong>';
+							echo ' : ';
+							echo '<h3>' . $item['item_title'] . '</h3>';
+							//echo '<br />';
+							echo '<small>Published on ' . $item['item_date'] . ' by ' . $item['item_author'] . '.<br />'; 
+							echo 'Added to feed on ' . $item['item_added_date'] . '.</small>';
+							echo '<br />';
+							echo '<div style="display:none;">Unix timestamp for item date:<span class="sortableitemdate">' . strtotime($item['item_date']) . '</span> and for added to RSS date <span class="sortablerssdate">' . strtotime($item['item_added_date']) . '</span>.</div>';
+						echo '</div><!-- End span9 -->';
+					echo '</a>';
+					echo '</div><!-- End row-fluid -->';
+					
+					echo '<div id="collapse' . $c . '" class="accordion-body collapse">';
+					echo '<div class="accordion-inner">';
+					echo '<div class="row-fluid">';
+						echo '<div class="span12 item_content">';
+							echo '<div>' . $item['item_content'] . '</div>';
+							echo '<br />';
+							echo '<a target="_blank" href="' . $item['item_link'] . '">Read More</a>';
+							echo '<br />';
+							echo '<strong class="item-tags">Item Tags</strong>: ' . $item['item_tags'] . '.';
+							echo '<br />';
+						echo '</div><!-- end item_content span12 -->';
+					echo '</div><!-- End row-fluid -->';
+					//print_r($item);
+					//print_r($ent = htmlentities($item['item_content']));
+					//print_r(html_entity_decode($ent));
+					
+					echo '<div class="item_actions row-fluid">';
+						echo '<div class="span12">';
+							//This needs a nonce for security.
+							echo '<form name="form-' . $item['item_id'] . '"><p>';
+							$this->prep_item_for_submit($item);
+							wp_nonce_field('nomination', RSSPF_SLUG . '_nomination_nonce', false);
+							//print_r($this->get_posts_after_for_check( 2011-01-03, 'nomination' ));
+							//if(!($this->get_post_nomination_status('2012-08-10', $item['item_id'], 'post'))){
+								//print_r( 'false < test.'); } else { print_r('true'); die();}
+							echo '<input type="hidden" name="GreetingAll" class="GreetingAll" value="Hello Everyone!" />'
+									. '<input type="submit" class="PleasePushMe" id="' . $item['item_id'] . '" />'
+									. '<div class="nominate-result-' . $item['item_id'] . '">'
+									. '<img class="loading-' . $item['item_id'] . '" src="' . RSSPF_URL . 'includes/images/ajax-loader.gif" alt="Loading..." style="display: none" />'
+									. '</div></p>'
+								  . '</form>';
+								  
+							
+					echo '</div><!-- End accordion Inner -->';
+					echo '</div><!-- End accordion body -->';
+
+						echo '</div>';
+					echo '</div>';
+				echo '</div><!-- End span12 -->';
+				
+			echo '</div><!-- End row-fluid -->';
+			$c++;
+			
 			//check out the built comment form from EditFlow at https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/editorial-comments.php
 			
 			// So, we're going to need some AJAXery method of sending RSS data to a nominations post. 
@@ -982,9 +1044,16 @@ class rsspf {
 			// So what to submit? I could store all the post data in hidden fields and submit it within seperate form docs, but that's a lot of data.
 			// Perhaps just an md5 hash of the ID of the post? Then use the retrieval function to find the matching post and submit it properly? 
 			// Something to experement with...
-		}
+		} // End foreach
 		
+		echo '</div><!-- End feed-container span7 -->';
+		echo '<div class="span4 feed-widget-container">';
+			# Some widgets go here.
+		echo '</div><!-- End feed-widget-container span4 -->';
+	
+	echo '</div><!-- End row -->';
 		
+	echo '</div><!-- End container-fluid -->';
 	}
 	
 	function rsspf_options_builder() {
@@ -1050,12 +1119,15 @@ class rsspf {
 			//And now lets enqueue the script, ensuring that jQuery is already active. 
 			
 			wp_enqueue_script('tinysort', RSSPF_URL . 'includes/js/jquery.tinysort.js', array( 'jquery' ));
-			wp_enqueue_script('sort-imp', RSSPF_URL . 'includes/js/sort-imp.js', array( 'tinysort' ));
+			wp_enqueue_script('sort-imp', RSSPF_URL . 'includes/js/sort-imp.js', array( 'tinysort', 'twitter-bootstrap' ));
 			wp_enqueue_script('nomination-imp', RSSPF_URL . 'includes/js/nomination-imp.js', array( 'jquery' ));
 			wp_enqueue_script('twitter-bootstrap', RSSPF_URL . 'includes/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
 			wp_register_style( RSSPF_SLUG . '-style', RSSPF_URL . 'includes/css/style.css');
 			wp_register_style( 'bootstrap-style', RSSPF_URL . 'includes/twitter-bootstrap/css/bootstrap.css');
 			wp_register_style( 'bootstrap-responsive-style', RSSPF_URL . 'includes/twitter-bootstrap/css/bootstrap-responsive.css');
+			
+			wp_enqueue_style('bootstrap-style');
+			wp_enqueue_style('bootstrap-responsive-style');
 			wp_enqueue_style( RSSPF_SLUG . '-style' );
 		
 		}
