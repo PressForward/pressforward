@@ -968,14 +968,14 @@ class rsspf {
 						echo '<div class="span3">';
 							echo '<div style="float:left; margin-right: 10px; margin-bottom: 10px;"><img src="' . $item['item_feat_img'] . '"></div>';
 						echo '</div><!-- End span3 -->';
-						echo '<div class="span9">';
+						echo '<div class="span8">';
 						} else {
 						echo '<div class="span1">';
 								echo '<div style="float:left; margin: 10px auto;">
 										<img src="' . RSSPF_URL . 'includes/images/books.png">
 									</div>';
 						echo '</div><!-- End span1 -->';			
-						echo '<div class="span11">';
+						echo '<div class="span10">';
 						}
 							echo $c . '. ';
 							//The following is a fix as described in http://simplepie.org/wiki/faq/typical_multifeed_gotchas
@@ -988,8 +988,11 @@ class rsspf {
 							echo 'Added to feed on ' . $item['item_added_date'] . '.</small>';
 							echo '<br />';
 							echo '<div style="display:none;">Unix timestamp for item date:<span class="sortableitemdate">' . strtotime($item['item_date']) . '</span> and for added to RSS date <span class="sortablerssdate">' . strtotime($item['item_added_date']) . '</span>.</div>';
-						echo '</div><!-- End span9 -->';
+						echo '</div><!-- End span8 or 10 -->';
 					echo '</a>';
+						echo '<div class="span1">';
+							echo '<button class="btn btn-small"><i class="icon-info-sign"></i></button>';
+						echo '</div>';
 					echo '</div><!-- End row-fluid -->';
 					
 					echo '<div id="collapse' . $c . '" class="accordion-body collapse">';
