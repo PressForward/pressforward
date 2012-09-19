@@ -937,6 +937,7 @@ class rsspf {
 							<button type="submit" class="refreshfeed btn btn-warning" id="refreshfeed" value="Refresh">Refresh</button>
 							<button type="submit" class="btn btn-info feedsort" id="sortbyitemdate" value="Sort by item date" >Sort by item date</button> 
 							<button type="submit" class="btn btn-info feedsort" id="sortbyfeedindate" value="Sort by date entered RSS">Sort by date entered RSS</button>
+							<button class="btn btn-inverse" id="fullscreenfeed">Full Screen</button>
 						</div><!-- End btn-group -->
 					</div><!-- End span6 -->';
 			echo 	'<div class="span3 offset3">
@@ -1126,9 +1127,11 @@ class rsspf {
 			//And now lets enqueue the script, ensuring that jQuery is already active. 
 			
 			wp_enqueue_script('tinysort', RSSPF_URL . 'includes/js/jquery.tinysort.js', array( 'jquery' ));
-			wp_enqueue_script('sort-imp', RSSPF_URL . 'includes/js/sort-imp.js', array( 'tinysort', 'twitter-bootstrap' ));
+			wp_enqueue_script('sort-imp', RSSPF_URL . 'includes/js/sort-imp.js', array( 'tinysort', 'twitter-bootstrap', 'jq-fullscreen' ));
 			wp_enqueue_script('nomination-imp', RSSPF_URL . 'includes/js/nomination-imp.js', array( 'jquery' ));
 			wp_enqueue_script('twitter-bootstrap', RSSPF_URL . 'includes/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
+			wp_enqueue_script('jq-fullscreen', RSSPF_URL . 'includes/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
+			
 			wp_register_style( RSSPF_SLUG . '-style', RSSPF_URL . 'includes/css/style.css');
 			wp_register_style( 'bootstrap-style', RSSPF_URL . 'includes/twitter-bootstrap/css/bootstrap.css');
 			wp_register_style( 'bootstrap-responsive-style', RSSPF_URL . 'includes/twitter-bootstrap/css/bootstrap-responsive.css');

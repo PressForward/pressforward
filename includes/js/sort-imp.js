@@ -20,4 +20,19 @@ jQuery(document).ready(function() {
 	}
 	);
 	
+	jQuery('#fullscreenfeed').click(function(e){
+		e.preventDefault();
+		jQuery('.container-fluid').fullScreen({
+			'background'	: '#ecf3f9',
+			'callback'		: function(isFullScreen){     
+					// ...
+					// Do some cleaning up here
+					// ...
+					if (isFullScreen){
+						//jQuery('#fullscreenfeed').prepend('Exit ')
+					}
+			}
+		});
+		
+	});
 });
