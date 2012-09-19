@@ -230,6 +230,30 @@ class rsspf {
 						//print_r(get_the_ID());
 						//print_r('< the ID');
 						if ((get_post_meta(get_the_ID(), 'item_id', $item_id, true)) == $item_id){ $thepostscheck++; }
+						# UNTESTED
+						if ($thepostscheck == 0){
+							# Post comparative values.
+							$theTitle = get_the_title();
+							$postID = get_the_ID();
+							$postDate = get_the_date('U');
+							$postItemLink = get_post_meta($postID, 'item_link', true);
+							# Item comparative values.
+							$itemDate = strtotime($item['item_date']);
+							$itemTitle = $item['item_title'];
+							$itemLink = $item['item_link'];
+							
+							# First check if it more recent than the currently stored item.
+							if(($itemDate > $postDate) && (($theTitle == $itemTitle) || ($postItemLink == $itemLink))){
+								# If it is more recent, than this is the new dominant post.
+							} elseif (($itemDate <= $postDate) && (($theTitle == $itemTitle) || ($postItemLink == $itemLink))) {
+								# if it is less recent, then we need to increment the source count.
+							
+							} else {
+								# If it isn't duplicated at all, then we need to give it a source repeat count of 0
+								$sourceRepeat = 0;
+							}
+							
+						}
 					endforeach;
 				endif;
 			wp_reset_query();
