@@ -629,7 +629,8 @@ class rsspf {
 	# Where we store a list of feeds to check. 
 	public function rsspf_feedlist() {
 	
-		$feedlist = 'http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations';
+		$feedlist = 'http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FEditors-at-Large%20Stream';
+		//'http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations';
 		//http://feeds.feedburner.com/DHNowEditorsChoiceAndNews
 		//http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations
 		return $feedlist;
