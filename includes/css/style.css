@@ -5,7 +5,7 @@ h3 {
 
 .deck .card {
 
-	background: #AFC459;
+	background-color: #AFC459;
 	border-color: #4C5B2C;
 	border-radius: 10px;
 	display:block;
@@ -14,6 +14,25 @@ h3 {
 	height: 100%;
     padding: 6px;
 
+background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#AFC459), to(#84924B));
+background-image: -webkit-linear-gradient(left, #AFC459, #84924B);
+background-image: -o-linear-gradient(left, #AFC459, #84924B);
+background-image: linear-gradient(to right, #AFC459, #84924B);
+background-image: -moz-linear-gradient(left, #AFC459, #84924B);
+background-repeat: repeat-x;
+
+border-color: #9FB351 #768341 #BFD662 #9FB351;
+filter: progid:dximagetransform.microsoft.gradient(startColorstr='#AFC459', endColorstr='#768341', GradientType=1);
+filter: progid:dximagetransform.microsoft.gradient(enabled=false);	
+
+}
+
+.deck .card:hover {
+	background-color: #84924B;
+}
+
+.deck .card:active {
+	background-color: #9FB351;
 }
 
 .tapped {
