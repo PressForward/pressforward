@@ -940,7 +940,7 @@ class rsspf {
 						</div><!-- End btn-group -->
 					</div><!-- End span6 -->';
 			echo 	'<div class="span3 offset3">
-						<button style="float:right;" type="submit" class="delete btn btn-danger" id="deletefeedarchive" value="Delete entire feed archive" >Delete entire feed archive</button>
+						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="Delete entire feed archive" >Delete entire feed archive</button>
 					</div><!-- End span3 -->';
 			
 		echo '</div><!-- End Row -->';
@@ -959,20 +959,24 @@ class rsspf {
 			echo '<div class="span7 feed-container accordion" id="feed-accordion">';
 		# http://twitter.github.com/bootstrap/javascript.html#collapse
 		foreach($this->archive_feed_to_display() as $item) {
-			echo '<div class="accordion-group feed-item row-fluid ' . $item['source_title'] . ' ' . $item['item_tags'] . '" id="' . $item['item_id'] . '">';
+			echo '<div class="well accordion-group feed-item row-fluid ' . $item['source_title'] . ' ' . $item['item_tags'] . '" id="' . $item['item_id'] . '">';
 				echo '<div class="span12">';
 				
 					echo '<div class="row-fluid accordion-heading">';
 					echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#feed-accordion" href="#collapse' . $c . '">';
 						if ($item['item_feat_img'] != ''){
 						echo '<div class="span3">';
+							echo '<div class="thumbnail">';
 							echo '<div style="float:left; margin-right: 10px; margin-bottom: 10px;"><img src="' . $item['item_feat_img'] . '"></div>';
+							echo '</div>';
 						echo '</div><!-- End span3 -->';
 						echo '<div class="span8">';
 						} else {
 						echo '<div class="span1">';
 								echo '<div style="float:left; margin: 10px auto;">
+										<div class="thumbnail" >
 										<img src="' . RSSPF_URL . 'includes/images/books.png">
+										</div>
 									</div>';
 						echo '</div><!-- End span1 -->';			
 						echo '<div class="span10">';
