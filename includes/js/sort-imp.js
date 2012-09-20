@@ -42,4 +42,7 @@ jQuery(document).ready(function() {
 		var itemID		= element.attr('id');
 		jQuery('#info-box-'+itemID).toggle();
 	});
+	
+	jQuery('.navwidget').scrollspy()
+	
 });

@@ -981,7 +981,7 @@ class rsspf {
 		foreach($this->archive_feed_to_display() as $item) {
 			echo '<div class="well accordion-group feed-item row-fluid ' . $item['source_title'] . ' ' . $item['item_tags'] . '" id="' . $item['item_id'] . '">';
 			
-				echo '<div class="span12">';
+				echo '<div class="span12" id="' . $c . '">';
 							# Let's build an info box!
 							//http://nicolasgallagher.com/pure-css-speech-bubbles/
 							
@@ -1102,8 +1102,10 @@ class rsspf {
 							Widget Title
 						</div>
 						<div class="widget-body">
-							Widget Body <br />
-							Widget Body
+							<div class="navwidget">
+								Widget Body <br />
+								<a href="#20">Test link to item 20.</a>
+							</div>
 						</div>
 				</div>
 				';
