@@ -507,6 +507,7 @@ class rsspf {
 				$item_feat_img = get_post_meta($post_id, 'item_feat_img', true);
 				$item_wp_date = get_post_meta($post_id, 'item_wp_date', true);
 				$item_tags = get_post_meta($post_id, 'item_tags', true);
+				$source_repeat = get_post_meta($post_id, 'source_repeat', true);
 				
 				$contentObj = new htmlchecker(get_the_content());
 				$item_content = $contentObj->closetags(get_the_content());
@@ -523,7 +524,8 @@ class rsspf {
 											$item_wp_date,
 											$item_tags,
 											//Manual ISO 8601 date for pre-PHP5 systems.
-											get_the_date('o-m-d\TH:i:sO')
+											get_the_date('o-m-d\TH:i:sO'),
+											$source_repeat
 											);
 				set_transient( 'rsspf_archive_' . $id, $rssObject['rss_archive_' . $c], 60*10 );
 				
