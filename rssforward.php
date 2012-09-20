@@ -1099,7 +1099,8 @@ class rsspf {
 		echo '</div><!-- End feed-container span7 -->';
 		echo '<div class="span4 feed-widget-container">';
 			# Some widgets go here.
-				echo '<div class="rsspf-right-widget well">
+				echo '<div class="row-fluid">';
+				echo '<div class="rsspf-right-widget well span12">
 						<div class="widget-title">
 							Widget Title
 						</div>
@@ -1110,7 +1111,39 @@ class rsspf {
 							</div>
 						</div>
 				</div>
+				</div>
 				';
+				# Does this work?
+				$blogusers = get_users('orderby=nom_count');
+				$uc = 1;
+				echo '<div class="row-fluid">
+				<div class="rsspf-right-widget well span12">
+						<div class="widget-title">
+							Nominator Leaderboard
+						</div>
+						<div class="widget-body">
+							<div class="navwidget">
+								<ol>';
+								foreach ($blogusers as $user){
+									if ($uc <= 5){
+										if (get_user_meta( $user->ID, 'nom_count', true )){
+										$userNomCount = get_user_meta( $user->ID, 'nom_count', true );
+										
+										} else {
+											$userNomCount = 0;
+										}
+										$uc++;
+										echo '<li>' . $user->display_name . ' - ' . $userNomCount . '</li>';
+									}
+								
+								}
+				echo			'</ol>
+							</div>
+						</div>
+				</div>
+				</div>
+				';				
+				//$user->__get( 'nom_count' );
 		echo '</div><!-- End feed-widget-container span4 -->';
 	
 	echo '</div><!-- End row -->';
@@ -1385,15 +1418,14 @@ class rsspf {
 		} else {
 			// Logged in.
 			$userID = $current_user->ID;
-			if ($current_user->has_prop( 'nom_count' )){
+			if (get_user_meta( $userID, 'nom_count', true )){
 			
-				$nom_counter = $current_user->__get( 'nom_count' );
+				$nom_counter = get_user_meta( $userID, 'nom_count', true );
 				$nom_counter++;
-				$current_user->__set('nom_count', $nom_counter);
+				update_user_meta( $userID, 'nom_count', $nom_counter, true );
 			
 			} else {
-			
-				$current_user->__set('nom_count', 1);
+				add_user_meta( $userID, 'nom_count', 1, true );
 			
 			}
 		}
