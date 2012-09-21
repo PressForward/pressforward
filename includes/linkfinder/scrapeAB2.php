@@ -99,7 +99,7 @@ class AB_subscription_builder {
 		$theWikiLink = 'http://academicblogs.org/index.php/Main_Page';
 		//Random article for testing.
 		$html = file_get_html($theWikiLink);
-		
+		print_r($html);
 		# Get the title page
 		foreach ($html->find('h1') as $link){
 			
