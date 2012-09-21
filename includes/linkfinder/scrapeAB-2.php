@@ -7,6 +7,8 @@ class AB_subscription_builder {
 
 	public function __construct(){
 		
+		$htmlCounter = $this->build_the_ref_array();
+		return $htmlCounter;
 	}	
 	
 	function getTitle($str){
@@ -180,5 +182,9 @@ class AB_subscription_builder {
 	}
 
 }
+
+$ABSubscriptionBuilder = new AB_subscription_builder;
+$ABLinksArray = $ABSubscriptionBuilder->build_the_ref_array();
+print_r($ABLinksArray);
 
 ?>

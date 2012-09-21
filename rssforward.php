@@ -1179,15 +1179,23 @@ class rsspf {
 			endif;		
 			
 			
-			if ( false === ( $ABLinksArray = get_transient( 'ab_links_array' ) ) ) {
+			//if ( false === ( $ABLinksArray = get_transient( 'ab_links_array' ) ) ) {
 				$ABSubscriptionBuilder = new AB_subscription_builder;
 				$ABLinksArray = $ABSubscriptionBuilder->build_the_ref_array();
 				set_transient( 'ab_links_array', $ABLinksArray, 60*60*24*30 );
-			}
+				print_r($ABLinksArray);
+			//}
 			echo '<select>';
-			foreach ($ABLinksArray as $genSubject){
-				
-			}
+				foreach ($ABLinksArray as $genSubject){
+					echo '<option value="' . $genSubject['slug'] . '">' . $genSubject['text'] . '</option>';
+					foreach ($genSubject['links'] as $subject){
+						echo '<option value="' . $subject['slug'] . '">&nbsp;&nbsp;' . $subject['title'] . '</option>';
+						foreach ($subject['blogs'] as $blogObj){
+							echo '<option value="' . $blogObj['slug'] . '">&nbsp;&nbsp;&nbsp;&nbsp;' . $blogObj['title'] . '</option>';
+						}
+					}
+					
+				}
 			echo '</select>';
 		
 	
