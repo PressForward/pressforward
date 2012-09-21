@@ -3,8 +3,12 @@
 require_once('simple_html_dom.php');
 $dom = new simple_html_dom;
 
-class ABSubscriptions {
+class AB_subscription_builder {
 
+	public function __construct(){
+		
+	}	
+	
 	function getTitle($str){
 		//$str = file_get_contents($Url);
 		if(strlen($str)>1){
@@ -90,8 +94,9 @@ class ABSubscriptions {
 	function build_the_ref_array()
 	{
 
+		$theWikiLink = 'http://academicblogs.org/index.php/Main_Page';
 		//Random article for testing.
-		$html = file_get_html('http://academicblogs.org/index.php/Main_Page');
+		$html = file_get_html($theWikiLink);
 		
 		# Get the title page
 		foreach ($html->find('h1') as $link){
@@ -158,8 +163,8 @@ class ABSubscriptions {
 									$htmlCounter[$spanSlug]['links'][$titleSlug]['blogs'] = $this->getLinksFromSection($link);
 								//}
 								
-								$links[$sectionSlug][$titleSlug]['title'] = $title;
-								$links[$sectionSlug][$titleSlug]['link'] = $link;
+								//$links[$sectionSlug][$titleSlug]['title'] = $title;
+								//$links[$sectionSlug][$titleSlug]['link'] = $link;
 							} else {
 								
 								$counter--;
@@ -167,7 +172,8 @@ class ABSubscriptions {
 						}
 					}			
 					
-					
+					return $htmlCounter;
+				
 				}
 				
 		}

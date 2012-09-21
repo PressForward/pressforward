@@ -45,6 +45,7 @@ require_once(RSSPF_ROOT . "/includes/htmlchecker.php");
 require_once(RSSPF_ROOT . "/includes/fivefilters-readability/Readability.php");
 //For reading through an HTML page. 
 require_once(RSSPF_ROOT . "/includes/linkfinder/simple_html_dom.php");
+require_once(RSSPF_ROOT . "/includes/linkfinder/AB_subscription_builder.php");
 $dom = new simple_html_dom;
 
 
@@ -1176,6 +1177,18 @@ class rsspf {
 			</div>
 			<?php
 			endif;		
+			
+			
+			if ( false === ( $ABLinksArray = get_transient( 'ab_links_array' ) ) ) {
+				$ABSubscriptionBuilder = new AB_subscription_builder;
+				$ABLinksArray = $ABSubscriptionBuilder->build_the_ref_array();
+				set_transient( 'ab_links_array', $ABLinksArray, 60*60*24*30 );
+			}
+			echo '<select>';
+			foreach ($ABLinksArray as $genSubject){
+				
+			}
+			echo '</select>';
 		
 	
 	}
