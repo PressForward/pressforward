@@ -45,7 +45,7 @@ class AB_subscription_builder {
 		$stringSlug = str_replace('&amp;','&', $stringSlug);
 		//$charsToElim = array('?','/','\\');
 		$stringSlug = $this->sanitize($stringSlug, false, true);
-		
+		echo $stringSlug;
 		return $stringSlug;
 		
 	}
@@ -83,7 +83,7 @@ class AB_subscription_builder {
 				}
 			}
 		}
-		print_r($blogs);		
+		echo $blogs;		
 		return $blogs;
 		
 	}
@@ -92,13 +92,14 @@ class AB_subscription_builder {
 	{
 		error_reporting(E_ALL);
 		error_reporting(-1);
+		echo 'begin<br /><br />';
 		$theWikiLink = 'http://academicblogs.org/index.php/Main_Page';
 		//Random article for testing.
 		$html = file_get_html($theWikiLink);
-		print_r($html);
+		//print_r($html);
 		# Get the title page
 		foreach ($html->find('h1') as $link){
-			
+			//print_r($link);
 		//	if (($link->plaintext == '[edit] External links') || ($link->plaintext == '[edit] References') ){
 				set_time_limit(0);
 				# Get the main content block
@@ -111,7 +112,7 @@ class AB_subscription_builder {
 				$links = array();
 				# Walk through the dom and count paragraphs between H2 tags
 				foreach ($nextBlock->children() as $bodyChild) {
-					
+					echo $bodyChild;
 					if (($bodyChild->find('span')) && ($bodyChild->tag=='h2')){
 						foreach ($bodyChild->find('span') as $span){
 							$sectionCounter++;
@@ -131,6 +132,8 @@ class AB_subscription_builder {
 							$links = array();
 							//$htmlCounter[];
 						}
+					} else {
+						//$htmlCounter[$spanSlug]['error'] = false;
 					}
 					
 					if (($bodyChild->tag=='p') && ((count($bodyChild->find('a'))) == 1) && ((count($bodyChild->find('a[class=new]'))) == 0)){
@@ -166,6 +169,7 @@ class AB_subscription_builder {
 							} else {
 								
 								$counter--;
+								$htmlCounter[$spanSlug]['links'][$counter]['error'] = false;
 							}
 						}
 					}
@@ -182,4 +186,7 @@ class AB_subscription_builder {
 $ABSubscriptionBuilder = new AB_subscription_builder;
 $ABLinksArray = $ABSubscriptionBuilder->build_the_ref_array();
 
+echo '<pre>';
+print_r($ABLinksArray);
+echo '</pre>';
 ?>
