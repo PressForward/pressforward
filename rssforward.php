@@ -40,9 +40,10 @@ require_once("OpenGraph.php");
 /** This is the function to check the HTML of each item for open tags and close them.
  * I've altered it specifically for some odd HTML artifacts that occur when WP sanitizes the content input.
 **/
-require_once(RSSPF_ROOT . "/includes/htmlchecker.php");
+require_once(RSSPF_ROOT . "/lib/htmlchecker.php");
 //A slightly altered version of the Readability library from Five Filters, who based it off readability.com's code.
-require_once(RSSPF_ROOT . "/includes/fivefilters-readability/Readability.php");
+require_once(RSSPF_ROOT . "/lib/fivefilters-readability/Readability.php");
+
 //For reading through an HTML page.
 require_once(RSSPF_ROOT . "/includes/linkfinder/simple_html_dom.php");
 require_once(RSSPF_ROOT . "/includes/linkfinder/AB_subscription_builder.php");
@@ -51,11 +52,8 @@ $dom = new simple_html_dom;
 // Load the module base class and our test module
 include( RSSPF_ROOT . "/includes/module-base.php" );
 
-// Load the packaged modules
-//include( RSSPF_ROOT . "/includes/module-foo.php" );
-
 class rsspf {
-	var $modules;
+	var $modules = array();
 
 	// See http://php.net/manual/en/language.oop5.decon.php to get a better understanding of what's going on here.
 	function __construct() {
@@ -120,9 +118,6 @@ class rsspf {
 	 * provided by plugins
 	 */
 	function setup_modules() {
-		if ( ! is_object( $this->modules ) ) {
-			$this->modules = new stdClass;
-		}
 
 		$module_args = array();
 
@@ -155,7 +150,7 @@ class rsspf {
 
 		$module_args = array_merge( $module_args, $plugin_module_args );
 		foreach ( $module_args as $module ) {
-			$this->modules->{$module['slug']} = new $module['class'];
+			$this->modules[ $module['slug'] ] = new $module['class'];
 		}
 	}
 
@@ -257,10 +252,27 @@ class rsspf {
 		}
 	}
 
+	/**
+	 * Get the source data object, in a standardized format
+	 *
+	 * For the moment, all this data comes from the RSS_Import module. In
+	 * the future, other modules can hook in to provide their own data
+	 * sources.
+	 */
+	public function source_data_object() {
+		// Loop through each module to get its source data
+		$source_data_object = array();
+		foreach ( $this->modules as $module ) {
+			$source_data_object = array_merge( $source_data_object, $module->get_data_object() );
+		}
+		return $source_data_object;
+	}
+
 	public function assemble_feed_for_pull() {
 		# This pulls the RSS feed into a set of predetermined objects.
 		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
-		$feedObj = $this->rss_object();
+		$feedObj = $this->source_data_object();
+
 		# We need to init $sourceRepeat so it can be if 0 if nothing is happening.
 		$sourceRepeat = 0;
 		# We'll need this for our fancy query.
@@ -693,20 +705,9 @@ class rsspf {
 
 	}
 
-	# Where we store a list of feeds to check.
-	public function rsspf_feedlist() {
-
-		$feedlist = 'http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FEditors-at-Large%20Stream';
-		//'http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations';
-		//http://feeds.feedburner.com/DHNowEditorsChoiceAndNews
-		//http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations
-		return $feedlist;
-
-	}
-
 	# Here's where we build the core object that we use to pass everything around in a standardized way.
 	# Perhaps it should take this as an array?
-	private function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='', $itemTags='', $addedDate='', $sourceRepeat='' ) {
+	public function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='', $itemTags='', $addedDate='', $sourceRepeat='' ) {
 
 		# Assemble all the needed variables into our fancy object!
 		$itemArray = array(
@@ -727,48 +728,6 @@ class rsspf {
 					);
 
 		return $itemArray;
-
-	}
-
-	# Tries to get the RSS item author for the meta.
-	function get_rss_authors($item) {
-
-		$authorArray = ($item->get_authors());
-		foreach ($authorArray as $author) {
-
-			$nameArray[] = $author->get_name();
-
-		}
-		$authors = implode(', ', $nameArray);
-
-		return $authors;
-
-	}
-
-	# Checks the URL against a list of aggregators.
-	public function is_from_aggregator($xmlbase){
-		$c = 0;
-		$urlParts = parse_url($xmlbase);
-
-		$aggregators = array (
-								'tweetedtimes',
-								'tweetedtimes.com',
-								'www.tweetedtimes.com',
-								'pipes.yahoo.com'
-							);
-		foreach ($aggregators as $aggregator) {
-			if (in_array($aggregator, $urlParts)){
-				$c++;
-			}
-		}
-		if ($c > 0){
-
-			return true;
-
-
-		} else {
-			return false;
-		}
 
 	}
 
@@ -795,8 +754,11 @@ class rsspf {
 		print_r($url); print_r(' - Readability<br />');
 		$url = $this->de_https($url);
 		$url = str_replace('&amp;','&', $url);
-		if (file_get_contents($url)){
-			$html = file_get_contents($url);
+
+		// change from Boone - use wp_remote_get() instead of file_get_contents()
+		$request = wp_remote_get( $url );
+		if ( ! empty( $request['body'] ) ){
+			$html = $request['body'];
 		} else {
 			$content = false;
 			return $content;
@@ -841,128 +803,6 @@ class rsspf {
 		}
 
 		return $content;
-
-	}
-
-	# This function takes measures to try and get item content throguh methods of increasing reliability, but decreasing relevance.
-	public function get_content_through_aggregator($url){
-		set_time_limit(0);
-		//$this->set_error_handler("customError");
-		$url = $this->de_https($url);
-		$descrip = '';
-		//$url = http_build_url($urlParts, HTTP_URL_STRIP_AUTH | HTTP_URL_JOIN_PATH | HTTP_URL_JOIN_QUERY | HTTP_URL_STRIP_FRAGMENT);
-		//print_r($url);
-		# First run it through Readability.
-		$descrip = $this->readability_object($url);
-		//print_r($url);
-		# If that doesn't work...
-		while (!$descrip) {
-			$url = str_replace('&amp;','&', $url);
-			#Try and get the OpenGraph description.
-			if (OpenGraph::fetch($url)){
-				$node = OpenGraph::fetch($url);
-				$descrip = $node->description;
-			} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
-			elseif ('' != ($contentHtml = @get_meta_tags($url))) {
-				# Try and get the HEAD > META DESCRIPTION tag.
-				$descrip = $contentHtml['description'];
-				print_r($url . ' has no meta OpenGraph description we can find.');
-
-			}
-			else
-			{
-				# Ugh... we can't get anything huh?
-				print_r($url . ' has no description we can find.');
-				# We'll want to return a false to loop with.
-				$descrip = false;
-
-				break;
-			}
-		}
-		return $descrip;
-
-	}
-
-	public function rss_object() {
-
-		$feedlist = call_user_func(array($this, 'rsspf_feedlist'));
-		$theFeed = fetch_feed($feedlist);
-		$rssObject = array();
-		$c = 0;
-
-		foreach($theFeed->get_items() as $item) {
-			$id = md5($item->get_id()); //die();
-			//print_r($item_categories_string); die();
-
-			if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
-				if ($item->get_source()){
-					$sourceObj = $item->get_source();
-					# Get the link of what created the RSS entry.
-					$source = $sourceObj->get_link(0,'alternate');
-					# Check if the feed item creator is an aggregator.
-					$agStatus = $this->is_from_aggregator($source);
-				} else {
-					# If we can't get source information then don't do anything.
-					$agStatus = false;
-				}
-				# If there is less than 160 characters of content, than it isn't really giving us meaningful information.
-				# So we'll want to get the good stuff from the source.
-				if ((strlen($item->get_content())) < 160){
-					$agStatus = true;
-				}
-				//override switch while rest is not working.
-				//$agStatus = false;
-				if ($agStatus){
-					# Get the origin post link.
-					$realLink = $item->get_link();
-					# Try and get the actual content of the post.
-					$realContent = $this->get_content_through_aggregator($realLink);
-					# If we can't get the actual content, then just use what we've got from the RSS feed.
-					if (!$realContent){
-						$item_content = $item->get_content();
-					} else {
-						$item_content = $realContent;
-						//print_r($realContent);
-					}
-				} else {
-						$item_content = $item->get_content();
-				}
-				$iFeed = $item->get_feed();
-				$authors = $this->get_rss_authors($item);
-				$item_categories = array();
-				$item_categories = $item->get_categories();
-				$itemTerms = array();
-				if (!empty($item_categories)){
-					foreach ($item_categories as $item_category){
-						$itemTerms[] = $item_category->get_term();
-					}
-					$item_categories_string = implode(',',$itemTerms);
-				} else { $item_categories_string = ''; }
-				//one final cleanup of the content.
-				$contentObj = new htmlchecker($item_content);
-				$item_content = $contentObj->closetags($item_content);
-				print_r($c);
-				$rssObject['rss_' . $c] = $this->feed_object(
-											$item->get_title(),
-											$iFeed->get_title(),
-											$item->get_date('r'),
-											$authors,
-											$item_content,
-											$item->get_link(),
-											'',
-											$id,
-											$item->get_date('Y-m-d'),
-											$item_categories_string
-											);
-
-				set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
-
-			}
-			$c++;
-
-		}
-
-		return $rssObject;
 
 	}
 

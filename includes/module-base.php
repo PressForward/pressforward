@@ -40,6 +40,10 @@ class RSSPF_Module {
 		}
 	}
 
+	// Fetch and return a formatted data object - optional
+	function get_data_object() { return array(); }
+
+	// Scripts and styles - optional
 	function admin_enqueue_scripts() {}
 	function admin_enqueue_styles() {}
 	function wp_enqueue_scripts() {}

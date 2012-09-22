@@ -45,5 +45,3 @@ class RSSPF_Foo extends RSSPF_Module {
 		wp_register_style( RSSPF_SLUG . '-foo-style', RSSPF_URL . 'includes/foo/css/style.css' );
 	}
 }
-
-new RSSPF_Foo;
