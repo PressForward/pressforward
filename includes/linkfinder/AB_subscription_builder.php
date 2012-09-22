@@ -7,23 +7,20 @@ class AB_subscription_builder {
 
 	public function __construct(){
 		
+		$htmlCounterObj = $this->build_the_ref_array();
+		return $htmlCounterObj;
 	}	
 	
-	function getTitle($str){
+	public function getTitle($str){
 		//$str = file_get_contents($Url);
 		if(strlen($str)>1){
 			preg_match("/\<title\>(.*)\<\/title\>/",$str,$title);
 			return $title[1];
 		}
 	}
-
-	function customError($errno, $errstr)
-	{
-	  return 'Nothing found';
-
-	}
+	
 	# via http://stackoverflow.com/questions/2668854/sanitizing-strings-to-make-them-url-and-filename-safe
-	function sanitize($string, $force_lowercase = true, $anal = false) {
+	public function sanitize($string, $force_lowercase = true, $anal = false) {
 		$strip = array("~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "[", "{", "]",
 					   "}", "\\", "|", ";", ":", "\"", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;",
 					   "—", "–", ",", "<", ".", ">", "/", "?");
@@ -37,7 +34,7 @@ class AB_subscription_builder {
 			$clean;
 	}
 
-	function slugger($string){
+	public function slugger($string){
 
 		$string = strip_tags($string);
 		$stringArray = explode(' ', $string);
@@ -48,12 +45,11 @@ class AB_subscription_builder {
 		$stringSlug = str_replace('&amp;','&', $stringSlug);
 		//$charsToElim = array('?','/','\\');
 		$stringSlug = $this->sanitize($stringSlug, false, true);
-		
 		return $stringSlug;
 		
 	}
 	
-	function get_spam_sites(){
+	public function get_spam_sites(){
 		
 		$spamsites = array('http://www.buy-wellbutrin.com/', 'http://www.mycaal.com/');
 		
@@ -63,7 +59,7 @@ class AB_subscription_builder {
 
 	# to fill the blog property of the array. 
 	# PS... How often does this get updated?
-	function getLinksFromSection ($sectionURL){		
+	public function getLinksFromSection ($sectionURL){		
 		set_time_limit(0);
 		$html = file_get_html($sectionURL);
 		
@@ -86,33 +82,45 @@ class AB_subscription_builder {
 				}
 			}
 		}
-		
+				
 		return $blogs;
 		
 	}
 
 	public function build_the_ref_array()
 	{
-
+		error_reporting(E_ALL);
+		error_reporting(-1);
 		$theWikiLink = 'http://academicblogs.org/index.php/Main_Page';
+		$htmlCounter = array();
 		//Random article for testing.
 		$html = file_get_html($theWikiLink);
-		
+		//print_r($html);
 		# Get the title page
 		foreach ($html->find('h1') as $link){
-			
+			//print_r($link);
 		//	if (($link->plaintext == '[edit] External links') || ($link->plaintext == '[edit] References') ){
-				
+				set_time_limit(0);
 				# Get the main content block
 				$nextBlock = $link->next_sibling();
 				//print_r($nextBlock);	
 				
-				$htmlCounter = array();
 				$counter = 0;
 				$sectionCounter = 0;
 				$links = array();
+				$ch1 = 0;
 				# Walk through the dom and count paragraphs between H2 tags
 				foreach ($nextBlock->children() as $bodyChild) {
+
+										
+					if (($bodyChild->tag=='h1')){
+						if ($ch1 != 0){
+							//return $htmlCounter;
+							break 2;
+							//goto end;
+						}
+						$ch1++;
+					}
 					
 					if (($bodyChild->find('span')) && ($bodyChild->tag=='h2')){
 						foreach ($bodyChild->find('span') as $span){
@@ -133,6 +141,8 @@ class AB_subscription_builder {
 							$links = array();
 							//$htmlCounter[];
 						}
+					} else {
+						//$htmlCounter[$spanSlug]['error'] = false;
 					}
 					
 					if (($bodyChild->tag=='p') && ((count($bodyChild->find('a'))) == 1) && ((count($bodyChild->find('a[class=new]'))) == 0)){
@@ -168,6 +178,7 @@ class AB_subscription_builder {
 							} else {
 								
 								$counter--;
+								$htmlCounter[$spanSlug]['links'][$counter]['error'] = false;
 							}
 						}
 					}
@@ -175,7 +186,7 @@ class AB_subscription_builder {
 				}
 				
 		}
-	
+		//end:
 		return $htmlCounter;
 	}
 

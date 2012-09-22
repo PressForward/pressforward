@@ -7,8 +7,8 @@ class AB_subscription_builder {
 
 	public function __construct(){
 		
-		//$htmlCounter = $this->build_the_ref_array();
-		//return $htmlCounter;
+		$htmlCounterObj = $this->build_the_ref_array();
+		return $htmlCounterObj;
 	}	
 	
 	public function getTitle($str){
@@ -94,6 +94,7 @@ class AB_subscription_builder {
 		error_reporting(-1);
 		echo 'begin<br /><br />';
 		$theWikiLink = 'http://academicblogs.org/index.php/Main_Page';
+		$htmlCounter = array();
 		//Random article for testing.
 		$html = file_get_html($theWikiLink);
 		//print_r($html);
@@ -106,7 +107,6 @@ class AB_subscription_builder {
 				$nextBlock = $link->next_sibling();
 				//print_r($nextBlock);	
 				
-				$htmlCounter = array();
 				$counter = 0;
 				$sectionCounter = 0;
 				$links = array();

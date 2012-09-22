@@ -1179,19 +1179,50 @@ class rsspf {
 			endif;		
 			
 			
-			//if ( false === ( $ABLinksArray = get_transient( 'ab_links_array' ) ) ) {
+			if ( false === ( $ABLinksArray = get_transient( 'ab_links_array' ) ) ) {
 				$ABSubscriptionBuilder = new AB_subscription_builder;
 				$ABLinksArray = $ABSubscriptionBuilder->build_the_ref_array();
 				set_transient( 'ab_links_array', $ABLinksArray, 60*60*24*30 );
-				print_r($ABLinksArray);
-			//}
+				//print_r($ABLinksArray);
+			}
+			$ca = 0;
+			$cb = 0;
+			$cc = 0;
+			
 			echo '<select>';
 				foreach ($ABLinksArray as $genSubject){
-					echo '<option value="' . $genSubject['slug'] . '">' . $genSubject['text'] . '</option>';
+					if ($ca == 0){
+						echo '<option disabled="disabled" value="0">----topic----<hr /></option>';
+						
+					}					
+					echo '<option value="' . $genSubject['slug'] . '">' . $genSubject['text'] . ' - ' . $ca . '</option>';
+					if ($ca == 0){
+						echo '<option disabled="disabled" value="0">--------<hr /></option>';
+						$cb = 0;
+					}
+					$ca++;
 					foreach ($genSubject['links'] as $subject){
-						echo '<option value="' . $subject['slug'] . '">&nbsp;&nbsp;' . $subject['title'] . '</option>';
+						//if ($cb == 0){
+							echo '<option disabled="disabled" value="0">----section----<hr /></option>';
+						//}
+						echo '<option value="' . $subject['slug'] . '">&nbsp;&nbsp;&nbsp;' . $subject['title'] . ' - ' . $cb . '</option>';
+						
+							echo '<option disabled="disabled" value="0">--------<hr /></option>';
+						if ($cb == 0){	
+							$ca = 0;
+							$cc = 0;
+						}
+						$cb++;
 						foreach ($subject['blogs'] as $blogObj){
-							echo '<option value="' . $blogObj['slug'] . '">&nbsp;&nbsp;&nbsp;&nbsp;' . $blogObj['title'] . '</option>';
+							
+							echo '<option value="' . $blogObj['slug'] . '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $blogObj['title'] . ' - ' . $cc . '</option>';
+							if ($cc == 0){
+								//echo '<option disabled="disabled" value="0"><hr /></option>';
+								
+								$cb = 0;
+							}
+							$cc++;
+							
 						}
 					}
 					
