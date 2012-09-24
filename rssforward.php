@@ -254,26 +254,30 @@ class rsspf {
 							# UNTESTED
 							
 								# Post comparative values.
-								$theTitle = get_the_title();
-								$postID = get_the_ID();
-								$postDate = get_the_date('U');
-								$postItemLink = get_post_meta($postID, 'item_link', true);
+								$theTitle = $post->post_title;
+								$postID = $post->ID;
+								$postDate = strtotime($post->post_date);
+								$postItemLink = get_post_meta($post->ID, 'item_link', true);
 								# Item comparative values.
 								$itemDate = strtotime($item['item_date']);
 								$itemTitle = $item['item_title'];
 								$itemLink = $item['item_link'];
 								
 								# First check if it more recent than the currently stored item.
-								if(($itemDate > $postDate) && (($theTitle == $itemTitle) || ($postItemLink == $itemLink))){
-									# If it is more recent, than this is the new dominant post.
-									$sourceRepeat = get_post_meta($postID, 'source_repeat', true);
-									$sourceRepeat++;
-								} elseif (($itemDate <= $postDate) && (($theTitle == $itemTitle) || ($postItemLink == $itemLink))) {
-									# if it is less recent, then we need to increment the source count.
-									$sourceRepeat = get_post_meta($postID, 'source_repeat', true);
-									$sourceRepeat++;
-									update_post_meta($postID, 'source_repeat', $sourceRepeat);
-									$thepostscheck++;
+								if((($theTitle == $itemTitle) || ($postItemLink == $itemLink))){
+									if (($itemDate > $postDate)) {
+										# If it is more recent, than this is the new dominant post.
+										$sourceRepeat = get_post_meta($postID, 'source_repeat', true);
+										$sourceRepeat++;
+									} elseif ($itemData <= $postDate) {
+										# if it is less recent, then we need to increment the source count.
+										$sourceRepeat = get_post_meta($postID, 'source_repeat', true);
+										$sourceRepeat++;
+										update_post_meta($postID, 'source_repeat', $sourceRepeat);
+										$thepostscheck++;
+									} else {
+										$thepostscheck = 0;
+									}
 								} else {
 									# If it isn't duplicated at all, then we need to give it a source repeat count of 0
 									$sourceRepeat = 0;
