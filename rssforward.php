@@ -207,7 +207,9 @@ class rsspf {
 		# We can do stuff with it, using the same structure of items as we do everywhere else. 
 		foreach($feedObj as $item) {
 			$thepostscheck = 0;
+			$thePostsDoubleCheck = 0;
 			$item_id 		= $item['item_id'];
+			$sourceRepeat = 0;
 			//$queryForCheck = new WP_Query( array( 'post_type' => 'rssarchival', 'meta_key' => 'item_id', 'meta_value' => $item_id ) );
 			 # Originally this query tried to get every archive post earlier than 'now' to check.
 			 # But it occured to me that, since I'm doing a custom query anyway, I could just query for items with the ID I want.
@@ -234,7 +236,7 @@ class rsspf {
 						setup_postdata($post);
 						//print_r(get_the_ID());
 						//print_r('< the ID');
-						if ((get_post_meta(get_the_ID(), 'item_id', $item_id, true)) == $item_id){ $thepostscheck++; }
+						if ((get_post_meta($post->ID, 'item_id', $item_id, true)) == $item_id){ $thepostscheck++; }
 					endforeach;
 				endif;
 				wp_reset_query();
@@ -250,8 +252,7 @@ class rsspf {
 					$checkpoststwo = $wpdb->get_results($queryMoreStr, OBJECT);
 					if ($checkpoststwo):
 						foreach ($checkpoststwo as $post):
-							setup_postdata($post);					
-							# UNTESTED
+							setup_postdata($post);
 							
 								# Post comparative values.
 								$theTitle = $post->post_title;
@@ -265,15 +266,17 @@ class rsspf {
 								
 								# First check if it more recent than the currently stored item.
 								if((($theTitle == $itemTitle) || ($postItemLink == $itemLink))){
+									$thePostsDoubleCheck++;
+									$sourceRepeat = get_post_meta($postID, 'source_repeat', true);
 									if (($itemDate > $postDate)) {
 										# If it is more recent, than this is the new dominant post.
-										$sourceRepeat = get_post_meta($postID, 'source_repeat', true);
 										$sourceRepeat++;
-									} elseif ($itemData <= $postDate) {
+									} elseif (($itemData <= $postDate)) {
 										# if it is less recent, then we need to increment the source count.
-										$sourceRepeat = get_post_meta($postID, 'source_repeat', true);
 										$sourceRepeat++;
-										update_post_meta($postID, 'source_repeat', $sourceRepeat);
+										if ($thePostsDoubleCheck > $sourceRepeat) {
+											update_post_meta($postID, 'source_repeat', $sourceRepeat);
+										}
 										$thepostscheck++;
 									} else {
 										$thepostscheck = 0;
@@ -287,7 +290,7 @@ class rsspf {
 						endforeach;
 					endif;
 				}
-			wp_reset_query();
+				wp_reset_query();
 			# Why an increment here instead of a bool? 
 			# If I start getting errors, I can use this to check how many times an item is in the database.
 			# Potentially I could even use this to clean the database from duplicates that might occur if
