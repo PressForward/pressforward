@@ -34,9 +34,9 @@ $result = $readability->init();
 // does it look like we found what we wanted?
 if ($result) {
 	echo "== Title =====================================\n";
-	echo $readability->getTitle()->textContent, "\n\n";
+//	echo $readability->getTitle()->textContent, "\n\n";
 	echo "== Body ======================================\n";
-	$content = $readability->getContent()->innerHTML;
+//	$content = $readability->getContent()->innerHTML;
 	// if we've got Tidy, let's clean it up for output
 	if (function_exists('tidy_parse_string')) {
 		$tidy = tidy_parse_string($content, array('indent'=>true, 'show-body-only' => true), 'UTF8');

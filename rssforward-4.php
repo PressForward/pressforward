@@ -263,7 +263,7 @@ class rsspf {
 	 * the future, other modules can hook in to provide their own data
 	 * sources.
 	 */
-	public function source_data_object() {
+	function source_data_object() {
 		// Loop through each module to get its source data
 		$source_data_object = array();
 		foreach ( $this->modules as $module ) {
@@ -272,7 +272,7 @@ class rsspf {
 		return $source_data_object;
 	}
 
-	public function assemble_feed_for_pull() {
+	function assemble_feed_for_pull() {
 		# This pulls the RSS feed into a set of predetermined objects.
 		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
 		$feedObj = $this->source_data_object();
@@ -548,7 +548,7 @@ class rsspf {
 	# This function feeds items to our display feed function rsspf_reader_builder.
 	# It is just taking our database of rssarchival items and putting them into a
 	# format that the builder understands.
-	public function archive_feed_to_display() {
+	function archive_feed_to_display() {
 		global $wpdb, $post;
 		//$args = array(
 		//				'post_type' => array('any')
@@ -681,7 +681,7 @@ class rsspf {
 	}
 
 	# Meta boxes to show up in nomination editing pages.
-	public function nominations_meta_boxes() {
+	function nominations_meta_boxes() {
 		global $post;
 
 		add_meta_box('rsspf-nominations', 'Nomination Data', array($this, 'nominations_box_builder'), 'nomination', 'side', 'high' );
@@ -689,7 +689,7 @@ class rsspf {
 	}
 
 	# The builder for the box that shows us the nomination metadata.
-	public function nominations_box_builder() {
+	function nominations_box_builder() {
 		global $post;
 		//wp_nonce_field( 'nominate_meta', 'nominate_meta_nonce' );
 		$origin_item_ID = get_post_meta($post->ID, 'origin_item_ID', true);
@@ -718,7 +718,7 @@ class rsspf {
 
 	# Here's where we build the core object that we use to pass everything around in a standardized way.
 	# Perhaps it should take this as an array?
-	public function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='', $itemTags='', $addedDate='', $sourceRepeat='' ) {
+	function feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='', $itemTags='', $addedDate='', $sourceRepeat='' ) {
 
 		# Assemble all the needed variables into our fancy object!
 		$itemArray = array(
@@ -742,14 +742,14 @@ class rsspf {
 
 	}
 
-	public function customError($errno, $errstr)
+	function customError($errno, $errstr)
 	{
 	  return false;
 
 	}
 
 	# Tries to turn any HTTPS URL into an HTTP URL for servers without ssl configured.
-	public function de_https($url) {
+	function de_https($url) {
 		$urlParts = parse_url($url);
 		if (in_array('https', $urlParts)){
 			$urlParts['scheme'] = 'http';
@@ -759,7 +759,7 @@ class rsspf {
 	}
 
 	# The function that runs a URL through Readability and attempts to give back the plain content.
-	public function readability_object($url) {
+	function readability_object($url) {
 	//ref: http://www.keyvan.net/2010/08/php-readability/
 		set_time_limit(0);
 		print_r($url); print_r(' - Readability<br />');
@@ -818,13 +818,13 @@ class rsspf {
 
 	}
 
-	public function assemble_public_stream() {
+	function assemble_public_stream() {
 
 		//build a function with hooks to assemble a bunch of function that gather content into one coherent stream.
 
 	}
 
-	private function prep_item_for_submit($item) {
+	function prep_item_for_submit($item) {
 		$item['item_content'] = htmlspecialchars($item['item_content']);
 		$itemid = $item['item_id'];
 
@@ -840,7 +840,7 @@ class rsspf {
 
 	}
 
-	public function rsspf_reader_builder() {
+	function rsspf_reader_builder() {
 		//Calling the feedlist within the rsspf class.
 	echo '<div class="container-fluid">';
 		echo '<div class="row-fluid">';

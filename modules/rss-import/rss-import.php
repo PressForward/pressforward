@@ -209,13 +209,22 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	}
 	
 	function add_to_feeder() {
-   
+		?>
+			<div class="show-feeds">
+				<?php
+					$feedlist = $this->rsspf_feedlist();
+					foreach ($feedlist as $feedUri){
+						echo $feedUri;
+					}
+				?>
+			</div>
+		<?php
     
-	?>
-		<p class="submit">
-			<input type="submit" class="button-primary" value="<?php _e('Save Options', 'responsive'); ?>" />
-		</p>		
-	<?php
+		?>
+			<p class="submit">
+				<input type="submit" class="button-primary" value="<?php _e('Save Options', 'responsive'); ?>" />
+			</p>		
+		<?php
 	}
 
 }
