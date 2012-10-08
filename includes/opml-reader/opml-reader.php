@@ -7,10 +7,6 @@ if (fopen ($file, "r")) {
 
 }
 
-//print_r( '<pre><code>' );
-//print_r($opml_data);
-//print_r( '</code></pre>' );
-
 //Site data
 $a = array();
 //Feed URI
@@ -23,8 +19,5 @@ foreach ($a as $outline) {
 	$b[] = $outline['xmlUrl'];
 }
 
-print_r( '<pre><code>' );
-print_r($b);
-print_r( '</code></pre>' );
 
 ?>
