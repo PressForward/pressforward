@@ -1,6 +1,6 @@
 <?php
 
-require_once(RSSPF_ROOT . "/includes/linkfinder/simple_html_dom.php");
+require_once(RSSPF_ROOT . "/lib/simple_html_dom.php");
 require_once(RSSPF_ROOT . "/includes/linkfinder/AB_subscription_builder.php");
 
 class RSSPF_AB_Subscribe extends RSSPF_Module {

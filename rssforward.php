@@ -841,7 +841,7 @@ class rsspf {
 		echo '<div class="row-fluid">';
 			echo '<div class="span9 title-span">';
 				echo '<h1>' . RSSPF_TITLE . '</h1>';
-				echo '<img class="loading-top" src="' . RSSPF_URL . 'includes/images/ajax-loader.gif" alt="Loading..." style="display: none" />';
+				echo '<img class="loading-top" src="' . RSSPF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';
 				echo '<div id="errors"></div>';
 			echo '</div><!-- End title 9 span -->';
 		echo '</div><!-- End Row -->';
@@ -925,7 +925,7 @@ class rsspf {
 						echo '<div class="span1">';
 								echo '<div style="float:left; margin: 10px auto;">
 										<div class="thumbnail" >
-										<img src="' . RSSPF_URL . 'includes/images/books.png">
+										<img src="' . RSSPF_URL . 'assets/images/books.png">
 										</div>
 									</div>';
 						echo '</div><!-- End span1 -->';
@@ -979,7 +979,7 @@ class rsspf {
 							echo '<input type="hidden" name="GreetingAll" class="GreetingAll" value="Hello Everyone!" />'
 									. '<input type="submit" class="PleasePushMe" id="' . $item['item_id'] . '" value="Nominate" />'
 									. '<div class="nominate-result-' . $item['item_id'] . '">'
-									. '<img class="loading-' . $item['item_id'] . '" src="' . RSSPF_URL . 'includes/images/ajax-loader.gif" alt="Loading..." style="display: none" />'
+									. '<img class="loading-' . $item['item_id'] . '" src="' . RSSPF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />'
 									. '</div></p>'
 								  . '</form>';
 
