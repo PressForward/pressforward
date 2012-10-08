@@ -1106,6 +1106,8 @@ class rsspf {
 	function rsspf_options_builder() {
 
 		echo 'Options';
+		
+		do_action( 'module_options' );
 
 	}
 
