@@ -207,5 +207,15 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		}
 
 	}
+	
+	function add_to_feeder() {
+   
+    
+	?>
+		<p class="submit">
+			<input type="submit" class="button-primary" value="<?php _e('Save Options', 'responsive'); ?>" />
+		</p>		
+	<?php
+	}
 
 }

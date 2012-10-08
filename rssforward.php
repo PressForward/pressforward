@@ -91,6 +91,9 @@ class rsspf {
 		//Activate our cron actions
 		add_action('init', array($this, 'scheduale_feed_in') );
 		add_action('init', array($this, 'scheduale_feed_out') );
+		
+		//Register options
+		add_action( 'init', array( $this, 'feeder_options_init' ) );
 
 		//The take_feed_out action is now initiated, we should be able to attach our feed disassembly function.
 		add_action( 'take_feed_out', array($this, 'disassemble_feed_items') );
@@ -101,6 +104,7 @@ class rsspf {
 		add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
 
 		add_action( 'init', array( $this, 'pressforward_init' ), 20 );
+		
 	}
 
 	/**
@@ -1110,6 +1114,10 @@ class rsspf {
 		do_action( 'module_options' );
 
 	}
+	
+	function feeder_options_init() {
+		register_setting(RSSPF_SLUG . '_feeder_options', RSSPF_SLUG . '_plugin_feeder_options', RSSPF_SLUG . '_plugin_feeder_options_validate');
+	}	
 
 	function rsspf_feeder_builder() {
 
@@ -1130,8 +1138,14 @@ class rsspf {
 			</div>
 			<?php
 			endif;
+			?><form method="post" action="options.php"><?php
+            settings_fields(RSSPF_SLUG . '_feeder_options');
+            $options = get_option(RSSPF_SLUG . '_plugin_feeder_options');			
 			
 			do_action( RSSPF_SLUG . '_feeder_menu' );
+			
+			?><input type="submit" class="button-primary" value="<?php _e('Save Options', RSSPF_SLUG); ?>" />
+			</form><?php
 
 
 	}
