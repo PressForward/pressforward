@@ -12,9 +12,19 @@ $a = array();
 //Feed URI
 $b = array();
 $c = 0;
+
+/** Get XML data:
+  * supplies:
+  * [text] - Text version of title
+  * [text] - Text version of title
+  * [type] - Feed type (should be rss)
+  * [xmlUrl] - location of the RSS feed on the site.
+  * [htmlUrl] - The site home URI.
+**/
 foreach ($opml_data->body->outline->outline as $data){
 	$a[] = reset($data);
 }
+// Pulls out the feed location. 
 foreach ($a as $outline) {
 	$b[] = $outline['xmlUrl'];
 }
