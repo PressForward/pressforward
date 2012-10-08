@@ -36,7 +36,7 @@ define( 'RSSPF_FILE_PATH', RSSPF_ROOT . '/' . basename(__FILE__) );
 define( 'RSSPF_URL', plugins_url('/', __FILE__) );
 
 //This adds the library we're going to use to pull and parse Open Graph data from a page.
-require_once("OpenGraph.php");
+require_once(RSSPF_ROOT . "/lib/OpenGraph.php");
 /** This is the function to check the HTML of each item for open tags and close them.
  * I've altered it specifically for some odd HTML artifacts that occur when WP sanitizes the content input.
 **/
@@ -45,7 +45,7 @@ require_once(RSSPF_ROOT . "/lib/htmlchecker.php");
 require_once(RSSPF_ROOT . "/lib/fivefilters-readability/Readability.php");
 
 //For reading through an HTML page.
-require_once(RSSPF_ROOT . "/includes/linkfinder/simple_html_dom.php");
+require_once(RSSPF_ROOT . "/lib/simple_html_dom.php");
 require_once(RSSPF_ROOT . "/includes/linkfinder/AB_subscription_builder.php");
 $dom = new simple_html_dom;
 
@@ -1176,15 +1176,15 @@ class rsspf {
 		else {
 			//And now lets enqueue the script, ensuring that jQuery is already active.
 
-			wp_enqueue_script('tinysort', RSSPF_URL . 'includes/js/jquery.tinysort.js', array( 'jquery' ));
-			wp_enqueue_script('sort-imp', RSSPF_URL . 'includes/js/sort-imp.js', array( 'tinysort', 'twitter-bootstrap', 'jq-fullscreen' ));
-			wp_enqueue_script('nomination-imp', RSSPF_URL . 'includes/js/nomination-imp.js', array( 'jquery' ));
-			wp_enqueue_script('twitter-bootstrap', RSSPF_URL . 'includes/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
-			wp_enqueue_script('jq-fullscreen', RSSPF_URL . 'includes/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
+			wp_enqueue_script('tinysort', RSSPF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
+			wp_enqueue_script('sort-imp', RSSPF_URL . 'assets/js/sort-imp.js', array( 'tinysort', 'twitter-bootstrap', 'jq-fullscreen' ));
+			wp_enqueue_script('nomination-imp', RSSPF_URL . 'assets/js/nomination-imp.js', array( 'jquery' ));
+			wp_enqueue_script('twitter-bootstrap', RSSPF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
+			wp_enqueue_script('jq-fullscreen', RSSPF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
 
-			wp_register_style( RSSPF_SLUG . '-style', RSSPF_URL . 'includes/css/style.css');
-			wp_register_style( 'bootstrap-style', RSSPF_URL . 'includes/twitter-bootstrap/css/bootstrap.css');
-			wp_register_style( 'bootstrap-responsive-style', RSSPF_URL . 'includes/twitter-bootstrap/css/bootstrap-responsive.css');
+			wp_register_style( RSSPF_SLUG . '-style', RSSPF_URL . 'assets/css/style.css');
+			wp_register_style( 'bootstrap-style', RSSPF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
+			wp_register_style( 'bootstrap-responsive-style', RSSPF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
 
 			wp_enqueue_style('bootstrap-style');
 			wp_enqueue_style('bootstrap-responsive-style');
@@ -1195,19 +1195,9 @@ class rsspf {
 
 	}
 
-	function MyAjaxFunction(){
-		  //get the data from ajax() call
-		   $GreetingAll = $_POST['GreetingAll'];
-		   $results = "<h2>".$GreetingAll."</h2>";
-		  // Return the String
-		   die($results);
-
-		//Ref for eventual building of nomination ajax:
-			//https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/editorial-comments.php ln284	//https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/lib/editorial-comments.js
-			//https://github.com/danielbachhuber/Edit-Flow/blob/master/edit_flow.php
-
-
-	}
+	//Ref for eventual building of nomination ajax:
+	//https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/editorial-comments.php ln284	//https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/lib/editorial-comments.js
+	//https://github.com/danielbachhuber/Edit-Flow/blob/master/edit_flow.php
 
 	//http://codex.wordpress.org/Class_Reference/WP_Query#Time_Parameters
 	function get_posts_after_for_check( $theDate, $post_type ) {

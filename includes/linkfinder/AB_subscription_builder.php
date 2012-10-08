@@ -1,6 +1,6 @@
 <?php
 
-require_once('simple_html_dom.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '\lib\simple_html_dom.php');
 $dom = new simple_html_dom;
 
 class AB_subscription_builder {

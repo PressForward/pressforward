@@ -12,7 +12,7 @@ define('IFRAME_REQUEST' , true);
 /** WordPress Administration Bootstrap */
 require_once( dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))) ) . '/wp-admin' . '/admin.php');
 	//RSSPF Correction - this will need to be changed to a constant later.
-require_once( dirname(dirname(dirname(__FILE__))) . "\OpenGraph.php");
+require_once( dirname(dirname(dirname(__FILE__))) . "\lib\OpenGraph.php");
 	global $rsspf_nt;
 	$rsspf_nt = new rsspf();
 	
