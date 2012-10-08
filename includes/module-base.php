@@ -40,7 +40,25 @@ class RSSPF_Module {
 			add_submenu_page( RSSPF_MENU_SLUG, $r['page_title'], $r['menu_title'], $r['cap'], $r['slug'], $r['callback'] );
 		}
 	}
+/**
+	function setup_dash_widgets( $dash_widgets ) {
+		foreach ( (array) $dash_widgets as $dash_widget ) {
+			$defaults = array(
+				'widget_title' => '',
+				'slug'       => '',
+				'callback'   => '',
+			);
+			$r = wp_parse_args( $dash_widget, $defaults );
 
+			// add_submenu_page() will fail if any arguments aren't passed
+			if ( empty( $r['widget_title'] ) || empty( $r['slug'] ) || empty( $r['callback'] ) ) {
+				continue;
+			}
+
+			//add_action( RSSPF_MENU_SLUG, $r['page_title'], $r['menu_title'], $r['cap'], $r['slug'], $r['callback'] );
+		}
+	}	
+**/	
 	// Fetch and return a formatted data object - optional
 	function get_data_object() { return array(); }
 

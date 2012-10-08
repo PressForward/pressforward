@@ -1057,7 +1057,45 @@ class rsspf {
 				</div>
 				</div>
 				';
-		
+				
+				$widgets_array = array(
+									'first_widget' => array(
+														'title' => 'Widget Title',
+														'slug' => 'first_widget',
+														'callback' => '<div class="navwidget">	Widget Body <br />	<a href="#20">Test link to item 20.</a>	</div>'
+													)
+								);
+				$mod_widgets = apply_filters( 'dash_widget_bar' );
+				$all_widgets_array = array_merge($widgets_array, $mod_widgets);
+				foreach ($all_widgets_array as $widget_array) {
+					$defaults = array(
+						'widget_title' => '',
+						'slug'       => '',
+						'callback'   => '',
+					);
+					$r = wp_parse_args( $dash_widget, $defaults );
+					
+					// add_submenu_page() will fail if any arguments aren't passed
+					if ( empty( $r['widget_title'] ) || empty( $r['slug'] ) || empty( $r['callback'] ) ) {
+						continue;
+					} else {
+
+						echo '<div class="row-fluid">
+						<div class="rsspf-right-widget well span12 ' . $r['slug'] . '">';
+							echo '<div class="widget-title">' . 
+								$r['widget_title']
+							. '</div>';		
+							echo '<div class="widget-body">';
+								echo $r['callback'];
+							echo '</div>';
+						echo '</div>
+						</div>';
+					
+					}
+					
+				}
+				
+				/**
 				// Loop through each module to get its source data
 				foreach ( $this->modules as $module ) {
 					//$source_data_object = array_merge( $source_data_object, $module->get_widget_object() );
@@ -1068,6 +1106,7 @@ class rsspf {
 					echo '</div>
 					</div>';
 				}
+				**/
 
 		echo '</div><!-- End feed-widget-container span4 -->';
 
