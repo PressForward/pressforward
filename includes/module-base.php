@@ -18,6 +18,7 @@ class RSSPF_Module {
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_scripts' ) );
 		add_action( 'wp_enqueue_styles',  array( $this, 'wp_enqueue_styles' ) );
+		add_action( RSSPF_SLUG . '_feeder_menu', array( $this, 'add_to_feeder' ) );
 	}
 
 	function setup_admin_menus( $admin_menus ) {
@@ -48,5 +49,6 @@ class RSSPF_Module {
 	function admin_enqueue_styles() {}
 	function wp_enqueue_scripts() {}
 	function wp_enqueue_styles() {}
+	function add_to_feeder() {}
 
 }

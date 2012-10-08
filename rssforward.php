@@ -874,6 +874,10 @@ class rsspf {
 							</div>
 						</div>
 					';
+					
+					# Auto add these actions depending on if the module presents a stream?
+					//do_action( 'module_stream' );
+					
 					echo '<div class="row-fluid">
 							<div class="span12 sub-card card well">
 								<div class="tapped">
@@ -1053,7 +1057,18 @@ class rsspf {
 				</div>
 				</div>
 				';
-				//$user->__get( 'nom_count' );
+		
+				// Loop through each module to get its source data
+				foreach ( $this->modules as $module ) {
+					//$source_data_object = array_merge( $source_data_object, $module->get_widget_object() );
+					
+					echo '<div class="row-fluid">
+					<div class="rsspf-right-widget well span12">';
+					
+					echo '</div>
+					</div>';
+				}
+
 		echo '</div><!-- End feed-widget-container span4 -->';
 
 	echo '</div><!-- End row -->';
@@ -1086,57 +1101,8 @@ class rsspf {
 			</div>
 			<?php
 			endif;
-
-
-			if ( false === ( $ABLinksArray = get_transient( 'ab_links_array' ) ) ) {
-				$ABSubscriptionBuilder = new AB_subscription_builder;
-				$ABLinksArray = $ABSubscriptionBuilder->build_the_ref_array();
-				set_transient( 'ab_links_array', $ABLinksArray, 60*60*24*30 );
-				//print_r($ABLinksArray);
-			}
-			$ca = 0;
-			$cb = 0;
-			$cc = 0;
 			
-			echo '<select>';
-				foreach ($ABLinksArray as $genSubject){
-					if ($ca == 0){
-						echo '<option disabled="disabled" value="0">----topic----<hr /></option>';
-						
-					}					
-					echo '<option value="' . $genSubject['slug'] . '">' . $genSubject['text'] . ' - ' . $ca . '</option>';
-					if ($ca == 0){
-						echo '<option disabled="disabled" value="0">--------<hr /></option>';
-						$cb = 0;
-					}
-					$ca++;
-					foreach ($genSubject['links'] as $subject){
-						//if ($cb == 0){
-							echo '<option disabled="disabled" value="0">----section----<hr /></option>';
-						//}
-						echo '<option value="' . $subject['slug'] . '">&nbsp;&nbsp;&nbsp;' . $subject['title'] . ' - ' . $cb . '</option>';
-						
-							echo '<option disabled="disabled" value="0">--------<hr /></option>';
-						if ($cb == 0){	
-							$ca = 0;
-							$cc = 0;
-						}
-						$cb++;
-						foreach ($subject['blogs'] as $blogObj){
-							
-							echo '<option value="' . $blogObj['slug'] . '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $blogObj['title'] . ' - ' . $cc . '</option>';
-							if ($cc == 0){
-								//echo '<option disabled="disabled" value="0"><hr /></option>';
-								
-								$cb = 0;
-							}
-							$cc++;
-							
-						}
-					}
-
-				}
-			echo '</select>';
+			do_action( RSSPF_SLUG . '_feeder_menu' );
 
 
 	}

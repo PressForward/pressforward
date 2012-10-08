@@ -17,6 +17,10 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 	}
 	
 
+	function add_to_feeder(){
+		echo $this->build_ab_item_selector();
+	}
+	
 	public function build_ab_item_selector() {
 	
 			if ( false === ( $ABLinksArray = get_transient( 'ab_links_array' ) ) ) {
@@ -29,25 +33,25 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 			$cb = 0;
 			$cc = 0;
 			
-			echo '<select>';
+			$ab_items_selector = '<select>';
 				foreach ($ABLinksArray as $genSubject){
 					if ($ca == 0){
-						echo '<option disabled="disabled" value="0">----topic----<hr /></option>';
+						$ab_items_selector .= '<option disabled="disabled" value="0">----topic----<hr /></option>';
 						
 					}					
-					echo '<option value="' . $genSubject['slug'] . '">' . $genSubject['text'] . ' - ' . $ca . '</option>';
+					$ab_items_selector .= '<option value="' . $genSubject['slug'] . '">' . $genSubject['text'] . ' - ' . $ca . '</option>';
 					if ($ca == 0){
-						echo '<option disabled="disabled" value="0">--------<hr /></option>';
+						$ab_items_selector .= '<option disabled="disabled" value="0">--------<hr /></option>';
 						$cb = 0;
 					}
 					$ca++;
 					foreach ($genSubject['links'] as $subject){
 						//if ($cb == 0){
-							echo '<option disabled="disabled" value="0">----section----<hr /></option>';
+							$ab_items_selector .= '<option disabled="disabled" value="0">----section----<hr /></option>';
 						//}
-						echo '<option value="' . $subject['slug'] . '">&nbsp;&nbsp;&nbsp;' . $subject['title'] . ' - ' . $cb . '</option>';
+						$ab_items_selector .= '<option value="' . $subject['slug'] . '">&nbsp;&nbsp;&nbsp;' . $subject['title'] . ' - ' . $cb . '</option>';
 						
-							echo '<option disabled="disabled" value="0">--------<hr /></option>';
+							$ab_items_selector .= '<option disabled="disabled" value="0">--------<hr /></option>';
 						if ($cb == 0){	
 							$ca = 0;
 							$cc = 0;
@@ -55,9 +59,9 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 						$cb++;
 						foreach ($subject['blogs'] as $blogObj){
 							
-							echo '<option value="' . $blogObj['slug'] . '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $blogObj['title'] . ' - ' . $cc . '</option>';
+							$ab_items_selector .= '<option value="' . $blogObj['slug'] . '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $blogObj['title'] . ' - ' . $cc . '</option>';
 							if ($cc == 0){
-								//echo '<option disabled="disabled" value="0"><hr /></option>';
+								//$ab_items_selector .= '<option disabled="disabled" value="0"><hr /></option>';
 								
 								$cb = 0;
 							}
@@ -67,7 +71,9 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 					}
 
 				}
-			echo '</select>';	
+			$ab_items_selector .= '</select>';	
+			
+			return $ab_items_selector;
 	}
 	
 }
