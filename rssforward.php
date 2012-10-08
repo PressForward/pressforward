@@ -1013,21 +1013,7 @@ class rsspf {
 		echo '</div><!-- End feed-container span7 -->';
 		echo '<div class="span4 feed-widget-container">';
 			# Some widgets go here.
-				echo '<div class="row-fluid">';
-				echo '<div class="rsspf-right-widget well span12">
-						<div class="widget-title">
-							Widget Title
-						</div>
-						<div class="widget-body">
-							<div class="navwidget">
-								Widget Body <br />
-								<a href="#20">Test link to item 20.</a>
-							</div>
-						</div>
-				</div>
-				</div>
-				';
-				# Does this work?
+				# Does this work? [nope...]
 				$blogusers = get_users('orderby=nom_count');
 				$uc = 1;
 				echo '<div class="row-fluid">
@@ -1065,25 +1051,27 @@ class rsspf {
 														'callback' => '<div class="navwidget">	Widget Body <br />	<a href="#20">Test link to item 20.</a>	</div>'
 													)
 								);
-				$mod_widgets = apply_filters( 'dash_widget_bar' );
-				$all_widgets_array = array_merge($widgets_array, $mod_widgets);
-				foreach ($all_widgets_array as $widget_array) {
+				$all_widgets_array = apply_filters( 'dash_widget_bar', $widgets_array );
+				
+				//$all_widgets_array = array_merge($widgets_array, $mod_widgets);
+				foreach ($all_widgets_array as $dash_widget) {
+
 					$defaults = array(
-						'widget_title' => '',
+						'title' => '',
 						'slug'       => '',
 						'callback'   => '',
 					);
 					$r = wp_parse_args( $dash_widget, $defaults );
-					
+
 					// add_submenu_page() will fail if any arguments aren't passed
-					if ( empty( $r['widget_title'] ) || empty( $r['slug'] ) || empty( $r['callback'] ) ) {
+					if ( empty( $r['title'] ) || empty( $r['slug'] ) || empty( $r['callback'] ) ) {
 						continue;
 					} else {
 
 						echo '<div class="row-fluid">
 						<div class="rsspf-right-widget well span12 ' . $r['slug'] . '">';
 							echo '<div class="widget-title">' . 
-								$r['widget_title']
+								$r['title']
 							. '</div>';		
 							echo '<div class="widget-body">';
 								echo $r['callback'];

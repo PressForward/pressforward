@@ -7,6 +7,7 @@
 class RSSPF_Foo extends RSSPF_Module {
 	function __construct() {
 		parent::start();
+		add_filter( 'dash_widget_bar', array($this, 'foo_widget') );
 	}
 
 	/**
@@ -43,5 +44,20 @@ class RSSPF_Foo extends RSSPF_Module {
 	 */
 	function admin_enqueue_styles() {
 		wp_register_style( RSSPF_SLUG . '-foo-style', RSSPF_URL . 'includes/foo/css/style.css' );
+	}
+	function foo_widget($widgets_array){
+		$foo_widgets_array = array(
+									'second_widget' => array(
+														'title' => 'Foo Title',
+														'slug' => 'foo_widget',
+														'callback' => $this->foobody()
+													)
+								);
+		$widgets = array_merge($widgets_array, $foo_widgets_array);						
+		return 	$widgets;					
+	}
+	
+	function foobody() {
+		return 'foo.';
 	}
 }
