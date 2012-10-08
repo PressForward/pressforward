@@ -3,7 +3,7 @@
 Plugin Name: RSS to PressForward
 Plugin URI: http://aramzs.me
 Description: This plugin is a RSS parser for CHNM's Press Forward project.
-Version: 1.0.2
+Version: 1.1.0
 Author: Aram Zucker-Scharff
 Author URI: http://aramzs.me
 License: GPL2
