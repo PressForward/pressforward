@@ -95,6 +95,10 @@ class AB_subscription_builder {
 		$html = file_get_html($theWikiLink);
 		//print_r($html);
 		# Get the title page
+		if ($html == false) {
+			return false;
+		}
+		
 		foreach ($html->find('h1') as $link){
 			//print_r($link);
 		//	if (($link->plaintext == '[edit] External links') || ($link->plaintext == '[edit] References') ){

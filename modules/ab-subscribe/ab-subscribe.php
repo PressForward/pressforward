@@ -33,6 +33,10 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 			$cb = 0;
 			$cc = 0;
 			
+			if ($ABLinksArray == false){
+				return "Academic Blogs not found";
+			}
+			
 			$ab_items_selector = '<select>';
 			
 				foreach ($ABLinksArray as $genSubject){
