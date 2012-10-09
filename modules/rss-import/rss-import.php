@@ -179,7 +179,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
     
 		?>
 			<p class="submit">
-				<input type="submit" class="button-primary" value="<?php _e('Save Options', 'responsive'); ?>" />
+				<input type="submit" class="button-primary" value="<?php _e('Save Options', 'rsspf'); ?>" />
 			</p>		
 		<?php
 	}

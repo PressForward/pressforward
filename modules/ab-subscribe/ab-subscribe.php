@@ -1,6 +1,5 @@
 <?php
 
-require_once(RSSPF_ROOT . "/lib/simple_html_dom.php");
 require_once(RSSPF_ROOT . "/includes/linkfinder/AB_subscription_builder.php");
 
 class RSSPF_AB_Subscribe extends RSSPF_Module {
@@ -18,22 +17,24 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 	
 
 	function add_to_feeder(){
-		echo $this->build_ab_item_selector();
+		_e($this->build_ab_item_selector());
 	}
 	
 	public function build_ab_item_selector() {
-	
-			if ( false === ( $ABLinksArray = get_transient( 'ab_links_array' ) ) ) {
+	    //echo 'test1';
+			//if ( false === ( $ABLinksArray = get_transient( 'ab_links_array' ) ) ) {
 				$ABSubscriptionBuilder = new AB_subscription_builder;
 				$ABLinksArray = $ABSubscriptionBuilder->build_the_ref_array();
-				set_transient( 'ab_links_array', $ABLinksArray, 60*60*24*30 );
+				//set_transient( 'ab_links_array', $ABLinksArray, 60*60*24*30 );
 				//print_r($ABLinksArray);
-			}
+			//}
+			
 			$ca = 0;
 			$cb = 0;
 			$cc = 0;
 			
 			$ab_items_selector = '<select>';
+			
 				foreach ($ABLinksArray as $genSubject){
 					if ($ca == 0){
 						$ab_items_selector .= '<option disabled="disabled" value="0">----topic----<hr /></option>';

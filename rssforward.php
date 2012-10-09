@@ -46,7 +46,7 @@ require_once(RSSPF_ROOT . "/lib/fivefilters-readability/Readability.php");
 
 //For reading through an HTML page.
 require_once(RSSPF_ROOT . "/lib/simple_html_dom.php");
-require_once(RSSPF_ROOT . "/includes/linkfinder/AB_subscription_builder.php");
+//require_once(RSSPF_ROOT . "/includes/linkfinder/AB_subscription_builder.php");
 $dom = new simple_html_dom;
 
 // Load the module base class and our test module
@@ -1167,25 +1167,25 @@ class rsspf {
 
 			if ( current_user_can('edit_posts') ) : ?>
 			<div class="tool-box">
-				<h3 class="title"><?php _e('Nominate This') ?></h3>
+				<h3 class="title"><?php _e('Nominate This'); ?></h3>
 				<p><?php _e('Nominate This is a bookmarklet: a little app that runs in your browser and lets you grab bits of the web.');?></p>
 
-				<p><?php _e('Use Nominate This to clip text, images and videos from any web page. Then edit and add more straight from Nominate This before you save or publish it in a post on your site.'); ?></p>
-				<p class="description"><?php _e('Drag-and-drop the following link to your bookmarks bar or right click it and add it to your favorites for a posting shortcut.') ?></p>
-				<p class="pressthis"><a onclick="return false;" oncontextmenu="if(window.navigator.userAgent.indexOf('WebKit')!=-1||window.navigator.userAgent.indexOf('MSIE')!=-1)jQuery('.pressthis-code').show().find('textarea').focus().select();return false;" href="<?php echo htmlspecialchars( $this->rsspf_get_shortcut_link() ); ?>"><span><?php _e('Nominate This') ?></span></a></p>
+				<p><?php _e('Use Nominate This to clip text, images and videos from any web page. Then edit and add more straight from Nominate This before you save or publish it in a post on your site.', RSSPF_SLUG); ?></p>
+				<p class="description"><?php _e('Drag-and-drop the following link to your bookmarks bar or right click it and add it to your favorites for a posting shortcut.', RSSPF_SLUG); ?></p>
+				<p class="pressthis"><a onclick="return false;" oncontextmenu="if(window.navigator.userAgent.indexOf('WebKit')!=-1||window.navigator.userAgent.indexOf('MSIE')!=-1)jQuery('.pressthis-code').show().find('textarea').focus().select();return false;" href="<?php echo htmlspecialchars( $this->rsspf_get_shortcut_link() ); ?>"><span><?php _e('Nominate This', RSSPF_SLUG); ?></span></a></p>
 				<div class="pressthis-code" style="display:none;">
-				<p class="description"><?php _e('If your bookmarks toolbar is hidden: copy the code below, open your Bookmarks manager, create new bookmark, type Press This into the name field and paste the code into the URL field.') ?></p>
+				<p class="description"><?php _e('If your bookmarks toolbar is hidden: copy the code below, open your Bookmarks manager, create new bookmark, type Press This into the name field and paste the code into the URL field.', RSSPF_SLUG); ?></p>
 				<p><textarea rows="5" cols="120" readonly="readonly"><?php echo htmlspecialchars( $this->rsspf_get_shortcut_link() ); ?></textarea></p>
 				</div>
 			</div>
 			<?php
 			endif;
 			?><form method="post" action="options.php"><?php
-            settings_fields(RSSPF_SLUG . '_feeder_options');
-            $options = get_option(RSSPF_SLUG . '_plugin_feeder_options');			
+            //settings_fields(RSSPF_SLUG . '_feeder_options');
+            //$options = get_option(RSSPF_SLUG . '_plugin_feeder_options');			
 			
-			do_action( RSSPF_SLUG . '_feeder_menu' );
-			
+			do_action( 'feeder_menu' );
+			echo 'BBB';
 			?><input type="submit" class="button-primary" value="<?php _e('Save Options', RSSPF_SLUG); ?>" />
 			</form><?php
 
@@ -1202,7 +1202,7 @@ class rsspf {
 				k=d.getSelection,
 				x=d.selection,
 				s=(e?e():(k)?k():(x?x.createRange().text:0)),
-				f='" . RSSPF_URL . 'includes/nomthis/nominate-this.php' . "',
+				f='" . RSSPF_URL . "includes/nomthis/nominate-this.php" . "',
 				l=d.location,
 				e=encodeURIComponent,
 				u=f+'?u='+e(l.href)+'&t='+e(d.title)+'&s='+e(s)+'&v=4';

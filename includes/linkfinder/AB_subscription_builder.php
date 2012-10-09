@@ -1,7 +1,5 @@
 <?php
 
-require_once(dirname(dirname(dirname(__FILE__))) . '/lib/simple_html_dom.php');
-$dom = new simple_html_dom;
 
 class AB_subscription_builder {
 
@@ -89,8 +87,8 @@ class AB_subscription_builder {
 
 	public function build_the_ref_array()
 	{
-		error_reporting(E_ALL);
-		error_reporting(-1);
+		//error_reporting(E_ALL);
+		//error_reporting(-1);
 		$theWikiLink = 'http://academicblogs.org/index.php/Main_Page';
 		$htmlCounter = array();
 		//Random article for testing.
