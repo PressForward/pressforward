@@ -64,7 +64,8 @@ define('DEFAULT_BR_TEXT', "\r\n");
 // $maxlen is defined in the code as PHP_STREAM_COPY_ALL which is defined as -1.
 function file_get_html($url, $use_include_path = false, $context=null, $offset = -1, $maxLen=-1, $lowercase = true, $forceTagsClosed=true, $target_charset = DEFAULT_TARGET_CHARSET, $stripRN=true, $defaultBRText=DEFAULT_BR_TEXT)
 {
-    // We DO force the tags to be terminated.
+    set_time_limit(0);
+	// We DO force the tags to be terminated.
     $dom = new simple_html_dom(null, $lowercase, $forceTagsClosed, $target_charset, $defaultBRText);
     // For sourceforge users: uncomment the next line and comment the retreive_url_contents line 2 lines down if it is not already done.
 	// use wp_remote_get() instead of file_get_contents()
