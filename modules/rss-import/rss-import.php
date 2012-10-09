@@ -168,6 +168,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	function add_to_feeder() {
 		?>
 			<div class="show-feeds">
+				Current items feeding on: <br />
 				<?php
 					$feedlist = $this->rsspf_feedlist();
 					foreach ($feedlist as $feedUri){

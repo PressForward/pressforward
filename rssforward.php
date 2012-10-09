@@ -767,13 +767,19 @@ class rsspf {
 		$url = str_replace('&amp;','&', $url);
 		print_r($url); print_r(' - Readability<br />');
 		// change from Boone - use wp_remote_get() instead of file_get_contents()
-		$request = wp_remote_get( $url );
+		$request = wp_remote_get( $url, array('timeout' => '30') );
+		if (is_wp_error($request)) {
+			$content = false;
+			print_r($request); die();
+			return $content;
+		}
 		if ( ! empty( $request['body'] ) ){
 			$html = $request['body'];
 		} else {
 			$content = false;
 			return $content;
 		}
+		
 		//check if tidy exists to clean up the input.
 		if (function_exists('tidy_parse_string')) {
 			$tidy = tidy_parse_string($html, array(), 'UTF8');
