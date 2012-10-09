@@ -57,7 +57,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 					# Get the origin post link.
 					$realLink = $item->get_link();
 					# Try and get the actual content of the post.
-					$realContent = $this->get_content_through_aggregator($realLink);
+					$realContent = $rsspf->get_content_through_aggregator($realLink);
 					# If we can't get the actual content, then just use what we've got from the RSS feed.
 					if (!$realContent){
 						$item_content = $item->get_content();
@@ -137,49 +137,6 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		return $authors;
 
 	}
-
-	# This function takes measures to try and get item content throguh methods of increasing reliability, but decreasing relevance.
-	public function get_content_through_aggregator($url){
-		global $rsspf;
-
-		set_time_limit(0);
-		//$this->set_error_handler("customError");
-		$url = $rsspf->de_https($url);
-		$descrip = '';
-		//$url = http_build_url($urlParts, HTTP_URL_STRIP_AUTH | HTTP_URL_JOIN_PATH | HTTP_URL_JOIN_QUERY | HTTP_URL_STRIP_FRAGMENT);
-		//print_r($url);
-		# First run it through Readability.
-		$descrip = $rsspf->readability_object($url);
-		//print_r($url);
-		# If that doesn't work...
-		while (!$descrip) {
-			$url = str_replace('&amp;','&', $url);
-			#Try and get the OpenGraph description.
-			if (OpenGraph::fetch($url)){
-				$node = OpenGraph::fetch($url);
-				$descrip = $node->description;
-			} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
-			elseif ('' != ($contentHtml = @get_meta_tags($url))) {
-				# Try and get the HEAD > META DESCRIPTION tag.
-				$descrip = $contentHtml['description'];
-				print_r($url . ' has no meta OpenGraph description we can find.');
-
-			}
-			else
-			{
-				# Ugh... we can't get anything huh?
-				print_r($url . ' has no description we can find.');
-				# We'll want to return a false to loop with.
-				$descrip = false;
-
-				break;
-			}
-		}
-		return $descrip;
-
-	}
-
-
 
 	# Checks the URL against a list of aggregators.
 	public function is_from_aggregator($xmlbase){

@@ -762,10 +762,10 @@ class rsspf {
 	public function readability_object($url) {
 	//ref: http://www.keyvan.net/2010/08/php-readability/
 		set_time_limit(0);
-		print_r($url); print_r(' - Readability<br />');
+		
 		$url = $this->de_https($url);
 		$url = str_replace('&amp;','&', $url);
-
+		print_r($url); print_r(' - Readability<br />');
 		// change from Boone - use wp_remote_get() instead of file_get_contents()
 		$request = wp_remote_get( $url );
 		if ( ! empty( $request['body'] ) ){
@@ -796,8 +796,8 @@ class rsspf {
 		$result = $readability->init();
 
 		if ($result){
-			$contentOut = $readability->getContent();
-			$content = $contentOut->innerHTML;
+			$content = $readability->getContent()->innerHTML;
+			//$content = $contentOut->innerHTML;
 				//if we've got tidy, let's use it.
 				if (function_exists('tidy_parse_string')) {
 					$tidy = tidy_parse_string($content,
@@ -817,6 +817,46 @@ class rsspf {
 		return $content;
 
 	}
+	
+	# This function takes measures to try and get item content throguh methods of increasing reliability, but decreasing relevance.
+	public function get_content_through_aggregator($url){
+
+		set_time_limit(0);
+		//$this->set_error_handler("customError");
+		$url = $this->de_https($url);
+		$descrip = '';
+		//$url = http_build_url($urlParts, HTTP_URL_STRIP_AUTH | HTTP_URL_JOIN_PATH | HTTP_URL_JOIN_QUERY | HTTP_URL_STRIP_FRAGMENT);
+		//print_r($url);
+		# First run it through Readability.
+		$descrip = $this->readability_object($url);
+		//print_r($url);
+		# If that doesn't work...
+		if (!$descrip) {
+			$url = str_replace('&amp;','&', $url);
+			#Try and get the OpenGraph description.
+			if (OpenGraph::fetch($url)){
+				$node = OpenGraph::fetch($url);
+				$descrip = $node->description;
+			} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
+			elseif ('' != ($contentHtml = @get_meta_tags($url))) {
+				# Try and get the HEAD > META DESCRIPTION tag.
+				$descrip = $contentHtml['description'];
+				print_r($url . ' has no meta OpenGraph description we can find.');
+
+			}
+			else
+			{
+				# Ugh... we can't get anything huh?
+				print_r($url . ' has no description we can find.');
+				# We'll want to return a false to loop with.
+				$descrip = false;
+
+				break;
+			}
+		}
+		return $descrip;
+
+	}	
 
 	public function assemble_public_stream() {
 
