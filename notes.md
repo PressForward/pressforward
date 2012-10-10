@@ -191,3 +191,15 @@ Possible Issues
 -	Error exists at `ln 702`.
 
 -	Slideshares do not provide good data for the readability to parse. The OG tags for descrip are pretty mediocure as well. 
+
+
+Modules
+--------
+
+-	Setup with an init method - provide data: have feed, name, description, slug, img? 
+
+-	Have the array merge happen in the base class and have users call it as a register_widget function type thing. 
+
+-	If loop added to the module to determine if it is on and off after it IDs and then don't do hooks. 
+
+-	If parent::start = false then __construct should return. 

@@ -50,7 +50,7 @@ class RSSPF_Foo extends RSSPF_Module {
 									'second_widget' => array(
 														'title' => 'Foo Title',
 														'slug' => 'foo_widget',
-														'callback' => $this->foobody()
+														'callback' => array( $this, 'foobody')
 													)
 								);
 		$widgets = array_merge($widgets_array, $foo_widgets_array);						
@@ -58,6 +58,6 @@ class RSSPF_Foo extends RSSPF_Module {
 	}
 	
 	function foobody() {
-		return 'foo.';
+		echo 'foo.';
 	}
 }

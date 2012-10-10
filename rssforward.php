@@ -1099,7 +1099,7 @@ class rsspf {
 									'first_widget' => array(
 														'title' => 'Widget Title',
 														'slug' => 'first_widget',
-														'callback' => '<div class="navwidget">	Widget Body <br />	<a href="#20">Test link to item 20.</a>	</div>'
+														'callback' => array($this, 'widget_one_call')
 													)
 								);
 				$all_widgets_array = apply_filters( 'dash_widget_bar', $widgets_array );
@@ -1125,7 +1125,7 @@ class rsspf {
 								$r['title']
 							. '</div>';		
 							echo '<div class="widget-body">';
-								echo $r['callback'];
+								call_user_func($r['callback']);
 							echo '</div>';
 						echo '</div>
 						</div>';
@@ -1152,6 +1152,10 @@ class rsspf {
 	echo '</div><!-- End row -->';
 
 	echo '</div><!-- End container-fluid -->';
+	}
+	
+	function widget_one_call(){
+		echo '<div class="navwidget">	Widget Body <br />	<a href="#20">Test link to item 20.</a>	</div>'	;
 	}
 
 	function rsspf_options_builder() {
