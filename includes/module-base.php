@@ -19,6 +19,7 @@ class RSSPF_Module {
 		add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_scripts' ) );
 		add_action( 'wp_enqueue_styles',  array( $this, 'wp_enqueue_styles' ) );
 		add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
+		add_filter('dash_widget_bar', array($this, 'add_dash_widgets_filter') );
 	}
 
 	function setup_admin_menus( $admin_menus ) {
@@ -61,6 +62,17 @@ class RSSPF_Module {
 **/	
 	// Fetch and return a formatted data object - optional
 	function get_data_object() { return array(); }
+	
+	function pf_add_dash_widgets() {
+		$array = array();
+		return $array;
+	}
+	
+	function add_dash_widgets_filter($filter_inc_array) {
+		$client_widgets = $this->pf_add_dash_widgets();
+		$all_widgets = array_merge($filter_inc_array, $client_widgets);
+		return $all_widgets;
+	}
 
 	// Scripts and styles - optional
 	function admin_enqueue_scripts() {}

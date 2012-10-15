@@ -1095,13 +1095,7 @@ class rsspf {
 				</div>
 				';
 				
-				$widgets_array = array(
-									'first_widget' => array(
-														'title' => 'Widget Title',
-														'slug' => 'first_widget',
-														'callback' => array($this, 'widget_one_call')
-													)
-								);
+				$widgets_array = $this->widget_array();
 				$all_widgets_array = apply_filters( 'dash_widget_bar', $widgets_array );
 				
 				//$all_widgets_array = array_merge($widgets_array, $mod_widgets);
@@ -1152,6 +1146,18 @@ class rsspf {
 	echo '</div><!-- End row -->';
 
 	echo '</div><!-- End container-fluid -->';
+	}
+	
+	function widget_array(){
+		$widgets = array(
+				'first_widget' => array(
+						'title' => 'Widget Title',
+						'slug' => 'first_widget',
+						'callback' => array($this, 'widget_one_call')
+									)
+							);
+		
+		return $widgets;
 	}
 	
 	function widget_one_call(){
