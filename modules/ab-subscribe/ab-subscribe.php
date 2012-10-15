@@ -22,12 +22,12 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 	
 	public function build_ab_item_selector() {
 	    //echo 'test1';
-			//if ( false === ( $ABLinksArray = get_transient( 'ab_links_array' ) ) ) {
+			if ( false === ( $ABLinksArray = get_transient( 'ab_links_array' ) ) ) {
 				$ABSubscriptionBuilder = new AB_subscription_builder;
 				$ABLinksArray = $ABSubscriptionBuilder->build_the_ref_array();
-				//set_transient( 'ab_links_array', $ABLinksArray, 60*60*24*30 );
+				set_transient( 'ab_links_array', $ABLinksArray, 60*60*24*30 );
 				//print_r($ABLinksArray);
-			//}
+			}
 			
 			$ca = 0;
 			$cb = 0;
