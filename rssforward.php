@@ -1178,7 +1178,7 @@ class rsspf {
 	}	
 
 	function rsspf_feeder_builder() {
-
+		
 		echo 'Feeder. <br />';
 
 			if ( current_user_can('edit_posts') ) : ?>
@@ -1201,7 +1201,7 @@ class rsspf {
             //$options = get_option(RSSPF_SLUG . '_plugin_feeder_options');			
 			
 			do_action( 'feeder_menu' );
-			echo 'BBB';
+			
 			?><input type="submit" class="button-primary" value="<?php _e('Save Options', RSSPF_SLUG); ?>" />
 			</form><?php
 

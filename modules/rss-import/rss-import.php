@@ -15,6 +15,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	 */
 	public function __construct() {
 		parent::start();
+		add_action( 'admin_init', array($this, 'register_settings') );
 	}
 
 	/**
@@ -119,6 +120,11 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		//'http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations';
 		//http://feeds.feedburner.com/DHNowEditorsChoiceAndNews
 		//http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations
+		if ( false == (get_option( RSSPF_SLUG . '_feedlist' )) ){
+			add_option( RSSPF_SLUG . '_feedlist', $feedlist);
+		} else {
+			$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
+		}
 		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
 		return $all_feeds_array;
 
@@ -126,7 +132,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 
 	# Tries to get the RSS item author for the meta.
 	function get_rss_authors($item) {
-
+		// This needs error checking. 
 		$authorArray = ($item->get_authors());
 		foreach ($authorArray as $author) {
 
@@ -167,23 +173,61 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	}
 	
 	function add_to_feeder() {
-		?>
+		
+		?><form method="post" action="options.php"><?php
+        settings_fields( RSSPF_SLUG . '_feedlist_group' );
+		$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
+		
+        /**
+        * Background Image
+        */
+        ?>                      
+			<br />
+			<br />
+			<div><?php _e('Add Single Feed', RSSPF_SLUG); ?></div>
+				<div>
+					<input id="<?php echo RSSPF_SLUG . '_feedlist'; ?>" class="regular-text" type="text" name="<?php echo RSSPF_SLUG . '_feedlist'; ?>" value="" />
+                    <label class="description" for="<?php echo RSSPF_SLUG . '_feedlist'; ?>"><?php _e('*Complete URL or RSS path', RSSPF_SLUG); ?></label>
+
+                     			
+                </div>	
+				
+			<p class="submit">
+				<?php submit_button(); ?>
+			</p>					
+				
 			<div class="show-feeds">
-				Current items feeding on: <br />
+				<p>Current items feeding on: <br /><pre><code>
 				<?php
-					$feedlist = $this->rsspf_feedlist();
-					foreach ($feedlist as $feedUri){
-						echo $feedUri;
-					}
-				?>
+					
+					print_r($feedlist);
+				?></code></pre></p>
 			</div>
+		</form>
 		<?php
     
-		?>
-			<p class="submit">
-				<input type="submit" class="button-primary" value="<?php _e('Save Options', 'rsspf'); ?>" />
-			</p>		
-		<?php
+
+		
+	}
+	
+	function rsspf_feedlist_validate($input){
+		$input = $input;
+
+		//$feedlist = $this->rsspf_feedlist();
+		// Needs something to do here if option is empty. 
+		$feedlist = get_option( RSSPF_SLUG . '_feedlist' );		
+//		if (false == $feedlist){
+//			$feedlist = $this->rsspf_feedlist();
+//		}
+	
+//		$feedlist = array('http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Flabel%2FEditors-at-Large');
+	
+		$feedlist[] = $input;
+		return $feedlist;
+	}
+	
+	function register_settings(){
+		register_setting(RSSPF_SLUG . '_feedlist_group', RSSPF_SLUG . '_feedlist', array($this, 'rsspf_feedlist_validate'));
 	}
 
 }
