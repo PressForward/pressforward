@@ -4,6 +4,8 @@
  * Test of module base class
  */
 
+ require_once(RSSPF_ROOT . "/includes/opml-reader/opml-reader.php");
+ 
 class RSSPF_RSS_Import extends RSSPF_Module {
 
 	/////////////////////////////
@@ -177,17 +179,22 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		?><form method="post" action="options.php"><?php
         settings_fields( RSSPF_SLUG . '_feedlist_group' );
 		$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
-		
-        /**
-        * Background Image
-        */
+
         ?>                      
 			<br />
 			<br />
 			<div><?php _e('Add Single Feed', RSSPF_SLUG); ?></div>
 				<div>
-					<input id="<?php echo RSSPF_SLUG . '_feedlist'; ?>" class="regular-text" type="text" name="<?php echo RSSPF_SLUG . '_feedlist'; ?>" value="" />
-                    <label class="description" for="<?php echo RSSPF_SLUG . '_feedlist'; ?>"><?php _e('*Complete URL or RSS path', RSSPF_SLUG); ?></label>
+					<input id="<?php echo RSSPF_SLUG . '_feedlist[single]'; ?>" class="regular-text" type="text" name="<?php echo RSSPF_SLUG . '_feedlist[single]'; ?>" value="" />
+                    <label class="description" for="<?php echo RSSPF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL or RSS path', RSSPF_SLUG); ?></label>
+
+                     			
+                </div>	
+
+			<div><?php _e('Add OPML', RSSPF_SLUG); ?></div>
+				<div>
+					<input id="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>" value="" />
+                    <label class="description" for="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here.', RSSPF_SLUG); ?></label>
 
                      			
                 </div>	
@@ -211,7 +218,12 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	}
 	
 	function rsspf_feedlist_validate($input){
-		$input = $input;
+		if (!(is_array($input['single']))){
+			$input['single'] = array($input['single']);
+		}
+		
+		$OPML_reader = new OPML_reader;
+		$opml_array = $OPML_reader->get_OPML_data($input['opml']);
 
 		//$feedlist = $this->rsspf_feedlist();
 		// Needs something to do here if option is empty. 
@@ -222,7 +234,8 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	
 //		$feedlist = array('http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Flabel%2FEditors-at-Large');
 	
-		$feedlist[] = $input;
+		$feedlist = array_merge($feedlist, $input['single']);
+		$feedlist = array_merge($feedlist, $opml_array);
 		return $feedlist;
 	}
 	
