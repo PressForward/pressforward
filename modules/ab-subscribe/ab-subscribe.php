@@ -17,7 +17,7 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 	
 
 	function add_to_feeder(){
-		echo $this->build_ab_item_selector();
+		//echo $this->build_ab_item_selector();
 	}
 	
 	public function build_ab_item_selector() {
