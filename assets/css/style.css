@@ -140,6 +140,12 @@ h3 {
 	width: 0;
 }
 
+.feed-item .item_meta {
+	font-size: 10px;
+	line-height: 11px;
+	margin-bottom: 6px;
+}
+
 .feed-widget-container .well{
 	padding: 0;
 }

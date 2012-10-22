@@ -930,6 +930,23 @@ class rsspf {
 		}
 
 	}
+	
+//Let's build a better excerpt! 
+	public function feed_excerpt( $text ) {
+
+			$text = apply_filters('the_content', $text);
+			$text = str_replace('\]\]\>', ']]&gt;', $text);
+			$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
+			$text = strip_tags($text);
+			$text = substr($text, 0, 260);
+			$excerpt_length = 20; 
+			$words = explode(' ', $text, $excerpt_length + 1);
+			  array_pop($words);
+			  array_push($words, '...');
+			  $text = implode(' ', $words);
+		
+		return $text;
+	}	
 
 	public function rsspf_reader_builder() {
 		//Calling the feedlist within the rsspf class.
@@ -1042,10 +1059,10 @@ class rsspf {
 							echo ' : ';
 							echo '<h3>' . $item['item_title'] . '</h3>';
 							//echo '<br />';
-							echo '<small>Published on ' . $item['item_date'] . ' by ' . $item['item_author'] . '.<br />';
-							echo 'Added to feed on ' . $item['item_added_date'] . '.</small>';
-							echo '<br />';
+							echo '<div class="item_meta item_meta_date">Published on ' . $item['item_date'] . ' by ' . $item['item_author'] . '.</div>';
+							echo '<div class="item_meta item_meta_added_date">Added to feed on ' . $item['item_added_date'] . '.</div>';
 							echo '<div style="display:none;">Unix timestamp for item date:<span class="sortableitemdate">' . strtotime($item['item_date']) . '</span> and for added to RSS date <span class="sortablerssdate">' . strtotime($item['item_added_date']) . '</span>.</div>';
+							echo '<div class="item_excerpt">' . $this->feed_excerpt($item['item_content']) . '</div>';
 						echo '</div><!-- End span8 or 10 -->';
 					echo '</a>';
 						echo '<div class="span1">';
