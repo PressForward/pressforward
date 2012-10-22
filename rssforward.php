@@ -960,8 +960,8 @@ class rsspf {
 								Feed: <span class="feed_title">' . $item['source_title'] . '</span><br />
 								Posted on: <span class="feed_posted">' . $item['item_date'] . '</span><br />
 								Authors: <span class="item_authors">' . $item['item_author'] . '</span><br />
-								Origin: <span class="source_name"><a href="' . $sourceLink . '">' . $sourceLink . '</a></span><br />
-								Original Item: <span class="source_link"><a href="' . $item['item_link'] . '">' . $item['item_title'] . '</a></span><br />
+								Origin: <span class="source_name"><a target ="_blank" href="' . $sourceLink . '">' . $sourceLink . '</a></span><br />
+								Original Item: <span class="source_link"><a href="' . $item['item_link'] . '" target ="_blank">' . $item['item_title'] . '</a></span><br />
 								Tags: <span class="item_tags">' . $item['item_tags'] . '</span><br />
 								Times repeated in source: <span class="feed_repeat">' . $item['source_repeat'] . '</span><br />
 								';
