@@ -1035,12 +1035,14 @@ class rsspf {
 					//echo '<a name="' . $c . '" style="display:none;"></a>';
 					
 		echo '<script type="text/javascript">	
-				jQuery("#' . $item['item_id'] . '").on("show", function () {
-					jQuery("#excerpt' . $c . '").hide("slow");
-				});
-				
-				jQuery("#' . $item['item_id'] . '").on("hide", function () {
-					jQuery("#excerpt' . $c . '").show("slow");
+				jQuery(document).ready(function() {
+					jQuery("#' . $item['item_id'] . '").on("show", function () {
+						jQuery("#excerpt' . $c . '").hide("slow");
+					});
+					
+					jQuery("#' . $item['item_id'] . '").on("hide", function () {
+						jQuery("#excerpt' . $c . '").show("slow");
+					});
 				});				
 			</script>';
 							
