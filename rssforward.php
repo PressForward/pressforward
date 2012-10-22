@@ -748,6 +748,51 @@ class rsspf {
 
 	}
 
+	
+	# via http://stackoverflow.com/questions/2668854/sanitizing-strings-to-make-them-url-and-filename-safe
+	public function sanitize($string, $force_lowercase = true, $anal = false) {
+		$strip = array("~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "[", "{", "]",
+					   "}", "\\", "|", ";", ":", "\"", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;",
+					   "—", "–", ",", "<", ".", ">", "/", "?");
+		$clean = trim(str_replace($strip, "", strip_tags($string)));
+		$clean = preg_replace('/\s+/', "-", $clean);
+		$clean = ($anal) ? preg_replace("/[^a-zA-Z0-9]/", "", $clean) : $clean ;
+		return ($force_lowercase) ?
+			(function_exists('mb_strtolower')) ?
+				mb_strtolower($clean, 'UTF-8') :
+				strtolower($clean) :
+			$clean;
+	}
+
+	public function slugger($string, $case = false, $strict = true, $spaces = false){
+
+		if ($spaces == false){
+			$string = strip_tags($string);
+			$stringArray = explode(' ', $string);
+			$stringSlug = '';
+			foreach ($stringArray as $stringPart){
+				$stringSlug .= ucfirst($stringPart);
+			}
+			$stringSlug = str_replace('&amp;','&', $stringSlug);
+			//$charsToElim = array('?','/','\\');
+			$stringSlug = $this->sanitize($stringSlug, $case, $strict);
+		} else {
+			//$string = strip_tags($string);
+			//$stringArray = explode(' ', $string);
+			//$stringSlug = '';
+			//foreach ($stringArray as $stringPart){
+			//	$stringSlug .= ucfirst($stringPart);
+			//}
+			$stringSlug = str_replace('&amp;','&', $string);
+			//$charsToElim = array('?','/','\\');
+			$stringSlug = $this->sanitize($stringSlug, $case, $strict);
+		}
+		
+		
+		return $stringSlug;
+		
+	}	
+	
 	# Tries to turn any HTTPS URL into an HTTP URL for servers without ssl configured.
 	public function de_https($url) {
 		$urlParts = parse_url($url);
@@ -946,7 +991,10 @@ class rsspf {
 			echo '<div class="span7 feed-container accordion" id="feed-accordion">';
 		# http://twitter.github.com/bootstrap/javascript.html#collapse
 		foreach($this->archive_feed_to_display() as $item) {
-			echo '<div class="well accordion-group feed-item row-fluid ' . $item['source_title'] . ' ' . $item['item_tags'] . '" id="' . $item['item_id'] . '">';
+			$itemTagsArray = explode(",", $item['item_tags']);
+			$itemTagClassesString = '';
+			foreach ($itemTagsArray as $itemTag) { $itemTagClassesString .= $this->slugger($itemTag, true, false, true); $itemTagClassesString .= ' '; }
+			echo '<div class="well accordion-group feed-item row-fluid ' . $this->slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '">';
 
 				echo '<div class="span12" id="' . $c . '">';
 							# Let's build an info box!
