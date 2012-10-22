@@ -146,6 +146,14 @@ h3 {
 	margin-bottom: 6px;
 }
 
+.feed-item .item_excerpt {
+	font-size: 12px;
+	line-height: 16px;
+	color: #494949;
+	font-family: sans-serif;
+	padding: 3px;
+}
+
 .feed-widget-container .well{
 	padding: 0;
 }
