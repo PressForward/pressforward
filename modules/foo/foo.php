@@ -27,7 +27,24 @@ class RSSPF_Foo extends RSSPF_Module {
 
 		parent::setup_admin_menus( $admin_menus );
 	}
+	
+	function setup_module() {
+		$enabled = get_option( 'rsspf_foo_enable' );
+		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
+			$enabled = 'yes';
+		}
+		
+		$mod_settings = array(
+			'name' => 'Foo Test Module',
+			'slug' => 'foo',
+			'options' => ''
+		);
+		
+		update_option( 'rsspf_foo_settings', $mod_settings );
 
+		
+	}
+	
 	function admin_menu_callback() {
 		?>
 		<div class="wrap">
