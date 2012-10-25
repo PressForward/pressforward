@@ -20,8 +20,14 @@ class RSSPF_Module {
 		add_action( 'wp_enqueue_styles',  array( $this, 'wp_enqueue_styles' ) );
 		add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
 		add_filter('dash_widget_bar', array($this, 'add_dash_widgets_filter') );
+		
+		add_action( 'module_control', array($this, 'setup_module') );
 	}
 
+	function setup_module_info() {
+		
+	}
+	
 	function setup_admin_menus( $admin_menus ) {
 		foreach ( (array) $admin_menus as $admin_menu ) {
 			$defaults = array(
