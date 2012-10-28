@@ -4,12 +4,18 @@
  * Base class for PressForward RSS modules
  */
 class RSSPF_Module {
+	var $id;
+	var $module_dir;
+	var $module_url;
 
 	function start() {
 		$this->setup_hooks();
 	}
 
 	function setup_hooks() {
+		// Once modules are registered, set up some basic module info
+		add_action( 'rsspf_setup_modules', array( $this, 'setup_module_info' ) );
+
 		// Run at 15 to make sure the core menu is loaded first
 		add_action( 'admin_menu', array( $this, 'setup_admin_menus' ), 15 );
 
@@ -20,14 +26,37 @@ class RSSPF_Module {
 		add_action( 'wp_enqueue_styles',  array( $this, 'wp_enqueue_styles' ) );
 		add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
 		add_filter('dash_widget_bar', array($this, 'add_dash_widgets_filter') );
-		
+
 		add_action( 'module_control', array($this, 'setup_module') );
 	}
 
+	/**
+	 * Determine some helpful info about this module
+	 *
+	 * Sets the module ID based on the key used to register the module in
+	 * the $rsspf global
+	 *
+	 * Also sets up the module_dir and module_url for use throughout
+	 */
 	function setup_module_info() {
-		
+		global $rsspf;
+
+		// Determine the ID by checking which module this class belongs to
+		$module_class = get_class( $this );
+		foreach ( $rsspf->modules as $module_id => $module ) {
+			if ( is_a( $module, $module_class ) ) {
+				$this->id = $module_id;
+				break;
+			}
+		}
+
+		// If we've found an id, use it to create some paths
+		if ( $this->id ) {
+			$this->module_dir = trailingslashit( RSSPF_ROOT . '/modules/' . $this->id );
+			$this->module_url = trailingslashit( RSSPF_URL . 'modules/' . $this->id );
+		}
 	}
-	
+
 	function setup_admin_menus( $admin_menus ) {
 		foreach ( (array) $admin_menus as $admin_menu ) {
 			$defaults = array(

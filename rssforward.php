@@ -156,6 +156,8 @@ class rsspf {
 		foreach ( $module_args as $module ) {
 			$this->modules[ $module['slug'] ] = new $module['class'];
 		}
+
+		do_action( 'rsspf_setup_modules', $this );
 	}
 
 	//Create the menus for this plugin

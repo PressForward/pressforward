@@ -3,12 +3,112 @@
 
 class AB_subscription_builder {
 
-	public function __construct(){
-		
-		$htmlCounterObj = $this->build_the_ref_array();
-		return $htmlCounterObj;
-	}	
-	
+	public function __construct() {}
+
+	/**
+	 * Fetches the top-level categories from the academicblogs.org wiki
+	 *
+	 * @return array The return array should look like this:
+	 *    'categories' => [the categories assembled from academicblogs.org]
+	 *    'node_count' => [the number of nodes]
+	 *    'nodes_populated' => [this value will always be zero coming from this method]
+	 */
+	public static function get_blog_categories() {
+		$theWikiLink = 'http://academicblogs.org/index.php/Main_Page';
+		$categories = array();
+		$node_count = 0;
+
+		$html = file_get_html($theWikiLink);
+		if ($html == false) {
+			return false;
+		}
+
+		// The categories are headed by h2 elements in #bodyContent
+		foreach ( $html->find( '#bodyContent' ) as $bodyContent ) {
+			foreach ( $bodyContent->find( 'h2' ) as $h2 ) {
+
+				$span = $h2->find( 'span' );
+				if ( empty( $span ) ) {
+					continue;
+				}
+
+				// Take the first item in the array
+				$span = array_pop( array_reverse( $span ) );
+
+				$spanText = $span->innertext;
+				$spanNameArray = explode(' ', $spanText);
+				$spanSlug = '';
+				foreach ($spanNameArray as $spanNamePart){
+					$spanSlug .= htmlentities(ucfirst($spanNamePart));
+				}
+				$spanSlug = self::sanitize($spanSlug, false, true);
+
+				$categories[$spanSlug] = array(
+					'slug' => $spanSlug,
+					'text' => htmlspecialchars( strip_tags( $spanText ) ),
+					'counter' => 0,
+				);
+
+				// Walk over siblings while they're <p> elements to get the subcategory links
+				$next = $h2->next_sibling();
+				while ( $next->tag == 'p' ) {
+					$pchildren = $next->find( 'a' );
+					if ( 1 == count( $pchildren ) ) {
+						$childLink = array_pop( array_reverse( $pchildren ) );
+
+						$link = $childLink->href;
+						if ( ! in_array( $link, self::get_spam_sites() ) ) {
+							$titleArray = explode( ' ', $childLink->title );
+
+							$titleSlug = '';
+							foreach ($titleArray as $titlePart){
+								$titleSlug .= htmlentities(ucfirst($titlePart));
+							}
+							$titleSlug = self::sanitize($titleSlug, false, true);
+
+							$categories[ $spanSlug ]['links'][ $titleSlug ] = array(
+								'slug' => $titleSlug,
+								'title' => htmlspecialchars( strip_tags( $childLink->title ) ),
+								'link' => 'http://academicblogs.org' . $link,
+							);
+
+							$node_count++;
+						}
+					}
+
+					$next = $next->next_sibling();
+				}
+			}
+		}
+
+		return array( 'categories' => $categories, 'node_count' => $node_count, 'nodes_populated' => 0 );
+	}
+
+	/**
+	 * Given the $categories array, walk over and process $count categories
+	 */
+	public function add_category_links( $categories, $count ) {
+		$counter = 0;
+
+		foreach ( $categories['categories'] as &$category ) {
+			foreach ( $category['links'] as &$subcategory ) {
+				if ( isset( $subcategory['blogs'] ) ) {
+					continue;
+				}
+
+				if ( $counter >= $count ) {
+					break 2;
+				}
+
+				$subcategory['blogs'] = self::getLinksFromSection( $subcategory['link'] );
+				$counter++;
+				$categories['nodes_populated']++;
+			}
+		}
+
+		return $categories;
+	}
+
 	public function getTitle($str){
 		//$str = file_get_contents($Url);
 		if(strlen($str)>1){
@@ -42,7 +142,7 @@ class AB_subscription_builder {
 		}
 		$stringSlug = str_replace('&amp;','&', $stringSlug);
 		//$charsToElim = array('?','/','\\');
-		$stringSlug = $this->sanitize($stringSlug, false, true);
+		$stringSlug = self::sanitize($stringSlug, false, true);
 		return $stringSlug;
 		
 	}
@@ -65,11 +165,11 @@ class AB_subscription_builder {
 		$c = 0;
 		foreach ($html->find('#bodyContent') as $body){
 			foreach ($body->find('a') as $link){
-				if (!in_array(($link->href), $this->get_spam_sites())){ 
+				if (!in_array(($link->href), self::get_spam_sites())){
 					if ($link->rel == 'nofollow'){
 						$URL = $link->href;
 						$title = $link->innertext;
-						$slug = $this->slugger($title);
+						$slug = self::slugger($title);
 						$blogs[$slug]['slug'] = $slug;
 						$blogs[$slug]['url'] = $URL;
 						$blogs[$slug]['title'] = htmlspecialchars(strip_tags($title));
