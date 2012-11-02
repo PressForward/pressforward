@@ -1021,7 +1021,7 @@ class rsspf {
 			$count = $page * 20;
 			$c = $c+$count;
 			//print_r($count);
-		foreach($this->archive_feed_to_display($count) as $item) {
+		foreach($this->archive_feed_to_display($count+1) as $item) {
 
 			$itemTagsArray = explode(",", $item['item_tags']);
 			$itemTagClassesString = '';
