@@ -550,11 +550,12 @@ class rsspf {
 	# This function feeds items to our display feed function rsspf_reader_builder.
 	# It is just taking our database of rssarchival items and putting them into a
 	# format that the builder understands.
-	public function archive_feed_to_display() {
+	public function archive_feed_to_display($pageTop = 0) {
 		global $wpdb, $post;
 		//$args = array(
 		//				'post_type' => array('any')
 		//			);
+		//$pageBottom = $pageTop + 20;
 		$args = 'post_type=rssarchival';
 		//$archiveQuery = new WP_Query( $args );
 		 $dquerystr = "
@@ -564,6 +565,7 @@ class rsspf {
 			AND $wpdb->posts.post_type = 'rssarchival'
 			AND $wpdb->postmeta.meta_key = 'sortable_item_date'
 			ORDER BY $wpdb->postmeta.meta_value DESC
+			LIMIT $pageTop, 20
 		 ";
 		 # DESC here because we are sorting by UNIX datestamp, where larger is later.
 		 //Provide an alternative to load by feed date order.
@@ -1008,8 +1010,18 @@ class rsspf {
 		$c = 1;
 
 			echo '<div class="span7 feed-container accordion" id="feed-accordion">';
+		$ic = 0;	
 		# http://twitter.github.com/bootstrap/javascript.html#collapse
-		foreach($this->archive_feed_to_display() as $item) {
+			if (isset($_GET["pc"])){
+				$page = $_GET["pc"];
+			} else {
+				$page = 0;
+			}
+			$count = $page * 20;
+			$c = $c+$count;
+			//print_r($count);
+		foreach($this->archive_feed_to_display($count) as $item) {
+
 			$itemTagsArray = explode(",", $item['item_tags']);
 			$itemTagClassesString = '';
 			foreach ($itemTagsArray as $itemTag) { $itemTagClassesString .= $this->slugger($itemTag, true, false, true); $itemTagClassesString .= ' '; }
@@ -1142,7 +1154,8 @@ class rsspf {
 			// Something to experement with...
 		} // End foreach
 
-		echo '</div><!-- End feed-container span7 -->';
+		echo '</div><!-- End feed-container span7 -->';		
+
 		echo '<div class="span4 feed-widget-container">';
 			# Some widgets go here.
 				# Does this work? [nope...]
@@ -1225,6 +1238,15 @@ class rsspf {
 		echo '</div><!-- End feed-widget-container span4 -->';
 
 	echo '</div><!-- End row -->';
+	
+		$pagePrev = $page-1;
+		$pageNext = $page+1;
+		echo '<div class="rsspf-navigation">';
+		if ($pagePrev > -1){
+			echo '<a class="prevNav" href="admin.php?page=rsspf-menu&pc=' . $pagePrev . '">Previous Page</a> | ';
+		}
+		echo '<a class="nextNav" href="admin.php?page=rsspf-menu&pc=' . $pageNext . '">Next Page</a>';
+		echo '</div>';
 
 	echo '</div><!-- End container-fluid -->';
 	}
@@ -1329,6 +1351,8 @@ class rsspf {
 			wp_enqueue_script('nomination-imp', RSSPF_URL . 'assets/js/nomination-imp.js', array( 'jquery' ));
 			wp_enqueue_script('twitter-bootstrap', RSSPF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
 			wp_enqueue_script('jq-fullscreen', RSSPF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
+			wp_enqueue_script('infiniscroll', RSSPF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery' ));
+			wp_enqueue_script('scrollimp', RSSPF_URL . 'assets/js/scroll-imp.js', array( 'infiniscroll' ));
 
 			wp_register_style( RSSPF_SLUG . '-style', RSSPF_URL . 'assets/css/style.css');
 			wp_register_style( 'bootstrap-style', RSSPF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
