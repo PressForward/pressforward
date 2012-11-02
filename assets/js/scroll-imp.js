@@ -5,7 +5,7 @@ jQuery(document).ready(function () {
     
     container.infinitescroll({
       navSelector  : '.rsspf-navigation',    // selector for the paged navigation 
-      nextSelector : '.rsspf-navigation a.nextNav',  // selector for the NEXT link (to page 2)
+      nextSelector : '.feednext a',  // selector for the NEXT link (to page 2)
       itemSelector : '.feed-item',     // selector for all items you'll retrieve
       loading: {
           finishedMsg: 'No more pages to load.',

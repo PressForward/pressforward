@@ -1014,6 +1014,7 @@ class rsspf {
 		# http://twitter.github.com/bootstrap/javascript.html#collapse
 			if (isset($_GET["pc"])){
 				$page = $_GET["pc"];
+				$page = $page-1;
 			} else {
 				$page = 0;
 			}
@@ -1239,13 +1240,15 @@ class rsspf {
 
 	echo '</div><!-- End row -->';
 	
+		//Nasty hack because infinite scroll only works starting with page 2 for some reason. 
+		if ($page == 0){ $page = 1; }
 		$pagePrev = $page-1;
 		$pageNext = $page+1;
 		echo '<div class="rsspf-navigation">';
 		if ($pagePrev > -1){
-			echo '<a class="prevNav" href="admin.php?page=rsspf-menu&pc=' . $pagePrev . '">Previous Page</a> | ';
+			echo '<span class="feedprev"><a class="prevnav" href="admin.php?page=rsspf-menu&pc=' . $pagePrev . '">Previous Page</a></span> | ';
 		}
-		echo '<a class="nextNav" href="admin.php?page=rsspf-menu&pc=' . $pageNext . '">Next Page</a>';
+		echo '<span class="feednext"><a class="nextnav" href="admin.php?page=rsspf-menu&pc=' . $pageNext . '">Next Page</a></span>';
 		echo '</div>';
 
 	echo '</div><!-- End container-fluid -->';
