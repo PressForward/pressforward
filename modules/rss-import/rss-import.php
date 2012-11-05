@@ -239,6 +239,23 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		return $feedlist;
 	}
 	
+	function remove_a_feed() {
+	
+		$feedURL = $POST['o_feed_url'];
+		if ( !wp_verify_nonce($_POST['rsspf_o_feed_nonce'], 'feedremove') )
+			die( __( "Nonce check failed. Please ensure you're supposed to be removing feeds.", 'rsspf' ) );		
+			
+		$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
+		
+		$offender = array_search($feedURL, $feedlist);
+		if ($offender != false){
+			unset($feedlist[$offender]);
+		}
+		
+		update_option( RSSPF_SLUG . '_feedlist', $feedlist);
+	
+	}	
+	
 	function register_settings(){
 		register_setting(RSSPF_SLUG . '_feedlist_group', RSSPF_SLUG . '_feedlist', array($this, 'rsspf_feedlist_validate'));
 	}
