@@ -208,7 +208,8 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 				<?php
 					echo '<code><pre>';
 					print_r($feedlist);
-					echo '</pre></code>';				
+					echo '</pre></code>';		
+					wp_nonce_field('feedremove', RSSPF_SLUG . '_o_feed_nonce', false);					
 				?>
 				<ul>
 				<?php
@@ -227,7 +228,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		foreach ($feedlist as $feed){
 			if ((!is_array($feed)) && $feed != ''){
 				$feedID = md5($feed);
-				echo '<li id="feed-' . $feedID . '" class="feed-list-item">' . $feed . ' <a id="' . $feedID . '" class="removeMyFeed" href="?"><i class="icon-remove-sign"></i></a>';
+				echo '<li id="feed-' . $feedID . '" class="feed-list-item">' . $feed . ' <a id="' . $feedID . '" class="removeMyFeed" href="#"><i class="icon-remove-sign"></i></a>';
 				echo '<input type="hidden" name="feed_url" id="o_feed_url_' . $feedID . '" value="' . $feed . ' "></li>';
 			} elseif (is_array($feed)){
 				$this->feedlist_builder($feed);
@@ -263,7 +264,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	function remove_a_feed() {
 	
 		$feedURL = $POST['o_feed_url'];
-		if ( !wp_verify_nonce($_POST['rsspf_o_feed_nonce'], 'feedremove') )
+		if ( !wp_verify_nonce($_POST[RSSPF_SLUG . '_o_feed_nonce'], 'feedremove') )
 			die( __( "Nonce check failed. Please ensure you're supposed to be removing feeds.", 'rsspf' ) );		
 			
 		$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
@@ -288,5 +289,11 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	function register_settings(){
 		register_setting(RSSPF_SLUG . '_feedlist_group', RSSPF_SLUG . '_feedlist', array($this, 'rsspf_feedlist_validate'));
 	}
+	
+	public function admin_enqueue_scripts() {
+		global $rsspf;
+		
+		wp_enqueue_script( 'feed-manip-ajax', $rsspf->modules['rss-import']->module_url . 'assets/js/feed-manip-imp.js', array( 'jquery', 'twitter-bootstrap') );
+	}	
 
 }

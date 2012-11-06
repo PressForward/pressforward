@@ -6,7 +6,7 @@ jQuery(document).ready(function() {
 		var itemID		= element.attr('id');
 	//var o_feed_title 	= jQuery("#o_feed_title_"+itemID).val();
 	var o_feed_url 		= jQuery("#o_feed_url_"+itemID).val(); 
-	var theNonce		= jQuery.trim(jQuery('#rsspf_feed_op_nonce').val())
+	var theNonce		= jQuery.trim(jQuery('#rsspf_o_feed_nonce').val())
 
 	jQuery('.loading-'+itemID).show();
 	jQuery.post(ajaxurl, {
