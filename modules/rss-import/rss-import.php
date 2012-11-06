@@ -18,6 +18,8 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	public function __construct() {
 		parent::start();
 		add_action( 'admin_init', array($this, 'register_settings') );
+		add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
+		add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed') );		
 	}
 
 	/**
@@ -229,7 +231,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			if ((!is_array($feed)) && $feed != ''){
 				$feedID = md5($feed);
 				echo '<li id="feed-' . $feedID . '" class="feed-list-item">' . $feed . ' <input id="' . $feedID . '" type="submit" class="removeMyFeed icon-remove-sign" value="   Remove"></input>';
-				echo '<input type="hidden" name="feed_url" id="o_feed_url_' . $feedID . '" value="' . $feed . ' "></li>';
+				echo '<input type="hidden" name="feed_url" id="o_feed_url_' . $feedID . '" value="' . $feed . '"></li>';
 			} elseif (is_array($feed)){
 				$this->feedlist_builder($feed);
 			}
@@ -275,26 +277,31 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	
 	public function remove_a_feed() {
 		
-		$feedURL = $POST['o_feed_url'];
-		if ( !wp_verify_nonce($_POST[RSSPF_SLUG . '_o_feed_nonce'], 'feedremove') )
-			return( __( "Nonce check failed. Please ensure you're supposed to be removing feeds.", 'rsspf' ) );		
+		if (!empty($_POST['o_feed_url'])){
+			$feedURL = $_POST['o_feed_url'];
+			if ( !wp_verify_nonce($_POST[RSSPF_SLUG . '_o_feed_nonce'], 'feedremove') )
+				die( __( "Nonce check failed. Please ensure you're supposed to be removing feeds.", 'rsspf' ) );		
+				
+			$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
 			
-		$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
-		
-		$offender = array_search($feedURL, $feedlist);
-		if ($offender != false){
-			unset($feedlist[$offender]);
-		}
-		
-		$check = update_option( RSSPF_SLUG . '_feedlist', $feedlist);
-		
-		if (!$check){
-			$result = 'The feedlist failed to update.'; 
+			$offender = array_search($feedURL, $feedlist);
+			if ($offender != false){
+				unset($feedlist[$offender]);
+			}
+			//$modfeedlist = array_diff($feedlist, array($feedURL));
+			
+			$check = update_option( RSSPF_SLUG . '_feedlist', $feedlist);
+			
+			if (!$check){
+				$result = 'The feedlist failed to update.'; 
+			} else {
+				$result = $feedURL . ' has been removed from your feedlist.';
+			}
+			
+			print_r($feedlist);
 		} else {
-			$result = $feedURL . ' has been removed from your feedlist.';
+			print_r("Error");
 		}
-		
-		return($result);
 	
 	}	
 	
