@@ -204,17 +204,38 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			</p>					
 				
 			<div class="show-feeds">
-				<p>Current items feeding on: <br /><pre><code>
+				<p>Current items feeding on: </p>
 				<?php
-					
+					echo '<code><pre>';
 					print_r($feedlist);
-				?></code></pre></p>
+					echo '</pre></code>';				
+				?>
+				<ul>
+				<?php
+					$this->feedlist_builder($feedlist);
+				?>
+				</ul>
 			</div>
 		</form>
 		<?php
     
 
 		
+	}
+	
+	public function feedlist_builder($feedlist){
+		foreach ($feedlist as $feed){
+			if ((!is_array($feed)) && $feed != ''){
+				$feedID = md5($feed);
+				echo '<li id="feed-' . $feedID . '" class="feed-list-item">' . $feed . ' <a id="' . $feedID . '" class="removeMyFeed" href="?"><i class="icon-remove-sign"></i></li></a>';
+				echo '<input type="hidden" name="feed_url" id="o_feed_url_' . $feedID . '" value="' . $feed . ' ">';
+			} elseif (is_array($feed)){
+				$this->feedlist_builder($feed);
+			}
+						
+		}
+		
+		return;
 	}
 	
 	function rsspf_feedlist_validate($input){
@@ -252,7 +273,15 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			unset($feedlist[$offender]);
 		}
 		
-		update_option( RSSPF_SLUG . '_feedlist', $feedlist);
+		$check = update_option( RSSPF_SLUG . '_feedlist', $feedlist);
+		
+		if (!$check){
+			$result = 'The feedlist failed to update.'; 
+		} else {
+			$result = $feedURL . ' has been removed from your feedlist.';
+		}
+		
+		return($result);
 	
 	}	
 	
