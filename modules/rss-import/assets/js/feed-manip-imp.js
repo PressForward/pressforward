@@ -17,8 +17,9 @@ jQuery(document).ready(function() {
 		},
 		function(response) {
 			jQuery('.loading-'+itemID).hide();
-			jQuery(".o-feed-"+itemID).html(response);
+			jQuery(".o_feed_"+itemID).html(response);
 			//jQuery("#test-div1").append(data);
+			jQuery(".feed-"+itemID).remove();
 		});
 	  });
 });

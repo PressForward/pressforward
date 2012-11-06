@@ -227,8 +227,8 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		foreach ($feedlist as $feed){
 			if ((!is_array($feed)) && $feed != ''){
 				$feedID = md5($feed);
-				echo '<li id="feed-' . $feedID . '" class="feed-list-item">' . $feed . ' <a id="' . $feedID . '" class="removeMyFeed" href="?"><i class="icon-remove-sign"></i></li></a>';
-				echo '<input type="hidden" name="feed_url" id="o_feed_url_' . $feedID . '" value="' . $feed . ' ">';
+				echo '<li id="feed-' . $feedID . '" class="feed-list-item">' . $feed . ' <a id="' . $feedID . '" class="removeMyFeed" href="?"><i class="icon-remove-sign"></i></a>';
+				echo '<input type="hidden" name="feed_url" id="o_feed_url_' . $feedID . '" value="' . $feed . ' "></li>';
 			} elseif (is_array($feed)){
 				$this->feedlist_builder($feed);
 			}
