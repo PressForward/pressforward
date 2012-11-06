@@ -175,7 +175,7 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 
 		wp_enqueue_script( 'jquery-ui' );
 		wp_enqueue_script( 'jquery-ui-progressbar' );
-		wp_enqueue_script( 'ab-refresh-progressbar', $rsspf->modules['ab-subscribe']->module_url . '/js/progressbar.js', array( 'jquery', 'jquery-ui-progressbar') );
-		wp_enqueue_style( 'ab-refresh-progressbar', $rsspf->modules['ab-subscribe']->module_url . '/css/progressbar.css' );
+		wp_enqueue_script( 'ab-refresh-progressbar', $rsspf->modules['ab-subscribe']->module_url . 'js/progressbar.js', array( 'jquery', 'jquery-ui-progressbar') );
+		wp_enqueue_style( 'ab-refresh-progressbar', $rsspf->modules['ab-subscribe']->module_url . 'css/progressbar.css' );
 	}
 }
