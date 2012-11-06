@@ -228,7 +228,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		foreach ($feedlist as $feed){
 			if ((!is_array($feed)) && $feed != ''){
 				$feedID = md5($feed);
-				echo '<li id="feed-' . $feedID . '" class="feed-list-item">' . $feed . ' <a id="' . $feedID . '" class="removeMyFeed" href="#"><i class="icon-remove-sign"></i></a>';
+				echo '<li id="feed-' . $feedID . '" class="feed-list-item">' . $feed . ' <input id="' . $feedID . '" type="submit" class="removeMyFeed icon-remove-sign" value="   Remove"></input>';
 				echo '<input type="hidden" name="feed_url" id="o_feed_url_' . $feedID . '" value="' . $feed . ' "></li>';
 			} elseif (is_array($feed)){
 				$this->feedlist_builder($feed);
@@ -241,31 +241,43 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	
 	function rsspf_feedlist_validate($input){
 		if (!(is_array($input['single']))){
-			$input['single'] = array($input['single']);
+			$inputSingle = array($input['single']);
+		} else {
+			$inputSingle = $input['single'];
 		}
 		
-		$OPML_reader = new OPML_reader;
-		$opml_array = $OPML_reader->get_OPML_data($input['opml']);
-
+		//print_r($inputSingle);
+		
+		if (!empty($input['opml'])){
+			$OPML_reader = new OPML_reader;
+			$opml_array = $OPML_reader->get_OPML_data($input['opml']);
+		}
 		//$feedlist = $this->rsspf_feedlist();
 		// Needs something to do here if option is empty. 
 		$feedlist = get_option( RSSPF_SLUG . '_feedlist' );		
-//		if (false == $feedlist){
-//			$feedlist = $this->rsspf_feedlist();
-//		}
-	
-//		$feedlist = array('http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Flabel%2FEditors-at-Large');
-	
-		$feedlist = array_merge($feedlist, $input['single']);
-		$feedlist = array_merge($feedlist, $opml_array);
+		if (false == $feedlist){
+			$feedlist = $inputSingle;
+			if (!empty($input['opml'])){
+				$feedlist = array_merge($feedlist, $opml_array);
+			}
+		} else {
+	//		$feedlist = array('http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Flabel%2FEditors-at-Large');
+		
+			$feedlist = array_merge($feedlist, $inputSingle);
+			if (!empty($input['opml'])){
+				$feedlist = array_merge($feedlist, $opml_array);
+			}
+		}
+		
+		//print_r($feedlist); die();
 		return $feedlist;
 	}
 	
-	function remove_a_feed() {
-	
+	public function remove_a_feed() {
+		
 		$feedURL = $POST['o_feed_url'];
 		if ( !wp_verify_nonce($_POST[RSSPF_SLUG . '_o_feed_nonce'], 'feedremove') )
-			die( __( "Nonce check failed. Please ensure you're supposed to be removing feeds.", 'rsspf' ) );		
+			return( __( "Nonce check failed. Please ensure you're supposed to be removing feeds.", 'rsspf' ) );		
 			
 		$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
 		
@@ -294,6 +306,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		global $rsspf;
 		
 		wp_enqueue_script( 'feed-manip-ajax', $rsspf->modules['rss-import']->module_url . 'assets/js/feed-manip-imp.js', array( 'jquery', 'twitter-bootstrap') );
+		wp_enqueue_style( 'feeder-style', $rsspf->modules['rss-import']->module_url . 'assets/css/feeder-styles.css' );
 	}	
 
 }
