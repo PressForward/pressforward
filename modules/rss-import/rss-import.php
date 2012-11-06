@@ -204,8 +204,9 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			<p class="submit">
 				<?php submit_button(); ?>
 			</p>					
-				
+		</form>		
 			<div class="show-feeds">
+			<form>
 				<p>Current items feeding on: </p>
 				<?php
 					echo '<code><pre>';
@@ -219,7 +220,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 				?>
 				</ul>
 			</div>
-		</form>
+			</form>
 		<?php
     
 
@@ -242,10 +243,12 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	}
 	
 	function rsspf_feedlist_validate($input){
-		if (!(is_array($input['single']))){
-			$inputSingle = array($input['single']);
-		} else {
-			$inputSingle = $input['single'];
+		if (!empty($input['single'])){
+			if (!(is_array($input['single']))){
+				$inputSingle = array($input['single']);
+			} else {
+				$inputSingle = $input['single'];
+			}
 		}
 		
 		//print_r($inputSingle);
@@ -258,14 +261,17 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		// Needs something to do here if option is empty. 
 		$feedlist = get_option( RSSPF_SLUG . '_feedlist' );		
 		if (false == $feedlist){
-			$feedlist = $inputSingle;
+			if (!empty($input['single'])){
+				$feedlist = $inputSingle;
+			}
 			if (!empty($input['opml'])){
 				$feedlist = array_merge($feedlist, $opml_array);
 			}
 		} else {
 	//		$feedlist = array('http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Flabel%2FEditors-at-Large');
-		
-			$feedlist = array_merge($feedlist, $inputSingle);
+			if (!empty($input['single'])){
+				$feedlist = array_merge($feedlist, $inputSingle);
+			}
 			if (!empty($input['opml'])){
 				$feedlist = array_merge($feedlist, $opml_array);
 			}
@@ -289,7 +295,8 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 				unset($feedlist[$offender]);
 			}
 			//$modfeedlist = array_diff($feedlist, array($feedURL));
-			
+			//update_option( RSSPF_SLUG . '_feedlist', '');
+			//delete_option( RSSPF_SLUG . '_feedlist' );
 			$check = update_option( RSSPF_SLUG . '_feedlist', $feedlist);
 			
 			if (!$check){
@@ -298,9 +305,9 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 				$result = $feedURL . ' has been removed from your feedlist.';
 			}
 			
-			print_r($feedlist);
+			die($result);
 		} else {
-			print_r("Error");
+			die("Error");
 		}
 	
 	}	
