@@ -167,3 +167,13 @@ h3 {
 .rsspf-right-widget .widget-body {
 	padding: 8px;
 }
+
+/**
+ * Specific override styles.
+ *
+ */
+ 
+.wp-submenu ul {
+  padding: 0;
+  margin: 0;
+}
