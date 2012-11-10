@@ -1345,8 +1345,7 @@ class rsspf {
 		global $pagenow;
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
-		if (('toplevel_page_rsspf-menu' || 'rss-to-press-forward_page_rsspf-feeder') != $hook) { return; }
-		else {
+		if (('toplevel_page_rsspf-menu') == $hook) { 
 			//And now lets enqueue the script, ensuring that jQuery is already active.
 
 			wp_enqueue_script('tinysort', RSSPF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
@@ -1366,6 +1365,23 @@ class rsspf {
 			wp_enqueue_style( RSSPF_SLUG . '-style' );
 
 		}
+		if (('rss-to-press-forward_page_rsspf-feeder') != $hook) { return; }
+		else {
+			//And now lets enqueue the script, ensuring that jQuery is already active.
+
+			wp_enqueue_script('tinysort', RSSPF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
+			wp_enqueue_script('twitter-bootstrap', RSSPF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
+			
+			wp_register_style( RSSPF_SLUG . '-style', RSSPF_URL . 'assets/css/style.css');
+			wp_register_style( 'bootstrap-style', RSSPF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
+			wp_register_style( 'bootstrap-responsive-style', RSSPF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
+
+			wp_enqueue_style('bootstrap-style');
+			wp_enqueue_style('bootstrap-responsive-style');
+			wp_enqueue_style( RSSPF_SLUG . '-style' );
+
+		}		
+		
 
 
 	}
