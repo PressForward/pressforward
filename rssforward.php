@@ -1089,7 +1089,6 @@ class rsspf {
 							echo '<h3>' . $item['item_title'] . '</h3>';
 							//echo '<br />';
 							echo '<div class="item_meta item_meta_date">Published on ' . $item['item_date'] . ' by ' . $item['item_author'] . '.</div>';
-							echo '<div class="item_meta item_meta_added_date">Added to feed on ' . $item['item_added_date'] . '.</div>';
 							echo '<div style="display:none;">Unix timestamp for item date:<span class="sortableitemdate">' . strtotime($item['item_date']) . '</span> and for added to RSS date <span class="sortablerssdate">' . strtotime($item['item_added_date']) . '</span>.</div>';
 							echo '<div class="item_excerpt" id="excerpt' . $c . '">' . $this->feed_excerpt($item['item_content']) . '</div>';
 						echo '</div><!-- End span8 or 10 -->';
