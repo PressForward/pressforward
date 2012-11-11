@@ -1039,6 +1039,7 @@ class rsspf {
 								echo '
 								Feed: <span class="feed_title">' . $item['source_title'] . '</span><br />
 								Posted on: <span class="feed_posted">' . $item['item_date'] . '</span><br />
+								Added to feed on <span class="item_meta item_meta_added_date">' . $item['item_added_date'] . '.</span>
 								Authors: <span class="item_authors">' . $item['item_author'] . '</span><br />
 								Origin: <span class="source_name"><a target ="_blank" href="' . $sourceLink . '">' . $sourceLink . '</a></span><br />
 								Original Item: <span class="source_link"><a href="' . $item['item_link'] . '" target ="_blank">' . $item['item_title'] . '</a></span><br />

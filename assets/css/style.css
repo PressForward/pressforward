@@ -109,15 +109,15 @@ h3 {
 	margin: 4px 0;
 }
 
-.feed-item .feed-item-info-box {
+.feed-item div.feed-item-info-box {
 	float: right;
-	width: 30%; /**320px;**/
+	margin-right: -327px!important;
+	width: 310px;
 	font-size: 10px;
 	line-height: 13px;
 	padding: 8px!important;
 	display: block;
-	position: absolute;
-	left: 65.3%; /**720px;**/	
+	position: relative;
 	z-index: 1001;
 }
 
