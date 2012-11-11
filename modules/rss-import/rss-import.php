@@ -18,8 +18,11 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	public function __construct() {
 		parent::start();
 		add_action( 'admin_init', array($this, 'register_settings') );
-		add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
-		add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed') );		
+		if( is_admin() )
+		{
+			add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
+			add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed') );		
+		}
 	}
 
 	/**
