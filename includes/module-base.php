@@ -9,7 +9,10 @@ class RSSPF_Module {
 	var $module_url;
 
 	function start() {
-		$this->setup_hooks();
+		$this->setup_module();
+		if ($this->is_enabled()){
+			$this->setup_hooks();
+		}
 	}
 
 	function setup_hooks() {
@@ -27,7 +30,7 @@ class RSSPF_Module {
 		add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
 		add_filter('dash_widget_bar', array($this, 'add_dash_widgets_filter') );
 
-		add_action( 'module_control', array($this, 'setup_module') );
+		//add_action( 'module_control', array($this, 'setup_module') );
 	}
 
 	/**
@@ -55,6 +58,30 @@ class RSSPF_Module {
 			$this->module_dir = trailingslashit( RSSPF_ROOT . '/modules/' . $this->id );
 			$this->module_url = trailingslashit( RSSPF_URL . 'modules/' . $this->id );
 		}
+	}
+	
+	function is_enabled(){
+		$enabled = get_option(RSSPF_SLUG . '_' . $this->id . '_enable');
+		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
+			$enabled = 'yes';
+			update_option( RSSPF_SLUG . '_' . $this->id . '_enable', $enabled);
+		}
+		
+		if ($enabled == 'yes') { $bool = true; }
+		if ($enabled == 'no') { $bool = false; }
+		return $bool;
+		
+	}
+	
+	function setup_module(){
+		$mod_settings = array(
+			'name' => $this->id . ' Module',
+			'slug' => $this->id,
+			'description' => 'This module needs to overwrite the setup_module function and give a description.',
+			'options' => ''
+		);
+		
+		update_option( RSSPF_SLUG . '_' . $this->id . '_enable', $mod_settings );		
 	}
 
 	function setup_admin_menus( $admin_menus ) {
