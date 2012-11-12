@@ -50,6 +50,7 @@ class RSSPF_Foo extends RSSPF_Module {
 		<div class="wrap">
 			<h2>Foo</h2>
 			<p>Foo bar</p>
+			<p><?php echo $this->id ?></p>
 		</div>
 		<?php
 	}
