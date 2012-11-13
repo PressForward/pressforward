@@ -40,7 +40,7 @@ class RSSPF_Foo extends RSSPF_Module {
 			'options' => ''
 		);
 		
-		update_option( 'rsspf_foo_settings', $mod_settings );
+		//update_option( 'rsspf_foo_settings', $mod_settings );
 
 		
 	}
