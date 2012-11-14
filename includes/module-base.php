@@ -63,8 +63,6 @@ class RSSPF_Module {
 			$this->module_dir = trailingslashit( RSSPF_ROOT . '/modules/' . $this->id );
 			$this->module_url = trailingslashit( RSSPF_URL . 'modules/' . $this->id );
 		}
-		
-		$this->enabler = RSSPF_SLUG . '_' . $this->id . '_enable';
 	}
 	
 	function is_enabled(){
