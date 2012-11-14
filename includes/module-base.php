@@ -16,6 +16,9 @@ class RSSPF_Module {
 		// Once modules are registered, set up some basic module info
 		add_action( 'rsspf_setup_modules', array( $this, 'setup_module_info' ) );
 		add_action( 'admin_init', array($this, 'module_setup') );
+		// Set up the admin panels and save methods
+		add_action( 'rsspf_admin_op_page', array( $this, 'admin_op_page' ) );
+		add_action( 'rsspf_admin_op_page_save', array( $this, 'admin_op_page_save' ) );	
 		
 		if (($this->is_enabled())){
 			// Run at 15 to make sure the core menu is loaded first
@@ -73,7 +76,7 @@ class RSSPF_Module {
 		}
 		if ($enabled == 'yes') { $bool = true; }
 		if ($enabled == 'no') { $bool = false; }
-		print_r(RSSPF_SLUG . '_' . $modId . '_enable ');
+		//print_r(RSSPF_SLUG . '_' . $modId . '_enable ');
 		return $bool;
 		
 	}
@@ -87,11 +90,7 @@ class RSSPF_Module {
 			'options' => ''
 		);
 		
-		update_option( RSSPF_SLUG . '_' . $this->id . '_settings', $mod_settings );
-		
-		// Set up the admin panels and save methods
-		add_action( 'rsspf_admin_op_page', array( $this, 'admin_op_page' ) );
-		add_action( 'rsspf_admin_op_page_save', array( $this, 'admin_op_page_save' ) );		
+		update_option( RSSPF_SLUG . '_' . $this->id . '_settings', $mod_settings );	
 
 		//return $test;
 	}
@@ -99,6 +98,7 @@ class RSSPF_Module {
 	public function admin_op_page() {
 		$modsetup = get_option(RSSPF_SLUG . '_' . $this->id . '_settings');
 		$modId = strtolower(preg_replace('/[^A-Za-z]/', '', get_class( $this )));
+		//print_r(RSSPF_SLUG . '_' . $modId . '_enable');
 		$enabled = get_option(RSSPF_SLUG . '_' . $modId . '_enable');
 		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
 			$enabled = 'yes';
@@ -130,8 +130,7 @@ class RSSPF_Module {
 		$modId = strtolower(preg_replace('/[^A-Za-z]/', '', get_class( $this )));
 		$enabled = isset( $_POST[RSSPF_SLUG . '_' . $modId . '_enable'] ) && 'no' == $_POST[RSSPF_SLUG . '_' . $modId . '_enable'] ? 'no' : 'yes';
 		update_option( RSSPF_SLUG . '_' . $modId . '_enable', $enabled );
-		print_r(RSSPF_SLUG . '_' . $modId . '_enable');
-		die();
+
 	}	
 
 	function setup_admin_menus( $admin_menus ) {

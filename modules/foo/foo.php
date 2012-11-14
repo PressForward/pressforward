@@ -45,6 +45,20 @@ class RSSPF_Foo extends RSSPF_Module {
 		
 	}
 	
+	function module_setup(){
+		$mod_settings = array(
+			'name' => 'Foo Test Module',
+			'slug' => 'foo',
+			'description' => 'This module provides a set of test functions for developers to check.',
+			'thumbnail' => '',
+			'options' => ''
+		);
+		
+		update_option( RSSPF_SLUG . '_' . $this->id . '_settings', $mod_settings );	
+
+		//return $test;
+	}	
+	
 	function admin_menu_callback() {
 		?>
 		<div class="wrap">
