@@ -7,7 +7,6 @@ class RSSPF_Module {
 	var $id;
 	var $module_dir;
 	var $module_url;
-	var $enabler;
 
 	function start() {
 		$this->setup_hooks();
@@ -17,17 +16,18 @@ class RSSPF_Module {
 		// Once modules are registered, set up some basic module info
 		add_action( 'rsspf_setup_modules', array( $this, 'setup_module_info' ) );
 		add_action( 'admin_init', array($this, 'module_setup') );
+		
 		if (($this->is_enabled())){
-		// Run at 15 to make sure the core menu is loaded first
-		add_action( 'admin_menu', array( $this, 'setup_admin_menus' ), 15 );
+			// Run at 15 to make sure the core menu is loaded first
+			add_action( 'admin_menu', array( $this, 'setup_admin_menus' ), 15 );
 
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ) );	// There's no admin_enqueue_styles action
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ) );	// There's no admin_enqueue_styles action
 
-		add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_scripts' ) );
-		add_action( 'wp_enqueue_styles',  array( $this, 'wp_enqueue_styles' ) );
-		add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
-		add_filter('dash_widget_bar', array($this, 'add_dash_widgets_filter') );
+			add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_scripts' ) );
+			add_action( 'wp_enqueue_styles',  array( $this, 'wp_enqueue_styles' ) );
+			add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
+			add_filter('dash_widget_bar', array($this, 'add_dash_widgets_filter') );
 
 		//add_action( 'module_control', array($this, 'setup_module') );
 		} else {
@@ -64,15 +64,16 @@ class RSSPF_Module {
 		$this->enabler = RSSPF_SLUG . '_' . $this->id . '_enable';
 	}
 	
-	public function is_enabled(){
-		$enabled = get_option(RSSPF_SLUG . '_' . $this->id . '_enable');
+	function is_enabled(){
+		$modId = strtolower(preg_replace('/[^A-Za-z]/', '', get_class( $this )));
+		$enabled = get_option(RSSPF_SLUG . '_' . $modId . '_enable');
 		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
 			$enabled = 'yes';
 			//update_option( RSSPF_SLUG . '_' . $this->id . '_enable', $enabled);
 		}
 		if ($enabled == 'yes') { $bool = true; }
 		if ($enabled == 'no') { $bool = false; }
-		print_r($this->enabler);
+		print_r(RSSPF_SLUG . '_' . $modId . '_enable ');
 		return $bool;
 		
 	}
@@ -82,6 +83,7 @@ class RSSPF_Module {
 			'name' => $this->id . ' Module',
 			'slug' => $this->id,
 			'description' => 'This module needs to overwrite the setup_module function and give a description.',
+			'thumbnail' => '',
 			'options' => ''
 		);
 		
@@ -91,12 +93,13 @@ class RSSPF_Module {
 		add_action( 'rsspf_admin_op_page', array( $this, 'admin_op_page' ) );
 		add_action( 'rsspf_admin_op_page_save', array( $this, 'admin_op_page_save' ) );		
 
-		return $test;
+		//return $test;
 	}
 	
 	public function admin_op_page() {
 		$modsetup = get_option(RSSPF_SLUG . '_' . $this->id . '_settings');
-		$enabled = get_option(RSSPF_SLUG . '_' . $this->id . '_enable');
+		$modId = strtolower(preg_replace('/[^A-Za-z]/', '', get_class( $this )));
+		$enabled = get_option(RSSPF_SLUG . '_' . $modId . '_enable');
 		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
 			$enabled = 'yes';
 		}
@@ -113,7 +116,7 @@ class RSSPF_Module {
 					</th>
 
 					<td>
-						<select id="<?php echo RSSPF_SLUG . '_' . $this->id . '_enable'; ?>" name="<?php echo RSSPF_SLUG . '_' . $this->id . '_enable'; ?>">
+						<select id="<?php echo RSSPF_SLUG . '_' . $modId . '_enable'; ?>" name="<?php echo RSSPF_SLUG . '_' . $modId . '_enable'; ?>">
 							<option value="yes" <?php selected( $enabled, 'yes' ) ?>><?php _e( 'Yes', RSSPF_SLUG ) ?></option>
 							<option value="no" <?php selected( $enabled, 'no' ) ?>><?php _e( 'No', RSSPF_SLUG ) ?></option>
 						</select>
@@ -124,8 +127,11 @@ class RSSPF_Module {
 	}
 	
 	public function admin_op_page_save() {
-		$enabled = isset( $_POST[RSSPF_SLUG . '_' . $this->id . '_enable'] ) && 'no' == $_POST[RSSPF_SLUG . '_' . $this->id . '_enable'] ? 'no' : 'yes';
-		update_option( RSSPF_SLUG . '_' . $this->id . '_enable', $enabled );
+		$modId = strtolower(preg_replace('/[^A-Za-z]/', '', get_class( $this )));
+		$enabled = isset( $_POST[RSSPF_SLUG . '_' . $modId . '_enable'] ) && 'no' == $_POST[RSSPF_SLUG . '_' . $modId . '_enable'] ? 'no' : 'yes';
+		update_option( RSSPF_SLUG . '_' . $modId . '_enable', $enabled );
+		print_r(RSSPF_SLUG . '_' . $modId . '_enable');
+		die();
 	}	
 
 	function setup_admin_menus( $admin_menus ) {
