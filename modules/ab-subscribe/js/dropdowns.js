@@ -14,6 +14,10 @@ function ab_refresh_dropdown( id ) {
 	var dd, ddval, cats, options, opts, child_id, child_dd, cat_id;
 	dd = document.getElementById( id );
 	ddval = dd.value;
+	if ( 0 == ddval.length || '-' == ddval ) {
+		return;
+	}
+
 	cats = JSON.parse( ABLinksArray );
 
 	if ( 'ab-cats' == id ) {
@@ -27,6 +31,7 @@ function ab_refresh_dropdown( id ) {
 		child_dd = document.getElementById( child_id );
 	}
 
+	options += '<option>-</option>';
 	jQuery.each( opts, function( optslug, opt ) {
 		options += '<option value="' + optslug + '">' + opt.title + '</option>';
 	} );
