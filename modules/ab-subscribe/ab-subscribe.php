@@ -33,8 +33,28 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 			return "No blogs found. Try refreshing the academicblogs.org list.";
 		}
 
-		$ab_items_selector = '<select>';
+		// Echo the ABLinksArray array into a JS object
+		$ab_items_selector  = '<script type="text/javascript">';
+		$ab_items_selector .= 'var ABLinksArray = "' . addslashes( json_encode( $ABLinksArray ) ) . '";';
+		$ab_items_selector .= '</script>';
 
+		// Build the top-level dropdown
+		$ab_items_selector .= '<label for="ab-cats">' . __( 'Category', 'rsspf' ) . '</label>';
+		$ab_items_selector .= '<select class="ab-dropdown" name="ab-cats" id="ab-cats">';
+		foreach ( (array) $ABLinksArray['categories'] as $cat_slug => $cat ) {
+			$ab_items_selector .= '<option value="' . esc_attr( $cat_slug ) . '">' . esc_html( $cat['text'] ) . '</option>';
+		}
+		$ab_items_selector .= '</select>';
+
+		// Add dummy dropdowns for subcategories
+		$ab_items_selector .= '<label for="ab-subcats">' . __( 'Subcategory', 'rsspf' ) . '</label>';
+		$ab_items_selector .= '<select class="ab-dropdown" name="ab-subcats" id="ab-subcats" disabled="disabled"><option>-</option></select>';
+
+		// Add dummy dropdowns for blogs
+		$ab_items_selector .= '<label for="ab-blogs">' . __( 'Blog', 'rsspf' ) . '</label>';
+		$ab_items_selector .= '<select class="ab-dropdown" name="ab-blogs" id="ab-blogs" disabled="disabled"><option>-</option></select>';
+
+/*
 		foreach ( (array) $ABLinksArray['categories'] as $genSubject){
 			if ($ca == 0){
 				$ab_items_selector .= '<option disabled="disabled" value="0">----topic----<hr /></option>';
@@ -76,7 +96,7 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 			}
 
 		}
-
+*/
 		$ab_items_selector .= '</select>';
 
 		return $ab_items_selector;
@@ -176,6 +196,7 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 		wp_enqueue_script( 'jquery-ui' );
 		wp_enqueue_script( 'jquery-ui-progressbar' );
 		wp_enqueue_script( 'ab-refresh-progressbar', $rsspf->modules['ab-subscribe']->module_url . 'js/progressbar.js', array( 'jquery', 'jquery-ui-progressbar') );
+		wp_enqueue_script( 'ab-dropdowns', $rsspf->modules['ab-subscribe']->module_url . 'js/dropdowns.js', array( 'jquery' ) );
 		wp_enqueue_style( 'ab-refresh-progressbar', $rsspf->modules['ab-subscribe']->module_url . 'css/progressbar.css' );
 	}
 }
