@@ -294,12 +294,17 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
 			
 			$offender = array_search($feedURL, $feedlist);
-			if ($offender != false){
+			if ($offender !== false){
 				unset($feedlist[$offender]);
 			}
 			//$modfeedlist = array_diff($feedlist, array($feedURL));
 			//update_option( RSSPF_SLUG . '_feedlist', '');
 			//delete_option( RSSPF_SLUG . '_feedlist' );
+
+			// The rsspf_feedlist setting is being filtered through the rsspf_feedlist_validate
+			// method, as a result of being registered with register_setting(). We'll work
+			// around this by unhooking the validation method during this update
+			remove_action( 'sanitize_option_rsspf_feedlist', array( 'RSSPF_RSS_Import', 'rsspf_feedlist_validate' ) );
 			$check = update_option( RSSPF_SLUG . '_feedlist', $feedlist);
 			
 			if (!$check){
@@ -316,7 +321,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	}	
 	
 	function register_settings(){
-		register_setting(RSSPF_SLUG . '_feedlist_group', RSSPF_SLUG . '_feedlist', array($this, 'rsspf_feedlist_validate'));
+		register_setting(RSSPF_SLUG . '_feedlist_group', RSSPF_SLUG . '_feedlist', array('RSSPF_RSS_Import', 'rsspf_feedlist_validate'));
 	}
 	
 	public function admin_enqueue_scripts() {
