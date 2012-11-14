@@ -1636,7 +1636,7 @@ class rsspf {
 		// verify if this is an auto save routine.
 		// If it is our form has not been submitted, so we dont want to do anything
 		//if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
-		if (($_POST['post_status'] == 'publish') && ($_POST['post_type'] == 'nomination')){
+		if ( isset( $_POST['post_status'] ) && isset( $_POST['post_type'] ) && ($_POST['post_status'] == 'publish') && ($_POST['post_type'] == 'nomination')){
 		//print_r($_POST); die();
 			$item_title = $_POST['post_title'];
 			$item_content = $_POST['post_content'];
