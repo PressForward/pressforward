@@ -13,6 +13,11 @@ function ab_refresh_dropdown( id ) {
 
 	var dd, ddval, cats, options, opts, child_id, child_dd, cat_id;
 	dd = document.getElementById( id );
+
+	if ( null === dd ) {
+		return;
+	}
+
 	ddval = dd.value;
 	if ( 0 == ddval.length || '-' == ddval ) {
 		return;
