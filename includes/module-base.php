@@ -94,6 +94,7 @@ class RSSPF_Module {
 	}
 	
 	public function admin_op_page() {
+		//Module enable option code originated in https://github.com/boonebgorges/participad
 		$modsetup = get_option(RSSPF_SLUG . '_' . $this->id . '_settings');
 		$modId = strtolower(preg_replace('/[^A-Za-z]/', '', get_class( $this )));
 		//print_r(RSSPF_SLUG . '_' . $modId . '_enable');
