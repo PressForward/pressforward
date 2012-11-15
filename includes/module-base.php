@@ -18,24 +18,8 @@ class RSSPF_Module {
 		add_action( 'admin_init', array($this, 'module_setup') );
 		// Set up the admin panels and save methods
 		add_action( 'rsspf_admin_op_page', array( $this, 'admin_op_page' ) );
-		add_action( 'rsspf_admin_op_page_save', array( $this, 'admin_op_page_save' ) );	
-		
-		if (($this->is_enabled())){
-			// Run at 15 to make sure the core menu is loaded first
-			add_action( 'admin_menu', array( $this, 'setup_admin_menus' ), 15 );
+		add_action( 'rsspf_admin_op_page_save', array( $this, 'admin_op_page_save' ) );
 
-			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ) );	// There's no admin_enqueue_styles action
-
-			add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_scripts' ) );
-			add_action( 'wp_enqueue_styles',  array( $this, 'wp_enqueue_styles' ) );
-			add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
-			add_filter('dash_widget_bar', array($this, 'add_dash_widgets_filter') );
-
-		//add_action( 'module_control', array($this, 'setup_module') );
-		} else {
-			return;
-		}
 	}
 
 	/**
@@ -63,22 +47,27 @@ class RSSPF_Module {
 			$this->module_dir = trailingslashit( RSSPF_ROOT . '/modules/' . $this->id );
 			$this->module_url = trailingslashit( RSSPF_URL . 'modules/' . $this->id );
 		}
-	}
-	
-	function is_enabled(){
-		$modId = strtolower(preg_replace('/[^A-Za-z]/', '', get_class( $this )));
-		$enabled = get_option(RSSPF_SLUG . '_' . $modId . '_enable');
+
+		$enabled = get_option( RSSPF_SLUG . '_' . $this->id . '_enable' );
 		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
 			$enabled = 'yes';
-			//update_option( RSSPF_SLUG . '_' . $this->id . '_enable', $enabled);
 		}
-		if ($enabled == 'yes') { $bool = true; }
-		if ($enabled == 'no') { $bool = false; }
-		//print_r(RSSPF_SLUG . '_' . $modId . '_enable ');
-		return $bool;
-		
+
+		if ( 'yes' == $enabled ) {
+			// Run at 15 to make sure the core menu is loaded first
+			add_action( 'admin_menu', array( $this, 'setup_admin_menus' ), 15 );
+
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ) );	// There's no admin_enqueue_styles action
+
+			add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_scripts' ) );
+			add_action( 'wp_enqueue_styles',  array( $this, 'wp_enqueue_styles' ) );
+			add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
+			add_filter('dash_widget_bar', array($this, 'add_dash_widgets_filter') );
+		}
+
 	}
-	
+
 	function module_setup(){
 		$mod_settings = array(
 			'name' => $this->id . ' Module',
