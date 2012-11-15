@@ -66,6 +66,8 @@ class rsspf {
 		add_action('init', array($this, 'create_rsspf_archive_post_type') );
 		//Adding javascript and css to admin pages
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
+		
+		add_action( 'admin_init', array($this, 'rsspf_options_admin_page_save') );	
 
 
 		/** Some actions are only needed inside of the admin area.
@@ -1271,12 +1273,58 @@ class rsspf {
 	}
 
 	function rsspf_options_builder() {
+		?>
+		<form action="<?php echo $this->rsspf_admin_url(); ?>" method="post">
+			<div class="wrap">
+				<?php
+				echo 'Options';
 
-		echo 'Options';
-		
-		do_action( 'module_options' );
+				?>
+					<h3><?php _e( 'Modules', RSSPF_SLUG ) ?></h3>
+
+					<p class="description"><?php _e( '<strong>PressForward Modules</strong> are addons to alter or improve the functionality of the ' . RSSPF_TITLE . ' plugin.', RSSPF_SLUG ) ?></p>
+				<?php
+				do_action( 'rsspf_admin_op_page' );
+				wp_nonce_field( 'rsspf_settings' );
+				?>
+					<br />
+					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", RSSPF_SLUG ) ?>" />
+			</div>
+		</form>
+		<?php
 
 	}
+	
+	function rsspf_options_admin_page_save() {
+		global $pagenow;
+
+		if ( 'admin.php' != $pagenow ) {
+			return;
+		}
+
+		if ( empty( $_POST['submit'] ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		check_admin_referer( 'rsspf_settings' );
+
+		do_action( 'rsspf_admin_op_page_save' );
+	}
+	
+	/**
+	 * Returns the URL of the admin page
+	 *
+	 * We need this all over the place, so I've thrown it in a function
+	 *
+	 * @return string
+	 */
+	function rsspf_admin_url() {
+		return add_query_arg( 'page', RSSPF_SLUG . '-options', admin_url( 'admin.php' ) );
+	}	
 	
 	function feeder_options_init() {
 		# Activate when settings are ready to go.
