@@ -85,7 +85,7 @@ class RSSPF_Module {
 	public function admin_op_page() {
 		//Module enable option code originated in https://github.com/boonebgorges/participad
 		$modsetup = get_option(RSSPF_SLUG . '_' . $this->id . '_settings');
-		$modId = strtolower(preg_replace('/[^A-Za-z]/', '', get_class( $this )));
+		$modId = $this->id;
 		//print_r(RSSPF_SLUG . '_' . $modId . '_enable');
 		$enabled = get_option(RSSPF_SLUG . '_' . $modId . '_enable');
 		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
@@ -115,7 +115,7 @@ class RSSPF_Module {
 	}
 	
 	public function admin_op_page_save() {
-		$modId = strtolower(preg_replace('/[^A-Za-z]/', '', get_class( $this )));
+		$modId = $this->id;
 		$enabled = isset( $_POST[RSSPF_SLUG . '_' . $modId . '_enable'] ) && 'no' == $_POST[RSSPF_SLUG . '_' . $modId . '_enable'] ? 'no' : 'yes';
 		update_option( RSSPF_SLUG . '_' . $modId . '_enable', $enabled );
 
