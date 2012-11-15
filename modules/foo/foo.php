@@ -40,16 +40,31 @@ class RSSPF_Foo extends RSSPF_Module {
 			'options' => ''
 		);
 		
-		update_option( 'rsspf_foo_settings', $mod_settings );
+		//update_option( 'rsspf_foo_settings', $mod_settings );
 
 		
 	}
+	
+	function module_setup(){
+		$mod_settings = array(
+			'name' => 'Foo Test Module',
+			'slug' => 'foo',
+			'description' => 'This module provides a set of test functions for developers to check.',
+			'thumbnail' => '',
+			'options' => ''
+		);
+		
+		update_option( RSSPF_SLUG . '_' . $this->id . '_settings', $mod_settings );	
+
+		//return $test;
+	}	
 	
 	function admin_menu_callback() {
 		?>
 		<div class="wrap">
 			<h2>Foo</h2>
 			<p>Foo bar</p>
+			<p><?php echo $this->id ?></p>
 		</div>
 		<?php
 	}

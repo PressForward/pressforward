@@ -15,19 +15,11 @@ class RSSPF_Module {
 	function setup_hooks() {
 		// Once modules are registered, set up some basic module info
 		add_action( 'rsspf_setup_modules', array( $this, 'setup_module_info' ) );
+		add_action( 'admin_init', array($this, 'module_setup') );
+		// Set up the admin panels and save methods
+		add_action( 'rsspf_admin_op_page', array( $this, 'admin_op_page' ) );
+		add_action( 'rsspf_admin_op_page_save', array( $this, 'admin_op_page_save' ) );
 
-		// Run at 15 to make sure the core menu is loaded first
-		add_action( 'admin_menu', array( $this, 'setup_admin_menus' ), 15 );
-
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ) );	// There's no admin_enqueue_styles action
-
-		add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_scripts' ) );
-		add_action( 'wp_enqueue_styles',  array( $this, 'wp_enqueue_styles' ) );
-		add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
-		add_filter('dash_widget_bar', array($this, 'add_dash_widgets_filter') );
-
-		add_action( 'module_control', array($this, 'setup_module') );
 	}
 
 	/**
@@ -55,7 +47,79 @@ class RSSPF_Module {
 			$this->module_dir = trailingslashit( RSSPF_ROOT . '/modules/' . $this->id );
 			$this->module_url = trailingslashit( RSSPF_URL . 'modules/' . $this->id );
 		}
+
+		$enabled = get_option( RSSPF_SLUG . '_' . $this->id . '_enable' );
+		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
+			$enabled = 'yes';
+		}
+
+		if ( 'yes' == $enabled ) {
+			// Run at 15 to make sure the core menu is loaded first
+			add_action( 'admin_menu', array( $this, 'setup_admin_menus' ), 15 );
+
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ) );	// There's no admin_enqueue_styles action
+
+			add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_scripts' ) );
+			add_action( 'wp_enqueue_styles',  array( $this, 'wp_enqueue_styles' ) );
+			add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
+			add_filter('dash_widget_bar', array($this, 'add_dash_widgets_filter') );
+		}
+
 	}
+
+	function module_setup(){
+		$mod_settings = array(
+			'name' => $this->id . ' Module',
+			'slug' => $this->id,
+			'description' => 'This module needs to overwrite the setup_module function and give a description.',
+			'thumbnail' => '',
+			'options' => ''
+		);
+		
+		update_option( RSSPF_SLUG . '_' . $this->id . '_settings', $mod_settings );	
+
+		//return $test;
+	}
+	
+	public function admin_op_page() {
+		//Module enable option code originated in https://github.com/boonebgorges/participad
+		$modsetup = get_option(RSSPF_SLUG . '_' . $this->id . '_settings');
+		$modId = $this->id;
+		//print_r(RSSPF_SLUG . '_' . $modId . '_enable');
+		$enabled = get_option(RSSPF_SLUG . '_' . $modId . '_enable');
+		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
+			$enabled = 'yes';
+		}
+			//print_r( $this->is_enabled() );
+		?>	
+			<h4><?php _e( $modsetup['name'], RSSPF_SLUG ) ?></h4>
+
+			<p class="description"><?php _e( $modsetup['description'], RSSPF_SLUG ) ?></p>
+
+			<table class="form-table">
+				<tr>
+					<th scope="row">
+						<label for="participad-dashboard-enable"><?php _e( 'Enable '. $modsetup['name'], RSSPF_SLUG ) ?></label>
+					</th>
+
+					<td>
+						<select id="<?php echo RSSPF_SLUG . '_' . $modId . '_enable'; ?>" name="<?php echo RSSPF_SLUG . '_' . $modId . '_enable'; ?>">
+							<option value="yes" <?php selected( $enabled, 'yes' ) ?>><?php _e( 'Yes', RSSPF_SLUG ) ?></option>
+							<option value="no" <?php selected( $enabled, 'no' ) ?>><?php _e( 'No', RSSPF_SLUG ) ?></option>
+						</select>
+					</td>
+				</tr>
+			</table>
+		<?php
+	}
+	
+	public function admin_op_page_save() {
+		$modId = $this->id;
+		$enabled = isset( $_POST[RSSPF_SLUG . '_' . $modId . '_enable'] ) && 'no' == $_POST[RSSPF_SLUG . '_' . $modId . '_enable'] ? 'no' : 'yes';
+		update_option( RSSPF_SLUG . '_' . $modId . '_enable', $enabled );
+
+	}	
 
 	function setup_admin_menus( $admin_menus ) {
 		foreach ( (array) $admin_menus as $admin_menu ) {
