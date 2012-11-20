@@ -270,6 +270,9 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			if (!empty($input['opml'])){
 				$feedlist = array_merge($feedlist, $opml_array);
 			}
+			if (!empty($_POST['o_feed_url'])){
+			
+			}
 		} else {
 	//		$feedlist = array('http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Flabel%2FEditors-at-Large');
 			if (!empty($input['single'])){
@@ -278,6 +281,14 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			if (!empty($input['opml'])){
 				$feedlist = array_merge($feedlist, $opml_array);
 			}
+			if (!empty($_POST['o_feed_url'])){
+				$offender = array_search($_POST['o_feed_url'], $feedlist);
+				if ($offender !== false){
+					unset($feedlist[$offender]);
+				}
+				
+			}
+			
 		}
 		
 		//print_r($feedlist); die();
@@ -290,7 +301,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			$feedURL = $_POST['o_feed_url'];
 			if ( !wp_verify_nonce($_POST[RSSPF_SLUG . '_o_feed_nonce'], 'feedremove') )
 				die( __( "Nonce check failed. Please ensure you're supposed to be removing feeds.", 'rsspf' ) );		
-				
+		/**		
 			$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
 			
 			$offender = array_search($feedURL, $feedlist);
@@ -300,12 +311,12 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			//$modfeedlist = array_diff($feedlist, array($feedURL));
 			//update_option( RSSPF_SLUG . '_feedlist', '');
 			//delete_option( RSSPF_SLUG . '_feedlist' );
-
+**/
 			// The rsspf_feedlist setting is being filtered through the rsspf_feedlist_validate
 			// method, as a result of being registered with register_setting(). We'll work
 			// around this by unhooking the validation method during this update
-			remove_action( 'sanitize_option_rsspf_feedlist', array( 'RSSPF_RSS_Import', 'rsspf_feedlist_validate' ) );
-			$check = update_option( RSSPF_SLUG . '_feedlist', $feedlist);
+			//remove_action( 'sanitize_option_rsspf_feedlist', array( 'RSSPF_RSS_Import', 'rsspf_feedlist_validate' ) );
+			$check = update_option( RSSPF_SLUG . '_feedlist', $_POST);
 			
 			if (!$check){
 				$result = 'The feedlist failed to update.'; 
