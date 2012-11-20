@@ -42,13 +42,15 @@ class OPML_reader {
 			foreach ($a as $outline) {
 				$b[] = $outline['xmlUrl'];
 			}
-			
+
+		}
+		
 			if ($is_array){
 				return $b;
 			} else {
 				return $a;
-			}
-		}
+			}		
+		
 	}
 
 }
