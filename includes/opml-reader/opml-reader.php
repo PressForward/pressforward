@@ -34,18 +34,20 @@ class OPML_reader {
 		  * [xmlUrl] - location of the RSS feed on the site.
 		  * [htmlUrl] - The site home URI.
 		**/
-		foreach ($opml_data->body->outline->outline as $data){
-			$a[] = reset($data);
-		}
-		// Pulls out the feed location. 
-		foreach ($a as $outline) {
-			$b[] = $outline['xmlUrl'];
-		}
-		
-		if ($is_array){
-			return $b;
-		} else {
-			return $a;
+		foreach ($opml_data->body->outline as $folder){
+			foreach ($folder->outline as $data){
+				$a[] = reset($data);
+			}
+			// Pulls out the feed location. 
+			foreach ($a as $outline) {
+				$b[] = $outline['xmlUrl'];
+			}
+			
+			if ($is_array){
+				return $b;
+			} else {
+				return $a;
+			}
 		}
 	}
 

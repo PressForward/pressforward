@@ -291,6 +291,9 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			
 		}
 		
+		//Let's ensure no duplicates.
+		$feedlist = array_unique($feedlist);
+		
 		//print_r($feedlist); die();
 		return $feedlist;
 	}
