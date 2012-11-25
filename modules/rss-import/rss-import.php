@@ -79,7 +79,12 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 //						$item_content = $item->get_content();
 //				}
 				$iFeed = $item->get_feed();
-				$authors = $this->get_rss_authors($item);
+				if (!$agStatus){
+					$authors = $this->get_rss_authors($item);
+				}
+				else {
+					$authors = '<span class="item-authorship">aggregation</span>';
+				}
 				$item_categories = array();
 				$item_categories = $item->get_categories();
 				$itemTerms = array();
@@ -149,7 +154,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 
 		}
 		$authors = implode(', ', $nameArray);
-
+		$authors = '<span class="item-authorship">' . $authors . '</span>';
 		return $authors;
 
 	}
