@@ -70,14 +70,14 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 //					$realContent = $rsspf->get_content_through_aggregator($realLink);
 //					# If we can't get the actual content, then just use what we've got from the RSS feed.
 //					if (!$realContent){
-//						$item_content = $item->get_content();
+						$item_content = $item->get_content();
 //					} else {
-						$item_content = $realContent;
+//						$item_content = $realContent;
 						//print_r($realContent);
 //					}
-				} else {
-						$item_content = $item->get_content();
-				}
+//				} else {
+//						$item_content = $item->get_content();
+//				}
 				$iFeed = $item->get_feed();
 				$authors = $this->get_rss_authors($item);
 				$item_categories = array();
