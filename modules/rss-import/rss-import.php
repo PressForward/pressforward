@@ -61,18 +61,20 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 				}
 				//override switch while rest is not working.
 				//$agStatus = false;
-				if ($agStatus){
-					# Get the origin post link.
-					$realLink = $item->get_link();
-					# Try and get the actual content of the post.
-					$realContent = $rsspf->get_content_through_aggregator($realLink);
-					# If we can't get the actual content, then just use what we've got from the RSS feed.
-					if (!$realContent){
-						$item_content = $item->get_content();
-					} else {
+				//This is where we switch off auto readability 
+				//And leave it to an AJAX function instead. 
+//				if ($agStatus){
+//					# Get the origin post link.
+//					$realLink = $item->get_link();
+//					# Try and get the actual content of the post.
+//					$realContent = $rsspf->get_content_through_aggregator($realLink);
+//					# If we can't get the actual content, then just use what we've got from the RSS feed.
+//					if (!$realContent){
+//						$item_content = $item->get_content();
+//					} else {
 						$item_content = $realContent;
 						//print_r($realContent);
-					}
+//					}
 				} else {
 						$item_content = $item->get_content();
 				}
