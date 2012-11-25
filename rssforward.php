@@ -875,6 +875,40 @@ class rsspf {
 
 	}
 	
+	public function make_it_readable(){
+		set_time_limit(0);
+		$url = $this->de_https($url);
+		$descrip = $content;
+		if ($aggregated || (strlen($descrip) <= 160)) {
+			$descrip = $this->readability_object($url);
+		}
+		if (!$descrip) {
+			$url = str_replace('&amp;','&', $url);
+			#Try and get the OpenGraph description.
+			if (OpenGraph::fetch($url)){
+				$node = OpenGraph::fetch($url);
+				$descrip = $node->description;
+			} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
+			elseif ('' != ($contentHtml = @get_meta_tags($url))) {
+				# Try and get the HEAD > META DESCRIPTION tag.
+				$descrip = $contentHtml['description'];
+				print_r($url . ' has no meta OpenGraph description we can find.');
+
+			}
+			else
+			{
+				# Ugh... we can't get anything huh?
+				print_r($url . ' has no description we can find.');
+				# We'll want to return a false to loop with.
+				$descrip = $content;
+
+				break;
+			}
+		}
+		return $descrip;
+		die(); // < to keep from returning 0s with everything.
+	}
+	
 	# This function takes measures to try and get item content throguh methods of increasing reliability, but decreasing relevance.
 	public function get_content_through_aggregator($url){
 

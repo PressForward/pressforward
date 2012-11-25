@@ -13,6 +13,8 @@ jQuery(document).ready(function() {
 			itemID: itemID,
 			//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
 			content: content,
+			//We need to pull the source data to determine if it is aggregation as well. 
+			// Source pull goes here. 
 			rsspf_nomination_nonce: theNonce
 			
 		}, function(response) {
