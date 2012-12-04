@@ -818,12 +818,12 @@ class rsspf {
 		
 		$url = $this->de_https($url);
 		$url = str_replace('&amp;','&', $url);
-		print_r($url); print_r(' - Readability<br />');
+		//print_r($url); print_r(' - Readability<br />');
 		// change from Boone - use wp_remote_get() instead of file_get_contents()
 		$request = wp_remote_get( $url, array('timeout' => '30') );
 		if (is_wp_error($request)) {
-			$content = false;
-			print_r($request); die();
+			$content = 'error-secured';
+			//print_r($request); die();
 			return $content;
 		}
 		if ( ! empty( $request['body'] ) ){
@@ -901,33 +901,36 @@ class rsspf {
 			
 			if ((strlen($descrip) <= 160) || $aggregated) {
 				$itemReadReady = $this->readability_object($url);
-			
-				if (!$itemReadReady) {
-					$itemReadReady = __( "This content failed Readability.", 'rsspf' );
-					$itemReadReady .= '<br />';
-					$url = str_replace('&amp;','&', $url);
-					#Try and get the OpenGraph description.
-					if (OpenGraph::fetch($url)){
-						$node = OpenGraph::fetch($url);
-						$itemReadReady .= $node->description;
-					} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
-					elseif ('' != ($contentHtml = @get_meta_tags($url))) {
-						# Try and get the HEAD > META DESCRIPTION tag.
-						$itemReadReady .= __( "This content failed an OpenGraph check.", 'rsspf' );
+				if ($itemReadReady != 'error-secured') {
+					if (!$itemReadReady) {
+						$itemReadReady = __( "This content failed Readability.", 'rsspf' );
 						$itemReadReady .= '<br />';
-						$descrip = $contentHtml['description'];
+						$url = str_replace('&amp;','&', $url);
+						#Try and get the OpenGraph description.
+						if (OpenGraph::fetch($url)){
+							$node = OpenGraph::fetch($url);
+							$itemReadReady .= $node->description;
+						} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
+						elseif ('' != ($contentHtml = @get_meta_tags($url))) {
+							# Try and get the HEAD > META DESCRIPTION tag.
+							$itemReadReady .= __( "This content failed an OpenGraph check.", 'rsspf' );
+							$itemReadReady .= '<br />';
+							$descrip = $contentHtml['description'];
 
+						}
+						else
+						{
+							# Ugh... we can't get anything huh?
+							$itemReadReady .= __( "This content has no description we can find.", 'rsspf' );
+							$itemReadReady .= '<br />';					
+							# We'll want to return a false to loop with.
+							$itemReadReady = $descrip;
+							
+						}
 					}
-					else
-					{
-						# Ugh... we can't get anything huh?
-						$itemReadReady .= __( "This content has no description we can find.", 'rsspf' );
-						$itemReadReady .= '<br />';					
-						# We'll want to return a false to loop with.
-						$itemReadReady = $descrip;
-						
-					}
-				} 
+				} else {
+					die('secured');
+				}
 			} else {
 				die('readable');
 			}

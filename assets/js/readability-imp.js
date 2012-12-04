@@ -26,7 +26,11 @@ jQuery(document).ready(function() {
 		function(response) {
 			// Don't bother doing anything if we don't need it.
 			if (response != 'readable') {
-				jQuery("#"+itemID+" .item_content").html(response);
+				if (response == 'secured') {
+					alert('The content of this post is behind SSL and cannot be retrieved.');
+				} else {
+					jQuery("#"+itemID+" .item_content").html(response);
+				}
 			}
 		});
 		
