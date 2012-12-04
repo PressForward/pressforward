@@ -2,8 +2,10 @@ jQuery(document).ready(function() {
 
 	jQuery(".feed-item").on('show', function(evt){
 		var element = jQuery(this);
+		//BUG: Not grabbing ID correctly...
 		var itemID = jQuery(element.attr('id'));
 		//At this point it should have grabbed the direct feeditem hashed ID. That allows us to do things specifically to that item past this point.
+		//BUG: Escaping everything incorrectly. 
 		var content = jQuery("#"+itemID+" .item_content").html();
 		var url = jQuery("#"+itemID+" .item_url").attr('href');
 		var authorship = jQuery("#"+itemID+" span.item-authorship").html();
@@ -20,7 +22,8 @@ jQuery(document).ready(function() {
 			authorship: authorship,
 			rsspf_nomination_nonce: theNonce
 			
-		}, function(response) {
+		}, 
+		function(response) {
 			jQuery("#"+itemID+" .item_content").html(response);
 		});
 		

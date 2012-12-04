@@ -877,6 +877,8 @@ class rsspf {
 
 	}
 	
+	//http://php.net/manual/en/function.set-error-handler.php
+	
 	public function make_it_readable(){
 		
 		// Verify nonce
@@ -884,7 +886,7 @@ class rsspf {
 			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'rsspf' ) );
 			
 		$item_id = $_POST['read_item_id'];
-
+		//error_reporting(0);
 		if ( false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) ) ) {
 
 			set_time_limit(0);
