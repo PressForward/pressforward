@@ -12,9 +12,9 @@ jQuery(document).ready(function() {
 		//At some point a waiting graphic should go here. 
 		jQuery.post(ajaxurl, {
 			action 'make_it_readable',
-			itemID: itemID,
+			//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
+			read_item_id: itemID,
 			url: url,
-			//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
 			content: content,
 			//We need to pull the source data to determine if it is aggregation as well. 
 			authorship: authorship,
