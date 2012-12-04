@@ -2,10 +2,10 @@ jQuery(document).ready(function() {
 
 	jQuery(".feed-item").on('show', function(evt){
 		var element = jQuery(this);
-		//BUG: Not grabbing ID correctly...
-		var itemID = jQuery(element.attr('id'));
+		var itemID = element.attr('id');
+		alert(itemID);
 		//At this point it should have grabbed the direct feeditem hashed ID. That allows us to do things specifically to that item past this point.
-		//BUG: Escaping everything incorrectly. 
+		//BUG: Escaping everything incorrectly. <-one time issue?
 		var content = jQuery("#"+itemID+" .item_content").html();
 		var url = jQuery("#"+itemID+" .item_url").attr('href');
 		var authorship = jQuery("#"+itemID+" span.item-authorship").html();
@@ -24,9 +24,14 @@ jQuery(document).ready(function() {
 			
 		}, 
 		function(response) {
-			jQuery("#"+itemID+" .item_content").html(response);
+			// Don't bother doing anything if we don't need it.
+			if (response != 'readable') {
+				jQuery("#"+itemID+" .item_content").html(response);
+			}
 		});
 		
 	});
+	
+	//This also needs to rewrite the content of the form!!
 
 })

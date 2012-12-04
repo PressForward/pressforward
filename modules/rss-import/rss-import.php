@@ -83,7 +83,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 					$authors = $this->get_rss_authors($item);
 				}
 				else {
-					$authors = '<span class="item-authorship">aggregation</span>';
+					$authors = 'aggregation';
 				}
 				$item_categories = array();
 				$item_categories = $item->get_categories();
@@ -154,7 +154,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 
 		}
 		$authors = implode(', ', $nameArray);
-		$authors = '<span class="item-authorship">' . $authors . '</span>';
+		$authors = $authors;
 		return $authors;
 
 	}
