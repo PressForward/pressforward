@@ -876,38 +876,85 @@ class rsspf {
 	}
 	
 	public function make_it_readable(){
-		set_time_limit(0);
-		$url = $this->de_https($url);
-		$descrip = $content;
-		if ($aggregated || (strlen($descrip) <= 160)) {
-			$descrip = $this->readability_object($url);
-		}
-		if (!$descrip) {
-			$url = str_replace('&amp;','&', $url);
-			#Try and get the OpenGraph description.
-			if (OpenGraph::fetch($url)){
-				$node = OpenGraph::fetch($url);
-				$descrip = $node->description;
-			} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
-			elseif ('' != ($contentHtml = @get_meta_tags($url))) {
-				# Try and get the HEAD > META DESCRIPTION tag.
-				$descrip = $contentHtml['description'];
-				print_r($url . ' has no meta OpenGraph description we can find.');
+		
+		// Verify nonce
+		if ( !wp_verify_nonce($_POST[RSSPF_SLUG . '_nomination_nonce'], 'nomination') )
+			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'rsspf' ) );
+			
+		$item_id = $_POST['read_item_id'];
 
-			}
-			else
-			{
-				# Ugh... we can't get anything huh?
-				print_r($url . ' has no description we can find.');
-				# We'll want to return a false to loop with.
-				$descrip = $content;
+		if ( false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) ) ) {
 
-				break;
+			set_time_limit(0);
+			$url = $this->de_https($_POST['url']);
+			$descrip = $_POST['content'];
+			$aggregated = $this->is_from_aggregator($url);
+			
+			
+			if ((strlen($descrip) <= 160) || $aggregated) {
+				$itemReadReady = $this->readability_object($url);
 			}
+			if (!$itemReadReady) {
+				$itemReadReady = __( "This content failed Readability.", 'rsspf' );
+				$itemReadReady .= '<br />';
+				$url = str_replace('&amp;','&', $url);
+				#Try and get the OpenGraph description.
+				if (OpenGraph::fetch($url)){
+					$node = OpenGraph::fetch($url);
+					$itemReadReady .= $node->description;
+				} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
+				elseif ('' != ($contentHtml = @get_meta_tags($url))) {
+					# Try and get the HEAD > META DESCRIPTION tag.
+					$itemReadReady .= __( "This content failed an OpenGraph check.", 'rsspf' );
+					$itemReadReady .= '<br />';
+					$descrip = $contentHtml['description'];
+
+				}
+				else
+				{
+					# Ugh... we can't get anything huh?
+					$itemReadReady .= __( "This content has no description we can find.", 'rsspf' );
+					$itemReadReady .= '<br />';					
+					print_r($url . ' has no description we can find.');
+					# We'll want to return a false to loop with.
+					$itemReadReady = $descrip;
+					
+				}
+			}	
+
+			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
 		}
-		return $descrip;
+		
+		return $itemReadReady;
 		die(); // < to keep from returning 0s with everything.
 	}
+	
+	# Checks the URL against a list of aggregators.
+	public function is_from_aggregator($xmlbase){
+		$c = 0;
+		$urlParts = parse_url($xmlbase);
+
+		$aggregators = array (
+								'tweetedtimes',
+								'tweetedtimes.com',
+								'www.tweetedtimes.com',
+								'pipes.yahoo.com'
+							);
+		foreach ($aggregators as $aggregator) {
+			if (in_array($aggregator, $urlParts)){
+				$c++;
+			}
+		}
+		if ($c > 0){
+
+			return true;
+
+
+		} else {
+			return false;
+		}
+
+	}	
 	
 	# This function takes measures to try and get item content throguh methods of increasing reliability, but decreasing relevance.
 	public function get_content_through_aggregator($url){
