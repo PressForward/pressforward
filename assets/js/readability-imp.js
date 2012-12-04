@@ -11,7 +11,7 @@ jQuery(document).ready(function() {
 		var theNonce		= jQuery.trim(jQuery('#rsspf_nomination_nonce').val());
 		//At some point a waiting graphic should go here. 
 		jQuery.post(ajaxurl, {
-			action 'make_it_readable',
+			action: 'make_it_readable',
 			//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
 			read_item_id: itemID,
 			url: url,

@@ -81,6 +81,8 @@ class rsspf {
 		add_action( 'wp_ajax_assemble_feed_for_pull', array( $this, 'assemble_feed_for_pull') );
 		add_action( 'wp_ajax_nopriv_reset_feed', array($this, 'reset_feed') );
 		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
+		add_action( 'wp_ajax_nopriv_make_it_readable', array($this, 'make_it_readable') );
+		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );		
 		}
 		add_action('edit_post', array( $this, 'send_nomination_for_publishing'));
 		add_filter( 'manage_edit-nomination_columns', array ($this, 'edit_nominations_columns') );
@@ -915,7 +917,6 @@ class rsspf {
 					# Ugh... we can't get anything huh?
 					$itemReadReady .= __( "This content has no description we can find.", 'rsspf' );
 					$itemReadReady .= '<br />';					
-					print_r($url . ' has no description we can find.');
 					# We'll want to return a false to loop with.
 					$itemReadReady = $descrip;
 					
@@ -925,7 +926,7 @@ class rsspf {
 			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
 		}
 		
-		return $itemReadReady;
+		print_r($itemReadReady);
 		die(); // < to keep from returning 0s with everything.
 	}
 	
@@ -1479,6 +1480,7 @@ class rsspf {
 
 			wp_enqueue_script('tinysort', RSSPF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
 			wp_enqueue_script('sort-imp', RSSPF_URL . 'assets/js/sort-imp.js', array( 'tinysort', 'twitter-bootstrap', 'jq-fullscreen' ));
+			wp_enqueue_script('readability-imp', RSSPF_URL . 'assets/js/readability-imp.js', array( 'twitter-bootstrap', 'jquery' ));
 			wp_enqueue_script('nomination-imp', RSSPF_URL . 'assets/js/nomination-imp.js', array( 'jquery' ));
 			wp_enqueue_script('twitter-bootstrap', RSSPF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
 			wp_enqueue_script('jq-fullscreen', RSSPF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
