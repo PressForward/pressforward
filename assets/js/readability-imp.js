@@ -27,7 +27,7 @@ jQuery(document).ready(function() {
 			// Don't bother doing anything if we don't need it.
 			if (response != 'readable') {
 				if (response == 'secured') {
-					alert('The content of this post is behind SSL and cannot be retrieved.');
+					alert('The content cannot be retrieved. The post may be on a secure page or it may have been removed.');
 				} else {
 					jQuery("#"+itemID+" .item_content").html(response);
 				}
