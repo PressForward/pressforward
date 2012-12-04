@@ -49,7 +49,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 					# Get the link of what created the RSS entry.
 					$source = $sourceObj->get_link(0,'alternate');
 					# Check if the feed item creator is an aggregator.
-					$agStatus = $this->is_from_aggregator($source);
+					$agStatus = $rsspf->is_from_aggregator($source);
 				} else {
 					# If we can't get source information then don't do anything.
 					$agStatus = false;
@@ -156,33 +156,6 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		$authors = implode(', ', $nameArray);
 		$authors = '<span class="item-authorship">' . $authors . '</span>';
 		return $authors;
-
-	}
-
-	# Checks the URL against a list of aggregators.
-	public function is_from_aggregator($xmlbase){
-		$c = 0;
-		$urlParts = parse_url($xmlbase);
-
-		$aggregators = array (
-								'tweetedtimes',
-								'tweetedtimes.com',
-								'www.tweetedtimes.com',
-								'pipes.yahoo.com'
-							);
-		foreach ($aggregators as $aggregator) {
-			if (in_array($aggregator, $urlParts)){
-				$c++;
-			}
-		}
-		if ($c > 0){
-
-			return true;
-
-
-		} else {
-			return false;
-		}
 
 	}
 	
