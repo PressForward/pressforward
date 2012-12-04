@@ -3,7 +3,6 @@ jQuery(document).ready(function() {
 	jQuery(".feed-item").on('show', function(evt){
 		var element = jQuery(this);
 		var itemID = element.attr('id');
-		alert(itemID);
 		//At this point it should have grabbed the direct feeditem hashed ID. That allows us to do things specifically to that item past this point.
 		//BUG: Escaping everything incorrectly. <-one time issue?
 		var content = jQuery("#"+itemID+" .item_content").html();
