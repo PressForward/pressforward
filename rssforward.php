@@ -181,7 +181,7 @@ class rsspf {
 
 		add_submenu_page(RSSPF_MENU_SLUG, 'All Content', 'All Content', 'edit_posts', RSSPF_MENU_SLUG, array($this, 'rsspf_reader_builder'));
 
-		add_submenu_page(RSSPF_MENU_SLUG, 'Under Review', 'Under Review', 'edit_posts', RSSPF_NOM_EDITOR);
+		add_submenu_page(RSSPF_MENU_SLUG, 'Under Review', 'Under Review', 'edit_posts',  RSSPF_SLUG . '-review', array($this, 'rsspf_review_builder'));
 
 		//Now create an options page for the plugin. This page is only accessable to Administrative level users.
 		add_submenu_page(RSSPF_MENU_SLUG, RSSPF_TITLE . ' Options', RSSPF_TITLE . ' Options', 'manage_options', RSSPF_SLUG . '-options', array($this, 'rsspf_options_builder'));
@@ -1364,6 +1364,11 @@ class rsspf {
 	
 	function widget_one_call(){
 		echo '<div class="navwidget">	Widget Body <br />	<a href="#20">Test link to item 20.</a>	</div>'	;
+	}
+	
+	//Let's build the Under Review page. 
+	function rsspf_review_builder() {
+	
 	}
 
 	function rsspf_options_builder() {
