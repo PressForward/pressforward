@@ -1,5 +1,15 @@
 jQuery(document).ready(function() {
 
+	//via http://stackoverflow.com/questions/1787322/htmlspecialchars-equivalent-in-javascript
+	function escapeHtml(unsafe) {
+	  return unsafe
+		  .replace(/&/g, "&amp;")
+		  .replace(/</g, "&lt;")
+		  .replace(/>/g, "&gt;")
+		  .replace(/"/g, "&quot;")
+		  .replace(/'/g, "&#039;");
+	}
+
 	jQuery(".feed-item").on('show', function(evt){
 		var element = jQuery(this);
 		var itemID = element.attr('id');
@@ -29,6 +39,8 @@ jQuery(document).ready(function() {
 					alert('The content cannot be retrieved. The post may be on a secure page or it may have been removed.');
 				} else {
 					jQuery("#"+itemID+" .item_content").html(response);
+					var safeResponse = escapeHtml(response);
+					jQuery("#item_content_"+itemID+"").attr('value', safeResponse);
 				}
 			}
 		});
