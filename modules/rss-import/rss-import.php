@@ -228,7 +228,11 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	function rsspf_feedlist_validate($input){
 		if (!empty($input['single'])){
 			if (!(is_array($input['single']))){
-				$inputSingle = array($input['single']);
+				//$simp = new SimplePie();
+				$simp = fetch_feed($input['single']);
+				//Needs some sort of error returned on no-feed
+				$inputSingleSub = $simp->subscribe_url();
+				$inputSingle = array($inputSingleSub);
 			} else {
 				$inputSingle = $input['single'];
 			}
