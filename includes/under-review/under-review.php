@@ -1,5 +1,5 @@
 <?php
-
+function rsspf_review_builder() {
 //Code for Under Review menu page generation
 
 //Duping code from 1053 in main. 
@@ -103,7 +103,7 @@
 			
 			?>
 				
-				<div class="row well accordion-group nom-item <?php ?>">
+				<div class="row well accordion-group nom-item<?php nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs )); ?>">
 					<div class="span12">
 					</div>
 				</div>
@@ -122,5 +122,23 @@
 		
 		
 	echo '</div><!-- End container -->';
+}
 
+function nom_class_tagger($array = array()){
+
+	foreach ($array as $class){
+		if (is_array($class)){
+		
+			foreach ($class as $subclass){
+				echo ' ';
+				echo $this->slugger($class, true, false, true);
+			}
+		
+		} else {
+			echo ' ';
+			echo $this->slugger($class, true, false, true);
+		}
+	}
+
+}
 ?>

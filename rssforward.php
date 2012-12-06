@@ -1367,10 +1367,7 @@ class rsspf {
 	}
 	
 	//Let's build the Under Review page. 
-	function rsspf_review_builder() {
-		// Load the module base class and our test module
-		include( RSSPF_ROOT . "/includes/under-review/under-review.php" );
-	}
+	include( RSSPF_ROOT . "/includes/under-review/under-review.php" );
 
 	function rsspf_options_builder() {
 		?>
