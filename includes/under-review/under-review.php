@@ -45,7 +45,7 @@ function rsspf_review_builder() {
 			}
 			$count = $page * 20;
 			$c = $c+$count;
-			if ($c <= 20) {
+			if ($c < 20) {
 				$offset = 0;
 			} else {
 				$offset = $c;
@@ -81,6 +81,8 @@ function rsspf_review_builder() {
 				$date_nomed = get_post_meta($nom_id, 'date_nominated', true);
 				//Datetime item was posted to its home RSS
 				$date_posted = get_post_meta($nom_id, 'posted_date', true);
+				//Unique RSS item ID
+				$rss_item_id = get_post_meta($nom_id, 'origin_item_ID', true);
 				//RSS-passed tags, comma seperated.
 				$nom_tags = get_post_meta($nom_id, 'item_tags', true);
 				$nomTagsArray = explode(",", $nom_tags);
@@ -103,8 +105,10 @@ function rsspf_review_builder() {
 			
 			?>
 				
-				<div class="row well accordion-group nom-item<?php nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs )); ?>">
-					<div class="span12">
+				<div class="row well accordion-group nom-item<?php nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php the_ID(); ?>">
+					<div class="span12" id=<?php echo $c; ?>>
+						
+					
 					</div>
 				</div>
 				
@@ -127,7 +131,10 @@ function rsspf_review_builder() {
 function nom_class_tagger($array = array()){
 
 	foreach ($array as $class){
-		if (is_array($class)){
+		if (($class == '') || (empty($class)) || (!isset($class))){
+			//Do nothing.
+		}
+		elseif (is_array($class)){
 		
 			foreach ($class as $subclass){
 				echo ' ';
