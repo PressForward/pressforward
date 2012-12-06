@@ -64,7 +64,7 @@ function rsspf_review_builder() {
 			
 			while ( $nom_query->have_posts() ) : $nom_query->the_post();
 			
-				//declare some variables for use
+				//declare some variables for use, mostly in various meta roles.
 				//1773 in rssforward.php for various post meta.
 				
 				//Get the submitter's user slug
@@ -134,9 +134,20 @@ function rsspf_review_builder() {
 							echo ': <span class="sortable_origin_link_slug">' . $sourceSlug . '</span><br />';
 							
 							//Add an action here for others to provide additional sortables.
-							?>
-						</div>
-					
+							
+						echo '</div>';
+						echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#nom-accordion" href="#collapse' . $c . '"><div class="nom-content-container">';
+						
+							//Figure out feature image later. Put it here when you do.
+							
+							echo '<h3>' . get_the_title() . '</h3>';
+							echo '<h5>' . get_the_author() . ', ' . get_the_date() . '</h5>';
+							echo '<div class="nom-content-body">';
+							the_content();
+							echo '</div>';
+						
+						echo '</div></a>';
+					?>
 					</div>
 				</div>
 				
