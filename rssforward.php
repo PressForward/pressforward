@@ -1367,7 +1367,30 @@ class rsspf {
 	}
 	
 	//Let's build the Under Review page. 
-	include( RSSPF_ROOT . "/includes/under-review/under-review.php" );
+	function rsspf_review_builder() {
+		include( RSSPF_ROOT . "/includes/under-review/under-review.php" );
+	}
+
+	function nom_class_tagger($array = array()){
+
+		foreach ($array as $class){
+			if (($class == '') || (empty($class)) || (!isset($class))){
+				//Do nothing.
+			}
+			elseif (is_array($class)){
+			
+				foreach ($class as $subclass){
+					echo ' ';
+					echo $this->slugger($class, true, false, true);
+				}
+			
+			} else {
+				echo ' ';
+				echo $this->slugger($class, true, false, true);
+			}
+		}
+
+	}
 
 	function rsspf_options_builder() {
 		?>

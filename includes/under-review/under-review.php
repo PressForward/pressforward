@@ -1,5 +1,4 @@
 <?php
-function rsspf_review_builder() {
 //Code for Under Review menu page generation
 
 //Duping code from 1053 in main. 
@@ -75,11 +74,11 @@ function rsspf_review_builder() {
 				$nom_count = get_post_meta($nom_id, 'nomination_count', true);
 				//Permalink to orig content	
 				$nom_permalink = get_post_meta($nom_id, 'nomination_permalink', true);
-				$urlArray = parse_url($item['item_link']);
+				$urlArray = parse_url($nom_permalink);
 				//Source Site
 				$sourceLink = 'http://' . $urlArray['host'];				
 				//Source site slug
-				$sourceSlug = $this->slugger($sourceLink, true, false, true);
+				$sourceSlug = $this->slugger($urlArray['host'], true, false, true);
 				//RSS Author designation
 				$item_authorship = get_post_meta($nom_id, 'authors', true);
 				//Datetime item was nominated
@@ -100,7 +99,7 @@ function rsspf_review_builder() {
 				//Number of times repeated in source. 
 				$source_repeat = get_post_meta($nom_id, 'source_repeat', true);
 				//Post-object tags
-				$nomed_tag_slugs = implode(" ", get_the_tags());
+				$nomed_tag_slugs = get_the_tags();
 				//UNIX datetime last modified.
 				$timestamp_nom_last_modified = get_the_modified_date( 'U' );
 				//UNIX datetime added to nominations. 
@@ -110,7 +109,7 @@ function rsspf_review_builder() {
 			
 			?>
 				
-				<div class="row well accordion-group nom-item<?php nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php the_ID(); ?>">
+				<div class="row well accordion-group nom-item<?php $this->nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php the_ID(); ?>">
 					<div class="span12" id=<?php echo $c; ?>>
 						
 						<div class="sortable-hidden-meta" style="display:none;">
@@ -136,17 +135,19 @@ function rsspf_review_builder() {
 							//Add an action here for others to provide additional sortables.
 							
 						echo '</div>';
-						echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#nom-accordion" href="#collapse' . $c . '"><div class="nom-content-container">';
+						//echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#nom-accordion" href="#collapse' . $c . '">';
+						echo '<div class="nom-content-container">';
 						
 							//Figure out feature image later. Put it here when you do.
 							
 							echo '<h3>' . get_the_title() . '</h3>';
-							echo '<h5>' . get_the_author() . ', ' . get_the_date() . '</h5>';
+							echo '<h6>' . get_the_author() . ', ' . get_the_date() . '</h6>';
 							echo '<div class="nom-content-body">';
 							the_content();
 							echo '</div>';
 						
-						echo '</div></a>';
+						echo '</div>';
+						//echo '</a>';
 					?>
 					</div>
 				</div>
@@ -161,31 +162,7 @@ function rsspf_review_builder() {
 		echo '</div><!-- End the posts nom-accordion -->';
 		echo '</div><!-- End nom-row -->';
 		
-		<?php
-		
 		
 	echo '</div><!-- End container -->';
-}
-
-function nom_class_tagger($array = array()){
-
-	foreach ($array as $class){
-		if (($class == '') || (empty($class)) || (!isset($class))){
-			//Do nothing.
-		}
-		elseif (is_array($class)){
-		
-			foreach ($class as $subclass){
-				echo ' ';
-				echo $this->slugger($class, true, false, true);
-			}
-		
-		} else {
-			echo ' ';
-			echo $this->slugger($class, true, false, true);
-		}
-	}
-
-}
 
 ?>
