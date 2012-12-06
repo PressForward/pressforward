@@ -1491,6 +1491,11 @@ class rsspf {
 
 		//This gets the current page the user is on.
 		global $pagenow;
+		
+			wp_register_style( RSSPF_SLUG . '-style', RSSPF_URL . 'assets/css/style.css');
+			wp_register_style( 'bootstrap-style', RSSPF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
+			wp_register_style( 'bootstrap-responsive-style', RSSPF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');		
+		
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
 		if (('toplevel_page_rsspf-menu') == $hook) { 
@@ -1505,14 +1510,17 @@ class rsspf {
 			wp_enqueue_script('infiniscroll', RSSPF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery' ));
 			wp_enqueue_script('scrollimp', RSSPF_URL . 'assets/js/scroll-imp.js', array( 'infiniscroll' ));
 
-			wp_register_style( RSSPF_SLUG . '-style', RSSPF_URL . 'assets/css/style.css');
-			wp_register_style( 'bootstrap-style', RSSPF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
-			wp_register_style( 'bootstrap-responsive-style', RSSPF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
-
 			wp_enqueue_style('bootstrap-style');
 			wp_enqueue_style('bootstrap-responsive-style');
 			wp_enqueue_style( RSSPF_SLUG . '-style' );
 
+		}
+		if (('rss-to-press-forward_page_rsspf-review') == $hook) { 
+			wp_enqueue_script('tinysort', RSSPF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
+			wp_enqueue_script('jq-fullscreen', RSSPF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
+			wp_enqueue_style('bootstrap-style');
+			wp_enqueue_style('bootstrap-responsive-style');
+			wp_enqueue_style( RSSPF_SLUG . '-style' );
 		}
 		if (('rss-to-press-forward_page_rsspf-feeder') != $hook) { return; }
 		else {

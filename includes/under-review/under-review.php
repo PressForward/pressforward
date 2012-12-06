@@ -2,6 +2,7 @@
 
 //Code for Under Review menu page generation
 
+//Duping code from 1053 in main. 
 	echo '<div class="container-fluid">';
 		echo '<div class="row-fluid">';
 			echo '<div class="span9 title-span">';
