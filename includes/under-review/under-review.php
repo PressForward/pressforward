@@ -136,12 +136,15 @@
 							
 						echo '</div>';
 						//echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#nom-accordion" href="#collapse' . $c . '">';
-						echo '<div class="nom-content-container">';
+						echo '<div class="row nom-content-container">';
 						
 							//Figure out feature image later. Put it here when you do.
-							
-							echo '<h3>' . get_the_title() . '</h3>';
-							echo '<h6>' . get_the_author() . ', ' . get_the_date() . '</h6>';
+							echo '<div class="row">';
+								echo '<div class="span12">';
+								echo '<h3>' . get_the_title() . '</h3>';
+								echo '<h6>' . get_the_author() . ', ' . get_the_date() . '</h6>';
+								echo '</div>';
+							echo '</div>';
 							echo '<div class="row">
 									<div class="nom-content-body span9">';
 										the_content();
