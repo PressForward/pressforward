@@ -142,8 +142,12 @@
 							
 							echo '<h3>' . get_the_title() . '</h3>';
 							echo '<h6>' . get_the_author() . ', ' . get_the_date() . '</h6>';
-							echo '<div class="nom-content-body">';
-							the_content();
+							echo '<div class="row">
+									<div class="nom-content-body span9">';
+										the_content();
+							echo '	</div>';
+							echo '<div class="post-control span3">';
+									echo '';
 							echo '</div>';
 						
 						echo '</div>';
