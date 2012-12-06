@@ -1823,8 +1823,8 @@ class rsspf {
 				add_post_meta($newPostID, 'submitted_by', $userID, true);
 				$item_permalink = get_post_meta($_POST['ID'], 'nomination_permalink', true);
 				add_post_meta($newPostID, 'nomination_permalink', $item_permalink, true);
-				$item_permalink = get_post_meta($_POST['ID'], 'authors', true);
-				add_post_meta($newPostID, 'authors', $item_permalink, true);
+				$item_authorship = get_post_meta($_POST['ID'], 'authors', true);
+				add_post_meta($newPostID, 'authors', $item_authorship, true);
 				$date_nom = get_post_meta($_POST['ID'], 'date_nominated', true);
 				add_post_meta($newPostID, 'date_nominated', $date_nom, true);
 				$item_tags = get_post_meta($_POST['ID'], 'item_tags', true);
