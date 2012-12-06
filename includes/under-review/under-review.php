@@ -75,6 +75,11 @@ function rsspf_review_builder() {
 				$nom_count = get_post_meta($nom_id, 'nomination_count', true);
 				//Permalink to orig content	
 				$nom_permalink = get_post_meta($nom_id, 'nomination_permalink', true);
+				$urlArray = parse_url($item['item_link']);
+				//Source Site
+				$sourceLink = 'http://' . $urlArray['host'];				
+				//Source site slug
+				$sourceSlug = $this->slugger($sourceLink, true, false, true);
 				//RSS Author designation
 				$item_authorship = get_post_meta($nom_id, 'authors', true);
 				//Datetime item was nominated
@@ -108,6 +113,29 @@ function rsspf_review_builder() {
 				<div class="row well accordion-group nom-item<?php nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php the_ID(); ?>">
 					<div class="span12" id=<?php echo $c; ?>>
 						
+						<div class="sortable-hidden-meta" style="display:none;">
+							<?php 
+							_e('UNIX timestamp from source RSS', RSSPF_SLUG);
+							echo ': <span class="sortable_source_timestamp">' . $timestamp_item_posted . '</span><br />';
+
+							_e('UNIX timestamp last modified', RSSPF_SLUG);
+							echo ': <span class="sortable_mod_timestamp">' . $timestamp_nom_last_modified . '</span><br />';
+							
+							_e('UNIX timestamp date nominated', RSSPF_SLUG);
+							echo ': <span class="sortable_nom_timestamp">' . $timestamp_unix_date_nomed . '</span><br />';
+							
+							_e('Times repeated in source feeds', RSSPF_SLUG);
+							echo ': <span class="sortable_sources_repeat">' . $source_repeat . '</span><br />';
+							
+							_e('Number of nominations received', RSSPF_SLUG);
+							echo ': <span class="sortable_nom_count">' . $nom_count . '</span><br />';
+							
+							_e('Slug for origon site', RSSPF_SLUG);
+							echo ': <span class="sortable_origin_link_slug">' . $sourceSlug . '</span><br />';
+							
+							//Add an action here for others to provide additional sortables.
+							?>
+						</div>
 					
 					</div>
 				</div>
@@ -148,4 +176,5 @@ function nom_class_tagger($array = array()){
 	}
 
 }
+
 ?>
