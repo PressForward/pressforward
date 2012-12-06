@@ -16,14 +16,14 @@
 
 			echo 	'<div class="span6">
 						<div class="btn-group">
-							<button type="submit" class="refreshfeed btn btn-warning" id="refreshfeed" value="Refresh">Refresh</button>
+							<button type="submit" class="showarchived btn btn-warning" id="refreshfeed" value="Show archived">Show archived.</button>
 							<button type="submit" class="btn btn-info feedsort" id="sortbyitemdate" value="Sort by item date" >Sort by item date</button>
 							<button type="submit" class="btn btn-info feedsort" id="sortbyfeedindate" value="Sort by date entered RSS">Sort by date entered RSS</button>
 							<button class="btn btn-inverse" id="fullscreenfeed">Full Screen</button>
 						</div><!-- End btn-group -->
 					</div><!-- End span6 -->';
 			echo 	'<div class="span3 offset3">
-						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="Delete entire feed archive" >Delete entire feed archive</button>
+						<button type="submit" class="delete btn btn-danger pull-right" id="archivenoms" value="Archive all" >Archive all</button>
 					</div><!-- End span3 -->';
 
 		echo '</div><!-- End Row -->';
@@ -109,7 +109,7 @@
 			
 			?>
 				
-				<div class="row well accordion-group nom-item<?php $this->nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php the_ID(); ?>">
+				<div class="row-fluid well accordion-group nom-item<?php $this->nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php the_ID(); ?>">
 					<div class="span12" id=<?php echo $c; ?>>
 						
 						<div class="sortable-hidden-meta" style="display:none;">
@@ -136,23 +136,31 @@
 							
 						echo '</div>';
 						//echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#nom-accordion" href="#collapse' . $c . '">';
-						echo '<div class="row nom-content-container">';
-						
-							//Figure out feature image later. Put it here when you do.
-							echo '<div class="row">';
-								echo '<div class="span12">';
-								echo '<h3>' . get_the_title() . '</h3>';
-								echo '<h6>' . get_the_author() . ', ' . get_the_date() . '</h6>';
+						echo '<div class="row-fluid nom-content-container">';
+							echo '<div class="span12">';
+								//Figure out feature image later. Put it here when you do.
+								echo '<div class="row-fluid">';
+									echo '<div class="span12">';
+									echo '<h3>' . get_the_title() . '</h3>';
+									echo '<h6>' . get_the_author() . ', ' . get_the_date() . '</h6>';
+									echo '</div>';
 								echo '</div>';
+								echo '<div class="row-fluid">
+										<div class="nom-content-body span9">';
+											the_content();
+								echo '	</div>';
+								echo '<div class="post-control span3">';
+										?>
+											<div class="nom-master-buttons row-fluid">
+												<div class="span12">
+													<button class="btn btn-inverse" id="nom-to-draft">Send to Draft</button> 
+													<button class="btn btn-inverse" id="archive">Archive</button>
+												</div>
+											</div>
+										<?php
+								echo '</div>';
+							
 							echo '</div>';
-							echo '<div class="row">
-									<div class="nom-content-body span9">';
-										the_content();
-							echo '	</div>';
-							echo '<div class="post-control span3">';
-									echo '';
-							echo '</div>';
-						
 						echo '</div>';
 						//echo '</a>';
 					?>
