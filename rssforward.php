@@ -1807,6 +1807,10 @@ class rsspf {
 
 
 	}
+	
+	function build_a_nom_draft() {
+		
+	}
 
 	function send_nomination_for_publishing() {
 		global $post;

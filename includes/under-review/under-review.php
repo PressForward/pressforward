@@ -153,8 +153,8 @@
 										?>
 											<div class="nom-master-buttons row-fluid">
 												<div class="span12">
-													<button class="btn btn-inverse" id="nom-to-draft">Send to Draft</button> 
-													<button class="btn btn-inverse" id="archive">Archive</button>
+													<button class="btn btn-inverse nom-to-draft">Send to Draft</button> 
+													<button class="btn btn-inverse nom-to-archive">Archive</button>
 												</div>
 											</div>
 										<?php
