@@ -13,12 +13,12 @@
 			echo '</div><!-- End title 9 span -->';
 		echo '</div><!-- End Row -->';
 		echo '<div class="row-fluid">';
-
+					wp_nonce_field('drafter', 'pf_drafted_nonce', false);
 			echo 	'<div class="span6">
 						<div class="btn-group">
-							<button type="submit" class="showarchived btn btn-warning" id="refreshfeed" value="Show archived">Show archived.</button>
+							<button type="submit" class="showarchived btn btn-warning" id="showarchived" value="Show archived">Show archived.</button>
 							<button type="submit" class="btn btn-info feedsort" id="sortbyitemdate" value="Sort by item date" >Sort by item date</button>
-							<button type="submit" class="btn btn-info feedsort" id="sortbyfeedindate" value="Sort by date entered RSS">Sort by date entered RSS</button>
+							<button type="submit" class="btn btn-info feedsort" id="sortbynomdate" value="Sort by date Nominated">Sort by date Nominated</button>
 							<button class="btn btn-inverse" id="fullscreenfeed">Full Screen</button>
 						</div><!-- End btn-group -->
 					</div><!-- End span6 -->';
@@ -137,7 +137,7 @@
 						echo '</div>';
 						//echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#nom-accordion" href="#collapse' . $c . '">';
 						echo '<div class="row-fluid nom-content-container">';
-							echo '<div class="span12">';
+							echo '<div class="span9">';
 								//Figure out feature image later. Put it here when you do.
 								echo '<div class="row-fluid">';
 									echo '<div class="span12">';
@@ -146,21 +146,21 @@
 									echo '</div>';
 								echo '</div>';
 								echo '<div class="row-fluid">
-										<div class="nom-content-body span9">';
+										<div class="nom-content-body span12">';
 											the_content();
-									echo '</div>';
-									echo '<div class="post-control span3">';
-											?>
-												<div class="nom-master-buttons row-fluid">
-													<div class="span12">
-														<button class="btn btn-inverse nom-to-draft">Send to Draft</button> 
-														<button class="btn btn-inverse nom-to-archive">Archive</button>
-													</div>
-												</div>
-											<?php
 									echo '</div>';
 							
 								echo '</div>';
+							echo '</div>';
+							echo '<div class="post-control span3">';
+											?>
+									<div class="nom-master-buttons row-fluid">
+										<div class="span12">
+											<button class="btn btn-inverse nom-to-draft">Send to Draft</button> 
+											<button class="btn btn-inverse nom-to-archive">Archive</button>
+										</div>
+									</div>
+									<?php
 							echo '</div>';
 						//echo '</a>';
 						echo '</div>';

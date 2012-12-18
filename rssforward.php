@@ -1809,7 +1809,62 @@ class rsspf {
 	}
 	
 	function build_a_nom_draft() {
-		
+		global $post;
+		// verify if this is an auto save routine.
+		// If it is our form has not been submitted, so we dont want to do anything
+		//if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
+		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
+		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
+			die($this->__('Nonce not recieved. Are you sure you should be drafting?'));
+		} else {
+			$item_title = $_POST['post_title'];
+			$item_content = $_POST['post_content'];
+			$data = array(
+				'post_status' => 'draft',
+				'post_type' => 'post',
+				'post_title' => $item_title,
+				'post_content' => $item_content,
+			);
+			//Will need to use a meta field to pass the content's md5 id around to check if it has already been posted.
+
+			//We assume that it is already in nominations, so no need to check there. This might be why we can't use post_exists here.
+			//No need to origonate the check at the time of the feed item either. It can't become a post with the proper meta if it wasn't a nomination first.
+			$item_id = get_post_meta($_POST['ID'], 'origin_item_ID', true);
+			$nom_date = $_POST['aa'] . '-' . $_POST['mm'] . '-' . $_POST['jj'];
+
+			//Now function will not update nomination count when it pushes nomination to publication.
+			$post_check = $this->get_post_nomination_status($nom_date, $item_id, 'post', false);
+
+			//Alternative check with post_exists? or use same as above?
+			if ($post_check != true) {
+				$newPostID = wp_insert_post( $data );
+				add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
+				$nomCount = get_post_meta($_POST['ID'], 'nomination_count', true);
+				add_post_meta($newPostID, 'nomination_count', $nomCount, true);
+				$userID = get_post_meta($_POST['ID'], 'submitted_by', true);
+				add_post_meta($newPostID, 'submitted_by', $userID, true);
+				$item_permalink = get_post_meta($_POST['ID'], 'nomination_permalink', true);
+				add_post_meta($newPostID, 'nomination_permalink', $item_permalink, true);
+				$item_authorship = get_post_meta($_POST['ID'], 'authors', true);
+				add_post_meta($newPostID, 'authors', $item_authorship, true);
+				$date_nom = get_post_meta($_POST['ID'], 'date_nominated', true);
+				add_post_meta($newPostID, 'date_nominated', $date_nom, true);
+				$item_tags = get_post_meta($_POST['ID'], 'item_tags', true);
+				add_post_meta($newPostID, 'item_tags', $item_tags, true);
+				//If user wants to use tags, we'll create an option to use it.
+				$nominators = get_post_meta($_POST['ID'], 'nominator_array', true);
+				add_post_meta($newPostID, 'nominator_array', $nominators, true);
+				$source_repeat = get_post_meta($_POST['ID'], 'source_repeat', true);
+				add_post_meta($newPostID, 'source_repeat', $source_repeat, true);
+
+				$already_has_thumb = has_post_thumbnail($_POST['ID']);
+				if ($already_has_thumb)  {
+					$post_thumbnail_id = get_post_thumbnail_id( $_POST['ID'] );
+					set_post_thumbnail($newPostID, $post_thumbnail_id);
+				}
+
+			}
+		}		
 	}
 
 	function send_nomination_for_publishing() {
