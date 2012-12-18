@@ -20,16 +20,23 @@ jQuery(document).ready(function() {
 	jQuery('.loading-'+itemID).show();
 	jQuery.post(ajaxurl, {
 			action: 'build_a_nom_draft',
-			nom_title: nom_title ,
+			nom_title: nom_title,
 			source_title: source_title,
-			nom_date: nom_date,
+			source_link: source_link,
+			source_slug: source_slug,
+			item_date: item_date,
 			item_author: item_author,
+			nom_user: nom_user,
 			nom_content: nom_content,
 			item_link: item_link,
 			nom_feat_img: nom_feat_img,
 			item_id: item_id,
+			nom_id: nom_id,
 			nom_date: nom_date,
+			nom_modified_date,
 			nom_tags: nom_tags,
+			nom_count: nom_count,
+			//Nom comments will sit here eventually.
 			pf_drafted_nonce: theNonce
 		},
 		function(response) {
