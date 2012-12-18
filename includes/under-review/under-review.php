@@ -148,21 +148,22 @@
 								echo '<div class="row-fluid">
 										<div class="nom-content-body span9">';
 											the_content();
-								echo '	</div>';
-								echo '<div class="post-control span3">';
-										?>
-											<div class="nom-master-buttons row-fluid">
-												<div class="span12">
-													<button class="btn btn-inverse nom-to-draft">Send to Draft</button> 
-													<button class="btn btn-inverse nom-to-archive">Archive</button>
+									echo '</div>';
+									echo '<div class="post-control span3">';
+											?>
+												<div class="nom-master-buttons row-fluid">
+													<div class="span12">
+														<button class="btn btn-inverse nom-to-draft">Send to Draft</button> 
+														<button class="btn btn-inverse nom-to-archive">Archive</button>
+													</div>
 												</div>
-											</div>
-										<?php
-								echo '</div>';
+											<?php
+									echo '</div>';
 							
+								echo '</div>';
 							echo '</div>';
-						echo '</div>';
 						//echo '</a>';
+						echo '</div>';
 					?>
 					</div>
 				</div>
@@ -179,5 +180,6 @@
 		
 		
 	echo '</div><!-- End container -->';
+
 
 ?>
