@@ -142,7 +142,7 @@
 								echo '<div class="row-fluid">';
 									echo '<div class="span12">';
 									echo '<h3>' . get_the_title() . '</h3>';
-									echo '<h6>' . get_the_author() . ', ' . get_the_date() . '</h6>';
+									echo '<h6>' . get_the_author() . ', ' . get_the_date() . ', Nominated on ' . date('Y-m-d', strtotime($date_nomed)) . '</h6>';
 									echo '</div>';
 								echo '</div>';
 								echo '<div class="row-fluid">

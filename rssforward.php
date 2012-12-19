@@ -1817,8 +1817,8 @@ class rsspf {
 		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
 			die($this->__('Nonce not recieved. Are you sure you should be drafting?'));
 		} else {
-			$item_title = $_POST['post_title'];
-			$item_content = $_POST['post_content'];
+			$item_title = $_POST['nom_title'];
+			$item_content = $_POST['nom_content'];
 			$data = array(
 				'post_status' => 'draft',
 				'post_type' => 'post',
@@ -1829,8 +1829,10 @@ class rsspf {
 
 			//We assume that it is already in nominations, so no need to check there. This might be why we can't use post_exists here.
 			//No need to origonate the check at the time of the feed item either. It can't become a post with the proper meta if it wasn't a nomination first.
-			$item_id = get_post_meta($_POST['ID'], 'origin_item_ID', true);
-			$nom_date = $_POST['aa'] . '-' . $_POST['mm'] . '-' . $_POST['jj'];
+			$item_id = $_POST['item_id'];
+			//YYYY-MM-DD
+			$nom_date = strtotime($_POST['nom_date']);
+			$nom_date = date('Y-m-d', $nom_date);
 
 			//Now function will not update nomination count when it pushes nomination to publication.
 			$post_check = $this->get_post_nomination_status($nom_date, $item_id, 'post', false);
@@ -1839,27 +1841,46 @@ class rsspf {
 			if ($post_check != true) {
 				$newPostID = wp_insert_post( $data );
 				add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
-				$nomCount = get_post_meta($_POST['ID'], 'nomination_count', true);
+				
+				add_post_meta($newPostID, 'source_title', $_POST['source_title'], true);
+				
+				add_post_meta($newPostID, 'source_link', $_POST['source_link'], true);
+				
+				add_post_meta($newPostID, 'source_slug', $_POST['source_slug'], true);
+				
+				$nomCount = $_POST['nom_count'];
 				add_post_meta($newPostID, 'nomination_count', $nomCount, true);
-				$userID = get_post_meta($_POST['ID'], 'submitted_by', true);
+				
+				add_post_meta($newPostID, 'nom_id', $_POST['nom_id'], true);
+				
+				$nomUserID = $_POST['nom_user'];
 				add_post_meta($newPostID, 'submitted_by', $userID, true);
-				$item_permalink = get_post_meta($_POST['ID'], 'nomination_permalink', true);
+				
+				$item_permalink = $_POST['item_link'];
 				add_post_meta($newPostID, 'nomination_permalink', $item_permalink, true);
-				$item_authorship = get_post_meta($_POST['ID'], 'authors', true);
+				
+				$item_authorship = $_POST['item_author'];
 				add_post_meta($newPostID, 'authors', $item_authorship, true);
-				$date_nom = get_post_meta($_POST['ID'], 'date_nominated', true);
+				
+				add_post_meta($newPostID, 'item_date', $_POST['item_date'], true);
+				
+				add_post_meta($newPostID, 'item_link', $_POST['item_link'], true);
+				
+				$date_nom = $_POST['nom_date'];
 				add_post_meta($newPostID, 'date_nominated', $date_nom, true);
-				$item_tags = get_post_meta($_POST['ID'], 'item_tags', true);
+				
+				add_post_meta($newPostID, 'nom_count', $_POST['nom_count'], true);
+				
+				$item_tags = $_POST['nom_tags'];
 				add_post_meta($newPostID, 'item_tags', $item_tags, true);
+				
 				//If user wants to use tags, we'll create an option to use it.
-				$nominators = get_post_meta($_POST['ID'], 'nominator_array', true);
+				$nominators = $_POST['nom_users'];
 				add_post_meta($newPostID, 'nominator_array', $nominators, true);
-				$source_repeat = get_post_meta($_POST['ID'], 'source_repeat', true);
-				add_post_meta($newPostID, 'source_repeat', $source_repeat, true);
 
-				$already_has_thumb = has_post_thumbnail($_POST['ID']);
+				$already_has_thumb = has_post_thumbnail($_POST['nom_id']);
 				if ($already_has_thumb)  {
-					$post_thumbnail_id = get_post_thumbnail_id( $_POST['ID'] );
+					$post_thumbnail_id = get_post_thumbnail_id( $_POST['nom_id'] );
 					set_post_thumbnail($newPostID, $post_thumbnail_id);
 				}
 

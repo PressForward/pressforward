@@ -3,8 +3,8 @@ jQuery(document).ready(function() {
 	jQuery(".nom-to-draft").click(function (evt){ 
 		evt.preventDefault();
 		
-		var element		= jQuery(this);
-		var itemID		= element.attr('id');
+	var element			= jQuery(this);
+	var itemID			= element.attr('id');
 	var nom_title 		= jQuery("#nom_title_"+itemID).val();
 	var source_title 	= jQuery("#source_title_"+itemID).val(); 
 	var nom_date 		= jQuery("#nom_date_"+itemID).val(); 
@@ -21,21 +21,21 @@ jQuery(document).ready(function() {
 	jQuery.post(ajaxurl, {
 			action: 'build_a_nom_draft',
 			nom_title: nom_title,
-			source_title: source_title,
-			source_link: source_link,
-			source_slug: source_slug,
-			item_date: item_date,
-			item_author: item_author,
-			nom_user: nom_user,
-			nom_content: nom_content,
-			item_link: item_link,
-			nom_feat_img: nom_feat_img,
-			item_id: item_id,
 			nom_id: nom_id,
 			nom_date: nom_date,
 			nom_modified_date,
 			nom_tags: nom_tags,
 			nom_count: nom_count,
+			nom_users: nom_users,
+			nom_content: nom_content,	
+			nom_feat_img: nom_feat_img,			
+			source_title: source_title,
+			source_link: source_link,
+			source_slug: source_slug,
+			item_id: item_id,			
+			item_date: item_date,
+			item_author: item_author,
+			item_link: item_link,
 			//Nom comments will sit here eventually.
 			pf_drafted_nonce: theNonce
 		},
