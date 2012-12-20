@@ -67,39 +67,40 @@
 				//1773 in rssforward.php for various post meta.
 				
 				//Get the submitter's user slug
-				$submitter_slug = get_the_author_meta('user_nicename');
+				$metadata['submitters'] = $submitter_slug = get_the_author_meta('user_nicename');
 				// Nomination (post) ID
-				$nom_id = get_the_ID();				
+				$metadata['nom_id'] = $nom_id = get_the_ID();				
 				//Number of Nominations recieved. 
-				$nom_count = get_post_meta($nom_id, 'nomination_count', true);
+				$metadata['nom_count'] = $nom_count = get_post_meta($nom_id, 'nomination_count', true);
 				//Permalink to orig content	
-				$nom_permalink = get_post_meta($nom_id, 'nomination_permalink', true);
+				$metadata['permalink'] = $nom_permalink = get_post_meta($nom_id, 'nomination_permalink', true);
 				$urlArray = parse_url($nom_permalink);
 				//Source Site
-				$sourceLink = 'http://' . $urlArray['host'];				
+				$metadata['source_link'] = $sourceLink = 'http://' . $urlArray['host'];				
 				//Source site slug
-				$sourceSlug = $this->slugger($urlArray['host'], true, false, true);
+				$metadata['source_slug'] = $sourceSlug = $this->slugger($urlArray['host'], true, false, true);
 				//RSS Author designation
-				$item_authorship = get_post_meta($nom_id, 'authors', true);
+				$metadata['authors'] = $item_authorship = get_post_meta($nom_id, 'authors', true);
 				//Datetime item was nominated
-				$date_nomed = get_post_meta($nom_id, 'date_nominated', true);
+				$metadata['date_nominated'] = $date_nomed = get_post_meta($nom_id, 'date_nominated', true);
 				//Datetime item was posted to its home RSS
-				$date_posted = get_post_meta($nom_id, 'posted_date', true);
+				$metadata['posted_date'] = $date_posted = get_post_meta($nom_id, 'posted_date', true);
 				//Unique RSS item ID
-				$rss_item_id = get_post_meta($nom_id, 'origin_item_ID', true);
+				$metadata['item_id'] = $rss_item_id = get_post_meta($nom_id, 'origin_item_ID', true);
 				//RSS-passed tags, comma seperated.
 				$nom_tags = get_post_meta($nom_id, 'item_tags', true);
 				$nomTagsArray = explode(",", $nom_tags);
 				$nomTagClassesString = '';
 				foreach ($nomTagsArray as $nomTag) { $nomTagClassesString .= $this->slugger($nomTag, true, false, true); $nomTagClassesString .= ' '; }
 				//RSS-passed tags as slugs.
-				$nom_tag_slugs = $nomTagClassesString;
+				$metadata['nom_tags'] = $nom_tag_slugs = $nomTagClassesString;
 				//All users who nominated.
-				$nominators = get_post_meta($nom_id, 'nominator_array', true);
+				$metadata['nominators'] = $nominators = get_post_meta($nom_id, 'nominator_array', true);
 				//Number of times repeated in source. 
-				$source_repeat = get_post_meta($nom_id, 'source_repeat', true);
+				$metadata['source_repeat'] = $source_repeat = get_post_meta($nom_id, 'source_repeat', true);
 				//Post-object tags
-				$nomed_tag_slugs = get_the_tags();
+				$metadata['nom_tags'] = $nomed_tag_slugs = get_the_tags();
+				$metadata['item_content'] = get_the_content();
 				//UNIX datetime last modified.
 				$timestamp_nom_last_modified = get_the_modified_date( 'U' );
 				//UNIX datetime added to nominations. 
@@ -156,8 +157,11 @@
 											?>
 									<div class="nom-master-buttons row-fluid">
 										<div class="span12">
-											<button class="btn btn-inverse nom-to-draft">Send to Draft</button> 
-											<button class="btn btn-inverse nom-to-archive">Archive</button>
+											<form name="form-<?php echo $rss_item_id; ?>"><p>
+												<?php $this->prep_item_for_submit($metadata); ?>
+												<button class="btn btn-inverse nom-to-draft">Send to Draft</button> 
+												<button class="btn btn-inverse nom-to-archive">Archive</button>
+											</form>
 										</div>
 									</div>
 									<?php
