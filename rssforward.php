@@ -77,6 +77,8 @@ class rsspf {
 		{
 		add_action( 'wp_ajax_nopriv_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
+		add_action( 'wp_ajax_nopriv_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
+		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );		
 		add_action( 'wp_ajax_nopriv_assemble_feed_for_pull', array($this, 'assemble_feed_for_pull') );
 		add_action( 'wp_ajax_assemble_feed_for_pull', array( $this, 'assemble_feed_for_pull') );
 		add_action( 'wp_ajax_nopriv_reset_feed', array($this, 'reset_feed') );
@@ -1538,6 +1540,7 @@ class rsspf {
 		if (('rss-to-press-forward_page_rsspf-review') == $hook) { 
 			wp_enqueue_script('tinysort', RSSPF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
 			wp_enqueue_script('jq-fullscreen', RSSPF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
+			wp_enqueue_script('send-to-draft-imp', RSSPF_URL . 'assets/js/send-to-draft-imp.js', array( 'jquery' ));
 			wp_enqueue_style('bootstrap-style');
 			wp_enqueue_style('bootstrap-responsive-style');
 			wp_enqueue_style( RSSPF_SLUG . '-style' );

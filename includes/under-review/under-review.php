@@ -157,9 +157,9 @@
 											?>
 									<div class="nom-master-buttons row-fluid">
 										<div class="span12">
-											<form name="form-<?php echo $rss_item_id; ?>"><p>
+											<form name="form-<?php echo $rss_item_id; ?>" id="<?php echo $rss_item_id ?>"><p>
 												<?php $this->prep_item_for_submit($metadata); ?>
-												<button class="btn btn-inverse nom-to-draft">Send to Draft</button> 
+												<button class="btn btn-inverse nom-to-draft" form="<?php echo $rss_item_id ?>">Send to Draft</button> 
 												<button class="btn btn-inverse nom-to-archive">Archive</button>
 											</form>
 										</div>
