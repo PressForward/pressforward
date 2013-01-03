@@ -100,6 +100,7 @@
 				$metadata['source_repeat'] = $source_repeat = get_post_meta($nom_id, 'source_repeat', true);
 				//Post-object tags
 				$metadata['nom_tags'] = $nomed_tag_slugs = get_the_tags();
+				$metadata['item_title'] = $item_title = get_the_title();
 				$metadata['item_content'] = get_the_content();
 				//UNIX datetime last modified.
 				$timestamp_nom_last_modified = get_the_modified_date( 'U' );
@@ -157,6 +158,10 @@
 											?>
 									<div class="nom-master-buttons row-fluid">
 										<div class="span12">
+											<div class="result-status-<?php echo $rss_item_id; ?>">
+												<?php echo '<img class="loading-' . $rss_item_id . '" src="' . RSSPF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />'; ?>
+												<div class="msg-box"></div>
+											</div>
 											<form name="form-<?php echo $rss_item_id; ?>" id="<?php echo $rss_item_id ?>"><p>
 												<?php $this->prep_item_for_submit($metadata); ?>
 												<button class="btn btn-inverse nom-to-draft" form="<?php echo $rss_item_id ?>">Send to Draft</button> 

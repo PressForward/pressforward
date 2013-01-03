@@ -1611,6 +1611,7 @@ class rsspf {
 		//Assume that it will not find anything.
 		$check = false;
 		if ($postsAfter):
+		
 			global $post;
 			foreach ($postsAfter as $post):
 				setup_postdata($post);
@@ -1820,13 +1821,17 @@ class rsspf {
 		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
 			die($this->__('Nonce not recieved. Are you sure you should be drafting?'));
 		} else {
+##Check		
+		print_r('Sending to Draft.');
+##Check
+		print_r($_POST);
 			$item_title = $_POST['nom_title'];
 			$item_content = $_POST['nom_content'];
 			$data = array(
 				'post_status' => 'draft',
 				'post_type' => 'post',
 				'post_title' => $item_title,
-				'post_content' => $item_content,
+				'post_content' => htmlspecialchars_decode($item_content),
 			);
 			//Will need to use a meta field to pass the content's md5 id around to check if it has already been posted.
 
@@ -1842,7 +1847,11 @@ class rsspf {
 
 			//Alternative check with post_exists? or use same as above?
 			if ($post_check != true) {
-				$newPostID = wp_insert_post( $data );
+##Check			
+				print_r('No Post exists.');
+				$newPostID = wp_insert_post( $data, true );
+##Check
+				print_r($newPostID);
 				add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
 				
 				add_post_meta($newPostID, 'source_title', $_POST['source_title'], true);
