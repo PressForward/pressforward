@@ -67,7 +67,7 @@ visibility:hidden;
 	color: black;
 }
 
-.feed-item {
+.feed-item, .nom-item {
 	width: 99%;
 	margin-top: 4px;
 	margin-bottom: 4px;
@@ -83,7 +83,7 @@ visibility:hidden;
 
 }
 
-#feed-accordion .well {
+#feed-accordion .well, #nom-accordion .well  {
 	padding: 0;
 	background-color: #FAFAFA;
 	/** Taking border from well in bootstrap **/

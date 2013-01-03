@@ -29,6 +29,7 @@
 		echo '</div><!-- End Row -->';
 		
 		echo '<div class="row-fluid" class="nom-row">';
+#Bootstrap Accordion group
 		echo '<div class="span12 nom-container accordion" id="nom-accordion">';
 		wp_nonce_field('drafter', 'pf_drafted_nonce', false);
 		// Reset Post Data
@@ -60,7 +61,7 @@
 							
 							);
 			$nom_query = new WP_Query( $nom_args );
-			
+			$count = 0;
 			while ( $nom_query->have_posts() ) : $nom_query->the_post();
 			
 				//declare some variables for use, mostly in various meta roles.
@@ -109,10 +110,13 @@
 				//UNIX datetime item was posted to its home RSS.
 				$timestamp_item_posted = strtotime($date_posted);
 			
+			
+			
 			?>
-				
-				<div class="row-fluid well accordion-group nom-item<?php $this->nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php the_ID(); ?>">
-					<div class="span12" id=<?php echo $c; ?>>
+			<div class="row-fluid">
+			<div class="span9">
+				<div class="row-fluid well accordion-group nom-item<?php $this->nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php the_ID(); ?> ">
+					<div class="span12" id="<?php echo $count; ?>">
 						
 						<div class="sortable-hidden-meta" style="display:none;">
 							<?php 
@@ -137,24 +141,32 @@
 							//Add an action here for others to provide additional sortables.
 							
 						echo '</div>';
-						//echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#nom-accordion" href="#collapse' . $c . '">';
-						echo '<div class="row-fluid nom-content-container">';
-							echo '<div class="span9">';
+						echo '<div class="row-fluid nom-content-container accordion-heading">';
+							echo '<div class="span12">';
+								echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#nom-accordion" href="#collapse' . $count . '">';
 								//Figure out feature image later. Put it here when you do.
-								echo '<div class="row-fluid">';
-									echo '<div class="span12">';
+								echo '<div class="row-fluid span12">';
 									echo '<h3>' . get_the_title() . '</h3>';
+								echo '</div>';	
+								echo '<div class="row-fluid span12">';	
 									echo '<h6>' . get_the_author() . ', ' . get_the_date() . ', Nominated on ' . date('Y-m-d', strtotime($date_nomed)) . '</h6>';
-									echo '</div>';
 								echo '</div>';
-								echo '<div class="row-fluid">
-										<div class="nom-content-body span12">';
+								echo '</a>';
+							echo '</div>';
+						echo '</div>';
+								
+						echo '<div class="row-fluid accordion-body collapse" id="collapse' . $count . '">
+										<div class="nom-content-body accordion-inner span12">';
 											the_content();
 									echo '</div>';
 							
-								echo '</div>';
-							echo '</div>';
-							echo '<div class="post-control span3">';
+						echo '</div>';
+					echo '</div>';
+
+				echo '</div>';
+			echo '</div>';
+				
+			echo '<div class="post-control span3 well">';
 											?>
 									<div class="nom-master-buttons row-fluid">
 										<div class="span12">
@@ -170,15 +182,11 @@
 										</div>
 									</div>
 									<?php
-							echo '</div>';
-						//echo '</a>';
-						echo '</div>';
+			echo '</div>';
 					?>
-					</div>
-				</div>
-				
+			</div>	
 			<?php
-			
+			$count++;
 			endwhile;
 			
 		// Reset Post Data
