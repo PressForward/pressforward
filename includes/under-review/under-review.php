@@ -13,7 +13,7 @@
 			echo '</div><!-- End title 9 span -->';
 		echo '</div><!-- End Row -->';
 		echo '<div class="row-fluid">';
-					wp_nonce_field('drafter', 'pf_drafted_nonce', false);
+					
 			echo 	'<div class="span6">
 						<div class="btn-group">
 							<button type="submit" class="showarchived btn btn-warning" id="showarchived" value="Show archived">Show archived.</button>
@@ -30,7 +30,7 @@
 		
 		echo '<div class="row-fluid" class="nom-row">';
 		echo '<div class="span12 nom-container accordion" id="nom-accordion">';
-		
+		wp_nonce_field('drafter', 'pf_drafted_nonce', false);
 		// Reset Post Data
 		wp_reset_postdata();
 		
