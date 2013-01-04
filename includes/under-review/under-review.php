@@ -25,9 +25,19 @@
 			echo 	'<div class="span3 offset3">
 						<button type="submit" class="delete btn btn-danger pull-right" id="archivenoms" value="Archive all" >Archive all</button>
 					</div><!-- End span3 -->';
-
+//Hidden here, user options, like 'show archived' etc...
 		echo '</div><!-- End Row -->';
-		
+		?>
+		<div class="pressforward-alertbox" style="display:none;">
+			<div class="row-fluid">
+				<div class="span11 pf-alert">
+				</div>
+				<div class="span1 pf-dismiss">
+				<i class="icon-remove-circle">Close</i>
+				</div>				
+			</div>
+		</div>
+		<?php
 		echo '<div class="row-fluid" class="nom-row">';
 #Bootstrap Accordion group
 		echo '<div class="span12 nom-container accordion" id="nom-accordion">';
@@ -109,11 +119,12 @@
 				$timestamp_unix_date_nomed = strtotime($date_nomed);
 				//UNIX datetime item was posted to its home RSS.
 				$timestamp_item_posted = strtotime($date_posted);
+				$archived_status = get_post_meta($nom_id, 'archived_status', true);
 			
 			
 			
 			?>
-			<div class="row-fluid" id="<?php the_ID(); ?>">
+			<div class="row-fluid nom-container" id="<?php the_ID(); ?>">
 			<div class="span12" id="item-box-<?php echo $count; ?>">
 				<div class="row-fluid well accordion-group nom-item<?php $this->nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php echo $count; ?>">
 					<div class="span12">
@@ -177,7 +188,7 @@
 											<form name="form-<?php echo $rss_item_id; ?>" id="<?php echo $rss_item_id ?>"><p>
 												<?php $this->prep_item_for_submit($metadata); ?>
 												<button class="btn btn-inverse nom-to-draft" form="<?php echo $rss_item_id ?>">Send to Draft</button> 
-												<button class="btn btn-inverse nom-to-archive">Archive</button>
+												<button class="btn btn-inverse nom-to-archive" form="<?php echo $nom_id ?>">Archive</button>
 											</form>
 										</div>
 									</div>
