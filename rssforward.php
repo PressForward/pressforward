@@ -84,7 +84,9 @@ class rsspf {
 		add_action( 'wp_ajax_nopriv_reset_feed', array($this, 'reset_feed') );
 		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
 		add_action( 'wp_ajax_nopriv_make_it_readable', array($this, 'make_it_readable') );
-		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );		
+		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );
+		add_action( 'wp_ajax_nopriv_archive_a_nom', array($this, 'archive_a_nom') );
+		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );		
 		}
 		add_action('edit_post', array( $this, 'send_nomination_for_publishing'));
 		add_filter( 'manage_edit-nomination_columns', array ($this, 'edit_nominations_columns') );
@@ -1542,6 +1544,7 @@ class rsspf {
 			wp_enqueue_script('jq-fullscreen', RSSPF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
 			wp_enqueue_script('twitter-bootstrap', RSSPF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
 			wp_enqueue_script('send-to-draft-imp', RSSPF_URL . 'assets/js/send-to-draft-imp.js', array( 'jquery' ));
+			wp_enqueue_script('archive-nom-imp', RSSPF_URL . 'assets/js/nom-archive-imp.js', array( 'jquery' ));
 			wp_enqueue_style('bootstrap-style');
 			wp_enqueue_style('bootstrap-responsive-style');
 			wp_enqueue_style( RSSPF_SLUG . '-style' );
@@ -1957,6 +1960,17 @@ class rsspf {
 			}
 		}
 
+	}
+	
+	function archive_a_nom(){
+		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
+		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
+			die($this->__('Nonce not recieved. Are you sure you should be archiving?'));
+		} else {
+			add_post_meta($_POST['nom_id'], 'archived_status', 'archived', true);
+			print_r('Archived.');
+			die();
+		}
 	}
 
 	//Based on http://seoserpent.com/wordpress/custom-author-byline

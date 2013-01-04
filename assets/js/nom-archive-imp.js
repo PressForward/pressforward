@@ -1,5 +1,6 @@
 jQuery(document).ready(function() {
 
+	
 	jQuery(".nom-to-archive").click(function (evt){ 
 		evt.preventDefault();
 		
@@ -9,7 +10,7 @@ jQuery(document).ready(function() {
 	
 	jQuery.post(ajaxurl, {
 			action: 'archive_a_nom',
-			nom_id: nom_id,
+			nom_id: nomID,
 			pf_drafted_nonce: theNonce
 		},
 		function(response) {
@@ -25,10 +26,23 @@ jQuery(document).ready(function() {
 });
 
 jQuery(document).ready(function() {
-	jQuery(".showarchived").click(function (evt){ 
+	jQuery(".showarchived").click().toggle(function (evt){ 
 		evt.preventDefault();
 		
 		jQuery('.archived').show();
+		jQuery('.showarchived').html('Hide Archived');
+		jQuery('.showarchived').attr('value', 'Hide Archived');
+		jQuery('.showarchived').addClass('hidearchived');
 	
-	  });
+	}, function (evt){ 
+		evt.preventDefault();
+		
+		jQuery('.archived').hide();
+		jQuery('.hidearchived').html('Show Archived');
+		jQuery('.hidearchived').attr('value', 'Show Archived');
+		jQuery('.showarchived').removeClass('hidearchived');
+	
+	}
+	);		
+	  
 });	
