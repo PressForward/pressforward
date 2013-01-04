@@ -1972,6 +1972,28 @@ class rsspf {
 			die();
 		}
 	}
+	
+	function ajax_user_option_set(){
+		//Function to set user options via AJAX.
+		/** Requires AJAX to send a name, slug and value in the forms of:
+			user_op_slug
+			user_op_value
+			user_op_name
+		**/
+		$pf_user_nonce = $_POST['pf_user_nonce'];
+		if (! wp_verify_nonce($pf_user_nonce, 'user')){
+			die($this->__('Nonce not recieved. Are you sure you should be setting user options?'));
+		} else {
+			$current_user = wp_get_current_user();
+			$user_op_bool = update_user_option($current_user->ID, $_POST['user_op_slug'], $_POST['user_op_value'], true);
+			if ($user_op_bool){
+				print_r('User option set:' . $_POST['user_op_name']);
+			} else {
+				print_r('User option not set:' . $_POST['user_op_name']);
+			}
+			die();
+		}
+	}
 
 	//Based on http://seoserpent.com/wordpress/custom-author-byline
 
