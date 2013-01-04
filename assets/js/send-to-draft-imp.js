@@ -53,5 +53,17 @@ jQuery(document).ready(function() {
 			//jQuery("#test-div1").append(data);
 		});
 	  });
-	  	
+	
+
+	jQuery(".accordion-toggle").click(function (evt){ 
+		var element			= jQuery(this);
+		var itemID			= element.attr('count');
+		
+		jQuery('#item-box-'+itemID).removeClass('span12');
+		jQuery('#item-box-'+itemID).addClass('span9');
+		jQuery('#action-box-'+itemID).addClass('span3');
+		jQuery('#action-box-'+itemID).show();
+		
+	});
+  	
 });

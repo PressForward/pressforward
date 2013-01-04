@@ -114,7 +114,7 @@
 			
 			?>
 			<div class="row-fluid">
-			<div class="span9">
+			<div class="span12" id="item-box-<?php echo $count; ?>">
 				<div class="row-fluid well accordion-group nom-item<?php $this->nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php the_ID(); ?> ">
 					<div class="span12" id="<?php echo $count; ?>">
 						
@@ -143,7 +143,7 @@
 						echo '</div>';
 						echo '<div class="row-fluid nom-content-container accordion-heading">';
 							echo '<div class="span12">';
-								echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#nom-accordion" href="#collapse' . $count . '">';
+								echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#nom-accordion" href="#collapse' . $count . '" count="' . $count . '">';
 								//Figure out feature image later. Put it here when you do.
 								echo '<div class="row-fluid span12">';
 									echo '<h3>' . get_the_title() . '</h3>';
@@ -166,7 +166,7 @@
 				echo '</div>';
 			echo '</div>';
 				
-			echo '<div class="post-control span3 well">';
+			echo '<div class="post-control span3 well" id="action-box-' . $count . '" style="display:none;">';
 											?>
 									<div class="nom-master-buttons row-fluid">
 										<div class="span12">
