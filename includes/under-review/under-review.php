@@ -113,10 +113,10 @@
 			
 			
 			?>
-			<div class="row-fluid">
+			<div class="row-fluid" id="<?php the_ID(); ?>">
 			<div class="span12" id="item-box-<?php echo $count; ?>">
-				<div class="row-fluid well accordion-group nom-item<?php $this->nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php the_ID(); ?> ">
-					<div class="span12" id="<?php echo $count; ?>">
+				<div class="row-fluid well accordion-group nom-item<?php $this->nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php echo $count; ?>">
+					<div class="span12">
 						
 						<div class="sortable-hidden-meta" style="display:none;">
 							<?php 

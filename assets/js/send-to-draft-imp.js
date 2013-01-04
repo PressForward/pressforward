@@ -53,11 +53,13 @@ jQuery(document).ready(function() {
 			//jQuery("#test-div1").append(data);
 		});
 	  });
-	
+  	
+});
 
-	jQuery(".accordion-toggle").click(function (evt){ 
+jQuery(document).ready(function() {
+	jQuery(".nom-item").on('show', function (){ 
 		var element			= jQuery(this);
-		var itemID			= element.attr('count');
+		var itemID			= element.attr('id');
 		
 		jQuery('#item-box-'+itemID).removeClass('span12');
 		jQuery('#item-box-'+itemID).addClass('span9');
@@ -65,5 +67,15 @@ jQuery(document).ready(function() {
 		jQuery('#action-box-'+itemID).show();
 		
 	});
-  	
-});
+	jQuery(".nom-item").on('hide', function (){
+		var element			= jQuery(this);
+		var itemID			= element.attr('id');
+		
+		jQuery('#action-box-'+itemID).removeClass('span3');
+		jQuery('#action-box-'+itemID).hide();		
+		jQuery('#item-box-'+itemID).removeClass('span9');
+		jQuery('#item-box-'+itemID).addClass('span12');
+
+	}
+	);
+});	
