@@ -156,20 +156,40 @@
 								echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#nom-accordion" href="#collapse' . $count . '" count="' . $count . '">';
 								//Figure out feature image later. Put it here when you do.
 								echo '<div class="row-fluid span12">';
-									echo '<h3>' . get_the_title() . '</h3>';
+								remove_filter('get_the_excerpt', 'wp_trim_excerpt');
+								add_filter('get_the_excerpt', array( $this, 'noms_excerpt'));
+									echo '<span class="nom-title">' . get_the_title() . '</span>';
+								remove_filter('get_the_excerpt', array( $this, 'noms_excerpt'));
+								add_filter('get_the_excerpt', 'wp_trim_excerpt');
 								echo '</div>';	
-								echo '<div class="row-fluid span12">';	
-									echo '<h6>' . get_the_author() . ', ' . get_the_date() . ', Nominated on ' . date('Y-m-d', strtotime($date_nomed)) . '</h6>';
-								echo '</div>';
+
 								echo '</a>';
 							echo '</div>';
 						echo '</div>';
 								
-						echo '<div class="row-fluid accordion-body collapse" id="collapse' . $count . '">
-										<div class="nom-content-body accordion-inner span12">';
+						echo '<div class="accordion-body collapse" id="collapse' . $count . '">';
+						echo '<div class="accordion-inner">';
+								echo '<div class="row-fluid span12 authorship-info">';
+									echo '<h6>Authored by ' . $item_authorship . ' on ' . $date_posted . '</h6>';
+									if ($nom_count > 1){
+										$nomersArray = explode(',',$nominators);
+										$userString = "";
+										foreach ($nomersArray as $nomer){
+											$userObj = get_userdata($nomer);
+											$userString .= $userObj->user_nicename;
+										}
+										$nominators = $userString;
+									} else {
+										$userObj = get_userdata($nominators);
+										$nominators = $userObj->user_nicename;
+									}
+									echo '<h6>Nominated by ' . $nominators . ' on ' . date('Y-m-d', strtotime($date_nomed)) . '</h6>';
+								echo '</div>
+										<div class="nom-content-body row-fluid span12">';
 											the_content();
 									echo '</div>';
 							
+						echo '</div>';
 						echo '</div>';
 					echo '</div>';
 

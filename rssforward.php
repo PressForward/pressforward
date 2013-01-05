@@ -1050,7 +1050,30 @@ class rsspf {
 			  $text = implode(' ', $words);
 		
 		return $text;
-	}	
+	}
+
+//Let's build a better excerpt! 
+function noms_excerpt( $text ) {
+	global $post;
+	if ( '' == $text ) {
+		$text = get_the_content('');
+		$text = apply_filters('the_content', $text);
+		$text = str_replace('\]\]\>', ']]&gt;', $text);
+		$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
+		$text = strip_tags($text, '<p> <strong> <bold> <i> <em> <emphasis> <del> <h1> <h2> <h3> <h4> <h5>');
+		$excerpt_length = 310; 
+		$words = explode(' ', $text, $excerpt_length + 1);
+		if (count($words)> $excerpt_length) {
+		  array_pop($words);
+		  array_push($words, '...');
+		  $text = implode(' ', $words);
+		}
+	}
+
+	$text = closetags($text);
+	
+return $text;
+}
 
 	public function rsspf_reader_builder() {
 		//Calling the feedlist within the rsspf class.
