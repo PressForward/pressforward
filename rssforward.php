@@ -1990,7 +1990,9 @@ return $text;
 		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
 			die($this->__('Nonce not recieved. Are you sure you should be archiving?'));
 		} else {
-			add_post_meta($_POST['nom_id'], 'archived_status', 'archived', true);
+			$current_user = wp_get_current_user();
+			$current_user_id = $current_user->ID;
+			add_post_meta($_POST['nom_id'], 'archived_by_user_status', 'archived_' . $current_user_id);
 			print_r('Archived.');
 			die();
 		}

@@ -26,6 +26,16 @@
 						<button type="submit" class="delete btn btn-danger pull-right" id="archivenoms" value="Archive all" >Archive all</button>
 					</div><!-- End span3 -->';
 //Hidden here, user options, like 'show archived' etc...
+				?><div id="page_data" style="display:none">
+					<?php
+						$current_user = wp_get_current_user();
+						$current_user_id = $current_user->ID;
+					?>
+					<span id="current-user-id"><?php echo $current_user_id; ?></span>
+					<?php
+					
+					?>
+				</div><?php
 		echo '</div><!-- End Row -->';
 		?>
 		<div class="pressforward-alertbox" style="display:none;">
