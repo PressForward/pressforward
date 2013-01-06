@@ -129,11 +129,23 @@
 				$timestamp_unix_date_nomed = strtotime($date_nomed);
 				//UNIX datetime item was posted to its home RSS.
 				$timestamp_item_posted = strtotime($date_posted);
-				$archived_status = get_post_meta($nom_id, 'archived_status', true);
-				if ($archived_status == 'archived'){ $dependent_style = 'display:none;'; } else { $dependent_style = ''; }
+				$archived_status = get_post_meta($nom_id, 'archived_by_user_status');
+				if (!empty($archived_status)){ 
+					$archived_status_string = '';
+					$archived_user_string_match = 'archived_' . $current_user_id;
+					foreach ($archived_status as $user_archived_status){
+						if ($user_archived_status == $archived_user_string_match){
+						$archived_status_string = 'archived';
+						$dependent_style = 'display:none;'; 
+						}
+					}
+				} else { 
+					$dependent_style = '';
+					$archived_status_string = '';
+				}
 			
 			?>
-			<div class="row-fluid nom-container <?php echo $archived_status; ?>" id="<?php the_ID(); ?>" style="<?php echo $dependent_style; ?>">
+			<div class="row-fluid nom-container <?php echo $archived_status_string; ?>" id="<?php the_ID(); ?>" style="<?php echo $dependent_style; ?>">
 			<div class="span12" id="item-box-<?php echo $count; ?>">
 				<div class="row-fluid well accordion-group nom-item<?php $this->nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php echo $count; ?>">
 					<div class="span12">

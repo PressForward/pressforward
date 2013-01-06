@@ -1,7 +1,5 @@
 jQuery(document).ready(function() {
 
-	//Check each element for archived status, check if it matches user number, if so, add `archived` class.
-	
 	jQuery(".nom-to-archive").click(function (evt){ 
 		evt.preventDefault();
 		
