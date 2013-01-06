@@ -65,6 +65,7 @@ jQuery(document).ready(function() {
 		jQuery('#item-box-'+itemID).addClass('span9');
 		jQuery('#action-box-'+itemID).addClass('span3');
 		jQuery('#action-box-'+itemID).show();
+		jQuery('#excerpt-graf-'+itemID).hide();
 		
 	});
 	jQuery(".nom-item").on('hide', function (){
@@ -75,7 +76,8 @@ jQuery(document).ready(function() {
 		jQuery('#action-box-'+itemID).hide();		
 		jQuery('#item-box-'+itemID).removeClass('span9');
 		jQuery('#item-box-'+itemID).addClass('span12');
-
+		jQuery('#excerpt-graf-'+itemID).show();
+		
 	}
 	);
 });	

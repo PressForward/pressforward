@@ -160,7 +160,7 @@
 								add_filter('get_the_excerpt', array( $this, 'noms_excerpt'));
 									echo '<h6 class="nom-title">' . get_the_title() . '</h6>';
 									?>
-									<div class="excerpt-graf">
+									<div class="excerpt-graf" id="excerpt-graf-<?php echo $count; ?>">
 										<?php print_r( get_the_excerpt() ); ?>
 									</div>
 									<?php
@@ -170,8 +170,7 @@
 
 								echo '</a>';
 							echo '</div>';
-						echo '</div>';
-								
+						echo '</div>';							
 						echo '<div class="accordion-body collapse" id="collapse' . $count . '">';
 						echo '<div class="accordion-inner">';
 								echo '<div class="row-fluid span12 authorship-info">';
