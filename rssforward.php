@@ -1055,12 +1055,14 @@ class rsspf {
 //Let's build a better excerpt! 
 function noms_excerpt( $text ) {
 	global $post;
-	if ( '' == $text ) {
+//	if ( '' == $text ) {
 		$text = get_the_content('');
 		$text = apply_filters('the_content', $text);
 		$text = str_replace('\]\]\>', ']]&gt;', $text);
 		$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
-		$text = strip_tags($text, '<p> <strong> <bold> <i> <em> <emphasis> <del> <h1> <h2> <h3> <h4> <h5>');
+	$contentObj = new htmlchecker($text);
+	$text = $contentObj->closetags($text);		
+		$text = strip_tags($text);
 		$excerpt_length = 310; 
 		$words = explode(' ', $text, $excerpt_length + 1);
 		if (count($words)> $excerpt_length) {
@@ -1068,9 +1070,7 @@ function noms_excerpt( $text ) {
 		  array_push($words, '...');
 		  $text = implode(' ', $words);
 		}
-	}
-
-	$text = closetags($text);
+//	}
 	
 return $text;
 }

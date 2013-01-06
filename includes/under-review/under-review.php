@@ -153,12 +153,17 @@
 						echo '</div>';
 						echo '<div class="row-fluid nom-content-container accordion-heading">';
 							echo '<div class="span12">';
-								echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#nom-accordion" href="#collapse' . $count . '" count="' . $count . '">';
+								echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#nom-accordion" href="#collapse' . $count . '" count="' . $count . '" style="display:block;">';
 								//Figure out feature image later. Put it here when you do.
 								echo '<div class="row-fluid span12">';
 								remove_filter('get_the_excerpt', 'wp_trim_excerpt');
 								add_filter('get_the_excerpt', array( $this, 'noms_excerpt'));
-									echo '<span class="nom-title">' . get_the_title() . '</span>';
+									echo '<h6 class="nom-title">' . get_the_title() . '</h6>';
+									?>
+									<div class="excerpt-graf">
+										<?php print_r( get_the_excerpt() ); ?>
+									</div>
+									<?php
 								remove_filter('get_the_excerpt', array( $this, 'noms_excerpt'));
 								add_filter('get_the_excerpt', 'wp_trim_excerpt');
 								echo '</div>';	
