@@ -13,14 +13,19 @@ class AB_subscription_builder {
 	 *    'node_count' => [the number of nodes]
 	 *    'nodes_populated' => [this value will always be zero coming from this method]
 	 */
-	public static function get_blog_categories() {
-		$theWikiLink = 'http://academicblogs.org/index.php/Main_Page';
+	public static function get_blog_categories( $theWikiLink = 'http://academicblogs.org/index.php/Main_Page' ) {
+		
 		$categories = array();
 		$node_count = 0;
 
-		$html = file_get_html($theWikiLink);
+		$html = wp_remote_get($theWikiLink);
 		if ($html == false) {
 			return false;
+		}
+		if (is_wp_error($html)) {
+			return false;			
+		} else {
+			$html = $html['body'];
 		}
 
 		// The categories are headed by h2 elements in #bodyContent
@@ -109,12 +114,42 @@ class AB_subscription_builder {
 		return $categories;
 	}
 
-	public function getTitle($str){
-		//$str = file_get_contents($Url);
-		if(strlen($str)>1){
-			preg_match("/\<title\>(.*)\<\/title\>/",$str,$title);
-			return $title[1];
+	function getTitle($Url){
+		$request = wp_remote_get($Url);
+		$response = $Url;
+
+			if (is_wp_error($request)) {
+				
+				
+			}	
+			else if(strlen($request['body'])>1){
+				preg_match("/\<title\>(.*)\<\/title\>/",$request['body'],$title);
+				$response = $title[1];
+			} else {
+				
+			}
+			$data = array();
+			$data['url'] = $Url;
+			$data['response'] = $response;
+
+		if ($data['url'] != $Url){
+
+			if (is_wp_error($request)) {
+				
+				
+			}	
+			else if(strlen($request['body'])>1){
+				preg_match("/\<title\>(.*)\<\/title\>/",$request['body'],$title);
+				$response = $title[1];
+			} else {
+				
+			}
+			$data = array();
+			$data['url'] = $Url;
+			$data['response'] = $response;
+		
 		}
+		return $data['response'];
 	}
 	
 	# via http://stackoverflow.com/questions/2668854/sanitizing-strings-to-make-them-url-and-filename-safe
@@ -159,7 +194,13 @@ class AB_subscription_builder {
 	# PS... How often does this get updated?
 	public function getLinksFromSection ($sectionURL){		
 		set_time_limit(0);
-		$html = file_get_html($sectionURL);
+		$html = wp_remote_get($sectionURL);
+
+		if (is_wp_error($html)) {
+			return 'No Links.';			
+		} else {
+			$html = $html['body'];
+		}
 		
 		$blogs = array();
 		$c = 0;
@@ -192,12 +233,18 @@ class AB_subscription_builder {
 		$theWikiLink = 'http://academicblogs.org/index.php/Main_Page';
 		$htmlCounter = array();
 		//Random article for testing.
-		$html = file_get_html($theWikiLink);
+		$html = wp_remote_get($theWikiLink);
 		//print_r($html);
 		# Get the title page
 		if ($html == false) {
 			return false;
 		}
+		
+		if (is_wp_error($html)) {
+			return 'No Links.';			
+		} else {
+			$html = $html['body'];
+		}		
 		
 		foreach ($html->find('h1') as $link){
 			//print_r($link);
