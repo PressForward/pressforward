@@ -235,55 +235,6 @@
 												<button class="btn btn-inverse nom-to-draft" form="<?php echo $rss_item_id ?>">Send to Draft</button> 
 												<button class="btn btn-inverse nom-to-archive" form="<?php echo $nom_id ?>">Archive</button>
 															<?php $tax = get_taxonomy( 'category' ); ?>
-			<div id="categorydiv" class="postbox">
-				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
-				<h3 class="hndle"><?php _e('Categories') ?></h3>
-				<div class="inside">
-				<div id="taxonomy-category" class="categorydiv">
-
-					<ul id="category-tabs" class="category-tabs">
-						<li class="tabs"><a href="#category-all" tabindex="3"><?php echo $tax->labels->all_items; ?></a></li>
-						<li class="hide-if-no-js"><a href="#category-pop" tabindex="3"><?php _e( 'Most Used' ); ?></a></li>
-					</ul>
-
-					<div id="category-pop" class="tabs-panel" style="display: none;">
-						<ul id="categorychecklist-pop" class="categorychecklist form-no-clear" >
-							<?php $popular_ids = wp_popular_terms_checklist( 'category' ); ?>
-						</ul>
-					</div>
-
-					<div id="category-all" class="tabs-panel">
-						<ul id="categorychecklist" class="list:category categorychecklist form-no-clear">
-							<?php wp_terms_checklist($post_ID, array( 'taxonomy' => 'category', 'popular_cats' => $popular_ids ) ) ?>
-						</ul>
-					</div>
-
-					<?php if ( !current_user_can($tax->cap->assign_terms) ) : ?>
-					<p><em><?php _e('You cannot modify this Taxonomy.'); ?></em></p>
-					<?php endif; ?>
-				<?php if ( current_user_can($tax->cap->edit_terms) ) : ?>
-						<div id="category-adder" class="wp-hidden-children">
-							<h4>
-								<a id="category-add-toggle" href="#category-add" class="hide-if-no-js" tabindex="3">
-									<?php printf( __( '+ %s' ), $tax->labels->add_new_item ); ?>
-								</a>
-							</h4>
-							<p id="category-add" class="category-add wp-hidden-child">
-								<label class="screen-reader-text" for="newcategory"><?php echo $tax->labels->add_new_item; ?></label>
-								<input type="text" name="newcategory" id="newcategory" class="form-required form-input-tip" value="<?php echo esc_attr( $tax->labels->new_item_name ); ?>" tabindex="3" aria-required="true"/>
-								<label class="screen-reader-text" for="newcategory_parent">
-									<?php echo $tax->labels->parent_item_colon; ?>
-								</label>
-								<?php wp_dropdown_categories( array( 'taxonomy' => 'category', 'hide_empty' => 0, 'name' => 'newcategory_parent', 'orderby' => 'name', 'hierarchical' => 1, 'show_option_none' => '&mdash; ' . $tax->labels->parent_item . ' &mdash;', 'tab_index' => 3 ) ); ?>
-								<input type="button" id="category-add-submit" class="add:categorychecklist:category-add button category-add-submit" value="<?php echo esc_attr( $tax->labels->add_new_item ); ?>" tabindex="3" />
-								<?php wp_nonce_field( 'add-category', '_ajax_nonce-add-category', false ); ?>
-								<span id="category-ajax-response"></span>
-							</p>
-						</div>
-					<?php endif; ?>
-				</div>
-				</div>
-			</div>
 			
 			<div id="tagsdiv-post_tag" class="postbox">
 				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
