@@ -1571,6 +1571,7 @@ return $text;
 			wp_enqueue_style('bootstrap-style');
 			wp_enqueue_style('bootstrap-responsive-style');
 			wp_enqueue_style( RSSPF_SLUG . '-style' );
+			wp_enqueue_script( 'post' );
 		}
 		if (('rss-to-press-forward_page_rsspf-feeder') != $hook) { return; }
 		else {

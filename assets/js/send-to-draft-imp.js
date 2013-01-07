@@ -22,6 +22,7 @@ jQuery(document).ready(function() {
 	var item_author 	= jQuery("#authors_"+itemID).val(); //
 	var item_link 		= jQuery("#permalink_"+itemID).val(); //
 	var nom_title		= jQuery("#item_title_"+itemID).val(); //
+	var addl_tags		= jQuery("#tag_input_"+itemID).val();
 //	var errorThrown		= 'Broken';
 	var theNonce		= jQuery.trim(jQuery('#pf_drafted_nonce').val())
 	jQuery('.loading-'+itemID).show();
@@ -44,6 +45,7 @@ jQuery(document).ready(function() {
 			item_author: item_author,
 			item_link: item_link,
 			nom_title: nom_title,
+			addl_tags: addl_tags,
 			//Nom comments will sit here eventually.
 			pf_drafted_nonce: theNonce
 		},
