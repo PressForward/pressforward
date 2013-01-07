@@ -67,7 +67,7 @@ visibility:hidden;
 	color: black;
 }
 
-.feed-item {
+.feed-item, .nom-item {
 	width: 99%;
 	margin-top: 4px;
 	margin-bottom: 4px;
@@ -77,13 +77,13 @@ visibility:hidden;
 	margin: 8px auto;
 }
 
-.toplevel_page_rsspf-menu #wpwrap {
+.toplevel_page_rsspf-menu #wpwrap, .rss-to-press-forward_page_rsspf-review #wpwrap {
 	
     background-color: #ecf3f9;
 
 }
 
-#feed-accordion .well {
+#feed-accordion .well, #nom-accordion .well  {
 	padding: 0;
 	background-color: #FAFAFA;
 	/** Taking border from well in bootstrap **/
@@ -158,7 +158,7 @@ h3 {
 	padding: 0;
 }
 
-.rsspf-right-widget .widget-title{
+.rsspf-right-widget .widget-title {
 	background-color: #F5EBBA;
 	padding: 8px;
 	border-bottom: 1px solid #CCBE8E
@@ -168,6 +168,18 @@ h3 {
 	padding: 8px;
 }
 
+.post-control {
+	position: fixed;
+	right: 10px;
+	padding: 10px;
+}
+
+.archived {
+	opacity: .6;
+	transition: opacity .25s ease-in-out;
+	-moz-transition: opacity .25s ease-in-out;
+	-webkit-transition: opacity .25s ease-in-out;
+}
 /**
  * Specific override styles.
  *

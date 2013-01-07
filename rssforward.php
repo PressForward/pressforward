@@ -77,12 +77,16 @@ class rsspf {
 		{
 		add_action( 'wp_ajax_nopriv_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
+		add_action( 'wp_ajax_nopriv_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
+		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );		
 		add_action( 'wp_ajax_nopriv_assemble_feed_for_pull', array($this, 'assemble_feed_for_pull') );
 		add_action( 'wp_ajax_assemble_feed_for_pull', array( $this, 'assemble_feed_for_pull') );
 		add_action( 'wp_ajax_nopriv_reset_feed', array($this, 'reset_feed') );
 		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
 		add_action( 'wp_ajax_nopriv_make_it_readable', array($this, 'make_it_readable') );
-		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );		
+		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );
+		add_action( 'wp_ajax_nopriv_archive_a_nom', array($this, 'archive_a_nom') );
+		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );		
 		}
 		add_action('edit_post', array( $this, 'send_nomination_for_publishing'));
 		add_filter( 'manage_edit-nomination_columns', array ($this, 'edit_nominations_columns') );
@@ -181,7 +185,7 @@ class rsspf {
 
 		add_submenu_page(RSSPF_MENU_SLUG, 'All Content', 'All Content', 'edit_posts', RSSPF_MENU_SLUG, array($this, 'rsspf_reader_builder'));
 
-		add_submenu_page(RSSPF_MENU_SLUG, 'Under Review', 'Under Review', 'edit_posts', RSSPF_NOM_EDITOR);
+		add_submenu_page(RSSPF_MENU_SLUG, 'Under Review', 'Under Review', 'edit_posts',  RSSPF_SLUG . '-review', array($this, 'rsspf_review_builder'));
 
 		//Now create an options page for the plugin. This page is only accessable to Administrative level users.
 		add_submenu_page(RSSPF_MENU_SLUG, RSSPF_TITLE . ' Options', RSSPF_TITLE . ' Options', 'manage_options', RSSPF_SLUG . '-options', array($this, 'rsspf_options_builder'));
@@ -1046,7 +1050,30 @@ class rsspf {
 			  $text = implode(' ', $words);
 		
 		return $text;
-	}	
+	}
+
+//Let's build a better excerpt! 
+function noms_excerpt( $text ) {
+	global $post;
+//	if ( '' == $text ) {
+		$text = get_the_content('');
+		$text = apply_filters('the_content', $text);
+		$text = str_replace('\]\]\>', ']]&gt;', $text);
+		$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
+	$contentObj = new htmlchecker($text);
+	$text = $contentObj->closetags($text);		
+		$text = strip_tags($text);
+		$excerpt_length = 310; 
+		$words = explode(' ', $text, $excerpt_length + 1);
+		if (count($words)> $excerpt_length) {
+		  array_pop($words);
+		  array_push($words, '...');
+		  $text = implode(' ', $words);
+		}
+//	}
+	
+return $text;
+}
 
 	public function rsspf_reader_builder() {
 		//Calling the feedlist within the rsspf class.
@@ -1365,6 +1392,32 @@ class rsspf {
 	function widget_one_call(){
 		echo '<div class="navwidget">	Widget Body <br />	<a href="#20">Test link to item 20.</a>	</div>'	;
 	}
+	
+	//Let's build the Under Review page. 
+	function rsspf_review_builder() {
+		include( RSSPF_ROOT . "/includes/under-review/under-review.php" );
+	}
+
+	function nom_class_tagger($array = array()){
+
+		foreach ($array as $class){
+			if (($class == '') || (empty($class)) || (!isset($class))){
+				//Do nothing.
+			}
+			elseif (is_array($class)){
+			
+				foreach ($class as $subclass){
+					echo ' ';
+					echo $this->slugger($class, true, false, true);
+				}
+			
+			} else {
+				echo ' ';
+				echo $this->slugger($class, true, false, true);
+			}
+		}
+
+	}
 
 	function rsspf_options_builder() {
 		?>
@@ -1485,6 +1538,11 @@ class rsspf {
 
 		//This gets the current page the user is on.
 		global $pagenow;
+		
+			wp_register_style( RSSPF_SLUG . '-style', RSSPF_URL . 'assets/css/style.css');
+			wp_register_style( 'bootstrap-style', RSSPF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
+			wp_register_style( 'bootstrap-responsive-style', RSSPF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');		
+		
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
 		if (('toplevel_page_rsspf-menu') == $hook) { 
@@ -1499,14 +1557,21 @@ class rsspf {
 			wp_enqueue_script('infiniscroll', RSSPF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery' ));
 			wp_enqueue_script('scrollimp', RSSPF_URL . 'assets/js/scroll-imp.js', array( 'infiniscroll' ));
 
-			wp_register_style( RSSPF_SLUG . '-style', RSSPF_URL . 'assets/css/style.css');
-			wp_register_style( 'bootstrap-style', RSSPF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
-			wp_register_style( 'bootstrap-responsive-style', RSSPF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
-
 			wp_enqueue_style('bootstrap-style');
 			wp_enqueue_style('bootstrap-responsive-style');
 			wp_enqueue_style( RSSPF_SLUG . '-style' );
 
+		}
+		if (('rss-to-press-forward_page_rsspf-review') == $hook) { 
+			wp_enqueue_script('tinysort', RSSPF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
+			wp_enqueue_script('jq-fullscreen', RSSPF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
+			wp_enqueue_script('twitter-bootstrap', RSSPF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
+			wp_enqueue_script('send-to-draft-imp', RSSPF_URL . 'assets/js/send-to-draft-imp.js', array( 'jquery' ));
+			wp_enqueue_script('archive-nom-imp', RSSPF_URL . 'assets/js/nom-archive-imp.js', array( 'jquery' ));
+			wp_enqueue_style('bootstrap-style');
+			wp_enqueue_style('bootstrap-responsive-style');
+			wp_enqueue_style( RSSPF_SLUG . '-style' );
+			wp_enqueue_script( 'post' );
 		}
 		if (('rss-to-press-forward_page_rsspf-feeder') != $hook) { return; }
 		else {
@@ -1574,6 +1639,7 @@ class rsspf {
 		//Assume that it will not find anything.
 		$check = false;
 		if ($postsAfter):
+		
 			global $post;
 			foreach ($postsAfter as $post):
 				setup_postdata($post);
@@ -1773,6 +1839,94 @@ class rsspf {
 
 
 	}
+	
+	function build_a_nom_draft() {
+		global $post;
+		// verify if this is an auto save routine.
+		// If it is our form has not been submitted, so we dont want to do anything
+		//if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
+		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
+		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
+			die($this->__('Nonce not recieved. Are you sure you should be drafting?'));
+		} else {
+##Check		
+		print_r('Sending to Draft.');
+##Check
+		print_r($_POST);
+			$item_title = $_POST['nom_title'];
+			$item_content = $_POST['nom_content'];
+			$data = array(
+				'post_status' => 'draft',
+				'post_type' => 'post',
+				'post_title' => $item_title,
+				'post_content' => htmlspecialchars_decode($item_content),
+			);
+			//Will need to use a meta field to pass the content's md5 id around to check if it has already been posted.
+
+			//We assume that it is already in nominations, so no need to check there. This might be why we can't use post_exists here.
+			//No need to origonate the check at the time of the feed item either. It can't become a post with the proper meta if it wasn't a nomination first.
+			$item_id = $_POST['item_id'];
+			//YYYY-MM-DD
+			$nom_date = strtotime($_POST['nom_date']);
+			$nom_date = date('Y-m-d', $nom_date);
+
+			//Now function will not update nomination count when it pushes nomination to publication.
+			$post_check = $this->get_post_nomination_status($nom_date, $item_id, 'post', false);
+
+			//Alternative check with post_exists? or use same as above?
+			if ($post_check != true) {
+##Check			
+				print_r('No Post exists.');
+				$newPostID = wp_insert_post( $data, true );
+##Check
+				print_r($newPostID);
+				add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
+				
+				add_post_meta($newPostID, 'source_title', $_POST['source_title'], true);
+				
+				add_post_meta($newPostID, 'source_link', $_POST['source_link'], true);
+				
+				add_post_meta($newPostID, 'source_slug', $_POST['source_slug'], true);
+				
+				$nomCount = $_POST['nom_count'];
+				add_post_meta($newPostID, 'nomination_count', $nomCount, true);
+				
+				add_post_meta($newPostID, 'nom_id', $_POST['nom_id'], true);
+				
+				$nomUserID = $_POST['nom_user'];
+				add_post_meta($newPostID, 'submitted_by', $userID, true);
+				
+				$item_permalink = $_POST['item_link'];
+				add_post_meta($newPostID, 'nomination_permalink', $item_permalink, true);
+				
+				$item_authorship = $_POST['item_author'];
+				add_post_meta($newPostID, 'authors', $item_authorship, true);
+				
+				add_post_meta($newPostID, 'item_date', $_POST['item_date'], true);
+				
+				add_post_meta($newPostID, 'item_link', $_POST['item_link'], true);
+				
+				$date_nom = $_POST['nom_date'];
+				add_post_meta($newPostID, 'date_nominated', $date_nom, true);
+				
+				add_post_meta($newPostID, 'nom_count', $_POST['nom_count'], true);
+				
+				$item_tags = $_POST['nom_tags'];
+				add_post_meta($newPostID, 'item_tags', $item_tags, true);
+				
+				//If user wants to use tags, we'll create an option to use it.
+				$nominators = $_POST['nom_users'];
+				add_post_meta($newPostID, 'nominator_array', $nominators, true);
+
+				$already_has_thumb = has_post_thumbnail($_POST['nom_id']);
+				if ($already_has_thumb)  {
+					$post_thumbnail_id = get_post_thumbnail_id( $_POST['nom_id'] );
+					set_post_thumbnail($newPostID, $post_thumbnail_id);
+				}
+
+			}
+		}		
+	}
 
 	function send_nomination_for_publishing() {
 		global $post;
@@ -1809,8 +1963,8 @@ class rsspf {
 				add_post_meta($newPostID, 'submitted_by', $userID, true);
 				$item_permalink = get_post_meta($_POST['ID'], 'nomination_permalink', true);
 				add_post_meta($newPostID, 'nomination_permalink', $item_permalink, true);
-				$item_permalink = get_post_meta($_POST['ID'], 'authors', true);
-				add_post_meta($newPostID, 'authors', $item_permalink, true);
+				$item_authorship = get_post_meta($_POST['ID'], 'authors', true);
+				add_post_meta($newPostID, 'authors', $item_authorship, true);
 				$date_nom = get_post_meta($_POST['ID'], 'date_nominated', true);
 				add_post_meta($newPostID, 'date_nominated', $date_nom, true);
 				$item_tags = get_post_meta($_POST['ID'], 'item_tags', true);
@@ -1830,6 +1984,41 @@ class rsspf {
 			}
 		}
 
+	}
+	
+	function archive_a_nom(){
+		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
+		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
+			die($this->__('Nonce not recieved. Are you sure you should be archiving?'));
+		} else {
+			$current_user = wp_get_current_user();
+			$current_user_id = $current_user->ID;
+			add_post_meta($_POST['nom_id'], 'archived_by_user_status', 'archived_' . $current_user_id);
+			print_r('Archived.');
+			die();
+		}
+	}
+	
+	function ajax_user_option_set(){
+		//Function to set user options via AJAX.
+		/** Requires AJAX to send a name, slug and value in the forms of:
+			user_op_slug
+			user_op_value
+			user_op_name
+		**/
+		$pf_user_nonce = $_POST['pf_user_nonce'];
+		if (! wp_verify_nonce($pf_user_nonce, 'user')){
+			die($this->__('Nonce not recieved. Are you sure you should be setting user options?'));
+		} else {
+			$current_user = wp_get_current_user();
+			$user_op_bool = update_user_option($current_user->ID, $_POST['user_op_slug'], $_POST['user_op_value'], true);
+			if ($user_op_bool){
+				print_r('User option set:' . $_POST['user_op_name']);
+			} else {
+				print_r('User option not set:' . $_POST['user_op_name']);
+			}
+			die();
+		}
 	}
 
 	//Based on http://seoserpent.com/wordpress/custom-author-byline
