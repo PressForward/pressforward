@@ -285,7 +285,7 @@ class rsspf {
 	public function assemble_feed_for_pull($feedObj = 0) {
 		# This pulls the RSS feed into a set of predetermined objects.
 		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
-		if ($feedObj = 0){
+		if ($feedObj == 0){
 			$feedObj = $this->source_data_object();
 		}
 

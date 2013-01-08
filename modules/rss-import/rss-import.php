@@ -30,15 +30,20 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		$feedlist = call_user_func(array($this, 'rsspf_feedlist'));	
 		//The array keys start with zero, as does the iteration number. This will account for that. 
 		$feedcount = count($feedlist) - 1;
+		
 		//Get the iteration state. If option does not exist, set the iteration variable to 0
 		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 0 );	
+//		print_r($feeds_iteration . ' iterate state'); die();
 		if ($feedcount >= $feeds_iteration) {
+//		print_r($feeds_iteration . ' iterate state'); die();
 			//If the feed item is empty, can I loop back through this function for max efficiency? I think so.
 			$aFeed = $feedlist[$feeds_iteration];
 			if ($feedcount == $feeds_iteration){
 				$feeds_iteration = 0;
+				
 			} else {
 				$feeds_iteration = $feeds_iteration++;
+				print_r($feeds_iteration); die();
 			}
 			update_option( RSSPF_SLUG . '_feeds_iteration', $feeds_iteration);
 			//If the array entry is empty and this isn't the end of the feedlist, then get the next item from the feedlist while iterating the count. 
@@ -155,6 +160,9 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		if ($feedcount >= $feeds_iteration) {
 			//http://codex.wordpress.org/Function_Reference/wp_schedule_single_event
 			//add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );
+			wp_schedule_single_event(time()-60, 'get_more_feeds');
+			add_action('get_more_feeds', array($rsspf, 'assemble_feed_for_pull'));
+			wp_remote_get(get_site_url() . '/wp-cron.php');
 		}
 		return $rssObject;
 
