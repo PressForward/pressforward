@@ -161,11 +161,15 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		if ($feedcount >= $feeds_iteration) {
 			//http://codex.wordpress.org/Function_Reference/wp_schedule_single_event
 			//add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );
-			wp_schedule_single_event(time()-60, 'get_more_feeds');
+			wp_schedule_single_event(time()-3600, 'get_more_feeds');
 			add_action('get_more_feeds', array($rsspf, 'assemble_feed_for_pull'));
-			wp_remote_get(get_site_url() . '/wp-cron.php');
-			//Looks like it is schedualed properly. But should I be using wp_cron() to trigger it instead? 
+			$wprgCheck = wp_remote_get(get_site_url() . '/wp-cron.php');
+			//Looks like it is schedualed properly. But should I be using wp_cron() or spawn_cron to trigger it instead? 
+			//wp_cron();
+			//If I use spawn_cron here, it can only occur every 60 secs. That's no good!
 			//print_r('<br />Cron: ' . wp_next_scheduled('get_more_feeds') . ' The next event.');
+			//print_r(get_site_url() . '/wp-cron.php');
+			//print_r($wprgCheck);
 		}
 		return $rssObject;
 
@@ -233,7 +237,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			<div><?php _e('Add OPML', RSSPF_SLUG); ?></div>
 				<div>
 					<input id="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>" value="" />
-                    <label class="description" for="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here.', RSSPF_SLUG); ?></label>
+                    <label class="description" for="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', RSSPF_SLUG); ?></label>
 
                      			
                 </div>	
@@ -297,6 +301,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		if (!empty($input['opml'])){
 			$OPML_reader = new OPML_reader;
 			$opml_array = $OPML_reader->get_OPML_data($input['opml']);
+			//print_r($opml_array); die();
 		}
 		//$feedlist = $this->rsspf_feedlist();
 		// Needs something to do here if option is empty. 
@@ -306,7 +311,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 				$feedlist = $inputSingle;
 			}
 			if (!empty($input['opml'])){
-				$feedlist = array_merge($feedlist, $opml_array);
+				$feedlist = $opml_array;
 			}
 			if (!empty($_POST['o_feed_url'])){
 			
@@ -328,7 +333,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			}
 			
 		}
-		
+//		print_r($feedlist); die();
 		//Let's ensure no duplicates.
 		$feedlist = array_unique($feedlist);
 		
