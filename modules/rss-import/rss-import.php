@@ -145,7 +145,9 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			$c++;
 
 		}
-
+		
+		//Here: If feedlist_iteration is not == to feedlist_count, scheduale a cron and trigger it before returning. 
+		
 		return $rssObject;
 
 	}
