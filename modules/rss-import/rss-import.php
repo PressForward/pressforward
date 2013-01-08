@@ -147,7 +147,15 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		}
 		
 		//Here: If feedlist_iteration is not == to feedlist_count, scheduale a cron and trigger it before returning. 
-		
+				$feedlist = call_user_func(array($this, 'rsspf_feedlist'));	
+		//The array keys start with zero, as does the iteration number. This will account for that. 
+		$feedcount = count($feedlist) - 1;
+		//Get the iteration state. If this variable doesn't exist the planet will break in half. 
+		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration');	
+		if ($feedcount >= $feeds_iteration) {
+			//http://codex.wordpress.org/Function_Reference/wp_schedule_single_event
+			//add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );
+		}
 		return $rssObject;
 
 	}
