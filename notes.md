@@ -393,41 +393,41 @@ Feed Retrieval
 	
 	*	Pseudocode:
 
-	`create_feed_list`
-	`	feedlist`
-	`populate_feed_list_option`
-	`	feedlist INTO feedlist_sql_option`
-	`scheduale_feed_in`
-	`	SCHEDULE assemble_feed_for_pull IN 00:30:00`
-	`assemble_feed_for_pull`
-	`	GET array_of_feed_items`
-	`		GET module_x get_data_object`
-	`		GET rss-import get_data_object`
-	`	CHECK to avoid repeat`
-	`	ASSEMBLE into posts`
-	`rss-import get_data_object`
-	`	GET feedlist_sql_option`
-	`	feedlist = feedlist_sql_option`
-	`	IF !feedlist_iteration_option {`
-	`		MAKE feedlist_iteration_option = 0`
-	`	} else {`
-	`		GET feedlist_iteration_option`
-	`	}`
-	`	IF count(feedlist) >= feedlist_iteration_option {`
-	`		GET feed OF feedlist WHERE key == feedlist_iteration_option`
-	`		IF count(feedlist) == feedlist_iteration_option {`
-	`			UPDATE feedlist_iteration_option = 0`
-	`		} ELSE {`
-	`			UPDATE feedlist_iteration_option = feedlist_iteration_option++`
-	`			SCHEDULE assemble_feed_for_pull IN -00:01:00`
-	`		}`
-	`	}`
-	`	FETCH_FEED(feed)`
-	`	ASSEMBLE into array`
-	`	IF feedlist_iteration_option != 0{`
-	`		WP_GET_FILE wp_cron`
-	`	}`
-	`	RETURN array.`
+	`create_feed_list`  
+	`	feedlist`  
+	`populate_feed_list_option`  
+	`	feedlist INTO feedlist_sql_option`  
+	`scheduale_feed_in`  
+	`	SCHEDULE assemble_feed_for_pull IN 00:30:00`  
+	`assemble_feed_for_pull`  
+	`	GET array_of_feed_items`  
+	`		GET module_x get_data_object`  
+	`		GET rss-import get_data_object`  
+	`	CHECK to avoid repeat`  
+	`	ASSEMBLE into posts`  
+	`rss-import get_data_object`  
+	`	GET feedlist_sql_option`  
+	`	feedlist = feedlist_sql_option`  
+	`	IF !feedlist_iteration_option {`  
+	`		MAKE feedlist_iteration_option = 0`  
+	`	} else {`  
+	`		GET feedlist_iteration_option`  
+	`	}`  
+	`	IF count(feedlist) >= feedlist_iteration_option {`   
+	`		GET feed OF feedlist WHERE key == feedlist_iteration_option`  
+	`		IF count(feedlist) == feedlist_iteration_option {`  
+	`			UPDATE feedlist_iteration_option = 0`  
+	`		} ELSE {`  
+	`			UPDATE feedlist_iteration_option = feedlist_iteration_option++`  
+	`			SCHEDULE assemble_feed_for_pull IN -00:01:00`  
+	`		}`  
+	`	}`  
+	`	FETCH_FEED(feed)`  
+	`	ASSEMBLE into array`  
+	`	IF feedlist_iteration_option != 0{`  
+	`		WP_GET_FILE wp_cron`  
+	`	}`  
+	`	RETURN array.`  
 		
 	
 -	Build Under Review, Then WP Cron, then start building the custom taxonomy. 
