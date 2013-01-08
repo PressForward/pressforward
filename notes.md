@@ -415,6 +415,9 @@ Feed Retrieval
 			}
 			IF count(feedlist) >= feedlist_iteration_option {
 				GET feed OF feedlist WHERE key == feedlist_iteration_option
+				IF feed OF feedlist == '' {
+					GET NEXT feed OF feedlist
+				}
 				IF count(feedlist) == feedlist_iteration_option {
 					UPDATE feedlist_iteration_option = 0
 				} ELSE {
