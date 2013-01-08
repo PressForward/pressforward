@@ -32,8 +32,8 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		$feedcount = count($feedlist) - 1;
 		
 		//Get the iteration state. If option does not exist, set the iteration variable to 0
-		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 0 );	
-//		print_r($feeds_iteration . ' iterate state'); die();
+		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 0 );
+		print_r($feeds_iteration . ' iterate state <br />'); 
 		if ($feedcount >= $feeds_iteration) {
 //		print_r($feeds_iteration . ' iterate state'); die();
 			//If the feed item is empty, can I loop back through this function for max efficiency? I think so.
@@ -42,10 +42,11 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 				$feeds_iteration = 0;
 				
 			} else {
-				$feeds_iteration = $feeds_iteration++;
-				print_r($feeds_iteration); die();
+				$feeds_iteration = $feeds_iteration+1;
+				//print_r($feeds_iteration . ' iterate state.'); die();
 			}
-			update_option( RSSPF_SLUG . '_feeds_iteration', $feeds_iteration);
+			$iterate_op_check = update_option( RSSPF_SLUG . '_feeds_iteration', $feeds_iteration);
+			if ($iterate_op_check == true){print_r('Iteration ' . $feeds_iteration . ' sent to option.'); }
 			//If the array entry is empty and this isn't the end of the feedlist, then get the next item from the feedlist while iterating the count. 
 			if ((empty($aFeed) || $aFeed == '') && ($feeds_iteration != 0)){
 				$aFeed = call_user_func(array($this, 'step_through_feedlist'));	
@@ -194,15 +195,20 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	function get_rss_authors($item) {
 		// This needs error checking. 
 		$authorArray = ($item->get_authors());
-		foreach ($authorArray as $author) {
+		if (!empty($authorArray)){
+			foreach ($authorArray as $author) {
 
-			$nameArray[] = $author->get_name();
+				$nameArray[] = $author->get_name();
 
+			}
+			$authors = implode(', ', $nameArray);
+			$authors = $authors;
+			
+		} else {
+			$authors = 'No author.';
 		}
-		$authors = implode(', ', $nameArray);
-		$authors = $authors;
+		
 		return $authors;
-
 	}
 	
 	function add_to_feeder() {
