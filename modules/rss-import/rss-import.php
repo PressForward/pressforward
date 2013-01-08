@@ -164,6 +164,8 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			wp_schedule_single_event(time()-60, 'get_more_feeds');
 			add_action('get_more_feeds', array($rsspf, 'assemble_feed_for_pull'));
 			wp_remote_get(get_site_url() . '/wp-cron.php');
+			//Looks like it is schedualed properly. But should I be using wp_cron() to trigger it instead? 
+			//print_r('<br />Cron: ' . wp_next_scheduled('get_more_feeds') . ' The next event.');
 		}
 		return $rssObject;
 
