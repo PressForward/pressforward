@@ -28,12 +28,14 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	public function step_through_feedlist() {
 		
 		$feedlist = call_user_func(array($this, 'rsspf_feedlist'));	
+		//The array keys start with zero, as does the iteration number. This will account for that. 
+		$feedcount = count($feedlist) - 1;
 		//Get the iteration state. If option does not exist, set the iteration variable to 0
 		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 0 );	
-		if (count($feedlist) >= $feeds_iteration) {
+		if ($feedcount >= $feeds_iteration) {
 			//If the feed item is empty, can I loop back through this function for max efficiency? I think so.
 			$aFeed = $feedlist[$feeds_iteration];
-			if (count($feedlist) == $feeds_iteration){
+			if ($feedcount == $feeds_iteration){
 				$feeds_iteration = 0;
 			} else {
 				$feeds_iteration = $feeds_iteration++;
