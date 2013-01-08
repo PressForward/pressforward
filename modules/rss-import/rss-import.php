@@ -24,6 +24,11 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed') );		
 		}
 	}
+	
+	public function step_through_feedlist() {
+	
+	
+	}
 
 	/**
 	 * Gets the data from an RSS feed and turns it into a data object

@@ -387,6 +387,15 @@ Feed Retrieval
 	*	Insure that there is a seperate function for javascript instead of wpcron to retrieve feeds x thru y
 	*	Would need option for feedcount and feedscounted.
 	
+	*	Reworking assemble_feed_for_pull
+		+	Instead of fetching the feed through the whole feedlist, it needs to run the whole process, but on a feed by feed basis. 
+		+	
+	
+	*	Pseudocode:
+`
+	
+`
+	
 -	Build Under Review, Then WP Cron, then start building the custom taxonomy. 
 	
 Design
