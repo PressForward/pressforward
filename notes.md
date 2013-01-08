@@ -392,7 +392,7 @@ Feed Retrieval
 		+	
 	
 	*	Pseudocode:
-
+<pre><code>
 		create_feed_list
 			feedlist
 		populate_feed_list_option
@@ -428,7 +428,7 @@ Feed Retrieval
 				WP_GET_FILE wp_cron
 			}
 			RETURN array.
-		
+</code></pre>		
 	
 -	Build Under Review, Then WP Cron, then start building the custom taxonomy. 
 	
