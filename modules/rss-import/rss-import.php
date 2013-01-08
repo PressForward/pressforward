@@ -26,7 +26,28 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	}
 	
 	public function step_through_feedlist() {
-	
+		
+		$feedlist = call_user_func(array($this, 'rsspf_feedlist'));	
+		//Get the iteration state. If option does not exist, set the iteration variable to 0
+		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 0 );	
+		if (count($feedlist) >= $feeds_iteration) {
+			//If the feed item is empty, can I loop back through this function for max efficiency? I think so.
+			$aFeed = $feedlist[$feeds_iteration];
+			if (count($feedlist) == $feeds_iteration){
+				$feeds_iteration = 0;
+			} else {
+				$feeds_iteration = $feeds_iteration++;
+			}
+			update_option( RSSPF_SLUG . '_feeds_iteration', $feeds_iteration);
+			//If the array entry is empty and this isn't the end of the feedlist, then get the next item from the feedlist while iterating the count. 
+			if ((empty($aFeed) || $aFeed == '') && ($feeds_iteration != 0)){
+				$aFeed = call_user_func(array($this, 'step_through_feedlist'));	
+			}
+			return $aFeed;
+		} else {
+			//An error state that should never, ever, ever, ever, ever happen. 
+			return false;
+		}
 	
 	}
 
@@ -39,8 +60,8 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	public function get_data_object() {
 		global $rsspf;
 
-		$feedlist = call_user_func(array($this, 'rsspf_feedlist'));
-		$theFeed = fetch_feed($feedlist);
+		$aFeed = call_user_func(array($this, 'step_through_feedlist'));		
+		$theFeed = fetch_feed($aFeed);
 		$rssObject = array();
 		$c = 0;
 
