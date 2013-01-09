@@ -44,7 +44,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			$aFeed = $feedlist[$feeds_iteration];
 			$theFeed = fetch_feed($aFeed);
 			$did_we_start_over = get_option(RSSPF_SLUG . '_iterate_going_switch', 0);
-			if (($last_key == $feeds_iteration)){
+			if (($last_key+1 == $feeds_iteration)){
 				//$feeds_iteration = 0;
 				update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
 				update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
@@ -53,20 +53,24 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			} elseif ($did_we_start_over == 1) {
 				$feeds_iteration = $feeds_iteration+1;
 				update_option( RSSPF_SLUG . '_iterate_going_switch', 1);
-				//print_r($feeds_iteration . ' iterate state.'); die();
+				print_r('<br />' . $feeds_iteration . ' reiterate state.');
 			}
 			$iterate_op_check = update_option( RSSPF_SLUG . '_feeds_iteration', $feeds_iteration);
 			if ($iterate_op_check == true){print_r('Iteration ' . $feeds_iteration . ' sent to option.'); }
 			//If the array entry is empty and this isn't the end of the feedlist, then get the next item from the feedlist while iterating the count. 
-			if (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration != $last_key)){
+			if (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration != $last_key+1)){
 				$theFeed = call_user_func(array($this, 'step_through_feedlist'));	
-			} elseif (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration == $last_key)){
+			} elseif (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration == $last_key+1)){
 				update_option( RSSPF_SLUG . '_feeds_iteration', 0);
+				update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+				update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+				print_r('End of the line.');
 				exit;
 			}
 			return $theFeed;
 		} else {
 			//An error state that should never, ever, ever, ever, ever happen. 
+			print_r('Bad.	');
 			return false;
 		}
 	
