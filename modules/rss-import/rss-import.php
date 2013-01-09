@@ -21,12 +21,14 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		if( is_admin() )
 		{
 			add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
-			add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed') );		
+			add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed') );	
+			add_action('get_more_feeds', array($rsspf, 'assemble_feed_for_pull'));			
 		}
 	}
 	
 	public function step_through_feedlist() {
 		
+		update_option( RSSPF_SLUG . '_feeds_go_switch', 1);
 		$feedlist = call_user_func(array($this, 'rsspf_feedlist'));	
 		//The array keys start with zero, as does the iteration number. This will account for that. 
 		$feedcount = count($feedlist) - 1;
@@ -40,6 +42,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			$aFeed = $feedlist[$feeds_iteration];
 			if ($feedcount == $feeds_iteration){
 				$feeds_iteration = 0;
+				update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
 				
 			} else {
 				$feeds_iteration = $feeds_iteration+1;
@@ -58,6 +61,18 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		}
 	
 	}
+	
+	public function pf_feed_fetcher($aFeed){
+		$theFeed = fetch_feed($aFeed);
+
+		if (($theFeed->error()) || (is_wp_error($theFeed))){
+			print_r('<br />The Feed ' . $aFeed . ' could not be retrieved.');
+				$aFeed = call_user_func(array($this, 'step_through_feedlist'));		
+				$theFeed = $this->pf_feed_fetcher($aFeed);
+		}
+		
+		return $theFeed;
+	}
 
 	/**
 	 * Gets the data from an RSS feed and turns it into a data object
@@ -69,10 +84,12 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		global $rsspf;
 
 		$aFeed = call_user_func(array($this, 'step_through_feedlist'));		
-		$theFeed = fetch_feed($aFeed);
+		$theFeed = $this->pf_feed_fetcher($aFeed);
+		
+		$theFeed->set_timeout(60);
 		$rssObject = array();
 		$c = 0;
-
+		
 		foreach($theFeed->get_items() as $item) {
 			$id = md5($item->get_id()); //die();
 			//print_r($item_categories_string); die();
@@ -158,18 +175,25 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		$feedcount = count($feedlist) - 1;
 		//Get the iteration state. If this variable doesn't exist the planet will break in half. 
 		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration');	
-		if ($feedcount >= $feeds_iteration) {
+		
+		$feed_get_switch = get_option( RSSPF_SLUG . '_feeds_go_switch');	
+		if ($feed_get_switch != 0) {
 			//http://codex.wordpress.org/Function_Reference/wp_schedule_single_event
 			//add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );
-			wp_schedule_single_event(time()-3600, 'get_more_feeds');
-			add_action('get_more_feeds', array($rsspf, 'assemble_feed_for_pull'));
-			$wprgCheck = wp_remote_get(get_site_url() . '/wp-cron.php');
+			//wp_schedule_single_event(time()-3600, 'get_more_feeds');
+			print_r('<br /> <br />' . RSSPF_URL . 'modules/rss-import/import-cron.php <br /> <br />');
+			$wprgCheck = wp_remote_get(RSSPF_URL . 'modules/rss-import/import-cron.php');
+			print_r('Checking remote get: <br />');
+			print_r($wprgCheck);
+			print_r('<br />');
 			//Looks like it is schedualed properly. But should I be using wp_cron() or spawn_cron to trigger it instead? 
 			//wp_cron();
 			//If I use spawn_cron here, it can only occur every 60 secs. That's no good!
 			//print_r('<br />Cron: ' . wp_next_scheduled('get_more_feeds') . ' The next event.');
 			//print_r(get_site_url() . '/wp-cron.php');
 			//print_r($wprgCheck);
+		} else {
+		
 		}
 		return $rssObject;
 
