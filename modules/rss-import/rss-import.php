@@ -35,17 +35,17 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		end($feedlist);
 		$last_key = key($feedlist);
 		//Get the iteration state. If option does not exist, set the iteration variable to 0
-		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 0 );
+		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 1 );
 		print_r($feeds_iteration . ' iterate state <br />'); 
 		print_r('The last key is: ' . $last_key . '<br />');
-		if ($last_key >= $feeds_iteration) {
+		if ($feeds_iteration <= $last_key) {
 //		print_r($feeds_iteration . ' iterate state'); die();
 			//If the feed item is empty, can I loop back through this function for max efficiency? I think so.
 			$aFeed = $feedlist[$feeds_iteration];
-			$theFeed = fetch_feed($aFeed);
-			$did_we_start_over = get_option(RSSPF_SLUG . '_iterate_going_switch', 0);
-			if (($last_key+1 == $feeds_iteration)){
-				//$feeds_iteration = 0;
+			
+			$did_we_start_over = get_option(RSSPF_SLUG . '_iterate_going_switch', 1);
+			if (($last_key == $feeds_iteration)){
+				$feeds_iteration = 0;
 				update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
 				update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
 				print_r('TURN IT OFF');
@@ -53,25 +53,31 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			} elseif ($did_we_start_over == 1) {
 				$feeds_iteration = $feeds_iteration+1;
 				update_option( RSSPF_SLUG . '_iterate_going_switch', 1);
-				print_r('<br />' . $feeds_iteration . ' reiterate state.');
+				print_r('<br /> We are set to a reiterate state.');
 			}
+			$theFeed = fetch_feed($aFeed);
 			$iterate_op_check = update_option( RSSPF_SLUG . '_feeds_iteration', $feeds_iteration);
 			if ($iterate_op_check == true){print_r('Iteration ' . $feeds_iteration . ' sent to option.'); }
 			//If the array entry is empty and this isn't the end of the feedlist, then get the next item from the feedlist while iterating the count. 
-			if (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration != $last_key+1)){
+			if (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration < $last_key)){
 				$theFeed = call_user_func(array($this, 'step_through_feedlist'));	
-			} elseif (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration == $last_key+1)){
+			} elseif (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration >= $last_key)){
 				update_option( RSSPF_SLUG . '_feeds_iteration', 0);
 				update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
 				update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
 				print_r('End of the line.');
-				exit;
+				return false;
 			}
 			return $theFeed;
 		} else {
 			//An error state that should never, ever, ever, ever, ever happen. 
-			print_r('Bad.	');
-			return false;
+			print_r('<br />The iteration is now greater than the array.<br />');
+				update_option( RSSPF_SLUG . '_feeds_iteration', 0);
+				update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+				update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+				print_r('<br />End of the line.<br />');
+				return false;			
+			//return false;
 		}
 	
 	}
@@ -128,18 +134,21 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	public function get_data_object() {
 		global $rsspf;
 		//Is this process already occuring?
-		$is_it_going = get_option(RSSPF_SLUG . '_iterate_going_switch', 0);
+		$is_it_going = get_option(RSSPF_SLUG . '_iterate_going_switch', 1);
 		if ($is_it_going == 0){
 			//WE ARE? SHUT IT DOWN!!!
 			update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
 			update_option( RSSPF_SLUG . '_feeds_iteration', 0);
 			update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
 			print_r('<br /> We\'re doing this thing already in the data object. <br />');
-			return false;
+			//return false;
+			exit;
 		}
 		
 		$theFeed = call_user_func(array($this, 'step_through_feedlist'));		
-		
+		if (!$theFeed){
+			exit;
+		}
 		$theFeed->set_timeout(60);
 		$rssObject = array();
 		$c = 0;
