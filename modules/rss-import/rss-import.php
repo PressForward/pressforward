@@ -31,16 +31,18 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		update_option( RSSPF_SLUG . '_feeds_go_switch', 1);
 		$feedlist = call_user_func(array($this, 'rsspf_feedlist'));	
 		//The array keys start with zero, as does the iteration number. This will account for that. 
-		$feedcount = count($feedlist) - 1;
-		
+		//$feedcount = count($feedlist) - 1;
+		end($feedlist);
+		$last_key = key($feedlist);
 		//Get the iteration state. If option does not exist, set the iteration variable to 0
 		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 0 );
 		print_r($feeds_iteration . ' iterate state <br />'); 
-		if ($feedcount >= $feeds_iteration) {
+		if ($last_key >= $feeds_iteration) {
 //		print_r($feeds_iteration . ' iterate state'); die();
 			//If the feed item is empty, can I loop back through this function for max efficiency? I think so.
 			$aFeed = $feedlist[$feeds_iteration];
-			if ($feedcount == $feeds_iteration){
+			
+			if ($last_key == $feeds_iteration){
 				$feeds_iteration = 0;
 				update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
 				
