@@ -65,7 +65,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	public function pf_feed_fetcher($aFeed){
 		$theFeed = fetch_feed($aFeed);
 
-		if (($theFeed->error()) || (is_wp_error($theFeed))){
+		if ((is_wp_error($theFeed))){
 			print_r('<br />The Feed ' . $aFeed . ' could not be retrieved.');
 				$aFeed = call_user_func(array($this, 'step_through_feedlist'));		
 				$theFeed = $this->pf_feed_fetcher($aFeed);
