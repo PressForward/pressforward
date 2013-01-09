@@ -37,26 +37,34 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		//Get the iteration state. If option does not exist, set the iteration variable to 0
 		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 0 );
 		print_r($feeds_iteration . ' iterate state <br />'); 
+		print_r('The last key is: ' . $last_key . '<br />');
 		if ($last_key >= $feeds_iteration) {
 //		print_r($feeds_iteration . ' iterate state'); die();
 			//If the feed item is empty, can I loop back through this function for max efficiency? I think so.
 			$aFeed = $feedlist[$feeds_iteration];
-			
-			if ($last_key == $feeds_iteration){
-				$feeds_iteration = 0;
+			$theFeed = fetch_feed($aFeed);
+			$did_we_start_over = get_option(RSSPF_SLUG . '_iterate_going_switch', 0);
+			if (($last_key == $feeds_iteration)){
+				//$feeds_iteration = 0;
 				update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+				update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+				print_r('TURN IT OFF');
 				
-			} else {
+			} elseif ($did_we_start_over == 1) {
 				$feeds_iteration = $feeds_iteration+1;
+				update_option( RSSPF_SLUG . '_iterate_going_switch', 1);
 				//print_r($feeds_iteration . ' iterate state.'); die();
 			}
 			$iterate_op_check = update_option( RSSPF_SLUG . '_feeds_iteration', $feeds_iteration);
 			if ($iterate_op_check == true){print_r('Iteration ' . $feeds_iteration . ' sent to option.'); }
 			//If the array entry is empty and this isn't the end of the feedlist, then get the next item from the feedlist while iterating the count. 
-			if ((empty($aFeed) || $aFeed == '') && ($feeds_iteration != 0)){
-				$aFeed = call_user_func(array($this, 'step_through_feedlist'));	
+			if (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration != $last_key)){
+				$theFeed = call_user_func(array($this, 'step_through_feedlist'));	
+			} elseif (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration == $last_key)){
+				update_option( RSSPF_SLUG . '_feeds_iteration', 0);
+				exit;
 			}
-			return $aFeed;
+			return $theFeed;
 		} else {
 			//An error state that should never, ever, ever, ever, ever happen. 
 			return false;
@@ -69,11 +77,42 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 
 		if ((is_wp_error($theFeed))){
 			print_r('<br />The Feed ' . $aFeed . ' could not be retrieved.');
-				$aFeed = call_user_func(array($this, 'step_through_feedlist'));		
-				$theFeed = $this->pf_feed_fetcher($aFeed);
+				//$aFeed = call_user_func(array($this, 'step_through_feedlist'));		
+				//$theFeed = $this->pf_feed_fetcher($aFeed);
+				return false;
 		}
 		
 		return $theFeed;
+	}
+	
+	public function advance_feeds(){
+
+		//Here: If feedlist_iteration is not == to feedlist_count, scheduale a cron and trigger it before returning. 
+				$feedlist = call_user_func(array($this, 'rsspf_feedlist'));	
+		//The array keys start with zero, as does the iteration number. This will account for that. 
+		$feedcount = count($feedlist) - 1;
+		//Get the iteration state. If this variable doesn't exist the planet will break in half. 
+		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration');	
+		
+		$feed_get_switch = get_option( RSSPF_SLUG . '_feeds_go_switch');	
+		if ($feed_get_switch != 0) {
+			//http://codex.wordpress.org/Function_Reference/wp_schedule_single_event
+			//add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );
+			//wp_schedule_single_event(time()-3600, 'get_more_feeds');
+			print_r('<br /> <br />' . RSSPF_URL . 'modules/rss-import/import-cron.php <br /> <br />');
+			$wprgCheck = wp_remote_get(RSSPF_URL . 'modules/rss-import/import-cron.php');
+			print_r('Checking remote get: <br />');
+			print_r($wprgCheck);
+			print_r('<br />');
+			//Looks like it is schedualed properly. But should I be using wp_cron() or spawn_cron to trigger it instead? 
+			//wp_cron();
+			//If I use spawn_cron here, it can only occur every 60 secs. That's no good!
+			//print_r('<br />Cron: ' . wp_next_scheduled('get_more_feeds') . ' The next event.');
+			//print_r(get_site_url() . '/wp-cron.php');
+			//print_r($wprgCheck);
+		} else {
+		
+		}	
 	}
 
 	/**
@@ -84,9 +123,18 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	 */
 	public function get_data_object() {
 		global $rsspf;
-
-		$aFeed = call_user_func(array($this, 'step_through_feedlist'));		
-		$theFeed = $this->pf_feed_fetcher($aFeed);
+		//Is this process already occuring?
+		$is_it_going = get_option(RSSPF_SLUG . '_iterate_going_switch', 0);
+		if ($is_it_going == 0){
+			//WE ARE? SHUT IT DOWN!!!
+			update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+			update_option( RSSPF_SLUG . '_feeds_iteration', 0);
+			update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+			print_r('<br /> We\'re doing this thing already in the data object. <br />');
+			return false;
+		}
+		
+		$theFeed = call_user_func(array($this, 'step_through_feedlist'));		
 		
 		$theFeed->set_timeout(60);
 		$rssObject = array();
@@ -171,32 +219,8 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 
 		}
 		
-		//Here: If feedlist_iteration is not == to feedlist_count, scheduale a cron and trigger it before returning. 
-				$feedlist = call_user_func(array($this, 'rsspf_feedlist'));	
-		//The array keys start with zero, as does the iteration number. This will account for that. 
-		$feedcount = count($feedlist) - 1;
-		//Get the iteration state. If this variable doesn't exist the planet will break in half. 
-		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration');	
+		$this->advance_feeds();
 		
-		$feed_get_switch = get_option( RSSPF_SLUG . '_feeds_go_switch');	
-		if ($feed_get_switch != 0) {
-			//http://codex.wordpress.org/Function_Reference/wp_schedule_single_event
-			//add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );
-			//wp_schedule_single_event(time()-3600, 'get_more_feeds');
-			print_r('<br /> <br />' . RSSPF_URL . 'modules/rss-import/import-cron.php <br /> <br />');
-			$wprgCheck = wp_remote_get(RSSPF_URL . 'modules/rss-import/import-cron.php');
-			print_r('Checking remote get: <br />');
-			print_r($wprgCheck);
-			print_r('<br />');
-			//Looks like it is schedualed properly. But should I be using wp_cron() or spawn_cron to trigger it instead? 
-			//wp_cron();
-			//If I use spawn_cron here, it can only occur every 60 secs. That's no good!
-			//print_r('<br />Cron: ' . wp_next_scheduled('get_more_feeds') . ' The next event.');
-			//print_r(get_site_url() . '/wp-cron.php');
-			//print_r($wprgCheck);
-		} else {
-		
-		}
 		return $rssObject;
 
 	}
