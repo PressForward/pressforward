@@ -5,7 +5,7 @@
  */
 
  require_once(RSSPF_ROOT . "/includes/opml-reader/opml-reader.php");
- define( 'FEED_LOG', RSSPF_ROOT . "/modules/rss-import/rss-import.txt" );
+ define( 'FEED_LOG', "rss-import.txt" );
  
 class RSSPF_RSS_Import extends RSSPF_Module {
 
@@ -161,8 +161,9 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			//add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );
 			//wp_schedule_single_event(time()-3600, 'get_more_feeds');
 			//print_r('<br /> <br />' . RSSPF_URL . 'modules/rss-import/import-cron.php <br /> <br />');
-			$wprgCheck = wp_remote_get(RSSPF_URL . 'modules/rss-import/import-cron.php');
-			$this->log_feed_input('Checking remote get: ');
+			$theFakeCron = RSSPF_URL . 'modules/rss-import/import-cron.php';
+			$wprgCheck = wp_remote_get($theFakeCron);
+			$this->log_feed_input('Checking remote get of ' . $theFakeCron . ': ');
 			$this->log_feed_input($wprgCheck);
 			//Looks like it is schedualed properly. But should I be using wp_cron() or spawn_cron to trigger it instead? 
 			//wp_cron();
