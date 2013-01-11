@@ -5,7 +5,7 @@
  */
 
  require_once(RSSPF_ROOT . "/includes/opml-reader/opml-reader.php");
- define( 'FEED_LOG', 'rss-import.txt' );
+ define( 'FEED_LOG', RSSPF_ROOT . "/modules/rss-import/rss-import.txt" );
  
 class RSSPF_RSS_Import extends RSSPF_Module {
 
@@ -31,13 +31,15 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	
 	public function log_feed_input($log_string){
 		$fo = fopen(FEED_LOG, 'a') or print_r('Can\'t open log file.');
-		if($log_string === true){$log_string = 'true';}
-		if($log_string === false){$log_string = 'false';}
-		if(is_wp_error($log_string)){$log_string = $log_string->get_error_message();}
-		if(is_array($log_string)){$log_string = implode(" > ", $log_string);}
-		$string_to_log = "\n" . $log_string;
-		fwrite($fo, $string_to_log);
-		fclose($fo);
+		if ($fo != false){
+			if($log_string === true){$log_string = 'true';}
+			if($log_string === false){$log_string = 'false';}
+			if(is_wp_error($log_string)){$log_string = $log_string->get_error_message();}
+			if(is_array($log_string)){$log_string = implode(" > ", $log_string);}
+			$string_to_log = "\n" . $log_string;
+			fwrite($fo, $string_to_log);
+			fclose($fo);
+		}
 	}
 	
 	public function step_through_feedlist() {
