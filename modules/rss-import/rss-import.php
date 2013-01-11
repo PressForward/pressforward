@@ -5,6 +5,7 @@
  */
 
  require_once(RSSPF_ROOT . "/includes/opml-reader/opml-reader.php");
+ define( 'FEED_LOG', 'rss-import.txt' );
  
 class RSSPF_RSS_Import extends RSSPF_Module {
 
@@ -26,56 +27,100 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		}
 	}
 	
+	public function log_feed_input($log_string){
+		$fo = fopen(FEED_LOG, 'a') or print_r('Can\'t open log file.');
+		if($log_string === true){$log_string = 'true';}
+		if($log_string === false){$log_string = 'false';}
+		if(is_wp_error($log_string)){$log_string = $log_string->get_error_message();}
+		if(is_array($log_string)){$log_string = implode(" > ", $log_string);}
+		$string_to_log = "\n" . $log_string;
+		fwrite($fo, $string_to_log);
+		fclose($fo);
+	}
+	
 	public function step_through_feedlist() {
-		
-		update_option( RSSPF_SLUG . '_feeds_go_switch', 1);
+		$this->log_feed_input('step_through_feedlist begins.');
+		//$feed_go = update_option( RSSPF_SLUG . '_feeds_go_switch', 1);
+		//$this->log_feed_input('The Feeds go switch has been updated?');
+		//$this->log_feed_input($feed_go);
 		$feedlist = call_user_func(array($this, 'rsspf_feedlist'));	
 		//The array keys start with zero, as does the iteration number. This will account for that. 
 		//$feedcount = count($feedlist) - 1;
 		end($feedlist);
 		$last_key = key($feedlist);
+		$this->log_feed_input('The last key is: ' . $last_key);
 		//Get the iteration state. If option does not exist, set the iteration variable to 0
 		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 1 );
-		print_r($feeds_iteration . ' iterate state <br />'); 
-		print_r('The last key is: ' . $last_key . '<br />');
+		$this->log_feed_input('The current iterate state is: ' . $feeds_iteration);
 		if ($feeds_iteration <= $last_key) {
+			$this->log_feed_input('The iteration is less than the last key.');
 //		print_r($feeds_iteration . ' iterate state'); die();
 			//If the feed item is empty, can I loop back through this function for max efficiency? I think so.
 			$aFeed = $feedlist[$feeds_iteration];
-			
+			$this->log_feed_input('Retrieved feed ' . $aFeed);
 			$did_we_start_over = get_option(RSSPF_SLUG . '_iterate_going_switch', 1);
+			$this->log_feed_input('Iterate going switch is set to: ' . $did_we_start_over);
 			if (($last_key == $feeds_iteration)){
+				$this->log_feed_input('The last key is equal to the feeds_iteration.');
 				$feeds_iteration = 0;
-				update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
-				update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
-				print_r('TURN IT OFF');
+				$this->log_feed_input('feeds_go_switch updated?.');
+				$go_switch_bool = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+				$this->log_feed_input($go_switch_bool);
+				$this->log_feed_input('iterate_going_switch updated?.');
+				$going_switch_bool = update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+				$this->log_feed_input($going_switch_bool);
+				//print_r('TURN IT OFF');
 				
 			} elseif ($did_we_start_over == 1) {
+				$this->log_feed_input('No, we didn\'t start over.');
 				$feeds_iteration = $feeds_iteration+1;
-				update_option( RSSPF_SLUG . '_iterate_going_switch', 1);
-				print_r('<br /> We are set to a reiterate state.');
+				$this->log_feed_input('Did the iterate_going_switch update?');
+				$iterate_going_bool = update_option( RSSPF_SLUG . '_iterate_going_switch', 1);
+				$this->log_feed_input($iterate_going_bool);
+				$this->log_feed_input('We are set to a reiterate state.');
 			}
 			$theFeed = fetch_feed($aFeed);
+			$this->log_feed_input('Did the feeds_iteration option update?');
 			$iterate_op_check = update_option( RSSPF_SLUG . '_feeds_iteration', $feeds_iteration);
-			if ($iterate_op_check == true){print_r('Iteration ' . $feeds_iteration . ' sent to option.'); }
+			$this->log_feed_input($iterate_op_check);
+			$this->log_feed_input('The feed iteration option is now set to ' . $feeds_iteration);
 			//If the array entry is empty and this isn't the end of the feedlist, then get the next item from the feedlist while iterating the count. 
 			if (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration < $last_key)){
+				$this->log_feed_input('The feed is either an empty entry or un-retrievable AND the iteration is less than the last key.');
 				$theFeed = call_user_func(array($this, 'step_through_feedlist'));	
 			} elseif (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration >= $last_key)){
-				update_option( RSSPF_SLUG . '_feeds_iteration', 0);
-				update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
-				update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
-				print_r('End of the line.');
+				$this->log_feed_input('The feed is either an empty entry or un-retrievable AND the iteration is greater or equal to the last key.');
+				$this->log_feed_input('Did the feeds_iteration option update?');
+				$feed_it_bool = update_option( RSSPF_SLUG . '_feeds_iteration', 0);
+				$this->log_feed_input($feed_it_bool);
+				
+				$this->log_feed_input('Did the feeds_go_switch option update?');
+				$feed_go_bool = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+				$this->log_feed_input($feed_go_bool);
+				
+				$this->log_feed_input('Did the iterate_going_switch option update?');
+				$feed_going_bool = update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+				$this->log_feed_input($feed_going_bool);
+				
+				$this->log_feed_input('End of the update process. Return false.');
 				return false;
 			}
 			return $theFeed;
 		} else {
 			//An error state that should never, ever, ever, ever, ever happen. 
-			print_r('<br />The iteration is now greater than the array.<br />');
-				update_option( RSSPF_SLUG . '_feeds_iteration', 0);
-				update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
-				update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
-				print_r('<br />End of the line.<br />');
+			$this->log_feed_input('The iteration is now greater than the last key.');
+				$this->log_feed_input('Did the feeds_iteration option update?');
+				$feed_it_bool = update_option( RSSPF_SLUG . '_feeds_iteration', 0);
+				$this->log_feed_input($feed_it_bool);
+				
+				$this->log_feed_input('Did the feeds_go_switch option update?');
+				$feed_go_bool = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+				$this->log_feed_input($feed_go_bool);
+				
+				$this->log_feed_input('Did the iterate_going_switch option update?');
+				$feed_going_bool = update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+				$this->log_feed_input($feed_going_bool);
+				$this->log_feed_input('End of the update process. Return false.');
 				return false;			
 			//return false;
 		}
@@ -96,7 +141,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	}
 	
 	public function advance_feeds(){
-
+		$this->log_feed_input('Begin advance_feeds.');
 		//Here: If feedlist_iteration is not == to feedlist_count, scheduale a cron and trigger it before returning. 
 				$feedlist = call_user_func(array($this, 'rsspf_feedlist'));	
 		//The array keys start with zero, as does the iteration number. This will account for that. 
@@ -106,14 +151,15 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		
 		$feed_get_switch = get_option( RSSPF_SLUG . '_feeds_go_switch');	
 		if ($feed_get_switch != 0) {
+			$this->log_feed_input('Feeds go switch is NOT set to 0.');
+			$this->log_feed_input('Getting import-cron.');
 			//http://codex.wordpress.org/Function_Reference/wp_schedule_single_event
 			//add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );
 			//wp_schedule_single_event(time()-3600, 'get_more_feeds');
-			print_r('<br /> <br />' . RSSPF_URL . 'modules/rss-import/import-cron.php <br /> <br />');
+			//print_r('<br /> <br />' . RSSPF_URL . 'modules/rss-import/import-cron.php <br /> <br />');
 			$wprgCheck = wp_remote_get(RSSPF_URL . 'modules/rss-import/import-cron.php');
-			print_r('Checking remote get: <br />');
-			print_r($wprgCheck);
-			print_r('<br />');
+			$this->log_feed_input('Checking remote get: ');
+			$this->log_feed_input($wprgCheck);
 			//Looks like it is schedualed properly. But should I be using wp_cron() or spawn_cron to trigger it instead? 
 			//wp_cron();
 			//If I use spawn_cron here, it can only occur every 60 secs. That's no good!
@@ -121,7 +167,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			//print_r(get_site_url() . '/wp-cron.php');
 			//print_r($wprgCheck);
 		} else {
-		
+			$this->log_feed_input('Feeds go switch is set to 0.');
 		}	
 	}
 
@@ -133,7 +179,11 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	 */
 	public function get_data_object() {
 		global $rsspf;
+		$this->log_feed_input('Begin get_data_object.');
 		//Is this process already occuring?
+		$feed_go = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+		$this->log_feed_input('The Feeds go switch has been updated?');
+		$this->log_feed_input($feed_go);		
 		$is_it_going = get_option(RSSPF_SLUG . '_iterate_going_switch', 1);
 		if ($is_it_going == 0){
 			//WE ARE? SHUT IT DOWN!!!
@@ -141,18 +191,20 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			update_option( RSSPF_SLUG . '_feeds_iteration', 0);
 			update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
 			print_r('<br /> We\'re doing this thing already in the data object. <br />');
+			$this->log_feed_input('We\'re doing this thing already in the data object.');
 			//return false;
 			exit;
 		}
 		
 		$theFeed = call_user_func(array($this, 'step_through_feedlist'));		
 		if (!$theFeed){
+			$this->log_feed_input('The feed is false, exit process. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
 			exit;
 		}
 		$theFeed->set_timeout(60);
 		$rssObject = array();
 		$c = 0;
-		
+		$this->log_feed_input('Begin processing the feed.');
 		foreach($theFeed->get_items() as $item) {
 			$id = md5($item->get_id()); //die();
 			//print_r($item_categories_string); die();
@@ -231,8 +283,12 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			$c++;
 
 		}
+
+		$feed_go = update_option( RSSPF_SLUG . '_feeds_go_switch', 1);
+		$this->log_feed_input('The Feeds go switch has been updated to on?');
+		$this->log_feed_input($feed_go);	
 		
-		$this->advance_feeds();
+		$this->advance_feeds();	
 		
 		return $rssObject;
 
@@ -256,6 +312,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
 		}
 		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
+		$this->log_feed_input('Sending feedlist to function.');
 		return $all_feeds_array;
 
 	}
