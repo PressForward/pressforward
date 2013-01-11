@@ -23,6 +23,8 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		{
 			add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
 			add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed') );	
+			add_action( 'wp_ajax_nopriv_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );
+			add_action( 'wp_ajax_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );
 			add_action('get_more_feeds', array($rsspf, 'assemble_feed_for_pull'));			
 		}
 	}
@@ -346,6 +348,14 @@ class RSSPF_RSS_Import extends RSSPF_Module {
         ?>                      
 			<br />
 			<br />
+			<button type="submit" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="Reset all Feed Retrieval Options">Reset all Feed Retrieval Options</button>		<br />	
+			<?php
+		$feed_go = get_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+		$feed_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 0);
+		$retrieval_state = get_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+			echo 'Feeds Go? ' . $feed_go . ' Feeds iteration? ' . $feed_iteration . ' Going switch? ' . $retrieval_state;
+			?>
+			<br /><br />
 			<div><?php _e('Add Single Feed', RSSPF_SLUG); ?></div>
 				<div>
 					<input id="<?php echo RSSPF_SLUG . '_feedlist[single]'; ?>" class="regular-text" type="text" name="<?php echo RSSPF_SLUG . '_feedlist[single]'; ?>" value="" />
@@ -381,7 +391,8 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 				?>
 				</ul>
 			</div>
-			</form>
+			</form>		
+			
 		<?php
     
 
@@ -401,6 +412,12 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		}
 		
 		return;
+	}
+	
+	function feed_retrieval_reset(){
+		$feed_go = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+		$feed_iteration = update_option( RSSPF_SLUG . '_feeds_iteration', 0);
+		$retrieval_state = update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
 	}
 	
 	function rsspf_feedlist_validate($input){
