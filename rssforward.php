@@ -3,7 +3,7 @@
 Plugin Name: RSS to PressForward
 Plugin URI: http://aramzs.me
 Description: This plugin is a RSS parser for CHNM's Press Forward project.
-Version: 1.2.0
+Version: 1.2.1
 Author: Aram Zucker-Scharff
 Author URI: http://aramzs.me
 License: GPL2
@@ -79,8 +79,8 @@ class rsspf {
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_nopriv_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
 		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );		
-		add_action( 'wp_ajax_nopriv_assemble_feed_for_pull', array($this, 'assemble_feed_for_pull') );
-		add_action( 'wp_ajax_assemble_feed_for_pull', array( $this, 'assemble_feed_for_pull') );
+		add_action( 'wp_ajax_nopriv_assemble_feed_for_pull', array($this, 'trigger_source_data') );
+		add_action( 'wp_ajax_assemble_feed_for_pull', array( $this, 'trigger_source_data') );
 		add_action( 'wp_ajax_nopriv_reset_feed', array($this, 'reset_feed') );
 		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
 		add_action( 'wp_ajax_nopriv_make_it_readable', array($this, 'make_it_readable') );
@@ -106,7 +106,7 @@ class rsspf {
 		//The take_feed_out action is now initiated, we should be able to attach our feed disassembly function.
 		add_action( 'take_feed_out', array($this, 'disassemble_feed_items') );
 		//The pull_feed_in action is now initiated, we should be able to attach our feed assembly function.
-		add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );
+		add_action( 'pull_feed_in', array($this, 'trigger_source_data') );
 
 		// Set up modules
 		add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
@@ -265,6 +265,22 @@ class rsspf {
 		  wp_schedule_event( time(), 'hourly', 'pull_feed_in' );
 		}
 	}
+	
+	public function trigger_source_data(){
+		$feed_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 0);
+		$retrieval_state = get_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+		if ($feed_iteration == 0 && $retrieval_state == 0){
+			$status = update_option( RSSPF_SLUG . '_iterate_going_switch', 1);
+$fo = fopen(RSSPF_ROOT . "/modules/rss-import/rss-import.txt", 'w') or print_r('Can\'t open log file.');
+fwrite($fo, "\nBegin process retrieval.\n\n\n");
+fclose($fo);			
+			if ($status) {print_r('<br /> Iterate switched to going. <br />');}
+			else { print_r('<br /> Iterate option not switched. <br />'); }
+			$this->assemble_feed_for_pull();
+		} else {
+			print_r('The sources are already being retrieved.'); die();
+		}
+	}
 
 	/**
 	 * Get the source data object, in a standardized format
@@ -282,10 +298,12 @@ class rsspf {
 		return $source_data_object;
 	}
 
-	public function assemble_feed_for_pull() {
+	public function assemble_feed_for_pull($feedObj = 0) {
 		# This pulls the RSS feed into a set of predetermined objects.
 		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
-		$feedObj = $this->source_data_object();
+		if ($feedObj == 0){
+			$feedObj = $this->source_data_object();
+		}
 
 		# We need to init $sourceRepeat so it can be if 0 if nothing is happening.
 		$sourceRepeat = 0;
