@@ -271,9 +271,11 @@ class rsspf {
 		$retrieval_state = get_option( RSSPF_SLUG . '_iterate_going_switch', 0);
 		if ($feed_iteration == 0 && $retrieval_state == 0){
 			$status = update_option( RSSPF_SLUG . '_iterate_going_switch', 1);
-$fo = fopen(RSSPF_ROOT . "/modules/rss-import/rss-import.txt", 'w') or print_r('Can\'t open log file.');
-fwrite($fo, "\nBegin process retrieval.\n\n\n");
-fclose($fo);			
+			$fo = fopen(RSSPF_ROOT . "/modules/rss-import/rss-import.txt", 'w') or print_r('Can\'t open log file.');
+			if ($fo != false){
+				fwrite($fo, "\nBegin process retrieval.\n\n\n");
+				fclose($fo);
+			}			
 			if ($status) {print_r('<br /> Iterate switched to going. <br />');}
 			else { print_r('<br /> Iterate option not switched. <br />'); }
 			$this->assemble_feed_for_pull();
