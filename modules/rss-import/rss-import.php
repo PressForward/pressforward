@@ -19,7 +19,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	public function __construct() {
 		parent::start();
 		add_action( 'admin_init', array($this, 'register_settings') );
-		add_action( 'admin_head', array($this, 'alter_admin_for_retrieval'));
+		add_action( 'wp_head', array($this, 'alter_admin_for_retrieval'));
 		if( is_admin() )
 		{
 			add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
@@ -158,7 +158,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			//add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );
 			//wp_schedule_single_event(time()-3600, 'get_more_feeds');
 			//print_r('<br /> <br />' . RSSPF_URL . 'modules/rss-import/import-cron.php <br /> <br />');
-			$theRetrievalLoop = add_query_arg( 'press', 'forward',  get_admin_url() );
+			$theRetrievalLoop = add_query_arg( 'press', 'forward',  site_url() );
 			$pfnonce = wp_create_nonce  ('retrieve-pressforward'); 
 			$theRetrievalLoopNounced = add_query_arg( 'nonce', $pfnonce,  $theRetrievalLoop );
 			$wprgCheck = wp_remote_get($theRetrievalLoopNounced);
@@ -177,14 +177,13 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	}
 	
 	public function alter_admin_for_retrieval() {
-		if (is_admin) {
 			if ($_GET['press'] == 'forward'){
 				if ( wp_verify_nonce($_GET['nounce'], 'retrieve-pressforward') ){
 					include(RSSPF_ROOT . '/modules/rss-import/import-cron.php');
 					exit;
 				}
 			}
-		}
+		
 	}
 
 	/**
