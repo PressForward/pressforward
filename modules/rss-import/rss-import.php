@@ -544,6 +544,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		$feed_go = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
 		$feed_iteration = update_option( RSSPF_SLUG . '_feeds_iteration', 0);
 		$retrieval_state = update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+		update_option( RSSPF_SLUG . '_chunk_assembly_status', 1 );
  	}  	
 	
 
