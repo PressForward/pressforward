@@ -11,7 +11,7 @@ if ( !defined('ABSPATH') ) {
 	require_once(IC_SITEBASE . '\wp-load.php');
 }
 global $rsspf;
-		$fo = fopen('rss-import.txt', 'a') or print_r('Can\'t open log file.');
+		$fo = fopen(RSSPF_ROOT . "/modules/rss-import/rss-import.txt", 'a') or print_r('Can\'t open log file.');
 
 		$string_to_log = "\nimport-cron.php triggered.\n";
 		fwrite($fo, $string_to_log);

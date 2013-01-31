@@ -60,7 +60,9 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		$this->log_feed_input('The last key is: ' . $last_key);
 		//Get the iteration state. If option does not exist, set the iteration variable to 0
 		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 1 );
-		
+				$this->log_feed_input('feeds_go_switch updated? (first check).');
+				$go_switch_bool = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+				$this->log_feed_input($go_switch_bool);		
 		$prev_iteration = get_option( RSSPF_SLUG . '_prev_iteration', 0);
 		$this->log_feed_input('Did the option properly iterate so that the previous iteration count of ' . $prev_iteration . ' is equal to the current of ' . $feeds_iteration . '?');
 		// This is the fix for the insanity caused by the planet money feed - http://www.npr.org/rss/podcast.php?id=510289
@@ -82,7 +84,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			$this->log_feed_input('Retrieved feed ' . $aFeed);
 			$did_we_start_over = get_option(RSSPF_SLUG . '_iterate_going_switch', 1);
 			$this->log_feed_input('Iterate going switch is set to: ' . $did_we_start_over);
-			if (($last_key == $feeds_iteration)){
+			if (($last_key === $feeds_iteration)){
 				$this->log_feed_input('The last key is equal to the feeds_iteration.');
 				$feeds_iteration = 0;
 				$this->log_feed_input('feeds_go_switch updated?.');
@@ -104,7 +106,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 				$this->log_feed_input($iterate_going_bool);
 				$this->log_feed_input('We are set to a reiterate state.');
 			}
-			$theFeed = fetch_feed($aFeed);
+			
 			$this->log_feed_input('Did the feeds_iteration option update to ' . $feeds_iteration . '?');
 			$iterate_op_check = update_option( RSSPF_SLUG . '_feeds_iteration', $feeds_iteration);
 			$this->log_feed_input($iterate_op_check);
@@ -118,6 +120,31 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 				$this->log_feed_input($iterate_op_check);
 			}			
 			$this->log_feed_input('The feed iteration option is now set to ' . $feeds_iteration);
+
+			if (((empty($aFeed)) || ($aFeed == '')) && ($feeds_iteration < $last_key)){
+				$this->log_feed_input('The feed is either an empty entry or un-retrievable AND the iteration is less than the last key.');
+				$theFeed = call_user_func(array($this, 'step_through_feedlist'));	
+			} elseif (((empty($aFeed)) || ($aFeed == '')) && ($feeds_iteration >= $last_key)){
+				$this->log_feed_input('The feed is either an empty entry or un-retrievable AND the iteration is greater or equal to the last key.');
+				$this->log_feed_input('Did the feeds_iteration option update?');
+				$feed_it_bool = update_option( RSSPF_SLUG . '_feeds_iteration', 0);
+				$this->log_feed_input($feed_it_bool);
+				
+				$this->log_feed_input('Did the feeds_go_switch option update?');
+				$feed_go_bool = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+				$this->log_feed_input($feed_go_bool);
+				
+				$this->log_feed_input('Did the iterate_going_switch option update?');
+				$feed_going_bool = update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+				$this->log_feed_input($feed_going_bool);
+				
+				$this->log_feed_input('End of the update process. Return false.');
+				return false;
+			}
+
+			if (is_wp_error($theFeed = fetch_feed($aFeed))){
+				$aFeed = '';
+			}
 			//If the array entry is empty and this isn't the end of the feedlist, then get the next item from the feedlist while iterating the count. 
 			if (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration < $last_key)){
 				$this->log_feed_input('The feed is either an empty entry or un-retrievable AND the iteration is less than the last key.');
@@ -182,7 +209,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		$feedcount = count($feedlist) - 1;
 		//Get the iteration state. If this variable doesn't exist the planet will break in half. 
 		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration');	
-		
+
 		$feed_get_switch = get_option( RSSPF_SLUG . '_feeds_go_switch');	
 		if ($feed_get_switch != 0) {
 			$this->log_feed_input('Feeds go switch is NOT set to 0.');
@@ -374,6 +401,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		}
 		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
 		$this->log_feed_input('Sending feedlist to function.');
+		$ordered_all_feeds_array = array_values($all_feeds_array);
 		return $all_feeds_array;
 
 	}
