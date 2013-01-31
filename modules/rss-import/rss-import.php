@@ -222,9 +222,10 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			$pfnonce = wp_create_nonce  ('retrieve-pressforward'); 
 			$theRetrievalLoopNounced = add_query_arg( 'nonce', $pfnonce,  $theRetrievalLoop );
 			$wprgCheck = wp_remote_get($theRetrievalLoopNounced);
-
+			
 			$this->log_feed_input('Checking remote get: ');
-			$this->log_feed_input($wprgCheck);
+			exit;
+			//$this->log_feed_input($wprgCheck);
 			//Looks like it is schedualed properly. But should I be using wp_cron() or spawn_cron to trigger it instead? 
 			//wp_cron();
 			//If I use spawn_cron here, it can only occur every 60 secs. That's no good!
@@ -402,7 +403,8 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
 		$this->log_feed_input('Sending feedlist to function.');
 		$ordered_all_feeds_array = array_values($all_feeds_array);
-		return $all_feeds_array;
+		$tidy_all_feeds_array = array_filter( $ordered_all_feeds_array, 'strlen' );
+		return $tidy_all_feeds_array;
 
 	}
 

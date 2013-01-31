@@ -505,6 +505,7 @@ class rsspf {
 
 		}
 		update_option( RSSPF_SLUG . '_chunk_assembly_status', 0 );
+		
 		//die('Refreshing...');
 
 	}
