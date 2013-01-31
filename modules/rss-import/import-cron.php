@@ -19,7 +19,7 @@ global $rsspf;
 		
 $rsspf->assemble_feed_for_pull();
 
-$fo = fopen('rss-import.txt', 'a') or print_r('Can\'t open log file.');
+$fo = fopen(RSSPF_ROOT . "/modules/rss-import/rss-import.txt", 'a') or print_r('Can\'t open log file.');
 fwrite($fo, "\nimport-cron.php compleated.\n\n\n");
 fclose($fo);		
 //do_action('get_more_feeds');

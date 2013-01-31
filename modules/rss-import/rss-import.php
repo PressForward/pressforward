@@ -24,7 +24,11 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		{
 			add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
 			add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed') );	
-			add_action('get_more_feeds', array($rsspf, 'assemble_feed_for_pull'));			
+			add_action('get_more_feeds', array($rsspf, 'assemble_feed_for_pull'));		
+	
+			add_action( 'wp_ajax_nopriv_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );
+			add_action( 'wp_ajax_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );     
+			
 		}
 	}
 	
@@ -34,7 +38,9 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			if($log_string === true){$log_string = 'true';}
 			if($log_string === false){$log_string = 'false';}
 			if(is_wp_error($log_string)){$log_string = $log_string->get_error_message();}
-			if(is_array($log_string)){$log_string = implode(" > ", $log_string);}
+			if(is_array($log_string)){
+					$log_string = print_r($log_string, TRUE);
+				}
 			$string_to_log = "\n" . $log_string;
 			fwrite($fo, $string_to_log);
 			fclose($fo);
@@ -360,7 +366,16 @@ class RSSPF_RSS_Import extends RSSPF_Module {
         settings_fields( RSSPF_SLUG . '_feedlist_group' );
 		$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
 
-        ?>                      
+        ?>
+			<br />
+			<br />
+		<button type="submit" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="Reset all Feed Retrieval Options">Reset all Feed Retrieval Options</button>    <br />  
+			 <?php
+			$feed_go = get_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+			$feed_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 0);
+			$retrieval_state = get_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+			echo 'Feeds Go? ' . $feed_go . ' Feeds iteration? ' . $feed_iteration . ' Going switch? ' . $retrieval_state;
+			?>
 			<br />
 			<br />
 			<div><?php _e('Add Single Feed', RSSPF_SLUG); ?></div>
@@ -524,5 +539,12 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		wp_enqueue_script( 'feed-manip-ajax', $rsspf->modules['rss-import']->module_url . 'assets/js/feed-manip-imp.js', array( 'jquery', 'twitter-bootstrap') );
 		wp_enqueue_style( 'feeder-style', $rsspf->modules['rss-import']->module_url . 'assets/css/feeder-styles.css' );
 	}	
+	
+  function feed_retrieval_reset(){
+		$feed_go = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+		$feed_iteration = update_option( RSSPF_SLUG . '_feeds_iteration', 0);
+		$retrieval_state = update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+ 	}  	
+	
 
 }
