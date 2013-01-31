@@ -19,7 +19,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	public function __construct() {
 		parent::start();
 		add_action( 'admin_init', array($this, 'register_settings') );
-		add_action( 'wp_head', array($this, 'alter_admin_for_retrieval'));
+		add_action( 'wp_head', array($this, 'alter_for_retrieval'));
 		if( is_admin() )
 		{
 			add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
@@ -176,12 +176,12 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		}	
 	}
 	
-	public function alter_admin_for_retrieval() {
+	public function alter_for_retrieval() {
 			if ($_GET['press'] == 'forward'){
-				if ( wp_verify_nonce($_GET['nounce'], 'retrieve-pressforward') ){
+				//if ( wp_verify_nonce($_GET['nounce'], 'retrieve-pressforward') ){
 					include(RSSPF_ROOT . '/modules/rss-import/import-cron.php');
 					exit;
-				}
+				//}
 			}
 		
 	}
