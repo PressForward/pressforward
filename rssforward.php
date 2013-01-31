@@ -298,8 +298,9 @@ class rsspf {
 			$source_data_object = array_merge( $source_data_object, $module->get_data_object() );
 		}
 		return $source_data_object;
-	}
-
+	}	
+	
+	
 	public function assemble_feed_for_pull($feedObj = 0) {
 	
 		# Chunking control, the goal here is to ensure that no feed assembly occurs while the feed assembly is already occuring. 
@@ -411,7 +412,11 @@ class rsspf {
 			# someone were to hit the refresh button at the same time as another person.
 
 
-
+			$fo = fopen(RSSPF_ROOT . "/modules/rss-import/rss-import.txt", 'a') or print_r('Can\'t open log file.');
+			if ($fo != false){
+				fwrite($fo, "\nSending " . $item['item_title'] . " to post table.");
+				fclose($fo);
+			}	
 			if ( $thepostscheck == 0) {
 				$item_title 	= $item['item_title'];
 				$item_content 	= $item['item_content'];
@@ -505,7 +510,7 @@ class rsspf {
 
 		}
 		update_option( RSSPF_SLUG . '_chunk_assembly_status', 0 );
-		
+		rsspf_rss_import::advance_feeds();
 		//die('Refreshing...');
 
 	}

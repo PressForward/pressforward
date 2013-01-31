@@ -202,9 +202,9 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	}
 	
 	public function advance_feeds(){
-		$this->log_feed_input('Begin advance_feeds.');
+		self::log_feed_input('Begin advance_feeds.');
 		//Here: If feedlist_iteration is not == to feedlist_count, scheduale a cron and trigger it before returning. 
-				$feedlist = call_user_func(array($this, 'rsspf_feedlist'));	
+				$feedlist = call_user_func(array(self, 'rsspf_feedlist'));	
 		//The array keys start with zero, as does the iteration number. This will account for that. 
 		$feedcount = count($feedlist) - 1;
 		//Get the iteration state. If this variable doesn't exist the planet will break in half. 
@@ -212,8 +212,8 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 
 		$feed_get_switch = get_option( RSSPF_SLUG . '_feeds_go_switch');	
 		if ($feed_get_switch != 0) {
-			$this->log_feed_input('Feeds go switch is NOT set to 0.');
-			$this->log_feed_input('Getting import-cron.');
+			self::log_feed_input('Feeds go switch is NOT set to 0.');
+			self::log_feed_input('Getting import-cron.');
 			//http://codex.wordpress.org/Function_Reference/wp_schedule_single_event
 			//add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );
 			//wp_schedule_single_event(time()-3600, 'get_more_feeds');
@@ -223,8 +223,8 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			$theRetrievalLoopNounced = add_query_arg( 'nonce', $pfnonce,  $theRetrievalLoop );
 			$wprgCheck = wp_remote_get($theRetrievalLoopNounced);
 			
-			$this->log_feed_input('Checking remote get: ');
-			exit;
+			self::log_feed_input('Checking remote get: ');
+			return;
 			//$this->log_feed_input($wprgCheck);
 			//Looks like it is schedualed properly. But should I be using wp_cron() or spawn_cron to trigger it instead? 
 			//wp_cron();
@@ -233,7 +233,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			//print_r(get_site_url() . '/wp-cron.php');
 			//print_r($wprgCheck);
 		} else {
-			$this->log_feed_input('Feeds go switch is set to 0.');
+			self::log_feed_input('Feeds go switch is set to 0.');
 		}	
 	}
 	
@@ -377,7 +377,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			$this->log_feed_input('Yes');
 		}
 
-		$this->advance_feeds();	
+		//$this->advance_feeds();	
 		
 		return $rssObject;
 
@@ -401,7 +401,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
 		}
 		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
-		$this->log_feed_input('Sending feedlist to function.');
+		self::log_feed_input('Sending feedlist to function.');
 		$ordered_all_feeds_array = array_values($all_feeds_array);
 		$tidy_all_feeds_array = array_filter( $ordered_all_feeds_array, 'strlen' );
 		return $tidy_all_feeds_array;
