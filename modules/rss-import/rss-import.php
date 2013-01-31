@@ -60,6 +60,19 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		$this->log_feed_input('The last key is: ' . $last_key);
 		//Get the iteration state. If option does not exist, set the iteration variable to 0
 		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 1 );
+		
+		$prev_iteration = get_option( RSSPF_SLUG . '_prev_iteration', 0);
+		$this->log_feed_input('Did the option properly iterate so that the previous iteration count of ' . $prev_iteration . ' is equal to the current of ' . $feeds_iteration . '?');
+		// This is the fix for the insanity caused by the planet money feed - http://www.npr.org/rss/podcast.php?id=510289
+		if ($prev_iteration === $feeds_iteration){
+			$this->log_feed_input('Nope. Did the step_though_feedlist iteration option emergency update work here?');
+			$check_iteration = update_option( RSSPF_SLUG . '_feeds_iteration', $feeds_iteration+1);
+			$this->log_feed_input($check_iteration);
+			$feeds_iteration = $feeds_iteration+1;
+		} else {
+			$this->log_feed_input('Yes');
+		}		
+		
 		$this->log_feed_input('The current iterate state is: ' . $feeds_iteration);
 		if ($feeds_iteration <= $last_key) {
 			$this->log_feed_input('The iteration is less than the last key.');
@@ -82,6 +95,9 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 				
 			} elseif ($did_we_start_over == 1) {
 				$this->log_feed_input('No, we didn\'t start over.');
+				$this->log_feed_input('Did we set the previous iteration option to ' . $feeds_iteration . '?');
+				$prev_iteration = update_option( RSSPF_SLUG . '_prev_iteration', $feeds_iteration);
+				$this->log_feed_input($prev_iteration);
 				$feeds_iteration = $feeds_iteration+1;
 				$this->log_feed_input('Did the iterate_going_switch update?');
 				$iterate_going_bool = update_option( RSSPF_SLUG . '_iterate_going_switch', 1);
@@ -89,9 +105,18 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 				$this->log_feed_input('We are set to a reiterate state.');
 			}
 			$theFeed = fetch_feed($aFeed);
-			$this->log_feed_input('Did the feeds_iteration option update?');
+			$this->log_feed_input('Did the feeds_iteration option update to ' . $feeds_iteration . '?');
 			$iterate_op_check = update_option( RSSPF_SLUG . '_feeds_iteration', $feeds_iteration);
 			$this->log_feed_input($iterate_op_check);
+			if ($iterate_op_check === false) {
+				$this->log_feed_input('For no apparent reason, the option did not update. Delete and try again.');
+				$this->log_feed_input('Did the option delete?');
+				$deleteCheck = delete_option( RSSPF_SLUG . '_feeds_iteration' );
+				$this->log_feed_input($deleteCheck);
+				$iterate_op_check = update_option( RSSPF_SLUG . '_feeds_iteration', $feeds_iteration);
+				$this->log_feed_input('Did the new option setup work?');
+				$this->log_feed_input($iterate_op_check);
+			}			
 			$this->log_feed_input('The feed iteration option is now set to ' . $feeds_iteration);
 			//If the array entry is empty and this isn't the end of the feedlist, then get the next item from the feedlist while iterating the count. 
 			if (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration < $last_key)){
@@ -229,7 +254,9 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		$c = 0;
 		$this->log_feed_input('Begin processing the feed.');
 		foreach($theFeed->get_items() as $item) {
-			$id = md5($item->get_id()); //die();
+			$this->log_feed_input('Feed looping through for the ' . $c . ' time.');
+			$id = md5($item->get_link() . $item->get_title()); //die();
+			$this->log_feed_input('Now on feed ID ' . $id . '.');
 			//print_r($item_categories_string); die();
 
 			if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
@@ -299,7 +326,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 											$item->get_date('Y-m-d'),
 											$item_categories_string
 											);
-
+				$this->log_feed_input('Setting new transient for ' . $item->get_title() . ' of ' . $iFeed->get_title() . '.');
 				set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
 
 			}
@@ -310,7 +337,18 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		$feed_go = update_option( RSSPF_SLUG . '_feeds_go_switch', 1);
 		$this->log_feed_input('The Feeds go switch has been updated to on?');
 		$this->log_feed_input($feed_go);	
-		
+		$prev_iteration = get_option( RSSPF_SLUG . '_prev_iteration', 0);
+		$iterate_op_check = get_option( RSSPF_SLUG . '_feeds_iteration', 1);
+		$this->log_feed_input('Did the option properly iterate so that the previous iteration count of ' . $prev_iteration . ' is equal to the current of ' . $iterate_op_check . '?');
+		if ($prev_iteration === $iterate_op_check){
+			$this->log_feed_input('Nope. Did the iteration option emergency update function here?');
+			$check_iteration = update_option( RSSPF_SLUG . '_feeds_iteration', $iterate_op_check+1);
+			$this->log_feed_input($check_iteration);
+			
+		} else {
+			$this->log_feed_input('Yes');
+		}
+
 		$this->advance_feeds();	
 		
 		return $rssObject;
