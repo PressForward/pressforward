@@ -41,7 +41,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			if(is_array($log_string)){
 					$log_string = print_r($log_string, TRUE);
 				}
-			$string_to_log = "\n" . $log_string;
+			$string_to_log = "\n" . date('r') . ": " . $log_string;
 			fwrite($fo, $string_to_log);
 			fclose($fo);
 		}
