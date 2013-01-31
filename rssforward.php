@@ -412,11 +412,11 @@ class rsspf {
 			# someone were to hit the refresh button at the same time as another person.
 
 
-			$fo = fopen(RSSPF_ROOT . "/modules/rss-import/rss-import.txt", 'a') or print_r('Can\'t open log file.');
-			if ($fo != false){
-				fwrite($fo, "\nSending " . $item['item_title'] . " to post table.");
-				fclose($fo);
-			}	
+#			$fo = fopen(RSSPF_ROOT . "/modules/rss-import/rss-import.txt", 'a') or print_r('Can\'t open log file.');
+#			if ($fo != false){
+#				fwrite($fo, "\nSending " . $item['item_title'] . " to post table.");
+#				fclose($fo);
+#			}	
 			if ( $thepostscheck == 0) {
 				$item_title 	= $item['item_title'];
 				$item_content 	= $item['item_content'];
