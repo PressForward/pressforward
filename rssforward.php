@@ -304,7 +304,7 @@ class rsspf {
 	
 		# Chunking control, the goal here is to ensure that no feed assembly occurs while the feed assembly is already occuring. 
 		$is_chunk_going = get_option( RSSPF_SLUG . '_chunk_assembly_status', 0);
-		if ($is_chunk_going == 1){ exit; }
+		if ($is_chunk_going === 1){ exit; }
 		else { update_option( RSSPF_SLUG . '_chunk_assembly_status', 1 ); }
 			
 		# This pulls the RSS feed into a set of predetermined objects.
