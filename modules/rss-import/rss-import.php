@@ -339,7 +339,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		$this->log_feed_input($feed_go);	
 		$prev_iteration = get_option( RSSPF_SLUG . '_prev_iteration', 0);
 		$iterate_op_check = get_option( RSSPF_SLUG . '_feeds_iteration', 1);
-		$this->log_feed_input('Did the option properly iterate so that the previous iteration count of ' . $prev_iteration . ' is equal to the current of ' . $iterate_op_check . '?');
+		$this->log_feed_input('Did the option properly iterate so that the previous iteration count of ' . $prev_iteration . ' is not equal to the current of ' . $iterate_op_check . '?');
 		if ($prev_iteration === $iterate_op_check){
 			$this->log_feed_input('Nope. Did the iteration option emergency update function here?');
 			$check_iteration = update_option( RSSPF_SLUG . '_feeds_iteration', $iterate_op_check+1);
