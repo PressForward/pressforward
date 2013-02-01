@@ -4,9 +4,7 @@
  * Test of module base class
  */
 
- require_once(RSSPF_ROOT . "/includes/opml-reader/opml-reader.php");
  define( 'FEED_LOG', RSSPF_ROOT . "/modules/rss-import/rss-import.txt" );
- 
 class RSSPF_RSS_Import extends RSSPF_Module {
 
 	/////////////////////////////
@@ -18,12 +16,13 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	 */
 	public function __construct() {
 		parent::start();
+
 		add_action( 'admin_init', array($this, 'register_settings') );
 		add_action( 'wp_head', array($this, 'alter_for_retrieval'));
 		if( is_admin() )
 		{
 			add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
-			add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed') );	
+			add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed') );		
 			add_action('get_more_feeds', array($rsspf, 'assemble_feed_for_pull'));		
 	
 			add_action( 'wp_ajax_nopriv_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );
@@ -248,6 +247,23 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	}
 
 	/**
+	 * Run any setup that has to happen after initial module registration
+	 */
+	public function post_setup_module_info() {
+		$this->includes();
+	}
+
+	/**
+	 * Includes necessary files
+	 */
+	public function includes() {
+		require_once(RSSPF_ROOT . "/includes/opml-reader/opml-reader.php");
+		require( $this->module_dir . '/schema.php' );
+		require( $this->module_dir . '/feed-items.php' );
+		require( $this->module_dir . '/relationships.php' );
+	}
+
+	/**
 	 * Gets the data from an RSS feed and turns it into a data object
 	 * as expected by RSSPF
 	 *
@@ -305,8 +321,8 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 				}
 				//override switch while rest is not working.
 				//$agStatus = false;
-				//This is where we switch off auto readability 
-				//And leave it to an AJAX function instead. 
+				//This is where we switch off auto readability
+				//And leave it to an AJAX function instead.
 //				if ($agStatus){
 //					# Get the origin post link.
 //					$realLink = $item->get_link();
@@ -410,7 +426,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 
 	# Tries to get the RSS item author for the meta.
 	function get_rss_authors($item) {
-		// This needs error checking. 
+		// This needs error checking.
 		$authorArray = ($item->get_authors());
 		if (!empty($authorArray)){
 			foreach ($authorArray as $author) {
@@ -427,9 +443,9 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		
 		return $authors;
 	}
-	
+
 	function add_to_feeder() {
-		
+
 		?><form method="post" action="options.php"><?php
         settings_fields( RSSPF_SLUG . '_feedlist_group' );
 		$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
@@ -451,29 +467,29 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 					<input id="<?php echo RSSPF_SLUG . '_feedlist[single]'; ?>" class="regular-text" type="text" name="<?php echo RSSPF_SLUG . '_feedlist[single]'; ?>" value="" />
                     <label class="description" for="<?php echo RSSPF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL or RSS path', RSSPF_SLUG); ?></label>
 
-                     			
-                </div>	
+
+                </div>
 
 			<div><?php _e('Add OPML', RSSPF_SLUG); ?></div>
 				<div>
 					<input id="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>" value="" />
                     <label class="description" for="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', RSSPF_SLUG); ?></label>
 
-                     			
-                </div>	
-				
+
+                </div>
+
 			<p class="submit">
 				<?php submit_button(); ?>
-			</p>					
-		</form>		
+			</p>
+		</form>
 			<div class="show-feeds">
 			<form>
 				<p>Current items feeding on: </p>
 				<?php
 					echo '<code><pre>';
 					print_r($feedlist);
-					echo '</pre></code>';		
-					wp_nonce_field('feedremove', RSSPF_SLUG . '_o_feed_nonce', false);					
+					echo '</pre></code>';
+					wp_nonce_field('feedremove', RSSPF_SLUG . '_o_feed_nonce', false);
 				?>
 				<ul>
 				<?php
@@ -483,11 +499,11 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			</div>
 			</form>
 		<?php
-    
 
-		
+
+
 	}
-	
+
 	public function feedlist_builder($feedlist){
 		foreach ($feedlist as $feed){
 			if ((!is_array($feed)) && $feed != ''){
@@ -497,12 +513,12 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			} elseif (is_array($feed)){
 				$this->feedlist_builder($feed);
 			}
-						
+
 		}
-		
+
 		return;
 	}
-	
+
 	function rsspf_feedlist_validate($input){
 		if (!empty($input['single'])){
 			if (!(is_array($input['single']))){
@@ -515,26 +531,26 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 				$inputSingle = $input['single'];
 			}
 		}
-		
+
 		//print_r($inputSingle);
-		
+
 		if (!empty($input['opml'])){
 			$OPML_reader = new OPML_reader;
 			$opml_array = $OPML_reader->get_OPML_data($input['opml']);
 			//print_r($opml_array); die();
 		}
 		//$feedlist = $this->rsspf_feedlist();
-		// Needs something to do here if option is empty. 
-		$feedlist = get_option( RSSPF_SLUG . '_feedlist' );		
+		// Needs something to do here if option is empty.
+		$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
 		if (false == $feedlist){
 			if (!empty($input['single'])){
 				$feedlist = $inputSingle;
 			}
 			if (!empty($input['opml'])){
-				$feedlist = $opml_array;
+				$feedlist = array_merge($feedlist, $opml_array);
 			}
 			if (!empty($_POST['o_feed_url'])){
-			
+
 			}
 		} else {
 	//		$feedlist = array('http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Flabel%2FEditors-at-Large');
@@ -549,27 +565,27 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 				if ($offender !== false){
 					unset($feedlist[$offender]);
 				}
-				
+
 			}
-			
+
 		}
-//		print_r($feedlist); die();
+		
 		//Let's ensure no duplicates.
 		$feedlist = array_unique($feedlist);
-		
+
 		//print_r($feedlist); die();
 		return $feedlist;
 	}
-	
+
 	public function remove_a_feed() {
-		
+
 		if (!empty($_POST['o_feed_url'])){
 			$feedURL = $_POST['o_feed_url'];
 			if ( !wp_verify_nonce($_POST[RSSPF_SLUG . '_o_feed_nonce'], 'feedremove') )
-				die( __( "Nonce check failed. Please ensure you're supposed to be removing feeds.", 'rsspf' ) );		
-		/**		
+				die( __( "Nonce check failed. Please ensure you're supposed to be removing feeds.", 'rsspf' ) );
+		/**
 			$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
-			
+
 			$offender = array_search($feedURL, $feedlist);
 			if ($offender !== false){
 				unset($feedlist[$offender]);
@@ -583,30 +599,30 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			// around this by unhooking the validation method during this update
 			//remove_action( 'sanitize_option_rsspf_feedlist', array( 'RSSPF_RSS_Import', 'rsspf_feedlist_validate' ) );
 			$check = update_option( RSSPF_SLUG . '_feedlist', $_POST);
-			
+
 			if (!$check){
-				$result = 'The feedlist failed to update.'; 
+				$result = 'The feedlist failed to update.';
 			} else {
 				$result = $feedURL . ' has been removed from your feedlist.';
 			}
-			
+
 			die($result);
 		} else {
 			die("Error");
 		}
-	
-	}	
-	
+
+	}
+
 	function register_settings(){
 		register_setting(RSSPF_SLUG . '_feedlist_group', RSSPF_SLUG . '_feedlist', array('RSSPF_RSS_Import', 'rsspf_feedlist_validate'));
 	}
-	
+
 	public function admin_enqueue_scripts() {
 		global $rsspf;
-		
+
 		wp_enqueue_script( 'feed-manip-ajax', $rsspf->modules['rss-import']->module_url . 'assets/js/feed-manip-imp.js', array( 'jquery', 'twitter-bootstrap') );
 		wp_enqueue_style( 'feeder-style', $rsspf->modules['rss-import']->module_url . 'assets/css/feeder-styles.css' );
-	}	
+	}
 	
   function feed_retrieval_reset(){
 		$feed_go = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
@@ -617,3 +633,47 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	
 
 }
+
+function rsspf_test_import() {
+	if ( is_super_admin() && ! empty( $_GET['rsspf_test_import'] ) ) {
+		var_dump( rsspf_get_starred_items_for_user( get_current_user_id(), 'simple' ) );
+		return;
+		$feed = fetch_feed( 'http://teleogistic.net/feed' );
+
+		$source = $feed->subscribe_url();
+
+		foreach ( $feed->get_items() as $item ) {
+			$io = new RSSPF_RSS_Import_Feed_Item();
+
+			// Check for existing items before importing
+			$foo = $io->get( array(
+				'url' => $item->get_link( 0 ),
+				'foo' => 'bar',
+			) );
+
+			if ( empty( $foo ) ) {
+				$tags = wp_list_pluck( $item->get_categories(), 'term' );
+				$fi_id = $io->create( array(
+					'title'   => $item->get_title(),
+					'url'     => $item->get_link( 0 ),
+					'content' => $item->get_content(),
+					'source'  => $source,
+					'date'    => strtotime( $item->get_date() ),
+					'tags'    => $tags,
+				) );
+			} else {
+				$fi_id = $foo[0]->ID;
+			}
+
+			rsspf_star_item_for_user( $fi_id, get_current_user_id() );
+			if ( rand( 0, 1 ) ) {
+				echo 'deleted:'; var_dump( rsspf_unstar_item_for_user( $fi_id, get_current_user_id() ) );
+			}
+
+			echo 'starred: ';
+			var_dump( rsspf_is_item_starred_for_user( $fi_id, get_current_user_id() ) );
+			var_dump( $fi_id );
+		}
+	}
+}
+add_action( 'admin_init', 'rsspf_test_import' );

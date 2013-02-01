@@ -66,6 +66,9 @@ class RSSPF_Module {
 			add_filter('dash_widget_bar', array($this, 'add_dash_widgets_filter') );
 		}
 
+		if ( method_exists( $this, 'post_setup_module_info' ) ) {
+			$this->post_setup_module_info();
+		}
 	}
 
 	function module_setup(){
@@ -76,12 +79,12 @@ class RSSPF_Module {
 			'thumbnail' => '',
 			'options' => ''
 		);
-		
-		update_option( RSSPF_SLUG . '_' . $this->id . '_settings', $mod_settings );	
+
+		update_option( RSSPF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 
 		//return $test;
 	}
-	
+
 	public function admin_op_page() {
 		//Module enable option code originated in https://github.com/boonebgorges/participad
 		$modsetup = get_option(RSSPF_SLUG . '_' . $this->id . '_settings');
@@ -92,7 +95,7 @@ class RSSPF_Module {
 			$enabled = 'yes';
 		}
 			//print_r( $this->is_enabled() );
-		?>	
+		?>
 			<h4><?php _e( $modsetup['name'], RSSPF_SLUG ) ?></h4>
 
 			<p class="description"><?php _e( $modsetup['description'], RSSPF_SLUG ) ?></p>
@@ -113,13 +116,13 @@ class RSSPF_Module {
 			</table>
 		<?php
 	}
-	
+
 	public function admin_op_page_save() {
 		$modId = $this->id;
 		$enabled = isset( $_POST[RSSPF_SLUG . '_' . $modId . '_enable'] ) && 'no' == $_POST[RSSPF_SLUG . '_' . $modId . '_enable'] ? 'no' : 'yes';
 		update_option( RSSPF_SLUG . '_' . $modId . '_enable', $enabled );
 
-	}	
+	}
 
 	function setup_admin_menus( $admin_menus ) {
 		foreach ( (array) $admin_menus as $admin_menu ) {
@@ -157,16 +160,16 @@ class RSSPF_Module {
 
 			//add_action( RSSPF_MENU_SLUG, $r['page_title'], $r['menu_title'], $r['cap'], $r['slug'], $r['callback'] );
 		}
-	}	
-**/	
+	}
+**/
 	// Fetch and return a formatted data object - optional
 	function get_data_object() { return array(); }
-	
+
 	function pf_add_dash_widgets() {
 		$array = array();
 		return $array;
 	}
-	
+
 	function add_dash_widgets_filter($filter_inc_array) {
 		$client_widgets = $this->pf_add_dash_widgets();
 		$all_widgets = array_merge($filter_inc_array, $client_widgets);

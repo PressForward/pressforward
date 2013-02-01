@@ -54,7 +54,7 @@ include( RSSPF_ROOT . "/includes/module-base.php" );
 
 class rsspf {
 	var $modules = array();
-
+	
 	// See http://php.net/manual/en/language.oop5.decon.php to get a better understanding of what's going on here.
 	function __construct() {
 
@@ -66,8 +66,8 @@ class rsspf {
 		add_action('init', array($this, 'create_rsspf_archive_post_type') );
 		//Adding javascript and css to admin pages
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
-		
-		add_action( 'admin_init', array($this, 'rsspf_options_admin_page_save') );	
+
+		add_action( 'admin_init', array($this, 'rsspf_options_admin_page_save') );
 
 
 		/** Some actions are only needed inside of the admin area.
@@ -99,7 +99,7 @@ class rsspf {
 		//Activate our cron actions
 		add_action('init', array($this, 'scheduale_feed_in') );
 		add_action('init', array($this, 'scheduale_feed_out') );
-		
+
 		//Register options
 		add_action( 'init', array( $this, 'feeder_options_init' ) );
 
@@ -111,8 +111,8 @@ class rsspf {
 		// Set up modules
 		add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
 
-		add_action( 'init', array( $this, 'pressforward_init' ), 20 );
-		
+		add_action( 'plugins_loaded', array( $this, 'pressforward_init' ) );
+
 	}
 
 	/**
@@ -337,7 +337,7 @@ class rsspf {
 				WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
 				AND $wpdb->postmeta.meta_key = 'item_id'
 				AND $wpdb->postmeta.meta_value = '" . $item_id . "'
-				AND $wpdb->posts.post_type = 'rssarchival'
+				AND $wpdb->posts.post_type = '" . rsspf_rss_import_schema()->feed_item_post_type . "'
 				ORDER BY $wpdb->posts.post_date DESC
 			 ";
 			 // AND $wpdb->posts.post_date < NOW() <- perhaps by removing we can better prevent simultaneous duplications?
@@ -361,7 +361,7 @@ class rsspf {
 						FROM $wpdb->posts, $wpdb->postmeta
 						WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
 						AND $wpdb->postmeta.meta_key = 'item_link'
-						AND $wpdb->posts.post_type = 'rssarchival'
+						AND $wpdb->posts.post_type = " . rsspf_rss_import_schema()->feed_item_post_type . "
 						ORDER BY $wpdb->posts.post_date DESC
 					 ";
 					$checkpoststwo = $wpdb->get_results($queryMoreStr, OBJECT);
@@ -439,7 +439,7 @@ class rsspf {
 			# Do we want or need the post_status to be published?
 				$data = array(
 					'post_status' => 'published',
-					'post_type' => 'rssarchival',
+					'post_type' => rsspf_rss_import_schema()->feed_item_post_type,
 					'post_date' => $_SESSION['cal_startdate'],
 					'post_title' => $item_title,
 					'post_content' => $item_content,
@@ -533,7 +533,7 @@ class rsspf {
 	function disassemble_feed_items() {
 		//delete rss feed items with a date past a certian point.
 		add_filter( 'posts_where', array($this, 'filter_where_older_sixty_days') );
-		$queryForDel = new WP_Query( array( 'post_type' => 'rssarchival' ) );
+		$queryForDel = new WP_Query( array( 'post_type' => rsspf_rss_import_schema()->feed_item_post_type ) );
 		remove_filter( 'posts_where', array($this, 'filter_where_older_sixty_days') );
 
 		// The Loop
@@ -556,14 +556,14 @@ class rsspf {
 		//$args = array(
 		//				'post_type' => array('any')
 		//			);
-		$args = 'post_type=rssarchival';
+		$args = 'post_type=' . rsspf_rss_import_schema()->feed_item_post_type;
 		//$archiveQuery = new WP_Query( $args );
 		$dquerystr = "
 			SELECT $wpdb->posts.*, $wpdb->postmeta.*
 			FROM $wpdb->posts, $wpdb->postmeta
 			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-			AND $wpdb->posts.post_type = 'rssarchival'
-		 ";
+			AND $wpdb->posts.post_type ='" . rsspf_rss_import_schema()->feed_item_post_type . 
+		 "'";
 		# This is how we do a custom query, when WP_Query doesn't do what we want it to.
 		$rssarchivalposts = $wpdb->get_results($dquerystr, OBJECT);
 		//print_r(count($rssarchivalposts)); die();
@@ -596,17 +596,18 @@ class rsspf {
 		//				'post_type' => array('any')
 		//			);
 		//$pageBottom = $pageTop + 20;
-		$args = 'post_type=rssarchival';
+		$args = rsspf_rss_import_schema()->feed_item_post_type;
 		//$archiveQuery = new WP_Query( $args );
 		 $dquerystr = "
 			SELECT $wpdb->posts.*, $wpdb->postmeta.*
 			FROM $wpdb->posts, $wpdb->postmeta
 			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-			AND $wpdb->posts.post_type = 'rssarchival'
+			AND $wpdb->posts.post_type = '" . rsspf_rss_import_schema()->feed_item_post_type . "'
 			AND $wpdb->postmeta.meta_key = 'sortable_item_date'
 			ORDER BY $wpdb->postmeta.meta_value DESC
 			LIMIT $pageTop, 20
 		 ";
+		// print_r($dquerystr);
 		 # DESC here because we are sorting by UNIX datestamp, where larger is later.
 		 //Provide an alternative to load by feed date order.
 		# This is how we do a custom query, when WP_Query doesn't do what we want it to.
@@ -792,7 +793,7 @@ class rsspf {
 
 	}
 
-	
+
 	# via http://stackoverflow.com/questions/2668854/sanitizing-strings-to-make-them-url-and-filename-safe
 	public function sanitize($string, $force_lowercase = true, $anal = false) {
 		$strip = array("~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "[", "{", "]",
@@ -831,12 +832,12 @@ class rsspf {
 			//$charsToElim = array('?','/','\\');
 			$stringSlug = $this->sanitize($stringSlug, $case, $strict);
 		}
-		
-		
+
+
 		return $stringSlug;
-		
-	}	
-	
+
+	}
+
 	# Tries to turn any HTTPS URL into an HTTP URL for servers without ssl configured.
 	public function de_https($url) {
 		$urlParts = parse_url($url);
@@ -851,7 +852,7 @@ class rsspf {
 	public function readability_object($url) {
 	//ref: http://www.keyvan.net/2010/08/php-readability/
 		set_time_limit(0);
-		
+
 		$url = $this->de_https($url);
 		$url = str_replace('&amp;','&', $url);
 		//print_r($url); print_r(' - Readability<br />');
@@ -868,7 +869,7 @@ class rsspf {
 			$content = false;
 			return $content;
 		}
-		
+
 		//check if tidy exists to clean up the input.
 		if (function_exists('tidy_parse_string')) {
 			$tidy = tidy_parse_string($html, array(), 'UTF8');
@@ -912,15 +913,15 @@ class rsspf {
 		return $content;
 
 	}
-	
+
 	//http://php.net/manual/en/function.set-error-handler.php
-	
+
 	public function make_it_readable(){
-		
+
 		// Verify nonce
 		if ( !wp_verify_nonce($_POST[RSSPF_SLUG . '_nomination_nonce'], 'nomination') )
 			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'rsspf' ) );
-			
+
 		$item_id = $_POST['read_item_id'];
 		//error_reporting(0);
 		if ( false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) ) ) {
@@ -928,13 +929,13 @@ class rsspf {
 			set_time_limit(0);
 			$url = $this->de_https($_POST['url']);
 			$descrip = $_POST['content'];
-			
+
 			if ($_POST['authorship'] == 'aggregation') {
 				$aggregated = true;
 			} else {
 				$aggregated = false;
-			}			
-			
+			}
+
 			if ((strlen($descrip) <= 160) || $aggregated) {
 				$itemReadReady = $this->readability_object($url);
 				if ($itemReadReady != 'error-secured') {
@@ -958,10 +959,10 @@ class rsspf {
 						{
 							# Ugh... we can't get anything huh?
 							$itemReadReady .= __( "This content has no description we can find.", 'rsspf' );
-							$itemReadReady .= '<br />';					
+							$itemReadReady .= '<br />';
 							# We'll want to return a false to loop with.
 							$itemReadReady = $descrip;
-							
+
 						}
 					}
 				} else {
@@ -973,11 +974,11 @@ class rsspf {
 
 			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
 		}
-		
+
 		print_r($itemReadReady);
 		die(); // < to keep from returning 0s with everything.
 	}
-	
+
 	# Checks the URL against a list of aggregators.
 	public function is_from_aggregator($xmlbase){
 		$c = 0;
@@ -1003,8 +1004,8 @@ class rsspf {
 			return false;
 		}
 
-	}	
-	
+	}
+
 	# This function takes measures to try and get item content throguh methods of increasing reliability, but decreasing relevance.
 	public function get_content_through_aggregator($url){
 
@@ -1043,7 +1044,7 @@ class rsspf {
 		}
 		return $descrip;
 
-	}	
+	}
 
 	public function assemble_public_stream() {
 
@@ -1066,8 +1067,8 @@ class rsspf {
 		}
 
 	}
-	
-//Let's build a better excerpt! 
+
+//Let's build a better excerpt!
 	public function feed_excerpt( $text ) {
 
 			$text = apply_filters('the_content', $text);
@@ -1075,12 +1076,12 @@ class rsspf {
 			$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
 			$text = strip_tags($text);
 			$text = substr($text, 0, 260);
-			$excerpt_length = 28; 
+			$excerpt_length = 28;
 			$words = explode(' ', $text, $excerpt_length + 1);
 			  array_pop($words);
 			  array_push($words, '...');
 			  $text = implode(' ', $words);
-		
+
 		return $text;
 	}
 
@@ -1146,10 +1147,10 @@ return $text;
 							</div>
 						</div>
 					';
-					
+
 					# Auto add these actions depending on if the module presents a stream?
 					//do_action( 'module_stream' );
-					
+
 					echo '<div class="row-fluid">
 							<div class="span12 sub-card card well">
 								<div class="tapped">
@@ -1165,7 +1166,7 @@ return $text;
 		$c = 1;
 
 			echo '<div class="span7 feed-container accordion" id="feed-accordion">';
-		$ic = 0;	
+		$ic = 0;
 		# http://twitter.github.com/bootstrap/javascript.html#collapse
 			if (isset($_GET["pc"])){
 				$page = $_GET["pc"];
@@ -1204,20 +1205,20 @@ return $text;
 							echo '</div>';
 					echo '<div class="row-fluid accordion-heading">';
 					//echo '<a name="' . $c . '" style="display:none;"></a>';
-					
-		echo '<script type="text/javascript">	
+
+		echo '<script type="text/javascript">
 				jQuery(document).ready(function() {
 					jQuery("#' . $item['item_id'] . '").on("show", function () {
 						jQuery("#excerpt' . $c . '").hide("slow");
 					});
-					
+
 					jQuery("#' . $item['item_id'] . '").on("hide", function () {
 						jQuery("#excerpt' . $c . '").show("slow");
 					});
-				});				
+				});
 			</script>';
-							
-					
+
+
 					echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#feed-accordion" href="#collapse' . $c . '">';
 						if ($item['item_feat_img'] != ''){
 						echo '<div class="span3">';
@@ -1310,7 +1311,7 @@ return $text;
 			// Something to experement with...
 		} // End foreach
 
-		echo '</div><!-- End feed-container span7 -->';		
+		echo '</div><!-- End feed-container span7 -->';
 
 		echo '<div class="span4 feed-widget-container">';
 			# Some widgets go here.
@@ -1344,10 +1345,10 @@ return $text;
 				</div>
 				</div>
 				';
-				
+
 				$widgets_array = $this->widget_array();
 				$all_widgets_array = apply_filters( 'dash_widget_bar', $widgets_array );
-				
+
 				//$all_widgets_array = array_merge($widgets_array, $mod_widgets);
 				foreach ($all_widgets_array as $dash_widget) {
 
@@ -1365,27 +1366,27 @@ return $text;
 
 						echo '<div class="row-fluid">
 						<div class="rsspf-right-widget well span12 ' . $r['slug'] . '">';
-							echo '<div class="widget-title">' . 
+							echo '<div class="widget-title">' .
 								$r['title']
-							. '</div>';		
+							. '</div>';
 							echo '<div class="widget-body">';
 								call_user_func($r['callback']);
 							echo '</div>';
 						echo '</div>
 						</div>';
-					
+
 					}
-					
+
 				}
-				
+
 				/**
 				// Loop through each module to get its source data
 				foreach ( $this->modules as $module ) {
 					//$source_data_object = array_merge( $source_data_object, $module->get_widget_object() );
-					
+
 					echo '<div class="row-fluid">
 					<div class="rsspf-right-widget well span12">';
-					
+
 					echo '</div>
 					</div>';
 				}
@@ -1394,8 +1395,8 @@ return $text;
 		echo '</div><!-- End feed-widget-container span4 -->';
 
 	echo '</div><!-- End row -->';
-	
-		//Nasty hack because infinite scroll only works starting with page 2 for some reason. 
+
+		//Nasty hack because infinite scroll only works starting with page 2 for some reason.
 		if ($page == 0){ $page = 1; }
 		$pagePrev = $page-1;
 		$pageNext = $page+1;
@@ -1408,7 +1409,7 @@ return $text;
 
 	echo '</div><!-- End container-fluid -->';
 	}
-	
+
 	function widget_array(){
 		$widgets = array(
 				'first_widget' => array(
@@ -1417,10 +1418,10 @@ return $text;
 						'callback' => array($this, 'widget_one_call')
 									)
 							);
-		
+
 		return $widgets;
 	}
-	
+
 	function widget_one_call(){
 		echo '<div class="navwidget">	Widget Body <br />	<a href="#20">Test link to item 20.</a>	</div>'	;
 	}
@@ -1473,7 +1474,7 @@ return $text;
 		<?php
 
 	}
-	
+
 	function rsspf_options_admin_page_save() {
 		global $pagenow;
 
@@ -1493,7 +1494,7 @@ return $text;
 
 		do_action( 'rsspf_admin_op_page_save' );
 	}
-	
+
 	/**
 	 * Returns the URL of the admin page
 	 *
@@ -1503,15 +1504,15 @@ return $text;
 	 */
 	function rsspf_admin_url() {
 		return add_query_arg( 'page', RSSPF_SLUG . '-options', admin_url( 'admin.php' ) );
-	}	
-	
+	}
+
 	function feeder_options_init() {
 		# Activate when settings are ready to go.
 		//register_setting(RSSPF_SLUG . '_feeder_options', RSSPF_SLUG . '_plugin_feeder_options', RSSPF_SLUG . '_plugin_feeder_options_validate');
-	}	
+	}
 
 	function rsspf_feeder_builder() {
-		
+
 		echo 'Feeder. <br />';
 
 			if ( current_user_can('edit_posts') ) : ?>
@@ -1531,10 +1532,10 @@ return $text;
 			endif;
 			?><form method="post" action="options.php"><?php
             //settings_fields(RSSPF_SLUG . '_feeder_options');
-            //$options = get_option(RSSPF_SLUG . '_plugin_feeder_options');			
-			
+            //$options = get_option(RSSPF_SLUG . '_plugin_feeder_options');
+
 			do_action( 'feeder_menu' );
-			
+
 			?><input type="submit" class="button-primary" value="<?php _e('Save Options', RSSPF_SLUG); ?>" />
 			</form><?php
 
@@ -1577,7 +1578,7 @@ return $text;
 		
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
-		if (('toplevel_page_rsspf-menu') == $hook) { 
+		if (('toplevel_page_rsspf-menu') == $hook) {
 			//And now lets enqueue the script, ensuring that jQuery is already active.
 
 			wp_enqueue_script('tinysort', RSSPF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
@@ -1611,7 +1612,7 @@ return $text;
 
 			wp_enqueue_script('tinysort', RSSPF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
 			wp_enqueue_script('twitter-bootstrap', RSSPF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
-			
+
 			wp_register_style( RSSPF_SLUG . '-style', RSSPF_URL . 'assets/css/style.css');
 			wp_register_style( 'bootstrap-style', RSSPF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
 			wp_register_style( 'bootstrap-responsive-style', RSSPF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
@@ -1620,8 +1621,8 @@ return $text;
 			wp_enqueue_style('bootstrap-responsive-style');
 			wp_enqueue_style( RSSPF_SLUG . '-style' );
 
-		}		
-		
+		}
+
 
 
 	}
