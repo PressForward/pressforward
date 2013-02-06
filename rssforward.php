@@ -302,7 +302,8 @@ class rsspf {
 	
 	
 	public function assemble_feed_for_pull($feedObj = 0) {
-	
+		ignore_user_abort(true);
+		set_time_limit(0);
 		# Chunking control, the goal here is to ensure that no feed assembly occurs while the feed assembly is already occuring. 
 		$is_chunk_going = get_option( RSSPF_SLUG . '_chunk_assembly_status', 0);
 		if ($is_chunk_going === 1){ exit; }
