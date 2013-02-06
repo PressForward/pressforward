@@ -299,83 +299,89 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		$this->log_feed_input('Begin processing the feed.');
 		foreach($theFeed->get_items() as $item) {
 			$this->log_feed_input('Feed looping through for the ' . $c . ' time.');
-			$id = md5($item->get_link() . $item->get_title()); //die();
-			$this->log_feed_input('Now on feed ID ' . $id . '.');
-			//print_r($item_categories_string); die();
+			$check_date = $item->get_date('U');
+			$dead_date = time() - (60*60*24*60); //Get the unixdate for two months ago.
+			if ($check_date <= $dead_date) {
+				$this->log_feed_input('Feed item too old. Skip it.');
+			} else {
+				$id = md5($item->get_link() . $item->get_title()); //die();
+				$this->log_feed_input('Now on feed ID ' . $id . '.');
+				//print_r($item_categories_string); die();
 
-			if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
-				if ($item->get_source()){
-					$sourceObj = $item->get_source();
-					# Get the link of what created the RSS entry.
-					$source = $sourceObj->get_link(0,'alternate');
-					# Check if the feed item creator is an aggregator.
-					$agStatus = $rsspf->is_from_aggregator($source);
-				} else {
-					# If we can't get source information then don't do anything.
-					$agStatus = false;
-				}
-				# If there is less than 160 characters of content, than it isn't really giving us meaningful information.
-				# So we'll want to get the good stuff from the source.
-				if ((strlen($item->get_content())) < 160){
-					$agStatus = true;
-				}
-				//override switch while rest is not working.
-				//$agStatus = false;
-				//This is where we switch off auto readability
-				//And leave it to an AJAX function instead.
-//				if ($agStatus){
-//					# Get the origin post link.
-//					$realLink = $item->get_link();
-//					# Try and get the actual content of the post.
-//					$realContent = $rsspf->get_content_through_aggregator($realLink);
-//					# If we can't get the actual content, then just use what we've got from the RSS feed.
-//					if (!$realContent){
-						$item_content = $item->get_content();
-//					} else {
-//						$item_content = $realContent;
-						//print_r($realContent);
-//					}
-//				} else {
-//						$item_content = $item->get_content();
-//				}
-				$iFeed = $item->get_feed();
-				if (!$agStatus){
-					$authors = $this->get_rss_authors($item);
-				}
-				else {
-					$authors = 'aggregation';
-				}
-				$item_categories = array();
-				$item_categories = $item->get_categories();
-				$itemTerms = array();
-				if (!empty($item_categories)){
-					foreach ($item_categories as $item_category){
-						$itemTerms[] = $item_category->get_term();
+				if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
+					if ($item->get_source()){
+						$sourceObj = $item->get_source();
+						# Get the link of what created the RSS entry.
+						$source = $sourceObj->get_link(0,'alternate');
+						# Check if the feed item creator is an aggregator.
+						$agStatus = $rsspf->is_from_aggregator($source);
+					} else {
+						# If we can't get source information then don't do anything.
+						$agStatus = false;
 					}
-					$item_categories_string = implode(',',$itemTerms);
-				} else { $item_categories_string = ''; }
-				//one final cleanup of the content.
-				$contentObj = new htmlchecker($item_content);
-				$item_content = $contentObj->closetags($item_content);
-				print_r($c);
-				$rssObject['rss_' . $c] = $rsspf->feed_object(
-											$item->get_title(),
-											$iFeed->get_title(),
-											$item->get_date('r'),
-											$authors,
-											$item_content,
-											$item->get_link(),
-											'',
-											$id,
-											$item->get_date('Y-m-d'),
-											$item_categories_string
-											);
-				$this->log_feed_input('Setting new transient for ' . $item->get_title() . ' of ' . $iFeed->get_title() . '.');
-				set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
+					# If there is less than 160 characters of content, than it isn't really giving us meaningful information.
+					# So we'll want to get the good stuff from the source.
+					if ((strlen($item->get_content())) < 160){
+						$agStatus = true;
+					}
+					//override switch while rest is not working.
+					//$agStatus = false;
+					//This is where we switch off auto readability
+					//And leave it to an AJAX function instead.
+	//				if ($agStatus){
+	//					# Get the origin post link.
+	//					$realLink = $item->get_link();
+	//					# Try and get the actual content of the post.
+	//					$realContent = $rsspf->get_content_through_aggregator($realLink);
+	//					# If we can't get the actual content, then just use what we've got from the RSS feed.
+	//					if (!$realContent){
+							$item_content = $item->get_content();
+	//					} else {
+	//						$item_content = $realContent;
+							//print_r($realContent);
+	//					}
+	//				} else {
+	//						$item_content = $item->get_content();
+	//				}
+					$iFeed = $item->get_feed();
+					if (!$agStatus){
+						$authors = $this->get_rss_authors($item);
+					}
+					else {
+						$authors = 'aggregation';
+					}
+					$item_categories = array();
+					$item_categories = $item->get_categories();
+					$itemTerms = array();
+					if (!empty($item_categories)){
+						foreach ($item_categories as $item_category){
+							$itemTerms[] = $item_category->get_term();
+						}
+						$item_categories_string = implode(',',$itemTerms);
+					} else { $item_categories_string = ''; }
+					//one final cleanup of the content.
+					$contentObj = new htmlchecker($item_content);
+					$item_content = $contentObj->closetags($item_content);
+					print_r($c);
+					$rssObject['rss_' . $c] = $rsspf->feed_object(
+												$item->get_title(),
+												$iFeed->get_title(),
+												$item->get_date('r'),
+												$authors,
+												$item_content,
+												$item->get_link(),
+												'',
+												$id,
+												$item->get_date('Y-m-d'),
+												$item_categories_string
+												);
+					$this->log_feed_input('Setting new transient for ' . $item->get_title() . ' of ' . $iFeed->get_title() . '.');
+					set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
 
+				}
 			}
 			$c++;
-
+			
 		}
 
 		$feed_go = update_option( RSSPF_SLUG . '_feeds_go_switch', 1);
