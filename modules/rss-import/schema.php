@@ -7,18 +7,18 @@
  * are described below.
  *
  * (1) FEED ITEMS
- *     Feed items are stored in a custom post type ('rsspf_feed_item'). Data
+ *     Feed items are stored in a custom post type ('pf_feed_item'). Data
  *     is mapped as follows:
  *
  *     [data type]       -> [WP location]
  *     feed item title   -> wp_posts.post_title
  *     feed item URL     -> wp_posts.guid
  *     feed item content -> wp_posts.post_content
- *     word count        -> wp_postmeta ('rsspf_feed_item_word_count')
- *     source feed       -> wp_postmeta ('rsspf_feed_item_source') May move to post_parent if feeds move to CPT
+ *     word count        -> wp_postmeta ('pf_feed_item_word_count')
+ *     source feed       -> wp_postmeta ('pf_feed_item_source') May move to post_parent if feeds move to CPT
  *     date              -> wp_posts.post_date_gmt
  */
-class RSSPF_RSS_Import_Schema {
+class PF_RSS_Import_Schema {
 	var $feed_item_post_type;
 	var $feed_item_tag_taxonomy;
 
@@ -33,12 +33,12 @@ class RSSPF_RSS_Import_Schema {
 	}
 
 	public function __construct() {
-		$this->feed_item_post_type = 'rsspf_feed_item';
-		$this->feed_item_tag_taxonomy = 'rsspf_feed_item_tag';
+		$this->feed_item_post_type = 'pf_feed_item';
+		$this->feed_item_tag_taxonomy = 'pf_feed_item_tag';
 
 		// Post types and taxonomies must be registered after 'init'
 		add_action( 'init', array( $this, 'register_feed_item_post_type' ) );
-		add_action( 'rsspf_feed_item_post_type_registered', array( $this, 'register_feed_item_tag_taxonomy' ) );
+		add_action( 'pf_feed_item_post_type_registered', array( $this, 'register_feed_item_tag_taxonomy' ) );
 
 		// Maybe install custom table for relationships
 		add_action( 'admin_init', array( $this, 'maybe_install_relationship_table' ) );
@@ -49,43 +49,43 @@ class RSSPF_RSS_Import_Schema {
 	 */
 	public function register_feed_item_post_type() {
 		$labels = array(
-			'name'               => __( 'Feed Items', 'rsspf' ),
-			'singular_name'      => __( 'Feed Item', 'rsspf' ),
-			'add_new'            => _x( 'Add New', 'rsspf', 'add new feed item' ),
-			'all_items'          => __( 'All Feed Items', 'rsspf' ),
-			'add_new_item'       => __( 'Add New Feed Item', 'rsspf' ),
-			'edit_item'          => __( 'Edit Feed Item', 'rsspf' ),
-			'new_item'           => __( 'New Feed Item', 'rsspf' ),
-			'view_item'          => __( 'View Feed Item', 'rsspf' ),
-			'search_items'       => __( 'Search Feed Items', 'rsspf' ),
-			'not_found'          => __( 'No feed items found', 'rsspf' ),
-			'not_found_in_trash' => __( 'No feed items found in trash', 'rsspf' ),
+			'name'               => __( 'Feed Items', 'pf' ),
+			'singular_name'      => __( 'Feed Item', 'pf' ),
+			'add_new'            => _x( 'Add New', 'pf', 'add new feed item' ),
+			'all_items'          => __( 'All Feed Items', 'pf' ),
+			'add_new_item'       => __( 'Add New Feed Item', 'pf' ),
+			'edit_item'          => __( 'Edit Feed Item', 'pf' ),
+			'new_item'           => __( 'New Feed Item', 'pf' ),
+			'view_item'          => __( 'View Feed Item', 'pf' ),
+			'search_items'       => __( 'Search Feed Items', 'pf' ),
+			'not_found'          => __( 'No feed items found', 'pf' ),
+			'not_found_in_trash' => __( 'No feed items found in trash', 'pf' ),
 		);
 
-		register_post_type( $this->feed_item_post_type, apply_filters( 'rsspf_register_feed_item_post_type_args', array(
+		register_post_type( $this->feed_item_post_type, apply_filters( 'pf_register_feed_item_post_type_args', array(
 			'label'       => $labels['name'],
 			'labels'      => $labels,
-			'description' => __( 'Feed items imported by PressForward&#8217;s RSS Importer', 'rsspf' ),
+			'description' => __( 'Feed items imported by PressForward&#8217;s RSS Importer', 'pf' ),
 			'public'      => false,
 			'show_ui'     => true, // for testing only
 		) ) );
 
-		do_action( 'rsspf_feed_item_post_type_registered' );
+		do_action( 'pf_feed_item_post_type_registered' );
 	}
 
 	public function register_feed_item_tag_taxonomy() {
 		$labels = array(
-			'name'          => __( 'Feed Item Tags', 'rsspf' ),
-			'singular_name' => __( 'Feed Item Tag', 'rsspf' ),
-			'all_items'     => __( 'All Feed Item Tags', 'rsspf' ),
-			'edit_item'     => __( 'Edit Feed Item Tag', 'rsspf' ),
-			'update_item'   => __( 'Update Feed Item Tag', 'rsspf' ),
-			'add_new_item'  => __( 'Add New Feed Item Tag', 'rsspf' ),
-			'new_item_name' => __( 'New Feed Item Tag', 'rsspf' ),
-			'search_items'  => __( 'Search Feed Item Tags', 'rsspf' ),
+			'name'          => __( 'Feed Item Tags', 'pf' ),
+			'singular_name' => __( 'Feed Item Tag', 'pf' ),
+			'all_items'     => __( 'All Feed Item Tags', 'pf' ),
+			'edit_item'     => __( 'Edit Feed Item Tag', 'pf' ),
+			'update_item'   => __( 'Update Feed Item Tag', 'pf' ),
+			'add_new_item'  => __( 'Add New Feed Item Tag', 'pf' ),
+			'new_item_name' => __( 'New Feed Item Tag', 'pf' ),
+			'search_items'  => __( 'Search Feed Item Tags', 'pf' ),
 		);
 
-		register_taxonomy( $this->feed_item_tag_taxonomy, $this->feed_item_post_type, apply_filters( 'rsspf_register_feed_item_tag_taxonomy_args', array(
+		register_taxonomy( $this->feed_item_tag_taxonomy, $this->feed_item_post_type, apply_filters( 'pf_register_feed_item_tag_taxonomy_args', array(
 			'labels' => $labels,
 			'public' => true,
 			'show_admin_columns' => true,
@@ -105,7 +105,7 @@ class RSSPF_RSS_Import_Schema {
 		}
 
 		global $wpdb;
-		$table_exists = $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $wpdb->prefix . 'rsspf_relationships' ) );
+		$table_exists = $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $wpdb->prefix . 'pf_relationships' ) );
 
 		if ( ! $table_exists ) {
 			self::install_relationship_table();
@@ -121,7 +121,7 @@ class RSSPF_RSS_Import_Schema {
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
 		$sql = array();
-		$sql[] = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}rsspf_relationships (
+		$sql[] = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}pf_relationships (
 	                    id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 		            user_id bigint(20) NOT NULL,
 		            item_id bigint(20) NOT NULL,
@@ -137,9 +137,9 @@ class RSSPF_RSS_Import_Schema {
 	}
 }
 
-function rsspf_rss_import_schema() {
-	return RSSPF_RSS_Import_Schema::init();
+function pf_rss_import_schema() {
+	return PF_RSS_Import_Schema::init();
 }
 
 // Bootstrap
-rsspf_rss_import_schema();
+pf_rss_import_schema();

@@ -7,12 +7,12 @@
 /**
  * Database class for manipulating feed items
  */
-class RSSPF_RSS_Import_Feed_Item {
+class PF_RSS_Import_Feed_Item {
 	protected $filter_data = array();
 
 	public function __construct() {
-		$this->post_type = rsspf_rss_import_schema()->feed_item_post_type;
-		$this->tag_taxonomy = rsspf_rss_import_schema()->feed_item_tag_taxonomy;
+		$this->post_type = pf_rss_import_schema()->feed_item_post_type;
+		$this->tag_taxonomy = pf_rss_import_schema()->feed_item_tag_taxonomy;
 	}
 
 	public function get( $args = array() ) {
@@ -48,11 +48,11 @@ class RSSPF_RSS_Import_Feed_Item {
 			}
 		}
 
-		// Fetch some handy rsspf-specific data
+		// Fetch some handy pf-specific data
 		if ( ! empty( $posts ) ) {
 			foreach ( $posts as &$post ) {
-				$post->word_count = get_post_meta( $post->ID, 'rsspf_feed_item_word_count', true );
-				$post->source     = get_post_meta( $post->ID, 'rsspf_feed_item_source', true );
+				$post->word_count = get_post_meta( $post->ID, 'pf_feed_item_word_count', true );
+				$post->source     = get_post_meta( $post->ID, 'pf_feed_item_source', true );
 				$post->tags       = wp_get_post_terms( $post->ID, $this->tag_taxonomy );
 			}
 		}
@@ -114,11 +114,11 @@ class RSSPF_RSS_Import_Feed_Item {
 		$content_array = explode( ' ', strip_tags( $content ) );
 		$word_count = count( $content_array );
 
-		return update_post_meta( $post_id, 'rsspf_feed_item_word_count', $word_count );
+		return update_post_meta( $post_id, 'pf_feed_item_word_count', $word_count );
 	}
 
 	public static function set_source( $post_id, $source ) {
-		return update_post_meta( $post_id, 'rsspf_feed_item_source', $source );
+		return update_post_meta( $post_id, 'pf_feed_item_source', $source );
 	}
 
 	/**
@@ -143,6 +143,6 @@ class RSSPF_RSS_Import_Feed_Item {
 	}
 
 	public static function get_term_slug_from_tag( $tag ) {
-//		return 'rsspf_feed_item_' .
+//		return 'pf_feed_item_' .
 	}
 }

@@ -4,8 +4,8 @@
  * Test of module base class
  */
 
- define( 'FEED_LOG', RSSPF_ROOT . "/modules/rss-import/rss-import.txt" );
-class RSSPF_RSS_Import extends RSSPF_Module {
+ define( 'FEED_LOG', PF_ROOT . "/modules/rss-import/rss-import.txt" );
+class PF_RSS_Import extends PF_Module {
 
 	/////////////////////////////
 	// PARENT OVERRIDE METHODS //
@@ -24,7 +24,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		{
 			add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
 			add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed') );		
-			add_action('get_more_feeds', array($rsspf, 'assemble_feed_for_pull'));		
+			add_action('get_more_feeds', array($pf, 'assemble_feed_for_pull'));		
 	
 			add_action( 'wp_ajax_nopriv_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );
 			add_action( 'wp_ajax_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );     
@@ -54,26 +54,26 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	
 	public function step_through_feedlist() {
 		$this->log_feed_input('step_through_feedlist begins.');
-		//$feed_go = update_option( RSSPF_SLUG . '_feeds_go_switch', 1);
+		//$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 1);
 		//$this->log_feed_input('The Feeds go switch has been updated?');
 		//$this->log_feed_input($feed_go);
-		$feedlist = call_user_func(array($this, 'rsspf_feedlist'));	
+		$feedlist = call_user_func(array($this, 'pf_feedlist'));	
 		//The array keys start with zero, as does the iteration number. This will account for that. 
 		//$feedcount = count($feedlist) - 1;
 		end($feedlist);
 		$last_key = key($feedlist);
 		$this->log_feed_input('The last key is: ' . $last_key);
 		//Get the iteration state. If option does not exist, set the iteration variable to 0
-		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 1 );
+		$feeds_iteration = get_option( PF_SLUG . '_feeds_iteration', 1 );
 				$this->log_feed_input('feeds_go_switch updated? (first check).');
-				$go_switch_bool = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+				$go_switch_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
 				$this->log_feed_input($go_switch_bool);		
-		$prev_iteration = get_option( RSSPF_SLUG . '_prev_iteration', 0);
+		$prev_iteration = get_option( PF_SLUG . '_prev_iteration', 0);
 		$this->log_feed_input('Did the option properly iterate so that the previous iteration count of ' . $prev_iteration . ' is equal to the current of ' . $feeds_iteration . '?');
 		// This is the fix for the insanity caused by the planet money feed - http://www.npr.org/rss/podcast.php?id=510289
 		if ($prev_iteration === $feeds_iteration){
 			$this->log_feed_input('Nope. Did the step_though_feedlist iteration option emergency update work here?');
-			$check_iteration = update_option( RSSPF_SLUG . '_feeds_iteration', $feeds_iteration+1);
+			$check_iteration = update_option( PF_SLUG . '_feeds_iteration', $feeds_iteration+1);
 			$this->log_feed_input($check_iteration);
 			$feeds_iteration = $feeds_iteration+1;
 		} else {
@@ -87,40 +87,40 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			//If the feed item is empty, can I loop back through this function for max efficiency? I think so.
 			$aFeed = $feedlist[$feeds_iteration];
 			$this->log_feed_input('Retrieved feed ' . $aFeed);
-			$did_we_start_over = get_option(RSSPF_SLUG . '_iterate_going_switch', 1);
+			$did_we_start_over = get_option(PF_SLUG . '_iterate_going_switch', 1);
 			$this->log_feed_input('Iterate going switch is set to: ' . $did_we_start_over);
 			if (($last_key === $feeds_iteration)){
 				$this->log_feed_input('The last key is equal to the feeds_iteration.');
 				$feeds_iteration = 0;
 				$this->log_feed_input('feeds_go_switch updated?.');
-				$go_switch_bool = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+				$go_switch_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
 				$this->log_feed_input($go_switch_bool);
 				$this->log_feed_input('iterate_going_switch updated?.');
-				$going_switch_bool = update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+				$going_switch_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
 				$this->log_feed_input($going_switch_bool);
 				//print_r('TURN IT OFF');
 				
 			} elseif ($did_we_start_over == 1) {
 				$this->log_feed_input('No, we didn\'t start over.');
 				$this->log_feed_input('Did we set the previous iteration option to ' . $feeds_iteration . '?');
-				$prev_iteration = update_option( RSSPF_SLUG . '_prev_iteration', $feeds_iteration);
+				$prev_iteration = update_option( PF_SLUG . '_prev_iteration', $feeds_iteration);
 				$this->log_feed_input($prev_iteration);
 				$feeds_iteration = $feeds_iteration+1;
 				$this->log_feed_input('Did the iterate_going_switch update?');
-				$iterate_going_bool = update_option( RSSPF_SLUG . '_iterate_going_switch', 1);
+				$iterate_going_bool = update_option( PF_SLUG . '_iterate_going_switch', 1);
 				$this->log_feed_input($iterate_going_bool);
 				$this->log_feed_input('We are set to a reiterate state.');
 			}
 			
 			$this->log_feed_input('Did the feeds_iteration option update to ' . $feeds_iteration . '?');
-			$iterate_op_check = update_option( RSSPF_SLUG . '_feeds_iteration', $feeds_iteration);
+			$iterate_op_check = update_option( PF_SLUG . '_feeds_iteration', $feeds_iteration);
 			$this->log_feed_input($iterate_op_check);
 			if ($iterate_op_check === false) {
 				$this->log_feed_input('For no apparent reason, the option did not update. Delete and try again.');
 				$this->log_feed_input('Did the option delete?');
-				$deleteCheck = delete_option( RSSPF_SLUG . '_feeds_iteration' );
+				$deleteCheck = delete_option( PF_SLUG . '_feeds_iteration' );
 				$this->log_feed_input($deleteCheck);
-				$iterate_op_check = update_option( RSSPF_SLUG . '_feeds_iteration', $feeds_iteration);
+				$iterate_op_check = update_option( PF_SLUG . '_feeds_iteration', $feeds_iteration);
 				$this->log_feed_input('Did the new option setup work?');
 				$this->log_feed_input($iterate_op_check);
 			}			
@@ -132,15 +132,15 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			} elseif (((empty($aFeed)) || ($aFeed == '')) && ($feeds_iteration >= $last_key)){
 				$this->log_feed_input('The feed is either an empty entry or un-retrievable AND the iteration is greater or equal to the last key.');
 				$this->log_feed_input('Did the feeds_iteration option update?');
-				$feed_it_bool = update_option( RSSPF_SLUG . '_feeds_iteration', 0);
+				$feed_it_bool = update_option( PF_SLUG . '_feeds_iteration', 0);
 				$this->log_feed_input($feed_it_bool);
 				
 				$this->log_feed_input('Did the feeds_go_switch option update?');
-				$feed_go_bool = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+				$feed_go_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
 				$this->log_feed_input($feed_go_bool);
 				
 				$this->log_feed_input('Did the iterate_going_switch option update?');
-				$feed_going_bool = update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+				$feed_going_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
 				$this->log_feed_input($feed_going_bool);
 				
 				$this->log_feed_input('End of the update process. Return false.');
@@ -157,15 +157,15 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			} elseif (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration >= $last_key)){
 				$this->log_feed_input('The feed is either an empty entry or un-retrievable AND the iteration is greater or equal to the last key.');
 				$this->log_feed_input('Did the feeds_iteration option update?');
-				$feed_it_bool = update_option( RSSPF_SLUG . '_feeds_iteration', 0);
+				$feed_it_bool = update_option( PF_SLUG . '_feeds_iteration', 0);
 				$this->log_feed_input($feed_it_bool);
 				
 				$this->log_feed_input('Did the feeds_go_switch option update?');
-				$feed_go_bool = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+				$feed_go_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
 				$this->log_feed_input($feed_go_bool);
 				
 				$this->log_feed_input('Did the iterate_going_switch option update?');
-				$feed_going_bool = update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+				$feed_going_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
 				$this->log_feed_input($feed_going_bool);
 				
 				$this->log_feed_input('End of the update process. Return false.');
@@ -176,15 +176,15 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			//An error state that should never, ever, ever, ever, ever happen. 
 			$this->log_feed_input('The iteration is now greater than the last key.');
 				$this->log_feed_input('Did the feeds_iteration option update?');
-				$feed_it_bool = update_option( RSSPF_SLUG . '_feeds_iteration', 0);
+				$feed_it_bool = update_option( PF_SLUG . '_feeds_iteration', 0);
 				$this->log_feed_input($feed_it_bool);
 				
 				$this->log_feed_input('Did the feeds_go_switch option update?');
-				$feed_go_bool = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+				$feed_go_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
 				$this->log_feed_input($feed_go_bool);
 				
 				$this->log_feed_input('Did the iterate_going_switch option update?');
-				$feed_going_bool = update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+				$feed_going_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
 				$this->log_feed_input($feed_going_bool);
 				$this->log_feed_input('End of the update process. Return false.');
 				return false;			
@@ -209,13 +209,13 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	public function advance_feeds(){
 		self::log_feed_input('Begin advance_feeds.');
 		//Here: If feedlist_iteration is not == to feedlist_count, scheduale a cron and trigger it before returning. 
-				$feedlist = call_user_func(array(self, 'rsspf_feedlist'));	
+				$feedlist = call_user_func(array(self, 'pf_feedlist'));	
 		//The array keys start with zero, as does the iteration number. This will account for that. 
 		$feedcount = count($feedlist) - 1;
 		//Get the iteration state. If this variable doesn't exist the planet will break in half. 
-		$feeds_iteration = get_option( RSSPF_SLUG . '_feeds_iteration');	
+		$feeds_iteration = get_option( PF_SLUG . '_feeds_iteration');	
 
-		$feed_get_switch = get_option( RSSPF_SLUG . '_feeds_go_switch');	
+		$feed_get_switch = get_option( PF_SLUG . '_feeds_go_switch');	
 		if ($feed_get_switch != 0) {
 			self::log_feed_input('Feeds go switch is NOT set to 0.');
 			self::log_feed_input('Getting import-cron.');
@@ -223,7 +223,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			//http://codex.wordpress.org/Function_Reference/wp_schedule_single_event
 			//add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );
 			//wp_schedule_single_event(time()-3600, 'get_more_feeds');
-			//print_r('<br /> <br />' . RSSPF_URL . 'modules/rss-import/import-cron.php <br /> <br />');
+			//print_r('<br /> <br />' . PF_URL . 'modules/rss-import/import-cron.php <br /> <br />');
 			$theRetrievalLoop = add_query_arg( 'press', 'forward',  site_url() );
 			$pfnonce = get_option('chunk_nonce'); 
 			$theRetrievalLoopNounced = add_query_arg( '_wpnonce', $pfnonce,  $theRetrievalLoop );
@@ -250,7 +250,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			if ($_GET['press'] == 'forward'){
 				if ( $nonce_check ===  $nonce){
 					self::log_feed_input($nonce_check . ' is equal to ' . $nonce . '. Pressing forward.');
-					include(RSSPF_ROOT . '/modules/rss-import/import-cron.php');
+					include(PF_ROOT . '/modules/rss-import/import-cron.php');
 					exit;
 				} else {
 					$verify_val = wp_verify_nonce($nonce, 'retrieve-pressforward');
@@ -272,7 +272,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	 * Includes necessary files
 	 */
 	public function includes() {
-		require_once(RSSPF_ROOT . "/includes/opml-reader/opml-reader.php");
+		require_once(PF_ROOT . "/includes/opml-reader/opml-reader.php");
 		require( $this->module_dir . '/schema.php' );
 		require( $this->module_dir . '/feed-items.php' );
 		require( $this->module_dir . '/relationships.php' );
@@ -280,23 +280,23 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 
 	/**
 	 * Gets the data from an RSS feed and turns it into a data object
-	 * as expected by RSSPF
+	 * as expected by PF
 	 *
-	 * @global $rsspf Used to access the feed_object() method
+	 * @global $pf Used to access the feed_object() method
 	 */
 	public function get_data_object() {
-		global $rsspf;
+		global $pf;
 		$this->log_feed_input('Begin get_data_object.');
 		//Is this process already occuring?
-		$feed_go = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
+		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0);
 		$this->log_feed_input('The Feeds go switch has been updated?');
 		$this->log_feed_input($feed_go);		
-		$is_it_going = get_option(RSSPF_SLUG . '_iterate_going_switch', 1);
+		$is_it_going = get_option(PF_SLUG . '_iterate_going_switch', 1);
 		if ($is_it_going == 0){
 			//WE ARE? SHUT IT DOWN!!!
-			update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
-			update_option( RSSPF_SLUG . '_feeds_iteration', 0);
-			update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
+			update_option( PF_SLUG . '_feeds_go_switch', 0);
+			update_option( PF_SLUG . '_feeds_iteration', 0);
+			update_option( PF_SLUG . '_iterate_going_switch', 0);
 			print_r('<br /> We\'re doing this thing already in the data object. <br />');
 			$this->log_feed_input('We\'re doing this thing already in the data object.');
 			//return false;
@@ -323,13 +323,13 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 				$this->log_feed_input('Now on feed ID ' . $id . '.');
 				//print_r($item_categories_string); die();
 
-				if ( false === ( $rssObject['rss_' . $c] = get_transient( 'rsspf_' . $id ) ) ) {
+				if ( false === ( $rssObject['rss_' . $c] = get_transient( 'pf_' . $id ) ) ) {
 					if ($item->get_source()){
 						$sourceObj = $item->get_source();
 						# Get the link of what created the RSS entry.
 						$source = $sourceObj->get_link(0,'alternate');
 						# Check if the feed item creator is an aggregator.
-						$agStatus = $rsspf->is_from_aggregator($source);
+						$agStatus = $pf->is_from_aggregator($source);
 					} else {
 						# If we can't get source information then don't do anything.
 						$agStatus = false;
@@ -347,7 +347,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	//					# Get the origin post link.
 	//					$realLink = $item->get_link();
 	//					# Try and get the actual content of the post.
-	//					$realContent = $rsspf->get_content_through_aggregator($realLink);
+	//					$realContent = $pf->get_content_through_aggregator($realLink);
 	//					# If we can't get the actual content, then just use what we've got from the RSS feed.
 	//					if (!$realContent){
 							$item_content = $item->get_content();
@@ -378,7 +378,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 					$contentObj = new htmlchecker($item_content);
 					$item_content = $contentObj->closetags($item_content);
 					print_r($c);
-					$rssObject['rss_' . $c] = $rsspf->feed_object(
+					$rssObject['rss_' . $c] = $pf->feed_object(
 												$item->get_title(),
 												$iFeed->get_title(),
 												$item->get_date('r'),
@@ -391,7 +391,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 												$item_categories_string
 												);
 					$this->log_feed_input('Setting new transient for ' . $item->get_title() . ' of ' . $iFeed->get_title() . '.');
-					set_transient( 'rsspf_' . $id, $rssObject['rss_' . $c], 60*10 );
+					set_transient( 'pf_' . $id, $rssObject['rss_' . $c], 60*10 );
 
 				}
 			}
@@ -399,15 +399,15 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			
 		}
 
-		$feed_go = update_option( RSSPF_SLUG . '_feeds_go_switch', 1);
+		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 1);
 		$this->log_feed_input('The Feeds go switch has been updated to on?');
 		$this->log_feed_input($feed_go);	
-		$prev_iteration = get_option( RSSPF_SLUG . '_prev_iteration', 0);
-		$iterate_op_check = get_option( RSSPF_SLUG . '_feeds_iteration', 1);
+		$prev_iteration = get_option( PF_SLUG . '_prev_iteration', 0);
+		$iterate_op_check = get_option( PF_SLUG . '_feeds_iteration', 1);
 		$this->log_feed_input('Did the option properly iterate so that the previous iteration count of ' . $prev_iteration . ' is not equal to the current of ' . $iterate_op_check . '?');
 		if ($prev_iteration === $iterate_op_check){
 			$this->log_feed_input('Nope. Did the iteration option emergency update function here?');
-			$check_iteration = update_option( RSSPF_SLUG . '_feeds_iteration', $iterate_op_check+1);
+			$check_iteration = update_option( PF_SLUG . '_feeds_iteration', $iterate_op_check+1);
 			$this->log_feed_input($check_iteration);
 			
 		} else {
@@ -425,17 +425,17 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	/////////////////////////////
 
 	# Where we store a list of feeds to check.
-	public function rsspf_feedlist() {
+	public function pf_feedlist() {
 
 		$feedlist = array('http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Flabel%2FEditors-at-Large');
 		//http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FEditors-at-Large%20Stream
 		//'http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations';
 		//http://feeds.feedburner.com/DHNowEditorsChoiceAndNews
 		//http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations
-		if ( false == (get_option( RSSPF_SLUG . '_feedlist' )) ){
-			add_option( RSSPF_SLUG . '_feedlist', $feedlist);
+		if ( false == (get_option( PF_SLUG . '_feedlist' )) ){
+			add_option( PF_SLUG . '_feedlist', $feedlist);
 		} else {
-			$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
+			$feedlist = get_option( PF_SLUG . '_feedlist' );
 		}
 		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
 		self::log_feed_input('Sending feedlist to function.');
@@ -459,7 +459,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			$authors = $authors;
 			
 		} else {
-			$authors = __('No author.', 'rsspf');
+			$authors = __('No author.', 'pf');
 		}
 		
 		return $authors;
@@ -468,34 +468,34 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	function add_to_feeder() {
 
 		?><form method="post" action="options.php"><?php
-        settings_fields( RSSPF_SLUG . '_feedlist_group' );
-		$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
+        settings_fields( PF_SLUG . '_feedlist_group' );
+		$feedlist = get_option( PF_SLUG . '_feedlist' );
 
         ?>
 			<br />
 			<br />
-		<button type="submit" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="Reset all Feed Retrieval Options"><?php _e('Reset all Feed Retrieval Options', 'rsspf'); ?></button>    <br />  
+		<button type="submit" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="Reset all Feed Retrieval Options"><?php _e('Reset all Feed Retrieval Options', 'pf'); ?></button>    <br />  
 			 <?php
-			$feed_go = get_option( RSSPF_SLUG . '_feeds_go_switch', 0);
-			$feed_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 0);
-			$retrieval_state = get_option( RSSPF_SLUG . '_iterate_going_switch', 0);
-			$retrieval_state = sprintf(__('Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d', 'rsspf'), $feed_go, $feed_iteration, $retrieval_state);
+			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0);
+			$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
+			$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
+			$retrieval_state = sprintf(__('Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d', 'pf'), $feed_go, $feed_iteration, $retrieval_state);
 			echo $retrieval_state;
 			?>
 			<br />
 			<br />
-			<div><?php _e('Add Single Feed', 'rsspf'); ?></div>
+			<div><?php _e('Add Single Feed', 'pf'); ?></div>
 				<div>
-					<input id="<?php echo RSSPF_SLUG . '_feedlist[single]'; ?>" class="regular-text" type="text" name="<?php echo RSSPF_SLUG . '_feedlist[single]'; ?>" value="" />
-                    <label class="description" for="<?php echo RSSPF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL or RSS path', 'rsspf'); ?></label>
+					<input id="<?php echo PF_SLUG . '_feedlist[single]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[single]'; ?>" value="" />
+                    <label class="description" for="<?php echo PF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL or RSS path', 'pf'); ?></label>
 
 
                 </div>
 
-			<div><?php _e('Add OPML', 'rsspf'); ?></div>
+			<div><?php _e('Add OPML', 'pf'); ?></div>
 				<div>
-					<input id="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>" value="" />
-                    <label class="description" for="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'rsspf'); ?></label>
+					<input id="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" value="" />
+                    <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'pf'); ?></label>
 
 
                 </div>
@@ -511,7 +511,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 					echo '<code><pre>';
 					print_r($feedlist);
 					echo '</pre></code>';
-					wp_nonce_field('feedremove', RSSPF_SLUG . '_o_feed_nonce', false);
+					wp_nonce_field('feedremove', PF_SLUG . '_o_feed_nonce', false);
 				?>
 				<ul>
 				<?php
@@ -541,7 +541,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		return;
 	}
 
-	function rsspf_feedlist_validate($input){
+	function pf_feedlist_validate($input){
 		if (!empty($input['single'])){
 			if (!(is_array($input['single']))){
 				//$simp = new SimplePie();
@@ -561,9 +561,9 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			$opml_array = $OPML_reader->get_OPML_data($input['opml']);
 			//print_r($opml_array); die();
 		}
-		//$feedlist = $this->rsspf_feedlist();
+		//$feedlist = $this->pf_feedlist();
 		// Needs something to do here if option is empty.
-		$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
+		$feedlist = get_option( PF_SLUG . '_feedlist' );
 		if (false == $feedlist){
 			if (!empty($input['single'])){
 				$feedlist = $inputSingle;
@@ -603,69 +603,69 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 
 		if (!empty($_POST['o_feed_url'])){
 			$feedURL = $_POST['o_feed_url'];
-			if ( !wp_verify_nonce($_POST[RSSPF_SLUG . '_o_feed_nonce'], 'feedremove') )
-				die( __( 'Nonce check failed. Please ensure you\'re supposed to be removing feeds.', 'rsspf' ) );
+			if ( !wp_verify_nonce($_POST[PF_SLUG . '_o_feed_nonce'], 'feedremove') )
+				die( __( 'Nonce check failed. Please ensure you\'re supposed to be removing feeds.', 'pf' ) );
 		/**
-			$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
+			$feedlist = get_option( PF_SLUG . '_feedlist' );
 
 			$offender = array_search($feedURL, $feedlist);
 			if ($offender !== false){
 				unset($feedlist[$offender]);
 			}
 			//$modfeedlist = array_diff($feedlist, array($feedURL));
-			//update_option( RSSPF_SLUG . '_feedlist', '');
-			//delete_option( RSSPF_SLUG . '_feedlist' );
+			//update_option( PF_SLUG . '_feedlist', '');
+			//delete_option( PF_SLUG . '_feedlist' );
 **/
-			// The rsspf_feedlist setting is being filtered through the rsspf_feedlist_validate
+			// The pf_feedlist setting is being filtered through the pf_feedlist_validate
 			// method, as a result of being registered with register_setting(). We'll work
 			// around this by unhooking the validation method during this update
-			//remove_action( 'sanitize_option_rsspf_feedlist', array( 'RSSPF_RSS_Import', 'rsspf_feedlist_validate' ) );
-			$check = update_option( RSSPF_SLUG . '_feedlist', $_POST);
+			//remove_action( 'sanitize_option_pf_feedlist', array( 'PF_RSS_Import', 'pf_feedlist_validate' ) );
+			$check = update_option( PF_SLUG . '_feedlist', $_POST);
 
 			if (!$check){
-				$result = __('The feedlist failed to update.', 'rsspf');
+				$result = __('The feedlist failed to update.', 'pf');
 			} else {
-				$result = $feedURL . __(' has been removed from your feedlist.', 'rsspf');
+				$result = $feedURL . __(' has been removed from your feedlist.', 'pf');
 			}
 
 			die($result);
 		} else {
-			die(__('Error', 'rsspf'));
+			die(__('Error', 'pf'));
 		}
 
 	}
 
 	function register_settings(){
-		register_setting(RSSPF_SLUG . '_feedlist_group', RSSPF_SLUG . '_feedlist', array('RSSPF_RSS_Import', 'rsspf_feedlist_validate'));
+		register_setting(PF_SLUG . '_feedlist_group', PF_SLUG . '_feedlist', array('PF_RSS_Import', 'pf_feedlist_validate'));
 	}
 
 	public function admin_enqueue_scripts() {
-		global $rsspf;
+		global $pf;
 
-		wp_enqueue_script( 'feed-manip-ajax', $rsspf->modules['rss-import']->module_url . 'assets/js/feed-manip-imp.js', array( 'jquery', 'twitter-bootstrap') );
-		wp_enqueue_style( 'feeder-style', $rsspf->modules['rss-import']->module_url . 'assets/css/feeder-styles.css' );
+		wp_enqueue_script( 'feed-manip-ajax', $pf->modules['rss-import']->module_url . 'assets/js/feed-manip-imp.js', array( 'jquery', 'twitter-bootstrap') );
+		wp_enqueue_style( 'feeder-style', $pf->modules['rss-import']->module_url . 'assets/css/feeder-styles.css' );
 	}
 	
   function feed_retrieval_reset(){
-		$feed_go = update_option( RSSPF_SLUG . '_feeds_go_switch', 0);
-		$feed_iteration = update_option( RSSPF_SLUG . '_feeds_iteration', 0);
-		$retrieval_state = update_option( RSSPF_SLUG . '_iterate_going_switch', 0);
-		update_option( RSSPF_SLUG . '_chunk_assembly_status', 1 );
+		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0);
+		$feed_iteration = update_option( PF_SLUG . '_feeds_iteration', 0);
+		$retrieval_state = update_option( PF_SLUG . '_iterate_going_switch', 0);
+		update_option( PF_SLUG . '_chunk_assembly_status', 1 );
  	}  	
 	
 
 }
 
-function rsspf_test_import() {
-	if ( is_super_admin() && ! empty( $_GET['rsspf_test_import'] ) ) {
-		var_dump( rsspf_get_starred_items_for_user( get_current_user_id(), 'simple' ) );
+function pf_test_import() {
+	if ( is_super_admin() && ! empty( $_GET['pf_test_import'] ) ) {
+		var_dump( pf_get_starred_items_for_user( get_current_user_id(), 'simple' ) );
 		return;
 		$feed = fetch_feed( 'http://teleogistic.net/feed' );
 
 		$source = $feed->subscribe_url();
 
 		foreach ( $feed->get_items() as $item ) {
-			$io = new RSSPF_RSS_Import_Feed_Item();
+			$io = new PF_RSS_Import_Feed_Item();
 
 			// Check for existing items before importing
 			$foo = $io->get( array(
@@ -687,15 +687,15 @@ function rsspf_test_import() {
 				$fi_id = $foo[0]->ID;
 			}
 
-			rsspf_star_item_for_user( $fi_id, get_current_user_id() );
+			pf_star_item_for_user( $fi_id, get_current_user_id() );
 			if ( rand( 0, 1 ) ) {
-				echo 'deleted:'; var_dump( rsspf_unstar_item_for_user( $fi_id, get_current_user_id() ) );
+				echo 'deleted:'; var_dump( pf_unstar_item_for_user( $fi_id, get_current_user_id() ) );
 			}
 
 			echo 'starred: ';
-			var_dump( rsspf_is_item_starred_for_user( $fi_id, get_current_user_id() ) );
+			var_dump( pf_is_item_starred_for_user( $fi_id, get_current_user_id() ) );
 			var_dump( $fi_id );
 		}
 	}
 }
-add_action( 'admin_init', 'rsspf_test_import' );
+add_action( 'admin_init', 'pf_test_import' );

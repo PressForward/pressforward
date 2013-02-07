@@ -11,10 +11,10 @@ define('IFRAME_REQUEST' , true);
 
 /** WordPress Administration Bootstrap */
 require_once( dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))) ) . '/wp-admin' . '/admin.php');
-	//RSSPF Correction - this will need to be changed to a constant later.
+	//PF Correction - this will need to be changed to a constant later.
 require_once( dirname(dirname(dirname(__FILE__))) . "/lib/OpenGraph.php");
-	global $rsspf_nt;
-	$rsspf_nt = new rsspf();
+	global $pf_nt;
+	$pf_nt = new pf();
 	
 header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset'));
 
@@ -42,7 +42,7 @@ function press_it() {
 	$post['post_category'] = isset($_POST['post_category']) ? $_POST['post_category'] : '';
 	$post['tax_input'] = isset($_POST['tax_input']) ? $_POST['tax_input'] : '';
 	$post['post_title'] = isset($_POST['title']) ? $_POST['title'] : '';
-	//RSSPF Addition: setting post type. 
+	//PF Addition: setting post type. 
 	//$post['post_type'] = 'nomination';
 	$content = isset($_POST['content']) ? $_POST['content'] : '';
 
@@ -69,7 +69,7 @@ function press_it() {
 	else
 		$post['post_status'] = 'draft';
 		
-	//RSSPF Addition - switch post type to nomination?
+	//PF Addition - switch post type to nomination?
 	$post['post_type'] = 'nomination';
 	
 	
@@ -86,20 +86,20 @@ function press_it() {
 			elseif ( '0' == $_POST['post_format'] )
 				set_post_format( $post_ID, false );
 		}
-		//RSSPF Note - Here's where it creates the post. 
+		//PF Note - Here's where it creates the post. 
 		$post_ID = wp_update_post($post);
 	}
 
 				//print_r($_POST['u']); die();
-				global $rsspf_nt;
+				global $pf_nt;
 				if (($_POST['nomination_permalink']) != ''){
 					//Gets OG image
-					$itemLink = $rsspf_nt->de_https($_POST['nomination_permalink']);
+					$itemLink = $pf_nt->de_https($_POST['nomination_permalink']);
 					$node = OpenGraph::fetch($itemLink);
 					$itemFeatImg = $node->image;
 				}
 	if (($_POST['nomination_permalink']) != ''){
-		$rsspf_nt->set_ext_as_featured($post_ID, $itemFeatImg);	
+		$pf_nt->set_ext_as_featured($post_ID, $itemFeatImg);	
 	}
 	
 	return $post_ID;
@@ -116,26 +116,26 @@ if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 
 // Set Variables
 
-//RSSPF Notes - gets origin title.
+//PF Notes - gets origin title.
 $title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( stripslashes( $_GET['t'] ) , ENT_QUOTES) ) ) : '';
 
 $selection = '';
-//RSSPF Notes - gets user selection. 
+//PF Notes - gets user selection. 
 if ( !empty($_GET['s']) ) {
 	$selection = str_replace('&apos;', "'", stripslashes($_GET['s']));
 	$selection = trim( htmlspecialchars( html_entity_decode($selection, ENT_QUOTES) ) );
 }
 
-//RSSPF Notes - Behaviour for user selection.
+//PF Notes - Behaviour for user selection.
 if ( ! empty($selection) ) {
 	$selection = preg_replace('/(\r?\n|\r)/', '</p><p>', $selection);
 	$selection = '<p>' . str_replace('<p></p>', '', $selection) . '</p>';
 	# Blockquotes should really be applied for selections.
 	$selection = '<blockquote>' . $selection . '</blockquote>';
 }
-//RSSPF Notes - Looks like this gets the URL.
+//PF Notes - Looks like this gets the URL.
 $url = isset($_GET['u']) ? esc_url($_GET['u']) : '';
-//RSSPF Notes - Looks like this gets the image page on image only links. 
+//PF Notes - Looks like this gets the image page on image only links. 
 $image = isset($_GET['i']) ? $_GET['i'] : '';
 
 if ( !empty($_REQUEST['ajax']) ) {
@@ -155,10 +155,10 @@ if ( !empty($_REQUEST['ajax']) ) {
 			/* ]]> */
 			</script>
 			<div class="postbox">
-				<h2><label for="embed-code"><?php _e('Embed Code', 'rsspf') ?></label></h2>
+				<h2><label for="embed-code"><?php _e('Embed Code', 'pf') ?></label></h2>
 				<div class="inside">
 					<textarea name="embed-code" id="embed-code" rows="8" cols="40"><?php echo esc_textarea( $selection ); ?></textarea>
-					<p id="options"><a href="#" class="select button"><?php _e('Insert Video', 'rsspf'); ?></a> <a href="#" class="close button"><?php _e('Cancel', 'rsspf'); ?></a></p>
+					<p id="options"><a href="#" class="select button"><?php _e('Insert Video', 'pf'); ?></a> <a href="#" class="close button"><?php _e('Cancel', 'pf'); ?></a></p>
 				</div>
 			</div>
 			<?php break;
@@ -174,7 +174,7 @@ if ( !empty($_REQUEST['ajax']) ) {
 				});
 				/* ]]> */
 			</script>
-			<h3 class="tb"><label for="tb_this_photo_description"><?php _e('Description', 'rsspf') ?></label></h3>
+			<h3 class="tb"><label for="tb_this_photo_description"><?php _e('Description', 'pf') ?></label></h3>
 			<div class="titlediv">
 				<div class="titlewrap">
 					<input id="tb_this_photo_description" name="photo_description" class="tb_this_photo_description tbtitle text" onkeypress="if(event.keyCode==13) image_selector(this);" value="<?php echo esc_attr($title);?>"/>
@@ -184,11 +184,11 @@ if ( !empty($_REQUEST['ajax']) ) {
 			<p class="centered">
 				<input type="hidden" name="this_photo" value="<?php echo esc_attr($image); ?>" id="tb_this_photo" class="tb_this_photo" />
 				<a href="#" class="select">
-					<img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr(__('Click to insert.', 'rsspf')); ?>" title="<?php echo esc_attr(__('Click to insert.', 'rsspf')); ?>" />
+					<img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr(__('Click to insert.', 'pf')); ?>" title="<?php echo esc_attr(__('Click to insert.', 'pf')); ?>" />
 				</a>
 			</p>
 
-			<p id="options"><a href="#" class="select button"><?php _e('Insert Image', 'rsspf'); ?></a> <a href="#" class="cancel button"><?php _e('Cancel', 'rsspf'); ?></a></p>
+			<p id="options"><a href="#" class="select button"><?php _e('Insert Image', 'pf'); ?></a> <a href="#" class="cancel button"><?php _e('Cancel', 'pf'); ?></a></p>
 			<?php break;
 	case 'photo_images':
 		/**
@@ -258,7 +258,7 @@ if ( !empty($_REQUEST['ajax']) ) {
 				}).responseText
 			);
 			if(my_src.length == 0) {
-				strtoappend = '<?php _e('Unable to retrieve images or no images on page.', 'rsspf'); ?>';
+				strtoappend = '<?php _e('Unable to retrieve images or no images on page.', 'pf'); ?>';
 			}
 		}
 		}
@@ -319,7 +319,7 @@ if ( !empty($_REQUEST['ajax']) ) {
 			return false;
 		}
 
-		jQuery('#extra-fields').html('<div class="postbox"><h2><?php _e( 'Add Photos', 'rsspf' ); ?> <small id="photo_directions">(<?php _e("click images to select", 'rsspf') ?>)</small></h2><ul class="actions"><li><a href="#" id="photo-add-url" class="button"><?php _e("Add from URL", 'rsspf') ?> +</a></li></ul><div class="inside"><div class="titlewrap"><div id="img_container"></div></div><p id="options"><a href="#" class="close button"><?php _e('Cancel', 'rsspf'); ?></a><a href="#" class="refresh button"><?php _e('Refresh', 'rsspf'); ?></a></p></div>');
+		jQuery('#extra-fields').html('<div class="postbox"><h2><?php _e( 'Add Photos', 'pf' ); ?> <small id="photo_directions">(<?php _e("click images to select", 'pf') ?>)</small></h2><ul class="actions"><li><a href="#" id="photo-add-url" class="button"><?php _e("Add from URL", 'pf') ?> +</a></li></ul><div class="inside"><div class="titlewrap"><div id="img_container"></div></div><p id="options"><a href="#" class="close button"><?php _e('Cancel', 'pf'); ?></a><a href="#" class="refresh button"><?php _e('Refresh', 'pf'); ?></a></p></div>');
 		jQuery('#img_container').html(strtoappend);
 		<?php break;
 }
@@ -330,7 +330,7 @@ die;
 	wp_enqueue_script( 'post' );
 	_wp_admin_html_begin();
 ?>
-<title><?php _e('Nominate This', 'rsspf') ?></title>
+<title><?php _e('Nominate This', 'pf') ?></title>
 <script type="text/javascript">
 //<![CDATA[
 addLoadEvent = function(func){if(typeof jQuery!="undefined")jQuery(document).ready(func);else if(typeof wpOnload!='function'){wpOnload=func;}else{var oldonload=wpOnload;wpOnload=function(){oldonload();func();}}};
@@ -495,12 +495,12 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			<div class="photolist"></div>
 
 			<div id="submitdiv" class="postbox">
-				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'rsspf' ); ?>"><br /></div>
-				<h3 class="hndle"><?php _e('Nominate This', 'rsspf') ?></h3>
+				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'pf' ); ?>"><br /></div>
+				<h3 class="hndle"><?php _e('Nominate This', 'pf') ?></h3>
 				<div class="inside">
 					<p id="publishing-actions">
 					<?php
-						submit_button( __( 'Save Nomination', 'rsspf' ), 'button', 'draft', false, array( 'id' => 'save' ) );
+						submit_button( __( 'Save Nomination', 'pf' ), 'button', 'draft', false, array( 'id' => 'save' ) );
 /**						if ( current_user_can('publish_posts') ) {
 							submit_button( __( 'Publish' ), 'primary', 'publish', false );
 						} else {
@@ -515,9 +515,9 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 								$default_format = get_option( 'default_post_format', '0' );
 						?>
 					<p>
-						<label for="post_format"><?php _e( 'Post Format:', 'rsspf' ); ?>
+						<label for="post_format"><?php _e( 'Post Format:', 'pf' ); ?>
 						<select name="post_format" id="post_format">
-							<option value="0"><?php _ex( 'Standard', 'Post format', 'rsspf' ); ?></option>
+							<option value="0"><?php _ex( 'Standard', 'Post format', 'pf' ); ?></option>
 						<?php foreach ( $post_formats[0] as $format ): ?>
 							<option<?php selected( $default_format, $format ); ?> value="<?php echo esc_attr( $format ); ?>"> <?php echo esc_html( get_post_format_string( $format ) ); ?></option>
 						<?php endforeach; ?>
@@ -529,14 +529,14 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 
 			<?php $tax = get_taxonomy( 'category' ); ?>
 			<div id="categorydiv" class="postbox">
-				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'rsspf' ); ?>"><br /></div>
-				<h3 class="hndle"><?php _e('Categories', 'rsspf') ?></h3>
+				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'pf' ); ?>"><br /></div>
+				<h3 class="hndle"><?php _e('Categories', 'pf') ?></h3>
 				<div class="inside">
 				<div id="taxonomy-category" class="categorydiv">
 
 					<ul id="category-tabs" class="category-tabs">
 						<li class="tabs"><a href="#category-all" tabindex="3"><?php echo $tax->labels->all_items; ?></a></li>
-						<li class="hide-if-no-js"><a href="#category-pop" tabindex="3"><?php _e( 'Most Used', 'rsspf' ); ?></a></li>
+						<li class="hide-if-no-js"><a href="#category-pop" tabindex="3"><?php _e( 'Most Used', 'pf' ); ?></a></li>
 					</ul>
 
 					<div id="category-pop" class="tabs-panel" style="display: none;">
@@ -552,7 +552,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 					</div>
 
 					<?php if ( !current_user_can($tax->cap->assign_terms) ) : ?>
-					<p><em><?php _e('You cannot modify this Taxonomy.', 'rsspf'); ?></em></p>
+					<p><em><?php _e('You cannot modify this Taxonomy.', 'pf'); ?></em></p>
 					<?php endif; ?>
 					<?php if ( current_user_can($tax->cap->edit_terms) ) : ?>
 						<div id="category-adder" class="wp-hidden-children">
@@ -579,21 +579,21 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			</div>
 
 			<div id="tagsdiv-post_tag" class="postbox">
-				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'rsspf' ); ?>"><br /></div>
+				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'pf' ); ?>"><br /></div>
 				<h3><span><?php _e('Tags'); ?></span></h3>
 				<div class="inside">
 					<div class="tagsdiv" id="post_tag">
 						<div class="jaxtag">
-							<label class="screen-reader-text" for="newtag"><?php _e('Tags', 'rsspf'); ?></label>
+							<label class="screen-reader-text" for="newtag"><?php _e('Tags', 'pf'); ?></label>
 							<input type="hidden" name="tax_input[post_tag]" class="the-tags" id="tax-input[post_tag]" value="" />
 							<div class="ajaxtag">
 								<input type="text" name="newtag[post_tag]" class="newtag form-input-tip" size="16" autocomplete="off" value="" />
-								<input type="button" class="button tagadd" value="<?php esc_attr_e('Add', 'rsspf'); ?>" tabindex="3" />
+								<input type="button" class="button tagadd" value="<?php esc_attr_e('Add', 'pf'); ?>" tabindex="3" />
 							</div>
 						</div>
 						<div class="tagchecklist"></div>
 					</div>
-					<p class="tagcloud-link"><a href="#titlediv" class="tagcloud-link" id="link-post_tag"><?php _e('Choose from the most used tags', 'rsspf'); ?></a></p>
+					<p class="tagcloud-link"><a href="#titlediv" class="tagcloud-link" id="link-post_tag"><?php _e('Choose from the most used tags', 'pf'); ?></a></p>
 				</div>
 			</div>
 		</div>
@@ -614,9 +614,9 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			$post_ID = intval($posted); ?>
 			<div id="message" class="updated">
 			<p><strong><?php _e('Your post has been saved.'); ?></strong>
-			<a onclick="window.opener.location.replace(this.href); window.close();" href="<?php echo get_permalink($post_ID); ?>"><?php _e('View post', 'rsspf'); ?></a>
-			| <a href="<?php echo get_edit_post_link( $post_ID ); ?>" onclick="window.opener.location.replace(this.href); window.close();"><?php _e('Edit Post', 'rsspf'); ?></a>
-			| <a href="#" onclick="window.close();"><?php _e('Close Window', 'rsspf'); ?></a></p>
+			<a onclick="window.opener.location.replace(this.href); window.close();" href="<?php echo get_permalink($post_ID); ?>"><?php _e('View post', 'pf'); ?></a>
+			| <a href="<?php echo get_edit_post_link( $post_ID ); ?>" onclick="window.opener.location.replace(this.href); window.close();"><?php _e('Edit Post', 'pf'); ?></a>
+			| <a href="#" onclick="window.close();"><?php _e('Close Window', 'pf'); ?></a></p>
 			</div>
 		<?php } ?>
 
@@ -626,7 +626,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			</div>
 		</div>
 
-		<div id="waiting" style="display: none"><img src="<?php echo esc_url( admin_url( 'images/wpspin_light.gif' ) ); ?>" alt="" /> <?php esc_html_e( 'Loading...', 'rsspf' ); ?></div>
+		<div id="waiting" style="display: none"><img src="<?php echo esc_url( admin_url( 'images/wpspin_light.gif' ) ); ?>" alt="" /> <?php esc_html_e( 'Loading...', 'pf' ); ?></div>
 
 		<div id="extra-fields" style="display: none"></div>
 
@@ -644,7 +644,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			
 		if ( !$selection ){
 			if ($url != ''){
-				$content .= $rsspf_nt->get_content_through_aggregator($url);
+				$content .= $pf_nt->get_content_through_aggregator($url);
 			}
 		
 		}
@@ -654,7 +654,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 
 			if ( $selection )
 				$content .= __('via ');
-			//RSSPF Notes - Set content for an empty selection.
+			//PF Notes - Set content for an empty selection.
 			$content .= sprintf( "<a href='%s'>%s</a>.</p>", esc_url( $url ), esc_html( $title ) );
 		}
 
@@ -665,12 +665,12 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 
 			if ( current_user_can('upload_files') ) {
 				?>
-				<a id="photo_button" title="<?php esc_attr_e('Insert an Image', 'rsspf'); ?>" href="#">
-				<img alt="<?php esc_attr_e('Insert an Image', 'rsspf'); ?>" src="<?php echo esc_url( admin_url( 'images/media-button-image.gif?ver=20100531' ) ); ?>"/></a>
+				<a id="photo_button" title="<?php esc_attr_e('Insert an Image', 'pf'); ?>" href="#">
+				<img alt="<?php esc_attr_e('Insert an Image', 'pf'); ?>" src="<?php echo esc_url( admin_url( 'images/media-button-image.gif?ver=20100531' ) ); ?>"/></a>
 				<?php
 			}
 			?>
-			<a id="video_button" title="<?php esc_attr_e('Embed a Video', 'rsspf'); ?>" href="#"><img alt="<?php esc_attr_e('Embed a Video', 'rsspf'); ?>" src="<?php echo esc_url( admin_url( 'images/media-button-video.gif?ver=20100531' ) ); ?>"/></a>
+			<a id="video_button" title="<?php esc_attr_e('Embed a Video', 'pf'); ?>" href="#"><img alt="<?php esc_attr_e('Embed a Video', 'pf'); ?>" src="<?php echo esc_url( admin_url( 'images/media-button-video.gif?ver=20100531' ) ); ?>"/></a>
 			<?php
 		}
 
@@ -683,13 +683,13 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 </form>
 <div id="photo-add-url-div" style="display:none;">
 	<table><tr>
-	<td><label for="this_photo"><?php _e('URL', 'rsspf') ?></label></td>
+	<td><label for="this_photo"><?php _e('URL', 'pf') ?></label></td>
 	<td><input type="text" id="this_photo" name="this_photo" class="tb_this_photo text" onkeypress="if(event.keyCode==13) image_selector(this);" /></td>
 	</tr><tr>
-	<td><label for="this_photo_description"><?php _e('Description', 'rsspf') ?></label></td>
+	<td><label for="this_photo_description"><?php _e('Description', 'pf') ?></label></td>
 	<td><input type="text" id="this_photo_description" name="photo_description" class="tb_this_photo_description text" onkeypress="if(event.keyCode==13) image_selector(this);" value="<?php echo esc_attr($title);?>"/></td>
 	</tr><tr>
-	<td><input type="button" class="button" onclick="image_selector(this)" value="<?php esc_attr_e('Insert Image', 'rsspf'); ?>" /></td>
+	<td><input type="button" class="button" onclick="image_selector(this)" value="<?php esc_attr_e('Insert Image', 'pf'); ?>" /></td>
 	</tr></table>
 </div>
 <?php

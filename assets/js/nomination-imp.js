@@ -16,7 +16,7 @@ jQuery(document).ready(function() {
 	var item_wp_date	= jQuery("#item_wp_date_"+itemID).val();
 	var item_tags		= jQuery("#item_tags_"+itemID).val();
 //	var errorThrown		= 'Broken';
-	var theNonce		= jQuery.trim(jQuery('#rsspf_nomination_nonce').val())
+	var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val())
 	jQuery('.loading-'+itemID).show();
 	jQuery.post(ajaxurl, {
 			action: 'build_a_nomination',
@@ -30,7 +30,7 @@ jQuery(document).ready(function() {
 			item_id: item_id,
 			item_wp_date: item_wp_date,
 			item_tags: item_tags,
-			rsspf_nomination_nonce: theNonce
+			pf_nomination_nonce: theNonce
 		},
 		function(response) {
 			jQuery('.loading-'+itemID).hide();

@@ -206,7 +206,7 @@ $gencode = '
 												<input type="hidden" name="item_tags" id="item_tags_{id}" value="{label}">
 												<input type="hidden" name="item_added_date" id="item_added_date_{id}" value="{addeddate}">
 												<input type="hidden" name="source_repeat" id="source_repeat_dabe225b933be76cd0233cc36ec5fd23" value="{repeat}">
-												<input type="hidden" id="rsspf_nomination_nonce" name="rsspf_nomination_nonce" value="035950e4ef">
+												<input type="hidden" id="pf_nomination_nonce" name="pf_nomination_nonce" value="035950e4ef">
 												<input type="submit" class="PleasePushMe" id="{id}" value="Nominate">
 												</p>
 											<div class="nominate-result-{id}">

@@ -4,7 +4,7 @@
  * Test of module base class
  */
 
-class RSSPF_Foo extends RSSPF_Module {
+class PF_Foo extends PF_Module {
 	function __construct() {
 		parent::start();
 	}
@@ -18,10 +18,10 @@ class RSSPF_Foo extends RSSPF_Module {
 		$admin_menus   = array();
 
 		$admin_menus[] = array(
-			'page_title' => __( 'Foo', 'rsspf' ),
-			'menu_title' => __( 'Foo', 'rsspf' ),
+			'page_title' => __( 'Foo', 'pf' ),
+			'menu_title' => __( 'Foo', 'pf' ),
 			'cap'        => 'edit_posts',
-			'slug'       => 'rsspf-foo',
+			'slug'       => 'pf-foo',
 			'callback'   => array( $this, 'admin_menu_callback' ),
 		);
 
@@ -29,7 +29,7 @@ class RSSPF_Foo extends RSSPF_Module {
 	}
 	
 	function setup_module() {
-		$enabled = get_option( 'rsspf_foo_enable' );
+		$enabled = get_option( 'pf_foo_enable' );
 		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
 			$enabled = 'yes';
 		}
@@ -40,7 +40,7 @@ class RSSPF_Foo extends RSSPF_Module {
 			'options' => ''
 		);
 		
-		//update_option( 'rsspf_foo_settings', $mod_settings );
+		//update_option( 'pf_foo_settings', $mod_settings );
 
 		
 	}
@@ -54,7 +54,7 @@ class RSSPF_Foo extends RSSPF_Module {
 			'options' => ''
 		);
 		
-		update_option( RSSPF_SLUG . '_' . $this->id . '_settings', $mod_settings );	
+		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );	
 
 		//return $test;
 	}	
@@ -74,7 +74,7 @@ class RSSPF_Foo extends RSSPF_Module {
 	 * If you have no styles, etc, just ignore this
 	 */
 	function admin_enqueue_styles() {
-		wp_register_style( RSSPF_SLUG . '-foo-style', RSSPF_URL . 'includes/foo/css/style.css' );
+		wp_register_style( PF_SLUG . '-foo-style', PF_URL . 'includes/foo/css/style.css' );
 	}
 	function pf_add_dash_widgets() {
 		$foo_widgets_array = array(

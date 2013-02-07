@@ -9,11 +9,11 @@
 /**
  * Database class for interacting with feed item relationships
  */
-class RSSPF_RSS_Import_Relationship {
+class PF_RSS_Import_Relationship {
 	public function __construct() {
 		global $wpdb;
 
-		$this->table_name = $wpdb->prefix . 'rsspf_relationships';
+		$this->table_name = $wpdb->prefix . 'pf_relationships';
 	}
 
 	public function create( $args = array() ) {
@@ -167,7 +167,7 @@ class RSSPF_RSS_Import_Relationship {
  * @param string $relationship_type
  * @return int $relationship_type_id
  */
-function rsspf_get_relationship_type_id( $relationship_type ) {
+function pf_get_relationship_type_id( $relationship_type ) {
 	// Might pay to abstract these out at some point
 	$types = array(
 		1 => 'read',
@@ -189,13 +189,13 @@ function rsspf_get_relationship_type_id( $relationship_type ) {
  * @param string value
  * @return bool True on success
  */
-function rsspf_set_relationship( $relationship_type, $item_id, $user_id, $value ) {
-	$existing = rsspf_get_relationship( $relationship_type, $item_id, $user_id );
+function pf_set_relationship( $relationship_type, $item_id, $user_id, $value ) {
+	$existing = pf_get_relationship( $relationship_type, $item_id, $user_id );
 
-	$relationship = new RSSPF_RSS_Import_Relationship();
+	$relationship = new PF_RSS_Import_Relationship();
 
 	// Translate relationship type
-	$relationship_type_id = rsspf_get_relationship_type_id( $relationship_type );
+	$relationship_type_id = pf_get_relationship_type_id( $relationship_type );
 
 	$params = array(
 		'relationship_type' => $relationship_type_id,
@@ -222,14 +222,14 @@ function rsspf_set_relationship( $relationship_type, $item_id, $user_id, $value 
  * @param int $user_id
  * @return bool True when a relationship is deleted OR when one is not found in the first place
  */
-function rsspf_delete_relationship( $relationship_type, $item_id, $user_id ) {
+function pf_delete_relationship( $relationship_type, $item_id, $user_id ) {
 	$deleted = false;
-	$existing = rsspf_get_relationship( $relationship_type, $item_id, $user_id );
+	$existing = pf_get_relationship( $relationship_type, $item_id, $user_id );
 
 	if ( empty( $existing ) ) {
 		$deleted = true;
 	} else {
-		$relationship = new RSSPF_RSS_Import_Relationship();
+		$relationship = new PF_RSS_Import_Relationship();
 		$deleted = $relationship->delete( array( 'id' => $existing->id ) );
 	}
 
@@ -246,11 +246,11 @@ function rsspf_delete_relationship( $relationship_type, $item_id, $user_id ) {
  * @param int $user_id
  * @return object The relationship object
  */
-function rsspf_get_relationship( $relationship_type, $item_id, $user_id ) {
-	$relationship = new RSSPF_RSS_Import_Relationship();
+function pf_get_relationship( $relationship_type, $item_id, $user_id ) {
+	$relationship = new PF_RSS_Import_Relationship();
 
 	// Translate relationship type
-	$relationship_type_id = rsspf_get_relationship_type_id( $relationship_type );
+	$relationship_type_id = pf_get_relationship_type_id( $relationship_type );
 
 	$existing = $relationship->get( array(
 		'relationship_type' => $relationship_type_id,
@@ -276,8 +276,8 @@ function rsspf_get_relationship( $relationship_type, $item_id, $user_id ) {
  * @param int $user_id
  * @return string|bool The relationship value if it exists, false otherwise
  */
-function rsspf_get_relationship_value( $relationship_type, $item_id, $user_id ) {
-	$r = rsspf_get_relationship( $relationship_type, $item_id, $user_id );
+function pf_get_relationship_value( $relationship_type, $item_id, $user_id ) {
+	$r = pf_get_relationship( $relationship_type, $item_id, $user_id );
 
 	if ( ! empty( $r ) ) {
 		$retval = $r->value;
@@ -294,9 +294,9 @@ function rsspf_get_relationship_value( $relationship_type, $item_id, $user_id ) 
  * @param string $relationship_type
  * @param int $user_id
  */
-function rsspf_get_relationships_for_user( $relationship_type, $user_id ) {
-	$relationship = new RSSPF_RSS_Import_Relationship();
-	$relationship_type_id = rsspf_get_relationship_type_id( $relationship_type );
+function pf_get_relationships_for_user( $relationship_type, $user_id ) {
+	$relationship = new PF_RSS_Import_Relationship();
+	$relationship_type_id = pf_get_relationship_type_id( $relationship_type );
 
 	$rs = $relationship->get( array(
 		'relationship_type' => $relationship_type_id,
@@ -310,27 +310,27 @@ function rsspf_get_relationships_for_user( $relationship_type, $user_id ) {
 //          "STAR"            //
 ////////////////////////////////
 
-function rsspf_is_item_starred_for_user( $item_id, $user_id ) {
-	$v = rsspf_get_relationship_value( 'star', $item_id, $user_id );
+function pf_is_item_starred_for_user( $item_id, $user_id ) {
+	$v = pf_get_relationship_value( 'star', $item_id, $user_id );
 	return 1 == $v;
 }
 
-function rsspf_star_item_for_user( $item_id, $user_id ) {
-	return rsspf_set_relationship( 'star', $item_id, $user_id, '1' );
+function pf_star_item_for_user( $item_id, $user_id ) {
+	return pf_set_relationship( 'star', $item_id, $user_id, '1' );
 }
 
-function rsspf_unstar_item_for_user( $item_id, $user_id ) {
-	return rsspf_delete_relationship( 'star', $item_id, $user_id );
+function pf_unstar_item_for_user( $item_id, $user_id ) {
+	return pf_delete_relationship( 'star', $item_id, $user_id );
 }
 
 /**
  * Get a list of starred items for a given user
  *
- * Use this function in conjunction with RSSPF_RSS_Import_Feed_Item:
+ * Use this function in conjunction with PF_RSS_Import_Feed_Item:
  *
- *    $starred_item_ids = rsspf_get_starred_items_for_user( $user_id, 'simple' );
+ *    $starred_item_ids = pf_get_starred_items_for_user( $user_id, 'simple' );
  *
- *    $feed_item = new RSSPF_RSS_Import_Feed_Item();
+ *    $feed_item = new PF_RSS_Import_Feed_Item();
  *    $items = $feed_item->get( array(
  *        'post__in' => $starred_item_ids
  *    ) );
@@ -338,8 +338,8 @@ function rsspf_unstar_item_for_user( $item_id, $user_id ) {
  * @param int $user_id
  * @param string $format 'simple' to get back just the item IDs. Otherwise raw relationship objects
  */
-function rsspf_get_starred_items_for_user( $user_id, $format = 'raw' ) {
-	$rs = rsspf_get_relationships_for_user( 'star', $user_id );
+function pf_get_starred_items_for_user( $user_id, $format = 'raw' ) {
+	$rs = pf_get_relationships_for_user( 'star', $user_id );
 
 	if ( 'simple' == $format ) {
 		$rs = wp_list_pluck( $rs, 'item_id' );

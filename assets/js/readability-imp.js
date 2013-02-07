@@ -19,7 +19,7 @@ jQuery(document).ready(function() {
 		var url = jQuery("#"+itemID+" .item_url").attr('href');
 		var authorship = jQuery("#"+itemID+" span.item-authorship").html();
 		//I suppose I should nonce here right? 
-		var theNonce		= jQuery.trim(jQuery('#rsspf_nomination_nonce').val());
+		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());
 		//At some point a waiting graphic should go here. 
 		jQuery.post(ajaxurl, {
 			action: 'make_it_readable',
@@ -29,7 +29,7 @@ jQuery(document).ready(function() {
 			content: content,
 			//We need to pull the source data to determine if it is aggregation as well. 
 			authorship: authorship,
-			rsspf_nomination_nonce: theNonce
+			pf_nomination_nonce: theNonce
 			
 		}, 
 		function(response) {

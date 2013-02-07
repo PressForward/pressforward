@@ -1,5 +1,5 @@
 /**
- * Implementation of sort for RSSPF
+ * Implementation of sort for pf
 **/
 jQuery(document).ready(function() {
 

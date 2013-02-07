@@ -3,7 +3,7 @@
 /**
  * Base class for PressForward RSS modules
  */
-class RSSPF_Module {
+class PF_Module {
 	var $id;
 	var $module_dir;
 	var $module_url;
@@ -14,11 +14,11 @@ class RSSPF_Module {
 
 	function setup_hooks() {
 		// Once modules are registered, set up some basic module info
-		add_action( 'rsspf_setup_modules', array( $this, 'setup_module_info' ) );
+		add_action( 'pf_setup_modules', array( $this, 'setup_module_info' ) );
 		add_action( 'admin_init', array($this, 'module_setup') );
 		// Set up the admin panels and save methods
-		add_action( 'rsspf_admin_op_page', array( $this, 'admin_op_page' ) );
-		add_action( 'rsspf_admin_op_page_save', array( $this, 'admin_op_page_save' ) );
+		add_action( 'pf_admin_op_page', array( $this, 'admin_op_page' ) );
+		add_action( 'pf_admin_op_page_save', array( $this, 'admin_op_page_save' ) );
 
 	}
 
@@ -26,16 +26,16 @@ class RSSPF_Module {
 	 * Determine some helpful info about this module
 	 *
 	 * Sets the module ID based on the key used to register the module in
-	 * the $rsspf global
+	 * the $pf global
 	 *
 	 * Also sets up the module_dir and module_url for use throughout
 	 */
 	function setup_module_info() {
-		global $rsspf;
+		global $pf;
 
 		// Determine the ID by checking which module this class belongs to
 		$module_class = get_class( $this );
-		foreach ( $rsspf->modules as $module_id => $module ) {
+		foreach ( $pf->modules as $module_id => $module ) {
 			if ( is_a( $module, $module_class ) ) {
 				$this->id = $module_id;
 				break;
@@ -44,11 +44,11 @@ class RSSPF_Module {
 
 		// If we've found an id, use it to create some paths
 		if ( $this->id ) {
-			$this->module_dir = trailingslashit( RSSPF_ROOT . '/modules/' . $this->id );
-			$this->module_url = trailingslashit( RSSPF_URL . 'modules/' . $this->id );
+			$this->module_dir = trailingslashit( PF_ROOT . '/modules/' . $this->id );
+			$this->module_url = trailingslashit( PF_URL . 'modules/' . $this->id );
 		}
 
-		$enabled = get_option( RSSPF_SLUG . '_' . $this->id . '_enable' );
+		$enabled = get_option( PF_SLUG . '_' . $this->id . '_enable' );
 		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
 			$enabled = 'yes';
 		}
@@ -80,36 +80,36 @@ class RSSPF_Module {
 			'options' => ''
 		);
 
-		update_option( RSSPF_SLUG . '_' . $this->id . '_settings', $mod_settings );
+		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 
 		//return $test;
 	}
 
 	public function admin_op_page() {
 		//Module enable option code originated in https://github.com/boonebgorges/participad
-		$modsetup = get_option(RSSPF_SLUG . '_' . $this->id . '_settings');
+		$modsetup = get_option(PF_SLUG . '_' . $this->id . '_settings');
 		$modId = $this->id;
-		//print_r(RSSPF_SLUG . '_' . $modId . '_enable');
-		$enabled = get_option(RSSPF_SLUG . '_' . $modId . '_enable');
+		//print_r(PF_SLUG . '_' . $modId . '_enable');
+		$enabled = get_option(PF_SLUG . '_' . $modId . '_enable');
 		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
 			$enabled = 'yes';
 		}
 			//print_r( $this->is_enabled() );
 		?>
-			<h4><?php _e( $modsetup['name'], RSSPF_SLUG ) ?></h4>
+			<h4><?php _e( $modsetup['name'], PF_SLUG ) ?></h4>
 
-			<p class="description"><?php _e( $modsetup['description'], RSSPF_SLUG ) ?></p>
+			<p class="description"><?php _e( $modsetup['description'], PF_SLUG ) ?></p>
 
 			<table class="form-table">
 				<tr>
 					<th scope="row">
-						<label for="participad-dashboard-enable"><?php _e( 'Enable '. $modsetup['name'], RSSPF_SLUG ) ?></label>
+						<label for="participad-dashboard-enable"><?php _e( 'Enable '. $modsetup['name'], PF_SLUG ) ?></label>
 					</th>
 
 					<td>
-						<select id="<?php echo RSSPF_SLUG . '_' . $modId . '_enable'; ?>" name="<?php echo RSSPF_SLUG . '_' . $modId . '_enable'; ?>">
-							<option value="yes" <?php selected( $enabled, 'yes' ) ?>><?php _e( 'Yes', RSSPF_SLUG ) ?></option>
-							<option value="no" <?php selected( $enabled, 'no' ) ?>><?php _e( 'No', RSSPF_SLUG ) ?></option>
+						<select id="<?php echo PF_SLUG . '_' . $modId . '_enable'; ?>" name="<?php echo PF_SLUG . '_' . $modId . '_enable'; ?>">
+							<option value="yes" <?php selected( $enabled, 'yes' ) ?>><?php _e( 'Yes', PF_SLUG ) ?></option>
+							<option value="no" <?php selected( $enabled, 'no' ) ?>><?php _e( 'No', PF_SLUG ) ?></option>
 						</select>
 					</td>
 				</tr>
@@ -119,8 +119,8 @@ class RSSPF_Module {
 
 	public function admin_op_page_save() {
 		$modId = $this->id;
-		$enabled = isset( $_POST[RSSPF_SLUG . '_' . $modId . '_enable'] ) && 'no' == $_POST[RSSPF_SLUG . '_' . $modId . '_enable'] ? 'no' : 'yes';
-		update_option( RSSPF_SLUG . '_' . $modId . '_enable', $enabled );
+		$enabled = isset( $_POST[PF_SLUG . '_' . $modId . '_enable'] ) && 'no' == $_POST[PF_SLUG . '_' . $modId . '_enable'] ? 'no' : 'yes';
+		update_option( PF_SLUG . '_' . $modId . '_enable', $enabled );
 
 	}
 
@@ -140,7 +140,7 @@ class RSSPF_Module {
 				continue;
 			}
 
-			add_submenu_page( RSSPF_MENU_SLUG, $r['page_title'], $r['menu_title'], $r['cap'], $r['slug'], $r['callback'] );
+			add_submenu_page( PF_MENU_SLUG, $r['page_title'], $r['menu_title'], $r['cap'], $r['slug'], $r['callback'] );
 		}
 	}
 /**
@@ -158,7 +158,7 @@ class RSSPF_Module {
 				continue;
 			}
 
-			//add_action( RSSPF_MENU_SLUG, $r['page_title'], $r['menu_title'], $r['cap'], $r['slug'], $r['callback'] );
+			//add_action( PF_MENU_SLUG, $r['page_title'], $r['menu_title'], $r['cap'], $r['slug'], $r['callback'] );
 		}
 	}
 **/

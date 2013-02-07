@@ -7,8 +7,8 @@
 	echo '<div class="container-fluid">';
 		echo '<div class="row-fluid">';
 			echo '<div class="span12 title-span">';
-				echo '<h1>' . RSSPF_TITLE . ': Under Review</h1>';
-				echo '<img class="loading-top" src="' . RSSPF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';
+				echo '<h1>' . PF_TITLE . ': Under Review</h1>';
+				echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';
 				echo '<div id="errors"></div>';
 			echo '</div><!-- End title 9 span -->';
 		echo '</div><!-- End Row -->';
@@ -16,14 +16,14 @@
 					
 			echo 	'<div class="span6">
 						<div class="btn-group">
-							<button type="submit" class="showarchived btn btn-warning" id="showarchived" value="' . __('Show archived', 'rsspf') . '">' . __('Show archived', 'rsspf') . '.</button>
-							<button type="submit" class="btn btn-info feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'rsspf') . '" >' . __('Sort by item date', 'rsspf') . '</button>
-							<button type="submit" class="btn btn-info feedsort" id="sortbynomdate" value="' . __('Sort by date Nominated', 'rsspf') . '">' . __('Sort by date Nominated', 'rsspf') . '</button>
+							<button type="submit" class="showarchived btn btn-warning" id="showarchived" value="' . __('Show archived', 'pf') . '">' . __('Show archived', 'pf') . '.</button>
+							<button type="submit" class="btn btn-info feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>
+							<button type="submit" class="btn btn-info feedsort" id="sortbynomdate" value="' . __('Sort by date Nominated', 'pf') . '">' . __('Sort by date Nominated', 'pf') . '</button>
 							<button class="btn btn-inverse" id="fullscreenfeed">Full Screen</button>
 						</div><!-- End btn-group -->
 					</div><!-- End span6 -->';
 			echo 	'<div class="span3 offset3">
-						<button type="submit" class="delete btn btn-danger pull-right" id="archivenoms" value="' . __('Archive all', 'rsspf') . '" >' . __('Archive all', 'rsspf') . '</button>
+						<button type="submit" class="delete btn btn-danger pull-right" id="archivenoms" value="' . __('Archive all', 'pf') . '" >' . __('Archive all', 'pf') . '</button>
 					</div><!-- End span3 -->';
 //Hidden here, user options, like 'show archived' etc...
 				?><div id="page_data" style="display:none">
@@ -152,22 +152,22 @@
 						
 						<div class="sortable-hidden-meta" style="display:none;">
 							<?php 
-							_e('UNIX timestamp from source RSS', 'rsspf');
+							_e('UNIX timestamp from source RSS', 'pf');
 							echo ': <span class="sortable_source_timestamp">' . $timestamp_item_posted . '</span><br />';
 
-							_e('UNIX timestamp last modified', 'rsspf');
+							_e('UNIX timestamp last modified', 'pf');
 							echo ': <span class="sortable_mod_timestamp">' . $timestamp_nom_last_modified . '</span><br />';
 							
-							_e('UNIX timestamp date nominated', 'rsspf');
+							_e('UNIX timestamp date nominated', 'pf');
 							echo ': <span class="sortable_nom_timestamp">' . $timestamp_unix_date_nomed . '</span><br />';
 							
-							_e('Times repeated in source feeds', 'rsspf');
+							_e('Times repeated in source feeds', 'pf');
 							echo ': <span class="sortable_sources_repeat">' . $source_repeat . '</span><br />';
 							
-							_e('Number of nominations received', 'rsspf');
+							_e('Number of nominations received', 'pf');
 							echo ': <span class="sortable_nom_count">' . $nom_count . '</span><br />';
 							
-							_e('Slug for origon site', 'rsspf');
+							_e('Slug for origon site', 'pf');
 							echo ': <span class="sortable_origin_link_slug">' . $sourceSlug . '</span><br />';
 							
 							//Add an action here for others to provide additional sortables.
@@ -196,7 +196,7 @@
 						echo '<div class="accordion-body collapse" id="collapse' . $count . '">';
 						echo '<div class="accordion-inner">';
 								echo '<div class="row-fluid span12 authorship-info">';
-									$author_string = sprintf(__('Authored by %1$d on %2$d', 'rsspf'), $item_authorship, $date_posted);
+									$author_string = sprintf(__('Authored by %1$d on %2$d', 'pf'), $item_authorship, $date_posted);
 									echo '<h6>' . $author_string . '</h6>';
 									if ($nom_count > 1){
 										$nomersArray = explode(',',$nominators);
@@ -210,7 +210,7 @@
 										$userObj = get_userdata($nominators);
 										$nominators = $userObj->user_nicename;
 									}
-									$nom_by_string = sprintf(__('Nominated by %1$d on %2$d', 'rsspf'), $nominators, date('Y-m-d', strtotime($date_nomed)));;
+									$nom_by_string = sprintf(__('Nominated by %1$d on %2$d', 'pf'), $nominators, date('Y-m-d', strtotime($date_nomed)));;
 									echo '<h6>' . $nom_by_string . '</h6>';
 								echo '</div>
 										<div class="nom-content-body row-fluid span12">';
@@ -229,17 +229,17 @@
 									<div class="nom-master-buttons row-fluid">
 										<div class="span12">
 											<div class="result-status-<?php echo $rss_item_id; ?>">
-												<?php echo '<img class="loading-' . $rss_item_id . '" src="' . RSSPF_URL . 'assets/images/ajax-loader.gif" alt="' . __('Loading', 'rsspf') . '..." style="display: none" />'; ?>
+												<?php echo '<img class="loading-' . $rss_item_id . '" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="' . __('Loading', 'pf') . '..." style="display: none" />'; ?>
 												<div class="msg-box"></div>
 											</div>
 											<form name="form-<?php echo $rss_item_id; ?>" id="<?php echo $rss_item_id ?>"><p>
 												<?php $this->prep_item_for_submit($metadata); ?>
-												<button class="btn btn-inverse nom-to-draft" form="<?php echo $rss_item_id ?>"><?php _e('Send to Draft', 'rsspf'); ?></button> 
-												<button class="btn btn-inverse nom-to-archive" form="<?php echo $nom_id ?>"><?php _e('Archive', 'rsspf'); ?></button>
+												<button class="btn btn-inverse nom-to-draft" form="<?php echo $rss_item_id ?>"><?php _e('Send to Draft', 'pf'); ?></button> 
+												<button class="btn btn-inverse nom-to-archive" form="<?php echo $nom_id ?>"><?php _e('Archive', 'pf'); ?></button>
 															<?php $tax = get_taxonomy( 'category' ); ?>
 			
 			<div id="tagsdiv-post_tag" class="postbox">
-				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'rsspf' ); ?>"><br /></div>
+				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'pf' ); ?>"><br /></div>
 				<h3><span><?php _e('Tags'); ?></span></h3>
 				<div class="inside">
 					<div class="tagsdiv" id="post_tag">
@@ -248,12 +248,12 @@
 							<input type="hidden" name="tax_input[post_tag]" class="the-tags" id="tax-input[post_tag] tag_input_<?php echo $rss_item_id; ?>" value="" />
 							<div class="ajaxtag">
 								<input type="text" name="newtag[post_tag]" class="newtag form-input-tip" size="16" autocomplete="off" value="" />
-								<input type="button" class="button tagadd" value="<?php esc_attr_e('Add', 'rsspf'); ?>" tabindex="3" />
+								<input type="button" class="button tagadd" value="<?php esc_attr_e('Add', 'pf'); ?>" tabindex="3" />
 							</div>
 						</div>
 						<div class="tagchecklist"></div>
 					</div>
-					<p class="tagcloud-link"><a href="#titlediv" class="tagcloud-link" id="link-post_tag"><?php _e('Choose from the most used tags', 'rsspf'); ?></a></p>
+					<p class="tagcloud-link"><a href="#titlediv" class="tagcloud-link" id="link-post_tag"><?php _e('Choose from the most used tags', 'pf'); ?></a></p>
 				</div>
 			</div>			
 			

@@ -77,7 +77,7 @@ visibility:hidden;
 	margin: 8px auto;
 }
 
-.toplevel_page_rsspf-menu #wpwrap, .rss-to-press-forward_page_rsspf-review #wpwrap {
+.toplevel_page_pf-menu #wpwrap, .pressforward_page_pf-review #wpwrap {
 	
     background-color: #ecf3f9;
 
@@ -158,13 +158,13 @@ h3 {
 	padding: 0;
 }
 
-.rsspf-right-widget .widget-title {
+.pf-right-widget .widget-title {
 	background-color: #F5EBBA;
 	padding: 8px;
 	border-bottom: 1px solid #CCBE8E
 }
 
-.rsspf-right-widget .widget-body {
+.pf-right-widget .widget-body {
 	padding: 8px;
 }
 

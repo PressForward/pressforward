@@ -1,8 +1,8 @@
 <?php
 
-require_once(RSSPF_ROOT . "/includes/linkfinder/AB_subscription_builder.php");
+require_once(PF_ROOT . "/includes/linkfinder/AB_subscription_builder.php");
 
-class RSSPF_AB_Subscribe extends RSSPF_Module {
+class PF_AB_Subscribe extends PF_Module {
 
 	/////////////////////////////
 	// PARENT OVERRIDE METHODS //
@@ -24,13 +24,13 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 	}
 
 	public function build_ab_item_selector() {
-		$ABLinksArray = get_option( 'rsspf_ab_categories' );
+		$ABLinksArray = get_option( 'pf_ab_categories' );
 		$ca = 0;
 		$cb = 0;
 		$cc = 0;
 
 		if ( ! $ABLinksArray ) {
-			return __('No blogs found. Try refreshing the academicblogs.org list.', 'rsspf');
+			return __('No blogs found. Try refreshing the academicblogs.org list.', 'pf');
 		}
 
 		// Echo the ABLinksArray array into a JS object
@@ -39,7 +39,7 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 		$ab_items_selector .= '</script>';
 
 		// Build the top-level dropdown
-		$ab_items_selector .= '<label for="ab-cats">' . __( 'Category', 'rsspf' ) . '</label>';
+		$ab_items_selector .= '<label for="ab-cats">' . __( 'Category', 'pf' ) . '</label>';
 		$ab_items_selector .= '<select class="ab-dropdown" name="ab-cats" id="ab-cats">';
 		foreach ( (array) $ABLinksArray['categories'] as $cat_slug => $cat ) {
 			$ab_items_selector .= '<option value="' . esc_attr( $cat_slug ) . '">' . esc_html( $cat['text'] ) . '</option>';
@@ -47,11 +47,11 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 		$ab_items_selector .= '</select>';
 
 		// Add dummy dropdowns for subcategories
-		$ab_items_selector .= '<label for="ab-subcats">' . __( 'Subcategory', 'rsspf' ) . '</label>';
+		$ab_items_selector .= '<label for="ab-subcats">' . __( 'Subcategory', 'pf' ) . '</label>';
 		$ab_items_selector .= '<select class="ab-dropdown" name="ab-subcats" id="ab-subcats" disabled="disabled"><option>-</option></select>';
 
 		// Add dummy dropdowns for blogs
-		$ab_items_selector .= '<label for="ab-blogs">' . __( 'Blog', 'rsspf' ) . '</label>';
+		$ab_items_selector .= '<label for="ab-blogs">' . __( 'Blog', 'pf' ) . '</label>';
 		$ab_items_selector .= '<select class="ab-dropdown" name="ab-blogs" id="ab-blogs" disabled="disabled"><option>-</option></select>';
 
 /*
@@ -106,7 +106,7 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 	 * Renders the UI for the "refresh feeds" section
 	 */
 	public function render_refresh_ui() {
-		$cats = get_option( 'rsspf_ab_categories' );
+		$cats = get_option( 'pf_ab_categories' );
 		$last_refreshed = isset( $cats['last_updated'] ) ? date( 'M j, Y H:i', $cats['last_updated'] ) : 'never';
 		?>
 
@@ -114,12 +114,12 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 			
 			<p>
 				<?php 
-				$ab_refresh_when = sprintf(__('The list of feeds from academicblogs.org was last refreshed at <strong>%d</strong>. Click the Refresh button to do a refresh right now.', 'rsspf'), $last_refreshed);
+				$ab_refresh_when = sprintf(__('The list of feeds from academicblogs.org was last refreshed at <strong>%d</strong>. Click the Refresh button to do a refresh right now.', 'pf'), $last_refreshed);
 				echo $ab_refresh_when;
 				?>
 			</p>
 
-			<a class="button" id="calc_submit"><?php _e('Refresh', 'rsspf') ?></a>
+			<a class="button" id="calc_submit"><?php _e('Refresh', 'pf') ?></a>
 
 			<br />
 			<div id="calc_progress"></div>
@@ -150,23 +150,23 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 		if ( 0 === $start ) {
 			// This is the beginning of a routine. Clear out previous caches
 			// and refetch top-level cats
-			delete_option( 'rsspf_ab_categories' );
+			delete_option( 'pf_ab_categories' );
 			$cats = AB_subscription_builder::get_blog_categories();
-			update_option( 'rsspf_ab_categories', $cats );
+			update_option( 'pf_ab_categories', $cats );
 
 			// Set the percentage to 1%. This is sort of a fib
 			$pct = 1;
 		} else {
 			// Anything but zero: Pull up the categories and pick
 			// up where last left off
-			$cats = get_option( 'rsspf_ab_categories' );
+			$cats = get_option( 'pf_ab_categories' );
 			$cats = AB_subscription_builder::add_category_links( $cats, 1 );
 
 			if ( $cats['nodes_populated'] >= $cats['node_count'] ) {
 				$cats['last_updated'] = time();
 			}
 
-			update_option( 'rsspf_ab_categories', $cats );
+			update_option( 'pf_ab_categories', $cats );
 
 			// Calculate progress
 			$pct = intval( 100 * ( $cats['nodes_populated'] / $cats['node_count'] ) );
@@ -187,9 +187,9 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 	 * the request to finish up the process
 	 */
 	public function finish_ab_feeds() {
-		$cats = get_option( 'rsspf_ab_categories' );
+		$cats = get_option( 'pf_ab_categories' );
 		$cats['last_updated'] = time();
-		update_option( 'rsspf_ab_categories', $cats );
+		update_option( 'pf_ab_categories', $cats );
 		die();
 	}
 
@@ -197,12 +197,12 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 	 * Enqueue our scripts and styles for the progressbar to work
 	 */
 	public function admin_enqueue_scripts() {
-		global $rsspf;
+		global $pf;
 
 		wp_enqueue_script( 'jquery-ui' );
 		wp_enqueue_script( 'jquery-ui-progressbar' );
-		wp_enqueue_script( 'ab-refresh-progressbar', $rsspf->modules['ab-subscribe']->module_url . 'js/progressbar.js', array( 'jquery', 'jquery-ui-progressbar') );
-		wp_enqueue_script( 'ab-dropdowns', $rsspf->modules['ab-subscribe']->module_url . 'js/dropdowns.js', array( 'jquery' ) );
-		wp_enqueue_style( 'ab-refresh-progressbar', $rsspf->modules['ab-subscribe']->module_url . 'css/progressbar.css' );
+		wp_enqueue_script( 'ab-refresh-progressbar', $pf->modules['ab-subscribe']->module_url . 'js/progressbar.js', array( 'jquery', 'jquery-ui-progressbar') );
+		wp_enqueue_script( 'ab-dropdowns', $pf->modules['ab-subscribe']->module_url . 'js/dropdowns.js', array( 'jquery' ) );
+		wp_enqueue_style( 'ab-refresh-progressbar', $pf->modules['ab-subscribe']->module_url . 'css/progressbar.css' );
 	}
 }
