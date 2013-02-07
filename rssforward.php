@@ -183,17 +183,17 @@ class rsspf {
 		*/
 		add_menu_page (RSSPF_TITLE, RSSPF_TITLE, 'edit_posts', RSSPF_MENU_SLUG, array($this, 'rsspf_reader_builder'), RSSPF_URL . '/rss-forward-16.png', 24);
 
-		add_submenu_page(RSSPF_MENU_SLUG, 'All Content', 'All Content', 'edit_posts', RSSPF_MENU_SLUG, array($this, 'rsspf_reader_builder'));
+		add_submenu_page(RSSPF_MENU_SLUG, __('All Content', 'rsspf'), __('All Content', 'rsspf'), 'edit_posts', RSSPF_MENU_SLUG, array($this, 'rsspf_reader_builder'));
 
-		add_submenu_page(RSSPF_MENU_SLUG, 'Under Review', 'Under Review', 'edit_posts',  RSSPF_SLUG . '-review', array($this, 'rsspf_review_builder'));
+		add_submenu_page(RSSPF_MENU_SLUG, __('Under Review', 'rsspf'), __('Under Review', 'rsspf'), 'edit_posts',  RSSPF_SLUG . '-review', array($this, 'rsspf_review_builder'));
 
 		//Now create an options page for the plugin. This page is only accessable to Administrative level users.
-		add_submenu_page(RSSPF_MENU_SLUG, RSSPF_TITLE . ' Options', RSSPF_TITLE . ' Options', 'manage_options', RSSPF_SLUG . '-options', array($this, 'rsspf_options_builder'));
+		add_submenu_page(RSSPF_MENU_SLUG, RSSPF_TITLE . __(' Options', 'rsspf'), RSSPF_TITLE . __(' Options', 'rsspf'), 'manage_options', RSSPF_SLUG . '-options', array($this, 'rsspf_options_builder'));
 
 		//Now create an feed-listing page for the plugin, where the user can add feeds. This page is Editor level users and above.
-		add_submenu_page(RSSPF_MENU_SLUG, RSSPF_TITLE . ' Feeder', RSSPF_TITLE . ' Feeder', 'edit_others_posts', RSSPF_SLUG . '-feeder', array($this, 'rsspf_feeder_builder'));
+		add_submenu_page(RSSPF_MENU_SLUG, RSSPF_TITLE . __(' Feeder', 'rsspf'), RSSPF_TITLE . __(' Feeder', 'rsspf'), 'edit_others_posts', RSSPF_SLUG . '-feeder', array($this, 'rsspf_feeder_builder'));
 
-		add_submenu_page(RSSPF_MENU_SLUG, 'Add Nomination', 'Add Nomination', 'edit_posts', RSSPF_NOM_POSTER);
+		add_submenu_page(RSSPF_MENU_SLUG, __('Add Nomination', 'rsspf'), __('Add Nomination', 'rsspf'), 'edit_posts', RSSPF_NOM_POSTER);
 
 	}
 
@@ -201,18 +201,18 @@ class rsspf {
 	function create_rsspf_nomination_post_type() {
 		$args = array(
 					'labels' => array(
-										'name' => __( 'Nominations' ),
-										'singular_name' => __( 'Nomination' ),
-										'add_new' => __('Nominate'),
-										'add_new_item' => __('Add New Nomination'),
-										'edit_item' => __('Edit Nomination'),
-										'new_item' => __('New Nomination'),
-										'view_item' => __('View Nomination'),
-										'search_items' => __('Search Nominations'),
-										'not_found' => __('No nominations found'),
-										'not_found_in_trash' => __('No nominations found in Trash')
+										'name' => __( 'Nominations', 'rsspf' ),
+										'singular_name' => __( 'Nomination', 'rsspf' ),
+										'add_new' => __('Nominate', 'rsspf'),
+										'add_new_item' => __('Add New Nomination', 'rsspf'),
+										'edit_item' => __('Edit Nomination', 'rsspf'),
+										'new_item' => __('New Nomination', 'rsspf'),
+										'view_item' => __('View Nomination', 'rsspf'),
+										'search_items' => __('Search Nominations', 'rsspf'),
+										'not_found' => __('No nominations found', 'rsspf'),
+										'not_found_in_trash' => __('No nominations found in Trash', 'rsspf')
 									),
-					'description' => 'Posts from around the internet nominated for consideration to public posting',
+					'description' => __('Posts from around the internet nominated for consideration to public posting', 'rsspf'),
 					//Not available to non-users.
 					'public' => false,
 					//I want a UI for users to use, so true.
@@ -240,10 +240,10 @@ class rsspf {
 	function create_rsspf_archive_post_type() {
 		$args = array(
 					'labels' => array(
-										'name' => __( 'Archival' ),
-										'singular_name' => __( 'Archival' )
+										'name' => __( 'Archival', 'rsspf'),
+										'singular_name' => __( 'Archival', 'rsspf')
 									),
-					'description' => 'Archival posts for saving RSS',
+					'description' => __('Archival posts for saving RSS', 'rsspf'),
 					'public' => false,
 					'show_ui' => false,
 					'show_in_menu' => false,
@@ -276,11 +276,11 @@ class rsspf {
 				fwrite($fo, "\nBegin process retrieval.\n\n\n");
 				fclose($fo);
 			}			
-			if ($status) {print_r('<br /> Iterate switched to going. <br />');}
-			else { print_r('<br /> Iterate option not switched. <br />'); }
+			if ($status) {print_r('<br /> ' . __('Iterate switched to going.', 'rsspf') . ' <br />');}
+			else { print_r('<br /> ' . __('Iterate option not switched.', 'rsspf') . ' <br />'); }
 			$this->assemble_feed_for_pull();
 		} else {
-			print_r('The sources are already being retrieved.'); die();
+			print_r(__('The sources are already being retrieved.', 'rsspf')); die();
 		}
 	}
 
@@ -584,7 +584,7 @@ class rsspf {
 
 		endif;
 		wp_reset_postdata();
-		print_r('All archives deleted.');
+		print_r(__('All archives deleted.', 'rsspf'));
 
 	}
 
@@ -676,12 +676,12 @@ class rsspf {
 
 		$columns = array(
 			'cb' => '<input type="checkbox" />',
-			'title' => 'Title',
-			'date' => 'Last Modified',
-			'nomcount' => 'Nominations',
-			'nominatedby' => 'Nominated By',
-			'original_author' => 'Original Author',
-			'date_nominated' => 'Date Nominated'
+			'title' => __('Title', 'rsspf'),
+			'date' => __('Last Modified', 'rsspf'),
+			'nomcount' => __('Nominations', 'rsspf'),
+			'nominatedby' => __('Nominated By', 'rsspf'),
+			'original_author' => __('Original Author', 'rsspf'),
+			'date_nominated' => __('Date Nominated', 'rsspf')
 		);
 
 		return $columns;
@@ -730,8 +730,23 @@ class rsspf {
 	public function nominations_meta_boxes() {
 		global $post;
 
-		add_meta_box('rsspf-nominations', 'Nomination Data', array($this, 'nominations_box_builder'), 'nomination', 'side', 'high' );
+		add_meta_box('rsspf-nominations', __('Nomination Data', 'rsspf'), array($this, 'nominations_box_builder'), 'nomination', 'side', 'high' );
 
+	}
+	
+	public function meta_box_printer($title, $variable, $link = false, $anchor_text = __('Link', 'rsspf')){
+		echo '<strong>' . $title . '</strong>: ';
+		if ($link === true){
+			echo '<a href=';
+			echo $variable
+			echo '" target="_blank">';
+			echo $anchor_text;
+			echo '</a>';
+		} else {
+			echo $variable;
+		}
+		
+		echo '<br />';
 	}
 
 	# The builder for the box that shows us the nomination metadata.
@@ -749,16 +764,16 @@ class rsspf {
 		$user = get_user_by('id', $submitted_by);
 		$item_tags = get_post_meta($post->ID, 'item_tags', true);
 		$source_repeat = get_post_meta($post->ID, 'source_repeat', true);
-		echo '<strong>Item ID</strong>: ' . $origin_item_ID . '<br />';
-		echo '<strong>Nomination Count</strong>: ' . $nomination_count . '<br />';
-		echo '<strong>Submitted By</strong>: ' . $user->display_name . '<br />';
-		echo '<strong>Feed Title</strong>: ' . $source_title . '<br />';
-		echo '<strong>Source Posted</strong>: ' . $posted_date . '<br />';
-		echo '<strong>Source Authors</strong>: ' . $nom_authors . '<br />';
-		echo '<strong>Source Link</strong>: <a href="' . $nomination_permalink . '" target="_blank">Original Post</a><br />';
-		echo '<strong>Item Tags</strong>: ' . $item_tags . '<br />';
-		echo '<strong>Date Nominated</strong>: ' . $date_nominated . '<br />';
-		echo '<strong>Repeated in Feed</strong>: ' . $source_repeat . '<br />';
+		$this->meta_box_printer(__('Item ID', 'rsspf'), $origin_item_ID);
+		$this->meta_box_printer(__('Nomination Count', 'rsspf'), $nomination_count);
+		$this->meta_box_printer(__('Submitted By', 'rsspf'), $user->display_name);
+		$this->meta_box_printer(__('Feed Title', 'rsspf'), $source_title);
+		$this->meta_box_printer(__('Source Posted', 'rsspf'), $posted_date);
+		$this->meta_box_printer(__('Source Authors', 'rsspf'), $nom_authors);
+		$this->meta_box_printer(__('Source Link', 'rsspf'), $nomination_permalink, true, __('Original Post', 'rsspf'));
+		$this->meta_box_printer(__('Item Tags', 'rsspf'), $item_tags);
+		$this->meta_box_printer(__('Date Nominated', 'rsspf'), $date_nominated);
+		$this->meta_box_printer(__('Repeated in Feed', 'rsspf'), $source_repeat);
 
 	}
 
@@ -908,7 +923,7 @@ class rsspf {
 			# If Readability can't get the content, send back a FALSE to loop with.
 			$content = false;
 			# and let's throw up an error via AJAX as well, so we know what's going on.
-			print_r($url . ' fails Readability.<br />');
+			print_r($url . __(' fails Readability.' , 'rsspf') . '<br />');
 		}
 
 		return $content;
@@ -1123,14 +1138,14 @@ return $text;
 
 			echo 	'<div class="span6">
 						<div class="btn-group">
-							<button type="submit" class="refreshfeed btn btn-warning" id="refreshfeed" value="Refresh">Refresh</button>
-							<button type="submit" class="btn btn-info feedsort" id="sortbyitemdate" value="Sort by item date" >Sort by item date</button>
-							<button type="submit" class="btn btn-info feedsort" id="sortbyfeedindate" value="Sort by date entered RSS">Sort by date entered RSS</button>
-							<button class="btn btn-inverse" id="fullscreenfeed">Full Screen</button>
+							<button type="submit" class="refreshfeed btn btn-warning" id="refreshfeed" value="' . __('Refresh', 'rsspf') . '">' . __('Refresh', 'rsspf') . '</button>
+							<button type="submit" class="btn btn-info feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'rsspf') . '" >' . __('Sort by item date', 'rsspf') . '</button>
+							<button type="submit" class="btn btn-info feedsort" id="sortbyfeedindate" value="' . __('Sort by date entered RSS', 'rsspf') . '">' . __('Sort by date entered RSS', 'rsspf') . '</button>
+							<button class="btn btn-inverse" id="fullscreenfeed">' . __('Full Screen', 'rsspf') . '</button>
 						</div><!-- End btn-group -->
 					</div><!-- End span6 -->';
 			echo 	'<div class="span3 offset3">
-						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="Delete entire feed archive" >Delete entire feed archive</button>
+						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="' . __('Delete entire feed archive', 'rsspf') . '" >' . __('Delete entire feed archive', 'rsspf') . '</button>
 					</div><!-- End span3 -->';
 
 		echo '</div><!-- End Row -->';
@@ -1143,7 +1158,7 @@ return $text;
 					echo '<div class="row-fluid">
 							<div class="span12 main-card card well">
 								<div class="tapped">
-									Main Feed
+									' . __('Main Feed', 'rsspf') . '
 								</div>
 							</div>
 						</div>
@@ -1155,7 +1170,7 @@ return $text;
 					echo '<div class="row-fluid">
 							<div class="span12 sub-card card well">
 								<div class="tapped">
-									Module Feed
+									' . __('Module Feed', 'rsspf') . '
 								</div>
 							</div>
 						</div>
@@ -1194,14 +1209,14 @@ return $text;
 							//http://nicolasgallagher.com/pure-css-speech-bubbles/demo/
 							echo '<div class="feed-item-info-box well leftarrow" id="info-box-' . $item['item_id'] . '" style="display:none;">';
 								echo '
-								Feed: <span class="feed_title">' . $item['source_title'] . '</span><br />
-								Posted on: <span class="feed_posted">' . $item['item_date'] . '</span><br />
-								Added to feed on <span class="item_meta item_meta_added_date">' . $item['item_added_date'] . '.</span>
-								Authors: <span class="item_authors">' . $item['item_author'] . '</span><br />
-								Origin: <span class="source_name"><a target ="_blank" href="' . $sourceLink . '">' . $sourceLink . '</a></span><br />
-								Original Item: <span class="source_link"><a href="' . $item['item_link'] . '" class="item_url" target ="_blank">' . $item['item_title'] . '</a></span><br />
-								Tags: <span class="item_tags">' . $item['item_tags'] . '</span><br />
-								Times repeated in source: <span class="feed_repeat">' . $item['source_repeat'] . '</span><br />
+								' . __('Feed', 'rsspf') . ': <span class="feed_title">' . $item['source_title'] . '</span><br />
+								' . __('Posted on', 'rsspf') . ': <span class="feed_posted">' . $item['item_date'] . '</span><br />
+								' . __('Added to feed on', 'rsspf') . '<span class="item_meta item_meta_added_date">' . $item['item_added_date'] . '.</span><br />
+								' . __('Authors', 'rsspf') . ': <span class="item_authors">' . $item['item_author'] . '</span><br />
+								' . __('Origin', 'rsspf') . ': <span class="source_name"><a target ="_blank" href="' . $sourceLink . '">' . $sourceLink . '</a></span><br />
+								' . __('Original Item', 'rsspf') . ': <span class="source_link"><a href="' . $item['item_link'] . '" class="item_url" target ="_blank">' . $item['item_title'] . '</a></span><br />
+								' . __('Tags', 'rsspf') . ': <span class="item_tags">' . $item['item_tags'] . '</span><br />
+								' . __('Times repeated in source', 'rsspf') . ': <span class="feed_repeat">' . $item['source_repeat'] . '</span><br />
 								';
 							echo '</div>';
 					echo '<div class="row-fluid accordion-heading">';
@@ -1263,9 +1278,9 @@ return $text;
 						echo '<div class="span12 item_content">';
 							echo '<div>' . $item['item_content'] . '</div>';
 							echo '<br />';
-							echo '<a target="_blank" href="' . $item['item_link'] . '">Read More</a>';
+							echo '<a target="_blank" href="' . $item['item_link'] . '">' . __('Read More', 'rsspf') . '</a>';
 							echo '<br />';
-							echo '<strong class="item-tags">Item Tags</strong>: ' . $item['item_tags'] . '.';
+							echo '<strong class="item-tags">' . __('Item Tags', 'rsspf') . '</strong>: ' . $item['item_tags'] . '.';
 							echo '<br />';
 						echo '</div><!-- end item_content span12 -->';
 					echo '</div><!-- End row-fluid -->';
@@ -1283,9 +1298,9 @@ return $text;
 							//if(!($this->get_post_nomination_status('2012-08-10', $item['item_id'], 'post'))){
 								//print_r( 'false < test.'); } else { print_r('true'); die();}
 							echo '<input type="hidden" name="GreetingAll" class="GreetingAll" value="Hello Everyone!" />'
-									. '<input type="submit" class="PleasePushMe" id="' . $item['item_id'] . '" value="Nominate" />'
+									. '<input type="submit" class="PleasePushMe" id="' . $item['item_id'] . '" value="' . __('Nominate', 'rsspf') . '" />'
 									. '<div class="nominate-result-' . $item['item_id'] . '">'
-									. '<img class="loading-' . $item['item_id'] . '" src="' . RSSPF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />'
+									. '<img class="loading-' . $item['item_id'] . '" src="' . RSSPF_URL . 'assets/images/ajax-loader.gif" alt="' . __('Loading', 'rsspf') . '..." style="display: none" />'
 									. '</div></p>'
 								  . '</form>';
 
@@ -1322,7 +1337,7 @@ return $text;
 				echo '<div class="row-fluid">
 				<div class="rsspf-right-widget well span12">
 						<div class="widget-title">
-							Nominator Leaderboard
+							' . __('Nominator Leaderboard', 'rsspf') . '
 						</div>
 						<div class="widget-body">
 							<div class="navwidget">
@@ -1461,15 +1476,15 @@ return $text;
 				echo 'Options';
 
 				?>
-					<h3><?php _e( 'Modules', RSSPF_SLUG ) ?></h3>
+					<h3><?php _e( 'Modules', 'rsspf' ) ?></h3>
 
-					<p class="description"><?php _e( '<strong>PressForward Modules</strong> are addons to alter or improve the functionality of the ' . RSSPF_TITLE . ' plugin.', RSSPF_SLUG ) ?></p>
+					<p class="description"><?php _e( '<strong>PressForward Modules</strong> are addons to alter or improve the functionality of the plugin.', 'rsspf' ) ?></p>
 				<?php
 				do_action( 'rsspf_admin_op_page' );
 				wp_nonce_field( 'rsspf_settings' );
 				?>
 					<br />
-					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", RSSPF_SLUG ) ?>" />
+					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'rsspf' ) ?>" />
 			</div>
 		</form>
 		<?php
@@ -1518,14 +1533,14 @@ return $text;
 
 			if ( current_user_can('edit_posts') ) : ?>
 			<div class="tool-box">
-				<h3 class="title"><?php _e('Nominate This'); ?></h3>
-				<p><?php _e('Nominate This is a bookmarklet: a little app that runs in your browser and lets you grab bits of the web.');?></p>
+				<h3 class="title"><?php _e('Nominate This', 'rsspf'); ?></h3>
+				<p><?php _e('Nominate This is a bookmarklet: a little app that runs in your browser and lets you grab bits of the web.', 'rsspf');?></p>
 
-				<p><?php _e('Use Nominate This to clip text, images and videos from any web page. Then edit and add more straight from Nominate This before you save or publish it in a post on your site.', RSSPF_SLUG); ?></p>
-				<p class="description"><?php _e('Drag-and-drop the following link to your bookmarks bar or right click it and add it to your favorites for a posting shortcut.', RSSPF_SLUG); ?></p>
-				<p class="pressthis"><a onclick="return false;" oncontextmenu="if(window.navigator.userAgent.indexOf('WebKit')!=-1||window.navigator.userAgent.indexOf('MSIE')!=-1)jQuery('.pressthis-code').show().find('textarea').focus().select();return false;" href="<?php echo htmlspecialchars( $this->rsspf_get_shortcut_link() ); ?>"><span><?php _e('Nominate This', RSSPF_SLUG); ?></span></a></p>
+				<p><?php _e('Use Nominate This to clip text, images and videos from any web page. Then edit and add more straight from Nominate This before you save or publish it in a post on your site.', 'rsspf'); ?></p>
+				<p class="description"><?php _e('Drag-and-drop the following link to your bookmarks bar or right click it and add it to your favorites for a posting shortcut.', 'rsspf'); ?></p>
+				<p class="pressthis"><a onclick="return false;" oncontextmenu="if(window.navigator.userAgent.indexOf('WebKit')!=-1||window.navigator.userAgent.indexOf('MSIE')!=-1)jQuery('.pressthis-code').show().find('textarea').focus().select();return false;" href="<?php echo htmlspecialchars( $this->rsspf_get_shortcut_link() ); ?>"><span><?php _e('Nominate This', 'rsspf'); ?></span></a></p>
 				<div class="pressthis-code" style="display:none;">
-				<p class="description"><?php _e('If your bookmarks toolbar is hidden: copy the code below, open your Bookmarks manager, create new bookmark, type Press This into the name field and paste the code into the URL field.', RSSPF_SLUG); ?></p>
+				<p class="description"><?php _e('If your bookmarks toolbar is hidden: copy the code below, open your Bookmarks manager, create new bookmark, type Press This into the name field and paste the code into the URL field.', 'rsspf'); ?></p>
 				<p><textarea rows="5" cols="120" readonly="readonly"><?php echo htmlspecialchars( $this->rsspf_get_shortcut_link() ); ?></textarea></p>
 				</div>
 			</div>
@@ -1537,7 +1552,7 @@ return $text;
 
 			do_action( 'feeder_menu' );
 
-			?><input type="submit" class="button-primary" value="<?php _e('Save Options', RSSPF_SLUG); ?>" />
+			?><input type="submit" class="button-primary" value="<?php _e('Save Options', 'rsspf'); ?>" />
 			</form><?php
 
 
@@ -1798,7 +1813,7 @@ return $text;
 		if ( 0 == $current_user->ID ) {
 			//Not logged in.
 			$userSlug = "external";
-			$userName = "External User";
+			$userName = __('External User', 'rsspf');
 			$userID = 0;
 		} else {
 			// Logged in.
@@ -1823,12 +1838,12 @@ return $text;
 		if ($post_check == true) {
 			//Run this function to increase the nomination count in the nomination, even if it is already a post.
 			$this->get_post_nomination_status($item_wp_date, $item_id, 'nomination');
-			$result = 'This item has already been nominated';
+			$result = __('This item has already been nominated.', 'rsspf');
 			die($result);
 		}
 		else {
 			$nom_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'nomination');
-				if ($nom_check == true) { $result = 'This item has already been nominated'; die($result); }
+				if ($nom_check == true) { $result = __('This item has already been nominated', 'rsspf'); die($result); }
 		}
 
 
@@ -1881,10 +1896,10 @@ return $text;
 		//if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
 		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
 		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
-			die($this->__('Nonce not recieved. Are you sure you should be drafting?'));
+			die($this->__('Nonce not recieved. Are you sure you should be drafting?', 'rsspf'));
 		} else {
 ##Check		
-		print_r('Sending to Draft.');
+		print_r(__('Sending to Draft.', 'rsspf'));
 ##Check
 		print_r($_POST);
 			$item_title = $_POST['nom_title'];
@@ -2023,12 +2038,12 @@ return $text;
 	function archive_a_nom(){
 		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
 		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
-			die($this->__('Nonce not recieved. Are you sure you should be archiving?'));
+			die($this->__('Nonce not recieved. Are you sure you should be archiving?', 'rsspf'));
 		} else {
 			$current_user = wp_get_current_user();
 			$current_user_id = $current_user->ID;
 			add_post_meta($_POST['nom_id'], 'archived_by_user_status', 'archived_' . $current_user_id);
-			print_r('Archived.');
+			print_r(__('Archived.', 'rsspf'));
 			die();
 		}
 	}
@@ -2042,7 +2057,7 @@ return $text;
 		**/
 		$pf_user_nonce = $_POST['pf_user_nonce'];
 		if (! wp_verify_nonce($pf_user_nonce, 'user')){
-			die($this->__('Nonce not recieved. Are you sure you should be setting user options?'));
+			die($this->__('Nonce not recieved. Are you sure you should be setting user options?', 'rsspf'));
 		} else {
 			$current_user = wp_get_current_user();
 			$user_op_bool = update_user_option($current_user->ID, $_POST['user_op_slug'], $_POST['user_op_value'], true);
