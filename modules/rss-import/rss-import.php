@@ -459,12 +459,13 @@ class RSSPF_RSS_Import extends RSSPF_Module {
         ?>
 			<br />
 			<br />
-		<button type="submit" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="Reset all Feed Retrieval Options">Reset all Feed Retrieval Options</button>    <br />  
+		<button type="submit" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="Reset all Feed Retrieval Options"><?php _e('Reset all Feed Retrieval Options', 'rsspf'); ?></button>    <br />  
 			 <?php
 			$feed_go = get_option( RSSPF_SLUG . '_feeds_go_switch', 0);
 			$feed_iteration = get_option( RSSPF_SLUG . '_feeds_iteration', 0);
 			$retrieval_state = get_option( RSSPF_SLUG . '_iterate_going_switch', 0);
-			echo 'Feeds Go? ' . $feed_go . ' Feeds iteration? ' . $feed_iteration . ' Going switch? ' . $retrieval_state;
+			$retrieval_state = sprintf(__('Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d', 'rsspf'), $feed_go, $feed_iteration, $retrieval_state);
+			echo $retrieval_state;
 			?>
 			<br />
 			<br />
@@ -588,7 +589,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		if (!empty($_POST['o_feed_url'])){
 			$feedURL = $_POST['o_feed_url'];
 			if ( !wp_verify_nonce($_POST[RSSPF_SLUG . '_o_feed_nonce'], 'feedremove') )
-				die( __( "Nonce check failed. Please ensure you're supposed to be removing feeds.", 'rsspf' ) );
+				die( __( 'Nonce check failed. Please ensure you\'re supposed to be removing feeds.', 'rsspf' ) );
 		/**
 			$feedlist = get_option( RSSPF_SLUG . '_feedlist' );
 
@@ -607,14 +608,14 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			$check = update_option( RSSPF_SLUG . '_feedlist', $_POST);
 
 			if (!$check){
-				$result = 'The feedlist failed to update.';
+				$result = __('The feedlist failed to update.', 'rsspf');
 			} else {
-				$result = $feedURL . ' has been removed from your feedlist.';
+				$result = $feedURL . __(' has been removed from your feedlist.', 'rsspf');
 			}
 
 			die($result);
 		} else {
-			die("Error");
+			die(__('Error', 'rsspf'));
 		}
 
 	}
