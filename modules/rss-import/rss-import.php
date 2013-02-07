@@ -16,8 +16,9 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	 */
 	public function __construct() {
 		parent::start();
-
+		//self::check_nonce = wp_create_nonce('retrieve-pressforward');
 		add_action( 'admin_init', array($this, 'register_settings') );
+		add_action( 'wp_head', array($this, 'get_chunk_nonce'));
 		add_action( 'wp_head', array($this, 'alter_for_retrieval'));
 		if( is_admin() )
 		{
@@ -29,6 +30,11 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			add_action( 'wp_ajax_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );     
 			
 		}
+	}
+	
+	public function get_chunk_nonce(){
+		$create_nonce = wp_create_nonce('chunkpressforward');
+		update_option('chunk_nonce', $create_nonce);
 	}
 	
 	public function log_feed_input($log_string){
@@ -213,16 +219,18 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 		if ($feed_get_switch != 0) {
 			self::log_feed_input('Feeds go switch is NOT set to 0.');
 			self::log_feed_input('Getting import-cron.');
+			
 			//http://codex.wordpress.org/Function_Reference/wp_schedule_single_event
 			//add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );
 			//wp_schedule_single_event(time()-3600, 'get_more_feeds');
 			//print_r('<br /> <br />' . RSSPF_URL . 'modules/rss-import/import-cron.php <br /> <br />');
 			$theRetrievalLoop = add_query_arg( 'press', 'forward',  site_url() );
-			$pfnonce = wp_create_nonce  ('retrieve-pressforward'); 
-			$theRetrievalLoopNounced = add_query_arg( 'nonce', $pfnonce,  $theRetrievalLoop );
+			$pfnonce = get_option('chunk_nonce'); 
+			$theRetrievalLoopNounced = add_query_arg( '_wpnonce', $pfnonce,  $theRetrievalLoop );
+			self::log_feed_input('Checking remote get at ' . $theRetrievalLoopNounced . ' : ');
 			$wprgCheck = wp_remote_get($theRetrievalLoopNounced);
 			
-			self::log_feed_input('Checking remote get: ');
+			self::log_feed_input('Checked remote get at ' . $theRetrievalLoopNounced . ' : ');
 			return;
 			//$this->log_feed_input($wprgCheck);
 			//Looks like it is schedualed properly. But should I be using wp_cron() or spawn_cron to trigger it instead? 
@@ -237,11 +245,18 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 	}
 	
 	public function alter_for_retrieval() {
+			$nonce = $_REQUEST['_wpnonce'];
+			$nonce_check = get_option('chunk_nonce');
 			if ($_GET['press'] == 'forward'){
-				//if ( wp_verify_nonce($_GET['nounce'], 'retrieve-pressforward') ){
+				if ( $nonce_check ===  $nonce){
+					self::log_feed_input($nonce_check . ' is equal to ' . $nonce . '. Pressing forward.');
 					include(RSSPF_ROOT . '/modules/rss-import/import-cron.php');
 					exit;
-				//}
+				} else {
+					$verify_val = wp_verify_nonce($nonce, 'retrieve-pressforward');
+					self::log_feed_input('Nonce check of ' . $nonce . ' failed. Returned: ');
+					self::log_feed_input($verify_val);
+				}
 			}
 		
 	}
