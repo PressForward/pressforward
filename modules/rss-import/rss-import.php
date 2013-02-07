@@ -444,7 +444,7 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			$authors = $authors;
 			
 		} else {
-			$authors = 'No author.';
+			$authors = __('No author.', 'rsspf');
 		}
 		
 		return $authors;
@@ -468,18 +468,18 @@ class RSSPF_RSS_Import extends RSSPF_Module {
 			?>
 			<br />
 			<br />
-			<div><?php _e('Add Single Feed', RSSPF_SLUG); ?></div>
+			<div><?php _e('Add Single Feed', 'rsspf'); ?></div>
 				<div>
 					<input id="<?php echo RSSPF_SLUG . '_feedlist[single]'; ?>" class="regular-text" type="text" name="<?php echo RSSPF_SLUG . '_feedlist[single]'; ?>" value="" />
-                    <label class="description" for="<?php echo RSSPF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL or RSS path', RSSPF_SLUG); ?></label>
+                    <label class="description" for="<?php echo RSSPF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL or RSS path', 'rsspf'); ?></label>
 
 
                 </div>
 
-			<div><?php _e('Add OPML', RSSPF_SLUG); ?></div>
+			<div><?php _e('Add OPML', 'rsspf'); ?></div>
 				<div>
 					<input id="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>" value="" />
-                    <label class="description" for="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', RSSPF_SLUG); ?></label>
+                    <label class="description" for="<?php echo RSSPF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'rsspf'); ?></label>
 
 
                 </div>
