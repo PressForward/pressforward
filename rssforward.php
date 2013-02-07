@@ -734,11 +734,14 @@ class rsspf {
 
 	}
 	
-	public function meta_box_printer($title, $variable, $link = false, $anchor_text = __('Link', 'rsspf')){
+	public function meta_box_printer($title, $variable, $link = false, $anchor_text = 'Link'){
 		echo '<strong>' . $title . '</strong>: ';
 		if ($link === true){
+			if ($anchor_text === 'Link'){
+				$anchor_text = $this->__('Link', 'rsspf');
+			}
 			echo '<a href=';
-			echo $variable
+			echo $variable;
 			echo '" target="_blank">';
 			echo $anchor_text;
 			echo '</a>';
