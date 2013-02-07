@@ -30,7 +30,7 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 		$cc = 0;
 
 		if ( ! $ABLinksArray ) {
-			return "No blogs found. Try refreshing the academicblogs.org list.";
+			return __('No blogs found. Try refreshing the academicblogs.org list.', 'rsspf');
 		}
 
 		// Echo the ABLinksArray array into a JS object
@@ -111,9 +111,15 @@ class RSSPF_AB_Subscribe extends RSSPF_Module {
 		?>
 
 		<div id="refresh-ab-feeds">
-			<p>The list of feeds from academicblogs.org was last refreshed at <strong><?php echo $last_refreshed ?></strong>. Click the Refresh button to do a refresh right now.</p>
+			
+			<p>
+				<?php 
+				$ab_refresh_when = sprintf(__('The list of feeds from academicblogs.org was last refreshed at <strong>%d</strong>. Click the Refresh button to do a refresh right now.', 'rsspf'), $last_refreshed);
+				echo $ab_refresh_when;
+				?>
+			</p>
 
-			<a class="button" id="calc_submit">Refresh</a>
+			<a class="button" id="calc_submit"><?php _e('Refresh', 'rsspf') ?></a>
 
 			<br />
 			<div id="calc_progress"></div>
