@@ -3,7 +3,7 @@
 Plugin Name: PressForward
 Plugin URI: http://aramzs.me
 Description: This plugin is a aggregation parser for CHNM's Press Forward project.
-Version: 1.6.0
+Version: 1.6.1
 Author: Aram Zucker-Scharff
 Author URI: http://aramzs.me
 License: GPL2
