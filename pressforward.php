@@ -35,28 +35,13 @@ define( 'PF_ROOT', dirname(__FILE__) );
 define( 'PF_FILE_PATH', PF_ROOT . '/' . basename(__FILE__) );
 define( 'PF_URL', plugins_url('/', __FILE__) );
 
-//This adds the library we're going to use to pull and parse Open Graph data from a page.
-require_once(PF_ROOT . "/lib/OpenGraph.php");
-/** This is the function to check the HTML of each item for open tags and close them.
- * I've altered it specifically for some odd HTML artifacts that occur when WP sanitizes the content input.
-**/
-require_once(PF_ROOT . "/lib/htmlchecker.php");
-//A slightly altered version of the Readability library from Five Filters, who based it off readability.com's code.
-require_once(PF_ROOT . "/lib/fivefilters-readability/Readability.php");
-
-//For reading through an HTML page.
-require_once(PF_ROOT . "/lib/simple_html_dom.php");
-//require_once(PF_ROOT . "/includes/linkfinder/AB_subscription_builder.php");
-$dom = new simple_html_dom;
-
-// Load the module base class and our test module
-include( PF_ROOT . "/includes/module-base.php" );
-
 class pf {
 	var $modules = array();
-	
+
 	// See http://php.net/manual/en/language.oop5.decon.php to get a better understanding of what's going on here.
 	function __construct() {
+
+		$this->includes();
 
 		//Activate the admin menu creation function.
 		add_action('admin_menu', array($this, 'register_pf_custom_menu_pages') );
@@ -112,9 +97,40 @@ class pf {
 		add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
 
 		add_action( 'plugins_loaded', array( $this, 'pressforward_init' ) );
-		
+
 		load_plugin_textdomain( 'pf', false, PF_ROOT );
 
+	}
+
+	/**
+	 * Include necessary files
+	 *
+	 * @since 1.7
+	 */
+	function includes() {
+
+		// External libraries
+
+		// Pull and parse Open Graph data from a page.
+		require( PF_ROOT . "/lib/OpenGraph.php" );
+
+		// Check the HTML of each item for open tags and close them.
+		// I've altered it specifically for some odd HTML artifacts that occur when
+		// WP sanitizes the content input.
+		require( PF_ROOT . "/lib/htmlchecker.php" );
+
+		// A slightly altered version of the Readability library from Five Filters,
+		// who based it off readability.com's code.
+		require( PF_ROOT . "/lib/fivefilters-readability/Readability.php" );
+
+		// For reading through an HTML page.
+		require( PF_ROOT . "/lib/simple_html_dom.php" );
+		$dom = new simple_html_dom;
+
+		// Internal tools
+
+		// Load the module base class and our test module
+		include( PF_ROOT . "/includes/module-base.php" );
 	}
 
 	/**
