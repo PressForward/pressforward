@@ -22,7 +22,7 @@ class PF_RSS_Import extends PF_Module {
 		//self::check_nonce = wp_create_nonce('retrieve-pressforward');
 		add_action( 'admin_init', array($this, 'register_settings') );
 		add_action( 'wp_head', array($this, 'get_chunk_nonce'));
-		add_action( 'wp_head', array($this, 'alter_for_retrieval'));
+		add_action( 'init', array($this, 'alter_for_retrieval'));
 
 		// Schedule our cron actions for fetching feeds
 		add_action( 'init', array($this, 'schedule_feed_in' ) );
@@ -35,7 +35,7 @@ class PF_RSS_Import extends PF_Module {
 		{
 			add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
 			add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed') );
-			add_action('get_more_feeds', array($pf, 'assemble_feed_for_pull'));
+			add_action( 'get_more_feeds', array( 'PF_Feed_Item', 'assemble_feed_for_pull' ) );
 
 			add_action( 'wp_ajax_nopriv_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );
 			add_action( 'wp_ajax_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );
@@ -718,13 +718,11 @@ class PF_RSS_Import extends PF_Module {
 			}
 			if ($status) {print_r('<br /> ' . __('Iterate switched to going.', 'pf') . ' <br />');}
 			else { print_r('<br /> ' . __('Iterate option not switched.', 'pf') . ' <br />'); }
-			$this->assemble_feed_for_pull();
+			PF_Feed_Item::assemble_feed_for_pull();
 		} else {
 			print_r(__('The sources are already being retrieved.', 'pf')); die();
 		}
 	}
-
-
 }
 
 function pf_test_import() {
