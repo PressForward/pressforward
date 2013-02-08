@@ -57,13 +57,10 @@ class PressForward {
 		add_filter( 'author_link', array($this, 'replace_author_uri_presentation') );
 
 		//Activate our cron actions
-		add_action('init', array($this, 'scheduale_feed_in') );
-		add_action('init', array($this, 'scheduale_feed_out') );
+		add_action( 'init', array($this, 'schedule_feed_in' ) );
+		add_action( 'init', array($this, 'schedule_feed_out' ) );
 
-		//The take_feed_out action is now initiated, we should be able to attach our feed disassembly function.
 		add_action( 'take_feed_out', array( 'PF_Feed_Item', 'disassemble_feed_items' ) );
-
-		//The pull_feed_in action is now initiated, we should be able to attach our feed assembly function.
 		add_action( 'pull_feed_in', array( $this->admin, 'trigger_source_data') );
 
 		// Set up modules
@@ -254,11 +251,11 @@ class PressForward {
 
 	}
 
-	// Our first cron job. This scheduales hourly pulls of the rss feed(s).
-	function scheduale_feed_in() {
-		//Check to make sure it isn't already schedualed.
+	// Our first cron job. This schedules hourly pulls of the rss feed(s).
+	function schedule_feed_in() {
+		//Check to make sure it isn't already scheduled.
 		if ( ! wp_next_scheduled( 'pull_feed_in' ) ) {
-		 //Scheduale the pull_feed_in action to go off every hour.
+		 //schedule the pull_feed_in action to go off every hour.
 		  wp_schedule_event( time(), 'hourly', 'pull_feed_in' );
 		}
 	}
@@ -496,7 +493,7 @@ class PressForward {
 	}
 
 	# Creating the action to, once a month, check for items older than two months and remove them from the database.
-	function scheduale_feed_out() {
+	function schedule_feed_out() {
 		if ( ! wp_next_scheduled( 'take_feed_out' ) ) {
 		  wp_schedule_event( time(), 'monthly', 'take_feed_out' );
 		}
