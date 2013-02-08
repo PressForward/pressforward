@@ -56,13 +56,6 @@ class PressForward {
 		add_filter('the_author', array($this, 'replace_author_presentation'));
 		add_filter( 'author_link', array($this, 'replace_author_uri_presentation') );
 
-		//Activate our cron actions
-		add_action( 'init', array($this, 'schedule_feed_in' ) );
-		add_action( 'init', array($this, 'schedule_feed_out' ) );
-
-		add_action( 'take_feed_out', array( 'PF_Feed_Item', 'disassemble_feed_items' ) );
-		add_action( 'pull_feed_in', array( $this->admin, 'trigger_source_data') );
-
 		// Set up modules
 		add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
 
@@ -249,15 +242,6 @@ class PressForward {
 
 		register_post_type('rssarchival', $args);
 
-	}
-
-	// Our first cron job. This schedules hourly pulls of the rss feed(s).
-	function schedule_feed_in() {
-		//Check to make sure it isn't already scheduled.
-		if ( ! wp_next_scheduled( 'pull_feed_in' ) ) {
-		 //schedule the pull_feed_in action to go off every hour.
-		  wp_schedule_event( time(), 'hourly', 'pull_feed_in' );
-		}
 	}
 
 	/**
@@ -490,13 +474,6 @@ class PressForward {
 		pf_rss_import::advance_feeds();
 		//die('Refreshing...');
 
-	}
-
-	# Creating the action to, once a month, check for items older than two months and remove them from the database.
-	function schedule_feed_out() {
-		if ( ! wp_next_scheduled( 'take_feed_out' ) ) {
-		  wp_schedule_event( time(), 'monthly', 'take_feed_out' );
-		}
 	}
 
 

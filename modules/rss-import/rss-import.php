@@ -18,10 +18,19 @@ class PF_RSS_Import extends PF_Module {
 		global $pf;
 
 		parent::start();
+
 		//self::check_nonce = wp_create_nonce('retrieve-pressforward');
 		add_action( 'admin_init', array($this, 'register_settings') );
 		add_action( 'wp_head', array($this, 'get_chunk_nonce'));
 		add_action( 'wp_head', array($this, 'alter_for_retrieval'));
+
+		// Schedule our cron actions for fetching feeds
+		add_action( 'init', array($this, 'schedule_feed_in' ) );
+		add_action( 'init', array($this, 'schedule_feed_out' ) );
+
+		add_action( 'take_feed_out', array( 'PF_Feed_Item', 'disassemble_feed_items' ) );
+		add_action( 'pull_feed_in', array( pressforward()->admin, 'trigger_source_data') );
+
 		if( is_admin() )
 		{
 			add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
@@ -31,6 +40,24 @@ class PF_RSS_Import extends PF_Module {
 			add_action( 'wp_ajax_nopriv_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );
 			add_action( 'wp_ajax_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );
 
+		}
+	}
+
+	/**
+	 * Schedules the hourly wp-cron job
+	 */
+	public function schedule_feed_in() {
+		if ( ! wp_next_scheduled( 'pull_feed_in' ) ) {
+			wp_schedule_event( time(), 'hourly', 'pull_feed_in' );
+		}
+	}
+
+	/**
+	 * Schedules the monthly feed item cleanup
+	 */
+	function schedule_feed_out() {
+		if ( ! wp_next_scheduled( 'take_feed_out' ) ) {
+			wp_schedule_event( time(), 'monthly', 'take_feed_out' );
 		}
 	}
 
