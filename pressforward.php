@@ -35,7 +35,7 @@ define( 'PF_ROOT', dirname(__FILE__) );
 define( 'PF_FILE_PATH', PF_ROOT . '/' . basename(__FILE__) );
 define( 'PF_URL', plugins_url('/', __FILE__) );
 
-class pf {
+class PressForward {
 	var $modules = array();
 	var $admin;
 
@@ -107,6 +107,7 @@ class pf {
 		require( PF_ROOT . "/includes/functions.php" );
 		require( PF_ROOT . "/includes/module-base.php" );
 		require( PF_ROOT . '/includes/schema.php' );
+		require( PF_ROOT . '/includes/readable.php' );
 		require( PF_ROOT . '/includes/feed-items.php' );
 		require( PF_ROOT . '/includes/relationships.php' );
 		require( PF_ROOT . '/includes/nominations.php' );
@@ -219,24 +220,6 @@ class pf {
 		if ( ! wp_next_scheduled( 'pull_feed_in' ) ) {
 		 //Scheduale the pull_feed_in action to go off every hour.
 		  wp_schedule_event( time(), 'hourly', 'pull_feed_in' );
-		}
-	}
-
-	public function trigger_source_data(){
-		$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
-		$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
-		if ($feed_iteration == 0 && $retrieval_state == 0){
-			$status = update_option( PF_SLUG . '_iterate_going_switch', 1);
-			$fo = fopen(PF_ROOT . "/modules/rss-import/rss-import.txt", 'w') or print_r('Can\'t open log file.');
-			if ($fo != false){
-				fwrite($fo, "\nBegin process retrieval.\n\n\n");
-				fclose($fo);
-			}
-			if ($status) {print_r('<br /> ' . __('Iterate switched to going.', 'pf') . ' <br />');}
-			else { print_r('<br /> ' . __('Iterate option not switched.', 'pf') . ' <br />'); }
-			$this->assemble_feed_for_pull();
-		} else {
-			print_r(__('The sources are already being retrieved.', 'pf')); die();
 		}
 	}
 
@@ -426,7 +409,7 @@ class pf {
 					if ( false === ( $itemFeatImg = get_transient( 'feed_img_' . $itemUID ) ) ) {
 						set_time_limit(0);
 						# Because many systems can't process https through php, we try and remove it.
-						$itemLink = $this->de_https($itemLink);
+						$itemLink = pf_de_https($itemLink);
 						# if it forces the issue when we try and get the image, there's nothing we can do.
 						$itemLink = str_replace('&amp;','&', $itemLink);
 						if (OpenGraph::fetch($itemLink)){
@@ -507,43 +490,6 @@ class pf {
 
 	}
 
-	# Method to manually delete rssarchival entries on user action.
-	function reset_feed() {
-		global $wpdb, $post;
-		//$args = array(
-		//				'post_type' => array('any')
-		//			);
-		$args = 'post_type=' . pf_rss_import_schema()->feed_item_post_type;
-		//$archiveQuery = new WP_Query( $args );
-		$dquerystr = "
-			SELECT $wpdb->posts.*, $wpdb->postmeta.*
-			FROM $wpdb->posts, $wpdb->postmeta
-			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-			AND $wpdb->posts.post_type ='" . pf_rss_import_schema()->feed_item_post_type .
-		 "'";
-		# This is how we do a custom query, when WP_Query doesn't do what we want it to.
-		$rssarchivalposts = $wpdb->get_results($dquerystr, OBJECT);
-		//print_r(count($rssarchivalposts)); die();
-		$feedObject = array();
-		$c = 0;
-
-		if ($rssarchivalposts):
-
-			foreach ($rssarchivalposts as $post) :
-			# This takes the $post objects and translates them into something I can do the standard WP functions on.
-			setup_postdata($post);
-			$post_id = get_the_ID();
-			//Switch the delete on to wipe rss archive posts from the database for testing.
-			wp_delete_post( $post_id, true );
-			endforeach;
-
-
-		endif;
-		wp_reset_postdata();
-		print_r(__('All archives deleted.', 'pf'));
-
-	}
-
 
 	public function customError($errno, $errstr)
 	{
@@ -551,22 +497,12 @@ class pf {
 
 	}
 
-	# Tries to turn any HTTPS URL into an HTTP URL for servers without ssl configured.
-	public function de_https($url) {
-		$urlParts = parse_url($url);
-		if (in_array('https', $urlParts)){
-			$urlParts['scheme'] = 'http';
-			$url = $urlParts['scheme'] . '://'. $urlParts['host'] . $urlParts['path'] . $urlParts['query'];
-		}
-		return $url;
-	}
-
 	# The function that runs a URL through Readability and attempts to give back the plain content.
 	public function readability_object($url) {
 	//ref: http://www.keyvan.net/2010/08/php-readability/
 		set_time_limit(0);
 
-		$url = $this->de_https($url);
+		$url = pf_de_https($url);
 		$url = str_replace('&amp;','&', $url);
 		//print_r($url); print_r(' - Readability<br />');
 		// change from Boone - use wp_remote_get() instead of file_get_contents()
@@ -627,71 +563,6 @@ class pf {
 
 	}
 
-	//http://php.net/manual/en/function.set-error-handler.php
-
-	public function make_it_readable(){
-
-		// Verify nonce
-		if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )
-			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) );
-
-		$item_id = $_POST['read_item_id'];
-		//error_reporting(0);
-		if ( false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) ) ) {
-
-			set_time_limit(0);
-			$url = $this->de_https($_POST['url']);
-			$descrip = $_POST['content'];
-
-			if ($_POST['authorship'] == 'aggregation') {
-				$aggregated = true;
-			} else {
-				$aggregated = false;
-			}
-
-			if ((strlen($descrip) <= 160) || $aggregated) {
-				$itemReadReady = $this->readability_object($url);
-				if ($itemReadReady != 'error-secured') {
-					if (!$itemReadReady) {
-						$itemReadReady = __( "This content failed Readability.", 'pf' );
-						$itemReadReady .= '<br />';
-						$url = str_replace('&amp;','&', $url);
-						#Try and get the OpenGraph description.
-						if (OpenGraph::fetch($url)){
-							$node = OpenGraph::fetch($url);
-							$itemReadReady .= $node->description;
-						} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
-						elseif ('' != ($contentHtml = @get_meta_tags($url))) {
-							# Try and get the HEAD > META DESCRIPTION tag.
-							$itemReadReady .= __( "This content failed an OpenGraph check.", 'pf' );
-							$itemReadReady .= '<br />';
-							$descrip = $contentHtml['description'];
-
-						}
-						else
-						{
-							# Ugh... we can't get anything huh?
-							$itemReadReady .= __( "This content has no description we can find.", 'pf' );
-							$itemReadReady .= '<br />';
-							# We'll want to return a false to loop with.
-							$itemReadReady = $descrip;
-
-						}
-					}
-				} else {
-					die('secured');
-				}
-			} else {
-				die('readable');
-			}
-
-			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
-		}
-
-		print_r($itemReadReady);
-		die(); // < to keep from returning 0s with everything.
-	}
-
 	# Checks the URL against a list of aggregators.
 	public function is_from_aggregator($xmlbase){
 		$c = 0;
@@ -724,12 +595,12 @@ class pf {
 
 		set_time_limit(0);
 		//$this->set_error_handler("customError");
-		$url = $this->de_https($url);
+		$url = pf_de_https($url);
 		$descrip = '';
 		//$url = http_build_url($urlParts, HTTP_URL_STRIP_AUTH | HTTP_URL_JOIN_PATH | HTTP_URL_JOIN_QUERY | HTTP_URL_STRIP_FRAGMENT);
 		//print_r($url);
 		# First run it through Readability.
-		$descrip = $this->readability_object($url);
+		$descrip = PF_Readability::readability_object($url);
 		//print_r($url);
 		# If that doesn't work...
 		if (!$descrip) {
@@ -765,49 +636,6 @@ class pf {
 
 	}
 
-//Let's build a better excerpt!
-function noms_excerpt( $text ) {
-	global $post;
-//	if ( '' == $text ) {
-		$text = get_the_content('');
-		$text = apply_filters('the_content', $text);
-		$text = str_replace('\]\]\>', ']]&gt;', $text);
-		$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
-	$contentObj = new htmlchecker($text);
-	$text = $contentObj->closetags($text);
-		$text = strip_tags($text);
-		$excerpt_length = 310;
-		$words = explode(' ', $text, $excerpt_length + 1);
-		if (count($words)> $excerpt_length) {
-		  array_pop($words);
-		  array_push($words, '...');
-		  $text = implode(' ', $words);
-		}
-//	}
-
-return $text;
-}
-
-	function nom_class_tagger($array = array()){
-
-		foreach ($array as $class){
-			if (($class == '') || (empty($class)) || (!isset($class))){
-				//Do nothing.
-			}
-			elseif (is_array($class)){
-
-				foreach ($class as $subclass){
-					echo ' ';
-					echo pf_slugger($class, true, false, true);
-				}
-
-			} else {
-				echo ' ';
-				echo pf_slugger($class, true, false, true);
-			}
-		}
-
-	}
 
 	function pf_options_admin_page_save() {
 		global $pagenow;
@@ -923,208 +751,6 @@ return $text;
 
 	}
 
-	function build_a_nomination() {
-
-		// Verify nonce
-		if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )
-			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) );
-
-		//ref http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields, http://wpseek.com/wp_insert_post/
-		$time = current_time('mysql', $gmt = 0);
-		//@todo Play with post_exists (wp-admin/includes/post.php ln 493) to make sure that submissions have not already been submitted in some other method.
-			//Perhaps with some sort of "Are you sure you don't mean this... reddit style thing?
-			//Should also figure out if I can create a version that triggers on nomination publishing to send to main posts.
-
-
-		//There is some serious delay here while it goes through the database. We need some sort of loading bar.
-
-		//set up nomination check
-		$item_wp_date = $_POST['item_wp_date'];
-		$item_id = $_POST['item_id'];
-		//die($item_wp_date);
-
-		//Record first nominator and/or add a nomination to the user's count.
-		$current_user = wp_get_current_user();
-		if ( 0 == $current_user->ID ) {
-			//Not logged in.
-			$userSlug = "external";
-			$userName = __('External User', 'pf');
-			$userID = 0;
-		} else {
-			// Logged in.
-			$userID = $current_user->ID;
-			if (get_user_meta( $userID, 'nom_count', true )){
-
-				$nom_counter = get_user_meta( $userID, 'nom_count', true );
-				$nom_counter++;
-				update_user_meta( $userID, 'nom_count', $nom_counter, true );
-
-			} else {
-				add_user_meta( $userID, 'nom_count', 1, true );
-
-			}
-		}
-		$userString = $userID;
-
-		//Going to check posts first on the assumption that there will be more nominations than posts.
-		$post_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'post');
-		/** The system will only check for nominations of the item does not exist in posts. This will stop increasing the user and nomination count in nominations once they are sent to draft.
-		**/
-		if ($post_check == true) {
-			//Run this function to increase the nomination count in the nomination, even if it is already a post.
-			$this->get_post_nomination_status($item_wp_date, $item_id, 'nomination');
-			$result = __('This item has already been nominated.', 'pf');
-			die($result);
-		}
-		else {
-			$nom_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'nomination');
-				if ($nom_check == true) { $result = __('This item has already been nominated', 'pf'); die($result); }
-		}
-
-
-		//set up rest of nomination data
-		$item_title = $_POST['item_title'];
-		$item_content = htmlspecialchars_decode($_POST['item_content']);
-
-		//No need to define every post arg right? I should only need the ones I'm pushing through. Well, I guess we will find out.
-		$data = array(
-			'post_status' => 'draft',
-			'post_type' => 'nomination',
-			//'post_author' => $user_ID,
-				//Hurm... what we really need is a way to pass the nominator's userID to this function to credit them as the author of the nomination.
-				//Then we could create a leaderboard.
-			'post_date' => $_SESSION['cal_startdate'],
-				//Do we want this to be nomination date or origonal posted date? Prob. nomination date? Optimally we can store and later sort by both.
-			'post_title' => $item_title,//$item_title,
-			'post_content' => $item_content,
-
-		);
-
-		$newNomID = wp_insert_post( $data );
-
-		if ($_POST['item_feat_img'] != '')
-			$this->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
-		//die($_POST['item_feat_img']);
-
-		add_post_meta($newNomID, 'origin_item_ID', $item_id, true);
-		add_post_meta($newNomID, 'nomination_count', 1, true);
-		add_post_meta($newNomID, 'submitted_by', $userString, true);
-		add_post_meta($newNomID, 'nominator_array', $userID, true);
-		add_post_meta($newNomID, 'source_title', $_POST['source_title'], true);
-		add_post_meta($newNomID, 'posted_date', $_POST['item_date'], true);
-		add_post_meta($newNomID, 'authors', $_POST['item_author'], true);
-		add_post_meta($newNomID, 'nomination_permalink', $_POST['item_link'], true);
-		add_post_meta($newNomID, 'date_nominated', date('c'), true);
-		add_post_meta($newNomID, 'item_tags', $_POST['item_tags'], true);
-		add_post_meta($newNomID, 'source_repeat', $_POST['source_repeat'], true);
-
-		$result  = $item_title . ' nominated.';
-		die($result);
-
-
-	}
-
-	function build_a_nom_draft() {
-		global $post;
-		// verify if this is an auto save routine.
-		// If it is our form has not been submitted, so we dont want to do anything
-		//if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
-		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
-		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
-			die($this->__('Nonce not recieved. Are you sure you should be drafting?', 'pf'));
-		} else {
-##Check
-		print_r(__('Sending to Draft.', 'pf'));
-##Check
-		print_r($_POST);
-			$item_title = $_POST['nom_title'];
-			$item_content = $_POST['nom_content'];
-			$data = array(
-				'post_status' => 'draft',
-				'post_type' => 'post',
-				'post_title' => $item_title,
-				'post_content' => htmlspecialchars_decode($item_content),
-			);
-			//Will need to use a meta field to pass the content's md5 id around to check if it has already been posted.
-
-			//We assume that it is already in nominations, so no need to check there. This might be why we can't use post_exists here.
-			//No need to origonate the check at the time of the feed item either. It can't become a post with the proper meta if it wasn't a nomination first.
-			$item_id = $_POST['item_id'];
-			//YYYY-MM-DD
-			$nom_date = strtotime($_POST['nom_date']);
-			$nom_date = date('Y-m-d', $nom_date);
-
-			//Now function will not update nomination count when it pushes nomination to publication.
-			$post_check = $this->get_post_nomination_status($nom_date, $item_id, 'post', false);
-
-			//Alternative check with post_exists? or use same as above?
-			if ($post_check != true) {
-##Check
-				print_r('No Post exists.');
-				$newPostID = wp_insert_post( $data, true );
-##Check
-				print_r($newPostID);
-				add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
-
-				add_post_meta($newPostID, 'source_title', $_POST['source_title'], true);
-
-				add_post_meta($newPostID, 'source_link', $_POST['source_link'], true);
-
-				add_post_meta($newPostID, 'source_slug', $_POST['source_slug'], true);
-
-				$nomCount = $_POST['nom_count'];
-				add_post_meta($newPostID, 'nomination_count', $nomCount, true);
-
-				add_post_meta($newPostID, 'nom_id', $_POST['nom_id'], true);
-
-				$nomUserID = $_POST['nom_user'];
-				add_post_meta($newPostID, 'submitted_by', $userID, true);
-
-				$item_permalink = $_POST['item_link'];
-				add_post_meta($newPostID, 'nomination_permalink', $item_permalink, true);
-
-				$item_authorship = $_POST['item_author'];
-				add_post_meta($newPostID, 'authors', $item_authorship, true);
-
-				add_post_meta($newPostID, 'item_date', $_POST['item_date'], true);
-
-				add_post_meta($newPostID, 'item_link', $_POST['item_link'], true);
-
-				$date_nom = $_POST['nom_date'];
-				add_post_meta($newPostID, 'date_nominated', $date_nom, true);
-
-				add_post_meta($newPostID, 'nom_count', $_POST['nom_count'], true);
-
-				$item_tags = $_POST['nom_tags'];
-				add_post_meta($newPostID, 'item_tags', $item_tags, true);
-
-				//If user wants to use tags, we'll create an option to use it.
-				$nominators = $_POST['nom_users'];
-				add_post_meta($newPostID, 'nominator_array', $nominators, true);
-
-				$already_has_thumb = has_post_thumbnail($_POST['nom_id']);
-				if ($already_has_thumb)  {
-					$post_thumbnail_id = get_post_thumbnail_id( $_POST['nom_id'] );
-					set_post_thumbnail($newPostID, $post_thumbnail_id);
-				}
-
-			}
-		}
-	}
-
-
-	function archive_a_nom(){
-		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
-		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
-			die($this->__('Nonce not recieved. Are you sure you should be archiving?', 'pf'));
-		} else {
-			$current_user = wp_get_current_user();
-			$current_user_id = $current_user->ID;
-			add_post_meta($_POST['nom_id'], 'archived_by_user_status', 'archived_' . $current_user_id);
-			print_r(__('Archived.', 'pf'));
-			die();
-		}
-	}
 
 	function ajax_user_option_set(){
 		//Function to set user options via AJAX.
@@ -1175,8 +801,25 @@ return $text;
 
 }
 
-global $pf;
-$pf = new pf();
+/**
+ * Bootstrap
+ *
+ * You can also use this to get a value out of the global, eg
+ *
+ *    $foo = pressforward()->bar;
+ *
+ * @since 1.7
+ */
+function pressforward() {
+	global $pf;
+	if ( ! is_a( $pf, 'PressForward' ) ) {
+		$pf = new PressForward();
+	}
+	return $pf;
+}
+
+// Start er up!
+pressforward();
 
 function pressforward_register_module( $args ) {
 	$defaults = array(

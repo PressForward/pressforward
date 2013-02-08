@@ -156,7 +156,7 @@ class PF_Nominations {
 
 	public function get_post_nomination_status($date, $item_id, $post_type, $updateCount = true){
 		//Get the query object, limiting by date, type and metavalue ID.
-		$postsAfter = $this->get_posts_by_id_for_check( $date, $post_type, $item_id );
+		$postsAfter = pf_get_posts_by_id_for_check( $date, $post_type, $item_id );
 		//Assume that it will not find anything.
 		$check = false;
 		if ($postsAfter):
@@ -190,8 +190,26 @@ class PF_Nominations {
 			endforeach;
 		endif;
 		return $check;
-
 	}
+
+	/**
+	 * Handles an archive action submitted via AJAX
+	 *
+	 * @since 1.7
+	 */
+	public static function archive_a_nom(){
+		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
+		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
+			die($this->__('Nonce not recieved. Are you sure you should be archiving?', 'pf'));
+		} else {
+			$current_user = wp_get_current_user();
+			$current_user_id = $current_user->ID;
+			add_post_meta($_POST['nom_id'], 'archived_by_user_status', 'archived_' . $current_user_id);
+			print_r(__('Archived.', 'pf'));
+			die();
+		}
+	}
+
 
 	public function meta_box_printer($title, $variable, $link = false, $anchor_text = 'Link'){
 		echo '<strong>' . $title . '</strong>: ';
@@ -267,4 +285,195 @@ class PF_Nominations {
 		'date_nominated' => 'date_nominated'
 	  );
 	}
+
+	function build_nomination() {
+
+		// Verify nonce
+		if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )
+			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) );
+
+		//ref http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields, http://wpseek.com/wp_insert_post/
+		$time = current_time('mysql', $gmt = 0);
+		//@todo Play with post_exists (wp-admin/includes/post.php ln 493) to make sure that submissions have not already been submitted in some other method.
+			//Perhaps with some sort of "Are you sure you don't mean this... reddit style thing?
+			//Should also figure out if I can create a version that triggers on nomination publishing to send to main posts.
+
+
+		//There is some serious delay here while it goes through the database. We need some sort of loading bar.
+
+		//set up nomination check
+		$item_wp_date = $_POST['item_wp_date'];
+		$item_id = $_POST['item_id'];
+		//die($item_wp_date);
+
+		//Record first nominator and/or add a nomination to the user's count.
+		$current_user = wp_get_current_user();
+		if ( 0 == $current_user->ID ) {
+			//Not logged in.
+			$userSlug = "external";
+			$userName = __('External User', 'pf');
+			$userID = 0;
+		} else {
+			// Logged in.
+			$userID = $current_user->ID;
+			if (get_user_meta( $userID, 'nom_count', true )){
+
+				$nom_counter = get_user_meta( $userID, 'nom_count', true );
+				$nom_counter++;
+				update_user_meta( $userID, 'nom_count', $nom_counter, true );
+
+			} else {
+				add_user_meta( $userID, 'nom_count', 1, true );
+
+			}
+		}
+		$userString = $userID;
+
+		//Going to check posts first on the assumption that there will be more nominations than posts.
+		$post_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'post');
+		/** The system will only check for nominations of the item does not exist in posts. This will stop increasing the user and nomination count in nominations once they are sent to draft.
+		**/
+		if ($post_check == true) {
+			//Run this function to increase the nomination count in the nomination, even if it is already a post.
+			$this->get_post_nomination_status($item_wp_date, $item_id, 'nomination');
+			$result = __('This item has already been nominated.', 'pf');
+			die($result);
+		}
+		else {
+			$nom_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'nomination');
+				if ($nom_check == true) { $result = __('This item has already been nominated', 'pf'); die($result); }
+		}
+
+
+		//set up rest of nomination data
+		$item_title = $_POST['item_title'];
+		$item_content = htmlspecialchars_decode($_POST['item_content']);
+
+		//No need to define every post arg right? I should only need the ones I'm pushing through. Well, I guess we will find out.
+		$data = array(
+			'post_status' => 'draft',
+			'post_type' => 'nomination',
+			//'post_author' => $user_ID,
+				//Hurm... what we really need is a way to pass the nominator's userID to this function to credit them as the author of the nomination.
+				//Then we could create a leaderboard.
+			'post_date' => $_SESSION['cal_startdate'],
+				//Do we want this to be nomination date or origonal posted date? Prob. nomination date? Optimally we can store and later sort by both.
+			'post_title' => $item_title,//$item_title,
+			'post_content' => $item_content,
+
+		);
+
+		$newNomID = wp_insert_post( $data );
+
+		if ($_POST['item_feat_img'] != '')
+			$this->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
+		//die($_POST['item_feat_img']);
+
+		add_post_meta($newNomID, 'origin_item_ID', $item_id, true);
+		add_post_meta($newNomID, 'nomination_count', 1, true);
+		add_post_meta($newNomID, 'submitted_by', $userString, true);
+		add_post_meta($newNomID, 'nominator_array', $userID, true);
+		add_post_meta($newNomID, 'source_title', $_POST['source_title'], true);
+		add_post_meta($newNomID, 'posted_date', $_POST['item_date'], true);
+		add_post_meta($newNomID, 'authors', $_POST['item_author'], true);
+		add_post_meta($newNomID, 'nomination_permalink', $_POST['item_link'], true);
+		add_post_meta($newNomID, 'date_nominated', date('c'), true);
+		add_post_meta($newNomID, 'item_tags', $_POST['item_tags'], true);
+		add_post_meta($newNomID, 'source_repeat', $_POST['source_repeat'], true);
+
+		$result  = $item_title . ' nominated.';
+		die($result);
+
+
+	}
+
+	function build_nom_draft() {
+		global $post;
+		// verify if this is an auto save routine.
+		// If it is our form has not been submitted, so we dont want to do anything
+		//if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
+		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
+		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
+			die($this->__('Nonce not recieved. Are you sure you should be drafting?', 'pf'));
+		} else {
+##Check
+		print_r(__('Sending to Draft.', 'pf'));
+##Check
+		print_r($_POST);
+			$item_title = $_POST['nom_title'];
+			$item_content = $_POST['nom_content'];
+			$data = array(
+				'post_status' => 'draft',
+				'post_type' => 'post',
+				'post_title' => $item_title,
+				'post_content' => htmlspecialchars_decode($item_content),
+			);
+			//Will need to use a meta field to pass the content's md5 id around to check if it has already been posted.
+
+			//We assume that it is already in nominations, so no need to check there. This might be why we can't use post_exists here.
+			//No need to origonate the check at the time of the feed item either. It can't become a post with the proper meta if it wasn't a nomination first.
+			$item_id = $_POST['item_id'];
+			//YYYY-MM-DD
+			$nom_date = strtotime($_POST['nom_date']);
+			$nom_date = date('Y-m-d', $nom_date);
+
+			//Now function will not update nomination count when it pushes nomination to publication.
+			$post_check = $this->get_post_nomination_status($nom_date, $item_id, 'post', false);
+
+			//Alternative check with post_exists? or use same as above?
+			if ($post_check != true) {
+##Check
+				print_r('No Post exists.');
+				$newPostID = wp_insert_post( $data, true );
+##Check
+				print_r($newPostID);
+				add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
+
+				add_post_meta($newPostID, 'source_title', $_POST['source_title'], true);
+
+				add_post_meta($newPostID, 'source_link', $_POST['source_link'], true);
+
+				add_post_meta($newPostID, 'source_slug', $_POST['source_slug'], true);
+
+				$nomCount = $_POST['nom_count'];
+				add_post_meta($newPostID, 'nomination_count', $nomCount, true);
+
+				add_post_meta($newPostID, 'nom_id', $_POST['nom_id'], true);
+
+				$nomUserID = $_POST['nom_user'];
+				add_post_meta($newPostID, 'submitted_by', $userID, true);
+
+				$item_permalink = $_POST['item_link'];
+				add_post_meta($newPostID, 'nomination_permalink', $item_permalink, true);
+
+				$item_authorship = $_POST['item_author'];
+				add_post_meta($newPostID, 'authors', $item_authorship, true);
+
+				add_post_meta($newPostID, 'item_date', $_POST['item_date'], true);
+
+				add_post_meta($newPostID, 'item_link', $_POST['item_link'], true);
+
+				$date_nom = $_POST['nom_date'];
+				add_post_meta($newPostID, 'date_nominated', $date_nom, true);
+
+				add_post_meta($newPostID, 'nom_count', $_POST['nom_count'], true);
+
+				$item_tags = $_POST['nom_tags'];
+				add_post_meta($newPostID, 'item_tags', $item_tags, true);
+
+				//If user wants to use tags, we'll create an option to use it.
+				$nominators = $_POST['nom_users'];
+				add_post_meta($newPostID, 'nominator_array', $nominators, true);
+
+				$already_has_thumb = has_post_thumbnail($_POST['nom_id']);
+				if ($already_has_thumb)  {
+					$post_thumbnail_id = get_post_thumbnail_id( $_POST['nom_id'] );
+					set_post_thumbnail($newPostID, $post_thumbnail_id);
+				}
+
+			}
+		}
+	}
+
+
 }

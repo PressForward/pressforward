@@ -161,7 +161,7 @@ class PF_Admin {
 			$count = $page * 20;
 			$c = $c+$count;
 			//print_r($count);
-		foreach(PF_RSS_Import_Feed_Item::archive_feed_to_display($count+1) as $item) {
+		foreach(PF_Feed_Item::archive_feed_to_display($count+1) as $item) {
 
 			$itemTagsArray = explode(",", $item['item_tags']);
 			$itemTagClassesString = '';
@@ -543,5 +543,37 @@ class PF_Admin {
 		echo '<div class="navwidget">	Widget Body <br />	<a href="#20">Test link to item 20.</a>	</div>'	;
 	}
 
+	/////////////////////////
+	//    AJAX HANDLERS    //
+	/////////////////////////
 
+	public function build_a_nomination() {
+		pressforward()->nominations->build_nomination();
+		die();
+	}
+
+	public function build_a_nom_draft() {
+		pressforward()->nominations->build_nom_draft();
+		die();
+	}
+
+	public function trigger_source_data() {
+		pressforward()->modules['rss-import']->trigger_source_data();
+		die();
+	}
+
+	public function reset_feed() {
+		PF_Feed_Item::reset_feed();
+		die();
+	}
+
+	public function make_it_readable() {
+		PF_Readability::make_it_readable();
+		die();
+	}
+
+	public function archive_a_nom() {
+		PF_Nominations::archive_a_nom();
+		die();
+	}
 }

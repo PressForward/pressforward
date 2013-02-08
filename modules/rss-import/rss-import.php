@@ -645,12 +645,30 @@ class PF_RSS_Import extends PF_Module {
 		wp_enqueue_style( 'feeder-style', $pf->modules['rss-import']->module_url . 'assets/css/feeder-styles.css' );
 	}
 
-  function feed_retrieval_reset(){
+	function feed_retrieval_reset(){
 		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0);
 		$feed_iteration = update_option( PF_SLUG . '_feeds_iteration', 0);
 		$retrieval_state = update_option( PF_SLUG . '_iterate_going_switch', 0);
 		update_option( PF_SLUG . '_chunk_assembly_status', 1 );
  	}
+
+	public function trigger_source_data(){
+		$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
+		$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
+		if ($feed_iteration == 0 && $retrieval_state == 0){
+			$status = update_option( PF_SLUG . '_iterate_going_switch', 1);
+			$fo = fopen(PF_ROOT . "/modules/rss-import/rss-import.txt", 'w') or print_r('Can\'t open log file.');
+			if ($fo != false){
+				fwrite($fo, "\nBegin process retrieval.\n\n\n");
+				fclose($fo);
+			}
+			if ($status) {print_r('<br /> ' . __('Iterate switched to going.', 'pf') . ' <br />');}
+			else { print_r('<br /> ' . __('Iterate option not switched.', 'pf') . ' <br />'); }
+			$this->assemble_feed_for_pull();
+		} else {
+			print_r(__('The sources are already being retrieved.', 'pf')); die();
+		}
+	}
 
 
 }
@@ -664,7 +682,7 @@ function pf_test_import() {
 		$source = $feed->subscribe_url();
 
 		foreach ( $feed->get_items() as $item ) {
-			$io = new PF_RSS_Import_Feed_Item();
+			$io = new PF_Feed_Item();
 
 			// Check for existing items before importing
 			$foo = $io->get( array(

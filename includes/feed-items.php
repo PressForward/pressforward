@@ -7,7 +7,7 @@
 /**
  * Database class for manipulating feed items
  */
-class PF_RSS_Import_Feed_Item {
+class PF_Feed_Item {
 	protected $filter_data = array();
 
 	public function __construct() {
@@ -202,6 +202,43 @@ class PF_RSS_Import_Feed_Item {
 		endif;
 		wp_reset_postdata();
 		return $feedObject;
+	}
+
+	# Method to manually delete rssarchival entries on user action.
+	public static function reset_feed() {
+		global $wpdb, $post;
+		//$args = array(
+		//				'post_type' => array('any')
+		//			);
+		$args = 'post_type=' . pf_feed_item_schema()->feed_item_post_type;
+		//$archiveQuery = new WP_Query( $args );
+		$dquerystr = "
+			SELECT $wpdb->posts.*, $wpdb->postmeta.*
+			FROM $wpdb->posts, $wpdb->postmeta
+			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
+			AND $wpdb->posts.post_type ='" . pf_feed_item_schema()->feed_item_post_type .
+		 "'";
+		# This is how we do a custom query, when WP_Query doesn't do what we want it to.
+		$rssarchivalposts = $wpdb->get_results($dquerystr, OBJECT);
+		//print_r(count($rssarchivalposts)); die();
+		$feedObject = array();
+		$c = 0;
+
+		if ($rssarchivalposts):
+
+			foreach ($rssarchivalposts as $post) :
+			# This takes the $post objects and translates them into something I can do the standard WP functions on.
+			setup_postdata($post);
+			$post_id = get_the_ID();
+			//Switch the delete on to wipe rss archive posts from the database for testing.
+			wp_delete_post( $post_id, true );
+			endforeach;
+
+
+		endif;
+		wp_reset_postdata();
+		print_r(__('All archives deleted.', 'pf'));
+
 	}
 
 

@@ -99,7 +99,7 @@
 				//Source Site
 				$metadata['source_link'] = $sourceLink = 'http://' . $urlArray['host'];
 				//Source site slug
-				$metadata['source_slug'] = $sourceSlug = $this->slugger($urlArray['host'], true, false, true);
+				$metadata['source_slug'] = $sourceSlug = pf_slugger($urlArray['host'], true, false, true);
 				//RSS Author designation
 				$metadata['authors'] = $item_authorship = get_post_meta($nom_id, 'authors', true);
 				//Datetime item was nominated
@@ -112,7 +112,7 @@
 				$nom_tags = get_post_meta($nom_id, 'item_tags', true);
 				$nomTagsArray = explode(",", $nom_tags);
 				$nomTagClassesString = '';
-				foreach ($nomTagsArray as $nomTag) { $nomTagClassesString .= $this->slugger($nomTag, true, false, true); $nomTagClassesString .= ' '; }
+				foreach ($nomTagsArray as $nomTag) { $nomTagClassesString .= pf_slugger($nomTag, true, false, true); $nomTagClassesString .= ' '; }
 				//RSS-passed tags as slugs.
 				$metadata['nom_tags'] = $nom_tag_slugs = $nomTagClassesString;
 				//All users who nominated.
@@ -147,7 +147,7 @@
 			?>
 			<div class="row-fluid nom-container <?php echo $archived_status_string; ?>" id="<?php the_ID(); ?>" style="<?php echo $dependent_style; ?>">
 			<div class="span12" id="item-box-<?php echo $count; ?>">
-				<div class="row-fluid well accordion-group nom-item<?php $this->nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php echo $count; ?>">
+				<div class="row-fluid well accordion-group nom-item<?php pf_nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php echo $count; ?>">
 					<div class="span12">
 
 						<div class="sortable-hidden-meta" style="display:none;">
@@ -179,14 +179,14 @@
 								//Figure out feature image later. Put it here when you do.
 								echo '<div class="row-fluid span12">';
 								remove_filter('get_the_excerpt', 'wp_trim_excerpt');
-								add_filter('get_the_excerpt', array( $this, 'noms_excerpt'));
+								add_filter( 'get_the_excerpt', 'pf_noms_excerpt' );
 									echo '<h6 class="nom-title">' . get_the_title() . '</h6>';
 									?>
 									<div class="excerpt-graf" id="excerpt-graf-<?php echo $count; ?>">
 										<?php print_r( get_the_excerpt() ); ?>
 									</div>
 									<?php
-								remove_filter('get_the_excerpt', array( $this, 'noms_excerpt'));
+								remove_filter( 'get_the_excerpt', 'pf_noms_excerpt' );
 								add_filter('get_the_excerpt', 'wp_trim_excerpt');
 								echo '</div>';
 
