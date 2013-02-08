@@ -15,6 +15,8 @@ class PF_RSS_Import extends PF_Module {
 	 * Constructor
 	 */
 	public function __construct() {
+		global $pf;
+
 		parent::start();
 		//self::check_nonce = wp_create_nonce('retrieve-pressforward');
 		add_action( 'admin_init', array($this, 'register_settings') );
