@@ -63,7 +63,7 @@ class pf {
 		add_action( 'wp_ajax_nopriv_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_nopriv_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
-		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );		
+		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
 		add_action( 'wp_ajax_nopriv_assemble_feed_for_pull', array($this, 'trigger_source_data') );
 		add_action( 'wp_ajax_assemble_feed_for_pull', array( $this, 'trigger_source_data') );
 		add_action( 'wp_ajax_nopriv_reset_feed', array($this, 'reset_feed') );
@@ -71,7 +71,7 @@ class pf {
 		add_action( 'wp_ajax_nopriv_make_it_readable', array($this, 'make_it_readable') );
 		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );
 		add_action( 'wp_ajax_nopriv_archive_a_nom', array($this, 'archive_a_nom') );
-		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );		
+		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
 		}
 		add_action('edit_post', array( $this, 'send_nomination_for_publishing'));
 		add_filter( 'manage_edit-nomination_columns', array ($this, 'edit_nominations_columns') );
@@ -283,7 +283,7 @@ class pf {
 		  wp_schedule_event( time(), 'hourly', 'pull_feed_in' );
 		}
 	}
-	
+
 	public function trigger_source_data(){
 		$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
 		$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
@@ -293,7 +293,7 @@ class pf {
 			if ($fo != false){
 				fwrite($fo, "\nBegin process retrieval.\n\n\n");
 				fclose($fo);
-			}			
+			}
 			if ($status) {print_r('<br /> ' . __('Iterate switched to going.', 'pf') . ' <br />');}
 			else { print_r('<br /> ' . __('Iterate option not switched.', 'pf') . ' <br />'); }
 			$this->assemble_feed_for_pull();
@@ -316,17 +316,17 @@ class pf {
 			$source_data_object = array_merge( $source_data_object, $module->get_data_object() );
 		}
 		return $source_data_object;
-	}	
-	
-	
+	}
+
+
 	public function assemble_feed_for_pull($feedObj = 0) {
 		ignore_user_abort(true);
 		set_time_limit(0);
-		# Chunking control, the goal here is to ensure that no feed assembly occurs while the feed assembly is already occuring. 
+		# Chunking control, the goal here is to ensure that no feed assembly occurs while the feed assembly is already occuring.
 		$is_chunk_going = get_option( PF_SLUG . '_chunk_assembly_status', 0);
 		if ($is_chunk_going === 1){ exit; }
 		else { update_option( PF_SLUG . '_chunk_assembly_status', 1 ); }
-			
+
 		# This pulls the RSS feed into a set of predetermined objects.
 		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
 		if ($feedObj == 0){
@@ -435,7 +435,7 @@ class pf {
 #			if ($fo != false){
 #				fwrite($fo, "\nSending " . $item['item_title'] . " to post table.");
 #				fclose($fo);
-#			}	
+#			}
 			if ( $thepostscheck == 0) {
 				$item_title 	= $item['item_title'];
 				$item_content 	= $item['item_content'];
@@ -581,7 +581,7 @@ class pf {
 			SELECT $wpdb->posts.*, $wpdb->postmeta.*
 			FROM $wpdb->posts, $wpdb->postmeta
 			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-			AND $wpdb->posts.post_type ='" . pf_rss_import_schema()->feed_item_post_type . 
+			AND $wpdb->posts.post_type ='" . pf_rss_import_schema()->feed_item_post_type .
 		 "'";
 		# This is how we do a custom query, when WP_Query doesn't do what we want it to.
 		$rssarchivalposts = $wpdb->get_results($dquerystr, OBJECT);
@@ -751,7 +751,7 @@ class pf {
 		add_meta_box('pf-nominations', __('Nomination Data', 'pf'), array($this, 'nominations_box_builder'), 'nomination', 'side', 'high' );
 
 	}
-	
+
 	public function meta_box_printer($title, $variable, $link = false, $anchor_text = 'Link'){
 		echo '<strong>' . $title . '</strong>: ';
 		if ($link === true){
@@ -766,7 +766,7 @@ class pf {
 		} else {
 			echo $variable;
 		}
-		
+
 		echo '<br />';
 	}
 
@@ -1122,7 +1122,7 @@ class pf {
 		return $text;
 	}
 
-//Let's build a better excerpt! 
+//Let's build a better excerpt!
 function noms_excerpt( $text ) {
 	global $post;
 //	if ( '' == $text ) {
@@ -1131,9 +1131,9 @@ function noms_excerpt( $text ) {
 		$text = str_replace('\]\]\>', ']]&gt;', $text);
 		$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
 	$contentObj = new htmlchecker($text);
-	$text = $contentObj->closetags($text);		
+	$text = $contentObj->closetags($text);
 		$text = strip_tags($text);
-		$excerpt_length = 310; 
+		$excerpt_length = 310;
 		$words = explode(' ', $text, $excerpt_length + 1);
 		if (count($words)> $excerpt_length) {
 		  array_pop($words);
@@ -1141,7 +1141,7 @@ function noms_excerpt( $text ) {
 		  $text = implode(' ', $words);
 		}
 //	}
-	
+
 return $text;
 }
 
@@ -1462,8 +1462,8 @@ return $text;
 	function widget_one_call(){
 		echo '<div class="navwidget">	Widget Body <br />	<a href="#20">Test link to item 20.</a>	</div>'	;
 	}
-	
-	//Let's build the Under Review page. 
+
+	//Let's build the Under Review page.
 	function pf_review_builder() {
 		include( PF_ROOT . "/includes/under-review/under-review.php" );
 	}
@@ -1475,12 +1475,12 @@ return $text;
 				//Do nothing.
 			}
 			elseif (is_array($class)){
-			
+
 				foreach ($class as $subclass){
 					echo ' ';
 					echo $this->slugger($class, true, false, true);
 				}
-			
+
 			} else {
 				echo ' ';
 				echo $this->slugger($class, true, false, true);
@@ -1608,11 +1608,11 @@ return $text;
 
 		//This gets the current page the user is on.
 		global $pagenow;
-		
+
 			wp_register_style( PF_SLUG . '-style', PF_URL . 'assets/css/style.css');
 			wp_register_style( 'bootstrap-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
-			wp_register_style( 'bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');		
-		
+			wp_register_style( 'bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
+
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
 		if (('toplevel_page_pf-menu') == $hook) {
@@ -1632,7 +1632,7 @@ return $text;
 			wp_enqueue_style( PF_SLUG . '-style' );
 
 		}
-		if (('pressforward_page_pf-review') == $hook) { 
+		if (('pressforward_page_pf-review') == $hook) {
 			wp_enqueue_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
 			wp_enqueue_script('jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
 			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
@@ -1709,7 +1709,7 @@ return $text;
 		//Assume that it will not find anything.
 		$check = false;
 		if ($postsAfter):
-		
+
 			global $post;
 			foreach ($postsAfter as $post):
 				setup_postdata($post);
@@ -1909,7 +1909,7 @@ return $text;
 
 
 	}
-	
+
 	function build_a_nom_draft() {
 		global $post;
 		// verify if this is an auto save routine.
@@ -1919,7 +1919,7 @@ return $text;
 		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
 			die($this->__('Nonce not recieved. Are you sure you should be drafting?', 'pf'));
 		} else {
-##Check		
+##Check
 		print_r(__('Sending to Draft.', 'pf'));
 ##Check
 		print_r($_POST);
@@ -1945,45 +1945,45 @@ return $text;
 
 			//Alternative check with post_exists? or use same as above?
 			if ($post_check != true) {
-##Check			
+##Check
 				print_r('No Post exists.');
 				$newPostID = wp_insert_post( $data, true );
 ##Check
 				print_r($newPostID);
 				add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
-				
+
 				add_post_meta($newPostID, 'source_title', $_POST['source_title'], true);
-				
+
 				add_post_meta($newPostID, 'source_link', $_POST['source_link'], true);
-				
+
 				add_post_meta($newPostID, 'source_slug', $_POST['source_slug'], true);
-				
+
 				$nomCount = $_POST['nom_count'];
 				add_post_meta($newPostID, 'nomination_count', $nomCount, true);
-				
+
 				add_post_meta($newPostID, 'nom_id', $_POST['nom_id'], true);
-				
+
 				$nomUserID = $_POST['nom_user'];
 				add_post_meta($newPostID, 'submitted_by', $userID, true);
-				
+
 				$item_permalink = $_POST['item_link'];
 				add_post_meta($newPostID, 'nomination_permalink', $item_permalink, true);
-				
+
 				$item_authorship = $_POST['item_author'];
 				add_post_meta($newPostID, 'authors', $item_authorship, true);
-				
+
 				add_post_meta($newPostID, 'item_date', $_POST['item_date'], true);
-				
+
 				add_post_meta($newPostID, 'item_link', $_POST['item_link'], true);
-				
+
 				$date_nom = $_POST['nom_date'];
 				add_post_meta($newPostID, 'date_nominated', $date_nom, true);
-				
+
 				add_post_meta($newPostID, 'nom_count', $_POST['nom_count'], true);
-				
+
 				$item_tags = $_POST['nom_tags'];
 				add_post_meta($newPostID, 'item_tags', $item_tags, true);
-				
+
 				//If user wants to use tags, we'll create an option to use it.
 				$nominators = $_POST['nom_users'];
 				add_post_meta($newPostID, 'nominator_array', $nominators, true);
@@ -1995,7 +1995,7 @@ return $text;
 				}
 
 			}
-		}		
+		}
 	}
 
 	function send_nomination_for_publishing() {
@@ -2055,7 +2055,7 @@ return $text;
 		}
 
 	}
-	
+
 	function archive_a_nom(){
 		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
 		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
@@ -2068,7 +2068,7 @@ return $text;
 			die();
 		}
 	}
-	
+
 	function ajax_user_option_set(){
 		//Function to set user options via AJAX.
 		/** Requires AJAX to send a name, slug and value in the forms of:
