@@ -130,6 +130,9 @@ class pf {
 		// Load the module base class and our test module
 		require( PF_ROOT . "/includes/functions.php" );
 		require( PF_ROOT . "/includes/module-base.php" );
+		require( PF_ROOT . '/includes/schema.php' );
+		require( PF_ROOT . '/includes/feed-items.php' );
+		require( PF_ROOT . '/includes/relationships.php' );
 		require( PF_ROOT . '/includes/admin.php' );
 	}
 

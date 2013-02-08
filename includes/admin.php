@@ -461,13 +461,13 @@ class PF_Admin {
 		//				'post_type' => array('any')
 		//			);
 		//$pageBottom = $pageTop + 20;
-		$args = pf_rss_import_schema()->feed_item_post_type;
+		$args = pf_feed_item_schema()->feed_item_post_type;
 		//$archiveQuery = new WP_Query( $args );
 		 $dquerystr = "
 			SELECT $wpdb->posts.*, $wpdb->postmeta.*
 			FROM $wpdb->posts, $wpdb->postmeta
 			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-			AND $wpdb->posts.post_type = '" . pf_rss_import_schema()->feed_item_post_type . "'
+			AND $wpdb->posts.post_type = '" . pf_feed_item_schema()->feed_item_post_type . "'
 			AND $wpdb->postmeta.meta_key = 'sortable_item_date'
 			ORDER BY $wpdb->postmeta.meta_value DESC
 			LIMIT $pageTop, 20

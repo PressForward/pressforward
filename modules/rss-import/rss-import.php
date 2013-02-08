@@ -4,7 +4,7 @@
  * Test of module base class
  */
 
- define( 'FEED_LOG', PF_ROOT . "/modules/rss-import/rss-import.txt" );
+define( 'FEED_LOG', PF_ROOT . "/modules/rss-import/rss-import.txt" );
 class PF_RSS_Import extends PF_Module {
 
 	/////////////////////////////
@@ -275,9 +275,6 @@ class PF_RSS_Import extends PF_Module {
 	 */
 	public function includes() {
 		require_once(PF_ROOT . "/includes/opml-reader/opml-reader.php");
-		require( $this->module_dir . '/schema.php' );
-		require( $this->module_dir . '/feed-items.php' );
-		require( $this->module_dir . '/relationships.php' );
 	}
 
 	/**
