@@ -14,6 +14,9 @@ class PF_Admin {
 	 */
 	function __construct() {
 		add_action( 'admin_menu', array( $this, 'register_pf_custom_menu_pages' ) );
+
+		// Adding javascript and css to admin pages
+		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
 	}
 
 	/**
@@ -26,7 +29,7 @@ class PF_Admin {
 			PF_TITLE, // menu title
 			'edit_posts', // cap required
 			PF_MENU_SLUG, // slug
-			array( $this, 'pf_reader_builder' ), // callback
+			array( $this, 'display_reader_builder' ), // callback
 			PF_URL . '/pressforward-16.png', // icon URL
 			24 // Position (just above comments - 25)
 		);
@@ -37,7 +40,7 @@ class PF_Admin {
 			__('All Content', 'pf'),
 			'edit_posts',
 			PF_MENU_SLUG,
-			array($this, 'pf_reader_builder')
+			array($this, 'display_reader_builder')
 		);
 
 		add_submenu_page(
@@ -46,7 +49,7 @@ class PF_Admin {
 			__('Under Review', 'pf'),
 			'edit_posts',
 			PF_SLUG . '-review',
-			array($this, 'pf_review_builder')
+			array($this, 'display_review_builder')
 		);
 
 		// Options page is accessible only to Administrators
@@ -56,7 +59,7 @@ class PF_Admin {
 			PF_TITLE . __(' Options', 'pf'), // @todo Too big to fit on a single line
 			'manage_options',
 			PF_SLUG . '-options',
-			array($this, 'pf_options_builder')
+			array($this, 'display_options_builder')
 		);
 
 		// Feed-listing page is accessible only to Editors and above
@@ -66,7 +69,7 @@ class PF_Admin {
 			PF_TITLE . __(' Feeder', 'pf'),
 			'edit_others_posts',
 			PF_SLUG . '-feeder',
-			array($this, 'pf_feeder_builder')
+			array($this, 'display_feeder_builder')
 		);
 
 		add_submenu_page(
@@ -81,7 +84,7 @@ class PF_Admin {
 	/**
 	 * Display function for the main All Content panel
 	 */
-	public function pf_reader_builder() {
+	public function display_reader_builder() {
 		//Calling the feedlist within the pf class.
 	echo '<div class="container-fluid">';
 		echo '<div class="row-fluid">';
@@ -386,14 +389,14 @@ class PF_Admin {
 	/**
 	 * Display function for the Under Review panel
 	 */
-	function pf_review_builder() {
+	function display_review_builder() {
 		include( PF_ROOT . "/includes/under-review/under-review.php" );
 	}
 
 	/**
 	 * Display function for the Options panel
 	 */
-	function pf_options_builder() {
+	function display_options_builder() {
 		?>
 		<form action="<?php pf_admin_url(); ?>" method="post">
 			<div class="wrap">
@@ -418,7 +421,7 @@ class PF_Admin {
 	/**
 	 * Display function for Feeder panel
 	 */
-	function pf_feeder_builder() {
+	function display_feeder_builder() {
 
 		echo 'Feeder. <br />';
 
@@ -531,4 +534,66 @@ class PF_Admin {
 		wp_reset_postdata();
 		return $feedObject;
 	}
+
+	//This function can add js and css that we need to specific admin pages.
+	function add_admin_scripts($hook) {
+
+		//This gets the current page the user is on.
+		global $pagenow;
+
+			wp_register_style( PF_SLUG . '-style', PF_URL . 'assets/css/style.css');
+			wp_register_style( 'bootstrap-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
+			wp_register_style( 'bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
+
+		//print_r($hook);
+		//This if loop will check to make sure we are on the right page for the js we are going to use.
+		if (('toplevel_page_pf-menu') == $hook) {
+			//And now lets enqueue the script, ensuring that jQuery is already active.
+
+			wp_enqueue_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
+			wp_enqueue_script('sort-imp', PF_URL . 'assets/js/sort-imp.js', array( 'tinysort', 'twitter-bootstrap', 'jq-fullscreen' ));
+			wp_enqueue_script('readability-imp', PF_URL . 'assets/js/readability-imp.js', array( 'twitter-bootstrap', 'jquery' ));
+			wp_enqueue_script('nomination-imp', PF_URL . 'assets/js/nomination-imp.js', array( 'jquery' ));
+			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
+			wp_enqueue_script('jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
+			wp_enqueue_script('infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery' ));
+			wp_enqueue_script('scrollimp', PF_URL . 'assets/js/scroll-imp.js', array( 'infiniscroll' ));
+
+			wp_enqueue_style('bootstrap-style');
+			wp_enqueue_style('bootstrap-responsive-style');
+			wp_enqueue_style( PF_SLUG . '-style' );
+
+		}
+		if (('pressforward_page_pf-review') == $hook) {
+			wp_enqueue_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
+			wp_enqueue_script('jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
+			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
+			wp_enqueue_script('send-to-draft-imp', PF_URL . 'assets/js/send-to-draft-imp.js', array( 'jquery' ));
+			wp_enqueue_script('archive-nom-imp', PF_URL . 'assets/js/nom-archive-imp.js', array( 'jquery' ));
+			wp_enqueue_style('bootstrap-style');
+			wp_enqueue_style('bootstrap-responsive-style');
+			wp_enqueue_style( PF_SLUG . '-style' );
+			wp_enqueue_script( 'post' );
+		}
+		if (('pressforward_page_pf-feeder') != $hook) { return; }
+		else {
+			//And now lets enqueue the script, ensuring that jQuery is already active.
+
+			wp_enqueue_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
+			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
+
+			wp_register_style( PF_SLUG . '-style', PF_URL . 'assets/css/style.css');
+			wp_register_style( 'bootstrap-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
+			wp_register_style( 'bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
+
+			wp_enqueue_style('bootstrap-style');
+			wp_enqueue_style('bootstrap-responsive-style');
+			wp_enqueue_style( PF_SLUG . '-style' );
+
+		}
+
+
+
+	}
+
 }

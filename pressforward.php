@@ -53,9 +53,6 @@ class pf {
 		//Activate the post-type that will archive the incoming RSS feed.
 		add_action('init', array($this, 'create_pf_archive_post_type') );
 
-		//Adding javascript and css to admin pages
-		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
-
 		add_action( 'admin_init', array($this, 'pf_options_admin_page_save') );
 
 		// We only need the ajax handlers on the Dashboard
@@ -1018,67 +1015,6 @@ return $text;
 	function feeder_options_init() {
 		# Activate when settings are ready to go.
 		//register_setting(PF_SLUG . '_feeder_options', PF_SLUG . '_plugin_feeder_options', PF_SLUG . '_plugin_feeder_options_validate');
-	}
-
-	//This function can add js and css that we need to specific admin pages.
-	function add_admin_scripts($hook) {
-
-		//This gets the current page the user is on.
-		global $pagenow;
-
-			wp_register_style( PF_SLUG . '-style', PF_URL . 'assets/css/style.css');
-			wp_register_style( 'bootstrap-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
-			wp_register_style( 'bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
-
-		//print_r($hook);
-		//This if loop will check to make sure we are on the right page for the js we are going to use.
-		if (('toplevel_page_pf-menu') == $hook) {
-			//And now lets enqueue the script, ensuring that jQuery is already active.
-
-			wp_enqueue_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
-			wp_enqueue_script('sort-imp', PF_URL . 'assets/js/sort-imp.js', array( 'tinysort', 'twitter-bootstrap', 'jq-fullscreen' ));
-			wp_enqueue_script('readability-imp', PF_URL . 'assets/js/readability-imp.js', array( 'twitter-bootstrap', 'jquery' ));
-			wp_enqueue_script('nomination-imp', PF_URL . 'assets/js/nomination-imp.js', array( 'jquery' ));
-			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
-			wp_enqueue_script('jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
-			wp_enqueue_script('infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery' ));
-			wp_enqueue_script('scrollimp', PF_URL . 'assets/js/scroll-imp.js', array( 'infiniscroll' ));
-
-			wp_enqueue_style('bootstrap-style');
-			wp_enqueue_style('bootstrap-responsive-style');
-			wp_enqueue_style( PF_SLUG . '-style' );
-
-		}
-		if (('pressforward_page_pf-review') == $hook) {
-			wp_enqueue_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
-			wp_enqueue_script('jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
-			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
-			wp_enqueue_script('send-to-draft-imp', PF_URL . 'assets/js/send-to-draft-imp.js', array( 'jquery' ));
-			wp_enqueue_script('archive-nom-imp', PF_URL . 'assets/js/nom-archive-imp.js', array( 'jquery' ));
-			wp_enqueue_style('bootstrap-style');
-			wp_enqueue_style('bootstrap-responsive-style');
-			wp_enqueue_style( PF_SLUG . '-style' );
-			wp_enqueue_script( 'post' );
-		}
-		if (('pressforward_page_pf-feeder') != $hook) { return; }
-		else {
-			//And now lets enqueue the script, ensuring that jQuery is already active.
-
-			wp_enqueue_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
-			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
-
-			wp_register_style( PF_SLUG . '-style', PF_URL . 'assets/css/style.css');
-			wp_register_style( 'bootstrap-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
-			wp_register_style( 'bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
-
-			wp_enqueue_style('bootstrap-style');
-			wp_enqueue_style('bootstrap-responsive-style');
-			wp_enqueue_style( PF_SLUG . '-style' );
-
-		}
-
-
-
 	}
 
 	//Ref for eventual building of nomination ajax:
