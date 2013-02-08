@@ -97,9 +97,9 @@
 				$metadata['permalink'] = $nom_permalink = get_post_meta($nom_id, 'nomination_permalink', true);
 				$urlArray = parse_url($nom_permalink);
 				//Source Site
-				$metadata['source_link'] = $sourceLink = 'http://' . $urlArray['host'];
+				$metadata['source_link'] = isset( $urlArray['host'] ) ? $sourceLink = 'http://' . $urlArray['host'] : '';
 				//Source site slug
-				$metadata['source_slug'] = $sourceSlug = pf_slugger($urlArray['host'], true, false, true);
+				$metadata['source_slug'] = $sourceSlug = isset( $urlArray['host'] ) ? pf_slugger($urlArray['host'], true, false, true) : '';
 				//RSS Author designation
 				$metadata['authors'] = $item_authorship = get_post_meta($nom_id, 'authors', true);
 				//Datetime item was nominated
