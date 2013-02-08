@@ -112,7 +112,8 @@ class pf {
 		add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
 
 		add_action( 'plugins_loaded', array( $this, 'pressforward_init' ) );
-
+		
+		load_plugin_textdomain( 'pf', false, PF_ROOT );
 
 	}
 
