@@ -355,7 +355,7 @@ class PF_RSS_Import extends PF_Module {
 						# Get the link of what created the RSS entry.
 						$source = $sourceObj->get_link(0,'alternate');
 						# Check if the feed item creator is an aggregator.
-						$agStatus = $pf->is_from_aggregator($source);
+						$agStatus = $this->is_from_aggregator($source);
 					} else {
 						# If we can't get source information then don't do anything.
 						$agStatus = false;
@@ -663,6 +663,33 @@ class PF_RSS_Import extends PF_Module {
 
 	function register_settings(){
 		register_setting(PF_SLUG . '_feedlist_group', PF_SLUG . '_feedlist', array('PF_RSS_Import', 'pf_feedlist_validate'));
+	}
+
+	# Checks the URL against a list of aggregators.
+	public function is_from_aggregator($xmlbase){
+		$c = 0;
+		$urlParts = parse_url($xmlbase);
+
+		$aggregators = array (
+								'tweetedtimes',
+								'tweetedtimes.com',
+								'www.tweetedtimes.com',
+								'pipes.yahoo.com'
+							);
+		foreach ($aggregators as $aggregator) {
+			if (in_array($aggregator, $urlParts)){
+				$c++;
+			}
+		}
+		if ($c > 0){
+
+			return true;
+
+
+		} else {
+			return false;
+		}
+
 	}
 
 	public function admin_enqueue_scripts() {
