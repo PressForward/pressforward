@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: PressForward
-Plugin URI: http://aramzs.me
+Plugin URI: http://pressforward.org/
 Description: This plugin is a aggregation parser for CHNM's Press Forward project.
 Version: 1.6.1
-Author: Aram Zucker-Scharff
-Author URI: http://aramzs.me
+Author: Aram Zucker-Scharff, Boone B Gorges
+Author URI: http://aramzs.me, http://boone.gorg.es/
 License: GPL2
 */
 
@@ -112,6 +112,7 @@ class pf {
 		add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
 
 		add_action( 'plugins_loaded', array( $this, 'pressforward_init' ) );
+
 
 	}
 
