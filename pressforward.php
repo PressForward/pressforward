@@ -213,10 +213,6 @@ class PressForward {
 
 		return '';
 	}
-
-
-
-
 }
 
 /**
