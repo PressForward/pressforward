@@ -644,7 +644,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 
 		if ( !$selection ){
 			if ($url != ''){
-				$content .= $pf_nt->get_content_through_aggregator($url);
+				$content .= PF_Feed_Item::get_content_through_aggregator($url);
 			}
 
 		}

@@ -6,6 +6,32 @@
  * @since 1.7
  */
 
+function pressforward_register_module( $args ) {
+	$defaults = array(
+		'slug' => '',
+		'class' => '',
+	);
+	$r = wp_parse_args( $args, $defaults );
+
+	// We need the 'class' and 'slug' terms
+	if ( empty( $r['class'] ) || empty( $r['slug'] ) ) {
+		continue;
+	}
+
+	// Ensure the class exists before attempting to initialize it
+	// @todo Should probably have better error reporting
+	if ( ! class_exists( $r['class'] ) ) {
+		continue;
+	}
+
+	add_filter( 'pressforward_register_modules', create_function( '$modules', '
+		return array_merge( $modules, array( array(
+			"slug"  => "' . $r['slug']  . '",
+			"class" => "' . $r['class'] . '",
+		) ) );
+	' ) );
+}
+
 /**
  * Echoes the URL of the admin page
  *
