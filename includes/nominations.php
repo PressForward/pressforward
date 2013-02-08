@@ -366,7 +366,7 @@ class PF_Nominations {
 		$newNomID = wp_insert_post( $data );
 
 		if ($_POST['item_feat_img'] != '')
-			$this->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
+			PF_Feed_Item::set_ext_as_featured($newNomID, $_POST['item_feat_img']);
 		//die($_POST['item_feat_img']);
 
 		add_post_meta($newNomID, 'origin_item_ID', $item_id, true);

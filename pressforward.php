@@ -37,7 +37,10 @@ define( 'PF_URL', plugins_url('/', __FILE__) );
 
 class PressForward {
 	var $modules = array();
+
+	var $schema;
 	var $admin;
+	var $nominations;
 
 	// See http://php.net/manual/en/language.oop5.decon.php to get a better understanding of what's going on here.
 	function __construct() {
@@ -214,96 +217,6 @@ class PressForward {
 
 		return '';
 	}
-
-
-	//Ref for eventual building of nomination ajax:
-	//https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/editorial-comments.php ln284	//https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/lib/editorial-comments.js
-	//https://github.com/danielbachhuber/Edit-Flow/blob/master/edit_flow.php
-
-	//http://codex.wordpress.org/Class_Reference/WP_Query#Time_Parameters
-	function get_posts_after_for_check( $theDate, $post_type ) {
-		global $wpdb;
-		$querystr = "
-			SELECT $wpdb->posts.*
-			FROM $wpdb->posts, $wpdb->postmeta
-			WHERE $wpdb->posts.post_type = '" . $post_type . "'
-			AND $wpdb->posts.post_date >= '". $theDate . "'
-			ORDER BY $wpdb->posts.post_date DESC
-			";
-
-		$postsAfter = $wpdb->get_results($querystr, OBJECT);
-
-		return $postsAfter;
-	}
-
-
-	function set_ext_as_featured($postID,$ogImage){
-
-			if ( (strlen($ogImage)) > 0 ){
-
-				//Remove Queries from the URL
-				$ogImage = preg_replace('/\?.*/', '', $ogImage);
-
-				$imgParts = pathinfo($ogImage);
-				$imgExt = $imgParts['extension'];
-				$imgTitle = $imgParts['filename'];
-
-				if ($imgExt != ('jpg'||'png'||'jrpg'||'bmp'||'gif')){
-					//print_r('bad og img');
-					return;
-				}
-
-
-				//'/' . get_option(upload_path, 'wp-content/uploads') . '/' . date("o")
-				$uploadDir = wp_upload_dir();
-				$ogCacheImg = $uploadDir['path'] . $postID . "-" . $imgTitle . "." . $imgExt;
-
-				if ( !file_exists($ogCacheImg) ) {
-
-
-					$result  = copy($ogImage, $ogCacheImg);
-
-
-				}
-		}
-
-		//Methods within sourced from http://codex.wordpress.org/Function_Reference/wp_insert_attachment
-		//and http://wordpress.stackexchange.com/questions/26138/set-post-thumbnail-with-php
-
-		//Get the type of the image file. .jpg, .gif, or whatever
-		$filetype = wp_check_filetype( $ogCacheImg );
-
-		//Set the identifying variables for the about to be featured image.
-		$imgData = array(
-						//tell WordPress what the filetype is.
-						'post_mime_type' => $filetype['type'],
-						//set the image title to the title of the site you are pulling from
-						'post_title' => '',
-						//WordPress tells us we must set this and set it to empty. Why? Dunno.
-						'post_content' => '',
-						//Now we set the status of the image. It will inheret that of the post.
-						//If the post is published, then the image will be to.
-						'post_status' => 'inherit'
-					);
-		//WordPress needs an absolute path to the image, as opposed to the relative path we used before.
-		//I'm hoping that by using the upload_dir function (above) I can make this function work with multisite.
-		//$pathedImg = $uploadDir['url'] . $img;
-		//Now we insert the image as a WordPress attachement, and associate it with the current post.
-		$thumbid = wp_insert_attachment($imgData, $ogCacheImg, $postID);
-
-		//To set a thumbnail, you need metadata associated with an image.
-		//To get that we need to call the image.php file
-		require_once(ABSPATH . 'wp-admin/includes/image.php');
-		$metadata = wp_generate_attachment_metadata( $thumbid, $ogCacheImg );
-		//Now we attach the meta data to the image.
-		wp_update_attachment_metadata( $thumbid, $metadata );
-
-		//Now that we have a correctly meta-ed and attached image we can finally turn it into a post thumbnail.
-		update_post_meta($postID, '_thumbnail_id', $thumbid);
-
-
-	}
-
 
 	function ajax_user_option_set(){
 		//Function to set user options via AJAX.

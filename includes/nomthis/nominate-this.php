@@ -99,7 +99,7 @@ function press_it() {
 					$itemFeatImg = $node->image;
 				}
 	if (($_POST['nomination_permalink']) != ''){
-		$pf_nt->set_ext_as_featured($post_ID, $itemFeatImg);
+		PF_Feed_Item::set_ext_as_featured($post_ID, $itemFeatImg);
 	}
 
 	return $post_ID;
