@@ -25,20 +25,20 @@ class PF_RSS_Import extends PF_Module {
 		if( is_admin() )
 		{
 			add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
-			add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed') );		
-			add_action('get_more_feeds', array($pf, 'assemble_feed_for_pull'));		
-	
+			add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed') );
+			add_action('get_more_feeds', array($pf, 'assemble_feed_for_pull'));
+
 			add_action( 'wp_ajax_nopriv_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );
-			add_action( 'wp_ajax_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );     
-			
+			add_action( 'wp_ajax_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );
+
 		}
 	}
-	
+
 	public function get_chunk_nonce(){
 		$create_nonce = wp_create_nonce('chunkpressforward');
 		update_option('chunk_nonce', $create_nonce);
 	}
-	
+
 	public function log_feed_input($log_string){
 		$fo = fopen(FEED_LOG, 'a') or print_r('Can\'t open log file.');
 		if ($fo != false){
@@ -53,14 +53,14 @@ class PF_RSS_Import extends PF_Module {
 			fclose($fo);
 		}
 	}
-	
+
 	public function step_through_feedlist() {
 		$this->log_feed_input('step_through_feedlist begins.');
 		//$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 1);
 		//$this->log_feed_input('The Feeds go switch has been updated?');
 		//$this->log_feed_input($feed_go);
-		$feedlist = call_user_func(array($this, 'pf_feedlist'));	
-		//The array keys start with zero, as does the iteration number. This will account for that. 
+		$feedlist = call_user_func(array($this, 'pf_feedlist'));
+		//The array keys start with zero, as does the iteration number. This will account for that.
 		//$feedcount = count($feedlist) - 1;
 		end($feedlist);
 		$last_key = key($feedlist);
@@ -69,7 +69,7 @@ class PF_RSS_Import extends PF_Module {
 		$feeds_iteration = get_option( PF_SLUG . '_feeds_iteration', 1 );
 				$this->log_feed_input('feeds_go_switch updated? (first check).');
 				$go_switch_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
-				$this->log_feed_input($go_switch_bool);		
+				$this->log_feed_input($go_switch_bool);
 		$prev_iteration = get_option( PF_SLUG . '_prev_iteration', 0);
 		$this->log_feed_input('Did the option properly iterate so that the previous iteration count of ' . $prev_iteration . ' is equal to the current of ' . $feeds_iteration . '?');
 		// This is the fix for the insanity caused by the planet money feed - http://www.npr.org/rss/podcast.php?id=510289
@@ -80,8 +80,8 @@ class PF_RSS_Import extends PF_Module {
 			$feeds_iteration = $feeds_iteration+1;
 		} else {
 			$this->log_feed_input('Yes');
-		}		
-		
+		}
+
 		$this->log_feed_input('The current iterate state is: ' . $feeds_iteration);
 		if ($feeds_iteration <= $last_key) {
 			$this->log_feed_input('The iteration is less than the last key.');
@@ -101,7 +101,7 @@ class PF_RSS_Import extends PF_Module {
 				$going_switch_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
 				$this->log_feed_input($going_switch_bool);
 				//print_r('TURN IT OFF');
-				
+
 			} elseif ($did_we_start_over == 1) {
 				$this->log_feed_input('No, we didn\'t start over.');
 				$this->log_feed_input('Did we set the previous iteration option to ' . $feeds_iteration . '?');
@@ -113,7 +113,7 @@ class PF_RSS_Import extends PF_Module {
 				$this->log_feed_input($iterate_going_bool);
 				$this->log_feed_input('We are set to a reiterate state.');
 			}
-			
+
 			$this->log_feed_input('Did the feeds_iteration option update to ' . $feeds_iteration . '?');
 			$iterate_op_check = update_option( PF_SLUG . '_feeds_iteration', $feeds_iteration);
 			$this->log_feed_input($iterate_op_check);
@@ -125,26 +125,26 @@ class PF_RSS_Import extends PF_Module {
 				$iterate_op_check = update_option( PF_SLUG . '_feeds_iteration', $feeds_iteration);
 				$this->log_feed_input('Did the new option setup work?');
 				$this->log_feed_input($iterate_op_check);
-			}			
+			}
 			$this->log_feed_input('The feed iteration option is now set to ' . $feeds_iteration);
 
 			if (((empty($aFeed)) || ($aFeed == '')) && ($feeds_iteration < $last_key)){
 				$this->log_feed_input('The feed is either an empty entry or un-retrievable AND the iteration is less than the last key.');
-				$theFeed = call_user_func(array($this, 'step_through_feedlist'));	
+				$theFeed = call_user_func(array($this, 'step_through_feedlist'));
 			} elseif (((empty($aFeed)) || ($aFeed == '')) && ($feeds_iteration >= $last_key)){
 				$this->log_feed_input('The feed is either an empty entry or un-retrievable AND the iteration is greater or equal to the last key.');
 				$this->log_feed_input('Did the feeds_iteration option update?');
 				$feed_it_bool = update_option( PF_SLUG . '_feeds_iteration', 0);
 				$this->log_feed_input($feed_it_bool);
-				
+
 				$this->log_feed_input('Did the feeds_go_switch option update?');
 				$feed_go_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
 				$this->log_feed_input($feed_go_bool);
-				
+
 				$this->log_feed_input('Did the iterate_going_switch option update?');
 				$feed_going_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
 				$this->log_feed_input($feed_going_bool);
-				
+
 				$this->log_feed_input('End of the update process. Return false.');
 				return false;
 			}
@@ -152,90 +152,90 @@ class PF_RSS_Import extends PF_Module {
 			if (is_wp_error($theFeed = fetch_feed($aFeed))){
 				$aFeed = '';
 			}
-			//If the array entry is empty and this isn't the end of the feedlist, then get the next item from the feedlist while iterating the count. 
+			//If the array entry is empty and this isn't the end of the feedlist, then get the next item from the feedlist while iterating the count.
 			if (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration < $last_key)){
 				$this->log_feed_input('The feed is either an empty entry or un-retrievable AND the iteration is less than the last key.');
-				$theFeed = call_user_func(array($this, 'step_through_feedlist'));	
+				$theFeed = call_user_func(array($this, 'step_through_feedlist'));
 			} elseif (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration >= $last_key)){
 				$this->log_feed_input('The feed is either an empty entry or un-retrievable AND the iteration is greater or equal to the last key.');
 				$this->log_feed_input('Did the feeds_iteration option update?');
 				$feed_it_bool = update_option( PF_SLUG . '_feeds_iteration', 0);
 				$this->log_feed_input($feed_it_bool);
-				
+
 				$this->log_feed_input('Did the feeds_go_switch option update?');
 				$feed_go_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
 				$this->log_feed_input($feed_go_bool);
-				
+
 				$this->log_feed_input('Did the iterate_going_switch option update?');
 				$feed_going_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
 				$this->log_feed_input($feed_going_bool);
-				
+
 				$this->log_feed_input('End of the update process. Return false.');
 				return false;
 			}
 			return $theFeed;
 		} else {
-			//An error state that should never, ever, ever, ever, ever happen. 
+			//An error state that should never, ever, ever, ever, ever happen.
 			$this->log_feed_input('The iteration is now greater than the last key.');
 				$this->log_feed_input('Did the feeds_iteration option update?');
 				$feed_it_bool = update_option( PF_SLUG . '_feeds_iteration', 0);
 				$this->log_feed_input($feed_it_bool);
-				
+
 				$this->log_feed_input('Did the feeds_go_switch option update?');
 				$feed_go_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
 				$this->log_feed_input($feed_go_bool);
-				
+
 				$this->log_feed_input('Did the iterate_going_switch option update?');
 				$feed_going_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
 				$this->log_feed_input($feed_going_bool);
 				$this->log_feed_input('End of the update process. Return false.');
-				return false;			
+				return false;
 			//return false;
 		}
-	
+
 	}
-	
+
 	public function pf_feed_fetcher($aFeed){
 		$theFeed = fetch_feed($aFeed);
 
 		if ((is_wp_error($theFeed))){
 			print_r('<br />The Feed ' . $aFeed . ' could not be retrieved.');
-				//$aFeed = call_user_func(array($this, 'step_through_feedlist'));		
+				//$aFeed = call_user_func(array($this, 'step_through_feedlist'));
 				//$theFeed = $this->pf_feed_fetcher($aFeed);
 				return false;
 		}
-		
+
 		return $theFeed;
 	}
-	
+
 	public function advance_feeds(){
 		self::log_feed_input('Begin advance_feeds.');
-		//Here: If feedlist_iteration is not == to feedlist_count, scheduale a cron and trigger it before returning. 
-				$feedlist = call_user_func(array(self, 'pf_feedlist'));	
-		//The array keys start with zero, as does the iteration number. This will account for that. 
+		//Here: If feedlist_iteration is not == to feedlist_count, scheduale a cron and trigger it before returning.
+				$feedlist = call_user_func(array(self, 'pf_feedlist'));
+		//The array keys start with zero, as does the iteration number. This will account for that.
 		$feedcount = count($feedlist) - 1;
-		//Get the iteration state. If this variable doesn't exist the planet will break in half. 
-		$feeds_iteration = get_option( PF_SLUG . '_feeds_iteration');	
+		//Get the iteration state. If this variable doesn't exist the planet will break in half.
+		$feeds_iteration = get_option( PF_SLUG . '_feeds_iteration');
 
-		$feed_get_switch = get_option( PF_SLUG . '_feeds_go_switch');	
+		$feed_get_switch = get_option( PF_SLUG . '_feeds_go_switch');
 		if ($feed_get_switch != 0) {
 			self::log_feed_input('Feeds go switch is NOT set to 0.');
 			self::log_feed_input('Getting import-cron.');
-			
+
 			//http://codex.wordpress.org/Function_Reference/wp_schedule_single_event
 			//add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );
 			//wp_schedule_single_event(time()-3600, 'get_more_feeds');
 			//print_r('<br /> <br />' . PF_URL . 'modules/rss-import/import-cron.php <br /> <br />');
 			$theRetrievalLoop = add_query_arg( 'press', 'forward',  site_url() );
-			$pfnonce = get_option('chunk_nonce'); 
+			$pfnonce = get_option('chunk_nonce');
 			$theRetrievalLoopNounced = add_query_arg( '_wpnonce', $pfnonce,  $theRetrievalLoop );
 			self::log_feed_input('Checking remote get at ' . $theRetrievalLoopNounced . ' : ');
 			$wprgCheck = wp_remote_get($theRetrievalLoopNounced);
-			
+
 			self::log_feed_input('Checked remote get at ' . $theRetrievalLoopNounced . ' : ');
 			return;
 			//$this->log_feed_input($wprgCheck);
-			//Looks like it is schedualed properly. But should I be using wp_cron() or spawn_cron to trigger it instead? 
+			//Looks like it is schedualed properly. But should I be using wp_cron() or spawn_cron to trigger it instead?
 			//wp_cron();
 			//If I use spawn_cron here, it can only occur every 60 secs. That's no good!
 			//print_r('<br />Cron: ' . wp_next_scheduled('get_more_feeds') . ' The next event.');
@@ -243,9 +243,9 @@ class PF_RSS_Import extends PF_Module {
 			//print_r($wprgCheck);
 		} else {
 			self::log_feed_input('Feeds go switch is set to 0.');
-		}	
+		}
 	}
-	
+
 	public function alter_for_retrieval() {
 			$nonce = $_REQUEST['_wpnonce'];
 			$nonce_check = get_option('chunk_nonce');
@@ -260,7 +260,7 @@ class PF_RSS_Import extends PF_Module {
 					self::log_feed_input($verify_val);
 				}
 			}
-		
+
 	}
 
 	/**
@@ -292,7 +292,7 @@ class PF_RSS_Import extends PF_Module {
 		//Is this process already occuring?
 		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0);
 		$this->log_feed_input('The Feeds go switch has been updated?');
-		$this->log_feed_input($feed_go);		
+		$this->log_feed_input($feed_go);
 		$is_it_going = get_option(PF_SLUG . '_iterate_going_switch', 1);
 		if ($is_it_going == 0){
 			//WE ARE? SHUT IT DOWN!!!
@@ -304,8 +304,8 @@ class PF_RSS_Import extends PF_Module {
 			//return false;
 			exit;
 		}
-		
-		$theFeed = call_user_func(array($this, 'step_through_feedlist'));		
+
+		$theFeed = call_user_func(array($this, 'step_through_feedlist'));
 		if (!$theFeed){
 			$this->log_feed_input('The feed is false, exit process. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
 			exit;
@@ -398,12 +398,12 @@ class PF_RSS_Import extends PF_Module {
 				}
 			}
 			$c++;
-			
+
 		}
 
 		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 1);
 		$this->log_feed_input('The Feeds go switch has been updated to on?');
-		$this->log_feed_input($feed_go);	
+		$this->log_feed_input($feed_go);
 		$prev_iteration = get_option( PF_SLUG . '_prev_iteration', 0);
 		$iterate_op_check = get_option( PF_SLUG . '_feeds_iteration', 1);
 		$this->log_feed_input('Did the option properly iterate so that the previous iteration count of ' . $prev_iteration . ' is not equal to the current of ' . $iterate_op_check . '?');
@@ -411,13 +411,13 @@ class PF_RSS_Import extends PF_Module {
 			$this->log_feed_input('Nope. Did the iteration option emergency update function here?');
 			$check_iteration = update_option( PF_SLUG . '_feeds_iteration', $iterate_op_check+1);
 			$this->log_feed_input($check_iteration);
-			
+
 		} else {
 			$this->log_feed_input('Yes');
 		}
 
-		//$this->advance_feeds();	
-		
+		//$this->advance_feeds();
+
 		return $rssObject;
 
 	}
@@ -459,11 +459,11 @@ class PF_RSS_Import extends PF_Module {
 			}
 			$authors = implode(', ', $nameArray);
 			$authors = $authors;
-			
+
 		} else {
 			$authors = __('No author.', 'pf');
 		}
-		
+
 		return $authors;
 	}
 
@@ -476,7 +476,7 @@ class PF_RSS_Import extends PF_Module {
         ?>
 			<br />
 			<br />
-		<button type="submit" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="Reset all Feed Retrieval Options"><?php _e('Reset all Feed Retrieval Options', 'pf'); ?></button>    <br />  
+		<button type="submit" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="Reset all Feed Retrieval Options"><?php _e('Reset all Feed Retrieval Options', 'pf'); ?></button>    <br />
 			 <?php
 			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0);
 			$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
@@ -593,7 +593,7 @@ class PF_RSS_Import extends PF_Module {
 			}
 
 		}
-		
+
 		//Let's ensure no duplicates.
 		$feedlist = array_unique($feedlist);
 
@@ -647,14 +647,14 @@ class PF_RSS_Import extends PF_Module {
 		wp_enqueue_script( 'feed-manip-ajax', $pf->modules['rss-import']->module_url . 'assets/js/feed-manip-imp.js', array( 'jquery', 'twitter-bootstrap') );
 		wp_enqueue_style( 'feeder-style', $pf->modules['rss-import']->module_url . 'assets/css/feeder-styles.css' );
 	}
-	
+
   function feed_retrieval_reset(){
 		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0);
 		$feed_iteration = update_option( PF_SLUG . '_feeds_iteration', 0);
 		$retrieval_state = update_option( PF_SLUG . '_iterate_going_switch', 0);
 		update_option( PF_SLUG . '_chunk_assembly_status', 1 );
- 	}  	
-	
+ 	}
+
 
 }
 
