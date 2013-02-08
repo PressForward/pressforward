@@ -19,17 +19,11 @@ class PF_Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
 
 		// AJAX handlers
-		add_action( 'wp_ajax_nopriv_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
-		add_action( 'wp_ajax_nopriv_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
 		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
-		add_action( 'wp_ajax_nopriv_assemble_feed_for_pull', array($this, 'trigger_source_data') );
 		add_action( 'wp_ajax_assemble_feed_for_pull', array( $this, 'trigger_source_data') );
-		add_action( 'wp_ajax_nopriv_reset_feed', array($this, 'reset_feed') );
 		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
-		add_action( 'wp_ajax_nopriv_make_it_readable', array($this, 'make_it_readable') );
 		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );
-		add_action( 'wp_ajax_nopriv_archive_a_nom', array($this, 'archive_a_nom') );
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
 	}
 
