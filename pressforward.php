@@ -219,31 +219,6 @@ class PressForward {
 		return '';
 	}
 
-	/**Create the archive post type.
-	 * Until the CS folks build the 'pressbox' this will pull in RSS items.
-	 * Elsewhere it is set up to store them for up to 2 months in the database.
-	 * We'll want to clean out anything older, because otherwise the database is likely to get heavy with items.
-	**/
-	function create_pf_archive_post_type() {
-		$args = array(
-					'labels' => array(
-										'name' => __( 'Archival', 'pf'),
-										'singular_name' => __( 'Archival', 'pf')
-									),
-					'description' => __('Archival posts for saving RSS', 'pf'),
-					'public' => false,
-					'show_ui' => false,
-					'show_in_menu' => false,
-					'capability_type' => 'post',
-					'supports' => array('title', 'editor', 'thumbnail', 'revisions'),
-					//This might need to be switched to false? The documentation isn't really clear on what this does.
-					'has_archive' => true
-				);
-
-		register_post_type('rssarchival', $args);
-
-	}
-
 	/**
 	 * Get the source data object, in a standardized format
 	 *
