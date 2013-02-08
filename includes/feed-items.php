@@ -121,6 +121,90 @@ class PF_RSS_Import_Feed_Item {
 		return update_post_meta( $post_id, 'pf_feed_item_source', $source );
 	}
 
+	# This function feeds items to our display feed function pf_reader_builder.
+	# It is just taking our database of rssarchival items and putting them into a
+	# format that the builder understands.
+	public static function archive_feed_to_display($pageTop = 0) {
+		global $wpdb, $post;
+		//$args = array(
+		//				'post_type' => array('any')
+		//			);
+		//$pageBottom = $pageTop + 20;
+		$args = pf_feed_item_schema()->feed_item_post_type;
+		//$archiveQuery = new WP_Query( $args );
+		 $dquerystr = "
+			SELECT $wpdb->posts.*, $wpdb->postmeta.*
+			FROM $wpdb->posts, $wpdb->postmeta
+			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
+			AND $wpdb->posts.post_type = '" . pf_feed_item_schema()->feed_item_post_type . "'
+			AND $wpdb->postmeta.meta_key = 'sortable_item_date'
+			ORDER BY $wpdb->postmeta.meta_value DESC
+			LIMIT $pageTop, 20
+		 ";
+		// print_r($dquerystr);
+		 # DESC here because we are sorting by UNIX datestamp, where larger is later.
+		 //Provide an alternative to load by feed date order.
+		# This is how we do a custom query, when WP_Query doesn't do what we want it to.
+		$archivalposts = $wpdb->get_results($dquerystr, OBJECT);
+		//print_r(count($rssarchivalposts)); die();
+		$feedObject = array();
+		$c = 0;
+
+		if ($archivalposts):
+
+			foreach ($archivalposts as $post) :
+			# This takes the $post objects and translates them into something I can do the standard WP functions on.
+			setup_postdata($post);
+			# I need this data to check against existing transients.
+			$post_id = get_the_ID();
+			$id = get_post_meta($post_id, 'item_id', true); //die();
+			//Switch the delete on to wipe rss archive posts from the database for testing.
+			//wp_delete_post( $post_id, true );
+			//print_r($id);
+			# If the transient exists than there is no reason to do any extra work.
+			if ( false === ( $feedObject['rss_archive_' . $c] = get_transient( 'pf_archive_' . $id ) ) ) {
+
+				$item_id = get_post_meta($post_id, 'item_id', true);
+				$source_title = get_post_meta($post_id, 'source_title', true);
+				$item_date = get_post_meta($post_id, 'item_date', true);
+				$item_author = get_post_meta($post_id, 'item_author', true);
+				$item_link = get_post_meta($post_id, 'item_link', true);
+				$item_feat_img = get_post_meta($post_id, 'item_feat_img', true);
+				$item_wp_date = get_post_meta($post_id, 'item_wp_date', true);
+				$item_tags = get_post_meta($post_id, 'item_tags', true);
+				$source_repeat = get_post_meta($post_id, 'source_repeat', true);
+
+				$contentObj = new htmlchecker(get_the_content());
+				$item_content = $contentObj->closetags(get_the_content());
+
+				$feedObject['rss_archive_' . $c] = pf_feed_object(
+											get_the_title(),
+											$source_title,
+											$item_date,
+											$item_author,
+											$item_content,
+											$item_link,
+											$item_feat_img,
+											$item_id,
+											$item_wp_date,
+											$item_tags,
+											//Manual ISO 8601 date for pre-PHP5 systems.
+											get_the_date('o-m-d\TH:i:sO'),
+											$source_repeat
+											);
+				set_transient( 'pf_archive_' . $id, $feedObject['rss_archive_' . $c], 60*10 );
+
+			}
+			$c++;
+			endforeach;
+
+
+		endif;
+		wp_reset_postdata();
+		return $feedObject;
+	}
+
+
 	/**
 	 * Set a feed item's tags
 	 *
