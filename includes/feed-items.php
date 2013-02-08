@@ -273,7 +273,7 @@ class PF_Feed_Item {
 		# This pulls the RSS feed into a set of predetermined objects.
 		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
 		if ($feedObj == 0){
-			$feedObj = pressforward()->source_data_object();
+			$feedObj = $this->source_data_object();
 		}
 
 		# We need to init $sourceRepeat so it can be if 0 if nothing is happening.
@@ -496,6 +496,22 @@ class PF_Feed_Item {
 	 */
 	public static function set_tags( $post_id, $tags, $append = false ) {
 		return wp_set_object_terms( $post_id, $tags, $this->tag_taxonomy, $append );
+	}
+
+	/**
+	 * Get the source data object, in a standardized format
+	 *
+	 * For the moment, all this data comes from the RSS_Import module. In
+	 * the future, other modules can hook in to provide their own data
+	 * sources.
+	 */
+	public function source_data_object() {
+		// Loop through each module to get its source data
+		$source_data_object = array();
+		foreach ( pressforward()->modules as $module ) {
+			$source_data_object = array_merge( $source_data_object, $module->get_data_object() );
+		}
+		return $source_data_object;
 	}
 
 	/**

@@ -216,22 +216,6 @@ class PressForward {
 		return '';
 	}
 
-	/**
-	 * Get the source data object, in a standardized format
-	 *
-	 * For the moment, all this data comes from the RSS_Import module. In
-	 * the future, other modules can hook in to provide their own data
-	 * sources.
-	 */
-	public function source_data_object() {
-		// Loop through each module to get its source data
-		$source_data_object = array();
-		foreach ( $this->modules as $module ) {
-			$source_data_object = array_merge( $source_data_object, $module->get_data_object() );
-		}
-		return $source_data_object;
-	}
-
 	# This function takes measures to try and get item content throguh methods of increasing reliability, but decreasing relevance.
 	public function get_content_through_aggregator($url){
 
