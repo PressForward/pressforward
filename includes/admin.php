@@ -17,6 +17,20 @@ class PF_Admin {
 
 		// Adding javascript and css to admin pages
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
+
+		// AJAX handlers
+		add_action( 'wp_ajax_nopriv_build_a_nomination', array( $this, 'build_a_nomination') );
+		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
+		add_action( 'wp_ajax_nopriv_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
+		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
+		add_action( 'wp_ajax_nopriv_assemble_feed_for_pull', array($this, 'trigger_source_data') );
+		add_action( 'wp_ajax_assemble_feed_for_pull', array( $this, 'trigger_source_data') );
+		add_action( 'wp_ajax_nopriv_reset_feed', array($this, 'reset_feed') );
+		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
+		add_action( 'wp_ajax_nopriv_make_it_readable', array($this, 'make_it_readable') );
+		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );
+		add_action( 'wp_ajax_nopriv_archive_a_nom', array($this, 'archive_a_nom') );
+		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
 	}
 
 	/**
@@ -252,7 +266,7 @@ class PF_Admin {
 						echo '<div class="span12">';
 							//This needs a nonce for security.
 							echo '<form name="form-' . $item['item_id'] . '"><p>';
-							$this->prep_item_for_submit($item);
+							pf_prep_item_for_submit($item);
 							wp_nonce_field('nomination', PF_SLUG . '_nomination_nonce', false);
 							//print_r($this->get_posts_after_for_check( 2011-01-03, 'nomination' ));
 							//if(!($this->get_post_nomination_status('2012-08-10', $item['item_id'], 'post'))){
@@ -512,5 +526,28 @@ class PF_Admin {
 
 
 	}
+
+	/**
+	 * @todo Looks like this was tester code that doesn't do anything important
+	 */
+	function widget_array(){
+		$widgets = array(
+				'first_widget' => array(
+						'title' => 'Widget Title',
+						'slug' => 'first_widget',
+						'callback' => array($this, 'widget_one_call')
+									)
+							);
+
+		return $widgets;
+	}
+
+	/**
+	 * @todo Looks like this was tester code that doesn't do anything important
+	 */
+	function widget_one_call(){
+		echo '<div class="navwidget">	Widget Body <br />	<a href="#20">Test link to item 20.</a>	</div>'	;
+	}
+
 
 }

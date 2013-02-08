@@ -181,4 +181,56 @@ function pf_feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuth
 	return $itemArray;
 }
 
+/**
+ * Get all posts with 'origin_item_ID' set to a given item id
+ *
+ * @since 1.7
+ *
+ * @param string $theDate MySQL-formatted date. Posts will only be fetched
+ *   starting from this date
+ * @param string $post_type The post type to limit results to
+ * @param int $item_id The origin item id
+ * @return object
+ */
+function pf_get_posts_by_id_for_check( $theDate, $post_type, $item_id ) {
+	global $wpdb;
+
+	 $querystr = "
+			SELECT $wpdb->posts.*
+			FROM $wpdb->posts, $wpdb->postmeta
+			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
+			AND $wpdb->postmeta.meta_key = 'origin_item_ID'
+			AND $wpdb->postmeta.meta_value = '" . $item_id . "'
+			AND $wpdb->posts.post_type = '" . $post_type . "'
+			AND $wpdb->posts.post_date >= '". $theDate . "'
+			ORDER BY $wpdb->posts.post_date DESC
+		 ";
+
+	$postsAfter = $wpdb->get_results($querystr, OBJECT);
+
+	return $postsAfter;
+}
+
+/**
+ * Create the hidden inputs used when nominating a post from All Content
+ *
+ * @since 1.7
+ */
+function pf_prep_item_for_submit($item) {
+	$item['item_content'] = htmlspecialchars($item['item_content']);
+	$itemid = $item['item_id'];
+
+	foreach ($item as $itemKey => $itemPart) {
+
+		if ($itemKey == 'item_content'){
+			$itemPart = htmlspecialchars($itemPart);
+		}
+
+		echo '<input type="hidden" name="' . $itemKey . '" id="' . $itemKey . '_' . $itemid . '" id="' . $itemKey . '" value="' . $itemPart . '" />';
+
+	}
+
+}
+
+
 
