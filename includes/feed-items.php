@@ -519,8 +519,6 @@ class PF_Feed_Item {
 
 	}
 
-
-
 	/**
 	 * Filter 'posts_where' to return only posts older than sixty days
 	 */

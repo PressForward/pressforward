@@ -48,7 +48,6 @@ class PressForward {
 		$this->set_up_nominations();
 		$this->set_up_admin();
 
-		add_action( 'admin_init', array($this, 'pf_options_admin_page_save') );
 
 		add_filter('the_author', array($this, 'replace_author_presentation'));
 		add_filter( 'author_link', array($this, 'replace_author_uri_presentation') );
@@ -215,25 +214,7 @@ class PressForward {
 
 		return '';
 	}
-	function pf_options_admin_page_save() {
-		global $pagenow;
 
-		if ( 'admin.php' != $pagenow ) {
-			return;
-		}
-
-		if ( empty( $_POST['submit'] ) ) {
-			return;
-		}
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-
-		check_admin_referer( 'pf_settings' );
-
-		do_action( 'pf_admin_op_page_save' );
-	}
 
 	//Ref for eventual building of nomination ajax:
 	//https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/editorial-comments.php ln284	//https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/lib/editorial-comments.js

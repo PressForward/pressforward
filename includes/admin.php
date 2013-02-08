@@ -18,6 +18,9 @@ class PF_Admin {
 		// Adding javascript and css to admin pages
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
 
+		// Catch form submits
+		add_action( 'admin_init', array($this, 'pf_options_admin_page_save') );
+
 		// AJAX handlers
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
@@ -543,6 +546,25 @@ class PF_Admin {
 		echo '<div class="navwidget">	Widget Body <br />	<a href="#20">Test link to item 20.</a>	</div>'	;
 	}
 
+	function pf_options_admin_page_save() {
+		global $pagenow;
+
+		if ( 'admin.php' != $pagenow ) {
+			return;
+		}
+
+		if ( empty( $_POST['submit'] ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		check_admin_referer( 'pf_settings' );
+
+		do_action( 'pf_admin_op_page_save' );
+	}
 	/////////////////////////
 	//    AJAX HANDLERS    //
 	/////////////////////////
