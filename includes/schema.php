@@ -136,10 +136,3 @@ class PF_Feed_Item_Schema {
 		dbDelta( $sql );
 	}
 }
-
-function pf_feed_item_schema() {
-	return PF_Feed_Item_Schema::init();
-}
-
-// Bootstrap
-pf_feed_item_schema();

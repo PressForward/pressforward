@@ -67,6 +67,28 @@ function pf_shortcut_link() {
 	}
 
 /**
+ * Get the feed item post type name
+ *
+ * @since 1.7
+ *
+ * @return string
+ */
+function pf_feed_item_post_type() {
+	return pressforward()->get_feed_item_post_type();
+}
+
+/**
+ * Get the feed item tag taxonomy name
+ *
+ * @since 1.7
+ *
+ * @return string
+ */
+function pf_feed_item_tag_taxonomy() {
+	return pressforward()->get_feed_item_tag_taxonomy();
+}
+
+/**
  * Get a feed excerpt
  */
 function pf_feed_excerpt( $text ) {

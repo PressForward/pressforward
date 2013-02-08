@@ -44,6 +44,7 @@ class PressForward {
 
 		$this->includes();
 
+		$this->set_up_schema();
 		$this->set_up_nominations();
 		$this->set_up_admin();
 
@@ -59,13 +60,11 @@ class PressForward {
 		add_action('init', array($this, 'scheduale_feed_in') );
 		add_action('init', array($this, 'scheduale_feed_out') );
 
-		//Register options
-		add_action( 'init', array( $this, 'feeder_options_init' ) );
-
 		//The take_feed_out action is now initiated, we should be able to attach our feed disassembly function.
-		add_action( 'take_feed_out', array($this, 'disassemble_feed_items') );
+		add_action( 'take_feed_out', array( 'PF_Feed_Item', 'disassemble_feed_items' ) );
+
 		//The pull_feed_in action is now initiated, we should be able to attach our feed assembly function.
-		add_action( 'pull_feed_in', array($this, 'trigger_source_data') );
+		add_action( 'pull_feed_in', array( $this->admin, 'trigger_source_data') );
 
 		// Set up modules
 		add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
@@ -112,6 +111,17 @@ class PressForward {
 		require( PF_ROOT . '/includes/relationships.php' );
 		require( PF_ROOT . '/includes/nominations.php' );
 		require( PF_ROOT . '/includes/admin.php' );
+	}
+
+	/**
+	 * Sets up the Dashboard admin
+	 *
+	 * @since 1.7
+	 */
+	function set_up_schema() {
+		if ( empty( $this->schema ) ) {
+			$this->schema = new PF_Feed_Item_Schema;
+		}
 	}
 
 	/**
@@ -187,6 +197,36 @@ class PressForward {
 		}
 
 		do_action( 'pf_setup_modules', $this );
+	}
+
+	/**
+	 * Get the feed item post type
+	 *
+	 * @since 1.7
+	 *
+	 * @return string
+	 */
+	public function get_feed_item_post_type() {
+		if ( isset( $this->schema ) ) {
+			return $this->schema->feed_item_post_type;
+		}
+
+		return '';
+	}
+
+	/**
+	 * Get the feed item tag taxonomy
+	 *
+	 * @since 1.7
+	 *
+	 * @return string
+	 */
+	public function get_feed_item_tag_taxonomy() {
+		if ( isset( $this->schema ) ) {
+			return $this->schema->feed_item_tag_taxonomy;
+		}
+
+		return '';
 	}
 
 	/**Create the archive post type.
@@ -277,7 +317,7 @@ class PressForward {
 				WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
 				AND $wpdb->postmeta.meta_key = 'item_id'
 				AND $wpdb->postmeta.meta_value = '" . $item_id . "'
-				AND $wpdb->posts.post_type = '" . pf_rss_import_schema()->feed_item_post_type . "'
+				AND $wpdb->posts.post_type = '" . pf_feed_item_post_type() . "'
 				ORDER BY $wpdb->posts.post_date DESC
 			 ";
 			 // AND $wpdb->posts.post_date < NOW() <- perhaps by removing we can better prevent simultaneous duplications?
@@ -301,7 +341,7 @@ class PressForward {
 						FROM $wpdb->posts, $wpdb->postmeta
 						WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
 						AND $wpdb->postmeta.meta_key = 'item_link'
-						AND $wpdb->posts.post_type = " . pf_rss_import_schema()->feed_item_post_type . "
+						AND $wpdb->posts.post_type = " . pf_feed_item_post_type() . "
 						ORDER BY $wpdb->posts.post_date DESC
 					 ";
 					$checkpoststwo = $wpdb->get_results($queryMoreStr, OBJECT);
@@ -379,7 +419,7 @@ class PressForward {
 			# Do we want or need the post_status to be published?
 				$data = array(
 					'post_status' => 'published',
-					'post_type' => pf_rss_import_schema()->feed_item_post_type,
+					'post_type' => pf_feed_item_post_type(),
 					'post_date' => $_SESSION['cal_startdate'],
 					'post_title' => $item_title,
 					'post_content' => $item_content,
@@ -455,39 +495,11 @@ class PressForward {
 
 	}
 
-// Create a new filtering function that will add our where clause to the query
-	function filter_where_older_sixty_days( $where = '' ) {
-		// posts before the last 60 days
-		$where .= " AND post_date < '" . date('Y-m-d', strtotime('-60 days')) . "'";
-		return $where;
-	}
-
 	# Creating the action to, once a month, check for items older than two months and remove them from the database.
 	function scheduale_feed_out() {
 		if ( ! wp_next_scheduled( 'take_feed_out' ) ) {
 		  wp_schedule_event( time(), 'monthly', 'take_feed_out' );
 		}
-	}
-
-	# The function we add to the action to clean our database.
-	function disassemble_feed_items() {
-		//delete rss feed items with a date past a certian point.
-		add_filter( 'posts_where', array($this, 'filter_where_older_sixty_days') );
-		$queryForDel = new WP_Query( array( 'post_type' => pf_rss_import_schema()->feed_item_post_type ) );
-		remove_filter( 'posts_where', array($this, 'filter_where_older_sixty_days') );
-
-		// The Loop
-		while ( $queryForDel->have_posts() ) : $queryForDel->the_post();
-			# All the posts in this loop are older than 60 days from 'now'.
-			# Delete them all.
-			$postid = get_the_ID();
-			wp_delete_post( $postid, true );
-
-		endwhile;
-
-		// Reset Post Data
-		wp_reset_postdata();
-
 	}
 
 
@@ -630,13 +642,6 @@ class PressForward {
 
 	}
 
-	public function assemble_public_stream() {
-
-		//build a function with hooks to assemble a bunch of function that gather content into one coherent stream.
-
-	}
-
-
 	function pf_options_admin_page_save() {
 		global $pagenow;
 
@@ -655,12 +660,6 @@ class PressForward {
 		check_admin_referer( 'pf_settings' );
 
 		do_action( 'pf_admin_op_page_save' );
-	}
-
-
-	function feeder_options_init() {
-		# Activate when settings are ready to go.
-		//register_setting(PF_SLUG . '_feeder_options', PF_SLUG . '_plugin_feeder_options', PF_SLUG . '_plugin_feeder_options_validate');
 	}
 
 	//Ref for eventual building of nomination ajax:

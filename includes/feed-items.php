@@ -11,8 +11,8 @@ class PF_Feed_Item {
 	protected $filter_data = array();
 
 	public function __construct() {
-		$this->post_type = pf_rss_import_schema()->feed_item_post_type;
-		$this->tag_taxonomy = pf_rss_import_schema()->feed_item_tag_taxonomy;
+		$this->post_type = pf_feed_item_post_type();
+		$this->tag_taxonomy = pf_feed_item_tag_taxonomy();
 	}
 
 	public function get( $args = array() ) {
@@ -130,13 +130,13 @@ class PF_Feed_Item {
 		//				'post_type' => array('any')
 		//			);
 		//$pageBottom = $pageTop + 20;
-		$args = pf_feed_item_schema()->feed_item_post_type;
+		$args = pf_feed_item_post_type();
 		//$archiveQuery = new WP_Query( $args );
 		 $dquerystr = "
 			SELECT $wpdb->posts.*, $wpdb->postmeta.*
 			FROM $wpdb->posts, $wpdb->postmeta
 			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-			AND $wpdb->posts.post_type = '" . pf_feed_item_schema()->feed_item_post_type . "'
+			AND $wpdb->posts.post_type = '" . pf_feed_item_post_type() . "'
 			AND $wpdb->postmeta.meta_key = 'sortable_item_date'
 			ORDER BY $wpdb->postmeta.meta_value DESC
 			LIMIT $pageTop, 20
@@ -204,19 +204,40 @@ class PF_Feed_Item {
 		return $feedObject;
 	}
 
+	# The function we add to the action to clean our database.
+	public static function disassemble_feed_items() {
+		//delete rss feed items with a date past a certian point.
+		add_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older_sixty_days') );
+		$queryForDel = new WP_Query( array( 'post_type' => pf_feed_item_post_type() ) );
+		remove_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older_sixty_days') );
+
+		// The Loop
+		while ( $queryForDel->have_posts() ) : $queryForDel->the_post();
+			# All the posts in this loop are older than 60 days from 'now'.
+			# Delete them all.
+			$postid = get_the_ID();
+			wp_delete_post( $postid, true );
+
+		endwhile;
+
+		// Reset Post Data
+		wp_reset_postdata();
+
+	}
+
 	# Method to manually delete rssarchival entries on user action.
 	public static function reset_feed() {
 		global $wpdb, $post;
 		//$args = array(
 		//				'post_type' => array('any')
 		//			);
-		$args = 'post_type=' . pf_feed_item_schema()->feed_item_post_type;
+		$args = 'post_type=' . pf_feed_item_post_type();
 		//$archiveQuery = new WP_Query( $args );
 		$dquerystr = "
 			SELECT $wpdb->posts.*, $wpdb->postmeta.*
 			FROM $wpdb->posts, $wpdb->postmeta
 			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-			AND $wpdb->posts.post_type ='" . pf_feed_item_schema()->feed_item_post_type .
+			AND $wpdb->posts.post_type ='" . pf_feed_item_post_type() .
 		 "'";
 		# This is how we do a custom query, when WP_Query doesn't do what we want it to.
 		$rssarchivalposts = $wpdb->get_results($dquerystr, OBJECT);
@@ -241,6 +262,14 @@ class PF_Feed_Item {
 
 	}
 
+	/**
+	 * Filter 'posts_where' to return only posts older than sixty days
+	 */
+	public static function filter_where_older_sixty_days( $where = '' ) {
+		// posts before the last 60 days
+		$where .= " AND post_date < '" . date('Y-m-d', strtotime('-60 days')) . "'";
+		return $where;
+	}
 
 	/**
 	 * Set a feed item's tags
