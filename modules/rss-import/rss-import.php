@@ -274,20 +274,19 @@ class PF_RSS_Import extends PF_Module {
 	}
 
 	public function alter_for_retrieval() {
-			$nonce = $_REQUEST['_wpnonce'];
-			$nonce_check = get_option('chunk_nonce');
-			if ( isset( $_GET['press'] ) && $_GET['press'] == 'forward'){
-				if ( $nonce_check ===  $nonce){
-					self::log_feed_input($nonce_check . ' is equal to ' . $nonce . '. Pressing forward.');
-					include(PF_ROOT . '/modules/rss-import/import-cron.php');
-					exit;
-				} else {
-					$verify_val = wp_verify_nonce($nonce, 'retrieve-pressforward');
-					self::log_feed_input('Nonce check of ' . $nonce . ' failed. Returned: ');
-					self::log_feed_input($verify_val);
-				}
+		$nonce = isset( $_REQUEST['_wpnonce'] ) ? $_REQUEST['_wpnonce'] : '';
+		$nonce_check = get_option('chunk_nonce');
+		if ( isset( $_GET['press'] ) && $_GET['press'] == 'forward'){
+			if ( $nonce && $nonce_check ===  $nonce){
+				self::log_feed_input($nonce_check . ' is equal to ' . $nonce . '. Pressing forward.');
+				include(PF_ROOT . '/modules/rss-import/import-cron.php');
+				exit;
+			} else {
+				$verify_val = wp_verify_nonce($nonce, 'retrieve-pressforward');
+				self::log_feed_input('Nonce check of ' . $nonce . ' failed. Returned: ');
+				self::log_feed_input($verify_val);
 			}
-
+		}
 	}
 
 	/**
