@@ -11,17 +11,13 @@ if ( !defined('ABSPATH') ) {
 	require_once(IC_SITEBASE . '\wp-load.php');
 }
 
-		$fo = fopen(PF_ROOT . "/modules/rss-import/rss-import.txt", 'a') or print_r('Can\'t open log file.');
 
 		$string_to_log = "\nimport-cron.php triggered.\n";
-		fwrite($fo, $string_to_log);
-		fclose($fo);
+		pf_log( $string_to_log );
 
 PF_Feed_Item::assemble_feed_for_pull();
 
-$fo = fopen(PF_ROOT . "/modules/rss-import/rss-import.txt", 'a') or print_r('Can\'t open log file.');
-fwrite($fo, "\nimport-cron.php compleated.\n\n\n");
-fclose($fo);
+pf_log( "import-cron.php compleated.\n\n\n" );
 //do_action('get_more_feeds');
 
 //print_r('<br /><br />Triggered <br />');
