@@ -385,7 +385,7 @@ add_filter( 'author_link', 'pf_replace_author_uri_presentation' );
  *
  * @param string $message The message to log
  */
-function pf_log( $message = '', $display = false ) {
+function pf_log( $message = '', $display = false, $reset = false ) {
 	static $debug;
 
 	if ( (true === $display) ) {
@@ -407,6 +407,13 @@ function pf_log( $message = '', $display = false ) {
 		$log_path = $upload_dir['basedir'] . '/pressforward.log';
 	} else {
 		$log_path = PF_DEBUG_LOG;
+	}
+	
+	if ($reset) {
+		$fo = fopen($log_path, 'w') or print_r('Can\'t open log file.');
+		fwrite($fo, "Log file reset.\n\n\n");
+		fclose($fo);
+
 	}
 
 	if ( ! isset( $debug ) ) {
