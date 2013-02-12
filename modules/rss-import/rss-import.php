@@ -227,7 +227,7 @@ class PF_RSS_Import extends PF_Module {
 	public function advance_feeds(){
 		pf_log('Begin advance_feeds.');
 		//Here: If feedlist_iteration is not == to feedlist_count, scheduale a cron and trigger it before returning.
-				$feedlist = call_user_func(array(self, 'pf_feedlist'));
+				$feedlist = self::pf_feedlist();
 		//The array keys start with zero, as does the iteration number. This will account for that.
 		$feedcount = count($feedlist) - 1;
 		//Get the iteration state. If this variable doesn't exist the planet will break in half.
@@ -248,7 +248,7 @@ class PF_RSS_Import extends PF_Module {
 			pf_log('Checking remote get at ' . $theRetrievalLoopNounced . ' : ');
 			$wprgCheck = wp_remote_get($theRetrievalLoopNounced);
 
-			pf_log('Checked remote get at ' . $theRetrievalLoopNounced . ' : ');
+			
 			return;
 			//pf_log($wprgCheck);
 			//Looks like it is schedualed properly. But should I be using wp_cron() or spawn_cron to trigger it instead?
