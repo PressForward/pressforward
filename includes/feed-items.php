@@ -325,10 +325,11 @@ class PF_Feed_Item {
 						//print_r(get_the_ID());
 						//print_r('< the ID');
 						if ((get_post_meta($post->ID, 'item_id', $item_id, true)) == $item_id){ $thepostscheck++; }
+						pf_log('We already have post ' . $item_id);
 					endforeach;
 				endif;
 				wp_reset_query();
-				if ($thepostscheck == 0){
+				if ($thepostscheck === 0){
 					$queryMoreStr = "
 						SELECT $wpdb->posts.*, $wpdb->postmeta.*
 						FROM $wpdb->posts, $wpdb->postmeta
@@ -345,6 +346,7 @@ class PF_Feed_Item {
 								# Post comparative values.
 								$theTitle = $post->post_title;
 								$postID = $post->ID;
+								pf_log('We are creating the post ' . $theTitle . ' with the title ' . $item_id);
 								$postDate = strtotime($post->post_date);
 								$postItemLink = get_post_meta($post->ID, 'item_link', true);
 								# Item comparative values.
@@ -390,7 +392,7 @@ class PF_Feed_Item {
 #				fwrite($fo, "\nSending " . $item['item_title'] . " to post table.");
 #				fclose($fo);
 #			}
-			if ( $thepostscheck == 0) {
+			if ( $thepostscheck === 0) {
 				$item_title 	= $item['item_title'];
 				$item_content 	= $item['item_content'];
 				$item_feat_img 	= $item['item_feat_img'];
@@ -425,6 +427,7 @@ class PF_Feed_Item {
 
 				# The post gets created here, the $newNomID variable contains the new post's ID.
 				$newNomID = wp_insert_post( $data );
+				pf_log('Create post in the database with the id of ' . $newNomID);
 				//$posttest = get_post($newNomID);
 				//print_r($posttest->post_content);
 
