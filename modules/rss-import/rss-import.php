@@ -82,8 +82,10 @@ class PF_RSS_Import extends PF_Module {
 		$feeds_iteration = get_option( PF_SLUG . '_feeds_iteration');
 
 		pf_log('feeds_go_switch updated? (first check).');
-
-		update_option( PF_SLUG . '_feeds_go_switch', 0);
+		# We begin the process of getting the next feed. If anything asks the system, from here until the end of the feed retrieval process, you DO NOT attempt to retrieve another feed. 
+		pf_log('feeds_go_switch updated?.');
+		$go_switch_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
+		pf_log($go_switch_bool);
 
 		$prev_iteration = get_option( PF_SLUG . '_prev_iteration', 0);
 		pf_log('Did the option properly iterate so that the previous iteration count of ' . $prev_iteration . ' is equal to the current of ' . $feeds_iteration . '?');
@@ -108,9 +110,9 @@ class PF_RSS_Import extends PF_Module {
 			if (($last_key === $feeds_iteration)){
 				pf_log('The last key is equal to the feeds_iteration.');
 				$feeds_iteration = 0;
-				pf_log('feeds_go_switch updated?.');
-				$go_switch_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
-				pf_log($go_switch_bool);
+//				pf_log('feeds_go_switch updated?.');
+//				$go_switch_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
+//				pf_log($go_switch_bool);
 				pf_log('iterate_going_switch updated?.');
 				$going_switch_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
 				pf_log($going_switch_bool);
@@ -410,7 +412,7 @@ class PF_RSS_Import extends PF_Module {
 			$c++;
 
 		}
-
+		# We've completed the feed retrieval, the system should know it is now ok to ask for another feed. 
 		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 1);
 		pf_log('The Feeds go switch has been updated to on?');
 		pf_log($feed_go);
