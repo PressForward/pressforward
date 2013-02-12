@@ -491,8 +491,8 @@ class PF_RSS_Import extends PF_Module {
 			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0);
 			$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
 			$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
-			$chunk_state = get_option( PF_SLUG . '_chunk_assembly_status', 1 );
-			$retrieval_state = sprintf(__('Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d  Chunk state? %4$d', 'pf'), $feed_go, $feed_iteration, $retrieval_state, $chunk_state);
+			$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );
+			$retrieval_state = sprintf(__('Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d  Ready to chunk? %4$d', 'pf'), $feed_go, $feed_iteration, $retrieval_state, $chunk_state);
 			echo $retrieval_state;
 			?>
 			<br />
@@ -690,7 +690,7 @@ class PF_RSS_Import extends PF_Module {
 		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0);
 		$feed_iteration = update_option( PF_SLUG . '_feeds_iteration', 0);
 		$retrieval_state = update_option( PF_SLUG . '_iterate_going_switch', 0);
-		$chunk_state = update_option( PF_SLUG . '_chunk_assembly_status', 1 );
+		$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 1 );
  	}
 
 	public function trigger_source_data(){

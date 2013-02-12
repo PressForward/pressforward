@@ -268,13 +268,17 @@ class PF_Feed_Item {
 		ignore_user_abort(true);
 		set_time_limit(0);
 		# Chunking control, the goal here is to ensure that no feed assembly occurs while the feed assembly is already occuring.
-		$is_chunk_going = get_option( PF_SLUG . '_chunk_assembly_status', 0);
+		# Option: If true (1), the system is ready to assemble a chunk. If false (0), the system is already assembling a chunk. 
+		$ready_for_chunk_assembly = get_option( PF_SLUG . '_ready_to_chunk', 1);
 
-		if ( $is_chunk_going == 1 ){
+		if ( $ready_for_chunk_assembly === 0 ){
 			pf_log( 'Chunk already in progress.' );
 			return;
 		} else {
 			pf_log( 'Beginning next import chunk.' );
+			pf_log( 'The chunk state is set?' );
+			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 0 );
+			pf_log( $chunk_state );
 		}
 
 		# This pulls the RSS feed into a set of predetermined objects.
@@ -478,7 +482,7 @@ class PF_Feed_Item {
 			}
 
 		}
-		update_option( PF_SLUG . '_chunk_assembly_status', 0 );
+		update_option( PF_SLUG . '_ready_to_chunk', 1 );
 		pf_rss_import::advance_feeds();
 		//die('Refreshing...');
 
