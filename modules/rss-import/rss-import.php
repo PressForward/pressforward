@@ -320,6 +320,8 @@ class PF_RSS_Import extends PF_Module {
 		$theFeed = call_user_func(array($this, 'step_through_feedlist'));
 		if (!$theFeed){
 			pf_log('The feed is false, exit process. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
+
+			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 1 );			
 			exit;
 		}
 		$theFeed->set_timeout(60);
@@ -698,13 +700,15 @@ class PF_RSS_Import extends PF_Module {
 	public function trigger_source_data(){
 		$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
 		$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
+		$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );
 		pf_log( 'Invoked: PF_RSS_Import::trigger_source_data()' );
 		pf_log( 'Feed iteration: ' . $feed_iteration );
 		pf_log( 'Retrieval state: ' . $retrieval_state );
-		if ($feed_iteration == 0 && $retrieval_state == 0){
+		pf_log( 'Chunk state: ' . $chunk_state );
+		if ($feed_iteration == 0 && $retrieval_state == 0 && $chunk_state == 1){
 			$status = update_option( PF_SLUG . '_iterate_going_switch', 1);
 
-			pf_log( 'Beginning the retrieval process' );
+			pf_log( __('Beginning the retrieval process', 'pf'), true, true );
 
 			if ( $status ) {
 				pf_log( __( 'Iterate switched to going.', 'pf' ) );
