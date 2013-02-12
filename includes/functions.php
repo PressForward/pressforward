@@ -385,9 +385,13 @@ add_filter( 'author_link', 'pf_replace_author_uri_presentation' );
  *
  * @param string $message The message to log
  */
-function pf_log( $message = '' ) {
+function pf_log( $message = '', $display = false ) {
 	static $debug;
 
+	if ( (true === $display) ) {
+		print_r($message);
+	}
+	
 	if ( 0 === $debug ) {
 		return;
 	}
