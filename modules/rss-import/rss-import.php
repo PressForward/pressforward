@@ -689,7 +689,7 @@ class PF_RSS_Import extends PF_Module {
 		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0);
 		$feed_iteration = update_option( PF_SLUG . '_feeds_iteration', 0);
 		$retrieval_state = update_option( PF_SLUG . '_iterate_going_switch', 0);
-		update_option( PF_SLUG . '_chunk_assembly_status', 1 );
+		$chunk_state = update_option( PF_SLUG . '_chunk_assembly_status', 1 );
  	}
 
 	public function trigger_source_data(){
@@ -711,7 +711,7 @@ class PF_RSS_Import extends PF_Module {
 
 			PF_Feed_Item::assemble_feed_for_pull();
 		} else {
-			pf_log(__('The sources are already being retrieved.', 'pf'));
+			pf_log(__('The sources are already being retrieved.', 'pf'), true);
 		}
 	}
 }
