@@ -263,17 +263,24 @@ class PF_Feed_Item {
 	}
 
 	public function assemble_feed_for_pull($feedObj = 0) {
+		pf_log( 'Invoked: PF_Feed_Item::assemble_feed_for_pull()' );
+
 		ignore_user_abort(true);
 		set_time_limit(0);
 		# Chunking control, the goal here is to ensure that no feed assembly occurs while the feed assembly is already occuring.
 		$is_chunk_going = get_option( PF_SLUG . '_chunk_assembly_status', 0);
-		if ($is_chunk_going === 1){ exit; }
-		else { update_option( PF_SLUG . '_chunk_assembly_status', 1 ); }
+
+		if ( $is_chunk_going == 1 ){
+			pf_log( 'Chunk already in progress.' );
+			return;
+		} else {
+			pf_log( 'Beginning next import chunk.' );
+		}
 
 		# This pulls the RSS feed into a set of predetermined objects.
 		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
 		if ($feedObj == 0){
-			$feedObj = $this->source_data_object();
+			$feedObj = self::source_data_object();
 		}
 
 		# We need to init $sourceRepeat so it can be if 0 if nothing is happening.

@@ -71,25 +71,27 @@ class PF_RSS_Import extends PF_Module {
 		//$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 1);
 		//pf_log('The Feeds go switch has been updated?');
 		//pf_log($feed_go);
-		$feedlist = call_user_func(array($this, 'pf_feedlist'));
+		$feedlist = $this->pf_feedlist();
 		//The array keys start with zero, as does the iteration number. This will account for that.
 		//$feedcount = count($feedlist) - 1;
 		end($feedlist);
 		$last_key = key($feedlist);
 		pf_log('The last key is: ' . $last_key);
+
 		//Get the iteration state. If option does not exist, set the iteration variable to 0
-		$feeds_iteration = get_option( PF_SLUG . '_feeds_iteration', 1 );
-				pf_log('feeds_go_switch updated? (first check).');
-				$go_switch_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
-				pf_log($go_switch_bool);
+		$feeds_iteration = get_option( PF_SLUG . '_feeds_iteration');
+
+		pf_log('feeds_go_switch updated? (first check).');
+
+		update_option( PF_SLUG . '_feeds_go_switch', 0);
+
 		$prev_iteration = get_option( PF_SLUG . '_prev_iteration', 0);
 		pf_log('Did the option properly iterate so that the previous iteration count of ' . $prev_iteration . ' is equal to the current of ' . $feeds_iteration . '?');
 		// This is the fix for the insanity caused by the planet money feed - http://www.npr.org/rss/podcast.php?id=510289
-		if ($prev_iteration === $feeds_iteration){
+		if ( (int) $prev_iteration == (int) $feeds_iteration){
 			pf_log('Nope. Did the step_though_feedlist iteration option emergency update work here?');
-			$check_iteration = update_option( PF_SLUG . '_feeds_iteration', $feeds_iteration+1);
-			pf_log($check_iteration);
-			$feeds_iteration = $feeds_iteration+1;
+			update_option( PF_SLUG . '_feeds_iteration', $feeds_iteration+1);
+			$feeds_iteration++;
 		} else {
 			pf_log('Yes');
 		}
@@ -310,7 +312,7 @@ class PF_RSS_Import extends PF_Module {
 			print_r('<br /> We\'re doing this thing already in the data object. <br />');
 			pf_log('We\'re doing this thing already in the data object.');
 			//return false;
-			exit;
+			die();
 		}
 
 		$theFeed = call_user_func(array($this, 'step_through_feedlist'));
@@ -693,18 +695,23 @@ class PF_RSS_Import extends PF_Module {
 	public function trigger_source_data(){
 		$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
 		$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
+		pf_log( 'Invoked: PF_RSS_Import::trigger_source_data()' );
+		pf_log( 'Feed iteration: ' . $feed_iteration );
+		pf_log( 'Retrieval state: ' . $retrieval_state );
 		if ($feed_iteration == 0 && $retrieval_state == 0){
 			$status = update_option( PF_SLUG . '_iterate_going_switch', 1);
-			$fo = fopen(PF_ROOT . "/modules/rss-import/rss-import.txt", 'w') or print_r('Can\'t open log file.');
-			if ($fo != false){
-				fwrite($fo, "\nBegin process retrieval.\n\n\n");
-				fclose($fo);
+
+			pf_log( 'Beginning the retrieval process' );
+
+			if ( $status ) {
+				pf_log( __( 'Iterate switched to going.', 'pf' ) );
+			} else {
+				pf_log( __( 'Iterate option not switched.', 'pf') );
 			}
-			if ($status) {print_r('<br /> ' . __('Iterate switched to going.', 'pf') . ' <br />');}
-			else { print_r('<br /> ' . __('Iterate option not switched.', 'pf') . ' <br />'); }
+
 			PF_Feed_Item::assemble_feed_for_pull();
 		} else {
-			print_r(__('The sources are already being retrieved.', 'pf')); die();
+			pf_log(__('The sources are already being retrieved.', 'pf'));
 		}
 	}
 }
