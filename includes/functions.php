@@ -432,6 +432,14 @@ function pf_log( $message = '', $display = false ) {
 	if ( is_array( $message ) ) {
 		$message = print_r( $message, true );
 	}
+	
+	if ( $message === true ) {
+		$message = 'True';
+	}
+	
+	if ( $message === false ) {
+		$message = 'False';
+	}
 
 	error_log( '[' . gmdate( 'd-M-Y H:i:s' ) . '] ' . $message . "\n", 3, $log_path );
 }
