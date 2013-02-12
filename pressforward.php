@@ -51,10 +51,9 @@ class PressForward {
 		$this->set_up_nominations();
 		$this->set_up_admin();
 
-		// Set up modules
-		add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
-
 		add_action( 'plugins_loaded', array( $this, 'pressforward_init' ) );
+
+		add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
 
 		load_plugin_textdomain( 'pf', false, PF_ROOT );
 
