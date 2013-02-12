@@ -369,4 +369,65 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 
 add_filter( 'author_link', 'pf_replace_author_uri_presentation' );
 
+/**
+ * Send status messages to a custom log
+ *
+ * Importing data via cron (such as in PF's RSS Import module) can be difficult
+ * to debug. This function is used to send status messages to a custom error
+ * log.
+ *
+ * The error log is disabled by default. To enable, set PF_DEBUG to true in
+ * wp-config.php. Set a custom error log location using PF_DEBUG_LOG.
+ *
+ * @todo Move log check into separate function for better unit tests
+ *
+ * @since 1.7
+ *
+ * @param string $message The message to log
+ */
+function pf_log( $message = '' ) {
+	static $debug;
 
+	if ( 0 === $debug ) {
+		return;
+	}
+
+	if ( ! defined( 'PF_DEBUG' ) || ! PF_DEBUG ) {
+		$debug = 0;
+		return;
+	}
+
+	// Default log location is in the uploads directory
+	if ( ! defined( 'PF_DEBUG_LOG' ) ) {
+		$upload_dir = wp_upload_dir();
+		$log_path = $upload_dir['basedir'] . 'pressforward.log';
+	} else {
+		$log_path = PF_DEBUG_LOG;
+	}
+
+	if ( ! isset( $debug ) ) {
+
+
+		if ( ! is_file( $log_path ) ) {
+			touch( $log_path );
+		}
+
+		if ( ! is_writable( $log_path ) ) {
+			$debug = true;
+			return new WP_Error( "Can't write to the error log at $log_path." );
+		} else {
+			$debug = 1;
+		}
+	}
+
+	// Make sure we've got a string to log
+	if ( is_wp_error( $message ) ) {
+		$message = $message->get_error_message();
+	}
+
+	if ( is_array( $message ) ) {
+		$message = print_r( $message, true );
+	}
+
+	error_log( '[' . gmdate( 'd-M-Y H:i:s' ) . '] ' . $message . "\n", 3, $log_path );
+}
