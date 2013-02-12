@@ -400,7 +400,7 @@ function pf_log( $message = '' ) {
 	// Default log location is in the uploads directory
 	if ( ! defined( 'PF_DEBUG_LOG' ) ) {
 		$upload_dir = wp_upload_dir();
-		$log_path = $upload_dir['basedir'] . 'pressforward.log';
+		$log_path = $upload_dir['basedir'] . '/pressforward.log';
 	} else {
 		$log_path = PF_DEBUG_LOG;
 	}
