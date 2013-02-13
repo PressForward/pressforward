@@ -412,6 +412,33 @@ class PF_Feed_Item {
 				# Trying to prevent bad or malformed HTML from entering the database.
 				$item_title = strip_tags($item_title);
 				$item_content = strip_tags($item_content, '<p> <strong> <bold> <i> <em> <emphasis> <del> <h1> <h2> <h3> <h4> <h5> <a> <img>');
+				# Need to get rid of some weird characters that prevent inserting posts into the database. 
+				# From: http://www.alexpoole.name/web-development/282/remove-smart-quotes-bullets-dashes-and-other-junky-characters-from-a-string-with-php
+				# And: http://www.enghiong.com/wp_insert_post-could-not-insert-post-into-the-database.html
+				$item_content = utf8_encode($item_content); 
+				$search = array(chr(145),
+								chr(146),
+								chr(147),
+								chr(148),
+								chr(151),
+								chr(150),
+								chr (133),
+								chr(149),
+								chr(189)
+								);
+
+								$replace = array("'",
+								"'",
+								'"',
+								'"',
+								'--',
+								'-',
+								'...',
+								"&bull;",
+								"1/2",
+								);
+				$item_content = str_replace($search, $replace, $item_content);
+				
 				//$item_content = wpautop($item_content);
 				//$postcontent = sanitize_post($item_content);
 				//If we use the @ to prevent showing errors, everything seems to work. But it is still dedicating crap to the database...
