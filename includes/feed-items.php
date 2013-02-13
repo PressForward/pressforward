@@ -415,30 +415,9 @@ class PF_Feed_Item {
 				# Need to get rid of some weird characters that prevent inserting posts into the database. 
 				# From: http://www.alexpoole.name/web-development/282/remove-smart-quotes-bullets-dashes-and-other-junky-characters-from-a-string-with-php
 				# And: http://www.enghiong.com/wp_insert_post-could-not-insert-post-into-the-database.html
-				$search = array(chr(145),
-								chr(146),
-								chr(147),
-								chr(148),
-								chr(151),
-								chr(150),
-								chr (133),
-								chr(149),
-								chr(189)
-								);
-
-								$replace = array("'",
-								"'",
-								'"',
-								'"',
-								'--',
-								'-',
-								'...',
-								"&bull;",
-								"1/2",
-								);
-				$item_content = str_replace($search, $replace, $item_content);
-				$item_content = htmlentities($item_content, ENT_QUOTES, "UTF-8");
-				$item_content = utf8_encode($item_content); 
+				$item_content = $this->extra_special_sanatize($item_content);
+				$item_title = $this->extra_special_sanatize($item_title);
+				
 				//$item_content = wpautop($item_content);
 				//$postcontent = sanitize_post($item_content);
 				//If we use the @ to prevent showing errors, everything seems to work. But it is still dedicating crap to the database...
@@ -535,6 +514,47 @@ class PF_Feed_Item {
 
 	}
 
+	# Alternate function title - 'stop_pasting_junk_from_word'
+	public function extra_special_sanatize($string){
+		$search = array(chr(145),
+						chr(146),
+						chr(147),
+						chr(148),
+						chr(151),
+						chr(150),
+						chr (133),
+						chr(149),
+						chr(189)
+						);
+		$replace = array("'",
+						"'",
+						'"',
+						'"',
+						'--',
+						'-',
+						'...',
+						"&bull;",
+						"1/2",
+						);
+		$string = str_replace($search, $replace, $string);
+		pf_log('String run through specified str_replace.');
+		$charset = get_option('blog_charset');
+		pf_log('Retrieved charset as: ' . $charset);
+		$re_ut = 0;
+		if (($charset === '') || (is_wp_error($charset))) {$charset = "UTF-8";	pf_log('Set charset to UTF-8');}
+		if ($charset === 'UTF-8'){ $charset = "ISO-8859-1"; $re_ut = 1; pf_log('Set charset to ISO-8859-1');); }
+		if ($charset === "ISO-8859-1"){ $re_ut = 1; }
+		$string = htmlentities($string, ENT_QUOTES, $charset);
+		pf_log('String run through htmlentities.');
+		if ($re_ut === 1) {
+			$string = utf8_encode($string); 	
+			pf_log('String run through utf8_encode');
+		}
+		pf_log('String returned.');
+		return $string;
+	}
+	
+	
 	/**
 	 * Get the content of a URL, using various fallbacks
 	 */
