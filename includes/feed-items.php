@@ -541,8 +541,15 @@ class PF_Feed_Item {
 		$charset = get_option('blog_charset');
 		pf_log('Retrieved charset as: ' . $charset);
 		$re_ut = 0;
-		if (($charset === '') || (is_wp_error($charset))) {$charset = "UTF-8";	pf_log('Set charset to UTF-8');}
-		if ($charset === 'UTF-8'){ $charset = "ISO-8859-1"; $re_ut = 1; pf_log('Set charset to ISO-8859-1');); }
+		if (($charset === '') || (is_wp_error($charset))) {
+			$charset = "UTF-8";	
+			pf_log('Set charset to UTF-8');
+		}
+		if ($charset === 'UTF-8'){ 
+			$charset = "ISO-8859-1"; 
+			$re_ut = 1; 
+			pf_log('Set charset to ISO-8859-1'); 
+		}
 		if ($charset === "ISO-8859-1"){ $re_ut = 1; }
 		$string = htmlentities($string, ENT_QUOTES, $charset);
 		pf_log('String run through htmlentities.');
