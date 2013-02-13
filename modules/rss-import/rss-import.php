@@ -169,11 +169,11 @@ class PF_RSS_Import extends PF_Module {
 				$aFeed = '';
 			}
 			//If the array entry is empty and this isn't the end of the feedlist, then get the next item from the feedlist while iterating the count.
-			if (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration < $last_key)){
-				pf_log('The feed is either an empty entry or un-retrievable AND the iteration is less than the last key.');
+			if (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration <= $last_key)){
+				pf_log('The feed is either an empty entry or un-retrievable AND the iteration is less than or equal to the last key.');
 				$theFeed = call_user_func(array($this, 'step_through_feedlist'));
-			} elseif (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration >= $last_key)){
-				pf_log('The feed is either an empty entry or un-retrievable AND the iteration is greater or equal to the last key.');
+			} elseif (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration > $last_key)){
+				pf_log('The feed is either an empty entry or un-retrievable AND the iteration is greater then the last key.');
 				pf_log('Did the feeds_iteration option update?');
 				$feed_it_bool = update_option( PF_SLUG . '_feeds_iteration', 0);
 				pf_log($feed_it_bool);
