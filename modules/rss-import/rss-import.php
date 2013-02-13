@@ -108,7 +108,7 @@ class PF_RSS_Import extends PF_Module {
 			$did_we_start_over = get_option(PF_SLUG . '_iterate_going_switch', 1);
 			pf_log('Iterate going switch is set to: ' . $did_we_start_over);
 			if (($last_key === $feeds_iteration)){
-				pf_log('The last key is equal to the feeds_iteration.');
+				pf_log('The last key is equal to the feeds_iteration. This is the last feed.');
 				$feeds_iteration = 0;
 //				pf_log('feeds_go_switch updated?.');
 //				$go_switch_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
@@ -311,8 +311,12 @@ class PF_RSS_Import extends PF_Module {
 			update_option( PF_SLUG . '_feeds_go_switch', 0);
 			update_option( PF_SLUG . '_feeds_iteration', 0);
 			update_option( PF_SLUG . '_iterate_going_switch', 0);
-			print_r('<br /> We\'re doing this thing already in the data object. <br />');
-			pf_log('We\'re doing this thing already in the data object.');
+			//print_r('<br /> We\'re doing this thing already in the data object. <br />');
+			if ( (get_option( PF_SLUG . '_ready_to_chunk', 1 )) === 0 ){
+				pf_log('The chunk is still open because there are no more feeds. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
+			} else {
+				pf_log('We\'re doing this thing already in the data object.', true);
+			}
 			//return false;
 			die();
 		}
