@@ -432,12 +432,18 @@ class PF_Feed_Item {
 				//It looks like sanitize post is screwing them up terribly. But what to do about it without removing the security measures which we need to apply?
 
 				# The post gets created here, the $newNomID variable contains the new post's ID.
-				$newNomID = wp_insert_post( $data );
-				pf_log('Create post in the database with the title ' . $item_title . ' and id of ');
-				pf_log($newNomID);
+				$newNomID = wp_insert_post( $data, true );
 				if ($newNomID === 0) {
 					pf_log('The following post did not go into the database correctly.');
 					pf_log($data);
+				} elseif (is_wp_error($newNomID)) {
+					pf_log('Attempting to add ' . $item_title . ' to the database caused this error:' );
+					pf_log($newNomID);
+					pf_log('The following post caused the above error.');
+					pf_log($data);
+				} else {
+					pf_log('Create post in the database with the title ' . $item_title . ' and id of ');
+					pf_log($newNomID);
 				}
 				//$posttest = get_post($newNomID);
 				//print_r($posttest->post_content);
