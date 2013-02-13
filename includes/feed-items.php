@@ -293,6 +293,7 @@ class PF_Feed_Item {
 		global $wpdb;
 		# Since rss_object places all the feed items into an array of arrays whose structure is standardized throughout,
 		# We can do stuff with it, using the same structure of items as we do everywhere else.
+		pf_log('Now beginning check and processing for entering items into the database.');
 		foreach($feedObj as $item) {
 			$thepostscheck = 0;
 			$thePostsDoubleCheck = 0;
@@ -415,8 +416,8 @@ class PF_Feed_Item {
 				# Need to get rid of some weird characters that prevent inserting posts into the database. 
 				# From: http://www.alexpoole.name/web-development/282/remove-smart-quotes-bullets-dashes-and-other-junky-characters-from-a-string-with-php
 				# And: http://www.enghiong.com/wp_insert_post-could-not-insert-post-into-the-database.html
-				$item_content = $this->extra_special_sanatize($item_content);
-				$item_title = $this->extra_special_sanatize($item_title);
+				$item_content = self::extra_special_sanatize($item_content);
+				$item_title = self::extra_special_sanatize($item_title);
 				
 				//$item_content = wpautop($item_content);
 				//$postcontent = sanitize_post($item_content);
@@ -538,25 +539,8 @@ class PF_Feed_Item {
 						);
 		$string = str_replace($search, $replace, $string);
 		pf_log('String run through specified str_replace.');
-		$charset = get_option('blog_charset');
-		pf_log('Retrieved charset as: ' . $charset);
-		$re_ut = 0;
-		if (($charset === '') || (is_wp_error($charset))) {
-			$charset = "UTF-8";	
-			pf_log('Set charset to UTF-8');
-		}
-		if ($charset === 'UTF-8'){ 
-			$charset = "ISO-8859-1"; 
-			$re_ut = 1; 
-			pf_log('Set charset to ISO-8859-1'); 
-		}
-		if ($charset === "ISO-8859-1"){ $re_ut = 1; }
-		$string = htmlentities($string, ENT_QUOTES, $charset);
-		pf_log('String run through htmlentities.');
-		if ($re_ut === 1) {
-			$string = utf8_encode($string); 	
-			pf_log('String run through utf8_encode');
-		}
+		$string = utf8_encode($string); 	
+		pf_log('String run through utf8_encode');
 		pf_log('String returned.');
 		return $string;
 	}
