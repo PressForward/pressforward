@@ -437,21 +437,31 @@ class PF_Feed_Item {
 				//RIGHT HERE is where the content is getting assigned a bunch of screwed up tags.
 				//The content is coming in from the rss_object assembler a-ok. But something here saves them to the database screwy.
 				//It looks like sanitize post is screwing them up terribly. But what to do about it without removing the security measures which we need to apply?
-
+				$worked = 1;
 				# The post gets created here, the $newNomID variable contains the new post's ID.
 				$newNomID = wp_insert_post( $data, true );
-				if ($newNomID === 0) {
-					pf_log('The following post did not go into the database correctly.');
-					pf_log($data);
-				} elseif (is_wp_error($newNomID)) {
-					pf_log('Attempting to add ' . $item_title . ' to the database caused this error:' );
-					pf_log($newNomID);
-					pf_log('The following post caused the above error.');
-					pf_log($data);
-				} else {
-					pf_log('Create post in the database with the title ' . $item_title . ' and id of ');
-					pf_log($newNomID);
+				$post_inserted_bool = self::post_inserted($newNomID, $data);
+
+				if (!$post_inserted_bool) {
+					# It's the end of the world! Let's throw everything at this. 
+					pf_log('Post will not go into the database. We will try again.');
+					$item_content = htmlentities(strip_tags($item_content), ENT_QUOTES, "UTF-8");
+					$item_content = wp_kses(stripslashes($item_content));
+					$item_content = self::extra_special_sanatize($item_content, true);
+					$item_content = wpautop($item_content);
+					$item_title = self::extra_special_sanatize($item_title, true);
+					$data = array(
+						'post_status' => 'publish',
+						'post_type' => pf_feed_item_post_type(),
+					//	'post_date' => $_SESSION['cal_startdate'],
+						'post_title' => $item_title,
+						'post_content' => $item_content
+
+					);
+					$newNomID = wp_insert_post( $data, true );
+					$post_inserted_bool = self::post_inserted($newNomID, $data);
 				}
+				pf_log('End of wp_insert_post process.');
 				//$posttest = get_post($newNomID);
 				//print_r($posttest->post_content);
 
@@ -514,9 +524,31 @@ class PF_Feed_Item {
 		//die('Refreshing...');
 
 	}
+	
+	public function post_inserted($postAttempt, $data){
+			$worked = 1;
+			$workedBool = true;
+				if ($postAttempt === 0) {
+					pf_log('The following post did not go into the database correctly.');
+					pf_log($data);
+					$worked = 0;
+				} elseif (is_wp_error($postAttempt)) {
+					pf_log('Attempting to add ' . $item_title . ' to the database caused this error:' );
+					pf_log($postAttempt);
+					pf_log('The following post caused the above error.');
+					pf_log($data);
+					$worked = 0;
+				} else {
+					pf_log('Create post in the database with the title ' . $item_title . ' and id of ');
+					pf_log($postAttempt);
+				}
+		if ($worked === 0){ $workedBool = false; }
+		return $workedBool;		
+	}
 
 	# Alternate function title - 'stop_pasting_junk_from_word'
-	public function extra_special_sanatize($string){
+	public function extra_special_sanatize($string, $severe = false){
+	
 		$search = array(chr(145),
 						chr(146),
 						chr(147),
@@ -542,6 +574,52 @@ class PF_Feed_Item {
 		$string = utf8_encode($string); 	
 		pf_log('String run through utf8_encode');
 		pf_log('String returned.');
+		if ($severe) {
+			// ============
+			// Remove MS Word Special Characters 
+			// From: https://gist.github.com/gcoop/701814
+			// ============
+				
+				$search  = array('&acirc;€“','&acirc;€œ','&acirc;€˜','&acirc;€™','&Acirc;&pound;','&Acirc;&not;','&acirc;„&cent;', '&Acirc;&nbsp;', '&Acirc;', '&amp;nbsp;', '&#8230;');
+				$replace = array('-','&ldquo;','&lsquo;','&rsquo;','&pound;','&not;','&#8482;', ' ', ' ', ' ', '...');
+				
+				$string = str_replace($search, $replace, $string);
+				$string = str_replace('&acirc;€', '&rdquo;', $string);
+		 
+				$search = array("&#39;", "\xc3\xa2\xc2\x80\xc2\x99", "\xc3\xa2\xc2\x80\xc2\x93", "\xc3\xa2\xc2\x80\xc2\x9d", "\xc3\xa2\x3f\x3f", "&#8220;", "&#8221;", "#8217;", "&not;", "&#8482;");
+				$resplace = array("'", "'", ' - ', '"', "'", '"', '"', "'", "-", "(TM)");
+				
+				$string = str_replace($search, $replace, $string);
+		 
+			$quotes = array(
+				"\xC2\xAB"     => '"',
+				"\xC2\xBB"     => '"',
+				"\xE2\x80\x98" => "'",
+				"\xE2\x80\x99" => "'",
+				"\xE2\x80\x9A" => "'",
+				"\xE2\x80\x9B" => "'",
+				"\xE2\x80\x9C" => '"',
+				"\xE2\x80\x9D" => '"',
+				"\xE2\x80\x9E" => '"',
+				"\xE2\x80\x9F" => '"',
+				"\xE2\x80\xB9" => "'",
+				"\xE2\x80\xBA" => "'",
+				"\xe2\x80\x93" => "-",
+				"\xc2\xb0"	   => "°",
+				"\xc2\xba"     => "°",
+				"\xc3\xb1"	   => "&#241;",
+				"\x96"		   => "&#241;",
+				"\xe2\x81\x83" => '&bull;',
+				"\xd5" => "'"
+			);
+				
+			$string = strtr($string, $quotes);		
+			# From: http://stackoverflow.com/questions/657643/how-to-remove-html-special-chars
+			//$string = preg_replace("/&#?[a-z0-9]+;/i","", $string);
+		
+		}
+		
+		
 		return $string;
 	}
 	
