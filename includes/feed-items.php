@@ -324,8 +324,11 @@ class PF_Feed_Item {
 						setup_postdata($post);
 						//print_r(get_the_ID());
 						//print_r('< the ID');
-						if ((get_post_meta($post->ID, 'item_id', $item_id, true)) == $item_id){ $thepostscheck++; }
-						pf_log('We already have post ' . $item_id);
+						if ((get_post_meta($post->ID, 'item_id', $item_id, true)) === $item_id){ 
+							$thepostscheck++; 
+							pf_log('We already have post ' . $item_id);
+						}
+						
 					endforeach;
 				endif;
 				wp_reset_query();
@@ -340,13 +343,14 @@ class PF_Feed_Item {
 					 ";
 					$checkpoststwo = $wpdb->get_results($queryMoreStr, OBJECT);
 					if ($checkpoststwo):
+						pf_log('Check for posts with the same link.');
 						foreach ($checkpoststwo as $post):
 							setup_postdata($post);
 
 								# Post comparative values.
 								$theTitle = $post->post_title;
 								$postID = $post->ID;
-								pf_log('We are creating the post ' . $theTitle . ' with the title ' . $item_id);
+								
 								$postDate = strtotime($post->post_date);
 								$postItemLink = get_post_meta($post->ID, 'item_link', true);
 								# Item comparative values.
@@ -357,6 +361,7 @@ class PF_Feed_Item {
 								# First check if it more recent than the currently stored item.
 								if((($theTitle == $itemTitle) || ($postItemLink == $itemLink))){
 									$thePostsDoubleCheck++;
+									pf_log('We already have the post ' . $theTitle . ' with the link ' . $itemLink);
 									$sourceRepeat = get_post_meta($postID, 'source_repeat', true);
 									if (($itemDate > $postDate)) {
 										# If it is more recent, than this is the new dominant post.
@@ -404,20 +409,21 @@ class PF_Feed_Item {
 				$item_tags		= $item['item_tags'];
 				$source_repeat  = $sourceRepeat;
 
-			# Trying to prevent bad or malformed HTML from entering the database.
-			$item_content = strip_tags($item_content, '<p> <strong> <bold> <i> <em> <emphasis> <del> <h1> <h2> <h3> <h4> <h5> <a> <img>');
-			//$item_content = wpautop($item_content);
-			//$postcontent = sanitize_post($item_content);
-			//If we use the @ to prevent showing errors, everything seems to work. But it is still dedicating crap to the database...
-			//Perhaps sanitize_post isn't the cause? What is then?
+				# Trying to prevent bad or malformed HTML from entering the database.
+				$item_title = strip_tags($item_title);
+				$item_content = strip_tags($item_content, '<p> <strong> <bold> <i> <em> <emphasis> <del> <h1> <h2> <h3> <h4> <h5> <a> <img>');
+				//$item_content = wpautop($item_content);
+				//$postcontent = sanitize_post($item_content);
+				//If we use the @ to prevent showing errors, everything seems to work. But it is still dedicating crap to the database...
+				//Perhaps sanitize_post isn't the cause? What is then?
 
-			# Do we want or need the post_status to be published?
+				# Do we want or need the post_status to be published?
 				$data = array(
-					'post_status' => 'published',
+					'post_status' => 'publish',
 					'post_type' => pf_feed_item_post_type(),
-					'post_date' => $_SESSION['cal_startdate'],
+				//	'post_date' => $_SESSION['cal_startdate'],
 					'post_title' => $item_title,
-					'post_content' => $item_content,
+					'post_content' => $item_content
 
 				);
 
@@ -427,7 +433,12 @@ class PF_Feed_Item {
 
 				# The post gets created here, the $newNomID variable contains the new post's ID.
 				$newNomID = wp_insert_post( $data );
-				pf_log('Create post in the database with the id of ' . $newNomID);
+				pf_log('Create post in the database with the title ' . $item_title . ' and id of ');
+				pf_log($newNomID);
+				if ($newNomID === 0) {
+					pf_log('The following post did not go into the database correctly.');
+					pf_log($data);
+				}
 				//$posttest = get_post($newNomID);
 				//print_r($posttest->post_content);
 
