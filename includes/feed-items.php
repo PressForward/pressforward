@@ -415,7 +415,6 @@ class PF_Feed_Item {
 				# Need to get rid of some weird characters that prevent inserting posts into the database. 
 				# From: http://www.alexpoole.name/web-development/282/remove-smart-quotes-bullets-dashes-and-other-junky-characters-from-a-string-with-php
 				# And: http://www.enghiong.com/wp_insert_post-could-not-insert-post-into-the-database.html
-				$item_content = utf8_encode($item_content); 
 				$search = array(chr(145),
 								chr(146),
 								chr(147),
@@ -438,7 +437,8 @@ class PF_Feed_Item {
 								"1/2",
 								);
 				$item_content = str_replace($search, $replace, $item_content);
-				
+				$item_content = htmlentities($item_content, ENT_QUOTES, "UTF-8");
+				$item_content = utf8_encode($item_content); 
 				//$item_content = wpautop($item_content);
 				//$postcontent = sanitize_post($item_content);
 				//If we use the @ to prevent showing errors, everything seems to work. But it is still dedicating crap to the database...
