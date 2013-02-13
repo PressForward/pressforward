@@ -314,6 +314,7 @@ class PF_RSS_Import extends PF_Module {
 			//print_r('<br /> We\'re doing this thing already in the data object. <br />');
 			if ( (get_option( PF_SLUG . '_ready_to_chunk', 1 )) === 0 ){
 				pf_log('The chunk is still open because there are no more feeds. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
+				update_option( PF_SLUG .  '_ready_to_chunk', 1 );
 			} else {
 				pf_log('We\'re doing this thing already in the data object.', true);
 			}
