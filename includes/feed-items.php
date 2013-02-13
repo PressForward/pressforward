@@ -581,7 +581,7 @@ class PF_Feed_Item {
 			// ============
 				
 				$search  = array('&acirc;€“','&acirc;€œ','&acirc;€˜','&acirc;€™','&Acirc;&pound;','&Acirc;&not;','&acirc;„&cent;', '&Acirc;&nbsp;', '&Acirc;', '&amp;nbsp;', '&#8230;');
-				$replace = array('-','&ldquo;','&lsquo;','&rsquo;','&pound;','&not;','&#8482;', ' ', ' ', ' ', '...');
+				$replace = array('-','&ldquo;','&lsquo;','&rsquo;','&pound;','&not;','&#8482;', '', '', '', '...');
 				
 				$string = str_replace($search, $replace, $string);
 				$string = str_replace('&acirc;€', '&rdquo;', $string);
@@ -614,6 +614,7 @@ class PF_Feed_Item {
 			);
 				
 			$string = strtr($string, $quotes);		
+			$string = utf8_encode($string);
 			# From: http://stackoverflow.com/questions/657643/how-to-remove-html-special-chars
 			//$string = preg_replace("/&#?[a-z0-9]+;/i","", $string);
 		
