@@ -533,13 +533,13 @@ class PF_Feed_Item {
 					pf_log($data);
 					$worked = 0;
 				} elseif (is_wp_error($postAttempt)) {
-					pf_log('Attempting to add ' . $item_title . ' to the database caused this error:' );
+					pf_log('Attempting to add ' . $data['post_title'] . ' to the database caused this error:' );
 					pf_log($postAttempt);
 					pf_log('The following post caused the above error.');
 					pf_log($data);
 					$worked = 0;
 				} else {
-					pf_log('Create post in the database with the title ' . $item_title . ' and id of ');
+					pf_log('Create post in the database with the title ' . $data['post_title'] . ' and id of ');
 					pf_log($postAttempt);
 				}
 		if ($worked === 0){ $workedBool = false; }
