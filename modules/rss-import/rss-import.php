@@ -417,6 +417,8 @@ class PF_RSS_Import extends PF_Module {
 				}
 			}
 			$c++;
+			# What the hell RSS feed? This is just ridiculous. 
+			if ($c > 300) {break;}
 
 		}
 		# We've completed the feed retrieval, the system should know it is now ok to ask for another feed. 
