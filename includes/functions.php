@@ -408,7 +408,7 @@ function pf_log( $message = '', $display = false, $reset = false ) {
 	} else {
 		$log_path = PF_DEBUG_LOG;
 	}
-	
+
 	if ($reset) {
 		$fo = fopen($log_path, 'w') or print_r('Can\'t open log file.');
 		fwrite($fo, "Log file reset.\n\n\n");
@@ -439,11 +439,11 @@ function pf_log( $message = '', $display = false, $reset = false ) {
 	if ( is_array( $message ) ) {
 		$message = print_r( $message, true );
 	}
-	
+
 	if ( $message === true ) {
 		$message = 'True';
 	}
-	
+
 	if ( $message === false ) {
 		$message = 'False';
 	}
