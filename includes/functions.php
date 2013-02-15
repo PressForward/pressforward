@@ -388,10 +388,6 @@ add_filter( 'author_link', 'pf_replace_author_uri_presentation' );
 function pf_log( $message = '', $display = false, $reset = false ) {
 	static $debug;
 
-	if ( (true === $display) ) {
-		print_r($message);
-	}
-	
 	if ( 0 === $debug ) {
 		return;
 	}
@@ -399,6 +395,10 @@ function pf_log( $message = '', $display = false, $reset = false ) {
 	if ( ! defined( 'PF_DEBUG' ) || ! PF_DEBUG ) {
 		$debug = 0;
 		return;
+	}
+
+	if ( ( true === $display ) ) {
+		print_r($message);
 	}
 
 	// Default log location is in the uploads directory
