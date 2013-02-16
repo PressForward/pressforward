@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RSS Import data schema
+ * Feed item data schema
  *
  * The RSS Import module stores several different types of data. The schemas
  * are described below.
@@ -18,7 +18,7 @@
  *     source feed       -> wp_postmeta ('pf_feed_item_source') May move to post_parent if feeds move to CPT
  *     date              -> wp_posts.post_date_gmt
  */
-class PF_RSS_Import_Schema {
+class PF_Feed_Item_Schema {
 	var $feed_item_post_type;
 	var $feed_item_tag_taxonomy;
 
@@ -136,10 +136,3 @@ class PF_RSS_Import_Schema {
 		dbDelta( $sql );
 	}
 }
-
-function pf_rss_import_schema() {
-	return PF_RSS_Import_Schema::init();
-}
-
-// Bootstrap
-pf_rss_import_schema();

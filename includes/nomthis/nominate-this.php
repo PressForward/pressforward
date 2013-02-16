@@ -4,7 +4,7 @@
  *
  * Based on the PressThis code.
  */
- 
+
  //Orig. file called from wp-admin/ by the bookmarklet.
 
 define('IFRAME_REQUEST' , true);
@@ -15,7 +15,7 @@ require_once( dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))) ) . 
 require_once( dirname(dirname(dirname(__FILE__))) . "/lib/OpenGraph.php");
 	global $pf_nt;
 	$pf_nt = new pf();
-	
+
 header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset'));
 
 if ( ! current_user_can('edit_posts') )
@@ -42,7 +42,7 @@ function press_it() {
 	$post['post_category'] = isset($_POST['post_category']) ? $_POST['post_category'] : '';
 	$post['tax_input'] = isset($_POST['tax_input']) ? $_POST['tax_input'] : '';
 	$post['post_title'] = isset($_POST['title']) ? $_POST['title'] : '';
-	//PF Addition: setting post type. 
+	//PF Addition: setting post type.
 	//$post['post_type'] = 'nomination';
 	$content = isset($_POST['content']) ? $_POST['content'] : '';
 
@@ -68,11 +68,11 @@ function press_it() {
 		$post['post_status'] = 'pending';
 	else
 		$post['post_status'] = 'draft';
-		
+
 	//PF Addition - switch post type to nomination?
 	$post['post_type'] = 'nomination';
-	
-	
+
+
 
 	// error handling for media_sideload
 	if ( is_wp_error($upload) ) {
@@ -86,7 +86,7 @@ function press_it() {
 			elseif ( '0' == $_POST['post_format'] )
 				set_post_format( $post_ID, false );
 		}
-		//PF Note - Here's where it creates the post. 
+		//PF Note - Here's where it creates the post.
 		$post_ID = wp_update_post($post);
 	}
 
@@ -94,14 +94,14 @@ function press_it() {
 				global $pf_nt;
 				if (($_POST['nomination_permalink']) != ''){
 					//Gets OG image
-					$itemLink = $pf_nt->de_https($_POST['nomination_permalink']);
+					$itemLink = pf_de_https($_POST['nomination_permalink']);
 					$node = OpenGraph::fetch($itemLink);
 					$itemFeatImg = $node->image;
 				}
 	if (($_POST['nomination_permalink']) != ''){
-		$pf_nt->set_ext_as_featured($post_ID, $itemFeatImg);	
+		PF_Feed_Item::set_ext_as_featured($post_ID, $itemFeatImg);
 	}
-	
+
 	return $post_ID;
 }
 
@@ -120,7 +120,7 @@ if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 $title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( stripslashes( $_GET['t'] ) , ENT_QUOTES) ) ) : '';
 
 $selection = '';
-//PF Notes - gets user selection. 
+//PF Notes - gets user selection.
 if ( !empty($_GET['s']) ) {
 	$selection = str_replace('&apos;', "'", stripslashes($_GET['s']));
 	$selection = trim( htmlspecialchars( html_entity_decode($selection, ENT_QUOTES) ) );
@@ -135,7 +135,7 @@ if ( ! empty($selection) ) {
 }
 //PF Notes - Looks like this gets the URL.
 $url = isset($_GET['u']) ? esc_url($_GET['u']) : '';
-//PF Notes - Looks like this gets the image page on image only links. 
+//PF Notes - Looks like this gets the image page on image only links.
 $image = isset($_GET['i']) ? $_GET['i'] : '';
 
 if ( !empty($_REQUEST['ajax']) ) {
@@ -476,8 +476,8 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 	<div id="side-sortables" class="press-this-sidebar">
 		<div class="sleeve">
 			<?php wp_nonce_field('press-this'); ?>
-			<?php 
-				
+			<?php
+
 			?>
 			<input type="hidden" name="post_type" id="post_type" value="text"/>
 			<input type="hidden" name="autosave" id="autosave" />
@@ -490,7 +490,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo date('c'); ?>" />
 			<input type="hidden" id="nomination_permalink" name="nomination_permalink" value="<?php echo esc_url( $url ); ?>" />
 			<?php } ?>
-			
+
 			<!-- This div holds the photo metadata -->
 			<div class="photolist"></div>
 
@@ -641,12 +641,12 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 		$content = '';
 		if ( $selection )
 			$content .= $selection;
-			
+
 		if ( !$selection ){
 			if ($url != ''){
-				$content .= $pf_nt->get_content_through_aggregator($url);
+				$content .= PF_Feed_Item::get_content_through_aggregator($url);
 			}
-		
+
 		}
 
 		if ( $url ) {

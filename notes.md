@@ -444,6 +444,33 @@ Feed Retrieval
 </code></pre>		
 	
 -	Build Under Review, Then WP Cron, then start building the custom taxonomy. 
+
+-	Some notes on important options for the iteration process. Note, their functionality has changed over time, so there may be places where they are still being updated even if they don't need to be. 
+
+	*	feeds_go_switch - The in-process iteration control. This option is designed to prevent the process from ever iterating to get a new feed while it is still trying to get a feed. 
+		+	At the beginning of the entire process it should be 0.
+		+	When the process begins it is set to 0.
+		+	When the process ends it is set to 1.
+		+	When the process is sent to iterate it is at 1.
+		+	When the entire process ends it should be at 0.
+	*	feeds_iteration - The step control. This option is how the system tells itself which feed to attempt to retrieve. 
+		+	At the beginning of the entire process it should be at 0.
+		+	When the process begins it is set to the feed to retrieve.
+		+	When the process ends it is at the next feed to retrieve. 
+		+	When the process is sent to iterate it is set at the next feed to retrieve.
+		+	When the entire process ends it should be at 0.
+	*	iterate_going_switch - The in-process loop control. This option is to prevent the feed retrieval process from multiplying in the midst of the ongoing process. 
+		+	At the beginning of the entire process it should be 0.
+		+	When the process begins it is set to 1.
+		+	When the process ends it is set to 0.
+		+	When the process is sent to iterate it is at 0.
+		+	When the entire process ends it should be at 0.
+	*	ready_to_chunk - The external-to-process iteration control. This option is designed to prevent the process from being triggered while it is already running, either by a user or a mis-fired iteration. 
+		+	At the beginning of the process it should be 1.
+		+	When the process begins it is set to 0.
+		+	When the process ends it is set to 1.
+		+	When the process is sent to iterate it should be at 1.
+		+	When the entire process ends it should be at 1.
 	
 Design
 --------

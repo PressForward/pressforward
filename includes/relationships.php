@@ -326,11 +326,11 @@ function pf_unstar_item_for_user( $item_id, $user_id ) {
 /**
  * Get a list of starred items for a given user
  *
- * Use this function in conjunction with PF_RSS_Import_Feed_Item:
+ * Use this function in conjunction with PF_Feed_Item:
  *
  *    $starred_item_ids = pf_get_starred_items_for_user( $user_id, 'simple' );
  *
- *    $feed_item = new PF_RSS_Import_Feed_Item();
+ *    $feed_item = new PF_Feed_Item();
  *    $items = $feed_item->get( array(
  *        'post__in' => $starred_item_ids
  *    ) );
