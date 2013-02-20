@@ -216,10 +216,10 @@
 										<div class="nom-content-body row-fluid span12">';
 											the_content();
 									echo '</div>';
-								echo '<div class="item_commenting">';
-								comment_form();
-								echo '</div>';
-
+								//echo '<div class="item_commenting">';
+								//comment_form();
+								//echo '</div>';
+								do_action('append_to_under_review_accordion');
 						echo '</div>';
 						echo '</div>';
 					echo '</div>';
