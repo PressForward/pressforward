@@ -276,11 +276,11 @@ class PF_Admin {
 								  . '</form>';
 
 
-					echo '</div><!-- End accordion Inner -->';
-					echo '</div><!-- End accordion body -->';
-
-						echo '</div>';
 					echo '</div>';
+					echo '</div>';
+
+						echo '</div><!-- End accordion Inner -->';
+					echo '</div><!-- End accordion body -->';
 				echo '</div><!-- End span12 -->';
 
 			echo '</div><!-- End row-fluid -->';
