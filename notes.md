@@ -342,6 +342,15 @@ Using Google Feed API
 -	Clean sweep for renaming to PressForward and making sure that it is ready for localization. 
 
 
+Setting up an editorial 'guest editor' process module.
+-------------------------------------------------------
+
+-	Build out module where you can see all the user stats by admins.
+
+-	Allow non-admin users to request guest editor status
+
+-	When approved by admins guest editors are promoted in user level by WP_cron and at the end of the period demoted by user crons.
+
 Feed Retrieval
 --------------
 
@@ -584,3 +593,5 @@ Prep for reformation
 -	Change everything RSSPF to PF
 
 -	Move to a github group (as opposed to personal)
+
+
