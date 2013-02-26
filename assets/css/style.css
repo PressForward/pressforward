@@ -109,9 +109,15 @@ visibility:hidden;
 	margin-bottom: 3px;
 }
 .source_title {
-	font-size: 11px;
-	line-height: 12px;
-	margin-bottom: 6px;
+
+}
+
+.item-tags {
+	text-align: left;
+}
+
+.modal .original-link {
+	margin-top: 2px;
 }
 
 h3 {
