@@ -106,7 +106,7 @@ class PF_Admin {
 		$itemTagsArray = explode(",", $item['item_tags']);
 		$itemTagClassesString = '';
 		foreach ($itemTagsArray as $itemTag) { $itemTagClassesString .= pf_slugger($itemTag, true, false, true); $itemTagClassesString .= ' '; }
-		echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . ' ' . $c . '">';
+		echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . ' ' . $c . '" tabindex="' . $c . '">';
 			?> <header> <?php 
 				echo '<h1 class="item_title"><a href="grid-single.html">' . $item['item_title'] . '</a></h1>';
 				echo '<p class="source_title">' . $item['source_title'] . '</p>';
