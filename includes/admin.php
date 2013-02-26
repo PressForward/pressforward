@@ -136,11 +136,12 @@ class PF_Admin {
 					 . '<div class="nominate-result-' . $item['item_id'] . '">'
 					 . '<img class="loading-' . $item['item_id'] . '" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="' . __('Loading', 'pf') . '..." style="display: none" />'
 					 . '</div>';
-					echo '<a href="#" class="btn btn-small"><i class="icon-star"></i> Star</a>';
-						pf_prep_item_for_submit($item);
-						wp_nonce_field('nomination', PF_SLUG . '_nomination_nonce', false);
-						# <a href="#" class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
-					echo '<input type="submit" class="btn btn-small PleasePushMe" id="' . $item['item_id'] . '" value="' . __('Nominate', 'pf') . '" />';
+					pf_prep_item_for_submit($item);
+					wp_nonce_field('nomination', PF_SLUG . '_nomination_nonce', false);
+					echo '</form>';
+					echo '<button class="btn btn-small"><i class="icon-star"></i> Star</button>';
+						# <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
+					echo '<button class="btn btn-small nominate-now" id="' . $item['item_id'] . '">' . __('Nominate', 'pf') .  '</button>';
 
 					# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
 					echo '<button class="btn btn-small itemInfobutton" id="' . $item['item_id'] . '"><i class="icon-info-sign"></i></button>';			

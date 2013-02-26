@@ -1,6 +1,6 @@
 jQuery(document).ready(function() {
 
-	jQuery(".PleasePushMe").click(function (evt){ 
+	jQuery(".nominate-now").click(function (evt){ 
 		evt.preventDefault();
 		
 		var element		= jQuery(this);
