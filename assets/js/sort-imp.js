@@ -22,7 +22,7 @@ jQuery(document).ready(function() {
 	
 	jQuery('#fullscreenfeed').click(function(e){
 		e.preventDefault();
-		jQuery('.container-fluid').fullScreen({
+		jQuery('.pf_container').fullScreen({
 			'background'	: '#ecf3f9',
 			'callback'		: function(isFullScreen){     
 					// ...
