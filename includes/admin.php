@@ -92,6 +92,33 @@ class PF_Admin {
 		);
 	}
 	
+	public function form_of_actions_btns($item, $c, $modal = false){
+			?>	
+				<div class="actions btn-group">
+					<?php
+					if ($modal === false){
+						echo '<form name="form-' . $item['item_id'] . '">' 
+						 . '<div class="nominate-result-' . $item['item_id'] . '">'
+						 . '<img class="loading-' . $item['item_id'] . '" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="' . __('Loading', 'pf') . '..." style="display: none" />'
+						 . '</div>';
+						pf_prep_item_for_submit($item);
+						wp_nonce_field('nomination', PF_SLUG . '_nomination_nonce', false);
+						echo '</form>';
+					}
+					echo '<button class="btn btn-small"><i class="icon-star"></i> Star</button>';
+						# <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
+					echo '<button class="btn btn-small nominate-now" id="' . $item['item_id'] . '">' . __('Nominate', 'pf') .  '</button>';
+
+					# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
+					echo '<button class="btn btn-small itemInfobutton" id="' . $item['item_id'] . '"><i class="icon-info-sign"></i></button>';			
+					if ($modal === true){
+						?><button class="btn btn-small" data-dismiss="modal" aria-hidden="true">Close</button><?php 
+					}
+					?>
+				</div>
+		<?php 				
+	}
+	
 	/**
 	 * Essentially the PF 'loop' template. 
 	 * $item = the each of the foreach
@@ -107,9 +134,9 @@ class PF_Admin {
 		$itemTagsArray = explode(",", $item['item_tags']);
 		$itemTagClassesString = '';
 		foreach ($itemTagsArray as $itemTag) { $itemTagClassesString .= pf_slugger($itemTag, true, false, true); $itemTagClassesString .= ' '; }
-		echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . ' ' . $c . '" tabindex="' . $c . '">';
+		echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '" tabindex="' . $c . '">';
 			?> <header> <?php 
-				echo '<h1 class="item_title"><a href="grid-single.html">' . $item['item_title'] . '</a></h1>';
+				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" role="button" data-toggle="modal">' . $item['item_title'] . '</a></h1>';
 				echo '<p class="source_title">' . $item['source_title'] . '</p>';
 									# Let's build an info box!
 									//http://nicolasgallagher.com/pure-css-speech-bubbles/
@@ -129,24 +156,9 @@ class PF_Admin {
 										' . __('Times repeated in source', 'pf') . ': <span class="feed_repeat">' . $item['source_repeat'] . '</span><br />
 										';
 									echo '</div>';		
+				
+				$this->form_of_actions_btns($item, $c);
 				?>
-				<div class="actions btn-group">
-					<?php 
-					echo '<form name="form-' . $item['item_id'] . '">' 
-					 . '<div class="nominate-result-' . $item['item_id'] . '">'
-					 . '<img class="loading-' . $item['item_id'] . '" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="' . __('Loading', 'pf') . '..." style="display: none" />'
-					 . '</div>';
-					pf_prep_item_for_submit($item);
-					wp_nonce_field('nomination', PF_SLUG . '_nomination_nonce', false);
-					echo '</form>';
-					echo '<button class="btn btn-small"><i class="icon-star"></i> Star</button>';
-						# <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
-					echo '<button class="btn btn-small nominate-now" id="' . $item['item_id'] . '">' . __('Nominate', 'pf') .  '</button>';
-
-					# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
-					echo '<button class="btn btn-small itemInfobutton" id="' . $item['item_id'] . '"><i class="icon-info-sign"></i></button>';			
-					?>
-				</div>	
 			</header>
 			<?php 
 						//echo '<a name="' . $c . '" style="display:none;"></a>';
@@ -202,6 +214,41 @@ class PF_Admin {
 			<footer>
 				<p class="pubdate"><?php echo date( 'F j, Y; g:i a' , strtotime($item['item_date'])); ?></p>
 			</footer>
+			<?php 
+				//Allows plugins to introduce their own item format output. 
+				if (has_action('pf_output_modal')){
+					do_action('pf_output_modal', $item, $c, $format);
+					
+				} else {
+			?>		
+			<!-- Begin Modal -->
+			<div id="modal-<?php echo $item['item_id']; ?>" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-<?php echo $item['item_id']; ?>-label" aria-hidden="true" pf-item-id="<?php echo $item['item_id']; ?>"> 
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<h3 id="modal-<?php echo $item['item_id']; ?>-label" class="source_title"><?php echo $item['source_title']; ?></h3>
+			  </div>
+			  <div class="modal-body">
+				<?php echo $item['item_content']; ?>
+			  </div>
+			  <div class="modal-footer">
+				<div class="row-fluid">
+				<?php 
+				echo '<div class="pull-left original-link"><a target="_blank" href="' . $item['item_link'] . '">' . __('Read Original', 'pf') . '</a></div>';
+				?><div class="pull-right"><?php 
+				$this->form_of_actions_btns($item, $c, $modal=true); 
+				?></div><?php 
+				?>	
+				</div>
+				<div class="item-tags pull-left row-fluid">
+				<?php
+					
+					echo '<strong>' . __('Item Tags', 'pf') . '</strong>: ' . $item['item_tags']; 
+				?>
+				</div>
+			  </div>				
+			</div>
+			<!-- End Modal -->
+				<?php } ?>
 		</article><!-- End article -->
 		<?php 
 	}

@@ -8,12 +8,13 @@ class PF_Readability {
 	/**
 	 * Handles a readability request via POST
 	 */
-	public function make_it_readable(){
+	public function make_it_readable($quickresponse = false){
 
 		// Verify nonce
 		if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )
 			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) );
-
+		
+		$read_status = 'readable';
 		$item_id = $_POST['read_item_id'];
 		//error_reporting(0);
 		if ( false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) ) ) {
@@ -21,6 +22,9 @@ class PF_Readability {
 			set_time_limit(0);
 			$url = pf_de_https($_POST['url']);
 			$descrip = $_POST['content'];
+			$descrip = html_entity_decode($descrip);
+			if (get_magic_quotes_gpc())  
+				$descrip = stripslashes($descrip);
 
 			if ($_POST['authorship'] == 'aggregation') {
 				$aggregated = true;
@@ -28,7 +32,7 @@ class PF_Readability {
 				$aggregated = false;
 			}
 
-			if ((strlen($descrip) <= 160) || $aggregated) {
+			if ((strlen($descrip) <= 1000) || $aggregated) {
 				$itemReadReady = self::readability_object($url);
 				if ($itemReadReady != 'error-secured') {
 					if (!$itemReadReady) {
@@ -58,16 +62,33 @@ class PF_Readability {
 						}
 					}
 				} else {
-					die('secured');
+					$read_status = 'secured';
 				}
 			} else {
-				die('readable');
+				$read_status = 'already_readable';
+				$itemReadReady = $descrip;
 			}
 
 			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
 		}
-
-		print_r($itemReadReady);
+		
+		if ($quickresponse == true){
+			print_r($itemReadReady);
+			die($read_status);
+		} else {
+			$response = array(
+				'what' => 'full_item_content',
+				'action' => 'make_readable',
+				'id' => $item_id,
+				'data' => htmlentities($itemReadReady),
+				'supplemental' => array(
+					'readable_status' => $read_status
+				)
+			);
+			$xmlResponse = new WP_Ajax_Response($response);
+			$xmlResponse->send();
+			die();
+		}
 	}
 
 	/**
