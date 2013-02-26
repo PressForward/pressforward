@@ -199,7 +199,7 @@ class PF_Admin {
 				?>
 			</div><!-- End content -->
 			<footer>
-				<p class="pubdate"><?php echo $item['item_date']; ?></p>
+				<p class="pubdate"><?php echo date( 'F j, Y; g:i a' , strtotime($item['item_date'])); ?></p>
 			</footer>
 		</article><!-- End article -->
 		<?php 
