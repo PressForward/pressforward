@@ -96,6 +96,7 @@ class PF_Admin {
 	 * Essentially the PF 'loop' template. 
 	 * $item = the each of the foreach
 	 * $c = count.
+	 * $format = format changes, to be used later or by plugins. 
 	**/
 	public function form_of_an_item($item, $c, $format = 'standard'){
 		//Allows plugins to introduce their own item format output. 
