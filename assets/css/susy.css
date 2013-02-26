@@ -40,8 +40,7 @@
     display: inline;
     font-size: 14px;
   }
-  #app-banner h1:after {
-    content: " · ";
+  #app-banner #h-after {
     color: #999;
   }
   #app-banner h1,
