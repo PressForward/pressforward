@@ -246,7 +246,7 @@ jQuery(document).ready(function() {
 			var read_content = html_entity_decode(jQuery(response).find("response_data").text());
 			var status = jQuery(response).find("readable_status").text();
 			
-			alert(read_content);
+			//alert(read_content);
 			// Don't bother doing anything if we don't need it.
 			if (status != 'readable') {
 				if (status == 'secured') {
