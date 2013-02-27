@@ -204,6 +204,12 @@ h3 {
 	padding-left: 40px;
 }
 
+#infscr-loading {
+	width:100%;
+	float: left;
+	padding-left: 40px;
+}
+
 /**
  * Specific override styles.
  *
