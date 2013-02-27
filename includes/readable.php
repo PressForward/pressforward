@@ -79,8 +79,12 @@ class PF_Readability {
 				'ID' => $post_id,
 				'post_content' => $itemReadReady
 			);
-			wp_update_post($update_ready);
-			update_post_meta($post_id, 'readable_status', 1);
+			$update_check = wp_update_post($update_ready, true);
+			if (!is_wp_error($update_check)){
+				update_post_meta($post_id, 'readable_status', 1);
+			} else {
+				$read_status = 'post_not_updated_readable';
+			}
 		}
 		
 		if ($quickresponse == true){
