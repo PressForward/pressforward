@@ -216,10 +216,37 @@ jQuery(document).ready(function() {
 
 	  return tmp_str;
 	}
+	//no longer via http://stackoverflow.com/questions/2440359/attaching-div-to-a-specific-element-for-showing-with-javascript
+
+
+	//http://stackoverflow.com/questions/14242227/bootstrap-modal-body-max-height-100
 
 	jQuery(".modal").on('show', function(evt){
 		//alert('Modal Triggered.');
-		var element = jQuery(this);
+		jQuery('#wpadminbar').hide();
+		document.body.style.overflow = 'hidden';
+		var element = jQuery(this);		
+		var modalID = element.attr('id');
+		var bigModal = { 
+			'display' : 'block',
+			'position': 'fixed',
+			'top': '0',
+			'right': '0',
+			'bottom': '100%',
+			'left': '0',
+			'margin': '0',
+			'width': '100%',
+			'height': '100%',
+			'overflow' : 'hidden'
+		};
+		jQuery('#'+modalID).css(bigModal);
+		//jQuery('#'+modalID+ ' .modal-header').css('max-height', '10%');
+		jQuery('#'+modalID).css({'background-color' : '#f5f5f5', 'max-height' : '100%'});
+		jQuery('#'+modalID+ ' .modal-header').css({'background-color' : 'white', 'max-height' : '10%'});
+		jQuery('#'+modalID+ ' .modal-body').css({'max-height' : '80%', 'background-color' : 'white'});
+		jQuery('#'+modalID+ ' .modal-footer').css({'max-height' : '10%', 'min-height' : '48px'});
+		//alert(modalID);
+		//showDiv(jQuery('#entries'), jQuery('#'+modalID));		
 		var itemID = element.attr('pf-item-id');
 		
 		//At this point it should have grabbed the direct feeditem hashed ID. That allows us to do things specifically to that item past this point.
@@ -268,6 +295,11 @@ jQuery(document).ready(function() {
 			}
 		});
 		
+	});
+	
+	jQuery(".modal").on('hide', function(evt){
+		jQuery('#wpadminbar').show();
+		document.body.style.overflow = 'visible';
 	});
 	
 	//This also needs to rewrite the content of the form!!
