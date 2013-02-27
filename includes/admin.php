@@ -434,8 +434,8 @@ class PF_Admin {
 				<?php echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';  ?>
 				<div id="errors"></div>
 				<div class="display btn-group">
-					<a href="index.html" class="btn btn-small">Grid</a>
-					<a href="list.html" class="btn btn-small">List</a>
+					<button type="submit" id="gogrid" class="btn btn-small">Grid</button>
+					<button type="submit" id="golist" class="btn btn-small">List</button>
 
 					<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
 					echo '<button type="submit" class="btn btn-small feedsort" id="sortbyfeedindate" value="' . __('Sort by date entered feed', 'pf') . '">' . __('Sort by date entered feed', 'pf') . '</button>'; ?>
@@ -575,6 +575,7 @@ class PF_Admin {
 			wp_enqueue_script('jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
 			wp_enqueue_script('infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery' ));
 			wp_enqueue_script('scrollimp', PF_URL . 'assets/js/scroll-imp.js', array( 'infiniscroll' ));
+			wp_enqueue_script('views', PF_URL . 'assets/js/views.js', array( 'twitter-bootstrap' ));
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style('bootstrap-style');
 			wp_enqueue_style('bootstrap-responsive-style');
@@ -588,6 +589,7 @@ class PF_Admin {
 			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
 			wp_enqueue_script('send-to-draft-imp', PF_URL . 'assets/js/send-to-draft-imp.js', array( 'jquery' ));
 			wp_enqueue_script('archive-nom-imp', PF_URL . 'assets/js/nom-archive-imp.js', array( 'jquery' ));
+			wp_enqueue_script('views', PF_URL . 'assets/js/views.js', array( 'twitter-bootstrap' ));
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style('bootstrap-style');
 			wp_enqueue_style('bootstrap-responsive-style');
