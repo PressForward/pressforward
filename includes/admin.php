@@ -96,7 +96,9 @@ class PF_Admin {
 			?>	
 				<div class="actions btn-group">
 					<?php
-					if ($modal === false){
+					$infoPop = 'top';
+					if ($modal == false){
+						$infoPop = 'right';
 						echo '<form name="form-' . $item['item_id'] . '">' 
 						 . '<div class="nominate-result-' . $item['item_id'] . '">'
 						 . '<img class="loading-' . $item['item_id'] . '" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="' . __('Loading', 'pf') . '..." style="display: none" />'
@@ -108,9 +110,10 @@ class PF_Admin {
 					echo '<button class="btn btn-small"><i class="icon-star"></i> Star</button>';
 						# <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
 					echo '<button class="btn btn-small nominate-now" id="' . $item['item_id'] . '">' . __('Nominate', 'pf') .  '</button>';
-
+					
+					
 					# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
-					echo '<button class="btn btn-small itemInfobutton" id="' . $item['item_id'] . '"><i class="icon-info-sign"></i></button>';			
+					echo '<button class="btn btn-small itemInfobutton" id="' . $item['item_id'] . '" data-placement="' . $infoPop . '"><i class="icon-info-sign"></i></button>';			
 					if ($modal === true){
 						?><button class="btn btn-small" data-dismiss="modal" aria-hidden="true">Close</button><?php 
 					}
