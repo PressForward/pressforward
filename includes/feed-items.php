@@ -418,8 +418,8 @@ class PF_Feed_Item {
 				# Need to get rid of some weird characters that prevent inserting posts into the database. 
 				# From: http://www.alexpoole.name/web-development/282/remove-smart-quotes-bullets-dashes-and-other-junky-characters-from-a-string-with-php
 				# And: http://www.enghiong.com/wp_insert_post-could-not-insert-post-into-the-database.html
-				$item_content = self::extra_special_sanatize($item_content);
-				$item_title = self::extra_special_sanatize($item_title);
+				//$item_content = self::extra_special_sanatize($item_content);
+				//$item_title = self::extra_special_sanatize($item_title);
 				
 				//$item_content = wpautop($item_content);
 				//$postcontent = sanitize_post($item_content);
