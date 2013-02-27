@@ -173,7 +173,7 @@ class PF_Feed_Item {
 				$item_wp_date = get_post_meta($post_id, 'item_wp_date', true);
 				$item_tags = get_post_meta($post_id, 'item_tags', true);
 				$source_repeat = get_post_meta($post_id, 'source_repeat', true);
-
+				$readable_status = get_post_meta($post_id, 'readable_status', true);
 				$contentObj = new htmlchecker(get_the_content());
 				$item_content = $contentObj->closetags(get_the_content());
 
@@ -190,7 +190,9 @@ class PF_Feed_Item {
 											$item_tags,
 											//Manual ISO 8601 date for pre-PHP5 systems.
 											get_the_date('o-m-d\TH:i:sO'),
-											$source_repeat
+											$source_repeat,
+											$post_id,
+											$readable_status
 											);
 				set_transient( 'pf_archive_' . $id, $feedObject['rss_archive_' . $c], 60*10 );
 

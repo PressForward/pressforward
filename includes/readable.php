@@ -16,6 +16,7 @@ class PF_Readability {
 		
 		$read_status = 'readable';
 		$item_id = $_POST['read_item_id'];
+		$post_id = $_POST['post_id'];
 		//error_reporting(0);
 		if ( false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) ) ) {
 
@@ -70,6 +71,16 @@ class PF_Readability {
 			}
 
 			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
+		}
+		
+		# BIG FREAKING WARNING: This WILL NOT WORK if you have WP_DEBUG and WP_DEBUG_DISPLAY true and either your theme or plugins have bad functions on the save_post hook. 
+		if ($post_id != 0){
+			$update_ready = array(
+				'ID' => $post_id,
+				'post_content' => $itemReadReady
+			);
+			wp_update_post($update_ready);
+			update_post_meta($post_id, 'readable_status', 1);
 		}
 		
 		if ($quickresponse == true){
