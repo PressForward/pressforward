@@ -198,6 +198,12 @@ h3 {
 	-webkit-transition: opacity .25s ease-in-out;
 }
 
+.pf-navigation {
+	width:100%;
+	float: left;
+	padding-left: 40px;
+}
+
 /**
  * Specific override styles.
  *

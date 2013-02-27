@@ -273,7 +273,7 @@ class PF_Admin {
 				<?php 
 					if ($page > 0) {
 						$pageNumForPrint = sprintf( __('Page %1$d', 'pf'), $page);
-						echo '<h4> - ' . $pageNumForPrint . '</h4>';
+						echo '<span> - ' . $pageNumForPrint . '</span>';
 					}
 				?>
 				<span id="h-after"> &#8226; </span>

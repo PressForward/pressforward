@@ -1,7 +1,7 @@
 jQuery(document).ready(function () {
 
  
-    var container = jQuery('.feed-container');
+    var container = jQuery('#entries');
     
     container.infinitescroll({
       navSelector  : '.pf-navigation',    // selector for the paged navigation 
