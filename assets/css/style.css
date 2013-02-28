@@ -210,6 +210,14 @@ h3 {
 	padding-left: 40px;
 }
 
+.list .actions {
+	display: none;
+}
+
+.list .modal .actions {
+	display: block;
+}
+
 .feed-item-info-box {
 	display:none;
 }
