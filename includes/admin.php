@@ -156,9 +156,20 @@ class PF_Admin {
 		$itemTagsArray = explode(",", $item['item_tags']);
 		$itemTagClassesString = '';
 		foreach ($itemTagsArray as $itemTag) { $itemTagClassesString .= pf_slugger($itemTag, true, false, true); $itemTagClassesString .= ' '; }
+			?>
+			<script type="text/javascript">	
+				jQuery(document).ready(function() {
+					jQuery(".grid #<?php echo $item['item_id']; ?>").on('click', function(evt){
+						if(evt.target === this){
+							jQuery("<?php echo '#modal-' . $item['item_id']; ?>").modal({backdrop : false})
+						}
+					});
+				});
+			</script>
+			<?php 
 		echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '" tabindex="' . $c . '">';
 			?> <header> <?php 
-				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" role="button" data-toggle="modal" data-backdrop="false">' . $item['item_title'] . '</a></h1>';
+				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander" role="button" data-toggle="modal" data-backdrop="false">' . $item['item_title'] . '</a></h1>';
 				echo '<p class="source_title">' . $item['source_title'] . '</p>';
 									# Let's build an info box!
 									//http://nicolasgallagher.com/pure-css-speech-bubbles/
