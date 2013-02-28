@@ -17,8 +17,9 @@ class PF_Readability {
 		$read_status = 'readable';
 		$item_id = $_POST['read_item_id'];
 		$post_id = $_POST['post_id'];
+		$force = $_POST['force'];
 		//error_reporting(0);
-		if ( false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) ) ) {
+		if ( (false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) )) || $force == 'force' ) {
 
 			set_time_limit(0);
 			$url = pf_de_https($_POST['url']);
@@ -33,7 +34,7 @@ class PF_Readability {
 				$aggregated = false;
 			}
 
-			if ((strlen($descrip) <= 1000) || $aggregated) {
+			if ((str_word_count($descrip) <= 300) || $aggregated || $force == 'force') {
 				$itemReadReady = self::readability_object($url);
 				if ($itemReadReady != 'error-secured') {
 					if (!$itemReadReady) {
@@ -77,13 +78,16 @@ class PF_Readability {
 		if ($post_id != 0){
 			$update_ready = array(
 				'ID' => $post_id,
-				'post_content' => $itemReadReady
+				'post_content' => html_entity_decode($itemReadReady)
 			);
 			$update_check = wp_update_post($update_ready, true);
 			if (!is_wp_error($update_check)){
 				update_post_meta($post_id, 'readable_status', 1);
+				$error = 'no error';
 			} else {
 				$read_status = 'post_not_updated_readable';
+				update_post_meta($post_id, 'readable_status', 0);
+				$error = $update_check->get_error_message();
 			}
 		}
 		
@@ -97,7 +101,8 @@ class PF_Readability {
 				'id' => $item_id,
 				'data' => htmlentities($itemReadReady),
 				'supplemental' => array(
-					'readable_status' => $read_status
+					'readable_status' => $read_status,
+					'error' => $error
 				)
 			);
 			$xmlResponse = new WP_Ajax_Response($response);
