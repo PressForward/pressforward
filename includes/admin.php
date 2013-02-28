@@ -149,6 +149,7 @@ class PF_Admin {
 	**/
 	public function form_of_an_item($item, $c, $format = 'standard'){
 		//Allows plugins to introduce their own item format output. 
+		date_default_timezone_set(get_option('timezone_string'));
 		if (has_action('pf_output_items')){
 			do_action('pf_output_items', $item, $c, $format);
 			return;
@@ -181,8 +182,8 @@ class PF_Admin {
 									$ibox = '<div class="feed-item-info-box" id="info-box-' . $item['item_id'] . '">';
 										$ibox .= '
 										' . __('Feed', 'pf') . ': <span class="feed_title">' . $item['source_title'] . '</span><br />
-										' . __('Posted', 'pf') . ': <span class="feed_posted">' . date( 'M j, Y; g:ia O' , strtotime($item['item_date'])) . '</span><br />
-										' . __('Retrieved', 'pf') . ': <span class="item_meta item_meta_added_date">' . date( 'M j, Y; g:ia O' , strtotime($item['item_added_date'])) . '</span><br />
+										' . __('Posted', 'pf') . ': <span class="feed_posted">' . date( 'M j, Y; g:ia' , strtotime($item['item_date'])) . '</span><br />
+										' . __('Retrieved', 'pf') . ': <span class="item_meta item_meta_added_date">' . date( 'M j, Y; g:ia' , strtotime($item['item_added_date'])) . '</span><br />
 										' . __('Authors', 'pf') . ': <span class="item_authors">' . $item['item_author'] . '</span><br />
 										' . __('Origin', 'pf') . ': <span class="source_name"><a target ="_blank" href="' . $sourceLink . '">' . $sourceLink . '</a></span><br />
 										' . __('Original Item', 'pf') . ': <span class="source_link"><a href="' . $item['item_link'] . '" class="item_url" target ="_blank">' . $item['item_title'] . '</a></span><br />
