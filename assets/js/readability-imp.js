@@ -269,8 +269,8 @@ jQuery(document).ready(function() {
 				post_id: postID,
 				//We need to pull the source data to determine if it is aggregation as well. 
 				authorship: authorship,
-				pf_nomination_nonce: theNonce
-				
+				pf_nomination_nonce: theNonce,
+				force: 'noforce'
 			}, 
 			function(response) {
 				var read_content = html_entity_decode(jQuery(response).find("response_data").text());
@@ -286,7 +286,7 @@ jQuery(document).ready(function() {
 						jQuery("#item_content_"+itemID).attr('value', safeResponse);
 						element.attr('pf-readability-status', 1);
 					} else if (status == 'already_readable') {
-						jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html(content);
+						jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html(html_entity_decode(content));
 						element.attr('pf-readability-status', 1);
 					} else {
 						jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html(read_content);
@@ -308,6 +308,68 @@ jQuery(document).ready(function() {
 		document.body.style.overflow = 'visible';
 	});
 	
+	jQuery(".modal-readability-reset").on('click', function(evt){
+		evt.preventDefault();
+		var element = jQuery(this);		
+		var modalID = element.attr('pf-modal-id');
+		var itemID = element.attr('pf-item-id');
+		var postID = element.attr('pf-post-id');		
+		//At this point it should have grabbed the direct feeditem hashed ID. That allows us to do things specifically to that item past this point.
+		//BUG: Escaping everything incorrectly. <-one time issue?
+		var content = jQuery("#"+itemID+" .modal-body").html();
+		var url = jQuery("#"+itemID+" #item_link_"+itemID).val();
+		var authorship = jQuery("#"+itemID+" #item_author_"+itemID).val();
+		
+		//I suppose I should nonce here right? 
+		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());
+		
+		//At some point a waiting graphic should go here. 
+		jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html('Attempting to retrieve full article.');
+			jQuery.post(ajaxurl, {
+				action: 'make_it_readable',
+				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
+				read_item_id: itemID,
+				url: url,
+				content: escape(content),
+				post_id: postID,
+				//We need to pull the source data to determine if it is aggregation as well. 
+				authorship: authorship,
+				pf_nomination_nonce: theNonce,
+				force: 'force'
+				
+			}, 
+			function(response) {
+				var read_content = html_entity_decode(jQuery(response).find("response_data").text());
+				var status = jQuery(response).find("readable_status").text();
+				
+				//alert(read_content);
+				// Don't bother doing anything if we don't need it.
+				if (status != 'readable') {
+					if (status == 'secured') {
+						alert('The content cannot be retrieved. The post may be on a secure page or it may have been removed.');
+						jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html(read_content);
+						var safeResponse = escapeHtml(read_content);
+						jQuery("#item_content_"+itemID).attr('value', safeResponse);
+						jQuery(modalID).attr('pf-readability-status', 1);
+					} else if (status == 'already_readable') {
+						jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html(html_entity_decode(content));
+						jQuery(modalID).attr('pf-readability-status', 1);
+					} else {
+						jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html(read_content);
+						var safeResponse = escapeHtml(read_content);
+						jQuery("#item_content_"+itemID).attr('value', safeResponse);
+					}
+				} else {
+						jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html(read_content);
+						var safeResponse = escapeHtml(read_content);
+						jQuery("#item_content_"+itemID).attr('value', safeResponse);
+						jQuery(modalID).attr('pf-readability-status', 1);
+				}
+			});
+			
+	
+	});
+	
 	//This also needs to rewrite the content of the form!!
 
-})
+});

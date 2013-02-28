@@ -264,9 +264,10 @@ class PF_Admin {
 			  </div>
 			  <div class="modal-footer">
 				<div class="row-fluid">
-				<?php 
-				echo '<div class="pull-left original-link"><a target="_blank" href="' . $item['item_link'] . '">' . __('Read Original', 'pf') . '</a></div>';
-				?><div class="pull-right"><?php 
+				<div class="pull-left original-link">
+					<a target="_blank" href="<?php echo $item['item_link']; ?>"><?php _e('Read Original', 'pf'); ?></a> | <a class="modal-readability-reset" target="#readable" href="<?php echo $item['item_link']; ?>" pf-item-id="<?php echo $item['item_id']; ?>" pf-post-id="<?php echo $item['post_id']; ?>" pf-modal-id="#modal-<?php echo $item['item_id']; ?>"><?php  _e('Reset Readability', 'pf'); ?></a>
+				</div>
+				<div class="pull-right"><?php 
 				$this->form_of_actions_btns($item, $c, true); 
 				?></div><?php 
 				?>	
