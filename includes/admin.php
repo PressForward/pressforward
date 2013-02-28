@@ -98,7 +98,7 @@ class PF_Admin {
 					<?php
 					$infoPop = 'top';
 					if ($modal == false){
-						$infoPop = 'right';
+						$infoPop = 'bottom';
 						echo '<form name="form-' . $item['item_id'] . '">' 
 						 . '<div class="nominate-result-' . $item['item_id'] . '">'
 						 . '<img class="loading-' . $item['item_id'] . '" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="' . __('Loading', 'pf') . '..." style="display: none" />'
@@ -107,13 +107,32 @@ class PF_Admin {
 						wp_nonce_field('nomination', PF_SLUG . '_nomination_nonce', false);
 						echo '</form>';
 					}
+					# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
+					echo '<button class="btn btn-small itemInfobutton" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover"><i class="icon-info-sign"></i></button>';
 					echo '<button class="btn btn-small"><i class="icon-star"></i> Star</button>';
 						# <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
 					echo '<button class="btn btn-small nominate-now" id="' . $item['item_id'] . '">' . __('Nominate', 'pf') .  '</button>';
 					
 					
-					# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
-					echo '<button class="btn btn-small itemInfobutton" id="' . $item['item_id'] . '" data-placement="' . $infoPop . '"><i class="icon-info-sign"></i></button>';			
+	
+					?>
+						<script type="text/javascript">
+						jQuery(document).ready(function() {
+							jQuery(function(){
+								jQuery("#<?php echo 'info-' . $item['item_id'] . '-' . $infoPop; ?>").popover({
+									title: pop_title_<?php echo $item['item_id'] ?>,
+									html: true,
+									content: pop_html_<?php echo $item['item_id'] ?>,
+									placement: "<?php echo $infoPop ?>",
+									container: ".actions"
+								})
+								.on("click", function(){
+									jQuery('.popover').addClass(jQuery(this).data("class")); //Add class .dynamic-class to <div>
+								});
+							});
+						});
+						</script>
+					<?php 
 					if ($modal === true){
 						?><button class="btn btn-small" data-dismiss="modal" aria-hidden="true">Close</button><?php 
 					}
@@ -147,19 +166,29 @@ class PF_Admin {
 									$urlArray = parse_url($item['item_link']);
 									$sourceLink = 'http://' . $urlArray['host'];
 									//http://nicolasgallagher.com/pure-css-speech-bubbles/demo/
-									echo '<div class="feed-item-info-box well leftarrow" id="info-box-' . $item['item_id'] . '" style="display:none;">';
-										echo '
+
+									$ibox = '<div class="feed-item-info-box" id="info-box-' . $item['item_id'] . '">';
+										$ibox .= '
 										' . __('Feed', 'pf') . ': <span class="feed_title">' . $item['source_title'] . '</span><br />
-										' . __('Posted on', 'pf') . ': <span class="feed_posted">' . $item['item_date'] . '</span><br />
-										' . __('Added to feed on', 'pf') . '<span class="item_meta item_meta_added_date">' . $item['item_added_date'] . '.</span><br />
+										' . __('Posted', 'pf') . ': <span class="feed_posted">' . date( 'M j, Y; g:ia O' , strtotime($item['item_date'])) . '</span><br />
+										' . __('Retrieved', 'pf') . ': <span class="item_meta item_meta_added_date">' . date( 'M j, Y; g:ia O' , strtotime($item['item_added_date'])) . '</span><br />
 										' . __('Authors', 'pf') . ': <span class="item_authors">' . $item['item_author'] . '</span><br />
 										' . __('Origin', 'pf') . ': <span class="source_name"><a target ="_blank" href="' . $sourceLink . '">' . $sourceLink . '</a></span><br />
 										' . __('Original Item', 'pf') . ': <span class="source_link"><a href="' . $item['item_link'] . '" class="item_url" target ="_blank">' . $item['item_title'] . '</a></span><br />
 										' . __('Tags', 'pf') . ': <span class="item_tags">' . $item['item_tags'] . '</span><br />
 										' . __('Times repeated in source', 'pf') . ': <span class="feed_repeat">' . $item['source_repeat'] . '</span><br />
 										';
-									echo '</div>';		
-				
+									$ibox .= '</div>';
+									echo $ibox;
+													?>
+									<script type="text/javascript">
+										
+											var pop_title_<?php echo $item['item_id'] ?> = '';
+											var pop_html_<?php echo $item['item_id'] ?> = jQuery('#<?php echo 'info-box-' . $item['item_id']; ?>');
+											
+										
+									</script>
+									<?php 
 				$this->form_of_actions_btns($item, $c);
 				?>
 			</header>
@@ -238,7 +267,7 @@ class PF_Admin {
 				<?php 
 				echo '<div class="pull-left original-link"><a target="_blank" href="' . $item['item_link'] . '">' . __('Read Original', 'pf') . '</a></div>';
 				?><div class="pull-right"><?php 
-				$this->form_of_actions_btns($item, $c, $modal=true); 
+				$this->form_of_actions_btns($item, $c, true); 
 				?></div><?php 
 				?>	
 				</div>
