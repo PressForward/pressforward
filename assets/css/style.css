@@ -126,7 +126,7 @@ h3 {
 	margin: 4px 0;
 }
 
-.feed-item div.feed-item-info-box {
+/**.feed-item div.feed-item-info-box {
 	float: right;
 	margin-right: -327px!important;
 	width: 310px;
@@ -155,7 +155,7 @@ h3 {
 	border-color: whiteSmoke transparent;
 	display: block;
 	width: 0;
-}
+}**/
 
 .feed-item .item_meta {
 	font-size: 10px;
@@ -208,6 +208,52 @@ h3 {
 	width:100%;
 	float: left;
 	padding-left: 40px;
+}
+
+.feed-item-info-box {
+	display:none;
+}
+
+.popover-inner .feed-item-info-box{
+	display: block;
+	font-size: 10px;
+	line-height: 13px;
+
+	
+	z-index: 2002;
+}
+
+.info-box-popover {
+	background-color: #f5f5f5;
+	z-index: 2001;
+	width: 310px;
+
+}
+
+.info-box-popover.right {
+	
+}
+
+.info-box-popover.top {
+
+}
+
+.info-box-popover.top .popover-content {
+	
+}
+
+.info-box-popover.right .arrow {
+
+	border-right-color: #f5f5f5!important;
+	
+}
+
+.info-box-popover .popover-title {
+	display:none;
+}
+
+.info-box-popover .popover-content {
+	
 }
 
 /**
