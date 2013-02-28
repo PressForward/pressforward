@@ -158,15 +158,7 @@ class PF_Admin {
 		$itemTagClassesString = '';
 		foreach ($itemTagsArray as $itemTag) { $itemTagClassesString .= pf_slugger($itemTag, true, false, true); $itemTagClassesString .= ' '; }
 			?>
-			<script type="text/javascript">	
-				jQuery(document).ready(function() {
-					jQuery(".grid #<?php echo $item['item_id']; ?>").on('click', function(evt){
-						if(evt.target === this){
-							jQuery("<?php echo '#modal-' . $item['item_id']; ?>").modal({backdrop : false})
-						}
-					});
-				});
-			</script>
+
 			<?php 
 		echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '" tabindex="' . $c . '">';
 			?> <header> <?php 
