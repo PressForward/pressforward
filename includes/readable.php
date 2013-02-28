@@ -34,7 +34,7 @@ class PF_Readability {
 				$aggregated = false;
 			}
 
-			if ((str_word_count($descrip) <= 300) || $aggregated || $force == 'force') {
+			if ((str_word_count($descrip) <= 150) || $aggregated || $force == 'force') {
 				$itemReadReady = self::readability_object($url);
 				if ($itemReadReady != 'error-secured') {
 					if (!$itemReadReady) {
