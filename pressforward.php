@@ -3,7 +3,7 @@
 Plugin Name: PressForward
 Plugin URI: http://pressforward.org/
 Description: This plugin is a aggregation parser for CHNM's Press Forward project.
-Version: 1.7.0
+Version: 1.8.1
 Author: Aram Zucker-Scharff, Boone B Gorges
 Author URI: http://aramzs.me, http://boone.gorg.es/
 License: GPL2
