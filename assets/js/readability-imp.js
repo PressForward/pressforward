@@ -286,7 +286,7 @@ jQuery(document).ready(function() {
 						jQuery("#item_content_"+itemID).attr('value', safeResponse);
 						element.attr('pf-readability-status', 1);
 					} else if (status == 'already_readable') {
-						jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html(html_entity_decode(content));
+						jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html(unescape(content));
 						element.attr('pf-readability-status', 1);
 					} else {
 						jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html(read_content);
@@ -319,7 +319,6 @@ jQuery(document).ready(function() {
 		var content = jQuery("#"+itemID+" .modal-body").html();
 		var url = jQuery("#"+itemID+" #item_link_"+itemID).val();
 		var authorship = jQuery("#"+itemID+" #item_author_"+itemID).val();
-		
 		//I suppose I should nonce here right? 
 		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());
 		
@@ -330,7 +329,7 @@ jQuery(document).ready(function() {
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
 				read_item_id: itemID,
 				url: url,
-				content: escape(content),
+				content: content,
 				post_id: postID,
 				//We need to pull the source data to determine if it is aggregation as well. 
 				authorship: authorship,
@@ -352,7 +351,7 @@ jQuery(document).ready(function() {
 						jQuery("#item_content_"+itemID).attr('value', safeResponse);
 						jQuery(modalID).attr('pf-readability-status', 1);
 					} else if (status == 'already_readable') {
-						jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html(html_entity_decode(content));
+						jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html(unescape(content));
 						jQuery(modalID).attr('pf-readability-status', 1);
 					} else {
 						jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html(read_content);
@@ -360,6 +359,7 @@ jQuery(document).ready(function() {
 						jQuery("#item_content_"+itemID).attr('value', safeResponse);
 					}
 				} else {
+						//alert('readable')
 						jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html(read_content);
 						var safeResponse = escapeHtml(read_content);
 						jQuery("#item_content_"+itemID).attr('value', safeResponse);
