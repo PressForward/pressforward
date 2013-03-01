@@ -204,6 +204,17 @@ h3 {
 	padding-left: 40px;
 }
 
+.full #tools {
+	display:none;
+}
+.full #entries {
+	width: 100%;
+}
+
+.pressforward .grid.full #entries article {
+	width: 23%;
+}
+
 #infscr-loading {
 	width:100%;
 	float: left;
