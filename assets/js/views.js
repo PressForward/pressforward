@@ -11,7 +11,12 @@ jQuery(document).ready(function() {
 	jQuery('#golist').click(function (evt){ 
 			evt.preventDefault();
 			jQuery("div.pf_container").removeClass('grid').addClass('list');
+			jQuery('.feed-item').each(function (index){
+				var element		= jQuery(this);
+				var itemID		= element.attr('id');
+				jQuery('#'+itemID+' header .actions').appendTo('#'+itemID+' footer');
+			});
 		}
-	);		
+	);
 	
 });

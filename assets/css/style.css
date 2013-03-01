@@ -211,11 +211,15 @@ h3 {
 }
 
 .list .actions {
-	display: none;
+	
 }
 
 .list .modal .actions {
 	display: block;
+}
+
+.grid .go-actions-bar {
+	display: none;
 }
 
 .feed-item-info-box {
