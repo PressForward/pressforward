@@ -323,12 +323,35 @@ function pf_nom_class_tagger($array = array()){
 
 }
 
+function get_pf_nom_class_tags($array = array()){
+
+	foreach ($array as $class){
+		if (($class == '') || (empty($class)) || (!isset($class))){
+			//Do nothing.
+			$tags = '';
+		}
+		elseif (is_array($class)){
+
+			foreach ($class as $subclass){
+				$tags = ' ';
+				$tags = pf_slugger($class, true, false, true);
+			}
+
+		} else {
+			$tags = ' ';
+			$tags = pf_slugger($class, true, false, true);
+		}
+	}
+	return $tags;
+
+}
+
 /**
  * Build an excerpt for a nomination
  *
  * @param string $text
  */
-function pf_noms_excerpt( $text ) {
+function pf_noms_filter( $text ) {
 	global $post;
 	$text = get_the_content('');
 	$text = apply_filters('the_content', $text);
@@ -336,11 +359,31 @@ function pf_noms_excerpt( $text ) {
 	$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
 	$contentObj = new htmlchecker($text);
 	$text = $contentObj->closetags($text);
-	$text = strip_tags($text);
+	$text = strip_tags($text, '<p>');
 
 	$excerpt_length = 310;
 	$words = explode(' ', $text, $excerpt_length + 1);
 	if (count($words)> $excerpt_length) {
+		array_pop($words);
+		array_push($words, '...');
+		$text = implode(' ', $words);
+	}
+
+	return $text;
+}
+
+function pf_noms_excerpt( $text ) {
+
+	$text = apply_filters('the_content', $text);
+	$text = str_replace('\]\]\>', ']]&gt;', $text);
+	$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
+	$contentObj = new htmlchecker($text);
+	$text = $contentObj->closetags($text);
+	$text = strip_tags($text, '<p>');
+
+	$excerpt_length = 310;
+	$words = explode(' ', $text, $excerpt_length + 1);
+	if (count($words) > $excerpt_length) {
 		array_pop($words);
 		array_push($words, '...');
 		$text = implode(' ', $words);

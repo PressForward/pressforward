@@ -4,7 +4,7 @@ jQuery(document).ready(function() {
 		evt.preventDefault();
 		
 		var element		= jQuery(this);
-		var itemID		= element.attr('id');
+		var itemID		= element.attr('form');
 	var item_title 		= jQuery("#item_title_"+itemID).val();
 	var source_title 	= jQuery("#source_title_"+itemID).val(); 
 	var item_date 		= jQuery("#item_date_"+itemID).val(); 
