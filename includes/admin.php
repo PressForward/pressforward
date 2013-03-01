@@ -325,7 +325,7 @@ class PF_Admin {
 		</header><!-- End Header -->
 		<div role="main">
 		   <div id="tools">
-				
+
 				<ul class="nav nav-tabs nav-stacked">
 					<li><a href="#">Top Blogs</a></li>
 					<li><a href="#">Starred Items</a></li>
@@ -467,12 +467,18 @@ class PF_Admin {
 			<div id="entries">
 				<?php echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';  ?>
 				<div id="errors"></div>
-				<div class="display btn-group">
+				<div class="display">
+					<div class="btn-group pull-left">
 					<button type="submit" id="gogrid" class="btn btn-small">Grid</button>
 					<button type="submit" id="golist" class="btn btn-small">List</button>
 
 					<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
 					echo '<button type="submit" class="btn btn-small feedsort" id="sortbyfeedindate" value="' . __('Sort by date entered feed', 'pf') . '">' . __('Sort by date entered feed', 'pf') . '</button>'; ?>
+					</div>
+					<div class="pull-right text-right">
+					<!-- or http://thenounproject.com/noun/list/#icon-No9479? -->
+					<a class="btn btn-small" href="#">Menu <i class="icon-tasks"></i></a>
+					</div>
 				</div><!-- End btn-group -->
 		
 			<?php 
