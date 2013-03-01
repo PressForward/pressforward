@@ -21,8 +21,12 @@ jQuery(document).ready(function() {
 	
 	jQuery('#gomenu').toggle(function (evt){ 
 			evt.preventDefault();
+			var toolswin = jQuery('#tools');
 			jQuery("div.pf_container").removeClass('full');
+			jQuery(toolswin).show('slide',{direction:'right', easing:'linear'},150);
 		}, function() {
+			var toolswin = jQuery('#tools');
+			jQuery(toolswin).hide('slide',{direction:'right', easing:'linear'},150);
 			jQuery("div.pf_container").addClass('full');
 		});	
 	
