@@ -17,6 +17,7 @@ class PF_Admin {
 
 		// Adding javascript and css to admin pages
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
+		add_filter('admin_body_class',  array( $this, 'add_pf_body_class'));
 
 		// Catch form submits
 		add_action( 'admin_init', array($this, 'pf_options_admin_page_save') );
@@ -90,6 +91,13 @@ class PF_Admin {
 			'edit_posts',
 			PF_NOM_POSTER
 		);
+	}
+	
+	function add_pf_body_class($classes) {
+		
+		$classes .= strtolower(PF_TITLE);
+
+		return $classes;
 	}
 	
 	public function form_of_actions_btns($item, $c, $modal = false){
@@ -294,6 +302,7 @@ class PF_Admin {
 	 * Display function for the main All Content panel
 	 */
 	public function display_reader_builder() {
+	
 		//Calling the feedlist within the pf class.
 		if (isset($_GET["pc"])){
 			$page = $_GET["pc"];
@@ -303,7 +312,7 @@ class PF_Admin {
 		}
 		$count = $page * 20;	
 	?>
-	<div class="grid pf_container">
+	<div class="grid pf_container full">
 		<header id="app-banner">
 			<div class="title-span title">
 				<?php echo '<h1>' . PF_TITLE . '</h1>'; ?>
@@ -477,7 +486,7 @@ class PF_Admin {
 					</div>
 					<div class="pull-right text-right">
 					<!-- or http://thenounproject.com/noun/list/#icon-No9479? -->
-					<a class="btn btn-small" href="#">Menu <i class="icon-tasks"></i></a>
+					<a class="btn btn-small" id="gomenu" href="#">Menu <i class="icon-tasks"></i></a>
 					</div>
 				</div><!-- End btn-group -->
 		

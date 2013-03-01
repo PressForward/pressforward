@@ -19,4 +19,11 @@ jQuery(document).ready(function() {
 		}
 	);
 	
+	jQuery('#gomenu').toggle(function (evt){ 
+			evt.preventDefault();
+			jQuery("div.pf_container").removeClass('full');
+		}, function() {
+			jQuery("div.pf_container").addClass('full');
+		});	
+	
 });
