@@ -100,7 +100,7 @@ class PF_Admin {
 		return $classes;
 	}
 	
-	public function form_of_actions_btns($item, $c, $modal = false){
+	public function form_of_actions_btns($item, $c, $modal = false, $format = 'standard', $metadata = array() ){
 			?>	
 				<div class="actions btn-group">
 					<?php
@@ -119,7 +119,11 @@ class PF_Admin {
 					echo '<button class="btn btn-small itemInfobutton" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover"><i class="icon-info-sign"></i></button>';
 					echo '<button class="btn btn-small"><i class="icon-star"></i> Star</button>';
 						# <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
-					echo '<button class="btn btn-small nominate-now" id="' . $item['item_id'] . '">' . __('Nominate', 'pf') .  '</button>';
+					if ($format === 'nomination'){
+						echo '<button class="btn btn-small nom-to-archive" form="' . $metadata['nom_id'] . '">' . __('Archive', 'pf') .  '</button>';
+					} else {
+						echo '<button class="btn btn-small nominate-now" form="' . $item['item_id'] . '">' . __('Nominate', 'pf') .  '</button>';
+					}
 					
 					
 	
@@ -155,7 +159,7 @@ class PF_Admin {
 	 * $c = count.
 	 * $format = format changes, to be used later or by plugins. 
 	**/
-	public function form_of_an_item($item, $c, $format = 'standard'){
+	public function form_of_an_item($item, $c, $format = 'standard', $metadata = array()){
 		//Allows plugins to introduce their own item format output. 
 		date_default_timezone_set(get_option('timezone_string'));
 		if (has_action('pf_output_items')){
@@ -165,13 +169,49 @@ class PF_Admin {
 		$itemTagsArray = explode(",", $item['item_tags']);
 		$itemTagClassesString = '';
 		foreach ($itemTagsArray as $itemTag) { $itemTagClassesString .= pf_slugger($itemTag, true, false, true); $itemTagClassesString .= ' '; }
-			?>
-
-			<?php 
-		echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '" tabindex="' . $c . '">';
+	
+				if (!empty($metadata['archived_status'])){
+					$archived_status_string = '';
+					$archived_user_string_match = 'archived_' . $metadata['current_user_id'];
+					foreach ($archived_status as $user_archived_status){
+						if ($user_archived_status == $archived_user_string_match){
+						$archived_status_string = 'archived';
+						$dependent_style = 'display:none;';
+						}
+					}
+				} else {
+					$dependent_style = '';
+					$archived_status_string = '';
+				}
+		if ($format === 'nomination'){
+			echo '<article class="feed-item entry nom-container ' . $archived_status_string . get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . '" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '">';
+		} else {
+			echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '" tabindex="' . $c . '">';		
+		}
+		
 			?> <header> <?php 
 				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander" role="button" data-toggle="modal" data-backdrop="false">' . $item['item_title'] . '</a></h1>';
 				echo '<p class="source_title">' . $item['source_title'] . '</p>';
+				if ($format === 'nomination'){
+				?>		
+						<div class="sortable-hidden-meta" style="display:none;">
+							<?php
+							_e('UNIX timestamp from source RSS', 'pf');
+							echo ': <span class="sortable_source_timestamp">' . $metadata['timestamp_item_posted'] . '</span><br />';
+
+							_e('UNIX timestamp last modified', 'pf');
+							echo ': <span class="sortable_mod_timestamp">' . $metadata['timestamp_nom_last_modified'] . '</span><br />';
+
+							_e('UNIX timestamp date nominated', 'pf');
+							echo ': <span class="sortable_nom_timestamp">' . $metadata['timestamp_unix_date_nomed'] . '</span><br />';
+
+							_e('Slug for origon site', 'pf');
+							echo ': <span class="sortable_origin_link_slug">' . $metadata['source_slug'] . '</span><br />';
+
+							//Add an action here for others to provide additional sortables.
+
+						echo '</div>';	
+				}
 									# Let's build an info box!
 									//http://nicolasgallagher.com/pure-css-speech-bubbles/
 
@@ -188,8 +228,16 @@ class PF_Admin {
 										' . __('Origin', 'pf') . ': <span class="source_name"><a target ="_blank" href="' . $sourceLink . '">' . $sourceLink . '</a></span><br />
 										' . __('Original Item', 'pf') . ': <span class="source_link"><a href="' . $item['item_link'] . '" class="item_url" target ="_blank">' . $item['item_title'] . '</a></span><br />
 										' . __('Tags', 'pf') . ': <span class="item_tags">' . $item['item_tags'] . '</span><br />
-										' . __('Times repeated in source', 'pf') . ': <span class="feed_repeat">' . $item['source_repeat'] . '</span><br />
+										' . __('Times repeated in source', 'pf') . ': <span class="feed_repeat sortable_sources_repeat">' . $item['source_repeat'] . '</span><br />
 										';
+										if ($format === 'nomination'){
+											$ibox .= __('Number of nominations received', 'pf')
+											. ': <span class="sortable_nom_count">' . $metadata['nom_count'] . '</span><br />'
+											. __('First submitted by', 'pf')
+											. ': <span class="first_submitter">' . $metadata['submitters'] . '</span><br />'
+											. __('Nominated on', 'pf')
+											. ': <span class="nominated_on">' . date( 'M j, Y; g:ia' , strtotime($metadata['date_nominated'])) . '</span><br />';		
+										}
 									$ibox .= '</div>';
 									echo $ibox;
 													?>
@@ -201,7 +249,7 @@ class PF_Admin {
 										
 									</script>
 									<?php 
-				$this->form_of_actions_btns($item, $c);
+				$this->form_of_actions_btns($item, $c, false, $format, $metadata);
 				?>
 			</header>
 			<?php 
@@ -230,9 +278,13 @@ class PF_Admin {
 					echo '<div class="item_meta item_meta_date">Published on ' . $item['item_date'] . ' by <span class="item-authorship">' . $item['item_author'] . '</span>.</div>';
 					echo 'Unix timestamp for item date:<span class="sortableitemdate">' . strtotime($item['item_date']) . '</span> and for added to feed date <span class="sortablerssdate">' . strtotime($item['item_added_date']) . '</span>.';
 				?> </div> <?php 
-				echo '<div class="item_excerpt" id="excerpt' . $c . '">
-						<p>' . pf_feed_excerpt($item['item_content']) . '</p>
-					</div>';
+				echo '<div class="item_excerpt" id="excerpt' . $c . '">';
+						if ($format === 'nomination'){
+							echo'<p>' . pf_noms_excerpt($item['item_content']) . '</p>';
+						} else {
+							echo'<p>' . pf_feed_excerpt($item['item_content']) . '</p>';
+						}
+					echo '</div>';
 /**
 						echo '<div id="collapse' . $c . '" class="accordion-body collapse">';
 						echo '<div class="accordion-inner">';
@@ -277,10 +329,17 @@ class PF_Admin {
 			  <div class="modal-footer">
 				<div class="row-fluid">
 				<div class="pull-left original-link">
-					<a target="_blank" href="<?php echo $item['item_link']; ?>"><?php _e('Read Original', 'pf'); ?></a> | <a class="modal-readability-reset" target="#readable" href="<?php echo $item['item_link']; ?>" pf-item-id="<?php echo $item['item_id']; ?>" pf-post-id="<?php echo $item['post_id']; ?>" pf-modal-id="#modal-<?php echo $item['item_id']; ?>"><?php  _e('Reset Readability', 'pf'); ?></a>
+					<a target="_blank" href="<?php echo $item['item_link']; ?>"><?php _e('Read Original', 'pf'); ?></a> 
+					<?php 
+					if ($fomat != 'nomination'){
+						?>
+						| <a class="modal-readability-reset" target="#readable" href="<?php echo $item['item_link']; ?>" pf-item-id="<?php echo $item['item_id']; ?>" pf-post-id="<?php echo $item['post_id']; ?>" pf-modal-id="#modal-<?php echo $item['item_id']; ?>"><?php  _e('Reset Readability', 'pf'); ?></a>
+						<?php 
+					}
+					?>
 				</div>
 				<div class="pull-right"><?php 
-				$this->form_of_actions_btns($item, $c, true); 
+				$this->form_of_actions_btns($item, $c, true, $format, $metadata); 
 				?></div><?php 
 				?>	
 				</div>
