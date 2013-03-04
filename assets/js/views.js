@@ -3,6 +3,35 @@
 **/
 jQuery(document).ready(function() {
 
+	function modalNavigator(tabindex){
+		var currentObj = jQuery('input[tabindex='+tabindex+']');
+		var prevTab = tabindex-1;
+		var nextTab = tabindex+1;
+		var prevObj = jQuery('input[tabindex='+prevTab+']');
+		var nextObj = jQuery('input[tabindex='+nextTab+']');
+		
+		//First lets assemble variables for the previous group.
+		if (jQuery(prevObj).is('*')){
+			var prevItemId = jQuery(prevObj).attr('id');
+			var prevTitle = jQuery(prevObj).children('h1.item_title').text();
+			var prevSource = jQuery(prevObj).children('p.source_title').text();
+			var prevAuthor = jQuery(prevObj).children('span.item-authorship').text();
+			var prevExcerpt = jQuery(prevObj).children('div.item_excerpt').html();
+			var prevDate = jQuery(prevObj).children('p.pubdate').text();
+		}
+		//Next lets assemble variables for the next group.
+		if (jQuery(nextObj).is('*')){
+			var nextItemId = jQuery(nextObj).attr('id');
+			var nextTitle = jQuery(nextObj).children('h1.item_title').text();
+			var nextSource = jQuery(nextObj).children('p.source_title').text();
+			var nextAuthor = jQuery(nextObj).children('span.item-authorship').text();
+			var nextExcerpt = jQuery(nextObj).children('div.item_excerpt').html();
+			var nextDate = jQuery(nextObj).children('p.pubdate').text();
+		}
+		
+		
+	}
+	
 	jQuery('#gogrid').click(function (evt){ 
 			evt.preventDefault();
 			jQuery("div.pf_container").removeClass('list').addClass('grid');

@@ -321,7 +321,7 @@ class PF_Admin {
 			<div id="modal-<?php echo $item['item_id']; ?>" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-<?php echo $item['item_id']; ?>-label" aria-hidden="true" pf-item-id="<?php echo $item['item_id']; ?>" pf-post-id="<?php echo $item['post_id']; ?>" pf-readability-status="<?php echo $item['readable_status']; ?>"> 
 			  <div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-				<h3 id="modal-<?php echo $item['item_id']; ?>-label" class="source_title"><?php echo $item['item_title']; ?></h3>
+				<h3 id="modal-<?php echo $item['item_id']; ?>-label" class="modal_item_title source_title"><?php echo $item['item_title']; ?></h3>
 			  </div>
 			  <div class="modal-body">
 				<?php echo $item['item_content']; ?>
