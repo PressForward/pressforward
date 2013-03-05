@@ -74,8 +74,209 @@ class PF_Comments extends PF_Module {
 	function the_comment_box($id_for_comments){
 
 		//echo $id_for_comments;
+		if ($id_for_comments == ''){
+			$id_for_comments = rand();
+		}
+		
+		//Ugh.... figure out a better way to do this later.
 		?>
-		<div id="ef-comments_wrapper">
+		
+		<script type="text/javascript">
+			<?php $selector_base = "pf-comment-" . $id_for_comments; $selector = '#' . $selector_base;?>
+			jQuery(document).ready(function () {
+				editorialCommentReply_<?php echo $id_for_comments; ?>.init();
+
+				// Check if certain hash flag set and take action
+				if (location.hash == '#editorialcomments/add') {
+					editorialCommentReply_<?php echo $id_for_comments; ?>.open();
+				} else if (location.hash.search(/#editorialcomments\/reply/) > -1) {
+					var reply_id = location.hash.substring(location.hash.lastIndexOf('/')+1);
+					editorialCommentReply_<?php echo $id_for_comments; ?>.open(reply_id);
+				}
+			});
+
+			/**
+			 * Blatantly stolen and modified from /wp-admin/js/edit-comment.dev.js -- yay!
+			 */
+			editorialCommentReply_<?php echo $id_for_comments; ?> = {
+
+				init : function() {
+					var row = jQuery('<?php echo $selector; ?>').find('#ef-replyrow');
+					
+					// Bind click events to cancel and submit buttons
+					jQuery('<?php echo $selector; ?>').find('a.ef-replycancel', row).click(function() { return editorialCommentReply_<?php echo $id_for_comments; ?>.revert(); });
+					jQuery('<?php echo $selector; ?>').find('a.ef-replysave', row).click(function() { return editorialCommentReply_<?php echo $id_for_comments; ?>.send(); });
+				},
+
+				revert : function() {
+					// Fade out slowly, slowly, slowly... 
+					jQuery('<?php echo $selector; ?>').find('#ef-replyrow').fadeOut('fast', function(){
+						editorialCommentReply_<?php echo $id_for_comments; ?>.close();
+					});
+					return false;
+				},
+
+				close : function() {
+					
+					jQuery('<?php echo $selector; ?>').find('#ef-comment_respond').show();
+					
+					// Move reply form back after the main "Respond" form
+					jQuery('<?php echo $selector; ?>').find('#ef-post_comment').after( jQuery('#ef-replyrow') );
+					
+					// Empty out all the form values
+					jQuery('<?php echo $selector; ?>').find('#ef-replycontent').val('');
+					jQuery('<?php echo $selector; ?>').find('#ef-comment_parent').val('');
+
+					// Hide error and waiting
+					jQuery('<?php echo $selector; ?>').find('#ef-replysubmit .error').html('').hide();
+					jQuery('<?php echo $selector; ?>').find('#ef-comment_loading').hide();
+				},
+
+				/**
+				 * @id = comment id
+				 */
+				open : function(id) {
+					var parent;
+					
+					// Close any open reply boxes
+					this.close();
+					
+					// Check if reply or new comment
+					if(id) {
+						jQuery('<?php echo $selector; ?>').find('input#ef-comment_parent').val(id);
+						parent = '#comment-'+id;
+					} else {
+						parent = '<?php echo $selector; ?> #ef-comments_wrapper';
+					}
+					
+					jQuery('<?php echo $selector; ?>').find('#ef-comment_respond').hide();
+					
+					// Show reply textbox
+					jQuery('<?php echo $selector; ?>').find('#ef-replyrow')
+						.show()
+						.appendTo(jQuery(parent))
+						;
+					
+					jQuery('<?php echo $selector; ?>').find('#ef-replycontent').focus();
+
+					return false;
+				},
+
+				/**
+				 * Sends the ajax response to save the commment
+				 * @param bool reply - indicates whether the comment is a reply or not 
+				 */
+				send : function(reply) {
+					var post = {};
+					var containter_id = '<?php echo $selector; ?> #ef-replyrow';
+					
+					jQuery('<?php echo $selector; ?>').find('#ef-replysubmit .error').html('').hide();
+					
+					// Validation: check to see if comment entered
+					post.content = jQuery.trim(jQuery('<?php echo $selector; ?>').find('#ef-replycontent').val());
+					if(!post.content) {
+						jQuery('<?php echo $selector; ?>').find('#ef-replyrow .error').text('Please enter a comment').show();
+						return;
+					}
+					
+					jQuery('<?php echo $selector; ?>').find('#ef-comment_loading').show();
+
+					// Prepare data
+					post.action = 'editflow_ajax_insert_comment';
+					post.parent = (jQuery('<?php echo $selector; ?>').find('#ef-comment_parent').val()=='') ? 0 : jQuery('<?php echo $selector; ?>').find("#ef-comment_parent").val();
+					post._nonce = jQuery('<?php echo $selector; ?>').find('#ef_comment_nonce').val();
+					post.post_id = <?php echo $id_for_comments; ?>;
+					
+					// Send the request
+					jQuery.ajax({
+						type : 'POST',
+						url : (ajaxurl) ? ajaxurl : wpListL10n.url,
+						data : post,
+						success : function(x) { editorialCommentReply_<?php echo $id_for_comments; ?>.show(x); },
+						error : function(r) { editorialCommentReply_<?php echo $id_for_comments; ?>.error(r); }
+					});
+
+					return false;
+				},
+
+				show : function(xml) {
+					var response, comment, supplemental, id, bg;
+					
+					// Didn't pass validation, so let's throw an error
+					if ( typeof(xml) == 'string' ) {
+						this.error({'responseText': xml});
+						return false;
+					}
+					
+					// Parse the response
+					response = wpAjax.parseAjaxResponse(xml);
+					if ( response.errors ) {
+						// Uh oh, errors found
+						this.error({'responseText': wpAjax.broken});
+						return false;
+					}
+					
+					response = response.responses[0];
+					comment = response.data;
+					supplemental = response.supplemental;
+					
+					jQuery(comment).hide()
+					
+					if(response.action.indexOf('reply') == -1 || !ef_thread_comments) {
+						// Not a reply, so add it to the bottom
+						jQuery('<?php echo $selector; ?>').find('#ef-comments').append(comment);
+					} else {
+						
+						// This is a reply, so add it after the comment replied to
+						
+						if(jQuery('<?php echo $selector; ?>').find('#ef-replyrow').parent().next().is('ul')) {
+							// Already been replied to, so just add to the list
+							jQuery('<?php echo $selector; ?>').find('#ef-replyrow').parent().next().append(comment);
+						} else {
+							// This is a first reply, so create an unordered list to house the comment
+							var newUL = jQuery('<ul></ul>')
+								.addClass('children')
+								.append(comment)
+								;
+							jQuery('<?php echo $selector; ?>').find('#ef-replyrow').parent().after(newUL)
+						}
+					}
+					
+					// Get the comment contaner's id  
+					this.o = id = '<?php echo $selector; ?> #comment-'+response.id;
+					// Close the reply box
+					this.revert();
+					
+					// Show the new comment
+					jQuery(id)
+						.animate( { 'backgroundColor':'#CCEEBB' }, 600 )
+						.animate( { 'backgroundColor':'#fff' }, 600 );
+						
+				},
+
+				error : function(r) {
+					// Oh noes! We haz an error!
+					jQuery('<?php echo $selector; ?>').find('#ef-comment_loading').hide();
+
+					if ( r.responseText ) {
+						er = r.responseText.replace( /<.[^<>]*?>/g, '' );
+					}
+
+					if ( er ) {
+						jQuery('<?php echo $selector; ?>').find('#ef-replysubmit .error').html(er).show();
+					}
+
+				}
+
+			};
+		</script>
+		
+		<?php 
+		
+		?>
+		
+		<div id="<?php echo $selector_base; ?>" >
+		<div id="ef-comments_wrapper" class="pf-comments">
 			<a name="editorialcomments"></a>
 			
 			<?php
@@ -112,6 +313,7 @@ class PF_Comments extends PF_Module {
 				
 			<div class="clear"></div>
 		</div>
+		</div>
 		<div class="clear"></div>
 		<?php		
 		
@@ -125,7 +327,7 @@ class PF_Comments extends PF_Module {
 		//global $post;
 		
 		?>
-		<a href="#" id="ef-comment_respond" onclick="editorialCommentReply.open();return false;" class="button-primary alignright hide-if-no-js" title=" <?php _e( 'Respond to this post', 'edit-flow' ); ?>"><span><?php _e( 'Respond to this Post', 'edit-flow' ); ?></span></a>
+		<a href="#" id="ef-comment_respond" onclick="editorialCommentReply_<?php echo $id_for_comments; ?>.open();return false;" class="button-primary alignright hide-if-no-js" title=" <?php _e( 'Respond to this post', 'edit-flow' ); ?>"><span><?php _e( 'Respond to this Post', 'edit-flow' ); ?></span></a>
 		
 		<!-- Reply form, hidden until reply clicked by user -->
 		<div id="ef-replyrow" style="display: none;">
@@ -176,7 +378,7 @@ class PF_Comments extends PF_Module {
 		$actions_string = '';
 		// Comments can only be added by users that can edit the post
 		if ( current_user_can('edit_post', $comment->comment_post_ID) ) {
-			$actions['reply'] = '<a onclick="editorialCommentReply.open(\''.$comment->comment_ID.'\',\''.$comment->comment_post_ID.'\');return false;" class="vim-r hide-if-no-js" title="'.__( 'Reply to this comment', 'edit-flow' ).'" href="#">' . __( 'Reply', 'edit-flow' ) . '</a>';
+			$actions['reply'] = '<a onclick="editorialCommentReply_' . $args['post_id'] . '.open(\''.$comment->comment_ID.'\',\''.$comment->comment_post_ID.'\');return false;" class="vim-r hide-if-no-js" title="'.__( 'Reply to this comment', 'edit-flow' ).'" href="#">' . __( 'Reply', 'edit-flow' ) . '</a>';
 			
 			$sep = ' ';
 			$i = 0;
@@ -325,7 +527,7 @@ class PF_Comments extends PF_Module {
 			return;
 		
 			//	print_r($hook);
-		wp_enqueue_script( 'pressforward-internal-comments', PF_URL . 'modules/comments/assets/js/editorial-comments.js', array( 'jquery','post' ));
+		//wp_enqueue_script( 'pressforward-internal-comments', PF_URL . 'modules/comments/assets/js/editorial-comments.js', array( 'jquery','post' ));
 				
 		$thread_comments = (int) get_option('thread_comments');
 		?>

@@ -122,7 +122,7 @@ class PF_Admin {
 					if (has_action('pf_comment_action_button')){
 						$commentModalCall = '#modal-comments-' . $item['item_id'];
 						$commentButtonArray = array('id' => $id_for_comments, 'modalID' => $commentModalCall);
-						print_r($commentModalCall);
+						//print_r($commentModalCall);
 						do_action('pf_comment_action_button', $commentButtonArray);
 					
 					} 
@@ -192,6 +192,7 @@ class PF_Admin {
 				}
 		if ($format === 'nomination'){
 			$id_for_comments = $metadata['item_feed_post_id'];
+			//$commentsArray = array();
 			echo '<article class="feed-item entry nom-container ' . $archived_status_string . get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . '" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-item-post-id="' . $metadata['item_feed_post_id'] . '">';
 		} else {
 			$id_for_comments = $item['post_id'];
@@ -392,7 +393,7 @@ class PF_Admin {
 					<h5 id="modal-comments-<?php echo $item['item_id']; ?>-label" class="modal_comments_item_title"><?php _e('Comments for'); echo ': ' . $item['item_title']; ?></h5>
 				</div>
 				<div class="modal-body">
-					<?php do_action('pf_modal_comments', $id_for_comments); ?>
+					<?php //do_action('pf_modal_comments', $id_for_comments); ?>
 				</div>
 				<div class="modal-footer">
 				
