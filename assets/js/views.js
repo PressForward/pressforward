@@ -1,9 +1,7 @@
 /**
  * Display transform for pf
 **/
-jQuery(document).ready(function() {
 
-	var openModals = [];
 
 	//via http://stackoverflow.com/questions/1662308/javascript-substr-limit-by-word-not-char
 	function trim_words(theString, numWords) {
@@ -68,6 +66,10 @@ jQuery(document).ready(function() {
 				
 		
 	}
+
+jQuery(document).ready(function() {
+
+	var openModals = [];
 	
 	jQuery('#gogrid').click(function (evt){ 
 			evt.preventDefault();

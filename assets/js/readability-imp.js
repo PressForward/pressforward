@@ -248,7 +248,9 @@ jQuery(document).ready(function() {
 		//alert(modalID);
 		//showDiv(jQuery('#entries'), jQuery('#'+modalID));		
 		var itemID = element.attr('pf-item-id');
-		var postID = element.attr('pf-post-id');		
+		var postID = element.attr('pf-post-id');	
+		var tabindex = element.parent().attr('tabindex');
+		modalNavigator(tabindex);			
 		//At this point it should have grabbed the direct feeditem hashed ID. That allows us to do things specifically to that item past this point.
 		//BUG: Escaping everything incorrectly. <-one time issue?
 		var content = jQuery("#"+itemID+" .modal-body").html();
@@ -320,8 +322,7 @@ jQuery(document).ready(function() {
 		var url = jQuery("#"+itemID+" #item_link_"+itemID).val();
 		var authorship = jQuery("#"+itemID+" #item_author_"+itemID).val();
 		//I suppose I should nonce here right? 
-		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());
-		
+		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());	
 		//At some point a waiting graphic should go here. 
 		jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html('Attempting to retrieve full article.');
 			jQuery.post(ajaxurl, {
