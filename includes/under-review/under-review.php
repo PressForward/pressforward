@@ -216,7 +216,7 @@
 		<?php
 		echo '<div class="row-fluid" class="nom-row">';
 #Bootstrap Accordion group
-		echo '<div class="span12 nom-container accordion" id="nom-accordion">';
+		echo '<div class="span12 nom-container" id="nom-accordion">';
 		wp_nonce_field('drafter', 'pf_drafted_nonce', false);
 		// Reset Post Data
 		wp_reset_postdata();
@@ -485,6 +485,7 @@
 			<?php
 **/			
 			$count++;
+			$c++;
 			endwhile;
 
 		// Reset Post Data

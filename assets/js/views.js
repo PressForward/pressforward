@@ -2,48 +2,73 @@
  * Display transform for pf
 **/
 jQuery(document).ready(function() {
+	
+	function trimExcerpt(n){
+	  return function textCutter(i, text) {
+			var short = text.substr(0, n);
+			if (/^\S/.test(text.substr(n)))
+				return short.replace(/\s+\S*$/, "");
+			return short;
+		};
+	}
+	
+	function trim_words(theString, numWords) {
+		expString = theString.split(/\s+/,numWords);
+		theNewString=expString.join(" ");
+		return theNewString;
+	}	
+
 
 	function modalNavigator(tabindex){
-		var currentObj = jQuery('input[tabindex='+tabindex+']');
+		tabindex = parseInt(tabindex);
+		var currentObj = jQuery('article[tabindex="'+tabindex+'"]');
+		//alert(tabindex);
+		var currentID = jQuery(currentObj).attr('id');
 		var prevTab = tabindex-1;
 		var nextTab = tabindex+1;
-		var prevObj = jQuery('input[tabindex='+prevTab+']');
-		var nextObj = jQuery('input[tabindex='+nextTab+']');
-		
+		var prevObj = jQuery('article[tabindex="'+prevTab+'"]');
+		var nextObj = jQuery('article[tabindex="'+nextTab+'"]');
+		var modalID = currentObj.children('header').children('h1').children('a').attr('href');
+
 		//First lets assemble variables for the previous group.
 		if (jQuery(prevObj).is('*')){
-			var prevItemID = jQuery(prevObj).attr('id');
-			var prevTitle = jQuery(prevObj).children('h1.item_title').text();
-			var prevSource = jQuery(prevObj).children('p.source_title').text();
-			var prevAuthor = jQuery(prevObj).children('span.item-authorship').text();
-			var prevExcerpt = jQuery(prevObj).children('div.item_excerpt').html();
-			var prevDate = jQuery(prevObj).children('p.pubdate').text();
+			var prevItemID = jQuery(prevObj).children('header').children('h1').children('a').attr('href');
+			var prevTitle = jQuery(prevObj).children('header').children('h1').text();
+			var prevSource = jQuery(prevObj).children('header').children('p.source_title').text();
+			var prevAuthor = jQuery(prevObj).children('header').children('div.feed-item-info-box').children('span.item_authors').text();
+			var prevExcerpt = jQuery(prevObj).children('div.content').children('div.item_excerpt').text();
+			prevExcerpt = trim_words(prevExcerpt, 20);
+			var prevDate = jQuery(prevObj).children('footer').children('p.pubdate').text();
 		
-			var prevHTML = '<h5 class="prev_title"><a href="#modal-'+prevItemID+'" role="button" data-toggle="modal" data-backdrop="false">'+prevTitle+'</a></h5>';
-			prevHTML += '<p class="prev_source_title">'+prevTitle+'</p>';
+			var prevHTML = '<h5 class="prev_title">Previously: <a href="'+prevItemID+'" role="button" class="modal-nav" data-toggle="modal" data-backdrop="false">'+prevTitle+'</a></h5>';
+			prevHTML += '<p class="prev_source_title">'+prevSource+'</p>';
 			prevHTML += '<p class="prev_author">'+prevAuthor+'</p>';
 			prevHTML += '<p class="prev_excerpt">'+prevExcerpt+'</p>';
 			prevHTML += '<p class="prev_date">'+prevDate+'</p>';
-			
-			jQuery(currentObj).children('.modal .goPrev').html(prevHTML);	
+			//alert(modalID);
+			jQuery(modalID+' div.modal-body-row div.modal-sidebar div.goPrev').html(prevHTML);	
+			jQuery(modalID+' div.mobile-goPrev').html('<i class="icon-arrow-left"></i> <a href="'+prevItemID+'" role="button" class="mobile-modal-navlink modal-nav" data-toggle="modal" data-backdrop="false">'+prevTitle+'</a> ');	
+	
 			
 		}
 		//Next lets assemble variables for the next group.
 		if (jQuery(nextObj).is('*')){
-			var nextItemID = jQuery(nextObj).attr('id');
-			var nextTitle = jQuery(nextObj).children('h1.item_title').text();
-			var nextSource = jQuery(nextObj).children('p.source_title').text();
-			var nextAuthor = jQuery(nextObj).children('span.item-authorship').text();
-			var nextExcerpt = jQuery(nextObj).children('div.item_excerpt').html();
-			var nextDate = jQuery(nextObj).children('p.pubdate').text();
-
-			var nextHTML = '<h5 class="next_title"><a href="#modal-'+nextItemID+'" role="button" data-toggle="modal" data-backdrop="false">'+nextTitle+'</a></h5>';
-			nextHTML += '<p class="next_source_title">'+nextTitle+'</p>';
+			var nextItemID = jQuery(nextObj).children('header').children('h1').children('a').attr('href');
+			var nextTitle = jQuery(nextObj).children('header').children('h1').text();
+			var nextSource = jQuery(nextObj).children('header').children('p.source_title').text();
+			var nextAuthor = jQuery(nextObj).children('header').children('div.feed-item-info-box').children('span.item_authors').text();
+			var nextExcerpt = jQuery(nextObj).children('div.content').children('div.item_excerpt').text();
+			nextExcerpt = trim_words(nextExcerpt, 20);
+			var nextDate = jQuery(nextObj).children('footer').children('p.pubdate').text();
+		
+			var nextHTML = '<h5 class="next_title">Next: <a href="'+nextItemID+'" role="button" class="modal-nav" data-toggle="modal" data-backdrop="false">'+nextTitle+'</a></h5>';
+			nextHTML += '<p class="next_source_title">'+nextSource+'</p>';
 			nextHTML += '<p class="next_author">'+nextAuthor+'</p>';
 			nextHTML += '<p class="next_excerpt">'+nextExcerpt+'</p>';
 			nextHTML += '<p class="next_date">'+nextDate+'</p>';
-			
-			jQuery(currentObj).children('.modal .goNext').html(nextHTML);			
+			//alert(modalID);
+			jQuery(modalID+' div.modal-body-row div.modal-sidebar div.goNext').html(nextHTML);		
+			jQuery(modalID+' div.mobile-goNext').html('&nbsp;| <a href="'+nextItemID+'" role="button" class="mobile-modal-navlink modal-nav" data-toggle="modal" data-backdrop="false">'+nextTitle+'</a> <i class="icon-arrow-right"></i>');	
 		
 		}
 				
@@ -99,16 +124,24 @@ jQuery(document).ready(function() {
 		jQuery('#'+modalID).css(bigModal);
 		//jQuery('#'+modalID+ ' .modal-header').css('max-height', '10%');
 		jQuery('#'+modalID).css({'background-color' : '#f5f5f5', 'max-height' : '100%'});
-		jQuery('#'+modalID+ ' .modal-header').css({'background-color' : 'white', 'max-height' : '10%'});
-		jQuery('#'+modalID+ ' .modal-body').css({'max-height' : '80%', 'background-color' : 'white'});
+		jQuery('#'+modalID+ ' .modal-header').css({'background-color' : 'white', 'max-height' : '13%'});
+		jQuery('#'+modalID+ ' .modal-body').css({'background-color' : 'white'});
 		jQuery('#'+modalID+ ' .modal-footer').css({'max-height' : '10%', 'min-height' : '48px'});
 		//alert(modalID);
 		//showDiv(jQuery('#entries'), jQuery('#'+modalID));		
 		var itemID = element.attr('pf-item-id');
-		var postID = element.attr('pf-post-id');		
+		var postID = element.attr('pf-post-id');
+		var tabindex = element.parent().attr('tabindex');
+		modalNavigator(tabindex);
 	});
 	
 	jQuery(".pressforward_page_pf-review .modal").on('hide', function(evt){
+//		jQuery('.pfmodal').each(function (index){
+//			if (this.isShown){
+//				jQuery(this).modal('hide');
+//			}
+//		});
+		
 		jQuery('#wpadminbar').show();
 		document.body.style.overflow = 'visible';
 	});	
