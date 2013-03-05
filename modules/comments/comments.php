@@ -62,12 +62,10 @@ class PF_Comments extends PF_Module {
 		return $comment_count;
 	}
 
-	function show_comment_count_button($commentButtonArray){
-		$id_for_comments = $commentButtonArray['id'];
-		$commentModalCall = $commentButtonArray['modalID'];
+	function show_comment_count_button($id_for_comments){
 		$count = self::get_editorial_comment_count( $id_for_comments );
 		//print_r($commentModalCall);
-		echo '<a href="' . $commentModalCall . '" role="button" data-toggle="modal" data-backdrop="false" class="btn btn-small itemCommentModal comments-expander">' . $count . '<i class="icon-comment"></i></a>';
+		echo '<a role="button" class="btn btn-small itemCommentModal comments-expander">' . $count . '<i class="icon-comment"></i></a>';
 	
 	}
 
