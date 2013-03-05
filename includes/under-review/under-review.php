@@ -205,7 +205,8 @@
 //Hidden here, user options, like 'show archived' etc...
 				?><div id="page_data" style="display:none">
 					<?php
-						$metadata['current_user'] = $current_user = wp_get_current_user();
+						$current_user = wp_get_current_user();
+						$metadata['current_user'] = $current_user->slug;
 						$metadata['current_user_id'] = $current_user_id = $current_user->ID;
 					?>
 					<span id="current-user-id"><?php echo $current_user_id; ?></span>
@@ -272,10 +273,23 @@
 				//RSS-passed tags, comma seperated.
 				$item_nom_tags = $nom_tags = get_post_meta($nom_id, 'item_tags', true);
 				$wp_nom_tags = '';
-				foreach (get_the_tags() as $tag){
-					$wp_nom_tags .= ', ';
-					$wp_nom_tags .= $tag->name;
+				$getTheTags = get_the_tags();
+				if (empty($getTheTags)){
+					$getTheTags[] = '';
+					$wp_nom_tags = '';
+					$wp_nom_slugs[] = '';
+				} else {
+					foreach ($getTheTags as $tag){
+						$wp_nom_tags .= ', ';
+						$wp_nom_tags .= $tag->name;
+					}
+					$wp_nom_slugs = array();
+					foreach ($getTheTags as $tag){
+						$wp_nom_slugs[] = $tag->slug;
+					}				
+								
 				}
+				$metadata['nom_tags'] = $nomed_tag_slugs = $wp_nom_slugs;		
 				$metadata['all_tags'] = $nom_tags .= $wp_nom_tags;
 				$nomTagsArray = explode(",", $item_nom_tags);
 				$nomTagClassesString = '';
@@ -287,11 +301,6 @@
 				//Number of times repeated in source.
 				$metadata['source_repeat'] = $source_repeat = get_post_meta($nom_id, 'source_repeat', true);
 				//Post-object tags
-				$wp_nom_slugs = array();
-				foreach (get_the_tags() as $tag){
-					$wp_nom_slugs[] = $tag->slug;
-				}				
-				$metadata['nom_tags'] = $nomed_tag_slugs = $wp_nom_slugs;
 				$metadata['item_title'] = $item_title = get_the_title();
 				$metadata['item_content'] = get_the_content();
 				//UNIX datetime last modified.

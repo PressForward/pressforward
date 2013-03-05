@@ -108,12 +108,17 @@ class PF_Admin {
 					$infoPop = 'top';
 					if ($modal == false){
 						$infoPop = 'bottom';
+						if ($format === 'nomination'){
+							?><form name="form-<?php echo $metadata['item_id']; ?>" pf-form="<?php echo $metadata['item_id']; ?>"><?php 
+							pf_prep_item_for_submit($metadata);
+						} else {
 						echo '<form name="form-' . $item['item_id'] . '">' 
 						 . '<div class="nominate-result-' . $item['item_id'] . '">'
 						 . '<img class="loading-' . $item['item_id'] . '" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="' . __('Loading', 'pf') . '..." style="display: none" />'
 						 . '</div>';
 						pf_prep_item_for_submit($item);
 						wp_nonce_field('nomination', PF_SLUG . '_nomination_nonce', false);
+						}
 						echo '</form>';
 					}
 					# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
@@ -128,6 +133,7 @@ class PF_Admin {
 					} 
 					if ($format === 'nomination'){
 						echo '<button class="btn btn-small nom-to-archive" form="' . $metadata['nom_id'] . '">' . __('Archive', 'pf') .  '</button>';
+						echo '<a href="#nominate" class="btn btn-small nom-to-draft" form="' . $metadata['item_id'] . '">' . __('Draft', 'pf') .  '</a>';
 					} else {
 						echo '<button class="btn btn-small nominate-now" form="' . $item['item_id'] . '">' . __('Nominate', 'pf') .  '</button>';
 					}
