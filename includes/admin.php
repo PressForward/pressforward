@@ -318,13 +318,34 @@ class PF_Admin {
 				} else {
 			?>		
 			<!-- Begin Modal -->
-			<div id="modal-<?php echo $item['item_id']; ?>" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modal-<?php echo $item['item_id']; ?>-label" aria-hidden="true" pf-item-id="<?php echo $item['item_id']; ?>" pf-post-id="<?php echo $item['post_id']; ?>" pf-readability-status="<?php echo $item['readable_status']; ?>"> 
+			<div id="modal-<?php echo $item['item_id']; ?>" class="modal hide fade pfmodal" tabindex="-1" role="dialog" aria-labelledby="modal-<?php echo $item['item_id']; ?>-label" aria-hidden="true" pf-item-id="<?php echo $item['item_id']; ?>" pf-post-id="<?php echo $item['post_id']; ?>" pf-readability-status="<?php echo $item['readable_status']; ?>"> 
 			  <div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>				
+				<div class="modal-mobile-nav pull-right">
+					<div class="mobile-goPrev pull-left">
+					
+					</div>
+					<div class="mobile-goNext pull-right">
+					
+					</div>					
+				</div>
 				<h3 id="modal-<?php echo $item['item_id']; ?>-label" class="modal_item_title source_title"><?php echo $item['item_title']; ?></h3>
 			  </div>
-			  <div class="modal-body">
-				<?php echo $item['item_content']; ?>
+			  <div class="row-fluid modal-body-row">
+				  <div class="modal-body span9">
+					<?php echo $item['item_content']; ?>
+				  </div>
+				  <div class="modal-sidebar span3">
+					<div class="goPrev modal-side-item row-fluid">
+					
+					</div>
+					<div class="modal-comments modal-side-item row-fluid">
+					
+					</div>
+					<div class="goNext modal-side-item row-fluid">
+					
+					</div>
+				  </div>
 			  </div>
 			  <div class="modal-footer">
 				<div class="row-fluid">
