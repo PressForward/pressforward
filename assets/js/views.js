@@ -99,7 +99,7 @@ jQuery(document).ready(function() {
 		});	
 		
 	//Need to fix this to only trigger on the specific model, but not sure how yet. 
-	jQuery(".pressforward_page_pf-review .modal").on('show', function(evt){
+	jQuery(".pressforward_page_pf-review .modal.pfmodal").on('show', function(evt){
 		//alert('Modal Triggered.');
 		jQuery('#wpadminbar').hide();
 		document.body.style.overflow = 'hidden';
@@ -128,7 +128,7 @@ jQuery(document).ready(function() {
 		modalNavigator(tabindex);
 	});
 	
-	jQuery(".pressforward_page_pf-review .modal").on('hide', function(evt){
+	jQuery(".pressforward_page_pf-review .modal.pfmodal").on('hide', function(evt){
 //		jQuery(openModals).each(function (index){
 //			if (this.isShown){
 //				jQuery(this).modal('hide');
