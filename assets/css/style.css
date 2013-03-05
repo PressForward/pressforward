@@ -269,6 +269,10 @@ h3 {
 	margin: 0;
 }
 
+.pfmodal .modal-comments {
+	overflow-y: auto;
+}
+
 .pfmodal .goPrev, .pfmodal .goNext {
 	height: 25%;
 	font-size: .7rem;
