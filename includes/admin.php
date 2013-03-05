@@ -29,6 +29,7 @@ class PF_Admin {
 		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
 		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
+		add_action( 'wp_ajax_ajax_get_comments', array( $this, 'ajax_get_comments') );
 	}
 
 	/**
@@ -349,9 +350,7 @@ class PF_Admin {
 					
 					</div>
 					<div class="modal-comments modal-side-item row-fluid">
-						<?php 
-							do_action('pf_modal_comments', $id_for_comments);
-						?>
+
 					</div>
 					<div class="goNext modal-side-item row-fluid">
 					
@@ -643,6 +642,14 @@ class PF_Admin {
 	 */
 	function display_review_builder() {
 		include( PF_ROOT . "/includes/under-review/under-review.php" );
+	}
+	
+	function ajax_get_comments(){
+			if (has_action('pf_modal_comments')){
+				$id_for_comments = $_POST['id_for_comments'];
+				do_action('pf_modal_comments', $id_for_comments);
+			}
+			die();
 	}
 
 	/**

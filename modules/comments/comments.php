@@ -72,6 +72,9 @@ class PF_Comments extends PF_Module {
 	function the_comment_box($id_for_comments){
 
 		//echo $id_for_comments;
+		echo '<script>
+		editorialCommentReply.init(); 
+		</script>';
 		?>
 		<div id="ef-comments_wrapper">
 			<a name="editorialcomments"></a>

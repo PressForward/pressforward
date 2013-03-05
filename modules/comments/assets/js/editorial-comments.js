@@ -1,5 +1,5 @@
 jQuery(document).ready(function () {
-	editorialCommentReply.init();
+	
 
 	// Check if certain hash flag set and take action
 	if (location.hash == '#editorialcomments/add') {
