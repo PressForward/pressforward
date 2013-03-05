@@ -120,7 +120,10 @@ class PF_Admin {
 					echo '<button class="btn btn-small"><i class="icon-star"></i> Star</button>';
 						# <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
 					if (has_action('pf_comment_action_button')){
-						do_action('pf_comment_action_button', $id_for_comments);
+						$commentModalCall = '#modal-comments-' . $item['item_id'];
+						$commentButtonArray = array('id' => $id_for_comments, 'modalID' => $commentModalCall);
+						print_r($commentModalCall);
+						do_action('pf_comment_action_button', $commentButtonArray);
 					
 					} 
 					if ($format === 'nomination'){
@@ -382,6 +385,20 @@ class PF_Admin {
 			  </div>				
 			</div>
 			<!-- End Modal -->
+			<!-- Begin comments Modal -->
+			<div id="modal-comments-<?php echo $item['item_id']; ?>" class="modal hide fade pf-comments-modal" tabindex="-1" role="dialog" aria-labelledby="modal-comments-<?php echo $item['item_id']; ?>-label" aria-hidden="true"> 
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>				
+					<h5 id="modal-comments-<?php echo $item['item_id']; ?>-label" class="modal_comments_item_title"><?php _e('Comments for'); echo ': ' . $item['item_title']; ?></h5>
+				</div>
+				<div class="modal-body">
+					<?php do_action('pf_modal_comments', $id_for_comments); ?>
+				</div>
+				<div class="modal-footer">
+				
+				</div>
+			</div>
+			<!-- End comments Modal -->
 				<?php } ?>
 		</article><!-- End article -->
 		<?php 

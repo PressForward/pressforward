@@ -120,11 +120,6 @@ jQuery(document).ready(function() {
 		jQuery('#'+modalID+ '.pfmodal').css(bigModal);
 		var modalIDString = '#'+modalID;
 		openModals.push(modalIDString);
-		//jQuery('#'+modalID+ ' .modal-header').css('max-height', '10%');
-		//jQuery('#'+modalID).css({'background-color' : '#f5f5f5', 'max-height' : '100%'});
-		//jQuery('#'+modalID+ ' .modal-header').css({'background-color' : 'white', 'max-height' : '13%'});
-		//jQuery('#'+modalID+ ' .modal-body').css({'background-color' : 'white'});
-		//jQuery('#'+modalID+ ' .modal-footer').css({'max-height' : '10%', 'min-height' : '48px'});
 		//alert(modalID);
 		//showDiv(jQuery('#entries'), jQuery('#'+modalID));		
 		var itemID = element.attr('pf-item-id');
