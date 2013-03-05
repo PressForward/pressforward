@@ -221,7 +221,7 @@ jQuery(document).ready(function() {
 
 	//http://stackoverflow.com/questions/14242227/bootstrap-modal-body-max-height-100
 	//Need to fix this to only trigger on the specific model, but not sure how yet. 
-	jQuery(".modal").on('show', function(evt){
+	jQuery(".pfmodal.modal").on('show', function(evt){
 		//alert('Modal Triggered.');
 		jQuery('#wpadminbar').hide();
 		document.body.style.overflow = 'hidden';
@@ -300,7 +300,7 @@ jQuery(document).ready(function() {
 		}
 	});
 	
-	jQuery(".modal").on('hide', function(evt){
+	jQuery(".pfmodal.modal").on('hide', function(evt){
 		jQuery('#wpadminbar').show();
 		document.body.style.overflow = 'visible';
 	});
