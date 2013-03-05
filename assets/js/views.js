@@ -2,16 +2,10 @@
  * Display transform for pf
 **/
 jQuery(document).ready(function() {
-	
-	function trimExcerpt(n){
-	  return function textCutter(i, text) {
-			var short = text.substr(0, n);
-			if (/^\S/.test(text.substr(n)))
-				return short.replace(/\s+\S*$/, "");
-			return short;
-		};
-	}
-	
+
+	var openModals = [];
+
+	//via http://stackoverflow.com/questions/1662308/javascript-substr-limit-by-word-not-char
 	function trim_words(theString, numWords) {
 		expString = theString.split(/\s+/,numWords);
 		theNewString=expString.join(" ");
@@ -40,14 +34,14 @@ jQuery(document).ready(function() {
 			prevExcerpt = trim_words(prevExcerpt, 20);
 			var prevDate = jQuery(prevObj).children('footer').children('p.pubdate').text();
 		
-			var prevHTML = '<h5 class="prev_title">Previously: <a href="'+prevItemID+'" role="button" class="modal-nav" data-toggle="modal" data-backdrop="false">'+prevTitle+'</a></h5>';
+			var prevHTML = '<h5 class="prev_title">Previously: <a href="'+prevItemID+'" role="button" class="modal-nav" data-dismiss="modal" data-toggle="modal" data-backdrop="false">'+prevTitle+'</a></h5>';
 			prevHTML += '<p class="prev_source_title">'+prevSource+'</p>';
 			prevHTML += '<p class="prev_author">'+prevAuthor+'</p>';
 			prevHTML += '<p class="prev_excerpt">'+prevExcerpt+'</p>';
 			prevHTML += '<p class="prev_date">'+prevDate+'</p>';
 			//alert(modalID);
 			jQuery(modalID+' div.modal-body-row div.modal-sidebar div.goPrev').html(prevHTML);	
-			jQuery(modalID+' div.mobile-goPrev').html('<i class="icon-arrow-left"></i> <a href="'+prevItemID+'" role="button" class="mobile-modal-navlink modal-nav" data-toggle="modal" data-backdrop="false">'+prevTitle+'</a> ');	
+			jQuery(modalID+' div.mobile-goPrev').html('<i class="icon-arrow-left"></i> <a href="'+prevItemID+'" role="button" data-dismiss="modal" class="mobile-modal-navlink modal-nav" data-toggle="modal" data-backdrop="false">'+prevTitle+'</a> ');	
 	
 			
 		}
@@ -61,14 +55,14 @@ jQuery(document).ready(function() {
 			nextExcerpt = trim_words(nextExcerpt, 20);
 			var nextDate = jQuery(nextObj).children('footer').children('p.pubdate').text();
 		
-			var nextHTML = '<h5 class="next_title">Next: <a href="'+nextItemID+'" role="button" class="modal-nav" data-toggle="modal" data-backdrop="false">'+nextTitle+'</a></h5>';
+			var nextHTML = '<h5 class="next_title">Next: <a href="'+nextItemID+'" role="button" class="modal-nav" data-dismiss="modal" data-toggle="modal" data-backdrop="false">'+nextTitle+'</a></h5>';
 			nextHTML += '<p class="next_source_title">'+nextSource+'</p>';
 			nextHTML += '<p class="next_author">'+nextAuthor+'</p>';
 			nextHTML += '<p class="next_excerpt">'+nextExcerpt+'</p>';
 			nextHTML += '<p class="next_date">'+nextDate+'</p>';
 			//alert(modalID);
 			jQuery(modalID+' div.modal-body-row div.modal-sidebar div.goNext').html(nextHTML);		
-			jQuery(modalID+' div.mobile-goNext').html('&nbsp;| <a href="'+nextItemID+'" role="button" class="mobile-modal-navlink modal-nav" data-toggle="modal" data-backdrop="false">'+nextTitle+'</a> <i class="icon-arrow-right"></i>');	
+			jQuery(modalID+' div.mobile-goNext').html('&nbsp;| <a href="'+nextItemID+'" role="button" class="mobile-modal-navlink modal-nav" data-dismiss="modal" data-toggle="modal" data-backdrop="false">'+nextTitle+'</a> <i class="icon-arrow-right"></i>');	
 		
 		}
 				
@@ -122,6 +116,8 @@ jQuery(document).ready(function() {
 			'overflow' : 'hidden'
 		};
 		jQuery('#'+modalID).css(bigModal);
+		var modalIDString = '#'+modalID;
+		openModals.push(modalIDString);
 		//jQuery('#'+modalID+ ' .modal-header').css('max-height', '10%');
 		jQuery('#'+modalID).css({'background-color' : '#f5f5f5', 'max-height' : '100%'});
 		jQuery('#'+modalID+ ' .modal-header').css({'background-color' : 'white', 'max-height' : '13%'});
@@ -136,7 +132,7 @@ jQuery(document).ready(function() {
 	});
 	
 	jQuery(".pressforward_page_pf-review .modal").on('hide', function(evt){
-//		jQuery('.pfmodal').each(function (index){
+//		jQuery(openModals).each(function (index){
 //			if (this.isShown){
 //				jQuery(this).modal('hide');
 //			}
