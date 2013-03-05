@@ -173,8 +173,10 @@ class PF_Admin {
 	 * $format = format changes, to be used later or by plugins. 
 	**/
 	public function form_of_an_item($item, $c, $format = 'standard', $metadata = array()){
-		//Allows plugins to introduce their own item format output. 
-		date_default_timezone_set(get_option('timezone_string'));
+		if ('' !== get_option('timezone_string')){
+			//Allows plugins to introduce their own item format output. 
+			date_default_timezone_set(get_option('timezone_string'));
+		}
 		if (has_action('pf_output_items')){
 			do_action('pf_output_items', $item, $c, $format);
 			return;
