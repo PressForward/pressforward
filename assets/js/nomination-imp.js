@@ -15,7 +15,7 @@ jQuery(document).ready(function() {
 	var item_id 		= jQuery("#item_id_"+itemID).val();
 	var item_wp_date	= jQuery("#item_wp_date_"+itemID).val();
 	var item_tags		= jQuery("#item_tags_"+itemID).val();
-	var postID 			= jQuery(itemID).attr('pf-post-id');
+	var postID 			= jQuery('#'+itemID).attr('pf-post-id');
 //	var errorThrown		= 'Broken';
 	var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val())
 	jQuery('.loading-'+itemID).show();
