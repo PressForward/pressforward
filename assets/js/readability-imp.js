@@ -239,12 +239,7 @@ jQuery(document).ready(function() {
 			'height': '100%',
 			'overflow' : 'hidden'
 		};
-		jQuery('#'+modalID).css(bigModal);
-		//jQuery('#'+modalID+ ' .modal-header').css('max-height', '10%');
-		jQuery('#'+modalID).css({'background-color' : '#f5f5f5', 'max-height' : '100%'});
-		jQuery('#'+modalID+ ' .modal-header').css({'background-color' : 'white', 'max-height' : '10%'});
-		jQuery('#'+modalID+ ' .modal-body').css({'max-height' : '80%', 'background-color' : 'white'});
-		jQuery('#'+modalID+ ' .modal-footer').css({'max-height' : '10%', 'min-height' : '48px'});
+		jQuery('#'+modalID+ '.pfmodal').css(bigModal);
 		//alert(modalID);
 		//showDiv(jQuery('#entries'), jQuery('#'+modalID));		
 		var itemID = element.attr('pf-item-id');
