@@ -254,6 +254,16 @@ jQuery(document).ready(function() {
 		var read_status = element.attr('pf-readability-status');
 		//I suppose I should nonce here right? 
 		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());
+		
+		jQuery.post(ajaxurl, {
+				action: 'ajax_get_comments',
+				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
+				id_for_comments: postID,
+			}, 
+			function(comment_response) {
+				jQuery("#"+itemID+" #modal-"+itemID+" .modal-comments").html(comment_response);
+			});		
+		
 		if (read_status != 1){
 		//At some point a waiting graphic should go here. 
 		jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html('Attempting to retrieve full article.');
@@ -303,6 +313,7 @@ jQuery(document).ready(function() {
 	jQuery(".pfmodal.modal").on('hide', function(evt){
 		jQuery('#wpadminbar').show();
 		document.body.style.overflow = 'visible';
+		jQuery(".pfmodal .modal-comments").html('');
 	});
 	
 	jQuery(".modal-readability-reset").on('click', function(evt){
