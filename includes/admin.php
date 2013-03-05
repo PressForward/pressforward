@@ -184,8 +184,10 @@ class PF_Admin {
 					$archived_status_string = '';
 				}
 		if ($format === 'nomination'){
+			$id_for_comments = $metadata['item_feed_post_id'];
 			echo '<article class="feed-item entry nom-container ' . $archived_status_string . get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . '" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-item-post-id="' . $metadata['item_feed_post_id'] . '">';
 		} else {
+			$id_for_comments = $item['post_id'];
 			echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '">';
 		}
 		
@@ -278,6 +280,7 @@ class PF_Admin {
 					echo '<div class="item_meta item_meta_date">Published on ' . $item['item_date'] . ' by <span class="item-authorship">' . $item['item_author'] . '</span>.</div>';
 					echo 'Unix timestamp for item date:<span class="sortableitemdate">' . strtotime($item['item_date']) . '</span> and for added to feed date <span class="sortablerssdate">' . strtotime($item['item_added_date']) . '</span>.';
 				?> </div> <?php 
+				
 				echo '<div class="item_excerpt" id="excerpt' . $c . '">';
 						if ($format === 'nomination'){
 							echo'<p>' . pf_noms_excerpt($item['item_content']) . '</p>';
@@ -341,7 +344,7 @@ class PF_Admin {
 					</div>
 					<div class="modal-comments modal-side-item row-fluid">
 						<?php 
-
+							do_action('pf_modal_comments', $id_for_comments);
 						?>
 					</div>
 					<div class="goNext modal-side-item row-fluid">
