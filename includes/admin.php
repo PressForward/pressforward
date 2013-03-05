@@ -100,7 +100,7 @@ class PF_Admin {
 		return $classes;
 	}
 	
-	public function form_of_actions_btns($item, $c, $modal = false, $format = 'standard', $metadata = array() ){
+	public function form_of_actions_btns($item, $c, $modal = false, $format = 'standard', $metadata = array(), $id_for_comments ){
 			?>	
 				<div class="actions btn-group">
 					<?php
@@ -119,6 +119,10 @@ class PF_Admin {
 					echo '<button class="btn btn-small itemInfobutton" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover"><i class="icon-info-sign"></i></button>';
 					echo '<button class="btn btn-small"><i class="icon-star"></i> Star</button>';
 						# <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
+					if (has_action('pf_comment_action_button')){
+						do_action('pf_comment_action_button', $id_for_comments);
+					
+					} 
 					if ($format === 'nomination'){
 						echo '<button class="btn btn-small nom-to-archive" form="' . $metadata['nom_id'] . '">' . __('Archive', 'pf') .  '</button>';
 					} else {
@@ -251,7 +255,7 @@ class PF_Admin {
 										
 									</script>
 									<?php 
-				$this->form_of_actions_btns($item, $c, false, $format, $metadata);
+				$this->form_of_actions_btns($item, $c, false, $format, $metadata, $id_for_comments);
 				?>
 			</header>
 			<?php 
@@ -365,7 +369,7 @@ class PF_Admin {
 					?>
 				</div>
 				<div class="pull-right"><?php 
-				$this->form_of_actions_btns($item, $c, true, $format, $metadata); 
+				$this->form_of_actions_btns($item, $c, true, $format, $metadata, $id_for_comments); 
 				?></div><?php 
 				?>	
 				</div>

@@ -16,7 +16,8 @@ class PF_Comments extends PF_Module {
 		
 		add_action('pf_modal_comments', array($this, 'the_comment_box'));
 		//add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
-		add_action( 'wp_ajax_editflow_ajax_insert_comment', array( $this, 'ajax_insert_comment' ) );		
+		add_action( 'wp_ajax_editflow_ajax_insert_comment', array( $this, 'ajax_insert_comment' ) );
+		add_action('pf_comment_action_button', array($this, 'show_comment_count_button'));	
 		
 	}
 
@@ -59,7 +60,13 @@ class PF_Comments extends PF_Module {
 		if ( !$comment_count )
 			$comment_count = 0;
 		return $comment_count;
-	}	
+	}
+
+	function show_comment_count_button($id_for_comments){
+		$count = self::get_editorial_comment_count( $id_for_comments );
+		echo '<button class="btn btn-small itemCommentModal">' . $count . '<i class="icon-comment"></i></button>';
+	
+	}
 
 	function the_comment_box($id_for_comments){
 
