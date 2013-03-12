@@ -274,6 +274,8 @@ class PF_RSS_Import extends PF_Module {
 				$verify_val = wp_verify_nonce($nonce, 'retrieve-pressforward');
 				pf_log('Nonce check of ' . $nonce . ' failed. Returned: ');
 				pf_log($verify_val);
+				pf_log('Stored nonce:');
+				pf_log($nonce_check);			
 			}
 		}
 	}
