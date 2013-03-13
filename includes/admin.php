@@ -155,6 +155,9 @@ class PF_Admin {
 									jQuery('.popover').addClass(jQuery(this).data("class")); //Add class .dynamic-class to <div>
 								});
 							});
+							jQuery(".modal.pfmodal").on('hide', function(evt){
+								jQuery("#<?php echo 'info-' . $item['item_id'] . '-' . $infoPop; ?>").popover('hide');
+							})
 						});
 						</script>
 					<?php 
