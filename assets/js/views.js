@@ -66,6 +66,64 @@
 				
 		
 	}
+	
+function reshowModal(){		
+	jQuery('.modal.pfmodal').on('shown', function(evt){
+		jQuery('#wpadminbar').hide();
+		var element = jQuery(this);	
+		var modalID = element.attr('id');
+		document.body.style.overflow = 'hidden';
+		var bigModal = { 
+			'display' : 'block',
+			'position': 'fixed',
+			'top': '0',
+			'right': '0',
+			'bottom': '100%',
+			'left': '0',
+			'margin': '0',
+			'width': '100%',
+			'height': '100%',
+			'overflow' : 'hidden'
+		};
+		jQuery('#'+modalID+ '.pfmodal').css(bigModal);	
+	});
+} 
+function reviewModal(){		
+	//Need to fix this to only trigger on the specific model, but not sure how yet. 
+	jQuery(".pressforward_page_pf-review .modal.pfmodal").on('shown', function(evt){
+		//alert('Modal Triggered.');
+		var element = jQuery(this);		
+		var modalID = element.attr('id');		
+		var modalIDString = '#'+modalID;
+		openModals.push(modalIDString);
+		//alert(modalID);
+		//showDiv(jQuery('#entries'), jQuery('#'+modalID));		
+		var itemID = element.attr('pf-item-id');
+		var postID = element.attr('pf-post-id');
+		var item_post_ID = element.parent().attr('pf-item-post-id');
+		
+		jQuery.post(ajaxurl, {
+				action: 'ajax_get_comments',
+				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
+				id_for_comments: item_post_ID,
+			}, 
+			function(comment_response) {
+				jQuery('#'+modalID+ '.pfmodal .modal-comments').html(comment_response);
+			});		
+			
+		
+		var tabindex = element.parent().attr('tabindex');
+		modalNavigator(tabindex);
+	});
+}
+
+function hideModal(){	
+	jQuery(".modal.pfmodal").on('hide', function(evt){
+		jQuery(".pfmodal .modal-comments").html('');
+		jQuery('#wpadminbar').show();
+		document.body.style.overflow = 'visible';
+	});		
+}
 
 jQuery(document).ready(function() {
 
@@ -98,57 +156,8 @@ jQuery(document).ready(function() {
 			jQuery("div.pf_container").addClass('full');
 		});	
 		
-	jQuery('.modal.pfmodal').on('shown', function(evt){
-		jQuery('#wpadminbar').hide();
-		var element = jQuery(this);	
-		var modalID = element.attr('id');
-		document.body.style.overflow = 'hidden';
-		var bigModal = { 
-			'display' : 'block',
-			'position': 'fixed',
-			'top': '0',
-			'right': '0',
-			'bottom': '100%',
-			'left': '0',
-			'margin': '0',
-			'width': '100%',
-			'height': '100%',
-			'overflow' : 'hidden'
-		};
-		jQuery('#'+modalID+ '.pfmodal').css(bigModal);	
-	});
-		
-	//Need to fix this to only trigger on the specific model, but not sure how yet. 
-	jQuery(".pressforward_page_pf-review .modal.pfmodal").on('shown', function(evt){
-		//alert('Modal Triggered.');
-		var element = jQuery(this);		
-		var modalID = element.attr('id');		
-		var modalIDString = '#'+modalID;
-		openModals.push(modalIDString);
-		//alert(modalID);
-		//showDiv(jQuery('#entries'), jQuery('#'+modalID));		
-		var itemID = element.attr('pf-item-id');
-		var postID = element.attr('pf-post-id');
-		var item_post_ID = element.parent().attr('pf-item-post-id');
-		
-		jQuery.post(ajaxurl, {
-				action: 'ajax_get_comments',
-				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
-				id_for_comments: item_post_ID,
-			}, 
-			function(comment_response) {
-				jQuery('#'+modalID+ '.pfmodal .modal-comments').html(comment_response);
-			});		
-			
-		
-		var tabindex = element.parent().attr('tabindex');
-		modalNavigator(tabindex);
-	});
-	
-	jQuery(".modal.pfmodal").on('hide', function(evt){
-		jQuery(".pfmodal .modal-comments").html('');
-		jQuery('#wpadminbar').show();
-		document.body.style.overflow = 'visible';
-	});	
+	reshowModal(); 
+	reviewModal(); 
+	hideModal();
 	
 });

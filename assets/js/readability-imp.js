@@ -1,4 +1,4 @@
-jQuery(document).ready(function() {
+
 
 	//via http://stackoverflow.com/questions/1787322/htmlspecialchars-equivalent-in-javascript
 	function escapeHtml(unsafe) {
@@ -218,7 +218,7 @@ jQuery(document).ready(function() {
 	}
 	//no longer via http://stackoverflow.com/questions/2440359/attaching-div-to-a-specific-element-for-showing-with-javascript
 
-
+function allContentModal(){
 	//http://stackoverflow.com/questions/14242227/bootstrap-modal-body-max-height-100
 	//Need to fix this to only trigger on the specific model, but not sure how yet. 
 	jQuery(".toplevel_page_pf-menu .pfmodal.modal").on('shown', function(evt){
@@ -295,7 +295,9 @@ jQuery(document).ready(function() {
 			});
 		}
 	});
-	
+}
+
+function modalReadReset(){	
 	jQuery(".modal-readability-reset").on('click', function(evt){
 		evt.preventDefault();
 		var element = jQuery(this);		
@@ -310,7 +312,7 @@ jQuery(document).ready(function() {
 		//I suppose I should nonce here right? 
 		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());	
 		//At some point a waiting graphic should go here. 
-		alert(content);
+		//alert(content);
 		jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html('Attempting to retrieve full article.');
 			jQuery.post(ajaxurl, {
 				action: 'make_it_readable',
@@ -358,7 +360,9 @@ jQuery(document).ready(function() {
 			
 	
 	});
-	
-	//This also needs to rewrite the content of the form!!
+}	
+jQuery(document).ready(function() {
+allContentModal(); 
+modalReadReset();
 
 });
