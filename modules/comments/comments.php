@@ -84,7 +84,7 @@ class PF_Comments extends PF_Module {
 //			if( ! in_array( $post->post_status, array( 'new', 'auto-draft' ) ) ) :
 				
 				// Unused since switched to wp_list_comments
-				$editorial_comments = ef_get_comments_plus (
+				$editorial_comments = $this->ef_get_comments_plus (
 								array(
 									'post_id' => $id_for_comments,
 									'comment_type' => self::comment_type,

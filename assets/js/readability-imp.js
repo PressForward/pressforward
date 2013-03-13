@@ -221,25 +221,11 @@ jQuery(document).ready(function() {
 
 	//http://stackoverflow.com/questions/14242227/bootstrap-modal-body-max-height-100
 	//Need to fix this to only trigger on the specific model, but not sure how yet. 
-	jQuery(".pfmodal.modal").on('show', function(evt){
+	jQuery(".toplevel_page_pf-menu .pfmodal.modal").on('shown', function(evt){
 		//alert('Modal Triggered.');
-		jQuery('#wpadminbar').hide();
 		document.body.style.overflow = 'hidden';
 		var element = jQuery(this);		
 		var modalID = element.attr('id');
-		var bigModal = { 
-			'display' : 'block',
-			'position': 'fixed',
-			'top': '0',
-			'right': '0',
-			'bottom': '100%',
-			'left': '0',
-			'margin': '0',
-			'width': '100%',
-			'height': '100%',
-			'overflow' : 'hidden'
-		};
-		jQuery('#'+modalID+ '.pfmodal').css(bigModal);
 		//alert(modalID);
 		//showDiv(jQuery('#entries'), jQuery('#'+modalID));		
 		var itemID = element.attr('pf-item-id');
@@ -310,12 +296,6 @@ jQuery(document).ready(function() {
 		}
 	});
 	
-	jQuery(".pfmodal.modal").on('hide', function(evt){
-		jQuery('#wpadminbar').show();
-		document.body.style.overflow = 'visible';
-		jQuery(".pfmodal .modal-comments").html('');
-	});
-	
 	jQuery(".modal-readability-reset").on('click', function(evt){
 		evt.preventDefault();
 		var element = jQuery(this);		
@@ -330,13 +310,14 @@ jQuery(document).ready(function() {
 		//I suppose I should nonce here right? 
 		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());	
 		//At some point a waiting graphic should go here. 
+		alert(content);
 		jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html('Attempting to retrieve full article.');
 			jQuery.post(ajaxurl, {
 				action: 'make_it_readable',
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
 				read_item_id: itemID,
 				url: url,
-				content: content,
+				content: escape(content),
 				post_id: postID,
 				//We need to pull the source data to determine if it is aggregation as well. 
 				authorship: authorship,
@@ -345,6 +326,7 @@ jQuery(document).ready(function() {
 				
 			}, 
 			function(response) {
+				var check = jQuery(response).find("response_data").text();
 				var read_content = html_entity_decode(jQuery(response).find("response_data").text());
 				var status = jQuery(response).find("readable_status").text();
 				
