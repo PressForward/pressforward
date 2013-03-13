@@ -233,6 +233,10 @@ h3 {
 	display: none;
 }
 
+.modal.fade.in {
+	top: 0;
+}
+
 .pfmodal {
 	background-color: #f5f5f5;
 	max-height: 100%;
