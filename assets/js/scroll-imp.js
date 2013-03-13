@@ -19,11 +19,18 @@ jQuery(document).ready(function () {
 						var itemID		= element.attr('id');
 						jQuery('.list #'+itemID+' header .actions').appendTo('#'+itemID+' footer');
 						
+						
+						
 			
 			
 		});
-	}
-	);
+	
+		reshowModal(); 
+		reviewModal(); 
+		hideModal();	
+		allContentModal(); 
+		modalReadReset();	
+	});	
 
 
 });
