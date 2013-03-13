@@ -266,7 +266,7 @@ class PF_RSS_Import extends PF_Module {
 		$nonce = isset( $_REQUEST['_wpnonce'] ) ? $_REQUEST['_wpnonce'] : '';
 		$nonce_check = get_option('chunk_nonce');
 		if ( isset( $_GET['press'] ) && $_GET['press'] == 'forward'){
-			if ( $nonce && $nonce_check ===  $nonce){
+			if ( $nonce === $nonce_check){
 				pf_log($nonce_check . ' is equal to ' . $nonce . '. Pressing forward.');
 				include(PF_ROOT . '/modules/rss-import/import-cron.php');
 				exit;
