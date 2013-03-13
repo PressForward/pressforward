@@ -98,13 +98,11 @@ jQuery(document).ready(function() {
 			jQuery("div.pf_container").addClass('full');
 		});	
 		
-	//Need to fix this to only trigger on the specific model, but not sure how yet. 
-	jQuery(".pressforward_page_pf-review .modal.pfmodal").on('show', function(evt){
-		//alert('Modal Triggered.');
+	jQuery('.modal.pfmodal').on('shown', function(evt){
 		jQuery('#wpadminbar').hide();
-		document.body.style.overflow = 'hidden';
-		var element = jQuery(this);		
+		var element = jQuery(this);	
 		var modalID = element.attr('id');
+		document.body.style.overflow = 'hidden';
 		var bigModal = { 
 			'display' : 'block',
 			'position': 'fixed',
@@ -117,7 +115,14 @@ jQuery(document).ready(function() {
 			'height': '100%',
 			'overflow' : 'hidden'
 		};
-		jQuery('#'+modalID+ '.pfmodal').css(bigModal);
+		jQuery('#'+modalID+ '.pfmodal').css(bigModal);	
+	});
+		
+	//Need to fix this to only trigger on the specific model, but not sure how yet. 
+	jQuery(".pressforward_page_pf-review .modal.pfmodal").on('shown', function(evt){
+		//alert('Modal Triggered.');
+		var element = jQuery(this);		
+		var modalID = element.attr('id');		
 		var modalIDString = '#'+modalID;
 		openModals.push(modalIDString);
 		//alert(modalID);
@@ -140,13 +145,8 @@ jQuery(document).ready(function() {
 		modalNavigator(tabindex);
 	});
 	
-	jQuery(".pressforward_page_pf-review .modal.pfmodal").on('hide', function(evt){
-//		jQuery(openModals).each(function (index){
-//			if (this.isShown){
-//				jQuery(this).modal('hide');
-//			}
-//		});
-		
+	jQuery(".modal.pfmodal").on('hide', function(evt){
+		jQuery(".pfmodal .modal-comments").html('');
 		jQuery('#wpadminbar').show();
 		document.body.style.overflow = 'visible';
 	});	
