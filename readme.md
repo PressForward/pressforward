@@ -35,6 +35,6 @@
 
 -	Provide the entire process in a attractive, responsive and mobile friendly design. 
 
--	Provide an open source back-end that is easily expandable for other developers and that can be hooked into by other independent WordPress plugins.
+-	Provide an open source back-end that is easily extendable for other developers and that can be hooked into by other independent WordPress plugins.
 
 Testing, contributions, and feedback welcome. 
