@@ -38,3 +38,9 @@
 -	Provide an open source back-end that is easily extendable for other developers and that can be hooked into by other independent WordPress plugins.
 
 Testing, contributions, and feedback welcome. 
+
+Latest stable releases are available at [this project's tags page](https://github.com/PressForward/pressforward/tags).
+
+Bugs can be reported in [the issue section](https://github.com/PressForward/pressforward/issues).
+
+To install this plugin in WordPress, just download the latest tagged release or [this repository as a zip file](https://github.com/PressForward/pressforward/archive/master.zip) and upload it to your WordPress plugins section. 
