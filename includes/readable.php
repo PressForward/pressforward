@@ -8,19 +8,26 @@ class PF_Readability {
 	/**
 	 * Handles a readability request via POST
 	 */
-	public function make_it_readable(){
+	public function make_it_readable($quickresponse = false){
 
 		// Verify nonce
 		if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )
 			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) );
-
+		ob_start();
+		$read_status = 'readable';
 		$item_id = $_POST['read_item_id'];
+		$post_id = $_POST['post_id'];
+		$force = $_POST['force'];
 		//error_reporting(0);
-		if ( false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) ) ) {
+		if ( (false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) )) || $force == 'force' ) {
 
 			set_time_limit(0);
 			$url = pf_de_https($_POST['url']);
+			$readability_stat = $url;
 			$descrip = $_POST['content'];
+			$descrip = rawurldecode($descrip);
+			if (get_magic_quotes_gpc())  
+				$descrip = stripslashes($descrip);
 
 			if ($_POST['authorship'] == 'aggregation') {
 				$aggregated = true;
@@ -28,12 +35,12 @@ class PF_Readability {
 				$aggregated = false;
 			}
 
-			if ((strlen($descrip) <= 160) || $aggregated) {
+			if ((str_word_count($descrip) <= 150) || $aggregated || $force == 'force') {
 				$itemReadReady = self::readability_object($url);
 				if ($itemReadReady != 'error-secured') {
 					if (!$itemReadReady) {
-						$itemReadReady = __( "This content failed Readability.", 'pf' );
-						$itemReadReady .= '<br />';
+						$readability_stat .= __( " This content failed Readability.", 'pf' );
+						//$itemReadReady .= '<br />';
 						$url = str_replace('&amp;','&', $url);
 						#Try and get the OpenGraph description.
 						if (OpenGraph::fetch($url)){
@@ -42,32 +49,76 @@ class PF_Readability {
 						} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
 						elseif ('' != ($contentHtml = @get_meta_tags($url))) {
 							# Try and get the HEAD > META DESCRIPTION tag.
-							$itemReadReady .= __( "This content failed an OpenGraph check.", 'pf' );
-							$itemReadReady .= '<br />';
-							$descrip = $contentHtml['description'];
+							$readability_stat .= __( " This content failed an OpenGraph check.", 'pf' );
+							//$itemReadReady .= '<br />';
+							$itemReadReady = $contentHtml['description'];
 
 						}
 						else
 						{
 							# Ugh... we can't get anything huh?
-							$itemReadReady .= __( "This content has no description we can find.", 'pf' );
-							$itemReadReady .= '<br />';
+							$readability_stat .= __( " This content has no description we can find.", 'pf' );
+							//$itemReadReady .= '<br />';
 							# We'll want to return a false to loop with.
 							$itemReadReady = $descrip;
 
 						}
+						if(strlen($itemReadReady) < strlen($descrip)){
+							$itemReadReady = $descrip;
+							$readability_stat .= ' Retrieved text is less than original text.';
+							$read_status = 'already_readable';
+						}
+						
 					}
 				} else {
-					die('secured');
+					$read_status = 'secured';
 				}
 			} else {
-				die('readable');
+				$read_status = 'already_readable';
+				$itemReadReady = $descrip;
 			}
 
 			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
 		}
-
-		print_r($itemReadReady);
+		
+		# BIG FREAKING WARNING: This WILL NOT WORK if you have WP_DEBUG and WP_DEBUG_DISPLAY true and either your theme or plugins have bad functions on the save_post hook. 
+		if ($post_id != 0){
+			$update_ready = array(
+				'ID' => $post_id,
+				'post_content' => html_entity_decode($itemReadReady)
+			);
+			$update_check = wp_update_post($update_ready, true);
+			if (!is_wp_error($update_check)){
+				update_post_meta($post_id, 'readable_status', 1);
+				$error = 'no error';
+			} else {
+				$read_status = 'post_not_updated_readable';
+				update_post_meta($post_id, 'readable_status', 0);
+				$error = $update_check->get_error_message();
+			}
+		}
+		
+		if ($quickresponse == true){
+			print_r($itemReadReady);
+			die($read_status);
+		} else {
+			$response = array(
+				'what' => 'full_item_content',
+				'action' => 'make_readable',
+				'id' => $item_id,
+				'data' => htmlentities($itemReadReady),
+				'supplemental' => array(
+					'readable_status' => $read_status,
+					'error' => $error,
+					'buffered' => ob_get_contents(),
+					'readable_response' => $readability_stat
+				)
+			);
+			$xmlResponse = new WP_Ajax_Response($response);
+			$xmlResponse->send();
+			ob_end_flush();
+			die();
+		}
 	}
 
 	/**
@@ -135,7 +186,7 @@ class PF_Readability {
 			# If Readability can't get the content, send back a FALSE to loop with.
 			$content = false;
 			# and let's throw up an error via AJAX as well, so we know what's going on.
-			print_r($url . ' fails Readability.<br />');
+			//print_r($url . ' fails Readability.<br />');
 		}
 
 		return $content;

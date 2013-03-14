@@ -1,3 +1,11 @@
+.error.fade {
+	display:none;
+}
+
+.toplevel_page_pf-menu #wpcontent {
+	margin-left: 145px;
+}
+
 .deck .card {
 
 	background-color: #AFC459;
@@ -97,10 +105,19 @@ visibility:hidden;
 	margin: 0;	
 }
 
+.item_title {
+	margin-bottom: 3px;
+}
 .source_title {
-	font-weight: bold;
-	font-size: 13px;
-	line-height: 15px;
+
+}
+
+.item-tags {
+	text-align: left;
+}
+
+.modal .original-link {
+	margin-top: 2px;
 }
 
 h3 {
@@ -109,7 +126,7 @@ h3 {
 	margin: 4px 0;
 }
 
-.feed-item div.feed-item-info-box {
+/**.feed-item div.feed-item-info-box {
 	float: right;
 	margin-right: -327px!important;
 	width: 310px;
@@ -138,7 +155,7 @@ h3 {
 	border-color: whiteSmoke transparent;
 	display: block;
 	width: 0;
-}
+}**/
 
 .feed-item .item_meta {
 	font-size: 10px;
@@ -180,6 +197,176 @@ h3 {
 	-moz-transition: opacity .25s ease-in-out;
 	-webkit-transition: opacity .25s ease-in-out;
 }
+
+.pf-navigation {
+	width:100%;
+	float: left;
+	padding-left: 40px;
+}
+
+#tools {
+	display:none;
+}
+.full #entries {
+	width: 100%;
+}
+
+.pressforward .grid.full #entries article {
+	width: 23%;
+}
+
+#infscr-loading {
+	width:100%;
+	float: left;
+	padding-left: 40px;
+}
+
+.list .actions {
+	
+}
+
+.list .modal .actions {
+	display: block;
+}
+
+.grid .go-actions-bar {
+	display: none;
+}
+
+.modal.fade.in {
+	top: 0;
+}
+
+.pfmodal {
+	background-color: #f5f5f5;
+	max-height: 100%;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 100%;
+	left: 0;
+	margin: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.pfmodal .modal-header {
+	background-color: white;
+	max-height: 13%;
+
+}
+
+.pfmodal .modal-mobile-nav {
+	margin: 0 8px;
+}
+
+.pfmodal .mobile-goPrev, .pfmodal .mobile-goNext {
+
+}
+
+.pfmodal .modal-body-row {
+	background:white;
+}
+
+.pfmodal .modal-body {
+	min-height: 100%
+}
+
+.pfmodal .modal-body-row {
+	height:80%;
+	overflow:hidden;
+}
+
+.pfmodal .modal-sidebar {
+	height:100%;
+	margin: 0;
+	/**width: 25.64102564102563%;**/
+	width:25.5%
+}
+
+.pfmodal .modal-side-item {
+	border: 1px solid #eee;
+	border-right: transparent;
+	padding: 1%;
+	margin: 0;
+}
+
+.pfmodal .modal-comments {
+	overflow-y: auto;
+}
+
+.pfmodal .goPrev, .pfmodal .goNext {
+	height: 25%;
+	font-size: .7rem;
+	line-height: .7rem;
+	overflow:hidden;
+	text-align: right;
+}
+
+.pfmodal .goPrev p, .pfmodal .goNext p {
+	margin-bottom: 8px;
+}
+
+.pfmodal .goPrev h5, .pfmodal .goNext h5 {
+	margin-bottom: 8px;
+}
+
+.pfmodal .modal-comments {
+	height: 50%;
+}
+
+.pfmodal .modal-footer {
+	max-height: 80%;
+	min-height: 48px;
+}
+
+.feed-item-info-box {
+	display:none;
+}
+
+.popover-inner .feed-item-info-box{
+	display: block;
+	font-size: 10px;
+	line-height: 13px;
+
+	
+	z-index: 2002;
+}
+
+.info-box-popover {
+	background-color: #f5f5f5;
+	z-index: 2001;
+	width: 310px;
+
+}
+
+.info-box-popover.right {
+	
+}
+
+.info-box-popover.top {
+
+}
+
+.info-box-popover.top .popover-content {
+	
+}
+
+.info-box-popover.right .arrow {
+
+	border-right-color: #f5f5f5!important;
+	
+}
+
+.info-box-popover .popover-title {
+	display:none;
+}
+
+.info-box-popover .popover-content {
+	
+}
+
 /**
  * Specific override styles.
  *

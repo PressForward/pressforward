@@ -263,18 +263,21 @@ class PF_RSS_Import extends PF_Module {
 	}
 
 	public function alter_for_retrieval() {
-		$nonce = isset( $_REQUEST['_wpnonce'] ) ? $_REQUEST['_wpnonce'] : '';
-		$nonce_check = get_option('chunk_nonce');
+		//$nonce = isset( $_REQUEST['_wpnonce'] ) ? $_REQUEST['_wpnonce'] : '';
+		//$nonce_check = get_option('chunk_nonce');
 		if ( isset( $_GET['press'] ) && $_GET['press'] == 'forward'){
-			if ( $nonce && $nonce_check ===  $nonce){
-				pf_log($nonce_check . ' is equal to ' . $nonce . '. Pressing forward.');
+			# Removing this until we decide to replace or eliminate. It isn't working. 
+			//if ( $nonce === $nonce_check){
+				pf_log('Pressing forward.');
 				include(PF_ROOT . '/modules/rss-import/import-cron.php');
 				exit;
-			} else {
-				$verify_val = wp_verify_nonce($nonce, 'retrieve-pressforward');
-				pf_log('Nonce check of ' . $nonce . ' failed. Returned: ');
-				pf_log($verify_val);
-			}
+			//} else {
+			//	$verify_val = wp_verify_nonce($nonce, 'retrieve-pressforward');
+			//	pf_log('Nonce check of ' . $nonce . ' failed. Returned: ');
+			//	pf_log($verify_val);
+			//	pf_log('Stored nonce:');
+			//	pf_log($nonce_check);			
+			//}
 		}
 	}
 

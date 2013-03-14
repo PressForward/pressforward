@@ -142,6 +142,8 @@ class PF_Nominations {
 				add_post_meta($newPostID, 'nominator_array', $nominators, true);
 				$source_repeat = get_post_meta($_POST['ID'], 'source_repeat', true);
 				add_post_meta($newPostID, 'source_repeat', $source_repeat, true);
+				$item_feed_post_id = get_post_meta($_POST['ID'], 'item_feed_post_id', true);
+				add_post_meta($newPostID, 'item_feed_post_id', $item_feed_post_id, true);
 
 				$already_has_thumb = has_post_thumbnail($_POST['ID']);
 				if ($already_has_thumb)  {
@@ -380,6 +382,7 @@ class PF_Nominations {
 		add_post_meta($newNomID, 'date_nominated', date('c'), true);
 		add_post_meta($newNomID, 'item_tags', $_POST['item_tags'], true);
 		add_post_meta($newNomID, 'source_repeat', $_POST['source_repeat'], true);
+		add_post_meta($newNomID, 'item_feed_post_id', $_POST['item_post_id'], true);
 
 		$result  = $item_title . ' nominated.';
 		die($result);

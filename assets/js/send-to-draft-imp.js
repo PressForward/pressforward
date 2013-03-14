@@ -51,7 +51,8 @@ jQuery(document).ready(function() {
 		},
 		function(response) {
 			jQuery('.loading-'+itemID).hide();
-			jQuery(".result-status-"+itemID+" .msg-box").html(response);
+			//jQuery(".result-status-"+itemID+" .msg-box").html(response);
+			alert(response);
 			//jQuery("#test-div1").append(data);
 		});
 	  });

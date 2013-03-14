@@ -1,10 +1,10 @@
 jQuery(document).ready(function() {
 
-	jQuery(".PleasePushMe").click(function (evt){ 
+	jQuery(".nominate-now").click(function (evt){ 
 		evt.preventDefault();
 		
 		var element		= jQuery(this);
-		var itemID		= element.attr('id');
+		var itemID		= element.attr('form');
 	var item_title 		= jQuery("#item_title_"+itemID).val();
 	var source_title 	= jQuery("#source_title_"+itemID).val(); 
 	var item_date 		= jQuery("#item_date_"+itemID).val(); 
@@ -15,6 +15,7 @@ jQuery(document).ready(function() {
 	var item_id 		= jQuery("#item_id_"+itemID).val();
 	var item_wp_date	= jQuery("#item_wp_date_"+itemID).val();
 	var item_tags		= jQuery("#item_tags_"+itemID).val();
+	var postID 			= jQuery('#'+itemID).attr('pf-post-id');
 //	var errorThrown		= 'Broken';
 	var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val())
 	jQuery('.loading-'+itemID).show();
@@ -30,11 +31,13 @@ jQuery(document).ready(function() {
 			item_id: item_id,
 			item_wp_date: item_wp_date,
 			item_tags: item_tags,
+			item_post_id: postID,
 			pf_nomination_nonce: theNonce
 		},
 		function(response) {
 			jQuery('.loading-'+itemID).hide();
-			jQuery(".nominate-result-"+itemID).html(response);
+			//jQuery(".nominate-result-"+itemID).html(response);
+			alert(response);
 			//jQuery("#test-div1").append(data);
 		});
 	  });

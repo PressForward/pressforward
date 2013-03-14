@@ -17,6 +17,7 @@ class PF_Admin {
 
 		// Adding javascript and css to admin pages
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
+		add_filter('admin_body_class',  array( $this, 'add_pf_body_class'));
 
 		// Catch form submits
 		add_action( 'admin_init', array($this, 'pf_options_admin_page_save') );
@@ -28,6 +29,7 @@ class PF_Admin {
 		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
 		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
+		add_action( 'wp_ajax_ajax_get_comments', array( $this, 'ajax_get_comments') );
 	}
 
 	/**
@@ -91,297 +93,546 @@ class PF_Admin {
 			PF_NOM_POSTER
 		);
 	}
+	
+	function add_pf_body_class($classes) {
+		
+		$classes .= strtolower(PF_TITLE);
+
+		return $classes;
+	}
+	
+	public function form_of_actions_btns($item, $c, $modal = false, $format = 'standard', $metadata = array(), $id_for_comments ){
+			?>	
+				<div class="actions btn-group">
+					<?php
+					$infoPop = 'top';
+					if ($modal == false){
+						$infoPop = 'bottom';
+						if ($format === 'nomination'){
+							?><form name="form-<?php echo $metadata['item_id']; ?>" pf-form="<?php echo $metadata['item_id']; ?>"><?php 
+							pf_prep_item_for_submit($metadata);
+						} else {
+						echo '<form name="form-' . $item['item_id'] . '">' 
+						 . '<div class="nominate-result-' . $item['item_id'] . '">'
+						 . '<img class="loading-' . $item['item_id'] . '" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="' . __('Loading', 'pf') . '..." style="display: none" />'
+						 . '</div>';
+						pf_prep_item_for_submit($item);
+						wp_nonce_field('nomination', PF_SLUG . '_nomination_nonce', false);
+						}
+						echo '</form>';
+					}
+					# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
+					echo '<button class="btn btn-small itemInfobutton" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover"><i class="icon-info-sign"></i></button>';
+					echo '<button class="btn btn-small"><i class="icon-star"></i> Star</button>';
+						# <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
+					if (has_action('pf_comment_action_button')){
+						$commentModalCall = '#modal-comments-' . $item['item_id'];
+						$commentButtonArray = array('id' => $id_for_comments, 'modalID' => $commentModalCall);
+						do_action('pf_comment_action_button', $id_for_comments);
+					
+					} 
+					if ($format === 'nomination'){
+						echo '<button class="btn btn-small nom-to-archive" form="' . $metadata['nom_id'] . '">' . __('Archive', 'pf') .  '</button>';
+						echo '<a href="#nominate" class="btn btn-small nom-to-draft" form="' . $metadata['item_id'] . '">' . __('Draft', 'pf') .  '</a>';
+					} else {
+						echo '<button class="btn btn-small nominate-now" form="' . $item['item_id'] . '">' . __('Nominate', 'pf') .  '</button>';
+					}
+					
+					
+	
+					?>
+						<script type="text/javascript">
+						jQuery(document).ready(function() {
+							jQuery(function(){
+								jQuery("#<?php echo 'info-' . $item['item_id'] . '-' . $infoPop; ?>").popover({
+									title: pop_title_<?php echo $item['item_id'] ?>,
+									html: true,
+									content: pop_html_<?php echo $item['item_id'] ?>,
+									placement: "<?php echo $infoPop ?>",
+									container: ".actions"
+								})
+								.on("click", function(){
+									jQuery('.popover').addClass(jQuery(this).data("class")); //Add class .dynamic-class to <div>
+								});
+							});
+							jQuery(".modal.pfmodal").on('hide', function(evt){
+								jQuery("#<?php echo 'info-' . $item['item_id'] . '-' . $infoPop; ?>").popover('hide');
+							})
+						});
+						</script>
+					<?php 
+					if ($modal === true){
+						?><button class="btn btn-small" data-dismiss="modal" aria-hidden="true">Close</button><?php 
+					}
+					?>
+				</div>
+		<?php 				
+	}
+	
+	/**
+	 * Essentially the PF 'loop' template. 
+	 * $item = the each of the foreach
+	 * $c = count.
+	 * $format = format changes, to be used later or by plugins. 
+	**/
+	public function form_of_an_item($item, $c, $format = 'standard', $metadata = array()){
+		if ('' !== get_option('timezone_string')){
+			//Allows plugins to introduce their own item format output. 
+			date_default_timezone_set(get_option('timezone_string'));
+		}
+		if (has_action('pf_output_items')){
+			do_action('pf_output_items', $item, $c, $format);
+			return;
+		}
+		$itemTagsArray = explode(",", $item['item_tags']);
+		$itemTagClassesString = '';
+		foreach ($itemTagsArray as $itemTag) { $itemTagClassesString .= pf_slugger($itemTag, true, false, true); $itemTagClassesString .= ' '; }
+	
+				if (!empty($metadata['archived_status'])){
+					$archived_status_string = '';
+					$archived_user_string_match = 'archived_' . $metadata['current_user_id'];
+					foreach ($archived_status as $user_archived_status){
+						if ($user_archived_status == $archived_user_string_match){
+						$archived_status_string = 'archived';
+						$dependent_style = 'display:none;';
+						}
+					}
+				} else {
+					$dependent_style = '';
+					$archived_status_string = '';
+				}
+		if ($format === 'nomination'){
+			$id_for_comments = $metadata['item_feed_post_id'];
+			echo '<article class="feed-item entry nom-container ' . $archived_status_string . get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . '" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-item-post-id="' . $metadata['item_feed_post_id'] . '">';
+		} else {
+			$id_for_comments = $item['post_id'];
+			echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '">';
+		}
+		
+			?> <header> <?php 
+				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander" role="button" data-toggle="modal" data-backdrop="false">' . $item['item_title'] . '</a></h1>';
+				echo '<p class="source_title">' . $item['source_title'] . '</p>';
+				if ($format === 'nomination'){
+				?>		
+						<div class="sortable-hidden-meta" style="display:none;">
+							<?php
+							_e('UNIX timestamp from source RSS', 'pf');
+							echo ': <span class="sortable_source_timestamp">' . $metadata['timestamp_item_posted'] . '</span><br />';
+
+							_e('UNIX timestamp last modified', 'pf');
+							echo ': <span class="sortable_mod_timestamp">' . $metadata['timestamp_nom_last_modified'] . '</span><br />';
+
+							_e('UNIX timestamp date nominated', 'pf');
+							echo ': <span class="sortable_nom_timestamp">' . $metadata['timestamp_unix_date_nomed'] . '</span><br />';
+
+							_e('Slug for origon site', 'pf');
+							echo ': <span class="sortable_origin_link_slug">' . $metadata['source_slug'] . '</span><br />';
+
+							//Add an action here for others to provide additional sortables.
+
+						echo '</div>';	
+				}
+									# Let's build an info box!
+									//http://nicolasgallagher.com/pure-css-speech-bubbles/
+
+									$urlArray = parse_url($item['item_link']);
+									$sourceLink = 'http://' . $urlArray['host'];
+									//http://nicolasgallagher.com/pure-css-speech-bubbles/demo/
+
+									$ibox = '<div class="feed-item-info-box" id="info-box-' . $item['item_id'] . '">';
+										$ibox .= '
+										' . __('Feed', 'pf') . ': <span class="feed_title">' . $item['source_title'] . '</span><br />
+										' . __('Posted', 'pf') . ': <span class="feed_posted">' . date( 'M j, Y; g:ia' , strtotime($item['item_date'])) . '</span><br />
+										' . __('Retrieved', 'pf') . ': <span class="item_meta item_meta_added_date">' . date( 'M j, Y; g:ia' , strtotime($item['item_added_date'])) . '</span><br />
+										' . __('Authors', 'pf') . ': <span class="item_authors">' . $item['item_author'] . '</span><br />
+										' . __('Origin', 'pf') . ': <span class="source_name"><a target ="_blank" href="' . $sourceLink . '">' . $sourceLink . '</a></span><br />
+										' . __('Original Item', 'pf') . ': <span class="source_link"><a href="' . $item['item_link'] . '" class="item_url" target ="_blank">' . $item['item_title'] . '</a></span><br />
+										' . __('Tags', 'pf') . ': <span class="item_tags">' . $item['item_tags'] . '</span><br />
+										' . __('Times repeated in source', 'pf') . ': <span class="feed_repeat sortable_sources_repeat">' . $item['source_repeat'] . '</span><br />
+										';
+										if ($format === 'nomination'){
+											$ibox .= __('Number of nominations received', 'pf')
+											. ': <span class="sortable_nom_count">' . $metadata['nom_count'] . '</span><br />'
+											. __('First submitted by', 'pf')
+											. ': <span class="first_submitter">' . $metadata['submitters'] . '</span><br />'
+											. __('Nominated on', 'pf')
+											. ': <span class="nominated_on">' . date( 'M j, Y; g:ia' , strtotime($metadata['date_nominated'])) . '</span><br />';		
+										}
+									$ibox .= '</div>';
+									echo $ibox;
+													?>
+									<script type="text/javascript">
+										
+											var pop_title_<?php echo $item['item_id'] ?> = '';
+											var pop_html_<?php echo $item['item_id'] ?> = jQuery('#<?php echo 'info-box-' . $item['item_id']; ?>');
+											
+										
+									</script>
+									<?php 
+				$this->form_of_actions_btns($item, $c, false, $format, $metadata, $id_for_comments);
+				?>
+			</header>
+			<?php 
+						//echo '<a name="' . $c . '" style="display:none;"></a>';
+/**
+			echo '<script type="text/javascript">
+					jQuery(document).ready(function() {
+						jQuery("#' . $item['item_id'] . '").on("show", function () {
+							jQuery("#excerpt' . $c . '").hide("slow");
+						});
+
+						jQuery("#' . $item['item_id'] . '").on("hide", function () {
+							jQuery("#excerpt' . $c . '").show("slow");
+						});
+					});
+				</script>';
+**/
+			?>
+			<div class="content">
+				<?php 
+					if ($item['item_feat_img'] != ''){
+						echo '<div style="float:left; margin-right: 10px; margin-bottom: 10px;"><img src="' . $item['item_feat_img'] . '"></div>';
+					}
+
+				?> <div style="display:none;"> <?php 
+					echo '<div class="item_meta item_meta_date">Published on ' . $item['item_date'] . ' by <span class="item-authorship">' . $item['item_author'] . '</span>.</div>';
+					echo 'Unix timestamp for item date:<span class="sortableitemdate">' . strtotime($item['item_date']) . '</span> and for added to feed date <span class="sortablerssdate">' . strtotime($item['item_added_date']) . '</span>.';
+				?> </div> <?php 
+				
+				echo '<div class="item_excerpt" id="excerpt' . $c . '">';
+						if ($format === 'nomination'){
+							echo'<p>' . pf_noms_excerpt($item['item_content']) . '</p>';
+						} else {
+							echo'<p>' . pf_feed_excerpt($item['item_content']) . '</p>';
+						}
+					echo '</div>';
+/**
+						echo '<div id="collapse' . $c . '" class="accordion-body collapse">';
+						echo '<div class="accordion-inner">';
+						echo '<div class="row-fluid">';
+							echo '<div class="span12 item_content">';
+								echo '<div>' . $item['item_content'] . '</div>';
+								echo '<br />';
+								echo '<a target="_blank" href="' . $item['item_link'] . '">' . __('Read More', 'pf') . '</a>';
+								echo '<br />';
+								echo '<strong class="item-tags">' . __('Item Tags', 'pf') . '</strong>: ' . $item['item_tags'] . '.';
+								echo '<br />';
+							echo '</div><!-- end item_content span12 -->';
+						echo '</div><!-- End row-fluid -->';
+						echo '</div>';
+						echo '</div>';
+						//print_r($item);
+						//print_r($ent = htmlentities($item['item_content']));
+						//print_r(html_entity_decode($ent));
+**/
+
+				?>
+			</div><!-- End content -->
+			<footer>
+				<p class="pubdate"><?php echo date( 'F j, Y; g:i a' , strtotime($item['item_date'])); ?></p>
+			</footer>
+			<?php 
+				//Allows plugins to introduce their own item format output. 
+				if (has_action('pf_output_modal')){
+					do_action('pf_output_modal', $item, $c, $format);
+					
+				} else {
+			?>		
+			<!-- Begin Modal -->
+			<div id="modal-<?php echo $item['item_id']; ?>" class="modal hide fade pfmodal" tabindex="-1" role="dialog" aria-labelledby="modal-<?php echo $item['item_id']; ?>-label" aria-hidden="true" pf-item-id="<?php echo $item['item_id']; ?>" pf-post-id="<?php echo $item['post_id']; ?>" pf-readability-status="<?php echo $item['readable_status']; ?>"> 
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>				
+				<div class="modal-mobile-nav pull-right">
+					<div class="mobile-goPrev pull-left">
+					
+					</div>
+					<div class="mobile-goNext pull-right">
+					
+					</div>					
+				</div>
+				<h3 id="modal-<?php echo $item['item_id']; ?>-label" class="modal_item_title source_title"><?php echo $item['item_title']; ?></h3>
+			  </div>
+			  <div class="row-fluid modal-body-row">
+				  <div class="modal-body span9">
+					<?php echo $item['item_content']; ?>
+				  </div>
+				  <div class="modal-sidebar span3">
+					<div class="goPrev modal-side-item row-fluid">
+					
+					</div>
+					<div class="modal-comments modal-side-item row-fluid">
+
+					</div>
+					<div class="goNext modal-side-item row-fluid">
+					
+					</div>
+				  </div>
+			  </div>
+			  <div class="modal-footer">
+				<div class="row-fluid">
+				<div class="pull-left original-link">
+					<a target="_blank" href="<?php echo $item['item_link']; ?>"><?php _e('Read Original', 'pf'); ?></a> 
+					<?php 
+					if ($format != 'nomination'){
+						?>
+						| <a class="modal-readability-reset" target="#readable" href="<?php echo $item['item_link']; ?>" pf-item-id="<?php echo $item['item_id']; ?>" pf-post-id="<?php echo $item['post_id']; ?>" pf-modal-id="#modal-<?php echo $item['item_id']; ?>"><?php  _e('Reset Readability', 'pf'); ?></a>
+						<?php 
+					}
+					?>
+				</div>
+				<div class="pull-right"><?php 
+				$this->form_of_actions_btns($item, $c, true, $format, $metadata, $id_for_comments); 
+				?></div><?php 
+				?>	
+				</div>
+				<div class="item-tags pull-left row-fluid">
+				<?php
+					echo '<em>' . __('Source', 'pf') . ': ' . $item['source_title'] . '</em> | ';
+					echo '<strong>' . __('Item Tags', 'pf') . '</strong>: ' . $item['item_tags']; 
+				?>
+				</div>
+			  </div>				
+			</div>
+			<!-- End Modal -->
+			<!-- Begin comments Modal
+			<div id="modal-comments-<?php echo $item['item_id']; ?>" class="modal hide fade pf-comments-modal" tabindex="-1" role="dialog" aria-labelledby="modal-comments-<?php echo $item['item_id']; ?>-label" aria-hidden="true"> 
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>				
+					<h5 id="modal-comments-<?php echo $item['item_id']; ?>-label" class="modal_comments_item_title"><?php _e('Comments for'); echo ': ' . $item['item_title']; ?></h5>
+				</div>
+				<div class="modal-body">
+					<?php //do_action('pf_modal_comments', $id_for_comments); ?>
+				</div>
+				<div class="modal-footer">
+				
+				</div>
+			</div>
+			End comments Modal -->
+				<?php } ?>
+		</article><!-- End article -->
+		<?php 
+	}
 
 	/**
 	 * Display function for the main All Content panel
 	 */
 	public function display_reader_builder() {
+	
 		//Calling the feedlist within the pf class.
-	echo '<div class="container-fluid">';
-		echo '<div class="row-fluid">';
-			echo '<div class="span9 title-span">';
-				echo '<h1>' . PF_TITLE . '</h1>';
-				echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';
-				echo '<div id="errors"></div>';
-			echo '</div><!-- End title 9 span -->';
-		echo '</div><!-- End Row -->';
-		echo '<div class="row-fluid">';
+		if (isset($_GET["pc"])){
+			$page = $_GET["pc"];
+			$page = $page-1;
+		} else {
+			$page = 0;
+		}
+		$count = $page * 20;	
+	?>
+	<div class="grid pf_container full">
+		<header id="app-banner">
+			<div class="title-span title">
+				<?php echo '<h1>' . PF_TITLE . '</h1>'; ?>
+				<?php 
+					if ($page > 0) {
+						$pageNumForPrint = sprintf( __('Page %1$d', 'pf'), $page);
+						echo '<span> - ' . $pageNumForPrint . '</span>';
+					}
+				?>
+				<span id="h-after"> &#8226; </span>
+				<button type="submit" class="refreshfeed btn btn-small" id="refreshfeed" value="<?php  _e('Refresh', 'pf')  ?>"><?php  _e('Refresh', 'pf');  ?></button>
+				<button class="btn btn-small" id="fullscreenfeed"> <?php  _e('Full Screen', 'pf');  ?> </button>
+			</div><!-- End title -->
+			<form id="feeds-search">
+					<label for="search-terms">Search</label>
+				<input type="text" name="search-terms" id="search-terms" placeholder="Enter search terms">
+				<input type="submit" class="btn btn-small" value="Search">
+			</form>			
+		</header><!-- End Header -->
+		<div role="main">
+		   <div id="tools">
 
-			echo 	'<div class="span6">
-						<div class="btn-group">
-							<button type="submit" class="refreshfeed btn btn-warning" id="refreshfeed" value="' . __('Refresh', 'pf') . '">' . __('Refresh', 'pf') . '</button>
-							<button type="submit" class="btn btn-info feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>
-							<button type="submit" class="btn btn-info feedsort" id="sortbyfeedindate" value="' . __('Sort by date entered feed', 'pf') . '">' . __('Sort by date entered feed', 'pf') . '</button>
-							<button class="btn btn-inverse" id="fullscreenfeed">' . __('Full Screen', 'pf') . '</button>
-						</div><!-- End btn-group -->
-					</div><!-- End span6 -->';
-			echo 	'<div class="span3 offset3">
-						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="' . __('Delete entire feed archive', 'pf') . '" >' . __('Delete entire feed archive', 'pf') . '</button>
-					</div><!-- End span3 -->';
+				<ul class="nav nav-tabs nav-stacked">
+					<li><a href="#">Top Blogs</a></li>
+					<li><a href="#">Starred Items</a></li>
+					<li><a href="#">Content from Twitter</a></li>
+				</ul>
 
-		echo '</div><!-- End Row -->';
-		//A testing method, to insure the feed is being received and processed.
-		//print_r($theFeed);
-		echo '<div class="row-fluid main-container">';
+				<form id="filters">
+					<h2>Filters</h2>
+					
+					<label><input type="checkbox"> Shared on Twitter</label>
+					<label><input type="checkbox"> Long Articles</label>
+					<label><input type="checkbox"> Short Articles</label>
+					<label><input type="checkbox"> Recommended by Algorithm</label>
+					<label><input type="checkbox"> High Number of Comments</label>
+					
+					<input type="submit" class="btn btn-small" value="Reset Filters">
+				</form>
 
-			# Some buttons to the left
-			echo '<div class="span1 deck">';
-					echo '<div class="row-fluid">
-							<div class="span12 main-card card well">
-								<div class="tapped">
-									' . __('Main Feed', 'pf') . '
+				<form id="subscription" method="post" action="">
+					<h2>New Subscription</h2>
+					<input type="text" placeholder="http://example.com/feed">
+				<input type="submit" class="btn btn-small" value="Subscribe">
+				</form>
+
+				<a href="#" id="settings" class="button">Settings</a>
+				<div class="btn-group">
+					<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete entire feed archive', 'pf');  ?>" ><?php  _e('Delete entire feed archive', 'pf');  ?></button>
+				</div>
+				<?php 
+				# Some buttons to the left
+/**				
+				echo '<div class="deck">';
+						echo '<div class="row-fluid">
+								<div class="span12 main-card card well">
+									<div class="tapped">
+										' . __('Main Feed', 'pf') . '
+									</div>
 								</div>
 							</div>
-						</div>
-					';
+						';
 
-					# Auto add these actions depending on if the module presents a stream?
-					//do_action( 'module_stream' );
-
-					echo '<div class="row-fluid">
-							<div class="span12 sub-card card well">
-								<div class="tapped">
-									' . __('Module Feed', 'pf') . '
-								</div>
-							</div>
-						</div>
-					';
-			echo '</div><!-- End span1 -->';
-
-		//Use this foreach loop to go through the overall feedlist, select each individual feed item (post) and do stuff with it.
-		//Based off SimplePie's tutorial at http://simplepie.org/wiki/tutorial/how_to_display_previous_feed_items_like_google_reader.
-		$c = 1;
-
-			echo '<div class="span7 feed-container accordion" id="feed-accordion">';
-		$ic = 0;
-		# http://twitter.github.com/bootstrap/javascript.html#collapse
-			if (isset($_GET["pc"])){
-				$page = $_GET["pc"];
-				$page = $page-1;
-			} else {
-				$page = 0;
-			}
-			$count = $page * 20;
-			$c = $c+$count;
-			//print_r($count);
-		foreach(PF_Feed_Item::archive_feed_to_display($count+1) as $item) {
-
-			$itemTagsArray = explode(",", $item['item_tags']);
-			$itemTagClassesString = '';
-			foreach ($itemTagsArray as $itemTag) { $itemTagClassesString .= pf_slugger($itemTag, true, false, true); $itemTagClassesString .= ' '; }
-			echo '<div class="well accordion-group feed-item row-fluid ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '">';
-
-				echo '<div class="span12" id="' . $c . '">';
-							# Let's build an info box!
-							//http://nicolasgallagher.com/pure-css-speech-bubbles/
-
-							$urlArray = parse_url($item['item_link']);
-							$sourceLink = 'http://' . $urlArray['host'];
-							//http://nicolasgallagher.com/pure-css-speech-bubbles/demo/
-							echo '<div class="feed-item-info-box well leftarrow" id="info-box-' . $item['item_id'] . '" style="display:none;">';
-								echo '
-								' . __('Feed', 'pf') . ': <span class="feed_title">' . $item['source_title'] . '</span><br />
-								' . __('Posted on', 'pf') . ': <span class="feed_posted">' . $item['item_date'] . '</span><br />
-								' . __('Added to feed on', 'pf') . '<span class="item_meta item_meta_added_date">' . $item['item_added_date'] . '.</span><br />
-								' . __('Authors', 'pf') . ': <span class="item_authors">' . $item['item_author'] . '</span><br />
-								' . __('Origin', 'pf') . ': <span class="source_name"><a target ="_blank" href="' . $sourceLink . '">' . $sourceLink . '</a></span><br />
-								' . __('Original Item', 'pf') . ': <span class="source_link"><a href="' . $item['item_link'] . '" class="item_url" target ="_blank">' . $item['item_title'] . '</a></span><br />
-								' . __('Tags', 'pf') . ': <span class="item_tags">' . $item['item_tags'] . '</span><br />
-								' . __('Times repeated in source', 'pf') . ': <span class="feed_repeat">' . $item['source_repeat'] . '</span><br />
-								';
-							echo '</div>';
-					echo '<div class="row-fluid accordion-heading">';
-					//echo '<a name="' . $c . '" style="display:none;"></a>';
-
-		echo '<script type="text/javascript">
-				jQuery(document).ready(function() {
-					jQuery("#' . $item['item_id'] . '").on("show", function () {
-						jQuery("#excerpt' . $c . '").hide("slow");
-					});
-
-					jQuery("#' . $item['item_id'] . '").on("hide", function () {
-						jQuery("#excerpt' . $c . '").show("slow");
-					});
-				});
-			</script>';
-
-
-					echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#feed-accordion" href="#collapse' . $c . '">';
-						if ($item['item_feat_img'] != ''){
-						echo '<div class="span3">';
-							echo '<div class="thumbnail">';
-							echo '<div style="float:left; margin-right: 10px; margin-bottom: 10px;"><img src="' . $item['item_feat_img'] . '"></div>';
-							echo '</div>';
-						echo '</div><!-- End span3 -->';
-						echo '<div class="span8">';
-						} else {
-						echo '<div class="span1">';
-								echo '<div style="float:left; margin: 10px auto;">
-										<div class="thumbnail" >
-										<img src="' . PF_URL . 'assets/images/books.png">
-										</div>
-									</div>';
-						echo '</div><!-- End span1 -->';
-						echo '<div class="span10">';
-						}
-
-							echo $c . '. ';
-							//The following is a fix as described in http://simplepie.org/wiki/faq/typical_multifeed_gotchas
-							//$iFeed = $item->get_feed();
-							echo '<span class="source_title">' . $item['source_title'] . '</span>';
-							echo ' : ';
-							echo '<h3>' . $item['item_title'] . '</h3>';
-							//echo '<br />';
-							echo '<div class="item_meta item_meta_date">Published on ' . $item['item_date'] . ' by <span class="item-authorship">' . $item['item_author'] . '</span>.</div>';
-							echo '<div style="display:none;">Unix timestamp for item date:<span class="sortableitemdate">' . strtotime($item['item_date']) . '</span> and for added to feed date <span class="sortablerssdate">' . strtotime($item['item_added_date']) . '</span>.</div>';
-							echo '<div class="item_excerpt" id="excerpt' . $c . '">' . pf_feed_excerpt($item['item_content']) . '</div>';
-						echo '</div><!-- End span8 or 10 -->';
-					echo '</a>';
-						echo '<div class="span1">';
-							# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
-							echo '<button class="btn btn-small itemInfobutton" id="' . $item['item_id'] . '"><i class="icon-info-sign"></i></button>';
-						echo '</div>';
-					echo '</div><!-- End row-fluid -->';
-
-					echo '<div id="collapse' . $c . '" class="accordion-body collapse">';
-					echo '<div class="accordion-inner">';
-					echo '<div class="row-fluid">';
-						echo '<div class="span12 item_content">';
-							echo '<div>' . $item['item_content'] . '</div>';
-							echo '<br />';
-							echo '<a target="_blank" href="' . $item['item_link'] . '">' . __('Read More', 'pf') . '</a>';
-							echo '<br />';
-							echo '<strong class="item-tags">' . __('Item Tags', 'pf') . '</strong>: ' . $item['item_tags'] . '.';
-							echo '<br />';
-						echo '</div><!-- end item_content span12 -->';
-					echo '</div><!-- End row-fluid -->';
-					//print_r($item);
-					//print_r($ent = htmlentities($item['item_content']));
-					//print_r(html_entity_decode($ent));
-
-					echo '<div class="item_actions row-fluid">';
-						echo '<div class="span12">';
-							//This needs a nonce for security.
-							echo '<form name="form-' . $item['item_id'] . '"><p>';
-							pf_prep_item_for_submit($item);
-							wp_nonce_field('nomination', PF_SLUG . '_nomination_nonce', false);
-							//print_r($this->get_posts_after_for_check( 2011-01-03, 'nomination' ));
-							//if(!($this->get_post_nomination_status('2012-08-10', $item['item_id'], 'post'))){
-								//print_r( 'false < test.'); } else { print_r('true'); die();}
-							echo '<input type="hidden" name="GreetingAll" class="GreetingAll" value="Hello Everyone!" />'
-									. '<input type="submit" class="PleasePushMe" id="' . $item['item_id'] . '" value="' . __('Nominate', 'pf') . '" />'
-									. '<div class="nominate-result-' . $item['item_id'] . '">'
-									. '<img class="loading-' . $item['item_id'] . '" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="' . __('Loading', 'pf') . '..." style="display: none" />'
-									. '</div></p>'
-								  . '</form>';
-
-
-					echo '</div><!-- End accordion Inner -->';
-					echo '</div><!-- End accordion body -->';
-
-						echo '</div>';
-					echo '</div>';
-				echo '</div><!-- End span12 -->';
-
-			echo '</div><!-- End row-fluid -->';
-
-			$c++;
-
-			//check out the built comment form from EditFlow at https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/editorial-comments.php
-
-			// So, we're going to need some AJAXery method of sending RSS data to a nominations post.
-			// Best example I can think of? The editorial comments from EditFlow, see edit-flow/modules/editorial-comments/editorial-comments.php, esp ln 284
-			// But lets start simple and get the hang of AJAX in WP first. http://wp.tutsplus.com/articles/getting-started-with-ajax-wordpress-pagination/
-			// Eventually should use http://wpseek.com/wp_insert_post/ I think....
-			// So what to submit? I could store all the post data in hidden fields and submit it within seperate form docs, but that's a lot of data.
-			// Perhaps just an md5 hash of the ID of the post? Then use the retrieval function to find the matching post and submit it properly?
-			// Something to experement with...
-		} // End foreach
-
-		echo '</div><!-- End feed-container span7 -->';
-
-		echo '<div class="span4 feed-widget-container">';
-			# Some widgets go here.
-				# Does this work? [nope...]
-				$blogusers = get_users('orderby=nom_count');
-				$uc = 1;
-				echo '<div class="row-fluid">
-				<div class="pf-right-widget well span12">
-						<div class="widget-title">
-							' . __('Nominator Leaderboard', 'pf') . '
-						</div>
-						<div class="widget-body">
-							<div class="navwidget">
-								<ol>';
-								foreach ($blogusers as $user){
-									if ($uc <= 5){
-										if (get_user_meta( $user->ID, 'nom_count', true )){
-										$userNomCount = get_user_meta( $user->ID, 'nom_count', true );
-
-										} else {
-											$userNomCount = 0;
-										}
-										$uc++;
-										echo '<li>' . $user->display_name . ' - ' . $userNomCount . '</li>';
-									}
-
-								}
-				echo			'</ol>
-							</div>
-						</div>
-				</div>
-				</div>
-				';
-
-				$widgets_array = $this->widget_array();
-				$all_widgets_array = apply_filters( 'dash_widget_bar', $widgets_array );
-
-				//$all_widgets_array = array_merge($widgets_array, $mod_widgets);
-				foreach ($all_widgets_array as $dash_widget) {
-
-					$defaults = array(
-						'title' => '',
-						'slug'       => '',
-						'callback'   => '',
-					);
-					$r = wp_parse_args( $dash_widget, $defaults );
-
-					// add_submenu_page() will fail if any arguments aren't passed
-					if ( empty( $r['title'] ) || empty( $r['slug'] ) || empty( $r['callback'] ) ) {
-						continue;
-					} else {
+						# Auto add these actions depending on if the module presents a stream?
+						//do_action( 'module_stream' );
 
 						echo '<div class="row-fluid">
-						<div class="pf-right-widget well span12 ' . $r['slug'] . '">';
-							echo '<div class="widget-title">' .
-								$r['title']
-							. '</div>';
-							echo '<div class="widget-body">';
-								call_user_func($r['callback']);
-							echo '</div>';
-						echo '</div>
-						</div>';
+								<div class="span12 sub-card card well">
+									<div class="tapped">
+										' . __('Module Feed', 'pf') . '
+									</div>
+								</div>
+							</div>
+						';
+				echo '</div><!-- End span1 -->';				
 
-					}
+		#Widgets
+				echo '<div class="feed-widget-container">';
+					# Some widgets go here.
+						# Does this work? [nope...]
+						$blogusers = get_users('orderby=nom_count');
+						$uc = 1;
+						echo '<div class="row-fluid">
+						<div class="pf-right-widget well span12">
+								<div class="widget-title">
+									' . __('Nominator Leaderboard', 'pf') . '
+								</div>
+								<div class="widget-body">
+									<div class="navwidget">
+										<ol>';
+										foreach ($blogusers as $user){
+											if ($uc <= 5){
+												if (get_user_meta( $user->ID, 'nom_count', true )){
+												$userNomCount = get_user_meta( $user->ID, 'nom_count', true );
 
-				}
+												} else {
+													$userNomCount = 0;
+												}
+												$uc++;
+												echo '<li>' . $user->display_name . ' - ' . $userNomCount . '</li>';
+											}
 
-				/**
-				// Loop through each module to get its source data
-				foreach ( $this->modules as $module ) {
-					//$source_data_object = array_merge( $source_data_object, $module->get_widget_object() );
+										}
+						echo			'</ol>
+									</div>
+								</div>
+						</div>
+						</div>
+						';
 
-					echo '<div class="row-fluid">
-					<div class="pf-right-widget well span12">';
+						$widgets_array = $this->widget_array();
+						$all_widgets_array = apply_filters( 'dash_widget_bar', $widgets_array );
 
-					echo '</div>
-					</div>';
-				}
-				**/
+						//$all_widgets_array = array_merge($widgets_array, $mod_widgets);
+						foreach ($all_widgets_array as $dash_widget) {
 
-		echo '</div><!-- End feed-widget-container span4 -->';
+							$defaults = array(
+								'title' => '',
+								'slug'       => '',
+								'callback'   => '',
+							);
+							$r = wp_parse_args( $dash_widget, $defaults );
 
-	echo '</div><!-- End row -->';
+							// add_submenu_page() will fail if any arguments aren't passed
+							if ( empty( $r['title'] ) || empty( $r['slug'] ) || empty( $r['callback'] ) ) {
+								continue;
+							} else {
+
+								echo '<div class="row-fluid">
+								<div class="pf-right-widget well span12 ' . $r['slug'] . '">';
+									echo '<div class="widget-title">' .
+										$r['title']
+									. '</div>';
+									echo '<div class="widget-body">';
+										call_user_func($r['callback']);
+									echo '</div>';
+								echo '</div>
+								</div>';
+
+							}
+
+						}
+
+						/**
+						// Loop through each module to get its source data
+						foreach ( $this->modules as $module ) {
+							//$source_data_object = array_merge( $source_data_object, $module->get_widget_object() );
+
+							echo '<div class="row-fluid">
+							<div class="pf-right-widget well span12">';
+
+							echo '</div>
+							</div>';
+						}
+						**/
+/**
+				echo '</div><!-- End feed-widget-container span4 -->';	
+**/				 
+				?>				
+			</div>			
+			<div id="entries">
+				<?php echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';  ?>
+				<div id="errors"></div>
+				<div class="display">
+					<div class="btn-group pull-left">
+					<button type="submit" id="gogrid" class="btn btn-small">Grid</button>
+					<button type="submit" id="golist" class="btn btn-small">List</button>
+
+					<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
+					echo '<button type="submit" class="btn btn-small feedsort" id="sortbyfeedindate" value="' . __('Sort by date entered feed', 'pf') . '">' . __('Sort by date entered feed', 'pf') . '</button>'; ?>
+					</div>
+					<div class="pull-right text-right">
+					<!-- or http://thenounproject.com/noun/list/#icon-No9479? -->
+					<a class="btn btn-small" id="gomenu" href="#">Menu <i class="icon-tasks"></i></a>
+					</div>
+				</div><!-- End btn-group -->
+		
+			<?php 
+		
+				//Use this foreach loop to go through the overall feedlist, select each individual feed item (post) and do stuff with it.
+				//Based off SimplePie's tutorial at http://simplepie.org/wiki/tutorial/how_to_display_previous_feed_items_like_google_reader.
+				$c = 1;
+				$ic = 0;
+				$c = $c+$count;	
+					//print_r($count);
+			foreach(PF_Feed_Item::archive_feed_to_display($count+1) as $item) {
+				
+				$this->form_of_an_item($item, $c);
+
+				$c++;
+
+				//check out the built comment form from EditFlow at https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/editorial-comments.php
+
+				// So, we're going to need some AJAXery method of sending RSS data to a nominations post.
+				// Best example I can think of? The editorial comments from EditFlow, see edit-flow/modules/editorial-comments/editorial-comments.php, esp ln 284
+				// But lets start simple and get the hang of AJAX in WP first. http://wp.tutsplus.com/articles/getting-started-with-ajax-wordpress-pagination/
+				// Eventually should use http://wpseek.com/wp_insert_post/ I think....
+				// So what to submit? I could store all the post data in hidden fields and submit it within seperate form docs, but that's a lot of data.
+				// Perhaps just an md5 hash of the ID of the post? Then use the retrieval function to find the matching post and submit it properly?
+				// Something to experement with...
+			} // End foreach
+
+		echo '</div><!-- End entries -->';
+
+	echo '</div><!-- End main -->';
 
 		//Nasty hack because infinite scroll only works starting with page 2 for some reason.
 		if ($page == 0){ $page = 1; }
@@ -402,6 +653,14 @@ class PF_Admin {
 	 */
 	function display_review_builder() {
 		include( PF_ROOT . "/includes/under-review/under-review.php" );
+	}
+	
+	function ajax_get_comments(){
+			if (has_action('pf_modal_comments')){
+				$id_for_comments = $_POST['id_for_comments'];
+				do_action('pf_modal_comments', $id_for_comments);
+			}
+			die();
 	}
 
 	/**
@@ -472,24 +731,33 @@ class PF_Admin {
 			wp_register_style( PF_SLUG . '-style', PF_URL . 'assets/css/style.css');
 			wp_register_style( 'bootstrap-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
 			wp_register_style( 'bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
+			wp_register_style( PF_SLUG . '-susy-style', PF_URL . 'assets/css/susy.css');
+			wp_register_style( PF_SLUG . '-reset-style', PF_URL . 'assets/css/reset.css');
+			wp_register_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
+			wp_register_script('views', PF_URL . 'assets/js/views.js', array( 'twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide'  ));	
+			wp_register_script('readability-imp', PF_URL . 'assets/js/readability-imp.js', array( 'twitter-bootstrap', 'jquery', 'views' ));
+			wp_register_script('infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery', 'views', 'readability-imp' ));
+			wp_register_script('scrollimp', PF_URL . 'assets/js/scroll-imp.js', array( 'infiniscroll' ));
 
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
 		if (('toplevel_page_pf-menu') == $hook) {
 			//And now lets enqueue the script, ensuring that jQuery is already active.
 
-			wp_enqueue_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
+			wp_enqueue_script('tinysort');
 			wp_enqueue_script('sort-imp', PF_URL . 'assets/js/sort-imp.js', array( 'tinysort', 'twitter-bootstrap', 'jq-fullscreen' ));
-			wp_enqueue_script('readability-imp', PF_URL . 'assets/js/readability-imp.js', array( 'twitter-bootstrap', 'jquery' ));
+			wp_enqueue_script('views');			
+			wp_enqueue_script('readability-imp');
 			wp_enqueue_script('nomination-imp', PF_URL . 'assets/js/nomination-imp.js', array( 'jquery' ));
 			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
 			wp_enqueue_script('jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
-			wp_enqueue_script('infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery' ));
-			wp_enqueue_script('scrollimp', PF_URL . 'assets/js/scroll-imp.js', array( 'infiniscroll' ));
-
+			wp_enqueue_script('infiniscroll');
+			wp_enqueue_script('scrollimp');
+			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style('bootstrap-style');
 			wp_enqueue_style('bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
+			wp_enqueue_style( PF_SLUG . '-susy-style' );
 
 		}
 		if (('pressforward_page_pf-review') == $hook) {
@@ -498,9 +766,15 @@ class PF_Admin {
 			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
 			wp_enqueue_script('send-to-draft-imp', PF_URL . 'assets/js/send-to-draft-imp.js', array( 'jquery' ));
 			wp_enqueue_script('archive-nom-imp', PF_URL . 'assets/js/nom-archive-imp.js', array( 'jquery' ));
+			wp_enqueue_script('views');			
+			wp_enqueue_script('readability-imp');
+			wp_enqueue_script('infiniscroll');
+			wp_enqueue_script('scrollimp');			
+			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style('bootstrap-style');
 			wp_enqueue_style('bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
+			wp_enqueue_style( PF_SLUG . '-susy-style' );
 			wp_enqueue_script( 'post' );
 		}
 		if (('pressforward_page_pf-feeder') != $hook) { return; }
@@ -510,13 +784,11 @@ class PF_Admin {
 			wp_enqueue_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
 			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
 
-			wp_register_style( PF_SLUG . '-style', PF_URL . 'assets/css/style.css');
-			wp_register_style( 'bootstrap-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
-			wp_register_style( 'bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
-
+			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style('bootstrap-style');
 			wp_enqueue_style('bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
+			wp_enqueue_style( PF_SLUG . '-susy-style' );
 
 		}
 
