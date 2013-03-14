@@ -1,6 +1,7 @@
 jQuery(document).ready(function() {
 	jQuery('.star-item').click(function(evt){
 		evt.preventDefault();
+		var obj			= jQuery(this);
 		var item 		= jQuery(this).closest('article');
 		var id			= item.attr('pf-post-id');
 		var parent		= jQuery(this).parent();
@@ -9,9 +10,23 @@ jQuery(document).ready(function() {
 			otherstar = item.find('header .star-item');
 		} else {
 			otherstar = item.find('.modal .star-item');
-		}		
+		}
 
-		dostarstuff(this, item, id, parent, otherstar);
+		jQuery.post(ajaxurl, {
+				action: 'pf_ajax_star',
+				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
+				post_id: id
+		}, 
+		function(response) {
+			var read_content = jQuery(response).find("response_data").text();
+			if (read_content == '1'){
+				alert(otherstar);
+				dostarstuff(obj, item, id, parent, otherstar);
+			} else {
+				alert('PressForward was unable to access the relationships database.');
+			}
+		});		
+
 		
 	});
 	

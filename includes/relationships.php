@@ -326,10 +326,8 @@ function pf_unstar_item_for_user( $item_id, $user_id ) {
 /**
  * Function for AJAX action to mark an item as starred or unstarred.
  *
- * @param string $relationship_type
- * @param int $user_id
  */
-
+add_action( 'wp_ajax_pf_ajax_star', 'pf_ajax_star');
 function pf_ajax_star(){
 	$item_id = $_POST['post_id'];
 	$userObj = wp_get_current_user();
