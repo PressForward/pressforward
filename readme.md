@@ -1,14 +1,14 @@
 
 ## Plugin Name: PressForward
-## Plugin URI: http://pressforward.org/
-## Description: PressForward is a WordPress plugin built to process feeds as a feed reader, allow groups to share and discuss the items that come in and then blog about them as an integrated editorial process. Currently in Alpha.
-## Version: 1.8.1
-## Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
-## Author URI: http://aramzs.me, http://boone.gorg.es/, http://clioweb.org
-## License: GPL2
+Plugin URI: http://pressforward.org/
+Description: PressForward is a WordPress plugin built to process feeds as a feed reader, allow groups to share and discuss the items that come in and then blog about them as an integrated editorial process. Currently in Alpha.
+Version: 1.8.1
+Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
+Author URI: http://aramzs.me, http://boone.gorg.es/, http://clioweb.org
+License: GPL2
 
 
-	Developed for the Center for History and New Media
+	Developed for the Center for History and New Media at George Mason University.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as
@@ -24,7 +24,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	
-### Project goals:
+#### Project goals:
 
 -	Retrieve items within the WordPress dashboard as an independent process (no required attachment to external servers)
 
