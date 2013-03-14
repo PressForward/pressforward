@@ -102,6 +102,14 @@ class PF_Admin {
 	}
 	
 	public function form_of_actions_btns($item, $c, $modal = false, $format = 'standard', $metadata = array(), $id_for_comments ){
+			$item_id = 0;
+			$user = wp_get_current_user();
+			$user_id = $user->ID;
+			if ($format === 'nomination'){
+				$item_id = $metadata['nom_id'];
+			} else {
+				$item_id = $item['post_id'];
+			}
 			?>	
 				<div class="actions <?php if($modal){ echo 'modal-btns '; } ?>btn-group">
 					<?php
@@ -123,8 +131,14 @@ class PF_Admin {
 					}
 					# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
 					echo '<button class="btn btn-small itemInfobutton" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover"><i class="icon-info-sign"></i></button>';
-					echo '<button class="btn btn-small star-item"><i class="icon-star"></i> Star</button>';
-						# <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
+					
+					if (pf_is_item_starred_for_user( $item_id, $user_id ) ){
+						echo '<button class="btn btn-small star-item btn-warning"><i class="icon-star"></i> Starred</button>';
+					} else {
+						echo '<button class="btn btn-small star-item"><i class="icon-star"></i> Star</button>';
+					}
+					
+					# <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
 					if (has_action('pf_comment_action_button')){
 						$commentModalCall = '#modal-comments-' . $item['item_id'];
 						$commentButtonArray = array('id' => $id_for_comments, 'modalID' => $commentModalCall);

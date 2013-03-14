@@ -19,8 +19,8 @@ jQuery(document).ready(function() {
 		}, 
 		function(response) {
 			var read_content = jQuery(response).find("response_data").text();
-			if (read_content == '1'){
-				alert(otherstar);
+			if (read_content != false){
+				//alert(otherstar);
 				dostarstuff(obj, item, id, parent, otherstar);
 			} else {
 				alert('PressForward was unable to access the relationships database.');

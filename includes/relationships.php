@@ -332,8 +332,8 @@ function pf_ajax_star(){
 	$item_id = $_POST['post_id'];
 	$userObj = wp_get_current_user();
 	$user_id = $userObj->ID;
-	
-	if (pf_is_item_starred_for_user( $item_id, $user_id )){
+	$result = 'nada';
+	if ( 1 != pf_is_item_starred_for_user( $item_id, $user_id )){
 		$result = pf_star_item_for_user( $item_id, $user_id );
 	} else {
 		$result = pf_unstar_item_for_user( $item_id, $user_id );
