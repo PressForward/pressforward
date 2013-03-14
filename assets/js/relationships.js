@@ -10,20 +10,25 @@ jQuery(document).ready(function() {
 		} else {
 			otherstar = item.find('.modal .star-item');
 		}		
-		if (jQuery(this).hasClass('btn-warning')){
+
+		dostarstuff(this, item, id, parent, otherstar);
 		
-			jQuery(this).removeClass('btn-warning');
-			jQuery(this).html('<i class="icon-star"></i> Star');
+	});
+	
+	function dostarstuff(obj, item, id, parent, otherstar){
+		if (jQuery(obj).hasClass('btn-warning')){
+		
+			jQuery(obj).removeClass('btn-warning');
+			jQuery(obj).html('<i class="icon-star"></i> Star');
 			otherstar.removeClass('btn-warning');
 			otherstar.html('<i class="icon-star"></i> Star');		
 		} else {
 			
 
-			jQuery(this).addClass('btn-warning');
-			jQuery(this).html('<i class="icon-star"></i> Starred');
+			jQuery(obj).addClass('btn-warning');
+			jQuery(obj).html('<i class="icon-star"></i> Starred');
 			otherstar.addClass('btn-warning');
 			otherstar.html('<i class="icon-star"></i> Starred');
 		}
-		
-	});
+	}
 });
