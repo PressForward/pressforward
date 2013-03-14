@@ -95,7 +95,7 @@ function reviewModal(){
 		var element = jQuery(this);		
 		var modalID = element.attr('id');		
 		var modalIDString = '#'+modalID;
-		openModals.push(modalIDString);
+		//openModals.push(modalIDString);
 		//alert(modalID);
 		//showDiv(jQuery('#entries'), jQuery('#'+modalID));		
 		var itemID = element.attr('pf-item-id');
@@ -126,8 +126,6 @@ function hideModal(){
 }
 
 jQuery(document).ready(function() {
-
-	var openModals = [];
 	
 	jQuery('#gogrid').click(function (evt){ 
 			evt.preventDefault();
