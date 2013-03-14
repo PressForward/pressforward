@@ -324,6 +324,38 @@ function pf_unstar_item_for_user( $item_id, $user_id ) {
 }
 
 /**
+ * Function for AJAX action to mark an item as starred or unstarred.
+ *
+ * @param string $relationship_type
+ * @param int $user_id
+ */
+
+function pf_ajax_star(){
+	$item_id = $_POST['post_id'];
+	$userObj = wp_get_current_user();
+	$user_id = $userObj->ID;
+	
+	if (pf_is_item_starred_for_user( $item_id, $user_id )){
+		$result = pf_star_item_for_user( $item_id, $user_id );
+	} else {
+		$result = pf_unstar_item_for_user( $item_id, $user_id );
+	}
+	
+	ob_start();
+	$response = array(
+			'what' => 'relationships',
+			'action' => 'pf_ajax_star',
+			'id' => $item_id,
+			'data' => $result,
+			'supplemental' => array(
+					'user' => $user_id,
+					'buffered' => ob_get_contents()
+				)
+			);
+	
+}
+
+/**
  * Get a list of starred items for a given user
  *
  * Use this function in conjunction with PF_Feed_Item:

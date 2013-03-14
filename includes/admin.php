@@ -103,7 +103,7 @@ class PF_Admin {
 	
 	public function form_of_actions_btns($item, $c, $modal = false, $format = 'standard', $metadata = array(), $id_for_comments ){
 			?>	
-				<div class="actions btn-group">
+				<div class="actions <?php if($modal){ echo 'modal-btns '; } ?>btn-group">
 					<?php
 					$infoPop = 'top';
 					if ($modal == false){
@@ -123,7 +123,7 @@ class PF_Admin {
 					}
 					# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
 					echo '<button class="btn btn-small itemInfobutton" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover"><i class="icon-info-sign"></i></button>';
-					echo '<button class="btn btn-small"><i class="icon-star"></i> Star</button>';
+					echo '<button class="btn btn-small star-item"><i class="icon-star"></i> Star</button>';
 						# <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
 					if (has_action('pf_comment_action_button')){
 						$commentModalCall = '#modal-comments-' . $item['item_id'];
@@ -738,6 +738,7 @@ class PF_Admin {
 			wp_register_script('readability-imp', PF_URL . 'assets/js/readability-imp.js', array( 'twitter-bootstrap', 'jquery', 'views' ));
 			wp_register_script('infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery', 'views', 'readability-imp' ));
 			wp_register_script('scrollimp', PF_URL . 'assets/js/scroll-imp.js', array( 'infiniscroll' ));
+			wp_register_script('pf-relationships', PF_URL . 'assets/js/relationships.js', array( 'infiniscroll' ));
 
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
@@ -753,6 +754,7 @@ class PF_Admin {
 			wp_enqueue_script('jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
 			wp_enqueue_script('infiniscroll');
 			wp_enqueue_script('scrollimp');
+			wp_enqueue_script('pf-relationships');
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style('bootstrap-style');
 			wp_enqueue_style('bootstrap-responsive-style');
@@ -770,6 +772,7 @@ class PF_Admin {
 			wp_enqueue_script('readability-imp');
 			wp_enqueue_script('infiniscroll');
 			wp_enqueue_script('scrollimp');			
+			wp_enqueue_script('pf-relationships');
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style('bootstrap-style');
 			wp_enqueue_style('bootstrap-responsive-style');
