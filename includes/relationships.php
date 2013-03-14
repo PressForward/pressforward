@@ -353,6 +353,11 @@ function pf_ajax_star(){
 				)
 			);
 	
+	$xmlResponse = new WP_Ajax_Response($response);
+	$xmlResponse->send();
+	ob_end_flush();
+	die();			
+	
 }
 
 /**
