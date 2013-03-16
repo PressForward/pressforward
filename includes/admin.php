@@ -150,6 +150,7 @@ class PF_Admin {
 						echo '<a href="#nominate" class="btn btn-small nom-to-draft" form="' . $metadata['item_id'] . '">' . __('Draft', 'pf') .  '</a>';
 					} else {
 						echo '<button class="btn btn-small nominate-now" form="' . $item['item_id'] . '">' . __('Nominate', 'pf') .  '</button>';
+						# Add option here for admin-level users to send items direct to draft. 
 					}
 					
 					

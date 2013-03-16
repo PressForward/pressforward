@@ -172,6 +172,9 @@ function pf_get_relationship_type_id( $relationship_type ) {
 	$types = array(
 		1 => 'read',
 		2 => 'star',
+		3 => 'archive',
+		4 => 'nominate',
+		
 	);
 
 	$relationship_type_id = array_search( $relationship_type, $types );
@@ -381,4 +384,43 @@ function pf_get_starred_items_for_user( $user_id, $format = 'raw' ) {
 	}
 
 	return $rs;
+}
+
+/** 
+ * A generalized function for setting/unsetting a relationship via ajax
+ * 
+ */
+add_action( 'wp_ajax_pf_ajax_relate', 'pf_ajax_relate');
+function pf_ajax_relate(){
+
+	$item_id = $_POST['post_id'];
+	$relationship_type = $_POST['schema'];
+	$userObj = wp_get_current_user();
+	$user_id = $userObj->ID;
+	$result = 'nada';
+	if ( false != pf_get_relationship_value( $relationship_type, $item_id, $user_id )){
+		$result = pf_set_relationship( $relationship_type, $item_id, $user_id, '1' );
+	} else {
+		$result = pf_delete_relationship( $relationship_type, $item_id, $user_id );
+	}
+	
+	ob_start();
+	$response = array(
+			'what' => 'relationships',
+			'action' => 'pf_ajax_star',
+			'id' => $item_id,
+			'data' => $result,
+			'supplemental' => array(
+					'user' => $user_id,
+					'buffered' => ob_get_contents()
+				)
+			);
+	
+	$xmlResponse = new WP_Ajax_Response($response);
+	$xmlResponse->send();
+	ob_end_flush();
+	die();			
+	
+	
+
 }
