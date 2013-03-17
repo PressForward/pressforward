@@ -146,11 +146,19 @@ class PF_Admin {
 					
 					} 
 					if ($format === 'nomination'){
+					
 						echo '<button class="btn btn-small nom-to-archive" form="' . $metadata['nom_id'] . '">' . __('Archive', 'pf') .  '</button>';
+						
 						echo '<a href="#nominate" class="btn btn-small nom-to-draft" form="' . $metadata['item_id'] . '">' . __('Draft', 'pf') .  '</a>';
+					
 					} else {
-						echo '<button class="btn btn-small nominate-now" form="' . $item['item_id'] . '">' . __('Nominate', 'pf') .  '</button>';
-						# Add option here for admin-level users to send items direct to draft. 
+						if (pf_get_relationship('nominate', $item_id, $user_id)){
+							echo '<button class="btn btn-small nominate-now btn-success schema-actor" pf-schema="nominate" form="' . $item['item_id'] . '">' . __('Nominated', 'pf') .  '</button>';
+							# Add option here for admin-level users to send items direct to draft. 
+						} else {
+							echo '<button class="btn btn-small nominate-now schema-actor" pf-schema="nominate" form="' . $item['item_id'] . '">' . __('Nominate', 'pf') .  '</button>';
+							# Add option here for admin-level users to send items direct to draft. 
+						}
 					}
 					
 					
