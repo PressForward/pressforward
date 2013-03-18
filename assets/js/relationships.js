@@ -47,7 +47,7 @@ jQuery(document).ready(function() {
 		}
 	}
 	
-	jQuery('.schema-actor').click(function(evt){
+	jQuery('.pf_container').on('click', '.schema-actor', function(evt){
 		evt.preventDefault();
 		var obj			= jQuery(this);
 		var schema		= obj.attr('pf-schema');
@@ -59,7 +59,7 @@ jQuery(document).ready(function() {
 		if (parent.hasClass('modal-btns')){
 			otherschema = item.find('#'+id+' [pf-schema="'+schema+'"]');
 		} else {
-			otherschema = item.find('#'+id+' [pf-schema="'+schema+'"]');
+			otherschema = item.find('#'+id+' .modal-btns [pf-schema="'+schema+'"]');
 		}
 		
 		if(obj.is('[pf-schema-class]')){
@@ -77,7 +77,7 @@ jQuery(document).ready(function() {
 		function(response) {
 			var read_content = jQuery(response).find("response_data").text();
 			if (read_content != false){
-				//alert(schemaclass);
+				alert(otherschema.attr('id'));
 				doschemastuff(obj, item, id, parent, otherschema, schemaclass);
 			} else {
 				alert('PressForward was unable to access the relationships database.');
@@ -102,10 +102,10 @@ jQuery(document).ready(function() {
 			if (jQuery(obj).hasClass(schemaclass)){
 			
 				jQuery(obj).removeClass(schemaclass);
-				otherstar.removeClass(schemaclass);		
+				otherschema.removeClass(schemaclass);		
 			} else {
 				jQuery(obj).addClass(schemaclass);
-				otherstar.addClass(schemaclass);
+				otherschema.addClass(schemaclass);
 			}		
 		
 		}
