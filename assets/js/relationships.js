@@ -1,5 +1,5 @@
 jQuery(document).ready(function() {
-	jQuery('.star-item').click(function(evt){
+	jQuery('.pf_container').on('click', '.star-item', function(evt){
 		evt.preventDefault();
 		var obj			= jQuery(this);
 		var item 		= jQuery(this).closest('article');
