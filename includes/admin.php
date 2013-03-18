@@ -68,8 +68,8 @@ class PF_Admin {
 		// Options page is accessible only to Administrators
 		add_submenu_page(
 			PF_MENU_SLUG,
-			PF_TITLE . __(' Options', 'pf'), // @todo sprintf
-			PF_TITLE . __(' Options', 'pf'), // @todo Too big to fit on a single line
+			__('Preferences', 'pf'), // @todo sprintf
+			__('Preferences', 'pf'),
 			'manage_options',
 			PF_SLUG . '-options',
 			array($this, 'display_options_builder')
@@ -78,8 +78,8 @@ class PF_Admin {
 		// Feed-listing page is accessible only to Editors and above
 		add_submenu_page(
 			PF_MENU_SLUG,
-			PF_TITLE . __(' Feeder', 'pf'),
-			PF_TITLE . __(' Feeder', 'pf'),
+			__('Feeder', 'pf'),
+			__('Feeder', 'pf'),
 			'edit_others_posts',
 			PF_SLUG . '-feeder',
 			array($this, 'display_feeder_builder')
