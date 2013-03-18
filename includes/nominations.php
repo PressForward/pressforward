@@ -402,9 +402,9 @@ class PF_Nominations {
 			die($this->__('Nonce not recieved. Are you sure you should be drafting?', 'pf'));
 		} else {
 ##Check
-		print_r(__('Sending to Draft.', 'pf'));
+		//print_r(__('Sending to Draft.', 'pf'));
 ##Check
-		print_r($_POST);
+		//print_r($_POST);
 			$item_title = $_POST['nom_title'];
 			$item_content = $_POST['nom_content'];
 			$data = array(
@@ -428,10 +428,10 @@ class PF_Nominations {
 			//Alternative check with post_exists? or use same as above?
 			if ($post_check != true) {
 ##Check
-				print_r('No Post exists.');
+				//print_r('No Post exists.');
 				$newPostID = wp_insert_post( $data, true );
 ##Check
-				print_r($newPostID);
+				//print_r($newPostID);
 				add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
 
 				add_post_meta($newPostID, 'source_title', $_POST['source_title'], true);
