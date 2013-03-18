@@ -402,7 +402,7 @@ class PF_Nominations {
 			die($this->__('Nonce not recieved. Are you sure you should be drafting?', 'pf'));
 		} else {
 ##Check
-		//print_r(__('Sending to Draft.', 'pf'));
+		print_r(__('Sending to Draft.', 'pf'));
 ##Check
 		//print_r($_POST);
 			$item_title = $_POST['nom_title'];
