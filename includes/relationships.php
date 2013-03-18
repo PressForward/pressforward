@@ -177,7 +177,7 @@ function pf_get_relationship_type_id( $relationship_type ) {
 		
 	);
 	
-	$types = apply_filter('pf_relationship_types', $types);
+	$types = apply_filters('pf_relationship_types', $types);
 
 	$relationship_type_id = array_search( $relationship_type, $types );
 
