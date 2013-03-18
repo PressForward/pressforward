@@ -152,11 +152,11 @@ class PF_Admin {
 						echo '<a href="#nominate" class="btn btn-small nom-to-draft" form="' . $metadata['item_id'] . '">' . __('Draft', 'pf') .  '</a>';
 					
 					} else {
-						if (pf_get_relationship('nominate', $item_id, $user_id)){
-							echo '<button class="btn btn-small nominate-now btn-success schema-actor" pf-schema="nominate" form="' . $item['item_id'] . '">' . __('Nominated', 'pf') .  '</button>';
+						if ('' == pf_get_relationship('nominate', $item_id, $user_id)){
+							echo '<button class="btn btn-small nominate-now schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '">' . __('Nominate', 'pf') .  '</button>';
 							# Add option here for admin-level users to send items direct to draft. 
 						} else {
-							echo '<button class="btn btn-small nominate-now schema-actor" pf-schema="nominate" form="' . $item['item_id'] . '">' . __('Nominate', 'pf') .  '</button>';
+							echo '<button class="btn btn-small nominate-now btn-success schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '">' . __('Nominated', 'pf') .  '</button>';
 							# Add option here for admin-level users to send items direct to draft. 
 						}
 					}

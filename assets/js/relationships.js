@@ -62,7 +62,7 @@ jQuery(document).ready(function() {
 			otherschema = item.find('#'+id+' [pf-schema="'+schema+'"]');
 		}
 		
-		if(obj.is('pf-schema-class')){
+		if(obj.is('[pf-schema-class]')){
 			schemaclass = obj.attr('pf-schema-class');
 		} else {
 			schemaclass = false;
@@ -77,7 +77,7 @@ jQuery(document).ready(function() {
 		function(response) {
 			var read_content = jQuery(response).find("response_data").text();
 			if (read_content != false){
-				//alert(otherstar);
+				//alert(schemaclass);
 				doschemastuff(obj, item, id, parent, otherschema, schemaclass);
 			} else {
 				alert('PressForward was unable to access the relationships database.');

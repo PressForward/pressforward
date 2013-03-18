@@ -15,6 +15,7 @@ jQuery(document).ready(function() {
 	var item_id 		= jQuery("#item_id_"+itemID).val();
 	var item_wp_date	= jQuery("#item_wp_date_"+itemID).val();
 	var item_tags		= jQuery("#item_tags_"+itemID).val();
+	var source_repeat	= jQuery("#source_repeat_"+itemID).val();	
 	var postID 			= jQuery('#'+itemID).attr('pf-post-id');
 //	var errorThrown		= 'Broken';
 	var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val())
@@ -32,6 +33,7 @@ jQuery(document).ready(function() {
 			item_wp_date: item_wp_date,
 			item_tags: item_tags,
 			item_post_id: postID,
+			source_repeat: source_repeat,
 			pf_nomination_nonce: theNonce
 		},
 		function(response) {

@@ -294,6 +294,8 @@ class PF_Nominations {
 		if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )
 			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) );
 
+			
+		date_default_timezone_set(get_option('timezone_string'));	
 		//ref http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields, http://wpseek.com/wp_insert_post/
 		$time = current_time('mysql', $gmt = 0);
 		//@todo Play with post_exists (wp-admin/includes/post.php ln 493) to make sure that submissions have not already been submitted in some other method.
@@ -357,8 +359,8 @@ class PF_Nominations {
 			'post_type' => 'nomination',
 			//'post_author' => $user_ID,
 				//Hurm... what we really need is a way to pass the nominator's userID to this function to credit them as the author of the nomination.
-				//Then we could create a leaderboard.
-			'post_date' => $_SESSION['cal_startdate'],
+				//Then we could create a leaderboard. ;
+			//'post_date' => $_SESSION['cal_startdate'],
 				//Do we want this to be nomination date or origonal posted date? Prob. nomination date? Optimally we can store and later sort by both.
 			'post_title' => $item_title,//$item_title,
 			'post_content' => $item_content,

@@ -400,7 +400,7 @@ function pf_ajax_relate(){
 	$userObj = wp_get_current_user();
 	$user_id = $userObj->ID;
 	$result = 'nada';
-	if ( false != pf_get_relationship_value( $relationship_type, $item_id, $user_id )){
+	if ( 1 != pf_get_relationship_value( $relationship_type, $item_id, $user_id )){
 		$result = pf_set_relationship( $relationship_type, $item_id, $user_id, '1' );
 	} else {
 		$result = pf_delete_relationship( $relationship_type, $item_id, $user_id );
@@ -409,7 +409,7 @@ function pf_ajax_relate(){
 	ob_start();
 	$response = array(
 			'what' => 'relationships',
-			'action' => 'pf_ajax_star',
+			'action' => 'pf_ajax_relate',
 			'id' => $item_id,
 			'data' => $result,
 			'supplemental' => array(
