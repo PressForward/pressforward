@@ -77,7 +77,7 @@ jQuery(document).ready(function() {
 		function(response) {
 			var read_content = jQuery(response).find("response_data").text();
 			if (read_content != false){
-				alert(otherschema.attr('id'));
+				//alert(otherschema.attr('id'));
 				doschemastuff(obj, item, id, parent, otherschema, schemaclass);
 			} else {
 				alert('PressForward was unable to access the relationships database.');
