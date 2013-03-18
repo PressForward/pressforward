@@ -133,9 +133,9 @@ class PF_Admin {
 					echo '<button class="btn btn-small itemInfobutton" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover"><i class="icon-info-sign"></i></button>';
 					
 					if (pf_is_item_starred_for_user( $item_id, $user_id ) ){
-						echo '<button class="btn btn-small star-item btn-warning"><i class="icon-star"></i> Starred</button>';
+						echo '<button class="btn btn-small star-item btn-warning"><i class="icon-star"></i></button>';
 					} else {
-						echo '<button class="btn btn-small star-item"><i class="icon-star"></i> Star</button>';
+						echo '<button class="btn btn-small star-item"><i class="icon-star"></i></button>';
 					}
 					
 					# <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>

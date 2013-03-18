@@ -34,16 +34,11 @@ jQuery(document).ready(function() {
 		if (jQuery(obj).hasClass('btn-warning')){
 		
 			jQuery(obj).removeClass('btn-warning');
-			jQuery(obj).html('<i class="icon-star"></i> Star');
 			otherstar.removeClass('btn-warning');
-			otherstar.html('<i class="icon-star"></i> Star');		
 		} else {
 			
-
 			jQuery(obj).addClass('btn-warning');
-			jQuery(obj).html('<i class="icon-star"></i> Starred');
 			otherstar.addClass('btn-warning');
-			otherstar.html('<i class="icon-star"></i> Starred');
 		}
 	}
 	
