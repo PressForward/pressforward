@@ -13,6 +13,7 @@ jQuery(document).ready(function() {
 			pf_drafted_nonce: theNonce
 		},
 		function(response) {
+			jQuery('#'+nomID).addClass('archived');
 			jQuery('#'+nomID).hide();
 			if (response != 0){
 				jQuery(".pf-alert").html(response);
