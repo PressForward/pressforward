@@ -3,7 +3,7 @@ jQuery(document).ready(function() {
 		evt.preventDefault();
 		var obj			= jQuery(this);
 		var item 		= jQuery(this).closest('article');
-		var id			= item.attr('pf-post-id');
+		var id			= item.attr('pf-feed-item-id');
 		var parent		= jQuery(this).parent();
 		var otherstar;
 		if (parent.hasClass('modal-btns')){
@@ -47,7 +47,7 @@ jQuery(document).ready(function() {
 		var obj			= jQuery(this);
 		var schema		= obj.attr('pf-schema');
 		var item 		= jQuery(this).closest('article');
-		var id			= item.attr('pf-post-id');
+		var id			= item.attr('pf-feed-item-id');
 		var parent		= jQuery(this).parent();
 		var otherschema;
 		var schemaclass;

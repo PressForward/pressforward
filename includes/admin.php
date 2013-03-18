@@ -106,9 +106,9 @@ class PF_Admin {
 			$user = wp_get_current_user();
 			$user_id = $user->ID;
 			if ($format === 'nomination'){
-				$item_id = $metadata['nom_id'];
+				$item_id = $metadata['item_id'];
 			} else {
-				$item_id = $item['post_id'];
+				$item_id = $item['item_id'];
 			}
 			?>	
 				<div class="actions <?php if($modal){ echo 'modal-btns '; } ?>btn-group">
@@ -226,10 +226,10 @@ class PF_Admin {
 				}
 		if ($format === 'nomination'){
 			$id_for_comments = $metadata['item_feed_post_id'];
-			echo '<article class="feed-item entry nom-container ' . $archived_status_string . get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . '" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $metadata['item_feed_post_id'] . '">';
+			echo '<article class="feed-item entry nom-container ' . $archived_status_string . get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . '" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $metadata['item_feed_post_id'] . '" pf-feed-item-id="' . $metadata['item_id'] . '">';
 		} else {
 			$id_for_comments = $item['post_id'];
-			echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '">';
+			echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '">';
 		}
 		
 			?> <header> <?php 
