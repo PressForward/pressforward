@@ -65,16 +65,16 @@ class PF_Comments extends PF_Module {
 	function show_comment_count_button($id_for_comments){
 		$count = self::get_editorial_comment_count( $id_for_comments );
 		//print_r($commentModalCall);
-		echo '<a role="button" class="btn btn-small itemCommentModal comments-expander" data-toggle="modal" data-target="#comment-modal-' . echo $id_for_comments . '">' . $count . '<i class="icon-comment"></i></a>';
+		echo '<a role="button" class="btn btn-small itemCommentModal comments-expander" data-toggle="modal" data-target="#comment_modal_' . $id_for_comments . '">' . $count . '<i class="icon-comment"></i></a>';
 		
 		?>
-			<div id="#comment-modal-<?php  echo $id_for_comments; ?>" class="modal hide fade comment-modal" tabindex="-1" role="dialog" aria-labelledby="comment-modal-<?php  echo $id_for_comments; ?>-label" aria-hidden="true">
+			<div id="#comment_modal_<?php  echo $id_for_comments; ?>" class="modal hide fade comment-modal" tabindex="-1" role="dialog" aria-labelledby="comment-modal-<?php  echo $id_for_comments; ?>-label" aria-hidden="true">
 			  <div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 				<h3 id="comment-modal-<?php  echo $id_for_comments; ?>-label">Comments</h3>
 			  </div>
 			  <div class="modal-body">
-				
+				Loading comments...
 			  </div>
 			  <div class="modal-footer">
 				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
