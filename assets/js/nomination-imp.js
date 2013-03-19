@@ -1,6 +1,6 @@
 jQuery(document).ready(function() {
 
-	jQuery(".nominate-now").click(function (evt){ 
+	jQuery('.pf_container').on('click', ".nominate-now", function (evt){ 
 		evt.preventDefault();
 		
 		var element		= jQuery(this);

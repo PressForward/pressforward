@@ -1,6 +1,6 @@
 jQuery(document).ready(function() {
 
-	jQuery(".nom-to-archive").click(function (evt){ 
+	jQuery('.pf_container').on('click', ".nom-to-archive", function (evt){ 
 		evt.preventDefault();
 		
 	var element			= jQuery(this);
