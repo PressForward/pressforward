@@ -124,7 +124,28 @@ function hideModal(){
 		document.body.style.overflow = 'visible';
 	});		
 }
-
+function commentModal(){
+	jQuery('.pf_container').on('show', '.comment-modal', function(evt){
+		var element = jQuery(this);		
+		var modalID = element.parent('article').attr('id');		
+		var modalIDString = '#'+modalID;
+		//openModals.push(modalIDString);
+		//alert(modalID);
+		//showDiv(jQuery('#entries'), jQuery('#'+modalID));		
+		var itemID = element.attr('pf-item-id');
+		var postID = element.attr('pf-post-id');
+		var item_post_ID = element.parent().attr('pf-item-post-id');
+		
+		jQuery.post(ajaxurl, {
+				action: 'ajax_get_comments',
+				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
+				id_for_comments: item_post_ID,
+			}, 
+			function(comment_response) {
+				jQuery('#'+modalID+ '.comment-modal .modal-body').html(comment_response);
+			});				
+	});
+}
 jQuery(document).ready(function() {
 	
 	jQuery('#gogrid').click(function (evt){ 
@@ -157,5 +178,5 @@ jQuery(document).ready(function() {
 	reshowModal(); 
 	reviewModal(); 
 	hideModal();
-	
+//	commentModal();
 });
