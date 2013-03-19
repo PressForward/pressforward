@@ -147,7 +147,7 @@ class PF_Admin {
 					} 
 					if ($format === 'nomination'){
 					
-						echo '<button class="btn btn-small nom-to-archive" form="' . $metadata['nom_id'] . '">' . __('Archive', 'pf') .  '</button>';
+						echo '<button class="btn btn-small nom-to-archive schema-actor" pf-schema="archive" pf-schema-class="archived" name="Archive" form="' . $metadata['nom_id'] . '">' . __('Archive', 'pf') .  '</button>';
 						
 						echo '<a href="#nominate" class="btn btn-small nom-to-draft" form="' . $metadata['item_id'] . '">' . __('Draft', 'pf') .  '</a>';
 					
@@ -210,23 +210,23 @@ class PF_Admin {
 		$itemTagsArray = explode(",", $item['item_tags']);
 		$itemTagClassesString = '';
 		foreach ($itemTagsArray as $itemTag) { $itemTagClassesString .= pf_slugger($itemTag, true, false, true); $itemTagClassesString .= ' '; }
-	
-				if (!empty($metadata['archived_status'])){
-					$archived_status_string = '';
-					$archived_user_string_match = 'archived_' . $metadata['current_user_id'];
-					foreach ($archived_status as $user_archived_status){
-						if ($user_archived_status == $archived_user_string_match){
-						$archived_status_string = 'archived';
-						$dependent_style = 'display:none;';
-						}
-					}
+				
+				if ($format === 'nomination'){
+					$feed_ited_id = $metadata['item_id'];
+				} else {
+					$feed_ited_id = $item['item_id'];
+				}
+				$archive_status = pf_get_relationship_value( 'archive', $feed_ited_id, wp_get_current_user()->ID );
+				if ($archive_status == 1){
+					$archived_status_string = 'archived';
+					$dependent_style = 'display:none;';
 				} else {
 					$dependent_style = '';
 					$archived_status_string = '';
 				}
 		if ($format === 'nomination'){
 			$id_for_comments = $metadata['item_feed_post_id'];
-			echo '<article class="feed-item entry nom-container ' . $archived_status_string . get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . '" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $metadata['item_feed_post_id'] . '" pf-feed-item-id="' . $metadata['item_id'] . '">';
+			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . '" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $metadata['item_feed_post_id'] . '" pf-feed-item-id="' . $metadata['item_id'] . '">';
 		} else {
 			$id_for_comments = $item['post_id'];
 			echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '">';
