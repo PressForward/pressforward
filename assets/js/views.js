@@ -68,7 +68,7 @@
 	}
 	
 function reshowModal(){		
-	jQuery('.modal.pfmodal').on('shown', function(evt){
+	jQuery('.pf_container').on('shown', '.modal.pfmodal', function(evt){
 		jQuery('#wpadminbar').hide();
 		var element = jQuery(this);	
 		var modalID = element.attr('id');
@@ -90,7 +90,7 @@ function reshowModal(){
 } 
 function reviewModal(){		
 	//Need to fix this to only trigger on the specific model, but not sure how yet. 
-	jQuery(".pressforward_page_pf-review .modal.pfmodal").on('shown', function(evt){
+	jQuery('.pf_container').on('shown', ".pressforward_page_pf-review .modal.pfmodal", function(evt){
 		//alert('Modal Triggered.');
 		var element = jQuery(this);		
 		var modalID = element.attr('id');		
@@ -118,7 +118,7 @@ function reviewModal(){
 }
 
 function hideModal(){	
-	jQuery(".modal.pfmodal").on('hide', function(evt){
+	jQuery('.pf_container').on('hide', ".modal.pfmodal", function(evt){
 		jQuery(".pfmodal .modal-comments").html('');
 		jQuery('#wpadminbar').show();
 		document.body.style.overflow = 'visible';
