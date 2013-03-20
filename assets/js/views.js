@@ -179,4 +179,10 @@ jQuery(document).ready(function() {
 	reviewModal(); 
 	hideModal();
 //	commentModal();
+	jQuery('.nom-to-archive').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Item'
+		
+	});
 });
