@@ -749,6 +749,7 @@ class PF_Admin {
 			wp_register_script('infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery', 'views', 'readability-imp' ));
 			wp_register_script('scrollimp', PF_URL . 'assets/js/scroll-imp.js', array( 'infiniscroll' ));
 			wp_register_script('pf-relationships', PF_URL . 'assets/js/relationships.js', array( 'infiniscroll' ));
+			wp_register_style( PF_SLUG . '-responsive-style', PF_URL . 'assets/css/pf-responsive.css', array(PF_SLUG . '-reset-style', PF_SLUG . '-style', 'bootstrap-style', PF_SLUG . '-susy-style'));
 
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
@@ -770,6 +771,7 @@ class PF_Admin {
 			wp_enqueue_style('bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
+			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 
 		}
 		if (('pressforward_page_pf-review') == $hook) {
@@ -789,6 +791,7 @@ class PF_Admin {
 			wp_enqueue_style( PF_SLUG . '-style' );
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
 			wp_enqueue_script( 'post' );
+			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 		}
 		if (('pressforward_page_pf-feeder') != $hook) { return; }
 		else {
@@ -802,6 +805,7 @@ class PF_Admin {
 			wp_enqueue_style('bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
+			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 
 		}
 
