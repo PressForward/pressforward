@@ -191,7 +191,16 @@ class PF_Admin {
 					}
 					?>
 				</div>
-		<?php 				
+		<?php 	
+
+				if (has_action('pf_comment_action_modal')){
+						$commentModalCall = '#modal-comments-' . $item['item_id'];
+						$commentSet = array('id' => $id_for_comments, 'modal_state' => $modal);
+						//echo $id_for_comments;
+						do_action('pf_comment_action_modal', $commentSet);
+					
+					} 
+		
 	}
 	
 	/**
