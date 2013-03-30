@@ -211,4 +211,17 @@ jQuery(document).ready(function() {
 		title: 'Item'
 		
 	});
+	jQuery('.nom-to-draft').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Item'
+		
+	});
+	jQuery('.nominate-now').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Nominate'
+		
+	});	
+	
 });
