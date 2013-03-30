@@ -3,7 +3,7 @@ jQuery(document).ready(function() {
 		evt.preventDefault();
 		var obj			= jQuery(this);
 		var item 		= jQuery(this).closest('article');
-		var id			= item.attr('pf-feed-item-id');
+		var id			= item.attr('pf-item-post-id');
 		var parent		= jQuery(this).parent();
 		var otherstar;
 		if (parent.hasClass('modal-btns')){
@@ -11,7 +11,6 @@ jQuery(document).ready(function() {
 		} else {
 			otherstar = item.find('.modal .star-item');
 		}
-
 		jQuery.post(ajaxurl, {
 				action: 'pf_ajax_star',
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
@@ -47,7 +46,7 @@ jQuery(document).ready(function() {
 		var obj			= jQuery(this);
 		var schema		= obj.attr('pf-schema');
 		var item 		= jQuery(this).closest('article');
-		var id			= item.attr('pf-feed-item-id');
+		var id			= item.attr('pf-item-post-id');
 		var parent		= jQuery(this).parent();
 		var otherschema;
 		var schemaclass;

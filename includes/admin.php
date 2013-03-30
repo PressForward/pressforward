@@ -105,7 +105,7 @@ class PF_Admin {
 			$item_id = 0;
 			$user = wp_get_current_user();
 			$user_id = $user->ID;
-			if ($format === 'nomination'){
+			if ($format == 'nomination'){
 				$item_id = $metadata['item_id'];
 			} else {
 				$item_id = $item['item_id'];
@@ -132,7 +132,8 @@ class PF_Admin {
 					# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
 					echo '<button class="btn btn-small itemInfobutton" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover"><i class="icon-info-sign"></i></button>';
 					
-					if (pf_is_item_starred_for_user( $item_id, $user_id ) ){
+					if (pf_is_item_starred_for_user( $id_for_comments, $user_id ) ){
+						echo '<!-- item_id selected = ' . $item_id . ' -->';
 						echo '<button class="btn btn-small star-item btn-warning"><i class="icon-star"></i></button>';
 					} else {
 						echo '<button class="btn btn-small star-item"><i class="icon-star"></i></button>';
@@ -153,7 +154,7 @@ class PF_Admin {
 						echo '<a href="#nominate" class="btn btn-small nom-to-draft" form="' . $metadata['item_id'] . '">' . __('Draft', 'pf') .  '</a>';
 					
 					} else {
-						if ('' == pf_get_relationship('nominate', $item_id, $user_id)){
+						if ('' == pf_get_relationship('nominate', $id_for_comments, $user_id)){
 							echo '<button class="btn btn-small nominate-now schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '">' . __('Nominate', 'pf') .  '</button>';
 							# Add option here for admin-level users to send items direct to draft. 
 						} else {
@@ -214,10 +215,12 @@ class PF_Admin {
 				
 				if ($format === 'nomination'){
 					$feed_ited_id = $metadata['item_id'];
+					$id_for_comments = $metadata['item_feed_post_id'];
 				} else {
 					$feed_ited_id = $item['item_id'];
+					$id_for_comments = $item['post_id'];
 				}
-				$archive_status = pf_get_relationship_value( 'archive', $feed_ited_id, wp_get_current_user()->ID );
+				$archive_status = pf_get_relationship_value( 'archive', $id_for_comments, wp_get_current_user()->ID );
 				if ($archive_status == 1){
 					$archived_status_string = 'archived';
 					$dependent_style = 'display:none;';
@@ -227,10 +230,10 @@ class PF_Admin {
 				}
 		if ($format === 'nomination'){
 			$id_for_comments = $metadata['item_feed_post_id'];
-			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . '" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $metadata['item_feed_post_id'] . '" pf-feed-item-id="' . $metadata['item_id'] . '">';
+			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . '" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '">';
 		} else {
 			$id_for_comments = $item['post_id'];
-			echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '">';
+			echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '" pf-item-post-id="' . $id_for_comments . '">';
 		}
 		
 			?> <header> <?php 
