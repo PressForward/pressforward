@@ -11,6 +11,7 @@ jQuery(document).ready(function() {
 		} else {
 			otherstar = item.find('.modal .star-item');
 		}
+		dostarstuff(obj, item, id, parent, otherstar);
 		jQuery.post(ajaxurl, {
 				action: 'pf_ajax_star',
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
@@ -20,7 +21,7 @@ jQuery(document).ready(function() {
 			var read_content = jQuery(response).find("response_data").text();
 			if (read_content != false){
 				//alert(otherstar);
-				dostarstuff(obj, item, id, parent, otherstar);
+				
 			} else {
 				alert('PressForward was unable to access the relationships database.');
 			}
@@ -61,7 +62,7 @@ jQuery(document).ready(function() {
 		} else {
 			schemaclass = false;
 		}
-
+		doschemastuff(obj, item, id, parent, otherschema, schemaclass);
 		jQuery.post(ajaxurl, {
 				action: 'pf_ajax_relate',
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
@@ -72,7 +73,7 @@ jQuery(document).ready(function() {
 			var read_content = jQuery(response).find("response_data").text();
 			if (read_content != false){
 				//alert(otherschema.attr('id'));
-				doschemastuff(obj, item, id, parent, otherschema, schemaclass);
+				
 			} else {
 				alert('PressForward was unable to access the relationships database.');
 			}

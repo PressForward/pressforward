@@ -237,6 +237,10 @@ h3 {
 	top: 0;
 }
 
+.actions .btn {
+	height: 26px;
+}
+
 .pfmodal {
 	background-color: #f5f5f5;
 	max-height: 100%;
