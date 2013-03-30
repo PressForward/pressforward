@@ -294,8 +294,9 @@ class PF_Nominations {
 		if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )
 			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) );
 
-			
-		date_default_timezone_set(get_option('timezone_string'));	
+		if ('' != (get_option('timezone_string'))){	
+			date_default_timezone_set(get_option('timezone_string'));	
+		}
 		//ref http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields, http://wpseek.com/wp_insert_post/
 		$time = current_time('mysql', $gmt = 0);
 		//@todo Play with post_exists (wp-admin/includes/post.php ln 493) to make sure that submissions have not already been submitted in some other method.
@@ -351,7 +352,16 @@ class PF_Nominations {
 
 		//set up rest of nomination data
 		$item_title = $_POST['item_title'];
-		$item_content = htmlspecialchars_decode($_POST['item_content']);
+		
+		$readable_status = get_post_meta($_POST['item_post_id'], 'readable_status', true);
+		if ($readable_status != 1){
+			$item_content = PF_Readability::readability_object($_POST['item_link']);
+			if (!$item_content){
+				$item_content = htmlspecialchars_decode($_POST['item_content']);
+			}
+		} else {
+			$item_content = htmlspecialchars_decode($_POST['item_content']);
+		}
 
 		//No need to define every post arg right? I should only need the ones I'm pushing through. Well, I guess we will find out.
 		$data = array(
