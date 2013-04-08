@@ -67,8 +67,33 @@
 		
 	}
 	
+function commentPopModal(){
+
+	jQuery('.pf_container').on('shown', '.modal.comment-modal', function(evt){
+		var elementC = jQuery(this);	
+		var element = elementC.closest('article');	
+		var modalID = elementC.closest('article').attr('id');		
+		var modalIDString = '#'+modalID;
+		//openModals.push(modalIDString);
+		//alert(modalID);
+		//showDiv(jQuery('#entries'), jQuery('#'+modalID));		
+		var itemID = element.attr('pf-item-id');
+		var postID = element.attr('pf-post-id');
+		var item_post_ID = element.attr('pf-item-post-id');
+		//alert(modalIDString);
+		jQuery.post(ajaxurl, {
+				action: 'ajax_get_comments',
+				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
+				id_for_comments: item_post_ID,
+			}, 
+			function(comment_response) {
+				jQuery('#comment_modal_'+item_post_ID+' .modal-body').html(comment_response);
+			});				
+	});
+}	
+	
 function reshowModal(){		
-	jQuery('.modal.pfmodal').on('shown', function(evt){
+	jQuery('.pf_container').on('shown', '.modal.pfmodal', function(evt){
 		jQuery('#wpadminbar').hide();
 		var element = jQuery(this);	
 		var modalID = element.attr('id');
@@ -90,7 +115,7 @@ function reshowModal(){
 } 
 function reviewModal(){		
 	//Need to fix this to only trigger on the specific model, but not sure how yet. 
-	jQuery(".pressforward_page_pf-review .modal.pfmodal").on('shown', function(evt){
+	jQuery('.pf_container').on('shown', ".pressforward_page_pf-review .modal.pfmodal", function(evt){
 		//alert('Modal Triggered.');
 		var element = jQuery(this);		
 		var modalID = element.attr('id');		
@@ -118,13 +143,34 @@ function reviewModal(){
 }
 
 function hideModal(){	
-	jQuery(".modal.pfmodal").on('hide', function(evt){
+	jQuery('.pf_container').on('hide', ".modal.pfmodal", function(evt){
 		jQuery(".pfmodal .modal-comments").html('');
 		jQuery('#wpadminbar').show();
 		document.body.style.overflow = 'visible';
 	});		
 }
-
+function commentModal(){
+	jQuery('.pf_container').on('show', '.comment-modal', function(evt){
+		var element = jQuery(this);		
+		var modalID = element.parent('article').attr('id');		
+		var modalIDString = '#'+modalID;
+		//openModals.push(modalIDString);
+		//alert(modalID);
+		//showDiv(jQuery('#entries'), jQuery('#'+modalID));		
+		var itemID = element.attr('pf-item-id');
+		var postID = element.attr('pf-post-id');
+		var item_post_ID = element.parent().attr('pf-item-post-id');
+		
+		jQuery.post(ajaxurl, {
+				action: 'ajax_get_comments',
+				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
+				id_for_comments: item_post_ID,
+			}, 
+			function(comment_response) {
+				jQuery('#'+modalID+ '.comment-modal .modal-body').html(comment_response);
+			});				
+	});
+}
 jQuery(document).ready(function() {
 	
 	jQuery('#gogrid').click(function (evt){ 
@@ -157,5 +203,25 @@ jQuery(document).ready(function() {
 	reshowModal(); 
 	reviewModal(); 
 	hideModal();
+	commentPopModal();
+//	commentModal();
+	jQuery('.nom-to-archive').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Item'
+		
+	});
+	jQuery('.nom-to-draft').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Item'
+		
+	});
+	jQuery('.nominate-now').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Nominate'
+		
+	});	
 	
 });

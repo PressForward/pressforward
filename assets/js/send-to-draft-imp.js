@@ -1,6 +1,6 @@
 jQuery(document).ready(function() {
 
-	jQuery(".nom-to-draft").click(function (evt){ 
+	jQuery('.pf_container').on('click', ".nom-to-draft", function (evt){ 
 		evt.preventDefault();
 		
 	var element			= jQuery(this);
@@ -60,7 +60,7 @@ jQuery(document).ready(function() {
 });
 
 jQuery(document).ready(function() {
-	jQuery(".nom-item").on('show', function (){ 
+	jQuery('.pf_container').on('show', ".nom-item", function (){ 
 		var element			= jQuery(this);
 		var itemID			= element.attr('id');
 		
@@ -71,7 +71,7 @@ jQuery(document).ready(function() {
 		jQuery('#excerpt-graf-'+itemID).hide();
 		
 	});
-	jQuery(".nom-item").on('hide', function (){
+	jQuery('.pf_container').on('hide', ".nom-item", function (){
 		var element			= jQuery(this);
 		var itemID			= element.attr('id');
 		

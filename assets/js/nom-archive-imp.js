@@ -1,33 +1,26 @@
-jQuery(document).ready(function() {
 
-	jQuery(".nom-to-archive").click(function (evt){ 
+	var archivesVisible = 0;
+
+jQuery(document).ready(function() {
+	
+	jQuery('.pf_container').on('click', ".nom-to-archive", function (evt){ 
 		evt.preventDefault();
 		
 	var element			= jQuery(this);
 	var nomID			= element.attr('form');
 	var theNonce		= jQuery.trim(jQuery('#pf_drafted_nonce').val())
 	
-	jQuery.post(ajaxurl, {
-			action: 'archive_a_nom',
-			nom_id: nomID,
-			pf_drafted_nonce: theNonce
-		},
-		function(response) {
-			jQuery('#'+nomID).hide();
-			if (response != 0){
-				jQuery(".pf-alert").html(response);
-				jQuery("pressforward-alertbox").show()
+			jQuery('#'+nomID).addClass('archived');
+			if (archivesVisible == 0){
+				jQuery('#'+nomID).hide();
 			}
-			//jQuery("#test-div1").append(data);
-		});
-	  });
-  	
+	});
 });
 
 jQuery(document).ready(function() {
 	jQuery(".showarchived").click().toggle(function (evt){ 
 		evt.preventDefault();
-		
+		archivesVisible = 1;
 		jQuery('.archived').show();
 		jQuery('.showarchived').html('Hide Archived');
 		jQuery('.showarchived').attr('value', 'Hide Archived');
@@ -35,7 +28,7 @@ jQuery(document).ready(function() {
 	
 	}, function (evt){ 
 		evt.preventDefault();
-		
+		archivesVisible = 0;
 		jQuery('.archived').hide();
 		jQuery('.hidearchived').html('Show Archived');
 		jQuery('.hidearchived').attr('value', 'Show Archived');

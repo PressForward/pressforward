@@ -221,7 +221,7 @@
 function allContentModal(){
 	//http://stackoverflow.com/questions/14242227/bootstrap-modal-body-max-height-100
 	//Need to fix this to only trigger on the specific model, but not sure how yet. 
-	jQuery(".toplevel_page_pf-menu .pfmodal.modal").on('shown', function(evt){
+	jQuery(".toplevel_page_pf-menu").on('shown', '.pfmodal.modal', function(evt){
 		//alert('Modal Triggered.');
 		document.body.style.overflow = 'hidden';
 		var element = jQuery(this);		
@@ -298,7 +298,7 @@ function allContentModal(){
 }
 
 function modalReadReset(){	
-	jQuery(".modal-readability-reset").on('click', function(evt){
+	jQuery('.pf_container').on('click', ".modal-readability-reset", function(evt){
 		evt.preventDefault();
 		var element = jQuery(this);		
 		var modalID = element.attr('pf-modal-id');

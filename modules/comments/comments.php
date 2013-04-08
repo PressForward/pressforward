@@ -18,6 +18,7 @@ class PF_Comments extends PF_Module {
 		//add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
 		add_action( 'wp_ajax_editflow_ajax_insert_comment', array( $this, 'ajax_insert_comment' ) );
 		add_action('pf_comment_action_button', array($this, 'show_comment_count_button'));	
+		add_action('pf_comment_action_modal', array($this, 'show_comment_modal'));	
 		
 	}
 
@@ -62,12 +63,39 @@ class PF_Comments extends PF_Module {
 		return $comment_count;
 	}
 
-	function show_comment_count_button($id_for_comments){
-		$count = self::get_editorial_comment_count( $id_for_comments );
+	function show_comment_count_button($commentSet){
+		$count = self::get_editorial_comment_count( $commentSet['id'] );
 		//print_r($commentModalCall);
-		echo '<a role="button" class="btn btn-small itemCommentModal comments-expander">' . $count . '<i class="icon-comment"></i></a>';
-	
+		if ($commentSet['modal_state'] == false){
+		
+			echo '<a role="button" class="btn btn-small itemCommentModal comments-expander" data-toggle="modal" href="#comment_modal_' . $commentSet['id'] . '" >' . $count . '<i class="icon-comment"></i></a>';
+		
+		} else {
+			echo '<a role="button" class="btn btn-small itemCommentModal comments-expander active" >' . $count . '<i class="icon-comment"></i></a>';		
+		}
 	}
+	
+	function show_comment_modal($commentSet){
+		//print_r($commentModalCall);
+		if ($commentSet['modal_state'] == false){	
+		
+		?>
+			<div id="comment_modal_<?php  echo $commentSet['id']; ?>" class="modal fade comment-modal" tabindex="-1" role="dialog" aria-labelledby="comment_modal_<?php  echo $commentSet['id']; ?>_label" aria-hidden="true">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+				<h3 id="comment_modal_<?php  echo $commentSet['id']; ?>_label">Comments</h3>
+			  </div>
+			  <div class="modal-body">
+				Loading comments...
+			  </div>
+			  <div class="modal-footer">
+				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+			  </div>
+			</div>
+		<?php 
+		
+		}
+	}	
 
 	function the_comment_box($id_for_comments){
 

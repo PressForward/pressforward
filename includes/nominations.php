@@ -294,6 +294,9 @@ class PF_Nominations {
 		if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )
 			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) );
 
+		if ('' != (get_option('timezone_string'))){	
+			date_default_timezone_set(get_option('timezone_string'));	
+		}
 		//ref http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields, http://wpseek.com/wp_insert_post/
 		$time = current_time('mysql', $gmt = 0);
 		//@todo Play with post_exists (wp-admin/includes/post.php ln 493) to make sure that submissions have not already been submitted in some other method.
@@ -349,7 +352,16 @@ class PF_Nominations {
 
 		//set up rest of nomination data
 		$item_title = $_POST['item_title'];
-		$item_content = htmlspecialchars_decode($_POST['item_content']);
+		
+		$readable_status = get_post_meta($_POST['item_post_id'], 'readable_status', true);
+		if ($readable_status != 1){
+			$item_content = PF_Readability::readability_object($_POST['item_link']);
+			if (!$item_content || ($item_content == 'error-secured')){
+				$item_content = htmlspecialchars_decode($_POST['item_content']);
+			}
+		} else {
+			$item_content = htmlspecialchars_decode($_POST['item_content']);
+		}
 
 		//No need to define every post arg right? I should only need the ones I'm pushing through. Well, I guess we will find out.
 		$data = array(
@@ -357,8 +369,8 @@ class PF_Nominations {
 			'post_type' => 'nomination',
 			//'post_author' => $user_ID,
 				//Hurm... what we really need is a way to pass the nominator's userID to this function to credit them as the author of the nomination.
-				//Then we could create a leaderboard.
-			'post_date' => $_SESSION['cal_startdate'],
+				//Then we could create a leaderboard. ;
+			//'post_date' => $_SESSION['cal_startdate'],
 				//Do we want this to be nomination date or origonal posted date? Prob. nomination date? Optimally we can store and later sort by both.
 			'post_title' => $item_title,//$item_title,
 			'post_content' => $item_content,
@@ -402,7 +414,7 @@ class PF_Nominations {
 ##Check
 		print_r(__('Sending to Draft.', 'pf'));
 ##Check
-		print_r($_POST);
+		//print_r($_POST);
 			$item_title = $_POST['nom_title'];
 			$item_content = $_POST['nom_content'];
 			$data = array(
@@ -426,10 +438,10 @@ class PF_Nominations {
 			//Alternative check with post_exists? or use same as above?
 			if ($post_check != true) {
 ##Check
-				print_r('No Post exists.');
+				//print_r('No Post exists.');
 				$newPostID = wp_insert_post( $data, true );
 ##Check
-				print_r($newPostID);
+				//print_r($newPostID);
 				add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
 
 				add_post_meta($newPostID, 'source_title', $_POST['source_title'], true);
