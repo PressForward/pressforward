@@ -106,7 +106,7 @@ class PF_Readability {
 				'what' => 'full_item_content',
 				'action' => 'make_readable',
 				'id' => $item_id,
-				'data' => htmlentities($itemReadReady),
+				'data' => htmlspecialchars($itemReadReady),
 				'supplemental' => array(
 					'readable_status' => $read_status,
 					'error' => $error,
