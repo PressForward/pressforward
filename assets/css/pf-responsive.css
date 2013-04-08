@@ -1,7 +1,7 @@
 
 /* Ultra Large desktop */
-@media (min-width: 1500px) {
-	.pressforward .grid.full #entries article {
+@media (min-width: 1700px) {
+	.pressforward .grid #entries article {
 		width: 23%;
 	}
 	
@@ -11,18 +11,18 @@
 }
 
 /* Large-ish desktop */
-@media (min-width: 1000px) and (max-width: 1100px) {
-	.pressforward .grid.full #entries article {
-		width: 48%;
+@media (min-width: 1100px) and (max-width: 1699px) {
+	.pressforward .grid #entries article {
+		width: 31%;
 	}
 	
 	.pressforward .grid.full #entries article {
-		width: 31%;
+		width: 23%;
 	}	
 }
  
 /* Portrait tablet to landscape and desktop */
-@media all and (min-width: 788px) and (max-width: 999px) { 
+@media all and (min-width: 888px) and (max-width: 1099px) { 
 	.pressforward .grid #entries article {
 		width: 48%;
 	}
@@ -33,7 +33,7 @@
 }
  
 /* Landscape phone to portrait tablet */
-@media all and (max-width: 787px) { 
+@media all and (max-width: 887px) { 
 	.pressforward .modal-sidebar {
 		display: none;
 	}
@@ -46,7 +46,7 @@
 }
  
 /* Landscape phones and down */
-@media all and (max-width: 600px) { 
+@media all and (max-width: 700px) { 
 	.pressforward .grid #entries article {
 		width: 100%;
 	}	
