@@ -356,7 +356,7 @@ class PF_Nominations {
 		$readable_status = get_post_meta($_POST['item_post_id'], 'readable_status', true);
 		if ($readable_status != 1){
 			$item_content = PF_Readability::readability_object($_POST['item_link']);
-			if (!$item_content){
+			if (!$item_content || ($item_content == 'error-secured')){
 				$item_content = htmlspecialchars_decode($_POST['item_content']);
 			}
 		} else {
