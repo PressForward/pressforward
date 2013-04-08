@@ -11,7 +11,7 @@
 }
 
 /* Large-ish desktop */
-@media (min-width: 1100px) and (max-width: 1699px) {
+@media (min-width: 1300px) and (max-width: 1699px) {
 	.pressforward .grid #entries article {
 		width: 31%;
 	}
@@ -22,7 +22,7 @@
 }
  
 /* Portrait tablet to landscape and desktop */
-@media all and (min-width: 888px) and (max-width: 1099px) { 
+@media all and (min-width: 988px) and (max-width: 1299px) { 
 	.pressforward .grid #entries article {
 		width: 48%;
 	}
@@ -33,7 +33,7 @@
 }
  
 /* Landscape phone to portrait tablet */
-@media all and (max-width: 887px) { 
+@media all and (max-width: 987px) { 
 	.pressforward .modal-sidebar {
 		display: none;
 	}
@@ -46,7 +46,7 @@
 }
  
 /* Landscape phones and down */
-@media all and (max-width: 700px) { 
+@media all and (max-width: 800px) { 
 	.pressforward .grid #entries article {
 		width: 100%;
 	}	
