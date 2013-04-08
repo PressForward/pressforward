@@ -233,8 +233,12 @@ h3 {
 	display: none;
 }
 
-.modal.fade.in {
+.pfmodal.fade.in {
 	top: 0;
+}
+
+.actions .btn {
+	height: 26px;
 }
 
 .pfmodal {

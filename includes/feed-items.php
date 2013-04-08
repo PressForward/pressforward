@@ -518,6 +518,7 @@ class PF_Feed_Item {
 				add_post_meta($newNomID, 'sortable_item_date', strtotime($item_date), true);
 				add_post_meta($newNomID, 'item_tags', $item_tags, true);
 				add_post_meta($newNomID, 'source_repeat', $source_repeat, true);
+				add_post_meta($newNomID, 'revertible_feed_text', $item_content, true);
 			}
 
 		}

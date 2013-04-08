@@ -68,8 +68,8 @@ class PF_Admin {
 		// Options page is accessible only to Administrators
 		add_submenu_page(
 			PF_MENU_SLUG,
-			PF_TITLE . __(' Options', 'pf'), // @todo sprintf
-			PF_TITLE . __(' Options', 'pf'), // @todo Too big to fit on a single line
+			__('Preferences', 'pf'), // @todo sprintf
+			__('Preferences', 'pf'),
 			'manage_options',
 			PF_SLUG . '-options',
 			array($this, 'display_options_builder')
@@ -78,8 +78,8 @@ class PF_Admin {
 		// Feed-listing page is accessible only to Editors and above
 		add_submenu_page(
 			PF_MENU_SLUG,
-			PF_TITLE . __(' Feeder', 'pf'),
-			PF_TITLE . __(' Feeder', 'pf'),
+			__('Feeder', 'pf'),
+			__('Feeder', 'pf'),
 			'edit_others_posts',
 			PF_SLUG . '-feeder',
 			array($this, 'display_feeder_builder')
@@ -102,8 +102,16 @@ class PF_Admin {
 	}
 	
 	public function form_of_actions_btns($item, $c, $modal = false, $format = 'standard', $metadata = array(), $id_for_comments ){
+			$item_id = 0;
+			$user = wp_get_current_user();
+			$user_id = $user->ID;
+			if ($format == 'nomination'){
+				$item_id = $metadata['item_id'];
+			} else {
+				$item_id = $item['item_id'];
+			}
 			?>	
-				<div class="actions btn-group">
+				<div class="actions <?php if($modal){ echo 'modal-btns '; } ?>btn-group">
 					<?php
 					$infoPop = 'top';
 					if ($modal == false){
@@ -123,19 +131,36 @@ class PF_Admin {
 					}
 					# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
 					echo '<button class="btn btn-small itemInfobutton" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover"><i class="icon-info-sign"></i></button>';
-					echo '<button class="btn btn-small"><i class="icon-star"></i> Star</button>';
-						# <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
+					
+					if (pf_is_item_starred_for_user( $id_for_comments, $user_id ) ){
+						echo '<!-- item_id selected = ' . $item_id . ' -->';
+						echo '<button class="btn btn-small star-item btn-warning"><i class="icon-star"></i></button>';
+					} else {
+						echo '<button class="btn btn-small star-item"><i class="icon-star"></i></button>';
+					}
+					
+					# <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
 					if (has_action('pf_comment_action_button')){
 						$commentModalCall = '#modal-comments-' . $item['item_id'];
-						$commentButtonArray = array('id' => $id_for_comments, 'modalID' => $commentModalCall);
-						do_action('pf_comment_action_button', $id_for_comments);
+						$commentSet = array('id' => $id_for_comments, 'modal_state' => $modal);
+						//echo $id_for_comments;
+						do_action('pf_comment_action_button', $commentSet);
 					
 					} 
 					if ($format === 'nomination'){
-						echo '<button class="btn btn-small nom-to-archive" form="' . $metadata['nom_id'] . '">' . __('Archive', 'pf') .  '</button>';
-						echo '<a href="#nominate" class="btn btn-small nom-to-draft" form="' . $metadata['item_id'] . '">' . __('Draft', 'pf') .  '</a>';
+					
+						echo '<a class="btn btn-small nom-to-archive schema-actor" pf-schema="archive" pf-schema-class="archived" data-toggle="tooltip" title="' . __('Archive', 'pf') .  '" form="' . $metadata['nom_id'] . '"><embed src="' . PF_URL . 'assets/images/noun_project_8945.svg" type="image/svg+xml" /></a>';
+						
+						echo '<a href="#nominate" class="btn btn-small nom-to-draft" form="' . $metadata['item_id'] . '" data-original-title="' . __('Draft', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></a>';
+					
 					} else {
-						echo '<button class="btn btn-small nominate-now" form="' . $item['item_id'] . '">' . __('Nominate', 'pf') .  '</button>';
+						if ('' == pf_get_relationship('nominate', $id_for_comments, $user_id)){
+							echo '<button class="btn btn-small nominate-now schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominate', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></button>';
+							# Add option here for admin-level users to send items direct to draft. 
+						} else {
+							echo '<button class="btn btn-small nominate-now btn-success schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominated', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></button>';
+							# Add option here for admin-level users to send items direct to draft. 
+						}
 					}
 					
 					
@@ -166,7 +191,16 @@ class PF_Admin {
 					}
 					?>
 				</div>
-		<?php 				
+		<?php 	
+
+				if (has_action('pf_comment_action_modal')){
+						$commentModalCall = '#modal-comments-' . $item['item_id'];
+						$commentSet = array('id' => $id_for_comments, 'modal_state' => $modal);
+						//echo $id_for_comments;
+						do_action('pf_comment_action_modal', $commentSet);
+					
+					} 
+		
 	}
 	
 	/**
@@ -187,26 +221,28 @@ class PF_Admin {
 		$itemTagsArray = explode(",", $item['item_tags']);
 		$itemTagClassesString = '';
 		foreach ($itemTagsArray as $itemTag) { $itemTagClassesString .= pf_slugger($itemTag, true, false, true); $itemTagClassesString .= ' '; }
-	
-				if (!empty($metadata['archived_status'])){
-					$archived_status_string = '';
-					$archived_user_string_match = 'archived_' . $metadata['current_user_id'];
-					foreach ($archived_status as $user_archived_status){
-						if ($user_archived_status == $archived_user_string_match){
-						$archived_status_string = 'archived';
-						$dependent_style = 'display:none;';
-						}
-					}
+				
+				if ($format === 'nomination'){
+					$feed_ited_id = $metadata['item_id'];
+					$id_for_comments = $metadata['item_feed_post_id'];
+				} else {
+					$feed_ited_id = $item['item_id'];
+					$id_for_comments = $item['post_id'];
+				}
+				$archive_status = pf_get_relationship_value( 'archive', $id_for_comments, wp_get_current_user()->ID );
+				if ($archive_status == 1){
+					$archived_status_string = 'archived';
+					$dependent_style = 'display:none;';
 				} else {
 					$dependent_style = '';
 					$archived_status_string = '';
 				}
 		if ($format === 'nomination'){
 			$id_for_comments = $metadata['item_feed_post_id'];
-			echo '<article class="feed-item entry nom-container ' . $archived_status_string . get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . '" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-item-post-id="' . $metadata['item_feed_post_id'] . '">';
+			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . '" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '">';
 		} else {
 			$id_for_comments = $item['post_id'];
-			echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '">';
+			echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '" pf-item-post-id="' . $id_for_comments . '">';
 		}
 		
 			?> <header> <?php 
@@ -342,7 +378,7 @@ class PF_Admin {
 			<div id="modal-<?php echo $item['item_id']; ?>" class="modal hide fade pfmodal" tabindex="-1" role="dialog" aria-labelledby="modal-<?php echo $item['item_id']; ?>-label" aria-hidden="true" pf-item-id="<?php echo $item['item_id']; ?>" pf-post-id="<?php echo $item['post_id']; ?>" pf-readability-status="<?php echo $item['readable_status']; ?>"> 
 			  <div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>				
-				<div class="modal-mobile-nav pull-right">
+				<div class="modal-mobile-nav pull-right hidden-desktop">
 					<div class="mobile-goPrev pull-left">
 					
 					</div>
@@ -394,23 +430,9 @@ class PF_Admin {
 			  </div>				
 			</div>
 			<!-- End Modal -->
-			<!-- Begin comments Modal
-			<div id="modal-comments-<?php echo $item['item_id']; ?>" class="modal hide fade pf-comments-modal" tabindex="-1" role="dialog" aria-labelledby="modal-comments-<?php echo $item['item_id']; ?>-label" aria-hidden="true"> 
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>				
-					<h5 id="modal-comments-<?php echo $item['item_id']; ?>-label" class="modal_comments_item_title"><?php _e('Comments for'); echo ': ' . $item['item_title']; ?></h5>
-				</div>
-				<div class="modal-body">
-					<?php //do_action('pf_modal_comments', $id_for_comments); ?>
-				</div>
-				<div class="modal-footer">
-				
-				</div>
-			</div>
-			End comments Modal -->
-				<?php } ?>
 		</article><!-- End article -->
 		<?php 
+		}
 	}
 
 	/**
@@ -738,6 +760,8 @@ class PF_Admin {
 			wp_register_script('readability-imp', PF_URL . 'assets/js/readability-imp.js', array( 'twitter-bootstrap', 'jquery', 'views' ));
 			wp_register_script('infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery', 'views', 'readability-imp' ));
 			wp_register_script('scrollimp', PF_URL . 'assets/js/scroll-imp.js', array( 'infiniscroll' ));
+			wp_register_script('pf-relationships', PF_URL . 'assets/js/relationships.js', array( 'infiniscroll' ));
+			wp_register_style( PF_SLUG . '-responsive-style', PF_URL . 'assets/css/pf-responsive.css', array(PF_SLUG . '-reset-style', PF_SLUG . '-style', 'bootstrap-style', PF_SLUG . '-susy-style'));
 
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
@@ -753,11 +777,13 @@ class PF_Admin {
 			wp_enqueue_script('jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
 			wp_enqueue_script('infiniscroll');
 			wp_enqueue_script('scrollimp');
+			wp_enqueue_script('pf-relationships');
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style('bootstrap-style');
 			wp_enqueue_style('bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
+			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 
 		}
 		if (('pressforward_page_pf-review') == $hook) {
@@ -770,12 +796,14 @@ class PF_Admin {
 			wp_enqueue_script('readability-imp');
 			wp_enqueue_script('infiniscroll');
 			wp_enqueue_script('scrollimp');			
+			wp_enqueue_script('pf-relationships');
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style('bootstrap-style');
 			wp_enqueue_style('bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
 			wp_enqueue_script( 'post' );
+			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 		}
 		if (('pressforward_page_pf-feeder') != $hook) { return; }
 		else {
@@ -789,6 +817,7 @@ class PF_Admin {
 			wp_enqueue_style('bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
+			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 
 		}
 
