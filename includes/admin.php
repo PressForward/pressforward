@@ -40,7 +40,7 @@ class PF_Admin {
 		add_menu_page(
 			PF_TITLE, // <title>
 			PF_TITLE, // menu title
-			'edit_posts', // cap required
+			get_option('pf_menu_group_access', pf_get_defining_capability_by_role('contributor')), // cap required
 			PF_MENU_SLUG, // slug
 			array( $this, 'display_reader_builder' ), // callback
 			PF_URL . '/pressforward-16.png', // icon URL
@@ -51,7 +51,7 @@ class PF_Admin {
 			PF_MENU_SLUG,
 			__('All Content', 'pf'),
 			__('All Content', 'pf'),
-			'edit_posts',
+			get_option('pf_menu_all_content_access', pf_get_defining_capability_by_role('contributor')),
 			PF_MENU_SLUG,
 			array($this, 'display_reader_builder')
 		);
@@ -60,7 +60,7 @@ class PF_Admin {
 			PF_MENU_SLUG,
 			__('Under Review', 'pf'),
 			__('Under Review', 'pf'),
-			'edit_posts',
+			get_option('pf_menu_under_review_access', pf_get_defining_capability_by_role('contributor')),
 			PF_SLUG . '-review',
 			array($this, 'display_review_builder')
 		);
@@ -70,7 +70,7 @@ class PF_Admin {
 			PF_MENU_SLUG,
 			__('Preferences', 'pf'), // @todo sprintf
 			__('Preferences', 'pf'),
-			'manage_options',
+			get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('contributor')),
 			PF_SLUG . '-options',
 			array($this, 'display_options_builder')
 		);
@@ -80,7 +80,7 @@ class PF_Admin {
 			PF_MENU_SLUG,
 			__('Feeder', 'pf'),
 			__('Feeder', 'pf'),
-			'edit_others_posts',
+			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')),
 			PF_SLUG . '-feeder',
 			array($this, 'display_feeder_builder')
 		);
@@ -89,7 +89,7 @@ class PF_Admin {
 			PF_MENU_SLUG,
 			__('Add Nomination', 'pf'),
 			__('Add Nomination', 'pf'),
-			'edit_posts',
+			get_option('pf_menu_add_nomination_access', pf_get_defining_capability_by_role('contributor')),
 			PF_NOM_POSTER
 		);
 	}
@@ -684,6 +684,18 @@ class PF_Admin {
 			}
 			die();
 	}
+	
+	function pf_get_user_role_select($option, $default){
+		global $wp_roles;
+		$roles = $wp_roles->get_names();
+		$enabled = get_option($option, $default);
+#		$roleObj = pf_get_role_by_capability($enabled, true, true);
+#		$enabled_role = $roleObj->name;
+		foreach ($roles as $slug=>$role){
+			$defining_capability = pf_get_defining_capability_by_role($slug);
+			?><option value="<?php echo $defining_capability ?>" <?php selected( $enabled, $defining_capability ) ?>><?php _e( $role, PF_SLUG ) ?></option><?php 
+		}
+	}
 
 	/**
 	 * Display function for the Options panel
@@ -705,6 +717,30 @@ class PF_Admin {
 				?>
 					<br />
 					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
+					<br />
+					
+					<h3><?php _e( 'User Control', 'pf' ) ?></h3>
+
+
+					<table class="form-table">
+						<tr>
+							<th scope="row">
+								<label for="participad-dashboard-enable"><?php _e( 'PressForward Menu Group', 'pf' ) ?></label>
+							</th>
+
+							<td>
+								<select id="pf_menu_group_access" name="pf_menu_group_access">
+									<?php $this->pf_get_user_role_select('pf_menu_group_access', pf_get_defining_capability_by_role('contributor')); ?>
+								</select>
+							</td>
+						</tr>
+					</table>
+				<?php 		
+				do_action ('pf_admin_user_settings');				
+				
+				?>
+					<br />
+					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />				
 			</div>
 		</form>
 		<?php
