@@ -7,7 +7,7 @@
 - License: GPL2
 
 
-	Developed for the Center for History and New Media at George Mason University.
+	Developed for the Roy Rosenzweig Center for History and New Media at George Mason University.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as
