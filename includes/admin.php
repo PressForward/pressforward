@@ -841,6 +841,9 @@ class PF_Admin {
 			wp_enqueue_script( 'post' );
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 		}
+		if (('nomination') == get_post_type()) {
+			wp_enqueue_script('add-nom-imp', PF_URL . 'assets/js/add-nom-imp.js', array( 'jquery' ));
+		}		
 		if (('pressforward_page_pf-feeder') != $hook) { return; }
 		else {
 			//And now lets enqueue the script, ensuring that jQuery is already active.
@@ -856,8 +859,6 @@ class PF_Admin {
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 
 		}
-
-
 
 	}
 
