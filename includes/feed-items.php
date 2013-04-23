@@ -235,12 +235,12 @@ class PF_Feed_Item {
 		//			);
 		$args = 'post_type=' . pf_feed_item_post_type();
 		//$archiveQuery = new WP_Query( $args );
-		$dquerystr = "
+		$dquerystr = $wpdb->prepare("
 			SELECT $wpdb->posts.*, $wpdb->postmeta.*
 			FROM $wpdb->posts, $wpdb->postmeta
 			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-			AND $wpdb->posts.post_type ='" . pf_feed_item_post_type() .
-		 "'";
+			AND $wpdb->posts.post_type = %s
+		 ", pf_feed_item_post_type() );
 		# This is how we do a custom query, when WP_Query doesn't do what we want it to.
 		$rssarchivalposts = $wpdb->get_results($dquerystr, OBJECT);
 		//print_r(count($rssarchivalposts)); die();
