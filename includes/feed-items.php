@@ -132,15 +132,15 @@ class PF_Feed_Item {
 		//$pageBottom = $pageTop + 20;
 		$args = pf_feed_item_post_type();
 		//$archiveQuery = new WP_Query( $args );
-		 $dquerystr = "
-			SELECT $wpdb->posts.*, $wpdb->postmeta.*
-			FROM $wpdb->posts, $wpdb->postmeta
-			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-			AND $wpdb->posts.post_type = '" . pf_feed_item_post_type() . "'
-			AND $wpdb->postmeta.meta_key = 'sortable_item_date'
-			ORDER BY $wpdb->postmeta.meta_value DESC
-			LIMIT $pageTop, 20
-		 ";
+		 $dquerystr = $wpdb->prepare("
+			SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
+			FROM {$wpdb->posts}, {$wpdb->postmeta}
+			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+			AND {$wpdb->posts}.post_type = %s
+			AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+			ORDER BY {$wpdb->postmeta}.meta_value DESC
+			LIMIT {$pageTop}, 20
+		 ", pf_feed_item_post_type());
 		// print_r($dquerystr);
 		 # DESC here because we are sorting by UNIX datestamp, where larger is later.
 		 //Provide an alternative to load by feed date order.
@@ -307,15 +307,15 @@ class PF_Feed_Item {
 			 # Less query results, less time.
 
 			 //Perhaps I should do this outside of the foreach? One query and search it for each item_id and then return those not in?
-			 $querystr = "
-				SELECT $wpdb->posts.*, $wpdb->postmeta.*
-				FROM $wpdb->posts, $wpdb->postmeta
-				WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-				AND $wpdb->postmeta.meta_key = 'item_id'
-				AND $wpdb->postmeta.meta_value = '" . $item_id . "'
-				AND $wpdb->posts.post_type = '" . pf_feed_item_post_type() . "'
-				ORDER BY $wpdb->posts.post_date DESC
-			 ";
+			 $querystr = $wpdb->prepare("
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+				AND {$wpdb->postmeta}.meta_key = 'item_id'
+				AND {$wpdb->postmeta}.meta_value = %s
+				AND {$wpdb->posts}.post_type = %s
+				ORDER BY {$wpdb->posts}.post_date DESC
+			 ", pf_feed_item_post_type(), $item_id);
 			 // AND $wpdb->posts.post_date < NOW() <- perhaps by removing we can better prevent simultaneous duplications?
 			 # Since I've altered the query, I could change this to just see if there are any items in the query results
 			 # and check based on that. But I haven't yet.
@@ -336,14 +336,14 @@ class PF_Feed_Item {
 				endif;
 				wp_reset_query();
 				if ($thepostscheck === 0){
-					$queryMoreStr = "
-						SELECT $wpdb->posts.*, $wpdb->postmeta.*
-						FROM $wpdb->posts, $wpdb->postmeta
-						WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-						AND $wpdb->postmeta.meta_key = 'item_link'
-						AND $wpdb->posts.post_type = " . pf_feed_item_post_type() . "
-						ORDER BY $wpdb->posts.post_date DESC
-					 ";
+					$queryMoreStr = $wpdb->prepare("
+						SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
+						FROM {$wpdb->posts}, {$wpdb->postmeta}
+						WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+						AND {$wpdb->postmeta}.meta_key = 'item_link'
+						AND {$wpdb->posts}.post_type = %s
+						ORDER BY {$wpdb->posts}.post_date DESC
+					 ", pf_feed_item_post_type());
 					$checkpoststwo = $wpdb->get_results($queryMoreStr, OBJECT);
 					if ($checkpoststwo):
 						pf_log('Check for posts with the same link.');
@@ -369,7 +369,7 @@ class PF_Feed_Item {
 									if (($itemDate > $postDate)) {
 										# If it is more recent, than this is the new dominant post.
 										$sourceRepeat++;
-									} elseif (($itemData <= $postDate)) {
+									} elseif (($itemDate <= $postDate)) {
 										# if it is less recent, then we need to increment the source count.
 										$sourceRepeat++;
 										if ($thePostsDoubleCheck > $sourceRepeat) {
