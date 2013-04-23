@@ -511,9 +511,9 @@
 		$pageNext = $page+1;
 		echo '<div class="pf-navigation">';
 		if ($pagePrev > -1){
-			echo '<span class="feedprev"><a class="prevnav" href="admin.php?page=pf-menu&pc=' . $pagePrev . '">Previous Page</a></span> | ';
+			echo '<span class="feedprev"><a class="prevnav" href="admin.php?page=pf-review&pc=' . $pagePrev . '">Previous Page</a></span> | ';
 		}
-		echo '<span class="feednext"><a class="nextnav" href="admin.php?page=pf-menu&pc=' . $pageNext . '">Next Page</a></span>';
+		echo '<span class="feednext"><a class="nextnav" href="admin.php?page=pf-review&pc=' . $pageNext . '">Next Page</a></span>';
 		echo '</div>';
 
 echo '</div><!-- End container-fluid -->';
