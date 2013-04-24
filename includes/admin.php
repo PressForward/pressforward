@@ -253,7 +253,7 @@ class PF_Admin {
 						<div class="sortable-hidden-meta" style="display:none;">
 							<?php
 							_e('UNIX timestamp from source RSS', 'pf');
-							echo ': <span class="sortable_source_timestamp">' . $metadata['timestamp_item_posted'] . '</span><br />';
+							echo ': <span class="sortable_source_timestamp sortableitemdate">' . $metadata['timestamp_item_posted'] . '</span><br />';
 
 							_e('UNIX timestamp last modified', 'pf');
 							echo ': <span class="sortable_mod_timestamp">' . $metadata['timestamp_nom_last_modified'] . '</span><br />';

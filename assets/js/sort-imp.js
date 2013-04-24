@@ -20,6 +20,15 @@ jQuery(document).ready(function() {
 	}
 	);
 	
+	jQuery('#sortbynomindate').click().toggle(function (evt){ 
+		evt.preventDefault();
+		jQuery("div.feed-item").tsort("span.sortable_nom_timestamp", {order:'desc'});
+	}, function (evt) {
+		evt.preventDefault();
+		jQuery("div.feed-item").tsort("span.sortable_nom_timestamp", {order:'asc'});		
+	}
+	);	
+	
 	jQuery('#fullscreenfeed').click(function(e){
 		e.preventDefault();
 		jQuery('.pf_container').fullScreen({
