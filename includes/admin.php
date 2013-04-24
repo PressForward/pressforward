@@ -70,7 +70,7 @@ class PF_Admin {
 			PF_MENU_SLUG,
 			__('Preferences', 'pf'), // @todo sprintf
 			__('Preferences', 'pf'),
-			get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('contributor')),
+			get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator')),
 			PF_SLUG . '-options',
 			array($this, 'display_options_builder')
 		);
@@ -725,12 +725,77 @@ class PF_Admin {
 					<table class="form-table">
 						<tr>
 							<th scope="row">
-								<label for="participad-dashboard-enable"><?php _e( 'PressForward Menu Group', 'pf' ) ?></label>
+								<label for="menu-dashboard-enable"><?php _e( 'PressForward Menu Group', 'pf' ) ?></label>
 							</th>
 
 							<td>
 								<select id="pf_menu_group_access" name="pf_menu_group_access">
 									<?php $this->pf_get_user_role_select('pf_menu_group_access', pf_get_defining_capability_by_role('contributor')); ?>
+								</select>
+							</td>
+						</tr>
+					</table>
+					<table class="form-table">
+						<tr>
+							<th scope="row">
+								<label for="all-content-dashboard-enable"><?php _e( 'All Content Menu', 'pf' ) ?></label>
+							</th>
+
+							<td>
+								<select id="pf_menu_all_content_access" name="pf_menu_all_content_access">
+									<?php $this->pf_get_user_role_select('pf_menu_all_content_access', pf_get_defining_capability_by_role('contributor')); ?>
+								</select>
+							</td>
+						</tr>
+					</table>
+					<table class="form-table">
+						<tr>
+							<th scope="row">
+								<label for="under-review-dashboard-enable"><?php _e( 'Under Review Menu', 'pf' ) ?></label>
+							</th>
+
+							<td>
+								<select id="pf_menu_under_review_access" name="pf_menu_under_review_access">
+									<?php $this->pf_get_user_role_select('pf_menu_under_review_access', pf_get_defining_capability_by_role('contributor')); ?>
+								</select>
+							</td>
+						</tr>
+					</table>
+					<table class="form-table">
+						<tr>
+							<th scope="row">
+								<label for="pf-preferences-dashboard-enable"><?php _e( 'Preferences Menu', 'pf' ) ?></label>
+							</th>
+
+							<td>
+								<select id="pf_menu_preferences_access" name="pf_menu_preferences_access">
+									<?php $this->pf_get_user_role_select('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator')); ?>
+								</select>
+							</td>
+						</tr>
+					</table>
+					<table class="form-table">
+						<tr>
+							<th scope="row">
+								<label for="pf_menu_feeder_access-dashboard-enable"><?php _e( 'Feeder Menu', 'pf' ) ?></label>
+							</th>
+
+							<td>
+								<select id="pf_menu_feeder_access" name="pf_menu_feeder_access">
+									<?php $this->pf_get_user_role_select('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')); ?>
+								</select>
+							</td>
+						</tr>
+					</table>
+					<table class="form-table">
+						<tr>
+							<th scope="row">
+								<label for="pf_menu_add_nomination_access-dashboard-enable"><?php _e( 'Add Nomination Menu', 'pf' ) ?></label>
+							</th>
+
+							<td>
+								<select id="pf_menu_add_nomination_access" name="pf_menu_add_nomination_access">
+									<?php $this->pf_get_user_role_select('pf_menu_add_nomination_access', pf_get_defining_capability_by_role('contributor')); ?>
 								</select>
 							</td>
 						</tr>
