@@ -286,7 +286,7 @@ function pf_prep_item_for_submit($item) {
 }
 
 function pf_get_user_level($option, $default_level) {
-	
+
 }
 
 /**
@@ -402,26 +402,26 @@ function pf_noms_excerpt( $text ) {
 function pf_get_capabilities($cap = false){
   # Get the WP_Roles object.
   global $wp_roles;
-  # Set up array for storage. 
+  # Set up array for storage.
   $role_reversal = array();
-  # Walk through the roles object by role and get capabilities. 
+  # Walk through the roles object by role and get capabilities.
   foreach ($wp_roles->roles as $role_slug=>$role_set){
-    
+
     foreach ($role_set['capabilities'] as $capability=>$cap_bool){
     	# Don't store a capability if it is false for the role (though none are).
 		if ($cap_bool){
   			$role_reversal[$capability][] = $role_slug;
-  		}		
+  		}
   	}
   }
-  # Allow users to get specific capabilities. 
+  # Allow users to get specific capabilities.
   if (!$cap){
     return $role_reversal;
   } else {
     return $role_reversal[$cap];
   }
 }
- 
+
 function pf_get_role_by_capability($cap, $lowest = true, $obj = false){
 	# Get set of roles for capability.
 	$roles = pf_get_capabilities($cap);
@@ -429,18 +429,18 @@ function pf_get_role_by_capability($cap, $lowest = true, $obj = false){
 	if ($lowest){
 		$roles = array_reverse($roles);
 	}
-	
+
   $the_role = array_shift(array_values($roles));
   if (!$obj){
 	return $the_role;
   } else {
     	return get_role($the_role);
   }
-	
-	
+
+
 }
- 
- 
+
+
 # If we want to allow users to set access by role, we need to give
 # the users the names of the roles, but WordPress needs a capability.
 # This function lets you match the role with the first capability
@@ -453,7 +453,7 @@ function pf_get_defining_capability_by_role($role_slug){
 		if ($role_slug == ($low_role))
 			return $slug;
 	}
-	
+
 }
 
 //Based on http://seoserpent.com/wordpress/custom-author-byline
