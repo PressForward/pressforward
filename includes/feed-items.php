@@ -475,7 +475,7 @@ class PF_Feed_Item {
 				# If it doesn't have a featured image assigned already, I use the set_ext_as_featured function to try and find one.
 				# It also, if it finds one, sets it as the featured image for that post.
 
-				if ($_POST['item_feat_img'] != ''){
+				if ( ! empty( $_POST['item_feat_img'] ) ){
 					# Turned off set_ext_as_featured here, as that should only occur when items are nominated.
 					# Before nominations, the featured image should remain a meta field with an external link.
 					if ( false === ( $itemFeatImg = get_transient( 'feed_img_' . $itemUID ) ) ) {
