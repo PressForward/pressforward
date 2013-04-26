@@ -309,14 +309,20 @@ class PF_Comments extends PF_Module {
 				$this->the_comment( $comment, '', '' );
 				$comment_list_item = ob_get_contents();
 			ob_end_clean();
-			
+
+			$comment_count = self::get_editorial_comment_count( $post_id );
+
 			$response->add( array(
 				'what' => 'comment',
 				'id' => $comment_id,
 				'data' => $comment_list_item,
-				'action' => ($parent) ? 'reply' : 'new'
-			));
-		
+				'action' => ($parent) ? 'reply' : 'new',
+				'supplemental' => array(
+					'post_comment_count' => $comment_count,
+					'post_id' => $post_id,
+				),
+			) );
+
 			$response->send();
 						
 		} else {

@@ -125,6 +125,7 @@ editorialCommentReply = {
 		
 		// Parse the response
 		response = wpAjax.parseAjaxResponse(xml);
+
 		if ( response.errors ) {
 			// Uh oh, errors found
 			this.error({'responseText': wpAjax.broken});
@@ -166,7 +167,9 @@ editorialCommentReply = {
 		jQuery(id)
 			.animate( { 'backgroundColor':'#CCEEBB' }, 600 )
 			.animate( { 'backgroundColor':'#fff' }, 600 );
-			
+
+		// Increment the comment count
+		jQuery( '#comments-expander-' + supplemental.post_id ).find( '.comments-expander-count' ).html( supplemental.post_comment_count );
 	},
 
 	error : function(r) {
