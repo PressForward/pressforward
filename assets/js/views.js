@@ -123,8 +123,8 @@ function reviewModal(){
 		//openModals.push(modalIDString);
 		//alert(modalID);
 		//showDiv(jQuery('#entries'), jQuery('#'+modalID));		
-		var itemID = element.attr('pf-item-id');
-		var postID = element.attr('pf-post-id');
+		//var itemID = element.attr('pf-item-id');
+		//var postID = element.attr('pf-post-id');
 		var item_post_ID = element.parent().attr('pf-item-post-id');
 		
 		jQuery.post(ajaxurl, {
