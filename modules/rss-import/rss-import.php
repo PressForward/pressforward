@@ -705,13 +705,16 @@ class PF_RSS_Import extends PF_Module {
 		$feed_iteration = update_option( PF_SLUG . '_feeds_iteration', 0);
 		$retrieval_state = update_option( PF_SLUG . '_iterate_going_switch', 0);
 		$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 1 );
+		
  	}
 
 	public function trigger_source_data(){
-		$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
-		$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
-		$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );
+			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0);
+			$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
+			$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
+			$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );		
 		pf_log( 'Invoked: PF_RSS_Import::trigger_source_data()' );
+		pf_log( 'Feeds go?: ' . $feed_go );
 		pf_log( 'Feed iteration: ' . $feed_iteration );
 		pf_log( 'Retrieval state: ' . $retrieval_state );
 		pf_log( 'Chunk state: ' . $chunk_state );
@@ -728,10 +731,35 @@ class PF_RSS_Import extends PF_Module {
 
 			PF_Feed_Item::assemble_feed_for_pull();
 		} else {
-			pf_log(__('The sources are already being retrieved.', 'pf'), true);
+			
+			$feeds_meta_state = get_option(PF_SLUG . '_feeds_meta_state', array());
+			if (empty($feeds_meta_state)){
+				$feeds_meta_state = array(
+											'feed_go' => $feed_go,
+											'feed_iteration' =>	$feed_iteration,
+											'retrieval_state' => $retrieval_state,
+											'chunk_state'	=> $chunk_state,
+											'retrigger'		=>	time() + (2 * 60 * 60)
+										);
+			} else {
+				
+			}
+			
+			if ($feeds_meta_state['retrigger'] > time()){
+					pf_log(__('The sources are already being retrieved.', 'pf'), true);
+			} else {		
+					if (($feed_go == $feeds_meta_state['feed_go']) && ($feed_iteration == $feeds_meta_state['feed_iteration']) && ($retrieval_state == $feeds_meta_state['retrieval_state']) && ($chunk_state == $feeds_meta_state['chunk_state'])){
+						pf_log(__('The sources are stuck.', 'pf'), true);
+						PF_Feed_Item::assemble_feed_for_pull();
+					} else {
+						return false;
+					}
+				
+			}
 		}
 	}
 }
+
 
 function pf_test_import() {
 	if ( is_super_admin() && ! empty( $_GET['pf_test_import'] ) ) {
