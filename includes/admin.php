@@ -43,7 +43,7 @@ class PF_Admin {
 			get_option('pf_menu_group_access', pf_get_defining_capability_by_role('contributor')), // cap required
 			PF_MENU_SLUG, // slug
 			array( $this, 'display_reader_builder' ), // callback
-			PF_URL . '/pressforward-16.png', // icon URL
+			PF_URL . 'pressforward-16.png', // icon URL
 			24 // Position (just above comments - 25)
 		);
 
@@ -149,7 +149,7 @@ class PF_Admin {
 					} 
 					if ($format === 'nomination'){
 					
-						echo '<a class="btn btn-small nom-to-archive schema-actor" pf-schema="archive" pf-schema-class="archived" data-toggle="tooltip" title="' . __('Archive', 'pf') .  '" form="' . $metadata['nom_id'] . '"><embed src="' . PF_URL . 'assets/images/noun_project_8945.svg" type="image/svg+xml" /></a>';
+						echo '<a class="btn btn-small nom-to-archive schema-actor" pf-schema="archive" pf-schema-class="archived" data-toggle="tooltip" title="' . __('Archive', 'pf') .  '" form="' . $metadata['nom_id'] . '"><img src="' . PF_URL . 'assets/images/archive.png" /></button></a>';
 						
 						echo '<a href="#nominate" class="btn btn-small nom-to-draft" form="' . $metadata['item_id'] . '" data-original-title="' . __('Draft', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></a>';
 					
