@@ -750,9 +750,11 @@ class PF_RSS_Import extends PF_Module {
 			} else {		
 					if (($feed_go == $feeds_meta_state['feed_go']) && ($feed_iteration == $feeds_meta_state['feed_iteration']) && ($retrieval_state == $feeds_meta_state['retrieval_state']) && ($chunk_state == $feeds_meta_state['chunk_state'])){
 						pf_log(__('The sources are stuck.', 'pf'), true);
+						# Wipe the checking option for use next time. 
+						update_option(PF_SLUG . '_feeds_meta_state', array());
 						PF_Feed_Item::assemble_feed_for_pull();
 					} else {
-						return false;
+						pf_log(__('The sources are already being retrieved.', 'pf'), true);
 					}
 				
 			}
