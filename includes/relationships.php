@@ -173,7 +173,8 @@ function pf_get_relationship_type_id( $relationship_type ) {
 		1 => 'read',
 		2 => 'star',
 		3 => 'archive',
-		4 => 'nominate'
+		4 => 'nominate',
+		5 => 'draft'
 		
 	);
 	
