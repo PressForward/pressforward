@@ -279,6 +279,10 @@ function pf_prep_item_for_submit($item) {
 			$itemPart = htmlspecialchars($itemPart);
 		}
 
+		if (is_array($itemPart)){
+			$itemPart = implode(",",$itemPart);
+		}
+		
 		echo '<input type="hidden" name="' . $itemKey . '" id="' . $itemKey . '_' . $itemid . '" id="' . $itemKey . '" value="' . $itemPart . '" />';
 
 	}
