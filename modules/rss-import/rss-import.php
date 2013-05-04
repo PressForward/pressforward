@@ -30,6 +30,7 @@ class PF_RSS_Import extends PF_Module {
 
 		add_action( 'take_feed_out', array( 'PF_Feed_Item', 'disassemble_feed_items' ) );
 		add_action( 'pull_feed_in', array( pressforward()->admin, 'trigger_source_data') );
+		add_filter( 'cron_schedules', array($this, 'cron_add_short' ));
 
 		if( is_admin() )
 		{
@@ -43,12 +44,23 @@ class PF_RSS_Import extends PF_Module {
 		}
 	}
 
+	
+	 
+	 function cron_add_short( $schedules ) {
+		// Adds once weekly to the existing schedules.
+		$schedules['halfhour'] = array(
+			'interval' => 30*60,
+			'display' => __( 'Half-hour' )
+		);
+		return $schedules;
+	 }	
+	
 	/**
 	 * Schedules the hourly wp-cron job
 	 */
 	public function schedule_feed_in() {
 		if ( ! wp_next_scheduled( 'pull_feed_in' ) ) {
-			wp_schedule_event( time(), 'hourly', 'pull_feed_in' );
+			wp_schedule_event( time(), 'halfhour', 'pull_feed_in' );
 		}
 	}
 
@@ -744,7 +756,7 @@ class PF_RSS_Import extends PF_Module {
 				update_option(PF_SLUG . '_feeds_meta_state', $feeds_meta_state);						
 				pf_log(__('Created new metastate.', 'pf'), true);						
 			} else {
-				
+				pf_log(__('Metastate saved and active for check.', 'pf'), true);	
 			}
 			
 			if ($feeds_meta_state['retrigger'] > time()){
