@@ -741,6 +741,8 @@ class PF_RSS_Import extends PF_Module {
 											'chunk_state'	=> $chunk_state,
 											'retrigger'		=>	time() + (2 * 60 * 60)
 										);
+				update_option(PF_SLUG . '_feeds_meta_state', $feeds_meta_state);						
+				pf_log(__('Created new metastate.', 'pf'), true);						
 			} else {
 				
 			}
@@ -752,6 +754,8 @@ class PF_RSS_Import extends PF_Module {
 						pf_log(__('The sources are stuck.', 'pf'), true);
 						# Wipe the checking option for use next time. 
 						update_option(PF_SLUG . '_feeds_meta_state', array());
+						update_option( PF_SLUG . '_ready_to_chunk', 1 );
+						update_option(PF_SLUG . '_iterate_going_switch', 1);
 						PF_Feed_Item::assemble_feed_for_pull();
 					} else {
 						pf_log(__('The sources are already being retrieved.', 'pf'), true);
