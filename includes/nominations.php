@@ -305,7 +305,7 @@ class PF_Nominations {
 
 
 		//There is some serious delay here while it goes through the database. We need some sort of loading bar.
-
+		ob_start();
 		//set up nomination check
 		$item_wp_date = $_POST['item_wp_date'];
 		$item_id = $_POST['item_id'];
@@ -395,11 +395,20 @@ class PF_Nominations {
 		add_post_meta($newNomID, 'item_tags', $_POST['item_tags'], true);
 		add_post_meta($newNomID, 'source_repeat', $_POST['source_repeat'], true);
 		add_post_meta($newNomID, 'item_feed_post_id', $_POST['item_post_id'], true);
-
-		$result  = $item_title . ' nominated.';
-		die($result);
-
-
+			$response = array(
+				'what' => 'nomination',
+				'action' => 'build_nomination',
+				'id' => $newNomID,
+				'data' => $item_title . ' nominated.',
+				'supplemental' => array(
+					'content' => $item_content,
+					'originID' => $item_id,
+					'buffered' => ob_get_contents()
+				)
+			);
+			$xmlResponse = new WP_Ajax_Response($response);
+			$xmlResponse->send();
+		ob_end_flush();
 	}
 
 	function build_nom_draft() {
@@ -412,9 +421,10 @@ class PF_Nominations {
 			die($this->__('Nonce not recieved. Are you sure you should be drafting?', 'pf'));
 		} else {
 ##Check
-		print_r(__('Sending to Draft.', 'pf'));
+		# print_r(__('Sending to Draft.', 'pf'));
 ##Check
 		//print_r($_POST);
+		ob_start();
 			$item_title = $_POST['nom_title'];
 			$item_content = $_POST['nom_content'];
 			$data = array(
@@ -434,7 +444,7 @@ class PF_Nominations {
 
 			//Now function will not update nomination count when it pushes nomination to publication.
 			$post_check = $this->get_post_nomination_status($nom_date, $item_id, 'post', false);
-
+			$newPostID = 'repeat';
 			//Alternative check with post_exists? or use same as above?
 			if ($post_check != true) {
 ##Check
@@ -487,6 +497,21 @@ class PF_Nominations {
 				}
 
 			}
+			$response = array(
+				'what' => 'draft',
+				'action' => 'build_nom_draft',
+				'id' => $newPostID,
+				'data' => $item_title . ' drafted.',
+				'supplemental' => array(
+					'content' => htmlspecialchars_decode($item_content),
+					'originID' => $item_id,
+					'repeat' => $post_check,
+					'buffered' => ob_get_contents()
+				)
+			);
+			$xmlResponse = new WP_Ajax_Response($response);
+			$xmlResponse->send();
+			ob_end_flush();
 		}
 	}
 
