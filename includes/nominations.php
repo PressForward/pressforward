@@ -503,7 +503,7 @@ class PF_Nominations {
 				'id' => $newPostID,
 				'data' => $item_title . ' drafted.',
 				'supplemental' => array(
-					'content' => htmlspecialchars_decode($item_content),
+					'content' => $item_content,
 					'originID' => $item_id,
 					'repeat' => $post_check,
 					'buffered' => ob_get_contents()
