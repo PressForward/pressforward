@@ -315,7 +315,7 @@ class PF_Feed_Item {
 				AND {$wpdb->postmeta}.meta_value = %s
 				AND {$wpdb->posts}.post_type = %s
 				ORDER BY {$wpdb->posts}.post_date DESC
-			 ", pf_feed_item_post_type(), $item_id);
+			 ", $item_id, pf_feed_item_post_type() );
 			 // AND $wpdb->posts.post_date < NOW() <- perhaps by removing we can better prevent simultaneous duplications?
 			 # Since I've altered the query, I could change this to just see if there are any items in the query results
 			 # and check based on that. But I haven't yet.
@@ -341,9 +341,10 @@ class PF_Feed_Item {
 						FROM {$wpdb->posts}, {$wpdb->postmeta}
 						WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 						AND {$wpdb->postmeta}.meta_key = 'item_link'
+						AND {$wpdb->postmeta}.meta_value = %s
 						AND {$wpdb->posts}.post_type = %s
 						ORDER BY {$wpdb->posts}.post_date DESC
-					 ", pf_feed_item_post_type());
+					 ", $item['item_link'], pf_feed_item_post_type());
 					$checkpoststwo = $wpdb->get_results($queryMoreStr, OBJECT);
 					if ($checkpoststwo):
 						pf_log('Check for posts with the same link.');
