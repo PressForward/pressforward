@@ -456,7 +456,7 @@ class PF_Nominations {
 				add_post_meta($newPostID, 'nom_id', $_POST['nom_id'], true);
 
 				$nomUserID = $_POST['nom_user'];
-				add_post_meta($newPostID, 'submitted_by', $userID, true);
+				add_post_meta($newPostID, 'submitted_by', $nomUserID, true);
 
 				$item_permalink = $_POST['item_link'];
 				add_post_meta($newPostID, 'nomination_permalink', $item_permalink, true);
