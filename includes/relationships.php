@@ -175,9 +175,8 @@ function pf_get_relationship_type_id( $relationship_type ) {
 		3 => 'archive',
 		4 => 'nominate',
 		5 => 'draft'
-		
 	);
-	
+
 	$types = apply_filters('pf_relationship_types', $types);
 
 	$relationship_type_id = array_search( $relationship_type, $types );
@@ -350,7 +349,7 @@ function pf_ajax_star(){
 	} else {
 		$result = pf_unstar_item_for_user( $item_id, $user_id );
 	}
-	
+
 	ob_start();
 	$response = array(
 			'what' => 'relationships',
@@ -362,12 +361,12 @@ function pf_ajax_star(){
 					'buffered' => ob_get_contents()
 				)
 			);
-	
+
 	$xmlResponse = new WP_Ajax_Response($response);
 	$xmlResponse->send();
 	ob_end_flush();
-	die();			
-	
+	die();
+
 }
 
 /**
@@ -395,9 +394,9 @@ function pf_get_starred_items_for_user( $user_id, $format = 'raw' ) {
 	return $rs;
 }
 
-/** 
+/**
  * A generalized function for setting/unsetting a relationship via ajax
- * 
+ *
  */
 add_action( 'wp_ajax_pf_ajax_relate', 'pf_ajax_relate');
 function pf_ajax_relate(){
@@ -412,7 +411,7 @@ function pf_ajax_relate(){
 	} else {
 		$result = pf_delete_relationship( $relationship_type, $item_id, $user_id );
 	}
-	
+
 	ob_start();
 	$response = array(
 			'what' => 'relationships',
@@ -424,12 +423,12 @@ function pf_ajax_relate(){
 					'buffered' => ob_get_contents()
 				)
 			);
-	
+
 	$xmlResponse = new WP_Ajax_Response($response);
 	$xmlResponse->send();
 	ob_end_flush();
-	die();			
-	
-	
+	die();
+
+
 
 }
