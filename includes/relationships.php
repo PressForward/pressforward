@@ -247,7 +247,9 @@ function pf_delete_relationship( $relationship_type, $item_id, $user_id ) {
  *
  * Note that this returns the relationship object, not the value
  *
- * @param string $relationship_type
+ * @param string|int $relationship_type Accepts either numeric key of the
+ *   relationship type, or a string ('star', 'read', etc) describing the
+ *   relationship type
  * @param int $item_id
  * @param int $user_id
  * @return object The relationship object
@@ -255,8 +257,12 @@ function pf_delete_relationship( $relationship_type, $item_id, $user_id ) {
 function pf_get_relationship( $relationship_type, $item_id, $user_id ) {
 	$relationship = new PF_RSS_Import_Relationship();
 
-	// Translate relationship type
-	$relationship_type_id = pf_get_relationship_type_id( $relationship_type );
+	// Translate relationship type to its integer index, if necessary
+	if ( is_string( $relationship_type ) ) {
+		$relationship_type_id = pf_get_relationship_type_id( $relationship_type );
+	} else {
+		$relationship_type_id = (int) $relationship_type;
+	}
 
 	$existing = $relationship->get( array(
 		'relationship_type' => $relationship_type_id,
