@@ -151,7 +151,7 @@ class PF_Admin {
 					
 						echo '<a class="btn btn-small nom-to-archive schema-actor" pf-schema="archive" pf-schema-class="archived" data-toggle="tooltip" title="' . __('Archive', 'pf') .  '" form="' . $metadata['nom_id'] . '"><img src="' . PF_URL . 'assets/images/archive.png" /></button></a>';
 						$arcive_status = "";
-						if ( 1 == pf_get_relationship_value( 5, $metadata['item_feed_post_id'], $user_id ) ){
+						if ( 1 == pf_get_relationship_value( 'draft', $metadata['item_feed_post_id'], $user_id ) ){
 							$arcive_status = 'btn-success';
 						}
 						echo '<a href="#nominate" class="btn btn-small nom-to-draft schema-actor '. $arcive_status .'" pf-schema="draft" pf-schema-class="btn-success" form="' . $metadata['item_id'] . '" data-original-title="' . __('Draft', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></a>';
