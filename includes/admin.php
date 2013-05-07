@@ -971,6 +971,14 @@ class PF_Admin {
 
 		check_admin_referer( 'pf_settings' );
 
+		$arrayedAdminRights = array('pf_menu_group_access','pf_menu_all_content_access','pf_menu_under_review_access','pf_menu_preferences_access','pf_menu_feeder_access','pf_menu_add_nomination_access');
+		
+		foreach($arrayedAdminRights as $right){
+			if (isset( $_POST[$right] )){
+				$enabled = $_POST[$right];
+				update_option( $right, $enabled );
+			}			
+		}
 		do_action( 'pf_admin_op_page_save' );
 	}
 	/////////////////////////
