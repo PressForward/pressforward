@@ -19,6 +19,7 @@ class PF_Comments extends PF_Module {
 		add_action( 'wp_ajax_editflow_ajax_insert_comment', array( $this, 'ajax_insert_comment' ) );
 		add_action('pf_comment_action_button', array($this, 'show_comment_count_button'));
 		add_action('pf_comment_action_modal', array($this, 'show_comment_modal'));
+		add_filter('pf_setup_admin_rights', array($this, 'control_menu_access'));
 
 	}
 
@@ -73,6 +74,20 @@ class PF_Comments extends PF_Module {
 		} else {
 			echo '<a role="button" class="btn btn-small itemCommentModal comments-expander active" >' . $count . '<i class="icon-comment"></i></a>';
 		}
+	}
+	
+	function control_menu_access($arrayedAdminRights){
+		$arrayedAdminRights['pf_menu_comments_access'] = array(
+															'default'=>'editor',
+															'title'=>'Internal Commenting Menu'
+														);
+		$arrayedAdminRights['pf_feature_comments_access'] = array(
+															'default'=>'editor',
+															'title'=>'Internal Commenting Feature'
+														);
+		
+		return $arrayedAdminRights;
+														
 	}
 
 	function show_comment_modal($commentSet){
