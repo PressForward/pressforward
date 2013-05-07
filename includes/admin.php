@@ -724,86 +724,58 @@ class PF_Admin {
 					
 					<h3><?php _e( 'User Control', 'pf' ) ?></h3>
 
+				<?php 	
 
+		$arrayedAdminRights = array(
+			'pf_menu_group_access'	=>	array(
+											'default'=>'contributor', 
+											'title'=>__( 'PressForward Menu Group', 'pf' )
+										),
+			'pf_menu_all_content_access'=>array(
+											'default'=>'contributor',
+											'title'=>__( 'All Content Menu', 'pf' )
+										),
+			'pf_menu_under_review_access'=>array(
+											'default'=>'contributor',
+											'title'=>__( 'Under Review Menu', 'pf' )
+										),
+			'pf_menu_preferences_access'=>array(
+											'default'=>'administrator',
+											'title'=>__( 'Preferences Menu', 'pf' )
+										),
+			'pf_menu_feeder_access'=>array(
+											'default'=>'editor',
+											'title'=>__( 'Feeder Menu', 'pf' )
+										),
+			'pf_menu_add_nomination_access'=>array(
+											'default'=>'contributor',
+											'title'=> __( 'Add Nomination Menu', 'pf' )
+										)
+		);
+		
+		$arrayedAdminRights = apply_filters('pf_setup_admin_rights',$arrayedAdminRights);
+		
+		foreach($arrayedAdminRights as $right=>$parts){
+
+			?>
 					<table class="form-table">
 						<tr>
 							<th scope="row">
-								<label for="menu-dashboard-enable"><?php _e( 'PressForward Menu Group', 'pf' ) ?></label>
+								<label for="<?php echo $right; ?>-enable"><?php echo $parts['title']; ?></label>
 							</th>
 
 							<td>
-								<select id="pf_menu_group_access" name="pf_menu_group_access">
-									<?php $this->pf_get_user_role_select('pf_menu_group_access', pf_get_defining_capability_by_role('contributor')); ?>
+								<select id="<?php echo $right; ?>" name="<?php echo $right; ?>">
+									<?php $this->pf_get_user_role_select($right, pf_get_defining_capability_by_role($parts['default'])); ?>
 								</select>
 							</td>
 						</tr>
-					</table>
-					<table class="form-table">
-						<tr>
-							<th scope="row">
-								<label for="all-content-dashboard-enable"><?php _e( 'All Content Menu', 'pf' ) ?></label>
-							</th>
-
-							<td>
-								<select id="pf_menu_all_content_access" name="pf_menu_all_content_access">
-									<?php $this->pf_get_user_role_select('pf_menu_all_content_access', pf_get_defining_capability_by_role('contributor')); ?>
-								</select>
-							</td>
-						</tr>
-					</table>
-					<table class="form-table">
-						<tr>
-							<th scope="row">
-								<label for="under-review-dashboard-enable"><?php _e( 'Under Review Menu', 'pf' ) ?></label>
-							</th>
-
-							<td>
-								<select id="pf_menu_under_review_access" name="pf_menu_under_review_access">
-									<?php $this->pf_get_user_role_select('pf_menu_under_review_access', pf_get_defining_capability_by_role('contributor')); ?>
-								</select>
-							</td>
-						</tr>
-					</table>
-					<table class="form-table">
-						<tr>
-							<th scope="row">
-								<label for="pf-preferences-dashboard-enable"><?php _e( 'Preferences Menu', 'pf' ) ?></label>
-							</th>
-
-							<td>
-								<select id="pf_menu_preferences_access" name="pf_menu_preferences_access">
-									<?php $this->pf_get_user_role_select('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator')); ?>
-								</select>
-							</td>
-						</tr>
-					</table>
-					<table class="form-table">
-						<tr>
-							<th scope="row">
-								<label for="pf_menu_feeder_access-dashboard-enable"><?php _e( 'Feeder Menu', 'pf' ) ?></label>
-							</th>
-
-							<td>
-								<select id="pf_menu_feeder_access" name="pf_menu_feeder_access">
-									<?php $this->pf_get_user_role_select('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')); ?>
-								</select>
-							</td>
-						</tr>
-					</table>
-					<table class="form-table">
-						<tr>
-							<th scope="row">
-								<label for="pf_menu_add_nomination_access-dashboard-enable"><?php _e( 'Add Nomination Menu', 'pf' ) ?></label>
-							</th>
-
-							<td>
-								<select id="pf_menu_add_nomination_access" name="pf_menu_add_nomination_access">
-									<?php $this->pf_get_user_role_select('pf_menu_add_nomination_access', pf_get_defining_capability_by_role('contributor')); ?>
-								</select>
-							</td>
-						</tr>
-					</table>
-				<?php 		
+					</table>			
+			
+			<?php
+			
+		}		
+		
 				do_action ('pf_admin_user_settings');				
 				
 				?>
@@ -971,9 +943,36 @@ class PF_Admin {
 
 		check_admin_referer( 'pf_settings' );
 
-		$arrayedAdminRights = array('pf_menu_group_access','pf_menu_all_content_access','pf_menu_under_review_access','pf_menu_preferences_access','pf_menu_feeder_access','pf_menu_add_nomination_access');
+		$arrayedAdminRights = array(
+			'pf_menu_group_access'	=>	array(
+											'default'=>'contributor', 
+											'title'=>__( 'PressForward Menu Group', 'pf' )
+										),
+			'pf_menu_all_content_access'=>array(
+											'default'=>'contributor',
+											'title'=>__( 'All Content Menu', 'pf' )
+										),
+			'pf_menu_under_review_access'=>array(
+											'default'=>'contributor',
+											'title'=>__( 'Under Review Menu', 'pf' )
+										),
+			'pf_menu_preferences_access'=>array(
+											'default'=>'administrator',
+											'title'=>__( 'Preferences Menu', 'pf' )
+										),
+			'pf_menu_feeder_access'=>array(
+											'default'=>'editor',
+											'title'=>__( 'Feeder Menu', 'pf' )
+										),
+			'pf_menu_add_nomination_access'=>array(
+											'default'=>'contributor',
+											'title'=> __( 'Add Nomination Menu', 'pf' )
+										)
+		);
 		
-		foreach($arrayedAdminRights as $right){
+		$arrayedAdminRights = apply_filters('pf_setup_admin_rights',$arrayedAdminRights);
+		
+		foreach($arrayedAdminRights as $right=>$parts){
 			if (isset( $_POST[$right] )){
 				$enabled = $_POST[$right];
 				update_option( $right, $enabled );
