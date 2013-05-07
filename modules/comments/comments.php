@@ -118,6 +118,14 @@ class PF_Comments extends PF_Module {
 		echo '<script>
 		editorialCommentReply.init();
 		</script>';
+		$comments_allowed = get_option('pf_feature_comments_access', pf_get_defining_capability_by_role('editor'));
+		
+		if (!(current_user_can($comments_allowed))){
+		
+			_e('You do not have permission to access this area.');
+			echo '<div class="clear"></div>';
+			return;
+		}
 		?>
 		<div id="ef-comments_wrapper">
 			<a name="editorialcomments"></a>
