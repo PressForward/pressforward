@@ -115,29 +115,34 @@ function reshowModal(){
 } 
 function reviewModal(){		
 	//Need to fix this to only trigger on the specific model, but not sure how yet. 
-	jQuery('.pf_container').on('shown', ".modal.pfmodal", function(evt){
+
+	jQuery('.pressforward_page_pf-review .pf_container').on('shown', ".modal.pfmodal", function(evt){
 		//alert('Modal Triggered.');
+
 		var element = jQuery(this);		
 		var modalID = element.attr('id');		
 		var modalIDString = '#'+modalID;
 		//openModals.push(modalIDString);
 		//alert(modalID);
 		//showDiv(jQuery('#entries'), jQuery('#'+modalID));		
-		var itemID = element.attr('pf-item-id');
-		var postID = element.attr('pf-post-id');
+		//var itemID = element.attr('pf-item-id');
+		//var postID = element.attr('pf-post-id');
 		var item_post_ID = element.parent().attr('pf-item-post-id');
-		
+
 		jQuery.post(ajaxurl, {
 				action: 'ajax_get_comments',
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
 				id_for_comments: item_post_ID,
 			}, 
 			function(comment_response) {
+
 				jQuery('#'+modalID+ '.pfmodal .modal-comments').html(comment_response);
+
 			});		
 			
-		
+
 		var tabindex = element.parent().attr('tabindex');
+
 		modalNavigator(tabindex);
 	});
 }

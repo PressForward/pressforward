@@ -40,10 +40,10 @@ class PF_Admin {
 		add_menu_page(
 			PF_TITLE, // <title>
 			PF_TITLE, // menu title
-			'edit_posts', // cap required
+			get_option('pf_menu_group_access', pf_get_defining_capability_by_role('contributor')), // cap required
 			PF_MENU_SLUG, // slug
 			array( $this, 'display_reader_builder' ), // callback
-			PF_URL . '/pressforward-16.png', // icon URL
+			PF_URL . 'pressforward-16.png', // icon URL
 			24 // Position (just above comments - 25)
 		);
 
@@ -51,7 +51,7 @@ class PF_Admin {
 			PF_MENU_SLUG,
 			__('All Content', 'pf'),
 			__('All Content', 'pf'),
-			'edit_posts',
+			get_option('pf_menu_all_content_access', pf_get_defining_capability_by_role('contributor')),
 			PF_MENU_SLUG,
 			array($this, 'display_reader_builder')
 		);
@@ -60,7 +60,7 @@ class PF_Admin {
 			PF_MENU_SLUG,
 			__('Under Review', 'pf'),
 			__('Under Review', 'pf'),
-			'edit_posts',
+			get_option('pf_menu_under_review_access', pf_get_defining_capability_by_role('contributor')),
 			PF_SLUG . '-review',
 			array($this, 'display_review_builder')
 		);
@@ -70,7 +70,7 @@ class PF_Admin {
 			PF_MENU_SLUG,
 			__('Preferences', 'pf'), // @todo sprintf
 			__('Preferences', 'pf'),
-			'manage_options',
+			get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator')),
 			PF_SLUG . '-options',
 			array($this, 'display_options_builder')
 		);
@@ -80,7 +80,7 @@ class PF_Admin {
 			PF_MENU_SLUG,
 			__('Feeder', 'pf'),
 			__('Feeder', 'pf'),
-			'edit_others_posts',
+			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')),
 			PF_SLUG . '-feeder',
 			array($this, 'display_feeder_builder')
 		);
@@ -89,7 +89,7 @@ class PF_Admin {
 			PF_MENU_SLUG,
 			__('Add Nomination', 'pf'),
 			__('Add Nomination', 'pf'),
-			'edit_posts',
+			get_option('pf_menu_add_nomination_access', pf_get_defining_capability_by_role('contributor')),
 			PF_NOM_POSTER
 		);
 	}
@@ -149,9 +149,12 @@ class PF_Admin {
 					} 
 					if ($format === 'nomination'){
 					
-						echo '<a class="btn btn-small nom-to-archive schema-actor" pf-schema="archive" pf-schema-class="archived" data-toggle="tooltip" title="' . __('Archive', 'pf') .  '" form="' . $metadata['nom_id'] . '"><embed src="' . PF_URL . 'assets/images/noun_project_8945.svg" type="image/svg+xml" /></a>';
-						
-						echo '<a href="#nominate" class="btn btn-small nom-to-draft" form="' . $metadata['item_id'] . '" data-original-title="' . __('Draft', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></a>';
+						echo '<a class="btn btn-small nom-to-archive schema-actor" pf-schema="archive" pf-schema-class="archived" data-toggle="tooltip" title="' . __('Archive', 'pf') .  '" form="' . $metadata['nom_id'] . '"><img src="' . PF_URL . 'assets/images/archive.png" /></button></a>';
+						$arcive_status = "";
+						if ( 1 == pf_get_relationship_value( 'draft', $metadata['item_feed_post_id'], $user_id ) ){
+							$arcive_status = 'btn-success';
+						}
+						echo '<a href="#nominate" class="btn btn-small nom-to-draft schema-actor '. $arcive_status .'" pf-schema="draft" pf-schema-class="btn-success" form="' . $metadata['item_id'] . '" data-original-title="' . __('Draft', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></a>';
 					
 					} else {
 						if ('' == pf_get_relationship('nominate', $id_for_comments, $user_id)){
@@ -253,7 +256,7 @@ class PF_Admin {
 						<div class="sortable-hidden-meta" style="display:none;">
 							<?php
 							_e('UNIX timestamp from source RSS', 'pf');
-							echo ': <span class="sortable_source_timestamp">' . $metadata['timestamp_item_posted'] . '</span><br />';
+							echo ': <span class="sortable_source_timestamp sortableitemdate">' . $metadata['timestamp_item_posted'] . '</span><br />';
 
 							_e('UNIX timestamp last modified', 'pf');
 							echo ': <span class="sortable_mod_timestamp">' . $metadata['timestamp_nom_last_modified'] . '</span><br />';
@@ -689,6 +692,18 @@ class PF_Admin {
 			}
 			die();
 	}
+	
+	function pf_get_user_role_select($option, $default){
+		global $wp_roles;
+		$roles = $wp_roles->get_names();
+		$enabled = get_option($option, $default);
+#		$roleObj = pf_get_role_by_capability($enabled, true, true);
+#		$enabled_role = $roleObj->name;
+		foreach ($roles as $slug=>$role){
+			$defining_capability = pf_get_defining_capability_by_role($slug);
+			?><option value="<?php echo $defining_capability ?>" <?php selected( $enabled, $defining_capability ) ?>><?php _e( $role, PF_SLUG ) ?></option><?php 
+		}
+	}
 
 	/**
 	 * Display function for the Options panel
@@ -710,6 +725,67 @@ class PF_Admin {
 				?>
 					<br />
 					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
+					<br />
+					
+					<h3><?php _e( 'User Control', 'pf' ) ?></h3>
+
+				<?php 	
+
+		$arrayedAdminRights = array(
+			'pf_menu_group_access'	=>	array(
+											'default'=>'contributor', 
+											'title'=>__( 'PressForward Menu Group', 'pf' )
+										),
+			'pf_menu_all_content_access'=>array(
+											'default'=>'contributor',
+											'title'=>__( 'All Content Menu', 'pf' )
+										),
+			'pf_menu_under_review_access'=>array(
+											'default'=>'contributor',
+											'title'=>__( 'Under Review Menu', 'pf' )
+										),
+			'pf_menu_preferences_access'=>array(
+											'default'=>'administrator',
+											'title'=>__( 'Preferences Menu', 'pf' )
+										),
+			'pf_menu_feeder_access'=>array(
+											'default'=>'editor',
+											'title'=>__( 'Feeder Menu', 'pf' )
+										),
+			'pf_menu_add_nomination_access'=>array(
+											'default'=>'contributor',
+											'title'=> __( 'Add Nomination Menu', 'pf' )
+										)
+		);
+		
+		$arrayedAdminRights = apply_filters('pf_setup_admin_rights',$arrayedAdminRights);
+		
+		foreach($arrayedAdminRights as $right=>$parts){
+
+			?>
+					<table class="form-table">
+						<tr>
+							<th scope="row">
+								<label for="<?php echo $right; ?>-enable"><?php echo $parts['title']; ?></label>
+							</th>
+
+							<td>
+								<select id="<?php echo $right; ?>" name="<?php echo $right; ?>">
+									<?php $this->pf_get_user_role_select($right, pf_get_defining_capability_by_role($parts['default'])); ?>
+								</select>
+							</td>
+						</tr>
+					</table>			
+			
+			<?php
+			
+		}		
+		
+				do_action ('pf_admin_user_settings');				
+				
+				?>
+					<br />
+					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />				
 			</div>
 		</form>
 		<?php
@@ -760,13 +836,14 @@ class PF_Admin {
 			wp_register_style( 'bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
 			wp_register_style( PF_SLUG . '-susy-style', PF_URL . 'assets/css/susy.css');
 			wp_register_style( PF_SLUG . '-reset-style', PF_URL . 'assets/css/reset.css');
-			wp_register_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
 			wp_register_script('views', PF_URL . 'assets/js/views.js', array( 'twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide'  ));	
 			wp_register_script('readability-imp', PF_URL . 'assets/js/readability-imp.js', array( 'twitter-bootstrap', 'jquery', 'views' ));
 			wp_register_script('infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery', 'views', 'readability-imp' ));
 			wp_register_script('scrollimp', PF_URL . 'assets/js/scroll-imp.js', array( 'infiniscroll' ));
 			wp_register_script('pf-relationships', PF_URL . 'assets/js/relationships.js', array( 'infiniscroll' ));
 			wp_register_style( PF_SLUG . '-responsive-style', PF_URL . 'assets/css/pf-responsive.css', array(PF_SLUG . '-reset-style', PF_SLUG . '-style', 'bootstrap-style', PF_SLUG . '-susy-style'));
+			wp_register_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
+			wp_register_script('sort-imp', PF_URL . 'assets/js/sort-imp.js', array( 'tinysort', 'twitter-bootstrap', 'jq-fullscreen' ));
 
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
@@ -774,7 +851,7 @@ class PF_Admin {
 			//And now lets enqueue the script, ensuring that jQuery is already active.
 
 			wp_enqueue_script('tinysort');
-			wp_enqueue_script('sort-imp', PF_URL . 'assets/js/sort-imp.js', array( 'tinysort', 'twitter-bootstrap', 'jq-fullscreen' ));
+			wp_enqueue_script('sort-imp');
 			wp_enqueue_script('views');			
 			wp_enqueue_script('readability-imp');
 			wp_enqueue_script('nomination-imp', PF_URL . 'assets/js/nomination-imp.js', array( 'jquery' ));
@@ -792,7 +869,8 @@ class PF_Admin {
 
 		}
 		if (('pressforward_page_pf-review') == $hook) {
-			wp_enqueue_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
+			wp_enqueue_script('tinysort');
+			wp_enqueue_script('sort-imp');
 			wp_enqueue_script('jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
 			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
 			wp_enqueue_script('send-to-draft-imp', PF_URL . 'assets/js/send-to-draft-imp.js', array( 'jquery' ));
@@ -810,6 +888,9 @@ class PF_Admin {
 			wp_enqueue_script( 'post' );
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 		}
+		if (('nomination') == get_post_type()) {
+			wp_enqueue_script('add-nom-imp', PF_URL . 'assets/js/add-nom-imp.js', array( 'jquery' ));
+		}		
 		if (('pressforward_page_pf-feeder') != $hook) { return; }
 		else {
 			//And now lets enqueue the script, ensuring that jQuery is already active.
@@ -825,8 +906,6 @@ class PF_Admin {
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 
 		}
-
-
 
 	}
 
@@ -869,6 +948,41 @@ class PF_Admin {
 
 		check_admin_referer( 'pf_settings' );
 
+		$arrayedAdminRights = array(
+			'pf_menu_group_access'	=>	array(
+											'default'=>'contributor', 
+											'title'=>__( 'PressForward Menu Group', 'pf' )
+										),
+			'pf_menu_all_content_access'=>array(
+											'default'=>'contributor',
+											'title'=>__( 'All Content Menu', 'pf' )
+										),
+			'pf_menu_under_review_access'=>array(
+											'default'=>'contributor',
+											'title'=>__( 'Under Review Menu', 'pf' )
+										),
+			'pf_menu_preferences_access'=>array(
+											'default'=>'administrator',
+											'title'=>__( 'Preferences Menu', 'pf' )
+										),
+			'pf_menu_feeder_access'=>array(
+											'default'=>'editor',
+											'title'=>__( 'Feeder Menu', 'pf' )
+										),
+			'pf_menu_add_nomination_access'=>array(
+											'default'=>'contributor',
+											'title'=> __( 'Add Nomination Menu', 'pf' )
+										)
+		);
+		
+		$arrayedAdminRights = apply_filters('pf_setup_admin_rights',$arrayedAdminRights);
+		
+		foreach($arrayedAdminRights as $right=>$parts){
+			if (isset( $_POST[$right] )){
+				$enabled = $_POST[$right];
+				update_option( $right, $enabled );
+			}			
+		}
 		do_action( 'pf_admin_op_page_save' );
 	}
 	/////////////////////////

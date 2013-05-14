@@ -2,6 +2,8 @@
 /** 
 * Arc90's Readability ported to PHP for FiveFilters.org
 * Based on readability.js version 1.7.1 (without multi-page support)
+* Updated to allow HTML5 parsing with html5lib
+* Updated with lightClean mode to preserve more images and youtube/vimeo/viddler embeds
 * ------------------------------------------------------
 * Original URL: http://lab.arc90.com/experiments/readability/js/readability.js
 * Arc90's project URL: http://lab.arc90.com/experiments/readability/
@@ -10,7 +12,7 @@
 * More information: http://fivefilters.org/content-only/
 * License: Apache License, Version 2.0
 * Requires: PHP5
-* Date: 2011-07-22
+* Date: 2012-09-19
 * 
 * Differences between the PHP port and the original
 * ------------------------------------------------------
@@ -72,6 +74,7 @@ class Readability
 	public $dom;
 	public $url = null; // optional - URL where HTML was retrieved
 	public $debug = false;
+	public $lightClean = true; // preserves more content (experimental) added 2012-09-19
 	protected $body = null; // 
 	protected $bodyCache = null; // Cache the body HTML in case we need to re-use it later
 	protected $flags = 7; // 1 | 2 | 4;   // Start with all flags set.
@@ -82,17 +85,17 @@ class Readability
 	* Defined up here so we don't instantiate them repeatedly in loops.
 	**/
 	public $regexps = array(
-		'unlikelyCandidates' => '/combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad-break|agegate|pagination|pager|popup|tweet|twitter/i',
+		'unlikelyCandidates' => '/combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad-break|agegate|pagination|pager|popup/i',
 		'okMaybeItsACandidate' => '/and|article|body|column|main|shadow/i',
-		'positive' => '/article|body|content|entry|hentry|main|page|pagination|post|text|blog|story/i',
-		'negative' => '/combx|comment|com-|contact|foot|footer|footnote|masthead|media|meta|outbrain|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget/i',
+		'positive' => '/article|body|content|entry|hentry|main|page|attachment|pagination|post|text|blog|story/i',
+		'negative' => '/combx|comment|com-|contact|foot|footer|_nav|footnote|masthead|media|meta|outbrain|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget/i',
 		'divToPElements' => '/<(a|blockquote|dl|div|img|ol|p|pre|table|ul)/i',
 		'replaceBrs' => '/(<br[^>]*>[ \n\r\t]*){2,}/i',
 		'replaceFonts' => '/<(\/?)font[^>]*>/i',
 		// 'trimRe' => '/^\s+|\s+$/g', // PHP has trim()
 		'normalize' => '/\s{2,}/',
 		'killBreaks' => '/(<br\s*\/?>(\s|&nbsp;?)*){1,}/',
-		'video' => '/http:\/\/(www\.)?(youtube|vimeo)\.com/i',
+		'video' => '!//(player\.|www\.)?(youtube|vimeo|viddler)\.com!i',
 		'skipFootnoteLink' => '/^\s*(\[?[a-z0-9]{1,2}\]?|^|edit|citation needed)\s*$/i'
 	);	
 	
@@ -105,19 +108,24 @@ class Readability
 	* Create instance of Readability
 	* @param string UTF-8 encoded string
 	* @param string (optional) URL associated with HTML (used for footnotes)
+	* @param string which parser to use for turning raw HTML into a DOMDocument (either 'libxml' or 'html5lib')
 	*/	
-	function __construct($html, $url=null)
+	function __construct($html, $url=null, $parser='libxml')
 	{
+		$this->url = $url;
 		/* Turn all double br's into p's */
 		$html = preg_replace($this->regexps['replaceBrs'], '</p><p>', $html);
 		$html = preg_replace($this->regexps['replaceFonts'], '<$1span>', $html);
 		$html = mb_convert_encoding($html, 'HTML-ENTITIES', "UTF-8");
-		$this->dom = new DOMDocument();
-		$this->dom->preserveWhiteSpace = false;
-		$this->dom->registerNodeClass('DOMElement', 'JSLikeHTMLElement');
 		if (trim($html) == '') $html = '<html></html>';
-		@$this->dom->loadHTML($html);
-		$this->url = $url;
+		if ($parser=='html5lib' && ($this->dom = HTML5_Parser::parse($html))) {
+			// all good
+		} else {
+			$this->dom = new DOMDocument();
+			$this->dom->preserveWhiteSpace = false;
+			@$this->dom->loadHTML($html);
+		}
+		$this->dom->registerNodeClass('DOMElement', 'JSLikeHTMLElement');
 	}
 
 	/**
@@ -213,7 +221,7 @@ class Readability
 	* Debug
 	*/
 	protected function dbg($msg) {
-		if ($this->debug) echo '* ',$msg, '<br />', "\n";
+		if ($this->debug) echo '* ',$msg, "\n";
 	}
 	
 	/**
@@ -414,13 +422,13 @@ class Readability
 		/* Clean out junk from the article content */
 		$this->cleanConditionally($articleContent, 'form');
 		$this->clean($articleContent, 'object');
-		//$this->clean($articleContent, 'h1');
+		# $this->clean($articleContent, 'h1');
 
 		/**
 		* If there is only one h2, they are probably using it
 		* as a header and not a subheader, so remove it since we already have a header.
 		***/
-		if ($articleContent->getElementsByTagName('h2')->length == 1) {
+		if (!$this->lightClean && ($articleContent->getElementsByTagName('h2')->length == 1)) {
 			//$this->clean($articleContent, 'h2'); 
 		}
 		$this->clean($articleContent, 'iframe');
@@ -439,8 +447,9 @@ class Readability
 			$imgCount    = $articleParagraphs->item($i)->getElementsByTagName('img')->length;
 			$embedCount  = $articleParagraphs->item($i)->getElementsByTagName('embed')->length;
 			$objectCount = $articleParagraphs->item($i)->getElementsByTagName('object')->length;
+			$iframeCount = $articleParagraphs->item($i)->getElementsByTagName('iframe')->length;
 			
-			if ($imgCount === 0 && $embedCount === 0 && $objectCount === 0 && $this->getInnerText($articleParagraphs->item($i), false) == '')
+			if ($imgCount === 0 && $embedCount === 0 && $objectCount === 0 && $iframeCount === 0 && $this->getInnerText($articleParagraphs->item($i), false) == '')
 			{
 				$articleParagraphs->item($i)->parentNode->removeChild($articleParagraphs->item($i));
 			}
@@ -946,13 +955,15 @@ class Readability
 	* Clean a node of all elements of type "tag".
 	* (Unless it's a youtube/vimeo video. People love movies.)
 	*
+	* Updated 2012-09-18 to preserve youtube/vimeo iframes
+	*
 	* @param DOMElement $e
 	* @param string $tag
 	* @return void
 	*/
 	public function clean($e, $tag) {
 		$targetList = $e->getElementsByTagName($tag);
-		$isEmbed = ($tag == 'object' || $tag == 'embed');
+		$isEmbed = ($tag == 'iframe' || $tag == 'object' || $tag == 'embed');
 		
 		for ($y=$targetList->length-1; $y >= 0; $y--) {
 			/* Allow youtube and vimeo videos through as people usually want to see those. */
@@ -1017,12 +1028,19 @@ class Readability
 				$img    = $tagsList->item($i)->getElementsByTagName('img')->length;
 				$li     = $tagsList->item($i)->getElementsByTagName('li')->length-100;
 				$input  = $tagsList->item($i)->getElementsByTagName('input')->length;
+				$a 		= $tagsList->item($i)->getElementsByTagName('a')->length;
 
 				$embedCount = 0;
 				$embeds = $tagsList->item($i)->getElementsByTagName('embed');
 				for ($ei=0, $il=$embeds->length; $ei < $il; $ei++) {
 					if (preg_match($this->regexps['video'], $embeds->item($ei)->getAttribute('src'))) {
-					$embedCount++; 
+						$embedCount++; 
+					}
+				}
+				$embeds = $tagsList->item($i)->getElementsByTagName('iframe');
+				for ($ei=0, $il=$embeds->length; $ei < $il; $ei++) {
+					if (preg_match($this->regexps['video'], $embeds->item($ei)->getAttribute('src'))) {
+						$embedCount++; 
 					}
 				}
 
@@ -1030,23 +1048,58 @@ class Readability
 				$contentLength = strlen($this->getInnerText($tagsList->item($i)));
 				$toRemove      = false;
 
-				if ( $img > $p ) {
-					$toRemove = true;
-				} else if ($li > $p && $tag != 'ul' && $tag != 'ol') {
-					$toRemove = true;
-				} else if ( $input > floor($p/3) ) {
-					$toRemove = true; 
-				} else if ($contentLength < 25 && ($img === 0 || $img > 2) ) {
-					$toRemove = true;
-				} else if($weight < 25 && $linkDensity > 0.2) {
-					$toRemove = true;
-				} else if($weight >= 25 && $linkDensity > 0.5) {
-					$toRemove = true;
-				} else if(($embedCount == 1 && $contentLength < 75) || $embedCount > 1) {
-					$toRemove = true;
+				if ($this->lightClean) {
+					$this->dbg('Light clean...');
+					if ( ($img > $p) && ($img > 4) ) {
+						$this->dbg(' more than 4 images and more image elements than paragraph elements');
+						$toRemove = true;
+					} else if ($li > $p && $tag != 'ul' && $tag != 'ol') {
+						$this->dbg(' too many <li> elements, and parent is not <ul> or <ol>');
+						$toRemove = true;
+					} else if ( $input > floor($p/3) ) {
+						$this->dbg(' too many <input> elements');
+						$toRemove = true; 
+					} else if ($contentLength < 25 && ($embedCount === 0 && ($img === 0 || $img > 2))) {
+						$this->dbg(' content length less than 25 chars, 0 embeds and either 0 images or more than 2 images');
+						$toRemove = true;
+					} else if($weight < 25 && $linkDensity > 0.2) {
+						$this->dbg(' weight smaller than 25 and link density above 0.2');
+						$toRemove = true;
+					} else if($a > 2 && ($weight >= 25 && $linkDensity > 0.5)) {
+						$this->dbg(' more than 2 links and weight above 25 but link density greater than 0.5');
+						$toRemove = true;
+					} else if($embedCount > 3) {
+						$this->dbg(' more than 3 embeds');
+						$toRemove = true;
+					}
+				} else {
+					$this->dbg('Standard clean...');
+					if ( $img > $p ) {
+						$this->dbg(' more image elements than paragraph elements');
+						$toRemove = true;
+					} else if ($li > $p && $tag != 'ul' && $tag != 'ol') {
+						$this->dbg(' too many <li> elements, and parent is not <ul> or <ol>');
+						$toRemove = true;
+					} else if ( $input > floor($p/3) ) {
+						$this->dbg(' too many <input> elements');
+						$toRemove = true; 
+					} else if ($contentLength < 25 && ($img === 0 || $img > 2) ) {
+						$this->dbg(' content length less than 25 chars and 0 images, or more than 2 images');
+						$toRemove = true;
+					} else if($weight < 25 && $linkDensity > 0.2) {
+						$this->dbg(' weight smaller than 25 and link density above 0.2');
+						$toRemove = true;
+					} else if($weight >= 25 && $linkDensity > 0.5) {
+						$this->dbg(' weight above 25 but link density greater than 0.5');
+						$toRemove = true;
+					} else if(($embedCount == 1 && $contentLength < 75) || $embedCount > 1) {
+						$this->dbg(' 1 embed and content length smaller than 75 chars, or more than one embed');
+						$toRemove = true;
+					}
 				}
 
 				if ($toRemove) {
+					//$this->dbg('Removing: '.$tagsList->item($i)->innerHTML);
 					$tagsList->item($i)->parentNode->removeChild($tagsList->item($i));
 				}
 			}
@@ -1082,4 +1135,3 @@ class Readability
 		$this->flags = $this->flags & ~$flag;
 	}
 }
-?>

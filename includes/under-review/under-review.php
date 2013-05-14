@@ -12,6 +12,7 @@
 			$page = 0;
 		}
 		$count = $page * 20;	
+		$countQ = 0;
 	?>
 	<div class="list pf_container full">
 		<header id="app-banner">
@@ -233,17 +234,25 @@
 
 			//Now we must loop.
 			//Eventually we may want to provide options to change some of these, so we're going to provide the default values for now.
+			$pageCheck = absint($page);
+			if (!$pageCheck){ $pageCheck = 1; }
+			
 			$nom_args = array(
 
 							'post_type' => 'nomination',
 							'orderby' => 'date',
-							'order' => 'DESC'
+							'order' => 'DESC',
+							'posts_per_page' => 20,
+							'offset' => $offset  #The query function will turn page into a 1 if it is a 0. 
 
 							);
 			$nom_query = new WP_Query( $nom_args );
 			$count = 0;
+			$countQ = $nom_query->post_count;
+			$countQT = $nom_query->found_posts;
+			//print_r($countQ);
 			while ( $nom_query->have_posts() ) : $nom_query->the_post();
-
+				
 				//declare some variables for use, mostly in various meta roles.
 				//1773 in rssforward.php for various post meta.
 
@@ -316,8 +325,8 @@
 					$archived_user_string_match = 'archived_' . $current_user_id;
 					foreach ($archived_status as $user_archived_status){
 						if ($user_archived_status == $archived_user_string_match){
-						$archived_status_string = 'archived';
-						$dependent_style = 'display:none;';
+							$archived_status_string = 'archived';
+							$dependent_style = 'display:none;';
 						}
 					}
 				} else {
@@ -504,18 +513,18 @@
 		echo '</div><!-- End entries -->';
 
 	echo '</div><!-- End main -->';
-
+	if ($countQT > $countQ){
 		//Nasty hack because infinite scroll only works starting with page 2 for some reason.
 		if ($page == 0){ $page = 1; }
 		$pagePrev = $page-1;
 		$pageNext = $page+1;
 		echo '<div class="pf-navigation">';
 		if ($pagePrev > -1){
-			echo '<span class="feedprev"><a class="prevnav" href="admin.php?page=pf-menu&pc=' . $pagePrev . '">Previous Page</a></span> | ';
+			echo '<span class="feedprev"><a class="prevnav" href="admin.php?page=pf-review&pc=' . $pagePrev . '">Previous Page</a></span> | ';
 		}
-		echo '<span class="feednext"><a class="nextnav" href="admin.php?page=pf-menu&pc=' . $pageNext . '">Next Page</a></span>';
+		echo '<span class="feednext"><a class="nextnav" href="admin.php?page=pf-review&pc=' . $pageNext . '">Next Page</a></span>';
 		echo '</div>';
-
+	}
 echo '</div><!-- End container-fluid -->';
 
 

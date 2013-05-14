@@ -3,24 +3,33 @@
 **/
 jQuery(document).ready(function() {
 
-	jQuery('#sortbyitemdate').click().toggle(function (evt){ 
+	jQuery('#sortbyitemdate').toggle(function (evt){ 
 		evt.preventDefault();
-		jQuery("div.feed-item").tsort("span.sortableitemdate", {order:'desc'});
+		jQuery(".feed-item").tsort("span.sortableitemdate", {order:'desc'});
 	}, function (evt){
 		evt.preventDefault();
-		jQuery("div.feed-item").tsort("span.sortableitemdate", {order:'asc'});
+		jQuery(".feed-item").tsort("span.sortableitemdate", {order:'asc'});
 	}
 	);
-	jQuery('#sortbyfeedindate').click().toggle(function (evt){ 
+	jQuery('#sortbyfeedindate').toggle(function (evt){ 
 		evt.preventDefault();
-		jQuery("div.feed-item").tsort("span.sortablerssdate", {order:'desc'});
+		jQuery(".feed-item").tsort("span.sortablerssdate", {order:'desc'});
 	}, function (evt) {
 		evt.preventDefault();
-		jQuery("div.feed-item").tsort("span.sortablerssdate", {order:'asc'});		
+		jQuery(".feed-item").tsort("span.sortablerssdate", {order:'asc'});		
 	}
 	);
 	
-	jQuery('#fullscreenfeed').click(function(e){
+	jQuery('#sortbynomdate').toggle(function (evt){ 
+		evt.preventDefault();
+		jQuery(".feed-item").tsort("span.sortable_nom_timestamp", {order:'desc'});
+	}, function (evt) {
+		evt.preventDefault();
+		jQuery(".feed-item").tsort("span.sortable_nom_timestamp", {order:'asc'});		
+	}
+	);	
+	
+	jQuery('.pf_container').on('click', "#fullscreenfeed", function(e){
 		e.preventDefault();
 		jQuery('.pf_container').fullScreen({
 			'background'	: '#ecf3f9',

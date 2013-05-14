@@ -39,7 +39,7 @@ jQuery(document).ready(function() {
 		function(response) {
 			jQuery('.loading-'+itemID).hide();
 			//jQuery(".nominate-result-"+itemID).html(response);
-			alert(response);
+			//alert(response);
 			//jQuery("#test-div1").append(data);
 		});
 	  });

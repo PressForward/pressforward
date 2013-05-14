@@ -132,15 +132,15 @@ class PF_Feed_Item {
 		//$pageBottom = $pageTop + 20;
 		$args = pf_feed_item_post_type();
 		//$archiveQuery = new WP_Query( $args );
-		 $dquerystr = "
-			SELECT $wpdb->posts.*, $wpdb->postmeta.*
-			FROM $wpdb->posts, $wpdb->postmeta
-			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-			AND $wpdb->posts.post_type = '" . pf_feed_item_post_type() . "'
-			AND $wpdb->postmeta.meta_key = 'sortable_item_date'
-			ORDER BY $wpdb->postmeta.meta_value DESC
-			LIMIT $pageTop, 20
-		 ";
+		 $dquerystr = $wpdb->prepare("
+			SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
+			FROM {$wpdb->posts}, {$wpdb->postmeta}
+			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+			AND {$wpdb->posts}.post_type = %s
+			AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+			ORDER BY {$wpdb->postmeta}.meta_value DESC
+			LIMIT {$pageTop}, 20
+		 ", pf_feed_item_post_type());
 		// print_r($dquerystr);
 		 # DESC here because we are sorting by UNIX datestamp, where larger is later.
 		 //Provide an alternative to load by feed date order.
@@ -235,12 +235,12 @@ class PF_Feed_Item {
 		//			);
 		$args = 'post_type=' . pf_feed_item_post_type();
 		//$archiveQuery = new WP_Query( $args );
-		$dquerystr = "
+		$dquerystr = $wpdb->prepare("
 			SELECT $wpdb->posts.*, $wpdb->postmeta.*
 			FROM $wpdb->posts, $wpdb->postmeta
 			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-			AND $wpdb->posts.post_type ='" . pf_feed_item_post_type() .
-		 "'";
+			AND $wpdb->posts.post_type = %s
+		 ", pf_feed_item_post_type() );
 		# This is how we do a custom query, when WP_Query doesn't do what we want it to.
 		$rssarchivalposts = $wpdb->get_results($dquerystr, OBJECT);
 		//print_r(count($rssarchivalposts)); die();
@@ -270,7 +270,7 @@ class PF_Feed_Item {
 		ignore_user_abort(true);
 		set_time_limit(0);
 		# Chunking control, the goal here is to ensure that no feed assembly occurs while the feed assembly is already occuring.
-		# Option: If true (1), the system is ready to assemble a chunk. If false (0), the system is already assembling a chunk. 
+		# Option: If true (1), the system is ready to assemble a chunk. If false (0), the system is already assembling a chunk.
 		$ready_for_chunk_assembly = get_option( PF_SLUG . '_ready_to_chunk', 1);
 
 		if ( $ready_for_chunk_assembly === 0 ){
@@ -307,15 +307,15 @@ class PF_Feed_Item {
 			 # Less query results, less time.
 
 			 //Perhaps I should do this outside of the foreach? One query and search it for each item_id and then return those not in?
-			 $querystr = "
-				SELECT $wpdb->posts.*, $wpdb->postmeta.*
-				FROM $wpdb->posts, $wpdb->postmeta
-				WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-				AND $wpdb->postmeta.meta_key = 'item_id'
-				AND $wpdb->postmeta.meta_value = '" . $item_id . "'
-				AND $wpdb->posts.post_type = '" . pf_feed_item_post_type() . "'
-				ORDER BY $wpdb->posts.post_date DESC
-			 ";
+			 $querystr = $wpdb->prepare("
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+				AND {$wpdb->postmeta}.meta_key = 'item_id'
+				AND {$wpdb->postmeta}.meta_value = %s
+				AND {$wpdb->posts}.post_type = %s
+				ORDER BY {$wpdb->posts}.post_date DESC
+			 ", $item_id, pf_feed_item_post_type() );
 			 // AND $wpdb->posts.post_date < NOW() <- perhaps by removing we can better prevent simultaneous duplications?
 			 # Since I've altered the query, I could change this to just see if there are any items in the query results
 			 # and check based on that. But I haven't yet.
@@ -327,23 +327,24 @@ class PF_Feed_Item {
 						setup_postdata($post);
 						//print_r(get_the_ID());
 						//print_r('< the ID');
-						if ((get_post_meta($post->ID, 'item_id', $item_id, true)) === $item_id){ 
-							$thepostscheck++; 
+						if ((get_post_meta($post->ID, 'item_id', $item_id, true)) === $item_id){
+							$thepostscheck++;
 							pf_log('We already have post ' . $item_id);
 						}
-						
+
 					endforeach;
 				endif;
 				wp_reset_query();
 				if ($thepostscheck === 0){
-					$queryMoreStr = "
-						SELECT $wpdb->posts.*, $wpdb->postmeta.*
-						FROM $wpdb->posts, $wpdb->postmeta
-						WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-						AND $wpdb->postmeta.meta_key = 'item_link'
-						AND $wpdb->posts.post_type = " . pf_feed_item_post_type() . "
-						ORDER BY $wpdb->posts.post_date DESC
-					 ";
+					$queryMoreStr = $wpdb->prepare("
+						SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
+						FROM {$wpdb->posts}, {$wpdb->postmeta}
+						WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+						AND {$wpdb->postmeta}.meta_key = 'item_link'
+						AND {$wpdb->postmeta}.meta_value = %s
+						AND {$wpdb->posts}.post_type = %s
+						ORDER BY {$wpdb->posts}.post_date DESC
+					 ", $item['item_link'], pf_feed_item_post_type());
 					$checkpoststwo = $wpdb->get_results($queryMoreStr, OBJECT);
 					if ($checkpoststwo):
 						pf_log('Check for posts with the same link.');
@@ -353,7 +354,7 @@ class PF_Feed_Item {
 								# Post comparative values.
 								$theTitle = $post->post_title;
 								$postID = $post->ID;
-								
+
 								$postDate = strtotime($post->post_date);
 								$postItemLink = get_post_meta($post->ID, 'item_link', true);
 								# Item comparative values.
@@ -369,7 +370,7 @@ class PF_Feed_Item {
 									if (($itemDate > $postDate)) {
 										# If it is more recent, than this is the new dominant post.
 										$sourceRepeat++;
-									} elseif (($itemData <= $postDate)) {
+									} elseif (($itemDate <= $postDate)) {
 										# if it is less recent, then we need to increment the source count.
 										$sourceRepeat++;
 										if ($thePostsDoubleCheck > $sourceRepeat) {
@@ -415,12 +416,12 @@ class PF_Feed_Item {
 				# Trying to prevent bad or malformed HTML from entering the database.
 				$item_title = strip_tags($item_title);
 				$item_content = strip_tags($item_content, '<p> <strong> <bold> <i> <em> <emphasis> <del> <h1> <h2> <h3> <h4> <h5> <a> <img>');
-				# Need to get rid of some weird characters that prevent inserting posts into the database. 
+				# Need to get rid of some weird characters that prevent inserting posts into the database.
 				# From: http://www.alexpoole.name/web-development/282/remove-smart-quotes-bullets-dashes-and-other-junky-characters-from-a-string-with-php
 				# And: http://www.enghiong.com/wp_insert_post-could-not-insert-post-into-the-database.html
 				//$item_content = self::extra_special_sanatize($item_content);
 				//$item_title = self::extra_special_sanatize($item_title);
-				
+
 				//$item_content = wpautop($item_content);
 				//$postcontent = sanitize_post($item_content);
 				//If we use the @ to prevent showing errors, everything seems to work. But it is still dedicating crap to the database...
@@ -445,7 +446,7 @@ class PF_Feed_Item {
 				$post_inserted_bool = self::post_inserted($newNomID, $data);
 
 				if (!$post_inserted_bool) {
-					# It's the end of the world! Let's throw everything at this. 
+					# It's the end of the world! Let's throw everything at this.
 					pf_log('Post will not go into the database. We will try again.');
 					$item_content = htmlentities(strip_tags($item_content), ENT_QUOTES, "UTF-8");
 					$item_content = wp_kses(stripslashes($item_content));
@@ -475,7 +476,7 @@ class PF_Feed_Item {
 				# If it doesn't have a featured image assigned already, I use the set_ext_as_featured function to try and find one.
 				# It also, if it finds one, sets it as the featured image for that post.
 
-				if ($_POST['item_feat_img'] != ''){
+				if ( ! empty( $_POST['item_feat_img'] ) ){
 					# Turned off set_ext_as_featured here, as that should only occur when items are nominated.
 					# Before nominations, the featured image should remain a meta field with an external link.
 					if ( false === ( $itemFeatImg = get_transient( 'feed_img_' . $itemUID ) ) ) {
@@ -527,7 +528,7 @@ class PF_Feed_Item {
 		//die('Refreshing...');
 
 	}
-	
+
 	public function post_inserted($postAttempt, $data){
 			$worked = 1;
 			$workedBool = true;
@@ -546,12 +547,12 @@ class PF_Feed_Item {
 					pf_log($postAttempt);
 				}
 		if ($worked === 0){ $workedBool = false; }
-		return $workedBool;		
+		return $workedBool;
 	}
 
 	# Alternate function title - 'stop_pasting_junk_from_word'
 	public function extra_special_sanatize($string, $severe = false){
-	
+
 		$search = array(chr(145),
 						chr(146),
 						chr(147),
@@ -574,26 +575,26 @@ class PF_Feed_Item {
 						);
 		$string = str_replace($search, $replace, $string);
 		pf_log('String run through specified str_replace.');
-		$string = utf8_encode($string); 	
+		$string = utf8_encode($string);
 		pf_log('String run through utf8_encode');
 		pf_log('String returned.');
 		if ($severe) {
 			// ============
-			// Remove MS Word Special Characters 
+			// Remove MS Word Special Characters
 			// From: https://gist.github.com/gcoop/701814
 			// ============
-				
+
 				$search  = array('&acirc;€“','&acirc;€œ','&acirc;€˜','&acirc;€™','&Acirc;&pound;','&Acirc;&not;','&acirc;„&cent;', '&Acirc;&nbsp;', '&Acirc;', '&amp;nbsp;', '&#8230;');
 				$replace = array('-','&ldquo;','&lsquo;','&rsquo;','&pound;','&not;','&#8482;', '', '', '', '...');
-				
+
 				$string = str_replace($search, $replace, $string);
 				$string = str_replace('&acirc;€', '&rdquo;', $string);
-		 
+
 				$search = array("&#39;", "\xc3\xa2\xc2\x80\xc2\x99", "\xc3\xa2\xc2\x80\xc2\x93", "\xc3\xa2\xc2\x80\xc2\x9d", "\xc3\xa2\x3f\x3f", "&#8220;", "&#8221;", "#8217;", "&not;", "&#8482;");
 				$resplace = array("'", "'", ' - ', '"', "'", '"', '"', "'", "-", "(TM)");
-				
+
 				$string = str_replace($search, $replace, $string);
-		 
+
 			$quotes = array(
 				"\xC2\xAB"     => '"',
 				"\xC2\xBB"     => '"',
@@ -615,19 +616,19 @@ class PF_Feed_Item {
 				"\xe2\x81\x83" => '&bull;',
 				"\xd5" => "'"
 			);
-				
-			$string = strtr($string, $quotes);		
+
+			$string = strtr($string, $quotes);
 			$string = utf8_encode($string);
 			# From: http://stackoverflow.com/questions/657643/how-to-remove-html-special-chars
 			//$string = preg_replace("/&#?[a-z0-9]+;/i","", $string);
-		
+
 		}
-		
-		
+
+
 		return $string;
 	}
-	
-	
+
+
 	/**
 	 * Get the content of a URL, using various fallbacks
 	 */

@@ -107,4 +107,3 @@ class JSLikeHTMLElement extends DOMElement
 		return '['.$this->tagName.']';
 	}
 }
-?>

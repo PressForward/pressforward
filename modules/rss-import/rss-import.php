@@ -30,6 +30,7 @@ class PF_RSS_Import extends PF_Module {
 
 		add_action( 'take_feed_out', array( 'PF_Feed_Item', 'disassemble_feed_items' ) );
 		add_action( 'pull_feed_in', array( pressforward()->admin, 'trigger_source_data') );
+		add_filter( 'cron_schedules', array($this, 'cron_add_short' ));
 
 		if( is_admin() )
 		{
@@ -43,12 +44,23 @@ class PF_RSS_Import extends PF_Module {
 		}
 	}
 
+	
+	 
+	 function cron_add_short( $schedules ) {
+		// Adds once weekly to the existing schedules.
+		$schedules['halfhour'] = array(
+			'interval' => 30*60,
+			'display' => __( 'Half-hour' )
+		);
+		return $schedules;
+	 }	
+	
 	/**
 	 * Schedules the hourly wp-cron job
 	 */
 	public function schedule_feed_in() {
 		if ( ! wp_next_scheduled( 'pull_feed_in' ) ) {
-			wp_schedule_event( time(), 'hourly', 'pull_feed_in' );
+			wp_schedule_event( time(), 'halfhour', 'pull_feed_in' );
 		}
 	}
 
@@ -82,7 +94,7 @@ class PF_RSS_Import extends PF_Module {
 		$feeds_iteration = get_option( PF_SLUG . '_feeds_iteration');
 
 		pf_log('feeds_go_switch updated? (first check).');
-		# We begin the process of getting the next feed. If anything asks the system, from here until the end of the feed retrieval process, you DO NOT attempt to retrieve another feed. 
+		# We begin the process of getting the next feed. If anything asks the system, from here until the end of the feed retrieval process, you DO NOT attempt to retrieve another feed.
 		pf_log('feeds_go_switch updated?.');
 		$go_switch_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
 		pf_log($go_switch_bool);
@@ -248,7 +260,7 @@ class PF_RSS_Import extends PF_Module {
 			pf_log('Checking remote get at ' . $theRetrievalLoopNounced . ' : ');
 			$wprgCheck = wp_remote_get($theRetrievalLoopNounced);
 
-			
+
 			return;
 			//pf_log($wprgCheck);
 			//Looks like it is schedualed properly. But should I be using wp_cron() or spawn_cron to trigger it instead?
@@ -266,7 +278,7 @@ class PF_RSS_Import extends PF_Module {
 		//$nonce = isset( $_REQUEST['_wpnonce'] ) ? $_REQUEST['_wpnonce'] : '';
 		//$nonce_check = get_option('chunk_nonce');
 		if ( isset( $_GET['press'] ) && $_GET['press'] == 'forward'){
-			# Removing this until we decide to replace or eliminate. It isn't working. 
+			# Removing this until we decide to replace or eliminate. It isn't working.
 			//if ( $nonce === $nonce_check){
 				pf_log('Pressing forward.');
 				include(PF_ROOT . '/modules/rss-import/import-cron.php');
@@ -276,7 +288,7 @@ class PF_RSS_Import extends PF_Module {
 			//	pf_log('Nonce check of ' . $nonce . ' failed. Returned: ');
 			//	pf_log($verify_val);
 			//	pf_log('Stored nonce:');
-			//	pf_log($nonce_check);			
+			//	pf_log($nonce_check);
 			//}
 		}
 	}
@@ -329,7 +341,7 @@ class PF_RSS_Import extends PF_Module {
 		if (!$theFeed){
 			pf_log('The feed is false, exit process. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
 
-			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 1 );			
+			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 1 );
 			exit;
 		}
 		$theFeed->set_timeout(60);
@@ -420,11 +432,11 @@ class PF_RSS_Import extends PF_Module {
 				}
 			}
 			$c++;
-			# What the hell RSS feed? This is just ridiculous. 
+			# What the hell RSS feed? This is just ridiculous.
 			if ($c > 300) {break;}
 
 		}
-		# We've completed the feed retrieval, the system should know it is now ok to ask for another feed. 
+		# We've completed the feed retrieval, the system should know it is now ok to ask for another feed.
 		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 1);
 		pf_log('The Feeds go switch has been updated to on?');
 		pf_log($feed_go);
@@ -705,13 +717,16 @@ class PF_RSS_Import extends PF_Module {
 		$feed_iteration = update_option( PF_SLUG . '_feeds_iteration', 0);
 		$retrieval_state = update_option( PF_SLUG . '_iterate_going_switch', 0);
 		$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 1 );
+		
  	}
 
 	public function trigger_source_data(){
-		$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
-		$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
-		$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );
+			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0);
+			$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
+			$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
+			$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );		
 		pf_log( 'Invoked: PF_RSS_Import::trigger_source_data()' );
+		pf_log( 'Feeds go?: ' . $feed_go );
 		pf_log( 'Feed iteration: ' . $feed_iteration );
 		pf_log( 'Retrieval state: ' . $retrieval_state );
 		pf_log( 'Chunk state: ' . $chunk_state );
@@ -728,10 +743,41 @@ class PF_RSS_Import extends PF_Module {
 
 			PF_Feed_Item::assemble_feed_for_pull();
 		} else {
-			pf_log(__('The sources are already being retrieved.', 'pf'), true);
+			
+			$feeds_meta_state = get_option(PF_SLUG . '_feeds_meta_state', array());
+			if (empty($feeds_meta_state)){
+				$feeds_meta_state = array(
+											'feed_go' => $feed_go,
+											'feed_iteration' =>	$feed_iteration,
+											'retrieval_state' => $retrieval_state,
+											'chunk_state'	=> $chunk_state,
+											'retrigger'		=>	time() + (2 * 60 * 60)
+										);
+				update_option(PF_SLUG . '_feeds_meta_state', $feeds_meta_state);						
+				pf_log(__('Created new metastate.', 'pf'), true);						
+			} else {
+				pf_log(__('Metastate saved and active for check.', 'pf'), true);	
+			}
+			
+			if ($feeds_meta_state['retrigger'] > time()){
+					pf_log(__('The sources are already being retrieved.', 'pf'), true);
+			} else {		
+					if (($feed_go == $feeds_meta_state['feed_go']) && ($feed_iteration == $feeds_meta_state['feed_iteration']) && ($retrieval_state == $feeds_meta_state['retrieval_state']) && ($chunk_state == $feeds_meta_state['chunk_state'])){
+						pf_log(__('The sources are stuck.', 'pf'), true);
+						# Wipe the checking option for use next time. 
+						update_option(PF_SLUG . '_feeds_meta_state', array());
+						update_option( PF_SLUG . '_ready_to_chunk', 1 );
+						update_option(PF_SLUG . '_iterate_going_switch', 1);
+						PF_Feed_Item::assemble_feed_for_pull();
+					} else {
+						pf_log(__('The sources are already being retrieved.', 'pf'), true);
+					}
+				
+			}
 		}
 	}
 }
+
 
 function pf_test_import() {
 	if ( is_super_admin() && ! empty( $_GET['pf_test_import'] ) ) {
