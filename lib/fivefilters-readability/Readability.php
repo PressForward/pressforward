@@ -71,7 +71,7 @@ class Readability
 	public $articleContent;
 	public $dom;
 	public $url = null; // optional - URL where HTML was retrieved
-	public $debug = false;
+	public $debug = true;
 	protected $body = null; // 
 	protected $bodyCache = null; // Cache the body HTML in case we need to re-use it later
 	protected $flags = 7; // 1 | 2 | 4;   // Start with all flags set.
@@ -86,7 +86,7 @@ class Readability
 		'okMaybeItsACandidate' => '/and|article|body|column|main|shadow/i',
 		'positive' => '/article|body|content|entry|hentry|main|page|pagination|post|text|blog|story/i',
 		'negative' => '/combx|comment|com-|contact|foot|footer|footnote|masthead|media|meta|outbrain|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget/i',
-		'divToPElements' => '/<(a|blockquote|dl|div|img|ol|p|pre|table|ul)/i',
+		'divToPElements' => '/<(a|blockquote|dl|div|ol|p|pre|table|ul)/i',
 		'replaceBrs' => '/(<br[^>]*>[ \n\r\t]*){2,}/i',
 		'replaceFonts' => '/<(\/?)font[^>]*>/i',
 		// 'trimRe' => '/^\s+|\s+$/g', // PHP has trim()
@@ -413,7 +413,7 @@ class Readability
 
 		/* Clean out junk from the article content */
 		$this->cleanConditionally($articleContent, 'form');
-		$this->clean($articleContent, 'object');
+		//$this->clean($articleContent, 'object');
 		//$this->clean($articleContent, 'h1');
 
 		/**
@@ -963,14 +963,14 @@ class Readability
 				}
 				
 				/* First, check the elements attributes to see if any of them contain youtube or vimeo */
-				if (preg_match($this->regexps['video'], $attributeValues)) {
+				#if (preg_match($this->regexps['video'], $attributeValues)) {
 					continue;
-				}
+				#}
 
 				/* Then check the elements inside this element for the same. */
-				if (preg_match($this->regexps['video'], $targetList->item($y)->innerHTML)) {
-					continue;
-				}
+				#if (preg_match($this->regexps['video'], $targetList->item($y)->innerHTML)) {
+				#	continue;
+				#}
 			}
 			$targetList->item($y)->parentNode->removeChild($targetList->item($y));
 		}
