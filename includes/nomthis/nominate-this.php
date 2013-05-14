@@ -30,7 +30,7 @@ if ( ! current_user_can( 'edit_posts' ) || ! current_user_can( get_post_type_obj
  *
  * @return int Post ID
  */
-function press_it() {
+function nominate_it() {
 
 	$post = get_default_post_to_edit();
 	$post = get_object_vars($post);
@@ -90,8 +90,8 @@ function press_it() {
 
 // For submitted posts.
 if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
-	check_admin_referer('press-this');
-	$posted = $post_ID = press_it();
+	check_admin_referer('nominate-this');
+	$posted = $post_ID = nominate_it();
 } else {
 	$post = get_default_post_to_edit('post', true);
 	$post_ID = $post->ID;
@@ -325,7 +325,7 @@ die;
 //<![CDATA[
 addLoadEvent = function(func){if(typeof jQuery!="undefined")jQuery(document).ready(func);else if(typeof wpOnload!='function'){wpOnload=func;}else{var oldonload=wpOnload;wpOnload=function(){oldonload();func();}}};
 var userSettings = {'url':'<?php echo SITECOOKIEPATH; ?>','uid':'<?php if ( ! isset($current_user) ) $current_user = wp_get_current_user(); echo $current_user->ID; ?>','time':'<?php echo time() ?>'};
-var ajaxurl = '<?php echo admin_url( 'admin-ajax.php', 'relative' ); ?>', pagenow = 'press-this', isRtl = <?php echo (int) is_rtl(); ?>;
+var ajaxurl = '<?php echo admin_url( 'admin-ajax.php', 'relative' ); ?>', pagenow = 'nominate-this', isRtl = <?php echo (int) is_rtl(); ?>;
 var photostorage = false;
 //]]>
 </script>
@@ -465,7 +465,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 <div id="poststuff" class="metabox-holder">
 	<div id="side-sortables" class="press-this-sidebar">
 		<div class="sleeve">
-			<?php wp_nonce_field('press-this') ?>
+			<?php wp_nonce_field('nominate-this') ?>
 			<input type="hidden" name="post_type" id="post_type" value="text"/>
 			<input type="hidden" name="autosave" id="autosave" />
 			<input type="hidden" id="original_post_status" name="original_post_status" value="draft" />
@@ -483,7 +483,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 
 			<div id="submitdiv" class="postbox">
 				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle','pf' ); ?>"><br /></div>
-				<h3 class="hndle"><?php _e('Press This','pf') ?></h3>
+				<h3 class="hndle"><?php _e('Nominate This','pf') ?></h3>
 				<div class="inside">
 					<p id="publishing-actions">
 					<?php
@@ -647,8 +647,8 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 		}
 
 		remove_action( 'media_buttons', 'media_buttons' );
-		add_action( 'media_buttons', 'press_this_media_buttons' );
-		function press_this_media_buttons() {
+		add_action( 'media_buttons', 'nominate_this_media_buttons' );
+		function nominate_this_media_buttons() {
 			_e( 'Add:','pf' );
 
 			if ( current_user_can('upload_files') ) {
