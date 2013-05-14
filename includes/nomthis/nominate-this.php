@@ -12,13 +12,13 @@ define('IFRAME_REQUEST' , true);
 /** WordPress Administration Bootstrap */
 require_once( dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))) ) . '/wp-admin' . '/admin.php');
 	//PF Correction - this will need to be changed to a constant later.
-require_once( dirname(dirname(dirname(__FILE__))) . "/lib/OpenGraph.php");
-	global $pf_nt;
-	$pf_nt = new pf();
+//require_once( dirname(dirname(dirname(__FILE__))) . "/lib/OpenGraph.php");
+//	global $pf_nt;
+//	$pf_nt = new PressForward();
 
 header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset'));
 
-if ( ! current_user_can('edit_posts') )
+if ( ! current_user_can( 'edit_posts' ) || ! current_user_can( get_post_type_object( 'post' )->cap->create_posts ) )
 	wp_die( __( 'Cheatin&#8217; uh?' ) );
 
 /**
@@ -42,8 +42,6 @@ function press_it() {
 	$post['post_category'] = isset($_POST['post_category']) ? $_POST['post_category'] : '';
 	$post['tax_input'] = isset($_POST['tax_input']) ? $_POST['tax_input'] : '';
 	$post['post_title'] = isset($_POST['title']) ? $_POST['title'] : '';
-	//PF Addition: setting post type.
-	//$post['post_type'] = 'nomination';
 	$content = isset($_POST['content']) ? $_POST['content'] : '';
 
 	$upload = false;
@@ -69,11 +67,6 @@ function press_it() {
 	else
 		$post['post_status'] = 'draft';
 
-	//PF Addition - switch post type to nomination?
-	$post['post_type'] = 'nomination';
-
-
-
 	// error handling for media_sideload
 	if ( is_wp_error($upload) ) {
 		wp_delete_post($post_ID);
@@ -86,20 +79,10 @@ function press_it() {
 			elseif ( '0' == $_POST['post_format'] )
 				set_post_format( $post_ID, false );
 		}
-		//PF Note - Here's where it creates the post.
+		# PF NOTE: Switching post type to nomination. 
+		$post['post_type'] = 'nomination';
+		# PF NOTE: This is where the inital post is created. 
 		$post_ID = wp_update_post($post);
-	}
-
-				//print_r($_POST['u']); die();
-				global $pf_nt;
-				if (($_POST['nomination_permalink']) != ''){
-					//Gets OG image
-					$itemLink = pf_de_https($_POST['nomination_permalink']);
-					$node = OpenGraph::fetch($itemLink);
-					$itemFeatImg = $node->image;
-				}
-	if (($_POST['nomination_permalink']) != ''){
-		PF_Feed_Item::set_ext_as_featured($post_ID, $itemFeatImg);
 	}
 
 	return $post_ID;
@@ -114,34 +97,41 @@ if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 	$post_ID = $post->ID;
 }
 
-// Set Variables
+				global $pf_nt;
+				if (!empty($_POST['nomination_permalink']) && ($_POST['nomination_permalink']) != ''){
+					//Gets OG image
+					$itemLink = pf_de_https($_POST['nomination_permalink']);
+					$node = OpenGraph::fetch($itemLink);
+					$itemFeatImg = $node->image;
+				}
 
-//PF Notes - gets origin title.
+	if (!empty($_POST['nomination_permalink']) && ($_POST['nomination_permalink']) != ''){
+		PF_Feed_Item::set_ext_as_featured($post_ID, $itemFeatImg);
+	}
+
+
+// Set Variables
 $title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( stripslashes( $_GET['t'] ) , ENT_QUOTES) ) ) : '';
 
 $selection = '';
-//PF Notes - gets user selection.
 if ( !empty($_GET['s']) ) {
 	$selection = str_replace('&apos;', "'", stripslashes($_GET['s']));
 	$selection = trim( htmlspecialchars( html_entity_decode($selection, ENT_QUOTES) ) );
 }
 
-//PF Notes - Behaviour for user selection.
 if ( ! empty($selection) ) {
 	$selection = preg_replace('/(\r?\n|\r)/', '</p><p>', $selection);
 	$selection = '<p>' . str_replace('<p></p>', '', $selection) . '</p>';
-	# Blockquotes should really be applied for selections.
 	$selection = '<blockquote>' . $selection . '</blockquote>';
 }
-//PF Notes - Looks like this gets the URL.
+
 $url = isset($_GET['u']) ? esc_url($_GET['u']) : '';
-//PF Notes - Looks like this gets the image page on image only links.
 $image = isset($_GET['i']) ? $_GET['i'] : '';
 
 if ( !empty($_REQUEST['ajax']) ) {
 	switch ($_REQUEST['ajax']) {
 		case 'video': ?>
-			<script type="text/javascript" charset="utf-8">
+			<script type="text/javascript">
 			/* <![CDATA[ */
 				jQuery('.select').click(function() {
 					append_editor(jQuery('#embed-code').val());
@@ -164,7 +154,7 @@ if ( !empty($_REQUEST['ajax']) ) {
 			<?php break;
 
 		case 'photo_thickbox': ?>
-			<script type="text/javascript" charset="utf-8">
+			<script type="text/javascript">
 				/* <![CDATA[ */
 				jQuery('.cancel').click(function() {
 					tb_remove();
@@ -174,7 +164,7 @@ if ( !empty($_REQUEST['ajax']) ) {
 				});
 				/* ]]> */
 			</script>
-			<h3 class="tb"><label for="tb_this_photo_description"><?php _e('Description', 'pf') ?></label></h3>
+			<h3 class="tb"><label for="tb_this_photo_description"><?php _e('Description', 'pf'); ?></label></h3>
 			<div class="titlediv">
 				<div class="titlewrap">
 					<input id="tb_this_photo_description" name="photo_description" class="tb_this_photo_description tbtitle text" onkeypress="if(event.keyCode==13) image_selector(this);" value="<?php echo esc_attr($title);?>"/>
@@ -188,7 +178,7 @@ if ( !empty($_REQUEST['ajax']) ) {
 				</a>
 			</p>
 
-			<p id="options"><a href="#" class="select button"><?php _e('Insert Image', 'pf'); ?></a> <a href="#" class="cancel button"><?php _e('Cancel', 'pf'); ?></a></p>
+			<p id="options"><a href="#" class="select button"><?php _e('Insert Image','pf'); ?></a> <a href="#" class="cancel button"><?php _e('Cancel','pf'); ?></a></p>
 			<?php break;
 	case 'photo_images':
 		/**
@@ -203,7 +193,7 @@ if ( !empty($_REQUEST['ajax']) ) {
 		 */
 		function get_images_from_uri($uri) {
 			$uri = preg_replace('/\/#.+?$/','', $uri);
-			if ( preg_match('/\.(jpg|jpe|jpeg|png|gif)$/', $uri) && !strpos($uri,'blogger.com') )
+			if ( preg_match( '/\.(jpe?g|jpe|gif|png)\b/i', $uri ) && !strpos( $uri, 'blogger.com' ) )
 				return "'" . esc_attr( html_entity_decode($uri) ) . "'";
 			$content = wp_remote_fopen($uri);
 			if ( false === $content )
@@ -258,7 +248,7 @@ if ( !empty($_REQUEST['ajax']) ) {
 				}).responseText
 			);
 			if(my_src.length == 0) {
-				strtoappend = '<?php _e('Unable to retrieve images or no images on page.', 'pf'); ?>';
+				strtoappend = '<?php _e('Unable to retrieve images or no images on page.','pf'); ?>';
 			}
 		}
 		}
@@ -319,7 +309,7 @@ if ( !empty($_REQUEST['ajax']) ) {
 			return false;
 		}
 
-		jQuery('#extra-fields').html('<div class="postbox"><h2><?php _e( 'Add Photos', 'pf' ); ?> <small id="photo_directions">(<?php _e("click images to select", 'pf') ?>)</small></h2><ul class="actions"><li><a href="#" id="photo-add-url" class="button"><?php _e("Add from URL", 'pf') ?> +</a></li></ul><div class="inside"><div class="titlewrap"><div id="img_container"></div></div><p id="options"><a href="#" class="close button"><?php _e('Cancel', 'pf'); ?></a><a href="#" class="refresh button"><?php _e('Refresh', 'pf'); ?></a></p></div>');
+		jQuery('#extra-fields').html('<div class="postbox"><h2><?php _e( 'Add Photos','pf' ); ?> <small id="photo_directions">(<?php _e("click images to select") ?>)</small></h2><ul class="actions"><li><a href="#" id="photo-add-url" class="button button-small"><?php _e("Add from URL",'pf') ?> +</a></li></ul><div class="inside"><div class="titlewrap"><div id="img_container"></div></div><p id="options"><a href="#" class="close button"><?php _e('Cancel','pf'); ?></a><a href="#" class="refresh button"><?php _e('Refresh','pf'); ?></a></p></div>');
 		jQuery('#img_container').html(strtoappend);
 		<?php break;
 }
@@ -330,7 +320,7 @@ die;
 	wp_enqueue_script( 'post' );
 	_wp_admin_html_begin();
 ?>
-<title><?php _e('Nominate This', 'pf') ?></title>
+<title><?php _e('Nominate This','pf') ?></title>
 <script type="text/javascript">
 //<![CDATA[
 addLoadEvent = function(func){if(typeof jQuery!="undefined")jQuery(document).ready(func);else if(typeof wpOnload!='function'){wpOnload=func;}else{var oldonload=wpOnload;wpOnload=function(){oldonload();func();}}};
@@ -445,7 +435,7 @@ var photostorage = false;
 	}
 	jQuery(document).ready(function($) {
 		//resize screen
-		window.resizeTo(720,580);
+		window.resizeTo(740,580);
 		// set button actions
 		jQuery('#photo_button').click(function() { show('photo'); return false; });
 		jQuery('#video_button').click(function() { show('video'); return false; });
@@ -458,7 +448,7 @@ var photostorage = false;
 			show('photo');
 		<?php } ?>
 		jQuery('#title').unbind();
-		jQuery('#publish, #save').click(function() { jQuery('#saving').css('display', 'inline'); });
+		jQuery('#publish, #save').click(function() { jQuery('.press-this #publishing-actions .spinner').css('display', 'inline-block'); });
 
 		$('#tagsdiv-post_tag, #categorydiv').children('h3, .handlediv').click(function(){
 			$(this).siblings('.inside').toggle();
@@ -470,44 +460,41 @@ var photostorage = false;
 $admin_body_class = ( is_rtl() ) ? 'rtl' : '';
 $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( '_', '-', get_locale() ) ) );
 ?>
-<body class="press-this wp-admin <?php echo $admin_body_class; ?>">
+<body class="press-this wp-admin wp-core-ui nominate-this <?php echo $admin_body_class; ?>">
 <form action="nominate-this.php?action=post" method="post">
 <div id="poststuff" class="metabox-holder">
 	<div id="side-sortables" class="press-this-sidebar">
 		<div class="sleeve">
-			<?php wp_nonce_field('press-this'); ?>
-			<?php
-
-			?>
+			<?php wp_nonce_field('press-this') ?>
 			<input type="hidden" name="post_type" id="post_type" value="text"/>
 			<input type="hidden" name="autosave" id="autosave" />
 			<input type="hidden" id="original_post_status" name="original_post_status" value="draft" />
 			<input type="hidden" id="prev_status" name="prev_status" value="draft" />
 			<input type="hidden" id="post_id" name="post_id" value="<?php echo (int) $post_ID; ?>" />
-			<?php if ($url != '') { ?>
-			<?php //print_r($url); ?>
-			<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr($title);?>" />
-			<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo date('c'); ?>" />
-			<input type="hidden" id="nomination_permalink" name="nomination_permalink" value="<?php echo esc_url( $url ); ?>" />
+-			<?php if ($url != '') { ?>
+				<?php //print_r($url); ?>
+				<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr($title);?>" />
+				<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo date('c'); ?>" />
+				<input type="hidden" id="nomination_permalink" name="nomination_permalink" value="<?php echo esc_url($url ); ?>" />
 			<?php } ?>
 
 			<!-- This div holds the photo metadata -->
 			<div class="photolist"></div>
 
 			<div id="submitdiv" class="postbox">
-				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'pf' ); ?>"><br /></div>
-				<h3 class="hndle"><?php _e('Nominate This', 'pf') ?></h3>
+				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle','pf' ); ?>"><br /></div>
+				<h3 class="hndle"><?php _e('Press This','pf') ?></h3>
 				<div class="inside">
 					<p id="publishing-actions">
 					<?php
-						submit_button( __( 'Save Nomination', 'pf' ), 'button', 'draft', false, array( 'id' => 'save' ) );
-/**						if ( current_user_can('publish_posts') ) {
-							submit_button( __( 'Publish' ), 'primary', 'publish', false );
+						submit_button( __( 'Nominate' ), 'button', 'draft', false, array( 'id' => 'save' ) );
+						if ( current_user_can('publish_posts') ) {
+							submit_button( __( 'Send to Draft' ), 'primary', 'publish', false );
 						} else {
 							echo '<br /><br />';
 							submit_button( __( 'Submit for Review' ), 'primary', 'review', false );
-						} **/?>
-						<img src="<?php echo esc_url( admin_url( 'images/wpspin_light.gif' ) ); ?>" alt="" id="saving" style="display:none;" />
+						} ?>
+						<span class="spinner" style="display: none;"></span>
 					</p>
 					<?php if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) :
 							$post_formats = get_theme_support( 'post-formats' );
@@ -515,9 +502,9 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 								$default_format = get_option( 'default_post_format', '0' );
 						?>
 					<p>
-						<label for="post_format"><?php _e( 'Post Format:', 'pf' ); ?>
+						<label for="post_format"><?php _e( 'Post Format:','pf' ); ?>
 						<select name="post_format" id="post_format">
-							<option value="0"><?php _ex( 'Standard', 'Post format', 'pf' ); ?></option>
+							<option value="0"><?php _ex( 'Standard', 'Post format' ); ?></option>
 						<?php foreach ( $post_formats[0] as $format ): ?>
 							<option<?php selected( $default_format, $format ); ?> value="<?php echo esc_attr( $format ); ?>"> <?php echo esc_html( get_post_format_string( $format ) ); ?></option>
 						<?php endforeach; ?>
@@ -529,14 +516,14 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 
 			<?php $tax = get_taxonomy( 'category' ); ?>
 			<div id="categorydiv" class="postbox">
-				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'pf' ); ?>"><br /></div>
-				<h3 class="hndle"><?php _e('Categories', 'pf') ?></h3>
+				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
+				<h3 class="hndle"><?php _e('Categories') ?></h3>
 				<div class="inside">
 				<div id="taxonomy-category" class="categorydiv">
 
 					<ul id="category-tabs" class="category-tabs">
-						<li class="tabs"><a href="#category-all" tabindex="3"><?php echo $tax->labels->all_items; ?></a></li>
-						<li class="hide-if-no-js"><a href="#category-pop" tabindex="3"><?php _e( 'Most Used', 'pf' ); ?></a></li>
+						<li class="tabs"><a href="#category-all"><?php echo $tax->labels->all_items; ?></a></li>
+						<li class="hide-if-no-js"><a href="#category-pop"><?php _e( 'Most Used','pf' ); ?></a></li>
 					</ul>
 
 					<div id="category-pop" class="tabs-panel" style="display: none;">
@@ -546,29 +533,29 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 					</div>
 
 					<div id="category-all" class="tabs-panel">
-						<ul id="categorychecklist" class="list:category categorychecklist form-no-clear">
+						<ul id="categorychecklist" data-wp-lists="list:category" class="categorychecklist form-no-clear">
 							<?php wp_terms_checklist($post_ID, array( 'taxonomy' => 'category', 'popular_cats' => $popular_ids ) ) ?>
 						</ul>
 					</div>
 
 					<?php if ( !current_user_can($tax->cap->assign_terms) ) : ?>
-					<p><em><?php _e('You cannot modify this Taxonomy.', 'pf'); ?></em></p>
+					<p><em><?php _e('You cannot modify this Taxonomy.','pf'); ?></em></p>
 					<?php endif; ?>
 					<?php if ( current_user_can($tax->cap->edit_terms) ) : ?>
 						<div id="category-adder" class="wp-hidden-children">
 							<h4>
-								<a id="category-add-toggle" href="#category-add" class="hide-if-no-js" tabindex="3">
+								<a id="category-add-toggle" href="#category-add" class="hide-if-no-js">
 									<?php printf( __( '+ %s' ), $tax->labels->add_new_item ); ?>
 								</a>
 							</h4>
 							<p id="category-add" class="category-add wp-hidden-child">
 								<label class="screen-reader-text" for="newcategory"><?php echo $tax->labels->add_new_item; ?></label>
-								<input type="text" name="newcategory" id="newcategory" class="form-required form-input-tip" value="<?php echo esc_attr( $tax->labels->new_item_name ); ?>" tabindex="3" aria-required="true"/>
+								<input type="text" name="newcategory" id="newcategory" class="form-required form-input-tip" value="<?php echo esc_attr( $tax->labels->new_item_name ); ?>" aria-required="true"/>
 								<label class="screen-reader-text" for="newcategory_parent">
 									<?php echo $tax->labels->parent_item_colon; ?>
 								</label>
-								<?php wp_dropdown_categories( array( 'taxonomy' => 'category', 'hide_empty' => 0, 'name' => 'newcategory_parent', 'orderby' => 'name', 'hierarchical' => 1, 'show_option_none' => '&mdash; ' . $tax->labels->parent_item . ' &mdash;', 'tab_index' => 3 ) ); ?>
-								<input type="button" id="category-add-submit" class="add:categorychecklist:category-add button category-add-submit" value="<?php echo esc_attr( $tax->labels->add_new_item ); ?>" tabindex="3" />
+								<?php wp_dropdown_categories( array( 'taxonomy' => 'category', 'hide_empty' => 0, 'name' => 'newcategory_parent', 'orderby' => 'name', 'hierarchical' => 1, 'show_option_none' => '&mdash; ' . $tax->labels->parent_item . ' &mdash;' ) ); ?>
+								<input type="button" id="category-add-submit" data-wp-lists="add:categorychecklist:category-add" class="button category-add-submit" value="<?php echo esc_attr( $tax->labels->add_new_item ); ?>" />
 								<?php wp_nonce_field( 'add-category', '_ajax_nonce-add-category', false ); ?>
 								<span id="category-ajax-response"></span>
 							</p>
@@ -579,21 +566,21 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			</div>
 
 			<div id="tagsdiv-post_tag" class="postbox">
-				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'pf' ); ?>"><br /></div>
+				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle','pf' ); ?>"><br /></div>
 				<h3><span><?php _e('Tags'); ?></span></h3>
 				<div class="inside">
 					<div class="tagsdiv" id="post_tag">
 						<div class="jaxtag">
-							<label class="screen-reader-text" for="newtag"><?php _e('Tags', 'pf'); ?></label>
+							<label class="screen-reader-text" for="newtag"><?php _e('Tags','pf'); ?></label>
 							<input type="hidden" name="tax_input[post_tag]" class="the-tags" id="tax-input[post_tag]" value="" />
 							<div class="ajaxtag">
 								<input type="text" name="newtag[post_tag]" class="newtag form-input-tip" size="16" autocomplete="off" value="" />
-								<input type="button" class="button tagadd" value="<?php esc_attr_e('Add', 'pf'); ?>" tabindex="3" />
+								<input type="button" class="button tagadd" value="<?php esc_attr_e('Add','pf'); ?>" />
 							</div>
 						</div>
 						<div class="tagchecklist"></div>
 					</div>
-					<p class="tagcloud-link"><a href="#titlediv" class="tagcloud-link" id="link-post_tag"><?php _e('Choose from the most used tags', 'pf'); ?></a></p>
+					<p class="tagcloud-link"><a href="#titlediv" class="tagcloud-link" id="link-post_tag"><?php _e('Choose from the most used tags','pf'); ?></a></p>
 				</div>
 			</div>
 		</div>
@@ -614,9 +601,9 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			$post_ID = intval($posted); ?>
 			<div id="message" class="updated">
 			<p><strong><?php _e('Your post has been saved.'); ?></strong>
-			<a onclick="window.opener.location.replace(this.href); window.close();" href="<?php echo get_permalink($post_ID); ?>"><?php _e('View post', 'pf'); ?></a>
-			| <a href="<?php echo get_edit_post_link( $post_ID ); ?>" onclick="window.opener.location.replace(this.href); window.close();"><?php _e('Edit Post', 'pf'); ?></a>
-			| <a href="#" onclick="window.close();"><?php _e('Close Window', 'pf'); ?></a></p>
+			<a onclick="window.opener.location.replace(this.href); window.close();" href="<?php echo get_permalink($post_ID); ?>"><?php _e('View post'); ?></a>
+			| <a href="<?php echo get_edit_post_link( $post_ID ); ?>" onclick="window.opener.location.replace(this.href); window.close();"><?php _e('Edit Post'); ?></a>
+			| <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a></p>
 			</div>
 		<?php } ?>
 
@@ -626,7 +613,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			</div>
 		</div>
 
-		<div id="waiting" style="display: none"><img src="<?php echo esc_url( admin_url( 'images/wpspin_light.gif' ) ); ?>" alt="" /> <?php esc_html_e( 'Loading...', 'pf' ); ?></div>
+		<div id="waiting" style="display: none"><span class="spinner"></span> <span><?php esc_html_e( 'Loading...' ); ?></span></div>
 
 		<div id="extra-fields" style="display: none"></div>
 
@@ -647,30 +634,31 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 				$content .= PF_Feed_Item::get_content_through_aggregator($url);
 			}
 
-		}
-
+		}			
+			
+			
 		if ( $url ) {
 			$content .= '<p>';
 
 			if ( $selection )
 				$content .= __('via ');
-			//PF Notes - Set content for an empty selection.
+
 			$content .= sprintf( "<a href='%s'>%s</a>.</p>", esc_url( $url ), esc_html( $title ) );
 		}
 
 		remove_action( 'media_buttons', 'media_buttons' );
 		add_action( 'media_buttons', 'press_this_media_buttons' );
 		function press_this_media_buttons() {
-			_e( 'Add:' );
+			_e( 'Add:','pf' );
 
 			if ( current_user_can('upload_files') ) {
 				?>
-				<a id="photo_button" title="<?php esc_attr_e('Insert an Image', 'pf'); ?>" href="#">
-				<img alt="<?php esc_attr_e('Insert an Image', 'pf'); ?>" src="<?php echo esc_url( admin_url( 'images/media-button-image.gif?ver=20100531' ) ); ?>"/></a>
+				<a id="photo_button" title="<?php esc_attr_e('Insert an Image'); ?>" href="#">
+				<img alt="<?php esc_attr_e('Insert an Image'); ?>" src="<?php echo esc_url( admin_url( 'images/media-button-image.gif?ver=20100531' ) ); ?>"/></a>
 				<?php
 			}
 			?>
-			<a id="video_button" title="<?php esc_attr_e('Embed a Video', 'pf'); ?>" href="#"><img alt="<?php esc_attr_e('Embed a Video', 'pf'); ?>" src="<?php echo esc_url( admin_url( 'images/media-button-video.gif?ver=20100531' ) ); ?>"/></a>
+			<a id="video_button" title="<?php esc_attr_e('Embed a Video'); ?>" href="#"><img alt="<?php esc_attr_e('Embed a Video'); ?>" src="<?php echo esc_url( admin_url( 'images/media-button-video.gif?ver=20100531' ) ); ?>"/></a>
 			<?php
 		}
 
@@ -683,13 +671,13 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 </form>
 <div id="photo-add-url-div" style="display:none;">
 	<table><tr>
-	<td><label for="this_photo"><?php _e('URL', 'pf') ?></label></td>
+	<td><label for="this_photo"><?php _e('URL','pf') ?></label></td>
 	<td><input type="text" id="this_photo" name="this_photo" class="tb_this_photo text" onkeypress="if(event.keyCode==13) image_selector(this);" /></td>
 	</tr><tr>
-	<td><label for="this_photo_description"><?php _e('Description', 'pf') ?></label></td>
+	<td><label for="this_photo_description"><?php _e('Description','pf') ?></label></td>
 	<td><input type="text" id="this_photo_description" name="photo_description" class="tb_this_photo_description text" onkeypress="if(event.keyCode==13) image_selector(this);" value="<?php echo esc_attr($title);?>"/></td>
 	</tr><tr>
-	<td><input type="button" class="button" onclick="image_selector(this)" value="<?php esc_attr_e('Insert Image', 'pf'); ?>" /></td>
+	<td><input type="button" class="button" onclick="image_selector(this)" value="<?php esc_attr_e('Insert Image'); ?>" /></td>
 	</tr></table>
 </div>
 <?php
@@ -699,3 +687,4 @@ do_action('admin_print_footer_scripts');
 <script type="text/javascript">if(typeof wpOnload=='function')wpOnload();</script>
 </body>
 </html>
+
