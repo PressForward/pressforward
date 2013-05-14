@@ -393,7 +393,12 @@ class PF_Admin {
 			  </div>
 			  <div class="row-fluid modal-body-row">
 				  <div class="modal-body span9">
-					<?php echo $item['item_content']; ?>
+					<?php 
+					$contentObj = new htmlchecker($item['item_content']);
+					$text = $contentObj->closetags($item['item_content']);
+					echo $text; 
+					
+					?>
 				  </div>
 				  <div class="modal-sidebar span3">
 					<div class="goPrev modal-side-item row-fluid">

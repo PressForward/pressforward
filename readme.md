@@ -1,14 +1,13 @@
-
 ## Plugin Name: PressForward
-Plugin URI: http://pressforward.org/
-Description: PressForward is a WordPress plugin built to process feeds as a feed reader, allow groups to share and discuss the items that come in and then blog about them as an integrated editorial process. Currently in Alpha.
-Version: 1.8.1
-Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
-Author URI: http://aramzs.me, http://boone.gorg.es/, http://clioweb.org
-License: GPL2
+- Plugin URI: http://pressforward.org/
+- Description: PressForward is a WordPress plugin built to process feeds as a feed reader, allow groups to share and discuss the items that come in and then blog about them as an integrated editorial process. Currently in Alpha.
+- Version: 1.9.6
+- Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
+- Author URI: http://aramzs.me, http://boone.gorg.es/, http://clioweb.org
+- License: GPL2
 
 
-	Developed for the Center for History and New Media at George Mason University.
+	Developed for the Roy Rosenzweig Center for History and New Media at George Mason University.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as
@@ -36,6 +35,12 @@ License: GPL2
 
 -	Provide the entire process in a attractive, responsive and mobile friendly design. 
 
--	Provide an open source back-end that is easily expandable for other developers and that can be hooked into by other independent WordPress plugins.
+-	Provide an open source back-end that is easily extendable for other developers and that can be hooked into by other independent WordPress plugins.
 
 Testing, contributions, and feedback welcome. 
+
+Latest stable releases are available at [this project's tags page](https://github.com/PressForward/pressforward/tags).
+
+Bugs can be reported in [the issue section](https://github.com/PressForward/pressforward/issues).
+
+To install this plugin in WordPress, just download the latest tagged release or [this repository as a zip file](https://github.com/PressForward/pressforward/archive/master.zip) and upload it to your WordPress plugins section. 
