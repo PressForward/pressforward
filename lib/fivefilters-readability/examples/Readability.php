@@ -4,7 +4,7 @@ header('Content-Type: text/plain; charset=utf-8');
 
 // get latest Medialens alert 
 // (change this URL to whatever you'd like to test)
-$url = 'http://medialens.org/alerts/index.php';
+$url = 'http://www.medialens.org/index.php/alerts/alert-archive/alerts-2013/729-thatcher.html';
 $html = file_get_contents($url);
 
 // Note: PHP Readability expects UTF-8 encoded content.
@@ -34,9 +34,9 @@ $result = $readability->init();
 // does it look like we found what we wanted?
 if ($result) {
 	echo "== Title =====================================\n";
-//	echo $readability->getTitle()->textContent, "\n\n";
+	echo $readability->getTitle()->textContent, "\n\n";
 	echo "== Body ======================================\n";
-//	$content = $readability->getContent()->innerHTML;
+	$content = $readability->getContent()->innerHTML;
 	// if we've got Tidy, let's clean it up for output
 	if (function_exists('tidy_parse_string')) {
 		$tidy = tidy_parse_string($content, array('indent'=>true, 'show-body-only' => true), 'UTF8');
