@@ -242,6 +242,9 @@ class PF_Admin {
 				}
 		if ($format === 'nomination'){
 			$id_for_comments = $metadata['item_feed_post_id'];
+			if (empty($metadata['nom_id'])){ $metadata['nom_id'] = md5($item['item_title']); }
+			if (empty($id_for_comments)){ $id_for_comments = md5($item['item_title']); }
+			if (empty($metadata['item_id'])){ $metadata['item_id'] = md5($item['item_title']); }
 			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . '" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '">';
 		} else {
 			$id_for_comments = $item['post_id'];
