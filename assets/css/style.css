@@ -191,11 +191,18 @@ h3 {
 	padding: 10px;
 }
 
-.archived {
+.archived, .article-read {
 	opacity: .6;
 	transition: opacity .25s ease-in-out;
 	-moz-transition: opacity .25s ease-in-out;
 	-webkit-transition: opacity .25s ease-in-out;
+}
+
+.archived, .article-read .modal {
+	opacity: 1;
+	transition: opacity 1s ease-in-out;
+	-moz-transition: opacity 1s ease-in-out;
+	-webkit-transition: opacity 1s ease-in-out;
 }
 
 .pf-navigation {
