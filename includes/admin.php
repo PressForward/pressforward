@@ -784,7 +784,7 @@ class PF_Admin {
 			
 		}		
 		
-				do_action ('pf_admin_user_settings');				
+				do_action('pf_admin_user_settings');				
 				
 				?>
 					<br />
