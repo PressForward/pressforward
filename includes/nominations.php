@@ -83,16 +83,29 @@ class PF_Nominations {
 		$user = get_user_by('id', $submitted_by);
 		$item_tags = get_post_meta($post->ID, 'item_tags', true);
 		$source_repeat = get_post_meta($post->ID, 'source_repeat', true);
-		$this->meta_box_printer(__('Item ID', 'pf'), $origin_item_ID);
+		if (!empty($origin_item_ID)){
+			$this->meta_box_printer(__('Item ID', 'pf'), $origin_item_ID);
+		}
+		if (empty($nomination_count)){$nomination_count = 1;}
 		$this->meta_box_printer(__('Nomination Count', 'pf'), $nomination_count);
+		if (empty($user)){ $user = wp_get_current_user(); }
 		$this->meta_box_printer(__('Submitted By', 'pf'), $user->display_name);
-		$this->meta_box_printer(__('Feed Title', 'pf'), $source_title);
-		$this->meta_box_printer(__('Source Posted', 'pf'), $posted_date);
+		if (!empty($source_title)){ 
+			$this->meta_box_printer(__('Feed Title', 'pf'), $source_title);
+		}
+		if (empty($posted_date)){
+			$this->meta_box_printer(__('Posted by source on', 'pf'), $posted_date);
+		} else {
+			$this->meta_box_printer(__('Source Posted', 'pf'), $posted_date);
+		}
 		$this->meta_box_printer(__('Source Authors', 'pf'), $nom_authors);
 		$this->meta_box_printer(__('Source Link', 'pf'), $nomination_permalink, true, __('Original Post', 'pf'));
 		$this->meta_box_printer(__('Item Tags', 'pf'), $item_tags);
+		if (empty($date_nominated)){ $date_nominated = date(DATE_ATOM); }
 		$this->meta_box_printer(__('Date Nominated', 'pf'), $date_nominated);
-		$this->meta_box_printer(__('Repeated in Feed', 'pf'), $source_repeat);
+		if (!empty($source_repeat)){ 
+			$this->meta_box_printer(__('Repeated in Feed', 'pf'), $source_repeat);
+		}
 
 	}
 
@@ -215,17 +228,21 @@ class PF_Nominations {
 
 	public function meta_box_printer($title, $variable, $link = false, $anchor_text = 'Link'){
 		echo '<strong>' . $title . '</strong>: ';
-		if ($link === true){
-			if ($anchor_text === 'Link'){
-				$anchor_text = $this->__('Link', 'pf');
+		if (empty($variable)){
+			echo '<br /><input type="text" name="{$title}">';
+		} else {		
+			if ($link === true){
+				if ($anchor_text === 'Link'){
+					$anchor_text = $this->__('Link', 'pf');
+				}
+				echo '<a href=';
+				echo $variable;
+				echo '" target="_blank">';
+				echo $anchor_text;
+				echo '</a>';
+			} else {
+				echo $variable;
 			}
-			echo '<a href=';
-			echo $variable;
-			echo '" target="_blank">';
-			echo $anchor_text;
-			echo '</a>';
-		} else {
-			echo $variable;
 		}
 
 		echo '<br />';
