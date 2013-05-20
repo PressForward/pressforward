@@ -229,7 +229,7 @@ class PF_Nominations {
 	public function meta_box_printer($title, $variable, $link = false, $anchor_text = 'Link'){
 		echo '<strong>' . $title . '</strong>: ';
 		if (empty($variable)){
-			echo '<br /><input type="text" name="{$title}">';
+			echo '<br /><input type="text" name="'.$title.'">';
 		} else {		
 			if ($link === true){
 				if ($anchor_text === 'Link'){
