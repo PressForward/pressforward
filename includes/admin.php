@@ -17,6 +17,7 @@ class PF_Admin {
 
 		// Adding javascript and css to admin pages
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
+		add_action( 'wp_head', array( $this, 'pf_aggregation_forwarder'));
 		add_filter('admin_body_class',  array( $this, 'add_pf_body_class'));
 
 		// Catch form submits
@@ -1015,6 +1016,21 @@ class PF_Admin {
 		
 		do_action( 'pf_admin_op_page_save' );
 	}
+	
+	function pf_aggregation_forwarder(){
+		if(1 == get_option('pf_link_to_source',0)){
+			//http://webmaster.iu.edu/tools-and-guides/maintenance/redirect-meta-refresh.phtml ?
+			$linked = get_post_meta('item_link', true);
+			if (is_single() && ('' != $linked)){
+				?>
+				 <script type="text/javascript">alert('You are being redirected to the source item.');</script>
+				<META HTTP-EQUIV="refresh" CONTENT="10;URL=<?php echo get_post_meta('item_link', true); ?>">
+				<?php
+				
+			}
+		}
+	}
+	
 	/////////////////////////
 	//    AJAX HANDLERS    //
 	/////////////////////////
