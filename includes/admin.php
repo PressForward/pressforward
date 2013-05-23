@@ -727,6 +727,7 @@ class PF_Admin {
 				echo 'Options';
 
 				?>
+				
 					<h3><?php _e( 'Modules', 'pf' ) ?></h3>
 
 					<p class="description"><?php _e( '<strong>PressForward Modules</strong> are addons to alter or improve the functionality of the plugin.', 'pf' ) ?></p>
@@ -735,8 +736,18 @@ class PF_Admin {
 				wp_nonce_field( 'pf_settings' );
 				?>
 					<br />
+					
+					<p><?php
+					$default_pf_link_value = get_option('pf_link_to_source', 0);	
+					echo '<input id="pf_link_to_source" name="pf_link_to_source" type="checkbox" value="1" class="pf_link_to_source_class"';
+						isset($default_pf_link_value) ? checked( '1', $default_pf_link_value ) : checked('0', '1');
+					echo '/>';
+					
+					echo '<label class="description" for="pf_link_to_source"> ' .__('Link aggregated stories to their source', 'pf'). ' </label>';						
+					?></p>
+					
 					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
-					<br />
+					<br />					
 					
 					<h3><?php _e( 'User Control', 'pf' ) ?></h3>
 
@@ -994,6 +1005,14 @@ class PF_Admin {
 				update_option( $right, $enabled );
 			}			
 		}
+		if (isset( $_POST['pf_link_to_source'] )){
+			$pf_links_opt_check = $_POST['pf_link_to_source'];
+			//print_r($pf_links_opt_check); die();
+			update_option('pf_link_to_source', $pf_links_opt_check);
+		} else {
+			update_option('pf_link_to_source', 0);
+		}
+		
 		do_action( 'pf_admin_op_page_save' );
 	}
 	/////////////////////////
