@@ -1021,6 +1021,7 @@ class PF_Admin {
 		if(1 == get_option('pf_link_to_source',0)){
 			//http://webmaster.iu.edu/tools-and-guides/maintenance/redirect-meta-refresh.phtml ?
 			$linked = get_post_meta('item_link', true);
+			//Need syndicate tag here.
 			if (is_single() && ('' != $linked)){
 				?>
 				 <script type="text/javascript">alert('You are being redirected to the source item.');</script>
