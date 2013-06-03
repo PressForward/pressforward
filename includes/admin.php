@@ -800,15 +800,16 @@ class PF_Admin {
 						</tr>
 					</table>			
 			
+				<br />		
+			
 			<?php
 			
 		}		
-		
+		?><input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" /><?php
 				do_action('pf_admin_user_settings');				
 				
 				?>
-					<br />
-					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />				
+						
 			</div>
 		</form>
 		<?php
