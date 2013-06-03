@@ -569,6 +569,10 @@ class PF_RSS_Import extends PF_Module {
 	}
 
 	public function feedlist_builder($feedlist){
+		if (empty($feedlist)){
+			echo __('No feeds added.', 'pf');
+			return;
+		}
 		foreach ($feedlist as $feed){
 			if ((!is_array($feed)) && $feed != ''){
 				$feedID = md5($feed);
@@ -605,24 +609,17 @@ class PF_RSS_Import extends PF_Module {
 		}
 		//$feedlist = $this->pf_feedlist();
 		// Needs something to do here if option is empty.
-		$feedlist = get_option( PF_SLUG . '_feedlist' );
-		if (false == $feedlist){
-			if (!empty($input['single'])){
-				$feedlist = $inputSingle;
-			}
-			if (!empty($input['opml'])){
-				$feedlist = array_merge($feedlist, $opml_array);
-			}
-			if (!empty($_POST['o_feed_url'])){
-
-			}
-		} else {
+		$feednew = array();
+		$feedlist = get_option( PF_SLUG . '_feedlist', false );
+		if (!$feedlist){
+			$feedlist = array();
+		}
 	//		$feedlist = array('http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Flabel%2FEditors-at-Large');
 			if (!empty($input['single'])){
-				$feedlist = array_merge($feedlist, $inputSingle);
+				$feedlist = array_merge((array)$feedlist, (array)$inputSingle);
 			}
 			if (!empty($input['opml'])){
-				$feedlist = array_merge($feedlist, $opml_array);
+				$feedlist = array_merge((array)$feedlist, (array)$opml_array);
 			}
 			if (!empty($_POST['o_feed_url'])){
 				$offender = array_search($_POST['o_feed_url'], $feedlist);
@@ -631,8 +628,6 @@ class PF_RSS_Import extends PF_Module {
 				}
 
 			}
-
-		}
 
 		//Let's ensure no duplicates.
 		$feedlist = array_unique($feedlist);
