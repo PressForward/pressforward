@@ -182,6 +182,27 @@ class PF_Readability {
 					$content = $tidy->value;
 				}
 
+			
+			$dom = new domDocument;
+			$dom->loadHTML($content);
+			$dom->preserveWhiteSpace = true;
+			$images = $dom->getElementsByTagName('img');
+			foreach ($images as $image) {
+			  $img = $image->getAttribute('src');
+			  if ((strpos($img, '/')) == 0){
+				$urlArray = parse_url($url);
+				$urlBase = 'http://' . $urlArray['host'];
+				if (!(false == file_get_contents($urlBase . $img,0,null,0,1))){
+					$image->setAttribute('src', $urlBase . $img);
+				} elseif (!(false == file_get_contents($url . $img,0,null,0,1))){
+					$image->setAttribute('src', $url . $img);
+				} else {
+					$image->parentNode->removeChild($image);
+				}
+			  }
+			}
+			$content = $dom->saveHTML();
+			
 		} else {
 			# If Readability can't get the content, send back a FALSE to loop with.
 			$content = false;
