@@ -81,6 +81,7 @@ function nominate_it() {
 		}
 		# PF NOTE: Switching post type to nomination. 
 		$post['post_type'] = 'nomination';
+		$post['post_date_gmt'] = gmdate('Y-m-d H:i:s');
 		# PF NOTE: This is where the inital post is created. 
 		$post_ID = wp_update_post($post);
 	}
