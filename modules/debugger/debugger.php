@@ -7,6 +7,7 @@
 class PF_Debugger extends PF_Module {
 	function __construct() {
 		parent::start();
+		add_filter('pf_setup_admin_rights', array($this, 'control_menu_access'));
 	}
 
 	/**
@@ -20,7 +21,7 @@ class PF_Debugger extends PF_Module {
 		$admin_menus[] = array(
 			'page_title' => __( 'View Log', 'pf' ),
 			'menu_title' => __( 'View Log', 'pf' ),
-			'cap'        => 'edit_posts',
+			'cap'        => get_option('pf_menu_log_access', pf_get_defining_capability_by_role('administrator')),
 			'slug'       => 'pf-debugger',
 			'callback'   => array( $this, 'admin_menu_callback' ),
 		);
@@ -92,4 +93,15 @@ class PF_Debugger extends PF_Module {
 	function admin_enqueue_styles() {
 		wp_register_style( PF_SLUG . '-debug-style', PF_URL . 'includes/debugger/css/style.css' );
 	}
+
+	function control_menu_access($arrayedAdminRights){
+		$arrayedAdminRights['pf_menu_log_access'] = array(
+															'default'=>'administrator',
+															'title'=>'Debugging Log'
+														);
+		
+		return $arrayedAdminRights;
+														
+	}	
+	
 }
