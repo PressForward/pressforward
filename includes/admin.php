@@ -341,7 +341,7 @@ class PF_Admin {
 			?>
 			<div class="content">
 				<?php 
-					if ($item['item_feat_img'] != ''){
+					if (($item['item_feat_img'] != '') && ($format != 'nomination')){
 						echo '<div style="float:left; margin-right: 10px; margin-bottom: 10px;"><img src="' . $item['item_feat_img'] . '"></div>';
 					}
 
