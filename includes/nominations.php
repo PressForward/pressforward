@@ -405,7 +405,12 @@ class PF_Nominations {
 		add_post_meta($newNomID, 'submitted_by', $userString, true);
 		add_post_meta($newNomID, 'nominator_array', $userID, true);
 		add_post_meta($newNomID, 'source_title', $_POST['source_title'], true);
-		add_post_meta($newNomID, 'posted_date', $_POST['item_date'], true);
+			$item_date = $_POST['item_date'];
+			if (empty($_POST['item_date'])){
+				$newDate = gmdate('Y-m-d H:i:s');
+				$item_date = $newDate;
+			}
+		add_post_meta($newNomID, 'posted_date', $item_date, true);
 		add_post_meta($newNomID, 'authors', $_POST['item_author'], true);
 		add_post_meta($newNomID, 'nomination_permalink', $_POST['item_link'], true);
 		add_post_meta($newNomID, 'date_nominated', date('c'), true);
