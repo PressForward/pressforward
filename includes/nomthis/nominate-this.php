@@ -85,7 +85,12 @@ function nominate_it() {
 		# PF NOTE: This is where the inital post is created. 
 		$post_ID = wp_update_post($post);
 	}
-
+			$item_date = $_POST['item_date'];
+			if (empty($_POST['item_date'])){
+				$newDate = gmdate('Y-m-d H:i:s');
+				$item_date = $newDate;
+			}
+			update_post_meta($post_ID, 'posted_date', $item_date, true);
 	return $post_ID;
 }
 
@@ -109,7 +114,6 @@ if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 	if (!empty($_POST['nomination_permalink']) && ($_POST['nomination_permalink']) != ''){
 		PF_Feed_Item::set_ext_as_featured($post_ID, $itemFeatImg);
 	}
-
 
 // Set Variables
 $title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( stripslashes( $_GET['t'] ) , ENT_QUOTES) ) ) : '';
