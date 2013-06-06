@@ -189,7 +189,7 @@ class PF_Readability {
 			$images = $dom->getElementsByTagName('img');
 			foreach ($images as $image) {
 			  $img = $image->getAttribute('src');
-			  if ((strpos($img, '/')) == 0){
+			  if ((strpos($img, '/')) === 0){
 				$urlArray = parse_url($url);
 				$urlBase = 'http://' . $urlArray['host'];
 				if (!(false == file_get_contents($urlBase . $img,0,null,0,1))){
