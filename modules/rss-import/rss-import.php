@@ -754,7 +754,8 @@ class PF_RSS_Import extends PF_Module {
 				update_option(PF_SLUG . '_feeds_meta_state', $feeds_meta_state);						
 				pf_log(__('Created new metastate.', 'pf'), true);						
 			} else {
-				pf_log(__('Metastate saved and active for check.', 'pf'), true);	
+				pf_log(__('Metastate saved and active for check.', 'pf'), true);
+				pf_log($feeds_meta_state);
 			}
 			
 			if ($feeds_meta_state['retrigger'] > time()){
