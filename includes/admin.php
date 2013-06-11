@@ -85,7 +85,7 @@ class PF_Admin {
 			PF_SLUG . '-feeder',
 			array($this, 'display_feeder_builder')
 		);
-
+/**
 		add_submenu_page(
 			PF_MENU_SLUG,
 			__('Add Nomination', 'pf'),
@@ -93,6 +93,7 @@ class PF_Admin {
 			get_option('pf_menu_add_nomination_access', pf_get_defining_capability_by_role('contributor')),
 			PF_NOM_POSTER
 		);
+**/
 	}
 	
 	function add_pf_body_class($classes) {
