@@ -769,6 +769,15 @@ class PF_RSS_Import extends PF_Module {
 						update_option(PF_SLUG . '_iterate_going_switch', 1);
 						PF_Feed_Item::assemble_feed_for_pull();
 					} else {
+						$double_check = array(
+													'feed_go' => $feeds_meta_state['feed_go'],
+													'feed_iteration' =>	$feed_iteration,
+													'retrieval_state' => $feeds_meta_state['retrieval_state'],
+													'chunk_state'	=> $feeds_meta_state['chunk_state'],
+													'retrigger'		=>	$feeds_meta_state['retrigger']
+												);
+						update_option(PF_SLUG . '_feeds_meta_state', $double_check);
+						pf_log($double_check);						
 						pf_log(__('The sources are already being retrieved.', 'pf'), true);
 					}
 				
