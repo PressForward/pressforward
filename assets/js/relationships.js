@@ -84,7 +84,7 @@ jQuery(document).ready(function() {
 
 	
 	function doschemastuff(obj, item, id, parent, otherschema, schemaclass){
-		if (jQuery(obj).hasClass('schema-active')){
+		if (jQuery(obj).hasClass('schema-active') && jQuery(obj).hasClass('schema-switchable')){
 			jQuery(obj).removeClass('schema-active');
 			otherschema.removeClass('schema-active');		
 		} else {
@@ -94,7 +94,7 @@ jQuery(document).ready(function() {
 		
 		if (schemaclass != false){
 
-			if (jQuery(obj).hasClass(schemaclass)){
+			if (jQuery(obj).hasClass(schemaclass) && jQuery(obj).hasClass('schema-switchable')){
 			
 				jQuery(obj).removeClass(schemaclass);
 				otherschema.removeClass(schemaclass);		
