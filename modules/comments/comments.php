@@ -226,8 +226,9 @@ class PF_Comments extends PF_Module {
 		$actions = array();
 
 		$actions_string = '';
+		$comments_allowed = get_option('pf_feature_comments_access', pf_get_defining_capability_by_role('editor'));
 		// Comments can only be added by users that can edit the post
-		if ( current_user_can('edit_post', $comment->comment_post_ID) ) {
+		if ( current_user_can($comments_allowed, $comment->comment_post_ID) ) {
 			$actions['reply'] = '<a onclick="editorialCommentReply.open(\''.$comment->comment_ID.'\',\''.$comment->comment_post_ID.'\');return false;" class="vim-r hide-if-no-js" title="'.__( 'Reply to this comment', 'edit-flow' ).'" href="#">' . __( 'Reply', 'edit-flow' ) . '</a>';
 
 			$sep = ' ';
@@ -276,14 +277,14 @@ class PF_Comments extends PF_Module {
 
 		// Get user info
       	get_currentuserinfo();
-
+		$comments_allowed = get_option('pf_feature_comments_access', pf_get_defining_capability_by_role('editor'));
       	// Set up comment data
 		$post_id = absint( $_POST['post_id'] );
 		$parent = absint( $_POST['parent'] );
 
       	// Only allow the comment if user can edit post
       	// @TODO: allow contributers to add comments as well (?)
-		if ( ! current_user_can( 'edit_post', $post_id ) )
+		if ( ! current_user_can( $comments_allowed, $post_id ) )
 			die( __('Sorry, you don\'t have the privileges to add editorial comments. Please talk to your Administrator.', 'edit-flow' ) );
 
 		// Verify that comment was actually entered
