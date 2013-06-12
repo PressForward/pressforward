@@ -103,6 +103,175 @@ class PF_Admin {
 		return $classes;
 	}
 	
+	public function toolbox($slug = 'allfeed', $version = 0, $deck = false){
+		global $hook_suffix;
+		if(!empty($hook_suffix)){
+			$slug = $hook_suffix;
+		}
+		?>
+		<div id="tools">
+			<?php if ($version > 0){ ?>
+				<ul class="nav nav-tabs nav-stacked">
+					<li><a href="#">Top Blogs</a></li>
+					<li><a href="#">Starred Items</a></li>
+					<li><a href="#">Content from Twitter</a></li>
+				</ul>
+
+				<form id="filters">
+					<h2>Filters</h2>
+					
+					<label><input type="checkbox"> Shared on Twitter</label>
+					<label><input type="checkbox"> Long Articles</label>
+					<label><input type="checkbox"> Short Articles</label>
+					<label><input type="checkbox"> Recommended by Algorithm</label>
+					<label><input type="checkbox"> High Number of Comments</label>
+					
+					<input type="submit" class="btn btn-small" value="Reset Filters">
+				</form>
+
+				<form id="subscription" method="post" action="">
+					<h2>New Subscription</h2>
+					<input type="text" placeholder="http://example.com/feed">
+				<input type="submit" class="btn btn-small" value="Subscribe">
+				</form>
+
+
+				<?php 
+				# Some buttons to the left
+				if ($deck){ 
+				echo '<div class="deck">';
+						echo '<div class="row-fluid">
+								<div class="span12 main-card card well">
+									<div class="tapped">
+										' . __('Main Feed', 'pf') . '
+									</div>
+								</div>
+							</div>
+						';
+
+						# Auto add these actions depending on if the module presents a stream?
+						//do_action( 'module_stream' );
+
+						echo '<div class="row-fluid">
+								<div class="span12 sub-card card well">
+									<div class="tapped">
+										' . __('Module Feed', 'pf') . '
+									</div>
+								</div>
+							</div>
+						';
+				echo '</div><!-- End span1 -->';				
+
+		#Widgets
+				echo '<div class="feed-widget-container">';
+					# Some widgets go here.
+						# Does this work? [nope...]
+						$blogusers = get_users('orderby=nom_count');
+						$uc = 1;
+						echo '<div class="row-fluid">
+						<div class="pf-right-widget well span12">
+								<div class="widget-title">
+									' . __('Nominator Leaderboard', 'pf') . '
+								</div>
+								<div class="widget-body">
+									<div class="navwidget">
+										<ol>';
+										foreach ($blogusers as $user){
+											if ($uc <= 5){
+												if (get_user_meta( $user->ID, 'nom_count', true )){
+												$userNomCount = get_user_meta( $user->ID, 'nom_count', true );
+
+												} else {
+													$userNomCount = 0;
+												}
+												$uc++;
+												echo '<li>' . $user->display_name . ' - ' . $userNomCount . '</li>';
+											}
+
+										}
+						echo			'</ol>
+									</div>
+								</div>
+						</div>
+						</div>
+						';
+
+						$widgets_array = $this->widget_array();
+						$all_widgets_array = apply_filters( 'dash_widget_bar', $widgets_array );
+
+						//$all_widgets_array = array_merge($widgets_array, $mod_widgets);
+						foreach ($all_widgets_array as $dash_widget) {
+
+							$defaults = array(
+								'title' => '',
+								'slug'       => '',
+								'callback'   => '',
+							);
+							$r = wp_parse_args( $dash_widget, $defaults );
+
+							// add_submenu_page() will fail if any arguments aren't passed
+							if ( empty( $r['title'] ) || empty( $r['slug'] ) || empty( $r['callback'] ) ) {
+								continue;
+							} else {
+
+								echo '<div class="row-fluid">
+								<div class="pf-right-widget well span12 ' . $r['slug'] . '">';
+									echo '<div class="widget-title">' .
+										$r['title']
+									. '</div>';
+									echo '<div class="widget-body">';
+										call_user_func($r['callback']);
+									echo '</div>';
+								echo '</div>
+								</div>';
+
+							}
+
+						}
+
+						/**
+						// Loop through each module to get its source data
+						foreach ( $this->modules as $module ) {
+							//$source_data_object = array_merge( $source_data_object, $module->get_widget_object() );
+
+							echo '<div class="row-fluid">
+							<div class="pf-right-widget well span12">';
+
+							echo '</div>
+							</div>';
+						}
+						**/
+				/**
+				echo '</div><!-- End feed-widget-container span4 -->';	
+				**/				 
+				}		
+				
+			}
+			if ($slug == 'toplevel_page_pf-menu' && $version >= 0){
+				?>
+					<a href="#" id="settings" class="button">Settings</a>
+					<div class="btn-group">
+						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete entire feed archive', 'pf');  ?>" ><?php  _e('Delete entire feed archive', 'pf');  ?></button>
+					</div>
+				<?php 
+			}			
+				?>
+				<div id="nom-this-toolbox">
+					<h3 class="title"><?php _e('Nominate This', 'pf'); ?></h3>
+					<p><?php _e('Nominate This is a bookmarklet: a little app that runs in your browser and lets you grab bits of the web.', 'pf');?></p>
+
+					<p><?php _e('Use Nominate This to clip text, images and videos from any web page. Then edit and add more straight from Nominate This before you save or publish it in a post on your site.', 'pf'); ?></p>
+					<p class="description"><?php _e('Drag-and-drop the following link to your bookmarks bar or right click it and add it to your favorites for a posting shortcut.', 'pf'); ?></p>
+					<p class="pressthis"><a onclick="return false;" oncontextmenu="if(window.navigator.userAgent.indexOf('WebKit')!=-1||window.navigator.userAgent.indexOf('MSIE')!=-1)jQuery('.pressthis-code').show().find('textarea').focus().select();return false;" href="<?php echo htmlspecialchars( pf_get_shortcut_link() ); ?>"><span><?php _e('Nominate This', 'pf'); ?></span></a></p>
+					<div class="pressthis-code" style="display:none;">
+					<p class="description"><?php _e('If your bookmarks toolbar is hidden: copy the code below, open your Bookmarks manager, create new bookmark, type Press This into the name field and paste the code into the URL field.', 'pf'); ?></p>
+					<p><textarea rows="5" cols="120" readonly="readonly"><?php echo htmlspecialchars( pf_get_shortcut_link() ); ?></textarea></p>
+					</div>
+				</div>
+		</div>			
+		<?php 
+	}
+	
 	public function form_of_actions_btns($item, $c, $modal = false, $format = 'standard', $metadata = array(), $id_for_comments ){
 			$item_id = 0;
 			$user = wp_get_current_user();
@@ -491,146 +660,7 @@ class PF_Admin {
 			</form>			
 		</header><!-- End Header -->
 		<div role="main">
-		   <div id="tools">
-
-				<ul class="nav nav-tabs nav-stacked">
-					<li><a href="#">Top Blogs</a></li>
-					<li><a href="#">Starred Items</a></li>
-					<li><a href="#">Content from Twitter</a></li>
-				</ul>
-
-				<form id="filters">
-					<h2>Filters</h2>
-					
-					<label><input type="checkbox"> Shared on Twitter</label>
-					<label><input type="checkbox"> Long Articles</label>
-					<label><input type="checkbox"> Short Articles</label>
-					<label><input type="checkbox"> Recommended by Algorithm</label>
-					<label><input type="checkbox"> High Number of Comments</label>
-					
-					<input type="submit" class="btn btn-small" value="Reset Filters">
-				</form>
-
-				<form id="subscription" method="post" action="">
-					<h2>New Subscription</h2>
-					<input type="text" placeholder="http://example.com/feed">
-				<input type="submit" class="btn btn-small" value="Subscribe">
-				</form>
-
-				<a href="#" id="settings" class="button">Settings</a>
-				<div class="btn-group">
-					<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete entire feed archive', 'pf');  ?>" ><?php  _e('Delete entire feed archive', 'pf');  ?></button>
-				</div>
-				<?php 
-				# Some buttons to the left
-/**				
-				echo '<div class="deck">';
-						echo '<div class="row-fluid">
-								<div class="span12 main-card card well">
-									<div class="tapped">
-										' . __('Main Feed', 'pf') . '
-									</div>
-								</div>
-							</div>
-						';
-
-						# Auto add these actions depending on if the module presents a stream?
-						//do_action( 'module_stream' );
-
-						echo '<div class="row-fluid">
-								<div class="span12 sub-card card well">
-									<div class="tapped">
-										' . __('Module Feed', 'pf') . '
-									</div>
-								</div>
-							</div>
-						';
-				echo '</div><!-- End span1 -->';				
-
-		#Widgets
-				echo '<div class="feed-widget-container">';
-					# Some widgets go here.
-						# Does this work? [nope...]
-						$blogusers = get_users('orderby=nom_count');
-						$uc = 1;
-						echo '<div class="row-fluid">
-						<div class="pf-right-widget well span12">
-								<div class="widget-title">
-									' . __('Nominator Leaderboard', 'pf') . '
-								</div>
-								<div class="widget-body">
-									<div class="navwidget">
-										<ol>';
-										foreach ($blogusers as $user){
-											if ($uc <= 5){
-												if (get_user_meta( $user->ID, 'nom_count', true )){
-												$userNomCount = get_user_meta( $user->ID, 'nom_count', true );
-
-												} else {
-													$userNomCount = 0;
-												}
-												$uc++;
-												echo '<li>' . $user->display_name . ' - ' . $userNomCount . '</li>';
-											}
-
-										}
-						echo			'</ol>
-									</div>
-								</div>
-						</div>
-						</div>
-						';
-
-						$widgets_array = $this->widget_array();
-						$all_widgets_array = apply_filters( 'dash_widget_bar', $widgets_array );
-
-						//$all_widgets_array = array_merge($widgets_array, $mod_widgets);
-						foreach ($all_widgets_array as $dash_widget) {
-
-							$defaults = array(
-								'title' => '',
-								'slug'       => '',
-								'callback'   => '',
-							);
-							$r = wp_parse_args( $dash_widget, $defaults );
-
-							// add_submenu_page() will fail if any arguments aren't passed
-							if ( empty( $r['title'] ) || empty( $r['slug'] ) || empty( $r['callback'] ) ) {
-								continue;
-							} else {
-
-								echo '<div class="row-fluid">
-								<div class="pf-right-widget well span12 ' . $r['slug'] . '">';
-									echo '<div class="widget-title">' .
-										$r['title']
-									. '</div>';
-									echo '<div class="widget-body">';
-										call_user_func($r['callback']);
-									echo '</div>';
-								echo '</div>
-								</div>';
-
-							}
-
-						}
-
-						/**
-						// Loop through each module to get its source data
-						foreach ( $this->modules as $module ) {
-							//$source_data_object = array_merge( $source_data_object, $module->get_widget_object() );
-
-							echo '<div class="row-fluid">
-							<div class="pf-right-widget well span12">';
-
-							echo '</div>
-							</div>';
-						}
-						**/
-/**
-				echo '</div><!-- End feed-widget-container span4 -->';	
-**/				 
-				?>				
-			</div>			
+			<?php $this->toolbox(); ?>
 			<div id="entries">
 				<?php echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';  ?>
 				<div id="errors"></div>

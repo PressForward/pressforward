@@ -364,6 +364,13 @@ h3 {
 	
 }
 
+#nom-this-toolbox {
+	width: 100%;
+	display: block;
+	float: right;
+	margin: 10px;
+}
+
 /**
  * Specific override styles.
  *
