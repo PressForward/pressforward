@@ -496,6 +496,24 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 
 add_filter( 'author_link', 'pf_replace_author_uri_presentation' );
 
+function pf_forward_unto_source(){
+	if(is_single()){
+		$obj = get_queried_object();
+		$post_ID = $obj->ID;
+		$link = get_post_meta($post_ID, 'nomination_permalink', TRUE);
+		if (!empty($link)){
+			echo '<meta name="syndication-source" content="'.$link.'" />';
+			$wait = get_option('pf_link_to_source', 0);
+			if ($wait > 0){
+				echo '<META HTTP-EQUIV="refresh" CONTENT="'.$wait.';URL='.$link.'">';
+			}
+			
+		}
+	}
+}
+
+add_action ('wp_head', 'pf_forward_unto_source');
+
 /**
  * Send status messages to a custom log
  *

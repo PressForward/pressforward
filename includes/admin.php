@@ -773,11 +773,9 @@ class PF_Admin {
 					
 					<p><?php
 					$default_pf_link_value = get_option('pf_link_to_source', 0);	
-					echo '<input id="pf_link_to_source" name="pf_link_to_source" type="checkbox" value="1" class="pf_link_to_source_class"';
-						isset($default_pf_link_value) ? checked( '1', $default_pf_link_value ) : checked('0', '1');
-					echo '/>';
+					echo '<input id="pf_link_to_source" name="pf_link_to_source" type="number" class="pf_link_to_source_class" value="'.$default_pf_link_value.'" />';
 					
-					echo '<label class="description" for="pf_link_to_source"> ' .__('Link aggregated stories to their source', 'pf'). ' </label>';						
+					echo '<label class="description" for="pf_link_to_source"> ' .__('Seconds to redirect user to source. (0 means no redirect)', 'pf'). ' </label>';						
 					?></p>
 					
 					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
