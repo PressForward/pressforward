@@ -111,6 +111,7 @@ function nominate_it() {
 			update_post_meta($post_ID, 'date_nominated', $item_date);
 			update_post_meta($post_ID, 'item_tags', 'via bookmarklet');
 			update_post_meta($post_ID, 'nominator_array', get_current_user_id());
+			update_post_meta($post_ID, 'authors', $_POST['authors']);
 		}
 	#var_dump($post); die();
 	return $post_ID;
@@ -524,6 +525,9 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 						} ?>
 						<span class="spinner" style="display: none;"></span>
 					</p>
+					<p>
+					<label for="post_format"><input type="text" id="authors" name="authors" value="" /><br />&nbsp;<?php _e('Enter Authors', 'pf'); ?></label>
+					</p>					
 					<?php if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) :
 							$post_formats = get_theme_support( 'post-formats' );
 							if ( is_array( $post_formats[0] ) ) :
