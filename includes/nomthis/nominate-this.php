@@ -67,10 +67,12 @@ function nominate_it() {
 	else
 		$post['post_status'] = 'draft';
 
+	$nom_check = false;
 	// error handling for media_sideload
 	if ( is_wp_error($upload) ) {
 		wp_delete_post($post_ID);
 		wp_die($upload);
+		$nom_check = true;
 	} else {
 		// Post formats
 		if ( isset( $_POST['post_format'] ) ) {
@@ -84,18 +86,28 @@ function nominate_it() {
 		$post['post_date_gmt'] = gmdate('Y-m-d H:i:s');
 		# PF NOTE: This is where the inital post is created. 
 		# PF NOTE: Put get_post_nomination_status here. 
-		$post_ID = wp_update_post($post);
-	}
+		$item_id = md5($_POST['nomination_permalink'] . $post['post_title']);
 			$item_date = $_POST['item_date'];
 			if (empty($_POST['item_date'])){
 				$newDate = gmdate('Y-m-d H:i:s');
 				$item_date = $newDate;
 			}
+		$nom_check = get_post_nomination_status($item_date, $item_id, 'nomination');
+		if (!$nom_check){
+			$post_ID = wp_update_post($post);
+		}
+	}
 			# var_dump($_POST); die();
-			$item_id = md5($_POST['nomination_permalink'] . $post['post_title']);
-			update_post_meta($post_ID, 'origin_item_ID', $item_id, true);
-			update_post_meta($post_ID, 'nomination_permalink', $_POST['nomination_permalink'], true);
-			update_post_meta($post_ID, 'posted_date', $item_date, true);
+		if (!$nom_check){	
+			update_post_meta($post_ID, 'nomination_count', 1);
+			update_post_meta($post_ID, 'submitted_by', get_current_user_id());
+			update_post_meta($post_ID, 'origin_item_ID', $item_id);
+			update_post_meta($post_ID, 'nomination_permalink', $_POST['nomination_permalink']);
+			update_post_meta($post_ID, 'posted_date', $item_date);
+			update_post_meta($post_ID, 'date_nominated', $item_date);
+			update_post_meta($post_ID, 'item_tags', 'via bookmarklet');
+			update_post_meta($post_ID, 'nominator_array', get_current_user_id());
+		}
 	return $post_ID;
 }
 
