@@ -191,7 +191,11 @@ class PF_Readability {
 			  $img = $image->getAttribute('src');
 			  if (((strpos($img, '/')) === 0) || (strpos($img, 'http') != 0)){
 				$urlArray = parse_url($url);
-				$urlBase = 'http://' . $urlArray['host'];
+				if ((strpos($img, 'http') != 0)){
+					$urlBase = 'http://' . $urlArray['host'] . '/';
+				} else {
+					$urlBase = 'http://' . $urlArray['host'];
+				}
 				if (!is_wp_error(wp_remote_head($urlBase . $img))){
 					$image->setAttribute('src', $urlBase . $img);
 				} elseif (!is_wp_error(wp_remote_head($url . $img))){
