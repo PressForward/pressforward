@@ -396,11 +396,20 @@ class PF_Admin {
 		}
 		$itemTagsArray = explode(",", $item['item_tags']);
 		$itemTagClassesString = '';
+				$user_id = $current_user->ID;
 		foreach ($itemTagsArray as $itemTag) { $itemTagClassesString .= pf_slugger($itemTag, true, false, true); $itemTagClassesString .= ' '; }
 				
 				if ($format === 'nomination'){
 					$feed_ited_id = $metadata['item_id'];
 					$id_for_comments = $metadata['item_feed_post_id'];
+			
+			$id_for_comments = $metadata['item_feed_post_id'];
+			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
+			if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
+			if (empty($metadata['nom_id'])){ $metadata['nom_id'] = md5($item['item_title']); }
+			if (empty($id_for_comments)){ $id_for_comments = $metadata['nom_id']; }
+			if (empty($metadata['item_id'])){ $metadata['item_id'] = md5($item['item_title']); }	
+			
 				} else {
 					$feed_ited_id = $item['item_id'];
 					$id_for_comments = $item['post_id'];
@@ -413,15 +422,8 @@ class PF_Admin {
 					$dependent_style = '';
 					$archived_status_string = '';
 				}
-		$user_id = $current_user->ID;
 		if ($format === 'nomination'){
 			
-			$id_for_comments = $metadata['item_feed_post_id'];
-			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
-			if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
-			if (empty($metadata['nom_id'])){ $metadata['nom_id'] = md5($item['item_title']); }
-			if (empty($id_for_comments)){ $id_for_comments = md5($item['item_title']); }
-			if (empty($metadata['item_id'])){ $metadata['item_id'] = md5($item['item_title']); }
 			echo '<article class="feed-item entry nom-container schema-actor ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . ' '.$readClass.'" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '" pf-schema="read" pf-schema-class="article-read">';
 		} else {
 			$id_for_comments = $item['post_id'];

@@ -87,13 +87,17 @@ function nominate_it() {
 		# PF NOTE: This is where the inital post is created. 
 		# PF NOTE: Put get_post_nomination_status here. 
 		$item_id = md5($_POST['nomination_permalink'] . $post['post_title']);
-			$item_date = $_POST['item_date'];
-			if (empty($_POST['item_date'])){
+			if (!isset($_POST['item_date'])){
 				$newDate = gmdate('Y-m-d H:i:s');
 				$item_date = $newDate;
+			} else {
+				$item_date = $_POST['item_date'];
 			}
-		$nom_check = get_post_nomination_status($item_date, $item_id, 'nomination');
+		$pf_nomination = new PF_Nominations();
+		$nom_check = $pf_nomination->get_post_nomination_status($item_date, $item_id, 'nomination');
+		
 		if (!$nom_check){
+			
 			$post_ID = wp_update_post($post);
 		}
 	}
@@ -108,6 +112,7 @@ function nominate_it() {
 			update_post_meta($post_ID, 'item_tags', 'via bookmarklet');
 			update_post_meta($post_ID, 'nominator_array', get_current_user_id());
 		}
+	#var_dump($post); die();
 	return $post_ID;
 }
 
