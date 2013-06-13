@@ -143,7 +143,7 @@ class PF_Readability {
 			return $content;
 		}
 		if ( ! empty( $request['body'] ) ){
-			$html = $request['body'];
+			$html = $request['body'];	
 		} else {
 			$content = false;
 			return $content;
@@ -183,9 +183,12 @@ class PF_Readability {
 				}
 
 			
-			$dom = new domDocument;
-			$dom->loadHTML($content);
+			$dom = new domDocument('1.0', 'utf-8');
+			
+			
 			$dom->preserveWhiteSpace = true;
+			$dom->substituteEntities = true;
+			$dom->loadHTML($content);
 			$images = $dom->getElementsByTagName('img');
 			foreach ($images as $image) {
 			  $img = $image->getAttribute('src');
@@ -206,7 +209,7 @@ class PF_Readability {
 			  }
 			}
 			$content = $dom->saveHTML();
-			
+			#var_dump($content); die();
 		} else {
 			# If Readability can't get the content, send back a FALSE to loop with.
 			$content = false;
