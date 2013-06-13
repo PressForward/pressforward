@@ -247,7 +247,7 @@ class PF_Admin {
 				}		
 				
 			}
-			if ($slug == 'toplevel_page_pf-menu' && $version >= 0){
+			if ($slug == 'toplevel_page_pf-menu' && $version >= 0 && current_user_can(pf_get_defining_capability_by_role('administrator'))){
 				?>
 					<a href="#" id="settings" class="button">Settings</a>
 					<div class="btn-group">
