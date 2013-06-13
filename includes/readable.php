@@ -189,7 +189,7 @@ class PF_Readability {
 			$images = $dom->getElementsByTagName('img');
 			foreach ($images as $image) {
 			  $img = $image->getAttribute('src');
-			  if ((strpos($img, '/')) === 0){
+			  if (((strpos($img, '/')) === 0) || (strpos($img, 'http') != 0)){
 				$urlArray = parse_url($url);
 				$urlBase = 'http://' . $urlArray['host'];
 				if (!is_wp_error(wp_remote_head($urlBase . $img))){
