@@ -219,6 +219,11 @@ h3 {
 	border-radius:6px;
 }
 
+.list .schema-read {
+	margin-right: 0;
+	margin-top: 0;
+}
+
 .marked-read {
 	background-color:none;
 	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings.png");
