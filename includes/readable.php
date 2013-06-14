@@ -188,7 +188,7 @@ class PF_Readability {
 			
 			$dom->preserveWhiteSpace = true;
 			$dom->substituteEntities = true;
-			$dom->loadHTML($content);
+			$dom->loadXML($content);
 			$images = $dom->getElementsByTagName('img');
 			foreach ($images as $image) {
 			  $img = $image->getAttribute('src');
@@ -208,7 +208,7 @@ class PF_Readability {
 				}
 			  }
 			}
-			$content = $dom->saveHTML();
+			$content = $dom->saveXML();
 #			$content = stripslashes($content); 
 
 #				var_dump($content); die();
