@@ -50,7 +50,7 @@ class PF_Debugger extends PF_Module {
 		$mod_settings = array(
 			'name' => 'Debugger Log Viewing Module',
 			'slug' => 'debugger',
-			'description' => 'This module provides a way to view the feet retrieval log within the dashboard.',
+			'description' => 'This module provides a way to view the feed retrieval log within the dashboard.',
 			'thumbnail' => '',
 			'options' => ''
 		);
