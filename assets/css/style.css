@@ -208,6 +208,26 @@ h3 {
 	width: 23%;
 }
 
+.schema-read {
+	float: right;
+	margin-right: -12px;
+	margin-top: -12px;
+	display: inline;
+	cursor: pointer;
+	background-color:none;
+	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings.png");
+	border-radius:6px;
+}
+
+.marked-read {
+	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
+	background-color:lavender;
+}
+
+.schema-read:hover {
+	background-color: lightGrey;
+}
+
 #infscr-loading {
 	width:100%;
 	float: left;
