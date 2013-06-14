@@ -98,10 +98,6 @@ class PF_Readability {
 			}
 		}
 		
-		if ($quickresponse == true){
-			print_r($itemReadReady);
-			die($read_status);
-		} else {
 			$response = array(
 				'what' => 'full_item_content',
 				'action' => 'make_readable',
@@ -118,7 +114,6 @@ class PF_Readability {
 			$xmlResponse->send();
 			ob_end_flush();
 			die();
-		}
 	}
 
 	/**
@@ -181,8 +176,13 @@ class PF_Readability {
 					$tidy->cleanRepair();
 					$content = $tidy->value;
 				}
-
+#			$content = quotemeta( $content );
+#			$content = htmlspecialchars($content);
+#			$content = mb_convert_encoding($content, 'ISO-8859-15');
+#			$content = mb_convert_encoding($content, "UTF-8", "ISO-8859-15");
 			
+#			$content =  html_entity_decode($content);
+			#var_dump($content); die();
 			$dom = new domDocument('1.0', 'utf-8');
 			
 			
@@ -209,7 +209,9 @@ class PF_Readability {
 			  }
 			}
 			$content = $dom->saveHTML();
-			#var_dump($content); die();
+#			$content = stripslashes($content); 
+
+#				var_dump($content); die();
 		} else {
 			# If Readability can't get the content, send back a FALSE to loop with.
 			$content = false;
