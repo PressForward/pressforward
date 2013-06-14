@@ -51,10 +51,18 @@ jQuery(document).ready(function() {
 		var parent		= jQuery(this).parent();
 		var otherschema;
 		var schemaclass;
+		var isSwitch	= 'off';
+		var schematargets;
+		var targetedObj;
+		var tschemaclass;
 		if (parent.hasClass('modal-btns')){
 			otherschema = item.find('#'+id+' [pf-schema="'+schema+'"]');
 		} else {
 			otherschema = item.find('#'+id+' .modal-btns [pf-schema="'+schema+'"]');
+		}
+		
+		if (jQuery(obj).hasClass('schema-switchable')) {
+			isSwitch = 'on';
 		}
 		
 		if(obj.is('[pf-schema-class]')){
@@ -62,12 +70,30 @@ jQuery(document).ready(function() {
 		} else {
 			schemaclass = false;
 		}
+		if(obj.is('[pf-schema-targets]')){
+			schematargets = jQuery(this).attr('pf-schema-targets');
+		} else {
+			schematargets = false;
+		}		
 		doschemastuff(obj, item, id, parent, otherschema, schemaclass);
+		
+		if ((schematargets != false)){
+			targetedObj = jQuery(this).closest('article').find('.'+schematargets);
+			
+			if(targetedObj.is('[pf-schema-class]')){
+				tschemaclass = targetedObj.attr('pf-schema-class');
+			} else {
+				tschemaclass = false;
+			}
+			doschemastuff(targetedObj, item, id, parent, otherschema, tschemaclass);
+		}
+		
 		jQuery.post(ajaxurl, {
 				action: 'pf_ajax_relate',
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
 				post_id: id,
-				schema: schema
+				schema: schema,
+				isSwitch: isSwitch
 		}, 
 		function(response) {
 			var read_content = jQuery(response).find("response_data").text();
@@ -84,7 +110,7 @@ jQuery(document).ready(function() {
 
 	
 	function doschemastuff(obj, item, id, parent, otherschema, schemaclass){
-		if (jQuery(obj).hasClass('schema-active')){
+		if (jQuery(obj).hasClass('schema-active') && jQuery(obj).hasClass('schema-switchable')){
 			jQuery(obj).removeClass('schema-active');
 			otherschema.removeClass('schema-active');		
 		} else {
@@ -94,7 +120,7 @@ jQuery(document).ready(function() {
 		
 		if (schemaclass != false){
 
-			if (jQuery(obj).hasClass(schemaclass)){
+			if (jQuery(obj).hasClass(schemaclass) && jQuery(obj).hasClass('schema-switchable')){
 			
 				jQuery(obj).removeClass(schemaclass);
 				otherschema.removeClass(schemaclass);		

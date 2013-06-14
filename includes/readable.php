@@ -98,10 +98,6 @@ class PF_Readability {
 			}
 		}
 		
-		if ($quickresponse == true){
-			print_r($itemReadReady);
-			die($read_status);
-		} else {
 			$response = array(
 				'what' => 'full_item_content',
 				'action' => 'make_readable',
@@ -118,7 +114,6 @@ class PF_Readability {
 			$xmlResponse->send();
 			ob_end_flush();
 			die();
-		}
 	}
 
 	/**
@@ -143,7 +138,7 @@ class PF_Readability {
 			return $content;
 		}
 		if ( ! empty( $request['body'] ) ){
-			$html = $request['body'];
+			$html = $request['body'];	
 		} else {
 			$content = false;
 			return $content;
@@ -181,7 +176,42 @@ class PF_Readability {
 					$tidy->cleanRepair();
 					$content = $tidy->value;
 				}
+#			$content = quotemeta( $content );
+#			$content = htmlspecialchars($content);
+#			$content = mb_convert_encoding($content, 'ISO-8859-15');
+#			$content = mb_convert_encoding($content, "UTF-8", "ISO-8859-15");
+			
+#			$content =  html_entity_decode($content);
+			#var_dump($content); die();
+			$dom = new domDocument('1.0', 'utf-8');
+			
+			
+			$dom->preserveWhiteSpace = true;
+			$dom->substituteEntities = true;
+			$dom->loadXML($content);
+			$images = $dom->getElementsByTagName('img');
+			foreach ($images as $image) {
+			  $img = $image->getAttribute('src');
+			  if (((strpos($img, '/')) === 0) || (strpos($img, 'http') != 0)){
+				$urlArray = parse_url($url);
+				if ((strpos($img, 'http') != 0)){
+					$urlBase = 'http://' . $urlArray['host'] . '/';
+				} else {
+					$urlBase = 'http://' . $urlArray['host'];
+				}
+				if (!is_wp_error(wp_remote_head($urlBase . $img))){
+					$image->setAttribute('src', $urlBase . $img);
+				} elseif (!is_wp_error(wp_remote_head($url . $img))){
+					$image->setAttribute('src', $url . $img);
+				} else {
+					$image->parentNode->removeChild($image);
+				}
+			  }
+			}
+			$content = $dom->saveXML();
+#			$content = stripslashes($content); 
 
+#				var_dump($content); die();
 		} else {
 			# If Readability can't get the content, send back a FALSE to loop with.
 			$content = false;

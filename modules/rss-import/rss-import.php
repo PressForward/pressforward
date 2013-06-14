@@ -329,6 +329,8 @@ class PF_RSS_Import extends PF_Module {
 			//print_r('<br /> We\'re doing this thing already in the data object. <br />');
 			if ( (get_option( PF_SLUG . '_ready_to_chunk', 1 )) === 0 ){
 				pf_log('The chunk is still open because there are no more feeds. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
+				# Wipe the checking option for use next time. 
+				update_option(PF_SLUG . '_feeds_meta_state', array());
 				update_option( PF_SLUG .  '_ready_to_chunk', 1 );
 			} else {
 				pf_log('We\'re doing this thing already in the data object.', true);
@@ -340,7 +342,8 @@ class PF_RSS_Import extends PF_Module {
 		$theFeed = call_user_func(array($this, 'step_through_feedlist'));
 		if (!$theFeed){
 			pf_log('The feed is false, exit process. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
-
+			# Wipe the checking option for use next time. 
+			update_option(PF_SLUG . '_feeds_meta_state', array());
 			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 1 );
 			exit;
 		}
@@ -566,6 +569,10 @@ class PF_RSS_Import extends PF_Module {
 	}
 
 	public function feedlist_builder($feedlist){
+		if (empty($feedlist)){
+			echo __('No feeds added.', 'pf');
+			return;
+		}
 		foreach ($feedlist as $feed){
 			if ((!is_array($feed)) && $feed != ''){
 				$feedID = md5($feed);
@@ -602,24 +609,17 @@ class PF_RSS_Import extends PF_Module {
 		}
 		//$feedlist = $this->pf_feedlist();
 		// Needs something to do here if option is empty.
-		$feedlist = get_option( PF_SLUG . '_feedlist' );
-		if (false == $feedlist){
-			if (!empty($input['single'])){
-				$feedlist = $inputSingle;
-			}
-			if (!empty($input['opml'])){
-				$feedlist = array_merge($feedlist, $opml_array);
-			}
-			if (!empty($_POST['o_feed_url'])){
-
-			}
-		} else {
+		$feednew = array();
+		$feedlist = get_option( PF_SLUG . '_feedlist', false );
+		if (!$feedlist){
+			$feedlist = array();
+		}
 	//		$feedlist = array('http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Flabel%2FEditors-at-Large');
 			if (!empty($input['single'])){
-				$feedlist = array_merge($feedlist, $inputSingle);
+				$feedlist = array_merge((array)$feedlist, (array)$inputSingle);
 			}
 			if (!empty($input['opml'])){
-				$feedlist = array_merge($feedlist, $opml_array);
+				$feedlist = array_merge((array)$feedlist, (array)$opml_array);
 			}
 			if (!empty($_POST['o_feed_url'])){
 				$offender = array_search($_POST['o_feed_url'], $feedlist);
@@ -628,8 +628,6 @@ class PF_RSS_Import extends PF_Module {
 				}
 
 			}
-
-		}
 
 		//Let's ensure no duplicates.
 		$feedlist = array_unique($feedlist);
@@ -756,7 +754,8 @@ class PF_RSS_Import extends PF_Module {
 				update_option(PF_SLUG . '_feeds_meta_state', $feeds_meta_state);						
 				pf_log(__('Created new metastate.', 'pf'), true);						
 			} else {
-				pf_log(__('Metastate saved and active for check.', 'pf'), true);	
+				pf_log(__('Metastate saved and active for check.', 'pf'), true);
+				pf_log($feeds_meta_state);
 			}
 			
 			if ($feeds_meta_state['retrigger'] > time()){
@@ -770,6 +769,15 @@ class PF_RSS_Import extends PF_Module {
 						update_option(PF_SLUG . '_iterate_going_switch', 1);
 						PF_Feed_Item::assemble_feed_for_pull();
 					} else {
+						$double_check = array(
+													'feed_go' => $feeds_meta_state['feed_go'],
+													'feed_iteration' =>	$feed_iteration,
+													'retrieval_state' => $feeds_meta_state['retrieval_state'],
+													'chunk_state'	=> $feeds_meta_state['chunk_state'],
+													'retrigger'		=>	$feeds_meta_state['retrigger']
+												);
+						update_option(PF_SLUG . '_feeds_meta_state', $double_check);
+						pf_log($double_check);						
 						pf_log(__('The sources are already being retrieved.', 'pf'), true);
 					}
 				

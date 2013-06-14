@@ -17,6 +17,7 @@ class PF_Admin {
 
 		// Adding javascript and css to admin pages
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
+		add_action( 'wp_head', array( $this, 'pf_aggregation_forwarder'));
 		add_filter('admin_body_class',  array( $this, 'add_pf_body_class'));
 
 		// Catch form submits
@@ -84,7 +85,7 @@ class PF_Admin {
 			PF_SLUG . '-feeder',
 			array($this, 'display_feeder_builder')
 		);
-
+/**
 		add_submenu_page(
 			PF_MENU_SLUG,
 			__('Add Nomination', 'pf'),
@@ -92,6 +93,7 @@ class PF_Admin {
 			get_option('pf_menu_add_nomination_access', pf_get_defining_capability_by_role('contributor')),
 			PF_NOM_POSTER
 		);
+**/
 	}
 	
 	function add_pf_body_class($classes) {
@@ -99,6 +101,175 @@ class PF_Admin {
 		$classes .= strtolower(PF_TITLE);
 
 		return $classes;
+	}
+	
+	public function toolbox($slug = 'allfeed', $version = 0, $deck = false){
+		global $hook_suffix;
+		if(!empty($hook_suffix)){
+			$slug = $hook_suffix;
+		}
+		?>
+		<div id="tools">
+			<?php if ($version > 0){ ?>
+				<ul class="nav nav-tabs nav-stacked">
+					<li><a href="#">Top Blogs</a></li>
+					<li><a href="#">Starred Items</a></li>
+					<li><a href="#">Content from Twitter</a></li>
+				</ul>
+
+				<form id="filters">
+					<h2>Filters</h2>
+					
+					<label><input type="checkbox"> Shared on Twitter</label>
+					<label><input type="checkbox"> Long Articles</label>
+					<label><input type="checkbox"> Short Articles</label>
+					<label><input type="checkbox"> Recommended by Algorithm</label>
+					<label><input type="checkbox"> High Number of Comments</label>
+					
+					<input type="submit" class="btn btn-small" value="Reset Filters">
+				</form>
+
+				<form id="subscription" method="post" action="">
+					<h2>New Subscription</h2>
+					<input type="text" placeholder="http://example.com/feed">
+				<input type="submit" class="btn btn-small" value="Subscribe">
+				</form>
+
+
+				<?php 
+				# Some buttons to the left
+				if ($deck){ 
+				echo '<div class="deck">';
+						echo '<div class="row-fluid">
+								<div class="span12 main-card card well">
+									<div class="tapped">
+										' . __('Main Feed', 'pf') . '
+									</div>
+								</div>
+							</div>
+						';
+
+						# Auto add these actions depending on if the module presents a stream?
+						//do_action( 'module_stream' );
+
+						echo '<div class="row-fluid">
+								<div class="span12 sub-card card well">
+									<div class="tapped">
+										' . __('Module Feed', 'pf') . '
+									</div>
+								</div>
+							</div>
+						';
+				echo '</div><!-- End span1 -->';				
+
+		#Widgets
+				echo '<div class="feed-widget-container">';
+					# Some widgets go here.
+						# Does this work? [nope...]
+						$blogusers = get_users('orderby=nom_count');
+						$uc = 1;
+						echo '<div class="row-fluid">
+						<div class="pf-right-widget well span12">
+								<div class="widget-title">
+									' . __('Nominator Leaderboard', 'pf') . '
+								</div>
+								<div class="widget-body">
+									<div class="navwidget">
+										<ol>';
+										foreach ($blogusers as $user){
+											if ($uc <= 5){
+												if (get_user_meta( $user->ID, 'nom_count', true )){
+												$userNomCount = get_user_meta( $user->ID, 'nom_count', true );
+
+												} else {
+													$userNomCount = 0;
+												}
+												$uc++;
+												echo '<li>' . $user->display_name . ' - ' . $userNomCount . '</li>';
+											}
+
+										}
+						echo			'</ol>
+									</div>
+								</div>
+						</div>
+						</div>
+						';
+
+						$widgets_array = $this->widget_array();
+						$all_widgets_array = apply_filters( 'dash_widget_bar', $widgets_array );
+
+						//$all_widgets_array = array_merge($widgets_array, $mod_widgets);
+						foreach ($all_widgets_array as $dash_widget) {
+
+							$defaults = array(
+								'title' => '',
+								'slug'       => '',
+								'callback'   => '',
+							);
+							$r = wp_parse_args( $dash_widget, $defaults );
+
+							// add_submenu_page() will fail if any arguments aren't passed
+							if ( empty( $r['title'] ) || empty( $r['slug'] ) || empty( $r['callback'] ) ) {
+								continue;
+							} else {
+
+								echo '<div class="row-fluid">
+								<div class="pf-right-widget well span12 ' . $r['slug'] . '">';
+									echo '<div class="widget-title">' .
+										$r['title']
+									. '</div>';
+									echo '<div class="widget-body">';
+										call_user_func($r['callback']);
+									echo '</div>';
+								echo '</div>
+								</div>';
+
+							}
+
+						}
+
+						/**
+						// Loop through each module to get its source data
+						foreach ( $this->modules as $module ) {
+							//$source_data_object = array_merge( $source_data_object, $module->get_widget_object() );
+
+							echo '<div class="row-fluid">
+							<div class="pf-right-widget well span12">';
+
+							echo '</div>
+							</div>';
+						}
+						**/
+				/**
+				echo '</div><!-- End feed-widget-container span4 -->';	
+				**/				 
+				}		
+				
+			}
+			if ($slug == 'toplevel_page_pf-menu' && $version >= 0 && current_user_can(pf_get_defining_capability_by_role('administrator'))){
+				?>
+					<a href="#" id="settings" class="button">Settings</a>
+					<div class="btn-group">
+						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete entire feed archive', 'pf');  ?>" ><?php  _e('Delete entire feed archive', 'pf');  ?></button>
+					</div>
+				<?php 
+			}			
+				?>
+				<div id="nom-this-toolbox">
+					<h3 class="title"><?php _e('Nominate This', 'pf'); ?></h3>
+					<p><?php _e('Nominate This is a bookmarklet: a little app that runs in your browser and lets you grab bits of the web.', 'pf');?></p>
+
+					<p><?php _e('Use Nominate This to clip text, images and videos from any web page. Then edit and add more straight from Nominate This before you save or publish it in a post on your site.', 'pf'); ?></p>
+					<p class="description"><?php _e('Drag-and-drop the following link to your bookmarks bar or right click it and add it to your favorites for a posting shortcut.', 'pf'); ?></p>
+					<p class="pressthis"><a onclick="return false;" oncontextmenu="if(window.navigator.userAgent.indexOf('WebKit')!=-1||window.navigator.userAgent.indexOf('MSIE')!=-1)jQuery('.pressthis-code').show().find('textarea').focus().select();return false;" href="<?php echo htmlspecialchars( pf_get_shortcut_link() ); ?>"><span><?php _e('Nominate This', 'pf'); ?></span></a></p>
+					<div class="pressthis-code" style="display:none;">
+					<p class="description"><?php _e('If your bookmarks toolbar is hidden: copy the code below, open your Bookmarks manager, create new bookmark, type Press This into the name field and paste the code into the URL field.', 'pf'); ?></p>
+					<p><textarea rows="5" cols="120" readonly="readonly"><?php echo htmlspecialchars( pf_get_shortcut_link() ); ?></textarea></p>
+					</div>
+				</div>
+		</div>			
+		<?php 
 	}
 	
 	public function form_of_actions_btns($item, $c, $modal = false, $format = 'standard', $metadata = array(), $id_for_comments ){
@@ -213,6 +384,8 @@ class PF_Admin {
 	 * $format = format changes, to be used later or by plugins. 
 	**/
 	public function form_of_an_item($item, $c, $format = 'standard', $metadata = array()){
+		global $current_user;
+		get_currentuserinfo();
 		if ('' !== get_option('timezone_string')){
 			//Allows plugins to introduce their own item format output. 
 			date_default_timezone_set(get_option('timezone_string'));
@@ -223,11 +396,20 @@ class PF_Admin {
 		}
 		$itemTagsArray = explode(",", $item['item_tags']);
 		$itemTagClassesString = '';
+				$user_id = $current_user->ID;
 		foreach ($itemTagsArray as $itemTag) { $itemTagClassesString .= pf_slugger($itemTag, true, false, true); $itemTagClassesString .= ' '; }
 				
 				if ($format === 'nomination'){
 					$feed_ited_id = $metadata['item_id'];
 					$id_for_comments = $metadata['item_feed_post_id'];
+			
+			$id_for_comments = $metadata['item_feed_post_id'];
+			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
+			if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
+			if (empty($metadata['nom_id'])){ $metadata['nom_id'] = md5($item['item_title']); }
+			if (empty($id_for_comments)){ $id_for_comments = $metadata['nom_id']; }
+			if (empty($metadata['item_id'])){ $metadata['item_id'] = md5($item['item_title']); }	
+			
 				} else {
 					$feed_ited_id = $item['item_id'];
 					$id_for_comments = $item['post_id'];
@@ -241,15 +423,21 @@ class PF_Admin {
 					$archived_status_string = '';
 				}
 		if ($format === 'nomination'){
-			$id_for_comments = $metadata['item_feed_post_id'];
-			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . '" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '">';
+			
+			echo '<article class="feed-item entry nom-container schema-actor ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . ' '.$readClass.'" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '" pf-schema="read" pf-schema-class="article-read">';
 		} else {
 			$id_for_comments = $item['post_id'];
-			echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . '" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '" pf-item-post-id="' . $id_for_comments . '">';
+			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
+			if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
+			echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . ' '.$readClass.'" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '" pf-item-post-id="' . $id_for_comments . '" >';
 		}
 		
-			?> <header> <?php 
-				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander" role="button" data-toggle="modal" data-backdrop="false">' . $item['item_title'] . '</a></h1>';
+			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
+			if (!$readStat){ $readClass = ''; } else { $readClass = 'marked-read'; }
+			echo '<i class="icon-ok-sign schema-read schema-actor schema-switchable '.$readClass.'" pf-item-post-id="' . $id_for_comments .'" pf-schema="read" pf-schema-class="marked-read" title="Mark as Read"></i>'
+			?> 
+			<header> <?php 
+				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander schema-actor" role="button" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . $item['item_title'] . '</a></h1>';
 				echo '<p class="source_title">' . $item['source_title'] . '</p>';
 				if ($format === 'nomination'){
 				?>		
@@ -329,7 +517,7 @@ class PF_Admin {
 			?>
 			<div class="content">
 				<?php 
-					if ($item['item_feat_img'] != ''){
+					if (($item['item_feat_img'] != '') && ($format != 'nomination')){
 						echo '<div style="float:left; margin-right: 10px; margin-bottom: 10px;"><img src="' . $item['item_feat_img'] . '"></div>';
 					}
 
@@ -478,146 +666,7 @@ class PF_Admin {
 			</form>			
 		</header><!-- End Header -->
 		<div role="main">
-		   <div id="tools">
-
-				<ul class="nav nav-tabs nav-stacked">
-					<li><a href="#">Top Blogs</a></li>
-					<li><a href="#">Starred Items</a></li>
-					<li><a href="#">Content from Twitter</a></li>
-				</ul>
-
-				<form id="filters">
-					<h2>Filters</h2>
-					
-					<label><input type="checkbox"> Shared on Twitter</label>
-					<label><input type="checkbox"> Long Articles</label>
-					<label><input type="checkbox"> Short Articles</label>
-					<label><input type="checkbox"> Recommended by Algorithm</label>
-					<label><input type="checkbox"> High Number of Comments</label>
-					
-					<input type="submit" class="btn btn-small" value="Reset Filters">
-				</form>
-
-				<form id="subscription" method="post" action="">
-					<h2>New Subscription</h2>
-					<input type="text" placeholder="http://example.com/feed">
-				<input type="submit" class="btn btn-small" value="Subscribe">
-				</form>
-
-				<a href="#" id="settings" class="button">Settings</a>
-				<div class="btn-group">
-					<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete entire feed archive', 'pf');  ?>" ><?php  _e('Delete entire feed archive', 'pf');  ?></button>
-				</div>
-				<?php 
-				# Some buttons to the left
-/**				
-				echo '<div class="deck">';
-						echo '<div class="row-fluid">
-								<div class="span12 main-card card well">
-									<div class="tapped">
-										' . __('Main Feed', 'pf') . '
-									</div>
-								</div>
-							</div>
-						';
-
-						# Auto add these actions depending on if the module presents a stream?
-						//do_action( 'module_stream' );
-
-						echo '<div class="row-fluid">
-								<div class="span12 sub-card card well">
-									<div class="tapped">
-										' . __('Module Feed', 'pf') . '
-									</div>
-								</div>
-							</div>
-						';
-				echo '</div><!-- End span1 -->';				
-
-		#Widgets
-				echo '<div class="feed-widget-container">';
-					# Some widgets go here.
-						# Does this work? [nope...]
-						$blogusers = get_users('orderby=nom_count');
-						$uc = 1;
-						echo '<div class="row-fluid">
-						<div class="pf-right-widget well span12">
-								<div class="widget-title">
-									' . __('Nominator Leaderboard', 'pf') . '
-								</div>
-								<div class="widget-body">
-									<div class="navwidget">
-										<ol>';
-										foreach ($blogusers as $user){
-											if ($uc <= 5){
-												if (get_user_meta( $user->ID, 'nom_count', true )){
-												$userNomCount = get_user_meta( $user->ID, 'nom_count', true );
-
-												} else {
-													$userNomCount = 0;
-												}
-												$uc++;
-												echo '<li>' . $user->display_name . ' - ' . $userNomCount . '</li>';
-											}
-
-										}
-						echo			'</ol>
-									</div>
-								</div>
-						</div>
-						</div>
-						';
-
-						$widgets_array = $this->widget_array();
-						$all_widgets_array = apply_filters( 'dash_widget_bar', $widgets_array );
-
-						//$all_widgets_array = array_merge($widgets_array, $mod_widgets);
-						foreach ($all_widgets_array as $dash_widget) {
-
-							$defaults = array(
-								'title' => '',
-								'slug'       => '',
-								'callback'   => '',
-							);
-							$r = wp_parse_args( $dash_widget, $defaults );
-
-							// add_submenu_page() will fail if any arguments aren't passed
-							if ( empty( $r['title'] ) || empty( $r['slug'] ) || empty( $r['callback'] ) ) {
-								continue;
-							} else {
-
-								echo '<div class="row-fluid">
-								<div class="pf-right-widget well span12 ' . $r['slug'] . '">';
-									echo '<div class="widget-title">' .
-										$r['title']
-									. '</div>';
-									echo '<div class="widget-body">';
-										call_user_func($r['callback']);
-									echo '</div>';
-								echo '</div>
-								</div>';
-
-							}
-
-						}
-
-						/**
-						// Loop through each module to get its source data
-						foreach ( $this->modules as $module ) {
-							//$source_data_object = array_merge( $source_data_object, $module->get_widget_object() );
-
-							echo '<div class="row-fluid">
-							<div class="pf-right-widget well span12">';
-
-							echo '</div>
-							</div>';
-						}
-						**/
-/**
-				echo '</div><!-- End feed-widget-container span4 -->';	
-**/				 
-				?>				
-			</div>			
+			<?php $this->toolbox(); ?>
 			<div id="entries">
 				<?php echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';  ?>
 				<div id="errors"></div>
@@ -716,6 +765,7 @@ class PF_Admin {
 				echo 'Options';
 
 				?>
+				
 					<h3><?php _e( 'Modules', 'pf' ) ?></h3>
 
 					<p class="description"><?php _e( '<strong>PressForward Modules</strong> are addons to alter or improve the functionality of the plugin.', 'pf' ) ?></p>
@@ -724,8 +774,16 @@ class PF_Admin {
 				wp_nonce_field( 'pf_settings' );
 				?>
 					<br />
+					
+					<p><?php
+					$default_pf_link_value = get_option('pf_link_to_source', 0);	
+					echo '<input id="pf_link_to_source" name="pf_link_to_source" type="number" class="pf_link_to_source_class" value="'.$default_pf_link_value.'" />';
+					
+					echo '<label class="description" for="pf_link_to_source"> ' .__('Seconds to redirect user to source. (0 means no redirect)', 'pf'). ' </label>';						
+					?></p>
+					
 					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
-					<br />
+					<br />					
 					
 					<h3><?php _e( 'User Control', 'pf' ) ?></h3>
 
@@ -777,15 +835,16 @@ class PF_Admin {
 						</tr>
 					</table>			
 			
+				<br />		
+			
 			<?php
 			
 		}		
-		
-				do_action ('pf_admin_user_settings');				
+		?><input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" /><?php
+				do_action('pf_admin_user_settings');				
 				
 				?>
-					<br />
-					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />				
+						
 			</div>
 		</form>
 		<?php
@@ -983,8 +1042,32 @@ class PF_Admin {
 				update_option( $right, $enabled );
 			}			
 		}
+		if (isset( $_POST['pf_link_to_source'] )){
+			$pf_links_opt_check = $_POST['pf_link_to_source'];
+			//print_r($pf_links_opt_check); die();
+			update_option('pf_link_to_source', $pf_links_opt_check);
+		} else {
+			update_option('pf_link_to_source', 0);
+		}
+		
 		do_action( 'pf_admin_op_page_save' );
 	}
+	
+	function pf_aggregation_forwarder(){
+		if(1 == get_option('pf_link_to_source',0)){
+			//http://webmaster.iu.edu/tools-and-guides/maintenance/redirect-meta-refresh.phtml ?
+			$linked = get_post_meta('item_link', true);
+			//Need syndicate tag here.
+			if (is_single() && ('' != $linked)){
+				?>
+				 <script type="text/javascript">alert('You are being redirected to the source item.');</script>
+				<META HTTP-EQUIV="refresh" CONTENT="10;URL=<?php echo get_post_meta('item_link', true); ?>">
+				<?php
+				
+			}
+		}
+	}
+	
 	/////////////////////////
 	//    AJAX HANDLERS    //
 	/////////////////////////

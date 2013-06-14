@@ -18,8 +18,8 @@ require_once( dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))) ) . 
 
 header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset'));
 
-if ( ! current_user_can( 'edit_posts' ) || ! current_user_can( get_post_type_object( 'post' )->cap->create_posts ) )
-	wp_die( __( 'Cheatin&#8217; uh?' ) );
+if ( ! current_user_can( 'edit_posts' ) || ! current_user_can( get_post_type_object( 'post' )->cap->edit_posts ) )
+	wp_die( __( 'Cheatin&#8217; uh?', 'pf' ) );
 
 /**
  * Press It form handler.
@@ -67,10 +67,12 @@ function nominate_it() {
 	else
 		$post['post_status'] = 'draft';
 
+	$nom_check = false;
 	// error handling for media_sideload
 	if ( is_wp_error($upload) ) {
 		wp_delete_post($post_ID);
 		wp_die($upload);
+		$nom_check = true;
 	} else {
 		// Post formats
 		if ( isset( $_POST['post_format'] ) ) {
@@ -81,10 +83,37 @@ function nominate_it() {
 		}
 		# PF NOTE: Switching post type to nomination. 
 		$post['post_type'] = 'nomination';
+		$post['post_date_gmt'] = gmdate('Y-m-d H:i:s');
 		# PF NOTE: This is where the inital post is created. 
-		$post_ID = wp_update_post($post);
+		# PF NOTE: Put get_post_nomination_status here. 
+		$item_id = md5($_POST['nomination_permalink'] . $post['post_title']);
+			if (!isset($_POST['item_date'])){
+				$newDate = gmdate('Y-m-d H:i:s');
+				$item_date = $newDate;
+			} else {
+				$item_date = $_POST['item_date'];
+			}
+		$pf_nomination = new PF_Nominations();
+		$nom_check = $pf_nomination->get_post_nomination_status($item_date, $item_id, 'nomination');
+		
+		if (!$nom_check){
+			
+			$post_ID = wp_update_post($post);
+		}
 	}
-
+			# var_dump($_POST); die();
+		if (!$nom_check){	
+			update_post_meta($post_ID, 'nomination_count', 1);
+			update_post_meta($post_ID, 'submitted_by', get_current_user_id());
+			update_post_meta($post_ID, 'origin_item_ID', $item_id);
+			update_post_meta($post_ID, 'nomination_permalink', $_POST['nomination_permalink']);
+			update_post_meta($post_ID, 'posted_date', $item_date);
+			update_post_meta($post_ID, 'date_nominated', $item_date);
+			update_post_meta($post_ID, 'item_tags', 'via bookmarklet');
+			update_post_meta($post_ID, 'nominator_array', get_current_user_id());
+			update_post_meta($post_ID, 'authors', $_POST['authors']);
+		}
+	#var_dump($post); die();
 	return $post_ID;
 }
 
@@ -108,7 +137,6 @@ if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 	if (!empty($_POST['nomination_permalink']) && ($_POST['nomination_permalink']) != ''){
 		PF_Feed_Item::set_ext_as_featured($post_ID, $itemFeatImg);
 	}
-
 
 // Set Variables
 $title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( stripslashes( $_GET['t'] ) , ENT_QUOTES) ) ) : '';
@@ -475,6 +503,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 				<?php //print_r($url); ?>
 				<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr($title);?>" />
 				<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo date('c'); ?>" />
+				<?php #Metadata goes here. ?>
 				<input type="hidden" id="nomination_permalink" name="nomination_permalink" value="<?php echo esc_url($url ); ?>" />
 			<?php } ?>
 
@@ -496,6 +525,9 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 						} ?>
 						<span class="spinner" style="display: none;"></span>
 					</p>
+					<p>
+					<label for="post_format"><input type="text" id="authors" name="authors" value="" /><br />&nbsp;<?php _e('Enter Authors', 'pf'); ?></label>
+					</p>					
 					<?php if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) :
 							$post_formats = get_theme_support( 'post-formats' );
 							if ( is_array( $post_formats[0] ) ) :

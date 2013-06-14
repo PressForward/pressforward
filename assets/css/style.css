@@ -191,13 +191,6 @@ h3 {
 	padding: 10px;
 }
 
-.archived {
-	opacity: .6;
-	transition: opacity .25s ease-in-out;
-	-moz-transition: opacity .25s ease-in-out;
-	-webkit-transition: opacity .25s ease-in-out;
-}
-
 .pf-navigation {
 	width:100%;
 	float: left;
@@ -213,6 +206,31 @@ h3 {
 
 .pressforward .grid.full #entries article {
 	width: 23%;
+}
+
+.schema-read {
+	float: right;
+	margin-right: -12px;
+	margin-top: -12px;
+	display: inline;
+	cursor: pointer;
+	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
+	background-color:lavender;
+	border-radius:6px;
+}
+
+.list .schema-read {
+	margin-right: 0;
+	margin-top: 0;
+}
+
+.marked-read {
+	background-color:none;
+	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings.png");
+}
+
+.schema-read:hover {
+	background-color: lightGrey;
 }
 
 #infscr-loading {
@@ -369,6 +387,13 @@ h3 {
 
 .info-box-popover .popover-content {
 	
+}
+
+#nom-this-toolbox {
+	width: 100%;
+	display: block;
+	float: right;
+	margin: 10px;
 }
 
 /**

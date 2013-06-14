@@ -247,20 +247,35 @@ function pf_feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuth
  */
 function pf_get_posts_by_id_for_check( $theDate, $post_type, $item_id ) {
 	global $wpdb;
-
-	 $querystr = "
-			SELECT $wpdb->posts.*
-			FROM $wpdb->posts, $wpdb->postmeta
-			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-			AND $wpdb->postmeta.meta_key = 'origin_item_ID'
-			AND $wpdb->postmeta.meta_value = '" . $item_id . "'
-			AND $wpdb->posts.post_type = '" . $post_type . "'
-			AND $wpdb->posts.post_date >= '". $theDate . "'
-			ORDER BY $wpdb->posts.post_date DESC
-		 ";
+	# If the item is less than 24 hours old on nomination, check the whole database.
+	 $querystr = $wpdb->prepare("
+			SELECT {$wpdb->posts}.*
+			FROM {$wpdb->posts}, {$wpdb->postmeta}
+			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+			AND {$wpdb->postmeta}.meta_key = 'origin_item_ID'
+			AND {$wpdb->postmeta}.meta_value = '%s'
+			AND {$wpdb->posts}.post_type = '%s'
+			AND {$wpdb->posts}.post_date >= '%s'
+			ORDER BY {$wpdb->posts}.post_date DESC
+		 ", $item_id, $post_type, $theDate);	
 
 	$postsAfter = $wpdb->get_results($querystr, OBJECT);
-
+	if ($wpdb->num_rows >= 1){
+	
+	} else {
+		$querystr = $wpdb->prepare("
+			SELECT {$wpdb->posts}.*
+			FROM {$wpdb->posts}, {$wpdb->postmeta}
+			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+			AND {$wpdb->postmeta}.meta_key = 'origin_item_ID'
+			AND {$wpdb->postmeta}.meta_value = '%s'
+			AND {$wpdb->posts}.post_type = '%s'
+			AND {$wpdb->posts}.post_date <= '%s'
+			ORDER BY {$wpdb->posts}.post_date DESC
+		 ", $item_id, $post_type, $theDate);		
+		
+		$postsAfter = $wpdb->get_results($querystr, OBJECT);
+	}
 	return $postsAfter;
 }
 
@@ -480,6 +495,24 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 }
 
 add_filter( 'author_link', 'pf_replace_author_uri_presentation' );
+
+function pf_forward_unto_source(){
+	if(is_single()){
+		$obj = get_queried_object();
+		$post_ID = $obj->ID;
+		$link = get_post_meta($post_ID, 'nomination_permalink', TRUE);
+		if (!empty($link)){
+			echo '<meta name="syndication-source" content="'.$link.'" />';
+			$wait = get_option('pf_link_to_source', 0);
+			if ($wait > 0){
+				echo '<META HTTP-EQUIV="refresh" CONTENT="'.$wait.';URL='.$link.'">';
+			}
+			
+		}
+	}
+}
+
+add_action ('wp_head', 'pf_forward_unto_source');
 
 /**
  * Send status messages to a custom log

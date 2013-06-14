@@ -403,13 +403,18 @@ function pf_ajax_relate(){
 
 	$item_id = $_POST['post_id'];
 	$relationship_type = $_POST['schema'];
+	$switch = $_POST['isSwitch'];
 	$userObj = wp_get_current_user();
 	$user_id = $userObj->ID;
 	$result = 'nada';
 	if ( 1 != pf_get_relationship_value( $relationship_type, $item_id, $user_id )){
 		$result = pf_set_relationship( $relationship_type, $item_id, $user_id, '1' );
 	} else {
-		$result = pf_delete_relationship( $relationship_type, $item_id, $user_id );
+		if($switch == 'on'){
+			$result = pf_delete_relationship( $relationship_type, $item_id, $user_id );
+		} else {
+			$result = 'unswitchable';
+		}
 	}
 
 	ob_start();
