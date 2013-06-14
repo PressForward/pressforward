@@ -214,14 +214,14 @@ h3 {
 	margin-top: -12px;
 	display: inline;
 	cursor: pointer;
-	background-color:none;
-	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings.png");
+	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
+	background-color:lavender;
 	border-radius:6px;
 }
 
 .marked-read {
-	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
-	background-color:lavender;
+	background-color:none;
+	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings.png");
 }
 
 .schema-read:hover {
