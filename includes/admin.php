@@ -437,7 +437,7 @@ class PF_Admin {
 			echo '<i class="icon-ok-sign schema-read schema-actor schema-switchable '.$readClass.'" pf-item-post-id="' . $id_for_comments .'" pf-schema="read" pf-schema-class="marked-read" title="Mark as Read"></i>'
 			?> 
 			<header> <?php 
-				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander" role="button" data-toggle="modal" data-backdrop="false" >' . $item['item_title'] . '</a></h1>';
+				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander schema-actor" role="button" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . $item['item_title'] . '</a></h1>';
 				echo '<p class="source_title">' . $item['source_title'] . '</p>';
 				if ($format === 'nomination'){
 				?>		

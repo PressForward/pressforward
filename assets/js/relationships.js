@@ -71,15 +71,15 @@ jQuery(document).ready(function() {
 			schemaclass = false;
 		}
 		if(obj.is('[pf-schema-targets]')){
-			schematargets = obj.attr('pf-schema-targets');
+			schematargets = jQuery(this).attr('pf-schema-targets');
 		} else {
 			schematargets = false;
 		}		
 		doschemastuff(obj, item, id, parent, otherschema, schemaclass);
 		
 		if ((schematargets != false)){
-			targetedObj = jQuery(item).closest('.'+schematargets);
-			alert(targetedObj.attr('pf-schema-class'));
+			targetedObj = jQuery(this).closest('article').find('.'+schematargets);
+			
 			if(targetedObj.is('[pf-schema-class]')){
 				tschemaclass = targetedObj.attr('pf-schema-class');
 			} else {
