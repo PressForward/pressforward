@@ -328,11 +328,11 @@ class PF_Admin {
 						echo '<a href="#nominate" class="btn btn-small nom-to-draft schema-actor '. $arcive_status .'" pf-schema="draft" pf-schema-class="btn-success" form="' . $metadata['item_id'] . '" data-original-title="' . __('Draft', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></a>';
 					
 					} else {
-						if ('' == pf_get_relationship('nominate', $id_for_comments, $user_id)){
-							echo '<button class="btn btn-small nominate-now schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominate', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></button>';
+						if (1 == pf_get_relationship('nominate', $id_for_comments, $user_id)){
+							echo '<button class="btn btn-small nominate-now btn-success schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominated', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></button>';
 							# Add option here for admin-level users to send items direct to draft. 
 						} else {
-							echo '<button class="btn btn-small nominate-now btn-success schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominated', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></button>';
+							echo '<button class="btn btn-small nominate-now schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominate', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></button>';
 							# Add option here for admin-level users to send items direct to draft. 
 						}
 					}
