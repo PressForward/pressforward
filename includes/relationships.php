@@ -400,20 +400,24 @@ function pf_get_starred_items_for_user( $user_id, $format = 'raw' ) {
  */
 add_action( 'wp_ajax_pf_ajax_relate', 'pf_ajax_relate');
 function pf_ajax_relate(){
-
+	pf_log( 'Invoked: pf_ajax_relate()' );
 	$item_id = $_POST['post_id'];
 	$relationship_type = $_POST['schema'];
 	$switch = $_POST['isSwitch'];
 	$userObj = wp_get_current_user();
 	$user_id = $userObj->ID;
 	$result = 'nada';
+	pf_log( 'pf_ajax_relate - received: ID = '.$item_id.', Schema = '.$relationship_type.', isSwitch = '.$switch.', userID = '.$user_id.'.' );
 	if ( 1 != pf_get_relationship_value( $relationship_type, $item_id, $user_id )){
 		$result = pf_set_relationship( $relationship_type, $item_id, $user_id, '1' );
+		pf_log('pf_ajax_relate - set: relationship on');
 	} else {
 		if($switch == 'on'){
 			$result = pf_delete_relationship( $relationship_type, $item_id, $user_id );
+			pf_log('pf_ajax_relate - set: relationship off');
 		} else {
 			$result = 'unswitchable';
+			pf_log('pf_ajax_relate - set: relationship unswitchable');
 		}
 	}
 
