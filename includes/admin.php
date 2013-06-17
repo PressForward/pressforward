@@ -328,11 +328,11 @@ class PF_Admin {
 						echo '<a href="#nominate" class="btn btn-small nom-to-draft schema-actor '. $arcive_status .'" pf-schema="draft" pf-schema-class="btn-success" form="' . $metadata['item_id'] . '" data-original-title="' . __('Draft', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></a>';
 					
 					} else {
-						if ('' == pf_get_relationship('nominate', $id_for_comments, $user_id)){
-							echo '<button class="btn btn-small nominate-now schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominate', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></button>';
+						if (1 == pf_get_relationship('nominate', $id_for_comments, $user_id)){
+							echo '<button class="btn btn-small nominate-now btn-success schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominated', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></button>';
 							# Add option here for admin-level users to send items direct to draft. 
 						} else {
-							echo '<button class="btn btn-small nominate-now btn-success schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominated', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></button>';
+							echo '<button class="btn btn-small nominate-now schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominate', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></button>';
 							# Add option here for admin-level users to send items direct to draft. 
 						}
 					}
@@ -898,8 +898,8 @@ class PF_Admin {
 			wp_register_script('views', PF_URL . 'assets/js/views.js', array( 'twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide'  ));	
 			wp_register_script('readability-imp', PF_URL . 'assets/js/readability-imp.js', array( 'twitter-bootstrap', 'jquery', 'views' ));
 			wp_register_script('infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery', 'views', 'readability-imp' ));
-			wp_register_script('scrollimp', PF_URL . 'assets/js/scroll-imp.js', array( 'infiniscroll' ));
-			wp_register_script('pf-relationships', PF_URL . 'assets/js/relationships.js', array( 'infiniscroll' ));
+			wp_register_script('scrollimp', PF_URL . 'assets/js/scroll-imp.js', array( 'infiniscroll', 'pf-relationships' ));
+			wp_register_script('pf-relationships', PF_URL . 'assets/js/relationships.js', array( 'jquery' ));
 			wp_register_style( PF_SLUG . '-responsive-style', PF_URL . 'assets/css/pf-responsive.css', array(PF_SLUG . '-reset-style', PF_SLUG . '-style', 'bootstrap-style', PF_SLUG . '-susy-style'));
 			wp_register_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
 			wp_register_script('sort-imp', PF_URL . 'assets/js/sort-imp.js', array( 'tinysort', 'twitter-bootstrap', 'jq-fullscreen' ));
