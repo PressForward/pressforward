@@ -179,6 +179,7 @@ class PF_Readability {
 					$content = $tidy->value;
 				}
 
+			$domRotated = 0;
 			$dom = new domDocument('1.0', 'utf-8');
 			
 			
@@ -198,18 +199,23 @@ class PF_Readability {
 				}
 				if (!is_wp_error(wp_remote_head($urlBase . $img))){
 					$image->setAttribute('src', $urlBase . $img);
+					$domRotated++;
 				} elseif (!is_wp_error(wp_remote_head($url . $img))){
 					$image->setAttribute('src', $url . $img);
+					$domRotated++;
 				} else {
 					$image->parentNode->removeChild($image);
+					$domRotated++;
 				}
 			  }
 			}
-			$content = $dom->saveXML();
-			$rel='(<\\?xml version="1\\.0" encoding="utf-8"\\?>)';
-			$content=preg_replace("/".$rel."/is", ' ', $content);
-			$rel='(<\\?xml version="1\\.0"\\?>)';
-			$content=preg_replace("/".$rel."/is", ' ', $content);			
+			if ($domRotated > 0){
+				$content = $dom->saveXML();
+				$rel='(<\\?xml version="1\\.0" encoding="utf-8"\\?>)';
+				$content=preg_replace("/".$rel."/is", ' ', $content);
+				$rel='(<\\?xml version="1\\.0"\\?>)';
+				$content=preg_replace("/".$rel."/is", ' ', $content);
+			}
 			if ( 120 > strlen($content)){$content = false;}
 			#			$content = stripslashes($content); 
 			# print_r($content);
