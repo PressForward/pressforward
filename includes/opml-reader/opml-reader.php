@@ -5,11 +5,12 @@
 class OPML_reader {
 
 	function open_OPML($file) {
-		if (fopen ($file, "r")) {
-			$opml_data = simplexml_load_file($file);
-			return $opml_data;
+		$file = simplexml_load_file($file);
+		if (empty($file)) {
+			return false;			
 		} else {
-			return false;
+			$opml_data = $file;
+			return $opml_data;
 		}
 	}
 	
@@ -17,9 +18,11 @@ class OPML_reader {
 	function get_OPML_data($url, $is_array = true){
 		
 		$opml_data = $this->open_OPML($url);
-		if (false == $opml_data){
+		if (!$opml_data){
+			
 			return false;
 		}
+
 		//Site data
 		$a = array();
 		//Feed URI
@@ -35,6 +38,7 @@ class OPML_reader {
 		  * [htmlUrl] - The site home URI.
 		**/
 		foreach ($opml_data->body->outline as $folder){
+
 			foreach ($folder->outline as $data){
 				$a[] = reset($data);
 			}
