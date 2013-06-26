@@ -37,8 +37,10 @@ class PF_Readability {
 
 			if ((str_word_count($descrip) <= 150) || $aggregated || $force == 'force') {
 				$itemReadReady = self::readability_object($url);
+				#print_r(  wp_richedit_pre($itemReadReady));
 				if ($itemReadReady != 'error-secured') {
 					if (!$itemReadReady) {
+						$read_status = 'failed_readability';
 						$readability_stat .= __( " This content failed Readability.", 'pf' );
 						//$itemReadReady .= '<br />';
 						$url = str_replace('&amp;','&', $url);
@@ -49,7 +51,7 @@ class PF_Readability {
 						} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
 						elseif ('' != ($contentHtml = @get_meta_tags($url))) {
 							# Try and get the HEAD > META DESCRIPTION tag.
-							$readability_stat .= __( " This content failed an OpenGraph check.", 'pf' );
+							$read_status = 'failed_readability_og';
 							//$itemReadReady .= '<br />';
 							$itemReadReady = $contentHtml['description'];
 
@@ -57,7 +59,7 @@ class PF_Readability {
 						else
 						{
 							# Ugh... we can't get anything huh?
-							$readability_stat .= __( " This content has no description we can find.", 'pf' );
+							$read_status = 'failed_readability_og_meta';
 							//$itemReadReady .= '<br />';
 							# We'll want to return a false to loop with.
 							$itemReadReady = $descrip;
@@ -176,19 +178,18 @@ class PF_Readability {
 					$tidy->cleanRepair();
 					$content = $tidy->value;
 				}
-#			$content = quotemeta( $content );
-#			$content = htmlspecialchars($content);
-#			$content = mb_convert_encoding($content, 'ISO-8859-15');
-#			$content = mb_convert_encoding($content, "UTF-8", "ISO-8859-15");
-			
-#			$content =  html_entity_decode($content);
-			#var_dump($content); die();
+
+			$content = balanceTags($content, true);
+			$content = ent2ncr($content);
+			$content = convert_chars($content);
+			$domRotated = 0;
 			$dom = new domDocument('1.0', 'utf-8');
 			
 			
 			$dom->preserveWhiteSpace = true;
 			$dom->substituteEntities = true;
-			$dom->loadXML($content);
+			$dom->resolveExternals = true;
+			$dom->loadXML('<fullContent>'.$content.'</fullContent>');
 			$images = $dom->getElementsByTagName('img');
 			foreach ($images as $image) {
 			  $img = $image->getAttribute('src');
@@ -201,17 +202,33 @@ class PF_Readability {
 				}
 				if (!is_wp_error(wp_remote_head($urlBase . $img))){
 					$image->setAttribute('src', $urlBase . $img);
+					$domRotated++;
 				} elseif (!is_wp_error(wp_remote_head($url . $img))){
 					$image->setAttribute('src', $url . $img);
+					$domRotated++;
 				} else {
 					$image->parentNode->removeChild($image);
+					$domRotated++;
 				}
 			  }
 			}
-			$content = $dom->saveXML();
-#			$content = stripslashes($content); 
-
+			if ($domRotated > 0){
+				$content = $dom->saveXML();
+				$rel='(<\\?xml version="1\\.0" encoding="utf-8"\\?>)';
+				$content=preg_replace("/".$rel."/is", ' ', $content);
+				$rel='(<\\?xml version="1\\.0"\\?>)';
+				$content=preg_replace("/".$rel."/is", ' ', $content);
+			}
+			if ( 120 > strlen($content)){$content = false;}
+			#			$content = stripslashes($content); 
+			# print_r($content);
 #				var_dump($content); die();
+// this will also output doctype and comments at top level
+#			$content = "";
+#			foreach($dom->childNodes as $node){
+#				$content .= $dom->saveXML($node)."\n";
+#			}
+			
 		} else {
 			# If Readability can't get the content, send back a FALSE to loop with.
 			$content = false;
