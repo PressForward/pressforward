@@ -186,7 +186,7 @@ class PF_Readability {
 			$dom->preserveWhiteSpace = true;
 			$dom->substituteEntities = true;
 			$dom->resolveExternals = true;
-			$dom->loadXML($content);
+			$dom->loadXML('<fullContent>'.$content.'</fullContent>');
 			$images = $dom->getElementsByTagName('img');
 			foreach ($images as $image) {
 			  $img = $image->getAttribute('src');
