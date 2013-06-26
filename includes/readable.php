@@ -179,6 +179,9 @@ class PF_Readability {
 					$content = $tidy->value;
 				}
 
+			$content = balanceTags($content, true);
+			$content = ent2ncr($content);
+			$content = convert_chars($content);
 			$domRotated = 0;
 			$dom = new domDocument('1.0', 'utf-8');
 			
