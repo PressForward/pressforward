@@ -483,6 +483,8 @@ function pf_replace_author_presentation( $author ) {
 		if($custom_author)
 			return $custom_author;
 		return $author;
+	} else {
+		return $author;
 	}
 }
 add_filter( 'the_author', 'pf_replace_author_presentation' );
@@ -494,6 +496,8 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 		$custom_author_uri = get_post_meta($post->ID, 'nomination_permalink', TRUE);
 		if($custom_author_uri)
 			return $custom_author_uri;
+		return $author_uri;
+	} else {
 		return $author_uri;
 	}
 }

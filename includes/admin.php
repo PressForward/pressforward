@@ -786,8 +786,8 @@ class PF_Admin {
 					$default_pf_present_author_value = get_option('pf_present_author_as_primary', 'yes');	
 					?>
 						<select id="pf_present_author_as_primary" name="pf_present_author_as_primary">
-							<option value="yes" selected="selected">Yes</option>
-							<option value="no">No</option>
+							<option value="yes" <?php if ($default_pf_present_author_value == 'yes'){ echo 'selected="selected"'; }?>>Yes</option>
+							<option value="no" <?php if ($default_pf_present_author_value == 'no'){ echo 'selected="selected"'; }?>>No</option>
 						</select>					
 					<?php
 					
@@ -1063,9 +1063,9 @@ class PF_Admin {
 		}
 		
 		if (isset( $_POST['pf_present_author_as_primary'] )){
-			$pf_links_opt_check = $_POST['pf_present_author_as_primary'];
+			$pf_author_opt_check = $_POST['pf_present_author_as_primary'];
 			//print_r($pf_links_opt_check); die();
-			update_option('pf_present_author_as_primary', $pf_links_opt_check);
+			update_option('pf_present_author_as_primary', $pf_author_opt_check);
 		} else {
 			update_option('pf_present_author_as_primary', 'no');
 		}		
