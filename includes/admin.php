@@ -781,6 +781,18 @@ class PF_Admin {
 					
 					echo '<label class="description" for="pf_link_to_source"> ' .__('Seconds to redirect user to source. (0 means no redirect)', 'pf'). ' </label>';						
 					?></p>
+
+					<p><?php
+					$default_pf_present_author_value = get_option('pf_present_author_as_primary', 'yes');	
+					?>
+						<select id="pf_present_author_as_primary" name="pf_present_author_as_primary">
+							<option value="yes" selected="selected">Yes</option>
+							<option value="no">No</option>
+						</select>					
+					<?php
+					
+					echo '<label class="description" for="pf_present_author_as_primary"> ' .__('Show item author as source.', 'pf'). ' </label>';						
+					?></p>
 					
 					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
 					<br />					
@@ -1049,6 +1061,15 @@ class PF_Admin {
 		} else {
 			update_option('pf_link_to_source', 0);
 		}
+		
+		if (isset( $_POST['pf_present_author_as_primary'] )){
+			$pf_links_opt_check = $_POST['pf_present_author_as_primary'];
+			//print_r($pf_links_opt_check); die();
+			update_option('pf_present_author_as_primary', $pf_links_opt_check);
+		} else {
+			update_option('pf_present_author_as_primary', 'no');
+		}		
+		
 		
 		do_action( 'pf_admin_op_page_save' );
 	}

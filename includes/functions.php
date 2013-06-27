@@ -478,20 +478,24 @@ function pf_get_defining_capability_by_role($role_slug){
 //Based on http://seoserpent.com/wordpress/custom-author-byline
 function pf_replace_author_presentation( $author ) {
 	global $post;
-	$custom_author = get_post_meta($post->ID, 'authors', TRUE);
-	if($custom_author)
-		return $custom_author;
-	return $author;
+	if ('yes' == get_option('pf_present_author_as_primary', 'yes')){
+		$custom_author = get_post_meta($post->ID, 'authors', TRUE);
+		if($custom_author)
+			return $custom_author;
+		return $author;
+	}
 }
 add_filter( 'the_author', 'pf_replace_author_presentation' );
 
 function pf_replace_author_uri_presentation( $author_uri ) {
 	//global $authordata;
 	global $post, $authordata;
-	$custom_author_uri = get_post_meta($post->ID, 'nomination_permalink', TRUE);
-	if($custom_author_uri)
-		return $custom_author_uri;
-	return $author_uri;
+	if ('yes' == get_option('pf_present_author_as_primary', 'yes')) {
+		$custom_author_uri = get_post_meta($post->ID, 'nomination_permalink', TRUE);
+		if($custom_author_uri)
+			return $custom_author_uri;
+		return $author_uri;
+	}
 }
 
 add_filter( 'author_link', 'pf_replace_author_uri_presentation' );
