@@ -64,10 +64,10 @@ class PF_RSS_Out extends PF_Module {
 				<lastBuildDate><?php echo date('D, d M Y H:i:s T'); ?></lastBuildDate>
 				<docs>http://feed2.w3.org/docs/rss2.html</docs>
 				<generator>PressForward</generator>
-				<!-- Built based on MQL spec for queries in style of [{  "type": "/internet/website_category", "id": null, "name": "Aggregator" }] -->
-				<category domain="Freebase">/m/075x5v</category>
-				<category domain="Freebase">/en/aggregator</category>
-				<category xmlns="http://www.freebase.com/internet/website_category">Aggregator</category>
+				<!-- Built based on MQL spec (http://wiki.freebase.com/wiki/MQL) for queries in style of [{  "type": "/internet/website_category", "id": null, "name": "Aggregator" }] -->
+				<category xmlns="http://www.freebase.com/internet/website_category" domain="Freebase" title="name">Aggregator</category>
+				<category domain="Freebase" title="mid">/m/075x5v</category>
+				<category domain="Freebase" title="id">/en/aggregator</category>
 				<managingEditor><?php bloginfo('admin_email'); ?></managingEditor>
 				<webMaster><?php bloginfo('admin_email'); ?></webMaster>
 				<ttl>30</ttl>
