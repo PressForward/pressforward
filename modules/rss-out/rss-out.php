@@ -76,11 +76,20 @@ class PF_RSS_Out extends PF_Module {
 					foreach(PF_Feed_Item::archive_feed_to_display(0) as $item) {
 						echo '<item>';
 							?>
-							<title></title>
-							<link></link>
-							<description></description>
-							<pubDate></pubDate>							
+							<title><?php echo $item['item_title']; ?></title>
+							<link><?php echo $item['item_link']; ?></link>
 							<?php
+								foreach ($item['item_tags'] as $tag){
+									echo '<category><![CDATA['.$tag.']]></category>';
+								}
+							?>
+							<dc:creator><?php echo $item['item_author']; ?></dc:creator>
+							<description><![CDATA[<?php echo pf_feed_excerpt($item['item_content']); ?>]]></description>
+							<content:encoded><![CDATA[<?php echo $item['item_content']; ?>]]></content:encoded>
+							<pubDate><?php date( 'D, d M Y H:i:s T' , strtotime($item['item_date'])); ?></pubDate>
+							
+							<?php
+							# Should use <source>, but not passing along RSS link, something to change.
 							# <guid></guid>
 						echo '</item>';
 						if ($c++ == 150) break;
@@ -88,6 +97,7 @@ class PF_RSS_Out extends PF_Module {
 				?>
 			</channel>
 		</rss>
+	<?php
 	}
 
 }
