@@ -76,7 +76,7 @@ class PF_RSS_Out extends PF_Module {
 				<?php $userObj = get_user_by('email',get_bloginfo('admin_email')); ?>
 				<managingEditor><?php bloginfo('admin_email'); ?> (<?php echo $userObj->display_name; ?>)</managingEditor>
 				<webMaster><?php bloginfo('admin_email'); ?> (<?php echo $userObj->display_name; ?>)</webMaster>
-				<ttl>0</ttl>
+				<ttl>30</ttl>
 				<?php
 					$c = 0;
 					foreach(PF_Feed_Item::archive_feed_to_display(0) as $item) {
