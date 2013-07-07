@@ -72,7 +72,19 @@ class PF_RSS_Out extends PF_Module {
 				<webMaster><?php bloginfo('admin_email'); ?></webMaster>
 				<ttl>30</ttl>
 				<?php
-				
+					$c = 0;
+					foreach(PF_Feed_Item::archive_feed_to_display(0) as $item) {
+						echo '<item>';
+							?>
+							<title></title>
+							<link></link>
+							<description></description>
+							<pubDate></pubDate>							
+							<?php
+							# <guid></guid>
+						echo '</item>';
+						if ($c++ == 150) break;
+					}
 				?>
 			</channel>
 		</rss>
