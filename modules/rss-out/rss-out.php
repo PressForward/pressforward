@@ -79,7 +79,7 @@ class PF_RSS_Out extends PF_Module {
 				<ttl>30</ttl>
 				<?php
 					$c = 0;
-					foreach(PF_Feed_Item::archive_feed_to_display(0) as $item) {
+					foreach(PF_Feed_Item::archive_feed_to_display(0, 50) as $item) {
 						echo '<item>';
 							?>
 							<title><![CDATA[<?php echo $item['item_title']; ?>]]></title>
@@ -107,7 +107,7 @@ class PF_RSS_Out extends PF_Module {
 							# Should use <source>, but not passing along RSS link, something to change.
 							# <guid></guid>
 						echo '</item>';
-						if ($c++ == 150) break;
+						if ($c++ == 50) break;
 					}
 				?>
 			</channel>
