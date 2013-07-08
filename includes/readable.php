@@ -79,6 +79,12 @@ class PF_Readability {
 				$read_status = 'already_readable';
 				$itemReadReady = $descrip;
 			}
+			# Final touch up for the sake of the system.
+			# Ok, enough trying to figure out article tags and keep them inline. People use them badly, the last two visual page bugs were bad articles. 
+			# We're turning them into divs now. 
+	$itemReadReady = str_replace(array('<article>', '</article>'), array('<div>', '</div>'), $itemReadReady);
+
+	$itemReadReady = str_replace(array('<!--', '-->'), array('<span class="commented-out-html" style="display:none;">', '</span>'), $itemReadReady); 
 
 			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
 		}
