@@ -130,6 +130,9 @@ function pf_feed_excerpt( $text ) {
 	array_push($words, '...');
 	$text = implode(' ', $words);
 
+	$contentObj = new htmlchecker($text);
+	$item_content = $contentObj->closetags($text);
+	
 	return $text;
 }
 
