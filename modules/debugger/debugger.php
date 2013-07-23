@@ -15,7 +15,7 @@ class PF_Debugger extends PF_Module {
 	 *
 	 * The parent class will take care of registering them
 	 */
-	function setup_admin_menus() {
+	function setup_admin_menus( $admin_menus ) {
 		$admin_menus   = array();
 
 		$admin_menus[] = array(

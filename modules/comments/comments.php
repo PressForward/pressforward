@@ -28,7 +28,7 @@ class PF_Comments extends PF_Module {
 	 *
 	 * The parent class will take care of registering them
 	 */
-	function setup_admin_menus() {
+	function setup_admin_menus( $admin_menus ) {
 		$admin_menus   = array();
 
 		$admin_menus[] = array(
@@ -370,8 +370,10 @@ class PF_Comments extends PF_Module {
 		<?php
 	}
 
-	function admin_enqueue_scripts($hook) {
+	function admin_enqueue_scripts() {
 		global $pagenow;
+
+		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
 
 //		$post_type = $this->get_current_post_type();
 //		$supported_post_types = array(pf_feed_item_post_type(), 'nomination'); //$this->get_post_types_for_module( $this->module );
