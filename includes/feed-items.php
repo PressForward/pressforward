@@ -124,8 +124,9 @@ class PF_Feed_Item {
 	# This function feeds items to our display feed function pf_reader_builder.
 	# It is just taking our database of rssarchival items and putting them into a
 	# format that the builder understands.
-	public static function archive_feed_to_display($pageTop = 0, $pagefull = 20) {
+	public static function archive_feed_to_display($pageTop = 0, $pagefull = 20, $fromUnixtime = false) {
 		global $wpdb, $post;
+		if ($fromUnixTime < 100 || !$fromUnixTime){$fromUnixTime = 0;}
 		//$args = array(
 		//				'post_type' => array('any')
 		//			);
@@ -138,6 +139,7 @@ class PF_Feed_Item {
 			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 			AND {$wpdb->posts}.post_type = %s
 			AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+			AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 			ORDER BY {$wpdb->postmeta}.meta_value DESC
 			LIMIT {$pageTop}, {$pagefull}
 		 ", pf_feed_item_post_type());
