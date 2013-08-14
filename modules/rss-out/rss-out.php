@@ -38,18 +38,18 @@ class PF_RSS_Out extends PF_Module {
 	}
 
 	function request_feed(){
-		# global $wp_rewrite;
+		global $wp_rewrite;
 		add_feed('feedforward', array($this, 'all_feed_assembler'));		
 		# Called because stated requirement at http://codex.wordpress.org/Rewrite_API/add_feed
 		# Called as per http://codex.wordpress.org/Rewrite_API/flush_rules
-		# $wp_rewrite->flush_rules();		
+		$wp_rewrite->flush_rules();		
 
 	}
 
 	function all_feed_assembler(){
-		
+		ob_start();
 		if (isset($_POST['from'])){ $fromUT = $_POST['from']; } else {$fromUT = 0;}
-		if (isset($_POST['limitless']) && $_POST['limitless'] == 'true'){ $fromUT = true; } else {$fromUT = false;}
+		if (isset($_POST['limitless']) && $_POST['limitless'] == 'true'){ $limitless = true; } else {$limitless = false;}
 		if ($fromUT < date('U')) {$fromUT = false;}
 		header('Content-Type: application/rss+xml; charset='.get_option('blog_charset'), true);
 		echo '<?xml version="1.0"?>';
@@ -77,7 +77,16 @@ class PF_RSS_Out extends PF_Module {
 				<freebase:name>Aggregator</freebase:name>
 				<freebase:mid>/m/075x5v</freebase:mid>
 				<freebase:id>/en/aggregator</freebase:id>
-				<?php $userObj = get_user_by('email',get_bloginfo('admin_email')); ?>
+				<?php $admin_email = get_bloginfo('admin_email'); $userObj = get_user_by('email',$admin_email);
+					if(!$userObj){
+						$firstAdmin = get_users(array('role' => 'administrator', 'number' => 1));
+						foreach ($firstAdmin as $admin){
+							$admin_email = $admin->user_email;
+						}
+						$userObj = get_user_by('email',$admin_email);
+					}
+
+				#var_dump($admin_email); echo '2'; die();?>
 				<managingEditor><?php bloginfo('admin_email'); ?> (<?php echo $userObj->display_name; ?>)</managingEditor>
 				<webMaster><?php bloginfo('admin_email'); ?> (<?php echo $userObj->display_name; ?>)</webMaster>
 				<ttl>30</ttl>
@@ -117,6 +126,7 @@ class PF_RSS_Out extends PF_Module {
 			</channel>
 		</rss>
 	<?php
+	ob_end_flush();
 	}
 
 }
