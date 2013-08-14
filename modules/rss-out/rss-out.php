@@ -48,8 +48,8 @@ class PF_RSS_Out extends PF_Module {
 
 	function all_feed_assembler(){
 		
-		if (is_set($_POST['from'])){ $fromUT = $_POST['from']; } else {$fromUT = 0;}
-		if (is_set($_POST['limitless']) && $_POST['limitless'] == 'true'){ $fromUT = true; } else {$fromUT = false;}
+		if (isset($_POST['from'])){ $fromUT = $_POST['from']; } else {$fromUT = 0;}
+		if (isset($_POST['limitless']) && $_POST['limitless'] == 'true'){ $fromUT = true; } else {$fromUT = false;}
 		if ($fromUT < date('U')) {$fromUT = false;}
 		header('Content-Type: application/rss+xml; charset='.get_option('blog_charset'), true);
 		echo '<?xml version="1.0"?>';
