@@ -124,9 +124,11 @@ class PF_Feed_Item {
 	# This function feeds items to our display feed function pf_reader_builder.
 	# It is just taking our database of rssarchival items and putting them into a
 	# format that the builder understands.
-	public static function archive_feed_to_display($pageTop = 0, $pagefull = 20, $fromUnixtime = 0, $limitless = false) {
+	public static function archive_feed_to_display($pageTop = 0, $pagefull = 20, $fromUnixTime = 0, $limitless = false) {
 		global $wpdb, $post;
+		#var_dump($fromUnixTime); die();
 		if ( !isset($fromUnixTime) || (!$fromUnixTime) || ($fromUnixTime < 100)){$fromUnixTime = 0;}
+		
 		//$args = array(
 		//				'post_type' => array('any')
 		//			);
