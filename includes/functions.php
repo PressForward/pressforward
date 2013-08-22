@@ -448,8 +448,8 @@ function pf_get_role_by_capability($cap, $lowest = true, $obj = false){
 	if ($lowest){
 		$roles = array_reverse($roles);
 	}
-
-  $the_role = array_shift(array_values($roles));
+  $arrayvalues = array_values($roles);
+  $the_role = array_shift($arrayvalues);
   if (!$obj){
 	return $the_role;
   } else {
