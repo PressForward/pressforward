@@ -170,6 +170,8 @@ editorialCommentReply = {
 
 		// Increment the comment count
 		jQuery( '#comments-expander-' + supplemental.post_id ).find( '.comments-expander-count' ).html( supplemental.post_comment_count );
+		jQuery( '#comments-expander-' + supplemental.post_id ).addClass('btn-info');
+		jQuery( '#comments-expander-' + supplemental.post_id + ' .icon-comment').addClass('icon-white');
 	},
 
 	error : function(r) {
