@@ -71,7 +71,7 @@ class PF_RSS_Out extends PF_Module {
 				<atom:link href="<?php echo home_url('/?feed=feedforward'); ?>" rel="self" type="application/rss+xml" />
 				<docs>http://feed2.w3.org/docs/rss2.html</docs>
 				<generator>PressForward</generator>
-				<!-- Built based on MQL spec (http://wiki.freebase.com/wiki/MQL) for queries in style of [{  "type": "/internet/website_category", "id": null, "name": "Aggregator" }] -->
+				<?php #Built based on MQL spec (http://wiki.freebase.com/wiki/MQL) for queries in style of [{  "type": "/internet/website_category", "id": null, "name": "Aggregator" }] ?>
 				<category domain="Freebase">Aggregator</category>
 				<category domain="Freebase">/m/075x5v</category>
 				<category domain="Freebase">/en/aggregator</category>
@@ -96,7 +96,7 @@ class PF_RSS_Out extends PF_Module {
 					foreach(PF_Feed_Item::archive_feed_to_display(0, 50, $fromUT, $limitless) as $item) {
 						echo '<item>';
 							?>
-							<title><![CDATA[<?php echo $item['item_title']; ?>]]></title>
+							<title><![CDATA[<?php echo strip_tags($item['item_title']); ?>]]></title>
 							<?php
 							# <link> should send users to published nominations when available.
 							?>						
@@ -113,8 +113,11 @@ class PF_RSS_Out extends PF_Module {
 							}
 							?>
 							<dc:creator><?php echo $item['item_author']; ?></dc:creator>
-							<description><![CDATA[<?php echo pf_feed_excerpt($item['item_content']); ?>]]></description>
-							<content:encoded><![CDATA[<?php echo $item['item_content']; ?>]]></content:encoded>
+							<?php $content = $item['item_content'];
+							$excerpt = pf_feed_excerpt($content);
+							?>
+							<description><![CDATA[<?php echo strip_tags($excerpt); ?>]]></description>
+							<content:encoded><![CDATA[<?php echo strip_tags($content); ?>]]></content:encoded>
 							<pubDate><?php echo date( 'D, d M Y H:i:s O' , strtotime($item['item_date'])); ?></pubDate>
 							
 							<?php
