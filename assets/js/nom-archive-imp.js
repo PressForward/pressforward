@@ -42,14 +42,16 @@ jQuery(document).ready(function() {
 	jQuery("#archivenoms").click(function(evt){
 		jQuery('.loading-top').show();
 		jQuery.post(ajaxurl, {
-			action: 'archive_all_nominations'
+			action: 'pf_archive_all_nominations'
+			jQuery('.nom-container').hide();
 		},
 		function(response) {
 			jQuery('.loading-top').hide();
-			jQuery('#errors').html(response);
-			if (archivesVisible == 1){
-				jQuery('.nom-container').addClass('hidearchived');
+			if (archivesVisible != 1){
+				jQuery('.nom-container').addClass('archived');
+
 			}
+			jQuery('#errors').html(response);
 		});
 	});
 	
