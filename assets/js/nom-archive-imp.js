@@ -17,6 +17,8 @@ jQuery(document).ready(function() {
 	});
 });
 
+var archivesVisible = 0;
+
 jQuery(document).ready(function() {
 	jQuery(".showarchived").click().toggle(function (evt){ 
 		evt.preventDefault();
@@ -36,5 +38,19 @@ jQuery(document).ready(function() {
 	
 	}
 	);		
-	  
+	
+	jQuery("#archivenoms").click(function(evt){
+		jQuery('.loading-top').show();
+		jQuery.post(ajaxurl, {
+			action: 'archive_all_nominations'
+		},
+		function(response) {
+			jQuery('.loading-top').hide();
+			jQuery('#errors').html(response);
+			if (archivesVisible == 1){
+				jQuery('.nom-container').addClass('hidearchived');
+			}
+		});
+	});
+	
 });	
