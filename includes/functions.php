@@ -130,6 +130,9 @@ function pf_feed_excerpt( $text ) {
 	array_push($words, '...');
 	$text = implode(' ', $words);
 
+	$contentObj = new htmlchecker($text);
+	$item_content = $contentObj->closetags($text);
+	
 	return $text;
 }
 
@@ -448,8 +451,8 @@ function pf_get_role_by_capability($cap, $lowest = true, $obj = false){
 	if ($lowest){
 		$roles = array_reverse($roles);
 	}
-
-  $the_role = array_shift(array_values($roles));
+  $arrayvalues = array_values($roles);
+  $the_role = array_shift($arrayvalues);
   if (!$obj){
 	return $the_role;
   } else {

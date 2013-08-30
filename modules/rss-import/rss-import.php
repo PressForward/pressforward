@@ -768,6 +768,25 @@ class PF_RSS_Import extends PF_Module {
 						update_option( PF_SLUG . '_ready_to_chunk', 1 );
 						update_option(PF_SLUG . '_iterate_going_switch', 1);
 						PF_Feed_Item::assemble_feed_for_pull();
+					} elseif (($feeds_meta_state['retrigger'] < (time() + 86400)) && !(empty($feeds_meta_state))) {
+						# If it has been more than 24 hours and retrieval has been frozen in place
+						# and the retrieval state hasn't been reset, reset the check values and reset
+						# the meta state. If it is actually mid-process things should progress.
+						# Otherwise next meta-state check will iterate forward.
+						update_option( PF_SLUG . '_feeds_go_switch', 0);
+						update_option( PF_SLUG . '_ready_to_chunk', 1 );
+						update_option(PF_SLUG . '_feeds_meta_state', array());
+						update_option(PF_SLUG . '_iterate_going_switch', 0);
+						update_option( PF_SLUG . '_feeds_iteration', 0);
+						$double_check = array(
+													'feed_go' => 0,
+													'feed_iteration' =>	0,
+													'retrieval_state' => 0,
+													'chunk_state'	=> 1,
+													'retrigger'		=>	$feeds_meta_state['retrigger']
+												);
+						update_option(PF_SLUG . '_feeds_meta_state', $double_check);
+						pf_log(__('The meta-state is too old. It is now reset. Next time, we should start over.', 'pf'), true);
 					} else {
 						$double_check = array(
 													'feed_go' => $feeds_meta_state['feed_go'],

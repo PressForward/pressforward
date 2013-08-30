@@ -20,9 +20,10 @@ class htmlchecker {
 
  public function closetags($html) {
 
-	$html = str_replace(array('<article>', '</article>'), array('<div>', '</div>'), $html);
+	$html = str_replace(array('<article', '</article>'), array('<div', '</div>'), $html);
 
 	$html = str_replace(array('<!--', '-->'), array('<span class="commented-out-html" style="display:none;">', '</span>'), $html); 
+	#$html = preg_match_all('#<(article)*>#', $html, $resultc);
   
   #put all opened tags into an array
 

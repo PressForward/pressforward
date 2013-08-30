@@ -15,7 +15,7 @@ class PF_Debugger extends PF_Module {
 	 *
 	 * The parent class will take care of registering them
 	 */
-	function setup_admin_menus() {
+	function setup_admin_menus( $admin_menus ) {
 		$admin_menus   = array();
 
 		$admin_menus[] = array(
@@ -28,24 +28,24 @@ class PF_Debugger extends PF_Module {
 
 		parent::setup_admin_menus( $admin_menus );
 	}
-	
+
 	function setup_module() {
 		$enabled = get_option( 'pf_debugger_enable' );
 		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
 			$enabled = 'yes';
 		}
-		
+
 		$mod_settings = array(
 			'name' => 'Debugger Log Viewing Module',
 			'slug' => 'debugger',
 			'options' => ''
 		);
-		
+
 		//update_option( 'pf_foo_settings', $mod_settings );
 
-		
+
 	}
-	
+
 	function module_setup(){
 		$mod_settings = array(
 			'name' => 'Debugger Log Viewing Module',
@@ -54,12 +54,12 @@ class PF_Debugger extends PF_Module {
 			'thumbnail' => '',
 			'options' => ''
 		);
-		
-		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );	
+
+		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 
 		//return $test;
-	}	
-	
+	}
+
 	function admin_menu_callback() {
 		// Default log location is in the uploads directory
 		if ( ! defined( 'PF_DEBUG_LOG' ) ) {
@@ -99,9 +99,9 @@ class PF_Debugger extends PF_Module {
 															'default'=>'administrator',
 															'title'=>'Debugging Log'
 														);
-		
+
 		return $arrayedAdminRights;
-														
-	}	
-	
+
+	}
+
 }

@@ -79,15 +79,12 @@ class PF_Readability {
 				$read_status = 'already_readable';
 				$itemReadReady = $descrip;
 			}
-			# Final touch up for the sake of the system.
-			# Ok, enough trying to figure out article tags and keep them inline. People use them badly, the last two visual page bugs were bad articles. 
-			# We're turning them into divs now. 
-	$itemReadReady = str_replace(array('<article>', '</article>'), array('<div>', '</div>'), $itemReadReady);
-
-	$itemReadReady = str_replace(array('<!--', '-->'), array('<span class="commented-out-html" style="display:none;">', '</span>'), $itemReadReady); 
 
 			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
 		}
+		
+		$contentObj = new htmlchecker($itemReadReady);
+		$itemReadReady = $contentObj->closetags($itemReadReady);		
 		
 		# BIG FREAKING WARNING: This WILL NOT WORK if you have WP_DEBUG and WP_DEBUG_DISPLAY true and either your theme or plugins have bad functions on the save_post hook. 
 		if ($post_id != 0){
@@ -240,6 +237,10 @@ class PF_Readability {
 			$content = false;
 			# and let's throw up an error via AJAX as well, so we know what's going on.
 			//print_r($url . ' fails Readability.<br />');
+		}
+		if ($content != false){
+				$contentObj = new htmlchecker($content);
+				$content = $contentObj->closetags($content);
 		}
 
 		return $content;

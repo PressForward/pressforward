@@ -28,7 +28,7 @@ class PF_Comments extends PF_Module {
 	 *
 	 * The parent class will take care of registering them
 	 */
-	function setup_admin_menus() {
+	function setup_admin_menus( $admin_menus ) {
 		$admin_menus   = array();
 
 		$admin_menus[] = array(
@@ -75,7 +75,7 @@ class PF_Comments extends PF_Module {
 			echo '<a role="button" class="btn btn-small itemCommentModal comments-expander active" >' . $count . '<i class="icon-comment"></i></a>';
 		}
 	}
-	
+
 	function control_menu_access($arrayedAdminRights){
 		$arrayedAdminRights['pf_menu_comments_access'] = array(
 															'default'=>'editor',
@@ -85,9 +85,9 @@ class PF_Comments extends PF_Module {
 															'default'=>'editor',
 															'title'=>'Internal Commenting Feature'
 														);
-		
+
 		return $arrayedAdminRights;
-														
+
 	}
 
 	function show_comment_modal($commentSet){
@@ -119,9 +119,9 @@ class PF_Comments extends PF_Module {
 		editorialCommentReply.init();
 		</script>';
 		$comments_allowed = get_option('pf_feature_comments_access', pf_get_defining_capability_by_role('editor'));
-		
+
 		if (!(current_user_can($comments_allowed))){
-		
+
 			_e('You do not have permission to access this area.');
 			echo '<div class="clear"></div>';
 			return;
@@ -370,8 +370,10 @@ class PF_Comments extends PF_Module {
 		<?php
 	}
 
-	function admin_enqueue_scripts($hook) {
+	function admin_enqueue_scripts() {
 		global $pagenow;
+
+		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
 
 //		$post_type = $this->get_current_post_type();
 //		$supported_post_types = array(pf_feed_item_post_type(), 'nomination'); //$this->get_post_types_for_module( $this->module );
