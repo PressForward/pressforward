@@ -29,6 +29,15 @@ jQuery(document).ready(function() {
 	}
 	);	
 	
+	jQuery('#sortbynomcount').toggle(function (evt){ 
+		evt.preventDefault();
+		jQuery(".feed-item").tsort("span.sortable_nom_count", {order:'desc'});
+	}, function (evt) {
+		evt.preventDefault();
+		jQuery(".feed-item").tsort("span.sortable_nom_count", {order:'asc'});		
+	}
+	);		
+	
 	jQuery('.pf_container').on('click', "#fullscreenfeed", function(e){
 		e.preventDefault();
 		jQuery('.pf_container').fullScreen({

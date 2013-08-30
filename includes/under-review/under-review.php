@@ -55,6 +55,7 @@
 
 					<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
 					echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomdate" value="' . __('Sort by date nominated', 'pf') . '">' . __('Sort by date nominated', 'pf') . '</button>'; 
+					echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomcount" value="' . __('Sort by nominations', 'pf') . '">' . __('Sort by nominations', 'pf') . '</button>'; 
 					echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="showarchived" value="' . __('Show archived', 'pf') . '">' . __('Show archived', 'pf') . '.</button>';
 					?>
 					</div>
