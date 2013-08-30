@@ -17,6 +17,8 @@ jQuery(document).ready(function() {
 	});
 });
 
+var archivesVisible = 0;
+
 jQuery(document).ready(function() {
 	jQuery(".showarchived").click().toggle(function (evt){ 
 		evt.preventDefault();
@@ -36,5 +38,21 @@ jQuery(document).ready(function() {
 	
 	}
 	);		
-	  
+	
+	jQuery("#archivenoms").click(function(evt){
+		jQuery('.loading-top').show();
+		jQuery('.nom-container').hide();
+		jQuery.post(ajaxurl, {
+			action: 'pf_archive_all_nominations'
+		},
+		function(response) {
+			jQuery('.loading-top').hide();
+			if (archivesVisible != 1){
+				jQuery('.nom-container').addClass('archived');
+
+			}
+			jQuery('#errors').html(response);
+		});
+	});
+	
 });	

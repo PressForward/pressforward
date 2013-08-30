@@ -8,7 +8,7 @@ class PF_Readability {
 	/**
 	 * Handles a readability request via POST
 	 */
-	public function make_it_readable($quickresponse = false){
+	public static function make_it_readable($quickresponse = false){
 
 		// Verify nonce
 		if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )

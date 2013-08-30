@@ -441,3 +441,58 @@ function pf_ajax_relate(){
 
 
 }
+
+add_action( 'wp_ajax_pf_archive_all_nominations', 'pf_archive_all_nominations');
+function pf_archive_all_nominations(){
+		global $wpdb, $post;
+		//$args = array(
+		//				'post_type' => array('any')
+		//			);
+		$args = 'post_type=' . 'nomination';
+		//$archiveQuery = new WP_Query( $args );
+		$dquerystr = $wpdb->prepare("
+			SELECT $wpdb->posts.*, $wpdb->postmeta.*
+			FROM $wpdb->posts, $wpdb->postmeta
+			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
+			AND $wpdb->posts.post_type = %s
+		 ", 'nomination' );
+		# This is how we do a custom query, when WP_Query doesn't do what we want it to.
+		$nominationsArchivalPosts = $wpdb->get_results($dquerystr, OBJECT);
+		//print_r(count($nominationsArchivalPosts)); die();
+		$feedObject = array();
+		$c = 0;
+
+		if ($nominationsArchivalPosts):
+
+			foreach ($nominationsArchivalPosts as $post) :
+				# This takes the $post objects and translates them into something I can do the standard WP functions on.
+				setup_postdata($post);
+				$post_id = get_the_ID();
+				//Switch the delete on to wipe rss archive posts from the database for testing.
+				$userObj = wp_get_current_user();
+				$user_id = $userObj->ID;
+				$feed_post_id = get_post_meta($post_id, 'item_feed_post_id', true);
+				pf_set_relationship( 'archive', $feed_post_id, $user_id, '1' );
+			endforeach;
+
+
+		endif;
+		wp_reset_postdata();
+		ob_start();
+		$response = array(
+				'what' => 'relationships',
+				'action' => 'pf_archive_all_nominations',
+				'id' => $user_id,
+				'data' => 'All archives deleted.',
+				'supplemental' => array(
+						'user' => $user_id,
+						'buffered' => ob_get_contents()
+					)
+				);
+
+		$xmlResponse = new WP_Ajax_Response($response);
+		$xmlResponse->send();
+		ob_end_flush();
+		die();		
+		#print_r(__('All archives deleted.', 'pf'));	
+}

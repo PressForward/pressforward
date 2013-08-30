@@ -124,23 +124,39 @@ class PF_Feed_Item {
 	# This function feeds items to our display feed function pf_reader_builder.
 	# It is just taking our database of rssarchival items and putting them into a
 	# format that the builder understands.
-	public static function archive_feed_to_display($pageTop = 0) {
+	public static function archive_feed_to_display($pageTop = 0, $pagefull = 20, $fromUnixTime = 0, $limitless = false) {
 		global $wpdb, $post;
+		#var_dump($fromUnixTime); die();
+		if ( !isset($fromUnixTime) || (!$fromUnixTime) || ($fromUnixTime < 100)){$fromUnixTime = 0;}
+		
 		//$args = array(
 		//				'post_type' => array('any')
 		//			);
 		//$pageBottom = $pageTop + 20;
 		$args = pf_feed_item_post_type();
 		//$archiveQuery = new WP_Query( $args );
+		if ($limitless){
 		 $dquerystr = $wpdb->prepare("
 			SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 			FROM {$wpdb->posts}, {$wpdb->postmeta}
 			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 			AND {$wpdb->posts}.post_type = %s
 			AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+			AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 			ORDER BY {$wpdb->postmeta}.meta_value DESC
-			LIMIT {$pageTop}, 20
+		 ", pf_feed_item_post_type());		
+		} else {
+		 $dquerystr = $wpdb->prepare("
+			SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
+			FROM {$wpdb->posts}, {$wpdb->postmeta}
+			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+			AND {$wpdb->posts}.post_type = %s
+			AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+			AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
+			ORDER BY {$wpdb->postmeta}.meta_value DESC
+			LIMIT {$pageTop}, {$pagefull}
 		 ", pf_feed_item_post_type());
+		}
 		// print_r($dquerystr);
 		 # DESC here because we are sorting by UNIX datestamp, where larger is later.
 		 //Provide an alternative to load by feed date order.
