@@ -176,7 +176,7 @@ function commentModal(){
 			});				
 	});
 }
-jQuery(document).ready(function() {
+jQuery(window).load(function() {
 	
 	jQuery('#gogrid').click(function (evt){ 
 			evt.preventDefault();

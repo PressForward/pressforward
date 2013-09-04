@@ -1,4 +1,4 @@
-jQuery(document).ready(function() {
+jQuery(window).load(function() {
 
 	jQuery('.pf_container').on('click', ".nominate-now", function (evt){ 
 		evt.preventDefault();

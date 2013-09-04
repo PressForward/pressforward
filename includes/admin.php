@@ -342,7 +342,7 @@ class PF_Admin {
 	
 					?>
 						<script type="text/javascript">
-						jQuery(document).ready(function() {
+						jQuery(window).load(function() {
 							jQuery(function(){
 								jQuery("#<?php echo 'info-' . $item['item_id'] . '-' . $infoPop; ?>").popover({
 									title: pop_title_<?php echo $item['item_id'] ?>,
@@ -504,7 +504,7 @@ class PF_Admin {
 						//echo '<a name="' . $c . '" style="display:none;"></a>';
 /**
 			echo '<script type="text/javascript">
-					jQuery(document).ready(function() {
+					jQuery(window).load(function() {
 						jQuery("#' . $item['item_id'] . '").on("show", function () {
 							jQuery("#excerpt' . $c . '").hide("slow");
 						});
