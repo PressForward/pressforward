@@ -1,6 +1,5 @@
 <?php
 
-
 class AB_subscription_builder {
 
 	public function __construct() {}
@@ -117,14 +116,14 @@ class AB_subscription_builder {
 		$response = $Url;
 
 			if (is_wp_error($request)) {
-				
-				
-			}	
+
+
+			}
 			else if(strlen($request['body'])>1){
 				preg_match("/\<title\>(.*)\<\/title\>/",$request['body'],$title);
 				$response = $title[1];
 			} else {
-				
+
 			}
 			$data = array();
 			$data['url'] = $Url;
@@ -133,23 +132,23 @@ class AB_subscription_builder {
 		if ($data['url'] != $Url){
 
 			if (is_wp_error($request)) {
-				
-				
-			}	
+
+
+			}
 			else if(strlen($request['body'])>1){
 				preg_match("/\<title\>(.*)\<\/title\>/",$request['body'],$title);
 				$response = $title[1];
 			} else {
-				
+
 			}
 			$data = array();
 			$data['url'] = $Url;
 			$data['response'] = $response;
-		
+
 		}
 		return $data['response'];
 	}
-	
+
 	# via http://stackoverflow.com/questions/2668854/sanitizing-strings-to-make-them-url-and-filename-safe
 	public static function sanitize($string, $force_lowercase = true, $anal = false) {
 		$strip = array("~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "[", "{", "]",
@@ -177,18 +176,18 @@ class AB_subscription_builder {
 		//$charsToElim = array('?','/','\\');
 		$stringSlug = self::sanitize($stringSlug, false, true);
 		return $stringSlug;
-		
+
 	}
 
 	public static function get_spam_sites(){
 
 		$spamsites = array('http://www.buy-wellbutrin.com/', 'http://www.mycaal.com/');
-		
+
 		return $spamsites;
-		
+
 	}
 
-	# to fill the blog property of the array. 
+	# to fill the blog property of the array.
 	# PS... How often does this get updated?
 	public static function getLinksFromSection ($sectionURL){
 		set_time_limit(0);
@@ -198,7 +197,7 @@ class AB_subscription_builder {
 		if ( ! $html ) {
 			return 'No Links.';
 		}
-		
+
 		$blogs = array();
 		$c = 0;
 		foreach ($html->find('#bodyContent') as $body){
@@ -214,13 +213,13 @@ class AB_subscription_builder {
 					}
 				}
 				else {
-					
+
 				}
 			}
 		}
-				
+
 		return $blogs;
-		
+
 	}
 
 	public function build_the_ref_array()
@@ -242,8 +241,8 @@ class AB_subscription_builder {
 				set_time_limit(0);
 				# Get the main content block
 				$nextBlock = $link->next_sibling();
-				//print_r($nextBlock);	
-				
+				//print_r($nextBlock);
+
 				$counter = 0;
 				$sectionCounter = 0;
 				$links = array();
@@ -251,7 +250,7 @@ class AB_subscription_builder {
 				# Walk through the dom and count paragraphs between H2 tags
 				foreach ($nextBlock->children() as $bodyChild) {
 
-										
+
 					if (($bodyChild->tag=='h1')){
 						if ($ch1 != 0){
 							//return $htmlCounter;
@@ -260,19 +259,19 @@ class AB_subscription_builder {
 						}
 						$ch1++;
 					}
-					
+
 					if (($bodyChild->find('span')) && ($bodyChild->tag=='h2')){
 						foreach ($bodyChild->find('span') as $span){
 							$sectionCounter++;
 							$spanText = $span->innertext;
-							
+
 							$spanNameArray = explode(' ', $spanText);
 							$spanSlug = '';
 							foreach ($spanNameArray as $spanNamePart){
 								$spanSlug .= htmlentities(ucfirst($spanNamePart));
 							}
 							$spanSlug = $this->sanitize($spanSlug, false, true);
-							
+
 							$htmlCounter[$spanSlug]['slug'] = $spanSlug;
 							$htmlCounter[$spanSlug]['text'] = htmlspecialchars(strip_tags($spanText));
 							$htmlCounter[$spanSlug]['counter'] = $counter;
@@ -283,15 +282,15 @@ class AB_subscription_builder {
 					} else {
 						//$htmlCounter[$spanSlug]['error'] = false;
 					}
-					
+
 					if (($bodyChild->tag=='p') && ((count($bodyChild->find('a'))) == 1) && ((count($bodyChild->find('a[class=new]'))) == 0)){
-						
+
 						$counter++;
-						
+
 						foreach ($bodyChild->find('a') as $childLink){
 							$link = $childLink->href;
 							$title = $childLink->title;
-							
+
 							if (!in_array($link, $this->get_spam_sites())){
 								$titleArray = explode(' ', $title);
 								$titleSlug = '';
@@ -300,30 +299,30 @@ class AB_subscription_builder {
 								}
 								//$charsToElim = array('?','/','\\');
 								$titleSlug = $this->sanitize($titleSlug, false, true);
-								
+
 								$link = 'http://academicblogs.org' . $link;
-								
+
 								$sectionSlug = $htmlCounter[$spanSlug]['slug'];
-								
+
 								$htmlCounter[$spanSlug]['links'][$titleSlug]['slug'] = $titleSlug;
 								$htmlCounter[$spanSlug]['links'][$titleSlug]['title'] = htmlspecialchars(strip_tags($title));
 								$htmlCounter[$spanSlug]['links'][$titleSlug]['link'] = $link;
 								//if ($childLink->){
 									$htmlCounter[$spanSlug]['links'][$titleSlug]['blogs'] = $this->getLinksFromSection($link);
 								//}
-								
+
 								//$links[$sectionSlug][$titleSlug]['title'] = $title;
 								//$links[$sectionSlug][$titleSlug]['link'] = $link;
 							} else {
-								
+
 								$counter--;
 								$htmlCounter[$spanSlug]['links'][$counter]['error'] = false;
 							}
 						}
 					}
-				
+
 				}
-				
+
 		}
 		//end:
 		return $htmlCounter;
@@ -344,5 +343,3 @@ class AB_subscription_builder {
 	}
 
 }
-
-?>
