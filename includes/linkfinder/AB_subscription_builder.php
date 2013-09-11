@@ -335,8 +335,8 @@ class AB_subscription_builder {
 		$dom = null;
 		$response = wp_remote_get( $url );
 		if ( ! empty( $response ) && ! is_wp_error( $response ) ) {
-			$html = new simple_html_dom( null );
-			$html->load( wp_remote_retrieve_body( $response ) );
+			$dom = new simple_html_dom( null );
+			$dom->load( wp_remote_retrieve_body( $response ) );
 		}
 
 		return $dom;
