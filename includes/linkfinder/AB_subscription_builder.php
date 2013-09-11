@@ -14,18 +14,14 @@ class AB_subscription_builder {
 	 *    'nodes_populated' => [this value will always be zero coming from this method]
 	 */
 	public static function get_blog_categories( $theWikiLink = 'http://academicblogs.org/index.php/Main_Page' ) {
-		
+
 		$categories = array();
 		$node_count = 0;
 
-		$html = wp_remote_get($theWikiLink);
-		if ($html == false) {
+		$html = self::get_simple_dom_object( $theWikiLink );
+
+		if ( ! $html ) {
 			return false;
-		}
-		if (is_wp_error($html)) {
-			return false;			
-		} else {
-			$html = $html['body'];
 		}
 
 		// The categories are headed by h2 elements in #bodyContent
@@ -194,12 +190,11 @@ class AB_subscription_builder {
 	# PS... How often does this get updated?
 	public function getLinksFromSection ($sectionURL){		
 		set_time_limit(0);
-		$html = wp_remote_get($sectionURL);
 
-		if (is_wp_error($html)) {
-			return 'No Links.';			
-		} else {
-			$html = $html['body'];
+		$html = self::get_simple_dom_object( $sectionURL );
+
+		if ( ! $html ) {
+			return 'No Links.';
 		}
 		
 		$blogs = array();
@@ -337,6 +332,20 @@ class AB_subscription_builder {
 		}
 		//end:
 		return $htmlCounter;
+	}
+
+	/**
+	 * Get the simple_html_dom object for a given URL
+	 */
+	public static function get_simple_dom_object( $url ) {
+		$dom = null;
+		$response = wp_remote_get( $url );
+		if ( ! empty( $response ) && ! is_wp_error( $response ) ) {
+			$html = new simple_html_dom( null );
+			$html->load( wp_remote_retrieve_body( $response ) );
+		}
+
+		return $dom;
 	}
 
 }
