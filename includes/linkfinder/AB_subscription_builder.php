@@ -34,7 +34,8 @@ class AB_subscription_builder {
 				}
 
 				// Take the first item in the array
-				$span = array_pop( array_reverse( $span ) );
+				$span_r = array_reverse( $span );
+				$span = array_pop( $span_r );
 
 				$spanText = $span->innertext;
 				$spanNameArray = explode(' ', $spanText);
@@ -55,7 +56,8 @@ class AB_subscription_builder {
 				while ( $next->tag == 'p' ) {
 					$pchildren = $next->find( 'a' );
 					if ( 1 == count( $pchildren ) ) {
-						$childLink = array_pop( array_reverse( $pchildren ) );
+						$pchildren_r = array_reverse( $pchildren );
+						$childLink = array_pop( $pchildren_r );
 
 						$link = $childLink->href;
 						if ( ! in_array( $link, self::get_spam_sites() ) ) {
@@ -149,7 +151,7 @@ class AB_subscription_builder {
 	}
 	
 	# via http://stackoverflow.com/questions/2668854/sanitizing-strings-to-make-them-url-and-filename-safe
-	public function sanitize($string, $force_lowercase = true, $anal = false) {
+	public static function sanitize($string, $force_lowercase = true, $anal = false) {
 		$strip = array("~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "[", "{", "]",
 					   "}", "\\", "|", ";", ":", "\"", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;",
 					   "—", "–", ",", "<", ".", ">", "/", "?");
@@ -177,9 +179,9 @@ class AB_subscription_builder {
 		return $stringSlug;
 		
 	}
-	
-	public function get_spam_sites(){
-		
+
+	public static function get_spam_sites(){
+
 		$spamsites = array('http://www.buy-wellbutrin.com/', 'http://www.mycaal.com/');
 		
 		return $spamsites;
@@ -188,7 +190,7 @@ class AB_subscription_builder {
 
 	# to fill the blog property of the array. 
 	# PS... How often does this get updated?
-	public function getLinksFromSection ($sectionURL){		
+	public static function getLinksFromSection ($sectionURL){
 		set_time_limit(0);
 
 		$html = self::get_simple_dom_object( $sectionURL );
