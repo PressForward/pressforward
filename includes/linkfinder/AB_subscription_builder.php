@@ -229,20 +229,13 @@ class AB_subscription_builder {
 		//error_reporting(-1);
 		$theWikiLink = 'http://academicblogs.org/index.php/Main_Page';
 		$htmlCounter = array();
-		//Random article for testing.
-		$html = wp_remote_get($theWikiLink);
-		//print_r($html);
-		# Get the title page
-		if ($html == false) {
-			return false;
+
+		$html = self::get_simple_dom_object( $theWikiLink );
+
+		if ( ! $html ) {
+			return 'No Links.';
 		}
-		
-		if (is_wp_error($html)) {
-			return 'No Links.';			
-		} else {
-			$html = $html['body'];
-		}		
-		
+
 		foreach ($html->find('h1') as $link){
 			//print_r($link);
 		//	if (($link->plaintext == '[edit] External links') || ($link->plaintext == '[edit] References') ){
