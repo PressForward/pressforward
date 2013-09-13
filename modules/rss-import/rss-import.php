@@ -515,7 +515,7 @@ class PF_RSS_Import extends PF_Module {
         ?>
 			<br />
 			<br />
-		<button type="submit" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="Reset all Feed Retrieval Options"><?php _e('Reset all Feed Retrieval Options', 'pf'); ?></button>    <br />
+		<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="Reset all Feed Retrieval Options"><?php _e('Reset all Feed Retrieval Options', 'pf'); ?></button>    <br />
 			 <?php
 			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0);
 			$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
