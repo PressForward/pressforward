@@ -414,7 +414,7 @@ class PF_RSS_Import extends PF_Module {
 						$item_categories_string = implode(',',$itemTerms);
 					} else { $item_categories_string = ''; }
 					//one final cleanup of the content.
-					$contentObj = new htmlchecker($item_content);
+					$contentObj = new pf_htmlchecker($item_content);
 					$item_content = $contentObj->closetags($item_content);
 					print_r($c);
 					$rssObject['rss_' . $c] = pf_feed_object(

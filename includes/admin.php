@@ -583,7 +583,7 @@ class PF_Admin {
 			  <div class="row-fluid modal-body-row">
 				  <div class="modal-body span9">
 					<?php 
-					$contentObj = new htmlchecker($item['item_content']);
+					$contentObj = new pf_htmlchecker($item['item_content']);
 					$text = $contentObj->closetags($item['item_content']);
 					echo $text; 
 					
