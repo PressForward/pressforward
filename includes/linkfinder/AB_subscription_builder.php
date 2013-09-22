@@ -329,13 +329,13 @@ class AB_subscription_builder {
 	}
 
 	/**
-	 * Get the simple_html_dom object for a given URL
+	 * Get the pf_simple_html_dom object for a given URL
 	 */
 	public static function get_simple_dom_object( $url ) {
 		$dom = null;
 		$response = wp_remote_get( $url );
 		if ( ! empty( $response ) && ! is_wp_error( $response ) ) {
-			$dom = new simple_html_dom( null );
+			$dom = new pf_simple_html_dom( null );
 			$dom->load( wp_remote_retrieve_body( $response ) );
 		}
 

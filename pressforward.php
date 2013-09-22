@@ -81,8 +81,8 @@ class PressForward {
 		require( PF_ROOT . "/lib/fivefilters-readability/Readability.php" );
 
 		// For reading through an HTML page.
-		require( PF_ROOT . "/lib/simple_html_dom.php" );
-		$dom = new simple_html_dom;
+		require( PF_ROOT . "/lib/pf_simple_html_dom.php" );
+		$dom = new pf_simple_html_dom;
 
 		// Internal tools
 
