@@ -922,57 +922,57 @@ class PF_Admin {
 		if (('toplevel_page_pf-menu') == $hook) {
 			//And now lets enqueue the script, ensuring that jQuery is already active.
 
-			wp_enqueue_script('tinysort');
-			wp_enqueue_script('sort-imp');
-			wp_enqueue_script('views');			
-			wp_enqueue_script('readability-imp');
-			wp_enqueue_script('nomination-imp', PF_URL . 'assets/js/nomination-imp.js', array( 'jquery' ));
-			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
-			wp_enqueue_script('jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
-			wp_enqueue_script('infiniscroll');
-			wp_enqueue_script('scrollimp');
+			wp_enqueue_script(PF_SLUG . '-tinysort');
+			wp_enqueue_script(PF_SLUG . '-sort-imp');
+			wp_enqueue_script(PF_SLUG . '-views');			
+			wp_enqueue_script(PF_SLUG . '-readability-imp');
+			wp_enqueue_script(PF_SLUG . '-nomination-imp', PF_URL . 'assets/js/nomination-imp.js', array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-infiniscroll');
+			wp_enqueue_script(PF_SLUG . '-scrollimp');
 			wp_enqueue_script('pf-relationships');
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
-			wp_enqueue_style('bootstrap-style');
-			wp_enqueue_style('bootstrap-responsive-style');
+			wp_enqueue_style(PF_SLUG . '-bootstrap-style');
+			wp_enqueue_style(PF_SLUG . '-bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 
 		}
 		if (('pressforward_page_pf-review') == $hook) {
-			wp_enqueue_script('tinysort');
-			wp_enqueue_script('sort-imp');
-			wp_enqueue_script('jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
-			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
-			wp_enqueue_script('send-to-draft-imp', PF_URL . 'assets/js/send-to-draft-imp.js', array( 'jquery' ));
-			wp_enqueue_script('archive-nom-imp', PF_URL . 'assets/js/nom-archive-imp.js', array( 'jquery' ));
-			wp_enqueue_script('views');			
-			wp_enqueue_script('readability-imp');
-			wp_enqueue_script('infiniscroll');
-			wp_enqueue_script('scrollimp');			
+			wp_enqueue_script(PF_SLUG . '-tinysort');
+			wp_enqueue_script(PF_SLUG . '-sort-imp');
+			wp_enqueue_script(PF_SLUG . '-jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-send-to-draft-imp', PF_URL . 'assets/js/send-to-draft-imp.js', array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-archive-nom-imp', PF_URL . 'assets/js/nom-archive-imp.js', array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-views');			
+			wp_enqueue_script(PF_SLUG . '-readability-imp');
+			wp_enqueue_script(PF_SLUG . '-infiniscroll');
+			wp_enqueue_script(PF_SLUG . '-scrollimp');			
 			wp_enqueue_script('pf-relationships');
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
-			wp_enqueue_style('bootstrap-style');
-			wp_enqueue_style('bootstrap-responsive-style');
+			wp_enqueue_style(PF_SLUG . '-bootstrap-style');
+			wp_enqueue_style(PF_SLUG . '-bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
 			wp_enqueue_script( 'post' );
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 		}
 		if (('nomination') == get_post_type()) {
-			wp_enqueue_script('add-nom-imp', PF_URL . 'assets/js/add-nom-imp.js', array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-add-nom-imp', PF_URL . 'assets/js/add-nom-imp.js', array( 'jquery' ));
 		}		
 		if (('pressforward_page_pf-feeder') != $hook) { return; }
 		else {
 			//And now lets enqueue the script, ensuring that jQuery is already active.
 
-			wp_enqueue_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
-			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
 
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
-			wp_enqueue_style('bootstrap-style');
-			wp_enqueue_style('bootstrap-responsive-style');
+			wp_enqueue_style(PF_SLUG . '-bootstrap-style');
+			wp_enqueue_style(PF_SLUG . '-bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
