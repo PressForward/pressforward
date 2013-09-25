@@ -431,6 +431,7 @@ class PF_Nominations {
 			$xmlResponse = new WP_Ajax_Response($response);
 			$xmlResponse->send();
 		ob_end_flush();
+		die();
 	}
 
 	function build_nom_draft() {
@@ -535,6 +536,7 @@ class PF_Nominations {
 			$xmlResponse->send();
 			ob_end_flush();
 		}
+		die();
 	}
 
 
