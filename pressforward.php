@@ -95,6 +95,7 @@ class PressForward {
 		require( PF_ROOT . '/includes/relationships.php' );
 		require( PF_ROOT . '/includes/nominations.php' );
 		require( PF_ROOT . '/includes/admin.php' );
+		require( PF_ROOT . '/includes/feeds.php' );
 	}
 
 	/**
@@ -107,6 +108,17 @@ class PressForward {
 			$this->schema = new PF_Feed_Item_Schema;
 		}
 	}
+	
+	/**
+	 * Sets up the Feeds functionality
+	 *
+	 * @since 1.7
+	 */
+	function set_up_feeds() {
+		if ( empty( $this->pf_feeds ) ) {
+			$this->pf_feeds = new PF_Feeds_Schema;
+		}
+	}	
 
 	/**
 	 * Sets up the Dashboard admin
