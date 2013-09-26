@@ -19,7 +19,7 @@ class PF_Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
 		add_action( 'wp_head', array( $this, 'pf_aggregation_forwarder'));
 		add_filter('admin_body_class',  array( $this, 'add_pf_body_class'));
-
+		add_filter('pf_admin_pages', array($this, 'state_pf_admin_pages'), 10,3);
 		// Catch form submits
 		add_action( 'admin_init', array($this, 'pf_options_admin_page_save') );
 
@@ -94,6 +94,19 @@ class PF_Admin {
 			PF_NOM_POSTER
 		);
 **/
+	
+#		$verifyPages = array();
+		
+#		$pf_admin_pages = apply_filters('pf_admin_pages',$verifyPages);
+	
+	}
+	
+	function state_pf_admin_pages($thepages){
+	
+		$basePages = array(PF_SLUG . '-feeder',PF_SLUG . '-options',PF_SLUG . '-review',PF_MENU_SLUG);
+		$thepages = array_merge($basePages, (array)$thepages);
+		return $thepages;
+	
 	}
 	
 	function add_pf_body_class($classes) {
@@ -1017,7 +1030,19 @@ class PF_Admin {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
+		if ($_GET['page'] != ('pf-options'|'pf-feeder')){
+			return;
+		}
 
+		
+		$verifyPages = array();
+		
+		$pf_admin_pages = apply_filters('pf_admin_pages',$verifyPages);
+
+		if (! in_array($pf_admin_pages)){
+			return;
+		}
+		
 		check_admin_referer( 'pf_settings' );
 
 		$arrayedAdminRights = array(
