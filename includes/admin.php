@@ -320,6 +320,13 @@ class PF_Admin {
 					} 
 					if ($format === 'nomination'){
 					
+						$nom_count_classes = 'btn btn-small';
+						if ($metadata['nom_count'] > 0){
+							$nom_count_classes .= ' btn-info';
+						} 
+					
+						echo '<a class="'.$nom_count_classes.'" data-toggle="tooltip" title="' . __('Nomination Count', 'pf') .  '" form="' . $metadata['nom_id'] . '">'.$metadata['nom_count'].'<i class="icon-play"></i></button></a>';
+					
 						echo '<a class="btn btn-small nom-to-archive schema-actor" pf-schema="archive" pf-schema-class="archived" data-toggle="tooltip" title="' . __('Archive', 'pf') .  '" form="' . $metadata['nom_id'] . '"><img src="' . PF_URL . 'assets/images/archive.png" /></button></a>';
 						$arcive_status = "";
 						if ( 1 == pf_get_relationship_value( 'draft', $metadata['item_feed_post_id'], $user_id ) ){
