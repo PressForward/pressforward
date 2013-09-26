@@ -20,11 +20,6 @@ jQuery(document).ready(function () {
 						jQuery('.list #'+itemID+' header .actions').appendTo('#'+itemID+' footer');
 							
 
-						
-						
-						
-			
-			
 		});
 	
 
@@ -33,6 +28,24 @@ jQuery(document).ready(function () {
 		hideModal();	
 		allContentModal(); 
 		modalReadReset();
+		jQuery('.nom-to-archive').tooltip({
+			placement : 'top',
+			trigger: 'hover',
+			title: 'Item'
+			
+		});
+		jQuery('.nom-to-draft').tooltip({
+			placement : 'top',
+			trigger: 'hover',
+			title: 'Item'
+			
+		});
+		jQuery('.nominate-now').tooltip({
+			placement : 'top',
+			trigger: 'hover',
+			title: 'Nominate'
+			
+		});	
 
 	});	
 
