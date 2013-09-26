@@ -54,13 +54,7 @@ jQuery(document).ready(function() {
 		
 	});
 	
-	jQuery('.pf_container').on('click', ".itemInfobutton", function(e){
-		e.preventDefault();
-		var element		= jQuery(e);
-		var itemID		= element.attr('id');
-		jQuery('#info-box-'+itemID).toggle();
-	});
-	
+
 	jQuery('.navwidget').scrollspy()
 	
 });
