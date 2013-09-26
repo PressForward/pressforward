@@ -587,11 +587,15 @@ class PF_RSS_Import extends PF_Module {
 		return;
 	}
 
-	function pf_feedlist_validate($input){
+	static function pf_feedlist_validate($input){
 		if (!empty($input['single'])){
 			if (!(is_array($input['single']))){
 				//$simp = new SimplePie();
 				$simp = fetch_feed($input['single']);
+				if ( is_wp_error($simp) ){
+					
+					wp_die($simp->get_error_message());
+				}
 				//Needs some sort of error returned on no-feed
 				$inputSingleSub = $simp->subscribe_url();
 				$inputSingle = array($inputSingleSub);
