@@ -314,7 +314,7 @@ class PF_Admin {
 						echo '</form>';
 					}
 					# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
-					echo '<button class="btn btn-small itemInfobutton" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover"><i class="icon-info-sign"></i></button>';
+					echo '<button class="btn btn-small itemInfobutton" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover" data-title="" data-target="'.$item['item_id'].'"><i class="icon-info-sign"></i></button>';
 					
 					if (pf_is_item_starred_for_user( $id_for_comments, $user_id ) ){
 						echo '<!-- item_id selected = ' . $item_id . ' -->';
@@ -355,23 +355,7 @@ class PF_Admin {
 	
 					?>
 						<script type="text/javascript">
-						jQuery(document).ready(function() {
-							jQuery(function(){
-								jQuery("#<?php echo 'info-' . $item['item_id'] . '-' . $infoPop; ?>").popover({
-									title: pop_title_<?php echo $item['item_id'] ?>,
-									html: true,
-									content: pop_html_<?php echo $item['item_id'] ?>,
-									placement: "<?php echo $infoPop ?>",
-									container: ".actions"
-								})
-								.on("click", function(){
-									jQuery('.popover').addClass(jQuery(this).data("class")); //Add class .dynamic-class to <div>
-								});
-							});
-							jQuery(".modal.pfmodal").on('hide', function(evt){
-								jQuery("#<?php echo 'info-' . $item['item_id'] . '-' . $infoPop; ?>").popover('hide');
-							})
-						});
+
 						</script>
 					<?php 
 					if ($modal === true){
