@@ -414,7 +414,7 @@ class PF_RSS_Import extends PF_Module {
 						$item_categories_string = implode(',',$itemTerms);
 					} else { $item_categories_string = ''; }
 					//one final cleanup of the content.
-					$contentObj = new htmlchecker($item_content);
+					$contentObj = new pf_htmlchecker($item_content);
 					$item_content = $contentObj->closetags($item_content);
 					print_r($c);
 					$rssObject['rss_' . $c] = pf_feed_object(
@@ -515,7 +515,7 @@ class PF_RSS_Import extends PF_Module {
         ?>
 			<br />
 			<br />
-		<button type="submit" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="Reset all Feed Retrieval Options"><?php _e('Reset all Feed Retrieval Options', 'pf'); ?></button>    <br />
+		<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="Reset all Feed Retrieval Options"><?php _e('Reset all Feed Retrieval Options', 'pf'); ?></button>    <br />
 			 <?php
 			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0);
 			$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
@@ -587,11 +587,15 @@ class PF_RSS_Import extends PF_Module {
 		return;
 	}
 
-	function pf_feedlist_validate($input){
+	static function pf_feedlist_validate($input){
 		if (!empty($input['single'])){
 			if (!(is_array($input['single']))){
 				//$simp = new SimplePie();
 				$simp = fetch_feed($input['single']);
+				if ( is_wp_error($simp) ){
+					
+					wp_die($simp->get_error_message());
+				}
 				//Needs some sort of error returned on no-feed
 				$inputSingleSub = $simp->subscribe_url();
 				$inputSingle = array($inputSingleSub);
@@ -706,8 +710,18 @@ class PF_RSS_Import extends PF_Module {
 	public function admin_enqueue_scripts() {
 		global $pf;
 
-		wp_enqueue_script( 'feed-manip-ajax', $pf->modules['rss-import']->module_url . 'assets/js/feed-manip-imp.js', array( 'jquery', 'twitter-bootstrap') );
-		wp_enqueue_style( 'feeder-style', $pf->modules['rss-import']->module_url . 'assets/css/feeder-styles.css' );
+		global $pagenow;
+
+		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
+
+		if ( !in_array( $pagenow, array( 'admin.php' ) ) )
+			return;
+
+		if(!in_array($hook, array('pressforward_page_pf-feeder')) )
+			return;		
+		
+		wp_enqueue_script( 'feed-manip-ajax', $pf->modules['rss-import']->module_url . 'assets/js/feed-manip-imp.js', array( 'jquery', PF_SLUG . '-twitter-bootstrap') );
+		wp_enqueue_style( PF_SLUG . '-feeder-style', $pf->modules['rss-import']->module_url . 'assets/css/feeder-styles.css' );
 	}
 
 	function feed_retrieval_reset(){

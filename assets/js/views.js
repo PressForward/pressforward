@@ -176,7 +176,54 @@ function commentModal(){
 			});				
 	});
 }
+
+function PFBootstrapInits() {
+
+	jQuery('.nom-to-archive').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Item'
+		
+	});
+	jQuery('.nom-to-draft').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Item'
+		
+	});
+	jQuery('.nominate-now').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Nominate'
+		
+	});	
+	jQuery('.itemInfobutton').popover({
+		html : true,
+		container : '.actions',
+		content : function(){
+			var idCode = jQuery(this).attr('data-target');
+			var contentOutput = '<div class="feed-item-info-box">';
+			contentOutput += jQuery('#info-box-'+idCode).html();
+			contentOutput += '</div>';
+			return contentOutput;
+		}
+	})
+	.on("click", function(){
+		jQuery('.popover').addClass(jQuery(this).data("class")); //Add class .dynamic-class to < div>
+	});	
+	
+	jQuery(".modal.pfmodal").on('hide', function(evt){
+		jQuery(".itemInfobutton").popover('hide');
+	})	
+	jQuery(".modal.pfmodal").on('show', function(evt){
+		jQuery(".itemInfobutton").popover('hide');
+	})		
+	
+
+}
+
 jQuery(window).load(function() {
+
 	
 	jQuery('#gogrid').click(function (evt){ 
 			evt.preventDefault();
@@ -209,7 +256,9 @@ jQuery(window).load(function() {
 	reviewModal(); 
 	hideModal();
 	commentPopModal();
+	PFBootstrapInits();
 //	commentModal();
+
 	jQuery('.nom-to-archive').tooltip({
 		placement : 'top',
 		trigger: 'hover',

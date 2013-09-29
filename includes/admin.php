@@ -19,7 +19,7 @@ class PF_Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
 		add_action( 'wp_head', array( $this, 'pf_aggregation_forwarder'));
 		add_filter('admin_body_class',  array( $this, 'add_pf_body_class'));
-
+		add_filter('pf_admin_pages', array($this, 'state_pf_admin_pages'), 10,3);
 		// Catch form submits
 		add_action( 'admin_init', array($this, 'pf_options_admin_page_save') );
 
@@ -94,6 +94,19 @@ class PF_Admin {
 			PF_NOM_POSTER
 		);
 **/
+	
+#		$verifyPages = array();
+		
+#		$pf_admin_pages = apply_filters('pf_admin_pages',$verifyPages);
+	
+	}
+	
+	function state_pf_admin_pages($thepages){
+	
+		$basePages = array(PF_SLUG . '-feeder',PF_SLUG . '-options',PF_SLUG . '-review',PF_MENU_SLUG);
+		$thepages = array_merge($basePages, (array)$thepages);
+		return $thepages;
+	
 	}
 	
 	function add_pf_body_class($classes) {
@@ -301,7 +314,7 @@ class PF_Admin {
 						echo '</form>';
 					}
 					# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
-					echo '<button class="btn btn-small itemInfobutton" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover"><i class="icon-info-sign"></i></button>';
+					echo '<button class="btn btn-small itemInfobutton" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover" data-title="" data-target="'.$item['item_id'].'"><i class="icon-info-sign"></i></button>';
 					
 					if (pf_is_item_starred_for_user( $id_for_comments, $user_id ) ){
 						echo '<!-- item_id selected = ' . $item_id . ' -->';
@@ -342,23 +355,7 @@ class PF_Admin {
 	
 					?>
 						<script type="text/javascript">
-						jQuery(window).load(function() {
-							jQuery(function(){
-								jQuery("#<?php echo 'info-' . $item['item_id'] . '-' . $infoPop; ?>").popover({
-									title: pop_title_<?php echo $item['item_id'] ?>,
-									html: true,
-									content: pop_html_<?php echo $item['item_id'] ?>,
-									placement: "<?php echo $infoPop ?>",
-									container: ".actions"
-								})
-								.on("click", function(){
-									jQuery('.popover').addClass(jQuery(this).data("class")); //Add class .dynamic-class to <div>
-								});
-							});
-							jQuery(".modal.pfmodal").on('hide', function(evt){
-								jQuery("#<?php echo 'info-' . $item['item_id'] . '-' . $infoPop; ?>").popover('hide');
-							})
-						});
+
 						</script>
 					<?php 
 					if ($modal === true){
@@ -425,7 +422,7 @@ class PF_Admin {
 				}
 		if ($format === 'nomination'){
 			
-			echo '<article class="feed-item entry nom-container schema-actor ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . ' '.$readClass.'" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '" pf-schema="read" pf-schema-class="article-read">';
+			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . ' '.$readClass.'" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '" pf-schema="read" pf-schema-class="article-read">';
 		} else {
 			$id_for_comments = $item['post_id'];
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
@@ -583,7 +580,7 @@ class PF_Admin {
 			  <div class="row-fluid modal-body-row">
 				  <div class="modal-body span9">
 					<?php 
-					$contentObj = new htmlchecker($item['item_content']);
+					$contentObj = new pf_htmlchecker($item['item_content']);
 					$text = $contentObj->closetags($item['item_content']);
 					echo $text; 
 					
@@ -904,75 +901,76 @@ class PF_Admin {
 		global $pagenow;
 
 			wp_register_style( PF_SLUG . '-style', PF_URL . 'assets/css/style.css');
-			wp_register_style( 'bootstrap-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
-			wp_register_style( 'bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
+			wp_register_style( PF_SLUG . '-bootstrap-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
+			wp_register_style( PF_SLUG . '-bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
+			wp_register_script(PF_SLUG . '-twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
 			wp_register_style( PF_SLUG . '-susy-style', PF_URL . 'assets/css/susy.css');
 			wp_register_style( PF_SLUG . '-reset-style', PF_URL . 'assets/css/reset.css');
-			wp_register_script('views', PF_URL . 'assets/js/views.js', array( 'twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide'  ));	
-			wp_register_script('readability-imp', PF_URL . 'assets/js/readability-imp.js', array( 'twitter-bootstrap', 'jquery', 'views' ));
-			wp_register_script('infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery', 'views', 'readability-imp' ));
-			wp_register_script('scrollimp', PF_URL . 'assets/js/scroll-imp.js', array( 'infiniscroll', 'pf-relationships' ));
+			wp_register_script(PF_SLUG . '-views', PF_URL . 'assets/js/views.js', array( PF_SLUG . '-twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide'  ));	
+			wp_register_script(PF_SLUG . '-readability-imp', PF_URL . 'assets/js/readability-imp.js', array( PF_SLUG . '-twitter-bootstrap', 'jquery', PF_SLUG . '-views' ));
+			wp_register_script(PF_SLUG . '-infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery', PF_SLUG . '-views', PF_SLUG . '-readability-imp', 'jquery' ));
+			wp_register_script(PF_SLUG . '-scrollimp', PF_URL . 'assets/js/scroll-imp.js', array( PF_SLUG . '-infiniscroll', 'pf-relationships', PF_SLUG . '-views'));
 			wp_register_script('pf-relationships', PF_URL . 'assets/js/relationships.js', array( 'jquery' ));
-			wp_register_style( PF_SLUG . '-responsive-style', PF_URL . 'assets/css/pf-responsive.css', array(PF_SLUG . '-reset-style', PF_SLUG . '-style', 'bootstrap-style', PF_SLUG . '-susy-style'));
-			wp_register_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
-			wp_register_script('sort-imp', PF_URL . 'assets/js/sort-imp.js', array( 'tinysort', 'twitter-bootstrap', 'jq-fullscreen' ));
+			wp_register_style( PF_SLUG . '-responsive-style', PF_URL . 'assets/css/pf-responsive.css', array(PF_SLUG . '-reset-style', PF_SLUG . '-style', PF_SLUG . '-bootstrap-style', PF_SLUG . '-susy-style'));
+			wp_register_script(PF_SLUG . '-tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
+			wp_register_script(PF_SLUG . '-sort-imp', PF_URL . 'assets/js/sort-imp.js', array( PF_SLUG . '-tinysort', PF_SLUG . '-twitter-bootstrap', PF_SLUG . '-jq-fullscreen' ));
 
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
 		if (('toplevel_page_pf-menu') == $hook) {
 			//And now lets enqueue the script, ensuring that jQuery is already active.
 
-			wp_enqueue_script('tinysort');
-			wp_enqueue_script('sort-imp');
-			wp_enqueue_script('views');			
-			wp_enqueue_script('readability-imp');
-			wp_enqueue_script('nomination-imp', PF_URL . 'assets/js/nomination-imp.js', array( 'jquery' ));
-			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
-			wp_enqueue_script('jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
-			wp_enqueue_script('infiniscroll');
-			wp_enqueue_script('scrollimp');
+			wp_enqueue_script(PF_SLUG . '-tinysort');
+			wp_enqueue_script(PF_SLUG . '-sort-imp');
+			wp_enqueue_script(PF_SLUG . '-views');			
+			wp_enqueue_script(PF_SLUG . '-readability-imp');
+			wp_enqueue_script(PF_SLUG . '-nomination-imp', PF_URL . 'assets/js/nomination-imp.js', array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-twitter-bootstrap');
+			wp_enqueue_script(PF_SLUG . '-jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-infiniscroll');
+			wp_enqueue_script(PF_SLUG . '-scrollimp');
 			wp_enqueue_script('pf-relationships');
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
-			wp_enqueue_style('bootstrap-style');
-			wp_enqueue_style('bootstrap-responsive-style');
+			wp_enqueue_style(PF_SLUG . '-bootstrap-style');
+			wp_enqueue_style(PF_SLUG . '-bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 
 		}
 		if (('pressforward_page_pf-review') == $hook) {
-			wp_enqueue_script('tinysort');
-			wp_enqueue_script('sort-imp');
-			wp_enqueue_script('jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
-			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
-			wp_enqueue_script('send-to-draft-imp', PF_URL . 'assets/js/send-to-draft-imp.js', array( 'jquery' ));
-			wp_enqueue_script('archive-nom-imp', PF_URL . 'assets/js/nom-archive-imp.js', array( 'jquery' ));
-			wp_enqueue_script('views');			
-			wp_enqueue_script('readability-imp');
-			wp_enqueue_script('infiniscroll');
-			wp_enqueue_script('scrollimp');			
+			wp_enqueue_script(PF_SLUG . '-tinysort');
+			wp_enqueue_script(PF_SLUG . '-sort-imp');
+			wp_enqueue_script(PF_SLUG . '-jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-twitter-bootstrap');
+			wp_enqueue_script(PF_SLUG . '-send-to-draft-imp', PF_URL . 'assets/js/send-to-draft-imp.js', array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-archive-nom-imp', PF_URL . 'assets/js/nom-archive-imp.js', array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-views');			
+			wp_enqueue_script(PF_SLUG . '-readability-imp');
+			wp_enqueue_script(PF_SLUG . '-infiniscroll');
+			wp_enqueue_script(PF_SLUG . '-scrollimp');			
 			wp_enqueue_script('pf-relationships');
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
-			wp_enqueue_style('bootstrap-style');
-			wp_enqueue_style('bootstrap-responsive-style');
+			wp_enqueue_style(PF_SLUG . '-bootstrap-style');
+			wp_enqueue_style(PF_SLUG . '-bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
 			wp_enqueue_script( 'post' );
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 		}
 		if (('nomination') == get_post_type()) {
-			wp_enqueue_script('add-nom-imp', PF_URL . 'assets/js/add-nom-imp.js', array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-add-nom-imp', PF_URL . 'assets/js/add-nom-imp.js', array( 'jquery' ));
 		}		
 		if (('pressforward_page_pf-feeder') != $hook) { return; }
 		else {
 			//And now lets enqueue the script, ensuring that jQuery is already active.
 
-			wp_enqueue_script('tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
-			wp_enqueue_script('twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-twitter-bootstrap');
 
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
-			wp_enqueue_style('bootstrap-style');
-			wp_enqueue_style('bootstrap-responsive-style');
+			wp_enqueue_style(PF_SLUG . '-bootstrap-style');
+			wp_enqueue_style(PF_SLUG . '-bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
@@ -1017,7 +1015,19 @@ class PF_Admin {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
+		if ($_GET['page'] != ('pf-options'|'pf-feeder')){
+			return;
+		}
 
+		
+		$verifyPages = array();
+		
+		$pf_admin_pages = apply_filters('pf_admin_pages',$verifyPages);
+
+		if (! in_array($pf_admin_pages)){
+			return;
+		}
+		
 		check_admin_referer( 'pf_settings' );
 
 		$arrayedAdminRights = array(

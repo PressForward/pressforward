@@ -12,7 +12,7 @@
 
  */
  
-class htmlchecker {
+class pf_htmlchecker {
 
  public function __construct(){
 	//$html = $this->closetags($html);

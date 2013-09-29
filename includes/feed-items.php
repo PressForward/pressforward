@@ -190,7 +190,7 @@ class PF_Feed_Item {
 				$item_tags = get_post_meta($post_id, 'item_tags', true);
 				$source_repeat = get_post_meta($post_id, 'source_repeat', true);
 				$readable_status = get_post_meta($post_id, 'readable_status', true);
-				$contentObj = new htmlchecker(get_the_content());
+				$contentObj = new pf_htmlchecker(get_the_content());
 				$item_content = $contentObj->closetags(get_the_content());
 
 				$feedObject['rss_archive_' . $c] = pf_feed_object(
