@@ -69,6 +69,7 @@ class PF_Feeds_Schema {
 			'public'      => false,
 			'hierarchical' => true,
 			'supports' 	=> array('title','editor','author','thumbnail','excerpt','custom-fields','page-attributes'),
+			'taxonomies' => ('post_tag'),
 			'show_ui'     => false, // for testing only
 		) ) );
 
@@ -115,7 +116,7 @@ class PF_Feeds_Schema {
 	# Not only is this moving feeds over into feed CPT posts, but this methodology will insure a time-out won't force the process to restart.
 	# There should probably be a AJAX interface for this, same as the AB subscribe method. 
 	public function progressive_feedlist_transformer($feedlist, $xmlUrl, $key) {
-		$check = $this->save_pf_feed($xmlUrl);
+		$check = self::save_pf_feed($xmlUrl);
 		if ($check){
 			unset($feedlist[$key]);
 			update_option( PF_SLUG . '_feedlist', $feedlist );
@@ -130,17 +131,53 @@ class PF_Feeds_Schema {
 	public function create_pf_feed($feedUrl, $args = array()){
 	
 		$r = wp_parse_args( $args, array(
-			'title'   => false,
-			'url'     => $feedURL,
-			'htmlUrl' => false,
-			'type'	  => 'rss',
-			'description' => false,
-			'thumbnail'  => false,
+			'title'   		=> false,
+			'url'     		=> $feedURL,
+			'htmlUrl' 		=> false,
+			'type'	  		=> 'rss',
+			'description' 	=> false,
+			'feed_author' 	=> false,
+			'feed_icon'  	=> false,
+			'copyright'		=> false,			
+			'thumbnail'  	=> false,
 			'user_added'    => false,
-			'module_added' => false,
+			'module_added' 	=> 'rss-import',
 			'tags'    => array(),
 		) );
-	
+		
+		if ($r['type'] == 'rss'){
+		
+			if (is_wp_error($theFeed = fetch_feed($feedURL))){
+				return new WP_Error('badfeed', __('The feed fails verification.'));
+			}
+			
+			if (!$r['htmlUrl']){
+				$r['htmlUrl'] = $theFeed->get_permalink();
+			}
+			if (!$r['title']){
+				$r['title'] = $theFeed->get_title();
+			}
+			if (!$r['description']){
+				$r['description'] = $theFeed->get_description();
+			}
+			if (!$r['feed_icon']){
+				$r['feed_icon'] = $theFeed->get_favicon();
+			}	
+			if (!$r['feed_author']){
+				$r['feed_author'] = $theFeed->get_author();
+			}	
+			if (!$r['thumbnail']){
+				$r['thumbnail'] = $theFeed->get_image_url();
+			}				
+			if (empty($r['tags'])){
+				$r['tags'] = $theFeed->get_feed_tags();
+			}			
+		}
+		if (!$r['user_added']){
+			$current_user = wp_get_current_user();
+			$r['user_added'] = $current_user->user_login;
+		}			
+
 	}
 	
 	# This function makes it easy to set the type of 'feed', which is important when we move to using something other than RSS.
