@@ -468,7 +468,7 @@ class PF_RSS_Import extends PF_Module {
 	# Where we store a list of feeds to check.
 	public function pf_feedlist() {
 
-		$feedlist = array('http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Flabel%2FEditors-at-Large');
+		$feedlist = array('http://pressforward.org/feed/');
 		//http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FEditors-at-Large%20Stream
 		//'http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations';
 		//http://feeds.feedburner.com/DHNowEditorsChoiceAndNews

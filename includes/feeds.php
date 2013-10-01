@@ -38,8 +38,9 @@ class PF_Feeds_Schema {
 		$this->feed_tag_taxonomy = 'pf_feed_category';
 
 		// Post types and taxonomies must be registered after 'init'
-		add_action( 'init', array( $this, 'register_feed_post_type' ) );
-		add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
+		#add_action( 'init', array( $this, 'register_feed_post_type' ) );
+		#add_action('admin_init', array($this, 'deal_with_old_feedlists') );
+		#add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
 	
 	}
 	
@@ -67,7 +68,7 @@ class PF_Feeds_Schema {
 			'description' => __( 'Feeds imported by PressForward&#8217;s Feed Importer', 'pf' ),
 			'public'      => false,
 			'hierarchical' => true,
-			'supports' 	=> array('title','editor','author','thumbnail','excerpt','custom-fields','page-attributes');
+			'supports' 	=> array('title','editor','author','thumbnail','excerpt','custom-fields','page-attributes'),
 			'show_ui'     => false, // for testing only
 		) ) );
 
@@ -92,6 +93,68 @@ class PF_Feeds_Schema {
 			'show_admin_columns' => true,
 			'rewrite' => false,
 		) ) );
+	}
+	
+	public function deal_with_old_feedlists() {
+		
+		if ( false == (get_option( PF_SLUG . '_feedlist' )) ){
+			return true;
+		} else {
+			$feedlist = get_option( PF_SLUG . '_feedlist' );
+		}
+		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
+		pf_log('Preparing to transform feedlist into a list of feed posts.');
+		$ordered_all_feeds_array = array_values($all_feeds_array);
+		$tidy_all_feeds_array = array_filter( $ordered_all_feeds_array, 'strlen' );
+		foreach ($tidy_all_feeds_array as $key => $feed){
+			$this->progressive_feedlist_transformer($tidy_all_feeds_array, $feed, $key);
+		}
+		
+	}
+	
+	# Not only is this moving feeds over into feed CPT posts, but this methodology will insure a time-out won't force the process to restart.
+	# There should probably be a AJAX interface for this, same as the AB subscribe method. 
+	public function progressive_feedlist_transformer($feedlist, $xmlUrl, $key) {
+		$check = $this->save_pf_feed($xmlUrl);
+		if ($check){
+			unset($feedlist[$key]);
+			update_option( PF_SLUG . '_feedlist', $feedlist );
+		}
+	}
+	
+	/*
+	 * Arguments:
+	 * 		$htmlUrl = false, $type = false, $title = false, $tags = false, $thumbnail = false, $description = false, $added_by_user = false, $added_by_module = false 
+	 */
+	
+	public function create_pf_feed($feedUrl, $args = array()){
+	
+		$r = wp_parse_args( $args, array(
+			'title'   => false,
+			'url'     => $feedURL,
+			'htmlUrl' => false,
+			'type'	  => 'rss',
+			'description' => false,
+			'thumbnail'  => false,
+			'user_added'    => false,
+			'module_added' => false,
+			'tags'    => array(),
+		) );
+	
+	}
+	
+	# This function makes it easy to set the type of 'feed', which is important when we move to using something other than RSS.
+	
+	public function set_pf_feed_type($id, $type = "rss") {
+	
+		$updateResult = update_post_meta($id, 'feed_type', $type);
+		
+		if (is_wp_error($updateResult)){
+			return $updateResult->get_error_message();
+		} else {
+			return true;
+		}
+	
 	}
 	
 }
