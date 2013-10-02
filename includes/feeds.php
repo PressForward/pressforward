@@ -20,8 +20,8 @@
  */
  
 class PF_Feeds_Schema {
-	var $feed_post_type;
-	var $feed_tag_taxonomy;
+	var $post_type;
+	var $tag_taxonomy;
 
 	public function init() {
 		static $instance;
@@ -34,20 +34,20 @@ class PF_Feeds_Schema {
 	}	
 	
 	public function __construct() {
-		$this->feed_post_type = 'pf_feed';
-		$this->feed_tag_taxonomy = 'pf_feed_category';
+		$this->post_type = 'pf_feed';
+		$this->tag_taxonomy = 'pf_feed_category';
 
 		// Post types and taxonomies must be registered after 'init'
-		#add_action( 'init', array( $this, 'register_feed_post_type' ) );
+		add_action( 'init', array( $this, 'register_feed_post_type' ) );
 		#add_action('admin_init', array($this, 'deal_with_old_feedlists') );
-		#add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
+		add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
 	
 	}
 	
 	/**
 	 * Feed items are stored in a CPT, which is registered here
 	 */
-	public function register_feed_item_post_type() {
+	public function register_feed_post_type() {
 		$labels = array(
 			'name'               => __( 'Feeds', 'pf' ),
 			'singular_name'      => __( 'Feed', 'pf' ),
@@ -62,7 +62,7 @@ class PF_Feeds_Schema {
 			'not_found_in_trash' => __( 'No feeds found in trash', 'pf' ),
 		);
 
-		register_post_type( $this->feed_item_post_type, apply_filters( 'pf_register_feed_post_type_args', array(
+		register_post_type( $this->post_type, apply_filters( 'pf_register_feed_post_type_args', array(
 			'label'       => $labels['name'],
 			'labels'      => $labels,
 			'description' => __( 'Feeds imported by PressForward&#8217;s Feed Importer', 'pf' ),
@@ -70,7 +70,7 @@ class PF_Feeds_Schema {
 			'hierarchical' => true,
 			'supports' 	=> array('title','editor','author','thumbnail','excerpt','custom-fields','page-attributes'),
 			'taxonomies' => ('post_tag'),
-			'show_ui'     => false, // for testing only
+			'show_ui'     => true, // for testing only
 		) ) );
 
 		do_action( 'pf_feed_item_post_type_registered' );
@@ -88,12 +88,34 @@ class PF_Feeds_Schema {
 			'search_items'  => __( 'Search Feed Tags', 'pf' ),
 		);
 
-		register_taxonomy( $this->feed_tag_taxonomy, $this->feed_post_type, apply_filters( 'pf_register_feed_tag_taxonomy_args', array(
+		register_taxonomy( $this->tag_taxonomy, $this->post_type, apply_filters( 'pf_register_feed_tag_taxonomy_args', array(
 			'labels' => $labels,
 			'public' => true,
 			'show_admin_columns' => true,
 			'rewrite' => false,
 		) ) );
+	}
+	
+	public function get( $args = array() ) {
+		$wp_args = array(
+			'post_type'        => $this->post_type,
+			'post_status'      => 'publish',
+			'suppress_filters' => false,
+		);
+
+	}
+	
+
+	public function create( $args = array() ) {
+		$r = wp_parse_args( $args, array(
+			'title'   => '',
+			'url'     => '',
+			'content' => '',
+			'source'  => '',
+			'date'    => '',
+			'tags'    => array(),
+		) );
+
 	}
 	
 	public function deal_with_old_feedlists() {
