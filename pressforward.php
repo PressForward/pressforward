@@ -41,12 +41,14 @@ class PressForward {
 	var $schema;
 	var $admin;
 	var $nominations;
+	var $pf_feeds;
 
 	// See http://php.net/manual/en/language.oop5.decon.php to get a better understanding of what's going on here.
 	function __construct() {
 
 		$this->includes();
-
+		
+		$this->set_up_feeds();
 		$this->set_up_schema();
 		$this->set_up_nominations();
 		$this->set_up_admin();
