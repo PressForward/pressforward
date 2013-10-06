@@ -468,6 +468,20 @@ class PF_Nominations {
 			//Now function will not update nomination count when it pushes nomination to publication.
 			$post_check = $this->get_post_nomination_status($nom_date, $item_id, 'post', false);
 			$newPostID = 'repeat';
+			
+			# Check if the item was rendered readable, if not, make it so.
+			$readable_state = get_post_meta($item_id, 'readable_status', true);
+			if ($readable_state != 1){
+				$readArgs = array(
+					'force' => '',
+					'descrip' => htmlspecialchars_decode($item_content),
+					'url' => $_POST['item_link'],
+					'authorship' => $_POST['item_author']
+					
+				);
+				$data['post_content'] = PF_Readability::get_readable_text($readArgs);
+			}			
+			
 			//Alternative check with post_exists? or use same as above?
 			if ($post_check != true) {
 ##Check
