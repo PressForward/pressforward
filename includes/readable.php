@@ -5,31 +5,29 @@
  */
 
 class PF_Readability {
+	
 	/**
-	 * Handles a readability request via POST
-	 */
-	public static function make_it_readable($quickresponse = false){
-
-		// Verify nonce
-		if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )
-			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) );
-		ob_start();
-		$read_status = 'readable';
-		$item_id = $_POST['read_item_id'];
-		$post_id = $_POST['post_id'];
-		$force = $_POST['force'];
-		//error_reporting(0);
-		if ( (false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) )) || $force == 'force' ) {
-
+	 * Abstract function to make everything readable.
+	 *
+	 * Potential arguments to base via array
+	 * 			$args = array(
+	 *			'force' 		=> $force,
+	 *			'descrip' 		=> $_POST['content'],
+	 *			'url' 			=> $url,
+	 *			'authorship'	=> $_POST['authorship']
+	 *		);
+	*/
+	public static function get_readable_text($args){
+			
+			extract( $args, EXTR_SKIP );
 			set_time_limit(0);
-			$url = pf_de_https($_POST['url']);
+			$url = pf_de_https($url);
 			$readability_stat = $url;
-			$descrip = $_POST['content'];
 			$descrip = rawurldecode($descrip);
 			if (get_magic_quotes_gpc())  
 				$descrip = stripslashes($descrip);
 
-			if ($_POST['authorship'] == 'aggregation') {
+			if ($authorship == 'aggregation') {
 				$aggregated = true;
 			} else {
 				$aggregated = false;
@@ -79,6 +77,40 @@ class PF_Readability {
 				$read_status = 'already_readable';
 				$itemReadReady = $descrip;
 			}
+			
+			$return_args = array( 'status' => $read_status, 'readable' => $itemReadReady);
+			
+			return $return_args;
+			
+	}
+	
+	/**
+	 * Handles a readability request via POST
+	 */
+	public static function make_it_readable($quickresponse = false){
+
+		// Verify nonce
+		if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )
+			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) );
+		ob_start();
+		$read_status = 'readable';
+		$item_id = $_POST['read_item_id'];
+		$post_id = $_POST['post_id'];
+		$force = $_POST['force'];
+		//error_reporting(0);
+		if ( (false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) )) || $force == 'force' ) {
+
+			$args = array(
+				'force' 		=> $force,
+				'descrip' 		=> $_POST['content'],
+				'url' 			=> $url,
+				'authorship'	=> $_POST['authorship']
+			);
+			
+			$readable_ready = self::get_readable_text($args);
+
+			$read_status = $readable_ready['status'];
+			$itemReadReady = $readable_ready['readable'];
 
 			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
 		}
