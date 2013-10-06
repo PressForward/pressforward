@@ -15,21 +15,21 @@ jQuery(document).ready(function () {
     }, function(arrayOfNewElems){
 		jQuery(arrayOfNewElems).each(function (elem){	
 			
-						var element		= jQuery(this);
+						var element		= jQuery(elem);
 						var itemID		= element.attr('id');
 						jQuery('.list #'+itemID+' header .actions').appendTo('#'+itemID+' footer');
-						
-						
-						
-			
-			
+							
+
 		});
 	
+
 		reshowModal(); 
 		reviewModal(); 
 		hideModal();	
 		allContentModal(); 
-		modalReadReset();	
+		modalReadReset();
+		PFBootstrapInits();
+
 	});	
 
 

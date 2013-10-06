@@ -197,8 +197,16 @@ class PF_AB_Subscribe extends PF_Module {
 	 * Enqueue our scripts and styles for the progressbar to work
 	 */
 	public function admin_enqueue_scripts() {
-		global $pf;
+		global $pf, $pagenow;
 
+		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
+
+		if ( !in_array( $pagenow, array( 'admin.php' ) ) )
+			return;
+
+		if(!in_array($hook, array('pressforward_page_pf-feeder')) )
+			return;
+			
 		wp_enqueue_script( 'jquery-ui' );
 		wp_enqueue_script( 'jquery-ui-progressbar' );
 		wp_enqueue_script( 'ab-refresh-progressbar', $pf->modules['ab-subscribe']->module_url . 'js/progressbar.js', array( 'jquery', 'jquery-ui-progressbar') );

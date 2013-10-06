@@ -54,13 +54,7 @@ jQuery(document).ready(function() {
 		
 	});
 	
-	jQuery('.itemInfobutton').click(function (e){
-		e.preventDefault();
-		var element		= jQuery(this);
-		var itemID		= element.attr('id');
-		jQuery('#info-box-'+itemID).toggle();
-	});
-	
+
 	jQuery('.navwidget').scrollspy()
 	
 });

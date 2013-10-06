@@ -372,10 +372,9 @@ class PF_Nominations {
 		
 		$readable_status = get_post_meta($_POST['item_post_id'], 'readable_status', true);
 		if ($readable_status != 1){
-			$item_content = PF_Readability::readability_object($_POST['item_link']);
-			if (!$item_content || ($item_content == 'error-secured')){
-				$item_content = htmlspecialchars_decode($_POST['item_content']);
-			}
+			$read_args = array('force' => '', 'descrip' => $item_content, 'url' => $_POST['item_link'], 'authorship' => $_POST['item_author'] );
+			$item_content_obj = PF_Readability::get_readable_text($read_args);
+			$item_content = $item_content_obj['readable'];
 		} else {
 			$item_content = htmlspecialchars_decode($_POST['item_content']);
 		}
@@ -431,6 +430,7 @@ class PF_Nominations {
 			$xmlResponse = new WP_Ajax_Response($response);
 			$xmlResponse->send();
 		ob_end_flush();
+		die();
 	}
 
 	function build_nom_draft() {
@@ -467,6 +467,20 @@ class PF_Nominations {
 			//Now function will not update nomination count when it pushes nomination to publication.
 			$post_check = $this->get_post_nomination_status($nom_date, $item_id, 'post', false);
 			$newPostID = 'repeat';
+			
+			# Check if the item was rendered readable, if not, make it so.
+			$readable_state = get_post_meta($item_id, 'readable_status', true);
+			if ($readable_state != 1){
+				$readArgs = array(
+					'force' => '',
+					'descrip' => htmlspecialchars_decode($item_content),
+					'url' => $_POST['item_link'],
+					'authorship' => $_POST['item_author']
+					
+				);
+				$data['post_content'] = PF_Readability::get_readable_text($readArgs);
+			}			
+			
 			//Alternative check with post_exists? or use same as above?
 			if ($post_check != true) {
 ##Check
@@ -534,6 +548,7 @@ class PF_Nominations {
 			$xmlResponse = new WP_Ajax_Response($response);
 			$xmlResponse->send();
 			ob_end_flush();
+			die();
 		}
 	}
 

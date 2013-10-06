@@ -12,7 +12,7 @@
 
  */
  
-class htmlchecker {
+class pf_htmlchecker {
 
  public function __construct(){
 	//$html = $this->closetags($html);
@@ -23,6 +23,14 @@ class htmlchecker {
 	$html = str_replace(array('<article', '</article>'), array('<div', '</div>'), $html);
 
 	$html = str_replace(array('<!--', '-->'), array('<span class="commented-out-html" style="display:none;">', '</span>'), $html); 
+	
+    $tags_and_content_to_strip = Array("title","script","link","meta");
+    
+    foreach ($tags_and_content_to_strip as $tag) {
+           $html = preg_replace("/<" . $tag . ">(.|\s)*?<\/" . $tag . ">/","",$html);
+		   $html = preg_replace("/<" . $tag . " (.|\s)*?>/","",$html);
+    }
+	
 	#$html = preg_match_all('#<(article)*>#', $html, $resultc);
   
   #put all opened tags into an array

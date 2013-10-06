@@ -5,31 +5,29 @@
  */
 
 class PF_Readability {
+	
 	/**
-	 * Handles a readability request via POST
-	 */
-	public static function make_it_readable($quickresponse = false){
-
-		// Verify nonce
-		if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )
-			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) );
-		ob_start();
-		$read_status = 'readable';
-		$item_id = $_POST['read_item_id'];
-		$post_id = $_POST['post_id'];
-		$force = $_POST['force'];
-		//error_reporting(0);
-		if ( (false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) )) || $force == 'force' ) {
-
+	 * Abstract function to make everything readable.
+	 *
+	 * Potential arguments to base via array
+	 * 			$args = array(
+	 *			'force' 		=> $force,
+	 *			'descrip' 		=> $_POST['content'],
+	 *			'url' 			=> $url,
+	 *			'authorship'	=> $_POST['authorship']
+	 *		);
+	*/
+	public static function get_readable_text($args){
+			ob_start();
+			extract( $args, EXTR_SKIP );
 			set_time_limit(0);
-			$url = pf_de_https($_POST['url']);
+			$url = pf_de_https($url);
 			$readability_stat = $url;
-			$descrip = $_POST['content'];
 			$descrip = rawurldecode($descrip);
 			if (get_magic_quotes_gpc())  
 				$descrip = stripslashes($descrip);
 
-			if ($_POST['authorship'] == 'aggregation') {
+			if ($authorship == 'aggregation') {
 				$aggregated = true;
 			} else {
 				$aggregated = false;
@@ -79,11 +77,45 @@ class PF_Readability {
 				$read_status = 'already_readable';
 				$itemReadReady = $descrip;
 			}
+			
+			$return_args = array( 'status' => $read_status, 'readable' => $itemReadReady);
+			ob_end_flush();
+			return $return_args;
+			
+	}
+	
+	/**
+	 * Handles a readability request via POST
+	 */
+	public static function make_it_readable($quickresponse = false){
+
+		// Verify nonce
+		if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )
+			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) );
+		ob_start();
+		$read_status = 'readable';
+		$item_id = $_POST['read_item_id'];
+		$post_id = $_POST['post_id'];
+		$force = $_POST['force'];
+		//error_reporting(0);
+		if ( (false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) )) || $force == 'force' ) {
+
+			$args = array(
+				'force' 		=> $force,
+				'descrip' 		=> $_POST['content'],
+				'url' 			=> $_POST['url'],
+				'authorship'	=> $_POST['authorship']
+			);
+			
+			$readable_ready = self::get_readable_text($args);
+
+			$read_status = $readable_ready['status'];
+			$itemReadReady = $readable_ready['readable'];
 
 			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
 		}
 		
-		$contentObj = new htmlchecker($itemReadReady);
+		$contentObj = new pf_htmlchecker($itemReadReady);
 		$itemReadReady = $contentObj->closetags($itemReadReady);		
 		
 		# BIG FREAKING WARNING: This WILL NOT WORK if you have WP_DEBUG and WP_DEBUG_DISPLAY true and either your theme or plugins have bad functions on the save_post hook. 
@@ -239,7 +271,7 @@ class PF_Readability {
 			//print_r($url . ' fails Readability.<br />');
 		}
 		if ($content != false){
-				$contentObj = new htmlchecker($content);
+				$contentObj = new pf_htmlchecker($content);
 				$content = $contentObj->closetags($content);
 		}
 
