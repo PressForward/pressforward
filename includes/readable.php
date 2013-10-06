@@ -103,7 +103,7 @@ class PF_Readability {
 			$args = array(
 				'force' 		=> $force,
 				'descrip' 		=> $_POST['content'],
-				'url' 			=> $url,
+				'url' 			=> $_POST['url'],
 				'authorship'	=> $_POST['authorship']
 			);
 			
