@@ -549,6 +549,7 @@ class PF_Nominations {
 			$xmlResponse = new WP_Ajax_Response($response);
 			$xmlResponse->send();
 			ob_end_flush();
+			die();
 		}
 		die();
 	}

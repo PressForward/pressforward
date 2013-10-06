@@ -18,7 +18,7 @@ class PF_Readability {
 	 *		);
 	*/
 	public static function get_readable_text($args){
-			
+			ob_start();
 			extract( $args, EXTR_SKIP );
 			set_time_limit(0);
 			$url = pf_de_https($url);
@@ -79,7 +79,7 @@ class PF_Readability {
 			}
 			
 			$return_args = array( 'status' => $read_status, 'readable' => $itemReadReady);
-			
+			ob_end_flush();
 			return $return_args;
 			
 	}
