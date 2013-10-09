@@ -1125,7 +1125,7 @@ class PF_Admin {
 		if ($readability_status || $readability_status > 0){
 			$args = array(
 				'post_parent' => $id
-			)
+			);
 			$attachments = get_children($args);
 			foreach ($attachments as $attachment) {
 				wp_delete_post($attachment->ID, true);
