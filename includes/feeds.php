@@ -69,11 +69,11 @@ class PF_Feeds_Schema {
 			'public'      => false,
 			'hierarchical' => true,
 			'supports' 	=> array('title','editor','author','thumbnail','excerpt','custom-fields','page-attributes'),
-			'taxonomies' => ('post_tag'),
+			'taxonomies' => array('post_tag'),
 			'show_ui'     => true, // for testing only
 		) ) );
 
-		do_action( 'pf_feed_item_post_type_registered' );
+		do_action( 'pf_feed_post_type_registered' );
 	}
 
 	public function register_feed_tag_taxonomy() {
@@ -92,7 +92,7 @@ class PF_Feeds_Schema {
 			'labels' => $labels,
 			'public' => true,
 			'show_admin_columns' => true,
-			'rewrite' => false,
+			'rewrite' => false
 		) ) );
 	}
 	
