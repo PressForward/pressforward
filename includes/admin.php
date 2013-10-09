@@ -1097,6 +1097,54 @@ class PF_Admin {
 		}
 	}
 	
+	/*
+	 *
+	 * A method to allow users to delete any CPT or post through AJAX.
+	 * The goal here is to tie an easy use function to an AJAX action,
+	 * that also cleans up all the extra data that PressForward
+	 * can create.
+	 * 
+	 * If a post is made readable, it will attempt (and often
+	 * succeed) at pulling in images. This should remove those
+	 * attached images and remove relationship schema data.
+	 * 
+	 * We should also figure out the best way to call this when
+	 * posts are 'expired' after 60 days. 
+	 * 
+	 * Takes: 
+	 *		Post ID
+	 *		Post Readability Status
+	 *
+	 */
+	
+	function pf_thing_deleter($id = 0, $readability_status = false){
+		if ($id == 0)
+			return new WP_Error('noID', __("No ID supplied for deletion", 'pf'));
+		
+		# Note: this will also remove feed items if a feed is deleted, is that something we want? 
+		if ($readability_status || $readability_status > 0){
+			$args = array(
+				'post_parent' => $id
+			)
+			$attachments = get_children($args);
+			foreach ($attachments as $attachment) {
+				wp_delete_post($attachment->ID, true);
+			}
+		}
+		
+		wp_delete_post($id, true);
+		
+	}
+	
+	function pf_ajax_thing_deleter() {
+		
+		$id = $_POST['post_id'];
+		$read_status = $_POST['made_readable'];
+		
+		$response = pf_thing_deleter($id, $read_status);
+	
+	}
+	
 	/////////////////////////
 	//    AJAX HANDLERS    //
 	/////////////////////////
