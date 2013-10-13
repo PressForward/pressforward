@@ -150,7 +150,7 @@ class PF_Feeds_Schema {
 	 * 		$htmlUrl = false, $type = false, $title = false, $tags = false, $thumbnail = false, $description = false, $added_by_user = false, $added_by_module = false 
 	 */
 	
-	public function create_pf_feed($feedUrl, $args = array()){
+	public function create($feedUrl, $args = array()){
 	
 		$r = wp_parse_args( $args, array(
 			'title'   		=> false,
@@ -198,7 +198,24 @@ class PF_Feeds_Schema {
 		if (!$r['user_added']){
 			$current_user = wp_get_current_user();
 			$r['user_added'] = $current_user->user_login;
-		}			
+		}
+		
+		foreach ($r as $k=>$e){
+			if (!$e)
+				$r[$k] = '';
+		}
+		
+		$wp_args = array(
+			'post_type' 	=> $this->post_type,
+			'post_status' 	=> 'publish',
+			'post_title'	=> $r['title'],
+			'post_content'	=> $r['description'],
+			'guid'			=> $r['url'],
+			'post_date'		=> date( 'Y-m-d H:i:s', time());
+			'tax_input' 	=> array($this->tag_taxonomy => $r['tags'])
+		)
+
+		$post_id = wp_insert_post($wp_args);
 
 	}
 	
@@ -215,5 +232,11 @@ class PF_Feeds_Schema {
 		}
 	
 	}
+	
+	public function _filter_where_guid( $where ) {
+		global $wpdb;
+		$where .= $wpdb->prepare( " AND {$wpdb->posts}.guid = %s ", $this->filter_data['guid'] );
+		return $where;
+	}	
 	
 }
