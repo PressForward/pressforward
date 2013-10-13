@@ -1,6 +1,5 @@
 <?php
 
-
 class AB_subscription_builder {
 
 	public function __construct() {}
@@ -14,18 +13,14 @@ class AB_subscription_builder {
 	 *    'nodes_populated' => [this value will always be zero coming from this method]
 	 */
 	public static function get_blog_categories( $theWikiLink = 'http://academicblogs.org/index.php/Main_Page' ) {
-		
+
 		$categories = array();
 		$node_count = 0;
 
-		$html = wp_remote_get($theWikiLink);
-		if ($html == false) {
+		$html = self::get_simple_dom_object( $theWikiLink );
+
+		if ( ! $html ) {
 			return false;
-		}
-		if (is_wp_error($html)) {
-			return false;			
-		} else {
-			$html = $html['body'];
 		}
 
 		// The categories are headed by h2 elements in #bodyContent
@@ -38,7 +33,8 @@ class AB_subscription_builder {
 				}
 
 				// Take the first item in the array
-				$span = array_pop( array_reverse( $span ) );
+				$span_r = array_reverse( $span );
+				$span = array_pop( $span_r );
 
 				$spanText = $span->innertext;
 				$spanNameArray = explode(' ', $spanText);
@@ -59,7 +55,8 @@ class AB_subscription_builder {
 				while ( $next->tag == 'p' ) {
 					$pchildren = $next->find( 'a' );
 					if ( 1 == count( $pchildren ) ) {
-						$childLink = array_pop( array_reverse( $pchildren ) );
+						$pchildren_r = array_reverse( $pchildren );
+						$childLink = array_pop( $pchildren_r );
 
 						$link = $childLink->href;
 						if ( ! in_array( $link, self::get_spam_sites() ) ) {
@@ -119,14 +116,14 @@ class AB_subscription_builder {
 		$response = $Url;
 
 			if (is_wp_error($request)) {
-				
-				
-			}	
+
+
+			}
 			else if(strlen($request['body'])>1){
 				preg_match("/\<title\>(.*)\<\/title\>/",$request['body'],$title);
 				$response = $title[1];
 			} else {
-				
+
 			}
 			$data = array();
 			$data['url'] = $Url;
@@ -135,25 +132,25 @@ class AB_subscription_builder {
 		if ($data['url'] != $Url){
 
 			if (is_wp_error($request)) {
-				
-				
-			}	
+
+
+			}
 			else if(strlen($request['body'])>1){
 				preg_match("/\<title\>(.*)\<\/title\>/",$request['body'],$title);
 				$response = $title[1];
 			} else {
-				
+
 			}
 			$data = array();
 			$data['url'] = $Url;
 			$data['response'] = $response;
-		
+
 		}
 		return $data['response'];
 	}
-	
+
 	# via http://stackoverflow.com/questions/2668854/sanitizing-strings-to-make-them-url-and-filename-safe
-	public function sanitize($string, $force_lowercase = true, $anal = false) {
+	public static function sanitize($string, $force_lowercase = true, $anal = false) {
 		$strip = array("~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "[", "{", "]",
 					   "}", "\\", "|", ";", ":", "\"", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;",
 					   "—", "–", ",", "<", ".", ">", "/", "?");
@@ -179,29 +176,28 @@ class AB_subscription_builder {
 		//$charsToElim = array('?','/','\\');
 		$stringSlug = self::sanitize($stringSlug, false, true);
 		return $stringSlug;
-		
+
 	}
-	
-	public function get_spam_sites(){
-		
+
+	public static function get_spam_sites(){
+
 		$spamsites = array('http://www.buy-wellbutrin.com/', 'http://www.mycaal.com/');
-		
+
 		return $spamsites;
-		
+
 	}
 
-	# to fill the blog property of the array. 
+	# to fill the blog property of the array.
 	# PS... How often does this get updated?
-	public function getLinksFromSection ($sectionURL){		
+	public static function getLinksFromSection ($sectionURL){
 		set_time_limit(0);
-		$html = wp_remote_get($sectionURL);
 
-		if (is_wp_error($html)) {
-			return 'No Links.';			
-		} else {
-			$html = $html['body'];
+		$html = self::get_simple_dom_object( $sectionURL );
+
+		if ( ! $html ) {
+			return 'No Links.';
 		}
-		
+
 		$blogs = array();
 		$c = 0;
 		foreach ($html->find('#bodyContent') as $body){
@@ -217,13 +213,13 @@ class AB_subscription_builder {
 					}
 				}
 				else {
-					
+
 				}
 			}
 		}
-				
+
 		return $blogs;
-		
+
 	}
 
 	public function build_the_ref_array()
@@ -232,28 +228,21 @@ class AB_subscription_builder {
 		//error_reporting(-1);
 		$theWikiLink = 'http://academicblogs.org/index.php/Main_Page';
 		$htmlCounter = array();
-		//Random article for testing.
-		$html = wp_remote_get($theWikiLink);
-		//print_r($html);
-		# Get the title page
-		if ($html == false) {
-			return false;
+
+		$html = self::get_simple_dom_object( $theWikiLink );
+
+		if ( ! $html ) {
+			return 'No Links.';
 		}
-		
-		if (is_wp_error($html)) {
-			return 'No Links.';			
-		} else {
-			$html = $html['body'];
-		}		
-		
+
 		foreach ($html->find('h1') as $link){
 			//print_r($link);
 		//	if (($link->plaintext == '[edit] External links') || ($link->plaintext == '[edit] References') ){
 				set_time_limit(0);
 				# Get the main content block
 				$nextBlock = $link->next_sibling();
-				//print_r($nextBlock);	
-				
+				//print_r($nextBlock);
+
 				$counter = 0;
 				$sectionCounter = 0;
 				$links = array();
@@ -261,7 +250,7 @@ class AB_subscription_builder {
 				# Walk through the dom and count paragraphs between H2 tags
 				foreach ($nextBlock->children() as $bodyChild) {
 
-										
+
 					if (($bodyChild->tag=='h1')){
 						if ($ch1 != 0){
 							//return $htmlCounter;
@@ -270,19 +259,19 @@ class AB_subscription_builder {
 						}
 						$ch1++;
 					}
-					
+
 					if (($bodyChild->find('span')) && ($bodyChild->tag=='h2')){
 						foreach ($bodyChild->find('span') as $span){
 							$sectionCounter++;
 							$spanText = $span->innertext;
-							
+
 							$spanNameArray = explode(' ', $spanText);
 							$spanSlug = '';
 							foreach ($spanNameArray as $spanNamePart){
 								$spanSlug .= htmlentities(ucfirst($spanNamePart));
 							}
 							$spanSlug = $this->sanitize($spanSlug, false, true);
-							
+
 							$htmlCounter[$spanSlug]['slug'] = $spanSlug;
 							$htmlCounter[$spanSlug]['text'] = htmlspecialchars(strip_tags($spanText));
 							$htmlCounter[$spanSlug]['counter'] = $counter;
@@ -293,15 +282,15 @@ class AB_subscription_builder {
 					} else {
 						//$htmlCounter[$spanSlug]['error'] = false;
 					}
-					
+
 					if (($bodyChild->tag=='p') && ((count($bodyChild->find('a'))) == 1) && ((count($bodyChild->find('a[class=new]'))) == 0)){
-						
+
 						$counter++;
-						
+
 						foreach ($bodyChild->find('a') as $childLink){
 							$link = $childLink->href;
 							$title = $childLink->title;
-							
+
 							if (!in_array($link, $this->get_spam_sites())){
 								$titleArray = explode(' ', $title);
 								$titleSlug = '';
@@ -310,35 +299,47 @@ class AB_subscription_builder {
 								}
 								//$charsToElim = array('?','/','\\');
 								$titleSlug = $this->sanitize($titleSlug, false, true);
-								
+
 								$link = 'http://academicblogs.org' . $link;
-								
+
 								$sectionSlug = $htmlCounter[$spanSlug]['slug'];
-								
+
 								$htmlCounter[$spanSlug]['links'][$titleSlug]['slug'] = $titleSlug;
 								$htmlCounter[$spanSlug]['links'][$titleSlug]['title'] = htmlspecialchars(strip_tags($title));
 								$htmlCounter[$spanSlug]['links'][$titleSlug]['link'] = $link;
 								//if ($childLink->){
 									$htmlCounter[$spanSlug]['links'][$titleSlug]['blogs'] = $this->getLinksFromSection($link);
 								//}
-								
+
 								//$links[$sectionSlug][$titleSlug]['title'] = $title;
 								//$links[$sectionSlug][$titleSlug]['link'] = $link;
 							} else {
-								
+
 								$counter--;
 								$htmlCounter[$spanSlug]['links'][$counter]['error'] = false;
 							}
 						}
 					}
-				
+
 				}
-				
+
 		}
 		//end:
 		return $htmlCounter;
 	}
 
-}
+	/**
+	 * Get the pf_simple_html_dom object for a given URL
+	 */
+	public static function get_simple_dom_object( $url ) {
+		$dom = null;
+		$response = wp_remote_get( $url );
+		if ( ! empty( $response ) && ! is_wp_error( $response ) ) {
+			$dom = new pf_simple_html_dom( null );
+			$dom->load( wp_remote_retrieve_body( $response ) );
+		}
 
-?>
+		return $dom;
+	}
+
+}

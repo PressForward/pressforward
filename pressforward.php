@@ -76,15 +76,15 @@ class PressForward {
 		// Check the HTML of each item for open tags and close them.
 		// I've altered it specifically for some odd HTML artifacts that occur when
 		// WP sanitizes the content input.
-		require( PF_ROOT . "/lib/htmlchecker.php" );
+		require( PF_ROOT . "/lib/pf_htmlchecker.php" );
 
 		// A slightly altered version of the Readability library from Five Filters,
 		// who based it off readability.com's code.
 		require( PF_ROOT . "/lib/fivefilters-readability/Readability.php" );
 
 		// For reading through an HTML page.
-		require( PF_ROOT . "/lib/simple_html_dom.php" );
-		$dom = new simple_html_dom;
+		require( PF_ROOT . "/lib/pf_simple_html_dom.php" );
+		$dom = new pf_simple_html_dom;
 
 		// Internal tools
 

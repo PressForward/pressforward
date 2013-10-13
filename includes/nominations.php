@@ -372,10 +372,9 @@ class PF_Nominations {
 		
 		$readable_status = get_post_meta($_POST['item_post_id'], 'readable_status', true);
 		if ($readable_status != 1){
-			$item_content = PF_Readability::readability_object($_POST['item_link']);
-			if (!$item_content || ($item_content == 'error-secured')){
-				$item_content = htmlspecialchars_decode($_POST['item_content']);
-			}
+			$read_args = array('force' => '', 'descrip' => $item_content, 'url' => $_POST['item_link'], 'authorship' => $_POST['item_author'] );
+			$item_content_obj = PF_Readability::get_readable_text($read_args);
+			$item_content = $item_content_obj['readable'];
 		} else {
 			$item_content = htmlspecialchars_decode($_POST['item_content']);
 		}
@@ -431,6 +430,7 @@ class PF_Nominations {
 			$xmlResponse = new WP_Ajax_Response($response);
 			$xmlResponse->send();
 		ob_end_flush();
+		die();
 	}
 
 	function build_nom_draft() {
