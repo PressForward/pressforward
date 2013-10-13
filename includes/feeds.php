@@ -216,6 +216,16 @@ class PF_Feeds_Schema {
 		)
 
 		$post_id = wp_insert_post($wp_args);
+		if ( $post_id ){
+			self::set_pf_feed_type($post_id, $r['type']);
+			foreach ($r as $k=>$a){
+				if ($k == ('title'||'description'||'url'||'tags'||'type'))
+					unset($r[$k]);
+			}
+			self::set_feed_meta($post_id, $r);
+		
+		}
+		
 
 	}
 	
@@ -231,6 +241,18 @@ class PF_Feeds_Schema {
 			return true;
 		}
 	
+	}
+	
+	public function set_feed_meta($post_id, $args){
+		foreach ($args as $k=>$a){
+		
+			if(!$a){
+	
+			} else {
+				update_post_meta($post_id, $k, $a);
+			}
+		
+		}
 	}
 	
 	public function _filter_where_guid( $where ) {
