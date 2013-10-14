@@ -96,28 +96,6 @@ class PF_Feeds_Schema {
 		) ) );
 	}
 	
-	public function get( $args = array() ) {
-		$wp_args = array(
-			'post_type'        => $this->post_type,
-			'post_status'      => 'publish',
-			'suppress_filters' => false,
-		);
-
-	}
-	
-
-	public function create( $args = array() ) {
-		$r = wp_parse_args( $args, array(
-			'title'   => '',
-			'url'     => '',
-			'content' => '',
-			'source'  => '',
-			'date'    => '',
-			'tags'    => array(),
-		) );
-
-	}
-	
 	public function deal_with_old_feedlists() {
 		
 		if ( false == (get_option( PF_SLUG . '_feedlist' )) ){
