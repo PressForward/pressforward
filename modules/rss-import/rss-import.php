@@ -588,19 +588,17 @@ class PF_RSS_Import extends PF_Module {
 	}
 
 	static function pf_feedlist_validate($input){
+		$feed_obj = new PF_Feeds_Schema();
 		if (!empty($input['single'])){
 			if (!(is_array($input['single']))){
-				//$simp = new SimplePie();
-				$simp = fetch_feed($input['single']);
-				if ( is_wp_error($simp) ){
-					
-					wp_die($simp->get_error_message());
+				if (is_wp_error($feed_obj->update_url($input['single']))){
+					$check = $feed_obj->create($feedUrl, array('type' => 'rss', 'module_added' => get_class($this)));
+					if (is_wp_error($check)){
+						wp_die($check);
+					}
 				}
-				//Needs some sort of error returned on no-feed
-				$inputSingleSub = $simp->subscribe_url();
-				$inputSingle = array($inputSingleSub);
 			} else {
-				$inputSingle = $input['single'];
+				wp_die('Bad feed input. Why are you trying to place an array?');
 			}
 		}
 
@@ -610,34 +608,18 @@ class PF_RSS_Import extends PF_Module {
 			$OPML_reader = new OPML_reader;
 			$opml_array = $OPML_reader->get_OPML_data($input['opml']);
 			//print_r($opml_array); die();
-		}
-		//$feedlist = $this->pf_feedlist();
-		// Needs something to do here if option is empty.
-		$feednew = array();
-		$feedlist = get_option( PF_SLUG . '_feedlist', false );
-		if (!$feedlist){
-			$feedlist = array();
-		}
-	//		$feedlist = array('http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Flabel%2FEditors-at-Large');
-			if (!empty($input['single'])){
-				$feedlist = array_merge((array)$feedlist, (array)$inputSingle);
+			foreach($opml_array as $key=>$feedXml){
+				$feed_obj->create($feedXml, array('type' => 'rss-quick'));
 			}
-			if (!empty($input['opml'])){
-				$feedlist = array_merge((array)$feedlist, (array)$opml_array);
-			}
-			if (!empty($_POST['o_feed_url'])){
+		}
+
+		if (!empty($_POST['o_feed_url'])){
 				$offender = array_search($_POST['o_feed_url'], $feedlist);
 				if ($offender !== false){
 					unset($feedlist[$offender]);
 				}
 
-			}
-
-		//Let's ensure no duplicates.
-		$feedlist = array_unique($feedlist);
-
-		//print_r($feedlist); die();
-		return $feedlist;
+		}
 	}
 
 	public function remove_a_feed() {
