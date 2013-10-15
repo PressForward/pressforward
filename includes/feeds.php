@@ -115,8 +115,8 @@ class PF_Feeds_Schema {
 	
 	# Not only is this moving feeds over into feed CPT posts, but this methodology will insure a time-out won't force the process to restart.
 	# There should probably be a AJAX interface for this, same as the AB subscribe method. 
-	public function progressive_feedlist_transformer($feedlist, $xmlUrl, $key) {
-		$check = self::create($xmlUrl, array('type' => 'rss-old'));
+	public function progressive_feedlist_transformer($feedlist = array(), $xmlUrl, $key) {
+		$check = self::create($xmlUrl, array('type' => 'rss-quick'));
 		if ($check){
 			unset($feedlist[$key]);
 			update_option( PF_SLUG . '_feedlist', $feedlist );
@@ -224,12 +224,13 @@ class PF_Feeds_Schema {
 			$current_user = wp_get_current_user();
 			$r['user_added'] = $current_user->user_login;
 		}
-		if ($r['type'] == 'rss-old'){
+		if ($r['type'] == 'rss-quick'){
 			$r['title'] = $r['url'];
 		}
 		
 		self::feed_post_setup($r);
 		
+		return true;
 
 	}
 	
@@ -280,14 +281,18 @@ class PF_Feeds_Schema {
 		foreach ($posts as $post){
 			setup_postdata($post);
 			$post_id = get_the_ID();
-			if ($c == 0){
-				self::update($post_id, array('url' => $url));
-			} else {
-				if ($url == get_the_guid($post_id)){
-					wp_delete_post( $post_id, true );
+			if (is_numeric($post_id)){
+				if (($c == 0)){
+					self::update($post_id, array('url' => $url));
+				} else {
+					if ($url == get_the_guid($post_id)){
+						wp_delete_post( $post_id, true );
+					}
 				}
+				$c++;
+			} else {
+				return new WP_Error('nothing_to_update', __('The feed does not exist in the database.'));
 			}
-			$c++;
 		}
 		wp_reset_postdata();
 	}
