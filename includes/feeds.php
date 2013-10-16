@@ -123,6 +123,7 @@ class PF_Feeds_Schema {
 		}
 	}
 	
+	# A function to take an argument array and turn it into a Feed CPT entry.
 	public function feed_post_setup($r, $insert_type = 'insert'){
 		
 		foreach ($r as $k=>$e){
@@ -169,6 +170,8 @@ class PF_Feeds_Schema {
 		}	
 	}
 	
+	
+	# A function to pull feed meta out of the SimplePie object and into the argument array. 
 	public function setup_rss_meta($r, $theFeed){
 	
 		if(empty($r)){
@@ -201,6 +204,7 @@ class PF_Feeds_Schema {
 	}
 	
 	/*
+	 * A function to create a new feed entry.
 	 * Arguments:
 	 * 		$htmlUrl = false, $type = false, $title = false, $tags = false, $thumbnail = false, $description = false, $added_by_user = false, $added_by_module = false 
 	 */
@@ -244,6 +248,7 @@ class PF_Feeds_Schema {
 
 	}
 	
+	# A function to pull feeds from the database. 
 	public function get( $args = array() ) {
 		$wp_args = array(
 			'post_type'        => $this->post_type,
@@ -323,6 +328,7 @@ class PF_Feeds_Schema {
 		wp_reset_postdata();
 	}
 	
+	# A function to update an existing feed CPT entry.
 	public function update($post_id, $args){
 		$r = wp_parse_args( $args, array(
 			'ID'			=> $post_id,
@@ -369,6 +375,12 @@ class PF_Feeds_Schema {
 	
 	}
 	
+	# This function processes the meta data passed to the create or
+	# update feed object and turns it into post_meta. 
+	#
+	# Note that the goal with all feed meta is to describe it
+	# in a way as similar to OPML as possible for accurate
+	# output later. 
 	public function set_feed_meta($post_id, $args){
 		$c = 1;
 		foreach ($args as $k=>$a){
