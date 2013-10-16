@@ -137,14 +137,24 @@ class PF_Feeds_Schema {
 			'post_content'	=> $r['description'],
 			'tax_input' 	=> array($this->tag_taxonomy => $r['tags'])
 		);
+		# Duplicate the function of WordPress where creating a pre-existing 
+		# post results in an update to that post. 
 		
-		if ($insert_type == 'insert'){
-			$wp_args['guid'] = $r['url'];
-			$wp_args['post_date'] = date( 'Y-m-d H:i:s', time());
-			$post_id = wp_insert_post($wp_args);
-		} elseif ($insert_type == 'update') {
+		if ($insert_type == 'update') {
 			$wp_args['ID'] = $r['ID'];
 			wp_update_post( $wp_args );
+			$post_id = $r['ID'];
+		}
+		
+		if ($insert_type == 'insert'){
+			$posts = self::has_feed($r['url']);
+			if (!$posts){
+				$wp_args['guid'] = $r['url'];
+				$wp_args['post_date'] = date( 'Y-m-d H:i:s', time());
+				$post_id = wp_insert_post($wp_args);
+			} else {
+				self::feed_post_setup($r, 'update');
+			}
 		}
 		if ( is_numeric($post_id) ){
 			self::set_pf_feed_type($post_id, $r['type']);
@@ -271,12 +281,27 @@ class PF_Feeds_Schema {
 
 
 		return $posts;
-	}	
+	}
+
+	# Check if a post or posts exists with get, if it does not
+	# return false. If it does, return the array of posts. 
+	public function has_feed($url){
+		$posts = self::get(array('url' => $url));
+		if (count($posts) > 0){
+			return $posts;
+		} else {
+			return false;
+		}
+	}
 	
 	# When walking through the feedlist, if it is an old entry,
 	# call this function to renew the feed post with better data.
 	public function update_url($url){
-		$posts = self::get(array('url' => $url));
+		$posts = self::has_feed($url);
+		if (!$posts){
+			$check = self::create($url);
+			return $check;
+		}
 		$c = 0;
 		foreach ($posts as $post){
 			setup_postdata($post);
@@ -291,7 +316,8 @@ class PF_Feeds_Schema {
 				}
 				$c++;
 			} else {
-				return new WP_Error('nothing_to_update', __('The feed does not exist in the database.'));
+				# Let's duplicate WordPress's mechanic of 'update' creating a new post if it doesn't exist.
+				self::create($url);
 			}
 		}
 		wp_reset_postdata();
@@ -324,7 +350,7 @@ class PF_Feeds_Schema {
 			}		
 		}
 		
-		self::feed_post_setup($r);
+		self::feed_post_setup($r, 'update');
 
 		
 	}

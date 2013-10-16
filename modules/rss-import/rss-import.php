@@ -591,11 +591,13 @@ class PF_RSS_Import extends PF_Module {
 		$feed_obj = new PF_Feeds_Schema();
 		if (!empty($input['single'])){
 			if (!(is_array($input['single']))){
-				if (is_wp_error($feed_obj->update_url($input['single']))){
+				if (!$feed_obj->has_feed($input['single'])){
 					$check = $feed_obj->create($feedUrl, array('type' => 'rss', 'module_added' => get_class($this)));
 					if (is_wp_error($check)){
 						wp_die($check);
 					}
+				} else {
+					$feed_obj->update_url($input['single']);
 				}
 			} else {
 				wp_die('Bad feed input. Why are you trying to place an array?');
@@ -609,6 +611,7 @@ class PF_RSS_Import extends PF_Module {
 			$opml_array = $OPML_reader->get_OPML_data($input['opml']);
 			//print_r($opml_array); die();
 			foreach($opml_array as $key=>$feedXml){
+				# Adding this as a 'quick' type so that we can process the list quickly.
 				$feed_obj->create($feedXml, array('type' => 'rss-quick'));
 			}
 		}
