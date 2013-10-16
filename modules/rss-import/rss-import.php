@@ -467,12 +467,9 @@ class PF_RSS_Import extends PF_Module {
 
 	# Where we store a list of feeds to check.
 	public function pf_feedlist() {
-
+		$feeds = new PF_Feeds_Schema();
 		$feedlist = array('http://pressforward.org/feed/');
-		//http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FEditors-at-Large%20Stream
-		//'http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations';
-		//http://feeds.feedburner.com/DHNowEditorsChoiceAndNews
-		//http://www.google.com/reader/public/atom/user%2F12869634832753741059%2Fbundle%2FNominations
+
 		if ( false == (get_option( PF_SLUG . '_feedlist' )) ){
 			add_option( PF_SLUG . '_feedlist', $feedlist);
 		} else {
