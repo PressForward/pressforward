@@ -248,8 +248,16 @@ class PF_Feeds_Schema {
 
 	}
 	
+	public function get_feed($url){
+			
+			$posts = self::has_feed($url);
+			return $posts;
+		
+	}
+	
 	# A function to pull feeds from the database. 
 	public function get( $args = array() ) {
+		
 		$wp_args = array(
 			'post_type'        => $this->post_type,
 			'post_status'      => 'publish',
@@ -297,6 +305,34 @@ class PF_Feeds_Schema {
 		} else {
 			return false;
 		}
+	}
+	
+	# @to-do - This will be important for plugging in non-RSS modules.
+	# A function to retrieve a list of feeds for walking, display.
+	# Specifically by type.
+	public function get_feeds_by_type($type = 'all', $args = array()){
+		
+		# Eventually we'll want to use the 'retrieve_by' 
+		# to allow devs to pass different types of queries
+		# using the data passed in the argument. 
+		$r = wp_parse_args( $args, array(
+			'title'   		=> false,
+			'url'     		=> false,
+			'htmlUrl' 		=> false,
+			'type'	  		=> $type,
+			'description' 	=> false,
+			'feed_author' 	=> false,
+			'feed_icon'  	=> false,
+			'copyright'		=> false,			
+			'thumbnail'  	=> false,
+			'user_added'    => false,
+			'module_added' 	=> false,
+			'tags'    		=> array(),
+			'page'			=> false,
+			'retrieve_by'	=> false
+		) );
+		
+	
 	}
 	
 	# When walking through the feedlist, if it is an old entry,
