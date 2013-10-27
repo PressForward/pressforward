@@ -52,7 +52,213 @@ class PF_Feed_Retrieve {
 		$create_nonce = wp_create_nonce('chunkpressforward');
 		update_option('chunk_nonce', $create_nonce);
 	}	
-	
+
+	public function step_through_feedlist() {
+		# Log the beginning of this function.
+		
+		pf_log('step_through_feedlist begins.');
+		
+		# Retrieve the list of feeds. 
+		
+		$feedlist = $this->pf_feedlist();
+		
+		# Move array internal pointer to end.
+		
+		end($feedlist);
+		
+		# Because the internal pointer is now at the end
+		# we can find the key for the last entry.
+		
+		$last_key = key($feedlist);
+		
+		# Log the key we retrieved. This allows us to compare
+		# to the iteration state in order to avoid multiple
+		# processes spawning at the same time. 
+		
+		pf_log('The last key is: ' . $last_key);
+		
+		# Get the option that stores the current step of iteration. 
+		
+		$feeds_iteration = get_option( PF_SLUG . '_feeds_iteration');
+		
+		# We will now set the lock on the feed retrieval process.
+		# The logging here is to insure that lock is set. 
+		
+		pf_log('feeds_go_switch updated? (first check).');
+		
+		# We begin the process of getting the next feed. 
+		# If anything asks the system, from here until the end of the feed
+		# retrieval process, you DO NOT attempt to retrieve another feed.
+		
+		$go_switch_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
+		
+		# A check to see if the lock has been set.
+		
+		pf_log($go_switch_bool);
+		
+		# We want to insure that we are neither skipping ahead or
+		# overlapping with a previous process. To do so we store two
+		# options. The first tells us the current state of iteration.
+		# We don't reset the pf_feeds_iteration option until we have actually
+		# begun to retrieve the feed. The pf_prev_iteration stores the 
+		# last time it was set. When the feed retrieval checks begin, we set the
+		# prev_iteration. When they are completed and ready to progress we
+		# set the pf_feeds_iteration option. 
+		#
+		# At this point the last run was started (and, we assume,
+		# completed, checks for that later.) but we have not advanced
+		# so the two options should match.
+		
+		$prev_iteration = get_option( PF_SLUG . '_prev_iteration', 0);
+		pf_log('Did the option properly iterate so that the previous iteration count of ' . $prev_iteration . ' is equal to the current of ' . $feeds_iteration . '?');
+		
+		/* @todo This appears to be reporting with the wrong messages.
+		 * We need to resolve what is going on here with the right log.
+		 */
+		
+		// This is the fix for the insanity caused by the planet money feed - http://www.npr.org/rss/podcast.php?id=510289.
+		if ( (int) $prev_iteration == (int) $feeds_iteration){
+			
+			# In some cases the option fails to update for reasons that are not
+			# clear. In those cases, we will risk skipping a feed rather 
+			# than get caught in an endless loop. 
+			
+			pf_log('Nope. Did the step_though_feedlist iteration option emergency update work here?');
+			
+			# Make an attempt to update the option to its appropriate state. 
+			
+			update_option( PF_SLUG . '_feeds_iteration', $feeds_iteration+1);
+			
+			# Regardless of success, iterate this process forward.
+			
+			$feeds_iteration++;
+		} else {
+			
+			# No rest for the iterative, so on we go. 
+			
+			pf_log('Yes');
+		}
+		
+		# If everything goes wrong, we need to know what the iterate state is.
+		# At this point $feeds_iteration should be one greater than prev_iteration.
+		
+		pf_log('The current iterate state is: ' . $feeds_iteration);
+		
+		# Insure that the function hasn't gone rogue and is not past the
+		# last element in the array. 
+		
+		if ($feeds_iteration <= $last_key) {
+			pf_log('The iteration is less than the last key.');
+
+			//If the feed item is empty, can I loop back through this function for max efficiency? I think so.
+			$aFeed = $feedlist[$feeds_iteration];
+			pf_log('Retrieved feed ' . $aFeed);
+			$did_we_start_over = get_option(PF_SLUG . '_iterate_going_switch', 1);
+			pf_log('Iterate going switch is set to: ' . $did_we_start_over);
+			if (($last_key === $feeds_iteration)){
+				pf_log('The last key is equal to the feeds_iteration. This is the last feed.');
+				$feeds_iteration = 0;
+//				pf_log('feeds_go_switch updated?.');
+//				$go_switch_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
+//				pf_log($go_switch_bool);
+				pf_log('iterate_going_switch updated?.');
+				$going_switch_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
+				pf_log($going_switch_bool);
+				//print_r('TURN IT OFF');
+
+			} elseif ($did_we_start_over == 1) {
+				pf_log('No, we didn\'t start over.');
+				pf_log('Did we set the previous iteration option to ' . $feeds_iteration . '?');
+				$prev_iteration = update_option( PF_SLUG . '_prev_iteration', $feeds_iteration);
+				pf_log($prev_iteration);
+				$feeds_iteration = $feeds_iteration+1;
+				pf_log('Did the iterate_going_switch update?');
+				$iterate_going_bool = update_option( PF_SLUG . '_iterate_going_switch', 1);
+				pf_log($iterate_going_bool);
+				pf_log('We are set to a reiterate state.');
+			}
+
+			pf_log('Did the feeds_iteration option update to ' . $feeds_iteration . '?');
+			$iterate_op_check = update_option( PF_SLUG . '_feeds_iteration', $feeds_iteration);
+			pf_log($iterate_op_check);
+			if ($iterate_op_check === false) {
+				pf_log('For no apparent reason, the option did not update. Delete and try again.');
+				pf_log('Did the option delete?');
+				$deleteCheck = delete_option( PF_SLUG . '_feeds_iteration' );
+				pf_log($deleteCheck);
+				$iterate_op_check = update_option( PF_SLUG . '_feeds_iteration', $feeds_iteration);
+				pf_log('Did the new option setup work?');
+				pf_log($iterate_op_check);
+			}
+			pf_log('The feed iteration option is now set to ' . $feeds_iteration);
+
+			if (((empty($aFeed)) || ($aFeed == '')) && ($feeds_iteration <= $last_key)){
+				pf_log('The feed is either an empty entry or un-retrievable AND the iteration is less than or equal to the last key.');
+				$theFeed = call_user_func(array($this, 'step_through_feedlist'));
+			} elseif (((empty($aFeed)) || ($aFeed == '')) && ($feeds_iteration > $last_key)){
+				pf_log('The feed is either an empty entry or un-retrievable AND the iteration is greater than the last key.');
+				pf_log('Did the feeds_iteration option update?');
+				$feed_it_bool = update_option( PF_SLUG . '_feeds_iteration', 0);
+				pf_log($feed_it_bool);
+
+				pf_log('Did the feeds_go_switch option update?');
+				$feed_go_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
+				pf_log($feed_go_bool);
+
+				pf_log('Did the iterate_going_switch option update?');
+				$feed_going_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
+				pf_log($feed_going_bool);
+
+				pf_log('End of the update process. Return false.');
+				return false;
+			}
+
+			if (is_wp_error($theFeed = fetch_feed($aFeed))){
+				$aFeed = '';
+			}
+			//If the array entry is empty and this isn't the end of the feedlist, then get the next item from the feedlist while iterating the count.
+			if (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration <= $last_key)){
+				pf_log('The feed is either an empty entry or un-retrievable AND the iteration is less than or equal to the last key.');
+				$theFeed = call_user_func(array($this, 'step_through_feedlist'));
+			} elseif (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration > $last_key)){
+				pf_log('The feed is either an empty entry or un-retrievable AND the iteration is greater then the last key.');
+				pf_log('Did the feeds_iteration option update?');
+				$feed_it_bool = update_option( PF_SLUG . '_feeds_iteration', 0);
+				pf_log($feed_it_bool);
+
+				pf_log('Did the feeds_go_switch option update?');
+				$feed_go_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
+				pf_log($feed_go_bool);
+
+				pf_log('Did the iterate_going_switch option update?');
+				$feed_going_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
+				pf_log($feed_going_bool);
+
+				pf_log('End of the update process. Return false.');
+				return false;
+			}
+			return $theFeed;
+		} else {
+			//An error state that should never, ever, ever, ever, ever happen.
+			pf_log('The iteration is now greater than the last key.');
+				pf_log('Did the feeds_iteration option update?');
+				$feed_it_bool = update_option( PF_SLUG . '_feeds_iteration', 0);
+				pf_log($feed_it_bool);
+
+				pf_log('Did the feeds_go_switch option update?');
+				$feed_go_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
+				pf_log($feed_go_bool);
+
+				pf_log('Did the iterate_going_switch option update?');
+				$feed_going_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
+				pf_log($feed_going_bool);
+				pf_log('End of the update process. Return false.');
+				return false;
+			//return false;
+		}
+
+	}	
+		
 	
 	
 }
