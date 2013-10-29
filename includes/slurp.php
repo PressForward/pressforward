@@ -148,40 +148,84 @@ class PF_Feed_Retrieve {
 		# last element in the array. 
 		
 		if ($feeds_iteration <= $last_key) {
+			
+			# The iteration state is not beyond the limit of the array
+			# which means we can move forward. 
+			
 			pf_log('The iteration is less than the last key.');
 
-			//If the feed item is empty, can I loop back through this function for max efficiency? I think so.
+			# Get the basic URL for the feed. 
+			
 			$aFeed = $feedlist[$feeds_iteration];
 			pf_log('Retrieved feed ' . $aFeed);
-			$did_we_start_over = get_option(PF_SLUG . '_iterate_going_switch', 1);
-			pf_log('Iterate going switch is set to: ' . $did_we_start_over);
+			
+			# Check the option to insure that we are currently inside the 
+			# iteration process. The 'going' switch is used elsewhere to check
+			# if the iteration process is active or ended.
+			
+			$are_we_going = get_option(PF_SLUG . '_iterate_going_switch', 1);
+			pf_log('Iterate going switch is set to: ' . $are_we_going);
+			
+			# The last key of the array is equal to our current key? Then we are 
+			# at the end of the feedlist. Set options appropriately to indicate to 
+			# other processes that the iterate state will soon be terminated. 
+			
 			if (($last_key === $feeds_iteration)){
 				pf_log('The last key is equal to the feeds_iteration. This is the last feed.');
+				
+				# If we're restarting after this, we need to tell the system 
+				# to begin the next retrieve cycle at 0.
+				
 				$feeds_iteration = 0;
-//				pf_log('feeds_go_switch updated?.');
-//				$go_switch_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
-//				pf_log($go_switch_bool);
-				pf_log('iterate_going_switch updated?.');
+				pf_log('iterate_going_switch updated?');
 				$going_switch_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
 				pf_log($going_switch_bool);
-				//print_r('TURN IT OFF');
+				
 
-			} elseif ($did_we_start_over == 1) {
+			} elseif ($are_we_going == 1) {
 				pf_log('No, we didn\'t start over.');
 				pf_log('Did we set the previous iteration option to ' . $feeds_iteration . '?');
+				
+				# We should have advanced the feeds_iteration by now, 
+				# it is the active array pointer. To track this action for
+				# future iterations, we store the current iteration state as
+				# prev_iteration.
+				
 				$prev_iteration = update_option( PF_SLUG . '_prev_iteration', $feeds_iteration);
 				pf_log($prev_iteration);
+				
+				# Now we advance the feeds_iteration var to the array pointer
+				# that represents the next feed we will need to retrieve. 
+				
 				$feeds_iteration = $feeds_iteration+1;
+				
 				pf_log('Did the iterate_going_switch update?');
+				
+				# Insure that the system knows we are actively iterating. 
+				
 				$iterate_going_bool = update_option( PF_SLUG . '_iterate_going_switch', 1);
+				
+				# Show us that this important option has been properly set.
+				
 				pf_log($iterate_going_bool);
 				pf_log('We are set to a reiterate state.');
+			} else {
+				# Oh noes, what has occurred!?
+				pf_log('There is a problem with the iterate_going_switch and now the program does not know its state.');
 			}
 
 			pf_log('Did the feeds_iteration option update to ' . $feeds_iteration . '?');
+			
+			# Set and log the update that gives us the future feed retrieval. 
+			
 			$iterate_op_check = update_option( PF_SLUG . '_feeds_iteration', $feeds_iteration);
 			pf_log($iterate_op_check);
 			if ($iterate_op_check === false) {
+			
+				# Occasionally WP refuses to set this option.
+				# In these situations we will take more drastic measures
+				# and attempt to set it again. 
+			
 				pf_log('For no apparent reason, the option did not update. Delete and try again.');
 				pf_log('Did the option delete?');
 				$deleteCheck = delete_option( PF_SLUG . '_feeds_iteration' );
