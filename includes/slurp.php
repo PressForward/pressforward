@@ -234,8 +234,13 @@ class PF_Feed_Retrieve {
 				pf_log('Did the new option setup work?');
 				pf_log($iterate_op_check);
 			}
+			
+			# Log a (hopefully) successful update. 
+			
 			pf_log('The feed iteration option is now set to ' . $feeds_iteration);
 
+			# If the feed retrieved is empty and we haven't hit the last feed item.
+			
 			if (((empty($aFeed)) || ($aFeed == '')) && ($feeds_iteration <= $last_key)){
 				pf_log('The feed is either an empty entry or un-retrievable AND the iteration is less than or equal to the last key.');
 				$theFeed = call_user_func(array($this, 'step_through_feedlist'));
@@ -257,14 +262,26 @@ class PF_Feed_Retrieve {
 				return false;
 			}
 
+			# If the feed isn't empty, attempt to retrieve it. 
+			
 			if (is_wp_error($theFeed = fetch_feed($aFeed))){
 				$aFeed = '';
+				pf_log($theFeed->get_error_message());
 			}
-			//If the array entry is empty and this isn't the end of the feedlist, then get the next item from the feedlist while iterating the count.
+			# If the array entry is empty and this isn't the end of the feedlist,
+			# then get the next item from the feedlist while iterating the count.
 			if (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration <= $last_key)){
 				pf_log('The feed is either an empty entry or un-retrievable AND the iteration is less than or equal to the last key.');
+				
+				# The feed is somehow bad, lets get the next one. 
+				
 				$theFeed = call_user_func(array($this, 'step_through_feedlist'));
 			} elseif (((empty($aFeed)) || ($aFeed == '') || (is_wp_error($theFeed))) && ($feeds_iteration > $last_key)){
+			
+				# The feed is somehow bad and we've come to the end of the array.
+				# Now we switch all the indicators to show that the process is
+				# over and log the process. 
+			
 				pf_log('The feed is either an empty entry or un-retrievable AND the iteration is greater then the last key.');
 				pf_log('Did the feeds_iteration option update?');
 				$feed_it_bool = update_option( PF_SLUG . '_feeds_iteration', 0);
