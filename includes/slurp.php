@@ -318,7 +318,28 @@ class PF_Feed_Retrieve {
 			//return false;
 		}
 
-	}	
+	}
+
+	# A function to make absolutely sure options update
+	public function update_option_with_check($option_name, $option_value){
+				pf_log('Did the '.$option_name.' option update?');
+				$option_result = update_option( PF_SLUG . $option_name, $option_value);
+				pf_log($option_result);
+			if (!$option_result) {
+			
+				# Occasionally WP refuses to set an option.
+				# In these situations we will take more drastic measures
+				# and attempt to set it again. 
+			
+				pf_log('For no apparent reason, the option did not update. Delete and try again.');
+				pf_log('Did the option delete?');
+				$deleteCheck = delete_option( PF_SLUG . $option_name );
+				pf_log($deleteCheck);
+				$second_check = update_option( PF_SLUG . $option_name, $option_value);
+				pf_log('Did the new option setup work?');
+				pf_log($second_check);
+			}				
+	}
 		
 	
 	
