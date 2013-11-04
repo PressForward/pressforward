@@ -84,18 +84,13 @@ class PF_Feed_Retrieve {
 		# We will now set the lock on the feed retrieval process.
 		# The logging here is to insure that lock is set. 
 		
-		pf_log('feeds_go_switch updated? (first check).');
-		
 		# We begin the process of getting the next feed. 
 		# If anything asks the system, from here until the end of the feed
 		# retrieval process, you DO NOT attempt to retrieve another feed.
 		
-		$go_switch_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
-		
 		# A check to see if the lock has been set.
-		
-		pf_log($go_switch_bool);
-		
+		$this->update_option_w_check('_feeds_go_switch', 0);
+
 		# We want to insure that we are neither skipping ahead or
 		# overlapping with a previous process. To do so we store two
 		# options. The first tells us the current state of iteration.
@@ -127,8 +122,7 @@ class PF_Feed_Retrieve {
 			
 			# Make an attempt to update the option to its appropriate state. 
 			
-			update_option( PF_SLUG . '_feeds_iteration', $feeds_iteration+1);
-			
+			$this->update_option_w_check('_feeds_iteration', $feeds_iteration+1);
 			# Regardless of success, iterate this process forward.
 			
 			$feeds_iteration++;
@@ -177,10 +171,7 @@ class PF_Feed_Retrieve {
 				# to begin the next retrieve cycle at 0.
 				
 				$feeds_iteration = 0;
-				pf_log('iterate_going_switch updated?');
-				$going_switch_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
-				pf_log($going_switch_bool);
-				
+				$this->update_option_w_check('_iterate_going_switch', 0);
 
 			} elseif ($are_we_going == 1) {
 				pf_log('No, we didn\'t start over.');
@@ -190,24 +181,14 @@ class PF_Feed_Retrieve {
 				# it is the active array pointer. To track this action for
 				# future iterations, we store the current iteration state as
 				# prev_iteration.
-				
-				$prev_iteration = update_option( PF_SLUG . '_prev_iteration', $feeds_iteration);
-				pf_log($prev_iteration);
+
+				$this->update_option_w_check('_prev_iteration', $feeds_iteration);
 				
 				# Now we advance the feeds_iteration var to the array pointer
 				# that represents the next feed we will need to retrieve. 
 				
 				$feeds_iteration = $feeds_iteration+1;
-				
-				pf_log('Did the iterate_going_switch update?');
-				
-				# Insure that the system knows we are actively iterating. 
-				
-				$iterate_going_bool = update_option( PF_SLUG . '_iterate_going_switch', 1);
-				
-				# Show us that this important option has been properly set.
-				
-				pf_log($iterate_going_bool);
+				$this->update_option_w_check('_iterate_going_switch', 1);
 				pf_log('We are set to a reiterate state.');
 			} else {
 				# Oh noes, what has occurred!?
@@ -217,23 +198,7 @@ class PF_Feed_Retrieve {
 			pf_log('Did the feeds_iteration option update to ' . $feeds_iteration . '?');
 			
 			# Set and log the update that gives us the future feed retrieval. 
-			
-			$iterate_op_check = update_option( PF_SLUG . '_feeds_iteration', $feeds_iteration);
-			pf_log($iterate_op_check);
-			if ($iterate_op_check === false) {
-			
-				# Occasionally WP refuses to set this option.
-				# In these situations we will take more drastic measures
-				# and attempt to set it again. 
-			
-				pf_log('For no apparent reason, the option did not update. Delete and try again.');
-				pf_log('Did the option delete?');
-				$deleteCheck = delete_option( PF_SLUG . '_feeds_iteration' );
-				pf_log($deleteCheck);
-				$iterate_op_check = update_option( PF_SLUG . '_feeds_iteration', $feeds_iteration);
-				pf_log('Did the new option setup work?');
-				pf_log($iterate_op_check);
-			}
+			$this->update_option_w_check('_feeds_iteration', $feeds_iteration);
 			
 			# Log a (hopefully) successful update. 
 			
@@ -246,17 +211,11 @@ class PF_Feed_Retrieve {
 				$theFeed = call_user_func(array($this, 'step_through_feedlist'));
 			} elseif (((empty($aFeed)) || ($aFeed == '')) && ($feeds_iteration > $last_key)){
 				pf_log('The feed is either an empty entry or un-retrievable AND the iteration is greater than the last key.');
-				pf_log('Did the feeds_iteration option update?');
-				$feed_it_bool = update_option( PF_SLUG . '_feeds_iteration', 0);
-				pf_log($feed_it_bool);
+				$this->update_option_w_check('_feeds_iteration', 0);
 
-				pf_log('Did the feeds_go_switch option update?');
-				$feed_go_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
-				pf_log($feed_go_bool);
+				$this->update_option_w_check('_feeds_go_switch', 0);
 
-				pf_log('Did the iterate_going_switch option update?');
-				$feed_going_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
-				pf_log($feed_going_bool);
+				$this->update_option_w_check('_iterate_going_switch', 0);
 
 				pf_log('End of the update process. Return false.');
 				return false;
@@ -283,17 +242,11 @@ class PF_Feed_Retrieve {
 				# over and log the process. 
 			
 				pf_log('The feed is either an empty entry or un-retrievable AND the iteration is greater then the last key.');
-				pf_log('Did the feeds_iteration option update?');
-				$feed_it_bool = update_option( PF_SLUG . '_feeds_iteration', 0);
-				pf_log($feed_it_bool);
+				$this->update_option_w_check('_feeds_iteration', 0);
 
-				pf_log('Did the feeds_go_switch option update?');
-				$feed_go_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
-				pf_log($feed_go_bool);
+				$this->update_option_w_check('_feeds_go_switch', 0);
 
-				pf_log('Did the iterate_going_switch option update?');
-				$feed_going_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
-				pf_log($feed_going_bool);
+				$this->update_option_w_check('_iterate_going_switch', 0);
 
 				pf_log('End of the update process. Return false.');
 				return false;
@@ -302,17 +255,11 @@ class PF_Feed_Retrieve {
 		} else {
 			//An error state that should never, ever, ever, ever, ever happen.
 			pf_log('The iteration is now greater than the last key.');
-				pf_log('Did the feeds_iteration option update?');
-				$feed_it_bool = update_option( PF_SLUG . '_feeds_iteration', 0);
-				pf_log($feed_it_bool);
+				$this->update_option_w_check('_feeds_iteration', 0);
 
-				pf_log('Did the feeds_go_switch option update?');
-				$feed_go_bool = update_option( PF_SLUG . '_feeds_go_switch', 0);
-				pf_log($feed_go_bool);
+				$this->update_option_w_check('_feeds_go_switch', 0);
 
-				pf_log('Did the iterate_going_switch option update?');
-				$feed_going_bool = update_option( PF_SLUG . '_iterate_going_switch', 0);
-				pf_log($feed_going_bool);
+				$this->update_option_w_check('_iterate_going_switch', 0);
 				pf_log('End of the update process. Return false.');
 				return false;
 			//return false;
@@ -321,7 +268,7 @@ class PF_Feed_Retrieve {
 	}
 
 	# A function to make absolutely sure options update
-	public function update_option_with_check($option_name, $option_value){
+	public function update_option_w_check($option_name, $option_value){
 				pf_log('Did the '.$option_name.' option update?');
 				$option_result = update_option( PF_SLUG . $option_name, $option_value);
 				pf_log($option_result);
