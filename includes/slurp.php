@@ -126,7 +126,7 @@ class PF_Feed_Retrieve {
 		# so the two options should match.
 		
 		$prev_iteration = get_option( PF_SLUG . '_prev_iteration', 0);
-		pf_log('Did the option properly iterate so that the previous iteration count of ' . $prev_iteration . ' is equal to the current of ' . $feeds_iteration . '?');
+		pf_log('Did the option properly iterate so that the previous iteration count of ' . $prev_iteration . ' is not equal to the current of ' . $feeds_iteration . '?');
 		
 		/* @todo This appears to be reporting with the wrong messages.
 		 * We need to resolve what is going on here with the right log.
