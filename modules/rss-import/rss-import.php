@@ -216,22 +216,23 @@ class PF_RSS_Import extends PF_Module {
 	// UTILITY METHODS         //
 	/////////////////////////////
 
-	# Where we store a list of feeds to check.
-	public function pf_feedlist() {
-		$feeds = new PF_Feeds_Schema();
-		$feedlist = array('http://pressforward.org/feed/');
+	# Retrieve the set of items. 
+	public function pf_feed_fetcher($aFeed){
+		
+		# Control retrieval with a filtered array
+		# Allow people to register types and handling functions
+		# rss and rss-quick will both call fetch_feed
+		
+		$theFeed = fetch_feed($aFeed);
 
-		if ( false == (get_option( PF_SLUG . '_feedlist' )) ){
-			add_option( PF_SLUG . '_feedlist', $feedlist);
-		} else {
-			$feedlist = get_option( PF_SLUG . '_feedlist' );
+		if ((is_wp_error($theFeed))){
+			print_r('<br />The Feed ' . $aFeed . ' could not be retrieved.');
+				//$aFeed = call_user_func(array($this, 'step_through_feedlist'));
+				//$theFeed = $this->pf_feed_fetcher($aFeed);
+				return false;
 		}
-		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
-		pf_log('Sending feedlist to function.');
-		$ordered_all_feeds_array = array_values($all_feeds_array);
-		$tidy_all_feeds_array = array_filter( $ordered_all_feeds_array, 'strlen' );
-		return $tidy_all_feeds_array;
 
+		return $theFeed;
 	}
 
 	# Tries to get the RSS item author for the meta.

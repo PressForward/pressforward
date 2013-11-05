@@ -13,7 +13,24 @@
 
 define( 'FEED_LOG', PF_ROOT . "/modules/rss-import/rss-import.txt" ); 
 class PF_Feed_Retrieve {
-	
+
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		global $pf;
+
+		add_action( 'wp_head', array($this, 'get_chunk_nonce'));
+		add_action( 'init', array($this, 'alter_for_retrieval'));
+
+		// Schedule our cron actions for fetching feeds
+		add_action( 'init', array($this, 'schedule_feed_in' ) );
+		add_action( 'init', array($this, 'schedule_feed_out' ) );
+
+		add_action( 'take_feed_out', array( 'PF_Feed_Item', 'disassemble_feed_items' ) );
+		add_action( 'pull_feed_in', array( pressforward()->admin, 'trigger_source_data') );
+		add_filter( 'cron_schedules', array($this, 'cron_add_short' ));
+	}	
 	
 	 function cron_add_short( $schedules ) {
 		// Adds once weekly to the existing schedules.
@@ -287,27 +304,25 @@ class PF_Feed_Retrieve {
 		}
 
 	}	
-	
 
-	# Retrieve the set of items. 
-	public function pf_feed_fetcher($aFeed){
-		
-		# Control retrieval with a filtered array
-		# Allow people to register types and handling functions
-		# rss and rss-quick will both call fetch_feed
-		
-		$theFeed = fetch_feed($aFeed);
+	# Where we store a list of feeds to check.
+	public function pf_feedlist() {
+		$feeds = new PF_Feeds_Schema();
+		$feedlist = array('http://pressforward.org/feed/');
 
-		if ((is_wp_error($theFeed))){
-			print_r('<br />The Feed ' . $aFeed . ' could not be retrieved.');
-				//$aFeed = call_user_func(array($this, 'step_through_feedlist'));
-				//$theFeed = $this->pf_feed_fetcher($aFeed);
-				return false;
+		if ( false == (get_option( PF_SLUG . '_feedlist' )) ){
+			add_option( PF_SLUG . '_feedlist', $feedlist);
+		} else {
+			$feedlist = get_option( PF_SLUG . '_feedlist' );
 		}
+		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
+		pf_log('Sending feedlist to function.');
+		$ordered_all_feeds_array = array_values($all_feeds_array);
+		$tidy_all_feeds_array = array_filter( $ordered_all_feeds_array, 'strlen' );
+		return $tidy_all_feeds_array;
 
-		return $theFeed;
-	}
-
+	}	
+	
 	public function advance_feeds(){
 		pf_log('Begin advance_feeds.');
 		//Here: If feedlist_iteration is not == to feedlist_count, scheduale a cron and trigger it before returning.
