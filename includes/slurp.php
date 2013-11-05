@@ -306,15 +306,17 @@ class PF_Feed_Retrieve {
 	}	
 
 	# Where we store a list of feeds to check.
-	public function pf_feedlist() {
-		$feeds = new PF_Feeds_Schema();
-		$feedlist = array('http://pressforward.org/feed/');
-
-		if ( false == (get_option( PF_SLUG . '_feedlist' )) ){
-			add_option( PF_SLUG . '_feedlist', $feedlist);
-		} else {
-			$feedlist = get_option( PF_SLUG . '_feedlist' );
-		}
+	# We need this to handle some sort of subsets of feeds
+	public function pf_feedlist($startcount = 0) {
+		$Feeds = new PF_Feeds_Schema();
+		$args = array(
+				'posts_per_page'=>-1
+			);
+		$theFeed = $Feeds->get($args);
+		
+		if ( !isset($theFeed)){
+			$feedlist = array();
+		} 
 		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
 		pf_log('Sending feedlist to function.');
 		$ordered_all_feeds_array = array_values($all_feeds_array);
