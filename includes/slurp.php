@@ -51,6 +51,27 @@ class PF_Feed_Retrieve {
 	public function get_chunk_nonce(){
 		$create_nonce = wp_create_nonce('chunkpressforward');
 		update_option('chunk_nonce', $create_nonce);
+	}
+
+	# A function to make absolutely sure options update
+	public function update_option_w_check($option_name, $option_value){
+				pf_log('Did the '.$option_name.' option update?');
+				$option_result = update_option( PF_SLUG . $option_name, $option_value);
+				pf_log($option_result);
+			if (!$option_result) {
+			
+				# Occasionally WP refuses to set an option.
+				# In these situations we will take more drastic measures
+				# and attempt to set it again. 
+			
+				pf_log('For no apparent reason, the option did not update. Delete and try again.');
+				pf_log('Did the option delete?');
+				$deleteCheck = delete_option( PF_SLUG . $option_name );
+				pf_log($deleteCheck);
+				$second_check = update_option( PF_SLUG . $option_name, $option_value);
+				pf_log('Did the new option setup work?');
+				pf_log($second_check);
+			}				
 	}	
 
 	public function step_through_feedlist() {
@@ -265,29 +286,83 @@ class PF_Feed_Retrieve {
 			//return false;
 		}
 
+	}	
+	
+
+	# Retrieve the set of items. 
+	public function pf_feed_fetcher($aFeed){
+		
+		# Control retrieval with a filtered array
+		# Allow people to register types and handling functions
+		# rss and rss-quick will both call fetch_feed
+		
+		$theFeed = fetch_feed($aFeed);
+
+		if ((is_wp_error($theFeed))){
+			print_r('<br />The Feed ' . $aFeed . ' could not be retrieved.');
+				//$aFeed = call_user_func(array($this, 'step_through_feedlist'));
+				//$theFeed = $this->pf_feed_fetcher($aFeed);
+				return false;
+		}
+
+		return $theFeed;
 	}
 
-	# A function to make absolutely sure options update
-	public function update_option_w_check($option_name, $option_value){
-				pf_log('Did the '.$option_name.' option update?');
-				$option_result = update_option( PF_SLUG . $option_name, $option_value);
-				pf_log($option_result);
-			if (!$option_result) {
-			
-				# Occasionally WP refuses to set an option.
-				# In these situations we will take more drastic measures
-				# and attempt to set it again. 
-			
-				pf_log('For no apparent reason, the option did not update. Delete and try again.');
-				pf_log('Did the option delete?');
-				$deleteCheck = delete_option( PF_SLUG . $option_name );
-				pf_log($deleteCheck);
-				$second_check = update_option( PF_SLUG . $option_name, $option_value);
-				pf_log('Did the new option setup work?');
-				pf_log($second_check);
-			}				
+	public function advance_feeds(){
+		pf_log('Begin advance_feeds.');
+		//Here: If feedlist_iteration is not == to feedlist_count, scheduale a cron and trigger it before returning.
+				$feedlist = self::pf_feedlist();
+		//The array keys start with zero, as does the iteration number. This will account for that.
+		$feedcount = count($feedlist) - 1;
+		//Get the iteration state. If this variable doesn't exist the planet will break in half.
+		$feeds_iteration = get_option( PF_SLUG . '_feeds_iteration');
+
+		$feed_get_switch = get_option( PF_SLUG . '_feeds_go_switch');
+		if ($feed_get_switch != 0) {
+			pf_log('Feeds go switch is NOT set to 0.');
+			pf_log('Getting import-cron.');
+
+			//http://codex.wordpress.org/Function_Reference/wp_schedule_single_event
+			//add_action( 'pull_feed_in', array($this, 'assemble_feed_for_pull') );
+			//wp_schedule_single_event(time()-3600, 'get_more_feeds');
+			//print_r('<br /> <br />' . PF_URL . 'modules/rss-import/import-cron.php <br /> <br />');
+			$theRetrievalLoop = add_query_arg( 'press', 'forward',  site_url() );
+			$pfnonce = get_option('chunk_nonce');
+			$theRetrievalLoopNounced = add_query_arg( '_wpnonce', $pfnonce,  $theRetrievalLoop );
+			pf_log('Checking remote get at ' . $theRetrievalLoopNounced . ' : ');
+			$wprgCheck = wp_remote_get($theRetrievalLoopNounced);
+
+
+			return;
+			//pf_log($wprgCheck);
+			//Looks like it is schedualed properly. But should I be using wp_cron() or spawn_cron to trigger it instead?
+			//wp_cron();
+			//If I use spawn_cron here, it can only occur every 60 secs. That's no good!
+			//print_r('<br />Cron: ' . wp_next_scheduled('get_more_feeds') . ' The next event.');
+			//print_r(get_site_url() . '/wp-cron.php');
+			//print_r($wprgCheck);
+		} else {
+			pf_log('Feeds go switch is set to 0.');
+		}
 	}
-		
-	
+
+	public function alter_for_retrieval() {
+		//$nonce = isset( $_REQUEST['_wpnonce'] ) ? $_REQUEST['_wpnonce'] : '';
+		//$nonce_check = get_option('chunk_nonce');
+		if ( isset( $_GET['press'] ) && $_GET['press'] == 'forward'){
+			# Removing this until we decide to replace or eliminate. It isn't working.
+			//if ( $nonce === $nonce_check){
+				pf_log('Pressing forward.');
+				include(PF_ROOT . '/modules/rss-import/import-cron.php');
+				exit;
+			//} else {
+			//	$verify_val = wp_verify_nonce($nonce, 'retrieve-pressforward');
+			//	pf_log('Nonce check of ' . $nonce . ' failed. Returned: ');
+			//	pf_log($verify_val);
+			//	pf_log('Stored nonce:');
+			//	pf_log($nonce_check);
+			//}
+		}
+	}	
 	
 }
