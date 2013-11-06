@@ -312,7 +312,8 @@ class PF_Feed_Retrieve {
 		$args = array(
 				'posts_per_page'=>-1
 			);
-		$theFeed = $Feeds->get($args);
+		$theFeeds = $Feeds->get($args);
+
 		
 		if ( !isset($theFeed)){
 			$feedlist = array();
@@ -323,7 +324,57 @@ class PF_Feed_Retrieve {
 		$tidy_all_feeds_array = array_filter( $ordered_all_feeds_array, 'strlen' );
 		return $tidy_all_feeds_array;
 
-	}	
+	}
+	
+	public function feed_walker($theFeeds) {
+		
+		foreach ($theFeeds as $aFeed) {
+		
+			setup_postdata($aFeed);
+			$id = get_the_ID();
+			$type = $Feeds->get_pf_feed_type($id);
+		
+		}	
+	}
+
+	# Take the feed type and the feed id
+	# and apply filters so that we know which 
+	# function to call to handle the feed
+	# and handle the item correctly. 
+	public function item_handler($type, $id){
+		
+	}
+	
+	# Turn a feed into a set of posts
+	public function get_data_object(){
+		global $pf;
+		pf_log('Begin get_data_object.');
+		//Has this process already occurring?
+		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0);
+		pf_log('The Feeds go switch has been updated?');
+		pf_log($feed_go);
+		$is_it_going = get_option(PF_SLUG . '_iterate_going_switch', 1);
+		if ($is_it_going == 0){
+			//WE ARE? SHUT IT DOWN!!!
+			update_option( PF_SLUG . '_feeds_go_switch', 0);
+			update_option( PF_SLUG . '_feeds_iteration', 0);
+			update_option( PF_SLUG . '_iterate_going_switch', 0);
+			//print_r('<br /> We\'re doing this thing already in the data object. <br />');
+			if ( (get_option( PF_SLUG . '_ready_to_chunk', 1 )) === 0 ){
+				pf_log('The chunk is still open because there are no more feeds. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
+				# Wipe the checking option for use next time. 
+				update_option(PF_SLUG . '_feeds_meta_state', array());
+				update_option( PF_SLUG .  '_ready_to_chunk', 1 );
+			} else {
+				pf_log('We\'re doing this thing already in the data object.', true);
+			}
+			//return false;
+			die();
+		}
+
+		# More functions need to be moved from rss-import ln 70
+		
+	}
 	
 	public function advance_feeds(){
 		pf_log('Begin advance_feeds.');

@@ -66,29 +66,6 @@ class PF_RSS_Import extends PF_Module {
 	 */
 	public function get_data_object() {
 		global $pf;
-		pf_log('Begin get_data_object.');
-		//Is this process already occuring?
-		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0);
-		pf_log('The Feeds go switch has been updated?');
-		pf_log($feed_go);
-		$is_it_going = get_option(PF_SLUG . '_iterate_going_switch', 1);
-		if ($is_it_going == 0){
-			//WE ARE? SHUT IT DOWN!!!
-			update_option( PF_SLUG . '_feeds_go_switch', 0);
-			update_option( PF_SLUG . '_feeds_iteration', 0);
-			update_option( PF_SLUG . '_iterate_going_switch', 0);
-			//print_r('<br /> We\'re doing this thing already in the data object. <br />');
-			if ( (get_option( PF_SLUG . '_ready_to_chunk', 1 )) === 0 ){
-				pf_log('The chunk is still open because there are no more feeds. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
-				# Wipe the checking option for use next time. 
-				update_option(PF_SLUG . '_feeds_meta_state', array());
-				update_option( PF_SLUG .  '_ready_to_chunk', 1 );
-			} else {
-				pf_log('We\'re doing this thing already in the data object.', true);
-			}
-			//return false;
-			die();
-		}
 
 		$theFeed = call_user_func(array($this, 'step_through_feedlist'));
 		if (!$theFeed){
@@ -101,7 +78,8 @@ class PF_RSS_Import extends PF_Module {
 		$theFeed->set_timeout(60);
 		$rssObject = array();
 		$c = 0;
-		pf_log('Begin processing the feed.');
+		pf_log('Begin processing the feed.');			
+
 		foreach($theFeed->get_items() as $item) {
 			pf_log('Feed looping through for the ' . $c . ' time.');
 			$check_date = $item->get_date('U');
