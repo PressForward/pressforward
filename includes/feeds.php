@@ -411,6 +411,18 @@ class PF_Feeds_Schema {
 	
 	}
 	
+	public function get_pf_feed_type($id) {
+	
+		$updateResult = get_post_meta($id, 'feed_type', true);
+		if (is_wp_error($updateResult)){
+			return $updateResult->get_error_message();
+		} elseif ( !$updateResult ) {
+			return false;
+		} else {
+			return $updateResult;
+		}	
+	}
+	
 	# This function processes the meta data passed to the create or
 	# update feed object and turns it into post_meta. 
 	#
