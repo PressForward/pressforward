@@ -537,7 +537,7 @@ class PF_Nominations {
 				'what' => 'draft',
 				'action' => 'build_nom_draft',
 				'id' => $newPostID,
-				'data' => $item_title . ' drafted.',
+				'data' => $data['post_content'] . ' drafted.',
 				'supplemental' => array(
 					'content' => $item_content,
 					'originID' => $item_id,
