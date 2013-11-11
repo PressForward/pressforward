@@ -61,6 +61,7 @@ class PF_Debugger extends PF_Module {
 	}
 
 	function admin_menu_callback() {
+		global $wpdb;
 		// Default log location is in the uploads directory
 		if ( ! defined( 'PF_DEBUG_LOG' ) ) {
 			$upload_dir = wp_upload_dir();
@@ -68,10 +69,47 @@ class PF_Debugger extends PF_Module {
 		} else {
 			$log_path = PF_DEBUG_LOG;
 		}
+		
+		$action_count = $wpdb->get_results( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}pf_relationships", ''), ARRAY_A );		
+		
+		$ntp_args = array( 'posts_per_page' => -1, 'meta_key' => 'item_link');
+		
+		$nominated_to_posts = get_posts($ntp_args);
+		$nomed_posts = count($nominated_to_posts);
+		
 		?>
 		<div class="wrap">
 			<h2>Current Log</h2>
 			<p>Does not update in real time.</p>
+			<p>Total Current Feed Items: 
+			<?php 
+				$feed_item = 'pf_feed_item';
+				echo wp_count_posts($feed_item)->publish;
+				#var_dump(wp_count_posts($feed_item));
+				#var_dump(wp_count_posts('post'));
+			?>
+			</p>
+			<p>Total Current Nominations: 
+			<?php 
+				# var_dump(wp_count_posts('nomination'));
+				echo wp_count_posts('nomination')->draft;
+			
+			?>
+			</p>
+			<p>Total Actions Taken: 
+			<?php 
+				echo current($action_count[0]);
+				#echo $action_count;
+			
+			?>
+			</p>	
+			<p>Total Nominations Published: 
+			<?php 
+				echo $nomed_posts;
+				#var_dump($nomed_posts );
+			
+			?>
+			</p>			
 			<br /><br />
 			<?php
 				if(file_exists($log_path)){
