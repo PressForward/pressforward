@@ -80,6 +80,17 @@ class PF_Debugger extends PF_Module {
 		?>
 		<div class="wrap">
 			<h2>Current Log</h2>
+			<?php 
+				$feed_items_query_arg = array(
+					'post_type' 		=> 'pf_feed_item',
+					'year'				=> date('Y'),
+					'monthnum'			=> date('m'),
+					'posts_per_page' 	=> -1
+				);
+				$feed_items_query = new WP_Query($feed_items_query_arg);
+				#var_dump($feed_items_query->post_count);
+			
+			?>
 			<p>Does not update in real time.</p>
 			<p>Total Current Feed Items: 
 			<?php 
@@ -87,7 +98,13 @@ class PF_Debugger extends PF_Module {
 				echo wp_count_posts($feed_item)->publish;
 				#var_dump(wp_count_posts($feed_item));
 				#var_dump(wp_count_posts('post'));
-			?>
+			?><br />
+			<?php 
+				$feed_item = 'pf_feed_item';
+				echo 'Month to date Feed Items: ' . $feed_items_query->post_count;
+				#var_dump(wp_count_posts($feed_item));
+				#var_dump(wp_count_posts('post'));
+			?>			
 			</p>
 			<p>Total Current Nominations: 
 			<?php 
