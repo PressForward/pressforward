@@ -113,7 +113,7 @@ class PF_Debugger extends PF_Module {
 			?><br />
 			<?php 
 				$feed_item = 'pf_feed_item';
-				echo 'Month to date Feed Items: ' . $this->count_the_posts($feed_item, );
+				echo 'Month to date Feed Items: ' . $this->count_the_posts($feed_item );
 				#var_dump(wp_count_posts($feed_item));
 				#var_dump(wp_count_posts('post'));
 			?>			
