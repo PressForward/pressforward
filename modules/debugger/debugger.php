@@ -59,6 +59,24 @@ class PF_Debugger extends PF_Module {
 
 		//return $test;
 	}
+	
+	function count_the_posts($post_type, $date_range = false){
+				
+				if (!$date_range){
+					$y = date('Y');
+					$m = date('m');
+				}
+				
+				$query_arg = array(
+					'post_type' 		=> $post_type,
+					'year'				=> date('Y'),
+					'monthnum'			=> date('m'),
+					'posts_per_page' 	=> -1
+				);
+				$query = new WP_Query($query_arg);	
+		
+		return $query->post_count;
+	}
 
 	function admin_menu_callback() {
 		global $wpdb;
@@ -81,13 +99,7 @@ class PF_Debugger extends PF_Module {
 		<div class="wrap">
 			<h2>Current Log</h2>
 			<?php 
-				$feed_items_query_arg = array(
-					'post_type' 		=> 'pf_feed_item',
-					'year'				=> date('Y'),
-					'monthnum'			=> date('m'),
-					'posts_per_page' 	=> -1
-				);
-				$feed_items_query = new WP_Query($feed_items_query_arg);
+
 				#var_dump($feed_items_query->post_count);
 			
 			?>
@@ -101,7 +113,7 @@ class PF_Debugger extends PF_Module {
 			?><br />
 			<?php 
 				$feed_item = 'pf_feed_item';
-				echo 'Month to date Feed Items: ' . $feed_items_query->post_count;
+				echo 'Month to date Feed Items: ' . $this->count_the_posts($feed_item, );
 				#var_dump(wp_count_posts($feed_item));
 				#var_dump(wp_count_posts('post'));
 			?>			
