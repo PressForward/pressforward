@@ -60,17 +60,26 @@ class PF_Debugger extends PF_Module {
 		//return $test;
 	}
 	
-	function count_the_posts($post_type, $date_range = false){
+	function count_the_posts($post_type, $date_less = false){
 				
-				if (!$date_range){
+				if (!$date_less){
 					$y = date('Y');
 					$m = date('m');
+				} elseif (!empty($date_less) && $date_less < 12) {
+					$y = date('Y');
+					$m = date('m');
+					$m = $m + $date_less;
+				} elseif (!empty($date_less) && $date_less >= 12) {
+					$y = date('Y');
+					$y = $y - floor($date_less/12);
+					$m = date('m');
+					$m = $m - (abs($date_less)-(12*floor($date_less/12)));
 				}
 				
 				$query_arg = array(
 					'post_type' 		=> $post_type,
-					'year'				=> date('Y'),
-					'monthnum'			=> date('m'),
+					'year'				=> $y,
+					'monthnum'			=> $m,
 					'posts_per_page' 	=> -1
 				);
 				$query = new WP_Query($query_arg);	
@@ -114,6 +123,7 @@ class PF_Debugger extends PF_Module {
 			<?php 
 				$feed_item = 'pf_feed_item';
 				echo 'Month to date Feed Items: ' . $this->count_the_posts($feed_item );
+				echo '<br />Last month Feed Items: ' . $this->count_the_posts($feed_item, -1 );
 				#var_dump(wp_count_posts($feed_item));
 				#var_dump(wp_count_posts('post'));
 			?>			
@@ -122,7 +132,9 @@ class PF_Debugger extends PF_Module {
 			<?php 
 				# var_dump(wp_count_posts('nomination'));
 				echo wp_count_posts('nomination')->draft;
-			
+				echo '<br />Month to date Nominations: ' . $this->count_the_posts('nomination');
+				echo '<br />Last month Nominations: ' . $this->count_the_posts('nomination', -1 );
+				
 			?>
 			</p>
 			<p>Total Actions Taken: 
