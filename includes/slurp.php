@@ -307,6 +307,9 @@ class PF_Feed_Retrieve {
 
 	# Where we store a list of feeds to check.
 	# We need this to handle some sort of subsets of feeds
+	# Eventually it should be going through these queries
+	# as pages to decrease server load from giant query
+	# results.
 	public function pf_feedlist($startcount = 0) {
 		$Feeds = new PF_Feeds_Schema();
 		$args = array(
@@ -326,23 +329,116 @@ class PF_Feed_Retrieve {
 
 	}
 	
+	/* 
+	 * This function will walk through the list of
+	 * feeds.
+	 * 
+	 */ 
+	
 	public function feed_walker($theFeeds) {
 		
 		foreach ($theFeeds as $aFeed) {
 		
-			setup_postdata($aFeed);
-			$id = get_the_ID();
-			$type = $Feeds->get_pf_feed_type($id);
+			# get_data_object thru source_data_object currently
+			# walk through the feed AND handle the individual items
+			# this is bad form. One function in each feed-type module
+			# should handle walking through the feedlist.
+			# a different function should interpret items.
+			$this->feed_handler($aFeed);
 		
 		}	
+	}
+	/*
+	 * Check if the requested feed_type exists
+	 *
+	 */
+	public function does_type_exist($type){
+		$type_check = false;
+		$module_to_use = false;
+		foreach ( pressforward()->modules as $module ) {
+			if ($type_check){
+				return $module_to_use;
+			}
+			$module_type = $module->feed_type;
+			if ($module_type == $type){
+				# id and slug should be the same right?
+				$module_to_use = $module->id;
+				$type_check = true;
+			}
+		}
+
+		if (!$type_check) {
+			# Needs to be a better error.
+			return false;
+		}
+	}
+	
+	
+	/*
+	 *
+	 * This will attempt to retrieve the feed
+	 * based on an available module function.
+	 *
+	*/
+	public function get_feed_items($module_to_use, $aFeedObj){
+		
+		$module = pressforward()->modules[$module_to_use];
+		$feedObj = $module->get_feed_object($aFeedObj);
+		if (empty($feedObj) || !$feedObj){
+			return false;
+		} else {
+			return $feedObj;
+		}
+		
 	}
 
 	# Take the feed type and the feed id
 	# and apply filters so that we know which 
 	# function to call to handle the feed
 	# and handle the item correctly. 
-	public function item_handler($type, $id){
+	# If check = true than this is just a validator for feeds.
+	public function feed_handler($obj, $check = false){
+		$Feeds = new PF_Feeds_Schema();	
+		setup_postdata($obj);
+		$id = get_the_ID();
+		$type = $Feeds->get_pf_feed_type($id);
+			
+		$module_to_use = $this->does_type_exist($type);
+		if (!$module_to_use){
+			# Be a better error.
+			return false;
+		}
 		
+		# module function to return a set of standard pf feed_item object
+		# Like get_items in SimplePie
+		$feedObj = $this->get_feed_items($module_to_use, $obj);
+		
+		if ($check){
+			# Be a better error.
+			if (!$feedObj){
+				return false;
+			} else {
+				return true;
+			}
+		}
+		
+		#foreach ($feedObj as $item) {
+			
+		#	$item
+			
+		#}
+		
+	}
+	
+	public function is_feed($obj){
+			# By passing true, we're making it return
+			# a bool.
+			return $this->feed_handler($obj, true);
+	}
+	
+	public function is_feed_by_id($id){
+		$obj = get_post($id);
+		return $this->feed_handler($obj, true);
 	}
 	
 	# Turn a feed into a set of posts
