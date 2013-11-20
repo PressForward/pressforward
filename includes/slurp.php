@@ -189,7 +189,10 @@ class PF_Feed_Retrieve {
 			# Get the basic URL for the feed. 
 			
 			$aFeed = $feedlist[$feeds_iteration];
-			pf_log('Retrieved feed ' . $aFeed);
+			pf_log('Retrieved feed ');
+			pf_log($aFeed);
+			
+			# @todo the above log may not work what what is being retrieved is an object.
 			
 			# Check the option to insure that we are currently inside the 
 			# iteration process. The 'going' switch is used elsewhere to check
