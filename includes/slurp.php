@@ -319,11 +319,18 @@ class PF_Feed_Retrieve {
 				'posts_per_page'=>-1
 			);
 		$theFeeds = $Feeds->get($args);
-
+		$feedlist = array();
 		
-		if ( !isset($theFeed)){
-			$feedlist = array();
-		} 
+		if ( !isset($theFeed) || is_wp_error($theFeed)){
+			# @todo a better error report
+			return false;
+		} else {
+			foreach ($theFeeds as $aFeed) {
+			
+				$feedlist[] = $aFeed;
+			
+			}
+		}
 		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
 		pf_log('Sending feedlist to function.');
 		$ordered_all_feeds_array = array_values($all_feeds_array);
@@ -383,7 +390,7 @@ class PF_Feed_Retrieve {
 	 * based on an available module function.
 	 *
 	*/
-	public function get_feed_items($module_to_use, $aFeedObj){
+	public function get_the_feed_object($module_to_use, $aFeedObj){
 		
 		$module = pressforward()->modules[$module_to_use];
 		$feedObj = $module->get_feed_object($aFeedObj);
@@ -414,7 +421,7 @@ class PF_Feed_Retrieve {
 		
 		# module function to return a set of standard pf feed_item object
 		# Like get_items in SimplePie
-		$feedObj = $this->get_feed_items($module_to_use, $obj);
+		$feedObj = $this->get_the_feed_object($module_to_use, $obj);
 		
 		if ($check){
 			# Be a better error.
