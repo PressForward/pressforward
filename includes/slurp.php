@@ -263,8 +263,8 @@ class PF_Feed_Retrieve {
 			}
 
 			# If the feed isn't empty, attempt to retrieve it. 
-			
-			if (is_wp_error($theFeed = fetch_feed($aFeed))){
+			$theFeed = $this->feed_handler($aFeed);
+			if (!$theFeed){
 				$aFeed = '';
 				pf_log($theFeed->get_error_message());
 			}
@@ -339,25 +339,6 @@ class PF_Feed_Retrieve {
 
 	}
 	
-	/* 
-	 * This function will walk through the list of
-	 * feeds.
-	 * 
-	 */ 
-	
-	public function feed_walker($theFeeds) {
-		
-		foreach ($theFeeds as $aFeed) {
-		
-			# get_data_object thru source_data_object currently
-			# walk through the feed AND handle the individual items
-			# this is bad form. One function in each feed-type module
-			# should handle walking through the feedlist.
-			# a different function should interpret items.
-			$this->feed_handler($aFeed);
-		
-		}	
-	}
 	/*
 	 * Check if the requested feed_type exists
 	 *
@@ -430,6 +411,8 @@ class PF_Feed_Retrieve {
 			} else {
 				return true;
 			}
+		} else {
+			return $feedObj;
 		}
 		
 		#foreach ($feedObj as $item) {
