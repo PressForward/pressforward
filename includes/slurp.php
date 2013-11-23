@@ -388,7 +388,9 @@ class PF_Feed_Retrieve {
 	# and handle the item correctly. 
 	# If check = true than this is just a validator for feeds.
 	public function feed_handler($obj, $check = false){
+		global $pf;
 		$Feeds = new PF_Feeds_Schema();	
+		pf_log( 'Invoked: PF_Feed_retrieve::feed_handler()' );
 		setup_postdata($obj);
 		$id = get_the_ID();
 		$type = $Feeds->get_pf_feed_type($id);
@@ -396,8 +398,33 @@ class PF_Feed_Retrieve {
 		$module_to_use = $this->does_type_exist($type);
 		if (!$module_to_use){
 			# Be a better error.
+			pf_log( 'The feed type does not exist.' );
 			return false;
 		}
+		
+		pf_log('Begin the process to retrieve the object full of feed items.');
+		//Has this process already occurring?
+		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0);
+		pf_log('The Feeds go switch has been updated?');
+		pf_log($feed_go);
+		$is_it_going = get_option(PF_SLUG . '_iterate_going_switch', 1);
+		if ($is_it_going == 0){
+			//WE ARE? SHUT IT DOWN!!!
+			update_option( PF_SLUG . '_feeds_go_switch', 0);
+			update_option( PF_SLUG . '_feeds_iteration', 0);
+			update_option( PF_SLUG . '_iterate_going_switch', 0);
+			//print_r('<br /> We\'re doing this thing already in the data object. <br />');
+			if ( (get_option( PF_SLUG . '_ready_to_chunk', 1 )) === 0 ){
+				pf_log('The chunk is still open because there are no more feeds. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
+				# Wipe the checking option for use next time. 
+				update_option(PF_SLUG . '_feeds_meta_state', array());
+				update_option( PF_SLUG .  '_ready_to_chunk', 1 );
+			} else {
+				pf_log('We\'re doing this thing already in the data object.', true);
+			}
+			//return false;
+			die();
+		}		
 		
 		# module function to return a set of standard pf feed_item object
 		# Like get_items in SimplePie
@@ -448,37 +475,6 @@ class PF_Feed_Retrieve {
 	public function is_feed_by_id($id){
 		$obj = get_post($id);
 		return $this->feed_handler($obj, true);
-	}
-	
-	# Turn a feed into a set of posts
-	public function get_data_object(){
-		global $pf;
-		pf_log('Begin get_data_object.');
-		//Has this process already occurring?
-		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0);
-		pf_log('The Feeds go switch has been updated?');
-		pf_log($feed_go);
-		$is_it_going = get_option(PF_SLUG . '_iterate_going_switch', 1);
-		if ($is_it_going == 0){
-			//WE ARE? SHUT IT DOWN!!!
-			update_option( PF_SLUG . '_feeds_go_switch', 0);
-			update_option( PF_SLUG . '_feeds_iteration', 0);
-			update_option( PF_SLUG . '_iterate_going_switch', 0);
-			//print_r('<br /> We\'re doing this thing already in the data object. <br />');
-			if ( (get_option( PF_SLUG . '_ready_to_chunk', 1 )) === 0 ){
-				pf_log('The chunk is still open because there are no more feeds. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
-				# Wipe the checking option for use next time. 
-				update_option(PF_SLUG . '_feeds_meta_state', array());
-				update_option( PF_SLUG .  '_ready_to_chunk', 1 );
-			} else {
-				pf_log('We\'re doing this thing already in the data object.', true);
-			}
-			//return false;
-			die();
-		}
-
-		# More functions need to be moved from rss-import ln 70
-		
 	}
 	
 	public function advance_feeds(){

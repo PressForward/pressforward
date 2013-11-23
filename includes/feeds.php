@@ -412,7 +412,7 @@ class PF_Feeds_Schema {
 	}
 	
 	public function get_pf_feed_type($id) {
-	
+		pf_log( 'Invoked: PF_Feed_Schema::get_pf_feed_type($id)' );
 		$updateResult = get_post_meta($id, 'feed_type', true);
 		if (is_wp_error($updateResult)){
 			return $updateResult->get_error_message();

@@ -286,7 +286,7 @@ class PF_Feed_Item {
 		# This pulls the RSS feed into a set of predetermined objects.
 		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
 		$theFeed = $PF_Feed_Retrieve->step_through_feedlist();
-		if (!$theFeed){
+		if ((!$theFeed) || is_wp_error($theFeed)){
 			pf_log('The feed is false, exit process. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
 			# Wipe the checking option for use next time. 
 			update_option(PF_SLUG . '_feeds_meta_state', array());
