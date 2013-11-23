@@ -373,7 +373,7 @@ class PF_Feed_Retrieve {
 	public function get_the_feed_object($module_to_use, $aFeedObj){
 		
 		$module = pressforward()->modules[$module_to_use];
-		$feedObj = $module->get_feed_object($aFeedObj);
+		$feedObj = $module->get_data_object($aFeedObj);
 		if (empty($feedObj) || !$feedObj){
 			return false;
 		} else {
@@ -519,6 +519,6 @@ class PF_Feed_Retrieve {
 			//	pf_log($nonce_check);
 			//}
 		}
-	}	
+	}
 	
 }

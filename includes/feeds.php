@@ -452,6 +452,6 @@ class PF_Feeds_Schema {
 		global $wpdb;
 		$where .= $wpdb->prepare( " AND {$wpdb->posts}.guid = %s ", $this->filter_data['guid'] );
 		return $where;
-	}	
+	}
 	
 }

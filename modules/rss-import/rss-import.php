@@ -64,17 +64,8 @@ class PF_RSS_Import extends PF_Module {
 	 *
 	 * @global $pf Used to access the feed_object() method
 	 */
-	public function get_data_object() {
-		global $pf;
+	public function get_data_object($theFeed) {
 
-		$theFeed = call_user_func(array($this, 'step_through_feedlist'));
-		if (!$theFeed){
-			pf_log('The feed is false, exit process. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
-			# Wipe the checking option for use next time. 
-			update_option(PF_SLUG . '_feeds_meta_state', array());
-			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 1 );
-			exit;
-		}
 		$theFeed->set_timeout(60);
 		$rssObject = array();
 		$c = 0;

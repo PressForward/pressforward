@@ -280,7 +280,24 @@ class PF_Feed_Item {
 
 	}
 
+	public function get_the_feed_object(){
+		$PF_Feed_Retrieve = new PF_Feed_Retrieve();
+		# This pulls the RSS feed into a set of predetermined objects.
+		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
+		$theFeed = $PF_Feed_Retrieve->step_through_feedlist();
+		if (!$theFeed){
+			pf_log('The feed is false, exit process. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
+			# Wipe the checking option for use next time. 
+			update_option(PF_SLUG . '_feeds_meta_state', array());
+			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 1 );
+			exit;
+		}
+	
+		return $theFeed;
+	}		
+	
 	public function assemble_feed_for_pull($feedObj = 0) {
+		global $pf;
 		pf_log( 'Invoked: PF_Feed_Item::assemble_feed_for_pull()' );
 
 		ignore_user_abort(true);
@@ -298,11 +315,9 @@ class PF_Feed_Item {
 			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 0 );
 			pf_log( $chunk_state );
 		}
-
-		# This pulls the RSS feed into a set of predetermined objects.
-		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
+		
 		if ($feedObj == 0){
-			$feedObj = self::source_data_object();
+			$theFeed = $this->get_the_feed_object();
 		}
 
 		# We need to init $sourceRepeat so it can be if 0 if nothing is happening.
