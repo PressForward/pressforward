@@ -163,7 +163,7 @@ class PF_Module {
 	}
 **/
 	// Fetch and return a formatted data object - optional
-	function get_data_object() { return array(); }
+	function get_data_object($theFeed) { return array(); }
 
 	function pf_add_dash_widgets() {
 		$array = array();
