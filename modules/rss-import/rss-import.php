@@ -65,7 +65,7 @@ class PF_RSS_Import extends PF_Module {
 	 * @global $pf Used to access the feed_object() method
 	 */
 	public function get_data_object($theFeed) {
-
+		pf_log( 'Invoked: PF_RSS_Import::get_data_object()' );
 		$theFeed->set_timeout(60);
 		$rssObject = array();
 		$c = 0;
@@ -158,21 +158,6 @@ class PF_RSS_Import extends PF_Module {
 			# What the hell RSS feed? This is just ridiculous.
 			if ($c > 300) {break;}
 
-		}
-		# We've completed the feed retrieval, the system should know it is now ok to ask for another feed.
-		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 1);
-		pf_log('The Feeds go switch has been updated to on?');
-		pf_log($feed_go);
-		$prev_iteration = get_option( PF_SLUG . '_prev_iteration', 0);
-		$iterate_op_check = get_option( PF_SLUG . '_feeds_iteration', 1);
-		pf_log('Did the option properly iterate so that the previous iteration count of ' . $prev_iteration . ' is not equal to the current of ' . $iterate_op_check . '?');
-		if ($prev_iteration === $iterate_op_check){
-			pf_log('Nope. Did the iteration option emergency update function here?');
-			$check_iteration = update_option( PF_SLUG . '_feeds_iteration', $iterate_op_check+1);
-			pf_log($check_iteration);
-
-		} else {
-			pf_log('Yes');
 		}
 
 		//$this->advance_feeds();
