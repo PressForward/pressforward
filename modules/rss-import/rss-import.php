@@ -21,16 +21,6 @@ class PF_RSS_Import extends PF_Module {
 
 		//self::check_nonce = wp_create_nonce('retrieve-pressforward');
 		add_action( 'admin_init', array($this, 'register_settings') );
-		add_action( 'wp_head', array($this, 'get_chunk_nonce'));
-		add_action( 'init', array($this, 'alter_for_retrieval'));
-
-		// Schedule our cron actions for fetching feeds
-		add_action( 'init', array($this, 'schedule_feed_in' ) );
-		add_action( 'init', array($this, 'schedule_feed_out' ) );
-
-		add_action( 'take_feed_out', array( 'PF_Feed_Item', 'disassemble_feed_items' ) );
-		add_action( 'pull_feed_in', array( pressforward()->admin, 'trigger_source_data') );
-		add_filter( 'cron_schedules', array($this, 'cron_add_short' ));
 
 		if( is_admin() )
 		{
