@@ -281,6 +281,7 @@ class PF_Feed_Item {
 	}
 
 	public function get_the_feed_object(){
+		pf_log( 'Invoked: PF_Feed_Item::get_the_feed_object()' );
 		$PF_Feed_Retrieve = new PF_Feed_Retrieve();
 		# This pulls the RSS feed into a set of predetermined objects.
 		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
