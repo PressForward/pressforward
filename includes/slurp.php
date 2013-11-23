@@ -11,7 +11,6 @@
  *
  */
 
-define( 'FEED_LOG', PF_ROOT . "/modules/rss-import/rss-import.txt" ); 
 class PF_Feed_Retrieve {
 
 	/**
@@ -510,7 +509,7 @@ class PF_Feed_Retrieve {
 			# Removing this until we decide to replace or eliminate. It isn't working.
 			//if ( $nonce === $nonce_check){
 				pf_log('Pressing forward.');
-				include(PF_ROOT . '/modules/rss-import/import-cron.php');
+				include(PF_ROOT . '/includes/import-cron.php');
 				exit;
 			//} else {
 			//	$verify_val = wp_verify_nonce($nonce, 'retrieve-pressforward');
