@@ -15,7 +15,7 @@ class PF_Feed_Item {
 		$this->tag_taxonomy = pf_feed_item_tag_taxonomy();
 	}
 
-	public function get( $args = array() ) {
+	public static function get( $args = array() ) {
 		$wp_args = array(
 			'post_type'        => $this->post_type,
 			'post_status'      => 'publish',
@@ -280,7 +280,7 @@ class PF_Feed_Item {
 
 	}
 
-	public function get_the_feed_object(){
+	public static function get_the_feed_object(){
 		pf_log( 'Invoked: PF_Feed_Item::get_the_feed_object()' );
 		$PF_Feed_Retrieve = new PF_Feed_Retrieve();
 		# This pulls the RSS feed into a set of predetermined objects.
