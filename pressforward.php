@@ -42,6 +42,7 @@ class PressForward {
 	var $admin;
 	var $nominations;
 	var $pf_feeds;
+	var $pf_retrieve;
 
 	// See http://php.net/manual/en/language.oop5.decon.php to get a better understanding of what's going on here.
 	function __construct() {
@@ -50,6 +51,7 @@ class PressForward {
 		
 		$this->set_up_feeds();
 		$this->set_up_schema();
+		$this->set_up_feed_retrieve();
 		$this->set_up_nominations();
 		$this->set_up_admin();
 
@@ -115,13 +117,24 @@ class PressForward {
 	/**
 	 * Sets up the Feeds functionality
 	 *
-	 * @since 1.7
+	 * @since 2.2
 	 */
 	function set_up_feeds() {
 		if ( empty( $this->pf_feeds ) ) {
 			$this->pf_feeds = new PF_Feeds_Schema;
 		}
 	}	
+	
+	/**
+	 * Sets up the Retrieval functionality
+	 *
+	 * @since 2.2
+	 */
+	function set_up_feed_retrieve() {
+		if ( empty( $this->pf_retrieve ) ) {
+			$this->pf_retrieve = new PF_Feed_Retrieve;
+		}
+	}		
 
 	/**
 	 * Sets up the Dashboard admin
