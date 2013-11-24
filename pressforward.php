@@ -95,6 +95,7 @@ class PressForward {
 		require( PF_ROOT . '/includes/readable.php' );
 		require( PF_ROOT . '/includes/feed-items.php' );
 		require( PF_ROOT . '/includes/feeds.php' );
+		require( PF_ROOT . '/includes/slurp.php' );
 		require( PF_ROOT . '/includes/relationships.php' );
 		require( PF_ROOT . '/includes/nominations.php' );
 		require( PF_ROOT . '/includes/admin.php' );
