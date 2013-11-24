@@ -57,7 +57,14 @@ class PF_RSS_Import extends PF_Module {
 	public function get_data_object($aFeed) {
 		pf_log( 'Invoked: PF_RSS_Import::get_data_object()' );
 		$aFeed_url = $aFeed->guid;
+		pf_log( 'Getting RSS Feed at '.$aFeed_url );
 		$theFeed = fetch_feed($aFeed_url);
+		pf_log( 'Getting RSS Feed at '.$aFeed_url );
+		if (!$theFeed || empty($theFeed) || is_wp_error($theFeed)){
+			pf_log('Can not use Simple Pie to retrieve the feed');
+			pf_log($theFeed);
+			return false;
+		}
 		$theFeed->set_timeout(60);
 		$rssObject = array();
 		$c = 0;
