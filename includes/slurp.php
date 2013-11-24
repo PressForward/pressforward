@@ -189,7 +189,7 @@ class PF_Feed_Retrieve {
 			
 			$aFeed = $feedlist[$feeds_iteration];
 			pf_log('Retrieved feed ');
-			pf_log($aFeed);
+			pf_log($aFeed->guid);
 			
 			# @todo the above log may not work what what is being retrieved is an object.
 			
@@ -265,7 +265,10 @@ class PF_Feed_Retrieve {
 			$theFeed = $this->feed_handler($aFeed);
 			if (!$theFeed){
 				$aFeed = '';
-				pf_log($theFeed->get_error_message());
+				pf_log('Could not get the feed.');
+				pf_log('feed_handler returned ');
+				pf_log($aFeed);
+				#pf_log($theFeed->get_error_message());
 			}
 			# If the array entry is empty and this isn't the end of the feedlist,
 			# then get the next item from the feedlist while iterating the count.
