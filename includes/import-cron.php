@@ -3,7 +3,7 @@
 ignore_user_abort(true);
 set_time_limit(0);
 
-define( 'IC_SITEBASE', dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) );
+define( 'IC_SITEBASE', dirname(dirname(dirname(dirname(dirname(__FILE__))))) );
 // print_r(IC_SITEBASE . '\wp-load.php');
 
 if ( !defined('ABSPATH') ) {
