@@ -54,8 +54,10 @@ class PF_RSS_Import extends PF_Module {
 	 *
 	 * @global $pf Used to access the feed_object() method
 	 */
-	public function get_data_object($theFeed) {
+	public function get_data_object($aFeed) {
 		pf_log( 'Invoked: PF_RSS_Import::get_data_object()' );
+		$aFeed_url = $aFeed->guid;
+		$theFeed = fetch_feed($aFeed_url);
 		$theFeed->set_timeout(60);
 		$rssObject = array();
 		$c = 0;

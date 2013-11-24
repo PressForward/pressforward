@@ -351,6 +351,9 @@ class PF_Feed_Retrieve {
 	public function does_type_exist($type){
 		$type_check = false;
 		$module_to_use = false;
+		if ($type == 'rss-quick'){
+			$type = 'rss';
+		}
 		foreach ( pressforward()->modules as $module ) {
 			if ($type_check){
 				return $module_to_use;
@@ -397,8 +400,11 @@ class PF_Feed_Retrieve {
 		global $pf;
 		$Feeds = new PF_Feeds_Schema();	
 		pf_log( 'Invoked: PF_Feed_retrieve::feed_handler()' );
-		setup_postdata($obj);
-		$id = get_the_ID();
+		pf_log( 'Are we just checking?' );
+		pf_log( $check );
+		#setup_postdata($obj);
+		$id = $obj->ID;
+		pf_log( 'Feed ID ' . $id );
 		$type = $Feeds->get_pf_feed_type($id);
 		pf_log( 'Checking for feed type ' . $type );	
 		$module_to_use = $this->does_type_exist($type);
