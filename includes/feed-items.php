@@ -318,7 +318,7 @@ class PF_Feed_Item {
 		}
 		
 		if ($feedObj == 0){
-			$theFeed = $this->get_the_feed_object();
+			$theFeed = self::get_the_feed_object();
 		}
 
 		# We need to init $sourceRepeat so it can be if 0 if nothing is happening.
