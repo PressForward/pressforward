@@ -98,29 +98,36 @@ class PF_Feeds_Schema {
 	
 	public function deal_with_old_feedlists() {
 		
-		if ( false == (get_option( PF_SLUG . '_feedlist' )) ){
+		$feedlist = get_option( PF_SLUG . '_feedlist' );
+		if ( (false == $feedlist) || (empty($feedlist)) ){
 			return true;
 		} else {
-			$feedlist = get_option( PF_SLUG . '_feedlist' );
+			$feedlist = $feedlist;
 		}
 		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
 		pf_log('Preparing to transform feedlist into a list of feed posts.');
 		$ordered_all_feeds_array = array_values($all_feeds_array);
 		$tidy_all_feeds_array = array_filter( $ordered_all_feeds_array, 'strlen' );
+		#print_r('<pre>'); var_dump($tidy_all_feeds_array); print_r('</pre>'); die();
 		foreach ($tidy_all_feeds_array as $key => $feed){
-			$this->progressive_feedlist_transformer($tidy_all_feeds_array, $feed, $key);
+			$feedlist = $this->progressive_feedlist_transformer($tidy_all_feeds_array, $feed, $key);
 		}
+		$check_up = update_option( PF_SLUG . '_feedlist', $feedlist );
+		if (!$check_up){
+			wp_die('Unable to update feedlist option with new smaller feedlist.');
+		}		
 		
 	}
 	
 	# Not only is this moving feeds over into feed CPT posts, but this methodology will insure a time-out won't force the process to restart.
 	# There should probably be a AJAX interface for this, same as the AB subscribe method. 
 	public function progressive_feedlist_transformer($feedlist = array(), $xmlUrl, $key) {
-		$check = self::create($xmlUrl, array('type' => 'rss-quick'));
+		
+		$check = $this->create($xmlUrl, array('type' => 'rss-quick'));
 		if ($check){
 			unset($feedlist[$key]);
-			update_option( PF_SLUG . '_feedlist', $feedlist );
 		}
+		return $feedlist;
 	}
 	
 	# A function to take an argument array and turn it into a Feed CPT entry.
@@ -151,10 +158,15 @@ class PF_Feeds_Schema {
 			$posts = self::has_feed($r['url']);
 			if (!$posts){
 				$wp_args['guid'] = $r['url'];
-				$wp_args['post_date'] = date( 'Y-m-d H:i:s', time());
+				#$wp_args['post_date'] = date( 'Y-m-d H:i:s', time());
 				$post_id = wp_insert_post($wp_args);
 			} else {
+				foreach ($posts as $post){
+					$r['ID'] = $post->ID;
+				}
 				self::feed_post_setup($r, 'update');
+				# @todo Better error needed.
+				return false;
 			}
 		}
 		if ( is_numeric($post_id) ){
@@ -210,10 +222,13 @@ class PF_Feeds_Schema {
 	 */
 	
 	public function create($feedUrl, $args = array()){
-	
+		#print_r('<pre>'); var_dump($feedUrl); print_r('</pre>'); die();
+		if (!isset($args['url'])){
+			$args['url'] = $feedUrl;
+		}
 		$r = wp_parse_args( $args, array(
 			'title'   		=> false,
-			'url'     		=> $feedURL,
+			'url'     		=> 'http://pressforward.org/feed/',
 			'htmlUrl' 		=> false,
 			'type'	  		=> 'rss',
 			'description' 	=> false,
