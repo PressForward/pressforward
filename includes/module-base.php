@@ -7,6 +7,7 @@ class PF_Module {
 	var $id;
 	var $module_dir;
 	var $module_url;
+	var $feed_type;
 
 	function start() {
 		$this->setup_hooks();

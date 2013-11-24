@@ -6,7 +6,7 @@
 
 define( 'FEED_LOG', PF_ROOT . "/modules/rss-import/rss-import.txt" );
 class PF_RSS_Import extends PF_Module {
-
+	
 	/////////////////////////////
 	// PARENT OVERRIDE METHODS //
 	/////////////////////////////
@@ -16,7 +16,7 @@ class PF_RSS_Import extends PF_Module {
 	 */
 	public function __construct() {
 		global $pf;
-
+		$this->feed_type = 'rss';
 		parent::start();
 
 		//self::check_nonce = wp_create_nonce('retrieve-pressforward');
