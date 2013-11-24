@@ -319,6 +319,7 @@ class PF_Feed_Item {
 		
 		if ($feedObj == 0){
 			$theFeed = self::get_the_feed_object();
+			$feedObj = $theFeed;
 		}
 
 		# We need to init $sourceRepeat so it can be if 0 if nothing is happening.
@@ -556,7 +557,8 @@ class PF_Feed_Item {
 
 		}
 		update_option( PF_SLUG . '_ready_to_chunk', 1 );
-		pf_rss_import::advance_feeds();
+		$Feed_Retrieve = new PF_Feed_Retrieve();
+		$Feed_Retrieve->advance_feeds();
 		//die('Refreshing...');
 
 	}
