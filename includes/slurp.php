@@ -313,6 +313,7 @@ class PF_Feed_Retrieve {
 	# as pages to decrease server load from giant query
 	# results.
 	public function pf_feedlist($startcount = 0) {
+		pf_log( 'Invoked: PF_Feed_Retrieve::pf_feedlist()' );
 		$Feeds = new PF_Feeds_Schema();
 		$args = array(
 				'posts_per_page'=>-1
@@ -320,9 +321,11 @@ class PF_Feed_Retrieve {
 		$theFeeds = $Feeds->get($args);
 		$feedlist = array();
 		
-		if ( !isset($theFeed) || is_wp_error($theFeed)){
+		if ( !isset($theFeeds)){
 			# @todo a better error report
 			return false;
+		} elseif (is_wp_error($theFeeds)) {
+			return $theFeeds;
 		} else {
 			foreach ($theFeeds as $aFeed) {
 			
@@ -333,8 +336,8 @@ class PF_Feed_Retrieve {
 		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
 		pf_log('Sending feedlist to function.');
 		$ordered_all_feeds_array = array_values($all_feeds_array);
-		$tidy_all_feeds_array = array_filter( $ordered_all_feeds_array, 'strlen' );
-		return $tidy_all_feeds_array;
+		#$tidy_all_feeds_array = array_filter( $ordered_all_feeds_array, 'strlen' );
+		return $ordered_all_feeds_array;
 
 	}
 	
