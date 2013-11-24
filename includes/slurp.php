@@ -262,7 +262,7 @@ class PF_Feed_Retrieve {
 			}
 
 			# If the feed isn't empty, attempt to retrieve it. 
-			$theFeed = $this->feed_handler($aFeed);
+			$theFeed = self::feed_handler($aFeed);
 			if (!$theFeed){
 				$aFeed = '';
 				pf_log('Could not get the feed.');
@@ -400,7 +400,7 @@ class PF_Feed_Retrieve {
 		setup_postdata($obj);
 		$id = get_the_ID();
 		$type = $Feeds->get_pf_feed_type($id);
-			
+		pf_log( 'Checking for feed type ' . $type );	
 		$module_to_use = $this->does_type_exist($type);
 		if (!$module_to_use){
 			# Be a better error.
