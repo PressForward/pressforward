@@ -405,26 +405,6 @@ class PF_RSS_Import extends PF_Module {
 		
 		wp_enqueue_script( 'feed-manip-ajax', $pf->modules['rss-import']->module_url . 'assets/js/feed-manip-imp.js', array( 'jquery', PF_SLUG . '-twitter-bootstrap') );
 		wp_enqueue_style( PF_SLUG . '-feeder-style', $pf->modules['rss-import']->module_url . 'assets/css/feeder-styles.css' );
-
-		if ( !in_array( $pagenow, array( 'admin.php' ) ) )
-			return;
-
-		if(!in_array($hook, array('pressforward_page_pf-feeder')) )
-			return;		
-		
-		wp_enqueue_script( 'feed-manip-ajax', $pf->modules['rss-import']->module_url . 'assets/js/feed-manip-imp.js', array( 'jquery', PF_SLUG . '-twitter-bootstrap') );
-		wp_enqueue_style( PF_SLUG . '-feeder-style', $pf->modules['rss-import']->module_url . 'assets/css/feeder-styles.css' );
-
-		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
-
-		if ( !in_array( $pagenow, array( 'admin.php' ) ) )
-			return;
-
-		if(!in_array($hook, array('pressforward_page_pf-feeder')) )
-			return;		
-		
-		wp_enqueue_script( 'feed-manip-ajax', $pf->modules['rss-import']->module_url . 'assets/js/feed-manip-imp.js', array( 'jquery', PF_SLUG . '-twitter-bootstrap') );
-		wp_enqueue_style( PF_SLUG . '-feeder-style', $pf->modules['rss-import']->module_url . 'assets/css/feeder-styles.css' );
 	}
 
 
