@@ -1170,7 +1170,7 @@ class PF_Admin {
 	}
 
 	public function trigger_source_data() {
-		pressforward()->modules['rss-import']->trigger_source_data();
+		pressforward()->pf_retrieve->trigger_source_data();
 		die();
 	}
 

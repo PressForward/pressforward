@@ -27,8 +27,14 @@ class PF_Feed_Retrieve {
 		add_action( 'init', array($this, 'schedule_feed_out' ) );
 
 		add_action( 'take_feed_out', array( 'PF_Feed_Item', 'disassemble_feed_items' ) );
-		add_action( 'pull_feed_in', array( pressforward()->admin, 'trigger_source_data') );
+		add_action( 'pull_feed_in', array( $this, 'trigger_source_data') );
 		add_filter( 'cron_schedules', array($this, 'cron_add_short' ));
+		
+		if (is_admin()){
+			add_action( 'wp_ajax_nopriv_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );
+			add_action( 'wp_ajax_feed_retrieval_reset', array( $this, 'feed_retrieval_reset') );
+			add_action( 'get_more_feeds', array( 'PF_Feed_Item', 'assemble_feed_for_pull' ) );
+		}
 	}	
 	
 	 function cron_add_short( $schedules ) {
@@ -516,7 +522,7 @@ class PF_Feed_Retrieve {
 
 			return;
 			//pf_log($wprgCheck);
-			//Looks like it is schedualed properly. But should I be using wp_cron() or spawn_cron to trigger it instead?
+			//Looks like it is scheduled properly. But should I be using wp_cron() or spawn_cron to trigger it instead?
 			//wp_cron();
 			//If I use spawn_cron here, it can only occur every 60 secs. That's no good!
 			//print_r('<br />Cron: ' . wp_next_scheduled('get_more_feeds') . ' The next event.');
@@ -528,6 +534,7 @@ class PF_Feed_Retrieve {
 	}
 
 	public function alter_for_retrieval() {
+		#print_r('alter_ready');
 		//$nonce = isset( $_REQUEST['_wpnonce'] ) ? $_REQUEST['_wpnonce'] : '';
 		//$nonce_check = get_option('chunk_nonce');
 		if ( isset( $_GET['press'] ) && $_GET['press'] == 'forward'){
@@ -545,5 +552,100 @@ class PF_Feed_Retrieve {
 			//}
 		}
 	}
+	
+	function feed_retrieval_reset(){
+		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0);
+		$feed_iteration = update_option( PF_SLUG . '_feeds_iteration', 0);
+		$retrieval_state = update_option( PF_SLUG . '_iterate_going_switch', 0);
+		$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 1 );
+		
+ 	}
+
+	public function trigger_source_data(){
+			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0);
+			$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
+			$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
+			$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );		
+		pf_log( 'Invoked: PF_Feed_Retrieve::trigger_source_data()' );
+		pf_log( 'Feeds go?: ' . $feed_go );
+		pf_log( 'Feed iteration: ' . $feed_iteration );
+		pf_log( 'Retrieval state: ' . $retrieval_state );
+		pf_log( 'Chunk state: ' . $chunk_state );
+		if ($feed_iteration == 0 && $retrieval_state == 0 && $chunk_state == 1){
+			$status = update_option( PF_SLUG . '_iterate_going_switch', 1);
+
+			pf_log( __('Beginning the retrieval process', 'pf'), true, true );
+
+			if ( $status ) {
+				pf_log( __( 'Iterate switched to going.', 'pf' ) );
+			} else {
+				pf_log( __( 'Iterate option not switched.', 'pf') );
+			}
+
+			PF_Feed_Item::assemble_feed_for_pull();
+		} else {
+			
+			$feeds_meta_state = get_option(PF_SLUG . '_feeds_meta_state', array());
+			if (empty($feeds_meta_state)){
+				$feeds_meta_state = array(
+											'feed_go' => $feed_go,
+											'feed_iteration' =>	$feed_iteration,
+											'retrieval_state' => $retrieval_state,
+											'chunk_state'	=> $chunk_state,
+											'retrigger'		=>	time() + (2 * 60 * 60)
+										);
+				update_option(PF_SLUG . '_feeds_meta_state', $feeds_meta_state);						
+				pf_log(__('Created new metastate.', 'pf'), true);						
+			} else {
+				pf_log(__('Metastate saved and active for check.', 'pf'), true);
+				pf_log($feeds_meta_state);
+			}
+			
+			if ($feeds_meta_state['retrigger'] > time()){
+					pf_log(__('The sources are already being retrieved.', 'pf'), true);
+			} else {		
+					if (($feed_go == $feeds_meta_state['feed_go']) && ($feed_iteration == $feeds_meta_state['feed_iteration']) && ($retrieval_state == $feeds_meta_state['retrieval_state']) && ($chunk_state == $feeds_meta_state['chunk_state'])){
+						pf_log(__('The sources are stuck.', 'pf'), true);
+						# Wipe the checking option for use next time. 
+						update_option(PF_SLUG . '_feeds_meta_state', array());
+						update_option( PF_SLUG . '_ready_to_chunk', 1 );
+						update_option(PF_SLUG . '_iterate_going_switch', 1);
+						PF_Feed_Item::assemble_feed_for_pull();
+					} elseif (($feeds_meta_state['retrigger'] < (time() + 86400)) && !(empty($feeds_meta_state))) {
+						# If it has been more than 24 hours and retrieval has been frozen in place
+						# and the retrieval state hasn't been reset, reset the check values and reset
+						# the meta state. If it is actually mid-process things should progress.
+						# Otherwise next meta-state check will iterate forward.
+						update_option( PF_SLUG . '_feeds_go_switch', 0);
+						update_option( PF_SLUG . '_ready_to_chunk', 1 );
+						update_option(PF_SLUG . '_feeds_meta_state', array());
+						update_option(PF_SLUG . '_iterate_going_switch', 0);
+						update_option( PF_SLUG . '_feeds_iteration', 0);
+						$double_check = array(
+													'feed_go' => 0,
+													'feed_iteration' =>	0,
+													'retrieval_state' => 0,
+													'chunk_state'	=> 1,
+													'retrigger'		=>	$feeds_meta_state['retrigger']
+												);
+						update_option(PF_SLUG . '_feeds_meta_state', $double_check);
+						pf_log(__('The meta-state is too old. It is now reset. Next time, we should start over.', 'pf'), true);
+					} else {
+						$double_check = array(
+													'feed_go' => $feeds_meta_state['feed_go'],
+													'feed_iteration' =>	$feed_iteration,
+													'retrieval_state' => $feeds_meta_state['retrieval_state'],
+													'chunk_state'	=> $feeds_meta_state['chunk_state'],
+													'retrigger'		=>	$feeds_meta_state['retrigger']
+												);
+						update_option(PF_SLUG . '_feeds_meta_state', $double_check);
+						pf_log($double_check);						
+						pf_log(__('The sources are already being retrieved.', 'pf'), true);
+					}
+				
+			}
+		}
+	}	
+	
 	
 }
