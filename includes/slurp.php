@@ -392,6 +392,7 @@ class PF_Feed_Retrieve {
 		if (empty($feedObj) || !$feedObj){
 			return false;
 		} else {
+			$feedObj['parent_feed_id'] = $aFeedObj->ID;
 			return $feedObj;
 		}
 		

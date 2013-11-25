@@ -443,7 +443,8 @@ class PF_Feed_Item {
 				$item_author 	= $item['item_author'];
 				$item_link 		= $item['item_link'];
 				$item_wp_date	= $item['item_wp_date'];
-				$item_tags		= $item['item_tags'];
+				$item_tags		= $item['item_tags']; 
+				$feed_obj_id	= $item['parent_feed_id']; 
 				$source_repeat  = $sourceRepeat;
 
 				# Trying to prevent bad or malformed HTML from entering the database.
@@ -466,6 +467,7 @@ class PF_Feed_Item {
 					'post_type' => pf_feed_item_post_type(),
 				//	'post_date' => $_SESSION['cal_startdate'],
 					'post_title' => $item_title,
+					'post_parent'    => $feed_obj_id,
 					'post_content' => $item_content
 
 				);
@@ -491,6 +493,7 @@ class PF_Feed_Item {
 						'post_type' => pf_feed_item_post_type(),
 					//	'post_date' => $_SESSION['cal_startdate'],
 						'post_title' => $item_title,
+						'post_parent'    => $feed_obj_id,
 						'post_content' => $item_content
 
 					);
