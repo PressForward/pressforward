@@ -104,7 +104,8 @@ class PF_Readability {
 				'force' 		=> $force,
 				'descrip' 		=> $_POST['content'],
 				'url' 			=> $_POST['url'],
-				'authorship'	=> $_POST['authorship']
+				'authorship'	=> $_POST['authorship'],
+				'post_id'		=> $_POST['post_id']
 			);
 			
 			$readable_ready = self::get_readable_text($args);
