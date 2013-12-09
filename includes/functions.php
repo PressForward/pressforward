@@ -525,6 +525,11 @@ function pf_forward_unto_source(){
 
 add_action ('wp_head', 'pf_forward_unto_source');
 
+function pf_debug_ipads(){
+	echo '<script src="http://debug.phonegap.com/target/target-script-min.js#pressforward"></script>';
+}
+add_action ('wp_head', 'pf_debug_ipads');
+add_action ('admin_head', 'pf_debug_ipads');
 /**
  * Send status messages to a custom log
  *
