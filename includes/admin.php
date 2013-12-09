@@ -508,7 +508,7 @@ class PF_Admin {
 						//echo '<a name="' . $c . '" style="display:none;"></a>';
 /**
 			echo '<script type="text/javascript">
-					jQuery(document).ready(function() {
+					jQuery(window).load(function() {
 						jQuery("#' . $item['item_id'] . '").on("show", function () {
 							jQuery("#excerpt' . $c . '").hide("slow");
 						});

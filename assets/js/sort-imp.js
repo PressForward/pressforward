@@ -1,7 +1,7 @@
 /**
  * Implementation of sort for pf
 **/
-jQuery(document).ready(function() {
+jQuery(window).load(function() {
 
 	jQuery('#sortbyitemdate').toggle(function (evt){ 
 		evt.preventDefault();

@@ -1,4 +1,4 @@
-jQuery(document).ready(function() {
+jQuery(window).load(function() {
 	jQuery(".removeMyFeed").click(function (evt){ 
 		evt.preventDefault();
 		
