@@ -13,7 +13,7 @@ class PF_Admin {
 	 * @since 1.7
 	 */
 	function __construct() {
-		add_action( 'admin_menu', array( $this, 'register_pf_custom_menu_pages' ) );
+		add_action( 'admin_menu', array( $this, 'register_pf_custom_menu_pages' ), 1 );
 
 		// Adding javascript and css to admin pages
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
@@ -84,7 +84,7 @@ class PF_Admin {
 			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')),
 			PF_SLUG . '-feeder',
 			array($this, 'display_feeder_builder')
-		);
+		);	
 /**
 		add_submenu_page(
 			PF_MENU_SLUG,

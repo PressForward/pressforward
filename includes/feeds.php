@@ -41,6 +41,10 @@ class PF_Feeds_Schema {
 		add_action( 'init', array( $this, 'register_feed_post_type' ) );
 		#add_action('admin_init', array($this, 'deal_with_old_feedlists') );
 		add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
+		
+		# AJAX Handlers
+		add_action( 'wp_ajax_deal_with_old_feedlists', array( $this, 'deal_with_old_feedlists') );
+		add_action( 'admin_menu', array( $this, 'register_feed_menus' ), 3 );
 	
 	}
 	
@@ -71,6 +75,7 @@ class PF_Feeds_Schema {
 			'supports' 	=> array('title','editor','author','thumbnail','excerpt','custom-fields','page-attributes'),
 			'taxonomies' => array('post_tag'),
 			'show_ui'     => true, // for testing only
+			'show_in_menu' => PF_MENU_SLUG,
 		) ) );
 
 		do_action( 'pf_feed_post_type_registered' );
@@ -92,8 +97,23 @@ class PF_Feeds_Schema {
 			'labels' => $labels,
 			'public' => true,
 			'show_admin_columns' => true,
-			'rewrite' => false
+			'rewrite' => false,
+			'show_ui' => true,
 		) ) );
+		
+		
+		
+	}
+	
+	public function register_feed_menus(){
+		# @todo Why doesn't this show with the PressForward menu open?
+		add_submenu_page(
+			PF_MENU_SLUG, 
+			'Feed Tags', 
+			'Feed Tags', 
+			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')), 
+			'edit-tags.php?taxonomy='.$this->tag_taxonomy
+		);
 	}
 	
 	public function deal_with_old_feedlists() {
