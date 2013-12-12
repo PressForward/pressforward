@@ -224,6 +224,9 @@ class PF_RSS_Import extends PF_Module {
 			?>
 			<br />
 			<br />
+		<p>When switching from version 2.1 to 2.2 you will see feeds in the bottom of this page. They should be removed and sent to the Feed Post Type. This can be done with this button.
+		<br /><button type="button" class="resetFeedLocation btn btn-warning" id="resetFeedOps" value="Reset all Feed Retrieval Options"><?php _e('Move Feeds to Feed Post Type', 'pf'); ?></button>    </p>			
+			<br />
 			<div><?php _e('Add Single Feed', 'pf'); ?></div>
 				<div>
 					<input id="<?php echo PF_SLUG . '_feedlist[single]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[single]'; ?>" value="" />

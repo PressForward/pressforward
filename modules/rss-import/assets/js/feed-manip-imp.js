@@ -38,6 +38,23 @@ jQuery(document).ready(function() {
 				//jQuery("#test-div1").append(data);
 				alert('Feed options reset.');
 			});
-		  });	  	  	  
+		  });
+
+	jQuery(".resetFeedLocation").click(function (evt){ 
+			evt.preventDefault();
+
+
+		//jQuery('.loading-'+itemID).show();
+		jQuery.post(ajaxurl, {
+				action: 'deal_with_old_feedlists'
+			},
+			function(response) {
+				//jQuery('.loading-'+itemID).hide();
+				//jQuery(".o_feed_"+itemID).html(response);
+				//jQuery("#test-div1").append(data);
+				var update_check = html_entity_decode(jQuery(response).find("update_status").text());
+				alert(update_check);
+			});
+		  });			  
 	  
 });

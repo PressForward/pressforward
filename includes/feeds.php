@@ -117,7 +117,7 @@ class PF_Feeds_Schema {
 	}
 	
 	public function deal_with_old_feedlists() {
-		
+		ob_start();
 		$feedlist = get_option( PF_SLUG . '_feedlist' );
 		if ( (false == $feedlist) || (empty($feedlist)) ){
 			return true;
@@ -132,10 +132,27 @@ class PF_Feeds_Schema {
 		foreach ($tidy_all_feeds_array as $key => $feed){
 			$feedlist = $this->progressive_feedlist_transformer($tidy_all_feeds_array, $feed, $key);
 		}
+		$check_string = 'Feeds Updated';
 		$check_up = update_option( PF_SLUG . '_feedlist', $feedlist );
-		if (!$check_up){
-			wp_die('Unable to update feedlist option with new smaller feedlist.');
-		}		
+		if (!isset($check_up) || !$check_up || is_wp_error($checkup)){
+			$check_string = 'Unable to update feedlist option with new smaller feedlist.';
+		}			
+		$response = array(
+				'what' => 'full_item_content',
+				'action' => 'make_readable',
+				'id' => $item_id,
+				'data' => '',
+				'supplemental' => array(
+					'update_status' => $check_string,
+					'update_result' => $check_up,
+					'buffered' => ob_get_contents()
+				)
+		);
+		$xmlResponse = new WP_Ajax_Response($response);
+		$xmlResponse->send();
+		ob_end_flush();
+		die();		
+	
 		
 	}
 	
