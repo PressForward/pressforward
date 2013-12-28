@@ -40,8 +40,14 @@ class PF_OPML_Subscribe extends PF_Module {
 	 *
 	 * @global $pf Used to access the feed_object() method
 	 */	
-	public function get_data_object($aFeed){
-	
+	public function get_data_object($aOPML){
+		pf_log( 'Invoked: PF_OPML_Subscribe::get_data_object()' );
+		$aOPML_url = $aOPML->guid;
+		pf_log( 'Getting OPML Feed at '.$aOPML_url );
+		$OPML_reader = new OPML_reader;
+		$opml_array = $OPML_reader->get_OPML_data($aOPML_url);
+		
+		
 	}
 	
 
