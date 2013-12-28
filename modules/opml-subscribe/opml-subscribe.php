@@ -41,12 +41,26 @@ class PF_OPML_Subscribe extends PF_Module {
 	 * @global $pf Used to access the feed_object() method
 	 */	
 	public function get_data_object($aOPML){
+		$feed_obj = new PF_Feeds_Schema();
 		pf_log( 'Invoked: PF_OPML_Subscribe::get_data_object()' );
 		$aOPML_url = $aOPML->guid;
 		pf_log( 'Getting OPML Feed at '.$aOPML_url );
 		$OPML_reader = new OPML_reader;
-		$opml_array = $OPML_reader->get_OPML_data($aOPML_url);
-		
+		$opml_array = $OPML_reader->get_OPML_data($aOPML_url, false);
+		foreach($opml_array as $feedObj){
+			# Adding this as a 'quick' type so that we can process the list quickly.
+			if ($feedObj['type'] == 'rss'){ $feedObj['type'] = 'rss-quick'; }
+			
+			$feed_obj->create(
+				$feedObj['xmlUrl'], 
+				array(
+					'type' => $feedObj['type'],
+					'title' => $feedObj['title'],
+					'htmlUrl' => $feedObj['htmlUrl'],
+					'description' => $feedObj['text']
+				)
+			);
+		}		
 		
 	}
 	
