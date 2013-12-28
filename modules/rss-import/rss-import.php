@@ -311,6 +311,7 @@ class PF_RSS_Import extends PF_Module {
 			foreach($opml_array as $key=>$feedXml){
 				# Adding this as a 'quick' type so that we can process the list quickly.
 				$feed_obj->create($feedXml, array('type' => 'rss-quick'));
+				# @todo Tag based on folder structure
 			}
 		}
 
