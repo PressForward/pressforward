@@ -103,9 +103,56 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 	
 	public function add_to_feeder(){
-	
-	
+		?><form method="post" action="options.php"><?php
+        settings_fields( PF_SLUG . '_opml_group' );
+		$feedlist = get_option( PF_SLUG . '_opml_module' );	
+        ?>
+			<br />
+			<br />
+		<div><?php _e('Subscribe to OPML', 'pf'); ?></div>
+			<div>
+				<input id="<?php echo PF_SLUG . '_opml_sub[list]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_opml_sub[list]'; ?>" value="" />
+                <label class="description" for="<?php echo PF_SLUG . '_opml_sub[list]'; ?>"><?php _e('*Complete URL for an OPML subscription', 'pf'); ?></label>
+
+
+            </div>
+			<p class="submit">
+				<?php submit_button(); ?>
+			</p>
+		</form><?php
 	}
+	
+	static function pf_opml_subscriber_validate($input){
+		$feed_obj = new PF_Feeds_Schema();
+		if (!empty($input['list'])){
+			if (!(is_array($input['list']))){
+				if (!$feed_obj->has_feed($input['list'])){
+					$check = $feed_obj->create(
+						$feedUrl, 
+						array(
+							'title' => 'OPML Subscription at ' . $input['list'],
+							'htmlUrl' => $input['list'],
+							'type' => 'opml', 
+							'tags' => 'OPML Subscription',
+							'module_added' => get_class($this)
+						)
+					);
+					if (is_wp_error($check)){
+						wp_die($check);
+					}
+				} else {
+					$feed_obj->update_url($input['list']);
+				}
+			} else {
+				wp_die('Bad feed input. Why are you trying to place an array?');
+			}
+		}
+	}
+	
+	function register_settings(){
+		register_setting(PF_SLUG . '_opml_group', PF_SLUG . '_opml_sub', array('PF_OPML_Subscribe', 'pf_opml_subscriber_validate'));
+	}	
+	
 	
 
 } 
