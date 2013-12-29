@@ -50,7 +50,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		foreach($opml_array as $feedObj){
 			# Adding this as a 'quick' type so that we can process the list quickly.
 			if ($feedObj['type'] == 'rss'){ $feedObj['type'] = 'rss-quick'; }
-			
+			if ($feedObj['title'] == ''){ $feedObj['title'] = $feedObj['text']; }
 			$feed_obj->create(
 				$feedObj['xmlUrl'], 
 				array(
