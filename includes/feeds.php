@@ -256,9 +256,11 @@ class PF_Feeds_Schema {
 		if ($r['type'] == 'rss-quick'){
 			$r['title'] = $r['url'];
 		}
-		
-		self::feed_post_setup($r);
-		
+		if ($this->has_feed($feedUrl)){
+			self::feed_post_setup($r, 'update');
+		} else {
+			self::feed_post_setup($r);
+		}
 		return true;
 
 	}
