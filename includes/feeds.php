@@ -169,6 +169,7 @@ class PF_Feeds_Schema {
 				foreach ($posts as $post){
 					$r['ID'] = $post->ID;
 				}
+				$r['feedUrl'] = $r['url'];
 				self::feed_post_setup($r, 'update');
 				# @todo Better error needed.
 				return false;
