@@ -571,7 +571,7 @@ class PF_Feed_Item {
 
 	}
 
-	public function post_inserted($postAttempt, $data){
+	public static function post_inserted($postAttempt, $data){
 			$worked = 1;
 			$workedBool = true;
 				if ($postAttempt === 0) {
