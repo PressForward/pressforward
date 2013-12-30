@@ -297,7 +297,7 @@ class PF_Feed_Item {
 		return $theFeed;
 	}		
 	
-	public function assemble_feed_for_pull($feedObj = 0) {
+	public static function assemble_feed_for_pull($feedObj = 0) {
 		global $pf;
 		pf_log( 'Invoked: PF_Feed_Item::assemble_feed_for_pull()' );
 
@@ -329,6 +329,8 @@ class PF_Feed_Item {
 		# Since rss_object places all the feed items into an array of arrays whose structure is standardized throughout,
 		# We can do stuff with it, using the same structure of items as we do everywhere else.
 		pf_log('Now beginning check and processing for entering items into the database.');
+		$parent = $feedObj['parent_feed_id'];
+		unset($feedObj['parent_feed_id']);
 		foreach($feedObj as $item) {
 			$thepostscheck = 0;
 			$thePostsDoubleCheck = 0;
@@ -444,6 +446,9 @@ class PF_Feed_Item {
 				$item_link 		= $item['item_link'];
 				$item_wp_date	= $item['item_wp_date'];
 				$item_tags		= $item['item_tags']; 
+				if (!isset($item['parent_feed_id']) || !$item['parent_feed_id']){
+					$item['parent_feed_id'] = $parent;
+				}
 				$feed_obj_id	= $item['parent_feed_id']; 
 				$source_repeat  = $sourceRepeat;
 
