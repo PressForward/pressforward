@@ -52,7 +52,12 @@ class PF_RSS_Import extends PF_Module {
 	 */
 	public function get_data_object($aFeed) {
 		pf_log( 'Invoked: PF_RSS_Import::get_data_object()' );
-		$aFeed_url = $aFeed->guid;
+		$aFeed_id = $aFeed->ID;
+		$aFeed_url - get_post_meta($aFeed_id, 'feedUrl', true);
+		if(empty($aFeed_url) || is_wp_error($aFeed_url) || !$aFeed_url){
+			$aFeed_url = $aFeed->post_title;
+			update_post_meta($aFeed_id, 'feedUrl', $aFeed_url);
+		}
 		pf_log( 'Getting RSS Feed at '.$aFeed_url );
 		$theFeed = fetch_feed($aFeed_url);
 		pf_log( 'Getting RSS Feed at '.$aFeed_url );
@@ -311,6 +316,7 @@ class PF_RSS_Import extends PF_Module {
 			foreach($opml_array as $key=>$feedXml){
 				# Adding this as a 'quick' type so that we can process the list quickly.
 				$feed_obj->create($feedXml, array('type' => 'rss-quick'));
+				# @todo Tag based on folder structure
 			}
 		}
 

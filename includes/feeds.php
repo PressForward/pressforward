@@ -41,6 +41,11 @@ class PF_Feeds_Schema {
 		add_action( 'init', array( $this, 'register_feed_post_type' ) );
 		#add_action('admin_init', array($this, 'deal_with_old_feedlists') );
 		add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
+		if (is_admin()){
+			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+			add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
+		}
 	
 	}
 	
@@ -164,6 +169,7 @@ class PF_Feeds_Schema {
 				foreach ($posts as $post){
 					$r['ID'] = $post->ID;
 				}
+				$r['feedUrl'] = $r['url'];
 				self::feed_post_setup($r, 'update');
 				# @todo Better error needed.
 				return false;
@@ -172,8 +178,13 @@ class PF_Feeds_Schema {
 		if ( is_numeric($post_id) ){
 			self::set_pf_feed_type($post_id, $r['type']);
 			foreach ($r as $k=>$a){
-				if ($k == ('title'||'description'||'url'||'tags'||'type'))
+				if ($k == ('title'||'description'||'tags'||'type')){
 					unset($r[$k]);
+				}
+				if ($k == 'url'){
+					$r['feedUrl'] = $r[$k];
+					unset($r[$k]);
+				}
 			}
 			self::set_feed_meta($post_id, $r);
 			return true;
@@ -256,9 +267,11 @@ class PF_Feeds_Schema {
 		if ($r['type'] == 'rss-quick'){
 			$r['title'] = $r['url'];
 		}
-		
-		self::feed_post_setup($r);
-		
+		if ($this->has_feed($feedUrl)){
+			self::feed_post_setup($r, 'update');
+		} else {
+			self::feed_post_setup($r);
+		}
 		return true;
 
 	}
@@ -467,6 +480,30 @@ class PF_Feeds_Schema {
 		global $wpdb;
 		$where .= $wpdb->prepare( " AND {$wpdb->posts}.guid = %s ", $this->filter_data['guid'] );
 		return $where;
+	}
+	
+	function admin_enqueue_scripts() {
+		global $pf;
+
+		global $pagenow;
+
+		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
+
+		if ( !in_array( $pagenow, array( 'admin.php' ) ) )
+			return;
+
+		if(!in_array($hook, array('pressforward_page_pf-feeder')) )
+			return;		
+			
+	
+		wp_enqueue_script( 'feed_control_script', PF_URL . '/assets/js/feeds_control.js', array('jquery', PF_SLUG . '-twitter-bootstrap') );
+	}
+	
+	function add_to_feeder(){
+		?>
+		<br />
+		<button type="button" class="redoFeeds btn btn-warning" id="resetFeedOps" value="Switch feeds to new retrieval setup"><?php _e('Switch feeds to new retrieval setup', 'pf'); ?></button>    <br />		
+		<?php
 	}
 	
 }
