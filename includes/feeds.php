@@ -177,8 +177,13 @@ class PF_Feeds_Schema {
 		if ( is_numeric($post_id) ){
 			self::set_pf_feed_type($post_id, $r['type']);
 			foreach ($r as $k=>$a){
-				if ($k == ('title'||'description'||'url'||'tags'||'type'))
+				if ($k == ('title'||'description'||'tags'||'type')){
 					unset($r[$k]);
+				}
+				if ($k == 'url'){
+					$r['feedUrl'] = $r[$k];
+					unset($r[$k]);
+				}
 			}
 			self::set_feed_meta($post_id, $r);
 			return true;
