@@ -194,7 +194,9 @@ class PF_Feed_Retrieve {
 			# Get the basic URL for the feed. 
 			
 			$aFeed = $feedlist[$feeds_iteration];
-			pf_log('Retrieved feed ');
+			pf_log('Retrieved feed');
+			pf_log(get_post_meta($aFeed->ID, 'feedUrl'));
+			pf_log(' from ');
 			pf_log($aFeed->guid);
 			
 			# @todo the above log may not work what what is being retrieved is an object.
