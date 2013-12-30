@@ -242,6 +242,7 @@ class PF_Feeds_Schema {
 			'url'     		=> 'http://pressforward.org/feed/',
 			'htmlUrl' 		=> false,
 			'type'	  		=> 'rss',
+			'feedUrl'		=> $feedUrl,
 			'description' 	=> false,
 			'feed_author' 	=> false,
 			'feed_icon'  	=> false,
