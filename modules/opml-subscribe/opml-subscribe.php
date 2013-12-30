@@ -43,7 +43,12 @@ class PF_OPML_Subscribe extends PF_Module {
 	public function get_data_object($aOPML){
 		$feed_obj = new PF_Feeds_Schema();
 		pf_log( 'Invoked: PF_OPML_Subscribe::get_data_object()' );
-		$aOPML_url = $aOPML->guid;
+		$aOPML_id = $aOPML->ID;
+		$aOPML_url - get_post_meta($aOPML_id, 'feedUrl', true);
+		if(empty($aOPML_url) || is_wp_error($aOPML_url) || !$aOPML_url){
+			$aOPML_url = $aOPML->post_title;
+			update_post_meta($aOPML_id, 'feedUrl', $aOPML_url);
+		}
 		pf_log( 'Getting OPML Feed at '.$aOPML_url );
 		$OPML_reader = new OPML_reader;
 		$opml_array = $OPML_reader->get_OPML_data($aOPML_url, false);		
