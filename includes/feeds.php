@@ -41,6 +41,11 @@ class PF_Feeds_Schema {
 		add_action( 'init', array( $this, 'register_feed_post_type' ) );
 		#add_action('admin_init', array($this, 'deal_with_old_feedlists') );
 		add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
+		if (is_admin()){
+			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+			add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
+		}
 	
 	}
 	
@@ -469,6 +474,30 @@ class PF_Feeds_Schema {
 		global $wpdb;
 		$where .= $wpdb->prepare( " AND {$wpdb->posts}.guid = %s ", $this->filter_data['guid'] );
 		return $where;
+	}
+	
+	function admin_enqueue_scripts() {
+		global $pf;
+
+		global $pagenow;
+
+		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
+
+		if ( !in_array( $pagenow, array( 'admin.php' ) ) )
+			return;
+
+		if(!in_array($hook, array('pressforward_page_pf-feeder')) )
+			return;		
+			
+	
+		wp_enqueue_script( 'feed_control_script', PF_URL . '/assets/js/feeds_control.js', array('jquery', PF_SLUG . '-twitter-bootstrap') );
+	}
+	
+	function add_to_feeder(){
+		?>
+		<br />
+		<button type="button" class="redoFeeds btn btn-warning" id="resetFeedOps" value="Switch feeds to new retrieval setup"><?php _e('Switch feeds to new retrieval setup', 'pf'); ?></button>    <br />		
+		<?php
 	}
 	
 }
