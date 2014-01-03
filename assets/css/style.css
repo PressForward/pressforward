@@ -401,7 +401,7 @@ h3 {
  *
  */
  
-.wp-submenu ul {
+ul.wp-submenu {
   padding: 0;
   margin: 0;
 }
