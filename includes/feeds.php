@@ -20,8 +20,8 @@
  */
  
 class PF_Feeds_Schema {
-	var $post_type;
-	var $tag_taxonomy;
+	#var $post_type;
+	#var $tag_taxonomy;
 
 	public function init() {
 		static $instance;
@@ -286,7 +286,7 @@ class PF_Feeds_Schema {
 	
 	# A function to pull feeds from the database. 
 	public function get( $args = array() ) {
-		
+		if ( ! post_type_exists( 'pf_feed' ) ) { $this->register_feed_post_type(); }
 		$wp_args = array(
 			'post_type'        => $this->post_type,
 			'post_status'      => 'publish',
