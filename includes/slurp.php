@@ -195,12 +195,12 @@ class PF_Feed_Retrieve {
 			
 			$aFeed = $feedlist[$feeds_iteration];
 			pf_log('Retrieved feed');
-			$feed_url = get_post_meta($aFeed->ID, 'feedUrl', true);
-			if (empty($feed_url)){
-				update_post_meta($aFeed->ID, 'feedUrl', $aFeed->post_title);
-				$feed_url = $aFeed->post_title;
-			}
-			pf_log($feed_url);
+#			$feed_url = get_post_meta($aFeed->ID, 'feedUrl', true);
+#			if (empty($feed_url)){
+#				update_post_meta($aFeed->ID, 'feedUrl', $aFeed->post_title);
+#				$feed_url = $aFeed->post_title;
+#			}
+#			pf_log($feed_url);
 			pf_log(' from ');
 			pf_log($aFeed->guid);
 			
