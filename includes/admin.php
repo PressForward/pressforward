@@ -383,6 +383,48 @@ class PF_Admin {
 	}
 	
 	/**
+	 * Prep an item element for display based on position and element.
+	 * Establishes the rules for item display.
+	 * Position should be title, source, graf.
+	**/
+	
+	public function display_a($string, $position = 'source', $page = 'list'){
+		$title_ln_length = 36;
+		$title_lns = 3;
+		
+		$source_ln_length = 48;
+		$source_lns = 2;
+		
+		$graf_ln_length = 48;
+		$graf_lns = 5;
+		
+		$max = 0;
+		
+		switch ($position){
+			case 'title':
+				$max = $title_ln_length * $title_lns;
+				break;
+			case 'source':
+				$max = $source_ln_length * $source_lns;
+				break;
+			case 'graf':
+				$max = $graf_ln_length * $graf_lns;
+				break;
+		}
+		
+		$cut = substr($string, 0, $max+1);
+		$final_cut = substr($cut, 0, -4);
+		if (strlen($cut) < $max){
+			$cut = substr($string, 0, $max);
+			return $cut;
+		} else {
+			$cut = $final_cut . ' ...';
+			return $cut;
+		}
+		
+	}
+	
+	/**
 	 * Essentially the PF 'loop' template. 
 	 * $item = the each of the foreach
 	 * $c = count.
@@ -442,8 +484,8 @@ class PF_Admin {
 			echo '<i class="icon-ok-sign schema-read schema-actor schema-switchable '.$readClass.'" pf-item-post-id="' . $id_for_comments .'" pf-schema="read" pf-schema-class="marked-read" title="Mark as Read"></i>'
 			?> 
 			<header> <?php 
-				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander schema-actor" role="button" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . $item['item_title'] . '</a></h1>';
-				echo '<p class="source_title">' . $item['source_title'] . '</p>';
+				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander schema-actor" role="button" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . self::display_a($item['item_title'], 'title') . '</a></h1>';
+				echo '<p class="source_title">' . self::display_a($item['source_title'], 'source') . '</p>';
 				if ($format === 'nomination'){
 				?>		
 						<div class="sortable-hidden-meta" style="display:none;">
@@ -535,7 +577,7 @@ class PF_Admin {
 						if ($format === 'nomination'){
 							echo'<p>' . pf_noms_excerpt($item['item_content']) . '</p>';
 						} else {
-							echo'<p>' . pf_feed_excerpt($item['item_content']) . '</p>';
+							echo'<p>' . self::display_a(pf_feed_excerpt($item['item_content']), 'graf') . '</p>';
 						}
 					echo '</div>';
 /**
