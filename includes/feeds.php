@@ -196,21 +196,18 @@ class PF_Feeds_Schema {
 				return false;
 			}
 		}
-		#echo '<pre>';
-		#var_dump($r);
+#echo '<pre>';
+		#var_dump($post_id);
 		#echo '</pre>';
 		if ( is_numeric($post_id) ){
 			self::set_pf_feed_type($post_id, $r['type']);
-			foreach ($r as $k=>$a){
-				if ($k == ('title'||'description'||'tags'||'type')){
-					unset($r[$k]);
-				}
-				if ($k == 'url' && isset($r[$k])){
-					$r['feedUrl'] = $r[$k];
-					unset($r[$k]);
-				}
+			$r['feedUrl'] = $r['url'];
+			$unsetables = array('title', 'description', 'tags', 'type', 'url');
+			foreach ($unsetables as $k=>$a){
+				unset($r[$a]);
 			}
 			self::set_feed_meta($post_id, $r);
+#echo '</pre>';
 			return true;
 		} else {
 			return false;
@@ -321,9 +318,18 @@ class PF_Feeds_Schema {
 
 		// WP_Query does not accept a 'guid' param, so we filter hackishly
 		if ( isset( $args['url'] ) ) {
-			$this->filter_data['guid'] = $args['url'];
-			unset( $args['url'] );
-			$query_filters['posts_where'][] = '_filter_where_guid';
+		
+			$parts = substr_count($args['url'], '&');
+				
+			if($parts > 0){
+				#Apparently WP query can't deal with more than one part in a URL query. So we need another way.
+				$args['meta_key'] = 'feedUrl';
+				$args['meta_value'] = $args['url'];
+			} else {	
+				$this->filter_data['guid'] = $args['url'];
+				unset( $args['url'] );
+				$query_filters['posts_where'][] = '_filter_where_guid';
+			}
 		}
 
 		foreach ( $query_filters as $hook => $filters ) {
@@ -488,6 +494,9 @@ class PF_Feeds_Schema {
 	# output later. 
 	public function set_feed_meta($post_id, $args){
 		$c = 1;
+		#echo '<pre>';
+		#var_dump($args);
+		#echo '</pre>';
 		foreach ($args as $k=>$a){
 		
 			if(!$a){
@@ -499,7 +508,7 @@ class PF_Feeds_Schema {
 		
 		}
 		
-		if ($c >= count($args)){
+		if ($c+1 == count($args)){
 			update_post_meta($post_id, 'meta_data', 'complete');
 
 		}
