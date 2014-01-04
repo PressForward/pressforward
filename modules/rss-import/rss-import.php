@@ -291,14 +291,17 @@ class PF_RSS_Import extends PF_Module {
 		return;
 	}
 
-	static function pf_feedlist_validate($input){
-		$feed_obj = new PF_Feeds_Schema();
+	public static function pf_feedlist_validate($input){
+		set_time_limit(0);
+		$feed_obj = pressforward()->pf_feeds;
 		if (!empty($input['single'])){
 			if (!(is_array($input['single']))){
 				if (!$feed_obj->has_feed($input['single'])){
-					$check = $feed_obj->create($feedUrl, array('type' => 'rss', 'module_added' => get_class($this)));
+					$check = $feed_obj->create($input['single'], array('type' => 'rss', 'module_added' => get_called_class()));
 					if (is_wp_error($check)){
-						wp_die($check);
+						#wp_die($check);
+						$description = 'Feed failed initial attempt to add to database | ' . $check->get_error_message();
+						$feed_obj->create($input['single'], array('type' => 'rss-quick', 'description' => $description, 'module_added' => get_called_class()));
 					}
 				} else {
 					$feed_obj->update_url($input['single']);
@@ -316,9 +319,11 @@ class PF_RSS_Import extends PF_Module {
 			//print_r($opml_array); die();
 			foreach($opml_array as $key=>$feedXml){
 				# Adding this as a 'quick' type so that we can process the list quickly.
-				$feed_obj->create($feedXml, array('type' => 'rss-quick'));
+				pf_log('Adding this as a quick type so that we can process the list quickly');
+				$opml_array = $feed_obj->progressive_feedlist_transformer($opml_array, $feedXml, $key);
 				# @todo Tag based on folder structure
 			}
+			$check_up = update_option( PF_SLUG . '_feedlist', $opml_array );
 		}
 
 		if (!empty($_POST['o_feed_url'])){
