@@ -107,9 +107,19 @@ visibility:hidden;
 
 .item_title {
 	margin-bottom: 3px;
+	margin-bottom: 3px;
+	line-height: 16px;
 }
 .source_title {
 
+}
+
+.actions.btn-group {
+	margin: 5px 0;
+}
+
+.actions form {
+	margin: 0;
 }
 
 .item-tags {
