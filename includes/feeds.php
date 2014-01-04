@@ -352,6 +352,10 @@ class PF_Feeds_Schema {
 	# Check if a post or posts exists with get, if it does not
 	# return false. If it does, return the array of posts. 
 	public function has_feed($url){
+		$parsed = parse_url($url);
+		if(!isset($parsed['scheme'])){
+			$url = 'http://' . $url;
+		}
 		$posts = self::get(array('url' => $url));
 		if (count($posts) > 0){
 			return $posts;
