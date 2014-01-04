@@ -135,6 +135,16 @@ class PF_Feeds_Schema {
 		return $feedlist;
 	}
 	
+	public function kill_all_feeds(){
+
+		$mycustomposts = get_posts( array( 'post_type' => 'pf_feed', 'posts_per_page'=>-1) );
+		   foreach( $mycustomposts as $mypost ) {
+			 // Delete each post.
+			 wp_delete_post( $mypost->ID, true);
+			// Set to False if you want to send them to Trash.
+		   }
+	}
+	
 	# A function to take an argument array and turn it into a Feed CPT entry.
 	public function feed_post_setup($r, $insert_type = 'insert'){
 		
@@ -143,17 +153,32 @@ class PF_Feeds_Schema {
 				$r[$k] = '';
 		}
 		
-		$wp_args = array(
+		$wp_args_d = array(
 			'post_type' 	=> $this->post_type,
 			'post_status' 	=> 'publish',
 			'post_title'	=> $r['title'],
 			'post_content'	=> $r['description'],
+			'guid'			=> $r['url'],
 			'tax_input' 	=> array($this->tag_taxonomy => $r['tags'])
 		);
 		# Duplicate the function of WordPress where creating a pre-existing 
 		# post results in an update to that post. 
 		
+		if (!self::has_feed($r['url'])){
+			$insert_type = 'insert';
+		} else {
+			$insert_type = 'update';
+		}
+		
+		$wp_args = wp_parse_args( $r, $wp_args_d );
+		
+		
 		if ($insert_type == 'update') {
+
+			if  (!isset($r['ID'])){
+				$post_obj = self::get_feed($r['url']);
+				$r['ID'] = $post_obj->ID;
+			}
 			$wp_args['ID'] = $r['ID'];
 			wp_update_post( $wp_args );
 			$post_id = $r['ID'];
@@ -166,22 +191,21 @@ class PF_Feeds_Schema {
 				#$wp_args['post_date'] = date( 'Y-m-d H:i:s', time());
 				$post_id = wp_insert_post($wp_args);
 			} else {
-				foreach ($posts as $post){
-					$r['ID'] = $post->ID;
-				}
-				$r['feedUrl'] = $r['url'];
 				self::feed_post_setup($r, 'update');
 				# @todo Better error needed.
 				return false;
 			}
 		}
+		#echo '<pre>';
+		#var_dump($r);
+		#echo '</pre>';
 		if ( is_numeric($post_id) ){
 			self::set_pf_feed_type($post_id, $r['type']);
 			foreach ($r as $k=>$a){
 				if ($k == ('title'||'description'||'tags'||'type')){
 					unset($r[$k]);
 				}
-				if ($k == 'url'){
+				if ($k == 'url' && isset($r[$k])){
 					$r['feedUrl'] = $r[$k];
 					unset($r[$k]);
 				}
@@ -255,7 +279,7 @@ class PF_Feeds_Schema {
 		
 		if ($r['type'] == 'rss'){
 		
-			if (is_wp_error($theFeed = fetch_feed($feedURL))){
+			if (is_wp_error($theFeed = fetch_feed($feedUrl))){
 				return new WP_Error('badfeed', __('The feed fails verification.'));
 			} else {
 				$r = self::setup_rss_meta($r, $theFeed);
@@ -268,7 +292,7 @@ class PF_Feeds_Schema {
 		if ($r['type'] == 'rss-quick'){
 			$r['title'] = $r['url'];
 		}
-		if ($this->has_feed($feedUrl)){
+		if (self::has_feed($feedUrl)){
 			self::feed_post_setup($r, 'update');
 		} else {
 			self::feed_post_setup($r);
@@ -280,7 +304,7 @@ class PF_Feeds_Schema {
 	public function get_feed($url){
 			
 			$posts = self::has_feed($url);
-			return $posts;
+			return $posts[0];
 		
 	}
 	
@@ -380,7 +404,7 @@ class PF_Feeds_Schema {
 				if (($c == 0)){
 					self::update($post_id, array('url' => $url));
 				} else {
-					if ($url == get_the_guid($post_id)){
+					if ($url == get_post_meta($post_id, 'feedUrl', true)){
 						wp_delete_post( $post_id, true );
 					}
 				}
