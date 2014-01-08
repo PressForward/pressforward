@@ -486,7 +486,7 @@ class PF_Admin {
 			if (current_user_can( 'manage_options' )){
 				echo '<i class="icon-remove-sign pf-item-remove" pf-item-post-id="' . $id_for_comments .'" title="Delete"></i>';
 			}
-			echo '<i class="icon-eye-close schema-actor schema-switchable schema-item-hide" pf-item-post-id="' . $id_for_comments .'" pf-schema="item-hide" pf-schema-class="hidden" title="Hide"></i>';
+			echo '<i class="icon-eye-close hide-item" pf-item-post-id="' . $id_for_comments .'" title="Hide"></i>';
 			
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'marked-read'; }
 			

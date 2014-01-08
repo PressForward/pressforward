@@ -70,4 +70,12 @@ jQuery(window).load(function() {
 		
 	});
 	
+	jQuery('.pf_container').on('click', ".hide-item", function(e){
+		e.preventDefault();
+		var element		= jQuery(this);
+		var postID		= element.attr('pf-item-post-id');
+		jQuery('article[pf-item-post-id="'+postID+'"]').remove();
+		
+	});	
+	
 });

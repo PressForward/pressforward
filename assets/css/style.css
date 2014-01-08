@@ -275,7 +275,7 @@ h3 {
 	margin-top: 0;
 }
 
-.schema-item-hide {
+.hide-item {
 	float: right;
 	margin-left: -24px;
 	margin-top: -12px;
@@ -287,11 +287,11 @@ h3 {
 	position:absolute;
 }
 
-.schema-item-hide:hover {
+.hide-item:hover {
 	background-color: lightGrey;
 }
 
-.list .schema-item-hide {
+.list .hide-item {
 	margin-right: 0;
 	margin-top: 0;
 }
