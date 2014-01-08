@@ -55,6 +55,20 @@ jQuery(window).load(function() {
 	});
 	
 
-	jQuery('.navwidget').scrollspy()
+	jQuery('.navwidget').scrollspy();
+	
+	jQuery('.pf_container').on('click', ".pf-item-remove", function(e){
+		e.preventDefault();
+		var element		= jQuery(this);
+		var postID		= element.attr('pf-item-post-id');
+		var itemID 		= element.attr('id');
+		jQuery.post(ajaxurl, {
+			action: 'pf_ajax_thing_deleter',
+			post_id: postID,
+		}, function (response) {
+			jQuery('article#'+itemId).remove();
+		}
+		
+	});
 	
 });

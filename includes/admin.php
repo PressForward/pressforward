@@ -31,6 +31,7 @@ class PF_Admin {
 		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
 		add_action( 'wp_ajax_ajax_get_comments', array( $this, 'ajax_get_comments') );
+		add_action( 'wp_ajax_pf_ajax_thing_deleter', array( $this, 'pf_ajax_thing_deleter') );	
 	}
 
 	/**
@@ -482,8 +483,9 @@ class PF_Admin {
 		
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
 			echo '<div class="box-controls">';
-			echo '<i class="icon-remove-sign schema-actor schema-switchable schema-item-remove" pf-item-post-id="' . $id_for_comments .'" pf-schema="item-remove" pf-schema-class="deleted" title="Delete"></i>';
-			
+			if (current_user_can( 'manage_options' )){
+				echo '<i class="icon-remove-sign pf-item-remove" pf-item-post-id="' . $id_for_comments .'" title="Delete"></i>';
+			}
 			echo '<i class="icon-eye-close schema-actor schema-switchable schema-item-hide" pf-item-post-id="' . $id_for_comments .'" pf-schema="item-hide" pf-schema-class="hidden" title="Hide"></i>';
 			
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'marked-read'; }
