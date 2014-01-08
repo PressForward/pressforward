@@ -134,6 +134,7 @@ class PF_Feed_Item {
 		//			);
 		//$pageBottom = $pageTop + 20;
 		$args = pf_feed_item_post_type();
+
 		//$archiveQuery = new WP_Query( $args );
 		if ($limitless){
 		 $dquerystr = $wpdb->prepare("
@@ -145,6 +146,31 @@ class PF_Feed_Item {
 			AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 			ORDER BY {$wpdb->postmeta}.meta_value DESC
 		 ", pf_feed_item_post_type());		
+		} elseif (is_user_logged_in()){
+			$relate = new PF_RSS_Import_Relationship();
+			$rt = $relate->table_name;
+			$user_id = get_current_user_id();
+			$read_id = pf_get_relationship_type_id('read');
+			 $dquerystr = $wpdb->prepare("
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+				AND {$wpdb->posts}.post_type = %s
+				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
+				AND {$wpdb->posts}.ID 
+				NOT 
+				IN (
+					SELECT item_id 
+					FROM {$rt} 
+					WHERE {$rt}.user_id = {$user_id} 
+					AND {$rt}.relationship_type = {$read_id} 
+					AND {$rt}.value = 1
+				)
+				ORDER BY {$wpdb->postmeta}.meta_value DESC
+				LIMIT {$pageTop}, {$pagefull}
+			 ", pf_feed_item_post_type());			
+		
 		} else {
 		 $dquerystr = $wpdb->prepare("
 			SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
