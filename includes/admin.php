@@ -480,8 +480,14 @@ class PF_Admin {
 		}
 		
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
+			echo '<div class="box-controls">';
+			echo '<i class="icon-remove-sign schema-actor schema-switchable schema-item-remove" pf-item-post-id="' . $id_for_comments .'" pf-schema="item-remove" pf-schema-class="deleted" title="Delete"></i>';
+			
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'marked-read'; }
-			echo '<i class="icon-ok-sign schema-read schema-actor schema-switchable '.$readClass.'" pf-item-post-id="' . $id_for_comments .'" pf-schema="read" pf-schema-class="marked-read" title="Mark as Read"></i>'
+			
+			echo '<i class="icon-ok-sign schema-read schema-actor schema-switchable '.$readClass.'" pf-item-post-id="' . $id_for_comments .'" pf-schema="read" pf-schema-class="marked-read" title="Mark as Read"></i>';
+			
+			echo '</div>';
 			?> 
 			<header> <?php 
 				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander schema-actor" role="button" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . self::display_a($item['item_title'], 'title') . '</a></h1>';

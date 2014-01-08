@@ -217,15 +217,22 @@ h3 {
 	width: 23%;
 }
 
+.box-controls {
+	position:relative;
+	float: right;
+	display: inline;
+}
+
 .schema-read {
 	float: right;
 	margin-right: -12px;
 	margin-top: -12px;
-	display: inline;
+	display: block;
 	cursor: pointer;
 	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
 	background-color:lavender;
 	border-radius:6px;
+	position:absolute;
 }
 
 .list .schema-read {
@@ -240,6 +247,27 @@ h3 {
 
 .schema-read:hover {
 	background-color: lightGrey;
+}
+
+.schema-item-remove {
+	float: right;
+	margin-left: -24px;
+	margin-top: -12px;
+	display: block;
+	cursor: pointer;
+	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
+	background-color:lavender;
+	border-radius:6px;	
+	position:absolute;
+}
+
+.schema-item-remove:hover {
+	background-color: lightGrey;
+}
+
+.list .schema-item-remove {
+	margin-right: 0;
+	margin-top: 0;
 }
 
 #infscr-loading {
