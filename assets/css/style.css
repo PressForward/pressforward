@@ -254,7 +254,7 @@ h3 {
 	background-color: lightGrey;
 }
 
-.schema-item-remove {
+.pf-item-remove {
 	float: right;
 	margin-left: -48px;
 	margin-top: -12px;
@@ -266,11 +266,11 @@ h3 {
 	position:absolute;
 }
 
-.schema-item-remove:hover {
+.pf-item-remove:hover {
 	background-color: lightGrey;
 }
 
-.list .schema-item-remove {
+.list .pf-item-remove {
 	margin-right: 0;
 	margin-top: 0;
 }

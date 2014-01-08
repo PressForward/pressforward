@@ -67,7 +67,7 @@ jQuery(window).load(function() {
 			post_id: postID,
 		}, function (response) {
 			jQuery('article#'+itemId).remove();
-		}
+		});
 		
 	});
 	
