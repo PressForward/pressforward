@@ -66,7 +66,7 @@ jQuery(window).load(function() {
 			action: 'pf_ajax_thing_deleter',
 			post_id: postID,
 		}, function (response) {
-			jQuery('article#'+itemId).remove();
+			jQuery('article#'+itemID).remove();
 		});
 		
 	});
