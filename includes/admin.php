@@ -1195,7 +1195,8 @@ class PF_Admin {
 			}
 		}
 		
-		wp_delete_post($id, true);
+		$result = wp_delete_post($id, true);
+		return $result;
 		
 	}
 	
@@ -1204,7 +1205,16 @@ class PF_Admin {
 		$id = $_POST['post_id'];
 		$read_status = $_POST['made_readable'];
 		
-		$response = pf_thing_deleter($id, $read_status);
+		$returned = pf_thing_deleter($id, $read_status);
+		$response = array(
+		   'what'=>'pressforward',
+		   'action'=>'pf_ajax_thing_deleter',
+		   'id'=>$id,
+		   'data'=>(string)$returned
+		);
+		$xmlResponse = new WP_Ajax_Response($response);
+		$xmlResponse->send();
+		die();
 	
 	}
 	
