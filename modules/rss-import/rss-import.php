@@ -219,18 +219,7 @@ class PF_RSS_Import extends PF_Module {
         ?>
 			<br />
 			<br />
-		<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="Reset all Feed Retrieval Options"><?php _e('Reset all Feed Retrieval Options', 'pf'); ?></button>    <br />
-			 <?php
-			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0);
-			$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
-			$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
-			$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );
-			$retrieval_state = sprintf(__('Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d  Ready to chunk? %4$d', 'pf'), $feed_go, $feed_iteration, $retrieval_state, $chunk_state);
-			echo $retrieval_state;
-			?>
-			<br />
-			<br />
-			<div><?php _e('Add Single Feed', 'pf'); ?></div>
+			<div><?php _e('Add Single RSS Feed', 'pf'); ?></div>
 				<div>
 					<input id="<?php echo PF_SLUG . '_feedlist[single]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[single]'; ?>" value="" />
                     <label class="description" for="<?php echo PF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL or RSS path', 'pf'); ?></label>
@@ -238,7 +227,7 @@ class PF_RSS_Import extends PF_Module {
 
                 </div>
 
-			<div><?php _e('Add OPML', 'pf'); ?></div>
+			<div><?php _e('Add OPML File', 'pf'); ?></div>
 				<div>
 					<input id="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" value="" />
                     <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'pf'); ?></label>
@@ -250,22 +239,6 @@ class PF_RSS_Import extends PF_Module {
 				<?php submit_button(); ?>
 			</p>
 		</form>
-			<div class="show-feeds">
-			<form>
-				<p>Current items feeding on: </p>
-				<?php
-					echo '<code><pre>';
-					print_r($feedlist);
-					echo '</pre></code>';
-					wp_nonce_field('feedremove', PF_SLUG . '_o_feed_nonce', false);
-				?>
-				<ul>
-				<?php
-					$this->feedlist_builder($feedlist);
-				?>
-				</ul>
-			</div>
-			</form>
 		<?php
 
 
