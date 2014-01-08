@@ -61,12 +61,11 @@ jQuery(window).load(function() {
 		e.preventDefault();
 		var element		= jQuery(this);
 		var postID		= element.attr('pf-item-post-id');
-		var itemID 		= element.attr('id');
 		jQuery.post(ajaxurl, {
 			action: 'pf_ajax_thing_deleter',
 			post_id: postID,
 		}, function (response) {
-			jQuery('article#'+itemID).remove();
+			jQuery('article[pf-item-post-id="'+postID+'"]').remove();
 		});
 		
 	});

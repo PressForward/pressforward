@@ -1201,16 +1201,22 @@ class PF_Admin {
 	}
 	
 	function pf_ajax_thing_deleter() {
-		
-		$id = $_POST['post_id'];
-		$read_status = $_POST['made_readable'];
-		
-		$returned = pf_thing_deleter($id, $read_status);
+		ob_start();
+		if(isset($_POST['post_id'])){
+			$id = $_POST['post_id'];
+		} else { die('Option not sent'); }
+		if(isset($_POST['made_readable'])){
+			$read_status = $_POST['made_readable'];
+		} else { $read_status = false; }
+		$returned = self::pf_thing_deleter($id, $read_status);
+		var_dump($returned);
+		$vd = ob_get_clean();
+		ob_end_clean();
 		$response = array(
 		   'what'=>'pressforward',
 		   'action'=>'pf_ajax_thing_deleter',
 		   'id'=>$id,
-		   'data'=>(string)$returned
+		   'data'=>(string)$vd
 		);
 		$xmlResponse = new WP_Ajax_Response($response);
 		$xmlResponse->send();
