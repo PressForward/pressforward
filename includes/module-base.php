@@ -7,7 +7,6 @@ class PF_Module {
 	var $id;
 	var $module_dir;
 	var $module_url;
-	var $feed_type;
 
 	function start() {
 		$this->setup_hooks();
@@ -164,7 +163,7 @@ class PF_Module {
 	}
 **/
 	// Fetch and return a formatted data object - optional
-	function get_data_object($theFeed) { return array(); }
+	function get_data_object() { return array(); }
 
 	function pf_add_dash_widgets() {
 		$array = array();

@@ -361,7 +361,7 @@ function modalReadReset(){
 	
 	});
 }	
-jQuery(window).load(function() {
+jQuery(document).ready(function() {
 allContentModal(); 
 modalReadReset();
 

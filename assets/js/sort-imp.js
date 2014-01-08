@@ -1,7 +1,7 @@
 /**
  * Implementation of sort for pf
 **/
-jQuery(window).load(function() {
+jQuery(document).ready(function() {
 
 	jQuery('#sortbyitemdate').toggle(function (evt){ 
 		evt.preventDefault();
@@ -55,25 +55,6 @@ jQuery(window).load(function() {
 	});
 	
 
-	jQuery('.navwidget').scrollspy();
-	
-	jQuery('.pf_container').on('click', ".pf-item-remove", function(e){
-		var postID		= element.attr('pf-item-post-id');
-		jQuery.post(ajaxurl, {
-			action: 'pf_ajax_thing_deleter',
-			post_id: postID,
-		}, function (response) {
-			jQuery('article[pf-item-post-id="'+postID+'"]').remove();
-		});
-		
-	});
-	
-	jQuery('.pf_container').on('click', ".hide-item", function(e){
-		e.preventDefault();
-		var element		= jQuery(this);
-		var postID		= element.attr('pf-item-post-id');
-		jQuery('article[pf-item-post-id="'+postID+'"]').remove();
-		
-	});	
+	jQuery('.navwidget').scrollspy()
 	
 });

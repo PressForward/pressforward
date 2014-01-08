@@ -1,4 +1,4 @@
-jQuery(window).load(function() {
+jQuery(document).ready(function() {
 	jQuery('.pf_container').on('click', '.star-item', function(evt){
 		evt.preventDefault();
 		var obj			= jQuery(this);

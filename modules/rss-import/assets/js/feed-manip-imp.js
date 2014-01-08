@@ -1,4 +1,4 @@
-jQuery(window).load(function() {
+jQuery(document).ready(function() {
 	jQuery(".removeMyFeed").click(function (evt){ 
 		evt.preventDefault();
 		
@@ -23,5 +23,21 @@ jQuery(window).load(function() {
 			jQuery("#feed-"+itemID).remove();
 		});
 	  });
+	  
+	jQuery(".resetFeedOps").click(function (evt){ 
+			evt.preventDefault();
 
+
+		//jQuery('.loading-'+itemID).show();
+		jQuery.post(ajaxurl, {
+				action: 'feed_retrieval_reset'
+			},
+			function(response) {
+				//jQuery('.loading-'+itemID).hide();
+				//jQuery(".o_feed_"+itemID).html(response);
+				//jQuery("#test-div1").append(data);
+				alert('Feed options reset.');
+			});
+		  });	  	  	  
+	  
 });

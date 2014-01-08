@@ -222,8 +222,7 @@ function PFBootstrapInits() {
 
 }
 
-jQuery(window).load(function() {
-
+jQuery(document).ready(function() {
 	
 	jQuery('#gogrid').click(function (evt){ 
 			evt.preventDefault();
@@ -258,5 +257,6 @@ jQuery(window).load(function() {
 	commentPopModal();
 	PFBootstrapInits();
 //	commentModal();
+
 	
 });

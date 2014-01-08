@@ -15,7 +15,7 @@ class PF_Feed_Item {
 		$this->tag_taxonomy = pf_feed_item_tag_taxonomy();
 	}
 
-	public static function get( $args = array() ) {
+	public function get( $args = array() ) {
 		$wp_args = array(
 			'post_type'        => $this->post_type,
 			'post_status'      => 'publish',
@@ -134,7 +134,6 @@ class PF_Feed_Item {
 		//			);
 		//$pageBottom = $pageTop + 20;
 		$args = pf_feed_item_post_type();
-
 		//$archiveQuery = new WP_Query( $args );
 		if ($limitless){
 		 $dquerystr = $wpdb->prepare("
@@ -146,31 +145,6 @@ class PF_Feed_Item {
 			AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 			ORDER BY {$wpdb->postmeta}.meta_value DESC
 		 ", pf_feed_item_post_type());		
-		} elseif (is_user_logged_in()){
-			$relate = new PF_RSS_Import_Relationship();
-			$rt = $relate->table_name;
-			$user_id = get_current_user_id();
-			$read_id = pf_get_relationship_type_id('read');
-			 $dquerystr = $wpdb->prepare("
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
-				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
-				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
-				AND {$wpdb->posts}.ID 
-				NOT 
-				IN (
-					SELECT item_id 
-					FROM {$rt} 
-					WHERE {$rt}.user_id = {$user_id} 
-					AND {$rt}.relationship_type = {$read_id} 
-					AND {$rt}.value = 1
-				)
-				ORDER BY {$wpdb->postmeta}.meta_value DESC
-				LIMIT {$pageTop}, {$pagefull}
-			 ", pf_feed_item_post_type());			
-		
 		} else {
 		 $dquerystr = $wpdb->prepare("
 			SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
@@ -306,25 +280,7 @@ class PF_Feed_Item {
 
 	}
 
-	public static function get_the_feed_object(){
-		pf_log( 'Invoked: PF_Feed_Item::get_the_feed_object()' );
-		$PF_Feed_Retrieve = new PF_Feed_Retrieve();
-		# This pulls the RSS feed into a set of predetermined objects.
-		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
-		$theFeed = $PF_Feed_Retrieve->step_through_feedlist();
-		if ((!$theFeed) || is_wp_error($theFeed)){
-			pf_log('The feed is false, exit process. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
-			# Wipe the checking option for use next time. 
-			update_option(PF_SLUG . '_feeds_meta_state', array());
-			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 1 );
-			exit;
-		}
-	
-		return $theFeed;
-	}		
-	
-	public static function assemble_feed_for_pull($feedObj = 0) {
-		global $pf;
+	public function assemble_feed_for_pull($feedObj = 0) {
 		pf_log( 'Invoked: PF_Feed_Item::assemble_feed_for_pull()' );
 
 		ignore_user_abort(true);
@@ -342,10 +298,11 @@ class PF_Feed_Item {
 			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 0 );
 			pf_log( $chunk_state );
 		}
-		
+
+		# This pulls the RSS feed into a set of predetermined objects.
+		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
 		if ($feedObj == 0){
-			$theFeed = self::get_the_feed_object();
-			$feedObj = $theFeed;
+			$feedObj = self::source_data_object();
 		}
 
 		# We need to init $sourceRepeat so it can be if 0 if nothing is happening.
@@ -355,8 +312,6 @@ class PF_Feed_Item {
 		# Since rss_object places all the feed items into an array of arrays whose structure is standardized throughout,
 		# We can do stuff with it, using the same structure of items as we do everywhere else.
 		pf_log('Now beginning check and processing for entering items into the database.');
-		$parent = $feedObj['parent_feed_id'];
-		unset($feedObj['parent_feed_id']);
 		foreach($feedObj as $item) {
 			$thepostscheck = 0;
 			$thePostsDoubleCheck = 0;
@@ -471,11 +426,7 @@ class PF_Feed_Item {
 				$item_author 	= $item['item_author'];
 				$item_link 		= $item['item_link'];
 				$item_wp_date	= $item['item_wp_date'];
-				$item_tags		= $item['item_tags']; 
-				if (!isset($item['parent_feed_id']) || !$item['parent_feed_id']){
-					$item['parent_feed_id'] = $parent;
-				}
-				$feed_obj_id	= $item['parent_feed_id']; 
+				$item_tags		= $item['item_tags'];
 				$source_repeat  = $sourceRepeat;
 
 				# Trying to prevent bad or malformed HTML from entering the database.
@@ -498,7 +449,6 @@ class PF_Feed_Item {
 					'post_type' => pf_feed_item_post_type(),
 				//	'post_date' => $_SESSION['cal_startdate'],
 					'post_title' => $item_title,
-					'post_parent'    => $feed_obj_id,
 					'post_content' => $item_content
 
 				);
@@ -524,7 +474,6 @@ class PF_Feed_Item {
 						'post_type' => pf_feed_item_post_type(),
 					//	'post_date' => $_SESSION['cal_startdate'],
 						'post_title' => $item_title,
-						'post_parent'    => $feed_obj_id,
 						'post_content' => $item_content
 
 					);
@@ -591,13 +540,12 @@ class PF_Feed_Item {
 
 		}
 		update_option( PF_SLUG . '_ready_to_chunk', 1 );
-		$Feed_Retrieve = new PF_Feed_Retrieve();
-		$Feed_Retrieve->advance_feeds();
+		pf_rss_import::advance_feeds();
 		//die('Refreshing...');
 
 	}
 
-	public static function post_inserted($postAttempt, $data){
+	public function post_inserted($postAttempt, $data){
 			$worked = 1;
 			$workedBool = true;
 				if ($postAttempt === 0) {

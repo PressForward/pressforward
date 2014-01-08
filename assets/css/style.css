@@ -3,7 +3,7 @@
 }
 
 .toplevel_page_pf-menu #wpcontent {
-	margin-left: 160px;
+	margin-left: 145px;
 }
 
 .deck .card {
@@ -107,18 +107,9 @@ visibility:hidden;
 
 .item_title {
 	margin-bottom: 3px;
-	line-height: 16px;
 }
 .source_title {
 
-}
-
-.actions.btn-group {
-	margin: 0 0;
-}
-
-.actions form {
-	margin: 0;
 }
 
 .item-tags {
@@ -215,29 +206,17 @@ h3 {
 
 .pressforward .grid.full #entries article.feed-item {
 	width: 23%;
-	padding: 1.6% 2% 2% 2%;
-}
-
-.pressforward .grid.full #entries article.feed-item header {
-	margin-bottom: 1em;
-}
-
-.box-controls {
-	position:relative;
-	float: right;
-	display: inline;
 }
 
 .schema-read {
 	float: right;
 	margin-right: -12px;
 	margin-top: -12px;
-	display: block;
+	display: inline;
 	cursor: pointer;
 	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
 	background-color:lavender;
 	border-radius:6px;
-	position:absolute;
 }
 
 .list .schema-read {
@@ -252,48 +231,6 @@ h3 {
 
 .schema-read:hover {
 	background-color: lightGrey;
-}
-
-.pf-item-remove {
-	float: right;
-	margin-left: -48px;
-	margin-top: -12px;
-	display: block;
-	cursor: pointer;
-	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
-	background-color:lavender;
-	border-radius:6px;	
-	position:absolute;
-}
-
-.pf-item-remove:hover {
-	background-color: lightGrey;
-}
-
-.list .pf-item-remove {
-	margin-right: 0;
-	margin-top: 0;
-}
-
-.hide-item {
-	float: right;
-	margin-left: -24px;
-	margin-top: -12px;
-	display: block;
-	cursor: pointer;
-	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
-	background-color:lavender;
-	border-radius:6px;	
-	position:absolute;
-}
-
-.hide-item:hover {
-	background-color: lightGrey;
-}
-
-.list .hide-item {
-	margin-right: 0;
-	margin-top: 0;
 }
 
 #infscr-loading {
@@ -464,7 +401,7 @@ h3 {
  *
  */
  
-ul.wp-submenu {
+.wp-submenu ul {
   padding: 0;
   margin: 0;
 }
