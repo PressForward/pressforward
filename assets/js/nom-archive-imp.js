@@ -1,7 +1,7 @@
 
 	var archivesVisible = 0;
 
-jQuery(document).ready(function() {
+jQuery(window).load(function() {
 	
 	jQuery('.pf_container').on('click', ".nom-to-archive", function (evt){ 
 		evt.preventDefault();
@@ -19,7 +19,7 @@ jQuery(document).ready(function() {
 
 var archivesVisible = 0;
 
-jQuery(document).ready(function() {
+jQuery(window).load(function() {
 	jQuery(".showarchived").click().toggle(function (evt){ 
 		evt.preventDefault();
 		archivesVisible = 1;

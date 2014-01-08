@@ -225,7 +225,7 @@ $gencode = '
 feednewsfeed.definetemplate('<?php echo $gencode; ?>');
 feednewsfeed.filterfeed(10, "date") //Show 8 entries, sort by date
 feednewsfeed.init() //Always call this last	
-								jQuery(document).ready(function() {
+								jQuery(window).load(function() {
 									jQuery("#{id}").on("show", function () {
 										jQuery("#excerpt1").hide("slow");
 									});

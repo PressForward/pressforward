@@ -1,4 +1,4 @@
-jQuery(document).ready(function() {
+jQuery(window).load(function() {
 
 	jQuery('.pf_container').on('click', ".nom-to-draft", function (evt){ 
 		evt.preventDefault();
@@ -59,7 +59,7 @@ jQuery(document).ready(function() {
   	
 });
 
-jQuery(document).ready(function() {
+jQuery(window).load(function() {
 	jQuery('.pf_container').on('show', ".nom-item", function (){ 
 		var element			= jQuery(this);
 		var itemID			= element.attr('id');

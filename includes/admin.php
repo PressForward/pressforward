@@ -31,6 +31,7 @@ class PF_Admin {
 		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
 		add_action( 'wp_ajax_ajax_get_comments', array( $this, 'ajax_get_comments') );
+		add_action( 'wp_ajax_pf_ajax_thing_deleter', array( $this, 'pf_ajax_thing_deleter') );	
 	}
 
 	/**
@@ -265,6 +266,7 @@ class PF_Admin {
 					<a href="#" id="settings" class="button">Settings</a>
 					<div class="btn-group">
 						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete entire feed archive', 'pf');  ?>" ><?php  _e('Delete entire feed archive', 'pf');  ?></button>
+						<button type="submit" class="delete btn btn-info pull-right" id="Show my Nominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
 					</div>
 				<?php 
 			}			
@@ -333,6 +335,13 @@ class PF_Admin {
 					} 
 					if ($format === 'nomination'){
 					
+						$nom_count_classes = 'btn btn-small';
+						if ($metadata['nom_count'] > 0){
+							$nom_count_classes .= ' btn-info';
+						} 
+					
+						echo '<a class="'.$nom_count_classes.'" data-toggle="tooltip" title="' . __('Nomination Count', 'pf') .  '" form="' . $metadata['nom_id'] . '">'.$metadata['nom_count'].'<i class="icon-play"></i></button></a>';
+					
 						echo '<a class="btn btn-small nom-to-archive schema-actor" pf-schema="archive" pf-schema-class="archived" data-toggle="tooltip" title="' . __('Archive', 'pf') .  '" form="' . $metadata['nom_id'] . '"><img src="' . PF_URL . 'assets/images/archive.png" /></button></a>';
 						$arcive_status = "";
 						if ( 1 == pf_get_relationship_value( 'draft', $metadata['item_feed_post_id'], $user_id ) ){
@@ -372,6 +381,48 @@ class PF_Admin {
 						do_action('pf_comment_action_modal', $commentSet);
 					
 					} 
+		
+	}
+	
+	/**
+	 * Prep an item element for display based on position and element.
+	 * Establishes the rules for item display.
+	 * Position should be title, source, graf.
+	**/
+	
+	public function display_a($string, $position = 'source', $page = 'list'){
+		$title_ln_length = 36;
+		$title_lns = 3;
+		
+		$source_ln_length = 48;
+		$source_lns = 2;
+		
+		$graf_ln_length = 48;
+		$graf_lns = 5;
+		
+		$max = 0;
+		
+		switch ($position){
+			case 'title':
+				$max = $title_ln_length * $title_lns;
+				break;
+			case 'source':
+				$max = $source_ln_length * $source_lns;
+				break;
+			case 'graf':
+				$max = $graf_ln_length * $graf_lns;
+				break;
+		}
+		
+		$cut = substr($string, 0, $max+1);
+		$final_cut = substr($cut, 0, -4);
+		if (strlen($cut) < $max){
+			$cut = substr($string, 0, $max);
+			return $cut;
+		} else {
+			$cut = $final_cut . ' ...';
+			return $cut;
+		}
 		
 	}
 	
@@ -431,12 +482,21 @@ class PF_Admin {
 		}
 		
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
+			echo '<div class="box-controls">';
+			if (current_user_can( 'manage_options' )){
+				echo '<i class="icon-remove-sign pf-item-remove" pf-item-post-id="' . $id_for_comments .'" title="Delete"></i>';
+			}
+			echo '<i class="icon-eye-close hide-item" pf-item-post-id="' . $id_for_comments .'" title="Hide"></i>';
+			
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'marked-read'; }
-			echo '<i class="icon-ok-sign schema-read schema-actor schema-switchable '.$readClass.'" pf-item-post-id="' . $id_for_comments .'" pf-schema="read" pf-schema-class="marked-read" title="Mark as Read"></i>'
+			
+			echo '<i class="icon-ok-sign schema-read schema-actor schema-switchable '.$readClass.'" pf-item-post-id="' . $id_for_comments .'" pf-schema="read" pf-schema-class="marked-read" title="Mark as Read"></i>';
+			
+			echo '</div>';
 			?> 
 			<header> <?php 
-				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander schema-actor" role="button" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . $item['item_title'] . '</a></h1>';
-				echo '<p class="source_title">' . $item['source_title'] . '</p>';
+				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander schema-actor" role="button" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . self::display_a($item['item_title'], 'title') . '</a></h1>';
+				echo '<p class="source_title">' . self::display_a($item['source_title'], 'source') . '</p>';
 				if ($format === 'nomination'){
 				?>		
 						<div class="sortable-hidden-meta" style="display:none;">
@@ -501,7 +561,7 @@ class PF_Admin {
 						//echo '<a name="' . $c . '" style="display:none;"></a>';
 /**
 			echo '<script type="text/javascript">
-					jQuery(document).ready(function() {
+					jQuery(window).load(function() {
 						jQuery("#' . $item['item_id'] . '").on("show", function () {
 							jQuery("#excerpt' . $c . '").hide("slow");
 						});
@@ -528,7 +588,7 @@ class PF_Admin {
 						if ($format === 'nomination'){
 							echo'<p>' . pf_noms_excerpt($item['item_content']) . '</p>';
 						} else {
-							echo'<p>' . pf_feed_excerpt($item['item_content']) . '</p>';
+							echo'<p>' . self::display_a(pf_feed_excerpt($item['item_content']), 'graf') . '</p>';
 						}
 					echo '</div>';
 /**
@@ -1100,6 +1160,70 @@ class PF_Admin {
 		}
 	}
 	
+	/*
+	 *
+	 * A method to allow users to delete any CPT or post through AJAX.
+	 * The goal here is to tie an easy use function to an AJAX action,
+	 * that also cleans up all the extra data that PressForward
+	 * can create.
+	 * 
+	 * If a post is made readable, it will attempt (and often
+	 * succeed) at pulling in images. This should remove those
+	 * attached images and remove relationship schema data.
+	 * 
+	 * We should also figure out the best way to call this when
+	 * posts are 'expired' after 60 days. 
+	 * 
+	 * Takes: 
+	 *		Post ID
+	 *		Post Readability Status
+	 *
+	 */
+	
+	function pf_thing_deleter($id = 0, $readability_status = false){
+		if ($id == 0)
+			return new WP_Error('noID', __("No ID supplied for deletion", 'pf'));
+		
+		# Note: this will also remove feed items if a feed is deleted, is that something we want? 
+		if ($readability_status || $readability_status > 0){
+			$args = array(
+				'post_parent' => $id
+			);
+			$attachments = get_children($args);
+			foreach ($attachments as $attachment) {
+				wp_delete_post($attachment->ID, true);
+			}
+		}
+		
+		$result = wp_delete_post($id, true);
+		return $result;
+		
+	}
+	
+	function pf_ajax_thing_deleter() {
+		ob_start();
+		if(isset($_POST['post_id'])){
+			$id = $_POST['post_id'];
+		} else { die('Option not sent'); }
+		if(isset($_POST['made_readable'])){
+			$read_status = $_POST['made_readable'];
+		} else { $read_status = false; }
+		$returned = self::pf_thing_deleter($id, $read_status);
+		var_dump($returned);
+		$vd = ob_get_clean();
+		ob_end_clean();
+		$response = array(
+		   'what'=>'pressforward',
+		   'action'=>'pf_ajax_thing_deleter',
+		   'id'=>$id,
+		   'data'=>(string)$vd
+		);
+		$xmlResponse = new WP_Ajax_Response($response);
+		$xmlResponse->send();
+		die();
+	
+	}
+	
 	/////////////////////////
 	//    AJAX HANDLERS    //
 	/////////////////////////
@@ -1115,7 +1239,7 @@ class PF_Admin {
 	}
 
 	public function trigger_source_data() {
-		pressforward()->modules['rss-import']->trigger_source_data();
+		pressforward()->pf_retrieve->trigger_source_data();
 		die();
 	}
 
