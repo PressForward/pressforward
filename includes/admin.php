@@ -638,7 +638,7 @@ class PF_Admin {
 				<h3 id="modal-<?php echo $item['item_id']; ?>-label" class="modal_item_title source_title"><?php echo $item['item_title']; ?></h3>
 			  </div>
 			  <div class="row-fluid modal-body-row">
-				  <div class="modal-body span9">
+				  <div class="modal-body span9" id="modal-body-<?php echo $item['item_id']; ?>">
 					<?php 
 					$contentObj = new pf_htmlchecker($item['item_content']);
 					$text = $contentObj->closetags($item['item_content']);

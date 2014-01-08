@@ -234,7 +234,7 @@ function allContentModal(){
 		modalNavigator(tabindex);			
 		//At this point it should have grabbed the direct feeditem hashed ID. That allows us to do things specifically to that item past this point.
 		//BUG: Escaping everything incorrectly. <-one time issue?
-		var content = jQuery("#"+itemID+" .modal-body").html();
+		var content = jQuery("#"+itemID+" #modal-body-"+itemID).html();
 		var url = jQuery("#"+itemID+" #item_link_"+itemID).val();
 		var authorship = jQuery("#"+itemID+" #item_author_"+itemID).val();
 		var read_status = element.attr('pf-readability-status');
@@ -279,7 +279,7 @@ function allContentModal(){
 						jQuery("#item_content_"+itemID).attr('value', safeResponse);
 						element.attr('pf-readability-status', 1);
 					} else if (status == 'already_readable') {
-						jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html(unescape(content));
+						jQuery("#"+itemID+" #modal-body-"+itemID).html(unescape(content));
 						element.attr('pf-readability-status', 1);
 					} else {
 						jQuery("#"+itemID+" #modal-"+itemID+" .modal-body").html(read_content);
