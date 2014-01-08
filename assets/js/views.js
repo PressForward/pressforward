@@ -258,7 +258,5 @@ jQuery(window).load(function() {
 	commentPopModal();
 	PFBootstrapInits();
 //	commentModal();
-
-
 	
 });
