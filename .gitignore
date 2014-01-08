@@ -220,4 +220,4 @@ pip-log.txt
 #############
 
 # Mergetool Diff files
-.orig
+*.orig
