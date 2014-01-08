@@ -3,7 +3,7 @@
 Plugin Name: PressForward
 Plugin URI: http://pressforward.org/
 Description: This plugin is an aggregation parser for CHNM's Press Forward project.
-Version: 2.1.5
+Version: 2.2.01
 Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
 Author URI: http://aramzs.me, http://boone.gorg.es/, http://clioweb.org
 License: GPL2
@@ -41,13 +41,17 @@ class PressForward {
 	var $schema;
 	var $admin;
 	var $nominations;
+	var $pf_feeds;
+	var $pf_retrieve;
 
 	// See http://php.net/manual/en/language.oop5.decon.php to get a better understanding of what's going on here.
 	function __construct() {
 
 		$this->includes();
-
+		
+		$this->set_up_feeds();
 		$this->set_up_schema();
+		$this->set_up_feed_retrieve();
 		$this->set_up_nominations();
 		$this->set_up_admin();
 
@@ -92,6 +96,8 @@ class PressForward {
 		require( PF_ROOT . '/includes/schema.php' );
 		require( PF_ROOT . '/includes/readable.php' );
 		require( PF_ROOT . '/includes/feed-items.php' );
+		require( PF_ROOT . '/includes/feeds.php' );
+		require( PF_ROOT . '/includes/slurp.php' );
 		require( PF_ROOT . '/includes/relationships.php' );
 		require( PF_ROOT . '/includes/nominations.php' );
 		require( PF_ROOT . '/includes/admin.php' );
@@ -107,6 +113,28 @@ class PressForward {
 			$this->schema = new PF_Feed_Item_Schema;
 		}
 	}
+	
+	/**
+	 * Sets up the Feeds functionality
+	 *
+	 * @since 2.2
+	 */
+	function set_up_feeds() {
+		if ( empty( $this->pf_feeds ) ) {
+			$this->pf_feeds = new PF_Feeds_Schema;
+		}
+	}	
+	
+	/**
+	 * Sets up the Retrieval functionality
+	 *
+	 * @since 2.2
+	 */
+	function set_up_feed_retrieve() {
+		if ( empty( $this->pf_retrieve ) ) {
+			$this->pf_retrieve = new PF_Feed_Retrieve;
+		}
+	}		
 
 	/**
 	 * Sets up the Dashboard admin
