@@ -483,6 +483,8 @@ class PF_Admin {
 			echo '<div class="box-controls">';
 			echo '<i class="icon-remove-sign schema-actor schema-switchable schema-item-remove" pf-item-post-id="' . $id_for_comments .'" pf-schema="item-remove" pf-schema-class="deleted" title="Delete"></i>';
 			
+			echo '<i class="icon-eye-close schema-actor schema-switchable schema-item-hide" pf-item-post-id="' . $id_for_comments .'" pf-schema="item-hide" pf-schema-class="hidden" title="Hide"></i>';
+			
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'marked-read'; }
 			
 			echo '<i class="icon-ok-sign schema-read schema-actor schema-switchable '.$readClass.'" pf-item-post-id="' . $id_for_comments .'" pf-schema="read" pf-schema-class="marked-read" title="Mark as Read"></i>';

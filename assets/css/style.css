@@ -215,6 +215,11 @@ h3 {
 
 .pressforward .grid.full #entries article.feed-item {
 	width: 23%;
+	padding: 1.6% 2% 2% 2%;
+}
+
+.pressforward .grid.full #entries article.feed-item header {
+	margin-bottom: 1em;
 }
 
 .box-controls {
@@ -251,7 +256,7 @@ h3 {
 
 .schema-item-remove {
 	float: right;
-	margin-left: -24px;
+	margin-left: -48px;
 	margin-top: -12px;
 	display: block;
 	cursor: pointer;
@@ -266,6 +271,27 @@ h3 {
 }
 
 .list .schema-item-remove {
+	margin-right: 0;
+	margin-top: 0;
+}
+
+.schema-item-hide {
+	float: right;
+	margin-left: -24px;
+	margin-top: -12px;
+	display: block;
+	cursor: pointer;
+	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
+	background-color:lavender;
+	border-radius:6px;	
+	position:absolute;
+}
+
+.schema-item-hide:hover {
+	background-color: lightGrey;
+}
+
+.list .schema-item-hide {
 	margin-right: 0;
 	margin-top: 0;
 }
