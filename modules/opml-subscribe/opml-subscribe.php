@@ -37,17 +37,21 @@ class PF_OPML_Subscribe extends PF_Module {
 	/**
 	 * Gets the data from an OPML file and turns it into a data object
 	 * as expected by PF
+	 * Prefers a post object, but can take a post ID. 
 	 *
 	 * @global $pf Used to access the feed_object() method
+	 *
 	 */	
 	public function get_data_object($aOPML){
 		$feed_obj = new PF_Feeds_Schema();
+		if (is_numeric($aOPML)){
+			$aOPML = get_post($aOPML);
+		}
 		pf_log( 'Invoked: PF_OPML_Subscribe::get_data_object()' );
-		$aOPML_id = $aOPML->ID;
-		$aOPML_url - get_post_meta($aOPML_id, 'feedUrl', true);
+		$aOPML_url = $aOPML->guid;
 		if(empty($aOPML_url) || is_wp_error($aOPML_url) || !$aOPML_url){
-			$aOPML_url = $aOPML->post_title;
-			update_post_meta($aOPML_id, 'feedUrl', $aOPML_url);
+			$aOPML_id = $aOPML->ID;
+			$aOPML_url - get_post_meta($aOPML_id, 'feedUrl', true);
 		}
 		pf_log( 'Getting OPML Feed at '.$aOPML_url );
 		$OPML_reader = new OPML_reader;
@@ -81,7 +85,8 @@ class PF_OPML_Subscribe extends PF_Module {
 						'type'		=>	'rss-quick'
 					)
 				);
-				var_dump($check); die();
+				pf_log( 'Creating subscription to '.$feedObj['xmlUrl'].' from OPML Feed at '.$aOPML_url );
+				#var_dump($check); die();
 				$content = 'Subscribed: ' . $feedObj['title'] . ' - ' . $feedObj['type'] . ' - ' . $feedObj['text'];
 				$source = $feedObj['htmlUrl'];
 				if (empty($source)){ $source = $feedObj['xmlUrl']; }
@@ -144,9 +149,10 @@ class PF_OPML_Subscribe extends PF_Module {
 							'module_added' => get_class($this)
 						)
 					);
-					if (is_wp_error($check)){
+					if (is_wp_error($check) || !$check){
 						wp_die($check);
 					}
+					self::get_data_object(get_post($check));
 				} else {
 					$feed_obj->update_url($input['list']);
 				}
