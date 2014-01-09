@@ -397,7 +397,7 @@ class PF_Admin {
 		$source_ln_length = 48;
 		$source_lns = 2;
 		
-		$graf_ln_length = 48;
+		$graf_ln_length = 40;
 		$graf_lns = 5;
 		
 		$max = 0;
