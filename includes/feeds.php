@@ -129,7 +129,7 @@ class PF_Feeds_Schema {
 	public function progressive_feedlist_transformer($feedlist = array(), $xmlUrl, $key) {
 		
 		$check = $this->create($xmlUrl, array('type' => 'rss-quick'));
-		if ($check){
+		if (is_numeric($check)){
 			unset($feedlist[$key]);
 		}
 		return $feedlist;
@@ -195,6 +195,7 @@ class PF_Feeds_Schema {
 				# @todo Better error needed.
 				return false;
 			}
+			
 		}
 #echo '<pre>';
 		#var_dump($post_id);
@@ -208,7 +209,7 @@ class PF_Feeds_Schema {
 			}
 			self::set_feed_meta($post_id, $r);
 #echo '</pre>';
-			return true;
+			return $post_id;
 		} else {
 			return false;
 		}	
