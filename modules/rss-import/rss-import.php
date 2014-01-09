@@ -26,6 +26,9 @@ class PF_RSS_Import extends PF_Module {
 		{
 			add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
 			add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed') );
+		}
+	}
+	
 	/**
 	 * Run any setup that has to happen after initial module registration
 	 */
