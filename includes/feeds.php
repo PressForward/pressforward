@@ -190,11 +190,13 @@ class PF_Feeds_Schema {
 				$wp_args['guid'] = $r['url'];
 				#$wp_args['post_date'] = date( 'Y-m-d H:i:s', time());
 				$post_id = wp_insert_post($wp_args);
+				
 			} else {
 				self::feed_post_setup($r, 'update');
 				# @todo Better error needed.
 				return false;
 			}
+			return $post_id;
 		}
 #echo '<pre>';
 		#var_dump($post_id);
@@ -286,13 +288,13 @@ class PF_Feeds_Schema {
 			$current_user = wp_get_current_user();
 			$r['user_added'] = $current_user->user_login;
 		}
-		if ($r['type'] == 'rss-quick'){
+		if ($r['type'] == 'rss-quick' && !isset($r['title'])){
 			$r['title'] = $r['url'];
 		}
 		if (self::has_feed($feedUrl)){
-			self::feed_post_setup($r, 'update');
+			$post_id = self::feed_post_setup($r, 'update');
 		} else {
-			self::feed_post_setup($r);
+			$post_id = self::feed_post_setup($r);
 		}
 		return true;
 

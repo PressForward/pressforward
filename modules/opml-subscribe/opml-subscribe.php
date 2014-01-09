@@ -56,7 +56,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		$opmlObject = array();
 		foreach($opml_array as $feedObj){
 			$id = md5($aOPML_url . '_opml_sub_for_' . $feedObj['xmlUrl']);
-			if ( false === ( $rssObject['opml_' . $c] = get_transient( 'pf_' . $id ) ) ) {
+			#if ( false === ( $rssObject['opml_' . $c] = get_transient( 'pf_' . $id ) ) ) {
 				# Adding this as a 'quick' type so that we can process the list quickly.
 				if ($feedObj['type'] == 'rss'){ $feedObj['type'] = 'rss-quick'; }
 				
@@ -71,15 +71,17 @@ class PF_OPML_Subscribe extends PF_Module {
 				}				
 				
 				if ($feedObj['title'] == ''){ $feedObj['title'] = $feedObj['text']; }
-				$feed_obj->create(
+				$check = $feed_obj->create(
 					$feedObj['xmlUrl'], 
 					array(
 						'type' => $feedObj['type'],
 						'title' => $feedObj['title'],
 						'htmlUrl' => $feedObj['htmlUrl'],
-						'description' => $feedObj['text']
+						'description' => $feedObj['text'],
+						'type'		=>	'rss-quick'
 					)
 				);
+				var_dump($check); die();
 				$content = 'Subscribed: ' . $feedObj['title'] . ' - ' . $feedObj['type'] . ' - ' . $feedObj['text'];
 				$source = $feedObj['htmlUrl'];
 				if (empty($source)){ $source = $feedObj['xmlUrl']; }
@@ -100,7 +102,7 @@ class PF_OPML_Subscribe extends PF_Module {
 				set_transient( 'pf_' . $id, $opmlObject['opml_' . $c], 60*10 );
 				$c++;
 			
-			}
+			#}
 		}
 
 		return $opmlObject;
