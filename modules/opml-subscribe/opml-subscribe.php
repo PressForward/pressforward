@@ -141,7 +141,7 @@ class PF_OPML_Subscribe extends PF_Module {
 			if (!(is_array($input['list']))){
 				if (!$feed_obj->has_feed($input['list'])){
 					$check = $feed_obj->create(
-						$input['list'], 
+						(string)$input['list'], 
 						array(
 							'title' => 'OPML Subscription at ' . $input['list'],
 							'htmlUrl' => $input['list'],
