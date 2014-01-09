@@ -391,14 +391,14 @@ class PF_Admin {
 	**/
 	
 	public function display_a($string, $position = 'source', $page = 'list'){
-		$title_ln_length = 36;
+		$title_ln_length = 30;
 		$title_lns = 3;
 		
 		$source_ln_length = 48;
 		$source_lns = 2;
 		
-		$graf_ln_length = 40;
-		$graf_lns = 5;
+		$graf_ln_length = 46;
+		$graf_lns = 4;
 		
 		$max = 0;
 		
