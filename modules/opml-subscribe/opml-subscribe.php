@@ -43,6 +43,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	 *
 	 */	
 	public function get_data_object($aOPML){
+		set_time_limit(0);
 		$feed_obj = new PF_Feeds_Schema();
 		if (is_numeric($aOPML)){
 			$aOPML = get_post($aOPML);
