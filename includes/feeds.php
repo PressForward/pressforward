@@ -172,6 +172,8 @@ class PF_Feeds_Schema {
 		
 		$wp_args = wp_parse_args( $r, $wp_args_d );
 		
+		pf_log('Will now ' . $insert_type . ' a post with the following args:');
+		pf_log($wp_args); #die();
 		
 		if ($insert_type == 'update') {
 
@@ -187,7 +189,6 @@ class PF_Feeds_Schema {
 		if ($insert_type == 'insert'){
 			$posts = self::has_feed($r['url']);
 			if (!$posts){
-				$wp_args['guid'] = $r['url'];
 				#$wp_args['post_date'] = date( 'Y-m-d H:i:s', time());
 				$post_id = wp_insert_post($wp_args);
 			} else {
@@ -256,12 +257,9 @@ class PF_Feeds_Schema {
 	
 	public function create($feedUrl, $args = array()){
 		#print_r('<pre>'); var_dump($feedUrl); print_r('</pre>'); die();
-		if (!isset($args['url'])){
-			$args['url'] = $feedUrl;
-		}
 		$r = wp_parse_args( $args, array(
 			'title'   		=> false,
-			'url'     		=> 'http://pressforward.org/feed/',
+			'url'     		=> $feedUrl,
 			'htmlUrl' 		=> false,
 			'type'	  		=> 'rss',
 			'feedUrl'		=> $feedUrl,
