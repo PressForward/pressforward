@@ -60,37 +60,44 @@ class PF_Feed_Item {
 		return $posts;
 	}
 
-	public function create( $args = array() ) {
+	public static function create( $args = array() ) {
 		$r = wp_parse_args( $args, array(
-			'title'   => '',
-			'url'     => '',
-			'content' => '',
-			'source'  => '',
-			'date'    => '',
-			'tags'    => array(),
+			'item_title'   => '',
+			'item_link'     => '',
+			'item_content' => '',
+			'source_title'  => '',
+			'item_wp_date'    => '',
+			'post_parent'    => '',
+			'item_tags'    => array(),
 		) );
-
+		
 		// Sanitization
 		// Conversion should be done upstream
-		if ( ! is_numeric( $r['date'] ) ) {
-			return new WP_Error( 'Date should be in UNIX format' );
+		if ( ! is_numeric( $r['item_wp_date'] ) ) {
+			$r['item_wp_date'] = strtotime($r['item_wp_date']);
+			if (!$r['item_wp_date']){
+				return new WP_Error( 'Date should be in UNIX format' );
+			}
 		}
 
+		
+
 		$wp_args = array(
-			'post_type'    => $this->post_type,
+			'post_type'    => pf_feed_item_post_type(),
 			'post_status'  => 'publish',
-			'post_title'   => $r['title'],
-			'post_content' => wp_specialchars_decode( $r['content'], ENT_COMPAT ), // todo
-			'guid'         => $r['url'],
-			'post_date'    => date( 'Y-m-d H:i:s', $r['date'] ),
-			'tax_input'    => array( $this->tag_taxonomy => $r['tags'] ),
+			'post_title'   => $r['item_title'],
+			'post_content' => wp_specialchars_decode( $r['item_content'], ENT_COMPAT ), // todo
+			'guid'         => $r['item_link'],
+			'post_date'    => date( 'Y-m-d H:i:s', $r['item_wp_date'] ),
+			'tax_input'    => array( pf_feed_item_tag_taxonomy() => $r['item_tags'] ),
+			'post_parent'	=> $r['post_parent']
 		);
 
 		$post_id = wp_insert_post( $wp_args );
 
-		if ( $post_id ) {
-			self::set_word_count( $post_id, $r['content'] );
-			self::set_source( $post_id, $r['source'] );
+		if ( is_numeric($post_id) ) {
+			self::set_word_count( $post_id, $r['item_content'] );
+			self::set_source( $post_id, $r['source_title'] );
 
 		}
 
@@ -497,9 +504,13 @@ class PF_Feed_Item {
 					'post_status' => 'publish',
 					'post_type' => pf_feed_item_post_type(),
 				//	'post_date' => $_SESSION['cal_startdate'],
-					'post_title' => $item_title,
+					'item_title' => $item_title,
 					'post_parent'    => $feed_obj_id,
-					'post_content' => $item_content
+					'item_content' => $item_content,
+					'item_link'	=> $item_link,
+					'source_title' => $source_title,
+					'item_wp_date' => $item_wp_date,
+					'item_tags'	=> $item_tags
 
 				);
 
@@ -508,27 +519,19 @@ class PF_Feed_Item {
 				//It looks like sanitize post is screwing them up terribly. But what to do about it without removing the security measures which we need to apply?
 				$worked = 1;
 				# The post gets created here, the $newNomID variable contains the new post's ID.
-				$newNomID = wp_insert_post( $data, true );
+				$newNomID = self::create( $data );
 				$post_inserted_bool = self::post_inserted($newNomID, $data);
 
 				if (!$post_inserted_bool) {
 					# It's the end of the world! Let's throw everything at this.
 					pf_log('Post will not go into the database. We will try again.');
 					$item_content = htmlentities(strip_tags($item_content), ENT_QUOTES, "UTF-8");
-					$item_content = wp_kses(stripslashes($item_content));
+					$item_content = wp_kses(stripslashes($item_content), array('p', 'a', 'b', 'em', 'strong'));
 					$item_content = self::extra_special_sanatize($item_content, true);
 					$item_content = wpautop($item_content);
 					$item_title = self::extra_special_sanatize($item_title, true);
-					$data = array(
-						'post_status' => 'publish',
-						'post_type' => pf_feed_item_post_type(),
-					//	'post_date' => $_SESSION['cal_startdate'],
-						'post_title' => $item_title,
-						'post_parent'    => $feed_obj_id,
-						'post_content' => $item_content
-
-					);
-					$newNomID = wp_insert_post( $data, true );
+					$data['item_content'] = $item_content;
+					$newNomID = self::create( $data );
 					$post_inserted_bool = self::post_inserted($newNomID, $data);
 				}
 				pf_log('End of wp_insert_post process.');
@@ -605,13 +608,13 @@ class PF_Feed_Item {
 					pf_log($data);
 					$worked = 0;
 				} elseif (is_wp_error($postAttempt)) {
-					pf_log('Attempting to add ' . $data['post_title'] . ' to the database caused this error:' );
+					pf_log('Attempting to add ' . $data['item_title'] . ' to the database caused this error:' );
 					pf_log($postAttempt);
 					pf_log('The following post caused the above error.');
 					pf_log($data);
 					$worked = 0;
 				} else {
-					pf_log('Create post in the database with the title ' . $data['post_title'] . ' and id of ');
+					pf_log('Create post in the database with the title ' . $data['item_title'] . ' and id of ');
 					pf_log($postAttempt);
 				}
 		if ($worked === 0){ $workedBool = false; }
