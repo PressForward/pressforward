@@ -287,7 +287,7 @@ class PF_Feeds_Schema {
 			$current_user = wp_get_current_user();
 			$r['user_added'] = $current_user->user_login;
 		}
-		if ($r['type'] == 'rss-quick' && !isset($r['title']){
+		if ($r['type'] == 'rss-quick' && !isset($r['title'])){
 			$r['title'] = $r['url'];
 		}
 		if (self::has_feed($feedUrl)){
