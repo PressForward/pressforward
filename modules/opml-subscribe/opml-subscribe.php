@@ -141,13 +141,13 @@ class PF_OPML_Subscribe extends PF_Module {
 			if (!(is_array($input['list']))){
 				if (!$feed_obj->has_feed($input['list'])){
 					$check = $feed_obj->create(
-						$feedUrl, 
+						$input['list'], 
 						array(
 							'title' => 'OPML Subscription at ' . $input['list'],
 							'htmlUrl' => $input['list'],
 							'type' => 'opml', 
 							'tags' => 'OPML Subscription',
-							'module_added' => get_class($this)
+							'module_added' => get_called_class()
 						)
 					);
 					if (is_wp_error($check) || !$check){
