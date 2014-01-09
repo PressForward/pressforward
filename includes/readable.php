@@ -69,6 +69,8 @@ class PF_Readability {
 							$read_status = 'already_readable';
 						}
 						
+					} else {
+						$read_status = 'already_readable';
 					}
 				} else {
 					$read_status = 'secured';
@@ -145,7 +147,7 @@ class PF_Readability {
 					'readable_status' => $read_status,
 					'error' => $error,
 					'buffered' => ob_get_contents(),
-					'readable_response' => $readability_stat
+					'readable_applied_to_url' => $_POST['url']
 				)
 			);
 			$xmlResponse = new WP_Ajax_Response($response);

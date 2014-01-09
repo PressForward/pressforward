@@ -20,8 +20,8 @@
  */
  
 class PF_Feeds_Schema {
-	var $post_type;
-	var $tag_taxonomy;
+	#var $post_type;
+	#var $tag_taxonomy;
 
 	public function init() {
 		static $instance;
@@ -135,6 +135,16 @@ class PF_Feeds_Schema {
 		return $feedlist;
 	}
 	
+	public function kill_all_feeds(){
+
+		$mycustomposts = get_posts( array( 'post_type' => 'pf_feed', 'posts_per_page'=>-1) );
+		   foreach( $mycustomposts as $mypost ) {
+			 // Delete each post.
+			 wp_delete_post( $mypost->ID, true);
+			// Set to False if you want to send them to Trash.
+		   }
+	}
+	
 	# A function to take an argument array and turn it into a Feed CPT entry.
 	public function feed_post_setup($r, $insert_type = 'insert'){
 		
@@ -143,17 +153,32 @@ class PF_Feeds_Schema {
 				$r[$k] = '';
 		}
 		
-		$wp_args = array(
+		$wp_args_d = array(
 			'post_type' 	=> $this->post_type,
 			'post_status' 	=> 'publish',
 			'post_title'	=> $r['title'],
 			'post_content'	=> $r['description'],
+			'guid'			=> $r['url'],
 			'tax_input' 	=> array($this->tag_taxonomy => $r['tags'])
 		);
 		# Duplicate the function of WordPress where creating a pre-existing 
 		# post results in an update to that post. 
 		
+		if (!self::has_feed($r['url'])){
+			$insert_type = 'insert';
+		} else {
+			$insert_type = 'update';
+		}
+		
+		$wp_args = wp_parse_args( $r, $wp_args_d );
+		
+		
 		if ($insert_type == 'update') {
+
+			if  (!isset($r['ID'])){
+				$post_obj = self::get_feed($r['url']);
+				$r['ID'] = $post_obj->ID;
+			}
 			$wp_args['ID'] = $r['ID'];
 			wp_update_post( $wp_args );
 			$post_id = $r['ID'];
@@ -166,27 +191,23 @@ class PF_Feeds_Schema {
 				#$wp_args['post_date'] = date( 'Y-m-d H:i:s', time());
 				$post_id = wp_insert_post($wp_args);
 			} else {
-				foreach ($posts as $post){
-					$r['ID'] = $post->ID;
-				}
-				$r['feedUrl'] = $r['url'];
 				self::feed_post_setup($r, 'update');
 				# @todo Better error needed.
 				return false;
 			}
 		}
+#echo '<pre>';
+		#var_dump($post_id);
+		#echo '</pre>';
 		if ( is_numeric($post_id) ){
 			self::set_pf_feed_type($post_id, $r['type']);
-			foreach ($r as $k=>$a){
-				if ($k == ('title'||'description'||'tags'||'type')){
-					unset($r[$k]);
-				}
-				if ($k == 'url'){
-					$r['feedUrl'] = $r[$k];
-					unset($r[$k]);
-				}
+			$r['feedUrl'] = $r['url'];
+			$unsetables = array('title', 'description', 'tags', 'type', 'url');
+			foreach ($unsetables as $k=>$a){
+				unset($r[$a]);
 			}
 			self::set_feed_meta($post_id, $r);
+#echo '</pre>';
 			return true;
 		} else {
 			return false;
@@ -242,6 +263,7 @@ class PF_Feeds_Schema {
 			'url'     		=> 'http://pressforward.org/feed/',
 			'htmlUrl' 		=> false,
 			'type'	  		=> 'rss',
+			'feedUrl'		=> $feedUrl,
 			'description' 	=> false,
 			'feed_author' 	=> false,
 			'feed_icon'  	=> false,
@@ -254,7 +276,7 @@ class PF_Feeds_Schema {
 		
 		if ($r['type'] == 'rss'){
 		
-			if (is_wp_error($theFeed = fetch_feed($feedURL))){
+			if (is_wp_error($theFeed = fetch_feed($feedUrl))){
 				return new WP_Error('badfeed', __('The feed fails verification.'));
 			} else {
 				$r = self::setup_rss_meta($r, $theFeed);
@@ -267,7 +289,7 @@ class PF_Feeds_Schema {
 		if ($r['type'] == 'rss-quick'){
 			$r['title'] = $r['url'];
 		}
-		if ($this->has_feed($feedUrl)){
+		if (self::has_feed($feedUrl)){
 			self::feed_post_setup($r, 'update');
 		} else {
 			self::feed_post_setup($r);
@@ -279,13 +301,13 @@ class PF_Feeds_Schema {
 	public function get_feed($url){
 			
 			$posts = self::has_feed($url);
-			return $posts;
+			return $posts[0];
 		
 	}
 	
 	# A function to pull feeds from the database. 
 	public function get( $args = array() ) {
-		
+		if ( ! post_type_exists( 'pf_feed' ) ) { $this->register_feed_post_type(); }
 		$wp_args = array(
 			'post_type'        => $this->post_type,
 			'post_status'      => 'publish',
@@ -296,9 +318,18 @@ class PF_Feeds_Schema {
 
 		// WP_Query does not accept a 'guid' param, so we filter hackishly
 		if ( isset( $args['url'] ) ) {
-			$this->filter_data['guid'] = $args['url'];
-			unset( $args['url'] );
-			$query_filters['posts_where'][] = '_filter_where_guid';
+		
+			$parts = substr_count($args['url'], '&');
+				
+			if($parts > 0){
+				#Apparently WP query can't deal with more than one part in a URL query. So we need another way.
+				$args['meta_key'] = 'feedUrl';
+				$args['meta_value'] = $args['url'];
+			} else {	
+				$this->filter_data['guid'] = $args['url'];
+				unset( $args['url'] );
+				$query_filters['posts_where'][] = '_filter_where_guid';
+			}
 		}
 
 		foreach ( $query_filters as $hook => $filters ) {
@@ -327,6 +358,10 @@ class PF_Feeds_Schema {
 	# Check if a post or posts exists with get, if it does not
 	# return false. If it does, return the array of posts. 
 	public function has_feed($url){
+		$parsed = parse_url($url);
+		if(!isset($parsed['scheme'])){
+			$url = 'http://' . $url;
+		}
 		$posts = self::get(array('url' => $url));
 		if (count($posts) > 0){
 			return $posts;
@@ -379,7 +414,7 @@ class PF_Feeds_Schema {
 				if (($c == 0)){
 					self::update($post_id, array('url' => $url));
 				} else {
-					if ($url == get_the_guid($post_id)){
+					if ($url == get_post_meta($post_id, 'feedUrl', true)){
 						wp_delete_post( $post_id, true );
 					}
 				}
@@ -459,6 +494,9 @@ class PF_Feeds_Schema {
 	# output later. 
 	public function set_feed_meta($post_id, $args){
 		$c = 1;
+		#echo '<pre>';
+		#var_dump($args);
+		#echo '</pre>';
 		foreach ($args as $k=>$a){
 		
 			if(!$a){
@@ -470,7 +508,7 @@ class PF_Feeds_Schema {
 		
 		}
 		
-		if ($c >= count($args)){
+		if ($c+1 == count($args)){
 			update_post_meta($post_id, 'meta_data', 'complete');
 
 		}
@@ -500,6 +538,18 @@ class PF_Feeds_Schema {
 	}
 	
 	function add_to_feeder(){
+		?>	
+			<br />
+			<br />
+		<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="Reset all Feed Retrieval Options"><?php _e('Reset all Feed Retrieval Options', 'pf'); ?></button>    <br />
+		<?php
+			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0);
+			$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
+			$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
+			$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );
+			$retrieval_state = sprintf(__('Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d  Ready to chunk? %4$d', 'pf'), $feed_go, $feed_iteration, $retrieval_state, $chunk_state);
+			echo $retrieval_state;
+		
 		?>
 		<br />
 		<button type="button" class="redoFeeds btn btn-warning" id="resetFeedOps" value="Switch feeds to new retrieval setup"><?php _e('Switch feeds to new retrieval setup', 'pf'); ?></button>    <br />		

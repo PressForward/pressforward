@@ -20,7 +20,7 @@ class PF_Feed_Retrieve {
 		global $pf;
 
 		add_action( 'wp_head', array($this, 'get_chunk_nonce'));
-		add_action( 'init', array($this, 'alter_for_retrieval'));
+		add_action( 'init', array($this, 'alter_for_retrieval'), 999);
 
 		// Schedule our cron actions for fetching feeds
 		add_action( 'init', array($this, 'schedule_feed_in' ) );
@@ -194,7 +194,14 @@ class PF_Feed_Retrieve {
 			# Get the basic URL for the feed. 
 			
 			$aFeed = $feedlist[$feeds_iteration];
-			pf_log('Retrieved feed ');
+			pf_log('Retrieved feed');
+#			$feed_url = get_post_meta($aFeed->ID, 'feedUrl', true);
+#			if (empty($feed_url)){
+#				update_post_meta($aFeed->ID, 'feedUrl', $aFeed->post_title);
+#				$feed_url = $aFeed->post_title;
+#			}
+#			pf_log($feed_url);
+			pf_log(' from ');
 			pf_log($aFeed->guid);
 			
 			# @todo the above log may not work what what is being retrieved is an object.
@@ -323,11 +330,10 @@ class PF_Feed_Retrieve {
 	# results.
 	public function pf_feedlist($startcount = 0) {
 		pf_log( 'Invoked: PF_Feed_Retrieve::pf_feedlist()' );
-		$Feeds = new PF_Feeds_Schema();
 		$args = array(
 				'posts_per_page'=>-1
 			);
-		$theFeeds = $Feeds->get($args);
+		$theFeeds = pressforward()->pf_feeds->get( $args );
 		$feedlist = array();
 		
 		if ( !isset($theFeeds)){

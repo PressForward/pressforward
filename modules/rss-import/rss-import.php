@@ -26,10 +26,6 @@ class PF_RSS_Import extends PF_Module {
 		{
 			add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
 			add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed') );
-
-		}
-	}
-
 	/**
 	 * Run any setup that has to happen after initial module registration
 	 */
@@ -52,15 +48,16 @@ class PF_RSS_Import extends PF_Module {
 	 */
 	public function get_data_object($aFeed) {
 		pf_log( 'Invoked: PF_RSS_Import::get_data_object()' );
-		$aFeed_id = $aFeed->ID;
-		$aFeed_url - get_post_meta($aFeed_id, 'feedUrl', true);
-		if(empty($aFeed_url) || is_wp_error($aFeed_url) || !$aFeed_url){
-			$aFeed_url = $aFeed->post_title;
-			update_post_meta($aFeed_id, 'feedUrl', $aFeed_url);
-		}
+		$aFeed_url = $aFeed->guid;
+#		$aFeed_id = $aFeed->ID;
+#		$aFeed_url = get_post_meta($aFeed_id, 'feedUrl', true);
+#		if(empty($aFeed_url) || is_wp_error($aFeed_url) || !$aFeed_url){
+#			$aFeed_url = $aFeed->post_title;
+#			update_post_meta($aFeed_id, 'feedUrl', $aFeed_url);
+#		}
 		pf_log( 'Getting RSS Feed at '.$aFeed_url );
 		$theFeed = fetch_feed($aFeed_url);
-		pf_log( 'Getting RSS Feed at '.$aFeed_url );
+#		pf_log( 'Getting RSS Feed at '.$aFeed_url );
 		if (!$theFeed || empty($theFeed) || is_wp_error($theFeed)){
 			pf_log('Can not use Simple Pie to retrieve the feed');
 			pf_log($theFeed);
@@ -218,18 +215,7 @@ class PF_RSS_Import extends PF_Module {
         ?>
 			<br />
 			<br />
-		<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="Reset all Feed Retrieval Options"><?php _e('Reset all Feed Retrieval Options', 'pf'); ?></button>    <br />
-			 <?php
-			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0);
-			$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
-			$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
-			$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );
-			$retrieval_state = sprintf(__('Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d  Ready to chunk? %4$d', 'pf'), $feed_go, $feed_iteration, $retrieval_state, $chunk_state);
-			echo $retrieval_state;
-			?>
-			<br />
-			<br />
-			<div><?php _e('Add Single Feed', 'pf'); ?></div>
+			<div><?php _e('Add Single RSS Feed', 'pf'); ?></div>
 				<div>
 					<input id="<?php echo PF_SLUG . '_feedlist[single]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[single]'; ?>" value="" />
                     <label class="description" for="<?php echo PF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL or RSS path', 'pf'); ?></label>
@@ -237,7 +223,7 @@ class PF_RSS_Import extends PF_Module {
 
                 </div>
 
-			<div><?php _e('Add OPML', 'pf'); ?></div>
+			<div><?php _e('Add OPML File', 'pf'); ?></div>
 				<div>
 					<input id="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" value="" />
                     <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'pf'); ?></label>
@@ -249,22 +235,6 @@ class PF_RSS_Import extends PF_Module {
 				<?php submit_button(); ?>
 			</p>
 		</form>
-			<div class="show-feeds">
-			<form>
-				<p>Current items feeding on: </p>
-				<?php
-					echo '<code><pre>';
-					print_r($feedlist);
-					echo '</pre></code>';
-					wp_nonce_field('feedremove', PF_SLUG . '_o_feed_nonce', false);
-				?>
-				<ul>
-				<?php
-					$this->feedlist_builder($feedlist);
-				?>
-				</ul>
-			</div>
-			</form>
 		<?php
 
 
@@ -290,14 +260,17 @@ class PF_RSS_Import extends PF_Module {
 		return;
 	}
 
-	static function pf_feedlist_validate($input){
-		$feed_obj = new PF_Feeds_Schema();
+	public static function pf_feedlist_validate($input){
+		set_time_limit(0);
+		$feed_obj = pressforward()->pf_feeds;
 		if (!empty($input['single'])){
 			if (!(is_array($input['single']))){
 				if (!$feed_obj->has_feed($input['single'])){
-					$check = $feed_obj->create($feedUrl, array('type' => 'rss', 'module_added' => get_class($this)));
+					$check = $feed_obj->create($input['single'], array('type' => 'rss', 'module_added' => get_called_class()));
 					if (is_wp_error($check)){
-						wp_die($check);
+						#wp_die($check);
+						$description = 'Feed failed initial attempt to add to database | ' . $check->get_error_message();
+						$feed_obj->create($input['single'], array('type' => 'rss-quick', 'description' => $description, 'module_added' => get_called_class()));
 					}
 				} else {
 					$feed_obj->update_url($input['single']);
@@ -315,9 +288,11 @@ class PF_RSS_Import extends PF_Module {
 			//print_r($opml_array); die();
 			foreach($opml_array as $key=>$feedXml){
 				# Adding this as a 'quick' type so that we can process the list quickly.
-				$feed_obj->create($feedXml, array('type' => 'rss-quick'));
+				pf_log('Adding this as a quick type so that we can process the list quickly');
+				$opml_array = $feed_obj->progressive_feedlist_transformer($opml_array, $feedXml, $key);
 				# @todo Tag based on folder structure
 			}
+			$check_up = update_option( PF_SLUG . '_feedlist', $opml_array );
 		}
 
 		if (!empty($_POST['o_feed_url'])){

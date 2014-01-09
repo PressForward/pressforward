@@ -31,6 +31,7 @@ class PF_Admin {
 		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
 		add_action( 'wp_ajax_ajax_get_comments', array( $this, 'ajax_get_comments') );
+		add_action( 'wp_ajax_pf_ajax_thing_deleter', array( $this, 'pf_ajax_thing_deleter') );	
 	}
 
 	/**
@@ -265,6 +266,7 @@ class PF_Admin {
 					<a href="#" id="settings" class="button">Settings</a>
 					<div class="btn-group">
 						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete entire feed archive', 'pf');  ?>" ><?php  _e('Delete entire feed archive', 'pf');  ?></button>
+						<button type="submit" class="delete btn btn-info pull-right" id="Show my Nominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
 					</div>
 				<?php 
 			}			
@@ -383,6 +385,48 @@ class PF_Admin {
 	}
 	
 	/**
+	 * Prep an item element for display based on position and element.
+	 * Establishes the rules for item display.
+	 * Position should be title, source, graf.
+	**/
+	
+	public function display_a($string, $position = 'source', $page = 'list'){
+		$title_ln_length = 36;
+		$title_lns = 3;
+		
+		$source_ln_length = 48;
+		$source_lns = 2;
+		
+		$graf_ln_length = 48;
+		$graf_lns = 5;
+		
+		$max = 0;
+		
+		switch ($position){
+			case 'title':
+				$max = $title_ln_length * $title_lns;
+				break;
+			case 'source':
+				$max = $source_ln_length * $source_lns;
+				break;
+			case 'graf':
+				$max = $graf_ln_length * $graf_lns;
+				break;
+		}
+		
+		$cut = substr($string, 0, $max+1);
+		$final_cut = substr($cut, 0, -4);
+		if (strlen($cut) < $max){
+			$cut = substr($string, 0, $max);
+			return $cut;
+		} else {
+			$cut = $final_cut . ' ...';
+			return $cut;
+		}
+		
+	}
+	
+	/**
 	 * Essentially the PF 'loop' template. 
 	 * $item = the each of the foreach
 	 * $c = count.
@@ -438,12 +482,21 @@ class PF_Admin {
 		}
 		
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
+			echo '<div class="box-controls">';
+			if (current_user_can( 'manage_options' )){
+				echo '<i class="icon-remove-sign pf-item-remove" pf-item-post-id="' . $id_for_comments .'" title="Delete"></i>';
+			}
+			echo '<i class="icon-eye-close hide-item" pf-item-post-id="' . $id_for_comments .'" title="Hide"></i>';
+			
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'marked-read'; }
-			echo '<i class="icon-ok-sign schema-read schema-actor schema-switchable '.$readClass.'" pf-item-post-id="' . $id_for_comments .'" pf-schema="read" pf-schema-class="marked-read" title="Mark as Read"></i>'
+			
+			echo '<i class="icon-ok-sign schema-read schema-actor schema-switchable '.$readClass.'" pf-item-post-id="' . $id_for_comments .'" pf-schema="read" pf-schema-class="marked-read" title="Mark as Read"></i>';
+			
+			echo '</div>';
 			?> 
 			<header> <?php 
-				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander schema-actor" role="button" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . $item['item_title'] . '</a></h1>';
-				echo '<p class="source_title">' . $item['source_title'] . '</p>';
+				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander schema-actor" role="button" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . self::display_a($item['item_title'], 'title') . '</a></h1>';
+				echo '<p class="source_title">' . self::display_a($item['source_title'], 'source') . '</p>';
 				if ($format === 'nomination'){
 				?>		
 						<div class="sortable-hidden-meta" style="display:none;">
@@ -535,7 +588,7 @@ class PF_Admin {
 						if ($format === 'nomination'){
 							echo'<p>' . pf_noms_excerpt($item['item_content']) . '</p>';
 						} else {
-							echo'<p>' . pf_feed_excerpt($item['item_content']) . '</p>';
+							echo'<p>' . self::display_a(pf_feed_excerpt($item['item_content']), 'graf') . '</p>';
 						}
 					echo '</div>';
 /**
@@ -585,7 +638,7 @@ class PF_Admin {
 				<h3 id="modal-<?php echo $item['item_id']; ?>-label" class="modal_item_title source_title"><?php echo $item['item_title']; ?></h3>
 			  </div>
 			  <div class="row-fluid modal-body-row">
-				  <div class="modal-body span9">
+				  <div class="modal-body span9" id="modal-body-<?php echo $item['item_id']; ?>">
 					<?php 
 					$contentObj = new pf_htmlchecker($item['item_content']);
 					$text = $contentObj->closetags($item['item_content']);
@@ -1142,16 +1195,32 @@ class PF_Admin {
 			}
 		}
 		
-		wp_delete_post($id, true);
+		$result = wp_delete_post($id, true);
+		return $result;
 		
 	}
 	
 	function pf_ajax_thing_deleter() {
-		
-		$id = $_POST['post_id'];
-		$read_status = $_POST['made_readable'];
-		
-		$response = pf_thing_deleter($id, $read_status);
+		ob_start();
+		if(isset($_POST['post_id'])){
+			$id = $_POST['post_id'];
+		} else { die('Option not sent'); }
+		if(isset($_POST['made_readable'])){
+			$read_status = $_POST['made_readable'];
+		} else { $read_status = false; }
+		$returned = self::pf_thing_deleter($id, $read_status);
+		var_dump($returned);
+		$vd = ob_get_clean();
+		ob_end_clean();
+		$response = array(
+		   'what'=>'pressforward',
+		   'action'=>'pf_ajax_thing_deleter',
+		   'id'=>$id,
+		   'data'=>(string)$vd
+		);
+		$xmlResponse = new WP_Ajax_Response($response);
+		$xmlResponse->send();
+		die();
 	
 	}
 	

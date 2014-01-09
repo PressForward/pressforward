@@ -134,6 +134,7 @@ class PF_Feed_Item {
 		//			);
 		//$pageBottom = $pageTop + 20;
 		$args = pf_feed_item_post_type();
+
 		//$archiveQuery = new WP_Query( $args );
 		if ($limitless){
 		 $dquerystr = $wpdb->prepare("
@@ -145,6 +146,31 @@ class PF_Feed_Item {
 			AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 			ORDER BY {$wpdb->postmeta}.meta_value DESC
 		 ", pf_feed_item_post_type());		
+		} elseif (is_user_logged_in()){
+			$relate = new PF_RSS_Import_Relationship();
+			$rt = $relate->table_name;
+			$user_id = get_current_user_id();
+			$read_id = pf_get_relationship_type_id('read');
+			 $dquerystr = $wpdb->prepare("
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+				AND {$wpdb->posts}.post_type = %s
+				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
+				AND {$wpdb->posts}.ID 
+				NOT 
+				IN (
+					SELECT item_id 
+					FROM {$rt} 
+					WHERE {$rt}.user_id = {$user_id} 
+					AND {$rt}.relationship_type = {$read_id} 
+					AND {$rt}.value = 1
+				)
+				ORDER BY {$wpdb->postmeta}.meta_value DESC
+				LIMIT {$pageTop}, {$pagefull}
+			 ", pf_feed_item_post_type());			
+		
 		} else {
 		 $dquerystr = $wpdb->prepare("
 			SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
@@ -297,7 +323,7 @@ class PF_Feed_Item {
 		return $theFeed;
 	}		
 	
-	public function assemble_feed_for_pull($feedObj = 0) {
+	public static function assemble_feed_for_pull($feedObj = 0) {
 		global $pf;
 		pf_log( 'Invoked: PF_Feed_Item::assemble_feed_for_pull()' );
 
@@ -329,6 +355,8 @@ class PF_Feed_Item {
 		# Since rss_object places all the feed items into an array of arrays whose structure is standardized throughout,
 		# We can do stuff with it, using the same structure of items as we do everywhere else.
 		pf_log('Now beginning check and processing for entering items into the database.');
+		$parent = $feedObj['parent_feed_id'];
+		unset($feedObj['parent_feed_id']);
 		foreach($feedObj as $item) {
 			$thepostscheck = 0;
 			$thePostsDoubleCheck = 0;
@@ -444,6 +472,9 @@ class PF_Feed_Item {
 				$item_link 		= $item['item_link'];
 				$item_wp_date	= $item['item_wp_date'];
 				$item_tags		= $item['item_tags']; 
+				if (!isset($item['parent_feed_id']) || !$item['parent_feed_id']){
+					$item['parent_feed_id'] = $parent;
+				}
 				$feed_obj_id	= $item['parent_feed_id']; 
 				$source_repeat  = $sourceRepeat;
 
@@ -566,7 +597,7 @@ class PF_Feed_Item {
 
 	}
 
-	public function post_inserted($postAttempt, $data){
+	public static function post_inserted($postAttempt, $data){
 			$worked = 1;
 			$workedBool = true;
 				if ($postAttempt === 0) {
