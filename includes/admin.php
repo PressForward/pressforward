@@ -1075,16 +1075,12 @@ class PF_Admin {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
-		if ($_GET['page'] != ('pf-options'|'pf-feeder')){
-			return;
-		}
 
-		
 		$verifyPages = array();
 		
 		$pf_admin_pages = apply_filters('pf_admin_pages',$verifyPages);
 
-		if (! in_array($pf_admin_pages)){
+		if (! in_array($_GET['page'], $pf_admin_pages)){
 			return;
 		}
 		
