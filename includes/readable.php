@@ -70,7 +70,7 @@ class PF_Readability {
 						}
 						
 					} else {
-						$read_status = 'already_readable';
+						$read_status = 'made_readable';
 					}
 				} else {
 					$read_status = 'secured';
