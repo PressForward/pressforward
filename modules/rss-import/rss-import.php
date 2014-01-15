@@ -43,6 +43,18 @@ class PF_RSS_Import extends PF_Module {
 	public function includes() {
 		require_once(PF_ROOT . "/includes/opml-reader/opml-reader.php");
 	}
+	
+	/**
+	 * Used to return a value in seconds that WordPress should be caching feeds
+	 * before retrieval.
+	 *
+	 * Filters to 'wp_feed_cache_transient_lifetime'
+	 */
+	 
+	 public function return_cachetime($seconds){
+	 	
+	 	return 2700;
+	 }
 
 	/**
 	 * Gets the data from an RSS feed and turns it into a data object
@@ -60,7 +72,9 @@ class PF_RSS_Import extends PF_Module {
 #			update_post_meta($aFeed_id, 'feedUrl', $aFeed_url);
 #		}
 		pf_log( 'Getting RSS Feed at '.$aFeed_url );
+		add_filter('wp_feed_cache_transient_lifetime', array($this, 'return_cachetime'));
 		$theFeed = fetch_feed($aFeed_url);
+		remove_filter('wp_feed_cache_transient_lifetime', array($this, 'return_cachetime'));
 #		pf_log( 'Getting RSS Feed at '.$aFeed_url );
 		if (!$theFeed || empty($theFeed) || is_wp_error($theFeed)){
 			pf_log('Can not use Simple Pie to retrieve the feed');
