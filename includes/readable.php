@@ -32,8 +32,8 @@ class PF_Readability {
 			} else {
 				$aggregated = false;
 			}
-
-			if ((str_word_count($descrip) <= 150) || $aggregated || $force == 'force') {
+			$stripped_descrip = strip_tags($descrip);
+			if ((str_word_count($stripped_descrip) <= 150) || $aggregated || $force == 'force') {
 				$itemReadReady = self::readability_object($url);
 				#print_r(  wp_richedit_pre($itemReadReady));
 				if ($itemReadReady != 'error-secured') {
@@ -74,6 +74,7 @@ class PF_Readability {
 					}
 				} else {
 					$read_status = 'secured';
+					$itemReadReady = $descrip;
 				}
 			} else {
 				$read_status = 'already_readable';
