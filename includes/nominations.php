@@ -109,11 +109,10 @@ class PF_Nominations {
 
 	}
 
-	public function get_the_source_statement($item_feed_post_id){
+	public function get_the_source_statement($nom_id){
 		 
-		$source_title = get_post_meta($item_feed_post_id, 'source_title', true);
-		$title_of_item = get_post_meta($item_feed_post_id, 'item_title', true);
-		$link_to_item = get_post_meta($item_feed_post_id, 'item_link', true);
+		$title_of_item = get_the_title($nom_id);
+		$link_to_item = get_post_meta($nom_id, 'nomination_permalink', true);
 		$args = array(
 		  'html_before' => "<p>",
 		  'source_statement' => "Source: ",
@@ -124,11 +123,12 @@ class PF_Nominations {
 		  'sourced' => true 
 		); 
 		$args = apply_filters('pf_source_statement', $args);
-		if ($args['sourced']) {
-			$statment = sprintf('%1$s<a href="%2$s" target="%3$s">%4$s</a>', 
+		if (true == $args['sourced']) {
+			$statement = sprintf('%1$s<a href="%2$s" target="%3$s" pf-nom-item-id="%4$s">%5$s</a>', 
 				 esc_html($args['source_statement']),
 				 esc_url($args['item_url']),
 				 esc_attr($args['link_target']),
+				 esc_attr($nom_id),
 				 esc_html($args['item_title'])
 			);
 			$statement = $args['html_before'] . $statement . $args['html_after'];
@@ -404,7 +404,7 @@ class PF_Nominations {
 
 		//set up rest of nomination data
 		$item_title = $_POST['item_title'];
-		
+		$item_content = $_POST['item_content'];
 		$readable_status = get_post_meta($_POST['item_post_id'], 'readable_status', true);
 		if ($readable_status != 1){
 			$read_args = array('force' => '', 'descrip' => $item_content, 'url' => $_POST['item_link'], 'authorship' => $_POST['item_author'] );
@@ -482,13 +482,24 @@ class PF_Nominations {
 ##Check
 		//print_r($_POST);
 		ob_start();
-			$item_title = $_POST['nom_title'];
+		
 			$item_content = $_POST['nom_content'];
+			$item_content = htmlspecialchars_decode($item_content);
+			#$args_fi['url'] = $_POST['item_link'];
+			#$posts = $pf->pf_feed_items->get($args_fi);
+
+			$linked = get_option('pf_link_to_source', 0);
+			if ($linked < 1){
+				$item_content = $item_content . $this->get_the_source_statement( $_POST['nom_id']);
+			}		
+		
+			$item_title = $_POST['nom_title'];
+			
 			$data = array(
 				'post_status' => 'draft',
 				'post_type' => 'post',
 				'post_title' => $item_title,
-				'post_content' => htmlspecialchars_decode($item_content),
+				'post_content' => $item_content
 			);
 			//Will need to use a meta field to pass the content's md5 id around to check if it has already been posted.
 
