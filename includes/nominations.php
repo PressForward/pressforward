@@ -109,6 +109,36 @@ class PF_Nominations {
 
 	}
 
+	public function get_the_source_statement($item_feed_post_id){
+		 
+		$source_title = get_post_meta($item_feed_post_id, 'source_title', true);
+		$title_of_item = get_post_meta($item_feed_post_id, 'item_title', true);
+		$link_to_item = get_post_meta($item_feed_post_id, 'item_link', true);
+		$args = array(
+		  'html_before' => "<p>",
+		  'source_statement' => "Source: ",
+		  'item_url' => $link_to_item,
+		  'link_target' => "_blank",
+		  'item_title' => $title_of_item,
+		  'html_after' => "</p>",
+		  'sourced' => true 
+		); 
+		$args = apply_filters('pf_source_statement', $args);
+		if ($args['sourced']) {
+			$statment = sprintf('%1$s<a href="%2$s" target="%3$s">%4$s</a>', 
+				 esc_html($args['source_statement']),
+				 esc_url($args['item_url']),
+				 esc_attr($args['link_target']),
+				 esc_html($args['item_title'])
+			);
+			$statement = $args['html_before'] . $statement . $args['html_after'];
+		} else {
+			$statement = '';
+		}
+		return $statement;
+
+	}
+
 	public function send_nomination_for_publishing() {
 		global $post;
 		// verify if this is an auto save routine.
@@ -118,6 +148,11 @@ class PF_Nominations {
 		//print_r($_POST); die();
 			$item_title = $_POST['post_title'];
 			$item_content = $_POST['post_content'];
+			$item_feed_post_id = get_post_meta($_POST['ID'], 'item_feed_post_id', true);
+			$linked = get_option('pf_link_to_source', 0);
+			if ($linked < 1){
+				$item_content = $item_content . $this->get_the_source_statement( $item_feed_post_id );
+			}
 			$data = array(
 				'post_status' => 'draft',
 				'post_type' => 'post',
