@@ -76,8 +76,8 @@ class PF_Feeds_Schema {
 			'hierarchical' => true,
 			'supports' 	=> array('title','editor','author','thumbnail','excerpt','custom-fields','page-attributes'),
 			'taxonomies' => array('post_tag'),
-			'show_in_menu' => PF_MENU_SLUG,
-			'menu_position' => 100
+			'show_in_menu' => PF_MENU_SLUG
+			#'menu_position' => 100
 			#'show_ui'     => true, // for testing only
 		) ) );
 
@@ -100,6 +100,7 @@ class PF_Feeds_Schema {
 			'labels' => $labels,
 			'public' => true,
 			'show_admin_columns' => true,
+			'show_in_menu' => PF_MENU_SLUG,
 			'rewrite' => false
 		) ) );
 	}
