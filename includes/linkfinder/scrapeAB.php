@@ -62,7 +62,7 @@ $spamsites = array('http://www.buy-wellbutrin.com/', 'http://www.mycaal.com/');
 function getLinksFromSection ($sectionURL){		
 	global $spamsites;
 	set_time_limit(0);
-	$html = file_get_html($sectionURL);
+	$html = pf_file_get_html($sectionURL);
 	
 	$blogs = array();
 	$c = 0;
@@ -90,7 +90,7 @@ function getLinksFromSection ($sectionURL){
 
 
 //Random article for testing.
-$html = file_get_html('http://academicblogs.org/index.php/Main_Page');
+$html = pf_file_get_html('http://academicblogs.org/index.php/Main_Page');
 echo 'Blog Categories: <br />'; 
 # Get the title page
 foreach ($html->find('h1') as $link){
@@ -222,10 +222,10 @@ foreach ($html->find('h1') as $link){
 		if($innerLink->getAttribute('rel') != 'nofollow'){
 			if (($innerLink->href != '') && ($innerLink->title != '')) {
 				$theExternalSite = $innerLink->href;
-				//if (!file_get_html($theExternalSite)){
+				//if (!pf_file_get_html($theExternalSite)){
 					//echo 'Page no longer exists.';
 				//} else {
-				//	$exHtml = file_get_html($theExternalSite);
+				//	$exHtml = pf_file_get_html($theExternalSite);
 					
 				//}
 				//echo getTitle($innerLink->href);
@@ -251,7 +251,7 @@ foreach ($html->find('h1') as $link){
 
 }
 
-//$contentHtml = file_get_html('http://academicblogs.org/index.php/Main_Page');
+//$contentHtml = pf_file_get_html('http://academicblogs.org/index.php/Main_Page');
 //set_error_handler("customError");
 //$content = $contentHtml->find('.hentry');
 //echo $content[0]->innertext;

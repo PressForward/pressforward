@@ -110,7 +110,15 @@ visibility:hidden;
 	line-height: 16px;
 }
 .source_title {
+	line-height: 1.5em;
+}
 
+.actions.btn-group {
+	margin: 0 0;
+}
+
+.actions form {
+	margin: 0;
 }
 
 .actions.btn-group {

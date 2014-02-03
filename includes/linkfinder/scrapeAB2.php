@@ -62,7 +62,7 @@ class AB_subscription_builder {
 	# PS... How often does this get updated?
 	public function getLinksFromSection ($sectionURL){		
 		set_time_limit(0);
-		$html = file_get_html($sectionURL);
+		$html = pf_file_get_html($sectionURL);
 		
 		$blogs = array();
 		$c = 0;
@@ -96,7 +96,7 @@ class AB_subscription_builder {
 		$theWikiLink = 'http://academicblogs.org/index.php/Main_Page';
 		$htmlCounter = array();
 		//Random article for testing.
-		$html = file_get_html($theWikiLink);
+		$html = pf_file_get_html($theWikiLink);
 		//print_r($html);
 		# Get the title page
 		foreach ($html->find('h1') as $link){

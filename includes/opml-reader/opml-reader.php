@@ -5,7 +5,20 @@
 class OPML_reader {
 
 	function open_OPML($file) {
-		$file = simplexml_load_file($file);
+		if(1 == ini_get('allow_url_fopen')){
+			$file = simplexml_load_file($file);
+		} else {
+			$ch = curl_init();
+			$timeout = 5;
+			curl_setopt($ch, CURLOPT_URL, $file);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+			$data = curl_exec($ch);
+			curl_close($ch);
+			$file = simplexml_load_string($data);
+		}
+
+    #echo '<pre>'; var_dump($data); #die();
 		if (empty($file)) {
 			return false;			
 		} else {
@@ -18,6 +31,7 @@ class OPML_reader {
 	function get_OPML_data($url, $is_array = true){
 		
 		$opml_data = $this->open_OPML($url);
+   #var_dump($opml_data);
 		if (!$opml_data){
 			
 			return false;
@@ -48,7 +62,9 @@ class OPML_reader {
 			}
 
 		}
-		
+		#var_dump($a);
+   #var_dump($b);
+   #die();
 			if ($is_array){
 				return $b;
 			} else {
