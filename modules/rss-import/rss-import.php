@@ -280,6 +280,8 @@ class PF_RSS_Import extends PF_Module {
 
 	public static function pf_feedlist_validate($input){
 		set_time_limit(0);
+		pf_log('Add Feed Process Invoked: PF_RSS_IMPORT::pf_feedlist_validate');
+		pf_log($input);
 		$feed_obj = pressforward()->pf_feeds;
 		if (!empty($input['single'])){
 			if (!(is_array($input['single']))){
@@ -297,7 +299,8 @@ class PF_RSS_Import extends PF_Module {
 				wp_die('Bad feed input. Why are you trying to place an array?');
 			}
 		}
-
+		#var_dump($input);
+		#die();
 		//print_r($inputSingle);
 
 		if (!empty($input['opml'])){

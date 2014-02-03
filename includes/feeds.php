@@ -367,6 +367,8 @@ class PF_Feeds_Schema {
 			$url = 'http://' . $url;
 		}
 		$posts = self::get(array('url' => $url));
+		pf_log('Checked for feed ' . $url);
+		pf_log($posts);
 		if (count($posts) > 0){
 			return $posts;
 		} else {
@@ -433,6 +435,7 @@ class PF_Feeds_Schema {
 	
 	# A function to update an existing feed CPT entry.
 	public function update($post_id, $args){
+		pf_log('Invoked: PF_FEEDS_SCHEMA::update');
 		$r = wp_parse_args( $args, array(
 			'ID'			=> $post_id,
 			'title'   		=> false,
@@ -467,9 +470,10 @@ class PF_Feeds_Schema {
 	# This function makes it easy to set the type of 'feed', which is important when we move to using something other than RSS.
 	
 	public function set_pf_feed_type($id, $type = "rss") {
-	
+		pf_log( 'Invoked: PF_Feed_Schema::set_pf_feed_type for ' . $id  );
 		$updateResult = update_post_meta($id, 'feed_type', $type);
-		
+		pf_log( 'Attempted to update to type ' . $type . ' with results of: ');
+		pf_log( $updateResult );
 		if (is_wp_error($updateResult)){
 			return $updateResult->get_error_message();
 		} else {
@@ -502,7 +506,7 @@ class PF_Feeds_Schema {
 		#var_dump($args);
 		#echo '</pre>';
 		foreach ($args as $k=>$a){
-		
+			pf_log('Setting ' . $post_id . ' Feed Meta: ' . $k . ' - ' . $a);
 			if(!$a){
 	
 			} else {
