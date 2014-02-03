@@ -27,7 +27,7 @@ function customError($errno, $errstr)
 
 
 //Random article for testing.
-$html = file_get_html('http://en.wikipedia.org/wiki/Saving_Babies');
+$html = pf_file_get_html('http://en.wikipedia.org/wiki/Saving_Babies');
 echo 'References: <br />'; 
 foreach ($html->find('h2') as $link){
 	
@@ -37,10 +37,10 @@ foreach ($html->find('h2') as $link){
 		foreach ($nextBlock->find('a') as $innerLink){
 		if($innerLink->getAttribute('rel') == 'nofollow'){
 			$theExternalSite = $innerLink->href;
-			//if (!file_get_html($theExternalSite)){
+			//if (!pf_file_get_html($theExternalSite)){
 				//echo 'Page no longer exists.';
 			//} else {
-			//	$exHtml = file_get_html($theExternalSite);
+			//	$exHtml = pf_file_get_html($theExternalSite);
 				
 			//}
 			//echo getTitle($innerLink->href);
@@ -51,7 +51,7 @@ foreach ($html->find('h2') as $link){
 			//}
 			//if (getTitle($theExternalSite))
 			set_error_handler("customError");
-			echo getTitle(file_get_html($theExternalSite));
+			echo getTitle(pf_file_get_html($theExternalSite));
 			restore_error_handler();
 			echo ' - ';
 			echo $theExternalSite;
@@ -65,21 +65,21 @@ foreach ($html->find('h2') as $link){
 
 }
 
-$contentHtml = file_get_html('http://oha2012.thatcamp.org/');
+$contentHtml = pf_file_get_html('http://oha2012.thatcamp.org/');
 //set_error_handler("customError");
 $content = $contentHtml->find('.hentry');
 echo $content[0]->innertext;
 
 echo '<hr />';
 
-$contentHtml = file_get_html('http://www.freshandnew.org/2012/08/museum-datasets-un-comprehensive-ness-data-mining/');
+$contentHtml = pf_file_get_html('http://www.freshandnew.org/2012/08/museum-datasets-un-comprehensive-ness-data-mining/');
 //set_error_handler("customError");
 $content = $contentHtml->find('.entry-content');
 echo $content[0]->innertext;
 
 echo '<hr />';
 
-$contentHtml = file_get_html('http://chronicle.com/article/Historians-Ask-Public-to-Help/134054');
+$contentHtml = pf_file_get_html('http://chronicle.com/article/Historians-Ask-Public-to-Help/134054');
 //set_error_handler("customError");
 $content = $contentHtml->find('.article-body');
 //foreach ($content[0]->find('p') as $p) {
@@ -91,28 +91,28 @@ echo $content[0]->innertext;
 
 echo '<hr />';
 
-$contentHtml = file_get_html('http://oha2012.thatcamp.org/');
+$contentHtml = pf_file_get_html('http://oha2012.thatcamp.org/');
 //set_error_handler("customError");
 $content = $contentHtml->find('article');
 echo $content[0]->innertext;
 
 echo '<hr />';
 
-$contentHtml = file_get_html('http://www.wordsinspace.net/urban-media-archaeology/2012-fall/?page_id=9');
+$contentHtml = pf_file_get_html('http://www.wordsinspace.net/urban-media-archaeology/2012-fall/?page_id=9');
 //set_error_handler("customError");
 $content = $contentHtml->find('section');
 echo $content[0]->innertext;
 
 echo '<hr />';
 
-$contentHtml = file_get_html('http://www.wordsinspace.net/urban-media-archaeology/2012-fall/?page_id=9');
+$contentHtml = pf_file_get_html('http://www.wordsinspace.net/urban-media-archaeology/2012-fall/?page_id=9');
 //set_error_handler("customError");
 $content = $contentHtml->find('#content');
 echo $content[0]->innertext;
 
 echo '<hr />';
 
-$contentHtml = file_get_html('http://www.wordsinspace.net/urban-media-archaeology/2012-fall/?page_id=9');
+$contentHtml = pf_file_get_html('http://www.wordsinspace.net/urban-media-archaeology/2012-fall/?page_id=9');
 //set_error_handler("customError");
 $content = $contentHtml->find('.page-content');
 //use to create it in html.
