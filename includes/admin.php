@@ -503,7 +503,7 @@ class PF_Admin {
 			if (current_user_can( 'manage_options' )){
 				echo '<i class="icon-remove-sign pf-item-remove" pf-item-post-id="' . $id_for_comments .'" title="Delete"></i>';
 			}
-			echo '<i class="icon-eye-close hide-item" pf-item-post-id="' . $id_for_comments .'" title="Hide"></i>';
+			echo '<i class="icon-eye-close hide-item pf-item-archive schema-archive schema-actor" pf-item-post-id="' . $id_for_comments .'" title="Hide" pf-schema="archive"></i>';
 			
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'marked-read'; }
 			

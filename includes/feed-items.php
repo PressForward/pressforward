@@ -157,7 +157,7 @@ class PF_Feed_Item {
 			$relate = new PF_RSS_Import_Relationship();
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
-			$read_id = pf_get_relationship_type_id('read');
+			$read_id = pf_get_relationship_type_id('archive');
 			 $dquerystr = $wpdb->prepare("
 				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
