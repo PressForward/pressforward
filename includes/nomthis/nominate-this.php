@@ -9,8 +9,18 @@
 
 define('IFRAME_REQUEST' , true);
 
+$wp_bootstrap = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))) );
+
+if (is_dir($wp_bootstrap.'/wp-admin')){
+   $wp_bootstrap = $wp_bootstrap.'/wp-admin';
+} elseif (is_dir($wp_bootstrap.'/wordpress/wp-admin')){
+   $wp_bootstrap = $wp_bootstrap.'/wordpress/wp-admin';
+} else {
+  echo 'Nominate This can not find your WP-Admin directory'; die();
+}
+
 /** WordPress Administration Bootstrap */
-require_once( dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))) ) . '/wp-admin' . '/admin.php');
+require_once( $wp_bootstrap . '/admin.php');
 	//PF Correction - this will need to be changed to a constant later.
 //require_once( dirname(dirname(dirname(__FILE__))) . "/lib/OpenGraph.php");
 //	global $pf_nt;

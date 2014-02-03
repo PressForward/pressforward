@@ -45,6 +45,7 @@ class PF_Feeds_Schema {
 			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 			add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
+			#add_action('admin_menu', array($this, 'feed_menus'));
 		}
 	
 	}
@@ -75,7 +76,9 @@ class PF_Feeds_Schema {
 			'hierarchical' => true,
 			'supports' 	=> array('title','editor','author','thumbnail','excerpt','custom-fields','page-attributes'),
 			'taxonomies' => array('post_tag'),
-			'show_ui'     => true, // for testing only
+			'show_in_menu' => PF_MENU_SLUG
+			#'menu_position' => 100
+			#'show_ui'     => true, // for testing only
 		) ) );
 
 		do_action( 'pf_feed_post_type_registered' );
@@ -97,6 +100,7 @@ class PF_Feeds_Schema {
 			'labels' => $labels,
 			'public' => true,
 			'show_admin_columns' => true,
+			'show_in_menu' => PF_MENU_SLUG,
 			'rewrite' => false
 		) ) );
 	}
@@ -357,6 +361,8 @@ class PF_Feeds_Schema {
 			$url = 'http://' . $url;
 		}
 		$posts = self::get(array('url' => $url));
+		pf_log('Checked for feed ' . $url);
+		pf_log($posts);
 		if (count($posts) > 0){
 			return $posts;
 		} else {
@@ -423,6 +429,7 @@ class PF_Feeds_Schema {
 	
 	# A function to update an existing feed CPT entry.
 	public function update($post_id, $args){
+		pf_log('Invoked: PF_FEEDS_SCHEMA::update');
 		$r = wp_parse_args( $args, array(
 			'ID'			=> $post_id,
 			'title'   		=> false,
@@ -457,9 +464,10 @@ class PF_Feeds_Schema {
 	# This function makes it easy to set the type of 'feed', which is important when we move to using something other than RSS.
 	
 	public function set_pf_feed_type($id, $type = "rss") {
-	
+		pf_log( 'Invoked: PF_Feed_Schema::set_pf_feed_type for ' . $id  );
 		$updateResult = update_post_meta($id, 'feed_type', $type);
-		
+		pf_log( 'Attempted to update to type ' . $type . ' with results of: ');
+		pf_log( $updateResult );
 		if (is_wp_error($updateResult)){
 			return $updateResult->get_error_message();
 		} else {
@@ -492,7 +500,7 @@ class PF_Feeds_Schema {
 		#var_dump($args);
 		#echo '</pre>';
 		foreach ($args as $k=>$a){
-		
+			pf_log('Setting ' . $post_id . ' Feed Meta: ' . $k . ' - ' . $a);
 			if(!$a){
 	
 			} else {
