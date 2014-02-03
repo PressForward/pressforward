@@ -38,6 +38,7 @@ class PF_Admin {
 	 * Register menu pages
 	 */
 	function register_pf_custom_menu_pages() {
+		
 		// Top-level menu page
 		add_menu_page(
 			PF_TITLE, // <title>
@@ -86,6 +87,14 @@ class PF_Admin {
 			PF_SLUG . '-feeder',
 			array($this, 'display_feeder_builder')
 		);
+		
+		add_submenu_page(
+			PF_MENU_SLUG, 
+			__('Subscribed Feeds', 'pf'),
+			__('Subscribed Feeds', 'pf'), 
+			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')), 
+			'edit.php?post_type=' . pressforward()->pf_feeds->post_type
+		);		
 /**
 		add_submenu_page(
 			PF_MENU_SLUG,

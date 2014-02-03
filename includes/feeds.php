@@ -45,6 +45,7 @@ class PF_Feeds_Schema {
 			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 			add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
+			#add_action('admin_menu', array($this, 'feed_menus'));
 		}
 	
 	}
@@ -75,7 +76,9 @@ class PF_Feeds_Schema {
 			'hierarchical' => true,
 			'supports' 	=> array('title','editor','author','thumbnail','excerpt','custom-fields','page-attributes'),
 			'taxonomies' => array('post_tag'),
-			'show_ui'     => true, // for testing only
+			'show_in_menu' => PF_MENU_SLUG,
+			'menu_position' => 100
+			#'show_ui'     => true, // for testing only
 		) ) );
 
 		do_action( 'pf_feed_post_type_registered' );
