@@ -109,7 +109,7 @@ class PF_Feed_Item {
 		$where .= $wpdb->prepare( " AND {$wpdb->posts}.guid = %s ", $this->filter_data['guid'] );
 		return $where;
 	}
-
+	
 	// STATIC UTILITY METHODS
 
 	public static function set_word_count( $post_id, $content = false ) {
@@ -149,6 +149,7 @@ class PF_Feed_Item {
 			FROM {$wpdb->posts}, {$wpdb->postmeta}
 			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 			AND {$wpdb->posts}.post_type = %s
+			AND {$wpdb->posts}.post_status = 'publish'
 			AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
 			AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 			ORDER BY {$wpdb->postmeta}.meta_value DESC
@@ -163,6 +164,7 @@ class PF_Feed_Item {
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
 				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 				AND {$wpdb->posts}.post_type = %s
+				AND {$wpdb->posts}.post_status = 'publish'
 				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
 				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 				AND {$wpdb->posts}.ID 
@@ -184,6 +186,7 @@ class PF_Feed_Item {
 			FROM {$wpdb->posts}, {$wpdb->postmeta}
 			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 			AND {$wpdb->posts}.post_type = %s
+			AND {$wpdb->posts}.post_status = 'publish'
 			AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
 			AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 			ORDER BY {$wpdb->postmeta}.meta_value DESC
@@ -254,10 +257,28 @@ class PF_Feed_Item {
 		wp_reset_postdata();
 		return $feedObject;
 	}
+	
+	#via http://wordpress.stackexchange.com/questions/109793/delete-associated-media-upon-page-deletion
+	public static function disassemble_feed_item_media( $post_id ) {
+
+		$attachments = get_posts( array(
+			'post_type'      => 'attachment',
+			'posts_per_page' => -1,
+			'post_status'    => 'any',
+			'post_parent'    => $post_id
+		) );
+
+		foreach ( $attachments as $attachment ) {
+			if ( false === wp_delete_attachment( $attachment->ID ) ) {
+				pf_log('Failed to delete attachment for '.$post_id);
+			}
+		}
+	}
+	
 
 	# The function we add to the action to clean our database.
 	public static function disassemble_feed_items() {
-		//delete rss feed items with a date past a certian point.
+		//delete rss feed items with a date past a certain point.
 		add_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older_sixty_days') );
 		$queryForDel = new WP_Query( array( 'post_type' => pf_feed_item_post_type() ) );
 		remove_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older_sixty_days') );

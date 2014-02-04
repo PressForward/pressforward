@@ -32,6 +32,7 @@ class PF_Admin {
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
 		add_action( 'wp_ajax_ajax_get_comments', array( $this, 'ajax_get_comments') );
 		add_action( 'wp_ajax_pf_ajax_thing_deleter', array( $this, 'pf_ajax_thing_deleter') );	
+		add_action( 'init', array( $this, 'removed_feed_item') );
 	}
 
 	/**
@@ -1173,6 +1174,22 @@ class PF_Admin {
 		}
 	}
 	
+	
+	public function register_feed_item_removed_status(){
+		
+		$args = array(
+			'label'						=>	_x('Removed Feed Item', 'pf' ),
+			'public'					=>	false,
+			'exclude_from_search'		=>	true,
+			'show_in_admin_all_list'	=>	false,
+			'show_in_admin_status_list'	=>	false,
+			'label_count'				=>	_n_noop( 'Removed <span class="count">(%s)</span>', 'Removed <span class="count">(%s)</span>' )
+		);
+		
+		register_post_status('removed_feed_item', $args);
+	
+	}	
+	
 	/*
 	 *
 	 * A method to allow users to delete any CPT or post through AJAX.
@@ -1208,7 +1225,13 @@ class PF_Admin {
 			}
 		}
 		
-		$result = wp_delete_post($id, true);
+		$argup = array(
+			'ID'			=> $id,
+			'post_content' 	=> '',
+			'post_status'	=>	'removed_feed_item'
+		);
+		
+		$result = wp_update_post($id, $argup);
 		return $result;
 		
 	}
