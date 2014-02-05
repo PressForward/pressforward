@@ -32,7 +32,7 @@ class PF_Admin {
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
 		add_action( 'wp_ajax_ajax_get_comments', array( $this, 'ajax_get_comments') );
 		add_action( 'wp_ajax_pf_ajax_thing_deleter', array( $this, 'pf_ajax_thing_deleter') );	
-		add_action( 'init', array( $this, 'removed_feed_item') );
+		add_action( 'init', array( $this, 'register_feed_item_removed_status') );
 	}
 
 	/**
@@ -1231,7 +1231,7 @@ class PF_Admin {
 			'post_status'	=>	'removed_feed_item'
 		);
 		
-		$result = wp_update_post($id, $argup);
+		$result = wp_update_post($argup);
 		return $result;
 		
 	}
