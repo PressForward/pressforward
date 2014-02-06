@@ -531,32 +531,202 @@ function pf_debug_ipads(){
 #add_action ('wp_head', 'pf_debug_ipads');
 #add_action ('admin_head', 'pf_debug_ipads');
 
+#Inspired by http://www.loc.gov/standards/metable.html
+#Adm=Administrative, Struc=Structural, Desc=Descriptive, Req=Required, Rep=Repeatable, Set=Set, Aggr=Aggregate, Dep = Depreciated
 function pf_meta_structure(){
-	$metas = array(
-		'item_id',	#pf unique ID
-		'origin_item_ID', #DUPE Soon to be depreciated version of the above. 
-		'pf_item_post_id', #The WordPress postID associated with the original item
-		'pf_nomination_post_id', #The WordPress postID associated with the nomination
-		'item_feed_post_id', #DUPE Soon to be depreciated version of the above. 
-		'source_title', #Item source site title
-		'item_date', #The date the item was posted to the source
-		'posted_date' #DUPE Soon to be depreciated version of the above.
-		'item_author', #The author(s) listed by the source
-		'authors', #DUPE Soon to be depreciated version of the above.
-		'item_link', #The link to the original item
-		'nomination_permalink' #DUPE Soon to be depreciated version of the above
-		'item_feat_img', #A featured image associated with the item, when it is available. 
-		'item_wp_date', #The date/time an item was added to WordPress via PressForward
-		'date_nominated', #The date the item was made a nomination.
-		'item_tags', #An array of tags associated with the item, as created in the feed. 
-		'source_repeat', #The number of times the item has been collected from the multiple feeds (Ex: from origin feed and Twitter)
-		'nomination_count', #The number of times users have been nominated. 
-		'submitted_by', #The user who has submitted the nomination (if it has been nominated). User ID number
-		'nominator_array', #An array of all the people who nominated the item.
-		'sortable_item_date', #A version of the `item_date` meta that's ready for sorting. Should be a Unix Timestamp
-		'readable_status', #Has the content been made readable?
-		'revertible_feed_text', #The original description, excerpt or content text given by the feed.
-		'pf_feed_item_word_count', #Wordcount or the original feed text.
+	$metas = array( 
+		array(
+			'name' => 'item_id',
+			'definition' => __('Unique PressForward ID', 'pf'),
+			'function'	=> __('Stores hashed ID based on title and URL of retrieved item', 'pf'),
+			'type'	=> array('struc'),
+			'use'	=> array('req'),
+			'level'	=> array('item', 'nomination', 'post')
+		),
+		array(
+			'name' => 'origin_item_ID',
+			'definition' => __('DUPE Soon to be depreciated version of item_id', 'pf'),
+			'function'	=> __('Stores hashed ID based on title and URL of retrieved item', 'pf'),
+			'type'	=> array('struc', 'dep'),
+			'use'	=> array('req'),
+			'level'	=> array('item', 'nomination', 'post')
+		),	
+		array(
+			'name' => 'pf_item_post_id',
+			'definition' => __('The WordPress postID associated with the original item', 'pf'),
+			'function'	=> __('Stores hashed WP post_ID associated with the original item', 'pf'),
+			'type'	=> array('struc'),
+			'use'	=> array('req'),
+			'level'	=> array('item', 'nomination', 'post')
+		),	
+		array(
+			'name' => 'pf_nomination_post_id',
+			'definition' => __('The WordPress postID associated with the nomination', 'pf'),
+			'function'	=> __('Stores postID associated with the nominated item', 'pf'),
+			'type'	=> array('struc'),
+			'use'	=> array(),
+			'level'	=> array('item', 'nomination', 'post')
+		),	
+		array(
+			'name' => 'item_feed_post_id',
+			'definition' => __('DUPE Soon to be depreciated version of pf_item_post_id', 'pf'),
+			'function'	=> __('Stores hashed ID based on title and URL of retrieved item', 'pf'),
+			'type'	=> array('struc', 'dep'),
+			'use'	=> array('req'),
+			'level'	=> array('item', 'nomination', 'post')
+		),	
+		array(
+			'name' => 'source_title',
+			'definition' => __('Title of the item\'s source', 'pf'),
+			'function'	=> __('Stores the title retrieved from the feed.', 'pf'),
+			'type'	=> array('adm'),
+			'use'	=> array(),
+			'level'	=> array('item', 'nomination', 'post')
+		),	
+		array(
+			'name' => 'item_date',
+			'definition' => __('Date posted on the original site', 'pf'),
+			'function'	=> __('Stores the date the item was posted on the original site', 'pf'),
+			'type'	=> array('desc'),
+			'use'	=> array('req'),
+			'level'	=> array('item', 'nomination', 'post')
+		),	
+		array(
+			'name' => 'posted_date',
+			'definition' => __('DUPE The soon to be depreciated version of item_date', 'pf'),
+			'function'	=> __('Stores the date given by the source.', 'pf'),
+			'type'	=> array('struc', 'dep'),
+			'use'	=> array('req'),
+			'level'	=> array('nomination', 'post')
+		),	
+		array(
+			'name' => 'item_author',
+			'definition' => __('Author(s) listed on the original site', 'pf'),
+			'function'	=> __('Stores array value containing authors listed in the source feed.', 'pf'),
+			'type'	=> array('struc'),
+			'use'	=> array(),
+			'level'	=> array('item', 'nomination', 'post')
+		),		
+		array(
+			'name' => 'authors',
+			'definition' => __('DUPE The soon to be depreciated version of item_author', 'pf'),
+			'function'	=> __('Stores a comma-separated set of authors as listed in the source feed', 'pf'),
+			'type'	=> array('struc','dep'),
+			'use'	=> array(),
+			'level'	=> array('nomination', 'post')
+		),	
+		array(
+			'name' => 'item_link',
+			'definition' => __('Source link', 'pf'),
+			'function'	=> __('Stores hashed ID based on title and URL of retrieved item', 'pf'),
+			'type'	=> array('struc'),
+			'use'	=> array('req'),
+			'level'	=> array('item', 'nomination', 'post')
+		),	
+		array(
+			'name' => 'nomination_permalink',
+			'definition' => __('Source link', 'pf'),
+			'function'	=> __('DUPE Soon to be depreciated version of the above', 'pf'),
+			'type'	=> array('struc','dep'),
+			'use'	=> array('req'),
+			'level'	=> array('nomination', 'post')
+		),	
+		array(
+			'name' => 'item_feat_img',
+			'definition' => __('Featured image from source', 'pf'),
+			'function'	=> __('A featured image associated with the item, when it is available', 'pf'),
+			'type'	=> array('struc'),
+			'use'	=> array(),
+			'level'	=> array('item', 'nomination', 'post')
+		),	
+		array(
+			'name' => 'item_wp_date',
+			'definition' => __('Time item was retrieved', 'pf'),
+			'function'	=> __('The datetime an item was added to WordPress via PressForward', 'pf'),
+			'type'	=> array('desc'),
+			'use'	=> array('req'),
+			'level'	=> array('item', 'nomination', 'post')
+		),	
+		array(
+			'name' => 'date_nominated',
+			'definition' => __('Time nominated', 'pf'),
+			'function'	=> __('The datetime the item was made a nomination', 'pf'),
+			'type'	=> array('desc'),
+			'use'	=> array('req'),
+			'level'	=> array('nomination', 'post')
+		),	
+		array(
+			'name' => 'item_tags',
+			'definition' => __('Tags associated with the item by source', 'pf'),
+			'function'	=> __('An array of tags associated with the item, as created in the feed', 'pf'),
+			'type'	=> array('desc'),
+			'use'	=> array(),
+			'level'	=> array('item', 'nomination', 'post')
+		),	
+		array(
+			'name' => 'source_repeat',
+			'definition' => __('Times retrieved', 'pf'),
+			'function'	=> __('#Counts number of times the item has been collected from the multiple feeds (Ex: from origin feed and Twitter)', 'pf'),
+			'type'	=> array('adm'),
+			'use'	=> array(),
+			'level'	=> array('item', 'nomination', 'post')
+		),	
+		array(
+			'name' => 'nomination_count',
+			'definition' => __('Nominations', 'pf'),
+			'function'	=> __('Counts number of times users have nominated an item', 'pf'),
+			'type'	=> array('adm'),
+			'use'	=> array('req'),
+			'level'	=> array('item', 'nomination', 'post')
+		),	
+		array(
+			'name' => 'submitted_by',
+			'definition' => __('The user who submitted the nomination', 'pf'),
+			'function'	=> __('The first user who submitted the nomination (if it has been nominated). User ID number', 'pf'),
+			'type'	=> array('adm'),
+			'use'	=> array('req'),
+			'level'	=> array('item', 'nomination', 'post')
+		),	
+		array(
+			'name' => 'nominator_array',
+			'definition' => __('Users who nominated this item', 'pf'),
+			'function'	=> __('Stores and array of all userIDs that nominated the item', 'pf'),
+			'type'	=> array('adm'),
+			'use'	=> array('req'),
+			'level'	=> array('nomination', 'post')
+		),	
+		array(
+			'name' => 'sortable_item_date',
+			'definition' => __('Timestamp for the item', 'pf'),
+			'function'	=> __('A version of the item_date meta that\'s ready for sorting. Should be a Unix timestamp', 'pf'),
+			'type'	=> array('adm'),
+			'use'	=> array('req'),
+			'level'	=> array('item', 'nomination', 'post')
+		),	
+		array(
+			'name' => 'readable_status',
+			'definition' => __('If the content is readable', 'pf'),
+			'function'	=> __('A check to determine if the content of the item has been made readable', 'pf'),
+			'type'	=> array('desc'),
+			'use'	=> array('req'),
+			'level'	=> array('item', 'nomination', 'post')
+		),	
+		array(
+			'name' => 'revertible_feed_text',
+			'definition' => __('The originally retrieved description', 'pf'),
+			'function'	=> __('The original description, excerpt or content text given by the feed', 'pf'),
+			'type'	=> array('adm'),
+			'use'	=> array(),
+			'level'	=> array('item', 'nomination', 'post')
+		),	
+		array(
+			'name' => 'pf_feed_item_word_count',
+			'definition' => __('Word count of original item text', 'pf'),
+			'function'	=> __('Stores the count of the original words retrieved with the feed item', 'pf'),
+			'type'	=> array('desc'),
+			'use'	=> array(),
+			'level'	=> array('item', 'nomination', 'post')
+		)
 	);
 	
 	$metas = apply_filters('pf_meta_terms',$metas);
