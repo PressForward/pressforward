@@ -42,7 +42,7 @@ class PF_RSS_Out extends PF_Module {
 		add_feed('feedforward', array($this, 'all_feed_assembler'));		
 		# Called because stated requirement at http://codex.wordpress.org/Rewrite_API/add_feed
 		# Called as per http://codex.wordpress.org/Rewrite_API/flush_rules
-		$wp_rewrite->flush_rules(false);		
+		#$wp_rewrite->flush_rules(false);		
 
 	}
 
