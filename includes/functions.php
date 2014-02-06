@@ -530,6 +530,51 @@ function pf_debug_ipads(){
 }
 #add_action ('wp_head', 'pf_debug_ipads');
 #add_action ('admin_head', 'pf_debug_ipads');
+
+function pf_meta_structure(){
+	$metas = array(
+		'item_id',	#pf unique ID
+		'origin_item_ID', #DUPE Soon to be depreciated version of the above. 
+		'pf_item_post_id', #The WordPress postID associated with the original item
+		'pf_nomination_post_id', #The WordPress postID associated with the nomination
+		'item_feed_post_id', #DUPE Soon to be depreciated version of the above. 
+		'source_title', #Item source site title
+		'item_date', #The date the item was posted to the source
+		'posted_date' #DUPE Soon to be depreciated version of the above.
+		'item_author', #The author(s) listed by the source
+		'authors', #DUPE Soon to be depreciated version of the above.
+		'item_link', #The link to the original item
+		'nomination_permalink' #DUPE Soon to be depreciated version of the above
+		'item_feat_img', #A featured image associated with the item, when it is available. 
+		'item_wp_date', #The date/time an item was added to WordPress via PressForward
+		'date_nominated', #The date the item was made a nomination.
+		'item_tags', #An array of tags associated with the item, as created in the feed. 
+		'source_repeat', #The number of times the item has been collected from the multiple feeds (Ex: from origin feed and Twitter)
+		'nomination_count', #The number of times users have been nominated. 
+		'submitted_by', #The user who has submitted the nomination (if it has been nominated). User ID number
+		'nominator_array', #An array of all the people who nominated the item.
+		'sortable_item_date', #A version of the `item_date` meta that's ready for sorting. Should be a Unix Timestamp
+		'readable_status', #Has the content been made readable?
+		'revertible_feed_text', #The original description, excerpt or content text given by the feed.
+		'pf_feed_item_word_count', #Wordcount or the original feed text.
+	);
+	
+	$metas = apply_filters('pf_meta_terms',$metas);
+	return $metas;
+}
+
+function pf_store_meta(){
+
+}
+
+function pf_pass_meta(){
+
+}
+
+function pf_retrieve_meta(){
+
+}
+
 /**
  * Send status messages to a custom log
  *
