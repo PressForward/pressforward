@@ -53,7 +53,7 @@ class PF_RSS_Import extends PF_Module {
 	 
 	 public function return_cachetime($seconds){
 	 	
-	 	return 2700;
+	 	return 1800;
 	 }
 
 	/**
