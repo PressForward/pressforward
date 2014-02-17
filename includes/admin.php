@@ -284,7 +284,13 @@ class PF_Admin {
 					<a href="#" id="settings" class="button">Settings</a>
 					<div class="btn-group">
 						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete entire feed archive', 'pf');  ?>" ><?php  _e('Delete entire feed archive', 'pf');  ?></button>
-						<button type="submit" class="delete btn btn-info pull-right" id="Show my Nominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
+						<button type="submit" class="delete btn btn-info pull-right" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
+						<button type="submit" class="delete btn btn-info pull-right" id="showMyStarred" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
+						<?php 
+							if (isset($_GET['by'])){
+								?><button type="submit" class="delete btn btn-info pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php 
+							}
+						?>
 					</div>
 				<?php 
 			}			
@@ -768,7 +774,13 @@ class PF_Admin {
 				$ic = 0;
 				$c = $c+$count;	
 					//print_r($count);
-			foreach(PF_Feed_Item::archive_feed_to_display($count+1) as $item) {
+			if (isset($_GET['by'])){
+				$limit = $_GET['by'];
+			} else {
+				$limit = false;
+			}
+			#var_dump($limit);	
+			foreach(PF_Feed_Item::archive_feed_to_display($count+1, 20, 0, false, $limit) as $item) {
 				
 				$this->form_of_an_item($item, $c);
 
@@ -793,11 +805,21 @@ class PF_Admin {
 		if ($page == 0){ $page = 1; }
 		$pagePrev = $page-1;
 		$pageNext = $page+1;
+		
+		$pagePrev = '?page=pf-menu&pc=' . $pagePrev; 
+		$pageNext = '?page=pf-menu&pc=' . $pageNext;
+		if (isset($pageQ)){
+			$pageQ = $_GET['by'];
+			$pageQed = '&by=' . $pageQ;
+			$pageNext .= $pageQed;
+			$pageNext .= $pageQed;
+			
+		}
 		echo '<div class="pf-navigation">';
 		if ($pagePrev > -1){
-			echo '<span class="feedprev"><a class="prevnav" href="admin.php?page=pf-menu&pc=' . $pagePrev . '">Previous Page</a></span> | ';
+			echo '<span class="feedprev"><a class="prevnav" href="admin.php' . $pagePrev . '">Previous Page</a></span> | ';
 		}
-		echo '<span class="feednext"><a class="nextnav" href="admin.php?page=pf-menu&pc=' . $pageNext . '">Next Page</a></span>';
+		echo '<span class="feednext"><a class="nextnav" href="admin.php' . $pageNext . '">Next Page</a></span>';
 		echo '</div>';
 
 	echo '</div><!-- End container-fluid -->';

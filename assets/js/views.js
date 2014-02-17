@@ -252,6 +252,45 @@ jQuery(window).load(function() {
 			jQuery("div.pf_container").addClass('full');
 		});	
 		
+	jQuery(".refreshfeed").click(function (evt){ 
+		evt.preventDefault();
+		jQuery('.loading-top').show();
+		jQuery.post(ajaxurl, {
+			action: 'assemble_feed_for_pull'
+		},
+		function(response) {
+			jQuery('.loading-top').hide();
+			jQuery('#errors').html(response);
+			//jQuery("#test-div1").append(data);
+		});
+	
+	});
+	
+	jQuery('#deletefeedarchive').click(function (evt) {
+		evt.preventDefault();
+		jQuery('.loading-top').show();
+		jQuery.post(ajaxurl, {
+			action: 'reset_feed'
+		},
+		function(response) {
+			jQuery('.loading-top').hide();
+			jQuery('#errors').html(response);
+		});
+	});
+	
+	jQuery('.pf_container').on('click', '#showMyNominations', function(evt){
+		evt.preventDefault();
+		window.open("?page=pf-menu&by=nominated", "_self")
+	});	
+	jQuery('.pf_container').on('click', '#showMyStarred', function(evt){    
+		evt.preventDefault();
+		window.open("?page=pf-menu&by=starred", "_self")
+	});		
+	jQuery('.pf_container').on('click', '#showNormal', function(evt){    
+		evt.preventDefault();
+		window.open("?page=pf-menu", "_self")
+	});		
+		
 	reshowModal(); 
 	reviewModal(); 
 	hideModal();

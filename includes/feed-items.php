@@ -131,7 +131,7 @@ class PF_Feed_Item {
 	# This function feeds items to our display feed function pf_reader_builder.
 	# It is just taking our database of rssarchival items and putting them into a
 	# format that the builder understands.
-	public static function archive_feed_to_display($pageTop = 0, $pagefull = 20, $fromUnixTime = 0, $limitless = false) {
+	public static function archive_feed_to_display($pageTop = 0, $pagefull = 20, $fromUnixTime = 0, $limitless = false, $limit = false) {
 		global $wpdb, $post;
 		#var_dump($fromUnixTime); die();
 		if ( !isset($fromUnixTime) || (!$fromUnixTime) || ($fromUnixTime < 100)){$fromUnixTime = 0;}
@@ -154,6 +154,58 @@ class PF_Feed_Item {
 			AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 			ORDER BY {$wpdb->postmeta}.meta_value DESC
 		 ", pf_feed_item_post_type());		
+		} elseif ($limit == 'starred') {
+			$pageTop = $pageTop-1;
+			$relate = new PF_RSS_Import_Relationship();
+			$rt = $relate->table_name;
+			$user_id = get_current_user_id();
+			$read_id = pf_get_relationship_type_id('star');
+			 $dquerystr = $wpdb->prepare("
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}				
+				AND {$wpdb->posts}.post_type = %s
+				AND {$wpdb->posts}.post_status = 'publish'
+				AND {$wpdb->posts}.ID 
+				IN (
+					SELECT item_id 
+					FROM {$rt} 
+					WHERE {$rt}.user_id = {$user_id} 
+					AND {$rt}.relationship_type = {$read_id} 
+					AND {$rt}.value = 1
+				)
+				GROUP BY {$wpdb->postmeta}.meta_key
+				ORDER BY {$wpdb->postmeta}.meta_value DESC
+				LIMIT {$pagefull} OFFSET {$pageTop}
+			 ", pf_feed_item_post_type());					
+		} elseif ($limit == 'nominated') {
+			$pageTop = $pageTop-1;
+			$relate = new PF_RSS_Import_Relationship();
+			$rt = $relate->table_name;
+			$user_id = get_current_user_id();
+			$read_id = pf_get_relationship_type_id('nominate');
+			 $dquerystr = $wpdb->prepare("
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}				
+				AND {$wpdb->posts}.post_type = %s
+				AND {$wpdb->posts}.post_status = 'publish'
+				AND {$wpdb->posts}.ID 
+				IN (
+					SELECT item_id 
+					FROM {$rt} 
+					WHERE {$rt}.user_id = {$user_id} 
+					AND {$rt}.relationship_type = {$read_id} 
+					AND {$rt}.value = 1
+				)
+				GROUP BY {$wpdb->postmeta}.meta_key
+				ORDER BY {$wpdb->postmeta}.meta_value DESC
+				LIMIT {$pagefull} OFFSET {$pageTop}
+			 ", pf_feed_item_post_type());					
 		} elseif (is_user_logged_in()){
 			$relate = new PF_RSS_Import_Relationship();
 			$rt = $relate->table_name;
@@ -201,7 +253,7 @@ class PF_Feed_Item {
 		//print_r(count($rssarchivalposts)); die();
 		$feedObject = array();
 		$c = 0;
-
+		#var_dump($dquerystr);
 		if ($archivalposts):
 
 			foreach ($archivalposts as $post) :
