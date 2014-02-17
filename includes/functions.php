@@ -531,6 +531,30 @@ function pf_debug_ipads(){
 #add_action ('wp_head', 'pf_debug_ipads');
 #add_action ('admin_head', 'pf_debug_ipads');
 
+function pf_meta_transition_post($idA, $idB){
+	foreach(pf_meta_structure() as $meta){
+		pf_meta_transition(get_pf_meta_name($meta), $idA, $idB);
+	}
+}
+
+function pf_meta_transition($name, $idA, $idB){
+	$meta_value = get_post_meta($idA, $name);
+	$result = update_post_meta($idB, $name, $meta_value);
+	return $result;
+}
+
+function pf_meta_by_name($name){
+	foreach (pf_meta_structure() as $meta){
+		if($name == $meta['name']){
+			return $meta;
+		}
+	}
+}
+
+function get_pf_meta_name($meta){
+	return $meta['name'];
+}
+
 #Inspired by http://www.loc.gov/standards/metable.html
 #Adm=Administrative, Struc=Structural, Desc=Descriptive, Req=Required, Rep=Repeatable, Set=Set, Aggr=Aggregate, Dep = Depreciated
 function pf_meta_structure(){
