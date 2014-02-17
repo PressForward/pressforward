@@ -55,4 +55,20 @@ jQuery(window).load(function() {
 		});
 	});
 	
+	jQuery('.pf_container').on('click', "#archivebefore", function (evt){
+		evt.preventDefault();	
+		var element		= jQuery(this);
+		var date_limit  = jQuery('#archiveBeforeOption').val();
+		jQuery('.loading-top').show();
+		jQuery('.nom-container').hide();
+		
+		jQuery.post(ajaxurl, {
+			action: 'pf_archive_nominations',
+			date_limit:  date_limit
+		},
+		function(response) {		
+			jQuery('#errors').html(response);
+		});
+	});	
+	
 });	
