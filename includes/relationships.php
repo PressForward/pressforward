@@ -465,6 +465,12 @@ function pf_archive_nominations(){
 				case '2weeks':
 					$before =  array('week' => date('W')-2);
 					break;
+				case '1month':
+					$before = array('month' => date('m')-1);
+					break;
+				case '1year':
+					$before = array('year'	=> date('Y')-1);
+					break;
 				
 			}
 			$args['date_query']	= array(
@@ -475,7 +481,7 @@ function pf_archive_nominations(){
 
 		
 		$q = new WP_Query($args);
-		$dquerystr = $wpdb->prepare("
+/**		$dquerystr = $wpdb->prepare("
 			SELECT $wpdb->posts.*, $wpdb->postmeta.*
 			FROM $wpdb->posts, $wpdb->postmeta
 			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
@@ -483,7 +489,8 @@ function pf_archive_nominations(){
 		 ", 'nomination' );
 		# This is how we do a custom query, when WP_Query doesn't do what we want it to.
 		$nominationsArchivalPosts = $wpdb->get_results($dquerystr, OBJECT);
-		//print_r(count($nominationsArchivalPosts)); die();
+**/		//print_r(count($nominationsArchivalPosts)); die();
+		$nominationsArchivalPosts = $q;
 		$feedObject = array();
 		$c = 0;
 
