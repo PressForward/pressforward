@@ -443,7 +443,7 @@ function pf_ajax_relate(){
 }
 
 add_action( 'wp_ajax_pf_archive_all_nominations', 'pf_archive_all_nominations');
-function pf_archive_nominations(){
+function pf_archive_nominations($limit = false){
 		global $wpdb, $post;
 		//$args = array(
 		//				'post_type' => array('any')
@@ -476,11 +476,34 @@ function pf_archive_nominations(){
 			$args['date_query']	= array(
 									'before' => $before
 								);
+		} elseif (false != $limit) {
+				$date_limit = $limit;
+			
+			switch ($date_limit){
+				case '1week':
+					$before = array('week' => date('W')-1);
+					break;
+				case '2weeks':
+					$before =  array('week' => date('W')-2);
+					break;
+				case '1month':
+					$before = array('month' => date('m')-1);
+					break;
+				case '1year':
+					$before = array('year'	=> date('Y')-1);
+					break;
+				
+			}
+			$args['date_query']	= array(
+									'before' => $before
+								);		
 		}
 		
 
 		
 		$q = new WP_Query($args);
+		echo '<pre>';
+		var_dump($q); die();
 /**		$dquerystr = $wpdb->prepare("
 			SELECT $wpdb->posts.*, $wpdb->postmeta.*
 			FROM $wpdb->posts, $wpdb->postmeta
