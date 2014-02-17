@@ -409,7 +409,7 @@ class PF_Nominations {
 		if ($readable_status != 1){
 			$read_args = array('force' => '', 'descrip' => $item_content, 'url' => $_POST['item_link'], 'authorship' => $_POST['item_author'] );
 			$item_content_obj = PF_Readability::get_readable_text($read_args);
-			$item_content = $item_content_obj['readable'];
+			$item_content = htmlspecialchars_decode($item_content_obj['readable']);
 		} else {
 			$item_content = htmlspecialchars_decode($_POST['item_content']);
 		}
