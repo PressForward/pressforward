@@ -43,7 +43,7 @@ jQuery(window).load(function() {
 		jQuery('.loading-top').show();
 		jQuery('.nom-container').hide();
 		jQuery.post(ajaxurl, {
-			action: 'pf_archive_all_nominations'
+			action: 'pf_archive_nominations'
 		},
 		function(response) {
 			jQuery('.loading-top').hide();
