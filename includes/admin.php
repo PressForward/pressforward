@@ -293,7 +293,20 @@ class PF_Admin {
 						?>
 					</div>
 				<?php 
-			}			
+			} elseif ( $slug == 'pressforward_page_pf-review' && (get_bloginfo('version') >= 3.7) && $version >= 0 && current_user_can(pf_get_defining_capability_by_role('administrator'))){
+				?>
+					<a href="#" id="settings" class="button">Settings</a>
+					<div class="btn-group">
+						<button type="submit" class="btn btn-warning pull-right" id="archivebefore" value="<?php  _e('Archive before', 'pf');  ?>:" ><?php  _e('Archive before', 'pf');  ?>:</button>
+						<select class="pull-right" id="archiveBeforeOption">
+							<option value="1week">Older then 1 week</option>
+							<option value="2weeks">Older than 2 weeks</option>
+							<option value="1month">Older than 1 month</option>
+							<option value="1year">Before this year</option>
+						</select>
+					</div>
+				<?php 
+			}				
 				?>
 				<div id="nom-this-toolbox">
 					<h3 class="title"><?php _e('Nominate This', 'pf'); ?></h3>
