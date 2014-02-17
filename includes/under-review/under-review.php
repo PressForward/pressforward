@@ -56,7 +56,11 @@
 					<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
 					echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomdate" value="' . __('Sort by date nominated', 'pf') . '">' . __('Sort by date nominated', 'pf') . '</button>'; 
 					echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomcount" value="' . __('Sort by nominations', 'pf') . '">' . __('Sort by nominations', 'pf') . '</button>'; 
-					echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="showarchived" value="' . __('Show archived', 'pf') . '">' . __('Show archived', 'pf') . '.</button>';
+					if (isset($_GET['by']) && ( 'archived' == $_GET['by'])){
+						echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="shownormal" value="' . __('Show non-archived', 'pf') . '">' . __('Show non-archived', 'pf') . '.</button>';
+					} else {
+						echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="showarchived" value="' . __('Show archived', 'pf') . '">' . __('Show archived', 'pf') . '.</button>';
+					}
 					?>
 					</div>
 					<div class="pull-right text-right">
@@ -184,6 +188,9 @@
 				//UNIX datetime item was posted to its home RSS.
 				$metadata['timestamp_item_posted'] = $timestamp_item_posted = strtotime($date_posted);
 				$metadata['archived_status'] = $archived_status = get_post_meta($nom_id, 'archived_by_user_status');
+				$userObj = wp_get_current_user();
+				$user_id = $userObj->ID;
+				
 				
 				if (!empty($metadata['archived_status'])){
 					$archived_status_string = '';
@@ -194,6 +201,9 @@
 							$dependent_style = 'display:none;';
 						}
 					}
+				} elseif ( 1 == pf_get_relationship_value( 'archive', $nom_id, $user_id)) {
+					$archived_status_string = 'archived';
+					$dependent_style = 'display:none;';
 				} else {
 					$dependent_style = '';
 					$archived_status_string = '';

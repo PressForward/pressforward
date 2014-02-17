@@ -59,8 +59,7 @@ jQuery(window).load(function() {
 		evt.preventDefault();	
 		var element		= jQuery(this);
 		var date_limit  = jQuery('#archiveBeforeOption').val();
-		jQuery('.loading-top').show();
-		jQuery('.nom-container').hide();
+		
 		
 		jQuery.post(ajaxurl, {
 			action: 'pf_archive_nominations',

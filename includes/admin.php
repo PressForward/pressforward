@@ -504,6 +504,9 @@ class PF_Admin {
 				if ($archive_status == 1){
 					$archived_status_string = 'archived';
 					$dependent_style = 'display:none;';
+				} elseif ( 1 == pf_get_relationship_value( 'archive', $metadata['nom_id'], $user_id)) {
+					$archived_status_string = 'archived';
+					$dependent_style = 'display:none;';
 				} else {
 					$dependent_style = '';
 					$archived_status_string = '';
