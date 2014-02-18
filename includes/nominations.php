@@ -415,20 +415,20 @@ class PF_Nominations {
 		if ($_POST['item_feat_img'] != '')
 			PF_Feed_Item::set_ext_as_featured($newNomID, $_POST['item_feat_img']);
 		//die($_POST['item_feat_img']);
-		add_post_meta($item_id, 'nomination_count', 1, true);
-		add_post_meta($item_id, 'submitted_by', $userString, true);
-		add_post_meta($item_id, 'nominator_array', $userID, true);	
-		add_post_meta($item_id, 'date_nominated', date('c'), true);		
-		add_post_meta($item_id, 'origin_item_ID', $item_id, true);
-		add_post_meta($item_id, 'item_feed_post_id', $_POST['item_post_id'], true);
-		add_post_meta($item_id, 'nomination_permalink', $_POST['item_link'], true);
+		add_post_meta($_POST['item_post_id'], 'nomination_count', 1, true);
+		add_post_meta($_POST['item_post_id'], 'submitted_by', $userString, true);
+		add_post_meta($_POST['item_post_id'], 'nominator_array', $userID, true);	
+		add_post_meta($_POST['item_post_id'], 'date_nominated', date('c'), true);		
+		add_post_meta($_POST['item_post_id'], 'origin_item_ID', $item_id, true);
+		add_post_meta($_POST['item_post_id'], 'item_feed_post_id', $_POST['item_post_id'], true);
+		add_post_meta($_POST['item_post_id'], 'nomination_permalink', $_POST['item_link'], true);
 			$item_date = $_POST['item_date'];
 			if (empty($_POST['item_date'])){
 				$newDate = gmdate('Y-m-d H:i:s');
 				$item_date = $newDate;
 			}
-		add_post_meta($item_id, 'posted_date', $item_date, true);		
-		pf_meta_transition_post($item_id, $newNomID);
+		add_post_meta($_POST['item_post_id'], 'posted_date', $item_date, true);		
+		pf_meta_transition_post($_POST['item_post_id'], $newNomID);
 			$response = array(
 				'what' => 'nomination',
 				'action' => 'build_nomination',
