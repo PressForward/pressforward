@@ -134,14 +134,14 @@
 				//Number of Nominations recieved.
 				$metadata['nom_count'] = $nom_count = get_post_meta($nom_id, 'nomination_count', true);
 				//Permalink to orig content
-				$metadata['permalink'] = $nom_permalink = get_post_meta($nom_id, 'nomination_permalink', true);
+				$metadata['permalink'] = $nom_permalink = get_post_meta($nom_id, 'item_link', true);
 				$urlArray = parse_url($nom_permalink);
 				//Source Site
 				$metadata['source_link'] = isset( $urlArray['host'] ) ? $sourceLink = 'http://' . $urlArray['host'] : '';
 				//Source site slug
 				$metadata['source_slug'] = $sourceSlug = isset( $urlArray['host'] ) ? pf_slugger($urlArray['host'], true, false, true) : '';
 				//RSS Author designation
-				$metadata['authors'] = $item_authorship = get_post_meta($nom_id, 'authors', true);
+				$metadata['authors'] = $item_authorship = get_post_meta($nom_id, 'item_author', true);
 				//Datetime item was nominated
 				$metadata['date_nominated'] = $date_nomed = get_post_meta($nom_id, 'date_nominated', true);
 				//Datetime item was posted to its home RSS
