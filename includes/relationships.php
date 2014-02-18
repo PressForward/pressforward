@@ -442,15 +442,70 @@ function pf_ajax_relate(){
 
 }
 
-add_action( 'wp_ajax_pf_archive_all_nominations', 'pf_archive_all_nominations');
-function pf_archive_all_nominations(){
+add_action( 'wp_ajax_pf_archive_nominations', 'pf_archive_nominations');
+function pf_archive_nominations($limit = false){
 		global $wpdb, $post;
 		//$args = array(
 		//				'post_type' => array('any')
 		//			);
-		$args = 'post_type=' . 'nomination';
+		#$$args = 'post_type=' . 'nomination';
+		$args = array(
+			'post_type'		=>	'nomination',
+			'posts_per_page' => -1
+			
+		);		
+		
 		//$archiveQuery = new WP_Query( $args );
-		$dquerystr = $wpdb->prepare("
+		if (isset( $_POST['date_limit'] )){
+			$date_limit = $_POST['date_limit'];
+			
+			switch ($date_limit){
+				case '1week':
+					$before = '1 week ago';
+					break;
+				case '2weeks':
+					$before =  '2 weeks ago';
+					break;
+				case '1month':
+					$before = array('month' => date('m')-1);
+					break;
+				case '1year':
+					$before = array('year'	=> date('Y')-1);
+					break;
+				
+			}
+			$args['date_query']	= array(
+									'before' => $before
+								);
+		} elseif (false != $limit) {
+				$date_limit = $limit;
+			
+			switch ($date_limit){
+				case '1week':
+					$before = array('week' => date('W')-1);
+					break;
+				case '2weeks':
+					$before =  array('week' => date('W')-2);
+					break;
+				case '1month':
+					$before = array('month' => date('m')-1);
+					break;
+				case '1year':
+					$before = array('year'	=> date('Y')-1);
+					break;
+				
+			}
+			$args['date_query']	= array(
+									'before' => $before
+								);		
+		}
+		
+
+		
+		$q = new WP_Query($args);
+		#echo '<pre>';
+		#var_dump($q);# die();
+/**		$dquerystr = $wpdb->prepare("
 			SELECT $wpdb->posts.*, $wpdb->postmeta.*
 			FROM $wpdb->posts, $wpdb->postmeta
 			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
@@ -458,35 +513,45 @@ function pf_archive_all_nominations(){
 		 ", 'nomination' );
 		# This is how we do a custom query, when WP_Query doesn't do what we want it to.
 		$nominationsArchivalPosts = $wpdb->get_results($dquerystr, OBJECT);
-		//print_r(count($nominationsArchivalPosts)); die();
+**/		//print_r(count($nominationsArchivalPosts)); die();
+		#$nominationsArchivalPosts = $q;
 		$feedObject = array();
 		$c = 0;
+		$id_list = '';
+		if ($q->have_posts()):
 
-		if ($nominationsArchivalPosts):
-
-			foreach ($nominationsArchivalPosts as $post) :
+			while ($q->have_posts()) : $q->the_post();
+				
 				# This takes the $post objects and translates them into something I can do the standard WP functions on.
-				setup_postdata($post);
+				#setup_postdata($post);
 				$post_id = get_the_ID();
+				#var_dump(get_the_ID());
+				$id_list .= get_the_title().',';
 				//Switch the delete on to wipe rss archive posts from the database for testing.
 				$userObj = wp_get_current_user();
 				$user_id = $userObj->ID;
 				$feed_post_id = get_post_meta($post_id, 'item_feed_post_id', true);
 				pf_set_relationship( 'archive', $feed_post_id, $user_id, '1' );
-			endforeach;
+				pf_set_relationship( 'archive', $post_id, $user_id, '1' );
+			endwhile;
 
-
+		
 		endif;
+		
 		wp_reset_postdata();
+		#var_dump('IDs: ');
+		#var_dump($id_list); die();
 		ob_start();
+		var_dump($q);
 		$response = array(
 				'what' => 'relationships',
 				'action' => 'pf_archive_all_nominations',
 				'id' => $user_id,
-				'data' => 'All archives deleted.',
+				'data' => 'Archives deleted: ' . $id_list,
 				'supplemental' => array(
 						'user' => $user_id,
-						'buffered' => ob_get_contents()
+						'buffered' => ob_get_contents(),
+						'query'	=>	$date_limit
 					)
 				);
 

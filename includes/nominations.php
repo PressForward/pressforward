@@ -172,26 +172,8 @@ class PF_Nominations {
 			//Alternative check with post_exists? or use same as above?
 			if ($post_check != true) {
 				$newPostID = wp_insert_post( $data );
-				add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
-				$nomCount = get_post_meta($_POST['ID'], 'nomination_count', true);
-				add_post_meta($newPostID, 'nomination_count', $nomCount, true);
-				$userID = get_post_meta($_POST['ID'], 'submitted_by', true);
-				add_post_meta($newPostID, 'submitted_by', $userID, true);
-				$item_permalink = get_post_meta($_POST['ID'], 'nomination_permalink', true);
-				add_post_meta($newPostID, 'nomination_permalink', $item_permalink, true);
-				$item_authorship = get_post_meta($_POST['ID'], 'authors', true);
-				add_post_meta($newPostID, 'authors', $item_authorship, true);
-				$date_nom = get_post_meta($_POST['ID'], 'date_nominated', true);
-				add_post_meta($newPostID, 'date_nominated', $date_nom, true);
-				$item_tags = get_post_meta($_POST['ID'], 'item_tags', true);
-				add_post_meta($newPostID, 'item_tags', $item_tags, true);
-				//If user wants to use tags, we'll create an option to use it.
-				$nominators = get_post_meta($_POST['ID'], 'nominator_array', true);
-				add_post_meta($newPostID, 'nominator_array', $nominators, true);
-				$source_repeat = get_post_meta($_POST['ID'], 'source_repeat', true);
-				add_post_meta($newPostID, 'source_repeat', $source_repeat, true);
-				$item_feed_post_id = get_post_meta($_POST['ID'], 'item_feed_post_id', true);
-				add_post_meta($newPostID, 'item_feed_post_id', $item_feed_post_id, true);
+				#add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
+				pf_meta_transition_post($_POST['ID'], $newPostID);
 
 				$already_has_thumb = has_post_thumbnail($_POST['ID']);
 				if ($already_has_thumb)  {
@@ -409,7 +391,7 @@ class PF_Nominations {
 		if ($readable_status != 1){
 			$read_args = array('force' => '', 'descrip' => $item_content, 'url' => $_POST['item_link'], 'authorship' => $_POST['item_author'] );
 			$item_content_obj = PF_Readability::get_readable_text($read_args);
-			$item_content = $item_content_obj['readable'];
+			$item_content = htmlspecialchars_decode($item_content_obj['readable']);
 		} else {
 			$item_content = htmlspecialchars_decode($_POST['item_content']);
 		}
@@ -433,24 +415,20 @@ class PF_Nominations {
 		if ($_POST['item_feat_img'] != '')
 			PF_Feed_Item::set_ext_as_featured($newNomID, $_POST['item_feat_img']);
 		//die($_POST['item_feat_img']);
-
-		add_post_meta($newNomID, 'origin_item_ID', $item_id, true);
-		add_post_meta($newNomID, 'nomination_count', 1, true);
-		add_post_meta($newNomID, 'submitted_by', $userString, true);
-		add_post_meta($newNomID, 'nominator_array', $userID, true);
-		add_post_meta($newNomID, 'source_title', $_POST['source_title'], true);
+		add_post_meta($_POST['item_post_id'], 'nomination_count', 1, true);
+		add_post_meta($_POST['item_post_id'], 'submitted_by', $userString, true);
+		add_post_meta($_POST['item_post_id'], 'nominator_array', $userID, true);	
+		add_post_meta($_POST['item_post_id'], 'date_nominated', date('c'), true);		
+		add_post_meta($_POST['item_post_id'], 'origin_item_ID', $item_id, true);
+		add_post_meta($_POST['item_post_id'], 'item_feed_post_id', $_POST['item_post_id'], true);
+		add_post_meta($_POST['item_post_id'], 'nomination_permalink', $_POST['item_link'], true);
 			$item_date = $_POST['item_date'];
 			if (empty($_POST['item_date'])){
 				$newDate = gmdate('Y-m-d H:i:s');
 				$item_date = $newDate;
 			}
-		add_post_meta($newNomID, 'posted_date', $item_date, true);
-		add_post_meta($newNomID, 'authors', $_POST['item_author'], true);
-		add_post_meta($newNomID, 'nomination_permalink', $_POST['item_link'], true);
-		add_post_meta($newNomID, 'date_nominated', date('c'), true);
-		add_post_meta($newNomID, 'item_tags', $_POST['item_tags'], true);
-		add_post_meta($newNomID, 'source_repeat', $_POST['source_repeat'], true);
-		add_post_meta($newNomID, 'item_feed_post_id', $_POST['item_post_id'], true);
+		add_post_meta($_POST['item_post_id'], 'posted_date', $item_date, true);		
+		pf_meta_transition_post($_POST['item_post_id'], $newNomID);
 			$response = array(
 				'what' => 'nomination',
 				'action' => 'build_nomination',
@@ -538,44 +516,8 @@ class PF_Nominations {
 				//print_r('No Post exists.');
 				$newPostID = wp_insert_post( $data, true );
 ##Check
-				//print_r($newPostID);
-				add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
-
-				add_post_meta($newPostID, 'source_title', $_POST['source_title'], true);
-
-				add_post_meta($newPostID, 'source_link', $_POST['source_link'], true);
-
-				add_post_meta($newPostID, 'source_slug', $_POST['source_slug'], true);
-
-				$nomCount = $_POST['nom_count'];
-				add_post_meta($newPostID, 'nomination_count', $nomCount, true);
-
-				add_post_meta($newPostID, 'nom_id', $_POST['nom_id'], true);
-
-				$nomUserID = $_POST['nom_user'];
-				add_post_meta($newPostID, 'submitted_by', $nomUserID, true);
-
-				$item_permalink = $_POST['item_link'];
-				add_post_meta($newPostID, 'nomination_permalink', $item_permalink, true);
-
-				$item_authorship = $_POST['item_author'];
-				add_post_meta($newPostID, 'authors', $item_authorship, true);
-
-				add_post_meta($newPostID, 'item_date', $_POST['item_date'], true);
-
-				add_post_meta($newPostID, 'item_link', $_POST['item_link'], true);
-
-				$date_nom = $_POST['nom_date'];
-				add_post_meta($newPostID, 'date_nominated', $date_nom, true);
-
-				add_post_meta($newPostID, 'nom_count', $_POST['nom_count'], true);
-
-				$item_tags = $_POST['nom_tags'];
-				add_post_meta($newPostID, 'item_tags', $item_tags, true);
-
-				//If user wants to use tags, we'll create an option to use it.
-				$nominators = $_POST['nom_users'];
-				add_post_meta($newPostID, 'nominator_array', $nominators, true);
+				add_post_meta($_POST['nom_id'], 'nom_id', $_POST['nom_id'], true);
+				pf_meta_transition_post($_POST['nom_id'], $newPostID);
 
 				$already_has_thumb = has_post_thumbnail($_POST['nom_id']);
 				if ($already_has_thumb)  {

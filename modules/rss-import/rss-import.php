@@ -287,7 +287,7 @@ class PF_RSS_Import extends PF_Module {
 			if (!(is_array($input['single']))){
 				if (!$feed_obj->has_feed($input['single'])){
 					$check = $feed_obj->create($input['single'], array('type' => 'rss', 'module_added' => get_called_class()));
-					if (is_wp_error($check)){
+					if (is_wp_error($check) || !$check){
 						#wp_die($check);
 						$description = 'Feed failed initial attempt to add to database | ' . $check->get_error_message();
 						$feed_obj->create($input['single'], array('type' => 'rss-quick', 'description' => $description, 'module_added' => get_called_class()));

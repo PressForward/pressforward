@@ -32,6 +32,7 @@ class PF_Admin {
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
 		add_action( 'wp_ajax_ajax_get_comments', array( $this, 'ajax_get_comments') );
 		add_action( 'wp_ajax_pf_ajax_thing_deleter', array( $this, 'pf_ajax_thing_deleter') );	
+		add_action( 'init', array( $this, 'register_feed_item_removed_status') );
 	}
 
 	/**
@@ -283,10 +284,29 @@ class PF_Admin {
 					<a href="#" id="settings" class="button">Settings</a>
 					<div class="btn-group">
 						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete entire feed archive', 'pf');  ?>" ><?php  _e('Delete entire feed archive', 'pf');  ?></button>
-						<button type="submit" class="delete btn btn-info pull-right" id="Show my Nominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
+						<button type="submit" class="delete btn btn-info pull-right" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
+						<button type="submit" class="delete btn btn-info pull-right" id="showMyStarred" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
+						<?php 
+							if (isset($_GET['by'])){
+								?><button type="submit" class="delete btn btn-info pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php 
+							}
+						?>
 					</div>
 				<?php 
-			}			
+			} elseif ( $slug == 'pressforward_page_pf-review' && (get_bloginfo('version') >= 3.7) && $version >= 0 && current_user_can(pf_get_defining_capability_by_role('administrator'))){
+				?>
+					<a href="#" id="settings" class="button">Settings</a>
+					<div class="btn-group">
+						<button type="submit" class="btn btn-warning pull-right" id="archivebefore" value="<?php  _e('Archive before', 'pf');  ?>:" ><?php  _e('Archive before', 'pf');  ?>:</button>
+						<select class="pull-right" id="archiveBeforeOption">
+							<option value="1week">Older then 1 week</option>
+							<option value="2weeks">Older than 2 weeks</option>
+							<option value="1month">Older than 1 month</option>
+							<option value="1year">Before this year</option>
+						</select>
+					</div>
+				<?php 
+			}				
 				?>
 				<div id="nom-this-toolbox">
 					<h3 class="title"><?php _e('Nominate This', 'pf'); ?></h3>
@@ -472,7 +492,7 @@ class PF_Admin {
 			$id_for_comments = $metadata['item_feed_post_id'];
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
-			if (empty($metadata['nom_id'])){ $metadata['nom_id'] = md5($item['item_title']); }
+			if (!isset($metadata['nom_id']) || empty($metadata['nom_id'])){ $metadata['nom_id'] = md5($item['item_title']); }
 			if (empty($id_for_comments)){ $id_for_comments = $metadata['nom_id']; }
 			if (empty($metadata['item_id'])){ $metadata['item_id'] = md5($item['item_title']); }	
 			
@@ -484,12 +504,16 @@ class PF_Admin {
 				if ($archive_status == 1){
 					$archived_status_string = 'archived';
 					$dependent_style = 'display:none;';
+				} elseif ( ($format === 'nomination') && (1 == pf_get_relationship_value( 'archive', $metadata['nom_id'], $user_id))) {
+					$archived_status_string = 'archived';
+					$dependent_style = 'display:none;';
 				} else {
 					$dependent_style = '';
 					$archived_status_string = '';
 				}
 		if ($format === 'nomination'){
-			
+			#$item = array_merge($metadata, $item);
+			#var_dump($item);
 			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . ' '.$readClass.'" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '" pf-schema="read" pf-schema-class="article-read">';
 		} else {
 			$id_for_comments = $item['post_id'];
@@ -503,7 +527,7 @@ class PF_Admin {
 			if (current_user_can( 'manage_options' )){
 				echo '<i class="icon-remove-sign pf-item-remove" pf-item-post-id="' . $id_for_comments .'" title="Delete"></i>';
 			}
-			echo '<i class="icon-eye-close hide-item" pf-item-post-id="' . $id_for_comments .'" title="Hide"></i>';
+			echo '<i class="icon-eye-close hide-item pf-item-archive schema-archive schema-actor" pf-item-post-id="' . $id_for_comments .'" title="Hide" pf-schema="archive"></i>';
 			
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'marked-read'; }
 			
@@ -527,7 +551,7 @@ class PF_Admin {
 							_e('UNIX timestamp date nominated', 'pf');
 							echo ': <span class="sortable_nom_timestamp">' . $metadata['timestamp_unix_date_nomed'] . '</span><br />';
 
-							_e('Slug for origon site', 'pf');
+							_e('Slug for origin site', 'pf');
 							echo ': <span class="sortable_origin_link_slug">' . $metadata['source_slug'] . '</span><br />';
 
 							//Add an action here for others to provide additional sortables.
@@ -767,7 +791,13 @@ class PF_Admin {
 				$ic = 0;
 				$c = $c+$count;	
 					//print_r($count);
-			foreach(PF_Feed_Item::archive_feed_to_display($count+1) as $item) {
+			if (isset($_GET['by'])){
+				$limit = $_GET['by'];
+			} else {
+				$limit = false;
+			}
+			#var_dump($limit);	
+			foreach(PF_Feed_Item::archive_feed_to_display($count+1, 20, 0, false, $limit) as $item) {
 				
 				$this->form_of_an_item($item, $c);
 
@@ -792,11 +822,21 @@ class PF_Admin {
 		if ($page == 0){ $page = 1; }
 		$pagePrev = $page-1;
 		$pageNext = $page+1;
+		
+		$pagePrev = '?page=pf-menu&pc=' . $pagePrev; 
+		$pageNext = '?page=pf-menu&pc=' . $pageNext;
+		if (isset($pageQ)){
+			$pageQ = $_GET['by'];
+			$pageQed = '&by=' . $pageQ;
+			$pageNext .= $pageQed;
+			$pageNext .= $pageQed;
+			
+		}
 		echo '<div class="pf-navigation">';
 		if ($pagePrev > -1){
-			echo '<span class="feedprev"><a class="prevnav" href="admin.php?page=pf-menu&pc=' . $pagePrev . '">Previous Page</a></span> | ';
+			echo '<span class="feedprev"><a class="prevnav" href="admin.php' . $pagePrev . '">Previous Page</a></span> | ';
 		}
-		echo '<span class="feednext"><a class="nextnav" href="admin.php?page=pf-menu&pc=' . $pageNext . '">Next Page</a></span>';
+		echo '<span class="feednext"><a class="nextnav" href="admin.php' . $pageNext . '">Next Page</a></span>';
 		echo '</div>';
 
 	echo '</div><!-- End container-fluid -->';
@@ -1173,6 +1213,22 @@ class PF_Admin {
 		}
 	}
 	
+	
+	public function register_feed_item_removed_status(){
+		
+		$args = array(
+			'label'						=>	_x('Removed Feed Item', 'pf' ),
+			'public'					=>	false,
+			'exclude_from_search'		=>	true,
+			'show_in_admin_all_list'	=>	false,
+			'show_in_admin_status_list'	=>	false,
+			'label_count'				=>	_n_noop( 'Removed <span class="count">(%s)</span>', 'Removed <span class="count">(%s)</span>' )
+		);
+		
+		register_post_status('removed_feed_item', $args);
+	
+	}	
+	
 	/*
 	 *
 	 * A method to allow users to delete any CPT or post through AJAX.
@@ -1208,7 +1264,13 @@ class PF_Admin {
 			}
 		}
 		
-		$result = wp_delete_post($id, true);
+		$argup = array(
+			'ID'			=> $id,
+			'post_content' 	=> '',
+			'post_status'	=>	'removed_feed_item'
+		);
+		
+		$result = wp_update_post($argup);
 		return $result;
 		
 	}

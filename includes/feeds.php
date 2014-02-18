@@ -133,7 +133,7 @@ class PF_Feeds_Schema {
 	public function progressive_feedlist_transformer($feedlist = array(), $xmlUrl, $key) {
 		
 		$check = $this->create($xmlUrl, array('type' => 'rss-quick'));
-		if ($check){
+		if (is_numeric($check)){
 			unset($feedlist[$key]);
 		}
 		return $feedlist;
@@ -157,7 +157,7 @@ class PF_Feeds_Schema {
 				$r[$k] = '';
 		}
 		
-		$wp_args_d = array(
+		$wp_args = array(
 			'post_type' 	=> $this->post_type,
 			'post_status' 	=> 'publish',
 			'post_title'	=> $r['title'],
@@ -174,8 +174,10 @@ class PF_Feeds_Schema {
 			$insert_type = 'update';
 		}
 		
-		$wp_args = wp_parse_args( $r, $wp_args_d );
+		#$wp_args = wp_parse_args( $r, $wp_args_d );
 		
+		pf_log('Will now ' . $insert_type . ' a post with the following args:');
+		pf_log($wp_args); #die();
 		
 		if ($insert_type == 'update') {
 
@@ -189,17 +191,12 @@ class PF_Feeds_Schema {
 		}
 		
 		if ($insert_type == 'insert'){
-			$posts = self::has_feed($r['url']);
-			if (!$posts){
-				$wp_args['guid'] = $r['url'];
-				#$wp_args['post_date'] = date( 'Y-m-d H:i:s', time());
-				$post_id = wp_insert_post($wp_args);
-			} else {
-				self::feed_post_setup($r, 'update');
-				# @todo Better error needed.
-				return false;
-			}
+			$post_id = wp_insert_post($wp_args);
 		}
+		pf_log('Posting process resulted in:');
+		pf_log($post_id);
+		pf_log('for');
+		pf_log($wp_args);
 #echo '<pre>';
 		#var_dump($post_id);
 		#echo '</pre>';
@@ -212,7 +209,7 @@ class PF_Feeds_Schema {
 			}
 			self::set_feed_meta($post_id, $r);
 #echo '</pre>';
-			return true;
+			return $post_id;
 		} else {
 			return false;
 		}	
@@ -259,12 +256,9 @@ class PF_Feeds_Schema {
 	
 	public function create($feedUrl, $args = array()){
 		#print_r('<pre>'); var_dump($feedUrl); print_r('</pre>'); die();
-		if (!isset($args['url'])){
-			$args['url'] = $feedUrl;
-		}
 		$r = wp_parse_args( $args, array(
 			'title'   		=> false,
-			'url'     		=> 'http://pressforward.org/feed/',
+			'url'     		=> $feedUrl,
 			'htmlUrl' 		=> false,
 			'type'	  		=> 'rss',
 			'feedUrl'		=> $feedUrl,
@@ -290,7 +284,7 @@ class PF_Feeds_Schema {
 			$current_user = wp_get_current_user();
 			$r['user_added'] = $current_user->user_login;
 		}
-		if ($r['type'] == 'rss-quick'){
+		if ($r['type'] == 'rss-quick' && !isset($r['title'])){
 			$r['title'] = $r['url'];
 		}
 		if (self::has_feed($feedUrl)){

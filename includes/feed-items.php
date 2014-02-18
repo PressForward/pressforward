@@ -60,37 +60,44 @@ class PF_Feed_Item {
 		return $posts;
 	}
 
-	public function create( $args = array() ) {
+	public static function create( $args = array() ) {
 		$r = wp_parse_args( $args, array(
-			'title'   => '',
-			'url'     => '',
-			'content' => '',
-			'source'  => '',
-			'date'    => '',
-			'tags'    => array(),
+			'item_title'   => '',
+			'item_link'     => '',
+			'item_content' => '',
+			'source_title'  => '',
+			'item_wp_date'    => '',
+			'post_parent'    => '',
+			'item_tags'    => array(),
 		) );
-
+		
 		// Sanitization
 		// Conversion should be done upstream
-		if ( ! is_numeric( $r['date'] ) ) {
-			return new WP_Error( 'Date should be in UNIX format' );
+		if ( ! is_numeric( $r['item_wp_date'] ) ) {
+			$r['item_wp_date'] = strtotime($r['item_wp_date']);
+			if (!$r['item_wp_date']){
+				return new WP_Error( 'Date should be in UNIX format' );
+			}
 		}
 
+		
+
 		$wp_args = array(
-			'post_type'    => $this->post_type,
+			'post_type'    => pf_feed_item_post_type(),
 			'post_status'  => 'publish',
-			'post_title'   => $r['title'],
-			'post_content' => wp_specialchars_decode( $r['content'], ENT_COMPAT ), // todo
-			'guid'         => $r['url'],
-			'post_date'    => date( 'Y-m-d H:i:s', $r['date'] ),
-			'tax_input'    => array( $this->tag_taxonomy => $r['tags'] ),
+			'post_title'   => $r['item_title'],
+			'post_content' => wp_specialchars_decode( $r['item_content'], ENT_COMPAT ), // todo
+			'guid'         => $r['item_link'],
+			'post_date'    => date( 'Y-m-d H:i:s', $r['item_wp_date'] ),
+			'tax_input'    => array( pf_feed_item_tag_taxonomy() => $r['item_tags'] ),
+			'post_parent'	=> $r['post_parent']
 		);
 
 		$post_id = wp_insert_post( $wp_args );
 
-		if ( $post_id ) {
-			self::set_word_count( $post_id, $r['content'] );
-			self::set_source( $post_id, $r['source'] );
+		if ( is_numeric($post_id) ) {
+			self::set_word_count( $post_id, $r['item_content'] );
+			self::set_source( $post_id, $r['source_title'] );
 
 		}
 
@@ -102,7 +109,7 @@ class PF_Feed_Item {
 		$where .= $wpdb->prepare( " AND {$wpdb->posts}.guid = %s ", $this->filter_data['guid'] );
 		return $where;
 	}
-
+	
 	// STATIC UTILITY METHODS
 
 	public static function set_word_count( $post_id, $content = false ) {
@@ -124,7 +131,7 @@ class PF_Feed_Item {
 	# This function feeds items to our display feed function pf_reader_builder.
 	# It is just taking our database of rssarchival items and putting them into a
 	# format that the builder understands.
-	public static function archive_feed_to_display($pageTop = 0, $pagefull = 20, $fromUnixTime = 0, $limitless = false) {
+	public static function archive_feed_to_display($pageTop = 0, $pagefull = 20, $fromUnixTime = 0, $limitless = false, $limit = false) {
 		global $wpdb, $post;
 		#var_dump($fromUnixTime); die();
 		if ( !isset($fromUnixTime) || (!$fromUnixTime) || ($fromUnixTime < 100)){$fromUnixTime = 0;}
@@ -142,20 +149,74 @@ class PF_Feed_Item {
 			FROM {$wpdb->posts}, {$wpdb->postmeta}
 			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 			AND {$wpdb->posts}.post_type = %s
+			AND {$wpdb->posts}.post_status = 'publish'
 			AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
 			AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 			ORDER BY {$wpdb->postmeta}.meta_value DESC
 		 ", pf_feed_item_post_type());		
+		} elseif ($limit == 'starred') {
+			$pageTop = $pageTop-1;
+			$relate = new PF_RSS_Import_Relationship();
+			$rt = $relate->table_name;
+			$user_id = get_current_user_id();
+			$read_id = pf_get_relationship_type_id('star');
+			 $dquerystr = $wpdb->prepare("
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}				
+				AND {$wpdb->posts}.post_type = %s
+				AND {$wpdb->posts}.post_status = 'publish'
+				AND {$wpdb->posts}.ID 
+				IN (
+					SELECT item_id 
+					FROM {$rt} 
+					WHERE {$rt}.user_id = {$user_id} 
+					AND {$rt}.relationship_type = {$read_id} 
+					AND {$rt}.value = 1
+				)
+				GROUP BY {$wpdb->postmeta}.meta_key
+				ORDER BY {$wpdb->postmeta}.meta_value DESC
+				LIMIT {$pagefull} OFFSET {$pageTop}
+			 ", pf_feed_item_post_type());					
+		} elseif ($limit == 'nominated') {
+			$pageTop = $pageTop-1;
+			$relate = new PF_RSS_Import_Relationship();
+			$rt = $relate->table_name;
+			$user_id = get_current_user_id();
+			$read_id = pf_get_relationship_type_id('nominate');
+			 $dquerystr = $wpdb->prepare("
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}				
+				AND {$wpdb->posts}.post_type = %s
+				AND {$wpdb->posts}.post_status = 'publish'
+				AND {$wpdb->posts}.ID 
+				IN (
+					SELECT item_id 
+					FROM {$rt} 
+					WHERE {$rt}.user_id = {$user_id} 
+					AND {$rt}.relationship_type = {$read_id} 
+					AND {$rt}.value = 1
+				)
+				GROUP BY {$wpdb->postmeta}.meta_key
+				ORDER BY {$wpdb->postmeta}.meta_value DESC
+				LIMIT {$pagefull} OFFSET {$pageTop}
+			 ", pf_feed_item_post_type());					
 		} elseif (is_user_logged_in()){
 			$relate = new PF_RSS_Import_Relationship();
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
-			$read_id = pf_get_relationship_type_id('read');
+			$read_id = pf_get_relationship_type_id('archive');
 			 $dquerystr = $wpdb->prepare("
 				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
 				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 				AND {$wpdb->posts}.post_type = %s
+				AND {$wpdb->posts}.post_status = 'publish'
 				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
 				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 				AND {$wpdb->posts}.ID 
@@ -177,6 +238,7 @@ class PF_Feed_Item {
 			FROM {$wpdb->posts}, {$wpdb->postmeta}
 			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 			AND {$wpdb->posts}.post_type = %s
+			AND {$wpdb->posts}.post_status = 'publish'
 			AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
 			AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 			ORDER BY {$wpdb->postmeta}.meta_value DESC
@@ -191,7 +253,7 @@ class PF_Feed_Item {
 		//print_r(count($rssarchivalposts)); die();
 		$feedObject = array();
 		$c = 0;
-
+		#var_dump($dquerystr);
 		if ($archivalposts):
 
 			foreach ($archivalposts as $post) :
@@ -247,10 +309,28 @@ class PF_Feed_Item {
 		wp_reset_postdata();
 		return $feedObject;
 	}
+	
+	#via http://wordpress.stackexchange.com/questions/109793/delete-associated-media-upon-page-deletion
+	public static function disassemble_feed_item_media( $post_id ) {
+
+		$attachments = get_posts( array(
+			'post_type'      => 'attachment',
+			'posts_per_page' => -1,
+			'post_status'    => 'any',
+			'post_parent'    => $post_id
+		) );
+
+		foreach ( $attachments as $attachment ) {
+			if ( false === wp_delete_attachment( $attachment->ID ) ) {
+				pf_log('Failed to delete attachment for '.$post_id);
+			}
+		}
+	}
+	
 
 	# The function we add to the action to clean our database.
 	public static function disassemble_feed_items() {
-		//delete rss feed items with a date past a certian point.
+		//delete rss feed items with a date past a certain point.
 		add_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older_sixty_days') );
 		$queryForDel = new WP_Query( array( 'post_type' => pf_feed_item_post_type() ) );
 		remove_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older_sixty_days') );
@@ -497,9 +577,13 @@ class PF_Feed_Item {
 					'post_status' => 'publish',
 					'post_type' => pf_feed_item_post_type(),
 				//	'post_date' => $_SESSION['cal_startdate'],
-					'post_title' => $item_title,
+					'item_title' => $item_title,
 					'post_parent'    => $feed_obj_id,
-					'post_content' => $item_content
+					'item_content' => $item_content,
+					'item_link'	=> $item_link,
+					'source_title' => $source_title,
+					'item_wp_date' => $item_wp_date,
+					'item_tags'	=> $item_tags
 
 				);
 
@@ -508,27 +592,19 @@ class PF_Feed_Item {
 				//It looks like sanitize post is screwing them up terribly. But what to do about it without removing the security measures which we need to apply?
 				$worked = 1;
 				# The post gets created here, the $newNomID variable contains the new post's ID.
-				$newNomID = wp_insert_post( $data, true );
+				$newNomID = self::create( $data );
 				$post_inserted_bool = self::post_inserted($newNomID, $data);
 
 				if (!$post_inserted_bool) {
 					# It's the end of the world! Let's throw everything at this.
 					pf_log('Post will not go into the database. We will try again.');
 					$item_content = htmlentities(strip_tags($item_content), ENT_QUOTES, "UTF-8");
-					$item_content = wp_kses(stripslashes($item_content));
+					$item_content = wp_kses(stripslashes($item_content), array('p', 'a', 'b', 'em', 'strong'));
 					$item_content = self::extra_special_sanatize($item_content, true);
 					$item_content = wpautop($item_content);
 					$item_title = self::extra_special_sanatize($item_title, true);
-					$data = array(
-						'post_status' => 'publish',
-						'post_type' => pf_feed_item_post_type(),
-					//	'post_date' => $_SESSION['cal_startdate'],
-						'post_title' => $item_title,
-						'post_parent'    => $feed_obj_id,
-						'post_content' => $item_content
-
-					);
-					$newNomID = wp_insert_post( $data, true );
+					$data['item_content'] = $item_content;
+					$newNomID = self::create( $data );
 					$post_inserted_bool = self::post_inserted($newNomID, $data);
 				}
 				pf_log('End of wp_insert_post process.');
@@ -573,20 +649,24 @@ class PF_Feed_Item {
 				}
 
 				# adding the meta info about the feed item to the post's meta.
-				add_post_meta($newNomID, 'item_id', $item_id, true);
-				add_post_meta($newNomID, 'source_title', $source_title, true);
-				add_post_meta($newNomID, 'item_date', $item_date, true);
-				add_post_meta($newNomID, 'item_author', $item_author, true);
-				add_post_meta($newNomID, 'item_link', $item_link, true);
-				add_post_meta($newNomID, 'item_feat_img', $item_feat_img, true);
-				// The item_wp_date allows us to sort the items with a query.
-				add_post_meta($newNomID, 'item_wp_date', $item_wp_date, true);
-				//We can't just sort by the time the item came into the system (for when mult items come into the system at once)
-				//So we need to create a machine sortable date for use in the later query.
-				add_post_meta($newNomID, 'sortable_item_date', strtotime($item_date), true);
-				add_post_meta($newNomID, 'item_tags', $item_tags, true);
-				add_post_meta($newNomID, 'source_repeat', $source_repeat, true);
-				add_post_meta($newNomID, 'revertible_feed_text', $item_content, true);
+				$pf_meta_args = array(
+					pf_meta_for_entry('item_id', $item_id),
+					pf_meta_for_entry('source_title', $source_title),
+					pf_meta_for_entry('item_date', $item_date),
+					pf_meta_for_entry('item_author', $item_author),
+					pf_meta_for_entry('item_link', $item_link),
+					pf_meta_for_entry('item_feat_img', $item_feat_img),
+					// The item_wp_date allows us to sort the items with a query.
+					pf_meta_for_entry('item_wp_date', $item_wp_date),
+					//We can't just sort by the time the item came into the system (for when mult items come into the system at once)
+					//So we need to create a machine sortable date for use in the later query.					
+					pf_meta_for_entry('sortable_item_date', strtotime($item_date)),
+					pf_meta_for_entry('item_tags', $item_tags),
+					pf_meta_for_entry('source_repeat', $source_repeat),
+					pf_meta_for_entry('revertible_feed_text', $item_content)
+					
+				);
+				pf_meta_establish_post($newNomID, $pf_meta_args);
 			}
 
 		}
@@ -605,13 +685,13 @@ class PF_Feed_Item {
 					pf_log($data);
 					$worked = 0;
 				} elseif (is_wp_error($postAttempt)) {
-					pf_log('Attempting to add ' . $data['post_title'] . ' to the database caused this error:' );
+					pf_log('Attempting to add ' . $data['item_title'] . ' to the database caused this error:' );
 					pf_log($postAttempt);
 					pf_log('The following post caused the above error.');
 					pf_log($data);
 					$worked = 0;
 				} else {
-					pf_log('Create post in the database with the title ' . $data['post_title'] . ' and id of ');
+					pf_log('Create post in the database with the title ' . $data['item_title'] . ' and id of ');
 					pf_log($postAttempt);
 				}
 		if ($worked === 0){ $workedBool = false; }

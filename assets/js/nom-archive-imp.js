@@ -43,7 +43,7 @@ jQuery(window).load(function() {
 		jQuery('.loading-top').show();
 		jQuery('.nom-container').hide();
 		jQuery.post(ajaxurl, {
-			action: 'pf_archive_all_nominations'
+			action: 'pf_archive_nominations'
 		},
 		function(response) {
 			jQuery('.loading-top').hide();
@@ -54,5 +54,20 @@ jQuery(window).load(function() {
 			jQuery('#errors').html(response);
 		});
 	});
+	
+	jQuery('.pf_container').on('click', "#archivebefore", function (evt){
+		evt.preventDefault();	
+		var element		= jQuery(this);
+		var date_limit  = jQuery('#archiveBeforeOption').val();
+		
+		
+		jQuery.post(ajaxurl, {
+			action: 'pf_archive_nominations',
+			date_limit:  date_limit
+		},
+		function(response) {		
+			jQuery('#errors').html(response);
+		});
+	});	
 	
 });	
