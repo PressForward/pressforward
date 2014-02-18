@@ -649,20 +649,24 @@ class PF_Feed_Item {
 				}
 
 				# adding the meta info about the feed item to the post's meta.
-				add_post_meta($newNomID, 'item_id', $item_id, true);
-				add_post_meta($newNomID, 'source_title', $source_title, true);
-				add_post_meta($newNomID, 'item_date', $item_date, true);
-				add_post_meta($newNomID, 'item_author', $item_author, true);
-				add_post_meta($newNomID, 'item_link', $item_link, true);
-				add_post_meta($newNomID, 'item_feat_img', $item_feat_img, true);
-				// The item_wp_date allows us to sort the items with a query.
-				add_post_meta($newNomID, 'item_wp_date', $item_wp_date, true);
-				//We can't just sort by the time the item came into the system (for when mult items come into the system at once)
-				//So we need to create a machine sortable date for use in the later query.
-				add_post_meta($newNomID, 'sortable_item_date', strtotime($item_date), true);
-				add_post_meta($newNomID, 'item_tags', $item_tags, true);
-				add_post_meta($newNomID, 'source_repeat', $source_repeat, true);
-				add_post_meta($newNomID, 'revertible_feed_text', $item_content, true);
+				$pf_meta_args = array(
+					pf_meta_for_entry('item_id', $item_id),
+					pf_meta_for_entry('source_title', $source_title),
+					pf_meta_for_entry('item_date', $item_date),
+					pf_meta_for_entry('item_author', $item_author),
+					pf_meta_for_entry('item_link', $item_link),
+					pf_meta_for_entry('item_feat_img', $item_feat_img),
+					// The item_wp_date allows us to sort the items with a query.
+					pf_meta_for_entry('item_wp_date', $item_wp_date),
+					//We can't just sort by the time the item came into the system (for when mult items come into the system at once)
+					//So we need to create a machine sortable date for use in the later query.					
+					pf_meta_for_entry('sortable_item_date', strtotime($item_date)),
+					pf_meta_for_entry('item_tags', $item_tags),
+					pf_meta_for_entry('source_repeat', $source_repeat),
+					pf_meta_for_entry('revertible_feed_text', $item_content)
+					
+				);
+				pf_meta_establish_post($newNomID, $pf_meta_args);
 			}
 
 		}

@@ -492,7 +492,7 @@ class PF_Admin {
 			$id_for_comments = $metadata['item_feed_post_id'];
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
-			if (empty($metadata['nom_id'])){ $metadata['nom_id'] = md5($item['item_title']); }
+			if (!isset($metadata['nom_id']) || empty($metadata['nom_id'])){ $metadata['nom_id'] = md5($item['item_title']); }
 			if (empty($id_for_comments)){ $id_for_comments = $metadata['nom_id']; }
 			if (empty($metadata['item_id'])){ $metadata['item_id'] = md5($item['item_title']); }	
 			
@@ -504,7 +504,7 @@ class PF_Admin {
 				if ($archive_status == 1){
 					$archived_status_string = 'archived';
 					$dependent_style = 'display:none;';
-				} elseif ( 1 == pf_get_relationship_value( 'archive', $metadata['nom_id'], $user_id)) {
+				} elseif ( ($format === 'nomination') && (1 == pf_get_relationship_value( 'archive', $metadata['nom_id'], $user_id))) {
 					$archived_status_string = 'archived';
 					$dependent_style = 'display:none;';
 				} else {
@@ -512,7 +512,8 @@ class PF_Admin {
 					$archived_status_string = '';
 				}
 		if ($format === 'nomination'){
-			
+			#$item = array_merge($metadata, $item);
+			#var_dump($item);
 			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . ' '.$readClass.'" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '" pf-schema="read" pf-schema-class="article-read">';
 		} else {
 			$id_for_comments = $item['post_id'];
@@ -550,7 +551,7 @@ class PF_Admin {
 							_e('UNIX timestamp date nominated', 'pf');
 							echo ': <span class="sortable_nom_timestamp">' . $metadata['timestamp_unix_date_nomed'] . '</span><br />';
 
-							_e('Slug for origon site', 'pf');
+							_e('Slug for origin site', 'pf');
 							echo ': <span class="sortable_origin_link_slug">' . $metadata['source_slug'] . '</span><br />';
 
 							//Add an action here for others to provide additional sortables.

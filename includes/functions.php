@@ -531,6 +531,19 @@ function pf_debug_ipads(){
 #add_action ('wp_head', 'pf_debug_ipads');
 #add_action ('admin_head', 'pf_debug_ipads');
 
+function pf_meta_establish_post($id, $args){
+	foreach ($args as $arg){
+		add_post_meta($id, $arg['name'], $arg['value'], true);
+	}
+}
+
+function pf_meta_for_entry($key, $value){
+	return array(
+		'name'	=>	$key,
+		'value'	=>	$value
+	);
+}
+
 function pf_meta_transition_post($idA, $idB){
 	foreach(pf_meta_structure() as $meta){
 		pf_meta_transition(get_pf_meta_name($meta), $idA, $idB);
@@ -538,9 +551,30 @@ function pf_meta_transition_post($idA, $idB){
 }
 
 function pf_meta_transition($name, $idA, $idB){
-	$meta_value = get_post_meta($idA, $name);
-	$result = update_post_meta($idB, $name, $meta_value);
+	$meta_value = get_post_meta($idA, $name, true);
+	#$result = pf_prep_for_depreciation($name, $meta_value, $idA, $idB);
+	#if (!$result){
+		$result = update_post_meta($idB, $name, $meta_value);
+	#}
+	
 	return $result;
+}
+
+function pf_prep_for_depreciation($name, $value, $idA, $idB){
+	foreach (pf_meta_structure() as $meta){
+		if ($meta['name'] == $name){
+			if (in_array('dep', $meta['type'])){
+				#if ((!isset($value)) || (false == $value) || ('' == $value) || (0 == $value) || (empty($value))){
+					$value = get_post_meta($idA, $meta['move'], true);
+				#}
+				#update_post_meta($idA, $name, $value);				
+				update_post_meta($idB, $meta['move'], $value);
+				update_post_meta($idB, $name, $value);
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 function pf_meta_by_name($name){
@@ -573,6 +607,7 @@ function pf_meta_structure(){
 			'function'	=> __('Stores hashed ID based on title and URL of retrieved item', 'pf'),
 			'type'	=> array('struc', 'dep'),
 			'use'	=> array('req'),
+			'move'	=> 'item_id',
 			'level'	=> array('item', 'nomination', 'post')
 		),	
 		array(
@@ -597,6 +632,7 @@ function pf_meta_structure(){
 			'function'	=> __('Stores hashed ID based on title and URL of retrieved item', 'pf'),
 			'type'	=> array('struc', 'dep'),
 			'use'	=> array('req'),
+			'move'	=> 'pf_item_post_id',
 			'level'	=> array('item', 'nomination', 'post')
 		),	
 		array(
@@ -606,7 +642,16 @@ function pf_meta_structure(){
 			'type'	=> array('adm'),
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
-		),	
+		),
+		array(
+			'name' => 'pf_feed_item_source',
+			'definition' => __('DUPE Soon to be depreciate version of source_title.', 'pf'),
+			'function'	=> __('Stores the title retrieved from the feed.', 'pf'),
+			'type'	=> array('desc','dep'),
+			'use'	=> array('req'),
+			'move'	=> 'source_title',
+			'level'	=> array('item', 'nomination', 'post')
+		),			
 		array(
 			'name' => 'item_date',
 			'definition' => __('Date posted on the original site', 'pf'),
@@ -621,6 +666,7 @@ function pf_meta_structure(){
 			'function'	=> __('Stores the date given by the source.', 'pf'),
 			'type'	=> array('struc', 'dep'),
 			'use'	=> array('req'),
+			'move'	=> 'item_date',
 			'level'	=> array('nomination', 'post')
 		),	
 		array(
@@ -637,6 +683,7 @@ function pf_meta_structure(){
 			'function'	=> __('Stores a comma-separated set of authors as listed in the source feed', 'pf'),
 			'type'	=> array('struc','dep'),
 			'use'	=> array(),
+			'move'	=> 'item_author',
 			'level'	=> array('nomination', 'post')
 		),	
 		array(
@@ -650,9 +697,10 @@ function pf_meta_structure(){
 		array(
 			'name' => 'nomination_permalink',
 			'definition' => __('Source link', 'pf'),
-			'function'	=> __('DUPE Soon to be depreciated version of the above', 'pf'),
+			'function'	=> __('DUPE Soon to be depreciated version of item_link', 'pf'),
 			'type'	=> array('struc','dep'),
 			'use'	=> array('req'),
+			'move'	=> 'item_link',
 			'level'	=> array('nomination', 'post')
 		),	
 		array(
