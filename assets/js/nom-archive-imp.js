@@ -70,4 +70,10 @@ jQuery(window).load(function() {
 		});
 	});	
 	
+	jQuery('.pf_container').on('click', "#showarchiveonly", function (evt){
+		evt.preventDefault();	
+		
+		window.open(location.href+'&pf-see=archive-only','_self');
+	});		
+	
 });	

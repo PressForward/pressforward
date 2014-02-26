@@ -817,6 +817,70 @@ function pf_retrieve_meta(){
 
 }
 
+function filter_for_pf_archives_only($sql){
+	global $wpdb;
+#	if (isset($_GET['pf-see']) && ('archive-only' == $_GET['pf-see'])){
+		$relate = new PF_RSS_Import_Relationship();
+		$rt = $relate->table_name;
+		$user_id = get_current_user_id();
+		$read_id = pf_get_relationship_type_id('archive');			
+	
+/**		$sql .= " AND {$wpdb->posts}.ID 
+				IN (
+					SELECT item_id 
+					FROM {$rt} 
+					WHERE {$rt}.user_id = {$user_id} 
+					AND {$rt}.relationship_type = {$read_id} 
+					AND {$rt}.value = 1
+				) ";	
+	}
+**/	#var_dump($sql);
+	return $sql;
+	
+}
+
+function prep_archives_query($q){
+		global $wpdb;
+		
+		if (isset($_GET["pc"])){
+			$offset = $_GET["pc"]-1;
+			$offset = $offset*10;
+		} else {
+			$offset = 0;
+		}
+		
+		if (isset($_GET['pf-see']) && ('archive-only' == $_GET['pf-see'])){
+			$pagefull = 20;
+			$relate = new PF_RSS_Import_Relationship();
+			$rt = $relate->table_name;
+			$user_id = get_current_user_id();
+			$read_id = pf_get_relationship_type_id('archive');
+			$q = $wpdb->prepare("
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id	
+				AND {$wpdb->posts}.post_type = %s
+				AND {$wpdb->posts}.post_status = 'draft'
+				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+				AND {$wpdb->postmeta}.meta_value > 0
+				AND {$wpdb->posts}.ID 
+				IN (
+					SELECT item_id 
+					FROM {$rt} 
+					WHERE {$rt}.user_id = {$user_id} 
+					AND {$rt}.relationship_type = {$read_id} 
+					AND {$rt}.value = 1
+				)
+				GROUP BY {$wpdb->posts}.ID
+				ORDER BY {$wpdb->postmeta}.meta_value DESC
+				LIMIT {$pagefull} OFFSET {$offset}
+			 ", 'nomination');	
+		}
+	#$archivalposts = $wpdb->get_results($dquerystr, OBJECT);
+	#return $archivalposts;
+	return $q;
+}
+
 /**
  * Send status messages to a custom log
  *
