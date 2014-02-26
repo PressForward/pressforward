@@ -56,6 +56,7 @@
 					<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
 					echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomdate" value="' . __('Sort by date nominated', 'pf') . '">' . __('Sort by date nominated', 'pf') . '</button>'; 
 					echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomcount" value="' . __('Sort by nominations', 'pf') . '">' . __('Sort by nominations', 'pf') . '</button>'; 
+					echo '<button type="submit" class="btn btn-small feedsort" id="showarchiveonly" value="' . __('Show only archived', 'pf') . '">' . __('Show only archived', 'pf') . '</button>'; 
 					if (isset($_GET['by']) && ( 'archived' == $_GET['by'])){
 						echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="shownormal" value="' . __('Show non-archived', 'pf') . '">' . __('Show non-archived', 'pf') . '.</button>';
 					} else {
@@ -112,10 +113,14 @@
 							'orderby' => 'date',
 							'order' => 'DESC',
 							'posts_per_page' => 20,
+							'suppress_filters' => FALSE,
 							'offset' => $offset  #The query function will turn page into a 1 if it is a 0. 
 
 							);
+			add_filter( 'posts_request', 'prep_archives_query');
 			$nom_query = new WP_Query( $nom_args );
+			remove_filter( 'posts_request', 'prep_archives_query' );
+			#var_dump($nom_query);
 			$count = 0;
 			$countQ = $nom_query->post_count;
 			$countQT = $nom_query->found_posts;
