@@ -47,7 +47,7 @@ jQuery(window).load(function() {
 		var obj			= jQuery(this);
 		var schema		= obj.attr('pf-schema');
 		var item 		= jQuery(this).closest('article');
-		var id			= item.attr('pf-item-post-id');
+		var id			= item.attr('pf-post-id');
 		var parent		= jQuery(this).parent();
 		var otherschema;
 		var schemaclass;
