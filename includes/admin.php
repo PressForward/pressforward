@@ -501,10 +501,11 @@ class PF_Admin {
 					$id_for_comments = $item['post_id'];
 				}
 				$archive_status = pf_get_relationship_value( 'archive', $id_for_comments, wp_get_current_user()->ID );
-				if ($archive_status == 1){
+				if (isset($_GET['pf-see'])){ } else { $_GET['pf-see'] = false; }
+				if ($archive_status == 1 && ('archive-only' != $_GET['pf-see'])){
 					$archived_status_string = 'archived';
 					$dependent_style = 'display:none;';
-				} elseif ( ($format === 'nomination') && (1 == pf_get_relationship_value( 'archive', $metadata['nom_id'], $user_id))) {
+				} elseif ( ($format === 'nomination') && (1 == pf_get_relationship_value( 'archive', $metadata['nom_id'], $user_id))  && ('archive-only' != $_GET['pf-see'])) {
 					$archived_status_string = 'archived';
 					$dependent_style = 'display:none;';
 				} else {
