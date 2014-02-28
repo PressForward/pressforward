@@ -818,10 +818,17 @@ class PF_Feed_Item {
 		return $descrip;
 
 	}
+	
+	public static function get_ext_og_img($link){
+		$itemLink = pf_de_https($link);
+		$node = OpenGraph::fetch($itemLink);
+		$itemFeatImg = $node->image;
+		return $itemFeatImg;
+	}
 
 	public static function set_ext_as_featured($postID,$ogImage){
 
-			if ( (strlen($ogImage)) > 0 ){
+			if ( (strlen($ogImage)) > 1 ){
 
 				//Remove Queries from the URL
 				$ogImage = preg_replace('/\?.*/', '', $ogImage);

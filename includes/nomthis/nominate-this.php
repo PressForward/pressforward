@@ -137,11 +137,9 @@ if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 }
 
 				global $pf_nt;
-				if (!empty($_POST['nomination_permalink']) && ($_POST['nomination_permalink']) != ''){
+				if (isset($_POST['nomination_permalink']) && !empty($_POST['nomination_permalink']) && ($_POST['nomination_permalink']) != ''){
 					//Gets OG image
-					$itemLink = pf_de_https($_POST['nomination_permalink']);
-					$node = OpenGraph::fetch($itemLink);
-					$itemFeatImg = $node->image;
+					$itemFeatImg = PF_Feed_Item::get_ext_og_img($_POST['nomination_permalink']);
 				}
 
 	if (!empty($_POST['nomination_permalink']) && ($_POST['nomination_permalink']) != ''){
