@@ -860,9 +860,9 @@ class PF_Feed_Item {
 						//tell WordPress what the filetype is.
 						'post_mime_type' => $filetype['type'],
 						//set the image title to the title of the site you are pulling from
-						'post_title' => '',
+						'post_title' => get_the_title($postID),
 						//WordPress tells us we must set this and set it to empty. Why? Dunno.
-						'post_content' => '',
+						'post_content' => $imgTitle,
 						//Now we set the status of the image. It will inheret that of the post.
 						//If the post is published, then the image will be to.
 						'post_status' => 'inherit'
