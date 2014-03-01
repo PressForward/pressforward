@@ -1320,17 +1320,17 @@ class PF_Admin {
 	}
 
 	public function reset_feed() {
-		pressforward()->schema->reset_feed();
+		PF_Feed_Item::reset_feed();
 		die();
 	}
 
 	public function make_it_readable() {
-		pressforward()->pf_retrieve->make_it_readable();
+		PF_Readability::make_it_readable();
 		die();
 	}
 
 	public function archive_a_nom() {
-		pressforward()->nominations->archive_a_nom();
+		PF_Nominations::archive_a_nom();
 		die();
 	}
 }

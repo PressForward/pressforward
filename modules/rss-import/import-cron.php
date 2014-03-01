@@ -15,7 +15,7 @@ if ( !defined('ABSPATH') ) {
 		$string_to_log = "\nimport-cron.php triggered.\n";
 		pf_log( $string_to_log );
 
-pressforward()->schema->assemble_feed_for_pull();
+PF_Feed_Item::assemble_feed_for_pull();
 
 pf_log( "import-cron.php compleated.\n\n\n" );
 //do_action('get_more_feeds');

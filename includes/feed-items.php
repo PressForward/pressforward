@@ -628,9 +628,9 @@ class PF_Feed_Item {
 						$itemLink = pf_de_https($itemLink);
 						# if it forces the issue when we try and get the image, there's nothing we can do.
 						$itemLink = str_replace('&amp;','&', $itemLink);
-						if (pressforward()->og_reader->fetch($itemLink)){
+						if (OpenGraph::fetch($itemLink)){
 							//If there is no featured image passed, let's try and grab the opengraph image.
-							$node = pressforward()->og_reader->fetch($itemLink);
+							$node = OpenGraph::fetch($itemLink);
 							$itemFeatImg = $node->image;
 
 						}
@@ -789,14 +789,14 @@ class PF_Feed_Item {
 		//$url = http_build_url($urlParts, HTTP_URL_STRIP_AUTH | HTTP_URL_JOIN_PATH | HTTP_URL_JOIN_QUERY | HTTP_URL_STRIP_FRAGMENT);
 		//print_r($url);
 		# First run it through Readability.
-		$descrip = pressforward()->readability->readability_object($url);
+		$descrip = PF_Readability::readability_object($url);
 		//print_r($url);
 		# If that doesn't work...
 		if (!$descrip) {
 			$url = str_replace('&amp;','&', $url);
 			#Try and get the OpenGraph description.
-			if (pressforward()->og_reader->fetch($url)){
-				$node = pressforward()->og_reader->fetch($url);
+			if (OpenGraph::fetch($url)){
+				$node = OpenGraph::fetch($url);
 				$descrip = $node->description;
 			} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
 			elseif ('' != ($contentHtml = @get_meta_tags($url))) {
@@ -821,14 +821,14 @@ class PF_Feed_Item {
 	
 	public static function get_ext_og_img($link){
 		$itemLink = pf_de_https($link);
-		$node = pressforward()->og_reader->fetch($itemLink);
+		$node = OpenGraph::fetch($itemLink);
 		$itemFeatImg = $node->image;
 		return $itemFeatImg;
 	}
 
 	public static function set_ext_as_featured($postID,$ogImage){
 
-		if ( (strlen($ogImage)) > 1 ){
+			if ( (strlen($ogImage)) > 1 ){
 
 				//Remove Queries from the URL
 				$ogImage = preg_replace('/\?.*/', '', $ogImage);

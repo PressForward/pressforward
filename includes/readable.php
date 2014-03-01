@@ -43,8 +43,8 @@ class PF_Readability {
 						//$itemReadReady .= '<br />';
 						$url = str_replace('&amp;','&', $url);
 						#Try and get the OpenGraph description.
-						if (pressforward()->og_reader->fetch($url)){
-							$node = pressforward()->og_reader->fetch($url);
+						if (OpenGraph::fetch($url)){
+							$node = OpenGraph::fetch($url);
 							$itemReadReady .= $node->description;
 						} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
 						elseif ('' != ($contentHtml = @get_meta_tags($url))) {
