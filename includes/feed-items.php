@@ -388,10 +388,10 @@ class PF_Feed_Item {
 
 	public static function get_the_feed_object(){
 		pf_log( 'Invoked: PF_Feed_Item::get_the_feed_object()' );
-		$PF_Feed_Retrieve = new PF_Feed_Retrieve();
+		#$PF_Feed_Retrieve = new PF_Feed_Retrieve();
 		# This pulls the RSS feed into a set of predetermined objects.
 		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
-		$theFeed = $PF_Feed_Retrieve->step_through_feedlist();
+		$theFeed = pressforward()->pf_retrieve->step_through_feedlist();
 		if ((!$theFeed) || is_wp_error($theFeed)){
 			pf_log('The feed is false, exit process. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
 			# Wipe the checking option for use next time. 
@@ -628,9 +628,9 @@ class PF_Feed_Item {
 						$itemLink = pf_de_https($itemLink);
 						# if it forces the issue when we try and get the image, there's nothing we can do.
 						$itemLink = str_replace('&amp;','&', $itemLink);
-						if (OpenGraph::fetch($itemLink)){
+						if (pressforward()->og_reader->fetch($itemLink)){
 							//If there is no featured image passed, let's try and grab the opengraph image.
-							$node = OpenGraph::fetch($itemLink);
+							$node = pressforward()->og_reader->fetch($itemLink);
 							$itemFeatImg = $node->image;
 
 						}
@@ -671,8 +671,8 @@ class PF_Feed_Item {
 
 		}
 		update_option( PF_SLUG . '_ready_to_chunk', 1 );
-		$Feed_Retrieve = new PF_Feed_Retrieve();
-		$Feed_Retrieve->advance_feeds();
+		#$Feed_Retrieve = new PF_Feed_Retrieve();
+		pressforward()->pf_retrieve->advance_feeds();
 		//die('Refreshing...');
 
 	}
@@ -789,14 +789,14 @@ class PF_Feed_Item {
 		//$url = http_build_url($urlParts, HTTP_URL_STRIP_AUTH | HTTP_URL_JOIN_PATH | HTTP_URL_JOIN_QUERY | HTTP_URL_STRIP_FRAGMENT);
 		//print_r($url);
 		# First run it through Readability.
-		$descrip = PF_Readability::readability_object($url);
+		$descrip = pressforward()->readability->readability_object($url);
 		//print_r($url);
 		# If that doesn't work...
 		if (!$descrip) {
 			$url = str_replace('&amp;','&', $url);
 			#Try and get the OpenGraph description.
-			if (OpenGraph::fetch($url)){
-				$node = OpenGraph::fetch($url);
+			if (pressforward()->og_reader->fetch($url)){
+				$node = pressforward()->og_reader->fetch($url);
 				$descrip = $node->description;
 			} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
 			elseif ('' != ($contentHtml = @get_meta_tags($url))) {
@@ -821,14 +821,14 @@ class PF_Feed_Item {
 	
 	public static function get_ext_og_img($link){
 		$itemLink = pf_de_https($link);
-		$node = OpenGraph::fetch($itemLink);
+		$node = pressforward()->og_reader->fetch($itemLink);
 		$itemFeatImg = $node->image;
 		return $itemFeatImg;
 	}
 
 	public static function set_ext_as_featured($postID,$ogImage){
 
-			if ( (strlen($ogImage)) > 1 ){
+		if ( (strlen($ogImage)) > 1 ){
 
 				//Remove Queries from the URL
 				$ogImage = preg_replace('/\?.*/', '', $ogImage);
