@@ -43,11 +43,19 @@ class PressForward {
 	var $nominations;
 	var $pf_feeds;
 	var $pf_retrieve;
+	var $opml_reader;
+	var $og_reader;
+	var $readability;
 
 	// See http://php.net/manual/en/language.oop5.decon.php to get a better understanding of what's going on here.
 	function __construct() {
 
 		$this->includes();
+		
+		$this->set_up_opml_reader();
+		$this->set_up_og_reader();
+		$this->set_up_readability();
+		
 		
 		$this->set_up_feeds();
 		$this->set_up_schema();
@@ -76,7 +84,7 @@ class PressForward {
 		require( PF_ROOT . "/lib/OpenGraph.php" );
 
 		// Check the HTML of each item for open tags and close them.
-		// I've altered it specifically for some odd HTML artifacts that occur when
+		// I've altered it specifically for some odd HTML artifices that occur when
 		// WP sanitizes the content input.
 		require( PF_ROOT . "/lib/pf_htmlchecker.php" );
 
@@ -89,6 +97,7 @@ class PressForward {
 		$dom = new pf_simple_html_dom;
 
 		// Internal tools
+		require(PF_ROOT . "/includes/opml-reader/opml-reader.php");
 
 		// Load the module base class and our test module
 		require( PF_ROOT . "/includes/functions.php" );
@@ -103,6 +112,39 @@ class PressForward {
 		require( PF_ROOT . '/includes/admin.php' );
 	}
 
+	/**
+	 * Sets up the OPML Reader
+	 *
+	 * @since 3.0
+	 */
+	function set_up_opml_reader() {
+		if ( empty( $this->opml_reader ) ) {
+			$this->opml_reader = new OPML_reader;
+		}
+	}
+
+	/**
+	 * Sets up the OG Reader
+	 *
+	 * @since 3.0
+	 */
+	function set_up_og_reader() {
+		if ( empty( $this->og_reader ) ) {
+			$this->og_reader = new OpenGraph;
+		}
+	}
+	
+	/**
+	 * Sets up the Readability Object
+	 *
+	 * @since 3.0
+	 */
+	function set_up_readability() {
+		if ( empty( $this->readability ) ) {
+			$this->readability = new PF_Readability;
+		}
+	}	
+	
 	/**
 	 * Sets up the Dashboard admin
 	 *

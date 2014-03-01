@@ -390,7 +390,7 @@ class PF_Nominations {
 		$readable_status = get_post_meta($_POST['item_post_id'], 'readable_status', true);
 		if ($readable_status != 1){
 			$read_args = array('force' => '', 'descrip' => $item_content, 'url' => $_POST['item_link'], 'authorship' => $_POST['item_author'] );
-			$item_content_obj = PF_Readability::get_readable_text($read_args);
+			$item_content_obj = pressforward()->readability->get_readable_text($read_args);
 			$item_content = htmlspecialchars_decode($item_content_obj['readable']);
 		} else {
 			$item_content = htmlspecialchars_decode($_POST['item_content']);
@@ -413,7 +413,7 @@ class PF_Nominations {
 		$newNomID = wp_insert_post( $data );
 
 		if ($_POST['item_feat_img'] != '')
-			PF_Feed_Item::set_ext_as_featured($newNomID, $_POST['item_feat_img']);
+			pressforward()->schema->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
 		//die($_POST['item_feat_img']);
 		add_post_meta($_POST['item_post_id'], 'nomination_count', 1, true);
 		add_post_meta($_POST['item_post_id'], 'submitted_by', $userString, true);
@@ -503,7 +503,7 @@ class PF_Nominations {
 					'authorship' => $_POST['item_author']
 					
 				);
-				$readReady = PF_Readability::get_readable_text($readArgs);
+				$readReady = pressforward()->readability->get_readable_text($readArgs);
 				#var_dump($readReady); die();
 				$data['post_content'] = $readReady['readable'];
 			}			

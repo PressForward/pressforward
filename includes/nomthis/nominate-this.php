@@ -139,11 +139,11 @@ if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 				global $pf_nt;
 				if (isset($_POST['nomination_permalink']) && !empty($_POST['nomination_permalink']) && ($_POST['nomination_permalink']) != ''){
 					//Gets OG image
-					$itemFeatImg = PF_Feed_Item::get_ext_og_img($_POST['nomination_permalink']);
+					$itemFeatImg = pressforward()->schema->get_ext_og_img($_POST['nomination_permalink']);
 				}
 
 	if (!empty($_POST['nomination_permalink']) && ($_POST['nomination_permalink']) != ''){
-		PF_Feed_Item::set_ext_as_featured($post_ID, $itemFeatImg);
+		pressforward()->schema->set_ext_as_featured($post_ID, $itemFeatImg);
 	}
 
 // Set Variables
@@ -671,7 +671,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 
 		if ( !$selection ){
 			if ($url != ''){
-				$content .= PF_Feed_Item::get_content_through_aggregator($url);
+				$content .= pressforward()->schema->get_content_through_aggregator($url);
 			}
 
 		}			
