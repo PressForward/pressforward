@@ -412,9 +412,9 @@ class PF_Nominations {
 
 		$newNomID = wp_insert_post( $data );
 
-		if ('secured' != $item_content_obj['status']){
+		if ((1 == $readable_status) && ('secured' != $item_content_obj['status'])){
 			update_post_meta($_POST['item_post_id'], 'readable_status', 1);
-		} else {
+		} elseif ((1 != $readable_status)) {
 			update_post_meta($_POST['item_post_id'], 'readable_status', 0);
 		}		
 		
