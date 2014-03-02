@@ -155,7 +155,7 @@ class PF_Feed_Retrieve {
 		 */
 		
 		// This is the fix for the insanity caused by the planet money feed - http://www.npr.org/rss/podcast.php?id=510289.
-		if ( (int) $prev_iteration == (int) $feeds_iteration){
+		if ( (int) $prev_iteration == (int) $feeds_iteration && (0 != $feeds_iteration)){
 			
 			# In some cases the option fails to update for reasons that are not
 			# clear. In those cases, we will risk skipping a feed rather 
@@ -169,6 +169,9 @@ class PF_Feed_Retrieve {
 			# Regardless of success, iterate this process forward.
 			
 			$feeds_iteration++;
+		} elseif ((0 == $feeds_iteration)) {
+			pf_log('No, but we are at the beginning, so all is well here.');
+		
 		} else {
 			
 			# No rest for the iterative, so on we go. 
