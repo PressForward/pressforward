@@ -452,7 +452,17 @@ class PF_Feed_Retrieve {
 			}
 			//return false;
 			die();
-		}		
+		}
+
+		if ('rss-quick' == $type){
+			# Let's update the RSS-Quick so it has real data.
+			$rq_update = array(
+				'type'		=>		'rss-quick',
+				'ID'		=>		$id,
+				'url'		=>		$obj->guid
+			);
+			$Feeds->update($id, $rq_update);
+		}
 		
 		# module function to return a set of standard pf feed_item object
 		# Like get_items in SimplePie

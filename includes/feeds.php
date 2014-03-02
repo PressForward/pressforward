@@ -455,6 +455,10 @@ class PF_Feeds_Schema {
 				$r = self::setup_rss_meta($r, $theFeed);
 			}		
 		}
+		if ('rss-quick' == $r['type']){
+			$r = self::setup_rss_meta($r, $theFeed);
+			self::set_pf_feed_type($r['ID'], 'rss');
+		}		
 		
 		self::feed_post_setup($r, 'update');
 
