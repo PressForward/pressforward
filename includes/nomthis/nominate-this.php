@@ -8,9 +8,10 @@
  //Orig. file called from wp-admin/ by the bookmarklet.
 
 define('IFRAME_REQUEST' , true);
-
+define('WP_ADMIN', false);
+global $pagenow;
 $wp_bootstrap = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))) );
-
+#var_dump();
 if (is_dir($wp_bootstrap.'/wp-admin')){
    $wp_bootstrap = $wp_bootstrap.'/wp-admin';
 } elseif (is_dir($wp_bootstrap.'/wordpress/wp-admin')){
