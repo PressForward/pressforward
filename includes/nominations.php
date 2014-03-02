@@ -394,7 +394,7 @@ class PF_Nominations {
 			$item_content = htmlspecialchars_decode($item_content_obj['readable']);
 		} else {
 			$item_content = htmlspecialchars_decode($_POST['item_content']);
-		}
+		}		
 
 		//No need to define every post arg right? I should only need the ones I'm pushing through. Well, I guess we will find out.
 		$data = array(
@@ -412,6 +412,12 @@ class PF_Nominations {
 
 		$newNomID = wp_insert_post( $data );
 
+		if ('secured' != $item_content_obj['status']){
+			update_post_meta($_POST['item_post_id'], 'readable_status', 1);
+		} else {
+			update_post_meta($_POST['item_post_id'], 'readable_status', 0);
+		}		
+		
 		if ($_POST['item_feat_img'] != '')
 			PF_Feed_Item::set_ext_as_featured($newNomID, $_POST['item_feat_img']);
 		//die($_POST['item_feat_img']);
