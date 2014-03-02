@@ -108,6 +108,9 @@ class PF_Feeds_Schema {
 	public function deal_with_old_feedlists() {
 		
 		$feedlist = get_option( PF_SLUG . '_feedlist' );
+		if (false == get_option( PF_SLUG . '_feedlist_backup' )){
+			$feedlist = add_option( PF_SLUG . '_feedlist_backup', $feedlist );
+		}
 		if ( (false == $feedlist) || (empty($feedlist)) ){
 			return true;
 		} else {
