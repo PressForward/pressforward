@@ -48,8 +48,18 @@ class PressForward {
 	var $og_reader;
 	var $readability;
 
+	public static function init() {
+		static $instance;
+
+		if ( ! is_a( $instance, 'PressForward' ) ) {
+			$instance = new self();
+		}
+
+		return $instance;
+	}
+
 	// See http://php.net/manual/en/language.oop5.decon.php to get a better understanding of what's going on here.
-	function __construct() {
+	private function __construct() {
 
 		$this->includes();
 		
@@ -307,11 +317,7 @@ class PressForward {
  * @since 1.7
  */
 function pressforward() {
-	global $pf;
-	if ( ! is_a( $pf, 'PressForward' ) ) {
-		$pf = new PressForward();
-	}
-	return $pf;
+	return PressForward::init();
 }
 
 // Start me up!
