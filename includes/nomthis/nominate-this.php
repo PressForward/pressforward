@@ -11,7 +11,7 @@ define('IFRAME_REQUEST' , true);
 define('WP_ADMIN', false);
 global $pagenow;
 $wp_bootstrap = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))) );
-#var_dump();
+#echo '<pre>'; var_dump($_POST); die();
 if (is_dir($wp_bootstrap.'/wp-admin')){
    $wp_bootstrap = $wp_bootstrap.'/wp-admin';
 } elseif (is_dir($wp_bootstrap.'/wordpress/wp-admin')){
@@ -32,6 +32,8 @@ header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('b
 if ( ! current_user_can( 'edit_posts' ) || ! current_user_can( get_post_type_object( 'post' )->cap->edit_posts ) )
 	wp_die( __( 'Cheatin&#8217; uh?', 'pf' ) );
 
+#var_dump($_POST);	die();
+	
 /**
  * Press It form handler.
  *
@@ -114,16 +116,58 @@ function nominate_it() {
 	}
 			# var_dump($_POST); die();
 		if (!$nom_check){	
-			update_post_meta($post_ID, 'nomination_count', 1);
-			update_post_meta($post_ID, 'submitted_by', get_current_user_id());
-			update_post_meta($post_ID, 'origin_item_ID', $item_id);
-			update_post_meta($post_ID, 'nomination_permalink', $_POST['nomination_permalink']);
-			update_post_meta($post_ID, 'posted_date', $item_date);
-			update_post_meta($post_ID, 'date_nominated', $item_date);
-			update_post_meta($post_ID, 'item_tags', 'via bookmarklet');
-			update_post_meta($post_ID, 'nominator_array', get_current_user_id());
-			update_post_meta($post_ID, 'authors', $_POST['authors']);
+			
+			$already_has_thumb = has_post_thumbnail($post_ID);
+			if ($already_has_thumb)  {
+				$post_thumbnail_id = get_post_thumbnail_id( $post_ID );
+				$post_thumbnail_url = wp_get_attachment_image_src( $attachment_id );
+			} else {
+				$post_thumbnail_url = false;
+			}
+			$pf_meta_args = array(
+				pf_meta_for_entry('item_id', $post_ID),
+				pf_meta_for_entry('origin_item_ID', $item_id),
+				pf_meta_for_entry('nomination_permalink', $_POST['nomination_permalink']),
+				pf_meta_for_entry('source_title', 'Bookmarklet'),
+				pf_meta_for_entry('item_date', $item_date),
+				pf_meta_for_entry('posted_date', $item_date),
+				pf_meta_for_entry('date_nominated', $_POST['date_nominated']),
+				pf_meta_for_entry('item_author', $_POST['authors']),
+				pf_meta_for_entry('authors', $_POST['authors']),
+				pf_meta_for_entry('item_link', $_POST['nomination_permalink']),
+				pf_meta_for_entry('item_feat_img', $post_thumbnail_url),
+				pf_meta_for_entry('nominator_array', array(get_current_user_id())),
+				// The item_wp_date allows us to sort the items with a query.
+				pf_meta_for_entry('item_wp_date', $item_date),
+				//We can't just sort by the time the item came into the system (for when mult items come into the system at once)
+				//So we need to create a machine sortable date for use in the later query.					
+				pf_meta_for_entry('sortable_item_date', strtotime($item_date)),
+				pf_meta_for_entry('item_tags', 'via bookmarklet'),
+				pf_meta_for_entry('source_repeat', 1),
+				pf_meta_for_entry('revertible_feed_text', $post['post_content'])
+				
+			);			
+			pf_meta_establish_post($post_ID, $pf_meta_args);
 		}
+	if ($_POST['publish'] == "Send to Draft") {
+		
+		$post_check = $pf_nomination->get_post_nomination_status($item_date, $item_id, 'post', false);
+		if ($post_check != true) {
+			add_post_meta($post_ID, 'nom_id', $post_ID, true);
+			$d_post = $post;
+			$d_post['post_type'] = 'post';
+			$d_post['post_status'] = 'draft';
+			$newPostID = wp_insert_post( $d_post, true );
+			#var_dump($newPostID); die();
+			#pf_meta_transition_post($post_ID, $newPostID);
+			$already_has_thumb = has_post_thumbnail($post_ID);
+			if ($already_has_thumb)  {
+				$post_thumbnail_id = get_post_thumbnail_id( $post_ID );
+				set_post_thumbnail($newPostID, $post_thumbnail_id);
+			}
+			pf_meta_transition_post($post_ID, $newPostID);
+		}
+	}
 	#var_dump($post); die();
 	return $post_ID;
 }
