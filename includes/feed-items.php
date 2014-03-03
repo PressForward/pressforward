@@ -11,6 +11,10 @@ class PF_Feed_Item {
 	protected $filter_data = array();
 
 	public function __construct() {
+		add_action( 'pressforward_init', array( $this, 'init' ) );
+	}
+
+	public function init() {
 		$this->post_type = pf_feed_item_post_type();
 		$this->tag_taxonomy = pf_feed_item_tag_taxonomy();
 	}
