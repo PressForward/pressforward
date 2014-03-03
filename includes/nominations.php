@@ -550,6 +550,18 @@ class PF_Nominations {
 			die();
 		}
 	}
+	
+	#Take a nomination post to draft.
+	public function nominate_to_draft($post){
+	
+	}
+	
+	#Take an object to nominate.
+	public function obj_to_nominate($post){
+	
+	}
+	
+	
 
 
 }
