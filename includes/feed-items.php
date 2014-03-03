@@ -408,7 +408,6 @@ class PF_Feed_Item {
 	}
 
 	public static function assemble_feed_for_pull($feedObj = 0) {
-		global $pf;
 		pf_log( 'Invoked: PF_Feed_Item::assemble_feed_for_pull()' );
 
 		ignore_user_abort(true);

@@ -17,8 +17,6 @@ class PF_Feed_Retrieve {
 	 * Constructor
 	 */
 	public function __construct() {
-		global $pf;
-
 		add_action( 'wp_head', array($this, 'get_chunk_nonce'));
 		add_action( 'init', array($this, 'alter_for_retrieval'), 999);
 

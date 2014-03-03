@@ -15,7 +15,6 @@ class PF_RSS_Import extends PF_Module {
 	 * Constructor
 	 */
 	public function __construct() {
-		global $pf;
 		$this->feed_type = 'rss';
 		parent::start();
 

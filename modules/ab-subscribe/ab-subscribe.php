@@ -197,7 +197,9 @@ class PF_AB_Subscribe extends PF_Module {
 	 * Enqueue our scripts and styles for the progressbar to work
 	 */
 	public function admin_enqueue_scripts() {
-		global $pf, $pagenow;
+		global $pagenow;
+
+		$pf = pressforward();
 
 		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
 

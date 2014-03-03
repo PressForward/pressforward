@@ -14,8 +14,6 @@ class PF_RSS_Out extends PF_Module {
 	 * Constructor
 	 */
 	public function __construct() {
-		global $pf;
-
 		parent::start();
 		add_action('init', array($this, 'request_feed'));
 		//self::check_nonce = wp_create_nonce('retrieve-pressforward');
