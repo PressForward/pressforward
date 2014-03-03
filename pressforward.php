@@ -62,11 +62,11 @@ class PressForward {
 	private function __construct() {
 
 		$this->includes();
-		
+
 		$this->set_up_opml_reader();
 		$this->set_up_og_reader();
 		$this->set_up_readability();
-		
+
 		$this->set_up_feeds();
 		$this->set_up_feed_items();
 		$this->set_up_schema();
@@ -79,7 +79,6 @@ class PressForward {
 		add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
 
 		load_plugin_textdomain( 'pf', false, PF_ROOT );
-
 	}
 
 	/**
@@ -144,7 +143,7 @@ class PressForward {
 			$this->og_reader = new PF_OpenGraph;
 		}
 	}
-	
+
 	/**
 	 * Sets up the Readability Object
 	 *
@@ -154,8 +153,8 @@ class PressForward {
 		if ( empty( $this->readability ) ) {
 			$this->readability = new PF_Readability;
 		}
-	}	
-	
+	}
+
 	/**
 	 * Sets up the Dashboard admin
 	 *
@@ -166,8 +165,8 @@ class PressForward {
 			$this->schema = new PF_Feed_Item_Schema;
 		}
 	}
-	
-	
+
+
 	/**
 	 * Sets up the Feeds functionality
 	 *
@@ -177,8 +176,8 @@ class PressForward {
 		if ( empty( $this->pf_feed_items ) ) {
 			$this->pf_feed_items = new PF_Feed_Item;
 		}
-	}	
-	
+	}
+
 	/**
 	 * Sets up the Feeds functionality
 	 *
@@ -188,8 +187,8 @@ class PressForward {
 		if ( empty( $this->pf_feeds ) ) {
 			$this->pf_feeds = new PF_Feeds_Schema;
 		}
-	}	
-	
+	}
+
 	/**
 	 * Sets up the Retrieval functionality
 	 *
@@ -199,7 +198,7 @@ class PressForward {
 		if ( empty( $this->pf_retrieve ) ) {
 			$this->pf_retrieve = new PF_Feed_Retrieve;
 		}
-	}		
+	}
 
 	/**
 	 * Sets up the Dashboard admin

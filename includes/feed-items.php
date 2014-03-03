@@ -74,7 +74,7 @@ class PF_Feed_Item {
 			'post_parent'    => '',
 			'item_tags'    => array(),
 		) );
-		
+
 		// Sanitization
 		// Conversion should be done upstream
 		if ( ! is_numeric( $r['item_wp_date'] ) ) {
@@ -84,7 +84,7 @@ class PF_Feed_Item {
 			}
 		}
 
-		
+
 
 		$wp_args = array(
 			'post_type'    => pf_feed_item_post_type(),
@@ -113,7 +113,7 @@ class PF_Feed_Item {
 		$where .= $wpdb->prepare( " AND {$wpdb->posts}.guid = %s ", $this->filter_data['guid'] );
 		return $where;
 	}
-	
+
 	// STATIC UTILITY METHODS
 
 	public static function set_word_count( $post_id, $content = false ) {
@@ -139,7 +139,7 @@ class PF_Feed_Item {
 		global $wpdb, $post;
 		#var_dump($fromUnixTime); die();
 		if ( !isset($fromUnixTime) || (!$fromUnixTime) || ($fromUnixTime < 100)){$fromUnixTime = 0;}
-		
+
 		//$args = array(
 		//				'post_type' => array('any')
 		//			);
@@ -157,7 +157,7 @@ class PF_Feed_Item {
 			AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
 			AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 			ORDER BY {$wpdb->postmeta}.meta_value DESC
-		 ", pf_feed_item_post_type());		
+		 ", pf_feed_item_post_type());
 		} elseif ($limit == 'starred') {
 			$pageTop = $pageTop-1;
 			$relate = new PF_RSS_Import_Relationship();
@@ -165,25 +165,25 @@ class PF_Feed_Item {
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('star');
 			 $dquerystr = $wpdb->prepare("
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
 				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
-				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}				
+				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 				AND {$wpdb->posts}.post_type = %s
 				AND {$wpdb->posts}.post_status = 'publish'
-				AND {$wpdb->posts}.ID 
+				AND {$wpdb->posts}.ID
 				IN (
-					SELECT item_id 
-					FROM {$rt} 
-					WHERE {$rt}.user_id = {$user_id} 
-					AND {$rt}.relationship_type = {$read_id} 
+					SELECT item_id
+					FROM {$rt}
+					WHERE {$rt}.user_id = {$user_id}
+					AND {$rt}.relationship_type = {$read_id}
 					AND {$rt}.value = 1
 				)
 				GROUP BY {$wpdb->postmeta}.meta_key
 				ORDER BY {$wpdb->postmeta}.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$pageTop}
-			 ", pf_feed_item_post_type());					
+			 ", pf_feed_item_post_type());
 		} elseif ($limit == 'nominated') {
 			$pageTop = $pageTop-1;
 			$relate = new PF_RSS_Import_Relationship();
@@ -191,51 +191,51 @@ class PF_Feed_Item {
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('nominate');
 			 $dquerystr = $wpdb->prepare("
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
 				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
-				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}				
+				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 				AND {$wpdb->posts}.post_type = %s
 				AND {$wpdb->posts}.post_status = 'publish'
-				AND {$wpdb->posts}.ID 
+				AND {$wpdb->posts}.ID
 				IN (
-					SELECT item_id 
-					FROM {$rt} 
-					WHERE {$rt}.user_id = {$user_id} 
-					AND {$rt}.relationship_type = {$read_id} 
+					SELECT item_id
+					FROM {$rt}
+					WHERE {$rt}.user_id = {$user_id}
+					AND {$rt}.relationship_type = {$read_id}
 					AND {$rt}.value = 1
 				)
 				GROUP BY {$wpdb->postmeta}.meta_key
 				ORDER BY {$wpdb->postmeta}.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$pageTop}
-			 ", pf_feed_item_post_type());					
+			 ", pf_feed_item_post_type());
 		} elseif (is_user_logged_in()){
 			$relate = new PF_RSS_Import_Relationship();
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('archive');
 			 $dquerystr = $wpdb->prepare("
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
 				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 				AND {$wpdb->posts}.post_type = %s
 				AND {$wpdb->posts}.post_status = 'publish'
 				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
 				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
-				AND {$wpdb->posts}.ID 
-				NOT 
+				AND {$wpdb->posts}.ID
+				NOT
 				IN (
-					SELECT item_id 
-					FROM {$rt} 
-					WHERE {$rt}.user_id = {$user_id} 
-					AND {$rt}.relationship_type = {$read_id} 
+					SELECT item_id
+					FROM {$rt}
+					WHERE {$rt}.user_id = {$user_id}
+					AND {$rt}.relationship_type = {$read_id}
 					AND {$rt}.value = 1
 				)
 				ORDER BY {$wpdb->postmeta}.meta_value DESC
 				LIMIT {$pageTop}, {$pagefull}
-			 ", pf_feed_item_post_type());			
-		
+			 ", pf_feed_item_post_type());
+
 		} else {
 		 $dquerystr = $wpdb->prepare("
 			SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
@@ -313,7 +313,7 @@ class PF_Feed_Item {
 		wp_reset_postdata();
 		return $feedObject;
 	}
-	
+
 	#via http://wordpress.stackexchange.com/questions/109793/delete-associated-media-upon-page-deletion
 	public static function disassemble_feed_item_media( $post_id ) {
 
@@ -330,7 +330,7 @@ class PF_Feed_Item {
 			}
 		}
 	}
-	
+
 
 	# The function we add to the action to clean our database.
 	public static function disassemble_feed_items() {
@@ -398,15 +398,15 @@ class PF_Feed_Item {
 		$theFeed = pressforward()->pf_retrieve->step_through_feedlist();
 		if ((!$theFeed) || is_wp_error($theFeed)){
 			pf_log('The feed is false, exit process. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
-			# Wipe the checking option for use next time. 
+			# Wipe the checking option for use next time.
 			update_option(PF_SLUG . '_feeds_meta_state', array());
 			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 1 );
 			exit;
 		}
-	
+
 		return $theFeed;
-	}		
-	
+	}
+
 	public static function assemble_feed_for_pull($feedObj = 0) {
 		global $pf;
 		pf_log( 'Invoked: PF_Feed_Item::assemble_feed_for_pull()' );
@@ -426,7 +426,7 @@ class PF_Feed_Item {
 			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 0 );
 			pf_log( $chunk_state );
 		}
-		
+
 		if ($feedObj == 0){
 			$theFeed = self::get_the_feed_object();
 			$feedObj = $theFeed;
@@ -555,11 +555,11 @@ class PF_Feed_Item {
 				$item_author 	= $item['item_author'];
 				$item_link 		= $item['item_link'];
 				$item_wp_date	= $item['item_wp_date'];
-				$item_tags		= $item['item_tags']; 
+				$item_tags		= $item['item_tags'];
 				if (!isset($item['parent_feed_id']) || !$item['parent_feed_id']){
 					$item['parent_feed_id'] = $parent;
 				}
-				$feed_obj_id	= $item['parent_feed_id']; 
+				$feed_obj_id	= $item['parent_feed_id'];
 				$source_repeat  = $sourceRepeat;
 
 				# Trying to prevent bad or malformed HTML from entering the database.
@@ -663,12 +663,12 @@ class PF_Feed_Item {
 					// The item_wp_date allows us to sort the items with a query.
 					pf_meta_for_entry('item_wp_date', $item_wp_date),
 					//We can't just sort by the time the item came into the system (for when mult items come into the system at once)
-					//So we need to create a machine sortable date for use in the later query.					
+					//So we need to create a machine sortable date for use in the later query.
 					pf_meta_for_entry('sortable_item_date', strtotime($item_date)),
 					pf_meta_for_entry('item_tags', $item_tags),
 					pf_meta_for_entry('source_repeat', $source_repeat),
 					pf_meta_for_entry('revertible_feed_text', $item_content)
-					
+
 				);
 				pf_meta_establish_post($newNomID, $pf_meta_args);
 			}
@@ -822,7 +822,7 @@ class PF_Feed_Item {
 		return $descrip;
 
 	}
-	
+
 	public static function get_ext_og_img($link){
 		$itemLink = pf_de_https($link);
 		$node = pressforward()->og_reader->fetch($itemLink);
