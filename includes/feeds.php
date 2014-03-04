@@ -241,7 +241,7 @@ class PF_Feeds_Schema {
 				$r['thumbnail'] = $theFeed->get_image_url();
 			}				
 			if (empty($r['tags'])){
-				$r['tags'] = $theFeed->get_feed_tags();
+				#$r['tags'] = $theFeed->get_feed_tags();
 			}
 		}
 		return $r;
