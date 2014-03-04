@@ -128,6 +128,7 @@ function nominate_it() {
 				pf_meta_for_entry('item_id', $post_ID),
 				pf_meta_for_entry('origin_item_ID', $item_id),
 				pf_meta_for_entry('nomination_permalink', $_POST['nomination_permalink']),
+				pf_meta_for_entry('nomination_count', 1),
 				pf_meta_for_entry('source_title', 'Bookmarklet'),
 				pf_meta_for_entry('item_date', $item_date),
 				pf_meta_for_entry('posted_date', $item_date),
