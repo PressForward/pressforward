@@ -136,7 +136,7 @@ class PF_Feeds_Schema {
 	public function progressive_feedlist_transformer($feedlist = array(), $xmlUrl, $key) {
 		
 		$check = $this->create($xmlUrl, array('type' => 'rss-quick'));
-		if (is_numeric($check)){
+		if (is_numeric($check) && (0 != $check)){
 			unset($feedlist[$key]);
 		}
 		return $feedlist;
