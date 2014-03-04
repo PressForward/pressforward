@@ -108,6 +108,9 @@ class PF_Feeds_Schema {
 	public function deal_with_old_feedlists() {
 		
 		$feedlist = get_option( PF_SLUG . '_feedlist' );
+		if (false == get_option( PF_SLUG . '_feedlist_backup' )){
+			$feedlist = add_option( PF_SLUG . '_feedlist_backup', $feedlist );
+		}
 		if ( (false == $feedlist) || (empty($feedlist)) ){
 			return true;
 		} else {
@@ -133,7 +136,7 @@ class PF_Feeds_Schema {
 	public function progressive_feedlist_transformer($feedlist = array(), $xmlUrl, $key) {
 		
 		$check = $this->create($xmlUrl, array('type' => 'rss-quick'));
-		if (is_numeric($check)){
+		if (is_numeric($check) && (0 != $check)){
 			unset($feedlist[$key]);
 		}
 		return $feedlist;
@@ -241,7 +244,7 @@ class PF_Feeds_Schema {
 				$r['thumbnail'] = $theFeed->get_image_url();
 			}				
 			if (empty($r['tags'])){
-				$r['tags'] = $theFeed->get_feed_tags();
+				#$r['tags'] = $theFeed->get_feed_tags();
 			}
 		}
 		return $r;

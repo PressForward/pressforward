@@ -768,7 +768,13 @@ class PF_Admin {
 			<?php $this->toolbox(); ?>
 			<div id="entries">
 				<?php echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';  ?>
-				<div id="errors"></div>
+				<div id="errors">
+				<?php 
+					if (0 >= self::count_the_posts('pf_feed')){
+						echo '<p>You need to add feeds, there are none in the system.</p>';
+					}
+				?>
+				</div>
 				<div class="display">
 					<div class="btn-group pull-left">
 					<button type="submit" id="gogrid" class="btn btn-small">Grid</button>
@@ -1227,6 +1233,33 @@ class PF_Admin {
 		
 		register_post_status('removed_feed_item', $args);
 	
+	}
+
+	public function count_the_posts($post_type, $date_less = false){
+				
+				if (!$date_less){
+					$y = date('Y');
+					$m = date('m');
+				} elseif (!empty($date_less) && $date_less < 12) {
+					$y = date('Y');
+					$m = date('m');
+					$m = $m + $date_less;
+				} elseif (!empty($date_less) && $date_less >= 12) {
+					$y = date('Y');
+					$y = $y - floor($date_less/12);
+					$m = date('m');
+					$m = $m - (abs($date_less)-(12*floor($date_less/12)));
+				}
+				
+				$query_arg = array(
+					'post_type' 		=> $post_type,
+					'year'				=> $y,
+					'monthnum'			=> $m,
+					'posts_per_page' 	=> -1
+				);
+				$query = new WP_Query($query_arg);	
+		
+		return $query->post_count;
 	}	
 	
 	/*
