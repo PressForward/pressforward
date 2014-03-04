@@ -528,10 +528,8 @@ class PF_Feeds_Schema {
 		$where .= $wpdb->prepare( " AND {$wpdb->posts}.guid = %s ", $this->filter_data['guid'] );
 		return $where;
 	}
-	
-	function admin_enqueue_scripts() {
-		global $pf;
 
+	function admin_enqueue_scripts() {
 		global $pagenow;
 
 		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';

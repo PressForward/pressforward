@@ -32,7 +32,7 @@ class PF_Module {
 	 * Also sets up the module_dir and module_url for use throughout
 	 */
 	function setup_module_info() {
-		global $pf;
+		$pf = pressforward();
 
 		// Determine the ID by checking which module this class belongs to
 		$module_class = get_class( $this );

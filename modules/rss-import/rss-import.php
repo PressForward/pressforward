@@ -15,7 +15,6 @@ class PF_RSS_Import extends PF_Module {
 	 * Constructor
 	 */
 	public function __construct() {
-		global $pf;
 		$this->feed_type = 'rss';
 		parent::start();
 
@@ -41,7 +40,7 @@ class PF_RSS_Import extends PF_Module {
 	 * Includes necessary files
 	 */
 	public function includes() {
-		require_once(PF_ROOT . "/includes/opml-reader/opml-reader.php");
+	
 	}
 	
 	/**
