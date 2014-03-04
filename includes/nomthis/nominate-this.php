@@ -150,7 +150,7 @@ function nominate_it() {
 			);			
 			pf_meta_establish_post($post_ID, $pf_meta_args);
 		}
-	if ($_POST['publish'] == "Send to Draft") {
+	if (isset($_POST['publish']) && ($_POST['publish'] == "Send to Draft")) {
 		
 		$post_check = $pf_nomination->get_post_nomination_status($item_date, $item_id, 'post', false);
 		if ($post_check != true) {

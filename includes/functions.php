@@ -762,7 +762,7 @@ function pf_meta_structure(){
 		array(
 			'name' => 'nominator_array',
 			'definition' => __('Users who nominated this item', 'pf'),
-			'function'	=> __('Stores and array of all userIDs that nominated the item', 'pf'),
+			'function'	=> __('Stores and array of all userIDs that nominated the item in an array', 'pf'),
 			'type'	=> array('adm'),
 			'use'	=> array('req'),
 			'level'	=> array('nomination', 'post')

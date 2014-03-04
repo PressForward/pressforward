@@ -211,7 +211,7 @@ class PF_Nominations {
 							//If we ever reveal this to non users and want to count nominations by all, here is where it will go.
 						} else {
 							$nominators = get_post_meta($id, 'nominator_array', true);
-							$nominators .= ',' . $current_user->ID;
+							$nominators[] = $current_user->ID;
 							update_post_meta($id, 'nominator_array', $nominators);
 						}
 
@@ -423,7 +423,7 @@ class PF_Nominations {
 		//die($_POST['item_feat_img']);
 		add_post_meta($_POST['item_post_id'], 'nomination_count', 1, true);
 		add_post_meta($_POST['item_post_id'], 'submitted_by', $userString, true);
-		add_post_meta($_POST['item_post_id'], 'nominator_array', $userID, true);	
+		add_post_meta($_POST['item_post_id'], 'nominator_array', array($userID), true);	
 		add_post_meta($_POST['item_post_id'], 'date_nominated', date('c'), true);		
 		add_post_meta($_POST['item_post_id'], 'origin_item_ID', $item_id, true);
 		add_post_meta($_POST['item_post_id'], 'item_feed_post_id', $_POST['item_post_id'], true);
