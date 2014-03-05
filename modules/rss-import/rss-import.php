@@ -392,9 +392,8 @@ class PF_RSS_Import extends PF_Module {
 	}
 
 	public function admin_enqueue_scripts() {
-		global $pf;
-
 		global $pagenow;
+		$pf = pressforward();
 
 		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
 
