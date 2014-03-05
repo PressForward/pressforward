@@ -225,11 +225,12 @@ class PF_RSS_Import extends PF_Module {
 
 	function add_to_feeder() {
 
-		?><form method="post" action="options.php"><?php
+		
         settings_fields( PF_SLUG . '_feedlist_group' );
 		$feedlist = get_option( PF_SLUG . '_feedlist' );
 
         ?>
+		<div class="pf-opt-group">
 			<br />
 			<br />
 			<div><?php _e('Add Single RSS Feed', 'pf'); ?></div>
@@ -247,11 +248,7 @@ class PF_RSS_Import extends PF_Module {
 
 
                 </div>
-
-			<p class="submit">
-				<?php submit_button(); ?>
-			</p>
-		</form>
+		</div>
 		<?php
 
 
@@ -282,6 +279,7 @@ class PF_RSS_Import extends PF_Module {
 		pf_log('Add Feed Process Invoked: PF_RSS_IMPORT::pf_feedlist_validate');
 		pf_log($input);
 		$feed_obj = pressforward()->pf_feeds;
+		$subed = '';
 		if (!empty($input['single'])){
 			if (!(is_array($input['single']))){
 				if (!$feed_obj->has_feed($input['single'])){
@@ -294,6 +292,8 @@ class PF_RSS_Import extends PF_Module {
 				} else {
 					$feed_obj->update_url($input['single']);
 				}
+				
+				$subed = 'a feed ';
 			} else {
 				wp_die('Bad feed input. Why are you trying to place an array?');
 			}
@@ -313,6 +313,7 @@ class PF_RSS_Import extends PF_Module {
 				# @todo Tag based on folder structure
 			}
 			$check_up = update_option( PF_SLUG . '_feedlist', $opml_array );
+			$subed = 'an OPML file ';
 		}
 
 		if (!empty($_POST['o_feed_url'])){
@@ -322,6 +323,10 @@ class PF_RSS_Import extends PF_Module {
 				}
 
 		}
+		
+		add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', 'You have submitted '.$subed.'.', 'updated');
+		return $input;
+		
 	}
 
 	public function remove_a_feed() {

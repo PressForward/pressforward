@@ -22,6 +22,7 @@ class PF_Admin {
 		add_filter('pf_admin_pages', array($this, 'state_pf_admin_pages'), 10,3);
 		// Catch form submits
 		add_action( 'admin_init', array($this, 'pf_options_admin_page_save') );
+		add_action( 'admin_notices', array($this, 'admin_notices_action' ));	
 
 		// AJAX handlers
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
@@ -1013,9 +1014,15 @@ class PF_Admin {
 			do_action( 'feeder_menu' );
 
 			?><input type="submit" class="button-primary" value="<?php _e('Save Options', 'pf'); ?>" />
+
+			
 			</form><?php
 
 
+	}
+	
+	function admin_notices_action() {
+		settings_errors( 'add_pf_feeds' );
 	}
 
 	//This function can add js and css that we need to specific admin pages.
