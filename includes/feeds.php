@@ -179,6 +179,11 @@ class PF_Feeds_Schema {
 		
 		#$wp_args = wp_parse_args( $r, $wp_args_d );
 		
+		if (empty($wp_args['post_title']) || !$wp_args['post_title']){
+			pf_log('Missing a title, assigning the URL');
+			$wp_args['post_title'] = $r['url'];
+		}
+		
 		pf_log('Will now ' . $insert_type . ' a post with the following args:');
 		pf_log($wp_args); #die();
 		
@@ -274,7 +279,8 @@ class PF_Feeds_Schema {
 			'module_added' 	=> 'rss-import',
 			'tags'    => array(),
 		) );
-		
+		pf_log('Received a create command with the following arguments:');
+		pf_log($r);
 		if ($r['type'] == 'rss'){
 		
 			if (is_wp_error($theFeed = fetch_feed($feedUrl))){
