@@ -731,6 +731,16 @@ class PF_Admin {
 		<?php 
 		}
 	}
+	
+	public function pf_search_template(){
+		?>
+			<form id="feeds-search" method="post" action="<?php echo basename($_SERVER['PHP_SELF']) . '?' . $_SERVER['QUERY_STRING'] . '&action=post'; ?>">
+					<label for="search-terms">Search</label>
+				<input type="text" name="search-terms" id="search-terms" placeholder="Enter search terms">
+				<input type="submit" class="btn btn-small" value="Search">
+			</form>			
+		<?php 
+	}
 
 	/**
 	 * Display function for the main All Content panel
@@ -760,11 +770,7 @@ class PF_Admin {
 				<button type="submit" class="refreshfeed btn btn-small" id="refreshfeed" value="<?php  _e('Refresh', 'pf')  ?>"><?php  _e('Refresh', 'pf');  ?></button>
 				<button class="btn btn-small" id="fullscreenfeed"> <?php  _e('Full Screen', 'pf');  ?> </button>
 			</div><!-- End title -->
-			<form id="feeds-search">
-					<label for="search-terms">Search</label>
-				<input type="text" name="search-terms" id="search-terms" placeholder="Enter search terms">
-				<input type="submit" class="btn btn-small" value="Search">
-			</form>			
+			<?php self::pf_search_template(); ?>
 		</header><!-- End Header -->
 		<div role="main">
 			<?php $this->toolbox(); ?>
@@ -805,7 +811,7 @@ class PF_Admin {
 				$limit = false;
 			}
 			#var_dump($limit);	
-			foreach(PF_Feed_Item::archive_feed_to_display($count+1, 20, 0, false, $limit) as $item) {
+			foreach(pressforward()->pf_feed_items->archive_feed_to_display($count+1, 20, 0, false, $limit) as $item) {
 				
 				$this->form_of_an_item($item, $c);
 
@@ -1268,7 +1274,20 @@ class PF_Admin {
 				$query = new WP_Query($query_arg);	
 		
 		return $query->post_count;
-	}	
+	}
+
+	public function search_the_posts($s, $post_type){
+	
+		$args = array(
+			's'			=>  $s,
+			'post_type' => $post_type
+			
+		);
+		
+		$q = WP_Query($args);
+		return $q;
+	
+	}
 	
 	/*
 	 *
