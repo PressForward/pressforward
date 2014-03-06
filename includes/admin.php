@@ -1384,7 +1384,7 @@ class PF_Admin {
 	}
 
 	public function make_it_readable() {
-		pressforward()->pf_retrieve->make_it_readable();
+		pressforward()->readability->make_it_readable();
 		die();
 	}
 
