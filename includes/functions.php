@@ -875,7 +875,27 @@ function prep_archives_query($q){
 				ORDER BY {$wpdb->postmeta}.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$offset}
 			 ", 'nomination');	
-		}
+		} elseif (isset($_GET['action']) && (isset($_POST['search-terms']))){
+			$pagefull = 20;
+			$relate = new PF_RSS_Import_Relationship();
+			$rt = $relate->table_name;
+			$user_id = get_current_user_id();
+			$read_id = pf_get_relationship_type_id('archive');
+			$search = $_POST['search-terms'];
+			$q = $wpdb->prepare("
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id	
+				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+				AND {$wpdb->postmeta}.meta_value > 0
+				AND {$wpdb->posts}.post_type = %s
+				AND {$wpdb->posts}.post_status = 'draft'
+				AND ((({$wpdb->posts}.post_title LIKE '%s') OR ({$wpdb->posts}.post_content LIKE '%s')))
+				GROUP BY {$wpdb->posts}.ID
+				ORDER BY {$wpdb->postmeta}.meta_value DESC
+				LIMIT {$pagefull} OFFSET {$offset}
+			 ", 'nomination', '%'.$search.'%', '%'.$search.'%');	
+		}		
 	#$archivalposts = $wpdb->get_results($dquerystr, OBJECT);
 	#return $archivalposts;
 	return $q;

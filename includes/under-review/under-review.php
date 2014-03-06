@@ -27,11 +27,7 @@
 				<span id="h-after"> &#8226; </span>
 				<button class="btn btn-small" id="fullscreenfeed"> <?php  _e('Full Screen', 'pf');  ?> </button>
 			</div><!-- End title -->
-			<form id="feeds-search">
-					<label for="search-terms">Search</label>
-				<input type="text" name="search-terms" id="search-terms" placeholder="Enter search terms">
-				<input type="submit" class="btn btn-small" value="Search">
-			</form>			
+				<?php pressforward()->admin->pf_search_template(); ?>
 		</header><!-- End Header -->
 		<div role="main">
 			<?php $this->toolbox();	?>	
