@@ -210,6 +210,37 @@ class PF_Feed_Item {
 				ORDER BY {$wpdb->postmeta}.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$pageTop}
 			 ", pf_feed_item_post_type());
+		} elseif (is_user_logged_in() && (isset($_GET['action']) && ('post' == $_GET['action']) &&(isset($_POST['search-terms'])))){
+			$relate = new PF_RSS_Import_Relationship();
+			$rt = $relate->table_name;
+			$user_id = get_current_user_id();
+			$read_id = pf_get_relationship_type_id('archive');
+			$search = $_POST['search-terms'];
+			 $dquerystr = $wpdb->prepare("
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
+				AND {$wpdb->posts}.post_type = %s
+				AND {$wpdb->posts}.post_status = 'publish'			
+				AND ((({$wpdb->posts}.post_title LIKE '%s') OR ({$wpdb->posts}.post_content LIKE '%s')))				
+				AND {$wpdb->posts}.ID
+				NOT
+				IN (
+					SELECT item_id
+					FROM {$rt}
+					WHERE {$rt}.user_id = {$user_id}
+					AND {$rt}.relationship_type = {$read_id}
+					AND {$rt}.value = 1
+				)
+				GROUP BY {$wpdb->posts}.ID
+				ORDER BY {$wpdb->postmeta}.meta_value DESC
+				LIMIT {$pagefull} OFFSET {$pageTop}
+			 ", pf_feed_item_post_type(), '%'.$search.'%', '%'.$search.'%');
+			 
+			 #var_dump($dquerystr);
+
 		} elseif (is_user_logged_in()){
 			$relate = new PF_RSS_Import_Relationship();
 			$rt = $relate->table_name;
@@ -255,6 +286,7 @@ class PF_Feed_Item {
 		# This is how we do a custom query, when WP_Query doesn't do what we want it to.
 		$archivalposts = $wpdb->get_results($dquerystr, OBJECT);
 		//print_r(count($rssarchivalposts)); die();
+#		 var_dump($archivalposts);
 		$feedObject = array();
 		$c = 0;
 		#var_dump($dquerystr);
