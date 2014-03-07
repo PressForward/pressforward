@@ -136,7 +136,7 @@ class PF_Feeds_Schema {
 	public function progressive_feedlist_transformer($feedlist = array(), $xmlUrl, $key) {
 		
 		$check = $this->create($xmlUrl, array('type' => 'rss-quick'));
-		if (is_numeric($check)){
+		if (is_numeric($check) && (0 < $check)){
 			unset($feedlist[$key]);
 		}
 		return $feedlist;
@@ -154,11 +154,12 @@ class PF_Feeds_Schema {
 	
 	# A function to take an argument array and turn it into a Feed CPT entry.
 	public function feed_post_setup($r, $insert_type = 'insert'){
-		
+		pf_log('Invoked: feed_post_setup');
 		foreach ($r as $k=>$e){
 			if (!$e)
 				$r[$k] = '';
 		}
+		pf_log('Replaced false meta with empty strings.');
 		
 		$wp_args = array(
 			'post_type' 	=> $this->post_type,
@@ -170,7 +171,8 @@ class PF_Feeds_Schema {
 		);
 		# Duplicate the function of WordPress where creating a pre-existing 
 		# post results in an update to that post. 
-		
+		pf_log('We have initially formed the following post args:');
+		pf_log($wp_args);
 		if (!self::has_feed($r['url'])){
 			$insert_type = 'insert';
 		} else {
@@ -208,7 +210,8 @@ class PF_Feeds_Schema {
 #echo '<pre>';
 		#var_dump($post_id);
 		#echo '</pre>';
-		if ( is_numeric($post_id) ){
+		if ( is_numeric($post_id) && (0 < $post_id) ){
+			pf_log('The post_id is numeric and greater than 0, complete the ' .$insert_type. ' process');
 			self::set_pf_feed_type($post_id, $r['type']);
 			$r['feedUrl'] = $r['url'];
 			$unsetables = array('title', 'description', 'tags', 'type', 'url');
@@ -282,10 +285,12 @@ class PF_Feeds_Schema {
 		pf_log('Received a create command with the following arguments:');
 		pf_log($r);
 		if ($r['type'] == 'rss'){
-		
+			pf_log('We are creating an RSS feed');
 			if (is_wp_error($theFeed = fetch_feed($feedUrl))){
+				pf_log('The RSS feed failed verification');
 				return new WP_Error('badfeed', __('The feed fails verification.'));
 			} else {
+				pf_log('The RSS feed was verified, setting up meta');
 				$r = self::setup_rss_meta($r, $theFeed);
 			}		
 		}
@@ -294,14 +299,24 @@ class PF_Feeds_Schema {
 			$r['user_added'] = $current_user->user_login;
 		}
 		if ($r['type'] == 'rss-quick' && !isset($r['title'])){
+			pf_log('The feed was added with the RSS-Quick type, normalizing by setting the title to the URL.'); 
 			$r['title'] = $r['url'];
 		}
 		if (self::has_feed($feedUrl)){
-			self::feed_post_setup($r, 'update');
+			pf_log('We checked for this feed and found it.');
+			pf_log('Doing the feed_post_setup process as an update.');
+			$check = self::feed_post_setup($r, 'update');
 		} else {
-			self::feed_post_setup($r);
+			pf_log('We checked for this feed and did not find it.')
+			pf_log('Doing the feed_post_setup process as a new post');
+			$check = self::feed_post_setup($r);
 		}
-		return true;
+		pf_log('Attempt to create or update the post has resulted in a post_id or false:');
+		pf_log($check);
+		if (!$check){
+			return false;
+		}
+		return $check;
 
 	}
 	
@@ -410,6 +425,7 @@ class PF_Feeds_Schema {
 	# When walking through the feedlist, if it is an old entry,
 	# call this function to renew the feed post with better data.
 	public function update_url($url){
+		pf_log('Invoked: PF_Feeds_Schema::update_url');
 		$posts = self::has_feed($url);
 		if (!$posts){
 			$check = self::create($url);
@@ -430,7 +446,9 @@ class PF_Feeds_Schema {
 				$c++;
 			} else {
 				# Let's duplicate WordPress's mechanic of 'update' creating a new post if it doesn't exist.
-				self::create($url);
+				$id = self::create($url);
+				wp_reset_postdata();
+				return $id;
 			}
 		}
 		wp_reset_postdata();
@@ -465,12 +483,13 @@ class PF_Feeds_Schema {
 			}		
 		}
 		if ('rss-quick' == $r['type']){
+			pf_log('Updating a rss-quick');
 			$r = self::setup_rss_meta($r, $theFeed);
 			self::set_pf_feed_type($r['ID'], 'rss');
 		}		
 		
-		self::feed_post_setup($r, 'update');
-
+		$check = self::feed_post_setup($r, 'update');
+		return $check;
 		
 	}
 	
@@ -490,7 +509,7 @@ class PF_Feeds_Schema {
 	}
 	
 	public function get_pf_feed_type($id) {
-		pf_log( 'Invoked: PF_Feed_Schema::get_pf_feed_type($id)' );
+		pf_log( 'Invoked: PF_Feed_Schema::get_pf_feed_type('.$id.')' );
 		$updateResult = get_post_meta($id, 'feed_type', true);
 		if (is_wp_error($updateResult)){
 			return $updateResult->get_error_message();
@@ -508,6 +527,7 @@ class PF_Feeds_Schema {
 	# in a way as similar to OPML as possible for accurate
 	# output later. 
 	public function set_feed_meta($post_id, $args){
+		pf_log('Invoked: PF_Feeds_Schema::set_feed_meta');
 		$c = 1;
 		#echo '<pre>';
 		#var_dump($args);
