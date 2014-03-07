@@ -307,7 +307,7 @@ class PF_Feeds_Schema {
 			pf_log('Doing the feed_post_setup process as an update.');
 			$check = self::feed_post_setup($r, 'update');
 		} else {
-			pf_log('We checked for this feed and did not find it.')
+			pf_log('We checked for this feed and did not find it.');
 			pf_log('Doing the feed_post_setup process as a new post');
 			$check = self::feed_post_setup($r);
 		}
