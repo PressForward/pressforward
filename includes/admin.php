@@ -1281,33 +1281,6 @@ class PF_Admin {
 		return $query->post_count;
 	}
 
-	public function count_the_posts($post_type, $date_less = false){
-				
-				if (!$date_less){
-					$y = date('Y');
-					$m = date('m');
-				} elseif (!empty($date_less) && $date_less < 12) {
-					$y = date('Y');
-					$m = date('m');
-					$m = $m + $date_less;
-				} elseif (!empty($date_less) && $date_less >= 12) {
-					$y = date('Y');
-					$y = $y - floor($date_less/12);
-					$m = date('m');
-					$m = $m - (abs($date_less)-(12*floor($date_less/12)));
-				}
-				
-				$query_arg = array(
-					'post_type' 		=> $post_type,
-					'year'				=> $y,
-					'monthnum'			=> $m,
-					'posts_per_page' 	=> -1
-				);
-				$query = new WP_Query($query_arg);	
-		
-		return $query->post_count;
-	}
-
 	public function search_the_posts($s, $post_type){
 	
 		$args = array(
