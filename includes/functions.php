@@ -493,13 +493,21 @@ function pf_replace_author_presentation( $author ) {
 add_filter( 'the_author', 'pf_replace_author_presentation' );
 
 function pf_replace_author_uri_presentation( $author_uri ) {
-	//global $authordata;
 	global $post, $authordata;
+	if(is_object($post)){
+		$id = $post->ID;
+	} elseif (is_numeric(get_the_ID())){
+		$id = get_the_ID();
+	} else {
+		return $author_uri;
+	}
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')) {
 		$custom_author_uri = get_post_meta($post->ID, 'nomination_permalink', TRUE);
-		if($custom_author_uri)
+		if(!$custom_author_uri || 0 == $custom_author_uri || empty($custom_author_uri)){
+			return $author_uri;
+		} else {
 			return $custom_author_uri;
-		return $author_uri;
+		}
 	} else {
 		return $author_uri;
 	}
