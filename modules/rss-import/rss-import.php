@@ -282,19 +282,26 @@ class PF_RSS_Import extends PF_Module {
 		$subed = '';
 		if (!empty($input['single'])){
 			if (!(is_array($input['single']))){
+				pf_log('The feed is not an array;');
 				if (!$feed_obj->has_feed($input['single'])){
+					pf_log('The feed does not already exist.');
 					$check = $feed_obj->create($input['single'], array('type' => 'rss', 'module_added' => get_called_class()));
 					if (is_wp_error($check) || !$check){
+						pf_log('The feed did not enter the database.');
 						#wp_die($check);
 						$description = 'Feed failed initial attempt to add to database | ' . $check->get_error_message();
 						$feed_obj->create($input['single'], array('type' => 'rss-quick', 'description' => $description, 'module_added' => get_called_class()));
 					}
 				} else {
-					$feed_obj->update_url($input['single']);
+					pf_log('The feed already exists, sending it to update.');
+					$check = $feed_obj->update_url($input['single']);
+					pf_log('Our attempt to update resulted in:');
+					pf_log($check);
 				}
 				
 				$subed = 'a feed ';
 			} else {
+				pf_log('The feed was an array, this does not work');
 				wp_die('Bad feed input. Why are you trying to place an array?');
 			}
 		}
