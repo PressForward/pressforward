@@ -290,7 +290,7 @@ class PF_RSS_Import extends PF_Module {
 				pf_log('The feed is not an array;');
 				if (!$feed_obj->has_feed($input['single'])){
 					pf_log('The feed does not already exist.');
-					$check = $feed_obj->create($input['single'], array('type' => 'rss', 'module_added' => get_called_class()));
+					$check = $feed_obj->create($input['single'], array('type' => 'rss', 'module_added' => get_class($this)));
 					if (is_wp_error($check) || !$check){
 						pf_log('The feed did not enter the database.');
 						#wp_die($check);
