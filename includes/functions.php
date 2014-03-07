@@ -493,13 +493,21 @@ function pf_replace_author_presentation( $author ) {
 add_filter( 'the_author', 'pf_replace_author_presentation' );
 
 function pf_replace_author_uri_presentation( $author_uri ) {
-	//global $authordata;
 	global $post, $authordata;
+	if(is_object($post)){
+		$id = $post->ID;
+	} elseif (is_numeric(get_the_ID())){
+		$id = get_the_ID();
+	} else {
+		return $author_uri;
+	}
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')) {
 		$custom_author_uri = get_post_meta($post->ID, 'nomination_permalink', TRUE);
-		if($custom_author_uri)
+		if(!$custom_author_uri || 0 == $custom_author_uri || empty($custom_author_uri)){
+			return $author_uri;
+		} else {
 			return $custom_author_uri;
-		return $author_uri;
+		}
 	} else {
 		return $author_uri;
 	}
@@ -762,7 +770,7 @@ function pf_meta_structure(){
 		array(
 			'name' => 'nominator_array',
 			'definition' => __('Users who nominated this item', 'pf'),
-			'function'	=> __('Stores and array of all userIDs that nominated the item', 'pf'),
+			'function'	=> __('Stores and array of all userIDs that nominated the item in an array', 'pf'),
 			'type'	=> array('adm'),
 			'use'	=> array('req'),
 			'level'	=> array('nomination', 'post')
@@ -815,6 +823,90 @@ function pf_pass_meta(){
 
 function pf_retrieve_meta(){
 
+}
+
+function filter_for_pf_archives_only($sql){
+	global $wpdb;
+#	if (isset($_GET['pf-see']) && ('archive-only' == $_GET['pf-see'])){
+		$relate = new PF_RSS_Import_Relationship();
+		$rt = $relate->table_name;
+		$user_id = get_current_user_id();
+		$read_id = pf_get_relationship_type_id('archive');			
+	
+/**		$sql .= " AND {$wpdb->posts}.ID 
+				IN (
+					SELECT item_id 
+					FROM {$rt} 
+					WHERE {$rt}.user_id = {$user_id} 
+					AND {$rt}.relationship_type = {$read_id} 
+					AND {$rt}.value = 1
+				) ";	
+	}
+**/	#var_dump($sql);
+	return $sql;
+	
+}
+
+function prep_archives_query($q){
+		global $wpdb;
+		
+		if (isset($_GET["pc"])){
+			$offset = $_GET["pc"]-1;
+			$offset = $offset*10;
+		} else {
+			$offset = 0;
+		}
+		
+		if (isset($_GET['pf-see']) && ('archive-only' == $_GET['pf-see'])){
+			$pagefull = 20;
+			$relate = new PF_RSS_Import_Relationship();
+			$rt = $relate->table_name;
+			$user_id = get_current_user_id();
+			$read_id = pf_get_relationship_type_id('archive');
+			$q = $wpdb->prepare("
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id	
+				AND {$wpdb->posts}.post_type = %s
+				AND {$wpdb->posts}.post_status = 'draft'
+				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+				AND {$wpdb->postmeta}.meta_value > 0
+				AND {$wpdb->posts}.ID 
+				IN (
+					SELECT item_id 
+					FROM {$rt} 
+					WHERE {$rt}.user_id = {$user_id} 
+					AND {$rt}.relationship_type = {$read_id} 
+					AND {$rt}.value = 1
+				)
+				GROUP BY {$wpdb->posts}.ID
+				ORDER BY {$wpdb->postmeta}.meta_value DESC
+				LIMIT {$pagefull} OFFSET {$offset}
+			 ", 'nomination');	
+		} elseif (isset($_GET['action']) && (isset($_POST['search-terms']))){
+			$pagefull = 20;
+			$relate = new PF_RSS_Import_Relationship();
+			$rt = $relate->table_name;
+			$user_id = get_current_user_id();
+			$read_id = pf_get_relationship_type_id('archive');
+			$search = $_POST['search-terms'];
+			$q = $wpdb->prepare("
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id	
+				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+				AND {$wpdb->postmeta}.meta_value > 0
+				AND {$wpdb->posts}.post_type = %s
+				AND {$wpdb->posts}.post_status = 'draft'
+				AND ((({$wpdb->posts}.post_title LIKE '%s') OR ({$wpdb->posts}.post_content LIKE '%s')))
+				GROUP BY {$wpdb->posts}.ID
+				ORDER BY {$wpdb->postmeta}.meta_value DESC
+				LIMIT {$pagefull} OFFSET {$offset}
+			 ", 'nomination', '%'.$search.'%', '%'.$search.'%');	
+		}		
+	#$archivalposts = $wpdb->get_results($dquerystr, OBJECT);
+	#return $archivalposts;
+	return $q;
 }
 
 /**

@@ -17,8 +17,6 @@ class PF_Feed_Retrieve {
 	 * Constructor
 	 */
 	public function __construct() {
-		global $pf;
-
 		add_action( 'wp_head', array($this, 'get_chunk_nonce'));
 		add_action( 'init', array($this, 'alter_for_retrieval'), 999);
 
@@ -155,7 +153,7 @@ class PF_Feed_Retrieve {
 		 */
 		
 		// This is the fix for the insanity caused by the planet money feed - http://www.npr.org/rss/podcast.php?id=510289.
-		if ( (int) $prev_iteration == (int) $feeds_iteration){
+		if ( (int) $prev_iteration == (int) $feeds_iteration && (0 != $feeds_iteration)){
 			
 			# In some cases the option fails to update for reasons that are not
 			# clear. In those cases, we will risk skipping a feed rather 
@@ -169,6 +167,9 @@ class PF_Feed_Retrieve {
 			# Regardless of success, iterate this process forward.
 			
 			$feeds_iteration++;
+		} elseif ((0 == $feeds_iteration)) {
+			pf_log('No, but we are at the beginning, so all is well here.');
+		
 		} else {
 			
 			# No rest for the iterative, so on we go. 
@@ -449,7 +450,17 @@ class PF_Feed_Retrieve {
 			}
 			//return false;
 			die();
-		}		
+		}
+
+		if ('rss-quick' == $type){
+			# Let's update the RSS-Quick so it has real data.
+			$rq_update = array(
+				'type'		=>		'rss-quick',
+				'ID'		=>		$id,
+				'url'		=>		$obj->guid
+			);
+			$Feeds->update($id, $rq_update);
+		}
 		
 		# module function to return a set of standard pf feed_item object
 		# Like get_items in SimplePie
@@ -589,7 +600,7 @@ class PF_Feed_Retrieve {
 				pf_log( __( 'Iterate option not switched.', 'pf') );
 			}
 
-			PF_Feed_Item::assemble_feed_for_pull();
+			pressforward()->pf_feed_items->assemble_feed_for_pull();
 		} else {
 			
 			$feeds_meta_state = get_option(PF_SLUG . '_feeds_meta_state', array());
@@ -617,7 +628,7 @@ class PF_Feed_Retrieve {
 						update_option(PF_SLUG . '_feeds_meta_state', array());
 						update_option( PF_SLUG . '_ready_to_chunk', 1 );
 						update_option(PF_SLUG . '_iterate_going_switch', 1);
-						PF_Feed_Item::assemble_feed_for_pull();
+						pressforward()->pf_feed_items->assemble_feed_for_pull();
 					} elseif (($feeds_meta_state['retrigger'] < (time() + 86400)) && !(empty($feeds_meta_state))) {
 						# If it has been more than 24 hours and retrieval has been frozen in place
 						# and the retrieval state hasn't been reset, reset the check values and reset

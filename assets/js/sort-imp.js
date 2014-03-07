@@ -2,7 +2,7 @@
  * Implementation of sort for pf
 **/
 jQuery(window).load(function() {
-
+	jQuery(".feed-item").tsort("span.sortable_nom_timestamp", {order:'desc'});
 	jQuery('#sortbyitemdate').toggle(function (evt){ 
 		evt.preventDefault();
 		jQuery(".feed-item").tsort("span.sortableitemdate", {order:'desc'});

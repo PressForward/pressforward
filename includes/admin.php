@@ -22,6 +22,7 @@ class PF_Admin {
 		add_filter('pf_admin_pages', array($this, 'state_pf_admin_pages'), 10,3);
 		// Catch form submits
 		add_action( 'admin_init', array($this, 'pf_options_admin_page_save') );
+		add_action( 'admin_notices', array($this, 'admin_notices_action' ));	
 
 		// AJAX handlers
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
@@ -501,10 +502,11 @@ class PF_Admin {
 					$id_for_comments = $item['post_id'];
 				}
 				$archive_status = pf_get_relationship_value( 'archive', $id_for_comments, wp_get_current_user()->ID );
-				if ($archive_status == 1){
+				if (isset($_GET['pf-see'])){ } else { $_GET['pf-see'] = false; }
+				if ($archive_status == 1 && ('archive-only' != $_GET['pf-see'])){
 					$archived_status_string = 'archived';
 					$dependent_style = 'display:none;';
-				} elseif ( ($format === 'nomination') && (1 == pf_get_relationship_value( 'archive', $metadata['nom_id'], $user_id))) {
+				} elseif ( ($format === 'nomination') && (1 == pf_get_relationship_value( 'archive', $metadata['nom_id'], $user_id))  && ('archive-only' != $_GET['pf-see'])) {
 					$archived_status_string = 'archived';
 					$dependent_style = 'display:none;';
 				} else {
@@ -514,7 +516,7 @@ class PF_Admin {
 		if ($format === 'nomination'){
 			#$item = array_merge($metadata, $item);
 			#var_dump($item);
-			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['nominators'], $metadata['item_tags'], $metadata['item_id'] )) . ' '.$readClass.'" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '" pf-schema="read" pf-schema-class="article-read">';
+			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['item_tags'], $metadata['item_id'] )) . ' '.$readClass.'" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '" pf-schema="read" pf-schema-class="article-read">';
 		} else {
 			$id_for_comments = $item['post_id'];
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
@@ -729,6 +731,16 @@ class PF_Admin {
 		<?php 
 		}
 	}
+	
+	public function pf_search_template(){
+		?>
+			<form id="feeds-search" method="post" action="<?php echo basename($_SERVER['PHP_SELF']) . '?' . $_SERVER['QUERY_STRING'] . '&action=post'; ?>">
+					<label for="search-terms">Search</label>
+				<input type="text" name="search-terms" id="search-terms" placeholder="Enter search terms">
+				<input type="submit" class="btn btn-small" value="Search">
+			</form>			
+		<?php 
+	}
 
 	/**
 	 * Display function for the main All Content panel
@@ -758,11 +770,7 @@ class PF_Admin {
 				<button type="submit" class="refreshfeed btn btn-small" id="refreshfeed" value="<?php  _e('Refresh', 'pf')  ?>"><?php  _e('Refresh', 'pf');  ?></button>
 				<button class="btn btn-small" id="fullscreenfeed"> <?php  _e('Full Screen', 'pf');  ?> </button>
 			</div><!-- End title -->
-			<form id="feeds-search">
-					<label for="search-terms">Search</label>
-				<input type="text" name="search-terms" id="search-terms" placeholder="Enter search terms">
-				<input type="submit" class="btn btn-small" value="Search">
-			</form>			
+			<?php self::pf_search_template(); ?>
 		</header><!-- End Header -->
 		<div role="main">
 			<?php $this->toolbox(); ?>
@@ -803,7 +811,7 @@ class PF_Admin {
 				$limit = false;
 			}
 			#var_dump($limit);	
-			foreach(PF_Feed_Item::archive_feed_to_display($count+1, 20, 0, false, $limit) as $item) {
+			foreach(pressforward()->pf_feed_items->archive_feed_to_display($count+1, 20, 0, false, $limit) as $item) {
 				
 				$this->form_of_an_item($item, $c);
 
@@ -1012,9 +1020,15 @@ class PF_Admin {
 			do_action( 'feeder_menu' );
 
 			?><input type="submit" class="button-primary" value="<?php _e('Save Options', 'pf'); ?>" />
+
+			
 			</form><?php
 
 
+	}
+	
+	function admin_notices_action() {
+		settings_errors( 'add_pf_feeds' );
 	}
 
 	//This function can add js and css that we need to specific admin pages.
@@ -1265,7 +1279,47 @@ class PF_Admin {
 				$query = new WP_Query($query_arg);	
 		
 		return $query->post_count;
-	}	
+	}
+
+	public function count_the_posts($post_type, $date_less = false){
+				
+				if (!$date_less){
+					$y = date('Y');
+					$m = date('m');
+				} elseif (!empty($date_less) && $date_less < 12) {
+					$y = date('Y');
+					$m = date('m');
+					$m = $m + $date_less;
+				} elseif (!empty($date_less) && $date_less >= 12) {
+					$y = date('Y');
+					$y = $y - floor($date_less/12);
+					$m = date('m');
+					$m = $m - (abs($date_less)-(12*floor($date_less/12)));
+				}
+				
+				$query_arg = array(
+					'post_type' 		=> $post_type,
+					'year'				=> $y,
+					'monthnum'			=> $m,
+					'posts_per_page' 	=> -1
+				);
+				$query = new WP_Query($query_arg);	
+		
+		return $query->post_count;
+	}
+
+	public function search_the_posts($s, $post_type){
+	
+		$args = array(
+			's'			=>  $s,
+			'post_type' => $post_type
+			
+		);
+		
+		$q = WP_Query($args);
+		return $q;
+	
+	}
 	
 	/*
 	 *
@@ -1357,17 +1411,17 @@ class PF_Admin {
 	}
 
 	public function reset_feed() {
-		PF_Feed_Item::reset_feed();
+		pressforward()->pf_feed_items->reset_feed();
 		die();
 	}
 
 	public function make_it_readable() {
-		PF_Readability::make_it_readable();
+		pressforward()->readability->make_it_readable();
 		die();
 	}
 
 	public function archive_a_nom() {
-		PF_Nominations::archive_a_nom();
+		pressforward()->nominations->archive_a_nom();
 		die();
 	}
 }

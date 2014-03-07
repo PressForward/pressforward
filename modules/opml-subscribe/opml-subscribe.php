@@ -116,7 +116,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 	
 	public function add_to_feeder(){
-		?><form method="post" action="options.php"><?php
+		
         settings_fields( PF_SLUG . '_opml_group' );
 		$feedlist = get_option( PF_SLUG . '_opml_module' );	
         ?>
@@ -129,10 +129,7 @@ class PF_OPML_Subscribe extends PF_Module {
 
 
             </div>
-			<p class="submit">
-				<?php submit_button(); ?>
-			</p>
-		</form><?php
+		<?php
 	}
 	
 	static function pf_opml_subscriber_validate($input){

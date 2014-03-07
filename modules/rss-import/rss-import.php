@@ -15,7 +15,6 @@ class PF_RSS_Import extends PF_Module {
 	 * Constructor
 	 */
 	public function __construct() {
-		global $pf;
 		$this->feed_type = 'rss';
 		parent::start();
 
@@ -41,7 +40,7 @@ class PF_RSS_Import extends PF_Module {
 	 * Includes necessary files
 	 */
 	public function includes() {
-		require_once(PF_ROOT . "/includes/opml-reader/opml-reader.php");
+	
 	}
 	
 	/**
@@ -226,11 +225,12 @@ class PF_RSS_Import extends PF_Module {
 
 	function add_to_feeder() {
 
-		?><form method="post" action="options.php"><?php
+		
         settings_fields( PF_SLUG . '_feedlist_group' );
 		$feedlist = get_option( PF_SLUG . '_feedlist' );
 
         ?>
+		<div class="pf-opt-group">
 			<br />
 			<br />
 			<div><?php _e('Add Single RSS Feed', 'pf'); ?></div>
@@ -248,11 +248,7 @@ class PF_RSS_Import extends PF_Module {
 
 
                 </div>
-
-			<p class="submit">
-				<?php submit_button(); ?>
-			</p>
-		</form>
+		</div>
 		<?php
 
 
@@ -282,20 +278,35 @@ class PF_RSS_Import extends PF_Module {
 		set_time_limit(0);
 		pf_log('Add Feed Process Invoked: PF_RSS_IMPORT::pf_feedlist_validate');
 		pf_log($input);
+		if ( current_user_can('edit_post') ) {
+ 			pf_log('Yes, the current user can edit posts.');
+		} else {
+			pf_log('No, the current user can not edit posts.');
+		}
 		$feed_obj = pressforward()->pf_feeds;
+		$subed = '';
 		if (!empty($input['single'])){
 			if (!(is_array($input['single']))){
+				pf_log('The feed is not an array;');
 				if (!$feed_obj->has_feed($input['single'])){
-					$check = $feed_obj->create($input['single'], array('type' => 'rss', 'module_added' => get_called_class()));
+					pf_log('The feed does not already exist.');
+					$check = $feed_obj->create($input['single'], array('type' => 'rss', 'module_added' => get_class($this)));
 					if (is_wp_error($check) || !$check){
+						pf_log('The feed did not enter the database.');
 						#wp_die($check);
 						$description = 'Feed failed initial attempt to add to database | ' . $check->get_error_message();
 						$feed_obj->create($input['single'], array('type' => 'rss-quick', 'description' => $description, 'module_added' => get_called_class()));
 					}
 				} else {
-					$feed_obj->update_url($input['single']);
+					pf_log('The feed already exists, sending it to update.');
+					$check = $feed_obj->update_url($input['single']);
+					pf_log('Our attempt to update resulted in:');
+					pf_log($check);
 				}
+				
+				$subed = 'a feed ';
 			} else {
+				pf_log('The feed was an array, this does not work');
 				wp_die('Bad feed input. Why are you trying to place an array?');
 			}
 		}
@@ -314,6 +325,7 @@ class PF_RSS_Import extends PF_Module {
 				# @todo Tag based on folder structure
 			}
 			$check_up = update_option( PF_SLUG . '_feedlist', $opml_array );
+			$subed = 'an OPML file ';
 		}
 
 		if (!empty($_POST['o_feed_url'])){
@@ -323,6 +335,10 @@ class PF_RSS_Import extends PF_Module {
 				}
 
 		}
+		
+		add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', 'You have submitted '.$subed.'.', 'updated');
+		return $input;
+		
 	}
 
 	public function remove_a_feed() {
@@ -393,9 +409,8 @@ class PF_RSS_Import extends PF_Module {
 	}
 
 	public function admin_enqueue_scripts() {
-		global $pf;
-
 		global $pagenow;
+		$pf = pressforward();
 
 		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
 

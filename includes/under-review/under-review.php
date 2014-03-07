@@ -27,11 +27,7 @@
 				<span id="h-after"> &#8226; </span>
 				<button class="btn btn-small" id="fullscreenfeed"> <?php  _e('Full Screen', 'pf');  ?> </button>
 			</div><!-- End title -->
-			<form id="feeds-search">
-					<label for="search-terms">Search</label>
-				<input type="text" name="search-terms" id="search-terms" placeholder="Enter search terms">
-				<input type="submit" class="btn btn-small" value="Search">
-			</form>			
+				<?php pressforward()->admin->pf_search_template(); ?>
 		</header><!-- End Header -->
 		<div role="main">
 			<?php $this->toolbox();	?>	
@@ -56,10 +52,13 @@
 					<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
 					echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomdate" value="' . __('Sort by date nominated', 'pf') . '">' . __('Sort by date nominated', 'pf') . '</button>'; 
 					echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomcount" value="' . __('Sort by nominations', 'pf') . '">' . __('Sort by nominations', 'pf') . '</button>'; 
-					if (isset($_GET['by']) && ( 'archived' == $_GET['by'])){
-						echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="shownormal" value="' . __('Show non-archived', 'pf') . '">' . __('Show non-archived', 'pf') . '.</button>';
-					} else {
-						echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="showarchived" value="' . __('Show archived', 'pf') . '">' . __('Show archived', 'pf') . '.</button>';
+					if (!isset($_GET['pf-see']) || ('archive-only' != $_GET['pf-see'])){
+						echo '<button type="submit" class="btn btn-small feedsort" id="showarchiveonly" value="' . __('Show only archived', 'pf') . '">' . __('Show only archived', 'pf') . '</button>'; 
+						if (isset($_GET['by']) && ( 'archived' == $_GET['by'])){
+							echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="shownormal" value="' . __('Show non-archived', 'pf') . '">' . __('Show non-archived', 'pf') . '.</button>';
+						} else {
+							echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="showarchived" value="' . __('Show archived', 'pf') . '">' . __('Show archived', 'pf') . '.</button>';
+						}
 					}
 					?>
 					</div>
@@ -112,10 +111,14 @@
 							'orderby' => 'date',
 							'order' => 'DESC',
 							'posts_per_page' => 20,
+							'suppress_filters' => FALSE,
 							'offset' => $offset  #The query function will turn page into a 1 if it is a 0. 
 
 							);
+			add_filter( 'posts_request', 'prep_archives_query');
 			$nom_query = new WP_Query( $nom_args );
+			remove_filter( 'posts_request', 'prep_archives_query' );
+			#var_dump($nom_query);
 			$count = 0;
 			$countQ = $nom_query->post_count;
 			$countQT = $nom_query->found_posts;

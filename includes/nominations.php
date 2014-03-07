@@ -211,7 +211,7 @@ class PF_Nominations {
 							//If we ever reveal this to non users and want to count nominations by all, here is where it will go.
 						} else {
 							$nominators = get_post_meta($id, 'nominator_array', true);
-							$nominators .= ',' . $current_user->ID;
+							$nominators[] = $current_user->ID;
 							update_post_meta($id, 'nominator_array', $nominators);
 						}
 
@@ -390,11 +390,11 @@ class PF_Nominations {
 		$readable_status = get_post_meta($_POST['item_post_id'], 'readable_status', true);
 		if ($readable_status != 1){
 			$read_args = array('force' => '', 'descrip' => $item_content, 'url' => $_POST['item_link'], 'authorship' => $_POST['item_author'] );
-			$item_content_obj = PF_Readability::get_readable_text($read_args);
+			$item_content_obj = pressforward()->readability->get_readable_text($read_args);
 			$item_content = htmlspecialchars_decode($item_content_obj['readable']);
 		} else {
 			$item_content = htmlspecialchars_decode($_POST['item_content']);
-		}
+		}		
 
 		//No need to define every post arg right? I should only need the ones I'm pushing through. Well, I guess we will find out.
 		$data = array(
@@ -412,12 +412,18 @@ class PF_Nominations {
 
 		$newNomID = wp_insert_post( $data );
 
+		if ((1 == $readable_status) && ('secured' != $item_content_obj['status'])){
+			update_post_meta($_POST['item_post_id'], 'readable_status', 1);
+		} elseif ((1 != $readable_status)) {
+			update_post_meta($_POST['item_post_id'], 'readable_status', 0);
+		}		
+		
 		if ($_POST['item_feat_img'] != '')
-			PF_Feed_Item::set_ext_as_featured($newNomID, $_POST['item_feat_img']);
+			pressforward()->pf_feed_items->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
 		//die($_POST['item_feat_img']);
 		add_post_meta($_POST['item_post_id'], 'nomination_count', 1, true);
 		add_post_meta($_POST['item_post_id'], 'submitted_by', $userString, true);
-		add_post_meta($_POST['item_post_id'], 'nominator_array', $userID, true);	
+		add_post_meta($_POST['item_post_id'], 'nominator_array', array($userID), true);	
 		add_post_meta($_POST['item_post_id'], 'date_nominated', date('c'), true);		
 		add_post_meta($_POST['item_post_id'], 'origin_item_ID', $item_id, true);
 		add_post_meta($_POST['item_post_id'], 'item_feed_post_id', $_POST['item_post_id'], true);
@@ -503,7 +509,7 @@ class PF_Nominations {
 					'authorship' => $_POST['item_author']
 					
 				);
-				$readReady = PF_Readability::get_readable_text($readArgs);
+				$readReady = pressforward()->readability->get_readable_text($readArgs);
 				#var_dump($readReady); die();
 				$data['post_content'] = $readReady['readable'];
 			}			
@@ -544,6 +550,18 @@ class PF_Nominations {
 			die();
 		}
 	}
+	
+	#Take a nomination post to draft.
+	public function nominate_to_draft($post){
+	
+	}
+	
+	#Take an object to nominate.
+	public function obj_to_nominate($post){
+	
+	}
+	
+	
 
 
 }

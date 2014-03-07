@@ -3,7 +3,7 @@
 Plugin Name: PressForward
 Plugin URI: http://pressforward.org/
 Description: This plugin is an aggregation parser for CHNM's Press Forward project.
-Version: 2.4.2
+Version: 3.0.1
 Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
 Author URI: http://aramzs.me, http://boone.gorg.es/, http://clioweb.org
 License: GPL2
@@ -41,15 +41,34 @@ class PressForward {
 	var $schema;
 	var $admin;
 	var $nominations;
+	var $pf_feed_items;
 	var $pf_feeds;
 	var $pf_retrieve;
+	var $opml_reader;
+	var $og_reader;
+	var $readability;
+
+	public static function init() {
+		static $instance;
+
+		if ( ! is_a( $instance, 'PressForward' ) ) {
+			$instance = new self();
+		}
+
+		return $instance;
+	}
 
 	// See http://php.net/manual/en/language.oop5.decon.php to get a better understanding of what's going on here.
-	function __construct() {
+	private function __construct() {
 
 		$this->includes();
-		
+
+		$this->set_up_opml_reader();
+		$this->set_up_og_reader();
+		$this->set_up_readability();
+
 		$this->set_up_feeds();
+		$this->set_up_feed_items();
 		$this->set_up_schema();
 		$this->set_up_feed_retrieve();
 		$this->set_up_nominations();
@@ -59,8 +78,7 @@ class PressForward {
 
 		add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
 
-		load_plugin_textdomain( 'pf', false, PF_ROOT );
-
+		load_plugin_textdomain( 'pf', false, PF_ROOT . '/languages' );
 	}
 
 	/**
@@ -73,34 +91,68 @@ class PressForward {
 		// External libraries
 
 		// Pull and parse Open Graph data from a page.
-		require( PF_ROOT . "/lib/OpenGraph.php" );
+		require_once( PF_ROOT . "/lib/PF_OpenGraph.php" );
 
 		// Check the HTML of each item for open tags and close them.
 		// I've altered it specifically for some odd HTML artifacts that occur when
 		// WP sanitizes the content input.
-		require( PF_ROOT . "/lib/pf_htmlchecker.php" );
+		require_once( PF_ROOT . "/lib/pf_htmlchecker.php" );
 
 		// A slightly altered version of the Readability library from Five Filters,
 		// who based it off readability.com's code.
-		require( PF_ROOT . "/lib/fivefilters-readability/Readability.php" );
+		require_once( PF_ROOT . "/lib/fivefilters-readability/Readability.php" );
 
 		// For reading through an HTML page.
-		require( PF_ROOT . "/lib/pf_simple_html_dom.php" );
-		$dom = new pf_simple_html_dom;
+		require_once( PF_ROOT . "/lib/pf_simple_html_dom.php" );
+		#$dom = new pf_simple_html_dom;
 
 		// Internal tools
+		require_once(PF_ROOT . "/includes/opml-reader/opml-reader.php");
 
 		// Load the module base class and our test module
-		require( PF_ROOT . "/includes/functions.php" );
-		require( PF_ROOT . "/includes/module-base.php" );
-		require( PF_ROOT . '/includes/schema.php' );
-		require( PF_ROOT . '/includes/readable.php' );
-		require( PF_ROOT . '/includes/feed-items.php' );
-		require( PF_ROOT . '/includes/feeds.php' );
-		require( PF_ROOT . '/includes/slurp.php' );
-		require( PF_ROOT . '/includes/relationships.php' );
-		require( PF_ROOT . '/includes/nominations.php' );
-		require( PF_ROOT . '/includes/admin.php' );
+		require_once( PF_ROOT . "/includes/functions.php" );
+		require_once( PF_ROOT . "/includes/module-base.php" );
+		require_once( PF_ROOT . '/includes/schema.php' );
+		require_once( PF_ROOT . '/includes/readable.php' );
+		require_once( PF_ROOT . '/includes/feed-items.php' );
+		require_once( PF_ROOT . '/includes/feeds.php' );
+		require_once( PF_ROOT . '/includes/slurp.php' );
+		require_once( PF_ROOT . '/includes/relationships.php' );
+		require_once( PF_ROOT . '/includes/nominations.php' );
+		require_once( PF_ROOT . '/includes/admin.php' );
+	}
+
+	/**
+	 * Sets up the OPML Reader
+	 *
+	 * @since 3.0
+	 */
+	function set_up_opml_reader() {
+		if ( empty( $this->opml_reader ) ) {
+			$this->opml_reader = new OPML_reader;
+		}
+	}
+
+	/**
+	 * Sets up the OG Reader
+	 *
+	 * @since 3.0
+	 */
+	function set_up_og_reader() {
+		if ( empty( $this->og_reader ) ) {
+			$this->og_reader = new PF_OpenGraph;
+		}
+	}
+
+	/**
+	 * Sets up the Readability Object
+	 *
+	 * @since 3.0
+	 */
+	function set_up_readability() {
+		if ( empty( $this->readability ) ) {
+			$this->readability = new PF_Readability;
+		}
 	}
 
 	/**
@@ -113,7 +165,19 @@ class PressForward {
 			$this->schema = new PF_Feed_Item_Schema;
 		}
 	}
-	
+
+
+	/**
+	 * Sets up the Feeds functionality
+	 *
+	 * @since 2.2
+	 */
+	function set_up_feed_items() {
+		if ( empty( $this->pf_feed_items ) ) {
+			$this->pf_feed_items = new PF_Feed_Item;
+		}
+	}
+
 	/**
 	 * Sets up the Feeds functionality
 	 *
@@ -123,8 +187,8 @@ class PressForward {
 		if ( empty( $this->pf_feeds ) ) {
 			$this->pf_feeds = new PF_Feeds_Schema;
 		}
-	}	
-	
+	}
+
 	/**
 	 * Sets up the Retrieval functionality
 	 *
@@ -134,7 +198,7 @@ class PressForward {
 		if ( empty( $this->pf_retrieve ) ) {
 			$this->pf_retrieve = new PF_Feed_Retrieve;
 		}
-	}		
+	}
 
 	/**
 	 * Sets up the Dashboard admin
@@ -252,11 +316,7 @@ class PressForward {
  * @since 1.7
  */
 function pressforward() {
-	global $pf;
-	if ( ! is_a( $pf, 'PressForward' ) ) {
-		$pf = new PressForward();
-	}
-	return $pf;
+	return PressForward::init();
 }
 
 // Start me up!
