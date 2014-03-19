@@ -234,7 +234,7 @@ class PF_Feeds_Schema {
 			
 		} else {
 			if (!$r['htmlUrl']){
-				$r['htmlUrl'] = $theFeed->get_permalink();
+				$r['htmlUrl'] = $theFeed->get_link();
 			}
 			if (!$r['title']){
 				$r['title'] = $theFeed->get_title();
