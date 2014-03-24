@@ -338,7 +338,7 @@ class PF_RSS_Import extends PF_Module {
 
 		}
 		if ($something_broke){
-			add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', 'You have submitted '.$subed.'. The feed .'$input['single']'. was not found.', 'updated');
+			add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', 'You have submitted '.$subed.'. The feed was not found.', 'updated');
 		} else {
 			add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', 'You have submitted '.$subed.'.', 'updated');
 		}
