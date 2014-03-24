@@ -1272,8 +1272,10 @@ class PF_Admin {
 					'posts_per_page' 	=> -1
 				);
 				$query = new WP_Query($query_arg);	
+				$post_count = $query->post_count;
+				wp_reset_postdata();
 		
-		return $query->post_count;
+		return $post_count;
 	}
 
 	public function search_the_posts($s, $post_type){
