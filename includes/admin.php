@@ -435,7 +435,7 @@ class PF_Admin {
 		$source_ln_length = 48;
 		$source_lns = 2;
 		
-		$graf_ln_length = 46;
+		$graf_ln_length = 44;
 		$graf_lns = 4;
 		
 		$max = 0;
@@ -836,9 +836,13 @@ class PF_Admin {
 		if ($page == 0){ $page = 1; }
 		$pagePrev = $page-1;
 		$pageNext = $page+1;
-		
-		$pagePrev = '?page=pf-menu&pc=' . $pagePrev; 
-		$pageNext = '?page=pf-menu&pc=' . $pageNext;
+		if (!empty($_GET['by'])){
+			$limit_q = '&by=' . $limit;
+		} else {
+			$limit_q = '';
+		}
+		$pagePrev = '?page=pf-menu'.$limit_q.'&pc=' . $pagePrev; 
+		$pageNext = '?page=pf-menu'.$limit_q.'&pc=' . $pageNext;
 		if (isset($pageQ)){
 			$pageQ = $_GET['by'];
 			$pageQed = '&by=' . $pageQ;
@@ -1277,8 +1281,10 @@ class PF_Admin {
 				
 
 				$query = new WP_Query($query_arg);	
+				$post_count = $query->post_count;
+				wp_reset_postdata();
 		
-		return $query->post_count;
+		return $post_count;
 	}
 
 	public function search_the_posts($s, $post_type){

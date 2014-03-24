@@ -285,6 +285,7 @@ class PF_RSS_Import extends PF_Module {
 		}
 		$feed_obj = pressforward()->pf_feeds;
 		$subed = '';
+		$something_broke = false;
 		if (!empty($input['single'])){
 			if (!(is_array($input['single']))){
 				pf_log('The feed is not an array;');
@@ -294,6 +295,7 @@ class PF_RSS_Import extends PF_Module {
 					if (is_wp_error($check) || !$check){
 						pf_log('The feed did not enter the database.');
 						#wp_die($check);
+						$something_broke = true;
 						$description = 'Feed failed initial attempt to add to database | ' . $check->get_error_message();
 						$feed_obj->create($input['single'], array('type' => 'rss-quick', 'description' => $description, 'module_added' => get_called_class()));
 					}
@@ -335,8 +337,11 @@ class PF_RSS_Import extends PF_Module {
 				}
 
 		}
-		
-		add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', 'You have submitted '.$subed.'.', 'updated');
+		if ($something_broke){
+			add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', 'You have submitted '.$subed.'. The feed was not found.', 'updated');
+		} else {
+			add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', 'You have submitted '.$subed.'.', 'updated');
+		}
 		return $input;
 		
 	}

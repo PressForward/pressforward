@@ -18,7 +18,7 @@ class PF_Readability {
 	 *		);
 	*/
 	public static function get_readable_text($args){
-			ob_start();
+			#ob_start();
 			extract( $args, EXTR_SKIP );
 			set_time_limit(0);
 			$url = pf_de_https($url);
@@ -82,7 +82,7 @@ class PF_Readability {
 			}
 			
 			$return_args = array( 'status' => $read_status, 'readable' => $itemReadReady);
-			ob_end_flush();
+			#ob_end_flush();
 			return $return_args;
 			
 	}
@@ -96,6 +96,7 @@ class PF_Readability {
 		if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )
 			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) );
 		ob_start();
+		libxml_use_internal_errors(true);
 		$read_status = 'readable';
 		$item_id = $_POST['read_item_id'];
 		$post_id = $_POST['post_id'];
@@ -138,6 +139,11 @@ class PF_Readability {
 				$error = $update_check->get_error_message();
 			}
 		}
+		$domDocErrors = '';
+		$dderrors = libxml_get_errors();
+		foreach ($dderrors as $dderror){
+			$domDocErrors .= ' Error: '.$dderror->code.' Line:'.$dderror->line.' '. $dderror->message;
+		}
 		
 			$response = array(
 				'what' => 'full_item_content',
@@ -148,11 +154,13 @@ class PF_Readability {
 					'readable_status' => $read_status,
 					'error' => $error,
 					'buffered' => ob_get_contents(),
+					'domDoc_errors' => $domDocErrors,
 					'readable_applied_to_url' => $_POST['url']
 				)
 			);
 			$xmlResponse = new WP_Ajax_Response($response);
 			$xmlResponse->send();
+			libxml_clear_errors();
 			ob_end_flush();
 			die();
 	}

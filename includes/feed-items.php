@@ -160,7 +160,7 @@ class PF_Feed_Item {
 		 ", pf_feed_item_post_type());
 		} elseif ($limit == 'starred') {
 			$pageTop = $pageTop-1;
-			$relate = new PF_RSS_Import_Relationship();
+			$relate = pressforward()->relationships;
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('star');
@@ -180,13 +180,14 @@ class PF_Feed_Item {
 					AND {$rt}.relationship_type = {$read_id}
 					AND {$rt}.value = 1
 				)
-				GROUP BY {$wpdb->postmeta}.meta_key
+				GROUP BY {$wpdb->postmeta}.post_id
 				ORDER BY {$wpdb->postmeta}.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$pageTop}
 			 ", pf_feed_item_post_type());
+			 #var_dump($dquerystr);
 		} elseif ($limit == 'nominated') {
 			$pageTop = $pageTop-1;
-			$relate = new PF_RSS_Import_Relationship();
+			$relate = pressforward()->relationships;
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('nominate');
@@ -206,12 +207,12 @@ class PF_Feed_Item {
 					AND {$rt}.relationship_type = {$read_id}
 					AND {$rt}.value = 1
 				)
-				GROUP BY {$wpdb->postmeta}.meta_key
+				GROUP BY {$wpdb->postmeta}.post_id
 				ORDER BY {$wpdb->postmeta}.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$pageTop}
 			 ", pf_feed_item_post_type());
 		} elseif (is_user_logged_in() && (isset($_GET['action']) && ('post' == $_GET['action']) &&(isset($_POST['search-terms'])))){
-			$relate = new PF_RSS_Import_Relationship();
+			$relate = pressforward()->relationships;
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('archive');
@@ -242,7 +243,7 @@ class PF_Feed_Item {
 			 #var_dump($dquerystr);
 
 		} elseif (is_user_logged_in()){
-			$relate = new PF_RSS_Import_Relationship();
+			$relate = pressforward()->relationships;
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('archive');
