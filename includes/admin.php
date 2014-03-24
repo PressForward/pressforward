@@ -836,9 +836,13 @@ class PF_Admin {
 		if ($page == 0){ $page = 1; }
 		$pagePrev = $page-1;
 		$pageNext = $page+1;
-		
-		$pagePrev = '?page=pf-menu&pc=' . $pagePrev; 
-		$pageNext = '?page=pf-menu&pc=' . $pageNext;
+		if (!empty($_GET['by'])){
+			$limit_q = '&by=' . $limit;
+		} else {
+			$limit_q = '';
+		}
+		$pagePrev = '?page=pf-menu'.$limit_q.'&pc=' . $pagePrev; 
+		$pageNext = '?page=pf-menu'.$limit_q.'&pc=' . $pageNext;
 		if (isset($pageQ)){
 			$pageQ = $_GET['by'];
 			$pageQed = '&by=' . $pageQ;
