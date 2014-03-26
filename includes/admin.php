@@ -286,7 +286,7 @@ class PF_Admin {
 					<div class="btn-group">
 						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete entire feed archive', 'pf');  ?>" ><?php  _e('Delete entire feed archive', 'pf');  ?></button>
 						<button type="submit" class="delete btn btn-info pull-right" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
-						<button type="submit" class="delete btn btn-info pull-right" id="showMyStarred" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
+						<button type="submit" class="delete btn btn-info pull-right" id="showMyStarred" value="<?php  _e('Show my starred', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
 						<?php 
 							if (isset($_GET['by'])){
 								?><button type="submit" class="delete btn btn-info pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php 
@@ -294,6 +294,18 @@ class PF_Admin {
 						?>
 					</div>
 				<?php 
+			} elseif ($slug == 'toplevel_page_pf-menu' && $version >= 0) {
+				?>		
+					<div class="btn-group">
+						<button type="submit" class="delete btn btn-info pull-right" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
+						<button type="submit" class="delete btn btn-info pull-right" id="showMyStarred" value="<?php  _e('Show my starred', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
+						<?php 
+							if (isset($_GET['by'])){
+								?><button type="submit" class="delete btn btn-info pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php 
+							}
+						?>
+					</div>				
+				<?php	
 			} elseif ( $slug == 'pressforward_page_pf-review' && (get_bloginfo('version') >= 3.7) && $version >= 0 && current_user_can(pf_get_defining_capability_by_role('administrator'))){
 				?>
 					<a href="#" id="settings" class="button">Settings</a>
