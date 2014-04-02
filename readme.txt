@@ -65,7 +65,7 @@ The PressForward Plugin was developed for the <a href="http://pressforward.org/"
 The feeds you add will populate content on the “All Content” page and a list of the feeds to which you have subscribed will appear on the “Subscribed Feeds” page. If this is your first time using feeds, please visit the tutorial available [here](http://www.paulstamatiou.com/how-to-getting-started-with-rss/). There are two ways to add feeds. You can either add feeds one at a time or import them from another reader with an OPML file.
 
 1. Select the Feeder menu from the PressForward tab in the Wordpress Dashboard
-1. To add a single feed just past the complete URL (http://...) or RSS path into the "Add Single Feed" box
+1. To add a single feed just past the complete URL (`http://...`) or RSS path into the "Add Single Feed" box
 1. To add a list of feeds copy the link to the OPML file into the "Add OPML" box
    + No HTTPS allowed
    + Link Needs to be live `http://` link, no local files
