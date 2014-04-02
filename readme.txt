@@ -68,7 +68,7 @@ The feeds you add will populate content on the “All Content” page and a list
 1. To add a single feed just past the complete URL (http://...) or RSS path into the "Add Single Feed" box
 1. To add a list of feeds copy the link to the OPML file into the "Add OPML" box
    + No HTTPS allowed
-   + Link Needs to be live http:// link, no local files
+   + Link Needs to be live `http://` link, no local files
    + File does not necessarily have to exist, ie you can use a dropbox-generated url
 1. Save Options
 1. You will see a confirmation dialog box that confirms the addition of the feed.
