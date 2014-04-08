@@ -829,12 +829,12 @@ function pf_pass_meta($field){
     
 }
 
-function pf_store_meta($id, $field, $obj = false, $single = false){
+function pf_store_meta($id, $field, $obj = false, $single = true){
     $field = pf_pass_meta($field);
 
 }
 
-function pf_retrieve_meta($id, $field, $obj = false, $single = false){
+function pf_retrieve_meta($id, $field, $obj = false, $single = true){
     $field = pf_pass_meta($field);
     $meta = get_post_meta($id, $field, $single);
     if ($obj){
