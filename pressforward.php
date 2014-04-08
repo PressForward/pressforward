@@ -120,6 +120,7 @@ class PressForward {
 		require_once( PF_ROOT . '/includes/relationships.php' );
 		require_once( PF_ROOT . '/includes/nominations.php' );
 		require_once( PF_ROOT . '/includes/admin.php' );
+        require_once( PF_ROOT . '/includes/template-tags.php' );
 	}
 
 	/**
