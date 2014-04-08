@@ -746,7 +746,7 @@ function pf_meta_structure(){
 		'source_repeat' => array(
 			'name' => 'source_repeat',
 			'definition' => __('Times retrieved', 'pf'),
-			'function'	=> __('#Counts number of times the item has been collected from the multiple feeds (Ex: from origin feed and Twitter)', 'pf'),
+			'function'	=> __('Counts number of times the item has been collected from the multiple feeds (Ex: from origin feed and Twitter)', 'pf'),
 			'type'	=> array('adm'),
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
