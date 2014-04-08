@@ -601,7 +601,7 @@ function get_pf_meta_name($meta){
 #Adm=Administrative, Struc=Structural, Desc=Descriptive, Req=Required, Rep=Repeatable, Set=Set, Aggr=Aggregate, Dep = Depreciated
 function pf_meta_structure(){
 	$metas = array( 
-		array(
+		'item_id' => array(
 			'name' => 'item_id',
 			'definition' => __('Unique PressForward ID', 'pf'),
 			'function'	=> __('Stores hashed ID based on title and URL of retrieved item', 'pf'),
@@ -609,7 +609,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
 		),
-		array(
+		'origin_item_ID' => array(
 			'name' => 'origin_item_ID',
 			'definition' => __('DUPE Soon to be depreciated version of item_id', 'pf'),
 			'function'	=> __('Stores hashed ID based on title and URL of retrieved item', 'pf'),
@@ -618,7 +618,7 @@ function pf_meta_structure(){
 			'move'	=> 'item_id',
 			'level'	=> array('item', 'nomination', 'post')
 		),	
-		array(
+		'pf_item_post_id' => array(
 			'name' => 'pf_item_post_id',
 			'definition' => __('The WordPress postID associated with the original item', 'pf'),
 			'function'	=> __('Stores hashed WP post_ID associated with the original item', 'pf'),
@@ -626,7 +626,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
 		),	
-		array(
+		'pf_nomination_post_id' => array(
 			'name' => 'pf_nomination_post_id',
 			'definition' => __('The WordPress postID associated with the nomination', 'pf'),
 			'function'	=> __('Stores postID associated with the nominated item', 'pf'),
@@ -634,7 +634,7 @@ function pf_meta_structure(){
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
 		),	
-		array(
+		'item_feed_post_id' => array(
 			'name' => 'item_feed_post_id',
 			'definition' => __('DUPE Soon to be depreciated version of pf_item_post_id', 'pf'),
 			'function'	=> __('Stores hashed ID based on title and URL of retrieved item', 'pf'),
@@ -643,7 +643,7 @@ function pf_meta_structure(){
 			'move'	=> 'pf_item_post_id',
 			'level'	=> array('item', 'nomination', 'post')
 		),	
-		array(
+		'source_title' => array(
 			'name' => 'source_title',
 			'definition' => __('Title of the item\'s source', 'pf'),
 			'function'	=> __('Stores the title retrieved from the feed.', 'pf'),
@@ -651,7 +651,7 @@ function pf_meta_structure(){
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
 		),
-		array(
+		'pf_feed_item_source' => array(
 			'name' => 'pf_feed_item_source',
 			'definition' => __('DUPE Soon to be depreciate version of source_title.', 'pf'),
 			'function'	=> __('Stores the title retrieved from the feed.', 'pf'),
@@ -660,7 +660,7 @@ function pf_meta_structure(){
 			'move'	=> 'source_title',
 			'level'	=> array('item', 'nomination', 'post')
 		),			
-		array(
+		'item_date' => array(
 			'name' => 'item_date',
 			'definition' => __('Date posted on the original site', 'pf'),
 			'function'	=> __('Stores the date the item was posted on the original site', 'pf'),
@@ -668,7 +668,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
 		),	
-		array(
+		'posted_date' => array(
 			'name' => 'posted_date',
 			'definition' => __('DUPE The soon to be depreciated version of item_date', 'pf'),
 			'function'	=> __('Stores the date given by the source.', 'pf'),
@@ -677,7 +677,7 @@ function pf_meta_structure(){
 			'move'	=> 'item_date',
 			'level'	=> array('nomination', 'post')
 		),	
-		array(
+		'item_author' => array(
 			'name' => 'item_author',
 			'definition' => __('Author(s) listed on the original site', 'pf'),
 			'function'	=> __('Stores array value containing authors listed in the source feed.', 'pf'),
@@ -685,7 +685,7 @@ function pf_meta_structure(){
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
 		),		
-		array(
+		'authors' => array(
 			'name' => 'authors',
 			'definition' => __('DUPE The soon to be depreciated version of item_author', 'pf'),
 			'function'	=> __('Stores a comma-separated set of authors as listed in the source feed', 'pf'),
@@ -694,7 +694,7 @@ function pf_meta_structure(){
 			'move'	=> 'item_author',
 			'level'	=> array('nomination', 'post')
 		),	
-		array(
+		'item_link' => array(
 			'name' => 'item_link',
 			'definition' => __('Source link', 'pf'),
 			'function'	=> __('Stores hashed ID based on title and URL of retrieved item', 'pf'),
@@ -702,7 +702,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
 		),	
-		array(
+		'nomination_permalink' => array(
 			'name' => 'nomination_permalink',
 			'definition' => __('Source link', 'pf'),
 			'function'	=> __('DUPE Soon to be depreciated version of item_link', 'pf'),
@@ -711,7 +711,7 @@ function pf_meta_structure(){
 			'move'	=> 'item_link',
 			'level'	=> array('nomination', 'post')
 		),	
-		array(
+		'item_feat_img' => array(
 			'name' => 'item_feat_img',
 			'definition' => __('Featured image from source', 'pf'),
 			'function'	=> __('A featured image associated with the item, when it is available', 'pf'),
@@ -719,7 +719,7 @@ function pf_meta_structure(){
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
 		),	
-		array(
+		'item_wp_date' => array(
 			'name' => 'item_wp_date',
 			'definition' => __('Time item was retrieved', 'pf'),
 			'function'	=> __('The datetime an item was added to WordPress via PressForward', 'pf'),
@@ -727,7 +727,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
 		),	
-		array(
+		'date_nominated' => array(
 			'name' => 'date_nominated',
 			'definition' => __('Time nominated', 'pf'),
 			'function'	=> __('The datetime the item was made a nomination', 'pf'),
@@ -735,7 +735,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'level'	=> array('nomination', 'post')
 		),	
-		array(
+		'item_tags' => array(
 			'name' => 'item_tags',
 			'definition' => __('Tags associated with the item by source', 'pf'),
 			'function'	=> __('An array of tags associated with the item, as created in the feed', 'pf'),
@@ -743,7 +743,7 @@ function pf_meta_structure(){
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
 		),	
-		array(
+		'source_repeat' => array(
 			'name' => 'source_repeat',
 			'definition' => __('Times retrieved', 'pf'),
 			'function'	=> __('#Counts number of times the item has been collected from the multiple feeds (Ex: from origin feed and Twitter)', 'pf'),
@@ -751,7 +751,7 @@ function pf_meta_structure(){
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
 		),	
-		array(
+		'nomination_count' => array(
 			'name' => 'nomination_count',
 			'definition' => __('Nominations', 'pf'),
 			'function'	=> __('Counts number of times users have nominated an item', 'pf'),
@@ -759,7 +759,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
 		),	
-		array(
+		'submitted_by' => array(
 			'name' => 'submitted_by',
 			'definition' => __('The user who submitted the nomination', 'pf'),
 			'function'	=> __('The first user who submitted the nomination (if it has been nominated). User ID number', 'pf'),
@@ -767,7 +767,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
 		),	
-		array(
+		'nominator_array' => array(
 			'name' => 'nominator_array',
 			'definition' => __('Users who nominated this item', 'pf'),
 			'function'	=> __('Stores and array of all userIDs that nominated the item in an array', 'pf'),
@@ -775,7 +775,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'level'	=> array('nomination', 'post')
 		),	
-		array(
+		'sortable_item_date' => array(
 			'name' => 'sortable_item_date',
 			'definition' => __('Timestamp for the item', 'pf'),
 			'function'	=> __('A version of the item_date meta that\'s ready for sorting. Should be a Unix timestamp', 'pf'),
@@ -783,7 +783,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
 		),	
-		array(
+		'readable_status' => array(
 			'name' => 'readable_status',
 			'definition' => __('If the content is readable', 'pf'),
 			'function'	=> __('A check to determine if the content of the item has been made readable', 'pf'),
@@ -791,7 +791,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
 		),	
-		array(
+		'revertible_feed_text' => array(
 			'name' => 'revertible_feed_text',
 			'definition' => __('The originally retrieved description', 'pf'),
 			'function'	=> __('The original description, excerpt or content text given by the feed', 'pf'),
@@ -799,7 +799,7 @@ function pf_meta_structure(){
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
 		),	
-		array(
+		'pf_feed_item_word_count' => array(
 			'name' => 'pf_feed_item_word_count',
 			'definition' => __('Word count of original item text', 'pf'),
 			'function'	=> __('Stores the count of the original words retrieved with the feed item', 'pf'),
@@ -813,16 +813,38 @@ function pf_meta_structure(){
 	return $metas;
 }
 
-function pf_store_meta(){
+/*
+ * A function to check and retrieve the right meta field for a post.
+ */
+function pf_pass_meta($field){
+    $metas = pf_meta_structure();
+    # Check if it exists.
+    if (empty($metas[$field])){
+        return false;
+    }
+    if (in_array('dep',$metas[$field]['type'])){
+        $field = $metas[$field]['move'];
+    }
+    return $field;
+    
+}
+
+function pf_store_meta($id, $field, $obj = false, $single = false){
+    $field = pf_pass_meta($field);
 
 }
 
-function pf_pass_meta(){
-
-}
-
-function pf_retrieve_meta(){
-
+function pf_retrieve_meta($id, $field, $obj = false, $single = false){
+    $field = pf_pass_meta($field);
+    $meta = get_post_meta($id, $field, $single);
+    if ($obj){
+        $metas = pf_meta_structure();
+        $meta_obj = $metas[$field];
+        $meta_obj['value'] = $meta;
+        return $meta_obj;
+    }
+    return $meta;
+    
 }
 
 function filter_for_pf_archives_only($sql){
