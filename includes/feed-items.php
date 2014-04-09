@@ -377,6 +377,7 @@ class PF_Feed_Item {
 			# All the posts in this loop are older than 60 days from 'now'.
 			# Delete them all.
 			$postid = get_the_ID();
+			$this->disassemble_feed_item_media( $post_id );
 			wp_delete_post( $postid, true );
 
 		endwhile;
