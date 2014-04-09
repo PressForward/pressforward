@@ -18,17 +18,19 @@ class PF_AB_Subscribe extends PF_Module {
 	}
 
 	function add_to_feeder(){
+		settings_fields( PF_SLUG . '_ab_list_group' );
+		echo '<div class="ab-opt-group">';
 		echo '<h3>academicblogs.org</h3>';
 		$this->render_refresh_ui();
 		echo $this->build_ab_item_selector();
+		echo '</div>';
 	}
 
-	public function build_ab_item_selector() {
-		$ABLinksArray = get_option( 'pf_ab_categories' );
+	public function build_ab_item_selector() {		
 		$ca = 0;
 		$cb = 0;
 		$cc = 0;
-
+		$ABLinksArray = get_option( 'pf_ab_categories' );
 		if ( ! $ABLinksArray ) {
 			return __('No blogs found. Try refreshing the academicblogs.org list.', 'pf');
 		}
@@ -169,6 +171,30 @@ class PF_AB_Subscribe extends PF_Module {
 			return $r;
 		}
 	
+	}
+	
+	function register_settings(){
+		register_setting(PF_SLUG . '_ab_list_group', PF_SLUG . '_ab_categories', array('PF_AB_Subscribe', 'ab_add_validator'));
+	}	
+	
+	/* 
+	 * Function to handle submissions from the pulldown menus
+	 */
+	public function ab_add_validator($input){
+		set_time_limit(0);
+		pf_log('Add Feed Process Invoked: PF_AB_Subscribe::ab_add_validator');
+		pf_log($input);
+		if ( current_user_can('edit_post') ) {
+ 			pf_log('Yes, the current user can edit posts.');
+		} else {
+			pf_log('No, the current user can not edit posts.');
+		}
+		if(!empty($input['ab-cats'])){
+			$feed_obj = pressforward()->pf_feeds;
+		}
+		var_dump($input); die();
+		
+		return $input;
 	}
 
 	/**
