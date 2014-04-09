@@ -83,8 +83,8 @@ class PF_Admin {
 		// Feed-listing page is accessible only to Editors and above
 		add_submenu_page(
 			PF_MENU_SLUG,
-			__('Feeder', 'pf'),
-			__('Feeder', 'pf'),
+			__('Add Feeds', 'pf'),
+			__('Add Feeds', 'pf'),
 			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')),
 			PF_SLUG . '-feeder',
 			array($this, 'display_feeder_builder')
@@ -1197,7 +1197,7 @@ class PF_Admin {
 										),
 			'pf_menu_feeder_access'=>array(
 											'default'=>'editor',
-											'title'=>__( 'Feeder Menu', 'pf' )
+											'title'=>__( 'Add Feeds', 'pf' )
 										),
 			'pf_menu_add_nomination_access'=>array(
 											'default'=>'contributor',
