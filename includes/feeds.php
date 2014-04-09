@@ -144,7 +144,7 @@ class PF_Feeds_Schema {
 	
 	public function kill_all_feeds(){
 
-		$mycustomposts = get_posts( array( 'post_type' => 'pf_feed', 'posts_per_page'=>-1) );
+		$mycustomposts = get_posts( array( 'post_type' => $this->post_type, 'posts_per_page'=>-1) );
 		   foreach( $mycustomposts as $mypost ) {
 			 // Delete each post.
 			 wp_delete_post( $mypost->ID, true);
