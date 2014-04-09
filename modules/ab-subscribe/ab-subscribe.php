@@ -98,7 +98,7 @@ class PF_AB_Subscribe extends PF_Module {
 		}
 */
 		$ab_items_selector .= '</select>';
-
+		$ab_items_selector .= '<br /><input type="submit" class="btn btn-info" value="Subscribe to Academic Sites">';
 		return $ab_items_selector;
 	}
 
@@ -127,6 +127,48 @@ class PF_AB_Subscribe extends PF_Module {
 		</div>
 
 		<?php
+	}
+
+	/**
+	 * A function to take the last selected value and turn it into blog subscriptions.
+	 */	
+	public function get_subs_by_value($values){
+		$cats = get_option( 'pf_ab_categories' );
+		$cats = $cats["categories"];
+		$r = array();
+		$c = 0;
+		if (!empty($cats[$values['cat']]['links'][$values['subcat']]['blogs'][$values['blog']])){
+			#$r[] = 1;
+			$r[0]['url'] = $cats[$values['cat']]['links'][$values['subcat']]['blogs'][$values['blog']]['url'];
+			$r[0]['feedUrl'] = $cats[$values['cat']]['links'][$values['subcat']]['blogs'][$values['blog']]['url'];
+			$r[0]['title'] = $cats[$values['cat']]['links'][$values['subcat']]['blogs'][$values['blog']]['title'];
+			return $r;
+		}
+		if (!empty($cats[$values['cat']]['links'][$values['subcat']])){
+			foreach ($cats[$values['cat']]['links'][$values['subcat']]['blogs'] as $blog){
+				
+				$r[$c]['url'] = $blog['url'];
+				$r[$c]['feedUrl'] = $blog['url'];
+				$r[$c]['title'] = $blog['title'];
+				$c++;
+			}
+			return $r;
+		}
+		if (!empty($cats[$values['cat']])){
+			#foreach ($cats[$values['cat']] as $cat){
+				foreach ($cats[$values['cat']]['links'] as $subcat){
+					foreach ($subcat['blogs'] as $blog){
+						
+						$r[$c]['url'] = $blog['url'];
+						$r[$c]['feedUrl'] = $blog['url'];
+						$r[$c]['title'] = $blog['title'];
+						$c++;
+					}
+				}
+			#}			
+			return $r;
+		}
+	
 	}
 
 	/**
