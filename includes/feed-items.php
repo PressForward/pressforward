@@ -145,7 +145,7 @@ class PF_Feed_Item {
 		//			);
 		//$pageBottom = $pageTop + 20;
 		$args = pf_feed_item_post_type();
-
+        $pageTop = $pageTop-1;
 		//$archiveQuery = new WP_Query( $args );
 		if ($limitless){
 		 $dquerystr = $wpdb->prepare("
@@ -159,7 +159,7 @@ class PF_Feed_Item {
 			ORDER BY {$wpdb->postmeta}.meta_value DESC
 		 ", pf_feed_item_post_type());
 		} elseif ($limit == 'starred') {
-			$pageTop = $pageTop-1;
+			
 			$relate = new PF_RSS_Import_Relationship();
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
@@ -185,7 +185,7 @@ class PF_Feed_Item {
 				LIMIT {$pagefull} OFFSET {$pageTop}
 			 ", pf_feed_item_post_type());
 		} elseif ($limit == 'nominated') {
-			$pageTop = $pageTop-1;
+			
 			$relate = new PF_RSS_Import_Relationship();
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
@@ -211,7 +211,8 @@ class PF_Feed_Item {
 				LIMIT {$pagefull} OFFSET {$pageTop}
 			 ", pf_feed_item_post_type());
 		} elseif (is_user_logged_in() && (isset($_GET['action']) && ('post' == $_GET['action']) &&(isset($_POST['search-terms'])))){
-			$relate = new PF_RSS_Import_Relationship();
+			
+            $relate = new PF_RSS_Import_Relationship();
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('archive');
@@ -767,11 +768,11 @@ class PF_Feed_Item {
 			// From: https://gist.github.com/gcoop/701814
 			// ============
 
-				$search  = array('&acirc;€“','&acirc;€œ','&acirc;€˜','&acirc;€™','&Acirc;&pound;','&Acirc;&not;','&acirc;„&cent;', '&Acirc;&nbsp;', '&Acirc;', '&amp;nbsp;', '&#8230;');
+				$search  = array('&acirc;ï¿½ï¿½','&acirc;ï¿½ï¿½','&acirc;ï¿½ï¿½','&acirc;ï¿½ï¿½','&Acirc;&pound;','&Acirc;&not;','&acirc;ï¿½&cent;', '&Acirc;&nbsp;', '&Acirc;', '&amp;nbsp;', '&#8230;');
 				$replace = array('-','&ldquo;','&lsquo;','&rsquo;','&pound;','&not;','&#8482;', '', '', '', '...');
 
 				$string = str_replace($search, $replace, $string);
-				$string = str_replace('&acirc;€', '&rdquo;', $string);
+				$string = str_replace('&acirc;ï¿½', '&rdquo;', $string);
 
 				$search = array("&#39;", "\xc3\xa2\xc2\x80\xc2\x99", "\xc3\xa2\xc2\x80\xc2\x93", "\xc3\xa2\xc2\x80\xc2\x9d", "\xc3\xa2\x3f\x3f", "&#8220;", "&#8221;", "#8217;", "&not;", "&#8482;");
 				$resplace = array("'", "'", ' - ', '"', "'", '"', '"', "'", "-", "(TM)");
@@ -792,8 +793,8 @@ class PF_Feed_Item {
 				"\xE2\x80\xB9" => "'",
 				"\xE2\x80\xBA" => "'",
 				"\xe2\x80\x93" => "-",
-				"\xc2\xb0"	   => "°",
-				"\xc2\xba"     => "°",
+				"\xc2\xb0"	   => "ï¿½",
+				"\xc2\xba"     => "ï¿½",
 				"\xc3\xb1"	   => "&#241;",
 				"\x96"		   => "&#241;",
 				"\xe2\x81\x83" => '&bull;',

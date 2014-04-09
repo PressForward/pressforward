@@ -858,12 +858,15 @@ class PF_Admin {
 			$pageNext .= $pageQed;
 			
 		}
-		echo '<div class="pf-navigation">';
-		if ($pagePrev > -1){
-			echo '<span class="feedprev"><a class="prevnav" href="admin.php' . $pagePrev . '">Previous Page</a></span> | ';
-		}
-		echo '<span class="feednext"><a class="nextnav" href="admin.php' . $pageNext . '">Next Page</a></span>';
-		echo '</div>';
+        if ($c > 19){
+            
+            echo '<div class="pf-navigation">';
+            if ($pagePrev > -1){
+                echo '<span class="feedprev"><a class="prevnav" href="admin.php' . $pagePrev . '">Previous Page</a></span> | ';
+            }
+            echo '<span class="feednext"><a class="nextnav" href="admin.php' . $pageNext . '">Next Page</a></span>';
+            echo '</div>';
+        }
 
 	echo '</div><!-- End container-fluid -->';
 	}
