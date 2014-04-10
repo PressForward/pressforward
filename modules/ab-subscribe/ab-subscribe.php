@@ -15,6 +15,9 @@ class PF_AB_Subscribe extends PF_Module {
 		parent::start();
 		add_action( 'wp_ajax_refresh_ab_feeds', array( $this, 'refresh_ab_feeds_callback' ) );
 		add_action( 'wp_ajax_finish_ab_feeds', array( $this, 'finish_ab_feeds_callback' ) );
+        if (is_admin()){
+            add_action( 'wp_ajax_ab_add_validator', array( $this, 'ab_add_validator' ) );
+        }
 	}
 
 	function add_to_feeder(){
@@ -23,6 +26,7 @@ class PF_AB_Subscribe extends PF_Module {
 		echo '<h3>academicblogs.org</h3>';
 		$this->render_refresh_ui();
 		echo $this->build_ab_item_selector();
+        echo '<br /><input type="submit" class="btn btn-info" id="academic-sub" value="Subscribe to Academic Sites">';
 		echo '</div>';
 	}
 
@@ -100,7 +104,7 @@ class PF_AB_Subscribe extends PF_Module {
 		}
 */
 		$ab_items_selector .= '</select>';
-		$ab_items_selector .= '<br /><input type="submit" class="btn btn-info" value="Subscribe to Academic Sites">';
+		
 		return $ab_items_selector;
 	}
 
@@ -180,21 +184,55 @@ class PF_AB_Subscribe extends PF_Module {
 	/* 
 	 * Function to handle submissions from the pulldown menus
 	 */
-	public function ab_add_validator($input){
-		set_time_limit(0);
+	public function ab_add_validator($input = false){
+		ob_start();
+        set_time_limit(0);
 		pf_log('Add Feed Process Invoked: PF_AB_Subscribe::ab_add_validator');
-		pf_log($input);
+	       
+        $ab['cat'] = $_POST['ab_cats'];
+        $ab['subcat'] = $_POST['ab_subcats'];
+        $ab['blog'] = $_POST['ab_blogs'];
+        foreach($ab as $k=>$e){
+            if ('-' == $e){
+                $ab[$k] = NULL;   
+            }
+        }
+        
+        pf_log($ab);
+        
 		if ( current_user_can('edit_post') ) {
  			pf_log('Yes, the current user can edit posts.');
 		} else {
 			pf_log('No, the current user can not edit posts.');
 		}
-		if(!empty($input['ab-cats'])){
+        $c = 0;
+		if(!empty($ab['cat'])){
 			$feed_obj = pressforward()->pf_feeds;
+            $subs = $this->get_subs_by_value($ab);
+            foreach ($subs as $sub){
+                $current_user = wp_get_current_user();
+                $sub['user_added'] = $current_user->user_login;
+			    $sub['module_added'] = 'ab-subscribe';
+                $feed_obj->create($sub['url'], $sub); 
+                $c++;
+            }
 		}
-		var_dump($input); die();
+		#var_dump($input); die();
 		
-		return $input;
+		#return $input;
+        $response = array(
+           'what'=>'ab_add_validator',
+           'action'=>'add_feeds',
+           'id'=>$current_user->ID,
+           'data'=> $c.' feeds added.',
+           'supplemental' => array(
+				'buffered' => ob_get_contents()
+			)
+        );
+        $xmlResponse = new WP_Ajax_Response($response);
+        $xmlResponse->send();
+        ob_end_clean();
+        die();
 	}
 
 	/**
@@ -281,6 +319,7 @@ class PF_AB_Subscribe extends PF_Module {
 		wp_enqueue_script( 'jquery-ui-progressbar' );
 		wp_enqueue_script( 'ab-refresh-progressbar', $pf->modules['ab-subscribe']->module_url . 'js/progressbar.js', array( 'jquery', 'jquery-ui-progressbar') );
 		wp_enqueue_script( 'ab-dropdowns', $pf->modules['ab-subscribe']->module_url . 'js/dropdowns.js', array( 'jquery' ) );
+        wp_enqueue_script( 'handle-ab-subs', $pf->modules['ab-subscribe']->module_url . 'js/handle-ab-subs.js', array( 'jquery' ) );
 		wp_enqueue_style( 'ab-refresh-progressbar', $pf->modules['ab-subscribe']->module_url . 'css/progressbar.css' );
 	}
 }
