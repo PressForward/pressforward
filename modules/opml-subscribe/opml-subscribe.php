@@ -134,6 +134,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	
 	static function pf_opml_subscriber_validate($input){
 		$feed_obj = new PF_Feeds_Schema();
+		#var_dump($input); die();
 		if (!empty($input['list'])){
 			if (!(is_array($input['list']))){
 				if (!$feed_obj->has_feed($input['list'])){

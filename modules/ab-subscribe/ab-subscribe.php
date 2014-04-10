@@ -15,10 +15,12 @@ class PF_AB_Subscribe extends PF_Module {
 		parent::start();
 		add_action( 'wp_ajax_refresh_ab_feeds', array( $this, 'refresh_ab_feeds_callback' ) );
 		add_action( 'wp_ajax_finish_ab_feeds', array( $this, 'finish_ab_feeds_callback' ) );
+        add_action( 'admin_init', array($this, 'register_settings') );
 	}
 
 	function add_to_feeder(){
-		settings_fields( PF_SLUG . '_ab_list_group' );
+		
+        settings_fields( PF_SLUG . '_ab_list_group' );
 		echo '<div class="ab-opt-group">';
 		echo '<h3>academicblogs.org</h3>';
 		$this->render_refresh_ui();
@@ -31,6 +33,7 @@ class PF_AB_Subscribe extends PF_Module {
 		$cb = 0;
 		$cc = 0;
 		$ABLinksArray = get_option( 'pf_ab_categories' );
+        $ABLinksOpts = get_option( PF_SLUG . '_ab_category' );
 		if ( ! $ABLinksArray ) {
 			return __('No blogs found. Try refreshing the academicblogs.org list.', 'pf');
 		}
@@ -41,20 +44,20 @@ class PF_AB_Subscribe extends PF_Module {
 		$ab_items_selector .= '</script>';
 
 		// Build the top-level dropdown
-		$ab_items_selector .= '<label for="ab-cats">' . __( 'Category', 'pf' ) . '</label>';
-		$ab_items_selector .= '<select class="ab-dropdown" name="ab-cats" id="ab-cats">';
+		$ab_items_selector .= '<label for="'.PF_SLUG.'_ab_category[ab-cats]">' . __( 'Category', 'pf' ) . '</label>';
+		$ab_items_selector .= '<select class="ab-dropdown" name="'.PF_SLUG.'_ab_category[ab-cats]" id="'.PF_SLUG.'_ab_category[ab-cats]">';
 		foreach ( (array) $ABLinksArray['categories'] as $cat_slug => $cat ) {
 			$ab_items_selector .= '<option value="' . esc_attr( $cat_slug ) . '">' . esc_html( $cat['text'] ) . '</option>';
 		}
 		$ab_items_selector .= '</select>';
 
 		// Add dummy dropdowns for subcategories
-		$ab_items_selector .= '<label for="ab-subcats">' . __( 'Subcategory', 'pf' ) . '</label>';
-		$ab_items_selector .= '<select class="ab-dropdown" name="ab-subcats" id="ab-subcats" disabled="disabled"><option>-</option></select>';
+		$ab_items_selector .= '<label for="'.PF_SLUG.'_ab_category[ab-subcats]">' . __( 'Subcategory', 'pf' ) . '</label>';
+		$ab_items_selector .= '<select class="ab-dropdown" name="'.PF_SLUG.'_ab_category[ab-subcats]" id="'.PF_SLUG.'_ab_category[ab-subcats]" disabled="disabled"><option>-</option></select>';
 
 		// Add dummy dropdowns for blogs
-		$ab_items_selector .= '<label for="ab-blogs">' . __( 'Blog', 'pf' ) . '</label>';
-		$ab_items_selector .= '<select class="ab-dropdown" name="ab-blogs" id="ab-blogs" disabled="disabled"><option>-</option></select>';
+		$ab_items_selector .= '<label for="'.PF_SLUG.'_ab_category[ab-blogs]">' . __( 'Blog', 'pf' ) . '</label>';
+		$ab_items_selector .= '<select class="ab-dropdown" name="'.PF_SLUG.'_ab_category[ab-blogs]" id="'.PF_SLUG.'_ab_category[ab-blogs]" disabled="disabled"><option>-</option></select>';
 
 /*
 		foreach ( (array) $ABLinksArray['categories'] as $genSubject){
@@ -174,7 +177,7 @@ class PF_AB_Subscribe extends PF_Module {
 	}
 	
 	function register_settings(){
-		register_setting(PF_SLUG . '_ab_list_group', PF_SLUG . '_ab_categories', array('PF_AB_Subscribe', 'ab_add_validator'));
+		register_setting(PF_SLUG . '_ab_list_group', PF_SLUG . '_ab_category', array('PF_AB_Subscribe', 'ab_add_validator'));
 	}	
 	
 	/* 
