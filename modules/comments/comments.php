@@ -27,7 +27,7 @@ class PF_Comments extends PF_Module {
 	 * Register the admin menu items
 	 *
 	 * The parent class will take care of registering them
-	 */
+	 
 	function setup_admin_menus( $admin_menus ) {
 		$admin_menus   = array();
 
@@ -41,7 +41,7 @@ class PF_Comments extends PF_Module {
 
 		parent::setup_admin_menus( $admin_menus );
 	}
-
+*/
 	function module_setup(){
 		$mod_settings = array(
 			'name' => 'Internal Commenting',
