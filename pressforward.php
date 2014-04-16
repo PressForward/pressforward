@@ -202,7 +202,7 @@ class PressForward {
 	}
 
 	/**
-	 * Sets up the Dashboard admin
+	 * Sets up the Nominations admin
 	 *
 	 * @since 1.7
 	 */
