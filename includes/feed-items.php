@@ -414,7 +414,7 @@ class PF_Feed_Item {
 			setup_postdata($post);
 			$post_id = get_the_ID();
 			//Switch the delete on to wipe rss archive posts from the database for testing.
-			wp_delete_post( $post_id, true );
+			pressforward()->admin->pf_thing_deleter( $post_id, true );
 			endforeach;
 
 
