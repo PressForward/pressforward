@@ -183,7 +183,7 @@ class PF_Comments extends PF_Module {
 		//global $post;
 
 		?>
-		<a href="#" id="ef-comment_respond" onclick="editorialCommentReply.open();return false;" class="button-primary alignright hide-if-no-js" title=" <?php _e( 'Respond to this post', 'edit-flow' ); ?>"><span><?php _e( 'Respond to this Post', 'edit-flow' ); ?></span></a>
+		<a href="#" id="ef-comment_respond" onclick="editorialCommentReply.open();return false;" class="button-primary alignright hide-if-no-js" title=" <?php _e( 'Respond to this post', 'pf' ); ?>"><span><?php _e( 'Add Comment', 'pf' ); ?></span></a>
 
 		<!-- Reply form, hidden until reply clicked by user -->
 		<div id="ef-replyrow" style="display: none;">
@@ -195,7 +195,7 @@ class PF_Comments extends PF_Module {
 				<a class="ef-replysave button-primary alignright" href="#comments-form">
 					<span id="ef-replybtn"><?php _e('Submit Response', 'edit-flow') ?></span>
 				</a>
-				<a class="ef-replycancel button-secondary alignright" href="#comments-form"><?php _e( 'Cancel', 'edit-flow' ); ?></a>
+				<a class="ef-replycancel button-secondary alignright" href="#comments-form"><?php _e( 'Cancel', 'pf' ); ?></a>
 				<img alt="Sending comment..." src="<?php echo admin_url('/images/wpspin_light.gif') ?>" class="alignright" style="display: none;" id="ef-comment_loading" />
 				<br class="clear" style="margin-bottom:35px;" />
 				<span style="display: none;" class="error"></span>
@@ -235,7 +235,7 @@ class PF_Comments extends PF_Module {
 		$comments_allowed = get_option('pf_feature_comments_access', pf_get_defining_capability_by_role('editor'));
 		// Comments can only be added by users that can edit the post
 		if ( current_user_can($comments_allowed, $comment->comment_post_ID) ) {
-			$actions['reply'] = '<a onclick="editorialCommentReply.open(\''.$comment->comment_ID.'\',\''.$comment->comment_post_ID.'\');return false;" class="vim-r hide-if-no-js" title="'.__( 'Reply to this comment', 'edit-flow' ).'" href="#">' . __( 'Reply', 'edit-flow' ) . '</a>';
+			$actions['reply'] = '<a onclick="editorialCommentReply.open(\''.$comment->comment_ID.'\',\''.$comment->comment_post_ID.'\');return false;" class="vim-r hide-if-no-js" title="'.__( 'Reply to this comment', 'pf' ).'" href="#">' . __( 'Reply', 'pf' ) . '</a>';
 
 			$sep = ' ';
 			$i = 0;
@@ -279,7 +279,7 @@ class PF_Comments extends PF_Module {
 
 		// Verify nonce
 		if ( !wp_verify_nonce( $_POST['_nonce'], 'comment') )
-			die( __( "Nonce check failed. Please ensure you're supposed to be adding editorial comments.", 'edit-flow' ) );
+			die( __( "Nonce check failed. Please ensure you're supposed to be adding editorial comments.", 'pf' ) );
 
 		// Get user info
       	get_currentuserinfo();
@@ -291,12 +291,12 @@ class PF_Comments extends PF_Module {
       	// Only allow the comment if user can edit post
       	// @TODO: allow contributers to add comments as well (?)
 		if ( ! current_user_can( $comments_allowed, $post_id ) )
-			die( __('Sorry, you don\'t have the privileges to add editorial comments. Please talk to your Administrator.', 'edit-flow' ) );
+			die( __('Sorry, you don\'t have the privileges to add editorial comments. Please talk to your Administrator.', 'pf' ) );
 
 		// Verify that comment was actually entered
 		$comment_content = trim($_POST['content']);
 		if( !$comment_content )
-			die( __( "Please enter a comment.", 'edit-flow' ) );
+			die( __( "Please enter a comment.", 'pf' ) );
 
 		// Check that we have a post_id and user logged in
 		if( $post_id && $current_user ) {
