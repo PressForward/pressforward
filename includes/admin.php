@@ -280,9 +280,9 @@ class PF_Admin {
 				}		
 				
 			}
+			#echo '<a href="#" id="settings" class="button">Settings</a>';
 			if ($slug == 'toplevel_page_pf-menu' && $version >= 0 && current_user_can(pf_get_defining_capability_by_role('administrator'))){
 				?>
-					<a href="#" id="settings" class="button">Settings</a>
 					<div class="btn-group">
 						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete entire feed archive', 'pf');  ?>" ><?php  _e('Delete entire feed archive', 'pf');  ?></button>
 						<button type="submit" class="delete btn btn-info pull-right" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
@@ -308,7 +308,7 @@ class PF_Admin {
 				<?php	
 			} elseif ( $slug == 'pressforward_page_pf-review' && (get_bloginfo('version') >= 3.7) && $version >= 0 && current_user_can(pf_get_defining_capability_by_role('administrator'))){
 				?>
-					<a href="#" id="settings" class="button">Settings</a>
+					
 					<div class="btn-group">
 						<button type="submit" class="btn btn-warning pull-right" id="archivebefore" value="<?php  _e('Archive before', 'pf');  ?>:" ><?php  _e('Archive before', 'pf');  ?>:</button>
 						<select class="pull-right" id="archiveBeforeOption">
