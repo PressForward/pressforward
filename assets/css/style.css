@@ -1,11 +1,11 @@
 .error.fade {
 	display:none;
 }
-
-.toplevel_page_pf-menu #wpcontent {
-	margin-left: 160px;
+@media only screen and (min-width: 900px) {
+    .toplevel_page_pf-menu #wpcontent {
+        margin-left: 160px;
+    }
 }
-
 .deck .card {
 
 	background-color: #AFC459;
