@@ -70,16 +70,6 @@ class PF_Admin {
 			array($this, 'display_review_builder')
 		);
 
-		// Options page is accessible only to Administrators
-		add_submenu_page(
-			PF_MENU_SLUG,
-			__('Preferences', 'pf'), // @todo sprintf
-			__('Preferences', 'pf'),
-			get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator')),
-			PF_SLUG . '-options',
-			array($this, 'display_options_builder')
-		);
-
 		// Feed-listing page is accessible only to Editors and above
 		add_submenu_page(
 			PF_MENU_SLUG,
@@ -89,14 +79,24 @@ class PF_Admin {
 			PF_SLUG . '-feeder',
 			array($this, 'display_feeder_builder')
 		);
-		
+        
 		add_submenu_page(
 			PF_MENU_SLUG, 
 			__('Subscribed Feeds', 'pf'),
 			__('Subscribed Feeds', 'pf'), 
 			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')), 
 			'edit.php?post_type=' . pressforward()->pf_feeds->post_type
-		);	
+		);	        
+        
+		// Options page is accessible only to Administrators
+		add_submenu_page(
+			PF_MENU_SLUG,
+			__('Preferences', 'pf'), // @todo sprintf
+			__('Preferences', 'pf'),
+			get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator')),
+			PF_SLUG . '-options',
+			array($this, 'display_options_builder')
+		);
 		
 		add_submenu_page(
 			PF_MENU_SLUG, 
