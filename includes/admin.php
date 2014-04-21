@@ -281,9 +281,10 @@ class PF_Admin {
 				
 			}
 			#echo '<a href="#" id="settings" class="button">Settings</a>';
+			echo '<div class="primary-btn-tools">';
 			if ($slug == 'toplevel_page_pf-menu' && $version >= 0 && current_user_can(pf_get_defining_capability_by_role('administrator'))){
 				?>
-					<div class="btn-group">
+					
 						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete all items', 'pf');  ?>" ><?php  _e('Delete all items', 'pf');  ?></button>
 						<button type="submit" class="delete btn btn-info pull-right" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
 						<button type="submit" class="delete btn btn-info pull-right" id="showMyStarred" value="<?php  _e('Show my starred', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
@@ -292,24 +293,19 @@ class PF_Admin {
 								?><button type="submit" class="delete btn btn-info pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php 
 							}
 						?>
-					</div>
 				<?php 
 			} elseif ($slug == 'toplevel_page_pf-menu' && $version >= 0) {
 				?>		
-					<div class="btn-group">
 						<button type="submit" class="delete btn btn-info pull-right" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
 						<button type="submit" class="delete btn btn-info pull-right" id="showMyStarred" value="<?php  _e('Show my starred', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
 						<?php 
 							if (isset($_GET['by'])){
 								?><button type="submit" class="delete btn btn-info pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php 
 							}
-						?>
-					</div>				
+						?>		
 				<?php	
 			} elseif ( $slug == 'pressforward_page_pf-review' && (get_bloginfo('version') >= 3.7) && $version >= 0 && current_user_can(pf_get_defining_capability_by_role('administrator'))){
 				?>
-					
-					<div class="btn-group">
 						<button type="submit" class="btn btn-warning pull-right" id="archivebefore" value="<?php  _e('Archive before', 'pf');  ?>:" ><?php  _e('Archive before', 'pf');  ?>:</button>
 						<select class="pull-right" id="archiveBeforeOption">
 							<option value="1week">Older then 1 week</option>
@@ -317,9 +313,9 @@ class PF_Admin {
 							<option value="1month">Older than 1 month</option>
 							<option value="1year">Before this year</option>
 						</select>
-					</div>
 				<?php 
-			}				
+			}
+			echo '</div>';
 				?>
 				<div id="nom-this-toolbox">
 					<h3 class="title"><?php _e('Nominate This', 'pf'); ?></h3>
