@@ -390,37 +390,29 @@ class PF_Feed_Item {
 	# Method to manually delete rssarchival entries on user action.
 	public static function reset_feed() {
 		global $wpdb, $post;
-		//$args = array(
-		//				'post_type' => array('any')
-		//			);
-		$args = 'post_type=' . pf_feed_item_post_type();
-		//$archiveQuery = new WP_Query( $args );
-		$dquerystr = $wpdb->prepare("
-			SELECT $wpdb->posts.*, $wpdb->postmeta.*
-			FROM $wpdb->posts, $wpdb->postmeta
-			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-			AND $wpdb->posts.post_type = %s
-		 ", pf_feed_item_post_type() );
-		# This is how we do a custom query, when WP_Query doesn't do what we want it to.
-		$rssarchivalposts = $wpdb->get_results($dquerystr, OBJECT);
-		//print_r(count($rssarchivalposts)); die();
-		$feedObject = array();
-		$c = 0;
+        $args = array(
+                'post_type' =>  pf_feed_item_post_type(),
+                'post_status' =>  'publish',
+                'posts_per_page'=>-1,
+                'nopaging'  => 'true'
+            );
+		$archiveQuery = new WP_Query( $args );
+        #var_dump($archiveQuery);
+		if ( $archiveQuery->have_posts() ) :
 
-		if ($rssarchivalposts):
+            while ( $archiveQuery->have_posts() ) : $archiveQuery->the_post(); 
+        	    $post_id = get_the_ID();
+			     //Switch the delete on to wipe rss archive posts from the database for testing.
+                pressforward()->admin->pf_thing_deleter( $post_id, true );
 
-			foreach ($rssarchivalposts as $post) :
-			# This takes the $post objects and translates them into something I can do the standard WP functions on.
-			setup_postdata($post);
-			$post_id = get_the_ID();
-			//Switch the delete on to wipe rss archive posts from the database for testing.
-			pressforward()->admin->pf_thing_deleter( $post_id, true );
-			endforeach;
-
-
-		endif;
+            endwhile;
+            print_r(__('All archives deleted.', 'pf'));
+        
 		wp_reset_postdata();
-		print_r(__('All archives deleted.', 'pf'));
+        else:
+          print_r( 'Sorry, no posts matched your criteria.' ); 
+        endif;
+		
 
 	}
 
