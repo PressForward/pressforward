@@ -14,6 +14,7 @@ class PF_Admin {
 	 */
 	function __construct() {
 		add_action( 'admin_menu', array( $this, 'register_pf_custom_menu_pages' ) );
+        add_action( 'init', array( $this, 'dead_post_status') );
 
 		// Adding javascript and css to admin pages
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
@@ -1306,6 +1307,15 @@ class PF_Admin {
 		return $q;
 	
 	}
+    
+    public function dead_post_status(){
+        register_post_status('removed_feed_item', array(
+            'label'                 =>     _x('Removed Feed Item', 'pf'),
+            'public'                =>      false,
+            'exclude_from_search'   =>      true,
+            'show_in_admin_all_list'=>      false
+        ) );
+    }
 	
 	/*
 	 *
