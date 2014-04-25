@@ -97,7 +97,7 @@ class PF_Debugger extends PF_Module {
 			$log_path = PF_DEBUG_LOG;
 		}
 		
-		$action_count = $wpdb->get_results( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}pf_relationships", ''), ARRAY_A );		
+		$action_count = $wpdb->get_results( "SELECT COUNT(*) FROM {$wpdb->prefix}pf_relationships", ARRAY_A );		
 		
 		$ntp_args = array( 'posts_per_page' => -1, 'meta_key' => 'item_link');
 		
