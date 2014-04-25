@@ -343,7 +343,7 @@ class PF_Admin {
 				$item_id = $item['item_id'];
 			}
 			?>	
-				<div class="actions <?php if($modal){ echo 'modal-btns '; } ?>btn-group">
+				<div class="actions pf-btns <?php if($modal){ echo 'modal-btns '; } ?>">
 					<?php
 					$infoPop = 'top';
 					if ($modal == false){
@@ -792,7 +792,7 @@ class PF_Admin {
 				?>
 				</div>
 				<div class="display">
-					<div class="btn-group pull-left">
+					<div class="pf-btns pull-left">
 					<button type="submit" id="gogrid" class="btn btn-small">Grid</button>
 					<button type="submit" id="golist" class="btn btn-small">List</button>
 

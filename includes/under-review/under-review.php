@@ -45,7 +45,7 @@
 					</div>				
 				</div>
 				<div class="display">
-					<div class="btn-group pull-left">
+					<div class="pf-btns pull-left">
 					<!--<button type="submit" id="gogrid" class="btn btn-small">Grid</button>
 					<button type="submit" id="golist" class="btn btn-small">List</button>-->
 

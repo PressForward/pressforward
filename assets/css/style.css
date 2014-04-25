@@ -113,8 +113,14 @@ visibility:hidden;
 	line-height: 1.5em;
 }
 
-.actions.btn-group {
+.pf-btns {
 	margin: 0 0;
+}
+
+.pf-btns .btn {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0    
 }
 
 .actions form {
