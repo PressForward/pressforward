@@ -49,7 +49,7 @@ if (!class_exists('The_Alert_Box')){
                 'ID'			=> $id,
                 'post_status'	=>	$this->status,
                 'posts_per_page'=>-1,
- +              'nopaging'  => 'true'
+                'nopaging'  => 'true'
             );
 
             $result = wp_update_post($argup);
