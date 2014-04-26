@@ -48,8 +48,6 @@ if (!class_exists('The_Alert_Box')){
             $argup = array(
                 'ID'			=> $id,
                 'post_status'	=>	$this->status,
-                'posts_per_page'=>-1,
-                'nopaging'  => 'true'
             );
 
             $result = wp_update_post($argup);
@@ -64,7 +62,9 @@ if (!class_exists('The_Alert_Box')){
             $post_types = apply_filters('ab_alert_specimens_post_types', $post_types);
             $args = array(
                 'post_type' =>  $post_types,  
-                'post_status' => $this->status
+                'post_status' => $this->status,
+                'posts_per_page'=>-1,
+                'nopaging'  => 'true'                
             );
             $q = new WP_Query( $args );
             return $q;
