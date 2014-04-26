@@ -1022,7 +1022,21 @@ class PF_Admin {
 				<p class="description"><?php _e('If your bookmarks toolbar is hidden: copy the code below, open your Bookmarks manager, create new bookmark, type Press This into the name field and paste the code into the URL field.', 'pf'); ?></p>
 				<p><textarea rows="5" cols="120" readonly="readonly"><?php echo htmlspecialchars( pf_get_shortcut_link() ); ?></textarea></p>
 				</div>
-			</div>
+                
+                <div class="alert-box postbox">
+                    <div class="handlediv" title="Click to toggle"><br></div>
+                    <h3 class="hndle"><span>Feed Problems</span></h3>
+                    <div class="inside">
+                    <?php
+                        add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+                        add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+                        the_alert_box()->alert_box_outsides();
+                        remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+                        remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+                    ?>
+                    </div>
+                </div>
+            </div>
 			<?php
 			endif;
 			?><form method="post" action="options.php"><?php
@@ -1038,6 +1052,14 @@ class PF_Admin {
 
 
 	}
+    
+    public function alert_filterer($post_types){
+        return array(pressforward()->pf_feeds->post_type);
+    }
+    
+    public function alert_safe_filterer($safe_msg){
+        return __('All feeds are ok!', 'pf');
+    }    
 	
 	function admin_notices_action() {
 		settings_errors( 'add_pf_feeds' );

@@ -571,9 +571,8 @@ class PF_Feeds_Schema {
 	}
 	
 	function add_to_feeder(){
-		?>	
-			<br />
-			<br />
+		?>
+		<p>
 		<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="<?php _e('Reset all Feed Retrieval Options', 'pf'); ?>"><?php _e('Reset all Feed Retrieval Options', 'pf'); ?></button>    <br />
 		<?php
 			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0);
@@ -585,7 +584,8 @@ class PF_Feeds_Schema {
 		
 		?>
 		<br />
-		<button type="button" class="redoFeeds btn btn-warning" id="resetFeedOps" value="<?php _e('Switch feeds to new retrieval setup', 'pf'); ?>"><?php _e('Switch feeds to new retrieval setup', 'pf'); ?></button>    <br />		
+		<button type="button" class="redoFeeds btn btn-warning" id="resetFeedOps" value="<?php _e('Switch feeds to new retrieval setup', 'pf'); ?>"><?php _e('Switch feeds to new retrieval setup', 'pf'); ?></button>    <br />
+		</p>
 		<?php
 	}
 	

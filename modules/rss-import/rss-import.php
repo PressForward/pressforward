@@ -295,7 +295,9 @@ class PF_RSS_Import extends PF_Module {
 						pf_log('The feed did not enter the database.');
 						#wp_die($check);
 						$description = 'Feed failed initial attempt to add to database | ' . $check->get_error_message();
-						$feed_obj->create($input['single'], array('type' => 'rss-quick', 'description' => $description, 'module_added' => get_called_class()));
+						$broken_id = $feed_obj->create($input['single'], array('type' => 'rss-quick', 'description' => $description, 'module_added' => get_called_class()));
+						the_alert_box()->switch_post_type($broken_id);
+						the_alert_box()->add_bug_type_to_post($broken_id, 'Broken feed.');
 					}
 				} else {
 					pf_log('The feed already exists, sending it to update.');
