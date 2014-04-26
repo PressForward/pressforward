@@ -78,6 +78,19 @@ class PF_RSS_Import extends PF_Module {
 		if (!$theFeed || empty($theFeed) || is_wp_error($theFeed)){
 			pf_log('Can not use Simple Pie to retrieve the feed');
 			pf_log($theFeed);
+			the_alert_box()->switch_post_type($aFeed->ID);
+			the_alert_box()->add_bug_type_to_post($aFeed->ID, __('Broken RSS feed.', 'pf'));
+			$post_obj = get_post( $aFeed->ID );
+			$old_content = $post_obj->post_content;
+			if(is_wp_error($theFeed)){
+				$argup = array(
+					'ID'			=> $aFeed->ID,
+					'post_content'	=>	$old_content . ' <p>' . $theFeed->get_error_message() . '</p>'
+				);
+
+				$result = wp_update_post($argup);
+
+			}
 			return false;
 		}
 		$theFeed->set_timeout(60);
