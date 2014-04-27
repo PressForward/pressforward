@@ -44,8 +44,6 @@ class PF_Feeds_Schema {
 		if (is_admin()){
 			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-			add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
-			#add_action('admin_menu', array($this, 'feed_menus'));
 		}
 	
 	}
@@ -568,25 +566,6 @@ class PF_Feeds_Schema {
 			
 	
 		wp_enqueue_script( 'feed_control_script', PF_URL . '/assets/js/feeds_control.js', array('jquery', PF_SLUG . '-twitter-bootstrap') );
-	}
-	
-	function add_to_feeder(){
-		?>
-		<p>
-		<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="<?php _e('Reset all Feed Retrieval Options', 'pf'); ?>"><?php _e('Reset all Feed Retrieval Options', 'pf'); ?></button>    <br />
-		<?php
-			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0);
-			$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
-			$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
-			$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );
-			$retrieval_state = sprintf(__('Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d  Ready to chunk? %4$d', 'pf'), $feed_go, $feed_iteration, $retrieval_state, $chunk_state);
-			echo $retrieval_state;
-		
-		?>
-		<br />
-		<button type="button" class="redoFeeds btn btn-warning" id="resetFeedOps" value="<?php _e('Switch feeds to new retrieval setup', 'pf'); ?>"><?php _e('Switch feeds to new retrieval setup', 'pf'); ?></button>    <br />
-		</p>
-		<?php
 	}
 	
 }
