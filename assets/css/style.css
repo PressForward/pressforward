@@ -236,9 +236,19 @@ h3 {
     background: #f1f1f1;
 }
 
-.alert-box .hndle {
+.alert-box .hndle, .pf-opt-group .hndle {
     padding-left:10px;
     border-bottom: 1px solid #E7E7E7;
+}
+
+.pf-opt-group .postbox{
+    float:left;
+    width: 45%;
+    margin-right: 10px;
+}
+
+.pf_feeder_input_box {
+    margin-bottom:24px;   
 }
 
 .full #entries {

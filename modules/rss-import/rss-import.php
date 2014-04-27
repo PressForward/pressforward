@@ -244,23 +244,30 @@ class PF_RSS_Import extends PF_Module {
 
         ?>
 		<div class="pf-opt-group">
-			<br />
-			<br />
-			<div><?php _e('Add Single RSS Feed', 'pf'); ?></div>
-				<div>
-					<input id="<?php echo PF_SLUG . '_feedlist[single]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[single]'; ?>" value="" />
-                    <label class="description" for="<?php echo PF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL or RSS path', 'pf'); ?></label>
+            <div class="rss-box postbox">
+                    <div class="handlediv" title="Click to toggle"><br></div>
+                    <h3 class="hndle"><span>RSS</span></h3>
+                    <div class="inside">
+                        <div><?php _e('Add Single RSS Feed', 'pf'); ?></div>
+                            <div class="pf_feeder_input_box">
+                                <input id="<?php echo PF_SLUG . '_feedlist[single]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[single]'; ?>" value="" />
+                                <label class="description" for="<?php echo PF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL or RSS path', 'pf'); ?></label>
+                                <a href="http://en.wikipedia.org/wiki/RSS">What is an RSS Feed?</a>
 
 
-                </div>
+                            </div>
 
-			<div><?php _e('Add OPML File', 'pf'); ?></div>
-				<div>
-					<input id="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" value="" />
-                    <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'pf'); ?></label>
+                        <div><?php _e('Add OPML File', 'pf'); ?></div>
+                            <div class="pf_feeder_input_box">
+                                <input id="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" value="" />
+                                <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'pf'); ?></label>
+                                <a href="http://en.wikipedia.org/wiki/Opml">What is an OPML file</a>
 
 
-                </div>
+                            </div>
+                        <input type="submit" class="button-primary" value="<?php _e('Save Options', 'pf'); ?>" />
+                    </div>
+            </div>
 		</div>
 		<?php
 

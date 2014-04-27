@@ -1045,10 +1045,10 @@ class PF_Admin {
 
 			do_action( 'feeder_menu' );
 
-			?><input type="submit" class="button-primary" value="<?php _e('Save Options', 'pf'); ?>" />
+			#<input type="submit" class="button-primary" value="<?php _e('Save Options', 'pf'); />
 
 			
-			</form><?php
+			?></form><?php
 
 
 	}
