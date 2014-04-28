@@ -417,6 +417,11 @@ var photostorage = false;
 	do_action('admin_print_scripts');
 	do_action('admin_head');
 ?>
+
+    <style type="text/css">
+      
+    </style>
+
 	<script type="text/javascript">
 	var wpActiveEditor = 'content';
 
@@ -545,6 +550,9 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 <body class="press-this wp-admin wp-core-ui nominate-this <?php echo $admin_body_class; ?>">
 <form action="nominate-this.php?action=post" method="post">
 <div id="poststuff" class="metabox-holder">
+<?php
+    if ( isset($posted) && intval($posted) ) { } else {   
+    ?>
 	<div id="side-sortables" class="press-this-sidebar">
 		<div class="sleeve">
 			<?php wp_nonce_field('nominate-this') ?>
@@ -553,7 +561,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			<input type="hidden" id="original_post_status" name="original_post_status" value="draft" />
 			<input type="hidden" id="prev_status" name="prev_status" value="draft" />
 			<input type="hidden" id="post_id" name="post_id" value="<?php echo (int) $post_ID; ?>" />
--			<?php if ($url != '') { ?>
+			<?php if ($url != '') { ?>
 				<?php //print_r($url); ?>
 				<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr($title);?>" />
 				<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo date('c'); ?>" />
@@ -671,6 +679,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			</div>
 		</div>
 	</div>
+    <?php } ?>
 	<div class="posting">
 
 		<div id="wphead">
@@ -684,14 +693,28 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 
 		<?php
 		if ( isset($posted) && intval($posted) ) {
-			$post_ID = intval($posted); ?>
-			<div id="message" class="updated">
-			<p><strong><?php _e('Your post has been saved.'); ?></strong>
-			<a onclick="window.opener.location.replace(this.href); window.close();" href="<?php echo get_permalink($post_ID); ?>"><?php _e('View post'); ?></a>
-			| <a href="<?php echo get_edit_post_link( $post_ID ); ?>" onclick="window.opener.location.replace(this.href); window.close();"><?php _e('Edit Post'); ?></a>
-			| <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a></p>
-			</div>
-		<?php } ?>
+			$post_ID = intval($posted); 
+            $pt = get_post_type($post_ID);
+            if ($pt == 'nomination'){
+                ?>
+                <div id="message" class="updated">
+                <p><strong><?php _e('Your nomination has been saved.'); ?></strong>
+                    <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a>
+                    </p>
+                </div>
+		      <?php 
+            } else {
+                ?>
+                <div id="message" class="updated">
+                <p><strong><?php _e('Your post has been saved.'); ?></strong>
+                <a onclick="window.opener.location.replace(this.href); window.close();" href="<?php echo get_permalink($post_ID); ?>"><?php _e('View post'); ?></a>
+                | <a href="<?php echo get_edit_post_link( $post_ID ); ?>" onclick="window.opener.location.replace(this.href); window.close();"><?php _e('Edit Post'); ?></a>
+                | <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a></p>
+                </div>
+		      <?php 
+            } 
+            die(); 
+        } ?>
 
 		<div id="titlediv">
 			<div class="titlewrap">
