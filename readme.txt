@@ -1,11 +1,11 @@
 === PressForward ===
 Contributors: PressForward, AramZS, boonebgorges, joanftroyano, clioweb
-Version: 3.0.2
+Version: 3.1.0
 Donate link:
 Tags: aggregation, atom, content curation, curation, curation tool, editorial, feed, RSS, workflow
 Requires at least: 3.0.1
 Tested up to: 3.8
-Stable tag: 3.0.2
+Stable tag: 3.1.0
 License: GPL2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
