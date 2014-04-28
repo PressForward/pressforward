@@ -278,10 +278,11 @@ class PF_Feed_Retrieve {
 			# If the feed isn't empty, attempt to retrieve it. 
 			$theFeed = self::feed_handler($aFeed);
 			if (!$theFeed){
+				
+				pf_log('This feed is empty, too old, or has had all items retrieved:');
+				#pf_log('feed_handler returned ');
+				pf_log($aFeed->guid);
 				$aFeed = '';
-				pf_log('Could not get the feed.');
-				pf_log('feed_handler returned ');
-				pf_log($aFeed);
 				#pf_log($theFeed->get_error_message());
 			}
 			# If the array entry is empty and this isn't the end of the feedlist,

@@ -25,7 +25,7 @@ class PF_RSS_Out extends PF_Module {
 		$mod_settings = array(
 			'name' => 'RSS Output Module',
 			'slug' => 'rss-out',
-			'description' => 'This module provides a way to output RSS Feeds from your subscribed items.',
+			'description' => 'This module provides a way to output RSS Feeds from your subscribed items. An RSS Feed consisting of all your subscribed items will be available at your domain "/feedforward."',
 			'thumbnail' => '',
 			'options' => ''
 		);

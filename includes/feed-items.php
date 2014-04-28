@@ -145,7 +145,7 @@ class PF_Feed_Item {
 		//			);
 		//$pageBottom = $pageTop + 20;
 		$args = pf_feed_item_post_type();
-
+        $pageTop = $pageTop-1;
 		//$archiveQuery = new WP_Query( $args );
 		if ($limitless){
 		 $dquerystr = $wpdb->prepare("
@@ -159,7 +159,7 @@ class PF_Feed_Item {
 			ORDER BY {$wpdb->postmeta}.meta_value DESC
 		 ", pf_feed_item_post_type());
 		} elseif ($limit == 'starred') {
-			$pageTop = $pageTop-1;
+			
 			$relate = pressforward()->relationships;
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
@@ -186,7 +186,7 @@ class PF_Feed_Item {
 			 ", pf_feed_item_post_type());
 			 #var_dump($dquerystr);
 		} elseif ($limit == 'nominated') {
-			$pageTop = $pageTop-1;
+			
 			$relate = pressforward()->relationships;
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
@@ -377,6 +377,7 @@ class PF_Feed_Item {
 			# All the posts in this loop are older than 60 days from 'now'.
 			# Delete them all.
 			$postid = get_the_ID();
+			$this->disassemble_feed_item_media( $post_id );
 			wp_delete_post( $postid, true );
 
 		endwhile;
@@ -389,37 +390,29 @@ class PF_Feed_Item {
 	# Method to manually delete rssarchival entries on user action.
 	public static function reset_feed() {
 		global $wpdb, $post;
-		//$args = array(
-		//				'post_type' => array('any')
-		//			);
-		$args = 'post_type=' . pf_feed_item_post_type();
-		//$archiveQuery = new WP_Query( $args );
-		$dquerystr = $wpdb->prepare("
-			SELECT $wpdb->posts.*, $wpdb->postmeta.*
-			FROM $wpdb->posts, $wpdb->postmeta
-			WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id
-			AND $wpdb->posts.post_type = %s
-		 ", pf_feed_item_post_type() );
-		# This is how we do a custom query, when WP_Query doesn't do what we want it to.
-		$rssarchivalposts = $wpdb->get_results($dquerystr, OBJECT);
-		//print_r(count($rssarchivalposts)); die();
-		$feedObject = array();
-		$c = 0;
+        $args = array(
+                'post_type' =>  pf_feed_item_post_type(),
+                'post_status' =>  'publish',
+                'posts_per_page'=>-1,
+                'nopaging'  => 'true'
+            );
+		$archiveQuery = new WP_Query( $args );
+        #var_dump($archiveQuery);
+		if ( $archiveQuery->have_posts() ) :
 
-		if ($rssarchivalposts):
+            while ( $archiveQuery->have_posts() ) : $archiveQuery->the_post(); 
+        	    $post_id = get_the_ID();
+			     //Switch the delete on to wipe rss archive posts from the database for testing.
+                pressforward()->admin->pf_thing_deleter( $post_id, true );
 
-			foreach ($rssarchivalposts as $post) :
-			# This takes the $post objects and translates them into something I can do the standard WP functions on.
-			setup_postdata($post);
-			$post_id = get_the_ID();
-			//Switch the delete on to wipe rss archive posts from the database for testing.
-			wp_delete_post( $post_id, true );
-			endforeach;
-
-
-		endif;
+            endwhile;
+            print_r(__('All archives deleted.', 'pf'));
+        
 		wp_reset_postdata();
-		print_r(__('All archives deleted.', 'pf'));
+        else:
+          print_r( 'Sorry, no posts matched your criteria.' ); 
+        endif;
+		
 
 	}
 
@@ -768,11 +761,11 @@ class PF_Feed_Item {
 			// From: https://gist.github.com/gcoop/701814
 			// ============
 
-				$search  = array('&acirc;€“','&acirc;€œ','&acirc;€˜','&acirc;€™','&Acirc;&pound;','&Acirc;&not;','&acirc;„&cent;', '&Acirc;&nbsp;', '&Acirc;', '&amp;nbsp;', '&#8230;');
+				$search  = array('&acirc;ï¿½ï¿½','&acirc;ï¿½ï¿½','&acirc;ï¿½ï¿½','&acirc;ï¿½ï¿½','&Acirc;&pound;','&Acirc;&not;','&acirc;ï¿½&cent;', '&Acirc;&nbsp;', '&Acirc;', '&amp;nbsp;', '&#8230;');
 				$replace = array('-','&ldquo;','&lsquo;','&rsquo;','&pound;','&not;','&#8482;', '', '', '', '...');
 
 				$string = str_replace($search, $replace, $string);
-				$string = str_replace('&acirc;€', '&rdquo;', $string);
+				$string = str_replace('&acirc;ï¿½', '&rdquo;', $string);
 
 				$search = array("&#39;", "\xc3\xa2\xc2\x80\xc2\x99", "\xc3\xa2\xc2\x80\xc2\x93", "\xc3\xa2\xc2\x80\xc2\x9d", "\xc3\xa2\x3f\x3f", "&#8220;", "&#8221;", "#8217;", "&not;", "&#8482;");
 				$resplace = array("'", "'", ' - ', '"', "'", '"', '"', "'", "-", "(TM)");
@@ -793,8 +786,8 @@ class PF_Feed_Item {
 				"\xE2\x80\xB9" => "'",
 				"\xE2\x80\xBA" => "'",
 				"\xe2\x80\x93" => "-",
-				"\xc2\xb0"	   => "°",
-				"\xc2\xba"     => "°",
+				"\xc2\xb0"	   => "ï¿½",
+				"\xc2\xba"     => "ï¿½",
 				"\xc3\xb1"	   => "&#241;",
 				"\x96"		   => "&#241;",
 				"\xe2\x81\x83" => '&bull;',

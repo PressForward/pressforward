@@ -45,13 +45,14 @@
 					</div>				
 				</div>
 				<div class="display">
-					<div class="btn-group pull-left">
+					<div class="pf-btns pull-left">
 					<!--<button type="submit" id="gogrid" class="btn btn-small">Grid</button>
 					<button type="submit" id="golist" class="btn btn-small">List</button>-->
 
 					<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
 					echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomdate" value="' . __('Sort by date nominated', 'pf') . '">' . __('Sort by date nominated', 'pf') . '</button>'; 
 					echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomcount" value="' . __('Sort by nominations', 'pf') . '">' . __('Sort by nominations', 'pf') . '</button>'; 
+                    echo '<button type="submit" class="btn btn-small starredonly" id="sortstarredonly" value="' . __('Show starred only', 'pf') . '">' . __('Show starred only', 'pf') . '</button>'; 
 					if (!isset($_GET['pf-see']) || ('archive-only' != $_GET['pf-see'])){
 						echo '<button type="submit" class="btn btn-small feedsort" id="showarchiveonly" value="' . __('Show only archived', 'pf') . '">' . __('Show only archived', 'pf') . '</button>'; 
 						if (isset($_GET['by']) && ( 'archived' == $_GET['by'])){

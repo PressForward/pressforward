@@ -122,6 +122,8 @@ class PressForward {
 		require_once( PF_ROOT . '/includes/relationships.php' );
 		require_once( PF_ROOT . '/includes/nominations.php' );
 		require_once( PF_ROOT . '/includes/admin.php' );
+        require_once( PF_ROOT . '/includes/template-tags.php' );
+        require_once( PF_ROOT . '/includes/specimen-box.php' );
 	}
 
 	/**
@@ -213,7 +215,7 @@ class PressForward {
 	}
 
 	/**
-	 * Sets up the Dashboard admin
+	 * Sets up the Nominations admin
 	 *
 	 * @since 1.7
 	 */

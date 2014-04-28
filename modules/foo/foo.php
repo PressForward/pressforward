@@ -31,7 +31,7 @@ class PF_Foo extends PF_Module {
 	function setup_module() {
 		$enabled = get_option( 'pf_foo_enable' );
 		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
-			$enabled = 'yes';
+			$enabled = 'no';
 		}
 
 		$mod_settings = array(

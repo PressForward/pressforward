@@ -1,11 +1,11 @@
 .error.fade {
 	display:none;
 }
-
-.toplevel_page_pf-menu #wpcontent {
-	margin-left: 160px;
+@media only screen and (min-width: 900px) {
+    .toplevel_page_pf-menu #wpcontent {
+        margin-left: 160px;
+    }
 }
-
 .deck .card {
 
 	background-color: #AFC459;
@@ -85,7 +85,7 @@ visibility:hidden;
 	margin: 8px auto;
 }
 
-.toplevel_page_pf-menu #wpwrap, .pressforward_page_pf-review #wpwrap {
+.toplevel_page_pf-menu #wpwrap, .pressforward_page_pf-review #wpwrap, .pressforward_page_pf-feeder #wpwrap {
 	
     background-color: #ecf3f9;
 
@@ -122,8 +122,14 @@ visibility:hidden;
 	height: 18px;
 }
 
-.actions.btn-group {
+.pf-btns {
 	margin: 0 0;
+}
+
+.pf-btns .btn {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0    
 }
 
 .actions form {
@@ -222,6 +228,42 @@ h3 {
 #tools {
 	display:none;
 }
+.primary-btn-tools .btn {
+    width:100%;
+    border-radius: 0;
+}
+.primary-btn-tools .btn:first-child {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+.primary-btn-tools .btn:last-child {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;    
+}
+.primary-btn-tools .btn:only-of-type {
+    border-radius: 4px;
+}
+
+.alert-box {
+    margin-right: 14px;
+    background: #f1f1f1;
+}
+
+.alert-box .hndle, .pf-opt-group .hndle {
+    padding-left:10px;
+    border-bottom: 1px solid #E7E7E7;
+}
+
+.pf-opt-group .postbox{
+    float:left;
+    width: 45%;
+    margin-right: 10px;
+}
+
+.pf_feeder_input_box {
+    margin-bottom:24px;   
+}
+
 .full #entries {
 	width: 100%;
 }

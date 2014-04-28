@@ -78,6 +78,19 @@ class PF_RSS_Import extends PF_Module {
 		if (!$theFeed || empty($theFeed) || is_wp_error($theFeed)){
 			pf_log('Can not use Simple Pie to retrieve the feed');
 			pf_log($theFeed);
+			the_alert_box()->switch_post_type($aFeed->ID);
+			the_alert_box()->add_bug_type_to_post($aFeed->ID, __('Broken RSS feed.', 'pf'));
+			$post_obj = get_post( $aFeed->ID );
+			$old_content = $post_obj->post_content;
+			if(is_wp_error($theFeed)){
+				$argup = array(
+					'ID'			=> $aFeed->ID,
+					'post_content'	=>	$old_content . ' <p>' . $theFeed->get_error_message() . '</p>'
+				);
+
+				$result = wp_update_post($argup);
+
+			}
 			return false;
 		}
 		$theFeed->set_timeout(60);
@@ -231,23 +244,30 @@ class PF_RSS_Import extends PF_Module {
 
         ?>
 		<div class="pf-opt-group">
-			<br />
-			<br />
-			<div><?php _e('Add Single RSS Feed', 'pf'); ?></div>
-				<div>
-					<input id="<?php echo PF_SLUG . '_feedlist[single]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[single]'; ?>" value="" />
-                    <label class="description" for="<?php echo PF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL or RSS path', 'pf'); ?></label>
+            <div class="rss-box postbox">
+                    <div class="handlediv" title="Click to toggle"><br></div>
+                    <h3 class="hndle"><span>RSS</span></h3>
+                    <div class="inside">
+                        <div><?php _e('Add Single RSS Feed', 'pf'); ?></div>
+                            <div class="pf_feeder_input_box">
+                                <input id="<?php echo PF_SLUG . '_feedlist[single]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[single]'; ?>" value="" />
+                                <label class="description" for="<?php echo PF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL or RSS path', 'pf'); ?></label>
+                                <a href="http://en.wikipedia.org/wiki/RSS">What is an RSS Feed?</a>
 
 
-                </div>
+                            </div>
 
-			<div><?php _e('Add OPML File', 'pf'); ?></div>
-				<div>
-					<input id="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" value="" />
-                    <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'pf'); ?></label>
+                        <div><?php _e('Add OPML File', 'pf'); ?></div>
+                            <div class="pf_feeder_input_box">
+                                <input id="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" value="" />
+                                <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'pf'); ?></label>
+                                <a href="http://en.wikipedia.org/wiki/Opml">What is an OPML file</a>
 
 
-                </div>
+                            </div>
+                        <input type="submit" class="button-primary" value="<?php _e('Save Options', 'pf'); ?>" />
+                    </div>
+            </div>
 		</div>
 		<?php
 
@@ -297,7 +317,9 @@ class PF_RSS_Import extends PF_Module {
 						#wp_die($check);
 						$something_broke = true;
 						$description = 'Feed failed initial attempt to add to database | ' . $check->get_error_message();
-						$feed_obj->create($input['single'], array('type' => 'rss-quick', 'description' => $description, 'module_added' => get_called_class()));
+						$broken_id = $feed_obj->create($input['single'], array('type' => 'rss-quick', 'description' => $description, 'module_added' => get_called_class()));
+						the_alert_box()->switch_post_type($broken_id);
+						the_alert_box()->add_bug_type_to_post($broken_id, 'Broken feed.');
 					}
 				} else {
 					pf_log('The feed already exists, sending it to update.');

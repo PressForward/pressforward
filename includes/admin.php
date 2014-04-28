@@ -14,6 +14,7 @@ class PF_Admin {
 	 */
 	function __construct() {
 		add_action( 'admin_menu', array( $this, 'register_pf_custom_menu_pages' ) );
+        add_action( 'init', array( $this, 'dead_post_status') );
 
 		// Adding javascript and css to admin pages
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
@@ -70,6 +71,24 @@ class PF_Admin {
 			array($this, 'display_review_builder')
 		);
 
+		// Feed-listing page is accessible only to Editors and above
+		add_submenu_page(
+			PF_MENU_SLUG,
+			__('Add Feeds', 'pf'),
+			__('Add Feeds', 'pf'),
+			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')),
+			PF_SLUG . '-feeder',
+			array($this, 'display_feeder_builder')
+		);
+        
+		add_submenu_page(
+			PF_MENU_SLUG, 
+			__('Subscribed Feeds', 'pf'),
+			__('Subscribed Feeds', 'pf'), 
+			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')), 
+			'edit.php?post_type=' . pressforward()->pf_feeds->post_type
+		);	        
+        
 		// Options page is accessible only to Administrators
 		add_submenu_page(
 			PF_MENU_SLUG,
@@ -79,24 +98,6 @@ class PF_Admin {
 			PF_SLUG . '-options',
 			array($this, 'display_options_builder')
 		);
-
-		// Feed-listing page is accessible only to Editors and above
-		add_submenu_page(
-			PF_MENU_SLUG,
-			__('Feeder', 'pf'),
-			__('Feeder', 'pf'),
-			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')),
-			PF_SLUG . '-feeder',
-			array($this, 'display_feeder_builder')
-		);
-		
-		add_submenu_page(
-			PF_MENU_SLUG, 
-			__('Subscribed Feeds', 'pf'),
-			__('Subscribed Feeds', 'pf'), 
-			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')), 
-			'edit.php?post_type=' . pressforward()->pf_feeds->post_type
-		);	
 		
 		add_submenu_page(
 			PF_MENU_SLUG, 
@@ -280,24 +281,32 @@ class PF_Admin {
 				}		
 				
 			}
+			#echo '<a href="#" id="settings" class="button">Settings</a>';
+			echo '<div class="primary-btn-tools">';
 			if ($slug == 'toplevel_page_pf-menu' && $version >= 0 && current_user_can(pf_get_defining_capability_by_role('administrator'))){
 				?>
-					<a href="#" id="settings" class="button">Settings</a>
-					<div class="btn-group">
-						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete entire feed archive', 'pf');  ?>" ><?php  _e('Delete entire feed archive', 'pf');  ?></button>
+					
+						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete all items', 'pf');  ?>" ><?php  _e('Delete all items', 'pf');  ?></button>
 						<button type="submit" class="delete btn btn-info pull-right" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
-						<button type="submit" class="delete btn btn-info pull-right" id="showMyStarred" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
+						<button type="submit" class="delete btn btn-info pull-right" id="showMyStarred" value="<?php  _e('Show my starred', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
 						<?php 
 							if (isset($_GET['by'])){
 								?><button type="submit" class="delete btn btn-info pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php 
 							}
 						?>
-					</div>
 				<?php 
+			} elseif ($slug == 'toplevel_page_pf-menu' && $version >= 0) {
+				?>		
+						<button type="submit" class="delete btn btn-info pull-right" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
+						<button type="submit" class="delete btn btn-info pull-right" id="showMyStarred" value="<?php  _e('Show my starred', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
+						<?php 
+							if (isset($_GET['by'])){
+								?><button type="submit" class="delete btn btn-info pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php 
+							}
+						?>		
+				<?php	
 			} elseif ( $slug == 'pressforward_page_pf-review' && (get_bloginfo('version') >= 3.7) && $version >= 0 && current_user_can(pf_get_defining_capability_by_role('administrator'))){
 				?>
-					<a href="#" id="settings" class="button">Settings</a>
-					<div class="btn-group">
 						<button type="submit" class="btn btn-warning pull-right" id="archivebefore" value="<?php  _e('Archive before', 'pf');  ?>:" ><?php  _e('Archive before', 'pf');  ?>:</button>
 						<select class="pull-right" id="archiveBeforeOption">
 							<option value="1week">Older then 1 week</option>
@@ -305,9 +314,9 @@ class PF_Admin {
 							<option value="1month">Older than 1 month</option>
 							<option value="1year">Before this year</option>
 						</select>
-					</div>
 				<?php 
-			}				
+			}
+			echo '</div>';
 				?>
 				<div id="nom-this-toolbox">
 					<h3 class="title"><?php _e('Nominate This', 'pf'); ?></h3>
@@ -335,7 +344,7 @@ class PF_Admin {
 				$item_id = $item['item_id'];
 			}
 			?>	
-				<div class="actions <?php if($modal){ echo 'modal-btns '; } ?>btn-group">
+				<div class="actions pf-btns <?php if($modal){ echo 'modal-btns '; } ?>">
 					<?php
 					$infoPop = 'top';
 					if ($modal == false){
@@ -390,10 +399,10 @@ class PF_Admin {
 					} else {
 						#var_dump(pf_get_relationship('nominate', $id_for_comments, $user_id));
 						if (1 == pf_get_relationship_value('nominate', $id_for_comments, $user_id)){
-							echo '<button class="btn btn-small nominate-now btn-success schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominated', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></button>';
+							echo '<button class="btn btn-small nominate-now btn-success schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominated', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-single-licon.png" /></button>';
 							# Add option here for admin-level users to send items direct to draft. 
 						} else {
-							echo '<button class="btn btn-small nominate-now schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominate', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></button>';
+							echo '<button class="btn btn-small nominate-now schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominate', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-single-licon.png" /></button>';
 							# Add option here for admin-level users to send items direct to draft. 
 						}
 					}
@@ -784,7 +793,7 @@ class PF_Admin {
 				?>
 				</div>
 				<div class="display">
-					<div class="btn-group pull-left">
+					<div class="pf-btns pull-left">
 					<button type="submit" id="gogrid" class="btn btn-small">Grid</button>
 					<button type="submit" id="golist" class="btn btn-small">List</button>
 
@@ -850,12 +859,15 @@ class PF_Admin {
 			$pageNext .= $pageQed;
 			
 		}
-		echo '<div class="pf-navigation">';
-		if ($pagePrev > -1){
-			echo '<span class="feedprev"><a class="prevnav" href="admin.php' . $pagePrev . '">Previous Page</a></span> | ';
-		}
-		echo '<span class="feednext"><a class="nextnav" href="admin.php' . $pageNext . '">Next Page</a></span>';
-		echo '</div>';
+        if ($c > 19){
+            
+            echo '<div class="pf-navigation">';
+            if ($pagePrev > -1){
+                echo '<span class="feedprev"><a class="prevnav" href="admin.php' . $pagePrev . '">Previous Page</a></span> | ';
+            }
+            echo '<span class="feednext"><a class="nextnav" href="admin.php' . $pageNext . '">Next Page</a></span>';
+            echo '</div>';
+        }
 
 	echo '</div><!-- End container-fluid -->';
 	}
@@ -1014,7 +1026,21 @@ class PF_Admin {
 				<p class="description"><?php _e('If your bookmarks toolbar is hidden: copy the code below, open your Bookmarks manager, create new bookmark, type Press This into the name field and paste the code into the URL field.', 'pf'); ?></p>
 				<p><textarea rows="5" cols="120" readonly="readonly"><?php echo htmlspecialchars( pf_get_shortcut_link() ); ?></textarea></p>
 				</div>
-			</div>
+                
+                <div class="alert-box postbox">
+                    <div class="handlediv" title="Click to toggle"><br></div>
+                    <h3 class="hndle"><span>Feed Problems</span></h3>
+                    <div class="inside">
+                    <?php
+                        add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+                        add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+                        the_alert_box()->alert_box_outsides();
+                        remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+                        remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+                    ?>
+                    </div>
+                </div>
+            </div>
 			<?php
 			endif;
 			?><form method="post" action="options.php"><?php
@@ -1023,13 +1049,21 @@ class PF_Admin {
 
 			do_action( 'feeder_menu' );
 
-			?><input type="submit" class="button-primary" value="<?php _e('Save Options', 'pf'); ?>" />
+			#<input type="submit" class="button-primary" value="<?php _e('Save Options', 'pf'); />
 
 			
-			</form><?php
+			?></form><?php
 
 
 	}
+    
+    public function alert_filterer($post_types){
+        return array(pressforward()->pf_feeds->post_type);
+    }
+    
+    public function alert_safe_filterer($safe_msg){
+        return __('All feeds are ok!', 'pf');
+    }    
 	
 	function admin_notices_action() {
 		settings_errors( 'add_pf_feeds' );
@@ -1186,7 +1220,7 @@ class PF_Admin {
 										),
 			'pf_menu_feeder_access'=>array(
 											'default'=>'editor',
-											'title'=>__( 'Feeder Menu', 'pf' )
+											'title'=>__( 'Add Feeds', 'pf' )
 										),
 			'pf_menu_add_nomination_access'=>array(
 											'default'=>'contributor',
@@ -1254,7 +1288,7 @@ class PF_Admin {
 	}
 
 	public function count_the_posts($post_type, $date_less = false){
-				
+
 				if (!$date_less){
 					$query_arg = array(
 						'post_type' 		=> $post_type,
@@ -1278,15 +1312,15 @@ class PF_Admin {
 						'posts_per_page' 	=> -1
 					);	
 				}
-				
+
 
 				$query = new WP_Query($query_arg);	
 				$post_count = $query->post_count;
 				wp_reset_postdata();
-		
+
 		return $post_count;
 	}
-
+    
 	public function search_the_posts($s, $post_type){
 	
 		$args = array(
@@ -1299,6 +1333,15 @@ class PF_Admin {
 		return $q;
 	
 	}
+    
+    public function dead_post_status(){
+        register_post_status('removed_feed_item', array(
+            'label'                 =>     _x('Removed Feed Item', 'pf'),
+            'public'                =>      false,
+            'exclude_from_search'   =>      true,
+            'show_in_admin_all_list'=>      false
+        ) );
+    }
 	
 	/*
 	 *

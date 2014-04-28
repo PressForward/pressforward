@@ -75,5 +75,11 @@ jQuery(window).load(function() {
 		
 		window.open(location.href+'&pf-see=archive-only','_self');
 	});		
+    
+	jQuery('.pf_container').on('click', "#sortstarredonly", function (evt){
+		evt.preventDefault();	
+		
+		window.open(location.href+'&pf-see=starred-only','_self');
+	});	    
 	
 });	
