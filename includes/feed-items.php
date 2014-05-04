@@ -394,6 +394,12 @@ class PF_Feed_Item {
         $count = wp_count_posts(pf_feed_item_post_type());
         $pub_count = $count->publish;
         $pages = $pub_count/100;
+        #var_dump($pages);
+        if (($pages < 1) && ($pages > 0)){
+            $pages = 1;    
+        } else {
+            $pages = round($pages, 0);
+        }
         while ($pages > 0){
             $args = array(
                     'post_type' =>  pf_feed_item_post_type(),
