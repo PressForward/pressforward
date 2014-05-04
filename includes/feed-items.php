@@ -390,28 +390,36 @@ class PF_Feed_Item {
 	# Method to manually delete rssarchival entries on user action.
 	public static function reset_feed() {
 		global $wpdb, $post;
-        $args = array(
-                'post_type' =>  pf_feed_item_post_type(),
-                'post_status' =>  'publish',
-                'posts_per_page'=>-1,
-                'nopaging'  => 'true'
-            );
-		$archiveQuery = new WP_Query( $args );
-        #var_dump($archiveQuery);
-		if ( $archiveQuery->have_posts() ) :
-
-            while ( $archiveQuery->have_posts() ) : $archiveQuery->the_post(); 
-        	    $post_id = get_the_ID();
-			     //Switch the delete on to wipe rss archive posts from the database for testing.
-                pressforward()->admin->pf_thing_deleter( $post_id, true );
-
-            endwhile;
-            print_r(__('All archives deleted.', 'pf'));
         
-		wp_reset_postdata();
-        else:
-          print_r( 'Sorry, no posts matched your criteria.' ); 
-        endif;
+        $count = wp_count_posts(pf_feed_item_post_type());
+        $pub_count = $count->publish;
+        $pages = $pub_count/100;
+        while ($pages > 0){
+            $args = array(
+                    'post_type' =>  pf_feed_item_post_type(),
+                    'post_status' =>  'publish',
+                    'posts_per_page'=>100,
+                    'paged'  => $pages
+                );            
+            $archiveQuery = new WP_Query( $args );
+            #var_dump($archiveQuery);
+            if ( $archiveQuery->have_posts() ) :
+    
+                while ( $archiveQuery->have_posts() ) : $archiveQuery->the_post(); 
+                    $post_id = get_the_ID();
+                     //Switch the delete on to wipe rss archive posts from the database for testing.
+                    pressforward()->admin->pf_thing_deleter( $post_id, true );
+    
+                endwhile;
+                #print_r(__('All archives deleted.', 'pf'));
+            
+            wp_reset_postdata();
+            else:
+              #print_r( 'Sorry, no posts matched your criteria.' ); 
+            endif;
+            
+            $pages--;
+        }
 		
 
 	}
