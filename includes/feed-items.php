@@ -398,7 +398,7 @@ class PF_Feed_Item {
         if (($pages < 1) && ($pages > 0)){
             $pages = 1;    
         } else {
-            $pages = round($pages, 0);
+            $pages = ceil($pages);
         }
         while ($pages > 0){
             $args = array(
