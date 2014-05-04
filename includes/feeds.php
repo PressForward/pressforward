@@ -471,8 +471,13 @@ class PF_Feeds_Schema {
 			'tags'    		=> array(),
 		) );
 		if (!$r['url']){
-			return false;
-		}
+			$feedURL = get_the_guid($post_id);
+            if (empty($feedURL)){
+                return false;
+            }
+		} else {
+            $feedURL = $r['url'];
+        }
 		if ($r['type'] == 'rss'){
 			$theFeed = fetch_feed($feedURL);
 			if (is_wp_error($theFeed)){
