@@ -3,7 +3,7 @@
 Plugin Name: PressForward
 Plugin URI: http://pressforward.org/
 Description: This plugin is an aggregation parser for CHNM's Press Forward project.
-Version: 3.0.1
+Version: 3.1.0
 Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
 Author URI: http://aramzs.me, http://boone.gorg.es/, http://clioweb.org
 License: GPL2
@@ -47,6 +47,7 @@ class PressForward {
 	var $opml_reader;
 	var $og_reader;
 	var $readability;
+	var $relationships;
 
 	public static function init() {
 		static $instance;
@@ -70,6 +71,7 @@ class PressForward {
 		$this->set_up_feeds();
 		$this->set_up_feed_items();
 		$this->set_up_schema();
+		$this->set_up_relationships();
 		$this->set_up_feed_retrieve();
 		$this->set_up_nominations();
 		$this->set_up_admin();
@@ -158,7 +160,7 @@ class PressForward {
 	}
 
 	/**
-	 * Sets up the Dashboard admin
+	 * Sets up the schema for feed items
 	 *
 	 * @since 1.7
 	 */
@@ -168,6 +170,16 @@ class PressForward {
 		}
 	}
 
+	/**
+	 * Sets up the Relationships schema
+	 *
+	 * @since 3.0
+	 */
+	function set_up_relationships() {
+		if ( empty( $this->relationships ) ) {
+			$this->relationships = new PF_RSS_Import_Relationship;
+		}
+	}	
 
 	/**
 	 * Sets up the Feeds functionality

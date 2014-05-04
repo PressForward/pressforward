@@ -160,7 +160,7 @@ class PF_Feed_Item {
 		 ", pf_feed_item_post_type());
 		} elseif ($limit == 'starred') {
 			
-			$relate = new PF_RSS_Import_Relationship();
+			$relate = pressforward()->relationships;
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('star');
@@ -180,13 +180,14 @@ class PF_Feed_Item {
 					AND {$rt}.relationship_type = {$read_id}
 					AND {$rt}.value = 1
 				)
-				GROUP BY {$wpdb->postmeta}.meta_key
+				GROUP BY {$wpdb->postmeta}.post_id
 				ORDER BY {$wpdb->postmeta}.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$pageTop}
 			 ", pf_feed_item_post_type());
+			 #var_dump($dquerystr);
 		} elseif ($limit == 'nominated') {
 			
-			$relate = new PF_RSS_Import_Relationship();
+			$relate = pressforward()->relationships;
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('nominate');
@@ -206,13 +207,12 @@ class PF_Feed_Item {
 					AND {$rt}.relationship_type = {$read_id}
 					AND {$rt}.value = 1
 				)
-				GROUP BY {$wpdb->postmeta}.meta_key
+				GROUP BY {$wpdb->postmeta}.post_id
 				ORDER BY {$wpdb->postmeta}.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$pageTop}
 			 ", pf_feed_item_post_type());
 		} elseif (is_user_logged_in() && (isset($_GET['action']) && ('post' == $_GET['action']) &&(isset($_POST['search-terms'])))){
-			
-            $relate = new PF_RSS_Import_Relationship();
+			$relate = pressforward()->relationships;
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('archive');
@@ -243,7 +243,7 @@ class PF_Feed_Item {
 			 #var_dump($dquerystr);
 
 		} elseif (is_user_logged_in()){
-			$relate = new PF_RSS_Import_Relationship();
+			$relate = pressforward()->relationships;
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('archive');
@@ -390,28 +390,42 @@ class PF_Feed_Item {
 	# Method to manually delete rssarchival entries on user action.
 	public static function reset_feed() {
 		global $wpdb, $post;
-        $args = array(
-                'post_type' =>  pf_feed_item_post_type(),
-                'post_status' =>  'publish',
-                'posts_per_page'=>-1,
-                'nopaging'  => 'true'
-            );
-		$archiveQuery = new WP_Query( $args );
-        #var_dump($archiveQuery);
-		if ( $archiveQuery->have_posts() ) :
-
-            while ( $archiveQuery->have_posts() ) : $archiveQuery->the_post(); 
-        	    $post_id = get_the_ID();
-			     //Switch the delete on to wipe rss archive posts from the database for testing.
-                pressforward()->admin->pf_thing_deleter( $post_id, true );
-
-            endwhile;
-            print_r(__('All archives deleted.', 'pf'));
         
-		wp_reset_postdata();
-        else:
-          print_r( 'Sorry, no posts matched your criteria.' ); 
-        endif;
+        $count = wp_count_posts(pf_feed_item_post_type());
+        $pub_count = $count->publish;
+        $pages = $pub_count/100;
+        #var_dump($pages);
+        if (($pages < 1) && ($pages > 0)){
+            $pages = 1;    
+        } else {
+            $pages = round($pages, 0);
+        }
+        while ($pages > 0){
+            $args = array(
+                    'post_type' =>  pf_feed_item_post_type(),
+                    'post_status' =>  'publish',
+                    'posts_per_page'=>100,
+                    'paged'  => $pages
+                );            
+            $archiveQuery = new WP_Query( $args );
+            #var_dump($archiveQuery);
+            if ( $archiveQuery->have_posts() ) :
+    
+                while ( $archiveQuery->have_posts() ) : $archiveQuery->the_post(); 
+                    $post_id = get_the_ID();
+                     //Switch the delete on to wipe rss archive posts from the database for testing.
+                    pressforward()->admin->pf_thing_deleter( $post_id, true );
+    
+                endwhile;
+                #print_r(__('All archives deleted.', 'pf'));
+            
+            wp_reset_postdata();
+            else:
+              #print_r( 'Sorry, no posts matched your criteria.' ); 
+            endif;
+            
+            $pages--;
+        }
 		
 
 	}

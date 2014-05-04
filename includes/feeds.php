@@ -232,7 +232,7 @@ class PF_Feeds_Schema {
 			
 		} else {
 			if (!$r['htmlUrl']){
-				$r['htmlUrl'] = $theFeed->get_permalink();
+				$r['htmlUrl'] = $theFeed->get_link(0);
 			}
 			if (!$r['title']){
 				$r['title'] = $theFeed->get_title();
@@ -284,7 +284,8 @@ class PF_Feeds_Schema {
 		pf_log($r);
 		if ($r['type'] == 'rss'){
 			pf_log('We are creating an RSS feed');
-			if (is_wp_error($theFeed = fetch_feed($feedUrl))){
+			$theFeed = fetch_feed($feedUrl);
+			if (is_wp_error($theFeed)){
 				pf_log('The RSS feed failed verification');
 				return new WP_Error('badfeed', __('The feed fails verification.'));
 			} else {
@@ -470,11 +471,16 @@ class PF_Feeds_Schema {
 			'tags'    		=> array(),
 		) );
 		if (!$r['url']){
-			return false;
-		}
+			$feedURL = get_the_guid($post_id);
+            if (empty($feedURL)){
+                return false;
+            }
+		} else {
+            $feedURL = $r['url'];
+        }
 		if ($r['type'] == 'rss'){
-		
-			if (is_wp_error($theFeed = fetch_feed($feedURL))){
+			$theFeed = fetch_feed($feedURL);
+			if (is_wp_error($theFeed)){
 				return new WP_Error('badfeed', __('The feed fails verification.'));
 			} else {
 				$r = self::setup_rss_meta($r, $theFeed);
@@ -482,7 +488,13 @@ class PF_Feeds_Schema {
 		}
 		if ('rss-quick' == $r['type']){
 			pf_log('Updating a rss-quick');
-			$r = self::setup_rss_meta($r, $theFeed);
+			$theFeed = fetch_feed($feedURL);
+			if (is_wp_error($theFeed)){
+				return new WP_Error('badfeed', __('The feed fails verification.'));
+			} else {
+				$r = self::setup_rss_meta($r, $theFeed);
+			}					
+			
 			self::set_pf_feed_type($r['ID'], 'rss');
 		}		
 		

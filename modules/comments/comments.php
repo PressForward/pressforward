@@ -160,6 +160,7 @@ class PF_Comments extends PF_Module {
 							array(
 								'type' => self::comment_type,
 								'callback' => array($this, 'the_comment'),
+								'end-callback' => '__return_false'
 							),
 							$editorial_comments
 						);

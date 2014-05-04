@@ -109,8 +109,17 @@ visibility:hidden;
 	margin-bottom: 3px;
 	line-height: 16px;
 }
+
+.grid .item_title {
+	height: 63px;
+}
+
 .source_title {
-	line-height: 1.5em;
+	line-height: 1.5em;	
+}
+
+.grid .source_title {
+	height: 18px;
 }
 
 .pf-btns {
@@ -184,6 +193,10 @@ h3 {
 	color: #494949;
 	font-family: sans-serif;
 	padding: 3px;
+}
+
+.grid .feed-item .item_excerpt {
+	height: 92px;
 }
 
 .feed-widget-container .well{
