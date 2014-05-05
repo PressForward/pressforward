@@ -41,6 +41,7 @@ class PF_Feeds_Schema {
 		add_action( 'init', array( $this, 'register_feed_post_type' ) );
 		#add_action('admin_init', array($this, 'deal_with_old_feedlists') );
 		add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
+        add_action('admin_init', array($this, 'disallow_add_new'));
 		if (is_admin()){
 			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
@@ -102,6 +103,15 @@ class PF_Feeds_Schema {
 			'rewrite' => false
 		) ) );
 	}
+    
+    public function disallow_add_new(){
+        global $pagenow;
+        /* Check current admin page. */
+        if($pagenow == 'post-new.php' && isset($_GET['post_type']) && $_GET['post_type'] == $this->post_type){
+            wp_redirect(admin_url('/admin.php?page=pf-feeder', 'http'), 301);
+            exit;
+        }    
+    }
 	
 	public function deal_with_old_feedlists() {
 		
