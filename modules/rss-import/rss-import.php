@@ -163,7 +163,7 @@ class PF_RSS_Import extends PF_Module {
 					//one final cleanup of the content.
 					$contentObj = new pf_htmlchecker($item_content);
 					$item_content = $contentObj->closetags($item_content);
-					print_r($c);
+					#print_r($c);
 					$rssObject['rss_' . $c] = pf_feed_object(
 												$item->get_title(),
 												$iFeed->get_title(),

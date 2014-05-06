@@ -592,7 +592,7 @@ class PF_Feed_Retrieve {
 		pf_log( 'Chunk state: ' . $chunk_state );
 		if ($feed_iteration == 0 && $retrieval_state == 0 && $chunk_state == 1){
 			$status = update_option( PF_SLUG . '_iterate_going_switch', 1);
-
+            # Echo to the user.
 			pf_log( __('Beginning the retrieval process', 'pf'), true, true );
 
 			if ( $status ) {
