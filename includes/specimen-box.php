@@ -25,11 +25,12 @@ if (!class_exists('The_Alert_Box')){
         }
 
         public function register_bug_status(){
-            register_post_status('alert_specimen', array(
-                'label'                 =>     _x('Alert', 'pf'),
+            register_post_status($this->status, array(
+                'label'                 =>     __('Alert', 'pf'),
                 'public'                =>      false,
                 'exclude_from_search'   =>      true,
-                'show_in_admin_all_list'=>      false
+                'show_in_admin_all_list'=>      true,
+                'label_count'           =>      __('Alerts', 'pf'),
             ) );
         }
 
@@ -74,7 +75,7 @@ if (!class_exists('The_Alert_Box')){
             
             wp_add_dashboard_widget(
                 'specimen_alert_box',
-                'Alerts',
+                __('Alerts', 'pf'),
                 array($this, 'alert_box_insides_function')
             );
         }
@@ -88,6 +89,8 @@ if (!class_exists('The_Alert_Box')){
                     edit_post_link(get_the_title(), '<span style="color:red;font-weight:bold;">'. __('Alert', 'pf') . '</span> for ', ': '.$this->get_bug_type(get_the_ID()));
                     echo ' ';
                     edit_post_link(__('Edit', 'pf'));
+                    echo ' ';
+                    echo '| <a href="'.get_delete_post_link( get_the_ID() ).'" title="Delete" >Delete</a>';
                     echo '</p>';
                 endwhile;
                 wp_reset_postdata();
