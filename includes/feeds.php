@@ -42,6 +42,7 @@ class PF_Feeds_Schema {
 		#add_action('admin_init', array($this, 'deal_with_old_feedlists') );
 		add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
         add_action('admin_init', array($this, 'disallow_add_new'));
+        add_filter('ab_alert_specimens_update_post_type', array($this, 'make_alert_return_to_publish'));
 		if (is_admin()){
 			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
@@ -574,6 +575,13 @@ class PF_Feeds_Schema {
 		$where .= $wpdb->prepare( " AND {$wpdb->posts}.guid = %s ", $this->filter_data['guid'] );
 		return $where;
 	}
+    
+    public function make_alert_return_to_publish($status_data){
+        if ($this->post_type == $status_data['type']){
+            $status_data['status'] = 'publish';
+            return $status_data;
+        }
+    }
 
 	function admin_enqueue_scripts() {
 		global $pagenow;

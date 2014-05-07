@@ -50,7 +50,7 @@ if (!class_exists('The_Alert_Box')){
                 'ID'			=> $id,
                 'post_status'	=>	$this->status,
             );
-
+            update_post_meta( $id, 'pre_alert_status', get_post_status($id) );
             $result = wp_update_post($argup);
             return $result;
 
@@ -78,6 +78,29 @@ if (!class_exists('The_Alert_Box')){
                 __('Alerts', 'pf'),
                 array($this, 'alert_box_insides_function')
             );
+        }
+        
+        public function remove_alert_on_edit($post_id){
+            $status = $this->status;
+            if ( $status != $_POST['post_status'] ) {
+                return;    
+            }
+            
+            // unhook this function so it doesn't loop infinitely
+            remove_action( 'save_post', array($this, 'remove_alert_on_edit') );
+    
+            $post_status_d = get_post_meta( $post_id, 'pre_alert_status', true);
+            if (empty($post_type_d)){
+                $post_status_d['status'] = 'draft';
+                $post_status_d['type'] = $_POST['post_type'];
+            }
+            $post_status = apply_filters('ab_alert_specimens_update_post_type', $post_status_d);
+            // update the post, which calls save_post again
+            wp_update_post( array( 'ID' => $post_id, 'post_status' => $post_status['status'] ) );
+    
+            // re-hook this function
+            add_action( 'save_post', array($this, 'remove_alert_on_edit') );
+            
         }
         
         public function alert_box_insides_function(){
