@@ -108,6 +108,7 @@ visibility:hidden;
 .item_title {
 	margin-bottom: 3px;
 	line-height: 16px;
+    overflow:hidden;
 }
 
 .grid .item_title {
@@ -115,7 +116,8 @@ visibility:hidden;
 }
 
 .source_title {
-	line-height: 1.5em;	
+	line-height: 1.5em;
+    overflow:hidden;
 }
 
 .grid .source_title {
