@@ -968,6 +968,19 @@ function prep_archives_query($q){
 	return $q;
 }
 
+add_filter('upload_mimes', 'pf_custom_upload_opml');
+
+function pf_custom_upload_opml ( $existing_mimes=array() ) {
+ 
+	// add your ext => mime to the array
+	$existing_mimes['opml'] = 'text/x-opml';
+ 
+	// and return the new full result
+	return $existing_mimes;
+ 
+}
+
+
 /**
  * Send status messages to a custom log
  *
