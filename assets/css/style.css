@@ -124,12 +124,15 @@ visibility:hidden;
 
 .pf-btns {
 	margin: 0 0;
+    font-size: 0;
+    vertical-align: middle;
 }
 
 .pf-btns .btn {
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
-    border-radius: 0    
+    border-radius: 0;
+    margin: 0;
 }
 
 .actions form {
