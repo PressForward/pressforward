@@ -490,7 +490,16 @@ class PF_Feed_Retrieve {
 
 			} else {
 				pf_log('Yes');
-			}		
+			}
+            
+            if ((false == $feedObj) || (is_wp_error($feedObj))) {
+                    
+            } else {
+                if ((class_exists('The_Alert_Box')) && (the_alert_box()->status == $obj->post_status)) {
+                    # The feed has been retrieved, therefor this is a good feed. We can remove the alert.
+                    the_alert_box()->remove_alert_on_edit($obj->ID);
+                }
+            }
 		
 			return $feedObj;
 		}

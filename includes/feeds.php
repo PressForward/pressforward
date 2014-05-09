@@ -340,9 +340,15 @@ class PF_Feeds_Schema {
 	# A function to pull feeds from the database. 
 	public function get( $args = array() ) {
 		if ( ! post_type_exists( 'pf_feed' ) ) { $this->register_feed_post_type(); }
-		$defaults = array(
+		
+        $post_status = array('publish');
+        if (class_exists('The_Alert_Box')){
+            $post_status[] = the_alert_box()->status;     
+        }
+        
+        $defaults = array(
 			'post_type'        => $this->post_type,
-			'post_status'      => 'publish',
+			'post_status'      => $post_status,
 			'suppress_filters' => false,
 		);
 
