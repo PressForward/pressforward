@@ -287,7 +287,6 @@ class PF_Admin {
 				?>
 					
 						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete all items', 'pf');  ?>" ><?php  _e('Delete all items', 'pf');  ?></button>
-						?>
 				<?php 
 			} elseif ($slug == 'toplevel_page_pf-menu' && $version >= 0) {
 				?>		
