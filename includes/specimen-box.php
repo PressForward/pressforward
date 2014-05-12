@@ -35,8 +35,15 @@ if (!class_exists('The_Alert_Box')){
         }
 
         public function add_bug_type_to_post($id, $string){
-            $result = add_post_meta($id, 'ab_alert_msg', $string, false);
-            return $result;
+            $metas = get_post_meta($id, 'ab_alert_msg', false);
+            if (!in_array($string, $metas)){
+                $result = add_post_meta($id, 'ab_alert_msg', $string, false);
+                return $result;
+            }
+            else {
+                return false;
+            }
+            
         }
         
         public function get_bug_type($id){
