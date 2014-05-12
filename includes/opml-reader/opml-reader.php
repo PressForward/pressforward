@@ -6,8 +6,10 @@ class OPML_reader {
 
 	function open_OPML($file) {
 		if(1 == ini_get('allow_url_fopen')){
-			$file = simplexml_load_file($file);
+			pf_log('Using simplexml_load_file to load OPML.');
+            $file = simplexml_load_file($file);
 		} else {
+            pf_log('Using cURL to load OPML file.');
 			$ch = curl_init();
 			$timeout = 5;
 			curl_setopt($ch, CURLOPT_URL, $file);
@@ -29,11 +31,14 @@ class OPML_reader {
 	
 	# Pass the URL and if you want to return an array of objects or of urls.
 	function get_OPML_data($url, $is_array = true){
-		
+		pf_log('OPML Reader process invoked: get_OPML_data');
 		$opml_data = $this->open_OPML($url);
+        
    #var_dump($opml_data);
 		if (!$opml_data){
-			
+			pf_log('Could not open the OPML file.');
+            pf_log('Resulted in:');
+            pf_log($opml_data);
 			return false;
 		}
 
