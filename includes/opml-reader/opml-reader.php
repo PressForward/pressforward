@@ -66,7 +66,7 @@ class OPML_reader {
 			# Check if there are no folders.
             if (isset($folder['xmlUrl'])){
                 pf_log('Not a folder.');
-                $b[] = $folder->xmlUrl;
+                $b[] = $folder['xmlUrl']->__toString();
             }
             
             foreach ($folder->outline as $data){
