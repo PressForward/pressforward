@@ -246,12 +246,12 @@ class PF_RSS_Import extends PF_Module {
 		<div class="pf-opt-group">
             <div class="rss-box postbox">
                     <div class="handlediv" title="Click to toggle"><br></div>
-                    <h3 class="hndle"><span>RSS</span></h3>
+                    <h3 class="hndle"><span><?php _e('Subscribe to Feeds', 'pf'); ?></span></h3>
                     <div class="inside">
-                        <div><?php _e('Add Single RSS Feed', 'pf'); ?></div>
+                        <div><?php _e('Add Single Feed', 'pf'); ?> (RSS or Atom)</div>
                             <div class="pf_feeder_input_box">
                                 <input id="<?php echo PF_SLUG . '_feedlist[single]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[single]'; ?>" value="" />
-                                <label class="description" for="<?php echo PF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL or RSS path', 'pf'); ?></label>
+                                <label class="description" for="<?php echo PF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL path', 'pf'); ?></label>
                                 <a href="http://en.wikipedia.org/wiki/RSS">What is an RSS Feed?</a>
 
 
