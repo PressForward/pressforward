@@ -341,7 +341,7 @@ class PF_RSS_Import extends PF_Module {
 		if (!empty($input['opml'])){
 			$OPML_reader = new OPML_reader;
 			$opml_array = $OPML_reader->get_OPML_data($input['opml']);
-			//print_r($opml_array); die();
+			#print_r($opml_array); die();
 			foreach($opml_array as $key=>$feedXml){
 				# Adding this as a 'quick' type so that we can process the list quickly.
 				pf_log('Adding this as a quick type so that we can process the list quickly');
