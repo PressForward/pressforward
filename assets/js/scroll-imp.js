@@ -17,10 +17,16 @@ jQuery(document).ready(function () {
 			
 						var element		= jQuery(elem);
 						var itemID		= element.attr('id');
-						jQuery('.list #'+itemID+' header .actions').appendTo('#'+itemID+' footer');
+						jQuery('.list #'+itemID+' header .actions').appendTo('#'+itemID+' footer');				
 							
 
 		});
+		
+			jQuery('.feed-item').each(function (index){
+				var element		= jQuery(this);
+				var itemID		= element.attr('id');
+				jQuery('#'+itemID+' header .actions').appendTo('#'+itemID+' footer');
+			});		
 	
 
 		reshowModal(); 
