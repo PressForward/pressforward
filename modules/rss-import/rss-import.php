@@ -348,7 +348,7 @@ class PF_RSS_Import extends PF_Module {
 				$opml_array = $feed_obj->progressive_feedlist_transformer($opml_array, $feedXml, $key);
 				# @todo Tag based on folder structure
 			}
-			$check_up = update_option( PF_SLUG . '_feedlist', $opml_array );
+			#$check_up = update_option( PF_SLUG . '_feedlist', $opml_array );
 			$subed = 'an OPML file ';
 		}
 
