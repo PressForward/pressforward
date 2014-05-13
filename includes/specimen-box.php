@@ -30,7 +30,12 @@ if (!class_exists('The_Alert_Box')){
                 'public'                =>      false,
                 'exclude_from_search'   =>      true,
                 'show_in_admin_all_list'=>      true,
-                'label_count'           =>      __('Alerts', 'pf'),
+                'label_count'           =>      array(
+							0 => __('Alerts <span class="count">(%s)</span>', 'pf'),
+							1 => __('Alerts <span class="count">(%s)</span>', 'pf'),
+							'singular' => __('Alert <span class="count">(%s)</span>', 'pf'),
+							'plural' => __('Alerts <span class="count">(%s)</span>', 'pf'),
+						),
             ) );
         }
 
