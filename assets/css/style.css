@@ -198,6 +198,7 @@ h3 {
 	color: #494949;
 	font-family: sans-serif;
 	padding: 3px;
+    overflow:hidden;
 }
 
 .grid .feed-item .item_excerpt {
