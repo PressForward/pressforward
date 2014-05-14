@@ -761,6 +761,9 @@ class PF_Admin {
 						$pageNumForPrint = sprintf( __('Page %1$d', 'pf'), $page);
 						echo '<span> - ' . $pageNumForPrint . '</span>';
 					}
+					if (!empty($_POST['search-terms'])){
+						echo ' | <span class="search-term-title">' . __('Search for:', 'pf') . ' ' . $_POST['search-terms'] . '</span>'; 
+					}
 				?>
 				<span id="h-after"> &#8226; </span>
 				<button type="submit" class="refreshfeed btn btn-small" id="refreshfeed" value="<?php  _e('Refresh', 'pf')  ?>"><?php  _e('Refresh', 'pf');  ?></button>
