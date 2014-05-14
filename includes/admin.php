@@ -317,6 +317,19 @@ class PF_Admin {
 					<p><textarea rows="5" cols="120" readonly="readonly"><?php echo htmlspecialchars( pf_get_shortcut_link() ); ?></textarea></p>
 					</div>
 				</div>
+                <div class="alert-box">
+                    <h3><span>Feed Problems</span></h3>
+                    <div class="inside">
+                    <?php
+                        add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+                        add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+                        the_alert_box()->alert_box_outsides();
+                        remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+                        remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+                    ?>
+                    </div>
+                </div>
+
 		</div>			
 		<?php 
 	}
@@ -799,7 +812,20 @@ class PF_Admin {
 					</div>
 					<div class="pull-right text-right">
 					<!-- or http://thenounproject.com/noun/list/#icon-No9479? -->
-					<a class="btn btn-small" id="gomenu" href="#">Menu <i class="icon-tasks"></i></a>
+						<?php
+					    add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+                        add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+                        $alerts = the_alert_box()->get_specimens();
+                        remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+                        remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+
+                        if ((0 != $alerts->post_count) || !empty($alerts)){
+                        	echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i> (!)</a>';
+                        } else {
+                        	echo '<a class="btn btn-small" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i></a>';
+                        }
+                        ?>
+					
 					</div>
 				</div><!-- End btn-group -->
 		

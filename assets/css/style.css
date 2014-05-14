@@ -260,6 +260,10 @@ h3 {
     border-bottom: 1px solid #E7E7E7;
 }
 
+#tools .alert-box {
+    word-wrap: break-word;
+}
+
 .pf-opt-group .postbox{
     float:left;
     width: 45%;
