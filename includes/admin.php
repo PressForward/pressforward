@@ -921,6 +921,16 @@ class PF_Admin {
 					echo '<label class="description" for="pf_link_to_source"> ' .__('Seconds to redirect user to source. (0 means no redirect)', 'pf'). ' </label>';						
 					?></p>
 
+					<p>
+						<?php
+						$default_pf_use_advanced_user_roles = get_option('pf_use_advanced_user_roles', 'no');
+						?>
+						<select id="pf_use_advanced_user_roles" name="pf_use_advanced_user_roles">
+							<option value="yes" <?php if ($default_pf_use_advanced_user_roles == 'yes'){ echo 'selected="selected"'; }?>>Yes</option>
+							<option value="no" <?php if ($default_pf_use_advanced_user_roles == 'no'){ echo 'selected="selected"'; }?>>No</option>
+						</select>
+						<label class="description" for="pf_use_advanced_user_roles"> <?php _e('Use advanced user role management? (May be needed if you customize user roles or capabilities).', 'pf'); ?> </label>
+					</p>
 					<p><?php
 					$default_pf_present_author_value = get_option('pf_present_author_as_primary', 'yes');	
 					?>
@@ -1244,8 +1254,15 @@ class PF_Admin {
 			update_option('pf_present_author_as_primary', $pf_author_opt_check);
 		} else {
 			update_option('pf_present_author_as_primary', 'no');
-		}		
-		
+		}
+
+		if (isset( $_POST['pf_use_advanced_user_roles'] )){
+			$pf_author_opt_check = $_POST['pf_use_advanced_user_roles'];
+			//print_r($pf_links_opt_check); die();
+			update_option('pf_use_advanced_user_roles', $pf_author_opt_check);
+		} else {
+			update_option('pf_use_advanced_user_roles', 'no');
+		}	
 		
 		do_action( 'pf_admin_op_page_save' );
 	}
