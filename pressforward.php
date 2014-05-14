@@ -3,7 +3,7 @@
 Plugin Name: PressForward
 Plugin URI: http://pressforward.org/
 Description: This plugin is an aggregation parser for CHNM's Press Forward project.
-Version: 3.1.0
+Version: 3.1.1
 Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
 Author URI: http://aramzs.me, http://boone.gorg.es/, http://clioweb.org
 License: GPL2
@@ -34,6 +34,7 @@ define( 'PF_NOM_POSTER', 'post-new.php?post_type=nomination' );
 define( 'PF_ROOT', dirname(__FILE__) );
 define( 'PF_FILE_PATH', PF_ROOT . '/' . basename(__FILE__) );
 define( 'PF_URL', plugins_url('/', __FILE__) );
+define( 'PF_VERSION', '3.1.1' );
 
 class PressForward {
 	var $modules = array();
@@ -318,6 +319,48 @@ class PressForward {
 
 		return '';
 	}
+    
+
+    /**
+	 * Set up first feed and other install/upgrade tasks
+	 * Code via Boone
+     * 
+	 * @since 3.1.1
+	 *
+	 * 
+	 */
+    function pressforward_check_installed() {
+        $current_version = PF_VERSION; // define this constant in the loader file
+        $saved_version = get_option( 'pf_version' );
+    
+        // This is a new installation
+        if ( ! $saved_version ) {
+            // Do whatever you need to do during first installation
+            $check = pressforward()->pf_feeds->create(
+                'http://pressforward.org/feed/', 
+                array(
+                    'title'         => 'PressForward',
+                    'htmlUrl'       => 'http://pressforward.org/',
+                    'description'   => 'The news feed for the PressForward project.',
+                    'type'          => 'rss', 
+                    'module_added'  => 'rss-import'
+                )
+            );
+    
+        // This is an upgrade
+        } else if ( version_compare( $saved_version, $current_version, '<' ) ) {
+            // Do whatever you need to do on an upgrade
+    
+         // Version is up to date - do nothing
+        } else {
+            return;
+        }
+    
+         // Update the version number stored in the db (so this does not run again)
+         update_option( 'pf_version', PF_VERSION );
+    }
+    add_action( 'pressforward_init', 'pressforward_check_installed' );    
+    
 }
 
 /**
