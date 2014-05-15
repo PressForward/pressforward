@@ -81,7 +81,7 @@ class PressForward {
 
 		add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
 
-		add_action( 'pressforward_init', array( $this, 'check_installed' ) );
+		add_action( 'wp', array( $this, 'check_installed' ), 0 );
 
 		load_plugin_textdomain( 'pf', false, PF_ROOT . '/languages' );
 	}
