@@ -126,7 +126,7 @@ class PressForward {
 		require_once( PF_ROOT . '/includes/nominations.php' );
 		require_once( PF_ROOT . '/includes/admin.php' );
         require_once( PF_ROOT . '/includes/template-tags.php' );
-        require_once( PF_ROOT . '/includes/specimen-box.php' );
+        require_once( PF_ROOT . '/includes/alert-box/alert-box.php' );
 	}
 
 	/**

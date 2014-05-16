@@ -1,0 +1,3 @@
+[submodule "includes/alert-box"]
+	path = includes/alert-box
+	url = https://github.com/PressForward/alert-box.git
