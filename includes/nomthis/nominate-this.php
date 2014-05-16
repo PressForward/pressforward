@@ -588,7 +588,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 						<span class="spinner" style="display: none;"></span>
 					</p>
 					<p>
-					<label for="post_format"><input type="text" id="authors" name="authors" value="" /><br />&nbsp;<?php _e('Enter Authors', 'pf'); ?></label>
+					<label for="authors"><input type="text" id="authors" name="authors" value="" /><br />&nbsp;<?php _e('Enter Authors', 'pf'); ?></label>
 					</p>					
 					<?php if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) :
 							$post_formats = get_theme_support( 'post-formats' );
