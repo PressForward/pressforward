@@ -27,7 +27,7 @@ before_script:
     - export WP_CORE_DIR=/tmp/wordpress-develop/src/
     - cp wp-tests-config-sample.php wp-tests-config.php
     - sed -i "s:dirname( __FILE__ ) . '/wordpress/':'$WP_CORE_DIR':" wp-tests-config.php
-    - sed -i "s/yourdbnamehere/wordpress_test/" wp-tests-config.php
+    - sed -i "s/youremptytestdbnamehere/wordpress_test/" wp-tests-config.php
     - sed -i "s/yourusernamehere/root/" wp-tests-config.php
     - sed -i "s/yourpasswordhere//" wp-tests-config.php
     - cat wp-tests-config.php
