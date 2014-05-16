@@ -95,6 +95,8 @@ function commentPopModal(){
 function reshowModal(){		
 	jQuery('.pf_container').on('shown', '.modal.pfmodal', function(evt){
 		jQuery('#wpadminbar').hide();
+		jQuery('#adminmenuback').hide();
+		jQuery('#adminmenuwrap').hide();
 		var element = jQuery(this);	
 		var modalID = element.attr('id');
 		document.body.style.overflow = 'hidden';
@@ -151,6 +153,8 @@ function hideModal(){
 	jQuery('.pf_container').on('hide', ".modal.pfmodal", function(evt){
 		jQuery(".pfmodal .modal-comments").html('');
 		jQuery('#wpadminbar').show();
+		jQuery('#adminmenuback').show();
+		jQuery('#adminmenuwrap').show();		
 		document.body.style.overflow = 'visible';
 	});		
 }
