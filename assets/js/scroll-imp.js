@@ -17,7 +17,7 @@ jQuery(document).ready(function () {
 			
 						var element		= jQuery(elem);
 						var itemID		= element.attr('id');
-						jQuery('.list #'+itemID+' header .actions').appendTo('#'+itemID+' footer');				
+									
 							
 
 		});
@@ -25,7 +25,8 @@ jQuery(document).ready(function () {
 			jQuery('.feed-item').each(function (index){
 				var element		= jQuery(this);
 				var itemID		= element.attr('id');
-				jQuery('#'+itemID+' header .actions').appendTo('#'+itemID+' footer');
+				jQuery('.grid #'+itemID+' header .actions').appendTo('#'+itemID+' header');
+                jQuery('.list #'+itemID+' header .actions').appendTo('#'+itemID+' footer');	
 			});		
 	
 
