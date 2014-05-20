@@ -468,14 +468,37 @@ function pf_get_role_by_capability($cap, $lowest = true, $obj = false){
 # This function lets you match the role with the first capability
 # that only it can do, the defining capability.
 function pf_get_defining_capability_by_role($role_slug){
-	$caps = pf_get_capabilities();
-	foreach ($caps as $slug=>$cap){
-		$low_role = pf_get_role_by_capability($slug);
-		# Return the first capability only applicable to that role.
-		if ($role_slug == ($low_role))
-			return $slug;
-	}
-
+	$pf_use_advanced_user_roles = get_option('pf_use_advanced_user_roles', 'no');
+    # For those who wish to ignore the super-cool auto-detection for fringe-y sites that
+    # let their user capabilities go wild. 
+    if ('no' == $pf_use_advanced_user_roles){
+        $role_slug = strtolower($role_slug);
+        switch ($role_slug){
+            case 'administrator':
+                return 'manage_options';
+                break;
+            case 'editor':
+                return 'edit_others_posts';
+                break;
+            case 'author':
+                return 'publish_posts';
+                break;
+            case 'contributor':
+                return 'edit_posts';
+                break;
+            case 'subscriber':
+                return 'read';
+                break;
+        }
+    } else {
+        $caps = pf_get_capabilities();
+        foreach ($caps as $slug=>$cap){
+            $low_role = pf_get_role_by_capability($slug);
+            # Return the first capability only applicable to that role.
+            if ($role_slug == ($low_role))
+                return $slug;
+        }
+    }
 }
 
 //Based on http://seoserpent.com/wordpress/custom-author-byline
@@ -967,6 +990,19 @@ function prep_archives_query($q){
 	#return $archivalposts;
 	return $q;
 }
+
+add_filter('upload_mimes', 'pf_custom_upload_opml');
+
+function pf_custom_upload_opml ( $existing_mimes=array() ) {
+ 
+	// add your ext => mime to the array
+	$existing_mimes['opml'] = 'text/x-opml';
+ 
+	// and return the new full result
+	return $existing_mimes;
+ 
+}
+
 
 /**
  * Send status messages to a custom log

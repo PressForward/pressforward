@@ -41,6 +41,8 @@ class PF_Feeds_Schema {
 		add_action( 'init', array( $this, 'register_feed_post_type' ) );
 		#add_action('admin_init', array($this, 'deal_with_old_feedlists') );
 		add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
+        add_action('admin_init', array($this, 'disallow_add_new'));
+        add_filter('ab_alert_specimens_update_post_type', array($this, 'make_alert_return_to_publish'));
 		if (is_admin()){
 			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
@@ -102,6 +104,15 @@ class PF_Feeds_Schema {
 			'rewrite' => false
 		) ) );
 	}
+    
+    public function disallow_add_new(){
+        global $pagenow;
+        /* Check current admin page. */
+        if($pagenow == 'post-new.php' && isset($_GET['post_type']) && $_GET['post_type'] == $this->post_type){
+            wp_redirect(admin_url('/admin.php?page=pf-feeder', 'http'), 301);
+            exit;
+        }    
+    }
 	
 	public function deal_with_old_feedlists() {
 		
@@ -329,9 +340,15 @@ class PF_Feeds_Schema {
 	# A function to pull feeds from the database. 
 	public function get( $args = array() ) {
 		if ( ! post_type_exists( 'pf_feed' ) ) { $this->register_feed_post_type(); }
-		$defaults = array(
+		
+        $post_status = array('publish');
+        if (class_exists('The_Alert_Box')){
+            $post_status[] = the_alert_box()->status;     
+        }
+        
+        $defaults = array(
 			'post_type'        => $this->post_type,
-			'post_status'      => 'publish',
+			'post_status'      => $post_status,
 			'suppress_filters' => false,
 		);
 
@@ -564,6 +581,13 @@ class PF_Feeds_Schema {
 		$where .= $wpdb->prepare( " AND {$wpdb->posts}.guid = %s ", $this->filter_data['guid'] );
 		return $where;
 	}
+    
+    public function make_alert_return_to_publish($status_data){
+        if ($this->post_type == $status_data['type']){
+            $status_data['status'] = 'publish';
+            return $status_data;
+        }
+    }
 
 	function admin_enqueue_scripts() {
 		global $pagenow;

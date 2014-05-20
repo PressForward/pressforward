@@ -108,6 +108,7 @@ visibility:hidden;
 .item_title {
 	margin-bottom: 3px;
 	line-height: 16px;
+    overflow:hidden;
 }
 
 .grid .item_title {
@@ -115,7 +116,8 @@ visibility:hidden;
 }
 
 .source_title {
-	line-height: 1.5em;	
+	line-height: 1.5em;
+    overflow:hidden;
 }
 
 .grid .source_title {
@@ -124,12 +126,15 @@ visibility:hidden;
 
 .pf-btns {
 	margin: 0 0;
+    font-size: 0;
+    vertical-align: middle;
 }
 
 .pf-btns .btn {
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
-    border-radius: 0    
+    border-radius: 0;
+    margin: 0;
 }
 
 .actions form {
@@ -193,6 +198,7 @@ h3 {
 	color: #494949;
 	font-family: sans-serif;
 	padding: 3px;
+    overflow:hidden;
 }
 
 .grid .feed-item .item_excerpt {
@@ -252,6 +258,10 @@ h3 {
 .alert-box .hndle, .pf-opt-group .hndle {
     padding-left:10px;
     border-bottom: 1px solid #E7E7E7;
+}
+
+#tools .alert-box {
+    word-wrap: break-word;
 }
 
 .pf-opt-group .postbox{

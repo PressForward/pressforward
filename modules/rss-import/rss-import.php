@@ -163,7 +163,7 @@ class PF_RSS_Import extends PF_Module {
 					//one final cleanup of the content.
 					$contentObj = new pf_htmlchecker($item_content);
 					$item_content = $contentObj->closetags($item_content);
-					print_r($c);
+					#print_r($c);
 					$rssObject['rss_' . $c] = pf_feed_object(
 												$item->get_title(),
 												$iFeed->get_title(),
@@ -246,12 +246,12 @@ class PF_RSS_Import extends PF_Module {
 		<div class="pf-opt-group">
             <div class="rss-box postbox">
                     <div class="handlediv" title="Click to toggle"><br></div>
-                    <h3 class="hndle"><span>RSS</span></h3>
+                    <h3 class="hndle"><span><?php _e('Subscribe to Feeds', 'pf'); ?></span></h3>
                     <div class="inside">
-                        <div><?php _e('Add Single RSS Feed', 'pf'); ?></div>
+                        <div><?php _e('Add Single Feed', 'pf'); ?> (RSS or Atom)</div>
                             <div class="pf_feeder_input_box">
                                 <input id="<?php echo PF_SLUG . '_feedlist[single]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[single]'; ?>" value="" />
-                                <label class="description" for="<?php echo PF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL or RSS path', 'pf'); ?></label>
+                                <label class="description" for="<?php echo PF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL path', 'pf'); ?></label>
                                 <a href="http://en.wikipedia.org/wiki/RSS">What is an RSS Feed?</a>
 
 
@@ -261,6 +261,7 @@ class PF_RSS_Import extends PF_Module {
                             <div class="pf_feeder_input_box">
                                 <input id="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" value="" />
                                 <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'pf'); ?></label>
+								<p>&nbsp;Adding large OPML files may take some time.</p>
                                 <a href="http://en.wikipedia.org/wiki/Opml">What is an OPML file</a>
 
 
@@ -341,14 +342,14 @@ class PF_RSS_Import extends PF_Module {
 		if (!empty($input['opml'])){
 			$OPML_reader = new OPML_reader;
 			$opml_array = $OPML_reader->get_OPML_data($input['opml']);
-			//print_r($opml_array); die();
+			#print_r($opml_array); die();
 			foreach($opml_array as $key=>$feedXml){
 				# Adding this as a 'quick' type so that we can process the list quickly.
 				pf_log('Adding this as a quick type so that we can process the list quickly');
 				$opml_array = $feed_obj->progressive_feedlist_transformer($opml_array, $feedXml, $key);
 				# @todo Tag based on folder structure
 			}
-			$check_up = update_option( PF_SLUG . '_feedlist', $opml_array );
+			#$check_up = update_option( PF_SLUG . '_feedlist', $opml_array );
 			$subed = 'an OPML file ';
 		}
 

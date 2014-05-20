@@ -25,17 +25,30 @@ if (!class_exists('The_Alert_Box')){
         }
 
         public function register_bug_status(){
-            register_post_status('alert_specimen', array(
-                'label'                 =>     _x('Alert', 'pf'),
+            register_post_status($this->status, array(
+                'label'                 =>     __('Alert', 'pf'),
                 'public'                =>      false,
                 'exclude_from_search'   =>      true,
-                'show_in_admin_all_list'=>      false
+                'show_in_admin_all_list'=>      true,
+                'label_count'           =>      _n_noop( 
+                					'Alert <span class="count">(%s)</span>', 
+                					'Alerts <span class="count">(%s)</span>',
+                					'pf'
+                					
+                				)
             ) );
         }
 
         public function add_bug_type_to_post($id, $string){
-            $result = add_post_meta($id, 'ab_alert_msg', $string, false);
-            return $result;
+            $metas = get_post_meta($id, 'ab_alert_msg', false);
+            if (!in_array($string, $metas)){
+                $result = add_post_meta($id, 'ab_alert_msg', $string, false);
+                return $result;
+            }
+            else {
+                return false;
+            }
+            
         }
         
         public function get_bug_type($id){
@@ -49,7 +62,7 @@ if (!class_exists('The_Alert_Box')){
                 'ID'			=> $id,
                 'post_status'	=>	$this->status,
             );
-
+            update_post_meta( $id, 'pre_alert_status', get_post_status($id) );
             $result = wp_update_post($argup);
             return $result;
 
@@ -74,9 +87,32 @@ if (!class_exists('The_Alert_Box')){
             
             wp_add_dashboard_widget(
                 'specimen_alert_box',
-                'Alerts',
+                __('Alerts', 'pf'),
                 array($this, 'alert_box_insides_function')
             );
+        }
+        
+        public function remove_alert_on_edit($post_id){
+            $status = $this->status;
+            if ( $status != $_POST['post_status'] ) {
+                return;    
+            }
+            
+            // unhook this function so it doesn't loop infinitely
+            remove_action( 'save_post', array($this, 'remove_alert_on_edit') );
+    
+            $post_status_d = get_post_meta( $post_id, 'pre_alert_status', true);
+            if (empty($post_type_d)){
+                $post_status_d['status'] = 'draft';
+                $post_status_d['type'] = $_POST['post_type'];
+            }
+            $post_status = apply_filters('ab_alert_specimens_update_post_type', $post_status_d);
+            // update the post, which calls save_post again
+            wp_update_post( array( 'ID' => $post_id, 'post_status' => $post_status['status'] ) );
+    
+            // re-hook this function
+            add_action( 'save_post', array($this, 'remove_alert_on_edit') );
+            
         }
         
         public function alert_box_insides_function(){
@@ -88,6 +124,8 @@ if (!class_exists('The_Alert_Box')){
                     edit_post_link(get_the_title(), '<span style="color:red;font-weight:bold;">'. __('Alert', 'pf') . '</span> for ', ': '.$this->get_bug_type(get_the_ID()));
                     echo ' ';
                     edit_post_link(__('Edit', 'pf'));
+                    echo ' ';
+                    echo '| <a href="'.get_delete_post_link( get_the_ID() ).'" title="Delete" >Delete</a>';
                     echo '</p>';
                 endwhile;
                 wp_reset_postdata();

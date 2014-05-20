@@ -490,7 +490,16 @@ class PF_Feed_Retrieve {
 
 			} else {
 				pf_log('Yes');
-			}		
+			}
+            
+            if ((false == $feedObj) || (is_wp_error($feedObj))) {
+                    
+            } else {
+                if ((class_exists('The_Alert_Box')) && (the_alert_box()->status == $obj->post_status)) {
+                    # The feed has been retrieved, therefor this is a good feed. We can remove the alert.
+                    the_alert_box()->remove_alert_on_edit($obj->ID);
+                }
+            }
 		
 			return $feedObj;
 		}
@@ -592,7 +601,7 @@ class PF_Feed_Retrieve {
 		pf_log( 'Chunk state: ' . $chunk_state );
 		if ($feed_iteration == 0 && $retrieval_state == 0 && $chunk_state == 1){
 			$status = update_option( PF_SLUG . '_iterate_going_switch', 1);
-
+            # Echo to the user.
 			pf_log( __('Beginning the retrieval process', 'pf'), true, true );
 
 			if ( $status ) {

@@ -287,23 +287,10 @@ class PF_Admin {
 				?>
 					
 						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete all items', 'pf');  ?>" ><?php  _e('Delete all items', 'pf');  ?></button>
-						<button type="submit" class="delete btn btn-info pull-right" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
-						<button type="submit" class="delete btn btn-info pull-right" id="showMyStarred" value="<?php  _e('Show my starred', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
-						<?php 
-							if (isset($_GET['by'])){
-								?><button type="submit" class="delete btn btn-info pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php 
-							}
-						?>
 				<?php 
 			} elseif ($slug == 'toplevel_page_pf-menu' && $version >= 0) {
 				?>		
-						<button type="submit" class="delete btn btn-info pull-right" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
-						<button type="submit" class="delete btn btn-info pull-right" id="showMyStarred" value="<?php  _e('Show my starred', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
-						<?php 
-							if (isset($_GET['by'])){
-								?><button type="submit" class="delete btn btn-info pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php 
-							}
-						?>		
+						
 				<?php	
 			} elseif ( $slug == 'pressforward_page_pf-review' && (get_bloginfo('version') >= 3.7) && $version >= 0 && current_user_can(pf_get_defining_capability_by_role('administrator'))){
 				?>
@@ -330,6 +317,19 @@ class PF_Admin {
 					<p><textarea rows="5" cols="120" readonly="readonly"><?php echo htmlspecialchars( pf_get_shortcut_link() ); ?></textarea></p>
 					</div>
 				</div>
+                <div class="alert-box">
+                    <h3><span>Feed Problems</span></h3>
+                    <div class="inside">
+                    <?php
+                        add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+                        add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+                        the_alert_box()->alert_box_outsides();
+                        remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+                        remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+                    ?>
+                    </div>
+                </div>
+
 		</div>			
 		<?php 
 	}
@@ -687,7 +687,7 @@ class PF_Admin {
 					
 					</div>					
 				</div>
-				<h3 id="modal-<?php echo $item['item_id']; ?>-label" class="modal_item_title source_title"><?php echo $item['item_title']; ?></h3>
+				<h3 id="modal-<?php echo $item['item_id']; ?>-label" class="modal_item_title"><?php echo $item['item_title']; ?></h3>
 			  </div>
 			  <div class="row-fluid modal-body-row">
 				  <div class="modal-body span9" id="modal-body-<?php echo $item['item_id']; ?>">
@@ -774,6 +774,9 @@ class PF_Admin {
 						$pageNumForPrint = sprintf( __('Page %1$d', 'pf'), $page);
 						echo '<span> - ' . $pageNumForPrint . '</span>';
 					}
+					if (!empty($_POST['search-terms'])){
+						echo ' | <span class="search-term-title">' . __('Search for:', 'pf') . ' ' . $_POST['search-terms'] . '</span>'; 
+					}
 				?>
 				<span id="h-after"> &#8226; </span>
 				<button type="submit" class="refreshfeed btn btn-small" id="refreshfeed" value="<?php  _e('Refresh', 'pf')  ?>"><?php  _e('Refresh', 'pf');  ?></button>
@@ -799,10 +802,30 @@ class PF_Admin {
 
 					<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
 					echo '<button type="submit" class="btn btn-small feedsort" id="sortbyfeedindate" value="' . __('Sort by date entered feed', 'pf') . '">' . __('Sort by date entered feed', 'pf') . '</button>'; ?>
+						<button type="submit" class="btn btn-info pull-right btn-small" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
+						<button type="submit" class="btn btn-info pull-right btn-small" id="showMyStarred" value="<?php  _e('Show my starred', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
+						<?php 
+							if (isset($_GET['by'])){
+								?><button type="submit" class="btn btn-info btn-small pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php 
+							}                        
+                    ?>    
 					</div>
 					<div class="pull-right text-right">
 					<!-- or http://thenounproject.com/noun/list/#icon-No9479? -->
-					<a class="btn btn-small" id="gomenu" href="#">Menu <i class="icon-tasks"></i></a>
+						<?php
+					    add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+                        add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+                        $alerts = the_alert_box()->get_specimens();
+                        remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+                        remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+
+                        if ((0 != $alerts->post_count) || !empty($alerts)){
+                        	echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i> (!)</a>';
+                        } else {
+                        	echo '<a class="btn btn-small" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i></a>';
+                        }
+                        ?>
+					
 					</div>
 				</div><!-- End btn-group -->
 		
@@ -927,6 +950,16 @@ class PF_Admin {
 					echo '<label class="description" for="pf_link_to_source"> ' .__('Seconds to redirect user to source. (0 means no redirect)', 'pf'). ' </label>';						
 					?></p>
 
+					<p>
+						<?php
+						$default_pf_use_advanced_user_roles = get_option('pf_use_advanced_user_roles', 'no');
+						?>
+						<select id="pf_use_advanced_user_roles" name="pf_use_advanced_user_roles">
+							<option value="yes" <?php if ($default_pf_use_advanced_user_roles == 'yes'){ echo 'selected="selected"'; }?>>Yes</option>
+							<option value="no" <?php if ($default_pf_use_advanced_user_roles == 'no'){ echo 'selected="selected"'; }?>>No</option>
+						</select>
+						<label class="description" for="pf_use_advanced_user_roles"> <?php _e('Use advanced user role management? (May be needed if you customize user roles or capabilities).', 'pf'); ?> </label>
+					</p>
 					<p><?php
 					$default_pf_present_author_value = get_option('pf_present_author_as_primary', 'yes');	
 					?>
@@ -1250,8 +1283,15 @@ class PF_Admin {
 			update_option('pf_present_author_as_primary', $pf_author_opt_check);
 		} else {
 			update_option('pf_present_author_as_primary', 'no');
-		}		
-		
+		}
+
+		if (isset( $_POST['pf_use_advanced_user_roles'] )){
+			$pf_author_opt_check = $_POST['pf_use_advanced_user_roles'];
+			//print_r($pf_links_opt_check); die();
+			update_option('pf_use_advanced_user_roles', $pf_author_opt_check);
+		} else {
+			update_option('pf_use_advanced_user_roles', 'no');
+		}	
 		
 		do_action( 'pf_admin_op_page_save' );
 	}
