@@ -3,7 +3,7 @@ Contributors: PressForward, AramZS, boonebgorges, joanftroyano, clioweb
 Version: 3.1.0
 Donate link:
 Tags: aggregation, atom, content curation, curation, curation tool, editorial, feed, RSS, workflow
-Requires at least: 3.0.1
+Requires at least: 3.1.2
 Tested up to: 3.8
 Stable tag: 3.1.0
 License: GPL2

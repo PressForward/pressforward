@@ -3,7 +3,7 @@
 Plugin Name: PressForward
 Plugin URI: http://pressforward.org/
 Description: This plugin is an aggregation parser for CHNM's Press Forward project.
-Version: 3.1.1
+Version: 3.1.2
 Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
 Author URI: http://aramzs.me, http://boone.gorg.es/, http://clioweb.org
 License: GPL2
@@ -34,7 +34,7 @@ define( 'PF_NOM_POSTER', 'post-new.php?post_type=nomination' );
 define( 'PF_ROOT', dirname(__FILE__) );
 define( 'PF_FILE_PATH', PF_ROOT . '/' . basename(__FILE__) );
 define( 'PF_URL', plugins_url('/', __FILE__) );
-define( 'PF_VERSION', '3.1.1' );
+define( 'PF_VERSION', '3.1.2' );
 
 class PressForward {
 	var $modules = array();
