@@ -80,6 +80,7 @@ function commentPopModal(){
 		var itemID = element.attr('pf-item-id');
 		var postID = element.attr('pf-post-id');
 		var item_post_ID = element.attr('pf-item-post-id');
+        jQuery('#ef-comments_wrapper').remove();
 		//alert(modalIDString);
 		jQuery.post(ajaxurl, {
 				action: 'ajax_get_comments',
@@ -90,6 +91,10 @@ function commentPopModal(){
 				jQuery('#comment_modal_'+item_post_ID+' .modal-body').html(comment_response);
 			});				
 	});
+    
+    jQuery('.pf_container').on('hide', '.modal.comment-modal', function(evt){
+        jQuery('#ef-comments_wrapper').remove();  
+    });
 }	
 	
 function reshowModal(){		
@@ -152,6 +157,9 @@ function reviewModal(){
 function hideModal(){	
 	jQuery('.pf_container').on('hide', ".modal.pfmodal", function(evt){
 		jQuery(".pfmodal .modal-comments").html('');
+        if (typeof editorialCommentReply == 'function') { 
+                  editorialCommentReply.close(); 
+        }           
 		jQuery('#wpadminbar').show();
 		jQuery('#adminmenuback').show();
 		jQuery('#adminmenuwrap').show();		
