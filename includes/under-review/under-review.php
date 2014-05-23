@@ -58,8 +58,10 @@
                     echo '<button type="submit" class="btn btn-small starredonly" id="sortstarredonly" value="' . __('Show starred only', 'pf') . '">' . __('Show starred only', 'pf') . '</button>'; 
 					if (!isset($_GET['pf-see']) || ('archive-only' != $_GET['pf-see'])){
 						echo '<button type="submit" class="btn btn-small feedsort" id="showarchiveonly" value="' . __('Show only archived', 'pf') . '">' . __('Show only archived', 'pf') . '</button>'; 
-						if (isset($_GET['by']) && ( 'archived' == $_GET['by'])){
+						if ((isset($_GET['by']) && ( 'archived' == $_GET['by'])) ){
 							echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="shownormal" value="' . __('Show non-archived', 'pf') . '">' . __('Show non-archived', 'pf') . '.</button>';
+						} elseif ( isset($_POST['search-terms']) ) {
+							?><button type="submit" class="btn btn-info btn-small pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php
 						} else {
 							echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="showarchived" value="' . __('Show archived', 'pf') . '">' . __('Show archived', 'pf') . '.</button>';
 						}
