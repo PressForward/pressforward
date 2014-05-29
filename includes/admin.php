@@ -321,11 +321,7 @@ class PF_Admin {
                     <h3><span>Feed Problems</span></h3>
                     <div class="inside">
                     <?php
-                        add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
-                        add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
-                        the_alert_box()->alert_box_outsides();
-                        remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
-                        remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+                        self::pf_alert_displayer();
                     ?>
                     </div>
                 </div>
@@ -1065,11 +1061,7 @@ class PF_Admin {
                     <h3 class="hndle"><span>Feed Problems</span></h3>
                     <div class="inside">
                     <?php
-                        add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
-                        add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
-                        the_alert_box()->alert_box_outsides();
-                        remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
-                        remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+                        self::pf_alert_displayer();
                     ?>
                     </div>
                 </div>
@@ -1090,8 +1082,28 @@ class PF_Admin {
 
 	}
     
+    public function pf_alert_displayer(){
+        add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+        add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+        add_filter('ab_alert_specimens_check_message', array($this, 'alert_check_message'));
+        add_filter('ab_alert_specimens_delete_all_text', array($this, 'alert_delete_all_message'));
+            the_alert_box()->alert_box_outsides();
+        remove_filter('ab_alert_specimens_delete_all_text', array($this, 'alert_delete_all_message'));
+        remove_filter('ab_alert_specimens_check_message', array($this, 'alert_check_message'));
+        remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+        remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));    
+    }
+    
     public function alert_filterer($post_types){
         return array(pressforward()->pf_feeds->post_type);
+    }
+    
+    public function alert_check_message($msg){
+        return __('Are you sure you want to delete all feeds with alerts?', 'pf');    
+    }
+    
+    public function alert_delete_all_message($msg){
+        return __('Delete all feeds with alerts', 'pf');     
     }
     
     public function alert_safe_filterer($safe_msg){
