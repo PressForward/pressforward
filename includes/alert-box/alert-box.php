@@ -22,6 +22,10 @@ if (!class_exists('The_Alert_Box')){
             $this->status = 'alert_specimen';
             add_action( 'init', array( $this, 'register_bug_status') );
             add_action( 'wp_dashboard_setup', array( $this, 'add_dashboard_widget') );
+            if (is_admin()){
+			     add_action( 'wp_ajax_nopriv_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
+			     add_action( 'wp_ajax_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
+            }
         }
 
         public function register_bug_status(){
@@ -69,16 +73,26 @@ if (!class_exists('The_Alert_Box')){
         }
 
         
-        public function get_specimens(){
-            
+        public function get_specimens($page = 0){
+            if (0 != $page){
+                $ppp = 100;
+            } else {
+                $ppp = -1;
+            }
+                
             $post_types = get_post_types('', 'names');
             $post_types = apply_filters('ab_alert_specimens_post_types', $post_types);
             $args = array(
                 'post_type' =>  $post_types,  
                 'post_status' => $this->status,
-                'posts_per_page'=>-1,
-                'nopaging'  => 'true'                
+                'posts_per_page'=>$ppp              
             );
+            if (0 != $page){
+                $args['paged'] = $page;
+            } else {
+                $args['nopaging']  = 'true';  
+            }
+                
             $q = new WP_Query( $args );
             return $q;
         }
@@ -115,6 +129,46 @@ if (!class_exists('The_Alert_Box')){
             
         }
         
+        public function remove_alerted_posts(){
+            $alerts = the_alert_box()->get_specimens();
+            if (0 < $alerts->post_count){
+                $count = 0;
+                foreach ($alerts->query['post_type'] as $pt){
+                    $counter = wp_count_posts($pt);
+                    $atype = the_alert_box()->status;
+                    $count += $counter->$atype;
+                }
+                $pages = $count/100;
+                $pages = ceil($pages);
+                $c = $pages;
+                while (0 > $c){
+                    $q = the_alert_box()->get_specimens($c);
+                    while ( $q->have_posts() ) : $q->the_post(); 
+                        wp_delete_post(get_the_ID()); 
+                    endwhile;
+                    wp_reset_postdata();
+                    $c--;
+                }
+            } else {
+                $alerts = false;
+            }
+            if (!isset($alerts) || !$alerts){
+                $response = array(
+                   'what'=>'the_alert_box',
+                   'action'=>'remove_alerted_posts',
+                   'id'=>0,
+                   'data'=>'No alerted posts to delete.'
+                );    
+            } else {
+                $response = array(
+                   'what'=>'the_alert_box',
+                   'action'=>'remove_alerted_posts',
+                   'id'=>$pages,
+                   'data'=> $alerts->post_count . ' posts deleted.'
+                );
+            }
+        }
+        
         public function alert_box_insides_function(){
             
             $q = $this->get_specimens();
@@ -129,6 +183,7 @@ if (!class_exists('The_Alert_Box')){
                     echo '</p>';
                 endwhile;
                 wp_reset_postdata();
+                echo '<p><a href="#" id="delete_all_alert_specimens" style="color:red;font-weight:bold;" title="Delete all posts" >Delete all posts with alerts</a></p>';
             else:
                 $return_string = __('No problems!', 'pf');
                 $return_string = apply_filters('ab_alert_safe', $return_string);

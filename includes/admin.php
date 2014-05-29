@@ -819,7 +819,7 @@ class PF_Admin {
                         remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
                         remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
 
-                        if ((0 != $alerts->post_count) || !empty($alerts)){
+                        if (!empty($alerts) && (0 != $alerts->post_count)){
                         	echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i> (!)</a>';
                         } else {
                         	echo '<a class="btn btn-small" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i></a>';
