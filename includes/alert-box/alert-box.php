@@ -73,14 +73,15 @@ if (!class_exists('The_Alert_Box')){
         }
 
         
-        public function get_specimens($page = 0){
+        public function get_specimens($page = 0, $post_types = false){
             if (0 != $page){
                 $ppp = 100;
             } else {
                 $ppp = -1;
             }
-                
-            $post_types = get_post_types('', 'names');
+            if (!$post_types){
+                $post_types = get_post_types('', 'names');
+            }
             $post_types = apply_filters('ab_alert_specimens_post_types', $post_types);
             $args = array(
                 'post_type' =>  $post_types,  
@@ -130,7 +131,14 @@ if (!class_exists('The_Alert_Box')){
         }
         
         public function remove_alerted_posts(){
-            $alerts = the_alert_box()->get_specimens();
+            $filtered_post_types = $_POST['filtered_post_types'];
+            
+            if (empty($filtered_post_types)){
+                $fpt_array = false;
+            } else {
+                $fpt_array = explode(',', $filtered_post_types);
+            }
+            $alerts = the_alert_box()->get_specimens(0, $fpt_array);
             if (0 < $alerts->post_count){
                 $count = 0;
                 foreach ($alerts->query['post_type'] as $pt){
@@ -142,7 +150,7 @@ if (!class_exists('The_Alert_Box')){
                 $pages = ceil($pages);
                 $c = $pages;
                 while (0 > $c){
-                    $q = the_alert_box()->get_specimens($c);
+                    $q = the_alert_box()->get_specimens($c, $fpt_array);
                     while ( $q->have_posts() ) : $q->the_post(); 
                         wp_delete_post(get_the_ID()); 
                     endwhile;
@@ -179,11 +187,13 @@ if (!class_exists('The_Alert_Box')){
                     echo ' ';
                     edit_post_link(__('Edit', 'pf'));
                     echo ' ';
-                    echo '| <a href="'.get_delete_post_link( get_the_ID() ).'" title="Delete" >Delete</a>';
+                    echo '| <a href="'.get_delete_post_link( get_the_ID() ).'" title="'. __('Delete', 'pf') .'" >'. __('Delete', 'pf') .'</a>';
                     echo '</p>';
                 endwhile;
                 wp_reset_postdata();
-                echo '<p><a href="#" id="delete_all_alert_specimens" style="color:red;font-weight:bold;" title="Delete all posts" >Delete all posts with alerts</a></p>';
+                $alertCheck = __('Are you sure you want to delete all posts with alerts?', 'pf');
+                $alertCheck = apply_filters('ab_alert_specimens_check_message', $alertCheck);
+                echo '<p><a href="#" id="delete_all_alert_specimens" style="color:red;font-weight:bold;" title="' . __('Delete all posts with alerts', 'pf') . '" alert-check="' . $alertCheck . '" alert-types="'.implode(',',$q->query['post_type']).'" >' . __('Delete all posts with alerts', 'pf') . '</a></p>';
             else:
                 $return_string = __('No problems!', 'pf');
                 $return_string = apply_filters('ab_alert_safe', $return_string);
@@ -195,6 +205,15 @@ if (!class_exists('The_Alert_Box')){
         public function alert_box_outsides(){
             $this->alert_box_insides_function();    
         }
+        
+        public function scripts(){
+            $dir = __DIR__ . '/';
+            wp_register_script('alert-box-handler', $dir . 'assets/js/alert-handler.js', array( 'jquery' ));
+            if (is_admin()){
+                wp_enqueue_script('alert-box-handler');
+            }
+        }
+            
     }
     
     function the_alert_box() {
