@@ -321,11 +321,7 @@ class PF_Admin {
                     <h3><span>Feed Problems</span></h3>
                     <div class="inside">
                     <?php
-                        add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
-                        add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
-                        the_alert_box()->alert_box_outsides();
-                        remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
-                        remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+                        self::pf_alert_displayer();
                     ?>
                     </div>
                 </div>
@@ -805,7 +801,7 @@ class PF_Admin {
 						<button type="submit" class="btn btn-info pull-right btn-small" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
 						<button type="submit" class="btn btn-info pull-right btn-small" id="showMyStarred" value="<?php  _e('Show my starred', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
 						<?php 
-							if (isset($_GET['by'])){
+							if (isset($_GET['by']) || isset($_POST['search-terms'])){
 								?><button type="submit" class="btn btn-info btn-small pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php 
 							}                        
                     ?>    
@@ -819,7 +815,7 @@ class PF_Admin {
                         remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
                         remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
 
-                        if ((0 != $alerts->post_count) || !empty($alerts)){
+                        if (!empty($alerts) && (0 != $alerts->post_count)){
                         	echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i> (!)</a>';
                         } else {
                         	echo '<a class="btn btn-small" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i></a>';
@@ -1065,11 +1061,7 @@ class PF_Admin {
                     <h3 class="hndle"><span>Feed Problems</span></h3>
                     <div class="inside">
                     <?php
-                        add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
-                        add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
-                        the_alert_box()->alert_box_outsides();
-                        remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
-                        remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+                        self::pf_alert_displayer();
                     ?>
                     </div>
                 </div>
@@ -1090,8 +1082,28 @@ class PF_Admin {
 
 	}
     
+    public function pf_alert_displayer(){
+        add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+        add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+        add_filter('ab_alert_specimens_check_message', array($this, 'alert_check_message'));
+        add_filter('ab_alert_specimens_delete_all_text', array($this, 'alert_delete_all_message'));
+            the_alert_box()->alert_box_outsides();
+        remove_filter('ab_alert_specimens_delete_all_text', array($this, 'alert_delete_all_message'));
+        remove_filter('ab_alert_specimens_check_message', array($this, 'alert_check_message'));
+        remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+        remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));    
+    }
+    
     public function alert_filterer($post_types){
         return array(pressforward()->pf_feeds->post_type);
+    }
+    
+    public function alert_check_message($msg){
+        return __('Are you sure you want to delete all feeds with alerts?', 'pf');    
+    }
+    
+    public function alert_delete_all_message($msg){
+        return __('Delete all feeds with alerts', 'pf');     
     }
     
     public function alert_safe_filterer($safe_msg){

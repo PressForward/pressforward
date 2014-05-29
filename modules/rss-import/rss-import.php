@@ -262,7 +262,7 @@ class PF_RSS_Import extends PF_Module {
                                 <input id="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" value="" />
                                 <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'pf'); ?></label>
 								<p>&nbsp;Adding large OPML files may take some time.</p>
-                                <a href="http://en.wikipedia.org/wiki/Opml">What is an OPML file</a>
+                                <a href="http://en.wikipedia.org/wiki/Opml">What is an OPML file?</a>
 
 
                             </div>
@@ -361,9 +361,9 @@ class PF_RSS_Import extends PF_Module {
 
 		}
 		if ($something_broke){
-			add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', 'You have submitted '.$subed.'. The feed was not found.', 'updated');
+			add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', __('You have submitted ','pf').$subed.'. ' . __('The feed was not found.', 'pf'), 'updated');
 		} else {
-			add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', 'You have submitted '.$subed.'.', 'updated');
+			add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', __('You have submitted ', 'pf').$subed.'.', 'updated');
 		}
 		return $input;
 		
