@@ -2,14 +2,14 @@
 /*
 Plugin Name: PressForward
 Plugin URI: http://pressforward.org/
-Description: This plugin is an aggregation parser for CHNM's Press Forward project.
+Description: The PressForward Plugin is a tool by the Roy Rosenzweig Center for History and New Media for aggregating and curating web-based content within the WordPress dashboard.
 Version: 3.1.3
 Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
-Author URI: http://aramzs.me, http://boone.gorg.es/, http://clioweb.org
+Author URI: http://pressforward.org/about/team/
 License: GPL2
 */
 
-/*  Developed for the Center for History and New Media
+/*  Developed for the Roy Rosenzweig Center for History and New Media
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as
