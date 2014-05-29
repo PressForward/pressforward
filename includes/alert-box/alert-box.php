@@ -23,8 +23,9 @@ if (!class_exists('The_Alert_Box')){
             add_action( 'init', array( $this, 'register_bug_status') );
             add_action( 'wp_dashboard_setup', array( $this, 'add_dashboard_widget') );
             if (is_admin()){
-			     add_action( 'wp_ajax_nopriv_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
-			     add_action( 'wp_ajax_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
+			    add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) ); 
+                add_action( 'wp_ajax_nopriv_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
+			    add_action( 'wp_ajax_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
             }
         }
 
@@ -131,6 +132,7 @@ if (!class_exists('The_Alert_Box')){
         }
         
         public function remove_alerted_posts(){
+            ob_start();
             $filtered_post_types = $_POST['filtered_post_types'];
             
             if (empty($filtered_post_types)){
@@ -149,10 +151,12 @@ if (!class_exists('The_Alert_Box')){
                 $pages = $count/100;
                 $pages = ceil($pages);
                 $c = $pages;
-                while (0 > $c){
+                
+                while (0 < $c){
                     $q = the_alert_box()->get_specimens($c, $fpt_array);
                     while ( $q->have_posts() ) : $q->the_post(); 
                         wp_delete_post(get_the_ID()); 
+                        
                     endwhile;
                     wp_reset_postdata();
                     $c--;
@@ -172,9 +176,16 @@ if (!class_exists('The_Alert_Box')){
                    'what'=>'the_alert_box',
                    'action'=>'remove_alerted_posts',
                    'id'=>$pages,
-                   'data'=> $alerts->post_count . ' posts deleted.'
+                   'data'=> $alerts->post_count . ' posts deleted.',
+                    'supplemental' => array(
+                        'buffered' => ob_get_contents()
+				    )
                 );
             }
+            $xmlResponse = new WP_Ajax_Response($response);
+            $xmlResponse->send();
+            ob_end_flush();
+			die();
         }
         
         public function alert_box_insides_function(){
@@ -206,8 +217,8 @@ if (!class_exists('The_Alert_Box')){
             $this->alert_box_insides_function();    
         }
         
-        public function scripts(){
-            $dir = __DIR__ . '/';
+        public function admin_enqueue_scripts(){
+            $dir = plugins_url('/', __FILE__);
             wp_register_script('alert-box-handler', $dir . 'assets/js/alert-handler.js', array( 'jquery' ));
             if (is_admin()){
                 wp_enqueue_script('alert-box-handler');

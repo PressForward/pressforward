@@ -9,7 +9,7 @@ jQuery(window).load(function() {
                 action: 'remove_alerted_posts',
                 filtered_post_types: post_types
             },
-            function(response) {
+            function (response) {
                 var check = jQuery(response).find("response_data").text();
                 alert(check);
                 location.reload();
