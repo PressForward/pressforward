@@ -169,14 +169,14 @@ if (!class_exists('The_Alert_Box')){
                    'what'=>'the_alert_box',
                    'action'=>'remove_alerted_posts',
                    'id'=>0,
-                   'data'=>'No alerted posts to delete.'
+                   'data'=>__('No alerted posts to delete.', 'pf')
                 );    
             } else {
                 $response = array(
                    'what'=>'the_alert_box',
                    'action'=>'remove_alerted_posts',
                    'id'=>$pages,
-                   'data'=> $alerts->post_count . ' posts deleted.',
+                   'data'=> $alerts->post_count . __(' posts deleted.', 'pf'),
                     'supplemental' => array(
                         'buffered' => ob_get_contents()
 				    )
@@ -204,7 +204,11 @@ if (!class_exists('The_Alert_Box')){
                 wp_reset_postdata();
                 $alertCheck = __('Are you sure you want to delete all posts with alerts?', 'pf');
                 $alertCheck = apply_filters('ab_alert_specimens_check_message', $alertCheck);
-                echo '<p><a href="#" id="delete_all_alert_specimens" style="color:red;font-weight:bold;" title="' . __('Delete all posts with alerts', 'pf') . '" alert-check="' . $alertCheck . '" alert-types="'.implode(',',$q->query['post_type']).'" >' . __('Delete all posts with alerts', 'pf') . '</a></p>';
+            
+                $deleteText = __('Delete all posts with alerts', 'pf');
+                $deleteText = apply_filters('ab_alert_specimens_delete_all_text', $deleteText);
+            
+                echo '<p><a href="#" id="delete_all_alert_specimens" style="color:red;font-weight:bold;" title="' . __('Delete all posts with alerts', 'pf') . '" alert-check="' . $alertCheck . '" alert-types="'.implode(',',$q->query['post_type']).'" >' . $deleteText . '</a></p>';
             else:
                 $return_string = __('No problems!', 'pf');
                 $return_string = apply_filters('ab_alert_safe', $return_string);
