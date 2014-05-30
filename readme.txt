@@ -1,5 +1,5 @@
 === PressForward ===
-Contributors: PressForward
+Contributors: PressForward, AramZS, boonebgorges, joanftroyano, clioweb
 Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 3.0.1
