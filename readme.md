@@ -8,7 +8,7 @@
 - Authors' Sites: http://aramzs.me, http://boone.gorg.es/, http://clioweb.org
 
 
-	Developed for the Roy Rosenzweig Center for History and New Media at George Mason University.
+	Developed for the Roy Rosenzweig Center for History and New Media at George Mason University. Generously funded by the Alfred P. Sloan Foundation.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as

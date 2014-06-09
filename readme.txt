@@ -1,78 +1,87 @@
 === PressForward ===
 Contributors: PressForward, AramZS, boonebgorges, joanftroyano, clioweb
-Version: 3.1.3
 Donate link:
-Tags: aggregation, atom, content curation, curation, curation tool, editorial, feed, RSS, workflow
-Requires at least: 3.1.2
-Tested up to: 3.8
+Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
+Requires at least: 3.0.1
+Tested up to: 3.9.1
 Stable tag: 3.1.3
 License: GPL2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
-PressForward provides an integrated editorial process to curate aggregated content from the web.
+PressForward provides an integrated workflow for curating content aggregated from the web.
 
 
 == Description == 
-PressForward provides an editorial process for content aggregation and curation within the WordPress dashboard. It is designed for bloggers and editorial teams who wish to review, discuss, and share content from a variety of sources.
+PressForward is a free plugin that provides an editorial workflow for content aggregation and curation within the WordPress dashboard. It is designed for bloggers and editorial teams who wish to collect, discuss, and share content from a variety of sources on the open web.
 
-The plugin provides 
+**PressForward includes:** 
 
-* an RSS reader within the WordPress dashboard
-* a bookmarklet to capture content from the Web
-* tools for collaborative editorial work
+* a feed reader embedded within the WordPress dashboard
+* a bookmarklet to capture content from the web
+* tools for collaborative, editorial work
 * a process for republishing aggregated content
 
-**The RSS “All Content” Reader includes:**
+**The feed reader features:**
 
-* Readability integration to clean and standardize the formatting of imported content
-* Importing of full text, images, video content, and post metadata 
-* Individual starring, allowing individual users to flag items of interest
-* Ability to nominate any item for further review prior to publication
-* Ability to incorporate content not accessible by RSS through the “Nominate This” bookmarklet
+* Readability integration to standardize the formatting of aggregated content
+* Full text, image, video content, and post metadata import for each item
+* Starring, allowing individual users to flag items of interest
+* Nomination of single items for further review prior to publication
+* Capture of any web content through the “Nominate This” bookmarklet
 * Batch import of feeds from OPML, including Google OPML
-* Temporary storage of the aggregated content outside of the WordPress database until it is “nominated” for publication. This enables users to survey content without overwhelming their WordPress installation.
-* Responsive design supporting grid or list viewing options
+* Temporary storage of aggregated content, enabling users to survey content without overwhelming their WordPress installation
+* Responsive design for grid or list viewing options
 
-**Tools for collaboration include:**
+**Tools for collaboration:**
 
-* Separate “Under Review” interface for editors to review and discuss nominations from all users
-* Ability to comment on all items
-* Ability to set levels of access by user privileges
+* Separate “Under Review” interface for editors to discuss and select nominations from all users
+* Commenting on each item
+* Customizable user privileges
 
-**Publication features include:**
+**Publication features:**
 
-* Ability to send full content, attribution link, and metadata of nominated posts to regular WordPress dashboard for publishing
-* Ability to republish any or all content in any format supported by your theme (text, image, quote, snippet, etc.)
-* Ability to auto-redirect published posts to original source
-* A single RSS feed of all your aggregated content
+* Full content, attribution link, and metadata of posts accessible in WordPress dashboard
+* Republish any or all content in any format supported by your theme (text, image, quote, snippet, etc.)
+* Optional auto-redirect back to original source
+* Produces a single RSS feed of all your aggregated content
 
-Instructions for use are found in our <a href="https://github.com/PressForward/pressforward/wiki">Wiki on GitHub</a>.
+Instructions for use are found in our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki).
 
-Screenshots and sample instructions for editorial groups are available in the <a href="http://digitalhumanitiesnow.org/editors-corner/instructions/">Editors’ Corner</a> on <a href="http://digitalhumanitiesnow.org">Digital Humanities Now</a>, the largest publication using the PressForward plugin.
+[See how we compare to other WordPress plugins](https://github.com/PressForward/pressforward/wiki/FAQ#how-does-pressforward-compare-to-other-plugins).
 
-The PressForward Plugin was developed for the <a href="http://pressforward.org/">PressForward Project</a> from the <a href="http://chnm.gmu.edu">Roy Rosenzweig Center for History and New Media</a> at <a href="http://gmu.edu">George Mason University</a> by <a href="http://aramzs.me">Aram Zucker-Scharff</a>, <a href=" http://boone.gorg.es/">Boone B. Gorges</a>, and <a href="http://clioweb.org">Jeremy Boggs</a>. It is free to use and modify under a <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">GNU GPL2 license</a>.
+Sample instructions for editorial groups are available in the [Editors’ Corner](http://digitalhumanitiesnow.org/editors-corner/instructions/) on [Digital Humanities Now](http://digitalhumanitiesnow.org), the largest publication using the PressForward plugin.
+ 
+The PressForward Plugin is developed and maintained by the [Roy Rosenzweig Center for History and New Media](http://chnm.gmu.edu) at [George Mason University](http://gmu.edu) as part of the [PressForward Project](http://pressforward.org), generously funded by the Alfred P. Sloan Foundation. Our developers include [Aram Zucker-Scharff](http://aramzs.me), [Boone B. Gorges](http://boone.gorg.es), and [Jeremy Boggs](http://clioweb.org). PressForward is free to use and modify under a [GNU GPL2 license](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
+
+[Detailed information about our code](https://github.com/PressForward/pressforward/wiki/Devbook) can be found on our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki/).
 
 == Installation ==
-1. Go to the <a href="https://github.com/PressForward/pressforward/tags">latest version on GitHub</a> or install from WordPress.org.
+
+Our [Five-Step Quick Start Guide](https://github.com/PressForward/pressforward/wiki/Quick-Start-Guide) can be found on our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki/).
+
+* Search the [WordPress Plugin Directory](http://wordpress.org/plugins/) and download the PressForward plugin; or
+* Go to the [latest version on GitHub](https://github.com/PressForward/pressforward/tags).
 1. Download the zip or tar.gz file of the most recent version
 1. Rename zipped folder 'pressforward'
-1. Place the ‘pressforward’ folder in your ‘/wp-content/plugins’ directory in your FTP client.
-1. Activate plugin via the "Installed Plugins" menu in the Wordpress Dashboard
-1. The installed plug-in should now appear in your toolbar on your Wordpress Dashboard. Clicking on the item will provide a dropdown menu. (note: a collapsed toolbar will appear differently on your page.) Take a moment to click through each of the PressForward tabs and familiarize yourself with the structure of the plugin.
+1. Place the ‘pressforward’ folder in your ‘/wp-content/plugins’ directory using your FTP client.
+* Activate plugin via the "Installed Plugins" menu in the Wordpress Dashboard
+* The PressForward menu should now appear in your Wordpress Dashboard. Clicking on the PressForward icon will display tabs.
+
+A complete [User Manual](https://github.com/PressForward/pressforward/wiki/User-Manual) also is available on our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki/).
 
 
-**How to Add Feeds**
-The feeds you add will populate content on the “All Content” page and a list of the feeds to which you have subscribed will appear on the “Subscribed Feeds” page. If this is your first time using feeds, please visit the tutorial available [here](http://www.paulstamatiou.com/how-to-getting-started-with-rss/). There are two ways to add feeds. You can either add feeds one at a time or import them from another reader with an OPML file.
+== Frequently Asked Questions ==
 
-1. Select the Feeder menu from the PressForward tab in the Wordpress Dashboard
-1. To add a single feed just past the complete URL `(http:// ...)` or RSS path into the "Add Single Feed" box
-1. To add a list of feeds copy the link to the OPML file into the "Add OPML" box
-   + No HTTPS allowed
-   + Link Needs to be live `http://` link, no local files
-   + File does not necessarily have to exist, ie you can use a dropbox-generated url
-1. Save Options
-1. You will see a confirmation dialog box that confirms the addition of the feed.
-1. If you are upgrading from any version lower than 2.2 to any version higher than 2.3, you will need to click the _**Switch feeds to new retrieval setup**_ button.  This only needs to be done once at the time of the upgrade. If you are installing any version higher than 2.3 for the first time, or upgrading from 2.3 to any higher version, you do not need to click this button.
-1. The Subscribed Feeds menu will list all of the feed subscriptions. The posts sent via the feeds will appear on the **All Content** page.
+A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be found on our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki/).
 
-A complete User Manual is available on our <a href="https://github.com/PressForward/pressforward/wiki">Wiki on GitHub</a>.
+== Screenshots ==
+
+1. Add RSS/Atom Feeds to automatically aggregate content.
+2. Nominate This! Bookmarklet allows you to collect content from the web.
+3. All Content Grid View provides title, source, snippet, and additional information for every item.
+4. All Content List View provides title, source, snippet, and additional information for every item.
+5. Toolbar on every item provides easy access to see additional information, star items, add a comment, or nominate an item, sending it to Under Review.
+6. Reader View displays content in a comfortable reading environment, links to original source, and includes comments and the toolbar.
+7. Discussion visible in threaded comments.
+8. In Under Review the toolbar displays the number of comments and nominations, and provides ability to archive item or Send to Draft.
+9. Edit and format items in the regular WordPress Posts panel.
