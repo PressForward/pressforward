@@ -481,12 +481,12 @@ h3 {
 	line-height: 13px;
 
 	
-	z-index: 2002;
+	z-index: 6002;
 }
 
 .info-box-popover {
 	background-color: #f5f5f5;
-	z-index: 2001;
+	z-index: 6001;
 	width: 310px;
 
 }
