@@ -451,7 +451,7 @@ class PF_Feeds_Schema {
 		$c = 0;
 		foreach ($posts as $post){
             setup_postdata($post);
-			$post_id = get_the_ID($post->ID);
+			$post_id = $post->ID;
 			if (is_numeric($post_id)){
 				if (($c == 0)){
 					self::update($post_id, array('url' => $url));
