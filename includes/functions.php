@@ -877,6 +877,13 @@ function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
     
 }
 
+function pf_add_meta($id, $field, $value = '', $unique = false){
+    $field = pf_pass_meta($field);
+    $check = add_post_meta($id, $field, $value, $unique);
+    return $check;
+    
+}
+
 function filter_for_pf_archives_only($sql){
 	global $wpdb;
 #	if (isset($_GET['pf-see']) && ('archive-only' == $_GET['pf-see'])){
