@@ -252,7 +252,7 @@ class PF_Feeds_Schema {
 				$r['description'] = $theFeed->get_description();
 			}
 			if (!$r['feed_icon']){
-				$r['feed_icon'] = $theFeed->get_favicon();
+				#$r['feed_icon'] = $theFeed->get_favicon();
 			}	
 			if (!$r['feed_author']){
 				$r['feed_author'] = $theFeed->get_author();
