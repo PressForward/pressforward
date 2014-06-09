@@ -441,7 +441,8 @@ class PF_Feeds_Schema {
 	# When walking through the feedlist, if it is an old entry,
 	# call this function to renew the feed post with better data.
 	public function update_url($url){
-		pf_log('Invoked: PF_Feeds_Schema::update_url');
+		global $post;
+        pf_log('Invoked: PF_Feeds_Schema::update_url');
 		$posts = self::has_feed($url);
 		if (!$posts){
 			$check = self::create($url);
@@ -449,8 +450,8 @@ class PF_Feeds_Schema {
 		}
 		$c = 0;
 		foreach ($posts as $post){
-			setup_postdata($post);
-			$post_id = get_the_ID();
+            setup_postdata($post);
+			$post_id = get_the_ID($post->ID);
 			if (is_numeric($post_id)){
 				if (($c == 0)){
 					self::update($post_id, array('url' => $url));
