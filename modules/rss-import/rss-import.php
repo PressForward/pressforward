@@ -355,7 +355,7 @@ class PF_RSS_Import extends PF_Module {
 						$override = array('test_form' => false);       
 						// save the file, and store an array, containing its location in $file       
 						$file = wp_handle_upload( $ofile, $override );       
-						self::process_opml($file['url'];);
+						self::process_opml($file['url']);
 					} else {       
 						// Not an image.        
 						#$options = get_option('plugin_options');       
