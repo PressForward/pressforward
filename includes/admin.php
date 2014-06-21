@@ -1068,7 +1068,7 @@ class PF_Admin {
             </div>
 			<?php
 			endif;
-			?><form method="post" action="options.php"><?php
+			?><form method="post" action="options.php" enctype="multipart/form-data"><?php
             //settings_fields(PF_SLUG . '_feeder_options');
             //$options = get_option(PF_SLUG . '_plugin_feeder_options');
 

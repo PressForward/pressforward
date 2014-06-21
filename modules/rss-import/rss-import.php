@@ -261,6 +261,7 @@ class PF_RSS_Import extends PF_Module {
                             <div class="pf_feeder_input_box">
                                 <input id="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" value="" />
                                 <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'pf'); ?></label>
+								<input type="file" name="<?php echo PF_SLUG; ?>_opml_uploader" /><label class="description" for="<?php echo PF_SLUG . '_opml_uploader'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'pf'); ?></label>
 								<p>&nbsp;Adding large OPML files may take some time.</p>
                                 <a href="http://en.wikipedia.org/wiki/Opml">What is an OPML file?</a>
 
