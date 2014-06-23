@@ -261,7 +261,7 @@ class PF_RSS_Import extends PF_Module {
                             <div class="pf_feeder_input_box">
                                 <input id="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" value="" />
                                 <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'pf'); ?></label><br />
-								<input type="file" name="<?php echo PF_SLUG; ?> '_feedlist[opml_uploader]" /><label class="description" for="<?php echo PF_SLUG; ?> '_feedlist[opml_uploader]"><?php _e('*Upload OPML here. No HTTPS allowed.', 'pf'); ?></label>
+								<input type="file" name="<?php echo PF_SLUG . '_feedlist[opml_uploader]'; ?>" /><label class="description" for="<?php echo PF_SLUG . '_feedlist[opml_uploader]'; ?>"><?php _e('*Upload OPML here. No HTTPS allowed.', 'pf'); ?></label>
 								<p>&nbsp;Adding large OPML files may take some time.</p>
                                 <a href="http://en.wikipedia.org/wiki/Opml">What is an OPML file?</a>
 
@@ -336,8 +336,8 @@ class PF_RSS_Import extends PF_Module {
 				wp_die('Bad feed input. Why are you trying to place an array?');
 			}
 		}
-		#var_dump($input);
-		#die();
+#		var_dump($_POST);
+#		die();
 		//print_r($inputSingle);
 
 		if (!empty($input['opml'])){
@@ -346,6 +346,8 @@ class PF_RSS_Import extends PF_Module {
 		}
 		
 		if (!empty($input['opml_uploader'])){
+			#var_dump($input); die();
+			pf_log('Attempting to upload on OPML file.');
 			$keys = array_keys($_FILES); $i = 0; foreach ( $_FILES as $ofile ) {   
 				// if a files was upload   
 				if ($ofile['size']) {     
@@ -354,7 +356,9 @@ class PF_RSS_Import extends PF_Module {
 					if ( preg_match('/(opml|xml)$/', $ofile['type']) ) {       
 						$override = array('test_form' => false);       
 						// save the file, and store an array, containing its location in $file       
-						$file = wp_handle_upload( $ofile, $override );       
+						$file = wp_handle_upload( $ofile, $override );  
+						pf_log('File upload resulted in:');
+						pf_log($file);
 						self::process_opml($file['url']);
 					} else {       
 						// Not an image.        
@@ -375,7 +379,7 @@ class PF_RSS_Import extends PF_Module {
 			
 			$subed = 'an OPML uploaded file ';
 		}		
-
+#var_dump($_FILES); die();
 		if (!empty($_POST['o_feed_url'])){
 				$offender = array_search($_POST['o_feed_url'], $feedlist);
 				if ($offender !== false){
