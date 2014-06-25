@@ -505,7 +505,7 @@ function pf_get_defining_capability_by_role($role_slug){
 function pf_replace_author_presentation( $author ) {
 	global $post;
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')){
-		$custom_author = get_post_meta($post->ID, 'authors', TRUE);
+		$custom_author = pf_retrieve_meta($post->ID, 'authors');
 		if($custom_author)
 			return $custom_author;
 		return $author;
@@ -525,7 +525,7 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 		return $author_uri;
 	}
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')) {
-		$custom_author_uri = get_post_meta($post->ID, 'nomination_permalink', TRUE);
+		$custom_author_uri = pf_retrieve_meta($id, 'nomination_permalink');
 		if(!$custom_author_uri || 0 == $custom_author_uri || empty($custom_author_uri)){
 			return $author_uri;
 		} else {
