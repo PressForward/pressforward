@@ -533,3 +533,7 @@ ul.wp-submenu {
   padding: 0;
   margin: 0;
 }
+
+#message {
+	display:none;
+}

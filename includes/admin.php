@@ -584,12 +584,15 @@ class PF_Admin {
 										' . __('Times repeated in source', 'pf') . ': <span class="feed_repeat sortable_sources_repeat">' . $item['source_repeat'] . '</span><br />
 										';
 										if ($format === 'nomination'){
+
 											$ibox .= __('Number of nominations received', 'pf')
 											. ': <span class="sortable_nom_count">' . $metadata['nom_count'] . '</span><br />'
 											. __('First submitted by', 'pf')
 											. ': <span class="first_submitter">' . $metadata['submitters'] . '</span><br />'
 											. __('Nominated on', 'pf')
-											. ': <span class="nominated_on">' . date( 'M j, Y; g:ia' , strtotime($metadata['date_nominated'])) . '</span><br />';		
+											. ': <span class="nominated_on">' . date( 'M j, Y; g:ia' , strtotime($metadata['date_nominated'])) . '</span><br />'
+											. __('Nominated by', 'pf')
+											. ': <span class="nominated_by">' . get_the_nominating_users() . '</span><br />';	
 										}
 									$ibox .= '</div>';
 									echo $ibox;
