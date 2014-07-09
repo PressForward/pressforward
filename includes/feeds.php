@@ -99,8 +99,10 @@ class PF_Feeds_Schema {
 		register_taxonomy( $this->tag_taxonomy, $this->post_type, apply_filters( 'pf_register_feed_tag_taxonomy_args', array(
 			'labels' => $labels,
 			'public' => true,
-			'show_admin_columns' => true,
-			'show_in_menu' => PF_MENU_SLUG,
+			'show_admin_columns' => TRUE,
+			'show_in_nav_menus' => TRUE,
+			'show_ui'           => TRUE,			
+			#'show_in_menu' => PF_MENU_SLUG,
 			'rewrite' => false
 		) ) );
 	}
