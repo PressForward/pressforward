@@ -102,9 +102,9 @@ class PF_Admin {
 		add_submenu_page(
 			PF_MENU_SLUG, 
 			__('Feed Tags', 'pf'),
-			__('Feed Tags', 'pf'), 
-			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')), 
-			'edit-tags.php?taxonomy=' . pressforward()->pf_feeds->tag_taxonomy . '&post_type='.pressforward()->pf_feeds->post_type . '&top_menu=' . PF_MENU_SLUG,
+			__('Feed Tags', 'pf'),
+			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')),
+			'edit-tags.php?taxonomy=' . pressforward()->pf_feeds->tag_taxonomy,
 			''
 		);			
 /**
