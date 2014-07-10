@@ -46,6 +46,9 @@ class PF_Feeds_Schema {
 		if (is_admin()){
 			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+
+			// Move the 'Feed Tags' item underneath 'pf-menu'
+			add_filter( 'parent_file', array( $this, 'move_feed_tags_submenu' ) );
 		}
 	
 	}
@@ -106,7 +109,24 @@ class PF_Feeds_Schema {
 			'rewrite' => false
 		) ) );
 	}
-    
+
+	/**
+	 * Ensure that 'Feed Tags' stays underneath the PressForward top-level item.
+	 *
+	 * @param string $pf The $parent_file value passed to the
+	 *        'parent_file' filter
+	 * @return string
+	 */
+	public function move_feed_tags_submenu( $pf ) {
+		global $typenow, $pagenow;
+
+		if ( $this->post_type === $typenow && 'edit-tags.php' === $pagenow && ! empty( $_GET['taxonomy'] ) && $this->tag_taxonomy === stripslashes( $_GET['taxonomy'] ) ) {
+			$pf = 'pf-menu';
+		}
+
+		return $pf;
+	}
+
     public function disallow_add_new(){
         global $pagenow;
         /* Check current admin page. */
