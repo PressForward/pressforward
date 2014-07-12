@@ -120,8 +120,17 @@ class PF_Feeds_Schema {
 	public function move_feed_tags_submenu( $pf ) {
 		global $typenow, $pagenow;
 
-		if ( $this->post_type === $typenow && 'edit-tags.php' === $pagenow && ! empty( $_GET['taxonomy'] ) && $this->tag_taxonomy === stripslashes( $_GET['taxonomy'] ) ) {
+		// Feed Tags edit page
+		if ( 'edit-tags.php' === $pagenow && ! empty( $_GET['taxonomy'] ) && $this->tag_taxonomy === stripslashes( $_GET['taxonomy'] ) ) {
 			$pf = 'pf-menu';
+		}
+
+		// Edit Feed page
+		if ( 'post.php' === $pagenow && ! empty( $_GET['post'] ) ) {
+			global $post;
+			if ( $this->post_type === $post->post_type ) {
+				$pf = 'pf-menu';
+			}
 		}
 
 		return $pf;
