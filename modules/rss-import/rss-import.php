@@ -264,11 +264,9 @@ class PF_RSS_Import extends PF_Module {
                         <div><?php _e('Add OPML File', 'pf'); ?></div>
                             <div class="pf_feeder_input_box">
                                 <input id="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" class="pf_opml_file_upload_field regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" value="" />
-                                <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'pf'); ?></label><br />
-							</div>
-							<div class="pf_feeder_input_box">
-									<a class="button-primary pf_primary_media_opml_upload" ><?php _e('Upload OPML file', 'pf'); ?></a>
-									<label class="description" for="<?php echo PF_SLUG . '_feedlist[opml_uploader]'; ?>"><?php _e('*Upload OPML here. No HTTPS allowed.', 'pf'); ?></label>
+                                <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'pf'); ?></label>
+								or <a class="button-primary pf_primary_media_opml_upload" ><?php _e('Upload OPML file', 'pf'); ?></a>
+								
 								<p>&nbsp;Adding large OPML files may take some time.</p>
                                 <a href="http://en.wikipedia.org/wiki/Opml">What is an OPML file?</a>
 
@@ -410,7 +408,7 @@ class PF_RSS_Import extends PF_Module {
 		foreach($opml_array as $key=>$feedXml){
 			# Adding this as a 'quick' type so that we can process the list quickly.
 			pf_log('Adding this as a quick type so that we can process the list quickly');
-			$opml_array = $feed_obj->progressive_feedlist_transformer($opml_array, $feedXml, $key);
+			$opml_array = pressforward()->pf_feeds->progressive_feedlist_transformer($opml_array, $feedXml, $key);
 			# @todo Tag based on folder structure
 		}
 		#$check_up = update_option( PF_SLUG . '_feedlist', $opml_array );
