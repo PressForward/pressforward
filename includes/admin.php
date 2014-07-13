@@ -1190,6 +1190,8 @@ class PF_Admin {
 		else {
 			//And now lets enqueue the script, ensuring that jQuery is already active.
 
+			wp_enqueue_media();
+			
 			wp_enqueue_script(PF_SLUG . '-tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
 			wp_enqueue_script(PF_SLUG . '-twitter-bootstrap');
 
@@ -1199,7 +1201,7 @@ class PF_Admin {
 			wp_enqueue_style( PF_SLUG . '-style' );
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
-			
+			wp_enqueue_style('thickbox');
 			wp_enqueue_script( PF_SLUG . '-media-query-imp' );
 
 		}

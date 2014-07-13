@@ -254,7 +254,7 @@ class PF_RSS_Import extends PF_Module {
                     <div class="inside">
                         <div><?php _e('Add Single Feed', 'pf'); ?> (RSS or Atom)</div>
                             <div class="pf_feeder_input_box">
-                                <input id="<?php echo PF_SLUG . '_feedlist[single]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[single]'; ?>" value="" />
+                                <input id="<?php echo PF_SLUG . '_feedlist[single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo PF_SLUG . '_feedlist[single]'; ?>" value="" />
                                 <label class="description" for="<?php echo PF_SLUG . '_feedlist[single]'; ?>"><?php _e('*Complete URL path', 'pf'); ?></label>
                                 <a href="http://en.wikipedia.org/wiki/RSS">What is an RSS Feed?</a>
 
@@ -263,11 +263,11 @@ class PF_RSS_Import extends PF_Module {
 
                         <div><?php _e('Add OPML File', 'pf'); ?></div>
                             <div class="pf_feeder_input_box">
-                                <input id="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" value="" />
+                                <input id="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" class="pf_opml_file_upload_field regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" value="" />
                                 <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml]'; ?>"><?php _e('*Drop link to OPML here. No HTTPS allowed.', 'pf'); ?></label><br />
 							</div>
 							<div class="pf_feeder_input_box">
-									<input type="button" class="button-primary pf_primary_media_opml_upload" value="<?php _e('Upload OPML file', 'pf'); ?>" />
+									<a class="button-primary pf_primary_media_opml_upload" ><?php _e('Upload OPML file', 'pf'); ?></a>
 									<label class="description" for="<?php echo PF_SLUG . '_feedlist[opml_uploader]'; ?>"><?php _e('*Upload OPML here. No HTTPS allowed.', 'pf'); ?></label>
 								<p>&nbsp;Adding large OPML files may take some time.</p>
                                 <a href="http://en.wikipedia.org/wiki/Opml">What is an OPML file?</a>
