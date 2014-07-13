@@ -240,6 +240,11 @@ jQuery(window).load(function() {
 	jQuery('#gogrid').click(function (evt){ 
 			evt.preventDefault();
 			jQuery("div.pf_container").removeClass('list').addClass('grid');
+			jQuery('.feed-item').each(function (index){
+				var element		= jQuery(this);
+				var itemID		= element.attr('id');
+				jQuery('#'+itemID+' footer .actions').appendTo('#'+itemID+' header');
+			});		
 		});
 
 	jQuery('#golist').click(function (evt){ 
