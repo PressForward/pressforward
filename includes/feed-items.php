@@ -242,7 +242,7 @@ class PF_Feed_Item {
 			 
 			 #var_dump($dquerystr);
 
-		} elseif (is_user_logged_in()){
+		} elseif (is_user_logged_in() && (!isset($_GET['reveal']))){
 			$relate = pressforward()->relationships;
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
@@ -268,6 +268,21 @@ class PF_Feed_Item {
 				LIMIT {$pageTop}, {$pagefull}
 			 ", pf_feed_item_post_type());
 
+		} elseif (isset($_GET['reveal']) && ('no_hidden' == $_GET['reveal'])) { 
+			$relate = pressforward()->relationships;
+			$rt = $relate->table_name;
+			$user_id = get_current_user_id(); 
+			$dquerystr = $wpdb->prepare("
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+				AND {$wpdb->posts}.post_type = %s
+				AND {$wpdb->posts}.post_status = 'publish'
+				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
+				ORDER BY {$wpdb->postmeta}.meta_value DESC
+				LIMIT {$pageTop}, {$pagefull}
+			 ", pf_feed_item_post_type());		
 		} else {
 		 $dquerystr = $wpdb->prepare("
 			SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*

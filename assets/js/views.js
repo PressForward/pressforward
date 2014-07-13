@@ -299,6 +299,10 @@ jQuery(window).load(function() {
 		evt.preventDefault();
 		window.open("?page=pf-menu&by=nominated", "_self")
 	});	
+	jQuery('.pf_container').on('click', '#showMyHidden', function(evt){
+		evt.preventDefault();
+		window.open("?page=pf-menu&reveal=no_hidden", "_self")
+	});		
 	jQuery('.pf_container').on('click', '#showMyStarred', function(evt){    
 		evt.preventDefault();
 		window.open("?page=pf-menu&by=starred", "_self")
