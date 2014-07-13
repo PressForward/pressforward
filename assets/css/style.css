@@ -537,3 +537,7 @@ ul.wp-submenu {
 #message {
 	display:none;
 }
+
+.relationship-button-active {
+	background-color:black;
+}

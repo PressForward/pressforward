@@ -535,7 +535,10 @@ class PF_Admin {
 			if (current_user_can( 'manage_options' )){
 				echo '<i class="icon-remove-sign pf-item-remove" pf-item-post-id="' . $id_for_comments .'" title="Delete"></i>';
 			}
-			echo '<i class="icon-eye-close hide-item pf-item-archive schema-archive schema-actor" pf-item-post-id="' . $id_for_comments .'" title="Hide" pf-schema="archive"></i>';
+			$archiveStat = pf_get_relationship_value( 'archive', $id_for_comments, $user_id );
+			$extra_classes = '';
+			if ($archiveStat){ $extra_classes .= ' relationship-button-active'; }
+			echo '<i class="icon-eye-close hide-item pf-item-archive schema-archive schema-actor'.$extra_classes.'" pf-item-post-id="' . $id_for_comments .'" title="Hide" pf-schema="archive"></i>';
 
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'marked-read'; }
 
@@ -764,8 +767,12 @@ class PF_Admin {
 			$page = 0;
 		}
 		$count = $page * 20;
+		$extra_class = '';
+		if(isset($_GET['reveal']) && ('no_hidden' == $_GET['reveal'])){
+			$extra_class .= ' archived_visible';
+		}
 	?>
-	<div class="grid pf_container full">
+	<div class="grid pf_container full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">
 				<?php echo '<h1>' . PF_TITLE . '</h1>'; ?>
