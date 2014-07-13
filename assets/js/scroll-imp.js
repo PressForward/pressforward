@@ -25,8 +25,12 @@ jQuery(document).ready(function () {
 			jQuery('.feed-item').each(function (index){
 				var element		= jQuery(this);
 				var itemID		= element.attr('id');
-				jQuery('.grid #'+itemID+' header .actions').appendTo('#'+itemID+' header');
-                jQuery('.list #'+itemID+' header .actions').appendTo('#'+itemID+' footer');	
+				if (jQuery('#'+itemID+' header .actions').length === 0){
+					jQuery('.grid #'+itemID+' header .actions').appendTo('#'+itemID+' header');
+				}
+				if (jQuery('#'+itemID+' footer .actions').length === 0){
+                	jQuery('.list #'+itemID+' header .actions').appendTo('#'+itemID+' footer');	
+				}
 			});		
 	
 
