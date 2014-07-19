@@ -3,7 +3,9 @@ if (!class_exists('The_Alert_Box')){
 
     class The_Alert_Box {
         
-        var $status;
+        public static $status = 'alert_specimen';
+		public static $option_name = 'alert_box_options';
+		var $settings;
         
         public static function init() {
             static $instance;
@@ -19,21 +21,30 @@ if (!class_exists('The_Alert_Box')){
          * Constructor
          */
         public function __construct() {
-            $this->status = 'alert_specimen';
-			$this->option_name = 'alert_box_options';
-			$this->settings = get_option( $this->option_name, array() );
-            add_action( 'init', array( $this, 'register_bug_status') );
-            add_action( 'wp_dashboard_setup', array( $this, 'add_dashboard_widget') );
-            if (is_admin()){
-			    add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) ); 
-                add_action( 'wp_ajax_nopriv_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
-			    add_action( 'wp_ajax_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
-				#add_action( 'admin_init', array($this, 'settings_field_settings_page') );
-            }
+			#$this->status = self::$status;
+			#$this->option_name = self::$option_name;
+			$this->settings = get_option( self::option_name(), array() );
+			add_action( 'init', array( $this, 'register_bug_status') );
+
+			if (is_admin()){
+					add_action( 'wp_dashboard_setup', array( $this, 'add_dashboard_widget') );
+					add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) ); 
+					add_action( 'wp_ajax_nopriv_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
+					add_action( 'wp_ajax_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
+			}
+			#add_action( 'admin_init', array($this, 'settings_field_settings_page') );
         }
+		
+		public function status(){
+			return self::$status;
+		}
+		
+		public function option_name(){
+			return self::$option_name;
+		}
 
         public function register_bug_status(){
-            register_post_status($this->status, array(
+            register_post_status(self::$status, array(
                 'label'                 =>     __('Alert', 'pf'),
                 'public'                =>      false,
                 'exclude_from_search'   =>      true,
@@ -89,7 +100,7 @@ if (!class_exists('The_Alert_Box')){
             $post_types = apply_filters('ab_alert_specimens_post_types', $post_types);
             $args = array(
                 'post_type' =>  $post_types,  
-                'post_status' => $this->status,
+                'post_status' => self::$status,
                 'posts_per_page'=>$ppp              
             );
             if (0 != $page){
@@ -103,12 +114,13 @@ if (!class_exists('The_Alert_Box')){
         }
         
         public function add_dashboard_widget(){
-            
-            wp_add_dashboard_widget(
-                'specimen_alert_box',
-                __('Alerts', 'pf'),
-                array($this, 'alert_box_insides_function')
-            );
+           if(self::is_on()){ 
+				wp_add_dashboard_widget(
+					'specimen_alert_box',
+					__('Alerts', 'pf'),
+					array($this, 'alert_box_insides_function')
+				);
+		   }
         }
         
         public function remove_alert_on_edit($post_id){
@@ -225,19 +237,20 @@ if (!class_exists('The_Alert_Box')){
         }
         
         public function admin_enqueue_scripts(){
-            $dir = plugins_url('/', __FILE__);
-            wp_register_script('alert-box-handler', $dir . 'assets/js/alert-handler.js', array( 'jquery' ));
-            if (is_admin()){
-                wp_enqueue_script('alert-box-handler');
-            }
+			if(self::is_on()){
+				$dir = plugins_url('/', __FILE__);
+				wp_register_script('alert-box-handler', $dir . 'assets/js/alert-handler.js', array( 'jquery' ));
+				if (is_admin()){
+					wp_enqueue_script('alert-box-handler');
+				}
+			}
         }
 		
-		public function setting($args, $default = array()){
-			
-			if (!empty(the_alert_box()->settings) && !isset($_POST)){
-				$settings = the_alert_box()->settings;
+		public static function find_a_setting($args, $default = array(), $settings){
+			if (!empty($settings) && !isset($_POST)){
+				$settings = $settings;
 			} else {
-				$settings = get_option( $this->option_name, array() );	
+				$settings = get_option( self::$option_name, array() );	
 			}
 		    if (empty($settings)) {
 				$r = '';
@@ -260,7 +273,15 @@ if (!class_exists('The_Alert_Box')){
 				return $default;
 			} else {
 				return $r;
-			}
+			}				
+		}
+		
+		public function setting($args, $default = array()){
+			
+			$settings = $this->settings;
+			$r = self::find_a_setting($args, $default, $settings);
+			return $r;
+			
 		}		
 		
 		public function settings_field_maker($args){
@@ -285,7 +306,7 @@ if (!class_exists('The_Alert_Box')){
 			}
 		}
 		
-		public function settings_fields(){
+		public static function settings_fields(){
 			$switch = array(
               'parent_element'   =>  'alert_check',
               'element'          =>  'alert_switch',
@@ -298,7 +319,7 @@ if (!class_exists('The_Alert_Box')){
 		
 		public function settings_field_settings_page(){
 			#var_dump('die');die();
-			register_setting( 'general', $this->option_name, array($this, 'validator')  );
+			register_setting( 'general', self::$option_name, array($this, 'validator')  );
 			$args = the_alert_box()->settings_fields();
 			add_settings_field(	'alert_box_check', 'Active Alert Boxes?', array($this, 'settings_field_maker'), 'general', 'default', $args['switch']);
 		}
@@ -309,7 +330,23 @@ if (!class_exists('The_Alert_Box')){
 			#update_option($this->option_name, $_POST['alert_box_options']);
 			#var_dump($_POST['alert_box_options']); die();
 			return $input;
-		}		
+		}
+		
+		public function is_on(){
+			
+			$alert_settings = self::settings_fields();
+			$alert_switch = $alert_settings['switch'];
+			#var_dump('<pre>');
+			#var_dump($alert_switch);
+			$check = self::find_a_setting($alert_switch, $alert_switch['default'], get_option( self::$option_name, array() ));#die();
+			#var_dump($check);
+			if ('true' == $check){
+				$state = true;
+			} else {
+				$state = false;
+			}
+			return $state;
+		}
             
     }
     
