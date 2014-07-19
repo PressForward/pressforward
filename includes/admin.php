@@ -992,7 +992,7 @@ class PF_Admin {
 								} else {
 									$mark = '';
 								}
-							echo '<input id="alert_switch" type="checkbox" name="'.the_alert_box()->option_name.'['.$alert_switch['parent_element'].']['.$alert_switch['element'].']" value="true" '.$mark.' class="'.$alert_switch['parent_element'].' '.$alert_switch['element'].'" />  <label for="'.the_alert_box()->option_name.'['.$alert_switch['parent_element'].']['.$alert_switch['element'].']" class="'.$alert_switch['parent_element'].' '.$alert_switch['element'].'" >' . $alert_switch['label_for'] . '</label>';
+							echo '<input id="alert_switch" type="checkbox" name="'.the_alert_box()->option_name().'['.$alert_switch['parent_element'].']['.$alert_switch['element'].']" value="true" '.$mark.' class="'.$alert_switch['parent_element'].' '.$alert_switch['element'].'" />  <label for="'.the_alert_box()->option_name().'['.$alert_switch['parent_element'].']['.$alert_switch['element'].']" class="'.$alert_switch['parent_element'].' '.$alert_switch['element'].'" >' . $alert_switch['label_for'] . '</label>';
 						}
 					?>
 					</p>
@@ -1333,11 +1333,11 @@ class PF_Admin {
 		
 		if (class_exists('The_Alert_Box')){
 			#var_dump($_POST);
-			if(empty($_POST[the_alert_box()->option_name])){
+			if(empty($_POST[the_alert_box()->option_name()])){
 				#var_dump('<pre>'); var_dump($_POST); var_dump('</pre>');
-				update_option(the_alert_box()->option_name, 'false');
+				update_option(the_alert_box()->option_name(), 'false');
 			} else {
-				update_option(the_alert_box()->option_name, $_POST[the_alert_box()->option_name]);
+				update_option(the_alert_box()->option_name(), $_POST[the_alert_box()->option_name()]);
 			}
 		}
 		
