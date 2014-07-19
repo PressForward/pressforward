@@ -843,9 +843,11 @@ function pf_pass_meta($field){
     $metas = pf_meta_structure();
     # Check if it exists.
     if (empty($metas[$field])){
-        return false;
+        pf_log('The field ' . $field . ' is not supported.');
+		return false;
     }
     if (in_array('dep',$metas[$field]['type'])){
+		pf_log('You tried to use depreciated field '.$field.' it was moved to '.$metas[$field]['move']);
         $field = $metas[$field]['move'];
     }
     return $field;
