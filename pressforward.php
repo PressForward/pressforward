@@ -348,6 +348,8 @@ class PressForward {
 					'module_added'  => 'rss-import'
 				)
 			);
+			
+			$wp_rewrite->flush_rules(false);
 
 		// This is an upgrade
 		} else if ( version_compare( $saved_version, $current_version, '<' ) ) {
