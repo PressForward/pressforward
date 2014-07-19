@@ -349,7 +349,7 @@ class PF_Admin {
 						if ($format === 'nomination'){
 							?><form name="form-<?php echo $metadata['item_id']; ?>" pf-form="<?php echo $metadata['item_id']; ?>"><?php
 							pf_prep_item_for_submit($metadata);
-							#wp_nonce_field('nomination', PF_SLUG . '_nomination_nonce', false);
+							wp_nonce_field('nomination', PF_SLUG . '_nomination_nonce', false);
 						} else {
 						echo '<form name="form-' . $item['item_id'] . '">'
 						 . '<div class="nominate-result-' . $item['item_id'] . '">'
@@ -719,11 +719,11 @@ class PF_Admin {
 				<div class="pull-left original-link">
 					<a target="_blank" href="<?php echo $item['item_link']; ?>"><?php _e('Read Original', 'pf'); ?></a>
 					<?php
-					if ($format != 'nomination'){
+					#if ($format != 'nomination'){
 						?>
 						| <a class="modal-readability-reset" target="#readable" href="<?php echo $item['item_link']; ?>" pf-item-id="<?php echo $item['item_id']; ?>" pf-post-id="<?php echo $item['post_id']; ?>" pf-modal-id="#modal-<?php echo $item['item_id']; ?>"><?php  _e('Reset Readability', 'pf'); ?></a>
 						<?php
-					}
+					#}
 					?>
 				</div>
 				<div class="pull-right"><?php
