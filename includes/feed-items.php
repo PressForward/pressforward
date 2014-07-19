@@ -383,9 +383,9 @@ class PF_Feed_Item {
 	# The function we add to the action to clean our database.
 	public static function disassemble_feed_items() {
 		//delete rss feed items with a date past a certain point.
-		add_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older_sixty_days') );
+		add_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older') );
 		$queryForDel = new WP_Query( array( 'post_type' => pf_feed_item_post_type() ) );
-		remove_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older_sixty_days') );
+		remove_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older') );
 
 		// The Loop
 		while ( $queryForDel->have_posts() ) : $queryForDel->the_post();
@@ -956,9 +956,12 @@ class PF_Feed_Item {
 	/**
 	 * Filter 'posts_where' to return only posts older than sixty days
 	 */
-	public static function filter_where_older_sixty_days( $where = '' ) {
+	public static function filter_where_older( $where = '' ) {
+		$retain = get_option('pf_retain_time', 2);
+		$retainMonths = $retain*30;
+		$str = '-'.$retainMonths.' days';
 		// posts before the last 60 days
-		$where .= " AND post_date < '" . date('Y-m-d', strtotime('-60 days')) . "'";
+		$where .= " AND post_date < '" . date('Y-m-d', strtotime($str)) . "'";
 		return $where;
 	}
 

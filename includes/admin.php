@@ -979,9 +979,11 @@ class PF_Admin {
 
 					echo '<label class="description" for="pf_present_author_as_primary"> ' .__('Show item author as source.', 'pf'). ' </label>';
 					?></p>
+					<?php 
+					if (class_exists('The_Alert_Box')){ ?>
 					<p>
 					<?php 
-						if (class_exists('The_Alert_Box')){
+						#if (class_exists('The_Alert_Box')){
 							$alert_settings = the_alert_box()->settings_fields();
 							$alert_switch = $alert_settings['switch'];
 							$check = the_alert_box()->setting($alert_switch, $alert_switch['default']);
@@ -993,9 +995,18 @@ class PF_Admin {
 									$mark = '';
 								}
 							echo '<input id="alert_switch" type="checkbox" name="'.the_alert_box()->option_name().'['.$alert_switch['parent_element'].']['.$alert_switch['element'].']" value="true" '.$mark.' class="'.$alert_switch['parent_element'].' '.$alert_switch['element'].'" />  <label for="'.the_alert_box()->option_name().'['.$alert_switch['parent_element'].']['.$alert_switch['element'].']" class="'.$alert_switch['parent_element'].' '.$alert_switch['element'].'" >' . $alert_switch['label_for'] . '</label>';
-						}
+						#}
 					?>
 					</p>
+					<?php 
+					}
+					?>
+					<p><?php
+					$default_pf_link_value = get_option('pf_retain_time', 2);
+					echo '<input id="pf_retain_time" name="pf_retain_time" type="number" class="pf_retain_time" value="'.$default_pf_link_value.'" />';
+
+					echo '<label class="description" for="pf_retain_time"> ' .__('Months to retain feed items.', 'pf'). ' </label>';
+					?></p><br />				
 
 					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
 					<br />
@@ -1322,6 +1333,14 @@ class PF_Admin {
 		} else {
 			update_option('pf_link_to_source', 0);
 		}
+		if (isset( $_POST['pf_retain_time'] )){
+			$pf_links_opt_check = $_POST['pf_retain_time'];
+			//print_r($pf_links_opt_check); die();
+			update_option('pf_retain_time', $pf_links_opt_check);
+		} else {
+			update_option('pf_retain_time', 2);
+		}		
+		
 
 		if (isset( $_POST['pf_present_author_as_primary'] )){
 			$pf_author_opt_check = $_POST['pf_present_author_as_primary'];
