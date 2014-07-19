@@ -471,7 +471,7 @@ h3 {
 	min-height: 48px;
 }
 
-.pfmodal .modal-body p, .pfmodal .modal-body div {
+.pfmodal .modal-body p, .pfmodal .modal-body div, .pfmodal .modal-body {
 	margin: 1.5em 0;
 	font-size: 18px;
 	line-height: 1.7em;
