@@ -979,6 +979,23 @@ class PF_Admin {
 
 					echo '<label class="description" for="pf_present_author_as_primary"> ' .__('Show item author as source.', 'pf'). ' </label>';
 					?></p>
+					<p>
+					<?php 
+						if (class_exists('The_Alert_Box')){
+							$alert_settings = the_alert_box()->settings_fields();
+							$alert_switch = $alert_settings['switch'];
+							$check = the_alert_box()->setting($alert_switch, $alert_switch['default']);
+							#var_dump($check);
+								$check = the_alert_box()->setting($alert_switch, $alert_switch['default']);
+								if ('true' == $check){
+									$mark = 'checked';
+								} else {
+									$mark = '';
+								}
+							echo '<input id="alert_switch" type="checkbox" name="'.the_alert_box()->option_name.'['.$alert_switch['parent_element'].']['.$alert_switch['element'].']" value="true" '.$mark.' class="'.$alert_switch['parent_element'].' '.$alert_switch['element'].'" />  <label for="'.the_alert_box()->option_name.'['.$alert_switch['parent_element'].']['.$alert_switch['element'].']" class="'.$alert_switch['parent_element'].' '.$alert_switch['element'].'" >' . $alert_switch['label_for'] . '</label>';
+						}
+					?>
+					</p>
 
 					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
 					<br />
@@ -1313,7 +1330,17 @@ class PF_Admin {
 		} else {
 			update_option('pf_present_author_as_primary', 'no');
 		}
-
+		
+		if (class_exists('The_Alert_Box')){
+			#var_dump($_POST);
+			if(empty($_POST[the_alert_box()->option_name])){
+				#var_dump('<pre>'); var_dump($_POST); var_dump('</pre>');
+				update_option(the_alert_box()->option_name, 'false');
+			} else {
+				update_option(the_alert_box()->option_name, $_POST[the_alert_box()->option_name]);
+			}
+		}
+		
 		if (isset( $_POST['pf_use_advanced_user_roles'] )){
 			$pf_author_opt_check = $_POST['pf_use_advanced_user_roles'];
 			//print_r($pf_links_opt_check); die();
