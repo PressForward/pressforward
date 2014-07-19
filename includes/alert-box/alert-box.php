@@ -280,7 +280,7 @@ if (!class_exists('The_Alert_Box')){
 				echo '<input id="'.$element.'" type="checkbox" name="'.$this->option_name.'['.$parent_element.']['.$element.']" value="true" '.$mark.' class="'.$args['parent_element'].' '.$args['element'].'" />  <label for="'.$this->option_name.'['.$parent_element.']['.$element.']" class="'.$args['parent_element'].' '.$args['element'].'" >' . $label . '</label>';
 				break;
 			  case 'text':
-				echo "<input type='text' name='".$this->option_name."[".$parent_element."][".$element."]' value='".esc_attr(self::setting($args, $default))."' class='".$args['parent_element']." ".$args['element']."' /> <label for='".$this->option_name."[".$parent_element."][".$element."]' class='".$args['parent_element']." ".$args['element']."' >" . $label . "</label>";
+				echo "<input type='text' id='".$element."' name='".$this->option_name."[".$parent_element."][".$element."]' value='".esc_attr(self::setting($args, $default))."' class='".$args['parent_element']." ".$args['element']."' /> <label for='".$this->option_name."[".$parent_element."][".$element."]' class='".$args['parent_element']." ".$args['element']."' >" . $label . "</label>";
 				break;
 			}
 		}
