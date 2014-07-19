@@ -21,14 +21,14 @@ if (!class_exists('The_Alert_Box')){
         public function __construct() {
             $this->status = 'alert_specimen';
 			$this->option_name = 'alert_box_options';
-			$this->setting = get_option( $this->option_name, array() );
+			$this->settings = get_option( $this->option_name, array() );
             add_action( 'init', array( $this, 'register_bug_status') );
             add_action( 'wp_dashboard_setup', array( $this, 'add_dashboard_widget') );
             if (is_admin()){
 			    add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) ); 
                 add_action( 'wp_ajax_nopriv_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
 			    add_action( 'wp_ajax_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
-				add_action( 'admin_init', array($this, 'settings_field_settings_page') );
+				#add_action( 'admin_init', array($this, 'settings_field_settings_page') );
             }
         }
 
@@ -234,13 +234,13 @@ if (!class_exists('The_Alert_Box')){
 		
 		public function setting($args, $default = array()){
 			
-			if (!empty(the_alert_box()->setting)){
-				$settings = the_alert_box()->setting;
+			if (!empty(the_alert_box()->settings) && !isset($_POST)){
+				$settings = the_alert_box()->settings;
 			} else {
 				$settings = get_option( $this->option_name, array() );	
 			}
 		    if (empty($settings)) {
-
+				$r = '';
 			} elseif (empty($settings[$args['parent_element']]) || empty($settings[$args['parent_element']][$args['element']])){
 				$r = '';
 			} elseif (!empty($args['parent_element']) && !empty($args['element'])){
@@ -249,6 +249,10 @@ if (!class_exists('The_Alert_Box')){
 				$r = $settings[$args['parent_element']];
 			} else {
 			  $r = '';
+			}
+			
+			if (empty($r) && !empty($settings)){
+				$r = 'false';	
 			}
 
 			if (empty($r)){
@@ -273,7 +277,7 @@ if (!class_exists('The_Alert_Box')){
 				} else {
 					$mark = '';
 				}
-				echo '<input type="checkbox" name="'.$this->option_name.'['.$parent_element.']['.$element.']" value="true" '.$mark.' class="'.$args['parent_element'].' '.$args['element'].'" />  <label for="'.$this->option_name.'['.$parent_element.']['.$element.']" class="'.$args['parent_element'].' '.$args['element'].'" >' . $label . '</label>';
+				echo '<input id="'.$element.'" type="checkbox" name="'.$this->option_name.'['.$parent_element.']['.$element.']" value="true" '.$mark.' class="'.$args['parent_element'].' '.$args['element'].'" />  <label for="'.$this->option_name.'['.$parent_element.']['.$element.']" class="'.$args['parent_element'].' '.$args['element'].'" >' . $label . '</label>';
 				break;
 			  case 'text':
 				echo "<input type='text' name='".$this->option_name."[".$parent_element."][".$element."]' value='".esc_attr(self::setting($args, $default))."' class='".$args['parent_element']." ".$args['element']."' /> <label for='".$this->option_name."[".$parent_element."][".$element."]' class='".$args['parent_element']." ".$args['element']."' >" . $label . "</label>";
@@ -294,14 +298,16 @@ if (!class_exists('The_Alert_Box')){
 		
 		public function settings_field_settings_page(){
 			#var_dump('die');die();
-			register_setting( 'general', $this->option_name, array($this, 'validator') );
+			register_setting( 'general', $this->option_name, array($this, 'validator')  );
 			$args = the_alert_box()->settings_fields();
 			add_settings_field(	'alert_box_check', 'Active Alert Boxes?', array($this, 'settings_field_maker'), 'general', 'default', $args['switch']);
 		}
 		
 		public function validator($input){
-			$output = get_option( $this->option_name );
-			#var_dump($input); die();
+			#$output = get_option( $this->option_name );
+			
+			#update_option($this->option_name, $_POST['alert_box_options']);
+			#var_dump($_POST['alert_box_options']); die();
 			return $input;
 		}		
             
