@@ -407,9 +407,11 @@ class PF_Nominations {
 		//set up rest of nomination data
 		$item_title = $_POST['item_title'];
 		$item_content = $_POST['item_content'];
-		$readable_status = get_post_meta($_POST['item_post_id'], 'readable_status', true);
+		$item_link = pf_retrieve_meta($_POST['item_post_id'], 'item_link');
+		$readable_status = pf_retrieve_meta($_POST['item_post_id'], 'readable_status');
+		$item_author = pf_retrieve_meta($_POST['item_post_id'], 'item_author');
 		if ($readable_status != 1){
-			$read_args = array('force' => '', 'descrip' => $item_content, 'url' => $_POST['item_link'], 'authorship' => $_POST['item_author'] );
+			$read_args = array('force' => '', 'descrip' => $item_content, 'url' => $item_link, 'authorship' => $item_author );
 			$item_content_obj = pressforward()->readability->get_readable_text($read_args);
 			$item_content = htmlspecialchars_decode($item_content_obj['readable']);
 		} else {
