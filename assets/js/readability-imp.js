@@ -365,20 +365,21 @@ function modalReadReset(){
 function modalNomReadReset(){	
 	jQuery('.pressforward_page_pf-review .pf_container').on('click', ".modal-readability-reset", function(evt){
 		evt.preventDefault();
+		//alert('NOMS');
 		var element = jQuery(this);		
 		var modalID = element.attr('pf-modal-id');
 		var itemID = element.attr('pf-item-id');
 		var postID = element.attr('pf-post-id');		
 		//At this point it should have grabbed the direct feeditem hashed ID. That allows us to do things specifically to that item past this point.
 		//BUG: Escaping everything incorrectly. <-one time issue?
-		var content = jQuery("#"+itemID+" #modal-body-"+itemID).html();
-		var url = jQuery("#"+itemID+" #permalink_"+itemID).val();
-		var authorship = jQuery("#"+itemID+" #authors_"+itemID).val();
+		var content = jQuery("#"+postID+" #modal-body-"+itemID).html();
+		var url = jQuery("#"+postID+" #permalink_"+itemID).val();
+		var authorship = jQuery("#"+postID+" #authors_"+itemID).val();
 		//I suppose I should nonce here right? 
 		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());	
 		//At some point a waiting graphic should go here. 
 		//alert(content);
-		jQuery("#"+itemID+" #modal-"+itemID+" #modal-body-"+itemID).html('Attempting to retrieve full article.');
+		jQuery("#"+postID+" #modal-"+itemID+" #modal-body-"+itemID).html('Attempting to retrieve full article.');
 			jQuery.post(ajaxurl, {
 				action: 'make_it_readable',
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
@@ -402,21 +403,21 @@ function modalNomReadReset(){
 				if (status != 'readable') {
 					if (status == 'secured') {
 						alert('The content cannot be retrieved. The post may be on a secure page or it may have been removed.');
-						jQuery("#"+itemID+" #modal-"+itemID+" #modal-body-"+itemID).html(read_content);
+						jQuery("#"+postID+" #modal-"+itemID+" #modal-body-"+itemID).html(read_content);
 						var safeResponse = escapeHtml(read_content);
 						jQuery("#item_content_"+itemID).attr('value', safeResponse);
 						jQuery(modalID).attr('pf-readability-status', 1);
 					} else if (status == 'already_readable') {
-						jQuery("#"+itemID+" #modal-"+itemID+" #modal-body-"+itemID).html(unescape(content));
+						jQuery("#"+postID+" #modal-"+itemID+" #modal-body-"+itemID).html(unescape(content));
 						jQuery(modalID).attr('pf-readability-status', 1);
 					} else {
-						jQuery("#"+itemID+" #modal-"+itemID+" #modal-body-"+itemID).html(read_content);
+						jQuery("#"+postID+" #modal-"+itemID+" #modal-body-"+itemID).html(read_content);
 						var safeResponse = escapeHtml(read_content);
 						jQuery("#item_content_"+itemID).attr('value', safeResponse);
 					}
 				} else {
 						//alert('readable')
-						jQuery("#"+itemID+" #modal-"+itemID+" #modal-body-"+itemID).html(read_content);
+						jQuery("#"+postID+" #modal-"+itemID+" #modal-body-"+itemID).html(read_content);
 						var safeResponse = escapeHtml(read_content);
 						jQuery("#item_content_"+itemID).attr('value', safeResponse);
 						jQuery(modalID).attr('pf-readability-status', 1);
