@@ -839,28 +839,41 @@ function pf_meta_structure(){
 /*
  * A function to check and retrieve the right meta field for a post.
  */
-function pf_pass_meta($field){
+function pf_pass_meta($field, $id = false, $value = '', $single = true){
     $metas = pf_meta_structure();
     # Check if it exists.
     if (empty($metas[$field])){
         pf_log('The field ' . $field . ' is not supported.');
 		return false;
     }
+	# Check if it has been depreciated (dep). If so retrieve 
     if (in_array('dep',$metas[$field]['type'])){
-		pf_log('You tried to use depreciated field '.$field.' it was moved to '.$metas[$field]['move']);
-        $field = $metas[$field]['move'];
+		$new_field = $metas[$field]['move'];
+		pf_log('You tried to use depreciated field '.$field.' it was moved to '.$new_field);
+		pf_transition_deped_meta($field, $id, $value, $single, $new_field);
+        $field = $new_field;
     }
     return $field;
     
 }
 
-function pf_store_meta($id, $field, $obj = false, $single = true){
-    $field = pf_pass_meta($field);
-
+function pf_transition_deped_meta($field, $id, $value, $single, $new_field){
+	$result = false;
+	# Note - empty checks for FALSE 
+	$old = get_post_meta($id, $field, $single);
+	$new = get_post_meta($id, $new_field, $single);
+	if ((false != $id) && !empty($old) && empty($new)){
+		if (empty($value)){
+			$result = update_post_meta($id, $new_field, $old);
+		} else {
+			$result = update_post_meta($id, $new_field, $value);
+		}
+	}
+	return $result;
 }
 
 function pf_retrieve_meta($id, $field, $obj = false, $single = true){
-    $field = pf_pass_meta($field);
+    $field = pf_pass_meta($field, $id);
     $meta = get_post_meta($id, $field, $single);
     if ($obj){
         $metas = pf_meta_structure();
@@ -873,14 +886,14 @@ function pf_retrieve_meta($id, $field, $obj = false, $single = true){
 }
 
 function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
-    $field = pf_pass_meta($field);
+    $field = pf_pass_meta($field, $id, $value);
     $check = update_post_meta($id, $field, $value, $prev_value);
     return $check;
     
 }
 
 function pf_add_meta($id, $field, $value = '', $unique = false){
-    $field = pf_pass_meta($field);
+    $field = pf_pass_meta($field, $id, $value, $unique);
     $check = add_post_meta($id, $field, $value, $unique);
     return $check;
     
