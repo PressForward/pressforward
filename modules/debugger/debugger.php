@@ -68,23 +68,55 @@ class PF_Debugger extends PF_Module {
 				} elseif (!empty($date_less) && $date_less < 12) {
 					$y = date('Y');
 					$m = date('m');
-					$m = $m + $date_less;
+					$m = (int) $m + (int) $date_less;
 				} elseif (!empty($date_less) && $date_less >= 12) {
 					$y = date('Y');
 					$y = $y - floor($date_less/12);
 					$m = date('m');
 					$m = $m - (abs($date_less)-(12*floor($date_less/12)));
 				}
-				
+				$posts_per_page = 200;
 				$query_arg = array(
 					'post_type' 		=> $post_type,
-					'year'				=> $y,
-					'monthnum'			=> $m,
-					'posts_per_page' 	=> -1
+					'year'				=> (int) $y,
+					'monthnum'			=> (int) $m,
+					'posts_per_page' 	=> $posts_per_page,
+					'offset'			=> 0,
+					'cache_results' 	=> false,
+					'no_found_rows' 	=> true,
+					'fields' 			=> 'ids'
 				);
-				$query = new WP_Query($query_arg);	
+				#var_dump($query_arg);
+				#$query = new WP_Query($query_arg);	
+				#var_dump($query);
+				$total = 0;
+				$last_q = $posts_per_page;
+				while ($last_q >= $posts_per_page){
+					$count = $this->query_counter($query_arg);
+					$last_q = $count;
+					$total += $count;
+					$query_arg['offset'] = $query_arg['offset']+$posts_per_page;
+				}
 		
-		return $query->post_count;
+		return $total;
+	}
+	
+	function query_counter($query_arg, $posts_per_page = 200){
+		if(empty($query_arg['offset'])){ $query_arg['offset'] = 0; }
+		if(empty($query_arg['posts_per_page'])){ $query_arg['posts_per_page'] = $posts_per_page; }
+		$query = new WP_Query($query_arg);
+		#$offset = 0;
+		$total = 0;	
+		$pc = $query->post_count;
+		wp_reset_query();
+		$total += $pc;
+		#if ($pc < $posts_per_page){
+		#	return $total;
+		#} else {
+		#	$query_arg['offset'] = $query_arg['offset']+$posts_per_page;
+		#	$total += $this->query_counter($query_arg);
+		#}
+		return $total;
 	}
 
 	function admin_menu_callback() {
@@ -122,7 +154,7 @@ class PF_Debugger extends PF_Module {
 			?><br />
 			<?php 
 				$feed_item = 'pf_feed_item';
-				echo 'Month to date Feed Items: ' . $this->count_the_posts($feed_item );
+				echo 'Month to date Feed Items: ' . $this->count_the_posts($feed_item);
 				echo '<br />Last month Feed Items: ' . $this->count_the_posts($feed_item, -1 );
 				#var_dump(wp_count_posts($feed_item));
 				#var_dump(wp_count_posts('post'));
