@@ -3,8 +3,8 @@ Contributors: PressForward, AramZS, boonebgorges, joanftroyano, clioweb
 Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 3.0.1
-Tested up to: 3.9.1
-Stable tag: 3.2.0
+Tested up to: 3.9.2
+Stable tag: 3.3.0
 License: GPL2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
