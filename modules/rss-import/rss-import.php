@@ -176,7 +176,6 @@ class PF_RSS_Import extends PF_Module {
 												$item_categories_string
 												);
 					pf_log('Setting new object for ' . $item->get_title() . ' of ' . $iFeed->get_title() . '.');
-					set_transient( 'pf_' . $id, $rssObject['rss_' . $c], 60*10 );
 
 			}
 			$c++;
