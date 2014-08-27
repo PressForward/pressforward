@@ -159,7 +159,7 @@ class PF_Feed_Item {
 			ORDER BY {$wpdb->postmeta}.meta_value DESC
 		 ", pf_feed_item_post_type());
 		} elseif ($limit == 'starred') {
-			
+
 			$relate = pressforward()->relationships;
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
@@ -186,7 +186,7 @@ class PF_Feed_Item {
 			 ", pf_feed_item_post_type());
 			 #var_dump($dquerystr);
 		} elseif ($limit == 'nominated') {
-			
+
 			$relate = pressforward()->relationships;
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
@@ -224,8 +224,8 @@ class PF_Feed_Item {
 				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
 				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->posts}.post_status = 'publish'			
-				AND ((({$wpdb->posts}.post_title LIKE '%s') OR ({$wpdb->posts}.post_content LIKE '%s')))				
+				AND {$wpdb->posts}.post_status = 'publish'
+				AND ((({$wpdb->posts}.post_title LIKE '%s') OR ({$wpdb->posts}.post_content LIKE '%s')))
 				AND {$wpdb->posts}.ID
 				NOT
 				IN (
@@ -239,7 +239,7 @@ class PF_Feed_Item {
 				ORDER BY {$wpdb->postmeta}.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$pageTop}
 			 ", pf_feed_item_post_type(), '%'.$search.'%', '%'.$search.'%');
-			 
+
 			 #var_dump($dquerystr);
 
 		} elseif (is_user_logged_in() && (!isset($_GET['reveal']))){
@@ -268,10 +268,10 @@ class PF_Feed_Item {
 				LIMIT {$pageTop}, {$pagefull}
 			 ", pf_feed_item_post_type());
 
-		} elseif (isset($_GET['reveal']) && ('no_hidden' == $_GET['reveal'])) { 
+		} elseif (isset($_GET['reveal']) && ('no_hidden' == $_GET['reveal'])) {
 			$relate = pressforward()->relationships;
 			$rt = $relate->table_name;
-			$user_id = get_current_user_id(); 
+			$user_id = get_current_user_id();
 			$dquerystr = $wpdb->prepare("
 				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
@@ -282,7 +282,7 @@ class PF_Feed_Item {
 				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
 				ORDER BY {$wpdb->postmeta}.meta_value DESC
 				LIMIT {$pageTop}, {$pagefull}
-			 ", pf_feed_item_post_type());		
+			 ", pf_feed_item_post_type());
 		} else {
 		 $dquerystr = $wpdb->prepare("
 			SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
@@ -317,8 +317,6 @@ class PF_Feed_Item {
 			//Switch the delete on to wipe rss archive posts from the database for testing.
 			//wp_delete_post( $post_id, true );
 			//print_r($id);
-			# If the transient exists than there is no reason to do any extra work.
-			if ( false === ( $feedObject['rss_archive_' . $c] = get_transient( 'pf_archive_' . $id ) ) ) {
 
 				$item_id = get_post_meta($post_id, 'item_id', true);
 				$source_title = get_post_meta($post_id, 'source_title', true);
@@ -350,9 +348,7 @@ class PF_Feed_Item {
 											$post_id,
 											$readable_status
 											);
-				set_transient( 'pf_archive_' . $id, $feedObject['rss_archive_' . $c], 60*10 );
 
-			}
 			$c++;
 			endforeach;
 
@@ -405,13 +401,13 @@ class PF_Feed_Item {
 	# Method to manually delete rssarchival entries on user action.
 	public static function reset_feed() {
 		global $wpdb, $post;
-        
+
         $count = wp_count_posts(pf_feed_item_post_type());
         $pub_count = $count->publish;
         $pages = $pub_count/100;
         #var_dump($pages);
         if (($pages < 1) && ($pages > 0)){
-            $pages = 1;    
+            $pages = 1;
         } else {
             $pages = ceil($pages);
         }
@@ -421,27 +417,27 @@ class PF_Feed_Item {
                     'post_status' =>  'publish',
                     'posts_per_page'=>100,
                     'paged'  => $pages
-                );            
+                );
             $archiveQuery = new WP_Query( $args );
             #var_dump($archiveQuery);
             if ( $archiveQuery->have_posts() ) :
-    
-                while ( $archiveQuery->have_posts() ) : $archiveQuery->the_post(); 
+
+                while ( $archiveQuery->have_posts() ) : $archiveQuery->the_post();
                     $post_id = get_the_ID();
                      //Switch the delete on to wipe rss archive posts from the database for testing.
                     pressforward()->admin->pf_thing_deleter( $post_id, true );
-    
+
                 endwhile;
                 #print_r(__('All archives deleted.', 'pf'));
-            
+
             wp_reset_postdata();
             else:
-              #print_r( 'Sorry, no posts matched your criteria.' ); 
+              #print_r( 'Sorry, no posts matched your criteria.' );
             endif;
-            
+
             $pages--;
         }
-		
+
 
 	}
 
@@ -912,7 +908,7 @@ class PF_Feed_Item {
 
 
 				}
-		
+
 
 			//Methods within sourced from http://codex.wordpress.org/Function_Reference/wp_insert_attachment
 			//and http://wordpress.stackexchange.com/questions/26138/set-post-thumbnail-with-php

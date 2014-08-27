@@ -132,7 +132,7 @@ function pf_feed_excerpt( $text ) {
 
 	$contentObj = new pf_htmlchecker($text);
 	$item_content = $contentObj->closetags($text);
-	
+
 	return $text;
 }
 
@@ -260,11 +260,11 @@ function pf_get_posts_by_id_for_check( $theDate, $post_type, $item_id ) {
 			AND {$wpdb->posts}.post_type = '%s'
 			AND {$wpdb->posts}.post_date >= '%s'
 			ORDER BY {$wpdb->posts}.post_date DESC
-		 ", $item_id, $post_type, $theDate);	
+		 ", $item_id, $post_type, $theDate);
 
 	$postsAfter = $wpdb->get_results($querystr, OBJECT);
 	if ($wpdb->num_rows >= 1){
-	
+
 	} else {
 		$querystr = $wpdb->prepare("
 			SELECT {$wpdb->posts}.*
@@ -275,8 +275,8 @@ function pf_get_posts_by_id_for_check( $theDate, $post_type, $item_id ) {
 			AND {$wpdb->posts}.post_type = '%s'
 			AND {$wpdb->posts}.post_date <= '%s'
 			ORDER BY {$wpdb->posts}.post_date DESC
-		 ", $item_id, $post_type, $theDate);		
-		
+		 ", $item_id, $post_type, $theDate);
+
 		$postsAfter = $wpdb->get_results($querystr, OBJECT);
 	}
 	return $postsAfter;
@@ -300,7 +300,7 @@ function pf_prep_item_for_submit($item) {
 		if (is_array($itemPart)){
 			$itemPart = implode(",",$itemPart);
 		}
-		
+
 		echo '<input type="hidden" name="' . $itemKey . '" id="' . $itemKey . '_' . $itemid . '" id="' . $itemKey . '" value="' . $itemPart . '" />';
 
 	}
@@ -470,7 +470,7 @@ function pf_get_role_by_capability($cap, $lowest = true, $obj = false){
 function pf_get_defining_capability_by_role($role_slug){
 	$pf_use_advanced_user_roles = get_option('pf_use_advanced_user_roles', 'no');
     # For those who wish to ignore the super-cool auto-detection for fringe-y sites that
-    # let their user capabilities go wild. 
+    # let their user capabilities go wild.
     if ('no' == $pf_use_advanced_user_roles){
         $role_slug = strtolower($role_slug);
         switch ($role_slug){
@@ -544,12 +544,12 @@ function pf_forward_unto_source(){
 		$post_ID = $obj->ID;
 		$link = get_post_meta($post_ID, 'nomination_permalink', TRUE);
 		if (!empty($link)){
-			echo '<meta name="syndication-source" content="'.$link.'" />';
+			echo '<link rel="canonical" href="'.$link.'" />';
 			$wait = get_option('pf_link_to_source', 0);
 			if ($wait > 0){
 				echo '<META HTTP-EQUIV="refresh" CONTENT="'.$wait.';URL='.$link.'">';
 			}
-			
+
 		}
 	}
 }
@@ -587,7 +587,7 @@ function pf_meta_transition($name, $idA, $idB){
 	#if (!$result){
 		$result = update_post_meta($idB, $name, $meta_value);
 	#}
-	
+
 	return $result;
 }
 
@@ -598,7 +598,7 @@ function pf_prep_for_depreciation($name, $value, $idA, $idB){
 				#if ((!isset($value)) || (false == $value) || ('' == $value) || (0 == $value) || (empty($value))){
 					$value = get_post_meta($idA, $meta['move'], true);
 				#}
-				#update_post_meta($idA, $name, $value);				
+				#update_post_meta($idA, $name, $value);
 				update_post_meta($idB, $meta['move'], $value);
 				update_post_meta($idB, $name, $value);
 				return true;
@@ -623,7 +623,7 @@ function get_pf_meta_name($meta){
 #Inspired by http://www.loc.gov/standards/metable.html
 #Adm=Administrative, Struc=Structural, Desc=Descriptive, Req=Required, Rep=Repeatable, Set=Set, Aggr=Aggregate, Dep = Depreciated
 function pf_meta_structure(){
-	$metas = array( 
+	$metas = array(
 		'item_id' => array(
 			'name' => 'item_id',
 			'definition' => __('Unique PressForward ID', 'pf'),
@@ -640,7 +640,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'move'	=> 'item_id',
 			'level'	=> array('item', 'nomination', 'post')
-		),	
+		),
 		'pf_item_post_id' => array(
 			'name' => 'pf_item_post_id',
 			'definition' => __('The WordPress postID associated with the original item', 'pf'),
@@ -648,7 +648,7 @@ function pf_meta_structure(){
 			'type'	=> array('struc'),
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
-		),	
+		),
 		'pf_nomination_post_id' => array(
 			'name' => 'pf_nomination_post_id',
 			'definition' => __('The WordPress postID associated with the nomination', 'pf'),
@@ -656,7 +656,7 @@ function pf_meta_structure(){
 			'type'	=> array('struc'),
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
-		),	
+		),
 		'item_feed_post_id' => array(
 			'name' => 'item_feed_post_id',
 			'definition' => __('DUPE Soon to be depreciated version of pf_item_post_id', 'pf'),
@@ -665,7 +665,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'move'	=> 'pf_item_post_id',
 			'level'	=> array('item', 'nomination', 'post')
-		),	
+		),
 		'source_title' => array(
 			'name' => 'source_title',
 			'definition' => __('Title of the item\'s source', 'pf'),
@@ -682,7 +682,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'move'	=> 'source_title',
 			'level'	=> array('item', 'nomination', 'post')
-		),			
+		),
 		'item_date' => array(
 			'name' => 'item_date',
 			'definition' => __('Date posted on the original site', 'pf'),
@@ -690,7 +690,7 @@ function pf_meta_structure(){
 			'type'	=> array('desc'),
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
-		),	
+		),
 		'posted_date' => array(
 			'name' => 'posted_date',
 			'definition' => __('DUPE The soon to be depreciated version of item_date', 'pf'),
@@ -699,7 +699,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'move'	=> 'item_date',
 			'level'	=> array('nomination', 'post')
-		),	
+		),
 		'item_author' => array(
 			'name' => 'item_author',
 			'definition' => __('Author(s) listed on the original site', 'pf'),
@@ -707,7 +707,7 @@ function pf_meta_structure(){
 			'type'	=> array('struc'),
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
-		),		
+		),
 		'authors' => array(
 			'name' => 'authors',
 			'definition' => __('DUPE The soon to be depreciated version of item_author', 'pf'),
@@ -716,7 +716,7 @@ function pf_meta_structure(){
 			'use'	=> array(),
 			'move'	=> 'item_author',
 			'level'	=> array('nomination', 'post')
-		),	
+		),
 		'item_link' => array(
 			'name' => 'item_link',
 			'definition' => __('Source link', 'pf'),
@@ -724,7 +724,7 @@ function pf_meta_structure(){
 			'type'	=> array('struc'),
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
-		),	
+		),
 		'nomination_permalink' => array(
 			'name' => 'nomination_permalink',
 			'definition' => __('Source link', 'pf'),
@@ -733,7 +733,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'move'	=> 'item_link',
 			'level'	=> array('nomination', 'post')
-		),	
+		),
 		'item_feat_img' => array(
 			'name' => 'item_feat_img',
 			'definition' => __('Featured image from source', 'pf'),
@@ -741,7 +741,7 @@ function pf_meta_structure(){
 			'type'	=> array('struc'),
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
-		),	
+		),
 		'item_wp_date' => array(
 			'name' => 'item_wp_date',
 			'definition' => __('Time item was retrieved', 'pf'),
@@ -749,7 +749,7 @@ function pf_meta_structure(){
 			'type'	=> array('desc'),
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
-		),	
+		),
 		'date_nominated' => array(
 			'name' => 'date_nominated',
 			'definition' => __('Time nominated', 'pf'),
@@ -757,7 +757,7 @@ function pf_meta_structure(){
 			'type'	=> array('desc'),
 			'use'	=> array('req'),
 			'level'	=> array('nomination', 'post')
-		),	
+		),
 		'item_tags' => array(
 			'name' => 'item_tags',
 			'definition' => __('Tags associated with the item by source', 'pf'),
@@ -765,7 +765,7 @@ function pf_meta_structure(){
 			'type'	=> array('desc'),
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
-		),	
+		),
 		'source_repeat' => array(
 			'name' => 'source_repeat',
 			'definition' => __('Times retrieved', 'pf'),
@@ -773,7 +773,7 @@ function pf_meta_structure(){
 			'type'	=> array('adm'),
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
-		),	
+		),
 		'nomination_count' => array(
 			'name' => 'nomination_count',
 			'definition' => __('Nominations', 'pf'),
@@ -781,7 +781,7 @@ function pf_meta_structure(){
 			'type'	=> array('adm'),
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
-		),	
+		),
 		'submitted_by' => array(
 			'name' => 'submitted_by',
 			'definition' => __('The user who submitted the nomination', 'pf'),
@@ -789,7 +789,7 @@ function pf_meta_structure(){
 			'type'	=> array('adm'),
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
-		),	
+		),
 		'nominator_array' => array(
 			'name' => 'nominator_array',
 			'definition' => __('Users who nominated this item', 'pf'),
@@ -797,7 +797,7 @@ function pf_meta_structure(){
 			'type'	=> array('adm'),
 			'use'	=> array('req'),
 			'level'	=> array('nomination', 'post')
-		),	
+		),
 		'sortable_item_date' => array(
 			'name' => 'sortable_item_date',
 			'definition' => __('Timestamp for the item', 'pf'),
@@ -805,7 +805,7 @@ function pf_meta_structure(){
 			'type'	=> array('adm'),
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
-		),	
+		),
 		'readable_status' => array(
 			'name' => 'readable_status',
 			'definition' => __('If the content is readable', 'pf'),
@@ -813,7 +813,7 @@ function pf_meta_structure(){
 			'type'	=> array('desc'),
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
-		),	
+		),
 		'revertible_feed_text' => array(
 			'name' => 'revertible_feed_text',
 			'definition' => __('The originally retrieved description', 'pf'),
@@ -821,7 +821,7 @@ function pf_meta_structure(){
 			'type'	=> array('adm'),
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
-		),	
+		),
 		'pf_feed_item_word_count' => array(
 			'name' => 'pf_feed_item_word_count',
 			'definition' => __('Word count of original item text', 'pf'),
@@ -831,7 +831,7 @@ function pf_meta_structure(){
 			'level'	=> array('item', 'nomination', 'post')
 		)
 	);
-	
+
 	$metas = apply_filters('pf_meta_terms',$metas);
 	return $metas;
 }
@@ -846,7 +846,7 @@ function pf_pass_meta($field, $id = false, $value = '', $single = true){
         pf_log('The field ' . $field . ' is not supported.');
 		return false;
     }
-	# Check if it has been depreciated (dep). If so retrieve 
+	# Check if it has been depreciated (dep). If so retrieve
     if (in_array('dep',$metas[$field]['type'])){
 		$new_field = $metas[$field]['move'];
 		pf_log('You tried to use depreciated field '.$field.' it was moved to '.$new_field);
@@ -854,12 +854,12 @@ function pf_pass_meta($field, $id = false, $value = '', $single = true){
         $field = $new_field;
     }
     return $field;
-    
+
 }
 
 function pf_transition_deped_meta($field, $id, $value, $single, $new_field){
 	$result = false;
-	# Note - empty checks for FALSE 
+	# Note - empty checks for FALSE
 	$old = get_post_meta($id, $field, $single);
 	$new = get_post_meta($id, $new_field, $single);
 	if ((false != $id) && !empty($old) && empty($new)){
@@ -882,21 +882,21 @@ function pf_retrieve_meta($id, $field, $obj = false, $single = true){
         return $meta_obj;
     }
     return $meta;
-    
+
 }
 
 function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
     $field = pf_pass_meta($field, $id, $value);
     $check = update_post_meta($id, $field, $value, $prev_value);
     return $check;
-    
+
 }
 
 function pf_add_meta($id, $field, $value = '', $unique = false){
     $field = pf_pass_meta($field, $id, $value, $unique);
     $check = add_post_meta($id, $field, $value, $unique);
     return $check;
-    
+
 }
 
 function filter_for_pf_archives_only($sql){
@@ -905,32 +905,32 @@ function filter_for_pf_archives_only($sql){
 		$relate = new PF_RSS_Import_Relationship();
 		$rt = $relate->table_name;
 		$user_id = get_current_user_id();
-		$read_id = pf_get_relationship_type_id('archive');			
-	
-/**		$sql .= " AND {$wpdb->posts}.ID 
+		$read_id = pf_get_relationship_type_id('archive');
+
+/**		$sql .= " AND {$wpdb->posts}.ID
 				IN (
-					SELECT item_id 
-					FROM {$rt} 
-					WHERE {$rt}.user_id = {$user_id} 
-					AND {$rt}.relationship_type = {$read_id} 
+					SELECT item_id
+					FROM {$rt}
+					WHERE {$rt}.user_id = {$user_id}
+					AND {$rt}.relationship_type = {$read_id}
 					AND {$rt}.value = 1
-				) ";	
+				) ";
 	}
 **/	#var_dump($sql);
 	return $sql;
-	
+
 }
 
 function prep_archives_query($q){
 		global $wpdb;
-		
+
 		if (isset($_GET["pc"])){
 			$offset = $_GET["pc"]-1;
 			$offset = $offset*10;
 		} else {
 			$offset = 0;
 		}
-		
+
 		if (isset($_GET['pf-see']) && ('archive-only' == $_GET['pf-see'])){
 			$pagefull = 20;
 			$relate = new PF_RSS_Import_Relationship();
@@ -938,25 +938,25 @@ function prep_archives_query($q){
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('archive');
 			$q = $wpdb->prepare("
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id	
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 				AND {$wpdb->posts}.post_type = %s
 				AND {$wpdb->posts}.post_status = 'draft'
 				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
 				AND {$wpdb->postmeta}.meta_value > 0
-				AND {$wpdb->posts}.ID 
+				AND {$wpdb->posts}.ID
 				IN (
-					SELECT item_id 
-					FROM {$rt} 
-					WHERE {$rt}.user_id = {$user_id} 
-					AND {$rt}.relationship_type = {$read_id} 
+					SELECT item_id
+					FROM {$rt}
+					WHERE {$rt}.user_id = {$user_id}
+					AND {$rt}.relationship_type = {$read_id}
 					AND {$rt}.value = 1
 				)
 				GROUP BY {$wpdb->posts}.ID
 				ORDER BY {$wpdb->postmeta}.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$offset}
-			 ", 'nomination');	
+			 ", 'nomination');
 		} elseif (isset($_GET['action']) && (isset($_POST['search-terms']))){
 			$pagefull = 20;
 			$relate = new PF_RSS_Import_Relationship();
@@ -965,9 +965,9 @@ function prep_archives_query($q){
 			$read_id = pf_get_relationship_type_id('archive');
 			$search = $_POST['search-terms'];
 			$q = $wpdb->prepare("
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.* 
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id	
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
 				AND {$wpdb->postmeta}.meta_value > 0
 				AND {$wpdb->posts}.post_type = %s
@@ -976,7 +976,7 @@ function prep_archives_query($q){
 				GROUP BY {$wpdb->posts}.ID
 				ORDER BY {$wpdb->postmeta}.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$offset}
-			 ", 'nomination', '%'.$search.'%', '%'.$search.'%');	
+			 ", 'nomination', '%'.$search.'%', '%'.$search.'%');
 		} elseif (isset($_GET['pf-see']) && ('starred-only' == $_GET['pf-see'])){
 			$pagefull = 20;
 			$relate = new PF_RSS_Import_Relationship();
@@ -986,35 +986,35 @@ function prep_archives_query($q){
 			$q = $wpdb->prepare("
 				SELECT DISTINCT wposts.*
 				FROM {$wpdb->posts} wposts
-				LEFT JOIN {$wpdb->postmeta} wpm1 ON (wposts.ID = wpm1.post_id 
+				LEFT JOIN {$wpdb->postmeta} wpm1 ON (wposts.ID = wpm1.post_id
 					AND wpm1.meta_key = 'sortable_item_date' AND wpm1.meta_value > 0 AND wposts.post_type = %s
 				)
 				LEFT JOIN {$wpdb->postmeta} wpm2 ON  (wposts.ID = wpm2.post_id
                        AND wpm2.meta_key = 'item_feed_post_id' AND wposts.post_type = %s )
 				WHERE wposts.post_status = 'draft'
 				AND wpm1.meta_value > 0
-				AND wposts.ID 
+				AND wposts.ID
 				IN (
-					SELECT item_id 
-					FROM {$rt} 
-					WHERE {$rt}.user_id = {$user_id} 
-					AND {$rt}.relationship_type = {$read_id} 
+					SELECT item_id
+					FROM {$rt}
+					WHERE {$rt}.user_id = {$user_id}
+					AND {$rt}.relationship_type = {$read_id}
 					AND {$rt}.value = 1
 				)
-				OR wpm2.meta_value 
+				OR wpm2.meta_value
 				IN (
-					SELECT item_id 
-					FROM {$rt} 
-					WHERE {$rt}.user_id = {$user_id} 
-					AND {$rt}.relationship_type = {$read_id} 
+					SELECT item_id
+					FROM {$rt}
+					WHERE {$rt}.user_id = {$user_id}
+					AND {$rt}.relationship_type = {$read_id}
 					AND {$rt}.value = 1
 				)
 				GROUP BY wpm2.post_id
 				ORDER BY wpm1.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$offset}
-			 ", 'nomination', 'nomination');	
+			 ", 'nomination', 'nomination');
 			 #var_dump($q);
-		}		
+		}
 	#$archivalposts = $wpdb->get_results($dquerystr, OBJECT);
 	#return $archivalposts;
 	return $q;
@@ -1023,13 +1023,13 @@ function prep_archives_query($q){
 add_filter('upload_mimes', 'pf_custom_upload_opml');
 
 function pf_custom_upload_opml ( $existing_mimes=array() ) {
- 
+
 	// add your ext => mime to the array
 	$existing_mimes['opml'] = 'text/x-opml';
- 
+
 	// and return the new full result
 	return $existing_mimes;
- 
+
 }
 
 

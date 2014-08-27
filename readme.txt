@@ -4,17 +4,17 @@ Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 3.0.1
 Tested up to: 3.9.2
-Stable tag: 3.2.0
+Stable tag: 3.3.0
 License: GPL2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 PressForward provides an integrated workflow for curating content aggregated from the web.
 
 
-== Description == 
+== Description ==
 PressForward is a free plugin that provides an editorial workflow for content aggregation and curation within the WordPress dashboard. It is designed for bloggers and editorial teams who wish to collect, discuss, and share content from a variety of sources on the open web.
 
-**PressForward includes:** 
+**PressForward includes:**
 
 * a feed reader embedded within the WordPress dashboard
 * a bookmarklet to capture content from the web
@@ -50,7 +50,7 @@ Instructions for use are found in our [GitHub Wiki](https://github.com/PressForw
 [See how we compare to other WordPress plugins](https://github.com/PressForward/pressforward/wiki/FAQ#how-does-pressforward-compare-to-other-plugins).
 
 Sample instructions for editorial groups are available in the [Editors’ Corner](http://digitalhumanitiesnow.org/editors-corner/instructions/) on [Digital Humanities Now](http://digitalhumanitiesnow.org), the largest publication using the PressForward plugin.
- 
+
 The PressForward Plugin is developed and maintained by the [Roy Rosenzweig Center for History and New Media](http://chnm.gmu.edu) at [George Mason University](http://gmu.edu) as part of the [PressForward Project](http://pressforward.org), generously funded by the Alfred P. Sloan Foundation. Our developers include [Aram Zucker-Scharff](http://aramzs.me), [Boone B. Gorges](http://boone.gorg.es), and [Jeremy Boggs](http://clioweb.org). PressForward is free to use and modify under a [GNU GPL2 license](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
 
 [Detailed information about our code](https://github.com/PressForward/pressforward/wiki/Devbook) can be found on our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki/).
