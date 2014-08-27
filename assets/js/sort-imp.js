@@ -75,7 +75,11 @@ jQuery(window).load(function() {
 		e.preventDefault();
 		var element		= jQuery(this);
 		var postID		= element.attr('pf-item-post-id');
-		jQuery('article[pf-item-post-id="'+postID+'"]').remove();
+		if (jQuery('.pf_container').hasClass('archived_visible')){
+			jQuery('article[pf-item-post-id="'+postID+'"] i.pf-item-archive').addClass('relationship-button-active');
+		} else {
+			jQuery('article[pf-item-post-id="'+postID+'"]').remove();
+		}
 		
 	});	
 	

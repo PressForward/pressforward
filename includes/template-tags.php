@@ -72,19 +72,59 @@ function the_nomination_count(){
 	echo get_the_item_tags();
 }	
 
-function get_the_nominators(){
+function get_the_nominator_ids(){
 	$m = pf_retrieve_meta(get_the_ID(), 'nominator_array', false, false);
 	return $m;
 }
 
-function the_nominators(){
-	if (is_array(get_the_nominators())){
-		$nomers = implode(", " , get_the_nominators());
-		echo $nomers;
+function get_the_nominators(){
+	#var_dump(get_the_nominators());
+	$nominators = get_the_nominator_ids();
+	if (is_array($nominators)){
+		$nomers = '';
+		$lastElement = end($nominators);
+		$lastKey = key($nominators);
+		foreach ($nominators as $k => $nomer){
+			if (is_array($nomer)){
+				$nomers .= implode("," , $nomer);
+			} else {
+				$nomers .= $nomer;	
+			}
+			if ($lastKey != $k){
+				$nomers .= ',';	
+			}
+		}
+		#$nomers = implode(", " , get_the_nominators());
 	} else {
-		echo get_the_nominators();
+		$nomers = get_the_nominator_ids();
 	}
-}	
+	
+	# Look, there are a lot of weird things that can happen 
+	# depending on how far back your version history has gone
+	# So this is a stupid way to do it, but it is really the
+	# best way.
+	
+	$nominating_user_ids = explode(",", $nomers);
+	$nominating_users = array();
+	foreach ($nominating_user_ids as $user_id){
+		$user_obj = get_user_by('id', $user_id);
+		$nominating_users[] = $user_obj->display_name;
+	}
+	
+	return $nominating_users;
+	
+}
+
+function get_the_nominating_users(){
+	$nominating_users = get_the_nominators();
+	$imp = implode(', ', $nominating_users);
+	return $imp;
+	
+}
+
+function the_nominators(){
+	echo get_the_nominating_users();
+}
 
 function get_the_word_count(){
 	$m = pf_retrieve_meta(get_the_ID(), 'pf_feed_item_word_count');

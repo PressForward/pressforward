@@ -505,7 +505,7 @@ function pf_get_defining_capability_by_role($role_slug){
 function pf_replace_author_presentation( $author ) {
 	global $post;
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')){
-		$custom_author = get_post_meta($post->ID, 'authors', TRUE);
+		$custom_author = pf_retrieve_meta($post->ID, 'authors');
 		if($custom_author)
 			return $custom_author;
 		return $author;
@@ -525,7 +525,7 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 		return $author_uri;
 	}
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')) {
-		$custom_author_uri = get_post_meta($post->ID, 'nomination_permalink', TRUE);
+		$custom_author_uri = pf_retrieve_meta($id, 'nomination_permalink');
 		if(!$custom_author_uri || 0 == $custom_author_uri || empty($custom_author_uri)){
 			return $author_uri;
 		} else {
@@ -839,26 +839,41 @@ function pf_meta_structure(){
 /*
  * A function to check and retrieve the right meta field for a post.
  */
-function pf_pass_meta($field){
+function pf_pass_meta($field, $id = false, $value = '', $single = true){
     $metas = pf_meta_structure();
     # Check if it exists.
     if (empty($metas[$field])){
-        return false;
+        pf_log('The field ' . $field . ' is not supported.');
+		return false;
     }
+	# Check if it has been depreciated (dep). If so retrieve 
     if (in_array('dep',$metas[$field]['type'])){
-        $field = $metas[$field]['move'];
+		$new_field = $metas[$field]['move'];
+		pf_log('You tried to use depreciated field '.$field.' it was moved to '.$new_field);
+		pf_transition_deped_meta($field, $id, $value, $single, $new_field);
+        $field = $new_field;
     }
     return $field;
     
 }
 
-function pf_store_meta($id, $field, $obj = false, $single = true){
-    $field = pf_pass_meta($field);
-
+function pf_transition_deped_meta($field, $id, $value, $single, $new_field){
+	$result = false;
+	# Note - empty checks for FALSE 
+	$old = get_post_meta($id, $field, $single);
+	$new = get_post_meta($id, $new_field, $single);
+	if ((false != $id) && !empty($old) && empty($new)){
+		if (empty($value)){
+			$result = update_post_meta($id, $new_field, $old);
+		} else {
+			$result = update_post_meta($id, $new_field, $value);
+		}
+	}
+	return $result;
 }
 
 function pf_retrieve_meta($id, $field, $obj = false, $single = true){
-    $field = pf_pass_meta($field);
+    $field = pf_pass_meta($field, $id);
     $meta = get_post_meta($id, $field, $single);
     if ($obj){
         $metas = pf_meta_structure();
@@ -867,6 +882,20 @@ function pf_retrieve_meta($id, $field, $obj = false, $single = true){
         return $meta_obj;
     }
     return $meta;
+    
+}
+
+function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
+    $field = pf_pass_meta($field, $id, $value);
+    $check = update_post_meta($id, $field, $value, $prev_value);
+    return $check;
+    
+}
+
+function pf_add_meta($id, $field, $value = '', $unique = false){
+    $field = pf_pass_meta($field, $id, $value, $unique);
+    $check = add_post_meta($id, $field, $value, $unique);
+    return $check;
     
 }
 

@@ -240,6 +240,11 @@ jQuery(window).load(function() {
 	jQuery('#gogrid').click(function (evt){ 
 			evt.preventDefault();
 			jQuery("div.pf_container").removeClass('list').addClass('grid');
+			jQuery('.feed-item').each(function (index){
+				var element		= jQuery(this);
+				var itemID		= element.attr('id');
+				jQuery('#'+itemID+' footer .actions').appendTo('#'+itemID+' header');
+			});		
 		});
 
 	jQuery('#golist').click(function (evt){ 
@@ -294,6 +299,10 @@ jQuery(window).load(function() {
 		evt.preventDefault();
 		window.open("?page=pf-menu&by=nominated", "_self")
 	});	
+	jQuery('.pf_container').on('click', '#showMyHidden', function(evt){
+		evt.preventDefault();
+		window.open("?page=pf-menu&reveal=no_hidden", "_self")
+	});		
 	jQuery('.pf_container').on('click', '#showMyStarred', function(evt){    
 		evt.preventDefault();
 		window.open("?page=pf-menu&by=starred", "_self")

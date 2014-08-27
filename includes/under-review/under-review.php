@@ -13,8 +13,14 @@
 		}
 		$count = $page * 20;	
 		$countQ = 0;
+		$extra_class = '';
+		if(isset($_GET['reveal']) && ('no_hidden' == $_GET['reveal'])){
+			$extra_class .= ' archived_visible';
+		} else {
+			$extra_class .= '';
+		}
 	?>
-	<div class="list pf_container full">
+	<div class="list pf_container full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">
 				<?php echo '<h1>' . PF_TITLE . ': Under Review</h1>'; ?>

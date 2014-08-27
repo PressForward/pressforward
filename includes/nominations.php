@@ -187,33 +187,42 @@ class PF_Nominations {
 	}
 
 	public function get_post_nomination_status($date, $item_id, $post_type, $updateCount = true){
-		//Get the query object, limiting by date, type and metavalue ID.
+		global $post;
+        //Get the query object, limiting by date, type and metavalue ID.
 		$postsAfter = pf_get_posts_by_id_for_check( $date, $post_type, $item_id );
 		//Assume that it will not find anything.
 		$check = false;
 		if ($postsAfter):
-
-			global $post;
+        
 			foreach ($postsAfter as $post):
 				setup_postdata($post);
 				$id = get_the_ID();
-				$origin_item_id = get_post_meta($id, 'origin_item_ID', true);
+				$origin_item_id = pf_retrieve_meta($id, 'origin_item_ID');
+                $current_user = wp_get_current_user();
 				if ($origin_item_id == $item_id) {
 					$check = true;
 					//Only update the nomination count on request.
 					if ($updateCount){
-						$nomCount = get_post_meta($id, 'nomination_count', true);
-						$nomCount++;
-						update_post_meta($id, 'nomination_count', $nomCount);
-						$current_user = wp_get_current_user();
 						if ( 0 == $current_user->ID ) {
 							//Not logged in.
 							//If we ever reveal this to non users and want to count nominations by all, here is where it will go.
+                            $nomCount = pf_retrieve_meta($id, 'nomination_count', false, true);
+                            $nomCount++;
+                            pf_update_meta($id, 'nomination_count', $nomCount);
 						} else {
-							$nominators = get_post_meta($id, 'nominator_array', true);
-							$nominators[] = $current_user->ID;
-							update_post_meta($id, 'nominator_array', $nominators);
-						}
+							$nominators_orig = pf_retrieve_meta($id, 'nominator_array', false, false);
+                            if (true == in_array($current_user->ID, $nominators_orig)){
+                                $nominators = $nominators_orig;
+                                $nominator = $current_user->ID;
+                                pf_add_meta($id, 'nominator_array', $nominator);
+                                $nomCount = get_post_meta($id, 'nomination_count', true);
+                                $nomCount++;
+                                pf_update_meta($id, 'nomination_count', $nomCount);                                
+                            } else {
+                                $check = 'user_nominated_already';    
+                            }
+						}                        
+
 
 					return $check;
 					break;
@@ -345,51 +354,64 @@ class PF_Nominations {
 		$item_id = $_POST['item_id'];
 		//die($item_wp_date);
 
-		//Record first nominator and/or add a nomination to the user's count.
-		$current_user = wp_get_current_user();
-		if ( 0 == $current_user->ID ) {
-			//Not logged in.
-			$userSlug = "external";
-			$userName = __('External User', 'pf');
-			$userID = 0;
-		} else {
-			// Logged in.
-			$userID = $current_user->ID;
-			if (get_user_meta( $userID, 'nom_count', true )){
-
-				$nom_counter = get_user_meta( $userID, 'nom_count', true );
-				$nom_counter++;
-				update_user_meta( $userID, 'nom_count', $nom_counter, true );
-
-			} else {
-				add_user_meta( $userID, 'nom_count', 1, true );
-
-			}
-		}
-		$userString = $userID;
-
 		//Going to check posts first on the assumption that there will be more nominations than posts.
-		$post_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'post');
+		$nom_check = '';
+        $post_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'post');
 		/** The system will only check for nominations of the item does not exist in posts. This will stop increasing the user and nomination count in nominations once they are sent to draft.
 		**/
-		if ($post_check == true) {
+		if (($post_check == true) || ($post_check == 'user_nominated_already')) {
 			//Run this function to increase the nomination count in the nomination, even if it is already a post.
-			$this->get_post_nomination_status($item_wp_date, $item_id, 'nomination');
+			$nom_check = self::get_post_nomination_status($item_wp_date, $item_id, 'nomination');
 			$result = __('This item has already been nominated.', 'pf');
-			die($result);
+			#die($result);
 		}
 		else {
-			$nom_check = $this->get_post_nomination_status($item_wp_date, $item_id, 'nomination');
-				if ($nom_check == true) { $result = __('This item has already been nominated', 'pf'); die($result); }
+			$nom_check = self::get_post_nomination_status($item_wp_date, $item_id, 'nomination');
+				if (($nom_check == true) || ($nom_check == 'user_nominated_already')) { 
+                    $result = __('This item has already been nominated', 'pf'); 
+                    
+                    #die($result); 
+                
+                }
 		}
+        
+        if (($nom_check == 'user_nominated_already') || ($post_check == 'user_nominated_already')){
+            die($result);         
+        } else {
+
+            //Record first nominator and/or add a nomination to the user's count.
+            $current_user = wp_get_current_user();
+            if ( 0 == $current_user->ID ) {
+                //Not logged in.
+                $userSlug = "external";
+                $userName = __('External User', 'pf');
+                $userID = 0;
+            } else {
+                // Logged in.
+                $userID = $current_user->ID;
+                if (get_user_meta( $userID, 'nom_count', true )){
+
+                        $nom_counter = get_user_meta( $userID, 'nom_count', true );
+                        $nom_counter++;
+                        update_user_meta( $userID, 'nom_count', $nom_counter, true );
+
+                } else {
+                        add_user_meta( $userID, 'nom_count', 1, true );
+
+                }
+            }
+            $userString = $userID;
+        }
 
 
 		//set up rest of nomination data
 		$item_title = $_POST['item_title'];
 		$item_content = $_POST['item_content'];
-		$readable_status = get_post_meta($_POST['item_post_id'], 'readable_status', true);
+		$item_link = pf_retrieve_meta($_POST['item_post_id'], 'item_link');
+		$readable_status = pf_retrieve_meta($_POST['item_post_id'], 'readable_status');
+		$item_author = pf_retrieve_meta($_POST['item_post_id'], 'item_author');
 		if ($readable_status != 1){
-			$read_args = array('force' => '', 'descrip' => $item_content, 'url' => $_POST['item_link'], 'authorship' => $_POST['item_author'] );
+			$read_args = array('force' => '', 'descrip' => $item_content, 'url' => $item_link, 'authorship' => $item_author );
 			$item_content_obj = pressforward()->readability->get_readable_text($read_args);
 			$item_content = htmlspecialchars_decode($item_content_obj['readable']);
 		} else {

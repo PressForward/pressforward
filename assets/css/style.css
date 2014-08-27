@@ -471,6 +471,12 @@ h3 {
 	min-height: 48px;
 }
 
+.pfmodal .modal-body p, .pfmodal .modal-body div, .pfmodal .modal-body {
+	margin: 1.5em 0;
+	font-size: 18px;
+	line-height: 1.7em;
+}
+
 .feed-item-info-box {
 	display:none;
 }
@@ -481,12 +487,12 @@ h3 {
 	line-height: 13px;
 
 	
-	z-index: 2002;
+	z-index: 6002;
 }
 
 .info-box-popover {
 	background-color: #f5f5f5;
-	z-index: 2001;
+	z-index: 6001;
 	width: 310px;
 
 }
@@ -532,4 +538,12 @@ h3 {
 ul.wp-submenu {
   padding: 0;
   margin: 0;
+}
+
+#message {
+	display:none;
+}
+
+.relationship-button-active {
+	background-color:black;
 }
