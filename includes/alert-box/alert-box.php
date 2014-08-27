@@ -1,12 +1,12 @@
-<?php 
+<?php
 if (!class_exists('The_Alert_Box')){
 
     class The_Alert_Box {
-        
+
         public static $status = 'alert_specimen';
-		public static $option_name = 'alert_box_options';
-		var $settings;
-        
+		    public static $option_name = 'alert_box_options';
+		    var $settings;
+
         public static function init() {
             static $instance;
 
@@ -15,8 +15,8 @@ if (!class_exists('The_Alert_Box')){
             }
 
             return $instance;
-        }        
-        
+        }
+
         /**
          * Constructor
          */
@@ -28,17 +28,17 @@ if (!class_exists('The_Alert_Box')){
 
 			if (is_admin()){
 					add_action( 'wp_dashboard_setup', array( $this, 'add_dashboard_widget') );
-					add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) ); 
+					add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 					add_action( 'wp_ajax_nopriv_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
 					add_action( 'wp_ajax_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
 			}
 			#add_action( 'admin_init', array($this, 'settings_field_settings_page') );
         }
-		
+
 		public function status(){
 			return self::$status;
 		}
-		
+
 		public function option_name(){
 			return self::$option_name;
 		}
@@ -49,11 +49,11 @@ if (!class_exists('The_Alert_Box')){
                 'public'                =>      false,
                 'exclude_from_search'   =>      true,
                 'show_in_admin_all_list'=>      true,
-                'label_count'           =>      _n_noop( 
-                					'Alert <span class="count">(%s)</span>', 
+                'label_count'           =>      _n_noop(
+                					'Alert <span class="count">(%s)</span>',
                 					'Alerts <span class="count">(%s)</span>',
                 					'pf'
-                					
+
                 				)
             ) );
         }
@@ -67,9 +67,9 @@ if (!class_exists('The_Alert_Box')){
             else {
                 return false;
             }
-            
+
         }
-        
+
         public function get_bug_type($id){
             $result = get_post_meta($id, 'ab_alert_msg', false);
             $s_result = implode(', ', $result);
@@ -79,7 +79,7 @@ if (!class_exists('The_Alert_Box')){
         public function switch_post_type($id){
             $argup = array(
                 'ID'			=> $id,
-                'post_status'	=>	$this->status,
+                'post_status'	=>	$this->status(),
             );
             update_post_meta( $id, 'pre_alert_status', get_post_status($id) );
             $result = wp_update_post($argup);
@@ -87,7 +87,7 @@ if (!class_exists('The_Alert_Box')){
 
         }
 
-        
+
         public function get_specimens($page = 0, $post_types = false){
             if (0 != $page){
                 $ppp = 100;
@@ -99,22 +99,22 @@ if (!class_exists('The_Alert_Box')){
             }
             $post_types = apply_filters('ab_alert_specimens_post_types', $post_types);
             $args = array(
-                'post_type' =>  $post_types,  
+                'post_type' =>  $post_types,
                 'post_status' => self::$status,
-                'posts_per_page'=>$ppp              
+                'posts_per_page'=>$ppp
             );
             if (0 != $page){
                 $args['paged'] = $page;
             } else {
-                $args['nopaging']  = 'true';  
+                $args['nopaging']  = 'true';
             }
-                
+
             $q = new WP_Query( $args );
             return $q;
         }
-        
+
         public function add_dashboard_widget(){
-           if(self::is_on()){ 
+           if(self::is_on()){
 				wp_add_dashboard_widget(
 					'specimen_alert_box',
 					__('Alerts', 'pf'),
@@ -122,16 +122,16 @@ if (!class_exists('The_Alert_Box')){
 				);
 		   }
         }
-        
+
         public function remove_alert_on_edit($post_id){
             $status = $this->status;
             if ( $status != $_POST['post_status'] ) {
-                return;    
+                return;
             }
-            
+
             // unhook this function so it doesn't loop infinitely
             remove_action( 'save_post', array($this, 'remove_alert_on_edit') );
-    
+
             $post_status_d = get_post_meta( $post_id, 'pre_alert_status', true);
             if (empty($post_type_d)){
                 $post_status_d['status'] = 'draft';
@@ -140,16 +140,16 @@ if (!class_exists('The_Alert_Box')){
             $post_status = apply_filters('ab_alert_specimens_update_post_type', $post_status_d);
             // update the post, which calls save_post again
             wp_update_post( array( 'ID' => $post_id, 'post_status' => $post_status['status'] ) );
-    
+
             // re-hook this function
             add_action( 'save_post', array($this, 'remove_alert_on_edit') );
-            
+
         }
-        
+
         public function remove_alerted_posts(){
             ob_start();
             $filtered_post_types = $_POST['filtered_post_types'];
-            
+
             if (empty($filtered_post_types)){
                 $fpt_array = false;
             } else {
@@ -166,12 +166,12 @@ if (!class_exists('The_Alert_Box')){
                 $pages = $count/100;
                 $pages = ceil($pages);
                 $c = $pages;
-                
+
                 while (0 < $c){
                     $q = the_alert_box()->get_specimens($c, $fpt_array);
-                    while ( $q->have_posts() ) : $q->the_post(); 
-                        wp_delete_post(get_the_ID()); 
-                        
+                    while ( $q->have_posts() ) : $q->the_post();
+                        wp_delete_post(get_the_ID());
+
                     endwhile;
                     wp_reset_postdata();
                     $c--;
@@ -185,7 +185,7 @@ if (!class_exists('The_Alert_Box')){
                    'action'=>'remove_alerted_posts',
                    'id'=>0,
                    'data'=>__('No alerted posts to delete.', 'pf')
-                );    
+                );
             } else {
                 $response = array(
                    'what'=>'the_alert_box',
@@ -202,12 +202,12 @@ if (!class_exists('The_Alert_Box')){
             ob_end_flush();
 			die();
         }
-        
+
         public function alert_box_insides_function(){
             if(self::is_on()){
 				$q = $this->get_specimens();
 				if ( $q->have_posts() ) :
-					while ( $q->have_posts() ) : $q->the_post(); 
+					while ( $q->have_posts() ) : $q->the_post();
 						echo '<p>';
 						edit_post_link(get_the_title(), '<span style="color:red;font-weight:bold;">'. __('Alert', 'pf') . '</span> for ', ': '.$this->get_bug_type(get_the_ID()));
 						echo ' ';
@@ -231,14 +231,14 @@ if (!class_exists('The_Alert_Box')){
 
 				endif;
 			} else {
-				echo 'Alert boxes not active.';	
+				echo 'Alert boxes not active.';
 			}
         }
-        
+
         public function alert_box_outsides(){
-            $this->alert_box_insides_function();    
+            $this->alert_box_insides_function();
         }
-        
+
         public function admin_enqueue_scripts(){
 			if(self::is_on()){
 				$dir = plugins_url('/', __FILE__);
@@ -248,12 +248,12 @@ if (!class_exists('The_Alert_Box')){
 				}
 			}
         }
-		
+
 		public static function find_a_setting($args, $default = array(), $settings){
 			if (!empty($settings) && !isset($_POST)){
 				$settings = $settings;
 			} else {
-				$settings = get_option( self::$option_name, array() );	
+				$settings = get_option( self::$option_name, array() );
 			}
 		    if (empty($settings)) {
 				$r = '';
@@ -266,9 +266,9 @@ if (!class_exists('The_Alert_Box')){
 			} else {
 			  $r = '';
 			}
-			
+
 			if (empty($r) && !empty($settings)){
-				$r = 'false';	
+				$r = 'false';
 			}
 
 			if (empty($r)){
@@ -276,17 +276,17 @@ if (!class_exists('The_Alert_Box')){
 				return $default;
 			} else {
 				return $r;
-			}				
+			}
 		}
-		
+
 		public function setting($args, $default = array()){
-			
+
 			$settings = $this->settings;
 			$r = self::find_a_setting($args, $default, $settings);
 			return $r;
-			
-		}		
-		
+
+		}
+
 		public function settings_field_maker($args){
 		  $parent_element = $args['parent_element'];
 		  $element = $args['element'];
@@ -308,35 +308,35 @@ if (!class_exists('The_Alert_Box')){
 				break;
 			}
 		}
-		
+
 		public static function settings_fields(){
 			$switch = array(
               'parent_element'   =>  'alert_check',
               'element'          =>  'alert_switch',
               'type'             =>  'checkbox',
               'label_for'        =>  'Turn alerts on.',
-              'default'          =>  'true'				
+              'default'          =>  'true'
 			);
 			return array('switch' => $switch);
 		}
-		
+
 		public function settings_field_settings_page(){
 			#var_dump('die');die();
 			register_setting( 'general', self::$option_name, array($this, 'validator')  );
 			$args = the_alert_box()->settings_fields();
 			add_settings_field(	'alert_box_check', 'Active Alert Boxes?', array($this, 'settings_field_maker'), 'general', 'default', $args['switch']);
 		}
-		
+
 		public function validator($input){
 			#$output = get_option( $this->option_name );
-			
+
 			#update_option($this->option_name, $_POST['alert_box_options']);
 			#var_dump($_POST['alert_box_options']); die();
 			return $input;
 		}
-		
+
 		public function is_on(){
-			
+
 			$alert_settings = self::settings_fields();
 			$alert_switch = $alert_settings['switch'];
 			#var_dump('<pre>');
@@ -350,9 +350,9 @@ if (!class_exists('The_Alert_Box')){
 			}
 			return $state;
 		}
-            
+
     }
-    
+
     function the_alert_box() {
 	   return The_Alert_Box::init();
     }
