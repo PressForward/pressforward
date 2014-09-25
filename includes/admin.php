@@ -145,155 +145,11 @@ class PF_Admin {
 		}
 		?>
 		<div id="tools">
-			<?php if ($version > 0){ ?>
-				<ul class="nav nav-tabs nav-stacked">
-					<li><a href="#">Top Blogs</a></li>
-					<li><a href="#">Starred Items</a></li>
-					<li><a href="#">Content from Twitter</a></li>
-				</ul>
-
-				<form id="filters">
-					<h2>Filters</h2>
-
-					<label><input type="checkbox"> Shared on Twitter</label>
-					<label><input type="checkbox"> Long Articles</label>
-					<label><input type="checkbox"> Short Articles</label>
-					<label><input type="checkbox"> Recommended by Algorithm</label>
-					<label><input type="checkbox"> High Number of Comments</label>
-
-					<input type="submit" class="btn btn-small" value="Reset Filters">
-				</form>
-
-				<form id="subscription" method="post" action="">
-					<h2>New Subscription</h2>
-					<input type="text" placeholder="http://example.com/feed">
-				<input type="submit" class="btn btn-small" value="Subscribe">
-				</form>
-
-
-				<?php
-				# Some buttons to the left
-				if ($deck){
-				echo '<div class="deck">';
-						echo '<div class="row-fluid">
-								<div class="span12 main-card card well">
-									<div class="tapped">
-										' . __('Main Feed', 'pf') . '
-									</div>
-								</div>
-							</div>
-						';
-
-						# Auto add these actions depending on if the module presents a stream?
-						//do_action( 'module_stream' );
-
-						echo '<div class="row-fluid">
-								<div class="span12 sub-card card well">
-									<div class="tapped">
-										' . __('Module Feed', 'pf') . '
-									</div>
-								</div>
-							</div>
-						';
-				echo '</div><!-- End span1 -->';
-
+			<?php
 		#Widgets
-				echo '<div class="feed-widget-container">';
-					# Some widgets go here.
-						# Does this work? [nope...]
-						$blogusers = get_users('orderby=nom_count');
-						$uc = 1;
-						echo '<div class="row-fluid">
-						<div class="pf-right-widget well span12">
-								<div class="widget-title">
-									' . __('Nominator Leaderboard', 'pf') . '
-								</div>
-								<div class="widget-body">
-									<div class="navwidget">
-										<ol>';
-										foreach ($blogusers as $user){
-											if ($uc <= 5){
-												if (get_user_meta( $user->ID, 'nom_count', true )){
-												$userNomCount = get_user_meta( $user->ID, 'nom_count', true );
-
-												} else {
-													$userNomCount = 0;
-												}
-												$uc++;
-												echo '<li>' . $user->display_name . ' - ' . $userNomCount . '</li>';
-											}
-
-										}
-						echo			'</ol>
-									</div>
-								</div>
-						</div>
-						</div>
-						';
-
-						$widgets_array = $this->widget_array();
-						$all_widgets_array = apply_filters( 'dash_widget_bar', $widgets_array );
-
-						//$all_widgets_array = array_merge($widgets_array, $mod_widgets);
-						foreach ($all_widgets_array as $dash_widget) {
-
-							$defaults = array(
-								'title' => '',
-								'slug'       => '',
-								'callback'   => '',
-							);
-							$r = wp_parse_args( $dash_widget, $defaults );
-
-							// add_submenu_page() will fail if any arguments aren't passed
-							if ( empty( $r['title'] ) || empty( $r['slug'] ) || empty( $r['callback'] ) ) {
-								continue;
-							} else {
-
-								echo '<div class="row-fluid">
-								<div class="pf-right-widget well span12 ' . $r['slug'] . '">';
-									echo '<div class="widget-title">' .
-										$r['title']
-									. '</div>';
-									echo '<div class="widget-body">';
-										call_user_func($r['callback']);
-									echo '</div>';
-								echo '</div>
-								</div>';
-
-							}
-
-						}
-
-						/**
-						// Loop through each module to get its source data
-						foreach ( $this->modules as $module ) {
-							//$source_data_object = array_merge( $source_data_object, $module->get_widget_object() );
-
-							echo '<div class="row-fluid">
-							<div class="pf-right-widget well span12">';
-
-							echo '</div>
-							</div>';
-						}
-						**/
-				/**
-				echo '</div><!-- End feed-widget-container span4 -->';
-				**/
-				}
-
-			}
 			#echo '<a href="#" id="settings" class="button">Settings</a>';
 			echo '<div class="primary-btn-tools">';
-			if ($slug == 'toplevel_page_pf-menu' && $version >= 0 && current_user_can(pf_get_defining_capability_by_role('administrator'))){
-				?>
-
-						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete all items', 'pf');  ?>" ><?php  _e('Delete all items', 'pf');  ?></button>
-				<?php
-			} elseif ($slug == 'toplevel_page_pf-menu' && $version >= 0) {
-				?>
-
-				<?php
-			} elseif ( $slug == 'pressforward_page_pf-review' && (get_bloginfo('version') >= 3.7) && $version >= 0 && current_user_can(pf_get_defining_capability_by_role('administrator'))){
+			if ( $slug == 'pressforward_page_pf-review' && (get_bloginfo('version') >= 3.7) && $version >= 0 && current_user_can(pf_get_defining_capability_by_role('administrator'))){
 				?>
 						<button type="submit" class="btn btn-warning pull-right" id="archivebefore" value="<?php  _e('Archive before', 'pf');  ?>:" ><?php  _e('Archive before', 'pf');  ?>:</button>
 						<select class="pull-right" id="archiveBeforeOption">
@@ -306,18 +162,6 @@ class PF_Admin {
 			}
 			echo '</div>';
 				?>
-				<div id="nom-this-toolbox">
-					<h3 class="title"><?php _e('Nominate This', 'pf'); ?></h3>
-					<p><?php _e('Nominate This is a bookmarklet: a little app that runs in your browser and lets you grab bits of the web.', 'pf');?></p>
-
-					<p><?php _e('Use Nominate This to clip text, images and videos from any web page. Then edit and add more straight from Nominate This before you save or publish it in a post on your site.', 'pf'); ?></p>
-					<p class="description"><?php _e('Drag-and-drop the following link to your bookmarks bar or right click it and add it to your favorites for a posting shortcut.', 'pf'); ?></p>
-					<p class="pressthis"><a onclick="return false;" oncontextmenu="if(window.navigator.userAgent.indexOf('WebKit')!=-1||window.navigator.userAgent.indexOf('MSIE')!=-1)jQuery('.pressthis-code').show().find('textarea').focus().select();return false;" href="<?php echo htmlspecialchars( pf_get_shortcut_link() ); ?>"><span><?php _e('Nominate This', 'pf'); ?></span></a></p>
-					<div class="pressthis-code" style="display:none;">
-					<p class="description"><?php _e('If your bookmarks toolbar is hidden: copy the code below, open your Bookmarks manager, create new bookmark, type Press This into the name field and paste the code into the URL field.', 'pf'); ?></p>
-					<p><textarea rows="5" cols="120" readonly="readonly"><?php echo htmlspecialchars( pf_get_shortcut_link() ); ?></textarea></p>
-					</div>
-				</div>
                 <div class="alert-box">
                     <h3><span>Feed Problems</span></h3>
                     <div class="inside">
@@ -327,8 +171,19 @@ class PF_Admin {
                     </div>
                 </div>
 
+			<?php if ($slug == 'toplevel_page_pf-menu' && $version >= 0 && current_user_can(pf_get_defining_capability_by_role('administrator'))){
+				?>
+
+						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php  _e('Delete all items', 'pf');  ?>" ><?php  _e('Delete all items', 'pf');  ?></button>
+				<?php
+			}
+
+			do_action('pf_side_menu_widgets', $slug);
+			?>
+
 		</div>
 		<?php
+
 	}
 
 	public function form_of_actions_btns($item, $c, $modal = false, $format = 'standard', $metadata = array(), $id_for_comments ){
@@ -980,10 +835,10 @@ class PF_Admin {
 
 					echo '<label class="description" for="pf_present_author_as_primary"> ' .__('Show item author as source.', 'pf'). ' </label>';
 					?></p>
-					<?php 
+					<?php
 					if (class_exists('The_Alert_Box')){ ?>
 					<p>
-					<?php 
+					<?php
 						#if (class_exists('The_Alert_Box')){
 							$alert_settings = the_alert_box()->settings_fields();
 							$alert_switch = $alert_settings['switch'];
@@ -999,7 +854,7 @@ class PF_Admin {
 						#}
 					?>
 					</p>
-					<?php 
+					<?php
 					}
 					?>
 					<p><?php
@@ -1007,7 +862,7 @@ class PF_Admin {
 					echo '<input id="pf_retain_time" name="pf_retain_time" type="number" class="pf_retain_time" value="'.$default_pf_link_value.'" />';
 
 					echo '<label class="description" for="pf_retain_time"> ' .__('Months to retain feed items.', 'pf'). ' </label>';
-					?></p><br />				
+					?></p><br />
 
 					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
 					<br />
@@ -1228,7 +1083,7 @@ class PF_Admin {
 			//And now lets enqueue the script, ensuring that jQuery is already active.
 
 			wp_enqueue_media();
-			
+
 			wp_enqueue_script(PF_SLUG . '-tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
 			wp_enqueue_script(PF_SLUG . '-twitter-bootstrap');
 
@@ -1340,8 +1195,8 @@ class PF_Admin {
 			update_option('pf_retain_time', $pf_links_opt_check);
 		} else {
 			update_option('pf_retain_time', 2);
-		}		
-		
+		}
+
 
 		if (isset( $_POST['pf_present_author_as_primary'] )){
 			$pf_author_opt_check = $_POST['pf_present_author_as_primary'];
@@ -1350,7 +1205,7 @@ class PF_Admin {
 		} else {
 			update_option('pf_present_author_as_primary', 'no');
 		}
-		
+
 		if (class_exists('The_Alert_Box')){
 			#var_dump($_POST);
 			if(empty($_POST[the_alert_box()->option_name()])){
@@ -1360,7 +1215,7 @@ class PF_Admin {
 				update_option(the_alert_box()->option_name(), $_POST[the_alert_box()->option_name()]);
 			}
 		}
-		
+
 		if (isset( $_POST['pf_use_advanced_user_roles'] )){
 			$pf_author_opt_check = $_POST['pf_use_advanced_user_roles'];
 			//print_r($pf_links_opt_check); die();
