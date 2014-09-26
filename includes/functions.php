@@ -323,7 +323,7 @@ function pf_de_https($url) {
 	$urlParts = parse_url($url);
 	if (in_array('https', $urlParts)){
 		$urlParts['scheme'] = 'http';
-		$url = $urlParts['scheme'] . '://'. $urlParts['host'] . $urlParts['path'] . $urlParts['query'];
+		$url = $urlParts['scheme'] . '://'. $urlParts['host'] . $urlParts['path'] .'?'. $urlParts['query'];
 	}
 	return $url;
 }
