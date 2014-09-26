@@ -102,7 +102,7 @@ class PF_Feed_Item {
 		if ( is_numeric($post_id) ) {
 			self::set_word_count( $post_id, $r['item_content'] );
 			self::set_source( $post_id, $r['source_title'] );
-
+			self::set_parent_last_retrieved( $post_id );
 		}
 
 		return $post_id;
@@ -130,6 +130,30 @@ class PF_Feed_Item {
 
 	public static function set_source( $post_id, $source ) {
 		return update_post_meta( $post_id, 'pf_feed_item_source', $source );
+	}
+
+	/**
+	 * Set the last_retrieved value for the parent feed.
+	 *
+	 * @since 3.4.0
+	 *
+	 * @param int $feed_item_id ID of the feed item.
+	 * @return bool
+	 */
+	public static function set_parent_last_retrieved( $feed_item_id ) {
+		$feed_item = get_post( $feed_item_id );
+
+		if ( ! is_a( $feed_item, 'WP_Post' ) || empty( $feed_item->post_parent ) ) {
+			return false;
+		}
+
+		$feed_id = intval( $feed_item->post_parent );
+
+		if ( ! $feed_id ) {
+			return false;
+		}
+
+		return update_post_meta( $feed_id, 'pf_feed_last_retrieved', date( 'Y-m-d H:i:s' ) );
 	}
 
 	# This function feeds items to our display feed function pf_reader_builder.
