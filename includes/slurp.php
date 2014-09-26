@@ -573,7 +573,6 @@ class PF_Feed_Retrieve {
 		if ( ! $nonce || ! $nonce_check ) {
 			return;
 		}
-		error_log( 'nonce check passed' );
 
 		pf_log( 'Pressing forward.' );
 		pf_log( 'Beginning import chunk' );
