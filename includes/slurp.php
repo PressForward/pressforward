@@ -17,7 +17,6 @@ class PF_Feed_Retrieve {
 	 * Constructor
 	 */
 	public function __construct() {
-		add_action( 'wp_head', array( $this, 'get_chunk_nonce' ) );
 		add_action( 'init', array( $this, 'alter_for_retrieval' ), 999 );
 
 		// Schedule our cron actions for fetching feeds
@@ -69,8 +68,9 @@ class PF_Feed_Retrieve {
 	 * retrieval requests.
 	 */
 	public function get_chunk_nonce() {
-		$create_nonce = wp_create_nonce( 'chunkpressforward' );
+		$nonce = wp_hash( time() );
 		update_option( 'chunk_nonce', $create_nonce );
+		return $nonce;
 	}
 
 	# A function to make absolutely sure options update
@@ -544,7 +544,7 @@ class PF_Feed_Retrieve {
 			//print_r( '<br /> <br />' . PF_URL . 'modules/rss-import/import-cron.php <br /> <br />' );
 			$theRetrievalLoop = add_query_arg( 'press', 'forward',  site_url() );
 			$pfnonce = get_option( 'chunk_nonce' );
-			$theRetrievalLoopNounced = add_query_arg( '_wpnonce', $pfnonce,  $theRetrievalLoop );
+			$theRetrievalLoopNounced = add_query_arg( 'nonce', $pfnonce, $theRetrievalLoop );
 			pf_log( 'Checking remote get at ' . $theRetrievalLoopNounced . ' : ' );
 			$wprgCheck = wp_remote_get( $theRetrievalLoopNounced );
 
@@ -563,23 +563,28 @@ class PF_Feed_Retrieve {
 	}
 
 	public function alter_for_retrieval() {
-		#print_r( 'alter_ready' );
-		//$nonce = isset( $_REQUEST['_wpnonce'] ) ? $_REQUEST['_wpnonce'] : '';
-		//$nonce_check = get_option( 'chunk_nonce' );
-		if ( isset( $_GET['press'] ) && $_GET['press'] == 'forward' ) {
-			# Removing this until we decide to replace or eliminate. It isn't working.
-			//if ( $nonce === $nonce_check ) {
-				pf_log( 'Pressing forward.' );
-				include( PF_ROOT . '/includes/import-cron.php' );
-				exit;
-			//} else {
-			//	$verify_val = wp_verify_nonce( $nonce, 'retrieve-pressforward' );
-			//	pf_log( 'Nonce check of ' . $nonce . ' failed. Returned: ' );
-			//	pf_log( $verify_val );
-			//	pf_log( 'Stored nonce:' );
-			//	pf_log( $nonce_check );
-			//}
+		if ( ! isset( $_GET['press'] ) || 'forward' !== $_GET['press'] ) {
+			return;
 		}
+
+		$nonce = isset( $_REQUEST['nonce'] ) ? $_REQUEST['nonce'] : '';
+		$nonce_check = get_option( 'chunk_nonce' );
+
+		if ( ! $nonce || ! $nonce_check ) {
+			return;
+		}
+		error_log( 'nonce check passed' );
+
+		pf_log( 'Pressing forward.' );
+		pf_log( 'Beginning import chunk' );
+
+		pressforward()->pf_feed_items->assemble_feed_for_pull();
+
+		delete_option( 'chunk_nonce' );
+
+		pf_log( "Import chunk completed.\n\n\n" );
+
+		exit;
 	}
 
 	function feed_retrieval_reset() {
