@@ -802,8 +802,6 @@ class PF_Admin {
 				<?php
 				echo 'Options';
 
-				?>
-
 
 				wp_nonce_field( 'pf_settings' );
 				?>
@@ -864,7 +862,14 @@ class PF_Admin {
 					echo '<input id="pf_retain_time" name="pf_retain_time" type="number" class="pf_retain_time" value="'.$default_pf_link_value.'" />';
 
 					echo '<label class="description" for="pf_retain_time"> ' .__('Months to retain feed items.', 'pf'). ' </label>';
-					?></p><br />
+					?></p>
+					<p><?php
+					$default_pf_link_value = get_option(PF_SLUG.'_errors_until_alert', 3);
+					echo '<input id="pf_retain_time" name="pf_errors_until_alert" type="number" class="pf_errors_until_alert" value="'.$default_pf_link_value.'" />';
+
+					echo '<label class="description" for="pf_errors_until_alert"> ' .__('Number of errors before a feed is marked as malfunctioning.', 'pf'). ' </label>';
+					?></p>
+					<br />
 
 					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
 					<br />
