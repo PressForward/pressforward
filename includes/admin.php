@@ -865,7 +865,7 @@ class PF_Admin {
 					?></p>
 					<p><?php
 					$default_pf_link_value = get_option(PF_SLUG.'_errors_until_alert', 3);
-					echo '<input id="pf_retain_time" name="pf_errors_until_alert" type="number" class="pf_errors_until_alert" value="'.$default_pf_link_value.'" />';
+					echo '<input id="pf_errors_until_alert" name="pf_errors_until_alert" type="number" class="pf_errors_until_alert" value="'.$default_pf_link_value.'" />';
 
 					echo '<label class="description" for="pf_errors_until_alert"> ' .__('Number of errors before a feed is marked as malfunctioning.', 'pf'). ' </label>';
 					?></p>
@@ -1210,6 +1210,14 @@ class PF_Admin {
 			update_option('pf_retain_time', $pf_links_opt_check);
 		} else {
 			update_option('pf_retain_time', 2);
+		}
+
+		if (isset( $_POST['pf_errors_until_alert'] )){
+			$pf_errors_until_alert = $_POST['pf_errors_until_alert'];
+			//print_r($pf_links_opt_check); die();
+			update_option('pf_errors_until_alert', $pf_errors_until_alert);
+		} else {
+			update_option('pf_errors_until_alert', 3);
 		}
 
 
