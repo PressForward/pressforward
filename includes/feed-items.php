@@ -974,7 +974,8 @@ class PF_Feed_Item {
 
 
 	/**
-	 * Filter 'posts_where' to return only posts older than sixty days
+	 * Filter 'posts_where' to return only posts older than sixty days.
+	 * Can be modified with user setting for retention.
 	 */
 	public static function filter_where_older( $where = '' ) {
 		$retain = get_option('pf_retain_time', 2);
