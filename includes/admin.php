@@ -804,11 +804,7 @@ class PF_Admin {
 
 				?>
 
-					<h3><?php _e( 'Modules', 'pf' ) ?></h3>
 
-					<p class="description"><?php _e( '<strong>PressForward Modules</strong> are addons to alter or improve the functionality of the plugin.', 'pf' ) ?></p>
-				<?php
-				do_action( 'pf_admin_op_page' );
 				wp_nonce_field( 'pf_settings' );
 				?>
 					<br />
@@ -931,7 +927,15 @@ class PF_Admin {
 		?><input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" /><?php
 				do_action('pf_admin_user_settings');
 
-				?>
+			?>
+
+				<h3><?php _e( 'Modules', 'pf' ) ?></h3>
+
+				<p class="description"><?php _e( '<strong>PressForward Modules</strong> are addons to alter or improve the functionality of the plugin.', 'pf' ) ?></p>
+					<?php
+					do_action( 'pf_admin_op_page' );
+					?>
+					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
 
 			</div>
 		</form>
