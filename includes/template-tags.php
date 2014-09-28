@@ -1,8 +1,11 @@
 <?php
 
-function get_the_source_title(){
+function get_the_source_title($id = false){
 	#$st = pf_retrieve_meta(get_the_ID(), 'source_title');
-	$parent_id = get_post_ancestors(get_the_ID());
+	if (!$id){
+		$id = get_the_ID();
+	}
+	$parent_id = get_post_ancestors($id);
 	$parent = get_post($parent_id);
 	$st = $parent->post_title;
 	return $st;
