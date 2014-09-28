@@ -389,7 +389,7 @@ class PF_Admin {
 			$id_for_comments = $item['post_id'];
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
-			echo '<article class="feed-item entry ' . pf_slugger(($item['source_title']), true, false, true) . ' ' . $itemTagClassesString . ' '.$readClass.'" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '" pf-item-post-id="' . $id_for_comments . '" >';
+			echo '<article class="feed-item entry ' . pf_slugger(get_the_source_title($id_for_comments), true, false, true) . ' ' . $itemTagClassesString . ' '.$readClass.'" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '" pf-item-post-id="' . $id_for_comments . '" >';
 		}
 
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
@@ -410,7 +410,7 @@ class PF_Admin {
 			?>
 			<header> <?php
 				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander schema-actor" role="button" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . self::display_a($item['item_title'], 'title') . '</a></h1>';
-				echo '<p class="source_title">' . self::display_a($item['source_title'], 'source') . '</p>';
+				echo '<p class="source_title">' . self::display_a(get_the_source_title($id_for_comments), 'source') . '</p>';
 				if ($format === 'nomination'){
 				?>
 						<div class="sortable-hidden-meta" style="display:none;">
@@ -440,7 +440,7 @@ class PF_Admin {
 
 									$ibox = '<div class="feed-item-info-box" id="info-box-' . $item['item_id'] . '">';
 										$ibox .= '
-										' . __('Feed', 'pf') . ': <span class="feed_title">' . $item['source_title'] . '</span><br />
+										' . __('Feed', 'pf') . ': <span class="feed_title">' . get_the_source_title($id_for_comments) . '</span><br />
 										' . __('Posted', 'pf') . ': <span class="feed_posted">' . date( 'M j, Y; g:ia' , strtotime($item['item_date'])) . '</span><br />
 										' . __('Retrieved', 'pf') . ': <span class="item_meta item_meta_added_date">' . date( 'M j, Y; g:ia' , strtotime($item['item_added_date'])) . '</span><br />
 										' . __('Authors', 'pf') . ': <span class="item_authors">' . $item['item_author'] . '</span><br />
@@ -594,7 +594,7 @@ class PF_Admin {
 				</div>
 				<div class="item-tags pull-left row-fluid">
 				<?php
-					echo '<em>' . __('Source', 'pf') . ': ' . $item['source_title'] . '</em> | ';
+					echo '<em>' . __('Source', 'pf') . ': ' . get_the_source_title($id_for_comments) . '</em> | ';
 					echo '<strong>' . __('Item Tags', 'pf') . '</strong>: ' . $item['item_tags'];
 				?>
 				</div>

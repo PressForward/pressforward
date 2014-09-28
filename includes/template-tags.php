@@ -6,7 +6,7 @@ function get_the_source_title($id = false){
 		$id = get_the_ID();
 	}
 	$parent_id = get_post_ancestors($id);
-	$parent = get_post($parent_id);
+	$parent = get_post($parent_id[0]);
 	$st = $parent->post_title;
 	return $st;
 }
