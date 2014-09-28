@@ -595,6 +595,7 @@ class PF_Admin {
 				<div class="item-tags pull-left row-fluid">
 				<?php
 					echo '<em>' . __('Source', 'pf') . ': ' . get_the_source_title($id_for_comments) . '</em> | ';
+					echo __('Author', 'pf').': '.get_the_item_author($id_for_comments).' | ';
 					echo '<strong>' . __('Item Tags', 'pf') . '</strong>: ' . $item['item_tags'];
 				?>
 				</div>

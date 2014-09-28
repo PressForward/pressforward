@@ -24,8 +24,11 @@ function the_original_post_date(){
 	echo get_the_original_post_date();
 }
 
-function get_the_item_author(){
-	$ia = pf_retrieve_meta(get_the_ID(), 'item_author');
+function get_the_item_author($id = false){
+	if (!$id){
+		$id = get_the_ID();
+	}
+	$ia = pf_retrieve_meta($id, 'item_author');
 	return $ia;
 }
 
