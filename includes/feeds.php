@@ -182,10 +182,52 @@ class PF_Feeds_Schema {
 		return $children;
 	}
 
-	public function get_feed_folders($ids = false){
-		if (!$id){
-			return $this->get_top_feed_folders();
+	public function get_child_folders($folder){
+		$child_folders = array();
+		$children = get_child_feed_folders($folder->term_id);
+		if (!$children){
+			$child_folders = false;
+		} else {
+			foreach ($children as $child){
+				$child_folders[$child->term_id] = $this->get_feed_folders($child->term_id);
+			}
 		}
+		return $child_folders;
+	}
+
+	public function get_feed_folders($ids = false){
+		$folder_set = array();
+		if (!$ids){
+			$top_folders = $this->get_top_feed_folders();
+			foreach ($top_folders as $folder){
+
+				$folder_set[$folder->term_id] = array(
+					'term'			=> $folder,
+					'children'	=> array(
+													'feeds'		=> get_objects_in_term($folder->term_id, $this->tag_taxonomy),
+													'folders'	=> get_child_folders($folder)
+												)
+				);
+			}
+		} elseif (is_numeric($ids)) {
+			$folder = get_term($ids, $this->tag_taxonomy);
+			$folder_set[$ids] = array(
+				'term'			=> $folder,
+				'children'	=> array(
+												'feeds'		=> get_objects_in_term($folder->term_id, $this->tag_taxonomy),
+												'folders'	=> get_child_folders($folder)
+											)
+			);
+		} elseif (is_array($ids)){
+			foreach ($ids as $id){
+				$folder_set[$id] = get_feed_folders($id);
+			}
+		} else {
+			return false;
+		}
+
+		return $folder_set;
+
 	}
 
     public function disallow_add_new(){
