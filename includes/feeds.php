@@ -136,6 +136,57 @@ class PF_Feeds_Schema {
 		return $pf;
 	}
 
+	public function is_feed_term($id){
+		if (!term_exists($id, $this->tag_taxonomy)){
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public function get_top_feed_folders(){
+		$terms = array($this->tag_taxonomy);
+		$cats = get_terms($terms,
+			array(
+				'parent' 				=> 0,
+				'hide_empty'		=> 0,
+				'hierarchical' 	=> 1
+			)
+		);
+		return $cats;
+	}
+
+	public function get_child_feed_folders($ids = false){
+		$children = array();
+		if (!$ids){
+			foreach ($this->get_top_feed_folders() as $cat){
+				if (!empty(get_term_children($cat->term_id, $this->tag_taxonomy))){
+					$children[$cat->term_id] = get_term_children($cat->term_id, $this->tag_taxonomy);
+				} else {
+					$children[$cat->term_id] = false;
+				}
+			}
+		} elseif (is_numeric($ids)) {
+			if(!$this->is_feed_term($ids)){
+				return false;
+			}
+			$children[$id] = get_term_children($ids, $this->tag_taxonomy);
+		} elseif (is_array($ids)){
+			foreach ($ids as $id){
+				$children[$id] = $this->get_child_feed_folders($id);
+			}
+		} else {
+			return false;
+		}
+		return $children;
+	}
+
+	public function get_feed_folders($ids = false){
+		if (!$id){
+			return $this->get_top_feed_folders();
+		}
+	}
+
     public function disallow_add_new(){
         global $pagenow;
         /* Check current admin page. */
