@@ -160,7 +160,8 @@ class PF_Feeds_Schema {
 		$children = array();
 		if (!$ids){
 			foreach ($this->get_top_feed_folders() as $cat){
-				if (!empty(get_term_children($cat->term_id, $this->tag_taxonomy))){
+				$term_childs = get_term_children($cat->term_id, $this->tag_taxonomy);
+				if (!empty($term_childs)){
 					$children[$cat->term_id] = get_term_children($cat->term_id, $this->tag_taxonomy);
 				} else {
 					$children[$cat->term_id] = false;
