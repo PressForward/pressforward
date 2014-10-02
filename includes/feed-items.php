@@ -702,8 +702,6 @@ class PF_Feed_Item {
 					# Before nominations, the featured image should remain a meta field with an external link.
 					if ( false === ( $itemFeatImg = get_transient( 'feed_img_' . $itemUID ) ) ) {
 						set_time_limit(0);
-						# Because many systems can't process https through php, we try and remove it.
-						$itemLink = pf_de_https($itemLink);
 						# if it forces the issue when we try and get the image, there's nothing we can do.
 						$itemLink = str_replace('&amp;','&', $itemLink);
 						if (pressforward()->og_reader->fetch($itemLink)){
@@ -862,7 +860,6 @@ class PF_Feed_Item {
 
 		set_time_limit(0);
 		//$this->set_error_handler("customError");
-		$url = pf_de_https($url);
 		$descrip = '';
 		//$url = http_build_url($urlParts, HTTP_URL_STRIP_AUTH | HTTP_URL_JOIN_PATH | HTTP_URL_JOIN_QUERY | HTTP_URL_STRIP_FRAGMENT);
 		//print_r($url);
@@ -898,7 +895,6 @@ class PF_Feed_Item {
 	}
 
 	public static function get_ext_og_img($link){
-		$itemLink = pf_de_https($link);
 		$node = pressforward()->og_reader->fetch($itemLink);
 		$itemFeatImg = $node->image;
 		return $itemFeatImg;
