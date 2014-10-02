@@ -50,8 +50,8 @@ class PF_OpenGraph implements Iterator
    * @return OpenGraph
    */
 	static public function fetch($url) {
-		$URI_data = pf_de_https($url, 'file_get_contents');
-    return self::_parse($URI_data);
+		$URI_data = pf_de_https($url, 'wp_remote_get', array('timeout' => '30'));
+    		return self::_parse($URI_data);
 	}
 
   /**
