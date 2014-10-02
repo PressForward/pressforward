@@ -324,12 +324,14 @@ function pf_get_user_level($option, $default_level) {
  * otherwise returns the result of the function after being checked for accessability.
  */
 function pf_de_https($url, $function = false) {
+	$args = func_get_args();
 	$url = str_replace('&amp;','&', $url);
 	if (!$function){
 		$r = set_url_scheme($url, 'http');
 	} else {
-		$args = func_get_args();
-		unset($args[1]);
+		$args[0] = $url;
+		#unset($args[1]);
+		#var_dump($args);
 		$r = call_user_func_array( $function, $args );
 		# "A variable is considered empty if it does not exist or if its value equals FALSE"
 		if ( is_wp_error( $r ) || empty($r) ) {
