@@ -328,12 +328,15 @@ function pf_de_https($url, $function = false) {
 	if (!$function){
 		$r = set_url_scheme($url, 'http');
 	} else {
-		$r = call_user_func( $function, $url );
+		$args = func_get_args();
+		unset($args[1]);
+		$r = call_user_func_array( $function, $args );
 		# "A variable is considered empty if it does not exist or if its value equals FALSE"
 		if ( is_wp_error( $r ) || empty($r) ) {
 		    $non_ssl_url = pf_de_https( $url );
 		    if ( $non_ssl_url != $url ) {
-		        $r = call_user_func( $function, $non_ssl_url );
+						$args[0] = $non_ssl_url;
+		        $r = call_user_func_array( $function, $args );
 		    }
 
 		    if ( is_wp_error( $r ) ) {
