@@ -312,17 +312,37 @@ function pf_get_user_level($option, $default_level) {
 }
 
 /**
- * Converts an https URL into http, to account for servers without SSL access
+ * Converts an https URL into http, to account for servers without SSL access.
+ * If a function is passed, pf_de_https will return the function result
+ * instead of the string.
  *
  * @since 1.7
  *
  * @param string $url
- * @return string $url
+ * @param string|array $function Function to call first to try and get the URL.
+ * @return string|object $r Returns the string URL, converted, when no function is passed.
+ * otherwise returns the result of the function after being checked for accessability.
  */
-function pf_de_https($url) {
+function pf_de_https($url, $function = false) {
 	$url = str_replace('&amp;','&', $url);
-	$url = set_url_scheme($url, 'http');
-	return $url;
+	if (!$function){
+		$r = set_url_scheme($url, 'http');
+	} else {
+		$r = call_user_func( $function, $url );
+		# "A variable is considered empty if it does not exist or if its value equals FALSE"
+		if ( is_wp_error( $r ) || empty($r) ) {
+		    $non_ssl_url = pf_de_https( $url );
+		    if ( $non_ssl_url != $url ) {
+		        $r = call_user_func( $function, $non_ssl_url );
+		    }
+
+		    if ( is_wp_error( $r ) ) {
+		        // bail
+						return false;
+		    }
+		}
+	}
+	return $r;
 }
 
 /**
