@@ -49,9 +49,9 @@ class PF_OpenGraph implements Iterator
    * @param $URI    URI to page to parse for Open Graph data
    * @return OpenGraph
    */
-	static public function fetch($URI) {
-		$URI = pf_de_https($URI);
-    return self::_parse(file_get_contents($URI));
+	static public function fetch($url) {
+		$URI_data = pf_de_https($url, 'file_get_contents');
+    return self::_parse($URI_data);
 	}
 
   /**

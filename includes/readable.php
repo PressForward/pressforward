@@ -181,10 +181,10 @@ class PF_Readability {
 
 		set_time_limit(0);
 
-		$url = pf_de_https($url);
+		$request = pf_de_https($url, 'wp_remote_get', array('timeout' => '30'));
 		//print_r($url); print_r(' - Readability<br />');
 		// change from Boone - use wp_remote_get() instead of file_get_contents()
-		$request = wp_remote_get( $url, array('timeout' => '30') );
+		//$request = wp_remote_get( $url, array('timeout' => '30') );
 		if (is_wp_error($request)) {
 			$content = 'error-secured';
 			//print_r($request); die();
