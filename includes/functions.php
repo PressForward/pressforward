@@ -320,6 +320,7 @@ function pf_get_user_level($option, $default_level) {
  * @return string $url
  */
 function pf_de_https($url) {
+	$url = str_replace('&amp;','&', $url);
 	$url = set_url_scheme($url, 'http');
 	return $url;
 }
