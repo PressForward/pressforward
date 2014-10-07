@@ -481,6 +481,10 @@ h3 {
 	line-height: 1.7em;
 }
 
+.itemCommentModal {
+	min-width: 40.7px;
+}
+
 .feed-item-info-box {
 	display:none;
 }

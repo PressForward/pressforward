@@ -27,7 +27,7 @@ class PF_Comments extends PF_Module {
 	 * Register the admin menu items
 	 *
 	 * The parent class will take care of registering them
-	 
+
 	function setup_admin_menus( $admin_menus ) {
 		$admin_menus   = array();
 
@@ -69,16 +69,16 @@ class PF_Comments extends PF_Module {
 		//print_r($commentModalCall);
 		$btnstate = "btn-small";
 		$iconstate = "icon-comment";
-		if ($count >= 1){ 
+		if ($count >= 1){
 			$btnstate .= " btn-info";
 			$iconstate .= " icon-white";
 		}
 		if ($commentSet['modal_state'] == false){
-		
+
 			echo '<a role="button" class="btn '.$btnstate.' itemCommentModal comments-expander" data-toggle="modal" href="#comment_modal_' . $commentSet['id'] . '" id="comments-expander-' . esc_attr( $commentSet['id'] ) . '" ><span class="comments-expander-count">' . $count . '</span><i class="'.$iconstate.'"></i></a>';
 
 		} else {
-			echo '<a role="button" class="btn btn-small itemCommentModal comments-expander active" >' . $count . '<i class="icon-comment"></i></a>';
+			echo '<a role="button" class="btn '.$btnstate.' btn-small itemCommentModal comments-expander active" ><span class="comments-expander-count">' . $count . '</span><i class="'.$iconstate.'"></i></a>';
 		}
 	}
 

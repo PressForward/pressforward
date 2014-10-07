@@ -1,5 +1,5 @@
 jQuery(document).ready(function () {
-	
+
 
 	// Check if certain hash flag set and take action
 	if (location.hash == '#editorialcomments/add') {
@@ -17,14 +17,16 @@ editorialCommentReply = {
 
 	init : function() {
 		var row = jQuery('#ef-replyrow');
-		
+
 		// Bind click events to cancel and submit buttons
 		jQuery('a.ef-replycancel', row).click(function() { return editorialCommentReply.revert(); });
 		jQuery('a.ef-replysave', row).click(function() { return editorialCommentReply.send(); });
+		jQuery('#ef-comment_respond').click();
+		//console.log('Init comments');
 	},
 
 	revert : function() {
-		// Fade out slowly, slowly, slowly... 
+		// Fade out slowly, slowly, slowly...
 		jQuery('#ef-replyrow').fadeOut('fast', function(){
 			editorialCommentReply.close();
 		});
@@ -32,12 +34,12 @@ editorialCommentReply = {
 	},
 
 	close : function() {
-		
+
 		jQuery('#ef-comment_respond').show();
-		
+
 		// Move reply form back after the main "Respond" form
 		jQuery('#ef-post_comment').after( jQuery('#ef-replyrow') );
-		
+
 		// Empty out all the form values
 		jQuery('#ef-replycontent').val('');
 		jQuery('#ef-comment_parent').val('');
@@ -52,10 +54,10 @@ editorialCommentReply = {
 	 */
 	open : function(id) {
 		var parent;
-		
+
 		// Close any open reply boxes
 		this.close();
-		
+
 		// Check if reply or new comment
 		if(id) {
 			jQuery('input#ef-comment_parent').val(id);
@@ -63,15 +65,15 @@ editorialCommentReply = {
 		} else {
 			parent = '#ef-comments_wrapper';
 		}
-		
+
 		jQuery('#ef-comment_respond').hide();
-		
+
 		// Show reply textbox
 		jQuery('#ef-replyrow')
 			.show()
 			.appendTo(jQuery(parent))
 			;
-		
+
 		jQuery('#ef-replycontent').focus();
 
 		return false;
@@ -79,21 +81,21 @@ editorialCommentReply = {
 
 	/**
 	 * Sends the ajax response to save the commment
-	 * @param bool reply - indicates whether the comment is a reply or not 
+	 * @param bool reply - indicates whether the comment is a reply or not
 	 */
 	send : function(reply) {
 		var post = {};
 		var containter_id = '#ef-replyrow';
-		
+
 		jQuery('#ef-replysubmit .error').html('').hide();
-		
+
 		// Validation: check to see if comment entered
 		post.content = jQuery.trim(jQuery('#ef-replycontent').val());
 		if(!post.content) {
 			jQuery('#ef-replyrow .error').text('Please enter a comment').show();
 			return;
 		}
-		
+
 		jQuery('#ef-comment_loading').show();
 
 		// Prepare data
@@ -101,7 +103,7 @@ editorialCommentReply = {
 		post.parent = (jQuery("#ef-comment_parent").val()=='') ? 0 : jQuery("#ef-comment_parent").val();
 		post._nonce = jQuery("#ef_comment_nonce").val();
 		post.post_id = jQuery("#ef-post_id").val();
-		
+
 		// Send the request
 		jQuery.ajax({
 			type : 'POST',
@@ -116,13 +118,13 @@ editorialCommentReply = {
 
 	show : function(xml) {
 		var response, comment, supplemental, id, bg;
-		
+
 		// Didn't pass validation, so let's throw an error
 		if ( typeof(xml) == 'string' ) {
 			this.error({'responseText': xml});
 			return false;
 		}
-		
+
 		// Parse the response
 		response = wpAjax.parseAjaxResponse(xml);
 
@@ -131,20 +133,20 @@ editorialCommentReply = {
 			this.error({'responseText': wpAjax.broken});
 			return false;
 		}
-		
+
 		response = response.responses[0];
 		comment = response.data;
 		supplemental = response.supplemental;
-		
+
 		jQuery(comment).hide()
-		
+
 		if(response.action.indexOf('reply') == -1 || !ef_thread_comments) {
 			// Not a reply, so add it to the bottom
 			jQuery('#ef-comments').append(comment);
 		} else {
-			
+
 			// This is a reply, so add it after the comment replied to
-			
+
 			if(jQuery('#ef-replyrow').parent().next().is('ul')) {
 				// Already been replied to, so just add to the list
 				jQuery('#ef-replyrow').parent().next().append(comment);
@@ -157,12 +159,12 @@ editorialCommentReply = {
 				jQuery('#ef-replyrow').parent().after(newUL)
 			}
 		}
-		
-		// Get the comment contaner's id  
+
+		// Get the comment contaner's id
 		this.o = id = '#comment-'+response.id;
 		// Close the reply box
 		this.revert();
-		
+
 		// Show the new comment
 		jQuery(id)
 			.animate( { 'backgroundColor':'#CCEEBB' }, 600 )
@@ -172,6 +174,10 @@ editorialCommentReply = {
 		jQuery( '#comments-expander-' + supplemental.post_id ).find( '.comments-expander-count' ).html( supplemental.post_comment_count );
 		jQuery( '#comments-expander-' + supplemental.post_id ).addClass('btn-info');
 		jQuery( '#comments-expander-' + supplemental.post_id + ' .icon-comment').addClass('icon-white');
+		jQuery( 'article[pf-item-post-id="'+supplemental.post_id+'"] .itemCommentModal').find( '.comments-expander-count' ).html( supplemental.post_comment_count );
+		//console.log(jQuery('article[pf-item-post-id="'+supplemental.post_id+'"] .itemCommentModal'));
+		jQuery( 'article[pf-item-post-id="'+supplemental.post_id+'"] .itemCommentModal' ).addClass('btn-info');
+		jQuery( 'article[pf-item-post-id="'+supplemental.post_id+'"] .itemCommentModal' ).addClass('icon-white');
 	},
 
 	error : function(r) {
