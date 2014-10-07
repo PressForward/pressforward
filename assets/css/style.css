@@ -432,10 +432,6 @@ h3 {
 	overflow:hidden;
 }
 
-.pfmodal .itemCommentModal {
-	display:none;
-}
-
 .pfmodal .modal-sidebar {
 	height:100%;
 	margin: 0;
