@@ -62,6 +62,7 @@ class PF_OpenGraph implements Iterator
    * @return OpenGraph
    */
 	static private function _parse($HTML) {
+		if (empty($HTML)){ return false; }
 		$old_libxml_error = libxml_use_internal_errors(true);
 
 		$doc = new DOMDocument();
