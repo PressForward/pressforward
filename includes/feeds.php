@@ -44,10 +44,13 @@ class PF_Feeds_Schema {
         add_action('admin_init', array($this, 'disallow_add_new'));
         add_filter('ab_alert_specimens_update_post_type', array($this, 'make_alert_return_to_publish'));
 		add_filter( 'views_edit-'.$this->post_type, array($this, 'modify_post_views') );
+		add_filter( 'status_edit_pre', array($this, 'modify_post_edit_status') );
 
 		if (is_admin()){
 			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_edit_feed_scripts' ) );
+
 
 			// Move the 'Feed Tags' item underneath 'pf-menu'
 			add_filter( 'parent_file', array( $this, 'move_feed_tags_submenu' ) );
@@ -373,6 +376,22 @@ class PF_Feeds_Schema {
 		}
 
 		return $views;
+
+	}
+
+	public function modify_post_edit_status($status){
+		#var_dump($status);
+
+		if( 'publish' == $status ) {
+				#$status = 'Active';
+		}
+
+		if( 'draft' == $status ) {
+				#$status = 'Inactive';
+		}
+
+		#die();
+		return $status;
 
 	}
 
@@ -743,7 +762,22 @@ class PF_Feeds_Schema {
 			return;
 
 
-		wp_enqueue_script( 'feed_control_script', PF_URL . '/assets/js/feeds_control.js', array('jquery', PF_SLUG . '-twitter-bootstrap') );
+		wp_enqueue_script( 'feed_control_script', PF_URL . '/assets/js/feeds_control.js', array('jquery', PF_SLUG . '-twitter-bootstrap'), PF_VERSION );
+	}
+
+	function admin_enqueue_edit_feed_scripts() {
+		global $pagenow;
+
+		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
+
+		if ( !in_array( $pagenow, array( 'post.php' ) ) )
+			return;
+
+		if(!in_array($hook, array('pf_feed')) )
+			#return;
+
+
+		wp_enqueue_script( 'feed_edit_manip', PF_URL . '/assets/js/subscribed-feeds-actions.js', array('jquery'), PF_VERSION );
 	}
 
 }
