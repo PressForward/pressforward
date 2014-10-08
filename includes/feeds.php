@@ -43,6 +43,8 @@ class PF_Feeds_Schema {
 		add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
         add_action('admin_init', array($this, 'disallow_add_new'));
         add_filter('ab_alert_specimens_update_post_type', array($this, 'make_alert_return_to_publish'));
+		add_filter( 'views_edit-'.$this->post_type, array($this, 'modify_post_views') );
+
 		if (is_admin()){
 			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
@@ -358,6 +360,20 @@ class PF_Feeds_Schema {
 		} else {
 			return false;
 		}
+	}
+
+	public function modify_post_views($views){
+		#var_dump($views);
+    if( isset( $views['publish'] ) ) {
+        $views['publish'] = str_replace( 'Published ', 'Active ', $views['publish'] );
+		}
+
+    if( isset( $views['draft'] ) ) {
+        $views['draft'] = str_replace( 'Drafts ', 'Inactive ', $views['draft'] );
+		}
+
+		return $views;
+
 	}
 
 
