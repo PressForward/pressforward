@@ -9,7 +9,7 @@ jQuery(window).load(function() {
 });
 
 function pf_switch_status_look(){
-  jQuery('#submitdiv h3.hndle span').text('Activate');
+  jQuery('body.post-type-pf_feed #submitdiv h3.hndle span').text('Activate');
   jQuery('body.post-type-pf_feed').find('#post_status option[value="draft"]').text('Inactive');
   jQuery('body.post-type-pf_feed').find('#post_status option[value="publish"]').text('Active');
   var status = jQuery.trim(jQuery('body.post-type-pf_feed').find('#post-status-display').text().replace('/ /g',''));
