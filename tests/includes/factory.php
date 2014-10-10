@@ -7,6 +7,8 @@ class PF_UnitTest_Factory extends WP_UnitTest_Factory {
 		parent::__construct();
 
 		$this->relationship = new PF_UnitTest_Factory_For_Relationship( $this );
+		$this->feed = new PF_UnitTest_Factory_For_Feed( $this );
+		$this->feed_item = new PF_UnitTest_Factory_For_Feed_Item( $this );
 	}
 }
 
@@ -30,20 +32,55 @@ class PF_UnitTest_Factory_For_Relationship extends WP_UnitTest_Factory_For_Thing
 		return pf_set_relationship( $args['type'], $args['item_id'], $args['user_id'], $args['value'] );
 	}
 
-	function update_object( $activity_id, $fields ) {
-		$activity = new BP_Activity_Activity( $activity_id );
+	function update_object( $activity_id, $fields ) {}
 
-		foreach ( $fields as $field_name => $value ) {
-			if ( isset( $activity->$field_name ) )
-				$activity->$field_name = $value;
-		}
-
-		$activity->save();
-		return $activity;
-	}
-
-	function get_object_by_id( $user_id ) {
-		return new BP_Activity_Activity( $user_id );
-	}
+	function get_object_by_id( $feed_id ) {}
 }
 
+class PF_UnitTest_Factory_For_Feed extends WP_UnitTest_Factory_For_Thing {
+
+	function __construct( $factory = null ) {
+		parent::__construct( $factory );
+
+		$this->default_generation_definitions = array(
+			'title' => new WP_UnitTest_Generator_Sequence( 'Feed Title %s' ),
+			'url' => new WP_UnitTest_Generator_Sequence( 'Feed URL %s' ),
+			'description' => new WP_UnitTest_Generator_Sequence( 'Feed Item description %s' ),
+			'tags' => '',
+			'type' => 'rss',
+		);
+	}
+
+	function create_object( $args ) {
+		$pf_feed_schema = new PF_Feeds_Schema();
+		return $pf_feed_schema->feed_post_setup( $args );
+	}
+
+	function update_object( $activity_id, $fields ) {}
+
+	function get_object_by_id( $item_id ) {}
+}
+
+class PF_UnitTest_Factory_For_Feed_Item extends WP_UnitTest_Factory_For_Thing {
+
+	function __construct( $factory = null ) {
+		parent::__construct( $factory );
+
+		$this->default_generation_definitions = array(
+			'item_title' => new WP_UnitTest_Generator_Sequence( 'Feed Item Title %s' ),
+			'item_title' => new WP_UnitTest_Generator_Sequence( 'Feed Item link %s' ),
+			'item_content' => new WP_UnitTest_Generator_Sequence( 'Feed Item content %s' ),
+			'source_title' => new WP_UnitTest_Generator_Sequence( 'Feed Item source_title %s' ),
+			'item_wp_date' => time(),
+		);
+	}
+
+	function create_object( $args ) {
+		$feed_item = new PF_Feed_Item();
+		return $feed_item->create( $args );
+	}
+
+	function update_object( $activity_id, $fields ) {}
+
+	function get_object_by_id( $item_id ) {}
+}
