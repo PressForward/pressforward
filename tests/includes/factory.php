@@ -68,16 +68,39 @@ class PF_UnitTest_Factory_For_Feed_Item extends WP_UnitTest_Factory_For_Thing {
 
 		$this->default_generation_definitions = array(
 			'item_title' => new WP_UnitTest_Generator_Sequence( 'Feed Item Title %s' ),
-			'item_title' => new WP_UnitTest_Generator_Sequence( 'Feed Item link %s' ),
+			'item_link' => new WP_UnitTest_Generator_Sequence( 'Feed Item link %s' ),
 			'item_content' => new WP_UnitTest_Generator_Sequence( 'Feed Item content %s' ),
 			'source_title' => new WP_UnitTest_Generator_Sequence( 'Feed Item source_title %s' ),
 			'item_wp_date' => time(),
+			'sortable_item_date' => time(),
 		);
 	}
 
 	function create_object( $args ) {
 		$feed_item = new PF_Feed_Item();
-		return $feed_item->create( $args );
+		$feed_item_id = $feed_item->create( $args );
+
+		$meta_keys = array(
+			'item_id',
+			'source_title',
+			'item_date',
+			'item_author',
+			'item_link',
+			'item_feat_img',
+			'item_wp_date',
+			'sortable_item_date',
+			'item_tags',
+			'source_repeat',
+			'revertible_feed_text',
+		);
+
+		foreach ( $meta_keys as $mk ) {
+			if ( isset( $args[ $mk ] ) ) {
+				update_post_meta( $feed_item_id, $mk, $args[ $mk ] );
+			}
+		}
+
+		return $feed_item_id;
 	}
 
 	function update_object( $activity_id, $fields ) {}
