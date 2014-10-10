@@ -159,226 +159,115 @@ class PF_Feed_Item {
 	# This function feeds items to our display feed function pf_reader_builder.
 	# It is just taking our database of rssarchival items and putting them into a
 	# format that the builder understands.
-	public static function archive_feed_to_display($pageTop = 0, $pagefull = 20, $fromUnixTime = 0, $limitless = false, $limit = false) {
-		global $wpdb, $post;
-		#var_dump($fromUnixTime); die();
-		if ( !isset($fromUnixTime) || (!$fromUnixTime) || ($fromUnixTime < 100)){$fromUnixTime = 0;}
+	/**
+	 * Fetch a collection of feed items and format for use in the reader.
+	 *
+	 * @param  int    $pageTop      First item to display on the page. Note that it
+	 *                              is decremented by 1, so should not be 0.
+	 * @param  int    $pagefull     Number of items to show per page.
+	 * @param  int    $fromUnixTime Feed items will only be returned when their
+	 *                              publish date is later than this. Must be in
+	 *                              UNIX format.
+	 * @param  bool   $limitless    True to show all feed items. Skips pagination,
+	 *                              but obeys $fromUnixTime. Default: false.
+	 * @param  string $limit        Limit to feed items with certain relationships
+	 *                              set. Note that relationships are relative to
+	 *                              logged-in user. (starred|nominated)
+	 * @return array
+	 */
+	public static function archive_feed_to_display( $pageTop = 0, $pagefull = 20, $fromUnixTime = 0, $limitless = false, $limit = false ) {
+		if ( empty( $fromUnixTime ) || ( $fromUnixTime < 100 ) ) {
+			$fromUnixTime = 0;
+		}
 
-		//$args = array(
-		//				'post_type' => array('any')
-		//			);
-		//$pageBottom = $pageTop + 20;
-		$args = pf_feed_item_post_type();
-        $pageTop = $pageTop-1;
-		//$archiveQuery = new WP_Query( $args );
-		if ($limitless){
-		 $dquerystr = $wpdb->prepare("
-			SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-			FROM {$wpdb->posts}, {$wpdb->postmeta}
-			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-			AND {$wpdb->posts}.post_type = %s
-			AND {$wpdb->posts}.post_status = 'publish'
-			AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
-			AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
-			ORDER BY {$wpdb->postmeta}.meta_value DESC
-		 ", pf_feed_item_post_type());
-		} elseif ($limit == 'starred') {
+		$pageTop = $pageTop - 1;
 
-			$relate = pressforward()->relationships;
-			$rt = $relate->table_name;
-			$user_id = get_current_user_id();
-			$read_id = pf_get_relationship_type_id('star');
-			 $dquerystr = $wpdb->prepare("
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
-				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
-				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->posts}.post_status = 'publish'
-				AND {$wpdb->posts}.ID
-				IN (
-					SELECT item_id
-					FROM {$rt}
-					WHERE {$rt}.user_id = {$user_id}
-					AND {$rt}.relationship_type = {$read_id}
-					AND {$rt}.value = 1
-				)
-				GROUP BY {$wpdb->postmeta}.post_id
-				ORDER BY {$wpdb->postmeta}.meta_value DESC
-				LIMIT {$pagefull} OFFSET {$pageTop}
-			 ", pf_feed_item_post_type());
-			 #var_dump($dquerystr);
-		} elseif ($limit == 'nominated') {
+		$post_args = array(
+			'post_type' => pf_feed_item_post_type(),
 
-			$relate = pressforward()->relationships;
-			$rt = $relate->table_name;
-			$user_id = get_current_user_id();
-			$read_id = pf_get_relationship_type_id('nominate');
-			 $dquerystr = $wpdb->prepare("
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
-				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
-				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->posts}.post_status = 'publish'
-				AND {$wpdb->posts}.ID
-				IN (
-					SELECT item_id
-					FROM {$rt}
-					WHERE {$rt}.user_id = {$user_id}
-					AND {$rt}.relationship_type = {$read_id}
-					AND {$rt}.value = 1
-				)
-				GROUP BY {$wpdb->postmeta}.post_id
-				ORDER BY {$wpdb->postmeta}.meta_value DESC
-				LIMIT {$pagefull} OFFSET {$pageTop}
-			 ", pf_feed_item_post_type());
-		} elseif (is_user_logged_in() && (isset($_GET['action']) && ('post' == $_GET['action']) &&(isset($_POST['search-terms'])))){
-			$relate = pressforward()->relationships;
-			$rt = $relate->table_name;
-			$user_id = get_current_user_id();
-			$read_id = pf_get_relationship_type_id('archive');
-			$search = $_POST['search-terms'];
-			 $dquerystr = $wpdb->prepare("
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
-				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
-				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->posts}.post_status = 'publish'
-				AND ((({$wpdb->posts}.post_title LIKE '%s') OR ({$wpdb->posts}.post_content LIKE '%s')))
-				AND {$wpdb->posts}.ID
-				NOT
-				IN (
-					SELECT item_id
-					FROM {$rt}
-					WHERE {$rt}.user_id = {$user_id}
-					AND {$rt}.relationship_type = {$read_id}
-					AND {$rt}.value = 1
-				)
-				GROUP BY {$wpdb->posts}.ID
-				ORDER BY {$wpdb->postmeta}.meta_value DESC
-				LIMIT {$pagefull} OFFSET {$pageTop}
-			 ", pf_feed_item_post_type(), '%'.$search.'%', '%'.$search.'%');
+			// Ordering by 'sortable_item_date' > 0.
+			'meta_key'     => 'sortable_item_date',
+			'meta_value'   => $fromUnixTime,
+			'meta_type'    => 'SIGNED',
+			'meta_compare' => '>',
+			'orderby'      => 'meta_value',
+			'order'        => 'DESC',
 
-			 #var_dump($dquerystr);
+			// Pagination
+			'posts_per_page' => $pagefull,
+			'offset'         => $pageTop,
+		);
+
+		if ( $limitless ) {
+			$post_args['posts_per_page'] = -1;
+
+		} else if ( $limit == 'starred' ) {
+			$stars = pf_get_relationships_for_user( 'star', get_current_user_id() );
+			$post_args['post__in'] = wp_list_pluck( $stars, 'item_id' );
+
+		} else if ( $limit == 'nominated' ) {
+			$nominated = pf_get_relationships_for_user( 'nominate', get_current_user_id() );
+			$post_args['post__in'] = wp_list_pluck( $nominated, 'item_id' );
+
+		} else if ( is_user_logged_in() && ( isset( $_GET['action'] ) && ( 'post' == $_GET['action'] ) &&( isset( $_POST['search-terms'] ) ) ) ) {
+			$archived = pf_get_relationships_for_user( 'archive', get_current_user_id() );
+			$post_args['post__not_in'] = wp_list_pluck( $archived, 'item_id' );
+
+			/*
+			 * Quote so as to get only exact matches. This is for
+			 * backward compatibility - might want to remove it for
+			 * a more flexible search.
+			 */
+			$post_args['s'] = '"' . stripslashes( $_POST['search-terms'] ) . '"';
 
 		} elseif (is_user_logged_in() && (!isset($_GET['reveal']))){
-			$relate = pressforward()->relationships;
-			$rt = $relate->table_name;
-			$user_id = get_current_user_id();
-			$read_id = pf_get_relationship_type_id('archive');
-			 $dquerystr = $wpdb->prepare("
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->posts}.post_status = 'publish'
-				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
-				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
-				AND {$wpdb->posts}.ID
-				NOT
-				IN (
-					SELECT item_id
-					FROM {$rt}
-					WHERE {$rt}.user_id = {$user_id}
-					AND {$rt}.relationship_type = {$read_id}
-					AND {$rt}.value = 1
-				)
-				ORDER BY {$wpdb->postmeta}.meta_value DESC
-				LIMIT {$pageTop}, {$pagefull}
-			 ", pf_feed_item_post_type());
-
-		} elseif (isset($_GET['reveal']) && ('no_hidden' == $_GET['reveal'])) {
-			$relate = pressforward()->relationships;
-			$rt = $relate->table_name;
-			$user_id = get_current_user_id();
-			$dquerystr = $wpdb->prepare("
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->posts}.post_status = 'publish'
-				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
-				AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
-				ORDER BY {$wpdb->postmeta}.meta_value DESC
-				LIMIT {$pageTop}, {$pagefull}
-			 ", pf_feed_item_post_type());
-		} else {
-		 $dquerystr = $wpdb->prepare("
-			SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-			FROM {$wpdb->posts}, {$wpdb->postmeta}
-			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-			AND {$wpdb->posts}.post_type = %s
-			AND {$wpdb->posts}.post_status = 'publish'
-			AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
-			AND {$wpdb->postmeta}.meta_value > {$fromUnixTime}
-			ORDER BY {$wpdb->postmeta}.meta_value DESC
-			LIMIT {$pageTop}, {$pagefull}
-		 ", pf_feed_item_post_type());
+			$archived = pf_get_relationships_for_user( 'archive', get_current_user_id() );
+			$post_args['post__not_in'] = wp_list_pluck( $archived, 'item_id' );
 		}
-		// print_r($dquerystr);
-		 # DESC here because we are sorting by UNIX datestamp, where larger is later.
-		 //Provide an alternative to load by feed date order.
-		# This is how we do a custom query, when WP_Query doesn't do what we want it to.
-		$archivalposts = $wpdb->get_results($dquerystr, OBJECT);
-		//print_r(count($rssarchivalposts)); die();
-#		 var_dump($archivalposts);
+
+		$feed_items = new WP_Query( $post_args );
+
 		$feedObject = array();
 		$c = 0;
-		#var_dump($dquerystr);
-		if ($archivalposts):
 
-			foreach ($archivalposts as $post) :
-			# This takes the $post objects and translates them into something I can do the standard WP functions on.
-			setup_postdata($post);
-			# I need this data to check against existing transients.
-			$post_id = get_the_ID();
-			$id = get_post_meta($post_id, 'item_id', true); //die();
-			//Switch the delete on to wipe rss archive posts from the database for testing.
-			//wp_delete_post( $post_id, true );
-			//print_r($id);
+		foreach ( $feed_items->posts as $post ) {
+			$post_id = $post->ID;
 
-				$item_id = get_post_meta($post_id, 'item_id', true);
-				$source_title = get_post_meta($post_id, 'source_title', true);
-				$item_date = get_post_meta($post_id, 'item_date', true);
-				$item_author = get_post_meta($post_id, 'item_author', true);
-				$item_link = get_post_meta($post_id, 'item_link', true);
-				$item_feat_img = get_post_meta($post_id, 'item_feat_img', true);
-				$item_wp_date = get_post_meta($post_id, 'item_wp_date', true);
-				$item_tags = get_post_meta($post_id, 'item_tags', true);
-				$source_repeat = get_post_meta($post_id, 'source_repeat', true);
-				$readable_status = get_post_meta($post_id, 'readable_status', true);
-				$contentObj = new pf_htmlchecker(get_the_content());
-				$item_content = $contentObj->closetags(get_the_content());
+			$item_id            = get_post_meta( $post_id, 'item_id', true );
+			$source_title       = get_post_meta( $post_id, 'source_title', true );
+			$item_date          = get_post_meta( $post_id, 'item_date', true );
+			$item_author        = get_post_meta( $post_id, 'item_author', true );
+			$item_link          = get_post_meta( $post_id, 'item_link', true );
+			$item_feat_img      = get_post_meta( $post_id, 'item_feat_img', true );
+			$item_wp_date       = get_post_meta( $post_id, 'item_wp_date', true );
+			$item_tags          = get_post_meta( $post_id, 'item_tags', true );
+			$source_repeat      = get_post_meta( $post_id, 'source_repeat', true );
+			$readable_status    = get_post_meta( $post_id, 'readable_status', true );
 
-				$feedObject['rss_archive_' . $c] = pf_feed_object(
-											get_the_title(),
-											$source_title,
-											$item_date,
-											$item_author,
-											$item_content,
-											$item_link,
-											$item_feat_img,
-											$item_id,
-											$item_wp_date,
-											$item_tags,
-											//Manual ISO 8601 date for pre-PHP5 systems.
-											get_the_date('o-m-d\TH:i:sO'),
-											$source_repeat,
-											$post_id,
-											$readable_status
-											);
+			$contentObj   = new pf_htmlchecker( $post->post_content );
+			$item_content = $contentObj->closetags( $post->post_content );
+
+			$feedObject['rss_archive_' . $c] = pf_feed_object(
+				$post->post_title,
+				$source_title,
+				$item_date,
+				$item_author,
+				$item_content,
+				$item_link,
+				$item_feat_img,
+				$item_id,
+				$item_wp_date,
+				$item_tags,
+				// Manual ISO 8601 date for pre-PHP5 systems.
+				date( 'o-m-d\TH:i:sO', strtotime( $post->post_date ) ),
+				$source_repeat,
+				$post_id,
+				$readable_status
+			);
 
 			$c++;
-			endforeach;
+		}
 
-
-		endif;
-		wp_reset_postdata();
 		return $feedObject;
 	}
 
