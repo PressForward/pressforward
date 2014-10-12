@@ -547,7 +547,7 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 		return $author_uri;
 	}
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')) {
-		$custom_author_uri = pf_retrieve_meta($id, 'nomination_permalink');
+		$custom_author_uri = pf_retrieve_meta($id, 'item_link');
 		if(!$custom_author_uri || 0 == $custom_author_uri || empty($custom_author_uri)){
 			return $author_uri;
 		} else {
@@ -564,7 +564,7 @@ function pf_forward_unto_source(){
 	if(is_single()){
 		$obj = get_queried_object();
 		$post_ID = $obj->ID;
-		$link = get_post_meta($post_ID, 'nomination_permalink', TRUE);
+		$link = get_post_meta($post_ID, 'item_link', TRUE);
 		if (!empty($link)){
 			echo '<link rel="canonical" href="'.$link.'" />';
 			$wait = get_option('pf_link_to_source', 0);
@@ -747,8 +747,8 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
 		),
-		'nomination_permalink' => array(
-			'name' => 'nomination_permalink',
+		'item_link' => array(
+			'name' => 'item_link',
 			'definition' => __('Source link', 'pf'),
 			'function'	=> __('DUPE Soon to be depreciated version of item_link', 'pf'),
 			'type'	=> array('struc','dep'),

@@ -78,7 +78,7 @@ class PF_Nominations {
 		$source_title = get_post_meta($post->ID, 'source_title', true);
 		$posted_date = get_post_meta($post->ID, 'posted_date', true);
 		$nom_authors = get_post_meta($post->ID, 'authors', true);
-		$nomination_permalink = get_post_meta($post->ID, 'nomination_permalink', true);
+		$item_link = get_post_meta($post->ID, 'item_link', true);
 		$date_nominated = get_post_meta($post->ID, 'date_nominated', true);
 		$user = get_user_by('id', $submitted_by);
 		$item_tags = get_post_meta($post->ID, 'item_tags', true);
@@ -99,7 +99,7 @@ class PF_Nominations {
 			$this->meta_box_printer(__('Source Posted', 'pf'), $posted_date);
 		}
 		$this->meta_box_printer(__('Source Authors', 'pf'), $nom_authors);
-		$this->meta_box_printer(__('Source Link', 'pf'), $nomination_permalink, true, __('Original Post', 'pf'));
+		$this->meta_box_printer(__('Source Link', 'pf'), $item_link, true, __('Original Post', 'pf'));
 		$this->meta_box_printer(__('Item Tags', 'pf'), $item_tags);
 		if (empty($date_nominated)){ $date_nominated = date(DATE_ATOM); }
 		$this->meta_box_printer(__('Date Nominated', 'pf'), $date_nominated);
@@ -112,7 +112,7 @@ class PF_Nominations {
 	public function get_the_source_statement($nom_id){
 		 
 		$title_of_item = get_the_title($nom_id);
-		$link_to_item = get_post_meta($nom_id, 'nomination_permalink', true);
+		$link_to_item = get_post_meta($nom_id, 'item_link', true);
 		$args = array(
 		  'html_before' => "<p>",
 		  'source_statement' => "Source: ",
@@ -449,7 +449,7 @@ class PF_Nominations {
 		add_post_meta($_POST['item_post_id'], 'date_nominated', date('c'), true);		
 		add_post_meta($_POST['item_post_id'], 'origin_item_ID', $item_id, true);
 		add_post_meta($_POST['item_post_id'], 'item_feed_post_id', $_POST['item_post_id'], true);
-		add_post_meta($_POST['item_post_id'], 'nomination_permalink', $_POST['item_link'], true);
+		add_post_meta($_POST['item_post_id'], 'item_link', $_POST['item_link'], true);
 			$item_date = $_POST['item_date'];
 			if (empty($_POST['item_date'])){
 				$newDate = gmdate('Y-m-d H:i:s');
