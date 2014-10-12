@@ -473,6 +473,8 @@ class PF_Feed_Item {
 		$theFeed = pressforward()->pf_retrieve->step_through_feedlist();
 		if ((!$theFeed) || is_wp_error($theFeed)){
 			pf_log('The feed is false, exit process. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
+			$retrieval_end_counter = get_option(PF_SLUG.'_retrieval_cycles_ended',0);
+			update_option(PF_SLUG.'_retrieval_cycles_ended',++$retrieval_end_counter);
 			# Wipe the checking option for use next time.
 			update_option(PF_SLUG . '_feeds_meta_state', array());
 			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 1 );

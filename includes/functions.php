@@ -1054,6 +1054,30 @@ function pf_custom_upload_opml ( $existing_mimes=array() ) {
 
 }
 
+function pf_iterate_cycle_state($option_name, $option_limit = false){
+	$default = array(
+		'day' 				=> 0,
+		'week'				=> 0,
+		'month' 			=> 0,
+		'next_day'		=> strtotime('+1 day'),
+		'next_week'		=> strtotime('+1 week'),
+		'next_month'	=> strtotime('+1 month')
+	);
+	$retrieval_cycle = get_option(PF_SLUG.'_'.$option_name,$default);
+	if(!$option_limit){
+		return $retrieval_cycle;
+	} else {
+		if (strtotime("now") >= $retrieval_cycle['next_'.$option_limit]){
+			$retrieval_cycle[$option_limit] = 1;
+			$retrieval_cycle['next_'.$option_limit] = strtotime('+1 '.$option_limit);
+		} else {
+			$retrieval_cycle[$option_limit] = $retrieval_cycle[$option_limit]+1;
+			update_option(PF_SLUG.'_'.$option_name, $retrieval_cycle[$option_limit]+1);
+		}
+		return $retrieval_cycle;
+	}
+}
+
 
 /**
  * Send status messages to a custom log
