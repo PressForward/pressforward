@@ -297,6 +297,10 @@ h3 {
 	display: inline;
 }
 
+.box-controls i {
+	background-color:lightblue;
+}
+
 .schema-read {
 	float: right;
 	margin-right: -12px;
@@ -304,7 +308,6 @@ h3 {
 	display: block;
 	cursor: pointer;
 	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
-	background-color:lavender;
 	border-radius:6px;
 	position:absolute;
 }
