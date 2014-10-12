@@ -185,21 +185,21 @@ class PF_Debugger extends PF_Module {
 			</p>
 			<p>Total Retrieval Chunks Begun This:
 			<?php
-				echo get_option(PF_SLUG.'_retrieval_chunks_begun',0);
+				pf_iterate_cycle_state('retrieval_chunks_begun', false, true);
 				#var_dump($nomed_posts );
 
 			?>
 			</p>
 			<p>Total Retrieval Cycles Begun This:
 			<?php
-				echo get_option(PF_SLUG.'_retrieval_cycles_begun',0);
+				pf_iterate_cycle_state('retrieval_cycles_begun', false, true);
 				#var_dump($nomed_posts );
 
 			?>
 			</p>
 			<p>Total Retrieval Cycles Ended This:
 			<?php
-				echo get_option(PF_SLUG.'_retrieval_cycles_ended',0);
+				pf_iterate_cycle_state('retrieval_cycles_ended', false, true);
 				#var_dump($nomed_posts );
 
 			?>

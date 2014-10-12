@@ -96,8 +96,7 @@ class PF_Feed_Retrieve {
 
 	public function step_through_feedlist() {
 		# Log the beginning of this function.
-		$retrieval_counter = get_option(PF_SLUG.'_retrieval_chunks_begun',0);
-		update_option(PF_SLUG.'_retrieval_chunks_begun',++$retrieval_counter);
+		pf_iterate_cycle_state('retrieval_chunks_begun', true);
 		pf_log( 'step_through_feedlist begins.' );
 
 		# Retrieve the list of feeds.
@@ -609,8 +608,7 @@ class PF_Feed_Retrieve {
 			$status = update_option( PF_SLUG . '_iterate_going_switch', 1 );
 			# Echo to the user.
 			pf_log( __( 'Beginning the retrieval process', 'pf' ), true, true );
-			$retrieval_cycle = get_option(PF_SLUG.'_retrieval_cycles_begun',0);
-			update_option(PF_SLUG.'_retrieval_cycles_begun',++$retrieval_cycle);
+			pf_iterate_cycle_state('retrieval_cycles_begun', true);
 			if ( $status ) {
 				pf_log( __( 'Iterate switched to going.', 'pf' ) );
 			} else {
