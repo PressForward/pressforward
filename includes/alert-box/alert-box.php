@@ -149,7 +149,18 @@ if (!class_exists('The_Alert_Box')){
         public function remove_alerted_posts(){
             ob_start();
             $filtered_post_types = $_POST['filtered_post_types'];
-
+            if (!current_user_can('delete_others_posts')){
+                $response = array(
+                   'what'=>'the_alert_box',
+                   'action'=>'remove_alerted_posts',
+                   'id'=>0,
+                   'data'=>__('You do not have permission to delete these posts.', 'pf')
+                );
+                $xmlResponse = new WP_Ajax_Response($response);
+                $xmlResponse->send();
+                ob_end_flush();
+                die();
+            }
             if (empty($filtered_post_types)){
                 $fpt_array = false;
             } else {
@@ -206,30 +217,33 @@ if (!class_exists('The_Alert_Box')){
         public function alert_box_insides_function(){
             if(self::is_on()){
 				$q = $this->get_specimens();
-				if ( $q->have_posts() ) :
+				if ( $q->have_posts() ) {
 					while ( $q->have_posts() ) : $q->the_post();
 						echo '<p>';
 						edit_post_link(get_the_title(), '<span style="color:red;font-weight:bold;">'. __('Alert', 'pf') . '</span> for ', ': '.$this->get_bug_type(get_the_ID()));
 						echo ' ';
 						edit_post_link(__('Edit', 'pf'));
 						echo ' ';
-						echo '| <a href="'.get_delete_post_link( get_the_ID() ).'" title="'. __('Delete', 'pf') .'" >'. __('Delete', 'pf') .'</a>';
+            if (current_user_can('delete_others_posts')){
+						        echo '| <a href="'.get_delete_post_link( get_the_ID() ).'" title="'. __('Delete', 'pf') .'" >'. __('Delete', 'pf') .'</a>';
+            }
 						echo '</p>';
 					endwhile;
 					wp_reset_postdata();
 					$alertCheck = __('Are you sure you want to delete all posts with alerts?', 'pf');
 					$alertCheck = apply_filters('ab_alert_specimens_check_message', $alertCheck);
+          if (current_user_can('delete_others_posts')){
+    					$deleteText = __('Delete all posts with alerts', 'pf');
+    					$deleteText = apply_filters('ab_alert_specimens_delete_all_text', $deleteText);
 
-					$deleteText = __('Delete all posts with alerts', 'pf');
-					$deleteText = apply_filters('ab_alert_specimens_delete_all_text', $deleteText);
-
-					echo '<p><a href="#" id="delete_all_alert_specimens" style="color:red;font-weight:bold;" title="' . __('Delete all posts with alerts', 'pf') . '" alert-check="' . $alertCheck . '" alert-types="'.implode(',',$q->query['post_type']).'" >' . $deleteText . '</a></p>';
-				else:
+    					echo '<p><a href="#" id="delete_all_alert_specimens" style="color:red;font-weight:bold;" title="' . __('Delete all posts with alerts', 'pf') . '" alert-check="' . $alertCheck . '" alert-types="'.implode(',',$q->query['post_type']).'" >' . $deleteText . '</a></p>';
+          }
+				} else {
 					$return_string = __('No problems!', 'pf');
 					$return_string = apply_filters('ab_alert_safe', $return_string);
 					echo $return_string;
 
-				endif;
+				}
 			} else {
 				echo 'Alert boxes not active.';
 			}
