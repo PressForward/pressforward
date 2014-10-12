@@ -527,7 +527,7 @@ function pf_get_defining_capability_by_role($role_slug){
 function pf_replace_author_presentation( $author ) {
 	global $post;
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')){
-		$custom_author = pf_retrieve_meta($post->ID, 'authors');
+		$custom_author = pf_retrieve_meta($post->ID, 'item_author');
 		if($custom_author)
 			return $custom_author;
 		return $author;
@@ -1082,7 +1082,7 @@ function pf_iterate_cycle_state($option_name, $option_limit = false, $echo = fal
 				$retrieval_cycle['next_'.$state] = strtotime('+1 '.$state);
 			} else {
 				$retrieval_cycle[$state] = $retrieval_cycle[$state]+1;
-			}			
+			}
 		}
 		update_option(PF_SLUG.'_'.$option_name, $retrieval_cycle);
 		return $retrieval_cycle;
