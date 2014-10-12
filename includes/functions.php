@@ -1064,11 +1064,14 @@ function pf_iterate_cycle_state($option_name, $option_limit = false, $echo = fal
 		'next_month'	=> strtotime('+1 month')
 	);
 	$retrieval_cycle = get_option(PF_SLUG.'_'.$option_name,$default);
+	if (!is_array($retrieval_cycle)){
+		$retrieval_cycle = $default;
+		update_option(PF_SLUG.'_'.$option_name, $retrieval_cycle);
+	}
 	if ($echo) {
-		echo 'Day: '.$retrieval_cycle['day'];
-		echo 'Week: '.$retrieval_cycle['week'];
-		echo 'Month: '.$retrieval_cycle['month'];
-		return;
+		echo '<br />Day: '.$retrieval_cycle['day'];
+		echo '<br />Week: '.$retrieval_cycle['week'];
+		echo '<br />Month: '.$retrieval_cycle['month'];
 	} else if(!$option_limit){
 		return $retrieval_cycle;
 	} else if($option_limit){
@@ -1082,7 +1085,7 @@ function pf_iterate_cycle_state($option_name, $option_limit = false, $echo = fal
 			}			
 		}
 		update_option(PF_SLUG.'_'.$option_name, $retrieval_cycle);
-		return;
+		return $retrieval_cycle;
 	} else {
 		if (strtotime("now") >= $retrieval_cycle['next_'.$option_limit]){
 			$retrieval_cycle[$option_limit] = 1;
