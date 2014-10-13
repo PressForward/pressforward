@@ -69,7 +69,9 @@ class PF_Feed_Retrieve {
 	 */
 	public function get_chunk_nonce() {
 		$nonce = wp_hash( time() );
-		update_option( 'chunk_nonce', $create_nonce );
+		pf_log('Create the retrieval nonce: ');
+		pf_log($nonce);
+		update_option( 'chunk_nonce', $nonce );
 		return $nonce;
 	}
 
@@ -543,7 +545,7 @@ class PF_Feed_Retrieve {
 			//wp_schedule_single_event( time()-3600, 'get_more_feeds' );
 			//print_r( '<br /> <br />' . PF_URL . 'modules/rss-import/import-cron.php <br /> <br />' );
 			$theRetrievalLoop = add_query_arg( 'press', 'forward',  site_url() );
-			$pfnonce = get_option( 'chunk_nonce' );
+			$pfnonce = $this->get_chunk_nonce();
 			$theRetrievalLoopNounced = add_query_arg( 'nonce', $pfnonce, $theRetrievalLoop );
 			pf_log( 'Checking remote get at ' . $theRetrievalLoopNounced . ' : ' );
 			$wprgCheck = wp_remote_get( $theRetrievalLoopNounced );
@@ -569,8 +571,10 @@ class PF_Feed_Retrieve {
 
 		$nonce = isset( $_REQUEST['nonce'] ) ? $_REQUEST['nonce'] : '';
 		$nonce_check = get_option( 'chunk_nonce' );
-
+		pf_log('Nonce is:');
+		pf_log($nonce_check);
 		if ( ! $nonce || ! $nonce_check ) {
+			pf_log('Nonce check failed.');
 			return;
 		}
 
