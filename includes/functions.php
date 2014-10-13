@@ -851,12 +851,12 @@ function pf_meta_structure(){
 			'type'	=> array('desc'),
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
-		)
+		),
 		'pf_feed_error_count' => array(
 			'name' => 'pf_feed_error_count',
 			'definition' => __('Count of feed errors', 'pf'),
 			'function'	=> __('Stores a count of the number of errors a feed has experianced', 'pf'),
-			'type'	=> array('dep', 'adm'),
+			'type'	=> array('adm'),
 			'use'	=> array(),
 			'level'	=> array('feed', 'post')
 		)
