@@ -747,7 +747,7 @@ function pf_meta_structure(){
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')
 		),
-		'item_link' => array(
+		'nomination_permalink' => array(
 			'name' => 'item_link',
 			'definition' => __('Source link', 'pf'),
 			'function'	=> __('DUPE Soon to be depreciated version of item_link', 'pf'),
