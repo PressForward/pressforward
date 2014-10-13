@@ -673,7 +673,10 @@ class PF_Feeds_Schema {
 				$r = self::setup_rss_meta($r, $theFeed);
 			}
 
-			self::set_pf_feed_type($r['ID'], 'rss');
+			$type_updated = self::set_pf_feed_type($r['ID'], 'rss');
+			if ($type_updated){
+				$r['type'] = 'rss';
+			}
 		}
 
 		$check = self::feed_post_setup($r, 'update');
