@@ -174,30 +174,41 @@ class PF_Feeds_Schema {
 					$children[$cat->term_id] = false;
 				}
 			}
-		} elseif (is_numeric($ids)) {
+		} elseif (is_numeric($ids) || is_string($ids)) {
 			if(!$this->is_feed_term($ids)){
 				return false;
 			}
-			$children[$id] = get_term_children($ids, $this->tag_taxonomy);
+			$children[$ids] = $this->get_feed_folders($ids);
 		} elseif (is_array($ids)){
 			foreach ($ids as $id){
 				$children[$id] = $this->get_child_feed_folders($id);
 			}
+		} elseif (is_object($ids)) {
+			$children[$ids->term_id] = get_term_children($ids->term_id, $this->tag_taxonomy);
 		} else {
-			return false;
+			return $ids;
 		}
 		return $children;
 	}
 
 	public function get_child_folders($folder){
 		$child_folders = array();
-		$children = get_child_feed_folders($folder->term_id);
+		if (is_object($folder)){
+			$children = $this->get_child_feed_folders($folder->term_id);
+		} else if (is_string($folder) || is_numeric($folder)) {
+			$children = $this->get_term_children($folder, $this->tag_taxonomy);
+		} else {
+			$children = false;
+		}
+		#return $children;
 		if (!$children){
 			$child_folders = false;
-		} else {
+		} elseif (is_array($children)) {
 			foreach ($children as $child){
 				$child_folders[$child->term_id] = $this->get_feed_folders($child->term_id);
 			}
+		} else {
+			$child_folders[$folder] = $children;
 		}
 		return $child_folders;
 	}
@@ -212,7 +223,7 @@ class PF_Feeds_Schema {
 					'term'			=> $folder,
 					'children'	=> array(
 													'feeds'		=> get_objects_in_term($folder->term_id, $this->tag_taxonomy),
-													'folders'	=> get_child_folders($folder)
+													'folders'	=> $this->get_child_folders($folder)
 												)
 				);
 			}
@@ -222,12 +233,12 @@ class PF_Feeds_Schema {
 				'term'			=> $folder,
 				'children'	=> array(
 												'feeds'		=> get_objects_in_term($folder->term_id, $this->tag_taxonomy),
-												'folders'	=> get_child_folders($folder)
+												'folders'	=> $this->get_child_folders($folder)
 											)
 			);
 		} elseif (is_array($ids)){
 			foreach ($ids as $id){
-				$folder_set[$id] = get_feed_folders($id);
+				$folder_set[$id] = $this->get_feed_folders($id);
 			}
 		} else {
 			return false;
