@@ -110,6 +110,8 @@ class PF_Feeds_Schema {
 			'show_admin_columns' => TRUE,
 			'show_in_nav_menus' => TRUE,
 			'show_ui'           => TRUE,
+			'show_admin_column' => TRUE,
+			'hierarchical'			=> TRUE,
 			#'show_in_menu' => PF_MENU_SLUG,
 			'rewrite' => false
 		) ) );
