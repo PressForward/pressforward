@@ -225,6 +225,24 @@ class PF_Feed_Item {
 			$post_args['post__not_in'] = wp_list_pluck( $archived, 'item_id' );
 		}
 
+		if (isset($_GET['feed']) {
+			$post_args['post_parent'] = pressforward()->pf_feeds->post_type;
+		} elseif (isset($_GET['folder'])){
+			$parents_in_folder = new WP_Query(
+					'post_type'								=> 'pf_feeds'
+					'fields'									=> 'ids',
+					'update_post_meta_cache' 	=> false,
+					'tax_query'								=> array(
+														array(
+															'taxonomy'	=> pressforward()->pf_feeds->tag_taxonomy,
+															'field'			=> 'term_id',
+															'terms'			=> $_GET['folder']
+														)
+					)
+			);
+			$post_args['post_parent__in'] = $parents_in_folder;
+		}
+
 		$feed_items = new WP_Query( $post_args );
 
 		$feedObject = array();
