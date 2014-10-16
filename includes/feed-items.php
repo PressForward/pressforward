@@ -226,10 +226,10 @@ class PF_Feed_Item {
 		}
 
 		if (isset($_GET['feed'])) {
-			$post_args['post_parent'] = pressforward()->pf_feeds->post_type;
+			$post_args['post_parent'] = $_GET['feed'];
 		} elseif (isset($_GET['folder'])){
 			$parents_in_folder = new WP_Query(array(
-					'post_type'								=> 'pf_feeds',
+					'post_type'								=> pressforward()->pf_feeds->post_type,
 					'fields'									=> 'ids',
 					'update_post_meta_cache' 	=> false,
 					'tax_query'								=> array(
@@ -240,7 +240,8 @@ class PF_Feed_Item {
 														)
 					)
 			));
-			$post_args['post_parent__in'] = $parents_in_folder;
+			#var_dump('<pre>'); var_dump($parents_in_folder); die();
+			$post_args['post_parent__in'] = $parents_in_folder->posts;
 		}
 
 		$feed_items = new WP_Query( $post_args );
