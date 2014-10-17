@@ -667,8 +667,8 @@ class PF_Admin {
 				</div>
 				<div class="display">
 					<div class="pf-btns pull-left">
-					<button type="submit" id="gogrid" class="btn btn-small">Grid</button>
-					<button type="submit" id="golist" class="btn btn-small">List</button>
+					<button type="submit" id="gogrid" class="btn btn-small display-state">Grid</button>
+					<button type="submit" id="golist" class="btn btn-small display-state">List</button>
 
 					<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
 					echo '<button type="submit" class="btn btn-small feedsort" id="sortbyfeedindate" value="' . __('Sort by date entered feed', 'pf') . '">' . __('Sort by date entered feed', 'pf') . '</button>'; ?>
@@ -1434,6 +1434,15 @@ class PF_Admin {
 		ob_end_clean();
 		die();
 
+	}
+
+	function pf_switch_display_setting($user_id, $read_state){
+		if ( !current_user_can( 'edit_user', $user_id ) ){
+			return false;
+		}
+
+		$check = update_user_meta($user_id, 'pf_user_read_state', $read_state);
+		return $check;
 	}
 
 	/**
