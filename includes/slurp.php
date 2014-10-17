@@ -551,7 +551,7 @@ class PF_Feed_Retrieve {
 			$wprgCheck = wp_remote_get( $theRetrievalLoopNounced );
 
 
-			return;
+			die();
 			//pf_log( $wprgCheck );
 			//Looks like it is scheduled properly. But should I be using wp_cron() or spawn_cron to trigger it instead?
 			//wp_cron();
