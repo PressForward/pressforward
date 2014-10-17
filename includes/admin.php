@@ -1408,6 +1408,34 @@ class PF_Admin {
 
 	}
 
+	function pf_ajax_retain_display_setting() {
+		ob_start();
+		if(isset($_POST['user_id'])){
+			$user_id = $_POST['user_id'];
+		} else {
+			#die('Option not sent');
+		}
+		if(isset($_POST['pf_read_state'])){
+			$read_state = $_POST['pf_read_state'];
+		} else {
+			$read_status = false;
+		}
+		$returned = self::pf_switch_display_setting($user_id, $read_state);
+		#var_dump($returned);
+
+		$response = array(
+			'what'=>'pressforward',
+			'action'=>'pf_ajax_retain_display_setting',
+			'id'=>$user_id,
+			'data'=>(string) $returned
+		);
+		$xmlResponse = new WP_Ajax_Response($response);
+		$xmlResponse->send();
+		ob_end_clean();
+		die();
+
+	}
+
 	/**
 	 * Add a Last Retrieved column to the pf_feed table.
 	 *
