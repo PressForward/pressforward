@@ -19,8 +19,8 @@ class PF_Admin {
 		// Adding javascript and css to admin pages
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
 		add_action( 'wp_head', array( $this, 'pf_aggregation_forwarder'));
-		add_filter('admin_body_class',  array( $this, 'add_pf_body_class'));
-		add_filter('pf_admin_pages', array($this, 'state_pf_admin_pages'), 10,3);
+		add_filter( 'admin_body_class',  array( $this, 'add_pf_body_class'));
+		add_filter( 'pf_admin_pages', array($this, 'state_pf_admin_pages'), 10,3);
 		// Catch form submits
 		add_action( 'admin_init', array($this, 'pf_options_admin_page_save') );
 		add_action( 'admin_notices', array($this, 'admin_notices_action' ));
