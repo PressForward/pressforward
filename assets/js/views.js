@@ -237,15 +237,17 @@ function PFBootstrapInits() {
 function detect_view_change(){
 
 	jQuery('.pf_container').on('click', 'button.display-state', function(evt){
-		var elementC = jQuery(this);
-
+		var element = jQuery(this);
+		var go_layout = element.attr('id');
+		console.log(go_layout);
 		//alert(modalIDString);
 		jQuery.post(ajaxurl, {
 				action: 'pf_ajax_retain_display_setting',
+				pf_read_state: go_layout
 
 			},
 			function(response) {
-				
+
 			});
 	});
 
@@ -334,6 +336,7 @@ jQuery(window).load(function() {
 	hideModal();
 	commentPopModal();
 	PFBootstrapInits();
+	detect_view_change();
 //	commentModal();
 
 });
