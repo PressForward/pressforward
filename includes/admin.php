@@ -34,6 +34,7 @@ class PF_Admin {
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
 		add_action( 'wp_ajax_ajax_get_comments', array( $this, 'ajax_get_comments') );
 		add_action( 'wp_ajax_pf_ajax_thing_deleter', array( $this, 'pf_ajax_thing_deleter') );
+		add_action( 'wp_ajax_pf_ajax_retain_display_setting', array( $this, 'pf_ajax_retain_display_setting' ) );
 		add_action( 'init', array( $this, 'register_feed_item_removed_status') );
 
 		// Modify the Subscribed Feeds panel
@@ -621,7 +622,8 @@ class PF_Admin {
 	 * Display function for the main All Content panel
 	 */
 	public function display_reader_builder() {
-
+		$userObj = wp_get_current_user();
+		$user_id = $userObj->ID;
 		//Calling the feedlist within the pf class.
 		if (isset($_GET["pc"])){
 			$page = $_GET["pc"];
@@ -634,8 +636,15 @@ class PF_Admin {
 		if(isset($_GET['reveal']) && ('no_hidden' == $_GET['reveal'])){
 			$extra_class .= ' archived_visible';
 		}
+		$view_state = ' grid';
+		$view_check = get_user_meta($user_id, 'pf_user_read_state', true);
+		if ('golist' == $view_check){
+			$view_state = ' list';
+		}
+		$extra_class = $extra_class.$view_state;
+
 	?>
-	<div class="grid pf_container full<?php echo $extra_class; ?>">
+	<div class="pf_container full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">
 				<?php echo '<h1>' . PF_TITLE . '</h1>'; ?>
@@ -1410,18 +1419,15 @@ class PF_Admin {
 
 	function pf_ajax_retain_display_setting() {
 		ob_start();
-		if(isset($_POST['user_id'])){
-			$user_id = $_POST['user_id'];
-		} else {
-			#die('Option not sent');
-		}
 		if(isset($_POST['pf_read_state'])){
 			$read_state = $_POST['pf_read_state'];
 		} else {
 			$read_status = false;
 		}
+		$userObj = wp_get_current_user();
+		$user_id = $userObj->ID;
 		$returned = self::pf_switch_display_setting($user_id, $read_state);
-		#var_dump($returned);
+		#var_dump($user_id);
 
 		$response = array(
 			'what'=>'pressforward',
