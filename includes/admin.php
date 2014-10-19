@@ -867,7 +867,21 @@ class PF_Admin {
 					<?php
 					}
 					?>
-					<p><?php
+					<p>
+					<?php
+					$user_ID = get_current_user_id();
+					$pf_user_scroll_switch = get_user_option('pf_user_scroll_switch', $user_ID);
+					if ( empty($pf_user_scroll_switch) || 'true' == $pf_user_scroll_switch){
+						$mark = 'checked';
+					} else {
+						$mark = '';
+					}
+					echo '<input id="pf_user_scroll_switch" type="checkbox" name="pf_user_scroll_switch" value="true" '.$mark.' class="user_setting" />
+								<label for="pf_user_scroll_switch" >' . 'Infinite Scroll Active' . '</label>';
+					?>
+					</p>
+					<p>
+					<?php
 					$default_pf_link_value = get_option('pf_retain_time', 2);
 					echo '<input id="pf_retain_time" name="pf_retain_time" type="number" class="pf_retain_time" value="'.$default_pf_link_value.'" />';
 
@@ -1214,6 +1228,17 @@ class PF_Admin {
 		} else {
 			update_option('pf_link_to_source', 0);
 		}
+
+		$user_ID = get_current_user_id();
+		if (isset( $_POST['pf_user_scroll_switch'] )){
+			$pf_user_scroll_switch = $_POST['pf_user_scroll_switch'];
+			//var_dump($pf_user_scroll_switch); die();
+			update_user_option($user_ID, 'pf_user_scroll_switch', $pf_user_scroll_switch);
+		} else {
+			update_user_option($user_ID, 'pf_user_scroll_switch', 'false');
+		}
+
+
 		if (isset( $_POST['pf_retain_time'] )){
 			$pf_links_opt_check = $_POST['pf_retain_time'];
 			//print_r($pf_links_opt_check); die();
