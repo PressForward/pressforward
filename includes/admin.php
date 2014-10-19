@@ -1055,6 +1055,10 @@ class PF_Admin {
 		//This gets the current page the user is on.
 		global $pagenow;
 
+
+		$user_ID = get_current_user_id();
+		$pf_user_scroll_switch = get_user_option('pf_user_scroll_switch', $user_ID);
+
 			wp_register_style( PF_SLUG . '-style', PF_URL . 'assets/css/style.css');
 			wp_register_style( PF_SLUG . '-bootstrap-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
 			wp_register_style( PF_SLUG . '-bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
@@ -1083,8 +1087,10 @@ class PF_Admin {
 			wp_enqueue_script(PF_SLUG . '-nomination-imp', PF_URL . 'assets/js/nomination-imp.js', array( 'jquery' ));
 			wp_enqueue_script(PF_SLUG . '-twitter-bootstrap');
 			wp_enqueue_script(PF_SLUG . '-jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
-			wp_enqueue_script(PF_SLUG . '-infiniscroll');
-			wp_enqueue_script(PF_SLUG . '-scrollimp');
+			if (empty($pf_user_scroll_switch) || 'true' == $pf_user_scroll_switch){
+				wp_enqueue_script(PF_SLUG . '-infiniscroll');
+				wp_enqueue_script(PF_SLUG . '-scrollimp');
+			}
 			wp_enqueue_script('pf-relationships');
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style(PF_SLUG . '-bootstrap-style');
@@ -1103,8 +1109,12 @@ class PF_Admin {
 			wp_enqueue_script(PF_SLUG . '-archive-nom-imp', PF_URL . 'assets/js/nom-archive-imp.js', array( 'jquery' ));
 			wp_enqueue_script(PF_SLUG . '-views');
 			wp_enqueue_script(PF_SLUG . '-readability-imp');
-			wp_enqueue_script(PF_SLUG . '-infiniscroll');
-			wp_enqueue_script(PF_SLUG . '-scrollimp');
+
+			if (empty($pf_user_scroll_switch) || 'true' == $pf_user_scroll_switch){
+				wp_enqueue_script(PF_SLUG . '-infiniscroll');
+				wp_enqueue_script(PF_SLUG . '-scrollimp');
+			}
+
 			wp_enqueue_script('pf-relationships');
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style(PF_SLUG . '-bootstrap-style');
