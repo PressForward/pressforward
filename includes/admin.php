@@ -723,7 +723,7 @@ class PF_Admin {
 				$limit = false;
 			}
 			#var_dump($limit);
-			foreach(pressforward()->pf_feed_items->archive_feed_to_display($count+1, 20, 0, false, $limit) as $item) {
+			foreach(pressforward()->pf_feed_items->archive_feed_to_display($count+1, false, 0, false, $limit) as $item) {
 
 				$this->form_of_an_item($item, $c);
 
@@ -880,6 +880,17 @@ class PF_Admin {
 								<label for="pf_user_scroll_switch" >' . 'Infinite Scroll Active' . '</label>';
 					?>
 					</p>
+					<p>
+					<?php
+					$user_ID = get_current_user_id();
+					$default_pf_pagefull = get_user_option('pf_pagefull', $user_ID);
+					if ( empty($default_pf_pagefull)){
+						$default_pf_pagefull = 20;
+					}
+					echo '<input id="pf_pagefull" name="pf_pagefull" type="number" class="pf_pagefull" value="'.$default_pf_pagefull.'" />';
+
+					echo '<label class="description" for="pf_pagefull"> ' .__('Number of feed items per page.', 'pf'). ' </label>';
+					?></p>
 					<p>
 					<?php
 					$default_pf_link_value = get_option('pf_retain_time', 2);
@@ -1246,6 +1257,14 @@ class PF_Admin {
 			update_user_option($user_ID, 'pf_user_scroll_switch', $pf_user_scroll_switch);
 		} else {
 			update_user_option($user_ID, 'pf_user_scroll_switch', 'false');
+		}
+
+		if (isset( $_POST['pf_pagefull'] )){
+			$pf_pagefull = $_POST['pf_pagefull'];
+			//var_dump($pf_user_scroll_switch); die();
+			update_user_option($user_ID, 'pf_pagefull', $pf_pagefull);
+		} else {
+			update_user_option($user_ID, 'pf_pagefull', 'false');
 		}
 
 
