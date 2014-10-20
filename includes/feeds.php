@@ -245,29 +245,73 @@ class PF_Feeds_Schema {
 
 	}
 
-	public function the_folder_object($obj){
-		?><ul>
+	public function the_feed_folders($obj = false){
+		if(!$obj){
+			$obj = $this->get_feed_folders();
+		}
+		?><ul class="feed_folders">
 				<?php
-				$this->the_feed($obj);
-
-				foreach ($obj['children']['folders'] as $subfolder){
-					$this->the_folder_object($subfolder);
+				#var_dump($obj);
+				foreach($obj as $folder){
+					$this->the_inside_of_folder($folder);
+					#printf();
 				}
-				foreach ($obj['children']['feeds'] as $feed){
-					$this->the_feed($feed);
-				}
-				printf();
-
 				?>
 		</ul>
 		<?php
 	}
 
+	public function the_inside_of_folder($folder){
+		$this->the_folder($folder);
+		#var_dump($folder);
+		if (!empty($folder['children']['folders'])){
+			foreach ($folder['children']['folders'] as $subfolder){
+				?>
+				<ul class="feed_inner_folders">
+				<?php
+				$this->the_inside_of_folder($subfolder);
+				?>
+				</ul>
+				<?php
+
+			}
+		}
+		if (!empty($folder['children']['feeds'])){
+			foreach ($folder['children']['feeds'] as $feed){
+				?>
+				<ul class="feed_inner_feeds">
+				<?php
+				$this->the_feed($feed);
+				?>
+				</ul>
+				<?php
+			}
+		}
+	}
+
+	public function the_folder($folder){
+		#var_dump($folder);
+		if(is_array($folder)){
+			$term_obj = $folder['term'];
+		} else {
+			$term_obj = $folder;
+		}
+		?>
+		<li class="feed_folder" id="folder-<?php echo $term_obj->term_id; ?>">
+		<?php
+			printf('<a href="%s" title="%s">%s</a>', $term_obj->term_id, $term_obj->name, $term_obj->name );
+
+		?>
+		</li>
+		<?php
+	}
+
 	public function the_feed($feed){
 		?>
-		<li id="folder-<?php echo $feed['term-id']; ?>">
+		<li class="feed" id="feed-<?php echo $feed->term_id; ?>">
 		<?php
-			printf('<a href="%s" title="%s">%s</a>', $feed['term']['term_id'], $feed['term']['name'], $feed['term']['name'] );
+			$feed_obj = get_post($feed);
+			printf('<a href="%s" title="%s">%s</a>', $feed, $feed_obj->post_title, $feed_obj->post_title );
 
 		?>
 		</li>
