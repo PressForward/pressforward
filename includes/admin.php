@@ -145,6 +145,15 @@ class PF_Admin {
 		return $classes;
 	}
 
+	public function folderbox(){
+		?>
+			<div id="feed-folders">
+					<?php printf(__('<h3>Folders</h3>')); ?>
+
+			</div>
+		<?php
+	}
+
 	public function toolbox($slug = 'allfeed', $version = 0, $deck = false){
 		global $hook_suffix;
 		if(!empty($hook_suffix)){
