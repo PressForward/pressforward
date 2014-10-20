@@ -818,7 +818,7 @@ function pf_meta_structure(){
 			'function'	=> __('Stores and array of all userIDs that nominated the item in an array', 'pf'),
 			'type'	=> array('adm'),
 			'use'	=> array('req'),
-			'level'	=> array('nomination', 'post')
+			'level'	=> array('item', 'nomination', 'post')
 		),
 		'sortable_item_date' => array(
 			'name' => 'sortable_item_date',
