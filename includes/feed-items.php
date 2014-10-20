@@ -182,6 +182,15 @@ class PF_Feed_Item {
 
 		$pageTop = $pageTop - 1;
 
+		if (!$pagefull){
+			$user_obj = wp_get_current_user();
+			$user_id = $user_obj->ID;
+			$pagefull = get_user_option('pf_pagefull', $user_id);
+			if (empty($pagefull)){
+				$pagefull = 20;
+			}
+		}
+
 		$post_args = array(
 			'post_type' => pf_feed_item_post_type(),
 

@@ -19,8 +19,8 @@ class PF_Admin {
 		// Adding javascript and css to admin pages
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
 		add_action( 'wp_head', array( $this, 'pf_aggregation_forwarder'));
-		add_filter('admin_body_class',  array( $this, 'add_pf_body_class'));
-		add_filter('pf_admin_pages', array($this, 'state_pf_admin_pages'), 10,3);
+		add_filter( 'admin_body_class',  array( $this, 'add_pf_body_class'));
+		add_filter( 'pf_admin_pages', array($this, 'state_pf_admin_pages'), 10,3);
 		// Catch form submits
 		add_action( 'admin_init', array($this, 'pf_options_admin_page_save') );
 		add_action( 'admin_notices', array($this, 'admin_notices_action' ));
@@ -34,6 +34,7 @@ class PF_Admin {
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
 		add_action( 'wp_ajax_ajax_get_comments', array( $this, 'ajax_get_comments') );
 		add_action( 'wp_ajax_pf_ajax_thing_deleter', array( $this, 'pf_ajax_thing_deleter') );
+		add_action( 'wp_ajax_pf_ajax_retain_display_setting', array( $this, 'pf_ajax_retain_display_setting' ) );
 		add_action( 'init', array( $this, 'register_feed_item_removed_status') );
 
 		// Modify the Subscribed Feeds panel
@@ -258,10 +259,10 @@ class PF_Admin {
 					} else {
 						#var_dump(pf_get_relationship('nominate', $id_for_comments, $user_id));
 						if (1 == pf_get_relationship_value('nominate', $id_for_comments, $user_id)){
-							echo '<button class="btn btn-small nominate-now btn-success schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominated', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-single-licon.png" /></button>';
+							echo '<button class="btn btn-small nominate-now btn-success schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominated', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-single-licon.png" /></button>';
 							# Add option here for admin-level users to send items direct to draft.
 						} else {
-							echo '<button class="btn btn-small nominate-now schema-actor" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominate', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-single-licon.png" /></button>';
+							echo '<button class="btn btn-small nominate-now schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominate', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-single-licon.png" /></button>';
 							# Add option here for admin-level users to send items direct to draft.
 						}
 					}
@@ -621,7 +622,8 @@ class PF_Admin {
 	 * Display function for the main All Content panel
 	 */
 	public function display_reader_builder() {
-
+		$userObj = wp_get_current_user();
+		$user_id = $userObj->ID;
 		//Calling the feedlist within the pf class.
 		if (isset($_GET["pc"])){
 			$page = $_GET["pc"];
@@ -634,8 +636,15 @@ class PF_Admin {
 		if(isset($_GET['reveal']) && ('no_hidden' == $_GET['reveal'])){
 			$extra_class .= ' archived_visible';
 		}
+		$view_state = ' grid';
+		$view_check = get_user_meta($user_id, 'pf_user_read_state', true);
+		if ('golist' == $view_check){
+			$view_state = ' list';
+		}
+		$extra_class = $extra_class.$view_state;
+
 	?>
-	<div class="grid pf_container full<?php echo $extra_class; ?>">
+	<div class="pf_container full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">
 				<?php echo '<h1>' . PF_TITLE . '</h1>'; ?>
@@ -667,8 +676,8 @@ class PF_Admin {
 				</div>
 				<div class="display">
 					<div class="pf-btns pull-left">
-					<button type="submit" id="gogrid" class="btn btn-small">Grid</button>
-					<button type="submit" id="golist" class="btn btn-small">List</button>
+					<button type="submit" id="gogrid" class="btn btn-small display-state">Grid</button>
+					<button type="submit" id="golist" class="btn btn-small display-state">List</button>
 
 					<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
 					echo '<button type="submit" class="btn btn-small feedsort" id="sortbyfeedindate" value="' . __('Sort by date entered feed', 'pf') . '">' . __('Sort by date entered feed', 'pf') . '</button>'; ?>
@@ -714,7 +723,7 @@ class PF_Admin {
 				$limit = false;
 			}
 			#var_dump($limit);
-			foreach(pressforward()->pf_feed_items->archive_feed_to_display($count+1, 20, 0, false, $limit) as $item) {
+			foreach(pressforward()->pf_feed_items->archive_feed_to_display($count+1, false, 0, false, $limit) as $item) {
 
 				$this->form_of_an_item($item, $c);
 
@@ -858,7 +867,32 @@ class PF_Admin {
 					<?php
 					}
 					?>
-					<p><?php
+					<p>
+					<?php
+					$user_ID = get_current_user_id();
+					$pf_user_scroll_switch = get_user_option('pf_user_scroll_switch', $user_ID);
+					if ( empty($pf_user_scroll_switch) || 'true' == $pf_user_scroll_switch){
+						$mark = 'checked';
+					} else {
+						$mark = '';
+					}
+					echo '<input id="pf_user_scroll_switch" type="checkbox" name="pf_user_scroll_switch" value="true" '.$mark.' class="user_setting" />
+								<label for="pf_user_scroll_switch" >' . 'Infinite Scroll Active' . '</label>';
+					?>
+					</p>
+					<p>
+					<?php
+					$user_ID = get_current_user_id();
+					$default_pf_pagefull = get_user_option('pf_pagefull', $user_ID);
+					if ( empty($default_pf_pagefull)){
+						$default_pf_pagefull = 20;
+					}
+					echo '<input id="pf_pagefull" name="pf_pagefull" type="number" class="pf_pagefull" value="'.$default_pf_pagefull.'" />';
+
+					echo '<label class="description" for="pf_pagefull"> ' .__('Number of feed items per page.', 'pf'). ' </label>';
+					?></p>
+					<p>
+					<?php
 					$default_pf_link_value = get_option('pf_retain_time', 2);
 					echo '<input id="pf_retain_time" name="pf_retain_time" type="number" class="pf_retain_time" value="'.$default_pf_link_value.'" />';
 
@@ -1032,6 +1066,10 @@ class PF_Admin {
 		//This gets the current page the user is on.
 		global $pagenow;
 
+
+		$user_ID = get_current_user_id();
+		$pf_user_scroll_switch = get_user_option('pf_user_scroll_switch', $user_ID);
+
 			wp_register_style( PF_SLUG . '-style', PF_URL . 'assets/css/style.css');
 			wp_register_style( PF_SLUG . '-bootstrap-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
 			wp_register_style( PF_SLUG . '-bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
@@ -1060,8 +1098,10 @@ class PF_Admin {
 			wp_enqueue_script(PF_SLUG . '-nomination-imp', PF_URL . 'assets/js/nomination-imp.js', array( 'jquery' ));
 			wp_enqueue_script(PF_SLUG . '-twitter-bootstrap');
 			wp_enqueue_script(PF_SLUG . '-jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
-			wp_enqueue_script(PF_SLUG . '-infiniscroll');
-			wp_enqueue_script(PF_SLUG . '-scrollimp');
+			if (empty($pf_user_scroll_switch) || 'true' == $pf_user_scroll_switch){
+				wp_enqueue_script(PF_SLUG . '-infiniscroll');
+				wp_enqueue_script(PF_SLUG . '-scrollimp');
+			}
 			wp_enqueue_script('pf-relationships');
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style(PF_SLUG . '-bootstrap-style');
@@ -1080,8 +1120,12 @@ class PF_Admin {
 			wp_enqueue_script(PF_SLUG . '-archive-nom-imp', PF_URL . 'assets/js/nom-archive-imp.js', array( 'jquery' ));
 			wp_enqueue_script(PF_SLUG . '-views');
 			wp_enqueue_script(PF_SLUG . '-readability-imp');
-			wp_enqueue_script(PF_SLUG . '-infiniscroll');
-			wp_enqueue_script(PF_SLUG . '-scrollimp');
+
+			if (empty($pf_user_scroll_switch) || 'true' == $pf_user_scroll_switch){
+				wp_enqueue_script(PF_SLUG . '-infiniscroll');
+				wp_enqueue_script(PF_SLUG . '-scrollimp');
+			}
+
 			wp_enqueue_script('pf-relationships');
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style(PF_SLUG . '-bootstrap-style');
@@ -1205,6 +1249,25 @@ class PF_Admin {
 		} else {
 			update_option('pf_link_to_source', 0);
 		}
+
+		$user_ID = get_current_user_id();
+		if (isset( $_POST['pf_user_scroll_switch'] )){
+			$pf_user_scroll_switch = $_POST['pf_user_scroll_switch'];
+			//var_dump($pf_user_scroll_switch); die();
+			update_user_option($user_ID, 'pf_user_scroll_switch', $pf_user_scroll_switch);
+		} else {
+			update_user_option($user_ID, 'pf_user_scroll_switch', 'false');
+		}
+
+		if (isset( $_POST['pf_pagefull'] )){
+			$pf_pagefull = $_POST['pf_pagefull'];
+			//var_dump($pf_user_scroll_switch); die();
+			update_user_option($user_ID, 'pf_pagefull', $pf_pagefull);
+		} else {
+			update_user_option($user_ID, 'pf_pagefull', 'false');
+		}
+
+
 		if (isset( $_POST['pf_retain_time'] )){
 			$pf_links_opt_check = $_POST['pf_retain_time'];
 			//print_r($pf_links_opt_check); die();
@@ -1406,6 +1469,40 @@ class PF_Admin {
 		$xmlResponse->send();
 		die();
 
+	}
+
+	function pf_ajax_retain_display_setting() {
+		ob_start();
+		if(isset($_POST['pf_read_state'])){
+			$read_state = $_POST['pf_read_state'];
+		} else {
+			$read_status = false;
+		}
+		$userObj = wp_get_current_user();
+		$user_id = $userObj->ID;
+		$returned = self::pf_switch_display_setting($user_id, $read_state);
+		#var_dump($user_id);
+
+		$response = array(
+			'what'=>'pressforward',
+			'action'=>'pf_ajax_retain_display_setting',
+			'id'=>$user_id,
+			'data'=>(string) $returned
+		);
+		$xmlResponse = new WP_Ajax_Response($response);
+		$xmlResponse->send();
+		ob_end_clean();
+		die();
+
+	}
+
+	function pf_switch_display_setting($user_id, $read_state){
+		if ( !current_user_can( 'edit_user', $user_id ) ){
+			return false;
+		}
+
+		$check = update_user_meta($user_id, 'pf_user_read_state', $read_state);
+		return $check;
 	}
 
 	/**
