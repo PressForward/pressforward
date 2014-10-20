@@ -312,20 +312,42 @@ function pf_get_user_level($option, $default_level) {
 }
 
 /**
- * Converts an https URL into http, to account for servers without SSL access
+ * Converts an https URL into http, to account for servers without SSL access.
+ * If a function is passed, pf_de_https will return the function result
+ * instead of the string.
  *
  * @since 1.7
  *
  * @param string $url
- * @return string $url
+ * @param string|array $function Function to call first to try and get the URL.
+ * @return string|object $r Returns the string URL, converted, when no function is passed.
+ * otherwise returns the result of the function after being checked for accessability.
  */
-function pf_de_https($url) {
-	$urlParts = parse_url($url);
-	if (in_array('https', $urlParts)){
-		$urlParts['scheme'] = 'http';
-		$url = $urlParts['scheme'] . '://'. $urlParts['host'] . $urlParts['path'] . $urlParts['query'];
+function pf_de_https($url, $function = false) {
+	$args = func_get_args();
+	$url = str_replace('&amp;','&', $url);
+	if (!$function){
+		$r = set_url_scheme($url, 'http');
+	} else {
+		$args[0] = $url;
+		#unset($args[1]);
+		#var_dump($args);
+		$r = call_user_func_array( $function, $args );
+		# "A variable is considered empty if it does not exist or if its value equals FALSE"
+		if ( is_wp_error( $r ) || empty($r) ) {
+		    $non_ssl_url = pf_de_https( $url );
+		    if ( $non_ssl_url != $url ) {
+						$args[0] = $non_ssl_url;
+		        $r = call_user_func_array( $function, $args );
+		    }
+
+		    if ( is_wp_error( $r ) ) {
+		        // bail
+						return false;
+		    }
+		}
 	}
-	return $url;
+	return $r;
 }
 
 /**
@@ -505,7 +527,7 @@ function pf_get_defining_capability_by_role($role_slug){
 function pf_replace_author_presentation( $author ) {
 	global $post;
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')){
-		$custom_author = pf_retrieve_meta($post->ID, 'authors');
+		$custom_author = pf_retrieve_meta($post->ID, 'item_author');
 		if($custom_author)
 			return $custom_author;
 		return $author;
@@ -525,7 +547,7 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 		return $author_uri;
 	}
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')) {
-		$custom_author_uri = pf_retrieve_meta($id, 'nomination_permalink');
+		$custom_author_uri = pf_retrieve_meta($id, 'item_link');
 		if(!$custom_author_uri || 0 == $custom_author_uri || empty($custom_author_uri)){
 			return $author_uri;
 		} else {
@@ -542,7 +564,7 @@ function pf_forward_unto_source(){
 	if(is_single()){
 		$obj = get_queried_object();
 		$post_ID = $obj->ID;
-		$link = get_post_meta($post_ID, 'nomination_permalink', TRUE);
+		$link = get_post_meta($post_ID, 'item_link', TRUE);
 		if (!empty($link)){
 			echo '<link rel="canonical" href="'.$link.'" />';
 			$wait = get_option('pf_link_to_source', 0);
@@ -726,7 +748,7 @@ function pf_meta_structure(){
 			'level'	=> array('item', 'nomination', 'post')
 		),
 		'nomination_permalink' => array(
-			'name' => 'nomination_permalink',
+			'name' => 'item_link',
 			'definition' => __('Source link', 'pf'),
 			'function'	=> __('DUPE Soon to be depreciated version of item_link', 'pf'),
 			'type'	=> array('struc','dep'),
@@ -796,7 +818,7 @@ function pf_meta_structure(){
 			'function'	=> __('Stores and array of all userIDs that nominated the item in an array', 'pf'),
 			'type'	=> array('adm'),
 			'use'	=> array('req'),
-			'level'	=> array('nomination', 'post')
+			'level'	=> array('item', 'nomination', 'post')
 		),
 		'sortable_item_date' => array(
 			'name' => 'sortable_item_date',
@@ -829,6 +851,14 @@ function pf_meta_structure(){
 			'type'	=> array('desc'),
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
+		),
+		'pf_feed_error_count' => array(
+			'name' => 'pf_feed_error_count',
+			'definition' => __('Count of feed errors', 'pf'),
+			'function'	=> __('Stores a count of the number of errors a feed has experianced', 'pf'),
+			'type'	=> array('adm'),
+			'use'	=> array(),
+			'level'	=> array('feed', 'post')
 		)
 	);
 
@@ -1030,6 +1060,50 @@ function pf_custom_upload_opml ( $existing_mimes=array() ) {
 	// and return the new full result
 	return $existing_mimes;
 
+}
+
+function pf_iterate_cycle_state($option_name, $option_limit = false, $echo = false){
+	$default = array(
+		'day' 			=> 0,
+		'week'			=> 0,
+		'month' 		=> 0,
+		'next_day'		=> strtotime('+1 day'),
+		'next_week'		=> strtotime('+1 week'),
+		'next_month'	=> strtotime('+1 month')
+	);
+	$retrieval_cycle = get_option(PF_SLUG.'_'.$option_name,$default);
+	if (!is_array($retrieval_cycle)){
+		$retrieval_cycle = $default;
+		update_option(PF_SLUG.'_'.$option_name, $retrieval_cycle);
+	}
+	if ($echo) {
+		echo '<br />Day: '.$retrieval_cycle['day'];
+		echo '<br />Week: '.$retrieval_cycle['week'];
+		echo '<br />Month: '.$retrieval_cycle['month'];
+	} else if(!$option_limit){
+		return $retrieval_cycle;
+	} else if($option_limit){
+		$states = array('day','week','month');
+		foreach ($states as $state){
+			if (strtotime("now") >= $retrieval_cycle['next_'.$state]){
+				$retrieval_cycle[$state] = 1;
+				$retrieval_cycle['next_'.$state] = strtotime('+1 '.$state);
+			} else {
+				$retrieval_cycle[$state] = $retrieval_cycle[$state]+1;
+			}
+		}
+		update_option(PF_SLUG.'_'.$option_name, $retrieval_cycle);
+		return $retrieval_cycle;
+	} else {
+		if (strtotime("now") >= $retrieval_cycle['next_'.$option_limit]){
+			$retrieval_cycle[$option_limit] = 1;
+			$retrieval_cycle['next_'.$option_limit] = strtotime('+1 '.$option_limit);
+		} else {
+			$retrieval_cycle[$option_limit] = $retrieval_cycle[$option_limit]+1;
+		}
+		update_option(PF_SLUG.'_'.$option_name, $retrieval_cycle);
+		return $retrieval_cycle;
+	}
 }
 
 
