@@ -312,8 +312,34 @@ jQuery(window).load(function() {
 		});
 
 
-	
 
+	jQuery('#feed-folders .folder').click(function (evt){
+		evt.preventDefault();
+		var obj = jQuery(this);
+		var id = obj.attr('href');
+		var url = window.location.origin+window.location.pathname+'?page=pf-menu';
+		//url = url.replace('#','');
+		if (url.indexOf('?') > -1){
+		   url += '&folder='+id;
+		}else{
+		   url += '?folder='+id;
+		}
+		window.location.href = url;
+	});
+
+	jQuery('#feed-folders .feed').click(function (evt){
+		evt.preventDefault();
+		var obj = jQuery(this);
+		var id = obj.children('a').attr('href');
+		var url = window.location.origin+window.location.pathname+'?page=pf-menu';
+		//url = url.replace('#','');
+		if (url.indexOf('?') > -1){
+			url += '&feed='+id;
+		}else{
+			url += '?feed='+id;
+		}
+		window.location.href = url;
+	});
 
 
 	jQuery(".refreshfeed").click(function (evt){
