@@ -199,25 +199,12 @@ class PF_Feeds_Schema {
 	}
 
 	public function get_child_folders($folder){
-		$child_folders = array();
-		if (is_object($folder)){
-			$children = $this->get_child_feed_folders($folder->term_id);
-		} else if (is_string($folder) || is_numeric($folder)) {
-			$children = $this->get_child_feed_folders($folder, $this->tag_taxonomy);
-		} else {
-			$children = false;
-		}
-		#return $children;
-		if (!$children){
-			$child_folders = false;
-		} elseif (is_array($children)) {
+			$children = get_term_children($folder->term_id, $this->tag_taxonomy);
+			$folders = array();
 			foreach ($children as $child){
-				$child_folders[$child] = $this->get_feed_folders($child);
+				$folders[$child] = $this->get_feed_folders($child);
 			}
-		} else {
-			$child_folders[$folder] = $children;
-		}
-		return $child_folders;
+			return $folders;
 	}
 
 	public function get_feed_folders($ids = false){
@@ -228,6 +215,7 @@ class PF_Feeds_Schema {
 
 				$folder_set[$folder->term_id] = array(
 					'term'			=> $folder,
+					'term-id'		=> $folder->term_id,
 					'children'	=> array(
 													'feeds'		=> get_objects_in_term($folder->term_id, $this->tag_taxonomy),
 													'folders'	=> $this->get_child_folders($folder)
@@ -236,7 +224,7 @@ class PF_Feeds_Schema {
 			}
 		} elseif (is_numeric($ids)) {
 			$folder = get_term($ids, $this->tag_taxonomy);
-			$folder_set[$ids] = array(
+			$folder_set = array(
 				'term'			=> $folder,
 				'term-id'		=> $folder->term_id,
 				'children'	=> array(
@@ -245,7 +233,7 @@ class PF_Feeds_Schema {
 											)
 			);
 		} elseif (is_array($ids)){
-			var_dump($ids); die();
+			#var_dump($ids); die();
 			foreach ($ids as $id){
 				$folder_set[$id] = $this->get_feed_folders($id);
 			}
