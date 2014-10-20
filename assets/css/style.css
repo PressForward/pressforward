@@ -238,6 +238,11 @@ h3 {
 #tools {
 	display:none;
 }
+
+#feed-folders {
+	display:none;
+}
+
 .primary-btn-tools .btn {
     width:100%;
     border-radius: 0;

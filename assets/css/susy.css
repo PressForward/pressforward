@@ -76,12 +76,12 @@
     display: block;
   }
 
-  #tools {
+  #tools, #feed-folders {
     float: right;
     width: 25%;
     padding: 40px;
   }
-  #tools h2 {
+  #tools h2, #feed-folders h2 {
     font-size: 1.125em;
     line-height: 1.55556em;
   }

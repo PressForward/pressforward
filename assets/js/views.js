@@ -277,16 +277,44 @@ jQuery(window).load(function() {
 		}
 	);
 
+	jQuery('#gomenu').click(function (evt){
+			evt.preventDefault();
+			jQuery('#feed-folders').hide('slide',{direction:'right', easing:'linear'},150);
+	});
+
 	jQuery('#gomenu').toggle(function (evt){
 			evt.preventDefault();
 			var toolswin = jQuery('#tools');
 			jQuery("div.pf_container").removeClass('full');
+			jQuery('#feed-folders').hide('slide',{direction:'right', easing:'linear'},150);
 			jQuery(toolswin).show('slide',{direction:'right', easing:'linear'},150);
-		}, function() {
+	}, function() {
 			var toolswin = jQuery('#tools');
+			//jQuery('#feed-folders').hide('slide',{direction:'right', easing:'linear'},150);
 			jQuery(toolswin).hide('slide',{direction:'right', easing:'linear'},150);
 			jQuery("div.pf_container").addClass('full');
+	});
+	jQuery('#gofolders').click(function (evt){
+			evt.preventDefault();
+			jQuery('#tools').hide('slide',{direction:'right', easing:'linear'},150);
+	});
+	jQuery('#gofolders').toggle(function (evt){
+				evt.preventDefault();
+				var folderswin = jQuery('#feed-folders');
+				jQuery("div.pf_container").removeClass('full');
+
+				jQuery(folderswin).show('slide',{direction:'right', easing:'linear'},150);
+		}, function() {
+				var folderswin = jQuery('#feed-folders');
+				//jQuery('#tools').hide('slide',{direction:'right', easing:'linear'},150);
+				jQuery(folderswin).hide('slide',{direction:'right', easing:'linear'},150);
+				jQuery("div.pf_container").addClass('full');
 		});
+
+
+	
+
+
 
 	jQuery(".refreshfeed").click(function (evt){
 		evt.preventDefault();
