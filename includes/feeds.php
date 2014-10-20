@@ -144,7 +144,9 @@ class PF_Feeds_Schema {
 	}
 
 	public function is_feed_term($id){
-		if (!term_exists($id, $this->tag_taxonomy)){
+		#var_dump($id);
+		$termcheck = term_exists((int) $id, $this->tag_taxonomy);
+		if (empty($termcheck)){
 			return false;
 		} else {
 			return true;
@@ -176,12 +178,17 @@ class PF_Feeds_Schema {
 			}
 		} elseif (is_numeric($ids) || is_string($ids)) {
 			if(!$this->is_feed_term($ids)){
+				var_dump($ids.' not a term in '.$this->tag_taxonomy);
 				return false;
 			}
-			$children[$ids] = $this->get_feed_folders($ids);
+			$children_terms = get_term_children( $ids, $this->tag_taxonomy );
+			#var_dump($children_terms);
+			foreach ($children_terms as $child){
+				$children[$child] = $this->get_feed_folders($child);
+			}
 		} elseif (is_array($ids)){
 			foreach ($ids as $id){
-				$children[$id] = $this->get_child_feed_folders($id);
+				$children[$id] = $this->get_feed_folders($id);
 			}
 		} elseif (is_object($ids)) {
 			$children[$ids->term_id] = get_term_children($ids->term_id, $this->tag_taxonomy);
@@ -192,25 +199,12 @@ class PF_Feeds_Schema {
 	}
 
 	public function get_child_folders($folder){
-		$child_folders = array();
-		if (is_object($folder)){
-			$children = $this->get_child_feed_folders($folder->term_id);
-		} else if (is_string($folder) || is_numeric($folder)) {
-			$children = $this->get_term_children($folder, $this->tag_taxonomy);
-		} else {
-			$children = false;
-		}
-		#return $children;
-		if (!$children){
-			$child_folders = false;
-		} elseif (is_array($children)) {
+			$children = get_term_children($folder->term_id, $this->tag_taxonomy);
+			$folders = array();
 			foreach ($children as $child){
-				$child_folders[$child->term_id] = $this->get_feed_folders($child->term_id);
+				$folders[$child] = $this->get_feed_folders($child);
 			}
-		} else {
-			$child_folders[$folder] = $children;
-		}
-		return $child_folders;
+			return $folders;
 	}
 
 	public function get_feed_folders($ids = false){
@@ -221,6 +215,7 @@ class PF_Feeds_Schema {
 
 				$folder_set[$folder->term_id] = array(
 					'term'			=> $folder,
+					'term_id'		=> $folder->term_id,
 					'children'	=> array(
 													'feeds'		=> get_objects_in_term($folder->term_id, $this->tag_taxonomy),
 													'folders'	=> $this->get_child_folders($folder)
@@ -229,14 +224,16 @@ class PF_Feeds_Schema {
 			}
 		} elseif (is_numeric($ids)) {
 			$folder = get_term($ids, $this->tag_taxonomy);
-			$folder_set[$ids] = array(
+			$folder_set = array(
 				'term'			=> $folder,
+				'term_id'		=> $folder->term_id,
 				'children'	=> array(
 												'feeds'		=> get_objects_in_term($folder->term_id, $this->tag_taxonomy),
 												'folders'	=> $this->get_child_folders($folder)
 											)
 			);
 		} elseif (is_array($ids)){
+			#var_dump($ids); die();
 			foreach ($ids as $id){
 				$folder_set[$id] = $this->get_feed_folders($id);
 			}
@@ -248,7 +245,102 @@ class PF_Feeds_Schema {
 
 	}
 
-    public function disallow_add_new(){
+	public function the_feed_folders($obj = false){
+		if(!$obj){
+			$obj = $this->get_feed_folders();
+		}
+		?><ul class="feed_folders">
+				<?php
+				#var_dump($obj);
+				foreach($obj as $folder){
+					?>
+					<li class="feed_folder" id="folder-<?php echo $folder['term_id']; ?>">
+					<?php
+					$this->the_inside_of_folder($folder);
+					?>
+					</li>
+					<?php
+				}
+				?>
+		</ul>
+		<?php
+	}
+
+	public function the_inside_of_folder($folder, $wrapped = false){
+		if ($wrapped){
+			?>
+			<li class="feed_folder" id="folder-<?php echo $folder['term_id']; ?>">
+			<?php
+		}
+		$this->the_folder($folder);
+
+		#var_dump($folder);
+		if (!empty($folder['children']['folders'])){
+			foreach ($folder['children']['folders'] as $subfolder){
+				?>
+				<ul class="feed_inner_folders">
+				<?php
+				$this->the_inside_of_folder($subfolder, true);
+				?>
+				</ul>
+				<?php
+
+			}
+		}
+
+		if (!empty($folder['children']['feeds'])){
+			?>
+			<ul class="feed_inner_feeds">
+			<?php
+			foreach ($folder['children']['feeds'] as $feed){
+				?>
+				<?php
+				$this->the_feed($feed);
+				?>
+				<?php
+			}
+			?>
+			</ul>
+			<?php
+		}
+		if ($wrapped){
+			?>
+		</li>
+			<?php
+		}
+	}
+
+	public function the_folder($folder){
+		#var_dump($folder);
+		if(is_array($folder)){
+			$term_obj = $folder['term'];
+		} else {
+			$term_obj = $folder;
+		}
+		?>
+
+		<?php
+			printf('<a href="%s" class="folder" title="%s">%s</a>', $term_obj->term_id, $term_obj->name, $term_obj->name );
+
+		?>
+
+		<?php
+	}
+
+	public function the_feed($feed){
+		$feed_obj = get_post($feed);
+		?>
+		<li class="feed" id="feed-<?php echo $feed_obj->ID; ?>">
+		<?php
+
+			printf('<a href="%s" title="%s">%s</a>', $feed_obj->ID, $feed_obj->post_title, $feed_obj->post_title );
+
+		?>
+		</li>
+		<?php
+	}
+
+  public function disallow_add_new(){
         global $pagenow;
         /* Check current admin page. */
         if($pagenow == 'post-new.php' && isset($_GET['post_type']) && $_GET['post_type'] == $this->post_type){

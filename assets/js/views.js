@@ -277,16 +277,70 @@ jQuery(window).load(function() {
 		}
 	);
 
+	jQuery('#gomenu').click(function (evt){
+			evt.preventDefault();
+			jQuery('#feed-folders').hide('slide',{direction:'right', easing:'linear'},150);
+	});
+
 	jQuery('#gomenu').toggle(function (evt){
 			evt.preventDefault();
 			var toolswin = jQuery('#tools');
 			jQuery("div.pf_container").removeClass('full');
+			jQuery('#feed-folders').hide('slide',{direction:'right', easing:'linear'},150);
 			jQuery(toolswin).show('slide',{direction:'right', easing:'linear'},150);
-		}, function() {
+	}, function() {
 			var toolswin = jQuery('#tools');
+			//jQuery('#feed-folders').hide('slide',{direction:'right', easing:'linear'},150);
 			jQuery(toolswin).hide('slide',{direction:'right', easing:'linear'},150);
 			jQuery("div.pf_container").addClass('full');
+	});
+	jQuery('#gofolders').click(function (evt){
+			evt.preventDefault();
+			jQuery('#tools').hide('slide',{direction:'right', easing:'linear'},150);
+	});
+	jQuery('#gofolders').toggle(function (evt){
+				evt.preventDefault();
+				var folderswin = jQuery('#feed-folders');
+				jQuery("div.pf_container").removeClass('full');
+
+				jQuery(folderswin).show('slide',{direction:'right', easing:'linear'},150);
+		}, function() {
+				var folderswin = jQuery('#feed-folders');
+				//jQuery('#tools').hide('slide',{direction:'right', easing:'linear'},150);
+				jQuery(folderswin).hide('slide',{direction:'right', easing:'linear'},150);
+				jQuery("div.pf_container").addClass('full');
 		});
+
+
+
+	jQuery('#feed-folders .folder').click(function (evt){
+		evt.preventDefault();
+		var obj = jQuery(this);
+		var id = obj.attr('href');
+		var url = window.location.origin+window.location.pathname+'?page=pf-menu';
+		//url = url.replace('#','');
+		if (url.indexOf('?') > -1){
+		   url += '&folder='+id;
+		}else{
+		   url += '?folder='+id;
+		}
+		window.location.href = url;
+	});
+
+	jQuery('#feed-folders .feed').click(function (evt){
+		evt.preventDefault();
+		var obj = jQuery(this);
+		var id = obj.children('a').attr('href');
+		var url = window.location.origin+window.location.pathname+'?page=pf-menu';
+		//url = url.replace('#','');
+		if (url.indexOf('?') > -1){
+			url += '&feed='+id;
+		}else{
+			url += '?feed='+id;
+		}
+		window.location.href = url;
+	});
+
 
 	jQuery(".refreshfeed").click(function (evt){
 		evt.preventDefault();

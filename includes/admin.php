@@ -145,6 +145,16 @@ class PF_Admin {
 		return $classes;
 	}
 
+	public function folderbox(){
+		?>
+			<div id="feed-folders">
+					<?php printf(__('<h3>Folders</h3>'));
+					pressforward()->pf_feeds->the_feed_folders();
+					?>
+			</div>
+		<?php
+	}
+
 	public function toolbox($slug = 'allfeed', $version = 0, $deck = false){
 		global $hook_suffix;
 		if(!empty($hook_suffix)){
@@ -665,6 +675,7 @@ class PF_Admin {
 		</header><!-- End Header -->
 		<div role="main">
 			<?php $this->toolbox(); ?>
+			<?php $this->folderbox(); ?>
 			<div id="entries">
 				<?php echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';  ?>
 				<div id="errors">
@@ -704,6 +715,7 @@ class PF_Admin {
                         } else {
                         	echo '<a class="btn btn-small" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i></a>';
                         }
+												echo '<a class="btn btn-small" id="gofolders" href="#">' . __('Folders', 'pf') . '</a>';
                         ?>
 
 					</div>
