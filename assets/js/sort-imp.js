@@ -88,7 +88,7 @@ jQuery(window).load(function() {
 
 
 function pf_show_unsort(){
-	console.log('b');
+	//console.log('b');
 	jQuery('.feedsort').on('click', function() {
 		console.log('a');
 		jQuery('#sort-reset').show();
