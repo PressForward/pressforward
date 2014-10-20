@@ -215,7 +215,7 @@ class PF_Feeds_Schema {
 
 				$folder_set[$folder->term_id] = array(
 					'term'			=> $folder,
-					'term-id'		=> $folder->term_id,
+					'term_id'		=> $folder->term_id,
 					'children'	=> array(
 													'feeds'		=> get_objects_in_term($folder->term_id, $this->tag_taxonomy),
 													'folders'	=> $this->get_child_folders($folder)
@@ -226,7 +226,7 @@ class PF_Feeds_Schema {
 			$folder = get_term($ids, $this->tag_taxonomy);
 			$folder_set = array(
 				'term'			=> $folder,
-				'term-id'		=> $folder->term_id,
+				'term_id'		=> $folder->term_id,
 				'children'	=> array(
 												'feeds'		=> get_objects_in_term($folder->term_id, $this->tag_taxonomy),
 												'folders'	=> $this->get_child_folders($folder)
@@ -253,39 +253,60 @@ class PF_Feeds_Schema {
 				<?php
 				#var_dump($obj);
 				foreach($obj as $folder){
+					?>
+					<li class="feed_folder" id="folder-<?php echo $folder['term_id']; ?>">
+					<?php
 					$this->the_inside_of_folder($folder);
-					#printf();
+					?>
+					</li>
+					<?php
 				}
 				?>
 		</ul>
 		<?php
 	}
 
-	public function the_inside_of_folder($folder){
+	public function the_inside_of_folder($folder, $wrapped = false){
+		if ($wrapped){
+			?>
+			<li class="feed_folder" id="folder-<?php echo $folder['term_id']; ?>">
+			<?php
+		}
 		$this->the_folder($folder);
+
 		#var_dump($folder);
 		if (!empty($folder['children']['folders'])){
 			foreach ($folder['children']['folders'] as $subfolder){
 				?>
 				<ul class="feed_inner_folders">
 				<?php
-				$this->the_inside_of_folder($subfolder);
+				$this->the_inside_of_folder($subfolder, true);
 				?>
 				</ul>
 				<?php
 
 			}
 		}
+
 		if (!empty($folder['children']['feeds'])){
+			?>
+			<ul class="feed_inner_feeds">
+			<?php
 			foreach ($folder['children']['feeds'] as $feed){
 				?>
-				<ul class="feed_inner_feeds">
 				<?php
 				$this->the_feed($feed);
 				?>
-				</ul>
 				<?php
 			}
+			?>
+			</ul>
+			<?php
+		}
+		if ($wrapped){
+			?>
+		</li>
+			<?php
 		}
 	}
 
@@ -297,21 +318,22 @@ class PF_Feeds_Schema {
 			$term_obj = $folder;
 		}
 		?>
-		<li class="feed_folder" id="folder-<?php echo $term_obj->term_id; ?>">
+
 		<?php
-			printf('<a href="%s" title="%s">%s</a>', $term_obj->term_id, $term_obj->name, $term_obj->name );
+			printf('<a href="%s" class="folder" title="%s">%s</a>', $term_obj->term_id, $term_obj->name, $term_obj->name );
 
 		?>
-		</li>
+
 		<?php
 	}
 
 	public function the_feed($feed){
+		$feed_obj = get_post($feed);
 		?>
-		<li class="feed" id="feed-<?php echo $feed->term_id; ?>">
+		<li class="feed" id="feed-<?php echo $feed_obj->ID; ?>">
 		<?php
-			$feed_obj = get_post($feed);
-			printf('<a href="%s" title="%s">%s</a>', $feed, $feed_obj->post_title, $feed_obj->post_title );
+
+			printf('<a href="%s" title="%s">%s</a>', $feed_obj->ID, $feed_obj->post_title, $feed_obj->post_title );
 
 		?>
 		</li>
