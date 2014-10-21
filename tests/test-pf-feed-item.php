@@ -4,6 +4,28 @@
  * @group PF_Feed_Item
  */
 class PF_Tests_Feed_Item extends PF_UnitTestCase {
+	public function test_archive_feed_to_display_translate_params() {
+		$feed_id = $this->factory->feed->create();
+
+		$feed_items = array();
+		for ( $i = 0; $i <= 5; $i++ ) {
+			$feed_items[ $i ] = $this->factory->feed_item->create( array(
+				'sortable_item_date' => 10000 * ( $i + 1 ), // no zeroes
+			) );
+		}
+
+		$found1 = PF_Feed_Item::archive_feed_to_display( 5, 7, 5050, true, false );
+		$found2 = PF_Feed_Item::archive_feed_to_display( array(
+			'start' => 5,
+			'posts_per_page' => 7,
+			'from_unix_time' => 5050,
+			'no_limit' => true,
+			'relationship' => false,
+		) );
+
+		$this->assertSame( $found1, $found2 );
+	}
+
 	public function test_archive_feed_to_display_limitless() {
 		$feed_id = $this->factory->feed->create();
 

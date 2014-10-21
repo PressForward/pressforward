@@ -175,19 +175,54 @@ class PF_Feed_Item {
 	 *                              logged-in user. (starred|nominated)
 	 * @return array
 	 */
-	public static function archive_feed_to_display( $pageTop = 0, $pagefull = 20, $fromUnixTime = 0, $limitless = false, $limit = false ) {
-		if ( empty( $fromUnixTime ) || ( $fromUnixTime < 100 ) ) {
-			$fromUnixTime = 0;
+	public static function archive_feed_to_display( $args = array() ) {
+
+		// Backward compatibility.
+		$func_args = func_get_args();
+		if ( ! is_array( $func_args[0] ) || 1 < count( $func_args ) ) {
+			$args = array(
+				'start' => $func_args[0],
+			);
+
+			if ( isset( $func_args[1] ) ) {
+				$args['posts_per_page'] = $func_args[1];
+			}
+
+			if ( isset( $func_args[2] ) ) {
+				$args['from_unix_time'] = $func_args[2];
+			}
+
+			if ( isset( $func_args[3] ) ) {
+				$args['no_limit'] = $func_args[3];
+			}
+
+			if ( isset( $func_args[4] ) ) {
+				$args['relationship'] = $func_args[4];
+			}
+		} else {
+			$args = func_get_arg( 0 );
 		}
 
-		$pageTop = $pageTop - 1;
+		$r = array_merge( array(
+			'start'          => 0,
+			'posts_per_page' => 20,
+			'from_unix_time' => 0,
+			'no_limit'       => false,
+			'relationship'   => false,
+		), $args );
 
-		if (!$pagefull){
+		if ( empty( $r['from_unix_time'] ) || ( $r['from_unix_time'] < 100 ) ) {
+			$r['from_unix_time'] = 0;
+		}
+
+		$r['start'] = $r['start'] - 1;
+
+		if (!$r['posts_per_page']){
 			$user_obj = wp_get_current_user();
 			$user_id = $user_obj->ID;
-			$pagefull = get_user_option('pf_pagefull', $user_id);
-			if (empty($pagefull)){
-				$pagefull = 20;
+			$r['posts_per_page'] = get_user_option('pf_pagefull', $user_id);
+			if (empty($r['posts_per_page'])){
+				$r['posts_per_page'] = 20;
 			}
 		}
 
@@ -196,25 +231,25 @@ class PF_Feed_Item {
 
 			// Ordering by 'sortable_item_date' > 0.
 			'meta_key'     => 'sortable_item_date',
-			'meta_value'   => $fromUnixTime,
+			'meta_value'   => $r['from_unix_time'],
 			'meta_type'    => 'SIGNED',
 			'meta_compare' => '>',
 			'orderby'      => 'meta_value',
 			'order'        => 'DESC',
 
 			// Pagination
-			'posts_per_page' => $pagefull,
-			'offset'         => $pageTop,
+			'posts_per_page' => $r['posts_per_page'],
+			'offset'         => $r['start'],
 		);
 
-		if ( $limitless ) {
+		if ( $r['no_limit'] ) {
 			$post_args['posts_per_page'] = -1;
 
-		} else if ( $limit == 'starred' ) {
+		} else if ( $r['relationship'] == 'starred' ) {
 			$stars = pf_get_relationships_for_user( 'star', get_current_user_id() );
 			$post_args['post__in'] = wp_list_pluck( $stars, 'item_id' );
 
-		} else if ( $limit == 'nominated' ) {
+		} else if ( $r['relationship'] == 'nominated' ) {
 			$nominated = pf_get_relationships_for_user( 'nominate', get_current_user_id() );
 			$post_args['post__in'] = wp_list_pluck( $nominated, 'item_id' );
 
