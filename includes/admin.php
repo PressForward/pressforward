@@ -735,7 +735,23 @@ class PF_Admin {
 				$limit = false;
 			}
 			#var_dump($limit);
-			foreach(pressforward()->pf_feed_items->archive_feed_to_display($count+1, false, 0, false, $limit) as $item) {
+
+			$archive_feed_args = array(
+				'start'            => $count + 1,
+				'posts_per_page'   => false,
+				'relationship'     => $limit,
+			);
+
+			if ( isset( $_POST['search-terms'] ) ) {
+				$archive_feed_args['search_terms'] = stripslashes( $_POST['search-terms'] );
+				$archive_feed_args['exclude_archived'] = true;
+			}
+
+			if ( ! isset( $_GET['reveal'] ) ) {
+				$archive_feed_args['exclude_archived'] = true;
+			}
+
+			foreach ( pressforward()->pf_feed_items->archive_feed_to_display( $archive_feed_args ) as $item ) {
 
 				$this->form_of_an_item($item, $c);
 

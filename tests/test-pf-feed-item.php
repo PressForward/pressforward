@@ -121,13 +121,6 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 		$u = $this->factory->user->create();
 		wp_set_current_user( $u );
 
-		// Fake it.
-		$old_get = $_GET;
-		$old_post = $_POST;
-
-		$_GET['action'] = 'post';
-		$_POST['search-terms'] = 'content 3';
-
 		$feed_id = $this->factory->feed->create();
 
 		$feed_items = array();
@@ -138,7 +131,10 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			) );
 		}
 
-		$found = PF_Feed_Item::archive_feed_to_display( 1 );
+		$found = PF_Feed_Item::archive_feed_to_display( array(
+			'start' => 1,
+			'search_terms' => 'content 3',
+		) );
 
 		$expected = array(
 			$feed_items[3],
@@ -147,21 +143,12 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 		$this->assertEquals( $expected, array_values( wp_list_pluck( $found, 'post_id' ) ) );
 
 		wp_set_current_user( $old_current_user );
-		$_GET = $old_get;
-		$_POST = $old_post;
 	}
 
 	public function test_archive_feed_to_display_search_terms_when_items_are_archived() {
 		$old_current_user = get_current_user_id();
 		$u = $this->factory->user->create();
 		wp_set_current_user( $u );
-
-		// Fake it.
-		$old_get = $_GET;
-		$old_post = $_POST;
-
-		$_GET['action'] = 'post';
-		$_POST['search-terms'] = 'content 3';
 
 		$feed_id = $this->factory->feed->create();
 
@@ -183,56 +170,15 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			) );
 		}
 
-		$found = PF_Feed_Item::archive_feed_to_display( 1 );
+		$found = PF_Feed_Item::archive_feed_to_display( array(
+			'start' => 1,
+			'search_terms' => 'content 3',
+			'exclude_archived' => true,
+		) );
 
 		$this->assertEmpty( $found );
 
 		wp_set_current_user( $old_current_user );
-		$_GET = $old_get;
-		$_POST = $old_post;
-	}
-
-	public function test_archive_feed_to_display_not_reveal() {
-		$old_current_user = get_current_user_id();
-		$u = $this->factory->user->create();
-		wp_set_current_user( $u );
-
-		// Fake it.
-		$old_get = $_GET;
-		unset( $_GET['reveal'] );
-
-		$feed_id = $this->factory->feed->create();
-
-		$feed_items = array();
-		for ( $i = 0; $i <= 5; $i++ ) {
-			$feed_items[ $i ] = $this->factory->feed_item->create( array(
-				'sortable_item_date' => 10000 * ( $i + 1 ), // no zeroes
-			) );
-		}
-
-		// Set archive on two items.
-		foreach ( array( 1, 3 ) as $key ) {
-			$this->factory->relationship->create( array(
-				'user_id' => $u,
-				'item_id' => $feed_items[ $key ],
-				'type'    => 'archive',
-				'value'   => '1',
-			) );
-		}
-
-		$found = PF_Feed_Item::archive_feed_to_display( 1 );
-
-		$expected = array(
-			$feed_items[5],
-			$feed_items[4],
-			$feed_items[2],
-			$feed_items[0],
-		);
-
-		$this->assertEquals( $expected, array_values( wp_list_pluck( $found, 'post_id' ) ) );
-
-		wp_set_current_user( $old_current_user );
-		$_GET = $old_get;
 	}
 
 	public function test_archive_feed_to_display_reveal_no_hidden() {

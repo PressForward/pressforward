@@ -203,12 +203,15 @@ class PF_Feed_Item {
 			$args = func_get_arg( 0 );
 		}
 
+		// Make sure default values are set.
 		$r = array_merge( array(
-			'start'          => 0,
-			'posts_per_page' => 20,
-			'from_unix_time' => 0,
-			'no_limit'       => false,
-			'relationship'   => false,
+			'start'            => 0,
+			'posts_per_page'   => 20,
+			'from_unix_time'   => 0,
+			'no_limit'         => false,
+			'relationship'     => false,
+			'search_terms'     => '',
+			'exclude_archived' => false,
 		), $args );
 
 		if ( empty( $r['from_unix_time'] ) || ( $r['from_unix_time'] < 100 ) ) {
@@ -244,29 +247,36 @@ class PF_Feed_Item {
 
 		if ( $r['no_limit'] ) {
 			$post_args['posts_per_page'] = -1;
+		}
 
-		} else if ( $r['relationship'] == 'starred' ) {
-			$stars = pf_get_relationships_for_user( 'star', get_current_user_id() );
-			$post_args['post__in'] = wp_list_pluck( $stars, 'item_id' );
+		if ( ! empty( $r['relationship'] ) ) {
+			switch ( $r['relationship'] ) {
+				case 'starred' :
+					$rel_items = pf_get_relationships_for_user( 'star', get_current_user_id() );
+					break;
 
-		} else if ( $r['relationship'] == 'nominated' ) {
-			$nominated = pf_get_relationships_for_user( 'nominate', get_current_user_id() );
-			$post_args['post__in'] = wp_list_pluck( $nominated, 'item_id' );
+				case 'nominated' :
+					$rel_items = pf_get_relationships_for_user( 'nominate', get_current_user_id() );
+					break;
+			}
 
-		} else if ( is_user_logged_in() && ( isset( $_GET['action'] ) && ( 'post' == $_GET['action'] ) &&( isset( $_POST['search-terms'] ) ) ) ) {
+			if ( ! empty( $rel_items ) ) {
+				$post_args['post__in'] = wp_list_pluck( $rel_items, 'item_id' );
+			}
+		}
+
+		if ( ! empty( $r['exclude_archived'] ) ) {
 			$archived = pf_get_relationships_for_user( 'archive', get_current_user_id() );
 			$post_args['post__not_in'] = wp_list_pluck( $archived, 'item_id' );
+		}
 
+		if ( ! empty( $r['search_terms'] ) ) {
 			/*
 			 * Quote so as to get only exact matches. This is for
 			 * backward compatibility - might want to remove it for
 			 * a more flexible search.
 			 */
-			$post_args['s'] = '"' . stripslashes( $_POST['search-terms'] ) . '"';
-
-		} elseif (is_user_logged_in() && (!isset($_GET['reveal']))){
-			$archived = pf_get_relationships_for_user( 'archive', get_current_user_id() );
-			$post_args['post__not_in'] = wp_list_pluck( $archived, 'item_id' );
+			$post_args['s'] = '"' . $r['search_terms'] . '"';
 		}
 
 		if (isset($_GET['feed'])) {
