@@ -575,7 +575,7 @@ class PF_Feed_Retrieve {
 		pf_log($nonce_check);
 		if ( ! $nonce || ! $nonce_check ) {
 			pf_log('Nonce check failed.');
-			#return;
+			return;
 		}
 
 		pf_log( 'Pressing forward.' );
