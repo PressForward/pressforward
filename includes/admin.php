@@ -1015,7 +1015,12 @@ class PF_Admin {
 	 */
 	function display_feeder_builder() {
 
-		echo 'Feeder. <br />';
+		echo '<header id="app-banner">
+			<div class="title-span title">
+				<h1>PressForward: Add Feeds</h1>								<span id="h-after"> • </span>
+				<button class="btn btn-small" id="fullscreenfeed"> Full Screen </button>
+			</div><!-- End title -->
+		</header>';
 
 			if ( current_user_can('edit_posts') ) : ?>
 			<div class="tool-box">
