@@ -489,6 +489,10 @@ h3 {
 	line-height: 1.7em;
 }
 
+.pfmodal > div {
+	z-index: 2000;
+}
+
 .itemCommentModal {
 	min-width: 40.7px;
 }
