@@ -582,8 +582,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 						if ( current_user_can('publish_posts') ) {
 							submit_button( __( 'Send to Draft' ), 'primary', 'publish', false );
 						} else {
-							echo '<br /><br />';
-							submit_button( __( 'Submit for Review' ), 'primary', 'review', false );
+
 						} ?>
 						<span class="spinner" style="display: none;"></span>
 					</p>
