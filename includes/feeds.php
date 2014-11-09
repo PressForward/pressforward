@@ -94,14 +94,14 @@ class PF_Feeds_Schema {
 
 	public function register_feed_tag_taxonomy() {
 		$labels = array(
-			'name'          => __( 'Feed Tags', 'pf' ),
-			'singular_name' => __( 'Feed Tag', 'pf' ),
-			'all_items'     => __( 'All Feed Tags', 'pf' ),
-			'edit_item'     => __( 'Edit Feed Tag', 'pf' ),
-			'update_item'   => __( 'Update Feed Tag', 'pf' ),
-			'add_new_item'  => __( 'Add New Feed Tag', 'pf' ),
-			'new_item_name' => __( 'New Feed Tag', 'pf' ),
-			'search_items'  => __( 'Search Feed Tags', 'pf' ),
+			'name'          => __( 'Folders', 'pf' ),
+			'singular_name' => __( 'Folder', 'pf' ),
+			'all_items'     => __( 'All Folders', 'pf' ),
+			'edit_item'     => __( 'Edit Folder', 'pf' ),
+			'update_item'   => __( 'Update Folder', 'pf' ),
+			'add_new_item'  => __( 'Add New Folder', 'pf' ),
+			'new_item_name' => __( 'New Folder', 'pf' ),
+			'search_items'  => __( 'Search Folders', 'pf' ),
 		);
 
 		register_taxonomy( $this->tag_taxonomy, $this->post_type, apply_filters( 'pf_register_feed_tag_taxonomy_args', array(
