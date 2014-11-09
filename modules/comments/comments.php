@@ -88,7 +88,7 @@ class PF_Comments extends PF_Module {
 															'title'=>'Internal Commenting Menu'
 														);
 		$arrayedAdminRights['pf_feature_comments_access'] = array(
-															'default'=>'editor',
+															'default'=>'contributor',
 															'title'=>'Internal Commenting Feature'
 														);
 
