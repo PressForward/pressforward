@@ -108,6 +108,15 @@ class PF_Admin {
 
 		add_submenu_page(
 			PF_MENU_SLUG,
+			__('Tools', 'pf'),
+			__('Tools', 'pf'),
+			get_option('pf_menu_tools_access', pf_get_defining_capability_by_role('contributor')),
+			PF_SLUG . '-tools',
+			array($this, 'display_tools_builder')
+		);
+
+		add_submenu_page(
+			PF_MENU_SLUG,
 			__('Feed Tags', 'pf'),
 			__('Feed Tags', 'pf'),
 			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')),
@@ -1011,6 +1020,34 @@ class PF_Admin {
 	}
 
 	/**
+	* Display function for Feeder panel
+	*/
+	function display_tools_builder() {
+
+		echo '<header id="app-banner">
+			<div class="title-span title">
+				<h1>PressForward: Tools</h1>								<span id="h-after"> • </span>
+				<button class="btn btn-small" id="fullscreenfeed"> Full Screen </button>
+			</div><!-- End title -->
+		</header>';
+
+			if ( current_user_can('edit_posts') ) : ?>
+				<h3 class="title"><?php _e('Nominate This', 'pf'); ?></h3>
+				<p><?php _e('Nominate This is a bookmarklet: a little app that runs in your browser and lets you grab bits of the web.', 'pf');?></p>
+
+				<p><?php _e('Use Nominate This to clip text, images and videos from any web page. Then edit and add more straight from Nominate This before you save or publish it in a post on your site.', 'pf'); ?></p>
+				<p class="description"><?php _e('Drag-and-drop the following link to your bookmarks bar or right click it and add it to your favorites for a posting shortcut.', 'pf'); ?></p>
+				<p class="pressthis"><a onclick="return false;" oncontextmenu="if(window.navigator.userAgent.indexOf('WebKit')!=-1||window.navigator.userAgent.indexOf('MSIE')!=-1)jQuery('.pressthis-code').show().find('textarea').focus().select();return false;" href="<?php echo htmlspecialchars( pf_get_shortcut_link() ); ?>"><span><?php _e('Nominate This', 'pf'); ?></span></a></p>
+				<div class="pressthis-code" style="display:none;">
+				<p class="description"><?php _e('If your bookmarks toolbar is hidden: copy the code below, open your Bookmarks manager, create new bookmark, type Press This into the name field and paste the code into the URL field.', 'pf'); ?></p>
+				<p><textarea rows="5" cols="120" readonly="readonly"><?php echo htmlspecialchars( pf_get_shortcut_link() ); ?></textarea></p>
+				</div>
+			<?php
+			endif;
+
+		}
+
+	/**
 	 * Display function for Feeder panel
 	 */
 	function display_feeder_builder() {
@@ -1166,6 +1203,17 @@ class PF_Admin {
 			wp_enqueue_style( PF_SLUG . '-style' );
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
 			wp_enqueue_script( 'post' );
+			wp_enqueue_style( PF_SLUG . '-responsive-style' );
+		}
+
+		if (('pressforward_page_pf-tools') == $hook) {
+			wp_enqueue_script(PF_SLUG . '-jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
+			wp_enqueue_script(PF_SLUG . '-twitter-bootstrap');
+			wp_enqueue_style( PF_SLUG . '-reset-style' );
+			wp_enqueue_style(PF_SLUG . '-bootstrap-style');
+			wp_enqueue_style(PF_SLUG . '-bootstrap-responsive-style');
+			wp_enqueue_style( PF_SLUG . '-style' );
+			wp_enqueue_style( PF_SLUG . '-susy-style' );
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 		}
 		if (('nomination') == get_post_type()) {
