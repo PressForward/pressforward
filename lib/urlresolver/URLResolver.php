@@ -422,8 +422,12 @@ class URLResolver {
 				$body_tag = $html_dom->find('body', 0);
 				if (!isset($body_tag)) {
 					$meta_refresh_tag = $html_dom->find('meta[http-equiv=refresh]', 0);
+					if (!isset($meta_refresh_tag)){
+
+					}
 					if (isset($meta_refresh_tag->content) &&
 				    	preg_match('/^\s*(\d+)\s*;\s*URL=(.*)/i', $meta_refresh_tag->content, $matches)) {
+							$matches[2] =	str_replace("'", "", $matches[2]);
 							if (!$matches[1] <= 2) {
 								$result->setRedirectTarget($this->fullyQualifyURI($matches[2], $url));
 							}
