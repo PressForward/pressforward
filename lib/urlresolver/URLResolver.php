@@ -1,4 +1,4 @@
-<?php require_once('lib/simple_html_dom.php');
+<?php
 /*******************************************************************************
 * Copyright (c) 2011-2014 by Matt Wright and contributors
 * https://github.com/mattwright/URLResolver.php
@@ -507,11 +507,11 @@ class URLResolver {
 
 		# We are not too concerned about the strictness of SSL when finding redirects
 		# Without these, some SSL links just fail to return anything
-		curl_setopt($this->curl, CURLOPT_SSL_VERIFYHOST, 0); 
-		curl_setopt($this->curl, CURLOPT_SSL_VERIFYPEER, 0); 
+		curl_setopt($this->curl, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($this->curl, CURLOPT_SSL_VERIFYPEER, 0);
 
 		# We want the headers returned to us to follow redirects
-		curl_setopt($this->curl, CURLOPT_HEADER, true); 
+		curl_setopt($this->curl, CURLOPT_HEADER, true);
 
 		return $this->curl;
 	}
@@ -533,7 +533,7 @@ class URLResolver {
 			$this->closeHTMLDOM();
 		}
 
-		$this->html_dom = new \simple_html_dom();
+		$this->html_dom = new pf_simple_html_dom_node();
 		$this->html_dom->load($html_content);
 		return $this->html_dom;
 	}
