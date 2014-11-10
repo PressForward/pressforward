@@ -125,8 +125,10 @@ class PressForward {
 		require_once( PF_ROOT . '/includes/relationships.php' );
 		require_once( PF_ROOT . '/includes/nominations.php' );
 		require_once( PF_ROOT . '/includes/admin.php' );
-        require_once( PF_ROOT . '/includes/template-tags.php' );
-        require_once( PF_ROOT . '/includes/alert-box/alert-box.php' );
+    require_once( PF_ROOT . '/includes/template-tags.php' );
+    require_once( PF_ROOT . '/includes/alert-box/alert-box.php' );
+		require_once( PF_ROOT . '/lib/urlresolver/URLResolver.php' );
+
 	}
 
 	/**
