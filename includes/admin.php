@@ -454,8 +454,10 @@ class PF_Admin {
 									# Let's build an info box!
 									//http://nicolasgallagher.com/pure-css-speech-bubbles/
 
-									$urlArray = parse_url($item['item_link']);
-									$sourceLink = 'http://' . $urlArray['host'];
+									#$urlArray = parse_url($item['item_link']);
+									$sourceLink = pressforward()->pf_feed_items->get_source_link($id_for_comments);
+									$url_array = parse_url($sourceLink);
+									$sourceLink = 'http://' . $url_array['host'];
 									//http://nicolasgallagher.com/pure-css-speech-bubbles/demo/
 
 									$ibox = '<div class="feed-item-info-box" id="info-box-' . $item['item_id'] . '">';
@@ -681,7 +683,43 @@ class PF_Admin {
 				<button class="btn btn-small" id="fullscreenfeed"> <?php  _e('Full Screen', 'pf');  ?> </button>
 			</div><!-- End title -->
 			<?php self::pf_search_template(); ?>
+
 		</header><!-- End Header -->
+		<div class="display">
+			<div class="pf-btns pull-left">
+			<button type="submit" id="gogrid" class="btn btn-small display-state">Grid</button>
+			<button type="submit" id="golist" class="btn btn-small display-state">List</button>
+
+			<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
+			echo '<button type="submit" class="btn btn-small feedsort" id="sortbyfeedindate" value="' . __('Sort by date entered feed', 'pf') . '">' . __('Sort by date entered feed', 'pf') . '</button>'; ?>
+				<button type="submit" class="btn btn-info pull-right btn-small" id="showMyHidden" value="<?php  _e('Show hidden', 'pf');  ?>" ><?php  _e('Show hidden', 'pf');  ?></button>
+				<button type="submit" class="btn btn-info pull-right btn-small" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
+				<button type="submit" class="btn btn-info pull-right btn-small" id="showMyStarred" value="<?php  _e('Show my starred', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
+				<?php
+					if (isset($_GET['by']) || isset($_POST['search-terms']) || isset($_GET['reveal']) || isset($_GET['folder']) || isset($_GET['feed'])){
+						?><button type="submit" class="btn btn-info btn-small pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php
+					}
+								?>
+			</div>
+			<div class="pull-right text-right">
+			<!-- or http://thenounproject.com/noun/list/#icon-No9479? -->
+				<?php
+					add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+										add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+										$alerts = the_alert_box()->get_specimens();
+										remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+										remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+
+										if (!empty($alerts) && (0 != $alerts->post_count)){
+											echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i> (!)</a>';
+										} else {
+											echo '<a class="btn btn-small" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i></a>';
+										}
+										echo '<a class="btn btn-small" id="gofolders" href="#">' . __('Folders', 'pf') . '</a>';
+										?>
+
+			</div>
+		</div><!-- End btn-group -->
 		<div role="main">
 			<?php $this->toolbox(); ?>
 			<?php $this->folderbox(); ?>
@@ -694,41 +732,7 @@ class PF_Admin {
 					}
 				?>
 				</div>
-				<div class="display">
-					<div class="pf-btns pull-left">
-					<button type="submit" id="gogrid" class="btn btn-small display-state">Grid</button>
-					<button type="submit" id="golist" class="btn btn-small display-state">List</button>
 
-					<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
-					echo '<button type="submit" class="btn btn-small feedsort" id="sortbyfeedindate" value="' . __('Sort by date entered feed', 'pf') . '">' . __('Sort by date entered feed', 'pf') . '</button>'; ?>
-						<button type="submit" class="btn btn-info pull-right btn-small" id="showMyHidden" value="<?php  _e('Show hidden', 'pf');  ?>" ><?php  _e('Show hidden', 'pf');  ?></button>
-						<button type="submit" class="btn btn-info pull-right btn-small" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
-						<button type="submit" class="btn btn-info pull-right btn-small" id="showMyStarred" value="<?php  _e('Show my starred', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
-						<?php
-							if (isset($_GET['by']) || isset($_POST['search-terms']) || isset($_GET['reveal']) || isset($_GET['folder']) || isset($_GET['feed'])){
-								?><button type="submit" class="btn btn-info btn-small pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php
-							}
-                    ?>
-					</div>
-					<div class="pull-right text-right">
-					<!-- or http://thenounproject.com/noun/list/#icon-No9479? -->
-						<?php
-					    add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
-                        add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
-                        $alerts = the_alert_box()->get_specimens();
-                        remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
-                        remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
-
-                        if (!empty($alerts) && (0 != $alerts->post_count)){
-                        	echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i> (!)</a>';
-                        } else {
-                        	echo '<a class="btn btn-small" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i></a>';
-                        }
-												echo '<a class="btn btn-small" id="gofolders" href="#">' . __('Folders', 'pf') . '</a>';
-                        ?>
-
-					</div>
-				</div><!-- End btn-group -->
 
 			<?php
 

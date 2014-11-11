@@ -102,6 +102,7 @@ class PF_Feed_Item {
 		if ( is_numeric($post_id) ) {
 			self::set_word_count( $post_id, $r['item_content'] );
 			self::set_source( $post_id, $r['source_title'] );
+			self::set_source_link( $post_id, $r['item_link'] );
 			self::set_parent_last_retrieved( $post_id );
 		}
 
@@ -130,6 +131,47 @@ class PF_Feed_Item {
 
 	public static function set_source( $post_id, $source ) {
 		return update_post_meta( $post_id, 'pf_feed_item_source', $source );
+	}
+
+	public static function set_source_link( $post_id, $item_url ) {
+		$url_array = parse_url($item_url);
+		if (empty($url_array['host'])){
+			return;
+		}
+		$source_url = 'http://' . $url_array['host'];
+		$google_check = strpos($source_url, 'google.com');
+		if (!empty($google_check)){
+			$resolver = new URLResolver();
+			$source_url = $resolver->resolveURL($item_url)->getURL();
+			$url_array = parse_url($source_url);
+			$source_url = 'http://' . $url_array['host'];
+		}
+		return pf_update_meta( $post_id, 'pf_source_link', $source_url );
+	}
+
+	public static function get_source_link( $post_id ) {
+		$source_url = pf_retrieve_meta($post_id, 'pf_source_link');
+		$google_check = strpos($source_url, 'google.com');
+		if ((empty($source_url)) || !empty($google_check)){
+			$item_url = pf_retrieve_meta($post_id, 'item_link');
+			#var_dump($item_url);
+			$url_array = parse_url($item_url);
+			if (empty($url_array['host'])){
+				return;
+			}
+			$source_url = 'http://' . $url_array['host'];
+			#var_dump($item_url);
+			$google_check = strpos($source_url, 'google.com');
+			if (!empty($google_check)){
+				$resolver = new URLResolver();
+				$source_url = $resolver->resolveURL($item_url)->getURL();
+				$url_array = parse_url($source_url);
+				$source_url = 'http://' . $url_array['host'];
+				#var_dump('Checking for more: '.$source_url);
+			}
+			pf_update_meta( $post_id, 'pf_source_link', $source_url );
+		}
+		return $source_url;
 	}
 
 	/**
