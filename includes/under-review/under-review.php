@@ -11,7 +11,7 @@
 		} else {
 			$page = 0;
 		}
-		$count = $page * 20;	
+		$count = $page * 20;
 		$countQ = 0;
 		$extra_class = '';
 		if(isset($_GET['reveal']) && ('no_hidden' == $_GET['reveal'])){
@@ -24,22 +24,53 @@
 		<header id="app-banner">
 			<div class="title-span title">
 				<?php echo '<h1>' . PF_TITLE . ': Under Review</h1>'; ?>
-				<?php 
+				<?php
 					if ($page > 0) {
 						$pageNumForPrint = sprintf( __('Page %1$d', 'pf'), $page);
 						echo '<span> - ' . $pageNumForPrint . '</span>';
 					}
 					if (!empty($_POST['search-terms'])){
-						echo ' | <span class="search-term-title">' . __('Search for:', 'pf') . ' ' . $_POST['search-terms'] . '</span>'; 
-					}					
+						echo ' | <span class="search-term-title">' . __('Search for:', 'pf') . ' ' . $_POST['search-terms'] . '</span>';
+					}
 				?>
 				<span id="h-after"> &#8226; </span>
 				<button class="btn btn-small" id="fullscreenfeed"> <?php  _e('Full Screen', 'pf');  ?> </button>
 			</div><!-- End title -->
 				<?php pressforward()->admin->pf_search_template(); ?>
 		</header><!-- End Header -->
+
+		<div class="display">
+			<div class="pf-btns pull-left">
+			<!--<button type="submit" id="gogrid" class="btn btn-small">Grid</button>
+			<button type="submit" id="golist" class="btn btn-small">List</button>-->
+
+			<?php
+			echo '<button type="submit" class="btn btn-small feedsort" id="sort-reset" value="' . __('Reset Sorting', 'pf') . '" style="display:none;" >' . __('Reset Sort', 'pf') . '</button>';
+			echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
+			echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomdate" value="' . __('Sort by date nominated', 'pf') . '">' . __('Sort by date nominated', 'pf') . '</button>';
+			echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomcount" value="' . __('Sort by nominations', 'pf') . '">' . __('Sort by nominations', 'pf') . '</button>';
+								echo '<button type="submit" class="btn btn-small starredonly" id="sortstarredonly" value="' . __('Show starred only', 'pf') . '">' . __('Show starred only', 'pf') . '</button>';
+			if (!isset($_GET['pf-see']) || ('archive-only' != $_GET['pf-see'])){
+				echo '<button type="submit" class="btn btn-small feedsort" id="showarchiveonly" value="' . __('Show only archived', 'pf') . '">' . __('Show only archived', 'pf') . '</button>';
+				if ((isset($_GET['by']) && ( 'archived' == $_GET['by'])) ){
+					echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="shownormal" value="' . __('Show non-archived', 'pf') . '">' . __('Show non-archived', 'pf') . '.</button>';
+				} elseif ( isset($_POST['search-terms']) || isset($_GET['by']) ) {
+					?><button type="submit" class="btn btn-info btn-small pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php
+				} else {
+					echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="showarchived" value="' . __('Show archived', 'pf') . '">' . __('Show archived', 'pf') . '.</button>';
+				}
+			}
+			?>
+			</div>
+			<div class="pull-right text-right">
+			<?php echo '<button type="submit" class="delete btn btn-danger btn-small pull-left" id="archivenoms" value="' . __('Archive all', 'pf') . '" >' . __('Archive all', 'pf') . '</button>'; ?>
+			<!-- or http://thenounproject.com/noun/list/#icon-No9479 ? -->
+			<a class="btn btn-small" id="gomenu" href="#">Menu <i class="icon-tasks"></i></a>
+			</div>
+		</div><!-- End btn-group -->
+
 		<div role="main">
-			<?php $this->toolbox();	?>	
+			<?php $this->toolbox();	?>
 			<div id="entries">
 				<?php echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';  ?>
 				<div id="errors">
@@ -51,39 +82,11 @@
 							<i class="icon-remove-circle">Close</i>
 							</div>
 						</div>
-					</div>				
+					</div>
 				</div>
-				<div class="display">
-					<div class="pf-btns pull-left">
-					<!--<button type="submit" id="gogrid" class="btn btn-small">Grid</button>
-					<button type="submit" id="golist" class="btn btn-small">List</button>-->
 
-					<?php 
-					echo '<button type="submit" class="btn btn-small feedsort" id="sort-reset" value="' . __('Reset Sorting', 'pf') . '" style="display:none;" >' . __('Reset Sort', 'pf') . '</button>';
-					echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
-					echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomdate" value="' . __('Sort by date nominated', 'pf') . '">' . __('Sort by date nominated', 'pf') . '</button>'; 
-					echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomcount" value="' . __('Sort by nominations', 'pf') . '">' . __('Sort by nominations', 'pf') . '</button>'; 
-                    echo '<button type="submit" class="btn btn-small starredonly" id="sortstarredonly" value="' . __('Show starred only', 'pf') . '">' . __('Show starred only', 'pf') . '</button>'; 
-					if (!isset($_GET['pf-see']) || ('archive-only' != $_GET['pf-see'])){
-						echo '<button type="submit" class="btn btn-small feedsort" id="showarchiveonly" value="' . __('Show only archived', 'pf') . '">' . __('Show only archived', 'pf') . '</button>'; 
-						if ((isset($_GET['by']) && ( 'archived' == $_GET['by'])) ){
-							echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="shownormal" value="' . __('Show non-archived', 'pf') . '">' . __('Show non-archived', 'pf') . '.</button>';
-						} elseif ( isset($_POST['search-terms']) || isset($_GET['by']) ) {
-							?><button type="submit" class="btn btn-info btn-small pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php
-						} else {
-							echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="showarchived" value="' . __('Show archived', 'pf') . '">' . __('Show archived', 'pf') . '.</button>';
-						}
-					}
-					?>
-					</div>
-					<div class="pull-right text-right">
-					<?php echo '<button type="submit" class="delete btn btn-danger btn-small pull-left" id="archivenoms" value="' . __('Archive all', 'pf') . '" >' . __('Archive all', 'pf') . '</button>'; ?>
-					<!-- or http://thenounproject.com/noun/list/#icon-No9479 ? -->
-					<a class="btn btn-small" id="gomenu" href="#">Menu <i class="icon-tasks"></i></a>
-					</div>
-				</div><!-- End btn-group -->
-		
-		<?php 			
+
+		<?php
 
 //Hidden here, user options, like 'show archived' etc...
 				?><div id="page_data" style="display:none">
@@ -118,7 +121,7 @@
 			//Eventually we may want to provide options to change some of these, so we're going to provide the default values for now.
 			$pageCheck = absint($page);
 			if (!$pageCheck){ $pageCheck = 1; }
-			
+
 			$nom_args = array(
 
 							'post_type' => 'nomination',
@@ -126,7 +129,7 @@
 							'order' => 'DESC',
 							'posts_per_page' => 20,
 							'suppress_filters' => FALSE,
-							'offset' => $offset  #The query function will turn page into a 1 if it is a 0. 
+							'offset' => $offset  #The query function will turn page into a 1 if it is a 0.
 
 							);
 			add_filter( 'posts_request', 'prep_archives_query');
@@ -138,7 +141,7 @@
 			$countQT = $nom_query->found_posts;
 			//print_r($countQ);
 			while ( $nom_query->have_posts() ) : $nom_query->the_post();
-				
+
 				//declare some variables for use, mostly in various meta roles.
 				//1773 in rssforward.php for various post meta.
 
@@ -146,7 +149,7 @@
 				$metadata['submitters'] = $submitter_slug = get_the_author_meta('user_nicename');
 				// Nomination (post) ID
 				$metadata['nom_id'] = $nom_id = get_the_ID();
-				//Get the WP database ID of the original item in the database. 
+				//Get the WP database ID of the original item in the database.
 				$metadata['item_feed_post_id'] = get_post_meta($nom_id, 'item_feed_post_id', true);
 				//Number of Nominations recieved.
 				$metadata['nom_count'] = $nom_count = get_post_meta($nom_id, 'nomination_count', true);
@@ -181,10 +184,10 @@
 					$wp_nom_slugs = array();
 					foreach ($getTheTags as $tag){
 						$wp_nom_slugs[] = $tag->slug;
-					}				
-								
+					}
+
 				}
-				$metadata['nom_tags'] = $nomed_tag_slugs = $wp_nom_slugs;		
+				$metadata['nom_tags'] = $nomed_tag_slugs = $wp_nom_slugs;
 				$metadata['all_tags'] = $nom_tags .= $wp_nom_tags;
 				$nomTagsArray = explode(",", $item_nom_tags);
 				$nomTagClassesString = '';
@@ -207,8 +210,8 @@
 				$metadata['archived_status'] = $archived_status = get_post_meta($nom_id, 'archived_by_user_status');
 				$userObj = wp_get_current_user();
 				$user_id = $userObj->ID;
-				
-				
+
+
 				if (!empty($metadata['archived_status'])){
 					$archived_status_string = '';
 					$archived_user_string_match = 'archived_' . $current_user_id;
@@ -226,9 +229,9 @@
 					$archived_status_string = '';
 				}
 			$item = pf_feed_object(get_the_title(), get_post_meta($nom_id, 'source_title', true), $date_posted, $item_authorship, get_the_content(), $nom_permalink, get_the_post_thumbnail($nom_id /**, 'nom_thumb'**/), $rss_item_id, get_post_meta($nom_id, 'item_wp_date', true), $nom_tags, $date_nomed, $source_repeat, $nom_id, '1');
-			
+
 			$this->form_of_an_item($item, $c, 'nomination', $metadata);
-/**			
+/**
 			echo '<article class="feed-item entry nom-container ' . $archived_status_string . pf_nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )) . '" id="' . get_the_ID() . '" style="' . $dependent_style . '" tabindex="' . $c . '">'; ?>
 					<header>
 						<?php echo '<h1 class="item_title"><a href="#modal-' . get_the_ID() . '" class="item-expander" role="button" data-toggle="modal" data-backdrop="false">' . get_the_title() . '</a></h1>'; ?>
@@ -271,8 +274,8 @@
 							' . __('Times repeated in source', 'pf') . ': <span class="feed_repeat">' . $item['source_repeat'] . '</span><br />
 							';
 						$ibox .= '</div>';
-						echo $ibox;						
-						?>			
+						echo $ibox;
+						?>
 			<div class="span12" id="item-box-<?php echo $count; ?>">
 				<div class="row-fluid well accordion-group nom-item<?php pf_nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php echo $count; ?>">
 					<div class="span12">
@@ -395,7 +398,7 @@
 					?>
 			</div>
 			<?php
-**/			
+**/
 			$count++;
 			$c++;
 			endwhile;
