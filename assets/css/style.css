@@ -373,6 +373,11 @@ h3 {
 	margin-top: 0;
 }
 
+.relationship-button-active {
+	background-color:none;
+	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings.png");
+}
+
 #infscr-loading {
 	width:100%;
 	float: left;
