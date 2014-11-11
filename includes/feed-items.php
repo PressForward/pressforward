@@ -148,7 +148,8 @@ class PF_Feed_Item {
 
 	public static function get_source_link( $post_id ) {
 		$source_url = pf_retrieve_meta($post_id, 'pf_source_link');
-		if ((empty($source_url)) || ('http://www.google.com' == $source_url)){
+		$google_check = strpos($source_url, 'google.com');
+		if ((empty($source_url)) || !empty($google_check)){
 			$item_url = pf_retrieve_meta($post_id, 'item_link');
 			#var_dump($item_url);
 			$url_array = parse_url($item_url);
