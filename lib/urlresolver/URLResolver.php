@@ -402,7 +402,7 @@ class URLResolver {
 
 			# Load the HTML DOM using PHP Simple HTML DOM
 			$html_dom = $this->loadHTMLDOM($body);
-
+			#var_dump($html_dom);
 			# If the DOM could not be parsed, mark it as a fatal error. Reasonable
 			# HTTP redirects may be available, but this notes it didn't get everything
 			if (!$html_dom) {
@@ -413,21 +413,26 @@ class URLResolver {
 
 			# If we cannot find the <head>, then we are done processing this page.
 			$head = $html_dom->find('head', 0);
-			if (!isset($head)) {
+
+			if (empty($head->content)) {
 				# If there is no <head> and no <body> tag, then we will look for an instant
 				# <meta http-equiv="refresh" tag and use that if found... We don't want to
 				# just always use the meta tag, as it is often used for noscript browsers
 				# or for long-delayed page reloads... But some pages do return just a very
 				# short noscript/meta refresh (t.co/pic.twitter.com) and it is good to catch
+				#var_dump(1);
 				$body_tag = $html_dom->find('body', 0);
-				if (!isset($body_tag)) {
-					$meta_refresh_tag = $html_dom->find('meta[http-equiv=refresh]', 0);
-					if (!isset($meta_refresh_tag)){
-
+				if (empty($body_tag->content)) {
+					#var_dump(2);
+					$meta_refresh_tag = $html_dom->find('meta');
+					#var_dump($meta_refresh_tag[0]->content);
+					if (!isset($meta_refresh_tag[0]->content)){
+							#var_dump('empty meta_refresh');
 					}
-					if (isset($meta_refresh_tag->content) &&
-				    	preg_match('/^\s*(\d+)\s*;\s*URL=(.*)/i', $meta_refresh_tag->content, $matches)) {
+					if (isset($meta_refresh_tag[0]->content) &&
+				    	preg_match('/^\s*(\d+)\s*;\s*URL=(.*)/i', $meta_refresh_tag[0]->content, $matches)) {
 							$matches[2] =	str_replace("'", "", $matches[2]);
+							#var_dump($matches);
 							if (!$matches[1] <= 2) {
 								$result->setRedirectTarget($this->fullyQualifyURI($matches[2], $url));
 							}

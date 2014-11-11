@@ -696,6 +696,14 @@ function pf_meta_structure(){
 			'use'	=> array(),
 			'level'	=> array('item', 'nomination', 'post')
 		),
+		'pf_source_link' => array(
+			'name' => 'pf_source_link',
+			'definition' => __('URL of the item\'s source', 'pf'),
+			'function'	=> __('Stores the url of feed source.', 'pf'),
+			'type'	=> array('adm'),
+			'use'	=> array(),
+			'level'	=> array('item', 'nomination', 'post')
+		),
 		'pf_feed_item_source' => array(
 			'name' => 'pf_feed_item_source',
 			'definition' => __('DUPE Soon to be depreciate version of source_title.', 'pf'),
@@ -742,7 +750,7 @@ function pf_meta_structure(){
 		'item_link' => array(
 			'name' => 'item_link',
 			'definition' => __('Source link', 'pf'),
-			'function'	=> __('Stores hashed ID based on title and URL of retrieved item', 'pf'),
+			'function'	=> __('Stores link to the origonal post.', 'pf'),
 			'type'	=> array('struc'),
 			'use'	=> array('req'),
 			'level'	=> array('item', 'nomination', 'post')

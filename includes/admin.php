@@ -454,8 +454,10 @@ class PF_Admin {
 									# Let's build an info box!
 									//http://nicolasgallagher.com/pure-css-speech-bubbles/
 
-									$urlArray = parse_url($item['item_link']);
-									$sourceLink = 'http://' . $urlArray['host'];
+									#$urlArray = parse_url($item['item_link']);
+									$sourceLink = pressforward()->pf_feed_items->get_source_link($id_for_comments);
+									$url_array = parse_url($sourceLink);
+									$sourceLink = 'http://' . $url_array['host'];
 									//http://nicolasgallagher.com/pure-css-speech-bubbles/demo/
 
 									$ibox = '<div class="feed-item-info-box" id="info-box-' . $item['item_id'] . '">';
