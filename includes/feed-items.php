@@ -136,7 +136,8 @@ class PF_Feed_Item {
 	public static function set_source_link( $post_id, $item_url ) {
 		$url_array = parse_url($item_url);
 		$source_url = 'http://' . $url_array['host'];
-		if ('http://www.google.com' == $source_url){
+		$google_check = strpos($source_url, 'google.com');
+		if (!empty($google_check)){
 			$resolver = new URLResolver();
 			$source_url = $resolver->resolveURL($item_url)->getURL();
 			$url_array = parse_url($source_url);
