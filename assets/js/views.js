@@ -10,6 +10,22 @@
 		return theNewString;
 	}
 
+	function assure_next_obj(tabindex, obj, advance){
+		// If we've hidden a next object, the tabs won't adjust, so check and fix.
+		if (jQuery.isEmptyObject(obj)){
+			if (1 == advance){
+				tabindex = tabindex+1;
+			} else {
+				tabindex = tabindex-1;
+			}
+			obj = jQuery('article[tabindex="'+tabindex+'"]');
+		}
+		if (jQuery.isEmptyObject(obj)){
+				obj = assure_next_obj(tabindex, obj, advance);
+		}
+		return obj;
+	}
+
 
 	function modalNavigator(tabindex){
 		tabindex = parseInt(tabindex);
@@ -22,6 +38,20 @@
 		var nextObj = jQuery('article[tabindex="'+nextTab+'"]');
 		var modalID = currentObj.children('header').children('h1').children('a').attr('href');
 
+		// If we've hidden a previous object, the tabs won't adjust, so check and fix.
+		prevObj = assure_next_obj(prevTab, prevObj, 0);
+		nextObj = assure_next_obj(nextTab, nextObj, 1);
+/**		if (jQuery.isEmptyObject(prevObj)){
+			prevTab = prevTab-1;
+			prevObj = jQuery('article[tabindex="'+prevTab+'"]');
+		}
+
+		// If we've hidden a next object, the tabs won't adjust, so check and fix.
+		if (jQuery.isEmptyObject(nextObj)){
+			nextTab = nextTab+1;
+			nextObj = jQuery('article[tabindex="'+nextTab+'"]');
+		}
+**/
 		//First lets assemble variables for the previous group.
 		if (jQuery(prevObj).is('*')){
 			var prevItemID = jQuery(prevObj).children('header').children('h1').children('a').attr('href');
