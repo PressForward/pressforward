@@ -92,6 +92,7 @@ class PF_UnitTest_Factory_For_Feed_Item extends WP_UnitTest_Factory_For_Thing {
 			'item_tags',
 			'source_repeat',
 			'revertible_feed_text',
+			'pf_feed_item_source'
 		);
 
 		foreach ( $meta_keys as $mk ) {

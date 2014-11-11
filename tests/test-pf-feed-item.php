@@ -317,6 +317,7 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			'source_repeat' => '',
 			'post_id' => $feed_item_id,
 			'readable_status' => '',
+			'pf_feed_item_source' => '',
 		);
 
 		// Check each key individually because format may change in the future.
@@ -337,6 +338,7 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			'source_repeat',
 			'post_id',
 			'readable_status',
+			'pf_feed_item_source'
 		);
 
 		foreach ( $keys as $key ) {
