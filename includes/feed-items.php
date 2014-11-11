@@ -135,6 +135,9 @@ class PF_Feed_Item {
 
 	public static function set_source_link( $post_id, $item_url ) {
 		$url_array = parse_url($item_url);
+		if (empty($url_array['host'])){
+			return;
+		}
 		$source_url = 'http://' . $url_array['host'];
 		$google_check = strpos($source_url, 'google.com');
 		if (!empty($google_check)){
@@ -153,6 +156,9 @@ class PF_Feed_Item {
 			$item_url = pf_retrieve_meta($post_id, 'item_link');
 			#var_dump($item_url);
 			$url_array = parse_url($item_url);
+			if (empty($url_array['host'])){
+				return;
+			}
 			$source_url = 'http://' . $url_array['host'];
 			#var_dump($item_url);
 			$google_check = strpos($source_url, 'google.com');
