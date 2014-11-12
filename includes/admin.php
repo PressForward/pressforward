@@ -585,7 +585,7 @@ class PF_Admin {
 
 					?>
 				  </div>
-				  <div class="modal-sidebar span3">
+				  <div class="modal-sidebar span3 hidden-tablet">
 					<div class="goPrev modal-side-item row-fluid">
 
 					</div>
