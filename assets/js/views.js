@@ -12,9 +12,7 @@
 
 	function assure_next_obj(tabindex, obj, advance){
 		// If we've hidden a next object, the tabs won't adjust, so check and fix.
-        console.log(obj);
 		if (0 == obj.length){
-            console.log('empty object, find the next nav item');
 			if (1 == advance){
 				tabindex = tabindex+1;
 			} else {
