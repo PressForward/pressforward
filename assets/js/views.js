@@ -11,8 +11,10 @@
 	}
 
 	function assure_next_obj(tabindex, obj, advance){
-		// If we've hidden a next object, the tabs won't adjust, so check and fix.
-		if (0 == obj.length){
+		var lastobj = jQuery('article:last-child');
+        var lastindex = lastobj.attr('tabindex');
+        // If we've hidden a next object, the tabs won't adjust, so check and fix.
+		if ((0 == obj.length) || obj.is(':hidden')){
 			if (1 == advance){
 				tabindex = tabindex+1;
 			} else {
@@ -20,7 +22,7 @@
 			}
 			obj = jQuery('article[tabindex="'+tabindex+'"]');
 		}
-		if (0 == obj.length){
+		if ((0 == obj.length) && (0 < tabindex) && (lastindex > tabindex)){
 				obj = assure_next_obj(tabindex, obj, advance);
 		}
 		return obj;
@@ -28,7 +30,7 @@
 
 
 	function modalNavigator(tabindex){
-		tabindex = parseInt(tabindex);
+        tabindex = parseInt(tabindex);
 		var currentObj = jQuery('article[tabindex="'+tabindex+'"]');
 		//alert(tabindex);
 		var currentID = jQuery(currentObj).attr('id');
@@ -284,8 +286,7 @@ function detect_view_change(){
 }
 
 jQuery(window).load(function() {
-
-
+    
 	jQuery('#gogrid').click(function (evt){
 			evt.preventDefault();
 			jQuery("div.pf_container").removeClass('list').addClass('grid');
