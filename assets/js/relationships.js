@@ -14,34 +14,34 @@ jQuery(window).load(function() {
 		dostarstuff(obj, item, id, parent, otherstar);
 		jQuery.post(ajaxurl, {
 				action: 'pf_ajax_star',
-				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
+				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
 				post_id: id
-		}, 
+		},
 		function(response) {
 			var read_content = jQuery(response).find("response_data").text();
 			if (read_content != false){
 				//alert(otherstar);
-				
+
 			} else {
 				alert('PressForward was unable to access the relationships database.');
 			}
-		});		
+		});
 
-		
+
 	});
-	
+
 	function dostarstuff(obj, item, id, parent, otherstar){
 		if (jQuery(obj).hasClass('btn-warning')){
-		
+
 			jQuery(obj).removeClass('btn-warning');
 			otherstar.removeClass('btn-warning');
 		} else {
-			
+
 			jQuery(obj).addClass('btn-warning');
 			otherstar.addClass('btn-warning');
 		}
 	}
-	
+
 	jQuery('.pf_container').on('click', '.schema-actor', function(evt){
 		evt.preventDefault();
 		var obj			= jQuery(this);
@@ -60,11 +60,11 @@ jQuery(window).load(function() {
 		} else {
 			otherschema = item.find('#'+id+' .modal-btns [pf-schema="'+schema+'"]');
 		}
-		
+
 		if (jQuery(obj).hasClass('schema-switchable')) {
 			isSwitch = 'on';
 		}
-		
+
 		if(obj.is('[pf-schema-class]')){
 			schemaclass = obj.attr('pf-schema-class');
 		} else {
@@ -74,12 +74,12 @@ jQuery(window).load(function() {
 			schematargets = jQuery(this).attr('pf-schema-targets');
 		} else {
 			schematargets = false;
-		}		
+		}
 		doschemastuff(obj, item, id, parent, otherschema, schemaclass);
-		
+
 		if ((schematargets != false)){
 			targetedObj = jQuery(this).closest('article').find('.'+schematargets);
-			
+
 			if(targetedObj.is('[pf-schema-class]')){
 				tschemaclass = targetedObj.attr('pf-schema-class');
 			} else {
@@ -87,50 +87,50 @@ jQuery(window).load(function() {
 			}
 			doschemastuff(targetedObj, item, id, parent, otherschema, tschemaclass);
 		}
-		
+
 		jQuery.post(ajaxurl, {
 				action: 'pf_ajax_relate',
-				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
+				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
 				post_id: id,
 				schema: schema,
 				isSwitch: isSwitch
-		}, 
+		},
 		function(response) {
 			var read_content = jQuery(response).find("response_data").text();
 			if (read_content != false){
 				//alert(otherschema.attr('id'));
-				
+
 			} else {
 				alert('PressForward was unable to access the relationships database.');
 			}
-		});		
+		});
 
-		
+
 	});
 
-	
+
 	function doschemastuff(obj, item, id, parent, otherschema, schemaclass){
 		if (jQuery(obj).hasClass('schema-active') && jQuery(obj).hasClass('schema-switchable')){
 			jQuery(obj).removeClass('schema-active');
-			otherschema.removeClass('schema-active');		
+			otherschema.removeClass('schema-active');
 		} else {
 			jQuery(obj).addClass('schema-active');
 			otherschema.addClass('schema-active');
 		}
-		
+
 		if (schemaclass != false){
 
 			if (jQuery(obj).hasClass(schemaclass) && jQuery(obj).hasClass('schema-switchable')){
-			
+
 				jQuery(obj).removeClass(schemaclass);
-				otherschema.removeClass(schemaclass);		
+				otherschema.removeClass(schemaclass);
 			} else {
 				jQuery(obj).addClass(schemaclass);
 				otherschema.addClass(schemaclass);
-			}		
-		
+			}
+
 		}
-		
-	}	
-	
+
+	}
+
 });
