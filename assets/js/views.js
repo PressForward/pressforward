@@ -415,6 +415,10 @@ jQuery(window).load(function() {
 		evt.preventDefault();
 		window.open("?page=pf-menu", "_self")
 	});
+	jQuery('.pf_container').on('click', '#showNormalNominations', function(evt){
+		evt.preventDefault();
+		window.open("?page=pf-review", "_self")
+	});
 
 	reshowModal();
 	reviewModal();
