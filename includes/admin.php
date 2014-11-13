@@ -763,6 +763,10 @@ class PF_Admin {
 			if ( ! isset( $_GET['reveal'] ) ) {
 				$archive_feed_args['exclude_archived'] = true;
 			}
+		
+			if ( isset( $_GET['reveal'] ) ) {
+				$archive_feed_args['reveal'] = stripslashes( $_GET['reveal'] );
+			}
 
 			foreach ( pressforward()->pf_feed_items->archive_feed_to_display( $archive_feed_args ) as $item ) {
 
