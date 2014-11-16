@@ -398,6 +398,15 @@ jQuery(window).load(function() {
 			jQuery('#errors').html(response);
 		});
 	});
+	
+    if (jQuery('.list').length != 0) {
+       var actionButtons = jQuery('.list article');
+		jQuery.each(actionButtons, function(index, value) {
+			var tID = jQuery(this).attr('id');
+			jQuery('#'+tID+' header .actions').appendTo('#'+tID+' footer');
+	   });
+       //console.log('Item Actions in foot.');
+    }
 
 	jQuery('.pf_container').on('click', '#showMyNominations', function(evt){
 		evt.preventDefault();

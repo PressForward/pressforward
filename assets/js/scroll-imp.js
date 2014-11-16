@@ -26,7 +26,7 @@ jQuery(document).ready(function () {
 				var element		= jQuery(this);
 				var itemID		= element.attr('id');
         if (jQuery('.nom-container').length != 0) {
-          jQuery('.list #'+itemID+' header .actions').appendTo('#'+itemID+' header');
+          jQuery('.list #'+itemID+' header .actions').appendTo('#'+itemID+' footer');
           //console.log('Item Actions in foot.');
         } else {
   				if (jQuery('#'+itemID+' header .actions').length === 0){
