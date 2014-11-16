@@ -4,8 +4,9 @@ if (!class_exists('The_Alert_Box')){
     class The_Alert_Box {
 
         public static $status = 'alert_specimen';
-		    public static $option_name = 'alert_box_options';
-		    var $settings;
+		public static $option_name = 'alert_box_options';
+		var $settings;
+		var $alert_name;
 
         public static function init() {
             static $instance;
@@ -32,6 +33,7 @@ if (!class_exists('The_Alert_Box')){
 					add_action( 'wp_ajax_nopriv_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
 					add_action( 'wp_ajax_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
 			}
+			$this->alert_name = $this->alert_name_maker();
 			#add_action( 'admin_init', array($this, 'settings_field_settings_page') );
         }
 
@@ -57,6 +59,29 @@ if (!class_exists('The_Alert_Box')){
                 				)
             ) );
         }
+		
+		public function alert_name_maker(){
+			$alert_names = array(
+				'name'               => _x( 'Alerts', 'post type general name', 'pf' ),
+				'singular_name'      => _x( 'Alert', 'post type singular name', 'pf' ),
+				'menu_name'          => _x( 'Alerts', 'admin menu', 'pf' ),
+				'name_admin_bar'     => _x( 'Alert', 'add new on admin bar', 'pf' ),
+				'add_new'            => _x( 'Add Alert', 'alert', 'pf' ),
+				'add_new_item'       => __( 'Add New Alert', 'pf' ),
+				'new_item'           => __( 'New Alert', 'pf' ),
+				'edit_item'          => __( 'Edit Alert', 'pf' ),
+				'view_item'          => __( 'View Alert', 'pf' ),
+				'all_items'          => __( 'All Alerts', 'pf' ),
+				'search_items'       => __( 'Search Alerts', 'pf' ),
+				'parent_item_colon'  => __( 'Parent Alerts:', 'pf' ),
+				'not_found'          => __( 'No alerts found.', 'pf' ),
+				'not_found_in_trash' => __( 'No alerts found in Trash.', 'pf' ),
+				'turned_off'		 => __( 'Alert boxes not active.', 'pf')
+			);
+			
+			$alert_names = apply_filters('ab_alert_specimens_labels', $alert_names);
+			return $alert_names;
+		}
 
         public function add_bug_type_to_post($id, $string){
             $metas = get_post_meta($id, 'ab_alert_msg', false);
@@ -224,20 +249,28 @@ if (!class_exists('The_Alert_Box')){
 						echo ' ';
 						edit_post_link(__('Edit', 'pf'));
 						echo ' ';
-            if (current_user_can('delete_others_posts')){
+				if (current_user_can('delete_others_posts')){
 						        echo '| <a href="'.get_delete_post_link( get_the_ID() ).'" title="'. __('Delete', 'pf') .'" >'. __('Delete', 'pf') .'</a>';
-            }
+				}
 						echo '</p>';
 					endwhile;
 					wp_reset_postdata();
 					$alertCheck = __('Are you sure you want to delete all posts with alerts?', 'pf');
 					$alertCheck = apply_filters('ab_alert_specimens_check_message', $alertCheck);
-          if (current_user_can('delete_others_posts')){
+				if (current_user_can('delete_others_posts')){
     					$deleteText = __('Delete all posts with alerts', 'pf');
     					$deleteText = apply_filters('ab_alert_specimens_delete_all_text', $deleteText);
 
     					echo '<p><a href="#" id="delete_all_alert_specimens" style="color:red;font-weight:bold;" title="' . __('Delete all posts with alerts', 'pf') . '" alert-check="' . $alertCheck . '" alert-types="'.implode(',',$q->query['post_type']).'" >' . $deleteText . '</a></p>';
-          }
+				}
+				if (current_user_can('edit_posts')){
+			    		$editText = __('Remove all alerts', 'pf');
+    					$editText = apply_filters('ab_alert_specimens_remove_all_text', $deleteText);
+						$editCheck = __('Are you sure you want to remove all alerts?', 'pf');
+						$editCheck = apply_filters('ab_alert_specimens_check_edit_message', $editCheck);
+
+    					echo '<p><a href="#" id="remove_all_alert_specimens" style="color:red;font-weight:bold;" title="' . $editText . '" alert-check="' . $editCheck . '" alert-types="'.implode(',',$q->query['post_type']).'" >' . $editText . '</a></p>';
+				}
 				} else {
 					$return_string = __('No problems!', 'pf');
 					$return_string = apply_filters('ab_alert_safe', $return_string);
