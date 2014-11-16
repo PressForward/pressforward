@@ -66,7 +66,6 @@ jQuery(window).load(function() {
 		if (jQuery(obj).hasClass('schema-switchable')) {
 			isSwitch = 'on';
 		}
-		console.log();
 		if(jQuery(selectableObj.selector).is('[pf-schema-class]')){
 			schemaclass = jQuery(selectableObj.selector).attr('pf-schema-class');
 		} else {
@@ -112,14 +111,8 @@ jQuery(window).load(function() {
 
 
 	function doschemastuff(obj, item, id, parent, otherschema, schemaclass){
-		console.log('schemaclass');
-		console.log(schemaclass);
 		otherschema = jQuery(otherschema.selector);
-		console.log('otherschema');
-		console.log(otherschema);
-		console.log('obj');
 		obj = jQuery(obj.selector);
-		console.log(obj);
 		if (obj.hasClass('schema-active') && obj.hasClass('schema-switchable')){
 			obj.removeClass('schema-active');
 			otherschema.removeClass('schema-active');
