@@ -48,25 +48,27 @@ jQuery(window).load(function() {
 		var schema		= obj.attr('pf-schema');
 		var item 		= jQuery(this).closest('article');
 		var id			= item.attr('pf-post-id');
-		var parent		= jQuery(this).parent();
+		var parent		= jQuery(this).closest('.pf-btns');
 		var otherschema;
 		var schemaclass;
 		var isSwitch	= 'off';
 		var schematargets;
 		var targetedObj;
 		var tschemaclass;
+		var selectableObj;
 		if (parent.hasClass('modal-btns')){
-			otherschema = item.find('#'+id+' [pf-schema="'+schema+'"]');
+			otherschema = item.find('article[pf-post-id="'+id+'"] header [pf-schema="'+schema+'"]');
+			selectableObj = item.find('article[pf-post-id="'+id+'"] .modal-btns [pf-schema="'+schema+'"]');
 		} else {
-			otherschema = item.find('#'+id+' .modal-btns [pf-schema="'+schema+'"]');
+			otherschema = item.find('article[pf-post-id="'+id+'"] .modal-btns [pf-schema="'+schema+'"]');
+			selectableObj = item.find('article[pf-post-id="'+id+'"] header [pf-schema="'+schema+'"]');
 		}
-
 		if (jQuery(obj).hasClass('schema-switchable')) {
 			isSwitch = 'on';
 		}
 
-		if(obj.is('[pf-schema-class]')){
-			schemaclass = obj.attr('pf-schema-class');
+		if(jQuery(selectableObj).is('[pf-schema-class]')){
+			schemaclass = jQuery(selectableObj).attr('pf-schema-class');
 		} else {
 			schemaclass = false;
 		}
@@ -75,7 +77,7 @@ jQuery(window).load(function() {
 		} else {
 			schematargets = false;
 		}
-		doschemastuff(obj, item, id, parent, otherschema, schemaclass);
+		doschemastuff(selectableObj, item, id, parent, otherschema, schemaclass);
 
 		if ((schematargets != false)){
 			targetedObj = jQuery(this).closest('article').find('.'+schematargets);
@@ -110,26 +112,35 @@ jQuery(window).load(function() {
 
 
 	function doschemastuff(obj, item, id, parent, otherschema, schemaclass){
-		if (jQuery(obj).hasClass('schema-active') && jQuery(obj).hasClass('schema-switchable')){
-			jQuery(obj).removeClass('schema-active');
+		console.log('schemaclass');
+		console.log(schemaclass);
+		otherschema = jQuery(otherschema);
+		console.log('otherschema');
+		console.log(otherschema);
+		console.log('obj');
+		console.log(obj);
+		if (obj.hasClass('schema-active') && obj.hasClass('schema-switchable')){
+			obj.removeClass('schema-active');
 			otherschema.removeClass('schema-active');
 		} else {
-			jQuery(obj).addClass('schema-active');
+			obj.addClass('schema-active');
 			otherschema.addClass('schema-active');
 		}
 
 		if (schemaclass != false){
 
-			if (jQuery(obj).hasClass(schemaclass) && jQuery(obj).hasClass('schema-switchable')){
+			if (obj.hasClass(schemaclass) && obj.hasClass('schema-switchable')){
 
-				jQuery(obj).removeClass(schemaclass);
+				obj.removeClass(schemaclass);
 				otherschema.removeClass(schemaclass);
 			} else {
-				jQuery(obj).addClass(schemaclass);
+				obj.addClass(schemaclass);
 				otherschema.addClass(schemaclass);
 			}
 
 		}
+		
+		
 
 	}
 
