@@ -154,22 +154,40 @@ if (!class_exists('The_Alert_Box')){
                 return;
             }
 
-            // unhook this function so it doesn't loop infinitely
-            remove_action( 'save_post', array($this, 'remove_alert_on_edit') );
+           self::dismiss_alert($post_id);
 
+
+        }
+		
+		public function dismiss_all_alerts(){
+			if (current_user_can('edit_posts')){
+				$q = $this->get_specimens();
+				if ( $q->have_posts() ) {
+					while ( $q->have_posts() ) : $q->the_post();
+						self::dismiss_alert( get_the_ID() );
+					endwhile;
+				}
+				wp_reset_postdata();			
+			}
+		}
+		
+		public function dismiss_alert($post_id){
+			// unhook this function so it doesn't loop infinitely
+            remove_action( 'save_post', array($this, 'remove_alert_on_edit') );
+			
             $post_status_d = get_post_meta( $post_id, 'pre_alert_status', true);
             if (empty($post_type_d)){
                 $post_status_d['status'] = 'draft';
                 $post_status_d['type'] = $_POST['post_type'];
             }
             $post_status = apply_filters('ab_alert_specimens_update_post_type', $post_status_d);
-            // update the post, which calls save_post again
+			
+			// update the post, which calls save_post again
             wp_update_post( array( 'ID' => $post_id, 'post_status' => $post_status['status'] ) );
 
             // re-hook this function
             add_action( 'save_post', array($this, 'remove_alert_on_edit') );
-
-        }
+		}
 
         public function remove_alerted_posts(){
             ob_start();
@@ -264,12 +282,12 @@ if (!class_exists('The_Alert_Box')){
     					echo '<p><a href="#" id="delete_all_alert_specimens" style="color:red;font-weight:bold;" title="' . __('Delete all posts with alerts', 'pf') . '" alert-check="' . $alertCheck . '" alert-types="'.implode(',',$q->query['post_type']).'" >' . $deleteText . '</a></p>';
 				}
 				if (current_user_can('edit_posts')){
-			    		$editText = __('Remove all alerts', 'pf');
-    					$editText = apply_filters('ab_alert_specimens_remove_all_text', $deleteText);
-						$editCheck = __('Are you sure you want to remove all alerts?', 'pf');
-						$editCheck = apply_filters('ab_alert_specimens_check_edit_message', $editCheck);
+			    		$editText = __('Dismiss all alerts', 'pf');
+    					$editText = apply_filters('ab_alert_specimens_dismiss_all_text', $editText);
+						$editCheck = __('Are you sure you want to dismiss all alerts?', 'pf');
+						$editCheck = apply_filters('ab_alert_specimens_check_dismiss_message', $editCheck);
 
-    					echo '<p><a href="#" id="remove_all_alert_specimens" style="color:red;font-weight:bold;" title="' . $editText . '" alert-check="' . $editCheck . '" alert-types="'.implode(',',$q->query['post_type']).'" >' . $editText . '</a></p>';
+    					echo '<p><a href="#" id="dismiss_all_alert_specimens" style="color:red;font-weight:bold;" title="' . $editText . '" alert-check="' . $editCheck . '" alert-types="'.implode(',',$q->query['post_type']).'" >' . $editText . '</a></p>';
 				}
 				} else {
 					$return_string = __('No problems!', 'pf');
