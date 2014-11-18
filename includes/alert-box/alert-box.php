@@ -32,6 +32,7 @@ if (!class_exists('The_Alert_Box')){
 					add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 					add_action( 'wp_ajax_nopriv_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
 					add_action( 'wp_ajax_remove_alerted_posts', array( $this, 'remove_alerted_posts') );
+					add_action( 'wp_ajax_dismiss_alerts_ajax', array( $this, 'dismiss_alerts_ajax') );
 			}
 			$this->alert_name = $this->alert_name_maker();
 			#add_action( 'admin_init', array($this, 'settings_field_settings_page') );
@@ -159,15 +160,20 @@ if (!class_exists('The_Alert_Box')){
 
         }
 		
-		public function dismiss_all_alerts(){
+		public function dismiss_all_alerts($page =  0, $post_types = false){
 			if (current_user_can('edit_posts')){
-				$q = $this->get_specimens();
+				$q = $this->get_specimens($page, $post_types);
 				if ( $q->have_posts() ) {
 					while ( $q->have_posts() ) : $q->the_post();
 						self::dismiss_alert( get_the_ID() );
 					endwhile;
+				} else {
+					return false;
 				}
-				wp_reset_postdata();			
+				wp_reset_postdata();
+				return true;
+			} else {
+				return false;
 			}
 		}
 		
@@ -183,11 +189,63 @@ if (!class_exists('The_Alert_Box')){
             $post_status = apply_filters('ab_alert_specimens_update_post_type', $post_status_d);
 			
 			// update the post, which calls save_post again
-            wp_update_post( array( 'ID' => $post_id, 'post_status' => $post_status['status'] ) );
+            $id = wp_update_post( array( 'ID' => $post_id, 'post_status' => $post_status['status'] ) );
 
             // re-hook this function
             add_action( 'save_post', array($this, 'remove_alert_on_edit') );
+			
+			return $id;
 		}
+		
+		public function dismiss_alerts_ajax(){
+            ob_start();
+            $filtered_post_types = sanitize_text_field($_POST['filtered_post_types']);
+            if (!current_user_can('edit_posts')){
+                $response = array(
+                   'what'=>'the_alert_box',
+                   'action'=>'remove_alerted_posts',
+                   'id'=>0,
+                   'data'=>__('You do not have permission to dismiss these posts.', 'pf')
+                );
+                $xmlResponse = new WP_Ajax_Response($response);
+                $xmlResponse->send();
+                ob_end_flush();
+                die();
+            }
+            if (empty($filtered_post_types)){
+                $fpt_array = false;
+            } else {
+                $fpt_array = explode(',', $filtered_post_types);
+            }
+			if (!empty($_POST['all_alerts'])){
+				$alerts = the_alert_box()->dismiss_all_alerts(0, $fpt_array);
+			} else {
+				$alert = intval( $_POST['alert'] );
+				$alerts = the_alert_box()->dismiss_alert($alert);	
+			}
+            if (!isset($alerts) || !$alerts || (0 == $alerts)){
+                $response = array(
+                   'what'=>'the_alert_box',
+                   'action'=>'remove_alerted_posts',
+                   'id'=>0,
+                   'data'=>__('No alerted posts to delete.', 'pf')
+                );
+            } else {
+                $response = array(
+                   'what'=>'the_alert_box',
+                   'action'=>'remove_alerted_posts',
+                   'id'=>$pages,
+                   'data'=> $alerts->post_count . __(' alerts dismissed.', 'pf'),
+                    'supplemental' => array(
+                        'buffered' => ob_get_contents()
+				    )
+                );
+            }
+            $xmlResponse = new WP_Ajax_Response($response);
+            $xmlResponse->send();
+            ob_end_flush();
+			die();
+        }
 
         public function remove_alerted_posts(){
             ob_start();
@@ -233,7 +291,7 @@ if (!class_exists('The_Alert_Box')){
             } else {
                 $alerts = false;
             }
-            if (!isset($alerts) || !$alerts){
+            if (!isset($alerts) || !$alerts || (0 == $alerts)){
                 $response = array(
                    'what'=>'the_alert_box',
                    'action'=>'remove_alerted_posts',
