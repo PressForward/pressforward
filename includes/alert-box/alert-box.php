@@ -61,7 +61,11 @@ if (!class_exists('The_Alert_Box')){
             ) );
         }
 
-		public function alert_name_maker(){
+		private function depreciated_alert_name_filters($alert_names){
+
+    }
+
+    public function alert_name_maker(){
 			$alert_names = array(
 				'name'               => _x( 'Alerts', 'post type general name', 'pf' ),
 				'singular_name'      => _x( 'Alert', 'post type singular name', 'pf' ),
@@ -77,12 +81,28 @@ if (!class_exists('The_Alert_Box')){
 				'parent_item_colon'  => __( 'Parent Alerts:', 'pf' ),
 				'not_found'          => __( 'No alerts found.', 'pf' ),
 				'not_found_in_trash' => __( 'No alerts found in Trash.', 'pf' ),
-				'turned_off'		 => __( 'Alert boxes not active.', 'pf')
+        'dismiss_all_check' => __( 'Are you sure you want to dismiss all alerts?', 'pf' ),
+        'dismiss_all'       => __( 'Dismiss all alerts', 'pf' ),
+        'delete_all_check'  => __( 'Are you sure you want to delete all posts with alerts?', 'pf' ),
+        'delete_all'         => __( 'Delete all posts with alerts', 'pf' ),
+        'turned_off'		 => __( 'Alert boxes not active.', 'pf')
 			);
-
+      $alert_names =  self::depreciated_alert_name_filters($alert_names);
 			$alert_names = apply_filters('ab_alert_specimens_labels', $alert_names);
+
 			return $alert_names;
 		}
+
+    public function alert_label($label = 'name', $nocaps = false){
+      $labels = self::alert_name_maker();
+      if (empty($labels[$label])){
+        return $labels['name'];
+      }
+      if ($nocaps) {
+        return strtolower($labels[$label]);
+      }
+      return $labels[$label];
+    }
 
         public function add_bug_type_to_post($id, $string){
             $metas = get_post_meta($id, 'ab_alert_msg', false);
@@ -205,7 +225,7 @@ if (!class_exists('The_Alert_Box')){
                    'what'=>'the_alert_box',
                    'action'=>'remove_alerted_posts',
                    'id'=>0,
-                   'data'=>__('You do not have permission to dismiss these posts.', 'pf')
+                   'data'=>__('You do not have permission to dismiss alerts.', 'pf')
                 );
                 $xmlResponse = new WP_Ajax_Response($response);
                 $xmlResponse->send();
@@ -458,7 +478,7 @@ if (!class_exists('The_Alert_Box')){
               'parent_element'   =>  'alert_check',
               'element'          =>  'alert_switch',
               'type'             =>  'checkbox',
-              'label_for'        =>  'Turn alerts on.',
+              'label_for'        =>  __('Turn alerts on.', 'pf'),
               'default'          =>  'true'
 			);
 			return array('switch' => $switch);
@@ -468,7 +488,7 @@ if (!class_exists('The_Alert_Box')){
 			#var_dump('die');die();
 			register_setting( 'general', self::$option_name, array($this, 'validator')  );
 			$args = the_alert_box()->settings_fields();
-			add_settings_field(	'alert_box_check', 'Active Alert Boxes?', array($this, 'settings_field_maker'), 'general', 'default', $args['switch']);
+			add_settings_field(	'alert_box_check', __('Active Alert Boxes?', 'pf'), array($this, 'settings_field_maker'), 'general', 'default', $args['switch']);
 		}
 
 		public function validator($input){
