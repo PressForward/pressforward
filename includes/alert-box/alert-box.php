@@ -62,7 +62,10 @@ if (!class_exists('The_Alert_Box')){
         }
 
 		private function depreciated_alert_name_filters($alert_names){
-
+      $alert_names['dismiss_all'] =  apply_filters('ab_alert_specimens_dismiss_all_text', $alert_names['dismiss_all']);
+      $alert_names['delete_all_check'] =  apply_filters('ab_alert_specimens_check_message', $alert_names['delete_all_check']);
+      $alert_names['dismiss_all_check'] =  apply_filters('ab_alert_specimens_check_dismiss_message', $alert_names['dismiss_all_check']);
+      return $alert_names;
     }
 
     public function alert_name_maker(){
@@ -81,6 +84,7 @@ if (!class_exists('The_Alert_Box')){
 				'parent_item_colon'  => __( 'Parent Alerts:', 'pf' ),
 				'not_found'          => __( 'No alerts found.', 'pf' ),
 				'not_found_in_trash' => __( 'No alerts found in Trash.', 'pf' ),
+        'dismiss_one_check' => __( 'Are you sure you want to dismiss the alert on', 'pf' ),
         'dismiss_all_check' => __( 'Are you sure you want to dismiss all alerts?', 'pf' ),
         'dismiss_all'       => __( 'Dismiss all alerts', 'pf' ),
         'delete_all_check'  => __( 'Are you sure you want to delete all posts with alerts?', 'pf' ),
