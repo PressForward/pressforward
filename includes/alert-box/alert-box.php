@@ -60,7 +60,7 @@ if (!class_exists('The_Alert_Box')){
                 				)
             ) );
         }
-		
+
 		public function alert_name_maker(){
 			$alert_names = array(
 				'name'               => _x( 'Alerts', 'post type general name', 'pf' ),
@@ -79,7 +79,7 @@ if (!class_exists('The_Alert_Box')){
 				'not_found_in_trash' => __( 'No alerts found in Trash.', 'pf' ),
 				'turned_off'		 => __( 'Alert boxes not active.', 'pf')
 			);
-			
+
 			$alert_names = apply_filters('ab_alert_specimens_labels', $alert_names);
 			return $alert_names;
 		}
@@ -159,7 +159,7 @@ if (!class_exists('The_Alert_Box')){
 
 
         }
-		
+
 		public function dismiss_all_alerts($page =  0, $post_types = false){
 			if (current_user_can('edit_posts')){
 				$q = $this->get_specimens($page, $post_types);
@@ -176,27 +176,27 @@ if (!class_exists('The_Alert_Box')){
 				return false;
 			}
 		}
-		
+
 		public function dismiss_alert($post_id){
 			// unhook this function so it doesn't loop infinitely
             remove_action( 'save_post', array($this, 'remove_alert_on_edit') );
-			
+
             $post_status_d = get_post_meta( $post_id, 'pre_alert_status', true);
             if (empty($post_type_d)){
                 $post_status_d['status'] = 'draft';
                 $post_status_d['type'] = $_POST['post_type'];
             }
             $post_status = apply_filters('ab_alert_specimens_update_post_type', $post_status_d);
-			
+
 			// update the post, which calls save_post again
             $id = wp_update_post( array( 'ID' => $post_id, 'post_status' => $post_status['status'] ) );
 
             // re-hook this function
             add_action( 'save_post', array($this, 'remove_alert_on_edit') );
-			
+
 			return $id;
 		}
-		
+
 		public function dismiss_alerts_ajax(){
             ob_start();
             $filtered_post_types = sanitize_text_field($_POST['filtered_post_types']);
@@ -221,34 +221,45 @@ if (!class_exists('The_Alert_Box')){
 				$alerts = the_alert_box()->dismiss_all_alerts(0, $fpt_array);
 			} else {
 				$alert = intval( $_POST['alert'] );
-				$alerts = the_alert_box()->dismiss_alert($alert);	
+				$alerts = the_alert_box()->dismiss_alert($alert);
 			}
             if (!isset($alerts) || !$alerts || (0 == $alerts)){
                 $response = array(
                    'what'=>'the_alert_box',
-                   'action'=>'remove_alerted_posts',
+                   'action'=>'dismiss_alerts_ajax',
                    'id'=>0,
-                   'data'=>__('No alerted posts to delete.', 'pf')
+                   'data'=>__('No alerted posts to dismiss.', 'pf')
                 );
+            } elseif ( empty($_POST['all_alerts'] ) {
+              $response = array(
+                 'what'=>'the_alert_box',
+                 'action'=>'dismiss_alerts_ajax',
+                 'id'=>$pages,
+                 'data'=> sprintf(__('Alert on post ID %s dismissed.', 'pf'), $alert),
+                  'supplemental' => array(
+                      'buffered' => ob_get_contents()
+                    )
+              );
             } else {
                 $response = array(
                    'what'=>'the_alert_box',
-                   'action'=>'remove_alerted_posts',
+                   'action'=>'dismiss_alerts_ajax',
                    'id'=>$pages,
                    'data'=> $alerts->post_count . __(' alerts dismissed.', 'pf'),
                     'supplemental' => array(
                         'buffered' => ob_get_contents()
-				    )
+				              )
                 );
             }
             $xmlResponse = new WP_Ajax_Response($response);
             $xmlResponse->send();
             ob_end_flush();
-			die();
+			      die();
         }
 
         public function remove_alerted_posts(){
             ob_start();
+            # @todo Nonce this function
             $filtered_post_types = $_POST['filtered_post_types'];
             if (!current_user_can('delete_others_posts')){
                 $response = array(
@@ -315,20 +326,30 @@ if (!class_exists('The_Alert_Box')){
 			die();
         }
 
+        public function the_alert(){
+
+          edit_post_link(get_the_title(), '<span style="color:red;font-weight:bold;">'. __('Alert', 'pf') . '</span> for ', ': '.$this->get_bug_type(get_the_ID()));
+          echo ' ';
+          edit_post_link(__('Edit', 'pf'));
+          echo ' ';
+          if (current_user_can('edit_posts')){
+            echo '| <a href="#" class="alert-dismisser" title="'. __('Dismiss', 'pf') . '" data-alert-post-id="'. get_the_ID() .'" data-alert-dismiss-check="'.sprintf(__('Are you sure you want to dismiss the alert on %s', 'pf'), get_the_title()).'" >' . __('Dismiss', 'pf').'</a>';
+          }
+          echo ' ';
+          if (current_user_can('delete_others_posts')){
+            echo '| <a href="'.get_delete_post_link( get_the_ID() ).'" title="'. __('Delete', 'pf') .'" >'. __('Delete', 'pf') .'</a>';
+          }
+
+        }
+
         public function alert_box_insides_function(){
             if(self::is_on()){
 				$q = $this->get_specimens();
 				if ( $q->have_posts() ) {
 					while ( $q->have_posts() ) : $q->the_post();
 						echo '<p>';
-						edit_post_link(get_the_title(), '<span style="color:red;font-weight:bold;">'. __('Alert', 'pf') . '</span> for ', ': '.$this->get_bug_type(get_the_ID()));
-						echo ' ';
-						edit_post_link(__('Edit', 'pf'));
-						echo ' ';
-				if (current_user_can('delete_others_posts')){
-						        echo '| <a href="'.get_delete_post_link( get_the_ID() ).'" title="'. __('Delete', 'pf') .'" >'. __('Delete', 'pf') .'</a>';
-				}
-						echo '</p>';
+              the_alert_box()->the_alert();
+            echo '</p>';
 					endwhile;
 					wp_reset_postdata();
 					$alertCheck = __('Are you sure you want to delete all posts with alerts?', 'pf');
@@ -345,7 +366,7 @@ if (!class_exists('The_Alert_Box')){
 						$editCheck = __('Are you sure you want to dismiss all alerts?', 'pf');
 						$editCheck = apply_filters('ab_alert_specimens_check_dismiss_message', $editCheck);
 
-    					echo '<p><a href="#" id="dismiss_all_alert_specimens" style="color:red;font-weight:bold;" title="' . $editText . '" alert-check="' . $editCheck . '" alert-types="'.implode(',',$q->query['post_type']).'" >' . $editText . '</a></p>';
+    					echo '<p><a href="#" id="dismiss_all_alert_specimens" style="color:yellow;font-weight:bold;" title="' . $editText . '" data-dismiss-all-check="' . $editCheck . '" alert-types="'.implode(',',$q->query['post_type']).'" >' . $editText . '</a></p>';
 				}
 				} else {
 					$return_string = __('No problems!', 'pf');
