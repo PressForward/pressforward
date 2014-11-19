@@ -354,19 +354,19 @@ if (!class_exists('The_Alert_Box')){
 					wp_reset_postdata();
 					$alertCheck = __('Are you sure you want to delete all posts with alerts?', 'pf');
 					$alertCheck = apply_filters('ab_alert_specimens_check_message', $alertCheck);
+          if (current_user_can('edit_posts')){
+                $editText = __('Dismiss all alerts', 'pf');
+                $editText = apply_filters('ab_alert_specimens_dismiss_all_text', $editText);
+              $editCheck = __('Are you sure you want to dismiss all alerts?', 'pf');
+              $editCheck = apply_filters('ab_alert_specimens_check_dismiss_message', $editCheck);
+
+                echo '<p><a href="#" id="dismiss_all_alert_specimens" style="color:GoldenRod;font-weight:bold;" title="' . $editText . '" data-dismiss-all-check="' . $editCheck . '" alert-types="'.implode(',',$q->query['post_type']).'" >' . $editText . '</a></p>';
+          }
 				if (current_user_can('delete_others_posts')){
     					$deleteText = __('Delete all posts with alerts', 'pf');
     					$deleteText = apply_filters('ab_alert_specimens_delete_all_text', $deleteText);
 
     					echo '<p><a href="#" id="delete_all_alert_specimens" style="color:red;font-weight:bold;" title="' . __('Delete all posts with alerts', 'pf') . '" alert-check="' . $alertCheck . '" alert-types="'.implode(',',$q->query['post_type']).'" >' . $deleteText . '</a></p>';
-				}
-				if (current_user_can('edit_posts')){
-			    		$editText = __('Dismiss all alerts', 'pf');
-    					$editText = apply_filters('ab_alert_specimens_dismiss_all_text', $editText);
-						$editCheck = __('Are you sure you want to dismiss all alerts?', 'pf');
-						$editCheck = apply_filters('ab_alert_specimens_check_dismiss_message', $editCheck);
-
-    					echo '<p><a href="#" id="dismiss_all_alert_specimens" style="color:yellow;font-weight:bold;" title="' . $editText . '" data-dismiss-all-check="' . $editCheck . '" alert-types="'.implode(',',$q->query['post_type']).'" >' . $editText . '</a></p>';
 				}
 				} else {
 					$return_string = __('No problems!', 'pf');
