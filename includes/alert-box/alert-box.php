@@ -230,7 +230,7 @@ if (!class_exists('The_Alert_Box')){
                    'id'=>0,
                    'data'=>__('No alerted posts to dismiss.', 'pf')
                 );
-            } elseif ( empty($_POST['all_alerts'] ) {
+            } elseif ( empty($_POST['all_alerts'] ) ) {
               $response = array(
                  'what'=>'the_alert_box',
                  'action'=>'dismiss_alerts_ajax',
