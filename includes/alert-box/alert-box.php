@@ -65,6 +65,7 @@ if (!class_exists('The_Alert_Box')){
       $alert_names['dismiss_all'] =  apply_filters('ab_alert_specimens_dismiss_all_text', $alert_names['dismiss_all']);
       $alert_names['delete_all_check'] =  apply_filters('ab_alert_specimens_check_message', $alert_names['delete_all_check']);
       $alert_names['dismiss_all_check'] =  apply_filters('ab_alert_specimens_check_dismiss_message', $alert_names['dismiss_all_check']);
+      $alert_names['delete_all'] = apply_filters('ab_alert_specimens_delete_all_text', $alert_names['delete_all']);
       return $alert_names;
     }
 
