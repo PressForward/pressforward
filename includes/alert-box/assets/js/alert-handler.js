@@ -54,7 +54,7 @@ jQuery(window).load(function() {
 				var check = jQuery(response).find("response_data").text();
 				alert(check);
 				jQuery(element).hide();
-			};
+			});
 		}
 
 	});
