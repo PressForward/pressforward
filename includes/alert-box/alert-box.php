@@ -58,6 +58,16 @@ if (!class_exists('The_Alert_Box')){
             ) );
         }
 
+	public static function alert_count() {
+		$q = new WP_Query( array(
+			'post_type' => get_post_types( '', 'names' ),
+			'post_status' => self::$status,
+			'fields' => 'ids',
+			'posts_per_page' => '-1',
+		) );
+		return $q->post_count;
+	}
+
         public function add_bug_type_to_post($id, $string){
             $metas = get_post_meta($id, 'ab_alert_msg', false);
             if (!in_array($string, $metas)){

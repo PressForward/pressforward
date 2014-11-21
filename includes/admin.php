@@ -88,10 +88,17 @@ class PF_Admin {
 			array($this, 'display_feeder_builder')
 		);
 
+		if ( $alert_count = The_Alert_Box::alert_count() ) {
+			$alert_count_notice = '<span class="update-plugins count-' . intval( $alert_count ) . '"><span class="plugin-count">' . number_format_i18n( $alert_count ) . '</span></span>';
+			$subscribed_feeds_menu_text = sprintf( __( 'Subscribed Feeds %s', 'pf' ), $alert_count_notice );
+		} else {
+			$subscribed_feeds_menu_text = __( 'Subscribed Feeds', 'pf' );
+		}
+
 		add_submenu_page(
 			PF_MENU_SLUG,
 			__('Subscribed Feeds', 'pf'),
-			__('Subscribed Feeds', 'pf'),
+			$subscribed_feeds_menu_text,
 			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')),
 			'edit.php?post_type=' . pressforward()->pf_feeds->post_type
 		);
