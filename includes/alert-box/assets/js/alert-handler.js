@@ -45,15 +45,16 @@ jQuery(window).load(function() {
 		var post_types = element.attr('alert-types');
 		var post_id = element.attr('data-alert-post-id');
 		if ( confirm(dismissConfirm)){
+			element.parent('p').hide();
 			jQuery.post(ajaxurl, {
-				action: dismiss_alerts_ajax,
+				action: 'dismiss_alerts_ajax',
 				filtered_post_types: post_types,
 				alert: post_id
 			},
 			function (response){
 				var check = jQuery(response).find("response_data").text();
 				alert(check);
-				jQuery(element).hide();
+
 			});
 		}
 

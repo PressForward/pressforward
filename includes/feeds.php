@@ -852,7 +852,7 @@ class PF_Feeds_Schema {
 	}
 
     public function make_alert_return_to_publish($status_data){
-        if ($this->post_type == $status_data['type']){
+        if ( (!empty($status_data['type'])) && ($this->post_type == $status_data['type']) ){
             $status_data['status'] = 'publish';
             return $status_data;
         }
