@@ -415,7 +415,7 @@ class PF_Admin {
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
 			echo '<div class="box-controls">';
 			if (current_user_can( 'manage_options' )){
-				echo '<i class="icon-remove-sign pf-item-remove" pf-item-post-id="' . $id_for_comments .'" title="Delete"></i>';
+				echo '<i class="icon-remove pf-item-remove" pf-item-post-id="' . $id_for_comments .'" title="Delete"></i>';
 			}
 			$archiveStat = pf_get_relationship_value( 'archive', $id_for_comments, $user_id );
 			$extra_classes = '';
