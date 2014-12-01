@@ -23,7 +23,7 @@
 	<div class="list pf_container full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">
-				<?php echo '<h1>' . PF_TITLE . ': Under Review</h1>'; ?>
+				<?php echo '<h1>' . PF_TITLE . ': '.__('Nominated', 'pf').'</h1>'; ?>
 				<?php
 					if ($page > 0) {
 						$pageNumForPrint = sprintf( __('Page %1$d', 'pf'), $page);

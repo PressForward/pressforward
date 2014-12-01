@@ -71,8 +71,8 @@ class PF_Admin {
 
 		add_submenu_page(
 			PF_MENU_SLUG,
-			__('Under Review', 'pf'),
-			__('Under Review', 'pf'),
+			__('Nominated', 'pf'),
+			__('Nominated', 'pf'),
 			get_option('pf_menu_under_review_access', pf_get_defining_capability_by_role('contributor')),
 			PF_SLUG . '-review',
 			array($this, 'display_review_builder')
@@ -969,7 +969,7 @@ class PF_Admin {
 										),
 			'pf_menu_under_review_access'=>array(
 											'default'=>'contributor',
-											'title'=>__( 'Under Review Menu', 'pf' )
+											'title'=>__( 'Nominated Menu', 'pf' )
 										),
 			'pf_menu_preferences_access'=>array(
 											'default'=>'administrator',
@@ -1307,7 +1307,7 @@ class PF_Admin {
 										),
 			'pf_menu_under_review_access'=>array(
 											'default'=>'contributor',
-											'title'=>__( 'Under Review Menu', 'pf' )
+											'title'=>__( 'Nominated Menu', 'pf' )
 										),
 			'pf_menu_preferences_access'=>array(
 											'default'=>'administrator',
