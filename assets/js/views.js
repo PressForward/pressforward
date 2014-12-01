@@ -64,7 +64,7 @@
 			prevExcerpt = trim_words(prevExcerpt, 20);
 			var prevDate = jQuery(prevObj).children('footer').children('p.pubdate').text();
 
-			var prevHTML = '<h5 class="prev_title">Previously: <a href="'+prevItemID+'" role="button" class="modal-nav" data-dismiss="modal" data-toggle="modal" data-backdrop="false">'+prevTitle+'</a></h5>';
+			var prevHTML = '<h5 class="prev_title">Previous: <a href="'+prevItemID+'" role="button" class="modal-nav" data-dismiss="modal" data-toggle="modal" data-backdrop="false">'+prevTitle+'</a></h5>';
 			prevHTML += '<p class="prev_source_title">'+prevSource+'</p>';
 			prevHTML += '<p class="prev_author">'+prevAuthor+'</p>';
 			prevHTML += '<p class="prev_excerpt">'+prevExcerpt+'</p>';
@@ -286,7 +286,7 @@ function detect_view_change(){
 }
 
 jQuery(window).load(function() {
-    
+
 	jQuery('#gogrid').click(function (evt){
 			evt.preventDefault();
 			jQuery("div.pf_container").removeClass('list').addClass('grid');
@@ -398,7 +398,7 @@ jQuery(window).load(function() {
 			jQuery('#errors').html(response);
 		});
 	});
-	
+
     if (jQuery('.list').length != 0) {
        var actionButtons = jQuery('.list article');
 		jQuery.each(actionButtons, function(index, value) {
