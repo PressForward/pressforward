@@ -289,9 +289,9 @@ class PF_Admin {
 
 
 					?>
-						<script type="text/javascript">
+						<!-- <script type="text/javascript">
 
-						</script>
+						 </script> -->
 					<?php
 					if ($modal === true){
 						?><button class="btn btn-small" data-dismiss="modal" aria-hidden="true">Close</button><?php
