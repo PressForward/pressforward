@@ -859,7 +859,8 @@ class PF_Admin {
 		<form action="<?php pf_admin_url(); ?>" method="post">
 			<div class="wrap">
 				<?php
-				echo 'Options';
+				echo '<h2>Preferences</h2>';
+				echo '<h3>Options</h3>';
 
 
 				wp_nonce_field( 'pf_settings' );
