@@ -62,8 +62,8 @@ jQuery(window).load(function() {
 	jQuery('.pf_container').on('click', ".pf-item-remove", function(e){
 		e.preventDefault();
 		var element		= jQuery(this);
-		var postID		= element.attr('pf-item-post-id');
-		jQuery('article[pf-item-post-id="'+postID+'"]').remove();
+		var postID		= element.attr('pf-post-id');
+		jQuery('article[pf-post-id="'+postID+'"]').remove();
 		jQuery.post(ajaxurl, {
 			action: 'pf_ajax_thing_deleter',
 			post_id: postID,
