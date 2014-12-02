@@ -3214,25 +3214,7 @@ input[type="button"].btn-block {
 .btn-primary.active {
   background-color: #003399 \9;
 }
-/*#resetFeedOps, #gomenu {
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(orange), to(orange));
-}
-.btn-warning {
-  color: #ffffff;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-  background-color: #ffd800;
-  *background-color: #ffd800;
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffd800), to(#ffd800));
-  background-image: -webkit-linear-gradient(top, #ffd800, #ffd800);
-  background-image: -o-linear-gradient(top, #ffd800, #ebc700);
-  background-image: linear-gradient(to bottom, #ffd800, #ebc700);
-  background-image: -moz-linear-gradient(top, #ffd800, #ebc700);
-  background-repeat: repeat-x;
-  border-color: #f89406 #f89406 #ad6704;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#fffbb450', endColorstr='#fff89406', GradientType=0);
-  filter: progid:dximagetransform.microsoft.gradient(enabled=false);
-}*/
+
 .btn-warning {
   color: #ffffff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
