@@ -53,9 +53,9 @@
 			if (!isset($_GET['pf-see']) || ('archive-only' != $_GET['pf-see'])){
 				echo '<button type="submit" class="btn btn-small feedsort" id="showarchiveonly" value="' . __('Show only archived', 'pf') . '">' . __('Show only archived', 'pf') . '</button>';
 				if ((isset($_GET['by']) && ( 'archived' == $_GET['by'])) ){
-					echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="shownormal" value="' . __('Show non-archived', 'pf') . '">' . __('Show non-archived', 'pf') . '.</button>';
+					echo '<button type="submit" class="showarchived btn btn-small" id="shownormal" value="' . __('Show non-archived', 'pf') . '">' . __('Show non-archived', 'pf') . '.</button>';
 				} else {
-					echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="showarchived" value="' . __('Show archived', 'pf') . '">' . __('Show archived', 'pf') . '.</button>';
+					echo '<button type="submit" class="showarchived btn btn-small" id="showarchived" value="' . __('Show archived', 'pf') . '">' . __('Show archived', 'pf') . '.</button>';
 				}
 			} 
 			if ( isset($_POST['search-terms']) || isset($_GET['by']) || isset($_GET['pf-see']) || isset($_GET['reveal']) ) {
