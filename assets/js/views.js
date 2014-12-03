@@ -241,6 +241,28 @@ function PFBootstrapInits() {
 		title: 'Nominate'
 
 	});
+	jQuery('.star-item').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Star'
+
+	});
+	jQuery('.itemInfobutton').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Star'
+
+	});
+	jQuery('.itemCommentModal').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Comment'
+	});
+	jQuery('.nom-count').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Nomination Count'
+	});
 	jQuery('.itemInfobutton').popover({
 		html : true,
 		container : '.actions',

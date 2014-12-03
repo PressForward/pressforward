@@ -75,7 +75,7 @@ class PF_Comments extends PF_Module {
 		}
 		if ($commentSet['modal_state'] == false){
 
-			echo '<a role="button" class="btn '.$btnstate.' itemCommentModal comments-expander" data-toggle="modal" href="#comment_modal_' . $commentSet['id'] . '" id="comments-expander-' . esc_attr( $commentSet['id'] ) . '" ><span class="comments-expander-count">' . $count . '</span><i class="'.$iconstate.'"></i></a>';
+			echo '<a role="button" class="btn '.$btnstate.' itemCommentModal comments-expander" title="' . __('Comment', 'pf') .  '" data-toggle="modal" href="#comment_modal_' . $commentSet['id'] . '" id="comments-expander-' . esc_attr( $commentSet['id'] ) . '" ><span class="comments-expander-count">' . $count . '</span><i class="'.$iconstate.'"></i></a>';
 
 		} else {
 			echo '<a role="button" class="btn '.$btnstate.' btn-small itemCommentModal comments-expander active" ><span class="comments-expander-count">' . $count . '</span><i class="'.$iconstate.'"></i></a>';

@@ -242,13 +242,13 @@ class PF_Admin {
 						echo '</form>';
 					}
 					# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
-					echo '<button class="btn btn-small itemInfobutton" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover" data-title="" data-target="'.$item['item_id'].'"><i class="icon-info-sign"></i></button>';
+					echo '<button class="btn btn-small itemInfobutton" data-toggle="tooltip" title="' . __('Info', 'pf') .  '" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover" data-title="" data-target="'.$item['item_id'].'"><i class="icon-info-sign"></i></button>';
 
 					if (pf_is_item_starred_for_user( $id_for_comments, $user_id ) ){
 						echo '<!-- item_id selected = ' . $item_id . ' -->';
-						echo '<button class="btn btn-small star-item btn-warning"><i class="icon-star"></i></button>';
+						echo '<button class="btn btn-small star-item btn-warning" data-toggle="tooltip" title="' . __('Star', 'pf') .  '"><i class="icon-star"></i></button>';
 					} else {
-						echo '<button class="btn btn-small star-item"><i class="icon-star"></i></button>';
+						echo '<button class="btn btn-small star-item" data-toggle="tooltip" title="' . __('Star', 'pf') .  '"><i class="icon-star"></i></button>';
 					}
 
 					# <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
@@ -261,7 +261,7 @@ class PF_Admin {
 					}
 					if ($format === 'nomination'){
 
-						$nom_count_classes = 'btn btn-small';
+						$nom_count_classes = 'btn btn-small nom-count';
 						if ($metadata['nom_count'] > 0){
 							$nom_count_classes .= ' btn-info';
 						}

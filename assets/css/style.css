@@ -555,6 +555,12 @@ h3 {
 	margin: 10px;
 }
 
+#gomenu.btn-warning {
+	background-color: #9E8A00;
+	background-image: linear-gradient(to bottom, #9E8A00, #AB9602);
+	border-color: #9E8A00 #AB9602 #C5AC00;
+}
+
 /**
  * Specific override styles.
  *
