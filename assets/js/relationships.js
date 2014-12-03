@@ -66,8 +66,14 @@ jQuery(window).load(function() {
 		if (jQuery(obj).hasClass('schema-switchable')) {
 			isSwitch = 'on';
 		}
-		if(jQuery(selectableObj.selector).is('[pf-schema-class]')){
-			schemaclass = jQuery(selectableObj.selector).attr('pf-schema-class');
+		
+		var schemaObjAttr = obj.attr('pf-schema-class');
+
+		// For some browsers, `schemaObjAttr` is undefined; for others,
+		// `schemaObjAttr` is false.  Check for both.
+		if(typeof schemaObjAttr !== typeof undefined && schemaObjAttr !== false){
+			schemaclass = schemaObjAttr;
+			console.log(schemaclass);
 		} else {
 			schemaclass = false;
 		}
