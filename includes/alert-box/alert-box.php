@@ -175,7 +175,7 @@ if (!class_exists('The_Alert_Box')){
         }
 
         public function remove_alert_on_edit($post_id){
-            $status = $this->status;
+            $status = $this->status();
             if ( $status != $_POST['post_status'] ) {
                 return;
             }
