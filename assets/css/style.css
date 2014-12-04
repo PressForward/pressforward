@@ -157,7 +157,7 @@ visibility:hidden;
   filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffe003', endColorstr='#ffdc1a', GradientType=0);
   filter: progid:dximagetransform.microsoft.gradient(enabled=false);
 }
-#resetFeedOps, #goMenu {
+#resetFeedOps, #goMenu, .nom-to-archive.btn-warning, .archived .nom-to-archive {
 color: #ffffff;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
   background-color: #faa732;
@@ -187,6 +187,12 @@ color: #ffffff;
 .btn-warning.active {
   background-color: #ffe003 \9;
 }
+
+.nom-to-archive.btn-warning, .archived .nom-to-archive {
+
+}
+
+
 
 .actions form {
 	margin: 0;
