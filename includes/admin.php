@@ -489,14 +489,15 @@ class PF_Admin {
 											. __('Nominated by', 'pf')
 											. ': <span class="nominated_by">' . get_the_nominating_users() . '</span><br />';
 										}
-										/*
+
 										$draft_id = pf_is_drafted($feed_item_id);
-										if ( false != $draft_id ){
+										if ( false != $draft_id && (current_user_can('edit_post', $draft_id)) ){
 											#http://codex.wordpress.org/Function_Reference/edit_post_link
-											edit_post_link($link, $before, $after, draft_id);
+											$edit_url = get_edit_post_link($draft_id );
+											$ibox .= '<br /><a class="edit_draft_from_info_box" href="'.$edit_url.'">' . __('Edit the draft based on this post.', 'pf') . '</a><br/>';
 										}
 
-										*/
+
 									$ibox .= '</div>';
 									echo $ibox;
 													?>
