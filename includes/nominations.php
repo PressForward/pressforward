@@ -190,9 +190,8 @@ class PF_Nominations {
 		$postsAfter = pf_get_posts_by_id_for_check( $date, $post_type, $item_id );
 		//Assume that it will not find anything.
 		$check = false;
-		if ($postsAfter):
-				foreach ($postsAfter as $post):
-					setup_postdata($post);
+		if ( $postsAfter->have_posts() ) :
+				while ( $postsAfter->have_posts() ) :
 					$id = get_the_ID();
 					$origin_item_id = pf_retrieve_meta($id, 'origin_item_ID');
 					$current_user = wp_get_current_user();
@@ -213,8 +212,9 @@ class PF_Nominations {
 							}
 						}
 					}
-				endforeach;
+				endwhile;
 		endif;
+		wp_reset_postdata();
 	}
 
 	public function get_post_nomination_status($date, $item_id, $post_type, $updateCount = true){
@@ -225,10 +225,8 @@ class PF_Nominations {
 		//Assume that it will not find anything.
 		$check = false;
 		pf_log('[ get_post_nomination_status ] Check for nominated posts.');
-		if ($postsAfter):
-
-			foreach ($postsAfter as $post):
-				setup_postdata($post);
+		if ( $postsAfter->have_posts() ) :
+				while ( $postsAfter->have_posts() ) :
 				$id = get_the_ID();
 				pf_log('[ get_post_nomination_status ] Deal with nominated post '.$id);
 				$origin_item_id = pf_retrieve_meta($id, 'origin_item_ID');
@@ -270,8 +268,9 @@ class PF_Nominations {
 					pf_log('[ get_post_nomination_status ] No nominations found for ' . $item_id);
 					$check = 'unmatched_post';
 				}
-			endforeach;
+			endwhile;
 		endif;
+		wp_reset_postdata();
 		return $check;
 	}
 
@@ -536,7 +535,7 @@ class PF_Nominations {
 		//if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
 		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
 		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
-			die($this->__('Nonce not recieved. Are you sure you should be drafting?', 'pf'));
+			die(__('Nonce not recieved. Are you sure you should be drafting?', 'pf'));
 		} else {
 ##Check
 		# print_r(__('Sending to Draft.', 'pf'));
