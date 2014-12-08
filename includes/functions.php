@@ -936,8 +936,9 @@ function pf_is_drafted($item_id){
 			'post_type'	=> 'post'
 		);
 	$q = new WP_Query($a);
-	if (is_array($q) && (0 < count($q))){
-		return $q[0];
+	if ( 0 < $q->post_count ){
+		$draft = $q->posts;
+		return $draft[0];
 	}
 	else {
 		return false;

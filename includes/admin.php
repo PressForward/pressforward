@@ -496,7 +496,6 @@ class PF_Admin {
 											$ibox .= '<br /><a class="edit_draft_from_info_box" href="'.$edit_url.'">' . __('Edit the draft based on this post.', 'pf') . '</a><br/>';
 										}
 
-
 									$ibox .= '</div>';
 									echo $ibox;
 													?>
