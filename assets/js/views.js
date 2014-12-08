@@ -131,9 +131,6 @@ function commentPopModal(){
 
 function reshowModal(){
 	jQuery('.pf_container').on('shown', '.modal.pfmodal', function(evt){
-		jQuery('#wpadminbar').hide();
-		jQuery('#adminmenuback').hide();
-		jQuery('#adminmenuwrap').hide();
 		var element = jQuery(this);
 		var modalID = element.attr('id');
 		document.body.style.overflow = 'hidden';
@@ -149,9 +146,16 @@ function reshowModal(){
 			'height': '100%',
 			'overflow' : 'hidden'
 		};
-		jQuery('#'+modalID+ '.pfmodal').css(bigModal);
+		jQuery('#'+modalID+ '.pfmodal').css(bigModal).load(hide_non_modals());
 	});
 }
+
+function hide_non_modals(){
+	jQuery('#wpadminbar').hide();
+	jQuery('#adminmenuback').hide();
+	jQuery('#adminmenuwrap').hide();
+}
+
 function reviewModal(){
 	//Need to fix this to only trigger on the specific model, but not sure how yet.
 
