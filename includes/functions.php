@@ -255,7 +255,7 @@ function pf_get_posts_by_id_for_check( $theDate, $post_type, $item_id ) {
 			SELECT {$wpdb->posts}.*
 			FROM {$wpdb->posts}, {$wpdb->postmeta}
 			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-			AND {$wpdb->postmeta}.meta_key = 'origin_item_ID'
+			AND {$wpdb->postmeta}.meta_key = 'item_id'
 			AND {$wpdb->postmeta}.meta_value = '%s'
 			AND {$wpdb->posts}.post_type = '%s'
 			AND {$wpdb->posts}.post_date >= '%s'
@@ -270,7 +270,7 @@ function pf_get_posts_by_id_for_check( $theDate, $post_type, $item_id ) {
 			SELECT {$wpdb->posts}.*
 			FROM {$wpdb->posts}, {$wpdb->postmeta}
 			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-			AND {$wpdb->postmeta}.meta_key = 'origin_item_ID'
+			AND {$wpdb->postmeta}.meta_key = 'item_id'
 			AND {$wpdb->postmeta}.meta_value = '%s'
 			AND {$wpdb->posts}.post_type = '%s'
 			AND {$wpdb->posts}.post_date <= '%s'
@@ -279,6 +279,8 @@ function pf_get_posts_by_id_for_check( $theDate, $post_type, $item_id ) {
 
 		$postsAfter = $wpdb->get_results($querystr, OBJECT);
 	}
+	pf_log('[ pf_get_posts_by_id_for_check ] returned query of: ');
+	pf_log($postsAfter);
 	return $postsAfter;
 }
 
@@ -882,7 +884,7 @@ function pf_pass_meta($field, $id = false, $value = '', $single = true){
     # Check if it exists.
     if (empty($metas[$field])){
         pf_log('The field ' . $field . ' is not supported.');
-		return false;
+				return $field;
     }
 	# Check if it has been depreciated (dep). If so retrieve
     if (in_array('dep',$metas[$field]['type'])){
@@ -920,6 +922,12 @@ function pf_retrieve_meta($id, $field, $obj = false, $single = true){
         return $meta_obj;
     }
     return $meta;
+
+}
+
+function pf_get_post_meta($id, $field, $single = true, $obj = false){
+
+		return pf_retrieve_meta($id, $field, $obj, $single);
 
 }
 

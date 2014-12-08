@@ -72,17 +72,17 @@ class PF_Nominations {
 	public function nominations_box_builder() {
 		global $post;
 		//wp_nonce_field( 'nominate_meta', 'nominate_meta_nonce' );
-		$origin_item_ID = get_post_meta($post->ID, 'origin_item_ID', true);
-		$nomination_count = get_post_meta($post->ID, 'nomination_count', true);
-		$submitted_by = get_post_meta($post->ID, 'submitted_by', true);
-		$source_title = get_post_meta($post->ID, 'source_title', true);
-		$posted_date = get_post_meta($post->ID, 'posted_date', true);
-		$nom_authors = get_post_meta($post->ID, 'authors', true);
-		$item_link = get_post_meta($post->ID, 'item_link', true);
-		$date_nominated = get_post_meta($post->ID, 'date_nominated', true);
+		$origin_item_ID = pf_get_post_meta($post->ID, 'origin_item_ID', true);
+		$nomination_count = pf_get_post_meta($post->ID, 'nomination_count', true);
+		$submitted_by = pf_get_post_meta($post->ID, 'submitted_by', true);
+		$source_title = pf_get_post_meta($post->ID, 'source_title', true);
+		$posted_date = pf_get_post_meta($post->ID, 'posted_date', true);
+		$nom_authors = pf_get_post_meta($post->ID, 'authors', true);
+		$item_link = pf_get_post_meta($post->ID, 'item_link', true);
+		$date_nominated = pf_get_post_meta($post->ID, 'date_nominated', true);
 		$user = get_user_by('id', $submitted_by);
-		$item_tags = get_post_meta($post->ID, 'item_tags', true);
-		$source_repeat = get_post_meta($post->ID, 'source_repeat', true);
+		$item_tags = pf_get_post_meta($post->ID, 'item_tags', true);
+		$source_repeat = pf_get_post_meta($post->ID, 'source_repeat', true);
 		if (!empty($origin_item_ID)){
 			$this->meta_box_printer(__('Item ID', 'pf'), $origin_item_ID);
 		}
@@ -112,7 +112,7 @@ class PF_Nominations {
 	public function get_the_source_statement($nom_id){
 
 		$title_of_item = get_the_title($nom_id);
-		$link_to_item = get_post_meta($nom_id, 'item_link', true);
+		$link_to_item = pf_get_post_meta($nom_id, 'item_link', true);
 		$args = array(
 		  'html_before' => "<p>",
 		  'source_statement' => "Source: ",
@@ -148,7 +148,7 @@ class PF_Nominations {
 		//print_r($_POST); die();
 			$item_title = $_POST['post_title'];
 			$item_content = $_POST['post_content'];
-			$item_feed_post_id = get_post_meta($_POST['ID'], 'item_feed_post_id', true);
+			$item_feed_post_id = pf_get_post_meta($_POST['ID'], 'item_feed_post_id', true);
 			$linked = get_option('pf_link_to_source', 0);
 			if ($linked < 1){
 				$item_content = $item_content . $this->get_the_source_statement( $item_feed_post_id );
@@ -163,7 +163,7 @@ class PF_Nominations {
 
 			//We assume that it is already in nominations, so no need to check there. This might be why we can't use post_exists here.
 			//No need to origonate the check at the time of the feed item either. It can't become a post with the proper meta if it wasn't a nomination first.
-			$item_id = get_post_meta($_POST['ID'], 'origin_item_ID', true);
+			$item_id = pf_get_post_meta($_POST['ID'], 'origin_item_ID', true);
 			$nom_date = $_POST['aa'] . '-' . $_POST['mm'] . '-' . $_POST['jj'];
 
 			//Now function will not update nomination count when it pushes nomination to publication.
@@ -220,14 +220,17 @@ class PF_Nominations {
 	public function get_post_nomination_status($date, $item_id, $post_type, $updateCount = true){
 		global $post;
         //Get the query object, limiting by date, type and metavalue ID.
+		pf_log('[ get_post_nomination_status ] Get posts matching '.$item_id);
 		$postsAfter = pf_get_posts_by_id_for_check( $date, $post_type, $item_id );
 		//Assume that it will not find anything.
 		$check = false;
+		pf_log('[ get_post_nomination_status ] Check for nominated posts.');
 		if ($postsAfter):
 
 			foreach ($postsAfter as $post):
 				setup_postdata($post);
 				$id = get_the_ID();
+				pf_log('[ get_post_nomination_status ] Deal with nominated post '.$id);
 				$origin_item_id = pf_retrieve_meta($id, 'origin_item_ID');
                 $current_user = wp_get_current_user();
 				if ($origin_item_id == $item_id) {
@@ -237,9 +240,11 @@ class PF_Nominations {
 						if ( 0 == $current_user->ID ) {
 							//Not logged in.
 							//If we ever reveal this to non users and want to count nominations by all, here is where it will go.
+							pf_log('[ get_post_nomination_status ] Can not find user for updating nomionation count.');
                             $nomCount = pf_retrieve_meta($id, 'nomination_count', false, true);
                             $nomCount++;
                             pf_update_meta($id, 'nomination_count', $nomCount);
+														$check = 'no_user';
 						} else {
 							$nominators_orig = pf_retrieve_meta($id, 'nominator_array', false, false);
                             if (!in_array($current_user->ID, $nominators_orig)){
@@ -247,8 +252,10 @@ class PF_Nominations {
                                 $nominator = $current_user->ID;
 																$nominators[] = $current_user->ID;
                                 pf_update_meta($id, 'nominator_array', $nominator);
-                                $nomCount = get_post_meta($id, 'nomination_count', true);
-                                $nomCount++;
+                                $nomCount = pf_get_post_meta($id, 'nomination_count', true);
+                                pf_log('[ get_post_nomination_status ] So far we have a nominating count of '.$nomCount);
+																$nomCount++;
+																pf_log('[ get_post_nomination_status ] Now we have a nominating count of '.	$nomCount);
                                 pf_update_meta($id, 'nomination_count', $nomCount);
                             } else {
                                 $check = 'user_nominated_already';
@@ -259,6 +266,9 @@ class PF_Nominations {
 					return $check;
 					break;
 					}
+				} else {
+					pf_log('[ get_post_nomination_status ] No nominations found for ' . $item_id);
+					$check = 'unmatched_post';
 				}
 			endforeach;
 		endif;
@@ -329,21 +339,21 @@ class PF_Nominations {
 		global $post;
 		switch ($column) {
 			case 'nomcount':
-				echo get_post_meta($post->ID, 'nomination_count', true);
+				echo pf_get_post_meta($post->ID, 'nomination_count', true);
 				break;
 			case 'nominatedby':
-				$nominatorID = get_post_meta($post->ID, 'submitted_by', true);
+				$nominatorID = pf_get_post_meta($post->ID, 'submitted_by', true);
 				$user = get_user_by('id', $nominatorID);
 				if ( is_a( $user, 'WP_User' ) ) {
 					echo $user->display_name;
 				}
 				break;
 			case 'original_author':
-				$orig_auth = get_post_meta($post->ID, 'authors', true);
+				$orig_auth = pf_get_post_meta($post->ID, 'authors', true);
 				echo $orig_auth;
 				break;
 			case 'date_nominated':
-				$dateNomed = get_post_meta($post->ID, 'date_nominated', true);
+				$dateNomed = pf_get_post_meta($post->ID, 'date_nominated', true);
 				echo $dateNomed;
 				break;
 
@@ -478,7 +488,7 @@ class PF_Nominations {
 				$newDate = gmdate('Y-m-d H:i:s');
 				$item_date = $newDate;
 			}
-		add_post_meta($_POST['item_post_id'], 'posted_date', $item_date, true);
+		pf_update_meta($_POST['item_post_id'], 'posted_date', $item_date);
 		pf_meta_transition_post($_POST['item_post_id'], $newNomID);
 			$response = array(
 				'what' => 'nomination',
@@ -567,7 +577,7 @@ class PF_Nominations {
 
 #
 			# Check if the item was rendered readable, if not, make it so.
-			$readable_state = get_post_meta($_POST['nom_id'], 'readable_status', true);
+			$readable_state = pf_get_post_meta($_POST['nom_id'], 'readable_status', true);
 			if ($readable_state != 1){
 				$readArgs = array(
 					'force' => false,
