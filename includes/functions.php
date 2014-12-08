@@ -927,6 +927,23 @@ function pf_add_meta($id, $field, $value = '', $unique = false){
 
 }
 
+function pf_is_drafted($item_id){
+	$a = array(
+			'no_found_rows' => true,
+			'fields' => 'ids',
+			'meta_key' => 'item_id',
+			'meta_value' => $item_id,
+			'post_type'	=> 'post'
+		);
+	$q = new WP_Query($a);
+	if (is_array($q) && (0 < count($q))){
+		return $q[0];
+	}
+	else {
+		return false;
+	}
+}
+
 function filter_for_pf_archives_only($sql){
 	global $wpdb;
 #	if (isset($_GET['pf-see']) && ('archive-only' == $_GET['pf-see'])){

@@ -419,7 +419,7 @@ class PF_Admin {
 			echo '<div class="box-controls">';
 			if (current_user_can( 'manage_options' )){
 				if ($format === 'nomination'){
-					echo '<i class="icon-remove pf-item-remove" pf-post-id="' . $metadata['nom_id'] .'" title="Delete"></i>'; 
+					echo '<i class="icon-remove pf-item-remove" pf-post-id="' . $metadata['nom_id'] .'" title="Delete"></i>';
 				} else {
 					echo '<i class="icon-remove pf-item-remove" pf-post-id="' . $id_for_comments .'" title="Delete"></i>';
 				}
@@ -489,6 +489,14 @@ class PF_Admin {
 											. __('Nominated by', 'pf')
 											. ': <span class="nominated_by">' . get_the_nominating_users() . '</span><br />';
 										}
+										/*
+
+										if (false != pf_is_drafted($id_for_comments)){
+											http://codex.wordpress.org/Function_Reference/edit_post_link
+											edit_post_link($link, $before, $after, draft_id);
+										}
+
+										*/
 									$ibox .= '</div>';
 									echo $ibox;
 													?>
@@ -770,7 +778,7 @@ class PF_Admin {
 			if ( ! isset( $_GET['reveal'] ) ) {
 				$archive_feed_args['exclude_archived'] = true;
 			}
-		
+
 			if ( isset( $_GET['reveal'] ) ) {
 				$archive_feed_args['reveal'] = stripslashes( $_GET['reveal'] );
 			}
