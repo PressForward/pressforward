@@ -354,11 +354,15 @@ if (!class_exists('The_Alert_Box')){
 
         public function the_alert(){
 
+          if ( !current_user_can( 'edit_post', get_the_ID() ) ){
+            return;
+          }
+
           edit_post_link(get_the_title(), '<span style="color:red;font-weight:bold;">'. __('Alert', 'pf') . '</span> for ', ': '.$this->get_bug_type(get_the_ID()));
           echo ' ';
           edit_post_link(__('Edit', 'pf'));
           echo ' ';
-          if (current_user_can('edit_posts')){
+          if (current_user_can('edit_others_posts')){
             echo '| <a href="#" class="alert-dismisser" title="'. __('Dismiss', 'pf') . '" data-alert-post-id="'. get_the_ID() .'" data-alert-dismiss-check="'.sprintf(__('Are you sure you want to dismiss the alert on %s', 'pf'), get_the_title()).'" '.self::alert_box_type_data( get_post_type( get_the_ID() ) ).' >' . __('Dismiss', 'pf').'</a>';
           }
           echo ' ';
@@ -367,18 +371,18 @@ if (!class_exists('The_Alert_Box')){
           }
 
         }
-		
+
 		public function alert_box_type_data($v){
 			if ( is_string($v) ){
 				return 'alert-types="'.$v.'"';
 			} elseif ( is_bool($v) ) {
-				return '';	
+				return '';
 			} else {
 				return 'alert-types="'.implode(',',$v->query['post_type']).'"';
 			}
 		}
 
-        public function alert_box_insides_function(){
+    public function alert_box_insides_function(){
             if(self::is_on()){
 				$q = $this->get_specimens();
 				if ( $q->have_posts() ) {
@@ -390,7 +394,7 @@ if (!class_exists('The_Alert_Box')){
 					wp_reset_postdata();
 					$alertCheck = __('Are you sure you want to delete all posts with alerts?', 'pf');
 					$alertCheck = apply_filters('ab_alert_specimens_check_message', $alertCheck);
-          if (current_user_can('edit_posts')){
+          if (current_user_can('edit_others_posts')){
                 $editText = __('Dismiss all alerts', 'pf');
                 $editText = apply_filters('ab_alert_specimens_dismiss_all_text', $editText);
               $editCheck = __('Are you sure you want to dismiss all alerts?', 'pf');
