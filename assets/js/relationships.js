@@ -31,15 +31,18 @@ jQuery(window).load(function() {
 	});
 
 	function dostarstuff(obj, item, id, parent, otherstar){
-		if (jQuery(obj).hasClass('btn-warning')){
+		var objs = jQuery('article[pf-item-post-id='+id+'] .star-item');
+		jQuery( objs ).each(function( index ) {
+			var obj = jQuery(this);
+			if (jQuery(obj).hasClass('btn-warning')){
 
-			jQuery(obj).removeClass('btn-warning');
-			otherstar.removeClass('btn-warning');
-		} else {
+				jQuery(obj).removeClass('btn-warning');
+			} else {
 
-			jQuery(obj).addClass('btn-warning');
-			otherstar.addClass('btn-warning');
-		}
+				jQuery(obj).addClass('btn-warning');
+			}
+		});
+
 	}
 
 	jQuery('.pf_container').on('click', '.schema-actor', function(evt){
@@ -143,7 +146,7 @@ jQuery(window).load(function() {
 
 			}
 		});
-		
+
 
 	}
 
