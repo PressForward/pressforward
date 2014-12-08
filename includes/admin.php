@@ -43,7 +43,6 @@ class PF_Admin {
 		add_action( 'manage_edit-pf_feed_sortable_columns', array( $this, 'make_last_retrieved_column_sortable' ) );
 		add_action( 'pre_get_posts', array( $this, 'sort_by_last_retrieved' ) );
 	}
-
 	/**
 	 * Register menu pages
 	 */
