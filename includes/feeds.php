@@ -56,6 +56,7 @@ class PF_Feeds_Schema {
 			add_filter( 'parent_file', array( $this, 'move_feed_tags_submenu' ) );
 		}
 
+		add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
 	}
 
 	/**
@@ -115,6 +116,12 @@ class PF_Feeds_Schema {
 			#'show_in_menu' => PF_MENU_SLUG,
 			'rewrite' => false
 		) ) );
+	}
+
+
+	public function custom_feed_column_name( $posts_columns ){
+			$posts_columns['author'] = 'Added by';
+			return $posts_columns;
 	}
 
 	/**

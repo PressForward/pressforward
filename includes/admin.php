@@ -42,12 +42,6 @@ class PF_Admin {
 		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
 		add_action( 'manage_edit-pf_feed_sortable_columns', array( $this, 'make_last_retrieved_column_sortable' ) );
 		add_action( 'pre_get_posts', array( $this, 'sort_by_last_retrieved' ) );
-		add_filter('manage_edit-pf_feed_columns', array( $this, 'custom_feed_column_name'));
-	}
-	
-	function custom_feed_column_name( $posts_columns ){
-		$posts_columns['author'] = 'Added by';
-		return $posts_columns;
 	}
 	/**
 	 * Register menu pages
