@@ -378,7 +378,7 @@ class PF_Admin {
 		foreach ($itemTagsArray as $itemTag) { $itemTagClassesString .= pf_slugger($itemTag, true, false, true); $itemTagClassesString .= ' '; }
 
 				if ($format === 'nomination'){
-					$feed_ited_id = $metadata['item_id'];
+					$feed_item_id = $metadata['item_id'];
 					$id_for_comments = $metadata['item_feed_post_id'];
 
 			$id_for_comments = $metadata['item_feed_post_id'];
@@ -389,7 +389,7 @@ class PF_Admin {
 			if (empty($metadata['item_id'])){ $metadata['item_id'] = md5($item['item_title']); }
 
 				} else {
-					$feed_ited_id = $item['item_id'];
+					$feed_item_id = $item['item_id'];
 					$id_for_comments = $item['post_id'];
 				}
 				$archive_status = pf_get_relationship_value( 'archive', $id_for_comments, wp_get_current_user()->ID );
@@ -490,9 +490,9 @@ class PF_Admin {
 											. ': <span class="nominated_by">' . get_the_nominating_users() . '</span><br />';
 										}
 										/*
-
-										if (false != pf_is_drafted($id_for_comments)){
-											http://codex.wordpress.org/Function_Reference/edit_post_link
+										$draft_id = pf_is_drafted($feed_item_id);
+										if ( false != $draft_id ){
+											#http://codex.wordpress.org/Function_Reference/edit_post_link
 											edit_post_link($link, $before, $after, draft_id);
 										}
 
