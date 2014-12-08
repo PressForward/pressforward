@@ -251,36 +251,18 @@ function pf_feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuth
 function pf_get_posts_by_id_for_check( $theDate, $post_type, $item_id ) {
 	global $wpdb;
 	# If the item is less than 24 hours old on nomination, check the whole database.
-	 $querystr = $wpdb->prepare("
-			SELECT {$wpdb->posts}.*
-			FROM {$wpdb->posts}, {$wpdb->postmeta}
-			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-			AND {$wpdb->postmeta}.meta_key = 'item_id'
-			AND {$wpdb->postmeta}.meta_value = '%s'
-			AND {$wpdb->posts}.post_type = '%s'
-			AND {$wpdb->posts}.post_date >= '%s'
-			ORDER BY {$wpdb->posts}.post_date DESC
-		 ", $item_id, $post_type, $theDate);
+#	$theDate = getdate();
+	#$w = date('W');
+	$r = array(
+							'meta_key' => 'item_id',
+							'meta_value' => $item_id,
+							'post_type' => $post_type,
 
-	$postsAfter = $wpdb->get_results($querystr, OBJECT);
-	if ($wpdb->num_rows >= 1){
+						);
 
-	} else {
-		$querystr = $wpdb->prepare("
-			SELECT {$wpdb->posts}.*
-			FROM {$wpdb->posts}, {$wpdb->postmeta}
-			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-			AND {$wpdb->postmeta}.meta_key = 'item_id'
-			AND {$wpdb->postmeta}.meta_value = '%s'
-			AND {$wpdb->posts}.post_type = '%s'
-			AND {$wpdb->posts}.post_date <= '%s'
-			ORDER BY {$wpdb->posts}.post_date DESC
-		 ", $item_id, $post_type, $theDate);
-
-		$postsAfter = $wpdb->get_results($querystr, OBJECT);
-	}
+	$postsAfter =  new WP_Query( $r );
 	pf_log('[ pf_get_posts_by_id_for_check ] returned query of: ');
-	pf_log($postsAfter);
+	#pf_log($postsAfter);
 	return $postsAfter;
 }
 
