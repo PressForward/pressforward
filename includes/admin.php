@@ -261,6 +261,7 @@ class PF_Admin {
 					if ($format === 'nomination'){
 
 						$nom_count_classes = 'btn btn-small nom-count';
+						$metadata['nom_count'] = get_the_nomination_count();
 						if ($metadata['nom_count'] > 0){
 							$nom_count_classes .= ' btn-info';
 						}
