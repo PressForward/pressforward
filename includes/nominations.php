@@ -138,7 +138,7 @@ class PF_Nominations {
 		return $statement;
 
 	}
-	
+
 	public function is_nominated($item_id, $post_type, $update){
 		$q = pf_get_posts_by_id_for_check($post_type, $item_id, true);
 		if ( 0 < $q->post_count ){
@@ -149,7 +149,7 @@ class PF_Nominations {
 			return false;
 		}
 	}
-	
+
 	public function change_nomination_count($id, $up = true){
 		$nom_count = pf_retrieve_meta($id, 'nomination_count');
 		if ( $up ) {
@@ -160,6 +160,50 @@ class PF_Nominations {
 		$check = pf_update_meta($id, 'nomination_count', $nom_count);
 		pf_log('Nomination now has a nomination count of ' . $nom_count . ' applied to post_meta with the result of '.$check);
 		return $check;
+	}
+
+	public function toggle_nominator_array($id, $update = true){
+		$nominators = pf_retrieve_meta($id, 'nominator_array');
+		$current_user = wp_get_current_user();
+		$user_id = $current_user->ID;
+		if ($update){
+			$nominators[] = $user_id;
+		} else {
+			if(($key = array_search($user_id, $nominators)) !== false) {
+				unset($nominators[$key]);
+			}
+		}
+		$check = pf_update_meta($id, 'nominator_array', $nominators);
+		return $check;
+	}
+
+	public function did_user_nominate($id, $user_id = false){
+		$nominators = pf_retrieve_meta($id, 'nominator_array');
+		if (!$user_id){
+			$current_user = wp_get_current_user();
+			$user_id = $current_user->ID;
+		}
+		if (in_array($user_id, $nominators)){
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public function handle_post_nomination_status($item_id,$post_type,$force_update){
+		if (is_nominated($item_id)){
+			if ( did_user_nominate($item_id) ){
+				$this->change_nomination_count($item_id, false);
+				$this->toggle_nominator_array($item_id, false);
+				$check = 'user_unnonminated';
+			} else {
+				$this->change_nomination_count($item_id);
+				$this->toggle_nominator_array($item_id);
+				$check = 'user_added_additional_nomination';
+			}
+		} else {
+			$check = 'no_nomination_exists';
+		}
 	}
 
 	public function send_nomination_for_publishing() {
