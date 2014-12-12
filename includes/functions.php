@@ -261,7 +261,7 @@ function pf_get_posts_by_id_for_check( $post_type, $item_id ) {
 						);
 
 	$postsAfter =  new WP_Query( $r );
-	pf_log(' Checking for posts with item ID '. $item_id .' returned query with ' . $postsAfter->post_count . 'items.');
+	pf_log(' Checking for posts with item ID '. $item_id .' returned query with ' . $postsAfter->post_count . ' items.');
 	#pf_log($postsAfter);
 	return $postsAfter;
 }
