@@ -138,6 +138,29 @@ class PF_Nominations {
 		return $statement;
 
 	}
+	
+	public function is_nominated($item_id, $post_type, $update){
+		$q = pf_get_posts_by_id_for_check($post_type, $item_id, true);
+		if ( 0 < $q->post_count ){
+			$nom = $q->posts;
+			return $nom[0];
+		}
+		else {
+			return false;
+		}
+	}
+	
+	public function change_nomination_count($id, $up = true){
+		$nom_count = pf_retrieve_meta($id, 'nomination_count');
+		if ( $up ) {
+			$nom_count++;
+		} else {
+			$nom_count--;
+		}
+		$check = pf_update_meta($id, 'nomination_count', $nom_count);
+		pf_log('Nomination now has a nomination count of ' . $nom_count . ' applied to post_meta with the result of '.$check);
+		return $check;
+	}
 
 	public function send_nomination_for_publishing() {
 		global $post;
@@ -187,21 +210,21 @@ class PF_Nominations {
 	}
 
 	public function remove_post_nomination($date, $item_id, $post_type, $updateCount = true){
-		$postsAfter = pf_get_posts_by_id_for_check( $date, $post_type, $item_id );
+		$postsAfter = pf_get_posts_by_id_for_check( $post_type, $item_id );
 		//Assume that it will not find anything.
 		$check = false;
-		if ( $postsAfter->have_posts() ) :
-				while ( $postsAfter->have_posts() ) :
+		if ( $postsAfter->have_posts() ) : while ( $postsAfter->have_posts() ) : $postsAfter->the_post();
+
 					$id = get_the_ID();
 					$origin_item_id = pf_retrieve_meta($id, 'origin_item_ID');
 					$current_user = wp_get_current_user();
 					if ($origin_item_id == $item_id) {
 						$check = true;
-						$nomCount = pf_retrieve_meta($id, 'nomination_count', false, true);
+						$nomCount = pf_retrieve_meta($id, 'nomination_count');
 						$nomCount--;
 						pf_update_meta($id, 'nomination_count', $nomCount);
 						if ( 0 != $current_user->ID ) {
-							$nominators_orig = pf_retrieve_meta($id, 'nominator_array', false, false);
+							$nominators_orig = pf_retrieve_meta($id, 'nominator_array');
 							if (true == in_array($current_user->ID, $nominators_orig)){
 								$nominators_new = array_diff($nominators_orig, array($current_user->ID));
 								if (empty($nominators_new)){
@@ -212,7 +235,8 @@ class PF_Nominations {
 							}
 						}
 					}
-				endwhile;
+		endwhile;	else :
+			pf_log(' No nominations found for ' . $item_id);
 		endif;
 		wp_reset_postdata();
 	}
@@ -220,15 +244,15 @@ class PF_Nominations {
 	public function get_post_nomination_status($date, $item_id, $post_type, $updateCount = true){
 		global $post;
         //Get the query object, limiting by date, type and metavalue ID.
-		pf_log('[ get_post_nomination_status ] Get posts matching '.$item_id);
-		$postsAfter = pf_get_posts_by_id_for_check( $date, $post_type, $item_id );
+		pf_log('Get posts matching '.$item_id);
+		$postsAfter = pf_get_posts_by_id_for_check( $post_type, $item_id );
 		//Assume that it will not find anything.
 		$check = false;
-		pf_log('[ get_post_nomination_status ] Check for nominated posts.');
-		if ( $postsAfter->have_posts() ) :
-				while ( $postsAfter->have_posts() ) :
+		pf_log('Check for nominated posts.');
+		if ( $postsAfter->have_posts() ) : while ( $postsAfter->have_posts() ) : $postsAfter->the_post();
+
 				$id = get_the_ID();
-				pf_log('[ get_post_nomination_status ] Deal with nominated post '.$id);
+				pf_log('Deal with nominated post '.$id);
 				$origin_item_id = pf_retrieve_meta($id, 'origin_item_ID');
                 $current_user = wp_get_current_user();
 				if ($origin_item_id == $item_id) {
@@ -238,23 +262,26 @@ class PF_Nominations {
 						if ( 0 == $current_user->ID ) {
 							//Not logged in.
 							//If we ever reveal this to non users and want to count nominations by all, here is where it will go.
-							pf_log('[ get_post_nomination_status ] Can not find user for updating nomionation count.');
-                            $nomCount = pf_retrieve_meta($id, 'nomination_count', false, true);
+							pf_log('Can not find user for updating nomionation count.');
+                            $nomCount = pf_retrieve_meta($id, 'nomination_count');
                             $nomCount++;
                             pf_update_meta($id, 'nomination_count', $nomCount);
 														$check = 'no_user';
 						} else {
-							$nominators_orig = pf_retrieve_meta($id, 'nominator_array', false, false);
+							$nominators_orig = pf_retrieve_meta($id, 'nominator_array');
                             if (!in_array($current_user->ID, $nominators_orig)){
                                 $nominators = $nominators_orig;
                                 $nominator = $current_user->ID;
 																$nominators[] = $current_user->ID;
                                 pf_update_meta($id, 'nominator_array', $nominator);
                                 $nomCount = pf_get_post_meta($id, 'nomination_count', true);
-                                pf_log('[ get_post_nomination_status ] So far we have a nominating count of '.$nomCount);
+                                pf_log('So far we have a nominating count of '.$nomCount);
 																$nomCount++;
-																pf_log('[ get_post_nomination_status ] Now we have a nominating count of '.	$nomCount);
-                                pf_update_meta($id, 'nomination_count', $nomCount);
+																pf_log('Now we have a nominating count of '.	$nomCount);
+                                $check_meta = pf_update_meta($id, 'nomination_count', $nomCount);
+																pf_log('Attempt to update the meta for nomination_count resulted in: ');
+																pf_log($check_meta);
+																$check = true;
                             } else {
                                 $check = 'user_nominated_already';
                             }
@@ -265,10 +292,12 @@ class PF_Nominations {
 					break;
 					}
 				} else {
-					pf_log('[ get_post_nomination_status ] No nominations found for ' . $item_id);
+					pf_log('No nominations found for ' . $item_id);
 					$check = 'unmatched_post';
 				}
-			endwhile;
+		endwhile;	else :
+			pf_log(' No nominations found for ' . $item_id);
+			$check = 'unmatched_post';
 		endif;
 		wp_reset_postdata();
 		return $check;

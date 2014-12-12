@@ -98,6 +98,7 @@ class PF_Feed_Item {
 		);
 
 		$post_id = wp_insert_post( $wp_args );
+		pf_log('Post created with ID of '.$post_id);
 
 		if ( is_numeric($post_id) ) {
 			self::set_word_count( $post_id, $r['item_content'] );
