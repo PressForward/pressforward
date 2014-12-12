@@ -1225,7 +1225,7 @@ function pf_log( $message = '', $display = false, $reset = false ) {
 	$trace=debug_backtrace();
 	foreach ($trace as $key=>$call) {
 
-		if ( in_array( $call['function'], array('call_user_func_array','do_action','apply_filter', 'call_user_func', 'do_action_ref_array') ) ){
+		if ( in_array( $call['function'], array('call_user_func_array','do_action','apply_filter', 'call_user_func', 'do_action_ref_array', 'require_once') ) ){
 			unset($trace[$key]);
 		}
 
