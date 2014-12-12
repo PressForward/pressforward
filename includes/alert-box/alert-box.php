@@ -535,13 +535,13 @@ if (!class_exists('The_Alert_Box')){
 			return $state;
 		}
 
-    }
+  }
 
-    function the_alert_box() {
-	   return The_Alert_Box::init();
-    }
+  function the_alert_box() {
+	  return The_Alert_Box::init();
+  }
 
-    // Start me up!
-    the_alert_box();
+  // Start me up!
+  the_alert_box();
 
 }
