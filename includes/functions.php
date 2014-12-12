@@ -238,7 +238,7 @@ function pf_feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuth
 }
 
 /**
- * Get all posts with 'origin_item_ID' set to a given item id
+ * Get all posts with 'item_id' set to a given item id
  *
  * @since 1.7
  *
@@ -261,7 +261,7 @@ function pf_get_posts_by_id_for_check( $theDate, $post_type, $item_id ) {
 						);
 
 	$postsAfter =  new WP_Query( $r );
-	pf_log('[ pf_get_posts_by_id_for_check ] returned query of: ');
+	pf_log(' Checking for posts with item ID '. $item_id .' returned query of: ');
 	#pf_log($postsAfter);
 	return $postsAfter;
 }
