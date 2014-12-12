@@ -1122,6 +1122,26 @@ function pf_iterate_cycle_state($option_name, $option_limit = false, $echo = fal
 	}
 }
 
+/**
+* Send takes an array dimension from a backtrace and puts it in log format
+*
+* As part of the effort to create the most informative log we want to auto
+* include the information about what function is adding to the log.
+*
+* @since 2.4
+*
+* @param array $caller The sub-array from a step in a debug_backtrace
+*/
+
+function pf_function_auto_logger($caller){
+	if (isset($caller['class'])){
+		$func_statement = '[ ' . $caller['class'] . '->' . $caller['function'] . ' ] ';
+	} else {
+		$func_statement = '[ ' . $caller['function'] . ' ] ';
+	}
+	return $func_statement;
+}
+
 
 /**
  * Send status messages to a custom log
@@ -1202,5 +1222,35 @@ function pf_log( $message = '', $display = false, $reset = false ) {
 		$message = 'False';
 	}
 
-	error_log( '[' . gmdate( 'd-M-Y H:i:s' ) . '] ' . $message . "\n", 3, $log_path );
+	$trace=debug_backtrace();
+	foreach ($trace as $key=>$call) {
+
+		if ( in_array( $call['function'], array('call_user_func_array','do_action','apply_filter', 'call_user_func') ) ){
+			unset($trace[$key]);
+		}
+
+	}
+	reset($trace);
+	$first_call = next($trace);
+	if (!empty($first_call)){
+		$func_statement = pf_function_auto_logger( $first_call );
+	} else {
+		$func_statement = '[ ? ] ';
+	}
+	$second_call = next($trace);
+	if ( !empty($second_call) ){
+		if ( ('call_user_func_array' == $second_call['function']) ){
+			$third_call = next($trace);
+			if ( !empty($third_call) ) {
+				$upper_func_statement = pf_function_auto_logger($third_call);
+			} else {
+				$upper_func_statement = '[ ? ] ';
+			}
+		} else {
+			$upper_func_statement = pf_function_auto_logger($second_call);
+		}
+		$func_statement = $upper_func_statement . $func_statement;
+	}
+
+	error_log( '[' . gmdate( 'd-M-Y H:i:s' ) . '] ' . $func_statement . $message . "\n", 3, $log_path );
 }
