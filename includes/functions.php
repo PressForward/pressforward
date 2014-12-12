@@ -248,7 +248,7 @@ function pf_feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuth
  * @param int $item_id The origin item id
  * @return object
  */
-function pf_get_posts_by_id_for_check( $theDate, $post_type, $item_id ) {
+function pf_get_posts_by_id_for_check( $post_type, $item_id ) {
 	global $wpdb;
 	# If the item is less than 24 hours old on nomination, check the whole database.
 #	$theDate = getdate();
@@ -261,7 +261,7 @@ function pf_get_posts_by_id_for_check( $theDate, $post_type, $item_id ) {
 						);
 
 	$postsAfter =  new WP_Query( $r );
-	pf_log(' Checking for posts with item ID '. $item_id .' returned query of: ');
+	pf_log(' Checking for posts with item ID '. $item_id .' returned query with ' . $postsAfter->post_count . 'items.');
 	#pf_log($postsAfter);
 	return $postsAfter;
 }
@@ -1225,7 +1225,7 @@ function pf_log( $message = '', $display = false, $reset = false ) {
 	$trace=debug_backtrace();
 	foreach ($trace as $key=>$call) {
 
-		if ( in_array( $call['function'], array('call_user_func_array','do_action','apply_filter', 'call_user_func') ) ){
+		if ( in_array( $call['function'], array('call_user_func_array','do_action','apply_filter', 'call_user_func', 'do_action_ref_array') ) ){
 			unset($trace[$key]);
 		}
 
