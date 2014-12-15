@@ -267,7 +267,7 @@ function pf_get_posts_by_id_for_check( $post_type, $item_id, $ids_only = false )
 	}
 
 	if ('post' != $post_type){
-		$r['post_type'] => $post_type;
+		$r['post_type'] = $post_type;
 	}
 
 	$postsAfter =  new WP_Query( $r );
