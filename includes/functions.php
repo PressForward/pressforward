@@ -248,7 +248,7 @@ function pf_feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuth
  * @param int $item_id The origin item id
  * @return object
  */
-function pf_get_posts_by_id_for_check( $post_type, $item_id, $ids_only = false ) {
+function pf_get_posts_by_id_for_check( $post_type = false, $item_id, $ids_only = false ) {
 	global $wpdb;
 	# If the item is less than 24 hours old on nomination, check the whole database.
 #	$theDate = getdate();
@@ -256,7 +256,7 @@ function pf_get_posts_by_id_for_check( $post_type, $item_id, $ids_only = false )
 	$r = array(
 							'meta_key' => 'item_id',
 							'meta_value' => $item_id,
-
+							'post_type'	=> array('post', pf_feed_item_post_type())
 						);
 
 	if ($ids_only){
@@ -266,7 +266,7 @@ function pf_get_posts_by_id_for_check( $post_type, $item_id, $ids_only = false )
 
 	}
 
-	if ('post' != $post_type){
+	if (false != $post_type){
 		$r['post_type'] = $post_type;
 	}
 
