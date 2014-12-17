@@ -55,6 +55,31 @@ class PF_RSS_Import extends PF_Module {
 	 	return 1800;
 	 }
 
+	function set_to_alert($id, $theFeed){
+		$error_to_alert = get_option(PF_SLUG.'_errors_until_alert', 3);
+		$error_count = pf_retrieve_meta($id, PF_SLUG.'_feed_error_count');
+		if ((!is_numeric($error_count)) || ('' == $error_count)){ $error_count = 0; }
+		if ($error_count >= $error_to_alert){
+			the_alert_box()->switch_post_type($id);
+			the_alert_box()->add_bug_type_to_post($id, __('Broken RSS feed.', 'pf'));
+			$post_obj = get_post( $id );
+			$old_content = $post_obj->post_content;
+			$update_result = pf_update_meta($id, PF_SLUG.'_feed_error_count', 0);
+			if(is_wp_error($theFeed)){
+				$argup = array(
+					'ID'			=> $id,
+					'post_content'	=>	$old_content . ' <p>' . $theFeed->get_error_message() . '</p>'
+				);
+
+				$result = wp_update_post($argup);
+			}
+			return true;
+		} else {
+			$update_result = pf_update_meta($id, PF_SLUG.'_feed_error_count', $error_count+1);
+			return $update_result;
+		}
+	}
+
 	/**
 	 * Gets the data from an RSS feed and turns it into a data object
 	 * as expected by PF
@@ -78,19 +103,9 @@ class PF_RSS_Import extends PF_Module {
 		if (!$theFeed || empty($theFeed) || is_wp_error($theFeed)){
 			pf_log('Can not use Simple Pie to retrieve the feed');
 			pf_log($theFeed);
-			the_alert_box()->switch_post_type($aFeed->ID);
-			the_alert_box()->add_bug_type_to_post($aFeed->ID, __('Broken RSS feed.', 'pf'));
-			$post_obj = get_post( $aFeed->ID );
-			$old_content = $post_obj->post_content;
-			if(is_wp_error($theFeed)){
-				$argup = array(
-					'ID'			=> $aFeed->ID,
-					'post_content'	=>	$old_content . ' <p>' . $theFeed->get_error_message() . '</p>'
-				);
-
-				$result = wp_update_post($argup);
-
-			}
+			$alert = $this->set_to_alert($aFeed->ID, $theFeed);
+			pf_log('Set to alert resulted in:');
+			pf_log($alert);
 			return false;
 		}
 		$theFeed->set_timeout(60);
@@ -287,7 +302,7 @@ class PF_RSS_Import extends PF_Module {
 		foreach ($feedlist as $feed){
 			if ((!is_array($feed)) && $feed != ''){
 				$feedID = md5($feed);
-				echo '<li id="feed-' . $feedID . '" class="feed-list-item">' . $feed . ' <input id="' . $feedID . '" type="submit" class="removeMyFeed icon-remove-sign" value="   Remove"></input>';
+				echo '<li id="feed-' . $feedID . '" class="feed-list-item">' . $feed . ' <input id="' . $feedID . '" type="submit" class="removeMyFeed icon-remove" value="   Remove"></input>';
 				echo '<input type="hidden" name="feed_url" id="o_feed_url_' . $feedID . '" value="' . $feed . '"></li>';
 			} elseif (is_array($feed)){
 				$this->feedlist_builder($feed);

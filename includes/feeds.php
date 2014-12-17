@@ -43,14 +43,20 @@ class PF_Feeds_Schema {
 		add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
         add_action('admin_init', array($this, 'disallow_add_new'));
         add_filter('ab_alert_specimens_update_post_type', array($this, 'make_alert_return_to_publish'));
+		add_filter( 'views_edit-'.$this->post_type, array($this, 'modify_post_views') );
+		add_filter( 'status_edit_pre', array($this, 'modify_post_edit_status') );
+
 		if (is_admin()){
 			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_edit_feed_scripts' ) );
+
 
 			// Move the 'Feed Tags' item underneath 'pf-menu'
 			add_filter( 'parent_file', array( $this, 'move_feed_tags_submenu' ) );
 		}
 
+		add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
 	}
 
 	/**
@@ -89,14 +95,14 @@ class PF_Feeds_Schema {
 
 	public function register_feed_tag_taxonomy() {
 		$labels = array(
-			'name'          => __( 'Feed Tags', 'pf' ),
-			'singular_name' => __( 'Feed Tag', 'pf' ),
-			'all_items'     => __( 'All Feed Tags', 'pf' ),
-			'edit_item'     => __( 'Edit Feed Tag', 'pf' ),
-			'update_item'   => __( 'Update Feed Tag', 'pf' ),
-			'add_new_item'  => __( 'Add New Feed Tag', 'pf' ),
-			'new_item_name' => __( 'New Feed Tag', 'pf' ),
-			'search_items'  => __( 'Search Feed Tags', 'pf' ),
+			'name'          => __( 'Folders', 'pf' ),
+			'singular_name' => __( 'Folder', 'pf' ),
+			'all_items'     => __( 'All Folders', 'pf' ),
+			'edit_item'     => __( 'Edit Folder', 'pf' ),
+			'update_item'   => __( 'Update Folder', 'pf' ),
+			'add_new_item'  => __( 'Add New Folder', 'pf' ),
+			'new_item_name' => __( 'New Folder', 'pf' ),
+			'search_items'  => __( 'Search Folders', 'pf' ),
 		);
 
 		register_taxonomy( $this->tag_taxonomy, $this->post_type, apply_filters( 'pf_register_feed_tag_taxonomy_args', array(
@@ -105,9 +111,17 @@ class PF_Feeds_Schema {
 			'show_admin_columns' => TRUE,
 			'show_in_nav_menus' => TRUE,
 			'show_ui'           => TRUE,
+			'show_admin_column' => TRUE,
+			'hierarchical'			=> TRUE,
 			#'show_in_menu' => PF_MENU_SLUG,
 			'rewrite' => false
 		) ) );
+	}
+
+
+	public function custom_feed_column_name( $posts_columns ){
+			$posts_columns['author'] = 'Added by';
+			return $posts_columns;
 	}
 
 	/**
@@ -136,7 +150,204 @@ class PF_Feeds_Schema {
 		return $pf;
 	}
 
-    public function disallow_add_new(){
+	public function is_feed_term($id){
+		#var_dump($id);
+		$termcheck = term_exists((int) $id, $this->tag_taxonomy);
+		if (empty($termcheck)){
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public function get_top_feed_folders(){
+		$terms = array($this->tag_taxonomy);
+		$cats = get_terms($terms,
+			array(
+				'parent' 				=> 0,
+				'hide_empty'		=> 0,
+				'hierarchical' 	=> 1
+			)
+		);
+		return $cats;
+	}
+
+	public function get_child_feed_folders($ids = false){
+		$children = array();
+		if (!$ids){
+			foreach ($this->get_top_feed_folders() as $cat){
+				$term_childs = get_term_children($cat->term_id, $this->tag_taxonomy);
+				if (!empty($term_childs)){
+					$children[$cat->term_id] = get_term_children($cat->term_id, $this->tag_taxonomy);
+				} else {
+					$children[$cat->term_id] = false;
+				}
+			}
+		} elseif (is_numeric($ids) || is_string($ids)) {
+			if(!$this->is_feed_term($ids)){
+				var_dump($ids.' not a term in '.$this->tag_taxonomy);
+				return false;
+			}
+			$children_terms = get_term_children( $ids, $this->tag_taxonomy );
+			#var_dump($children_terms);
+			foreach ($children_terms as $child){
+				$children[$child] = $this->get_feed_folders($child);
+			}
+		} elseif (is_array($ids)){
+			foreach ($ids as $id){
+				$children[$id] = $this->get_feed_folders($id);
+			}
+		} elseif (is_object($ids)) {
+			$children[$ids->term_id] = get_term_children($ids->term_id, $this->tag_taxonomy);
+		} else {
+			return $ids;
+		}
+		return $children;
+	}
+
+	public function get_child_folders($folder){
+			$children = get_term_children($folder->term_id, $this->tag_taxonomy);
+			$folders = array();
+			foreach ($children as $child){
+				$folders[$child] = $this->get_feed_folders($child);
+			}
+			return $folders;
+	}
+
+	public function get_feed_folders($ids = false){
+		$folder_set = array();
+		if (!$ids){
+			$top_folders = $this->get_top_feed_folders();
+			foreach ($top_folders as $folder){
+
+				$folder_set[$folder->term_id] = array(
+					'term'			=> $folder,
+					'term_id'		=> $folder->term_id,
+					'children'	=> array(
+													'feeds'		=> get_objects_in_term($folder->term_id, $this->tag_taxonomy),
+													'folders'	=> $this->get_child_folders($folder)
+												)
+				);
+			}
+		} elseif (is_numeric($ids)) {
+			$folder = get_term($ids, $this->tag_taxonomy);
+			$folder_set = array(
+				'term'			=> $folder,
+				'term_id'		=> $folder->term_id,
+				'children'	=> array(
+												'feeds'		=> get_objects_in_term($folder->term_id, $this->tag_taxonomy),
+												'folders'	=> $this->get_child_folders($folder)
+											)
+			);
+		} elseif (is_array($ids)){
+			#var_dump($ids); die();
+			foreach ($ids as $id){
+				$folder_set[$id] = $this->get_feed_folders($id);
+			}
+		} else {
+			return false;
+		}
+
+		return $folder_set;
+
+	}
+
+	public function the_feed_folders($obj = false){
+		if(!$obj){
+			$obj = $this->get_feed_folders();
+		}
+		?><ul class="feed_folders">
+				<?php
+				#var_dump($obj);
+				foreach($obj as $folder){
+					?>
+					<li class="feed_folder" id="folder-<?php echo $folder['term_id']; ?>">
+					<?php
+					$this->the_inside_of_folder($folder);
+					?>
+					</li>
+					<?php
+				}
+				?>
+		</ul>
+		<?php
+	}
+
+	public function the_inside_of_folder($folder, $wrapped = false){
+		if ($wrapped){
+			?>
+			<li class="feed_folder" id="folder-<?php echo $folder['term_id']; ?>">
+			<?php
+		}
+		$this->the_folder($folder);
+
+		#var_dump($folder);
+		if (!empty($folder['children']['folders'])){
+			foreach ($folder['children']['folders'] as $subfolder){
+				?>
+				<ul class="feed_inner_folders">
+				<?php
+				$this->the_inside_of_folder($subfolder, true);
+				?>
+				</ul>
+				<?php
+
+			}
+		}
+
+		if (!empty($folder['children']['feeds'])){
+			?>
+			<ul class="feed_inner_feeds">
+			<?php
+			foreach ($folder['children']['feeds'] as $feed){
+				?>
+				<?php
+				$this->the_feed($feed);
+				?>
+				<?php
+			}
+			?>
+			</ul>
+			<?php
+		}
+		if ($wrapped){
+			?>
+		</li>
+			<?php
+		}
+	}
+
+	public function the_folder($folder){
+		#var_dump($folder);
+		if(is_array($folder)){
+			$term_obj = $folder['term'];
+		} else {
+			$term_obj = $folder;
+		}
+		?>
+
+		<?php
+			printf('<a href="%s" class="folder" title="%s">%s</a>', $term_obj->term_id, $term_obj->name, $term_obj->name );
+
+		?>
+
+		<?php
+	}
+
+	public function the_feed($feed){
+		$feed_obj = get_post($feed);
+		?>
+		<li class="feed" id="feed-<?php echo $feed_obj->ID; ?>">
+		<?php
+
+			printf('<a href="%s" title="%s">%s</a>', $feed_obj->ID, $feed_obj->post_title, $feed_obj->post_title );
+
+		?>
+		</li>
+		<?php
+	}
+
+  public function disallow_add_new(){
         global $pagenow;
         /* Check current admin page. */
         if($pagenow == 'post-new.php' && isset($_GET['post_type']) && $_GET['post_type'] == $this->post_type){
@@ -264,6 +475,36 @@ class PF_Feeds_Schema {
 		} else {
 			return false;
 		}
+	}
+
+	public function modify_post_views($views){
+		#var_dump($views);
+    if( isset( $views['publish'] ) ) {
+        $views['publish'] = str_replace( 'Published ', 'Active ', $views['publish'] );
+		}
+
+    if( isset( $views['draft'] ) ) {
+        $views['draft'] = str_replace( 'Drafts ', 'Inactive ', $views['draft'] );
+		}
+
+		return $views;
+
+	}
+
+	public function modify_post_edit_status($status){
+		#var_dump($status);
+
+		if( 'publish' == $status ) {
+				#$status = 'Active';
+		}
+
+		if( 'draft' == $status ) {
+				#$status = 'Inactive';
+		}
+
+		#die();
+		return $status;
+
 	}
 
 
@@ -544,7 +785,10 @@ class PF_Feeds_Schema {
 				$r = self::setup_rss_meta($r, $theFeed);
 			}
 
-			self::set_pf_feed_type($r['ID'], 'rss');
+			$type_updated = self::set_pf_feed_type($r['ID'], 'rss');
+			if ($type_updated){
+				$r['type'] = 'rss';
+			}
 		}
 
 		$check = self::feed_post_setup($r, 'update');
@@ -615,7 +859,7 @@ class PF_Feeds_Schema {
 	}
 
     public function make_alert_return_to_publish($status_data){
-        if ($this->post_type == $status_data['type']){
+        if ( (!empty($status_data['type'])) && ($this->post_type == $status_data['type']) ){
             $status_data['status'] = 'publish';
             return $status_data;
         }
@@ -633,7 +877,22 @@ class PF_Feeds_Schema {
 			return;
 
 
-		wp_enqueue_script( 'feed_control_script', PF_URL . '/assets/js/feeds_control.js', array('jquery', PF_SLUG . '-twitter-bootstrap') );
+		wp_enqueue_script( 'feed_control_script', PF_URL . '/assets/js/feeds_control.js', array('jquery', PF_SLUG . '-twitter-bootstrap'), PF_VERSION );
+	}
+
+	function admin_enqueue_edit_feed_scripts() {
+		global $pagenow;
+
+		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
+
+		if ( !in_array( $pagenow, array( 'post.php' ) ) )
+			return;
+
+		if(!in_array($hook, array('pf_feed')) )
+			#return;
+
+
+		wp_enqueue_script( 'feed_edit_manip', PF_URL . '/assets/js/subscribed-feeds-actions.js', array('jquery'), PF_VERSION );
 	}
 
 }

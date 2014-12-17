@@ -1,7 +1,14 @@
-<?php 
+<?php
 
-function get_the_source_title(){
-	$st = pf_retrieve_meta(get_the_ID(), 'source_title');
+function get_the_source_title($id = false){
+	#$st = pf_retrieve_meta(get_the_ID(), 'source_title');
+	if (!$id){
+		$id = get_the_ID();
+	}
+	$parent_id = get_post_ancestors($id);
+	if (!isset($parent_id[0])){ return __('Bookmarklet', 'pf'); }
+	$parent = get_post($parent_id[0]);
+	$st = $parent->post_title;
 	return $st;
 }
 
@@ -18,14 +25,17 @@ function the_original_post_date(){
 	echo get_the_original_post_date();
 }
 
-function get_the_item_author(){
-	$ia = pf_retrieve_meta(get_the_ID(), 'item_author');
+function get_the_item_author($id = false){
+	if (!$id){
+		$id = get_the_ID();
+	}
+	$ia = pf_retrieve_meta($id, 'item_author');
 	return $ia;
 }
 
 function the_item_author(){
 	echo get_the_item_author();
-}	
+}
 
 function get_the_item_link(){
 	$m = pf_retrieve_meta(get_the_ID(), 'item_link');
@@ -34,7 +44,7 @@ function get_the_item_link(){
 
 function the_item_link(){
 	echo get_the_item_link();
-}	
+}
 
 function get_the_item_feat_image(){
 	$m = pf_retrieve_meta(get_the_ID(), 'item_feat_img');
@@ -43,7 +53,7 @@ function get_the_item_feat_image(){
 
 function the_item_feat_image(){
 	echo get_the_item_feat_image();
-}	
+}
 
 function get_the_item_tags(){
 	$m = pf_retrieve_meta(get_the_ID(), 'item_tags');
@@ -52,7 +62,7 @@ function get_the_item_tags(){
 
 function the_item_tags(){
 	echo get_the_item_tags();
-}	
+}
 
 function get_the_repeats(){
 	$m = pf_retrieve_meta(get_the_ID(), 'source_repeat');
@@ -61,7 +71,7 @@ function get_the_repeats(){
 
 function the_item_repeats(){
 	echo get_the_repeats();
-}	
+}
 
 function get_the_nomination_count(){
 	$m = pf_retrieve_meta(get_the_ID(), 'nomination_count');
@@ -70,7 +80,7 @@ function get_the_nomination_count(){
 
 function the_nomination_count(){
 	echo get_the_item_tags();
-}	
+}
 
 function get_the_nominator_ids(){
 	$m = pf_retrieve_meta(get_the_ID(), 'nominator_array', false, false);
@@ -88,38 +98,38 @@ function get_the_nominators(){
 			if (is_array($nomer)){
 				$nomers .= implode("," , $nomer);
 			} else {
-				$nomers .= $nomer;	
+				$nomers .= $nomer;
 			}
 			if ($lastKey != $k){
-				$nomers .= ',';	
+				$nomers .= ',';
 			}
 		}
 		#$nomers = implode(", " , get_the_nominators());
 	} else {
 		$nomers = get_the_nominator_ids();
 	}
-	
-	# Look, there are a lot of weird things that can happen 
+
+	# Look, there are a lot of weird things that can happen
 	# depending on how far back your version history has gone
 	# So this is a stupid way to do it, but it is really the
 	# best way.
-	
+
 	$nominating_user_ids = explode(",", $nomers);
 	$nominating_users = array();
 	foreach ($nominating_user_ids as $user_id){
 		$user_obj = get_user_by('id', $user_id);
 		$nominating_users[] = $user_obj->display_name;
 	}
-	
+
 	return $nominating_users;
-	
+
 }
 
 function get_the_nominating_users(){
 	$nominating_users = get_the_nominators();
 	$imp = implode(', ', $nominating_users);
 	return $imp;
-	
+
 }
 
 function the_nominators(){
@@ -133,4 +143,4 @@ function get_the_word_count(){
 
 function the_word_count(){
 	echo get_the_word_count();
-}	
+}

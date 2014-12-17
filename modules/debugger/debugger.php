@@ -59,9 +59,9 @@ class PF_Debugger extends PF_Module {
 
 		//return $test;
 	}
-	
+
 	function count_the_posts($post_type, $date_less = false){
-				
+
 				if (!$date_less){
 					$y = date('Y');
 					$m = date('m');
@@ -87,7 +87,7 @@ class PF_Debugger extends PF_Module {
 					'fields' 			=> 'ids'
 				);
 				#var_dump($query_arg);
-				#$query = new WP_Query($query_arg);	
+				#$query = new WP_Query($query_arg);
 				#var_dump($query);
 				$total = 0;
 				$last_q = $posts_per_page;
@@ -97,16 +97,16 @@ class PF_Debugger extends PF_Module {
 					$total += $count;
 					$query_arg['offset'] = $query_arg['offset']+$posts_per_page;
 				}
-		
+
 		return $total;
 	}
-	
+
 	function query_counter($query_arg, $posts_per_page = 200){
 		if(empty($query_arg['offset'])){ $query_arg['offset'] = 0; }
 		if(empty($query_arg['posts_per_page'])){ $query_arg['posts_per_page'] = $posts_per_page; }
 		$query = new WP_Query($query_arg);
 		#$offset = 0;
-		$total = 0;	
+		$total = 0;
 		$pc = $query->post_count;
 		wp_reset_query();
 		$total += $pc;
@@ -128,61 +128,82 @@ class PF_Debugger extends PF_Module {
 		} else {
 			$log_path = PF_DEBUG_LOG;
 		}
-		
-		$action_count = $wpdb->get_results( "SELECT COUNT(*) FROM {$wpdb->prefix}pf_relationships", ARRAY_A );		
-		
+
+		$action_count = $wpdb->get_results( "SELECT COUNT(*) FROM {$wpdb->prefix}pf_relationships", ARRAY_A );
+
 		$ntp_args = array( 'posts_per_page' => -1, 'meta_key' => 'item_link');
-		
+
 		$nominated_to_posts = get_posts($ntp_args);
 		$nomed_posts = count($nominated_to_posts);
-		
+
 		?>
 		<div class="wrap">
 			<h2>Current Log</h2>
-			<?php 
+			<?php
 
 				#var_dump($feed_items_query->post_count);
-			
+
 			?>
 			<p>Does not update in real time.</p>
-			<p>Total Current Feed Items: 
-			<?php 
+			<p>Total Current Feed Items:
+			<?php
 				$feed_item = 'pf_feed_item';
 				echo wp_count_posts($feed_item)->publish;
 				#var_dump(wp_count_posts($feed_item));
 				#var_dump(wp_count_posts('post'));
 			?><br />
-			<?php 
+			<?php
 				$feed_item = 'pf_feed_item';
 				echo 'Month to date Feed Items: ' . $this->count_the_posts($feed_item);
 				echo '<br />Last month Feed Items: ' . $this->count_the_posts($feed_item, -1 );
 				#var_dump(wp_count_posts($feed_item));
 				#var_dump(wp_count_posts('post'));
-			?>			
+			?>
 			</p>
-			<p>Total Current Nominations: 
-			<?php 
+			<p>Total Current Nominations:
+			<?php
 				# var_dump(wp_count_posts('nomination'));
 				echo wp_count_posts('nomination')->draft;
 				echo '<br />Month to date Nominations: ' . $this->count_the_posts('nomination');
 				echo '<br />Last month Nominations: ' . $this->count_the_posts('nomination', -1 );
-				
+
 			?>
 			</p>
-			<p>Total Actions Taken: 
-			<?php 
+			<p>Total Actions Taken:
+			<?php
 				echo current($action_count[0]);
 				#echo $action_count;
-			
+
 			?>
-			</p>	
-			<p>Total Nominations Published: 
-			<?php 
+			</p>
+			<p>Total Nominations Published:
+			<?php
 				echo $nomed_posts;
 				#var_dump($nomed_posts );
-			
+
 			?>
-			</p>			
+			</p>
+			<p>Total Retrieval Chunks Begun This:
+			<?php
+				pf_iterate_cycle_state('retrieval_chunks_begun', false, true);
+				#var_dump($nomed_posts );
+
+			?>
+			</p>
+			<p>Total Retrieval Cycles Begun This:
+			<?php
+				pf_iterate_cycle_state('retrieval_cycles_begun', false, true);
+				#var_dump($nomed_posts );
+
+			?>
+			</p>
+			<p>Total Retrieval Cycles Ended This:
+			<?php
+				pf_iterate_cycle_state('retrieval_cycles_ended', false, true);
+				#var_dump($nomed_posts );
+
+			?>
+			</p>
 			<br /><br />
 			<?php
 				if(file_exists($log_path)){
@@ -214,7 +235,7 @@ class PF_Debugger extends PF_Module {
 		return $arrayedAdminRights;
 
 	}
-    
+
 	function add_to_feeder(){
 		?>
 		<p>
@@ -226,12 +247,12 @@ class PF_Debugger extends PF_Module {
 			$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );
 			$retrieval_state = sprintf(__('Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d  Ready to chunk? %4$d', 'pf'), $feed_go, $feed_iteration, $retrieval_state, $chunk_state);
 			echo $retrieval_state;
-		
+
 		?>
 		<br />
 		<button type="button" class="redoFeeds btn btn-warning" id="resetFeedOps" value="<?php _e('Switch feeds to new retrieval setup', 'pf'); ?>"><?php _e('Switch feeds to new retrieval setup', 'pf'); ?></button>    <br />
 		</p>
 		<?php
-	}    
+	}
 
 }

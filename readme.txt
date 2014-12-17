@@ -3,8 +3,8 @@ Contributors: PressForward, AramZS, boonebgorges, joanftroyano, clioweb
 Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 3.0.1
-Tested up to: 3.9.2
-Stable tag: 3.3.0
+Tested up to: 4.0.1
+Stable tag: 3.4.3
 License: GPL2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -85,3 +85,29 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 7. Discussion visible in threaded comments.
 8. In Under Review the toolbar displays the number of comments and nominations, and provides ability to archive item or Send to Draft.
 9. Edit and format items in the regular WordPress Posts panel.
+
+== Changelog ==
+
+= 3.4 =
+* the "Nominate This" bookmarklet has moved to tools
+* the "Under Review" panel has been renamed to Nominated
+* refinements to sorting and filtering in the "All Content" and "Nominated" views
+* the "Subscribed Feeds" panel now displays the time and date of the last update on a feed
+* items can now be unnominated by clicking again on the green nominate button in All Content
+* Administrators can now set the number of days to retain feed items
+* users can choose to turn on pagination rather than infinite scroll
+* feed alerts can now be deleted or dismissed
+* items older than one week, two weeks, one month, or one year can now be archived in "Nominated"
+* introduction of folders for feeds.  Individual feeds can be added to folders in the "Subscribed Feeds" panel.  Items in "All Content" can then be filtered by folder.
+For more information on the changes see the GitHub summary for [3.4](https://github.com/PressForward/pressforward/issues?q=milestone%3A3.4.x)
+
+= 3.3 =
+* show hidden items on the "All Content" browse page
+* upload OPML files in the "Add Feeds" panel
+* return an item to the pre-readability state in the full screen mode
+* provide option to turn off alerts and to change the retention time for feeds
+* enhancements improve the speed of the plugin
+* improvements to moving a nominated item's metadata into a draft
+* improvements to the appearance of action buttons in list and grid view
+* sets a limit to the number of times an indivdual user is able to nominate a single item
+For more information see the GitHub summary for [3.2](https://github.com/PressForward/pressforward/issues?q=milestone%3A3.2)

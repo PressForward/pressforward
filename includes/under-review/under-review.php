@@ -11,7 +11,7 @@
 		} else {
 			$page = 0;
 		}
-		$count = $page * 20;	
+		$count = $page * 20;
 		$countQ = 0;
 		$extra_class = '';
 		if(isset($_GET['reveal']) && ('no_hidden' == $_GET['reveal'])){
@@ -23,23 +23,55 @@
 	<div class="list pf_container full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">
-				<?php echo '<h1>' . PF_TITLE . ': Under Review</h1>'; ?>
-				<?php 
+				<?php echo '<h1>' . PF_TITLE . ': '.__('Nominated', 'pf').'</h1>'; ?>
+				<?php
 					if ($page > 0) {
 						$pageNumForPrint = sprintf( __('Page %1$d', 'pf'), $page);
 						echo '<span> - ' . $pageNumForPrint . '</span>';
 					}
 					if (!empty($_POST['search-terms'])){
-						echo ' | <span class="search-term-title">' . __('Search for:', 'pf') . ' ' . $_POST['search-terms'] . '</span>'; 
-					}					
+						echo ' | <span class="search-term-title">' . __('Search for:', 'pf') . ' ' . $_POST['search-terms'] . '</span>';
+					}
 				?>
 				<span id="h-after"> &#8226; </span>
 				<button class="btn btn-small" id="fullscreenfeed"> <?php  _e('Full Screen', 'pf');  ?> </button>
 			</div><!-- End title -->
 				<?php pressforward()->admin->pf_search_template(); ?>
 		</header><!-- End Header -->
+
+		<div class="display">
+			<div class="pf-btns pull-left">
+			<!--<button type="submit" id="gogrid" class="btn btn-small">Grid</button>
+			<button type="submit" id="golist" class="btn btn-small">List</button>-->
+
+			<?php
+			echo '<button type="submit" class="btn btn-small feedsort" id="sort-reset" value="' . __('Reset Sorting', 'pf') . '" style="display:none;" >' . __('Reset Sort', 'pf') . '</button>';
+			echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
+			echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomdate" value="' . __('Sort by date nominated', 'pf') . '">' . __('Sort by date nominated', 'pf') . '</button>';
+			echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomcount" value="' . __('Sort by nominations', 'pf') . '">' . __('Sort by nominations', 'pf') . '</button>';
+								echo '<button type="submit" class="btn btn-small starredonly" id="sortstarredonly" value="' . __('Show starred only', 'pf') . '">' . __('Show starred only', 'pf') . '</button>';
+			if (!isset($_GET['pf-see']) || ('archive-only' != $_GET['pf-see'])){
+				echo '<button type="submit" class="btn btn-small feedsort" id="showarchiveonly" value="' . __('Show only archived', 'pf') . '">' . __('Show only archived', 'pf') . '</button>';
+				if ((isset($_GET['by']) && ( 'archived' == $_GET['by'])) ){
+					echo '<button type="submit" class="showarchived btn btn-small" id="shownormal" value="' . __('Show non-archived', 'pf') . '">' . __('Show non-archived', 'pf') . '.</button>';
+				} else {
+					echo '<button type="submit" class="showarchived btn btn-small" id="showarchived" value="' . __('Show archived', 'pf') . '">' . __('Show archived', 'pf') . '.</button>';
+				}
+			}
+			if ( isset($_POST['search-terms']) || isset($_GET['by']) || isset($_GET['pf-see']) || isset($_GET['reveal']) ) {
+					?><button type="submit" class="btn btn-info btn-small pull-right" id="showNormalNominations" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php
+			}
+			?>
+			</div>
+			<div class="pull-right text-right">
+			<?php echo '<button type="submit" class="delete btn btn-danger btn-small pull-left" id="archivenoms" value="' . __('Archive all', 'pf') . '" >' . __('Archive all', 'pf') . '</button>'; ?>
+			<!-- or http://thenounproject.com/noun/list/#icon-No9479 ? -->
+			<a class="btn btn-small" id="gomenu" href="#">Menu <i class="icon-tasks"></i></a>
+			</div>
+		</div><!-- End btn-group -->
+
 		<div role="main">
-			<?php $this->toolbox();	?>	
+			<?php $this->toolbox();	?>
 			<div id="entries">
 				<?php echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';  ?>
 				<div id="errors">
@@ -51,37 +83,11 @@
 							<i class="icon-remove-circle">Close</i>
 							</div>
 						</div>
-					</div>				
+					</div>
 				</div>
-				<div class="display">
-					<div class="pf-btns pull-left">
-					<!--<button type="submit" id="gogrid" class="btn btn-small">Grid</button>
-					<button type="submit" id="golist" class="btn btn-small">List</button>-->
 
-					<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
-					echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomdate" value="' . __('Sort by date nominated', 'pf') . '">' . __('Sort by date nominated', 'pf') . '</button>'; 
-					echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomcount" value="' . __('Sort by nominations', 'pf') . '">' . __('Sort by nominations', 'pf') . '</button>'; 
-                    echo '<button type="submit" class="btn btn-small starredonly" id="sortstarredonly" value="' . __('Show starred only', 'pf') . '">' . __('Show starred only', 'pf') . '</button>'; 
-					if (!isset($_GET['pf-see']) || ('archive-only' != $_GET['pf-see'])){
-						echo '<button type="submit" class="btn btn-small feedsort" id="showarchiveonly" value="' . __('Show only archived', 'pf') . '">' . __('Show only archived', 'pf') . '</button>'; 
-						if ((isset($_GET['by']) && ( 'archived' == $_GET['by'])) ){
-							echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="shownormal" value="' . __('Show non-archived', 'pf') . '">' . __('Show non-archived', 'pf') . '.</button>';
-						} elseif ( isset($_POST['search-terms']) || isset($_GET['by']) ) {
-							?><button type="submit" class="btn btn-info btn-small pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php
-						} else {
-							echo '<button type="submit" class="showarchived btn btn-small btn-warning" id="showarchived" value="' . __('Show archived', 'pf') . '">' . __('Show archived', 'pf') . '.</button>';
-						}
-					}
-					?>
-					</div>
-					<div class="pull-right text-right">
-					<?php echo '<button type="submit" class="delete btn btn-danger btn-small pull-left" id="archivenoms" value="' . __('Archive all', 'pf') . '" >' . __('Archive all', 'pf') . '</button>'; ?>
-					<!-- or http://thenounproject.com/noun/list/#icon-No9479 ? -->
-					<a class="btn btn-small" id="gomenu" href="#">Menu <i class="icon-tasks"></i></a>
-					</div>
-				</div><!-- End btn-group -->
-		
-		<?php 			
+
+		<?php
 
 //Hidden here, user options, like 'show archived' etc...
 				?><div id="page_data" style="display:none">
@@ -116,7 +122,7 @@
 			//Eventually we may want to provide options to change some of these, so we're going to provide the default values for now.
 			$pageCheck = absint($page);
 			if (!$pageCheck){ $pageCheck = 1; }
-			
+
 			$nom_args = array(
 
 							'post_type' => 'nomination',
@@ -124,7 +130,7 @@
 							'order' => 'DESC',
 							'posts_per_page' => 20,
 							'suppress_filters' => FALSE,
-							'offset' => $offset  #The query function will turn page into a 1 if it is a 0. 
+							'offset' => $offset  #The query function will turn page into a 1 if it is a 0.
 
 							);
 			add_filter( 'posts_request', 'prep_archives_query');
@@ -136,7 +142,7 @@
 			$countQT = $nom_query->found_posts;
 			//print_r($countQ);
 			while ( $nom_query->have_posts() ) : $nom_query->the_post();
-				
+
 				//declare some variables for use, mostly in various meta roles.
 				//1773 in rssforward.php for various post meta.
 
@@ -144,27 +150,27 @@
 				$metadata['submitters'] = $submitter_slug = get_the_author_meta('user_nicename');
 				// Nomination (post) ID
 				$metadata['nom_id'] = $nom_id = get_the_ID();
-				//Get the WP database ID of the original item in the database. 
-				$metadata['item_feed_post_id'] = get_post_meta($nom_id, 'item_feed_post_id', true);
+				//Get the WP database ID of the original item in the database.
+				$metadata['item_feed_post_id'] = pf_get_post_meta($nom_id, 'item_feed_post_id', true);
 				//Number of Nominations recieved.
-				$metadata['nom_count'] = $nom_count = get_post_meta($nom_id, 'nomination_count', true);
+				$metadata['nom_count'] = $nom_count = pf_retrieve_meta($nom_id, 'nomination_count');
 				//Permalink to orig content
-				$metadata['permalink'] = $nom_permalink = get_post_meta($nom_id, 'item_link', true);
+				$metadata['permalink'] = $nom_permalink = pf_get_post_meta($nom_id, 'item_link', true);
 				$urlArray = parse_url($nom_permalink);
 				//Source Site
 				$metadata['source_link'] = isset( $urlArray['host'] ) ? $sourceLink = 'http://' . $urlArray['host'] : '';
 				//Source site slug
 				$metadata['source_slug'] = $sourceSlug = isset( $urlArray['host'] ) ? pf_slugger($urlArray['host'], true, false, true) : '';
 				//RSS Author designation
-				$metadata['authors'] = $item_authorship = get_post_meta($nom_id, 'item_author', true);
+				$metadata['authors'] = $item_authorship = pf_get_post_meta($nom_id, 'item_author', true);
 				//Datetime item was nominated
-				$metadata['date_nominated'] = $date_nomed = get_post_meta($nom_id, 'date_nominated', true);
+				$metadata['date_nominated'] = $date_nomed = pf_get_post_meta($nom_id, 'date_nominated', true);
 				//Datetime item was posted to its home RSS
-				$metadata['posted_date'] = $date_posted = get_post_meta($nom_id, 'posted_date', true);
+				$metadata['posted_date'] = $date_posted = pf_get_post_meta($nom_id, 'posted_date', true);
 				//Unique RSS item ID
-				$metadata['item_id'] = $rss_item_id = get_post_meta($nom_id, 'origin_item_ID', true);
+				$metadata['item_id'] = $rss_item_id = pf_get_post_meta($nom_id, 'origin_item_ID', true);
 				//RSS-passed tags, comma seperated.
-				$item_nom_tags = $nom_tags = get_post_meta($nom_id, 'item_tags', true);
+				$item_nom_tags = $nom_tags = pf_get_post_meta($nom_id, 'item_tags', true);
 				$wp_nom_tags = '';
 				$getTheTags = get_the_tags();
 				if (empty($getTheTags)){
@@ -179,10 +185,10 @@
 					$wp_nom_slugs = array();
 					foreach ($getTheTags as $tag){
 						$wp_nom_slugs[] = $tag->slug;
-					}				
-								
+					}
+
 				}
-				$metadata['nom_tags'] = $nomed_tag_slugs = $wp_nom_slugs;		
+				$metadata['nom_tags'] = $nomed_tag_slugs = $wp_nom_slugs;
 				$metadata['all_tags'] = $nom_tags .= $wp_nom_tags;
 				$nomTagsArray = explode(",", $item_nom_tags);
 				$nomTagClassesString = '';
@@ -190,9 +196,9 @@
 				//RSS-passed tags as slugs.
 				$metadata['item_tags'] = $nom_tag_slugs = $nomTagClassesString;
 				//All users who nominated.
-				$metadata['nominators'] = $nominators = get_post_meta($nom_id, 'nominator_array', true);
+				$metadata['nominators'] = $nominators = pf_get_post_meta($nom_id, 'nominator_array', true);
 				//Number of times repeated in source.
-				$metadata['source_repeat'] = $source_repeat = get_post_meta($nom_id, 'source_repeat', true);
+				$metadata['source_repeat'] = $source_repeat = pf_get_post_meta($nom_id, 'source_repeat', true);
 				//Post-object tags
 				$metadata['item_title'] = $item_title = get_the_title();
 				$metadata['item_content'] = get_the_content();
@@ -202,11 +208,11 @@
 				$metadata['timestamp_unix_date_nomed'] = $timestamp_unix_date_nomed = strtotime($date_nomed);
 				//UNIX datetime item was posted to its home RSS.
 				$metadata['timestamp_item_posted'] = $timestamp_item_posted = strtotime($date_posted);
-				$metadata['archived_status'] = $archived_status = get_post_meta($nom_id, 'archived_by_user_status');
+				$metadata['archived_status'] = $archived_status = pf_get_post_meta($nom_id, 'archived_by_user_status');
 				$userObj = wp_get_current_user();
 				$user_id = $userObj->ID;
-				
-				
+
+
 				if (!empty($metadata['archived_status'])){
 					$archived_status_string = '';
 					$archived_user_string_match = 'archived_' . $current_user_id;
@@ -223,177 +229,9 @@
 					$dependent_style = '';
 					$archived_status_string = '';
 				}
-			$item = pf_feed_object(get_the_title(), get_post_meta($nom_id, 'source_title', true), $date_posted, $item_authorship, get_the_content(), $nom_permalink, get_the_post_thumbnail($nom_id /**, 'nom_thumb'**/), $rss_item_id, get_post_meta($nom_id, 'item_wp_date', true), $nom_tags, $date_nomed, $source_repeat, $nom_id, '1');
-			
+			$item = pf_feed_object(get_the_title(), pf_get_post_meta($nom_id, 'source_title', true), $date_posted, $item_authorship, get_the_content(), $nom_permalink, get_the_post_thumbnail($nom_id /**, 'nom_thumb'**/), $rss_item_id, pf_get_post_meta($nom_id, 'item_wp_date', true), $nom_tags, $date_nomed, $source_repeat, $nom_id, '1');
+
 			$this->form_of_an_item($item, $c, 'nomination', $metadata);
-/**			
-			echo '<article class="feed-item entry nom-container ' . $archived_status_string . pf_nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )) . '" id="' . get_the_ID() . '" style="' . $dependent_style . '" tabindex="' . $c . '">'; ?>
-					<header>
-						<?php echo '<h1 class="item_title"><a href="#modal-' . get_the_ID() . '" class="item-expander" role="button" data-toggle="modal" data-backdrop="false">' . get_the_title() . '</a></h1>'; ?>
-						<div class="sortable-hidden-meta" style="display:none;">
-							<?php
-							_e('UNIX timestamp from source RSS', 'pf');
-							echo ': <span class="sortable_source_timestamp">' . $timestamp_item_posted . '</span><br />';
-
-							_e('UNIX timestamp last modified', 'pf');
-							echo ': <span class="sortable_mod_timestamp">' . $timestamp_nom_last_modified . '</span><br />';
-
-							_e('UNIX timestamp date nominated', 'pf');
-							echo ': <span class="sortable_nom_timestamp">' . $timestamp_unix_date_nomed . '</span><br />';
-
-							_e('Times repeated in source feeds', 'pf');
-							echo ': <span class="sortable_sources_repeat">' . $source_repeat . '</span><br />';
-
-							_e('Number of nominations received', 'pf');
-							echo ': <span class="sortable_nom_count">' . $nom_count . '</span><br />';
-
-							_e('Slug for origon site', 'pf');
-							echo ': <span class="sortable_origin_link_slug">' . $sourceSlug . '</span><br />';
-
-							//Add an action here for others to provide additional sortables.
-
-						echo '</div>';
-
-						$urlArray = parse_url($item['item_link']);
-						$sourceLink = 'http://' . $urlArray['host'];
-						//http://nicolasgallagher.com/pure-css-speech-bubbles/demo/
-						$ibox = '<div class="feed-item-info-box" id="info-box-' . $item['item_id'] . '">';
-						$ibox .= '
-							' . __('Feed', 'pf') . ': <span class="feed_title">' . $item['source_title'] . '</span><br />
-							' . __('Posted', 'pf') . ': <span class="feed_posted">' . date( 'M j, Y; g:ia' , strtotime($item['item_date'])) . '</span><br />
-							' . __('Retrieved', 'pf') . ': <span class="item_meta item_meta_added_date">' . date( 'M j, Y; g:ia' , strtotime($item['item_added_date'])) . '</span><br />
-							' . __('Authors', 'pf') . ': <span class="item_authors">' . $item['item_author'] . '</span><br />
-							' . __('Origin', 'pf') . ': <span class="source_name"><a target ="_blank" href="' . $sourceLink . '">' . $sourceLink . '</a></span><br />
-							' . __('Original Item', 'pf') . ': <span class="source_link"><a href="' . $item['item_link'] . '" class="item_url" target ="_blank">' . $item['item_title'] . '</a></span><br />
-							' . __('Tags', 'pf') . ': <span class="item_tags">' . $item['item_tags'] . '</span><br />
-							' . __('Times repeated in source', 'pf') . ': <span class="feed_repeat">' . $item['source_repeat'] . '</span><br />
-							';
-						$ibox .= '</div>';
-						echo $ibox;						
-						?>			
-			<div class="span12" id="item-box-<?php echo $count; ?>">
-				<div class="row-fluid well accordion-group nom-item<?php pf_nom_class_tagger(array($submitter_slug, $nom_id, $item_authorship, $nom_tag_slugs, $nominators, $nomed_tag_slugs, $rss_item_id )); ?>" id="<?php echo $count; ?>">
-					<div class="span12">
-
-						<div class="sortable-hidden-meta" style="display:none;">
-							<?php
-							_e('UNIX timestamp from source RSS', 'pf');
-							echo ': <span class="sortable_source_timestamp">' . $timestamp_item_posted . '</span><br />';
-
-							_e('UNIX timestamp last modified', 'pf');
-							echo ': <span class="sortable_mod_timestamp">' . $timestamp_nom_last_modified . '</span><br />';
-
-							_e('UNIX timestamp date nominated', 'pf');
-							echo ': <span class="sortable_nom_timestamp">' . $timestamp_unix_date_nomed . '</span><br />';
-
-							_e('Times repeated in source feeds', 'pf');
-							echo ': <span class="sortable_sources_repeat">' . $source_repeat . '</span><br />';
-
-							_e('Number of nominations received', 'pf');
-							echo ': <span class="sortable_nom_count">' . $nom_count . '</span><br />';
-
-							_e('Slug for origon site', 'pf');
-							echo ': <span class="sortable_origin_link_slug">' . $sourceSlug . '</span><br />';
-
-							//Add an action here for others to provide additional sortables.
-
-						echo '</div>';
-						echo '<div class="row-fluid nom-content-container accordion-heading">';
-							echo '<div class="span12">';
-								echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#nom-accordion" href="#collapse' . $count . '" count="' . $count . '" style="display:block;">';
-								//Figure out feature image later. Put it here when you do.
-								echo '<div class="row-fluid span12">';
-								remove_filter('get_the_excerpt', 'wp_trim_excerpt');
-								add_filter( 'get_the_excerpt', 'pf_noms_excerpt' );
-									echo '<h6 class="nom-title">' . get_the_title() . '</h6>';
-									?>
-									<div class="excerpt-graf" id="excerpt-graf-<?php echo $count; ?>">
-										<?php print_r( get_the_excerpt() ); ?>
-									</div>
-									<?php
-								remove_filter( 'get_the_excerpt', 'pf_noms_excerpt' );
-								add_filter('get_the_excerpt', 'wp_trim_excerpt');
-								echo '</div>';
-
-								echo '</a>';
-							echo '</div>';
-						echo '</div>';
-						echo '<div class="accordion-body collapse" id="collapse' . $count . '">';
-						echo '<div class="accordion-inner">';
-								echo '<div class="row-fluid span12 authorship-info">';
-									$author_string = sprintf(__('Authored by %1$d on %2$d', 'pf'), $item_authorship, $date_posted);
-									echo '<h6>' . $author_string . '</h6>';
-									if ($nom_count > 1){
-										$nomersArray = explode(',',$nominators);
-										$userString = "";
-										foreach ($nomersArray as $nomer){
-											$userObj = get_userdata($nomer);
-											$userString .= $userObj->user_nicename;
-										}
-										$nominators = $userString;
-									} else {
-										$userObj = get_userdata($nominators);
-										$nominators = $userObj->user_nicename;
-									}
-									$nom_by_string = sprintf(__('Nominated by %1$d on %2$d', 'pf'), $nominators, date('Y-m-d', strtotime($date_nomed)));;
-									echo '<h6>' . $nom_by_string . '</h6>';
-								echo '</div>
-										<div class="nom-content-body row-fluid span12">';
-											the_content();
-									echo '</div>';
-								//echo '<div class="item_commenting">';
-								//comment_form();
-								//echo '</div>';
-								do_action('append_to_under_review_accordion');
-						echo '</div>';
-						echo '</div>';
-					echo '</div>';
-
-				echo '</div>';
-			echo '</div>';
-
-			echo '<div class="post-control span3 well" id="action-box-' . $count . '" style="display:none;">';
-											?>
-									<div class="nom-master-buttons row-fluid">
-										<div class="span12">
-											<div class="result-status-<?php echo $rss_item_id; ?>">
-												<?php echo '<img class="loading-' . $rss_item_id . '" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="' . __('Loading', 'pf') . '..." style="display: none" />'; ?>
-												<div class="msg-box"></div>
-											</div>
-											<form name="form-<?php echo $rss_item_id; ?>" id="<?php echo $rss_item_id ?>"><p>
-												<?php pf_prep_item_for_submit($metadata); ?>
-												<button class="btn btn-inverse nom-to-draft" form="<?php echo $rss_item_id ?>"><?php _e('Send to Draft', 'pf'); ?></button>
-												<button class="btn btn-inverse nom-to-archive" form="<?php echo $nom_id ?>"><?php _e('Archive', 'pf'); ?></button>
-															<?php $tax = get_taxonomy( 'category' ); ?>
-
-			<div id="tagsdiv-post_tag" class="postbox">
-				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'pf' ); ?>"><br /></div>
-				<h3><span><?php _e('Tags'); ?></span></h3>
-				<div class="inside">
-					<div class="tagsdiv" id="post_tag">
-						<div class="jaxtag">
-							<label class="screen-reader-text" for="newtag"><?php _e('Tags'); ?></label>
-							<input type="hidden" name="tax_input[post_tag]" class="the-tags" id="tax-input[post_tag] tag_input_<?php echo $rss_item_id; ?>" value="" />
-							<div class="ajaxtag">
-								<input type="text" name="newtag[post_tag]" class="newtag form-input-tip" size="16" autocomplete="off" value="" />
-								<input type="button" class="button tagadd" value="<?php esc_attr_e('Add', 'pf'); ?>" tabindex="3" />
-							</div>
-						</div>
-						<div class="tagchecklist"></div>
-					</div>
-					<p class="tagcloud-link"><a href="#titlediv" class="tagcloud-link" id="link-post_tag"><?php _e('Choose from the most used tags', 'pf'); ?></a></p>
-				</div>
-			</div>
-
-											</form>
-										</div>
-									</div>
-									<?php
-			echo '</div>';
-					?>
-			</div>
-			<?php
-**/			
 			$count++;
 			$c++;
 			endwhile;

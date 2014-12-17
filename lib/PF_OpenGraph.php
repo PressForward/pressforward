@@ -13,9 +13,9 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
+
 	Original can be found at https://github.com/scottmac/opengraph/blob/master/OpenGraph.php
-   
+
 */
 
 class PF_OpenGraph implements Iterator
@@ -50,7 +50,8 @@ class PF_OpenGraph implements Iterator
    * @return OpenGraph
    */
 	static public function fetch($URI) {
-		return self::_parse(file_get_contents($URI));
+		$URI_data = pf_de_https($URI, 'wp_remote_get', array('timeout' => '30'));
+    return self::_parse($URI_data);
 	}
 
   /**
@@ -61,11 +62,17 @@ class PF_OpenGraph implements Iterator
    * @return OpenGraph
    */
 	static private function _parse($HTML) {
+		if (empty($HTML)){ return false; }
 		$old_libxml_error = libxml_use_internal_errors(true);
 
 		$doc = new DOMDocument();
+		if (is_array($HTML)){
+			pf_log('Attempt to parse URL for OpenGraph.');
+			#pf_log($HTML);
+			return false;
+		}
 		$doc->loadHTML($HTML);
-		
+
 		libxml_use_internal_errors($old_libxml_error);
 
 		$tags = $doc->getElementsByTagName('meta');
@@ -76,15 +83,15 @@ class PF_OpenGraph implements Iterator
 		$page = new self();
 
 		$nonOgDescription = null;
-		
+
 		foreach ($tags AS $tag) {
 			if ($tag->hasAttribute('property') &&
 			    strpos($tag->getAttribute('property'), 'og:') === 0) {
 				$key = strtr(substr($tag->getAttribute('property'), 3), '-', '_');
 				$page->_values[$key] = $tag->getAttribute('content');
 			}
-			
-			//Added this if loop to retrieve description values from sites like the New York Times who have malformed it. 
+
+			//Added this if loop to retrieve description values from sites like the New York Times who have malformed it.
 			if ($tag ->hasAttribute('value') && $tag->hasAttribute('property') &&
 			    strpos($tag->getAttribute('property'), 'og:') === 0) {
 				$key = strtr(substr($tag->getAttribute('property'), 3), '-', '_');
@@ -94,7 +101,7 @@ class PF_OpenGraph implements Iterator
 			if ($tag->hasAttribute('name') && $tag->getAttribute('name') === 'description') {
                 $nonOgDescription = $tag->getAttribute('content');
             }
-			
+
 		}
 		//Based on modifications at https://github.com/bashofmann/opengraph/blob/master/src/OpenGraph/OpenGraph.php
 		if (!isset($page->_values['title'])) {
@@ -107,8 +114,22 @@ class PF_OpenGraph implements Iterator
             $page->_values['description'] = $nonOgDescription;
         }
 
+        //Fallback to use image_src if ogp::image isn't set.
+        if (!isset($page->values['image'])) {
+            $domxpath = new DOMXPath($doc);
+            $elements = $domxpath->query("//link[@rel='image_src']");
+
+            if ($elements->length > 0) {
+                $domattr = $elements->item(0)->attributes->getNamedItem('href');
+                if ($domattr) {
+                    $page->_values['image'] = $domattr->value;
+                    $page->_values['image_src'] = $domattr->value;
+                }
+            }
+        }
+
 		if (empty($page->_values)) { return false; }
-		
+
 		return $page;
 	}
 
@@ -123,7 +144,7 @@ class PF_OpenGraph implements Iterator
 		if (array_key_exists($key, $this->_values)) {
 			return $this->_values[$key];
 		}
-		
+
 		if ($key === 'schema') {
 			foreach (self::$TYPES AS $schema => $types) {
 				if (array_search($this->_values['type'], $types)) {
@@ -160,7 +181,7 @@ class PF_OpenGraph implements Iterator
 		if (array_key_exists('latitude', $this->_values) && array_key_exists('longitude', $this->_values)) {
 			return true;
 		}
-		
+
 		$address_keys = array('street_address', 'locality', 'region', 'postal_code', 'country_name');
 		$valid_address = true;
 		foreach ($address_keys AS $key) {

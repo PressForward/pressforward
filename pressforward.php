@@ -3,7 +3,8 @@
 Plugin Name: PressForward
 Plugin URI: http://pressforward.org/
 Description: The PressForward Plugin is a tool by the Roy Rosenzweig Center for History and New Media for aggregating and curating web-based content within the WordPress dashboard.
-Version: 3.3.0
+Version: 3.4.3
+GitHub Plugin URI: https://github.com/PressForward/pressforward
 Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
 Author URI: http://pressforward.org/about/team/
 License: GPL2
@@ -34,7 +35,7 @@ define( 'PF_NOM_POSTER', 'post-new.php?post_type=nomination' );
 define( 'PF_ROOT', dirname(__FILE__) );
 define( 'PF_FILE_PATH', PF_ROOT . '/' . basename(__FILE__) );
 define( 'PF_URL', plugins_url('/', __FILE__) );
-define( 'PF_VERSION', '3.1.3' );
+define( 'PF_VERSION', '3.4.3' );
 
 class PressForward {
 	var $modules = array();
@@ -125,8 +126,10 @@ class PressForward {
 		require_once( PF_ROOT . '/includes/relationships.php' );
 		require_once( PF_ROOT . '/includes/nominations.php' );
 		require_once( PF_ROOT . '/includes/admin.php' );
-        require_once( PF_ROOT . '/includes/template-tags.php' );
-        require_once( PF_ROOT . '/includes/alert-box/alert-box.php' );
+    require_once( PF_ROOT . '/includes/template-tags.php' );
+    require_once( PF_ROOT . '/includes/alert-box/alert-box.php' );
+		require_once( PF_ROOT . '/lib/urlresolver/URLResolver.php' );
+
 	}
 
 	/**

@@ -33,7 +33,7 @@ if ( ! current_user_can( 'edit_posts' ) || ! current_user_can( get_post_type_obj
 	wp_die( __( 'Cheatin&#8217; uh?', 'pf' ) );
 
 #var_dump($_POST);	die();
-	
+
 /**
  * Press It form handler.
  *
@@ -94,12 +94,12 @@ function nominate_it() {
 			elseif ( '0' == $_POST['post_format'] )
 				set_post_format( $post_ID, false );
 		}
-		# PF NOTE: Switching post type to nomination. 
+		# PF NOTE: Switching post type to nomination.
 		$post['post_type'] = 'nomination';
 		$post['post_date_gmt'] = gmdate('Y-m-d H:i:s');
-		# PF NOTE: This is where the inital post is created. 
-		# PF NOTE: Put get_post_nomination_status here. 
-		$item_id = md5($_POST['nomination_permalink'] . $post['post_title']);
+		# PF NOTE: This is where the inital post is created.
+		# PF NOTE: Put get_post_nomination_status here.
+		$item_id = md5($_POST['item_link'] . $post['post_title']);
 			if (!isset($_POST['item_date'])){
 				$newDate = gmdate('Y-m-d H:i:s');
 				$item_date = $newDate;
@@ -107,16 +107,16 @@ function nominate_it() {
 				$item_date = $_POST['item_date'];
 			}
 		$pf_nomination = new PF_Nominations();
-		$nom_check = $pf_nomination->get_post_nomination_status($item_date, $item_id, 'nomination');
-		
+		$nom_check = $pf_nomination->is_nominated($item_id);
+
 		if (!$nom_check){
-			
+
 			$post_ID = wp_update_post($post);
 		}
 	}
 			# var_dump($_POST); die();
-		if (!$nom_check){	
-			
+		if (!$nom_check){
+
 			$already_has_thumb = has_post_thumbnail($post_ID);
 			if ($already_has_thumb)  {
 				$post_thumbnail_id = get_post_thumbnail_id( $post_ID );
@@ -127,7 +127,7 @@ function nominate_it() {
 			$pf_meta_args = array(
 				pf_meta_for_entry('item_id', $post_ID),
 				pf_meta_for_entry('origin_item_ID', $item_id),
-				pf_meta_for_entry('nomination_permalink', $_POST['nomination_permalink']),
+				pf_meta_for_entry('item_link', $_POST['item_link']),
 				pf_meta_for_entry('nomination_count', 1),
 				pf_meta_for_entry('source_title', 'Bookmarklet'),
 				pf_meta_for_entry('item_date', $item_date),
@@ -135,26 +135,26 @@ function nominate_it() {
 				pf_meta_for_entry('date_nominated', $_POST['date_nominated']),
 				pf_meta_for_entry('item_author', $_POST['authors']),
 				pf_meta_for_entry('authors', $_POST['authors']),
-				pf_meta_for_entry('item_link', $_POST['nomination_permalink']),
+				pf_meta_for_entry('item_link', $_POST['item_link']),
 				pf_meta_for_entry('item_feat_img', $post_thumbnail_url),
 				pf_meta_for_entry('nominator_array', array(get_current_user_id())),
 				// The item_wp_date allows us to sort the items with a query.
 				pf_meta_for_entry('item_wp_date', $item_date),
 				//We can't just sort by the time the item came into the system (for when mult items come into the system at once)
-				//So we need to create a machine sortable date for use in the later query.					
+				//So we need to create a machine sortable date for use in the later query.
 				pf_meta_for_entry('sortable_item_date', strtotime($item_date)),
 				pf_meta_for_entry('item_tags', 'via bookmarklet'),
 				pf_meta_for_entry('source_repeat', 1),
 				pf_meta_for_entry('revertible_feed_text', $post['post_content'])
-				
-			);			
+
+			);
 			pf_meta_establish_post($post_ID, $pf_meta_args);
 		}
 	if (isset($_POST['publish']) && ($_POST['publish'] == "Send to Draft")) {
-		
-		$post_check = $pf_nomination->get_post_nomination_status($item_date, $item_id, 'post', false);
+
+		$post_check = $pf_nomination->is_nominated($item_id, 'post', false);
 		if ($post_check != true) {
-			add_post_meta($post_ID, 'nom_id', $post_ID, true);
+			pf_update_meta($post_ID, 'nom_id', $post_ID);
 			$d_post = $post;
 			$d_post['post_type'] = 'post';
 			$d_post['post_status'] = 'draft';
@@ -183,12 +183,12 @@ if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 }
 
 				global $pf_nt;
-				if (isset($_POST['nomination_permalink']) && !empty($_POST['nomination_permalink']) && ($_POST['nomination_permalink']) != ''){
+				if (isset($_POST['item_link']) && !empty($_POST['item_link']) && ($_POST['item_link']) != ''){
 					//Gets OG image
-					$itemFeatImg = pressforward()->pf_feed_items->get_ext_og_img($_POST['nomination_permalink']);
+					$itemFeatImg = pressforward()->pf_feed_items->get_ext_og_img($_POST['item_link']);
 				}
 
-	if (!empty($_POST['nomination_permalink']) && ($_POST['nomination_permalink']) != ''){
+	if (!empty($_POST['item_link']) && ($_POST['item_link']) != ''){
 		pressforward()->pf_feed_items->set_ext_as_featured($post_ID, $itemFeatImg);
 	}
 
@@ -419,7 +419,7 @@ var photostorage = false;
 ?>
 
     <style type="text/css">
-      
+
     </style>
 
 	<script type="text/javascript">
@@ -551,7 +551,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 <form action="nominate-this.php?action=post" method="post">
 <div id="poststuff" class="metabox-holder">
 <?php
-    if ( isset($posted) && intval($posted) ) { } else {   
+    if ( isset($posted) && intval($posted) ) { } else {
     ?>
 	<div id="side-sortables" class="press-this-sidebar">
 		<div class="sleeve">
@@ -566,7 +566,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 				<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr($title);?>" />
 				<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo date('c'); ?>" />
 				<?php #Metadata goes here. ?>
-				<input type="hidden" id="nomination_permalink" name="nomination_permalink" value="<?php echo esc_url($url ); ?>" />
+				<input type="hidden" id="item_link" name="item_link" value="<?php echo esc_url($url ); ?>" />
 			<?php } ?>
 
 			<!-- This div holds the photo metadata -->
@@ -582,14 +582,13 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 						if ( current_user_can('publish_posts') ) {
 							submit_button( __( 'Send to Draft' ), 'primary', 'publish', false );
 						} else {
-							echo '<br /><br />';
-							submit_button( __( 'Submit for Review' ), 'primary', 'review', false );
+
 						} ?>
 						<span class="spinner" style="display: none;"></span>
 					</p>
 					<p>
 					<label for="authors"><input type="text" id="authors" name="authors" value="" /><br />&nbsp;<?php _e('Enter Authors', 'pf'); ?></label>
-					</p>					
+					</p>
 					<?php if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) :
 							$post_formats = get_theme_support( 'post-formats' );
 							if ( is_array( $post_formats[0] ) ) :
@@ -693,7 +692,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 
 		<?php
 		if ( isset($posted) && intval($posted) ) {
-			$post_ID = intval($posted); 
+			$post_ID = intval($posted);
             $pt = get_post_type($post_ID);
             if ($pt == 'nomination'){
                 ?>
@@ -702,7 +701,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
                     <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a>
                     </p>
                 </div>
-		      <?php 
+		      <?php
             } else {
                 ?>
                 <div id="message" class="updated">
@@ -711,9 +710,9 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
                 | <a href="<?php echo get_edit_post_link( $post_ID ); ?>" onclick="window.opener.location.replace(this.href); window.close();"><?php _e('Edit Post'); ?></a>
                 | <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a></p>
                 </div>
-		      <?php 
-            } 
-            die(); 
+		      <?php
+            }
+            die();
         } ?>
 
 		<div id="titlediv">
@@ -743,9 +742,9 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 				$content .= pressforward()->pf_feed_items->get_content_through_aggregator($url);
 			}
 
-		}			
-			
-			
+		}
+
+
 		if ( $url ) {
 			$content .= '<p>';
 
@@ -796,4 +795,3 @@ do_action('admin_print_footer_scripts');
 <script type="text/javascript">if(typeof wpOnload=='function')wpOnload();</script>
 </body>
 </html>
-
