@@ -6,6 +6,7 @@ function get_the_source_title($id = false){
 		$id = get_the_ID();
 	}
 	$parent_id = get_post_ancestors($id);
+	if (!isset($parent_id[0])){ return __('Bookmarklet', 'pf'); }
 	$parent = get_post($parent_id[0]);
 	$st = $parent->post_title;
 	return $st;
