@@ -107,7 +107,7 @@ function nominate_it() {
 				$item_date = $_POST['item_date'];
 			}
 		$pf_nomination = new PF_Nominations();
-		$nom_check = $pf_nomination->get_post_nomination_status($item_date, $item_id, 'nomination');
+		$nom_check = $pf_nomination->is_nominated($item_id);
 
 		if (!$nom_check){
 
@@ -152,9 +152,9 @@ function nominate_it() {
 		}
 	if (isset($_POST['publish']) && ($_POST['publish'] == "Send to Draft")) {
 
-		$post_check = $pf_nomination->get_post_nomination_status($item_date, $item_id, 'post', false);
+		$post_check = $pf_nomination->is_nominated($item_id, 'post', false);
 		if ($post_check != true) {
-			add_post_meta($post_ID, 'nom_id', $post_ID, true);
+			pf_update_meta($post_ID, 'nom_id', $post_ID);
 			$d_post = $post;
 			$d_post['post_type'] = 'post';
 			$d_post['post_status'] = 'draft';
