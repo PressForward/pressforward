@@ -645,3 +645,7 @@ ul.wp-submenu {
 .relationship-button-active {
 	background-color:black;
 }
+
+#adminmenuback {
+	z-index:0;
+}
