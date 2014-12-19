@@ -642,7 +642,7 @@ class PF_Nominations {
 			$nom_date = date('Y-m-d', $nom_date);
 
 			//Now function will not update nomination count when it pushes nomination to publication.
-			$post_check = $this->get_post_nomination_status($nom_date, $item_id, 'post', false);
+			$post_check = $this->is_nominated($item_id, 'post', false);
 			$newPostID = 'repeat';
 
 #
