@@ -800,8 +800,9 @@ class PF_Admin {
 				// Something to experement with...
 			} // End foreach
 
+		?><div class="clear"></div><?php
 		echo '</div><!-- End entries -->';
-
+		?><div class="clear"></div><?php
 	echo '</div><!-- End main -->';
 
 		//Nasty hack because infinite scroll only works starting with page 2 for some reason.
@@ -831,7 +832,7 @@ class PF_Admin {
             echo '<span class="feednext"><a class="nextnav" href="admin.php' . $pageNext . '">Next Page</a></span>';
             echo '</div>';
         }
-
+	?><div class="clear"></div><?php
 	echo '</div><!-- End container-fluid -->';
 	}
 
@@ -840,6 +841,7 @@ class PF_Admin {
 	 */
 	function display_review_builder() {
 		include( PF_ROOT . "/includes/under-review/under-review.php" );
+		
 	}
 
 	function ajax_get_comments(){

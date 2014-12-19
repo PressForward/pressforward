@@ -67,6 +67,11 @@ clear:both;
 visibility:hidden;
 }
 
+.pf_clear{
+	display:block;
+	clear:both;
+}
+
 #deletefeedarchive {
 	width:100%;
 }
@@ -89,7 +94,7 @@ visibility:hidden;
 	margin: 8px auto;
 }
 
-.toplevel_page_pf-menu #wpwrap, .pressforward_page_pf-review #wpwrap, .pressforward_page_pf-feeder #wpwrap {
+.toplevel_page_pf-menu #wpcontent, .pressforward_page_pf-review #wpcontent, .pressforward_page_pf-feeder #wpcontent {
 
     background-color: #ecf3f9;
 
@@ -182,7 +187,7 @@ color: #ffffff;
   background-image: linear-gradient(to bottom, #fbb450, #f89406);
   background-image: -moz-linear-gradient(top, #fbb450, #f89406);
   background-repeat: repeat-x;
-	
+
 }
 .btn-warning:hover,
 .btn-warning:active,
@@ -639,4 +644,8 @@ ul.wp-submenu {
 
 .relationship-button-active {
 	background-color:black;
+}
+
+body {
+		background: 0;
 }
