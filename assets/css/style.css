@@ -646,6 +646,6 @@ ul.wp-submenu {
 	background-color:black;
 }
 
-#adminmenuback {
-	z-index:0;
+body {
+		background: 0;
 }

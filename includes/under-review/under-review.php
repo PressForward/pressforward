@@ -238,6 +238,7 @@
 
 		// Reset Post Data
 		wp_reset_postdata();
+		?><div class="clear"></div><?php
 		echo '</div><!-- End entries -->';
 
 	echo '</div><!-- End main -->';
@@ -251,9 +252,10 @@
 			echo '<span class="feedprev"><a class="prevnav" href="admin.php?page=pf-review&pc=' . $pagePrev . '">Previous Page</a></span> | ';
 		}
 		echo '<span class="feednext"><a class="nextnav" href="admin.php?page=pf-review&pc=' . $pageNext . '">Next Page</a></span>';
+		?><div class="clear"></div><?php
 		echo '</div>';
 	}
+?><div class="clear"></div><?php
 echo '</div><!-- End container-fluid -->';
-
 
 ?>
