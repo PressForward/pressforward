@@ -154,6 +154,7 @@ function hide_non_modals(){
 	jQuery('#wpadminbar').hide();
 	jQuery('#adminmenuback').hide();
 	jQuery('#adminmenuwrap').hide();
+	jQuery('#wpfooter').hide();
 }
 
 function reviewModal(){
@@ -199,6 +200,7 @@ function hideModal(){
 		jQuery('#wpadminbar').show();
 		jQuery('#adminmenuback').show();
 		jQuery('#adminmenuwrap').show();
+		jQuery('#wpfooter').show();
 		document.body.style.overflow = 'visible';
 	});
 }
