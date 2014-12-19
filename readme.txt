@@ -88,6 +88,10 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 
 == Changelog ==
 
+= 3.4.5 =
+* Resolved CSS overlay design conflicts.
+* Fixed Nominate to Draft in the Nominated page.
+
 = 3.4 =
 * the "Nominate This" bookmarklet has moved to tools
 * the "Under Review" panel has been renamed to Nominated
