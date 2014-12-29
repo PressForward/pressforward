@@ -155,24 +155,42 @@ class PF_Feed_Item {
 		$google_check = strpos($source_url, 'google.com');
 		if ((empty($source_url)) || !empty($google_check)){
 			$item_url = pf_retrieve_meta($post_id, 'item_link');
-			#var_dump($item_url);
-			$url_array = parse_url($item_url);
-			if (empty($url_array['host'])){
-				return;
-			}
-			$source_url = 'http://' . $url_array['host'];
-			#var_dump($item_url);
-			$google_check = strpos($source_url, 'google.com');
-			if (!empty($google_check)){
-				$resolver = new URLResolver();
-				$source_url = $resolver->resolveURL($item_url)->getURL();
-				$url_array = parse_url($source_url);
-				$source_url = 'http://' . $url_array['host'];
-				#var_dump('Checking for more: '.$source_url);
-			}
+			$source_url = pressforward()->pf_feed_items->resolve_source_url($item_url);
 			pf_update_meta( $post_id, 'pf_source_link', $source_url );
 		}
 		return $source_url;
+	}
+
+	public static function resolve_source_url($url){
+		$url_array = parse_url($url);
+		if (empty($url_array['host'])){
+			return $url;
+		}
+		$source_url = $url_array['scheme'] . '://' . $url_array['host'];
+		#var_dump($item_url);
+		$google_check = strpos($source_url, 'google.com');
+		if (!empty($google_check)){
+			$resolver = new URLResolver();
+			$url = $resolver->resolveURL($url)->getURL();
+			$url_array = parse_url($url);
+			$source_url = 'http://' . $url_array['host'];
+			#var_dump('Checking for more: '.$source_url);
+		}
+		return $source_url;
+	}
+
+	public static function resolve_full_url($url){
+		$url_array = parse_url($url);
+		if (empty($url_array['host'])){
+			return $url;
+		}
+		#var_dump($item_url);
+		$google_check = strpos($url, 'google.com');
+		if (!empty($google_check)){
+			$resolver = new URLResolver();
+			$url = $resolver->resolveURL($url)->getURL();
+		}
+		return $url;
 	}
 
 	/**

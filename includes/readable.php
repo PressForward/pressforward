@@ -22,6 +22,7 @@ class PF_Readability {
 			extract( $args, EXTR_SKIP );
 			set_time_limit(0);
 			$readability_stat = $url;
+			$url = pressforward()->pf_feed_items->resolve_full_url($url);
 			$descrip = rawurldecode($descrip);
 			if (get_magic_quotes_gpc())
 				$descrip = stripslashes($descrip);
@@ -80,7 +81,7 @@ class PF_Readability {
 				$itemReadReady = $descrip;
 			}
 
-			$return_args = array( 'status' => $read_status, 'readable' => $itemReadReady);
+			$return_args = array( 'status' => $read_status, 'readable' => $itemReadReady, 'url' => $url);
 			#ob_end_flush();
 			return $return_args;
 
@@ -100,6 +101,7 @@ class PF_Readability {
 		$item_id = $_POST['read_item_id'];
 		$post_id = $_POST['post_id'];
 		$force = $_POST['force'];
+		$url = $_POST['url'];
 		//error_reporting(0);
 		if ( (false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) )) || $force == 'force' ) {
 
@@ -115,6 +117,7 @@ class PF_Readability {
 
 			$read_status = $readable_ready['status'];
 			$itemReadReady = $readable_ready['readable'];
+			$url = $readable_ready['url'];
 
 			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
 		}
@@ -180,7 +183,7 @@ class PF_Readability {
 	public static function readability_object($url) {
 
 		set_time_limit(0);
-
+		$url =  pressforward()->pf_feed_items->resolve_full_url($url);
 		$request = pf_de_https($url, 'wp_remote_get', array('timeout' => '30'));
 		//print_r($url); print_r(' - Readability<br />');
 		// change from Boone - use wp_remote_get() instead of file_get_contents()
