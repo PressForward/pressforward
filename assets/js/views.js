@@ -154,6 +154,7 @@ function hide_non_modals(){
 	jQuery('#wpadminbar').hide();
 	jQuery('#adminmenuback').hide();
 	jQuery('#adminmenuwrap').hide();
+	jQuery('#wpfooter').hide();
 }
 
 function reviewModal(){
@@ -199,6 +200,7 @@ function hideModal(){
 		jQuery('#wpadminbar').show();
 		jQuery('#adminmenuback').show();
 		jQuery('#adminmenuwrap').show();
+		jQuery('#wpfooter').show();
 		document.body.style.overflow = 'visible';
 	});
 }
@@ -310,6 +312,24 @@ function detect_view_change(){
 	});
 
 }
+
+
+function pf_load_wait_process(){
+	jQuery('.pf_container').hide();
+	jQuery('<div class="pf-loader"></div>').insertAfter('.update-nag');
+	console.log('Waiting for load.');
+	jQuery(window).load(function() {
+		 // executes when complete page is fully loaded, including all frames, objects and images
+		console.log('Load complete.');
+		 jQuery('.pf-loader').remove();
+		 jQuery('.pf_container').show();
+	});
+
+}
+jQuery(document).ready(function() {
+	pf_load_wait_process();
+});
+
 
 jQuery(window).load(function() {
 
