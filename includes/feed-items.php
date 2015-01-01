@@ -118,6 +118,13 @@ class PF_Feed_Item {
 
 	// STATIC UTILITY METHODS
 
+	/**
+	* Set word count for an item
+	*
+	* @since 2.0.0
+	*
+	*
+	*/
 	public static function set_word_count( $post_id, $content = false ) {
 		if ( false === $content ) {
 			$post = get_post( $post_id );
@@ -127,13 +134,47 @@ class PF_Feed_Item {
 		$content_array = explode( ' ', strip_tags( $content ) );
 		$word_count = count( $content_array );
 
-		return update_post_meta( $post_id, 'pf_feed_item_word_count', $word_count );
+		return pf_update_meta( $post_id, 'pf_feed_item_word_count', $word_count );
 	}
 
+
+	/**
+	* Set source title.
+	*
+	* @since 2.0.0
+	*
+	*
+	*/
 	public static function set_source( $post_id, $source ) {
-		return update_post_meta( $post_id, 'pf_feed_item_source', $source );
+		return pf_update_meta( $post_id, 'pf_feed_item_source', $source );
 	}
 
+	public static function aggregation_services(){
+		return array(
+						'Google'  =>	'google.com'
+					);
+	}
+
+	public static function url_is_aggregation_service($url){
+		$check = false;
+		foreach (self::aggregation_services() as $service){
+			if(empty(strpos($source_url, 'google.com'))){
+				$check = true;
+			}
+		}
+		return $check;
+	}
+
+	/**
+	* Set source URL
+	*
+	* This function is meant to find and set the true source URL on an item,
+	* it seeks to fully resolve URLs from known aggregation services.
+	*
+	* @since 3.4.5
+	*
+	*
+	*/
 	public static function set_source_link( $post_id, $item_url ) {
 		$url_array = parse_url($item_url);
 		if (empty($url_array['host'])){
@@ -150,6 +191,17 @@ class PF_Feed_Item {
 		return pf_update_meta( $post_id, 'pf_source_link', $source_url );
 	}
 
+
+	/**
+	* Retrieve the item source's link.
+	*
+	* Retrieve the link for the item's source. Attempt to fully
+	* resolve the URL for known aggregation services.
+	*
+	* @since 3.4.5
+	*
+	*
+	*/
 	public static function get_source_link( $post_id ) {
 		$source_url = pf_retrieve_meta($post_id, 'pf_source_link');
 		$google_check = strpos($source_url, 'google.com');

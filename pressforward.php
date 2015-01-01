@@ -61,7 +61,15 @@ class PressForward {
 		return $instance;
 	}
 
-	// See http://php.net/manual/en/language.oop5.decon.php to get a better understanding of what's going on here.
+
+	/**
+	 * Construct function.
+	 *
+	 * See http://php.net/manual/en/language.oop5.decon.php to get a better understanding of what's going on here.
+	 *
+	 * @since 1.7
+	 *
+	 */
 	private function __construct() {
 
 		$this->includes();
@@ -88,7 +96,7 @@ class PressForward {
 	}
 
 	/**
-	 * Include necessary files
+	 * Include necessary files.
 	 *
 	 * @since 1.7
 	 */
