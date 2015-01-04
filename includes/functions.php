@@ -6,6 +6,25 @@
  * @since 1.7
  */
 
+/**
+ * Register a PressForward module.
+ *
+ * This function allows developers to register modules into the array
+ * of PressForward modules. Developers can do this to take advantage
+ * of a variaty of PressForward function and to makeit appear in
+ * the PressForward dashboard.
+ *
+ * @since 2.x.x
+ *
+ * @param  array $args {
+ *     Required. An array of arguments describing the module.
+ *
+ *     @var string $slug A non-capatalized safe string.
+ *     @var string $class The name of the module's class.
+ * 												Must match the folder name.
+ * }
+ * @return null
+ */
 function pressforward_register_module( $args ) {
 	$defaults = array(
 		'slug' => '',
@@ -97,7 +116,7 @@ function pf_shortcut_link() {
  *
  * @since 1.7
  *
- * @return string
+ * @return string The name of the feed item post_type for PressForward.
  */
 function pf_feed_item_post_type() {
 	return pressforward()->get_feed_item_post_type();
@@ -108,7 +127,7 @@ function pf_feed_item_post_type() {
  *
  * @since 1.7
  *
- * @return string
+ * @return string The slug for the taxonomy used by feed items.
  */
 function pf_feed_item_tag_taxonomy() {
 	return pressforward()->get_feed_item_tag_taxonomy();
@@ -242,11 +261,11 @@ function pf_feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuth
  *
  * @since 1.7
  *
- * @param string $theDate MySQL-formatted date. Posts will only be fetched
- *   starting from this date
- * @param string $post_type The post type to limit results to
- * @param int $item_id The origin item id
- * @return object
+ * @param string $post_type The post type to limit results to.
+ * @param string $item_id The origin item id.
+ * @param bool $ids_only Set to true if you want only an array of IDs returned in the query.
+ *
+ * @return object A standard WP_Query object.
  */
 function pf_get_posts_by_id_for_check( $post_type = false, $item_id, $ids_only = false ) {
 	global $wpdb;
@@ -315,6 +334,7 @@ function pf_get_user_level($option, $default_level) {
  * @param string $url
  * @param string|array $function Function to call first to try and get the URL.
  * @return string|object $r Returns the string URL, converted, when no function is passed.
+ *
  * otherwise returns the result of the function after being checked for accessability.
  */
 function pf_de_https($url, $function = false) {
@@ -345,7 +365,7 @@ function pf_de_https($url, $function = false) {
 }
 
 /**
- * Converts a list of terms to a set of slugs to be listed in the nomination CSS selector
+ * Converts and echos a list of terms to a set of slugs to be listed in the nomination CSS selector
  */
 function pf_nom_class_tagger($array = array()){
 
@@ -368,6 +388,16 @@ function pf_nom_class_tagger($array = array()){
 
 }
 
+/**
+* Converts and returns a list of terms as a set of slugs useful for nominations
+*
+* @since 1.7
+*
+* @param array $array A set of terms.
+*
+* @return string|object $tags A string containing a comma-seperated list of slugged tags.
+*
+*/
 function get_pf_nom_class_tags($array = array()){
 
 	foreach ($array as $class){
@@ -392,7 +422,7 @@ function get_pf_nom_class_tags($array = array()){
 }
 
 /**
- * Build an excerpt for a nomination
+ * Build an excerpt for a nomination. For filtering.
  *
  * @param string $text
  */
@@ -417,6 +447,16 @@ function pf_noms_filter( $text ) {
 	return $text;
 }
 
+
+/**
+* Build an excerpt for nominations.
+*
+* @since 1.7
+*
+* @param string $text
+*
+* @return string $r Returns the adjusted excerpt.
+*/
 function pf_noms_excerpt( $text ) {
 
 	$text = apply_filters('the_content', $text);
@@ -436,6 +476,16 @@ function pf_noms_excerpt( $text ) {
 
 	return $text;
 }
+
+/**
+ * Get an object with capabilities as keys pointing to roles that contain those capabilities.
+ *
+ * @since 3.x
+ *
+ * @param string $cap Optional. If given, the function will return a set of roles that have that capability.
+ *
+ * @return array $role_reversal An array with capailities as keys pointing to what roles they match to.
+ */
 
 function pf_get_capabilities($cap = false){
   # Get the WP_Roles object.
@@ -460,6 +510,22 @@ function pf_get_capabilities($cap = false){
   }
 }
 
+/**
+ * Request a role string or object by asking for its capability.
+ *
+ * Function allows the user to find out a role by a capability that it holds.
+ * The user may specify the higest role with that capability or the lowest.
+ * The lowest is the default.
+ *
+ * @since 3.x
+ *
+ * @param string $cap The slug for the capacity being checked against.
+ * @param bool $lowest Optional. If the function should return the lowest capable role. Default true.
+ * @param bool $obj Optional. If the function should return a role object instead of a string. Default false.
+ *
+ * @return string|object Returns either the string name of the role or the WP object created by get_role.
+ */
+
 function pf_get_role_by_capability($cap, $lowest = true, $obj = false){
 	# Get set of roles for capability.
 	$roles = pf_get_capabilities($cap);
@@ -479,10 +545,22 @@ function pf_get_role_by_capability($cap, $lowest = true, $obj = false){
 }
 
 
-# If we want to allow users to set access by role, we need to give
-# the users the names of the roles, but WordPress needs a capability.
-# This function lets you match the role with the first capability
-# that only it can do, the defining capability.
+/**
+ * Get the capability that uniquely matches a specific role.
+ *
+ * If we want to allow users to set access by role, we need to give users the names
+ * of all roles. But Wordpress takes capabilities. This function matches the role with
+ * its first capability, so users can set by Role but WordPress takes capability.
+ *
+ * However, it will check against the system options and either attempt to return
+ * this information based on WordPress defaults or by checking the current system.
+ *
+ * @since 3.x
+ *
+ * @param string $role_slug The slug for the role being checked against.
+ *
+ * @return string The slug for the defining capability of the given role.
+ */
 function pf_get_defining_capability_by_role($role_slug){
 	$pf_use_advanced_user_roles = get_option('pf_use_advanced_user_roles', 'no');
     # For those who wish to ignore the super-cool auto-detection for fringe-y sites that
@@ -517,7 +595,17 @@ function pf_get_defining_capability_by_role($role_slug){
     }
 }
 
-//Based on http://seoserpent.com/wordpress/custom-author-byline
+/**
+ * A function to filter authors and, if available, replace their display with the origonal item author.
+ *
+ * Based on http://seoserpent.com/wordpress/custom-author-byline
+ *
+ * @since 3.x
+ *
+ * @param string $author The author string currently being displayed.
+ *
+ * @return string Returns the author.
+ */
 function pf_replace_author_presentation( $author ) {
 	global $post;
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')){
@@ -531,6 +619,15 @@ function pf_replace_author_presentation( $author ) {
 }
 add_filter( 'the_author', 'pf_replace_author_presentation' );
 
+/**
+ * A function to filter author urls and, if available, replace their display with the origonal item author urls.
+ *
+ * @since 3.x
+ *
+ * @param string $author_uri The author URI currently in use.
+ *
+ * @return string Returns the author URI.
+ */
 function pf_replace_author_uri_presentation( $author_uri ) {
 	global $post, $authordata;
 	if(is_object($post)){
@@ -554,6 +651,13 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 
 add_filter( 'author_link', 'pf_replace_author_uri_presentation' );
 
+/**
+ * A function to set up the HEAD data to forward users to origonal articles.
+ *
+ * Echos the approprite code to forward users.
+ *
+ * @since 3.x
+ */
 function pf_forward_unto_source(){
 	if(is_single()){
 		$obj = get_queried_object();
@@ -572,18 +676,46 @@ function pf_forward_unto_source(){
 
 add_action ('wp_head', 'pf_forward_unto_source');
 
+/**
+* Echos the script link to use phonegap's debugging tools.
+*
+* @since 3.x
+*
+*/
 function pf_debug_ipads(){
 	echo '<script src="http://debug.phonegap.com/target/target-script-min.js#pressforward"></script>';
 }
 #add_action ('wp_head', 'pf_debug_ipads');
 #add_action ('admin_head', 'pf_debug_ipads');
 
+/**
+ * Take an array of objects describing post_metas and set them to the id of a post.
+ *
+ * @since 3.x
+ *
+ * @param int $id A post object ID number.
+ * @param array $args {
+ * 			An array of objects containing post_meta data.
+ *
+ * 			@var array {
+ *						@var string $name The post_meta slug.
+ * 						@var string $value The post_meta's value.
+ *			}
+ * }
+ *
+ */
 function pf_meta_establish_post($id, $args){
 	foreach ($args as $arg){
 		add_post_meta($id, $arg['name'], $arg['value'], true);
 	}
 }
 
+/**
+ * Takes a post_meta name and a post_meta value and turns it into an for use.
+ *
+ * @return array An array useful in thevarious parts of the post_meta setting process.
+ *
+ */
 function pf_meta_for_entry($key, $value){
 	return array(
 		'name'	=>	$key,
@@ -591,12 +723,29 @@ function pf_meta_for_entry($key, $value){
 	);
 }
 
+/**
+ * With two post IDs copy all the standard PressForward meta from one post to another.
+ *
+ * @param int $idA The ID of the post that has all the meta info already set.
+ * @param int $idB The ID of the post that needs to have the meta info attached to it.
+ *
+ */
 function pf_meta_transition_post($idA, $idB){
 	foreach(pf_meta_structure() as $meta){
 		pf_meta_transition(get_pf_meta_name($meta), $idA, $idB);
 	}
 }
 
+/**
+ * With a post_meta slug and two post IDs copy a post_meta from one post to another.
+ *
+ * @param string $name The post_meta slug.
+ * @param int $idA The post which already has the post_meta data.
+ * @param int $idB The post which needs the post_meta copied to it.
+ *
+ * @return int The result of the update_post_meta function.
+ *
+ */
 function pf_meta_transition($name, $idA, $idB){
 	$meta_value = get_post_meta($idA, $name, true);
 	#$result = pf_prep_for_depreciation($name, $meta_value, $idA, $idB);
@@ -607,6 +756,23 @@ function pf_meta_transition($name, $idA, $idB){
 	return $result;
 }
 
+/**
+ * Check a post_meta slug and insure that the correct post_meta is being set.
+ *
+ * Considers a post_meta slug and checkes it against a list for depreciation.
+ * If the post_meta slug has been depreciated update the new slug and the old one.
+ *
+ * Based on http://seoserpent.com/wordpress/custom-author-byline
+ *
+ * @since 3.x
+ *
+ * @param string $name The post_meta slug.
+ * @param string $value The post_meta value.
+ * @param int $idA The id of the post that already has the post_meta set.
+ * @param int $idB The id of the post that needs the post_meta set.
+ *
+ * @return bool True if the post_meta is supported by PressForward.
+ */
 function pf_prep_for_depreciation($name, $value, $idA, $idB){
 	foreach (pf_meta_structure() as $meta){
 		if ($meta['name'] == $name){
@@ -624,6 +790,15 @@ function pf_prep_for_depreciation($name, $value, $idA, $idB){
 	return false;
 }
 
+/**
+ * Get the meta by its name, if it is supported by PressForward.
+ *
+ * @since 3.x
+ *
+ * @param string $author The author string currently being displayed.
+ *
+ * @return string Returns the author.
+ */
 function pf_meta_by_name($name){
 	foreach (pf_meta_structure() as $meta){
 		if($name == $meta['name']){
@@ -632,13 +807,24 @@ function pf_meta_by_name($name){
 	}
 }
 
+/**
+ * Get the name out of the meta object.
+ */
 function get_pf_meta_name($meta){
 	return $meta['name'];
 }
 
-#Inspired by http://www.loc.gov/standards/metable.html
-#Adm=Administrative, Struc=Structural, Desc=Descriptive, Req=Required, Rep=Repeatable, Set=Set, Aggr=Aggregate, Dep = Depreciated
+/**
+ * Get an array representing all the approved post_meta objects for PressForward.
+ *
+ * @since 3.x
+ *
+ * @return array An object describing all the post_metas used by PressForward.
+ */
 function pf_meta_structure(){
+	#Inspired by http://www.loc.gov/standards/metable.html
+	#Adm=Administrative, Struc=Structural, Desc=Descriptive, Req=Required, Rep=Repeatable, Set=Set, Aggr=Aggregate, Dep = Depreciated
+
 	$metas = array(
 		'item_id' => array(
 			'name' => 'item_id',
@@ -889,6 +1075,10 @@ function pf_pass_meta($field, $id = false, $value = '', $single = true){
 
 }
 
+/**
+ * Transitions meta values from old depreciated meta_slugs to new ones.
+ *
+ */
 function pf_transition_deped_meta($field, $id, $value, $single, $new_field){
 	$result = false;
 	# Note - empty checks for FALSE
@@ -904,6 +1094,21 @@ function pf_transition_deped_meta($field, $id, $value, $single, $new_field){
 	return $result;
 }
 
+/**
+ * Retrieve post_meta data in a way that insures the correct value is pulled.
+ *
+ * Function allows users to retrieve the post_meta in a safe way standerdizing against
+ * the list of accepted PressForward meta_slugs. It deals with depreciated post_meta.
+ *
+ * @since 3.x
+ *
+ * @param int $id Post ID.
+ * @param string $field The post_meta field to retrieve.
+ * @param bool $obj If the user wants to return a PressForward post_meta description object. Default false.
+ * @param bool $single If the user wants to use the WordPress post_meta Single decleration. Default true.
+ *
+ * @return string|array Returns the result of retrieving the post_meta or the self-descriptive meta-object with value.
+ */
 function pf_retrieve_meta($id, $field, $obj = false, $single = true){
     $field = pf_pass_meta($field, $id);
     $meta = get_post_meta($id, $field, $single);
@@ -917,12 +1122,26 @@ function pf_retrieve_meta($id, $field, $obj = false, $single = true){
 
 }
 
+/**
+ * An alias for pf_retrieve_meta that allows you to use the standard argument set from get_post_meta.
+ *
+ */
 function pf_get_post_meta($id, $field, $single = true, $obj = false){
 
 		return pf_retrieve_meta($id, $field, $obj, $single);
 
 }
 
+/**
+ * Update post_meta on a post using PressForward post_meta standardization.
+ *
+ * @param int|string $id The post ID.
+ * @param string $field The post_meta field slug.
+ * @param string $value The post_meta value.
+ * @param string $prev_value The previous value to insure proper replacement.
+ *
+ * @return int The check value from update_post_meta.
+ */
 function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
     $field = pf_pass_meta($field, $id, $value);
     $check = update_post_meta($id, $field, $value, $prev_value);
@@ -930,6 +1149,16 @@ function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
 
 }
 
+/**
+ * Add post_meta on a post using PressForward post_meta standardization.
+ *
+ * @param int|string $id The post ID.
+ * @param string $field The post_meta field slug.
+ * @param string $value The post_meta value.
+ * @param string $unique If the post_meta is unique.
+ *
+ * @return int The check value from add_post_meta.
+ */
 function pf_add_meta($id, $field, $value = '', $unique = false){
     $field = pf_pass_meta($field, $id, $value, $unique);
     $check = add_post_meta($id, $field, $value, $unique);
