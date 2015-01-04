@@ -149,20 +149,64 @@ class PF_Feed_Item {
 		return pf_update_meta( $post_id, 'pf_feed_item_source', $source );
 	}
 
+	/**
+	* Return an array of known aggregation services.
+	*
+	* @since 3.4.5
+	*
+	* @return array An array of URLs with aggregation URL host parts.
+	*
+	*/
 	public static function aggregation_services(){
 		return array(
 						'Google'  =>	'google.com'
 					);
 	}
 
+	/**
+	* Check a URL for an aggregation service's forward and return true or false.
+	*
+	* @since 3.4.5
+	*
+	* @param string $url A web address URI.
+	* @return bool True value for a submitted URL that matches an aggregation service.
+	*
+	*/
 	public static function url_is_aggregation_service($url){
 		$check = false;
-		foreach (self::aggregation_services() as $service){
-			if(empty(strpos($source_url, 'google.com'))){
+		$services = self::aggregation_services();
+		foreach ($services as $service){
+			$pos = strpos($url, $service);
+			if(!empty($pos)){
 				$check = true;
 			}
 		}
 		return $check;
+	}
+
+	/**
+	* Examine a URL and resolve it as needed.
+	*
+	* @since 3.4.5
+	*
+	* @param string $url A web address URI.
+	* @return bool True value for a submitted URL that matches an aggregation service.
+	*
+	*/
+	public static function resolve_a_url($url){
+		$url_array = parse_url($url);
+		if (empty($url_array['host'])){
+
+		} else {
+			$check = self::url_is_aggregation_service($url);
+			if ($check){
+				$resolver = new URLResolver();
+				$url = $resolver->resolveURL($url)->getURL();
+			}
+		}
+
+		return $url;
+
 	}
 
 	/**
@@ -176,18 +220,9 @@ class PF_Feed_Item {
 	*
 	*/
 	public static function set_source_link( $post_id, $item_url ) {
-		$url_array = parse_url($item_url);
-		if (empty($url_array['host'])){
-			return;
-		}
+		$url = self::resolve_a_url($item_url);
+		$url_array = parse_url($url);
 		$source_url = 'http://' . $url_array['host'];
-		$google_check = strpos($source_url, 'google.com');
-		if (!empty($google_check)){
-			$resolver = new URLResolver();
-			$source_url = $resolver->resolveURL($item_url)->getURL();
-			$url_array = parse_url($source_url);
-			$source_url = 'http://' . $url_array['host'];
-		}
 		return pf_update_meta( $post_id, 'pf_source_link', $source_url );
 	}
 
@@ -203,45 +238,24 @@ class PF_Feed_Item {
 	*
 	*/
 	public static function get_source_link( $post_id ) {
-		$source_url = pf_retrieve_meta($post_id, 'pf_source_link');
-		$google_check = strpos($source_url, 'google.com');
-		if ((empty($source_url)) || !empty($google_check)){
-			$item_url = pf_retrieve_meta($post_id, 'item_link');
-			$source_url = pressforward()->pf_feed_items->resolve_source_url($item_url);
-			pf_update_meta( $post_id, 'pf_source_link', $source_url );
+		$url = pf_retrieve_meta($post_id, 'pf_source_link');
+		if (empty($url)){
+			$url = pf_retrieve_meta($post_id, 'item_link');
 		}
+		$source_url = pressforward()->pf_feed_items->resolve_a_url($url);
+		pf_update_meta( $post_id, 'pf_source_link', $source_url );
 		return $source_url;
 	}
 
 	public static function resolve_source_url($url){
+		$url = pressforward()->pf_feed_items->resolve_a_url($url);
 		$url_array = parse_url($url);
-		if (empty($url_array['host'])){
-			return $url;
-		}
-		$source_url = $url_array['scheme'] . '://' . $url_array['host'];
-		#var_dump($item_url);
-		$google_check = strpos($source_url, 'google.com');
-		if (!empty($google_check)){
-			$resolver = new URLResolver();
-			$url = $resolver->resolveURL($url)->getURL();
-			$url_array = parse_url($url);
-			$source_url = 'http://' . $url_array['host'];
-			#var_dump('Checking for more: '.$source_url);
-		}
+		$source_url = 'http://' . $url_array['host'];
 		return $source_url;
 	}
 
 	public static function resolve_full_url($url){
-		$url_array = parse_url($url);
-		if (empty($url_array['host'])){
-			return $url;
-		}
-		#var_dump($item_url);
-		$google_check = strpos($url, 'google.com');
-		if (!empty($google_check)){
-			$resolver = new URLResolver();
-			$url = $resolver->resolveURL($url)->getURL();
-		}
+		$url = pressforward()->pf_feed_items->resolve_a_url($url);
 		return $url;
 	}
 
