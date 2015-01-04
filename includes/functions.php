@@ -1367,7 +1367,7 @@ function pf_iterate_cycle_state($option_name, $option_limit = false, $echo = fal
 * As part of the effort to create the most informative log we want to auto
 * include the information about what function is adding to the log.
 *
-* @since 2.4
+* @since 3.4
 *
 * @param array $caller The sub-array from a step in a debug_backtrace
 */
