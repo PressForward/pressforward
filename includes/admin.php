@@ -286,6 +286,17 @@ class PF_Admin {
 						} else {
 							echo '<button class="btn btn-small nominate-now schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominate', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-single-licon.png" /></button>';
 							# Add option here for admin-level users to send items direct to draft.
+						?>
+							<button type="button" class="btn btn-small amplify btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="icon-bullhorn"></i><span class="caret"></button>
+								 <ul class="dropdown-menu" role="menu">
+							    <li><a href="#">Send to draft</a></li>
+									<li class="divider"></li>
+							    <li><a href="#">Tweet</a></li>
+							    <li><a href="#">Facebook</a></li>
+									<li><a href="#">Instapaper</a></li>
+							    <li><a href="#">Tumblr</a></li>
+							  </ul>
+						<?php
 						}
 					}
 
