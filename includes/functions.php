@@ -665,6 +665,7 @@ function pf_forward_unto_source(){
 		$link = get_post_meta($post_ID, 'item_link', TRUE);
 		if (!empty($link)){
 			echo '<link rel="canonical" href="'.$link.'" />';
+			echo '<meta property="og:url" content="'.$link.'" />';
 			$wait = get_option('pf_link_to_source', 0);
 			if ($wait > 0){
 				echo '<META HTTP-EQUIV="refresh" CONTENT="'.$wait.';URL='.$link.'">';
