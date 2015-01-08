@@ -69,7 +69,10 @@ class PF_OpenGraph implements Iterator
 		if (is_array($HTML)){
 			pf_log('Attempt to parse URL for OpenGraph.');
 			#pf_log($HTML);
-			return false;
+			$HTML = $HTML['body'];
+			if (empty($HTML)){
+				return false;
+			}
 		}
 		$doc->loadHTML($HTML);
 
