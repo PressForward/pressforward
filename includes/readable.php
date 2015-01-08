@@ -202,7 +202,7 @@ class PF_Readability {
 
 		//check if tidy exists to clean up the input.
 		if (function_exists('tidy_parse_string')) {
-			$tidy = tidy_parse_string($html, array(), 'UTF8');
+			$tidy = tidy_parse_string($html, array('wrap' => 0, ), 'UTF8');
 			$tidy->cleanRepair();
 			$html = $tidy->value;
 		}
