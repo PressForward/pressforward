@@ -939,7 +939,7 @@ class PF_Feed_Item {
 	}
 
 	public static function get_ext_og_img($link){
-		$node = pressforward()->og_reader->fetch($itemLink);
+		$node = pressforward()->og_reader->fetch($link);
 		$itemFeatImg = $node->image;
 		return $itemFeatImg;
 	}
