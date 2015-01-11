@@ -195,6 +195,8 @@ class PF_Readability {
 		}
 		if ( ! empty( $request['body'] ) ){
 			$html = $request['body'];
+		} elseif ( ! empty( $request ) && ( ! is_array( $request ) ) ) {
+			$html = $request;
 		} else {
 			$content = false;
 			return $content;

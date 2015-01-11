@@ -340,6 +340,7 @@ function pf_get_user_level($option, $default_level) {
 function pf_de_https($url, $function = false) {
 	$args = func_get_args();
 	$url = str_replace('&amp;','&', $url);
+	$url_first = $url;
 	if (!$function){
 		$r = set_url_scheme($url, 'http');
 	} else {
@@ -355,9 +356,15 @@ function pf_de_https($url, $function = false) {
 		        $r = call_user_func_array( $function, $args );
 		    }
 
-		    if ( is_wp_error( $r ) ) {
-		        // bail
-						return false;
+		    if ( !$r || is_wp_error( $r ) ) {
+		        # Last Chance!
+						if ('file_get_contents' != $function){
+							$r = file_get_contents($url_first);
+							#var_dump($r); die();
+						} else {
+								// bail
+								return false;
+						}
 		    }
 		}
 	}
