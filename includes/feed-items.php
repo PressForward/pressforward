@@ -1005,7 +1005,7 @@ class PF_Feed_Item {
 	}
 
 	public static function get_ext_og_img($link){
-		$node = pressforward()->og_reader->fetch($itemLink);
+		$node = pressforward()->og_reader->fetch($link);
 		$itemFeatImg = $node->image;
 		return $itemFeatImg;
 	}
@@ -1015,7 +1015,7 @@ class PF_Feed_Item {
 		if ( 5 < (strlen($ogImage)) ){
 
 				//Remove Queries from the URL
-				$ogImage = preg_replace('/\?.*/', '', $ogImage);
+				#$ogImage = preg_replace('/\?.*/', '', $ogImage);
 
 				$imgParts = pathinfo($ogImage);
 				$imgExt = $imgParts['extension'];
@@ -1026,10 +1026,13 @@ class PF_Feed_Item {
 					return;
 				}
 
+				$imgTitle = sanitize_file_name($imgTitle);
+				# Let's not get crazy here. 
+				$imgTitle = substr($imgTitle, 0, 100);
 
 				//'/' . get_option(upload_path, 'wp-content/uploads') . '/' . date("o")
 				$uploadDir = wp_upload_dir();
-				$ogCacheImg = $uploadDir['path'] . $postID . "-" . $imgTitle . "." . $imgExt;
+				$ogCacheImg = $uploadDir['path'] . '/' . $postID . "-" . $imgTitle . "." . $imgExt;
 
 				if ( !file_exists($ogCacheImg) ) {
 

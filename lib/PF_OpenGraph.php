@@ -69,7 +69,10 @@ class PF_OpenGraph implements Iterator
 		if (is_array($HTML)){
 			pf_log('Attempt to parse URL for OpenGraph.');
 			#pf_log($HTML);
-			return false;
+			$HTML = $HTML['body'];
+			if (empty($HTML)){
+				return false;
+			}
 		}
 		$doc->loadHTML($HTML);
 
@@ -115,7 +118,7 @@ class PF_OpenGraph implements Iterator
         }
 
         //Fallback to use image_src if ogp::image isn't set.
-        if (!isset($page->values['image'])) {
+        if (!isset($page->_values['image'])) {
             $domxpath = new DOMXPath($doc);
             $elements = $domxpath->query("//link[@rel='image_src']");
 
