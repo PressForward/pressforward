@@ -680,6 +680,7 @@ class PF_Admin {
 		$extra_class = $extra_class.$view_state;
 
 	?>
+	<div class="pf-loader"></div>
 	<div class="pf_container full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">

@@ -20,6 +20,7 @@
 			$extra_class .= '';
 		}
 	?>
+	<div class="pf-loader"></div>
 	<div class="list pf_container full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">
