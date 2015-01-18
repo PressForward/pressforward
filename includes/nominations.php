@@ -601,34 +601,26 @@ class PF_Nominations {
 
 	function build_nom_draft() {
 		global $post;
-		// verify if this is an auto save routine.
-		// If it is our form has not been submitted, so we dont want to do anything
-		//if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
-		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
-		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
-			die(__('Nonce not recieved. Are you sure you should be drafting?', 'pf'));
-		} else {
-##Check
-		# print_r(__('Sending to Draft.', 'pf'));
-##Check
-		//print_r($_POST);
-		ob_start();
 
+		if ( !wp_verify_nonce($_POST['pf_drafted_nonce'], 'drafter') ) {
+			die(__('Nonce not received. Are you sure you should be drafting?', 'pf'));
+		} else {
+			ob_start();
+
+			$pf_post_type = get_option('pf_post_type');
+			$pf_post_status = get_option('pf_post_status');
 			$item_content = $_POST['nom_content'];
 			$item_content = htmlspecialchars_decode($item_content);
-			#$args_fi['url'] = $_POST['item_link'];
-			#$posts = $pf->pf_feed_items->get($args_fi);
-
 			$linked = get_option('pf_link_to_source', 0);
-			if ($linked < 1){
+
+			if ( $linked < 1 ) {
 				$item_content = $item_content . $this->get_the_source_statement( $_POST['nom_id']);
 			}
 
 			$item_title = $_POST['nom_title'];
-
 			$data = array(
-				'post_status' => 'draft',
-				'post_type' => 'post',
+				'post_status' => $pf_post_status,
+				'post_type' => $pf_post_type,
 				'post_title' => $item_title,
 				'post_content' => $item_content
 			);

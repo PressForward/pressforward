@@ -7,6 +7,9 @@
  */
 
 class PF_Admin {
+
+	const DEFAULT_PF_POST_STATUS = 'draft';
+
 	/**
 	 * Constructor
 	 *
@@ -841,7 +844,7 @@ class PF_Admin {
 	 */
 	function display_review_builder() {
 		include( PF_ROOT . "/includes/under-review/under-review.php" );
-		
+
 	}
 
 	function ajax_get_comments(){
@@ -908,6 +911,27 @@ class PF_Admin {
 
 					echo '<label class="description" for="pf_present_author_as_primary"> ' .__('Show item author as source.', 'pf'). ' </label>';
 					?></p>
+
+					<p>
+						<?php $default_pf_post_type = get_option('pf_post_type', 'post'); ?>
+						<select id="pf_post_type" name="pf_post_type">
+							<?php foreach (get_post_types(array('public' => true), 'objects') as $post_type): ?>
+							<option value="<?php echo $post_type->name; ?>" <?php if ($default_pf_post_type == $post_type->name) echo 'selected="selected"'; ?>><?php echo $post_type->label; ?></option>
+							<?php endforeach; ?>
+						</select>
+						<label class="description" for="pf_post_type"><?php echo __('Post type for approved items.', 'pf'); ?></label>
+					</p>
+
+					<p>
+						<?php $default_pf_post_status = get_option('pf_post_status', self::DEFAULT_PF_POST_STATUS); ?>
+						<select id="pf_post_status" name="pf_post_status">
+							<?php foreach (get_post_statuses() as $status_name => $status_label): ?>
+								<option value="<?php echo $status_name; ?>" <?php if ($default_pf_post_status == $status_name) echo 'selected="selected"'; ?>><?php echo $status_label; ?></option>
+							<?php endforeach; ?>
+						</select>
+						<label class="description" for="pf_post_status"><?php echo __('Status for feed item posts.', 'pf'); ?></label>
+					</p>
+
 					<?php
 					if (class_exists('The_Alert_Box')){ ?>
 					<p>
@@ -1391,6 +1415,19 @@ class PF_Admin {
 			update_option('pf_errors_until_alert', 3);
 		}
 
+		if (isset( $_POST['pf_post_type'] )){
+			$pf_post_type = $_POST['pf_post_type'];
+			update_option('pf_post_type', $pf_post_type);
+		} else {
+			update_option('pf_post_type', 'post');
+		}
+
+		if (isset( $_POST['pf_post_status'] )){
+			$pf_post_status = $_POST['pf_post_status'];
+			update_option('pf_post_status', $pf_post_status);
+		} else {
+			update_option('pf_post_status', 'draft');
+		}
 
 		if (isset( $_POST['pf_present_author_as_primary'] )){
 			$pf_author_opt_check = $_POST['pf_present_author_as_primary'];

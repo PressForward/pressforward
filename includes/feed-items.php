@@ -19,7 +19,7 @@ class PF_Feed_Item {
 		$this->tag_taxonomy = pf_feed_item_tag_taxonomy();
 	}
 
-	public static function get( $args = array() ) {
+	public function get( $args = array() ) {
 		$wp_args = array(
 			'post_type'        => $this->post_type,
 			'post_status'      => 'publish',
