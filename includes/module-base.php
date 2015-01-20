@@ -48,8 +48,9 @@ class PF_Module {
 			$this->module_dir = trailingslashit( PF_ROOT . '/modules/' . $this->id );
 			$this->module_url = trailingslashit( PF_URL . 'modules/' . $this->id );
 		}
+		$modId = $this->id;
 
-		$enabled = get_option( PF_SLUG . '_' . $this->id . '_enable' );
+		$enabled = get_option( PF_SLUG . '_' . $modId . '_enable' );
 		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
 			$enabled = 'yes';
 		}
@@ -104,7 +105,7 @@ class PF_Module {
 			<table class="form-table">
 				<tr>
 					<th scope="row">
-						<label for="participad-dashboard-enable"><?php _e( 'Enable '. $modsetup['name'], PF_SLUG ) ?></label>
+						<label for="pressforward-dashboard-enable"><?php _e( 'Enable '. $modsetup['name'], PF_SLUG ) ?></label>
 					</th>
 
 					<td>
@@ -126,22 +127,31 @@ class PF_Module {
 	}
 
 	function setup_admin_menus( $admin_menus ) {
-		foreach ( (array) $admin_menus as $admin_menu ) {
-			$defaults = array(
-				'page_title' => '',
-				'menu_title' => '',
-				'cap'        => 'edit_posts',
-				'slug'       => '',
-				'callback'   => '',
-			);
-			$r = wp_parse_args( $admin_menu, $defaults );
+		$modId = $this->id;
 
-			// add_submenu_page() will fail if any arguments aren't passed
-			if ( empty( $r['page_title'] ) || empty( $r['menu_title'] ) || empty( $r['cap'] ) || empty( $r['slug'] ) || empty( $r['callback'] ) ) {
-				continue;
+		$enabled = get_option( PF_SLUG . '_' . $modId . '_enable' );
+		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
+			$enabled = 'yes';
+		}
+
+		if ( 'yes' == $enabled ) {
+			foreach ( (array) $admin_menus as $admin_menu ) {
+				$defaults = array(
+					'page_title' => '',
+					'menu_title' => '',
+					'cap'        => 'edit_posts',
+					'slug'       => '',
+					'callback'   => '',
+				);
+				$r = wp_parse_args( $admin_menu, $defaults );
+
+				// add_submenu_page() will fail if any arguments aren't passed
+				if ( empty( $r['page_title'] ) || empty( $r['menu_title'] ) || empty( $r['cap'] ) || empty( $r['slug'] ) || empty( $r['callback'] ) ) {
+					continue;
+				}
+
+				add_submenu_page( PF_MENU_SLUG, $r['page_title'], $r['menu_title'], $r['cap'], $r['slug'], $r['callback'] );
 			}
-
-			add_submenu_page( PF_MENU_SLUG, $r['page_title'], $r['menu_title'], $r['cap'], $r['slug'], $r['callback'] );
 		}
 	}
 /**

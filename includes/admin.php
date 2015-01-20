@@ -178,7 +178,7 @@ class PF_Admin {
 				?>
 						<button type="submit" class="btn btn-warning pull-right" id="archivebefore" value="<?php  _e('Archive before', 'pf');  ?>:" ><?php  _e('Archive before', 'pf');  ?>:</button>
 						<select class="pull-right" id="archiveBeforeOption">
-							<option value="1week">Older then 1 week</option>
+							<option value="1week">Older than 1 week</option>
 							<option value="2weeks">Older than 2 weeks</option>
 							<option value="1month">Older than 1 month</option>
 							<option value="1year">Before this year</option>
@@ -680,6 +680,7 @@ class PF_Admin {
 		$extra_class = $extra_class.$view_state;
 
 	?>
+	<div class="pf-loader"></div>
 	<div class="pf_container full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">
@@ -841,7 +842,7 @@ class PF_Admin {
 	 */
 	function display_review_builder() {
 		include( PF_ROOT . "/includes/under-review/under-review.php" );
-		
+
 	}
 
 	function ajax_get_comments(){

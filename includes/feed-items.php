@@ -155,24 +155,42 @@ class PF_Feed_Item {
 		$google_check = strpos($source_url, 'google.com');
 		if ((empty($source_url)) || !empty($google_check)){
 			$item_url = pf_retrieve_meta($post_id, 'item_link');
-			#var_dump($item_url);
-			$url_array = parse_url($item_url);
-			if (empty($url_array['host'])){
-				return;
-			}
-			$source_url = 'http://' . $url_array['host'];
-			#var_dump($item_url);
-			$google_check = strpos($source_url, 'google.com');
-			if (!empty($google_check)){
-				$resolver = new URLResolver();
-				$source_url = $resolver->resolveURL($item_url)->getURL();
-				$url_array = parse_url($source_url);
-				$source_url = 'http://' . $url_array['host'];
-				#var_dump('Checking for more: '.$source_url);
-			}
+			$source_url = pressforward()->pf_feed_items->resolve_source_url($item_url);
 			pf_update_meta( $post_id, 'pf_source_link', $source_url );
 		}
 		return $source_url;
+	}
+
+	public static function resolve_source_url($url){
+		$url_array = parse_url($url);
+		if (empty($url_array['host'])){
+			return $url;
+		}
+		$source_url = $url_array['scheme'] . '://' . $url_array['host'];
+		#var_dump($item_url);
+		$google_check = strpos($source_url, 'google.com');
+		if (!empty($google_check)){
+			$resolver = new URLResolver();
+			$url = $resolver->resolveURL($url)->getURL();
+			$url_array = parse_url($url);
+			$source_url = 'http://' . $url_array['host'];
+			#var_dump('Checking for more: '.$source_url);
+		}
+		return $source_url;
+	}
+
+	public static function resolve_full_url($url){
+		$url_array = parse_url($url);
+		if (empty($url_array['host'])){
+			return $url;
+		}
+		#var_dump($item_url);
+		$google_check = strpos($url, 'google.com');
+		if (!empty($google_check)){
+			$resolver = new URLResolver();
+			$url = $resolver->resolveURL($url)->getURL();
+		}
+		return $url;
 	}
 
 	/**
@@ -921,7 +939,7 @@ class PF_Feed_Item {
 	}
 
 	public static function get_ext_og_img($link){
-		$node = pressforward()->og_reader->fetch($itemLink);
+		$node = pressforward()->og_reader->fetch($link);
 		$itemFeatImg = $node->image;
 		return $itemFeatImg;
 	}
@@ -931,7 +949,7 @@ class PF_Feed_Item {
 		if ( 5 < (strlen($ogImage)) ){
 
 				//Remove Queries from the URL
-				$ogImage = preg_replace('/\?.*/', '', $ogImage);
+				#$ogImage = preg_replace('/\?.*/', '', $ogImage);
 
 				$imgParts = pathinfo($ogImage);
 				$imgExt = $imgParts['extension'];
@@ -942,10 +960,13 @@ class PF_Feed_Item {
 					return;
 				}
 
+				$imgTitle = sanitize_file_name($imgTitle);
+				# Let's not get crazy here. 
+				$imgTitle = substr($imgTitle, 0, 100);
 
 				//'/' . get_option(upload_path, 'wp-content/uploads') . '/' . date("o")
 				$uploadDir = wp_upload_dir();
-				$ogCacheImg = $uploadDir['path'] . $postID . "-" . $imgTitle . "." . $imgExt;
+				$ogCacheImg = $uploadDir['path'] . '/' . $postID . "-" . $imgTitle . "." . $imgExt;
 
 				if ( !file_exists($ogCacheImg) ) {
 

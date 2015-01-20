@@ -313,6 +313,19 @@ function detect_view_change(){
 
 }
 
+
+	console.log('Waiting for load.');
+	jQuery(window).load(function() {
+		 // executes when complete page is fully loaded, including all frames, objects and images
+
+		 	jQuery('.pf-loader').delay(300).fadeOut( "slow", function() {
+				console.log('Load complete.');
+				jQuery('.pf_container').fadeIn("slow");
+			});;
+
+	});
+
+
 jQuery(window).load(function() {
 
 	jQuery('#gogrid').click(function (evt){
