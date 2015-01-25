@@ -28,23 +28,6 @@ class PF_Foo extends PF_Module {
 		parent::setup_admin_menus( $admin_menus );
 	}
 
-	function setup_module() {
-		$enabled = get_option( 'pf_foo_enable' );
-		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
-			$enabled = 'no';
-		}
-
-		$mod_settings = array(
-			'name' => 'Foo Test Module',
-			'slug' => 'foo',
-			'options' => ''
-		);
-
-		//update_option( 'pf_foo_settings', $mod_settings );
-
-
-	}
-
 	function module_setup(){
 		$mod_settings = array(
 			'name' => 'Foo Test Module',
@@ -53,7 +36,12 @@ class PF_Foo extends PF_Module {
 			'thumbnail' => '',
 			'options' => ''
 		);
-
+		
+		$enabled = get_option( 'pf_foo_enable' );
+		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
+			$enabled = 'no';
+			update_option( PF_SLUG .'_' . $this->id . '_enable', $enabled );
+		}
 		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 
 		//return $test;

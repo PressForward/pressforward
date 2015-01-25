@@ -76,14 +76,16 @@ jQuery(window).load(function() {
 		} else {
 			schemaclass = false;
 		}
+		
+		
+		
 		if(obj.is('[pf-schema-targets]')){
 			schematargets = jQuery(this).attr('pf-schema-targets');
 		} else {
 			schematargets = false;
 		}
-		doschemastuff(selectableObj, item, id, parent, otherschema, schemaclass, objs);
-
-		if ((schematargets != false)){
+		
+		if ((schematargets != false) || (null != schematargets) || (typeof schematargets != 'undefined') ){
 			targetedObj = jQuery(this).closest('article').find('.'+schematargets);
 
 			if(targetedObj.is('[pf-schema-class]')){
@@ -92,8 +94,11 @@ jQuery(window).load(function() {
 				tschemaclass = false;
 			}
 			doschemastuff(targetedObj, item, id, parent, otherschema, tschemaclass, objs);
-		}
+		} else {
 
+			doschemastuff(selectableObj, item, id, parent, otherschema, schemaclass, objs);
+		
+		}
 		jQuery.post(ajaxurl, {
 				action: 'pf_ajax_relate',
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
@@ -117,33 +122,53 @@ jQuery(window).load(function() {
 
 	function doschemastuff(obj, item, id, parent, otherschema, schemaclass, objs){
 		otherschema = jQuery(otherschema.selector);
-		console.log(otherschema);
+		//console.log(otherschema);
 		obj = jQuery(obj.selector);
-		console.log(objs);
+		//var is_it_done = false;
+		//console.log(objs);
 		jQuery( objs ).each(function( index ) {
 			var obj = jQuery(this);
-			if (obj.hasClass('schema-active') && obj.hasClass('schema-switchable')){
-				console.log('Switchable Active class');
-				obj.removeClass('schema-active');
-				otherschema.removeClass('schema-active');
-			} else {
-				console.log('Non-switchable, make active');
-				obj.addClass('schema-active');
-				otherschema.addClass('schema-active');
-			}
 			var schemaclass = obj.attr('pf-schema-class');
-			if (schemaclass != false){
+			
+						
+			if ((schemaclass != false) && (typeof schemaclass != 'undefined')){
 
 				if (obj.hasClass(schemaclass) && obj.hasClass('schema-switchable')){
-					console.log('Switchable schema class: on - turn it off');
+					console.log(obj);
+					console.log('Switchable schema class ' +schemaclass+': on - turn it off');
 					obj.removeClass(schemaclass);
+					
+					console.log(otherschema);
 					otherschema.removeClass(schemaclass);
+					return false;
 				} else {
-					console.log('Switchable schema class: off - turn it on');
+					console.log(obj);
+					console.log('Switchable schema class ' +schemaclass+': off - turn it on');
 					obj.addClass(schemaclass);
+					
+					console.log(otherschema);
 					otherschema.addClass(schemaclass);
+					return false;
 				}
 
+			}
+			
+			if (obj.hasClass('schema-active') && obj.hasClass('schema-switchable')){
+				console.log(obj);
+				console.log('Switchable Active schema-active: class');
+				obj.removeClass('schema-active');
+				
+				console.log(otherschema);
+				otherschema.removeClass('schema-active');
+				return false;
+			} else {
+				console.log(obj);
+				console.log('Non-switchable schema-active: make active');
+				obj.addClass('schema-active');
+				
+				console.log(otherschema);
+				otherschema.addClass('schema-active');
+				return false;
 			}
 		});
 

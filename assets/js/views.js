@@ -314,21 +314,16 @@ function detect_view_change(){
 }
 
 
-function pf_load_wait_process(){
-	jQuery('.pf_container').hide();
-	jQuery('<div class="pf-loader"></div>').insertAfter('.update-nag');
 	console.log('Waiting for load.');
 	jQuery(window).load(function() {
 		 // executes when complete page is fully loaded, including all frames, objects and images
-		console.log('Load complete.');
-		 jQuery('.pf-loader').remove();
-		 jQuery('.pf_container').show();
-	});
 
-}
-jQuery(document).ready(function() {
-	pf_load_wait_process();
-});
+		 	jQuery('.pf-loader').delay(300).fadeOut( "slow", function() {
+				console.log('Load complete.');
+				jQuery('.pf_container').fadeIn("slow");
+			});;
+
+	});
 
 
 jQuery(window).load(function() {

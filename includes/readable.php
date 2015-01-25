@@ -229,7 +229,7 @@ class PF_Readability {
 				//if we've got tidy, let's use it.
 				if (function_exists('tidy_parse_string')) {
 					$tidy = tidy_parse_string($content,
-						array('indent'=>true, 'show-body-only'=>true),
+						array('indent'=>true, 'show-body-only'=>true, 'wrap' => 0),
 						'UTF8');
 					$tidy->cleanRepair();
 					$content = $tidy->value;
