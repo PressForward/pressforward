@@ -649,19 +649,23 @@ h3 {
 	display:none;
 }
 
+.display {
+	background: rgba(0, 0, 0, 0.025);
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	padding: 10px;
+	margin: 0 auto;
+	min-width: 600px;
+	max-width: 1444px;
+}
+
 .nav-fix {
 	
     position: fixed;
     top: 31px;
     width: 100%;
     z-index: 9991;
-    border: #E8FFFF 1px solid;
-    background-color: #E0FEFF;
-    padding: 10px;
     margin: 0;
     left: 200px;
-    min-width: 600px;
-    max-width: 1444px;
 	
 }
 
