@@ -220,6 +220,10 @@ color: #ffffff;
 	margin-top: 2px;
 }
 
+.modal.pfmodal {
+	z-index: 9999;
+}
+
 h3 {
 	font-size: 18px;
 	line-height: 19px;
@@ -644,6 +648,23 @@ h3 {
 .js .pf_container {
 	display:none;
 }
+
+.nav-fix {
+	
+    position: fixed;
+    top: 31px;
+    width: 100%;
+    z-index: 9991;
+    border: #E8FFFF 1px solid;
+    background-color: #E0FEFF;
+    padding: 10px;
+    margin: 0;
+    left: 200px;
+    min-width: 600px;
+    max-width: 1444px;
+	
+}
+
 /**
  * Specific override styles.
  *
