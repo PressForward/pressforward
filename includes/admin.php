@@ -162,6 +162,47 @@ class PF_Admin {
 			</div>
 		<?php
 	}
+	
+	public function nav_bar(){
+		?>
+		<div class="display">
+			<div class="pf-btns pull-left">
+			<button type="submit" id="gogrid" class="btn btn-small display-state">Grid</button>
+			<button type="submit" id="golist" class="btn btn-small display-state">List</button>
+
+			<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
+			echo '<button type="submit" class="btn btn-small feedsort" id="sortbyfeedindate" value="' . __('Sort by date entered feed', 'pf') . '">' . __('Sort by date entered feed', 'pf') . '</button>'; ?>
+				<button type="submit" class="btn btn-info pull-right btn-small" id="showMyHidden" value="<?php  _e('Show hidden', 'pf');  ?>" ><?php  _e('Show hidden', 'pf');  ?></button>
+				<button type="submit" class="btn btn-info pull-right btn-small" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
+				<button type="submit" class="btn btn-info pull-right btn-small" id="showMyStarred" value="<?php  _e('Show my starred', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
+				<?php
+					if (isset($_GET['by']) || isset($_POST['search-terms']) || isset($_GET['reveal']) || isset($_GET['folder']) || isset($_GET['feed'])){
+						?><button type="submit" class="btn btn-info btn-small pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php
+					}
+								?>
+			</div>
+			
+			<div class="pull-right text-right">
+			<!-- or http://thenounproject.com/noun/list/#icon-No9479? -->
+				<?php
+					add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+										add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+										$alerts = the_alert_box()->get_specimens();
+										remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+										remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+
+										if (!empty($alerts) && (0 != $alerts->post_count)){
+											echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i> (!)</a>';
+										} else {
+											echo '<a class="btn btn-small" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i></a>';
+										}
+										echo '<a class="btn btn-small" id="gofolders" href="#">' . __('Folders', 'pf') . '</a>';
+										?>
+
+			</div>
+		</div><!-- End btn-group -->
+		<?php 
+	}
 
 	public function toolbox($slug = 'allfeed', $version = 0, $deck = false){
 		global $hook_suffix;
@@ -701,41 +742,9 @@ class PF_Admin {
 			<?php self::pf_search_template(); ?>
 
 		</header><!-- End Header -->
-		<div class="display">
-			<div class="pf-btns pull-left">
-			<button type="submit" id="gogrid" class="btn btn-small display-state">Grid</button>
-			<button type="submit" id="golist" class="btn btn-small display-state">List</button>
-
-			<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
-			echo '<button type="submit" class="btn btn-small feedsort" id="sortbyfeedindate" value="' . __('Sort by date entered feed', 'pf') . '">' . __('Sort by date entered feed', 'pf') . '</button>'; ?>
-				<button type="submit" class="btn btn-info pull-right btn-small" id="showMyHidden" value="<?php  _e('Show hidden', 'pf');  ?>" ><?php  _e('Show hidden', 'pf');  ?></button>
-				<button type="submit" class="btn btn-info pull-right btn-small" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
-				<button type="submit" class="btn btn-info pull-right btn-small" id="showMyStarred" value="<?php  _e('Show my starred', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
-				<?php
-					if (isset($_GET['by']) || isset($_POST['search-terms']) || isset($_GET['reveal']) || isset($_GET['folder']) || isset($_GET['feed'])){
-						?><button type="submit" class="btn btn-info btn-small pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php
-					}
-								?>
-			</div>
-			<div class="pull-right text-right">
-			<!-- or http://thenounproject.com/noun/list/#icon-No9479? -->
-				<?php
-					add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
-										add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
-										$alerts = the_alert_box()->get_specimens();
-										remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
-										remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
-
-										if (!empty($alerts) && (0 != $alerts->post_count)){
-											echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i> (!)</a>';
-										} else {
-											echo '<a class="btn btn-small" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i></a>';
-										}
-										echo '<a class="btn btn-small" id="gofolders" href="#">' . __('Folders', 'pf') . '</a>';
-										?>
-
-			</div>
-		</div><!-- End btn-group -->
+		<?php 
+			self::nav_bar();
+		?>
 		<div role="main">
 			<?php $this->toolbox(); ?>
 			<?php $this->folderbox(); ?>
