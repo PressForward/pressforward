@@ -144,7 +144,8 @@ function reshowModal(){
 			'margin': '0',
 			'width': '100%',
 			'height': '100%',
-			'overflow' : 'hidden'
+			'overflow' : 'hidden',
+			'z-index'  : '9999'
 		};
 		jQuery('#'+modalID+ '.pfmodal').css(bigModal).load(hide_non_modals());
 	});
@@ -290,8 +291,25 @@ function PFBootstrapInits() {
 	jQuery(".modal.pfmodal").on('show', function(evt){
 		jQuery(".itemInfobutton").popover('hide');
 	})
+	
+	attach_menu_on_scroll_past();
 
+}
 
+function attach_menu_on_scroll_past(){
+	jQuery(window).scroll(function() {
+		var y_scroll_pos = window.pageYOffset;
+		var scroll_pos_test = 190;             
+		// set to whatever you want it to be
+
+		if(y_scroll_pos > scroll_pos_test) {
+		   jQuery('.pf_container .display').addClass('nav-fix');
+		}
+		else
+		{
+			jQuery('.pf_container .display').removeClass('nav-fix');
+		}
+	});
 }
 
 function detect_view_change(){
