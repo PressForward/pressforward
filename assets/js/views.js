@@ -354,7 +354,7 @@ jQuery(window).load(function() {
 				var itemID		= element.attr('id');
 				jQuery('#'+itemID+' footer .actions').appendTo('#'+itemID+' header');
 			});
-		});
+	});
 
 	jQuery('#golist').click(function (evt){
 			evt.preventDefault();

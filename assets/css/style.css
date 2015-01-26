@@ -139,7 +139,7 @@ visibility:hidden;
     vertical-align: middle;
 }
 
-.pf-btns .btn {
+.pf-btns .btn.btn-unrounded {
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     border-radius: 0;
@@ -204,9 +204,9 @@ color: #ffffff;
   background-color: #ffe003 \9;
 }
 
-
-
-
+.dropdown-menu {
+	
+}
 
 .actions form {
 	margin: 0;
@@ -648,27 +648,27 @@ h3 {
 .js .pf_container {
 	display:none;
 }
+	.display {
+		background: #e5ecf2;
+		border-bottom: 1px solid #cdd4d9;
+		padding: 10px;
+		min-height: 46px;
+		overflow: visible!important;
+		margin: 0 auto;
+		min-width: 600px;
+		max-width: 1440px;
+	}
 
-.display {
-	background: rgba(0, 0, 0, 0.025);
-	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-	padding: 10px;
-	margin: 0 auto;
-	min-width: 600px;
-	max-width: 1444px;
-}
-
-.nav-fix {
-	
-    position: fixed;
-    top: 31px;
-    width: 100%;
-    z-index: 9991;
-    margin: 0;
-    left: 200px;
-	
-}
-
+	.nav-fix {
+		
+		position: fixed;
+		top: 30px;
+		width: 100%;
+		z-index: 9991;
+		margin: 0;
+		left: 200px;
+		
+	}
 /**
  * Specific override styles.
  *
