@@ -365,6 +365,11 @@ h3 {
 
 .pressforward .grid.full #entries article.feed-item header {
 	margin-bottom: 1em;
+	overflow: visible;
+}
+
+.pressforward .pf-btns .amplify-group {
+	display: inline-block;
 }
 
 .box-controls {

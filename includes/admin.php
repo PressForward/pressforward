@@ -313,8 +313,9 @@ class PF_Admin {
 				$item_id = $metadata['item_id'];
 			} else {
 				$item_id = $item['item_id'];
-			}
+			}	
 			?>
+
 				<div class="actions pf-btns <?php if($modal){ echo 'modal-btns '; } ?>">
 					<?php
 					$infoPop = 'top';
@@ -380,8 +381,11 @@ class PF_Admin {
 						} else {
 							echo '<button class="btn btn-small nominate-now schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominate', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-single-licon.png" /></button>';
 							# Add option here for admin-level users to send items direct to draft.
+
+						}
+
 						?>
-						<div class="dropdown btn-group" role="group">
+						<div class="dropdown btn-group amplify-group" role="group">
 							<button type="button" class="btn btn-default btn-small dropdown-toggle pf-amplify" data-toggle="dropdown" aria-expanded="true" id="amplify-<?php echo $item['item_id']; ?>"><i class="icon-bullhorn"></i><span class="caret"></button>
 							<ul class="dropdown-menu" role="menu" aria-labelledby="amplify-<?php echo $item['item_id']; ?>">
 								<?php 
@@ -398,8 +402,8 @@ class PF_Admin {
 
 							 </ul>
 						</div>
-						<?php
-						}
+						<?php 
+
 					}
 
 
@@ -414,6 +418,7 @@ class PF_Admin {
 					}
 					?>
 				</div>
+
 		<?php
 
 				if (has_action('pf_comment_action_modal')){
