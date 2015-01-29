@@ -162,6 +162,100 @@ class PF_Admin {
 			</div>
 		<?php
 	}
+	
+	public function dropdown_option($string, $id, $class = 'pf-top-menu-selection'){
+		?><li role="presentation"><a role="menuitem" id="<?php echo $id; ?>" tabindex="-1" class="<?php echo $class; ?>" href="#"><?php echo $string; ?></a></li><?php 
+	}
+	
+	public function nav_bar($page = 'pf-menu'){
+		?>
+		<div class="display">
+			<div class="pf-btns pull-left btn-toolbar">
+				<?php if ( 'pf-review' != $page ) { ?>
+					<div class="dropdown pf-view-dropdown btn-group" role="group">
+					  <button class="btn btn-default btn-small dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+						<?php _e('View', 'pf'); ?>
+						<span class="caret"></span>
+					  </button>
+						<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+						<?php 
+							self::dropdown_option(__('Grid', 'pf'), "gogrid");
+							self::dropdown_option(__('List', 'pf'), "golist");
+						?>
+						 </ul>
+					</div>
+				<?php } ?>
+				<div class="dropdown pf-filter-dropdown btn-group" role="group">
+				  <button class="btn btn-default dropdown-toggle btn-small" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+					<?php _e('Filter', 'pf'); ?>
+					<span class="caret"></span>
+				  </button>
+				  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+					<?php 
+						if ( 'pf-review' != $page ){
+							self::dropdown_option(__('Starred', 'pf'), "showMyStarred");
+							self::dropdown_option(__('Show hidden', 'pf'), "showMyHidden");
+							self::dropdown_option(__('Standard view', 'pf'), "showNormal");
+							self::dropdown_option(__('My nominations', 'pf'), "showMyNominations");
+						} else {
+							self::dropdown_option(__('Starred', 'pf'), "sortstarredonly", 'starredonly');
+							self::dropdown_option(__('Toggle visibility of archived', 'pf'), "showarchived");
+							self::dropdown_option(__('Only archived', 'pf'), "showarchiveonly");
+							if ( isset($_POST['search-terms']) || isset($_GET['by']) || isset($_GET['pf-see']) || isset($_GET['reveal']) ) {
+								self::dropdown_option(__('Reset filter', 'pf'), "showNormalNominations");
+							}
+						}
+					?>
+				  </ul>
+				</div>
+				<div class="dropdown pf-sort-dropdown btn-group" role="group">
+				  <button class="btn btn-default dropdown-toggle btn-small" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+					<?php _e('Sort', 'pf'); ?>
+					<span class="caret"></span>
+				  </button>
+				  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+					<?php 
+						self::dropdown_option(__('Reset', 'pf'), "sort-reset");
+						self::dropdown_option(__('Date of item', 'pf'), "sortbyitemdate"); 
+						self::dropdown_option(__('Date retrieved', 'pf'), "sortbyfeedindate");
+						if ( 'pf-review' == $page ){
+							self::dropdown_option(__('Date nominated', 'pf'), "sortbynomdate");
+							self::dropdown_option(__('Nominations received', 'pf'), "sortbynomcount");
+						}
+					?>
+					<?php #<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Feed name</a></li> ?>
+				  </ul>
+				</div>
+				<div class="btn-group" role="group">
+					<button type="submit" id="pf-help" class="btn btn-small"><?php _e('Need help?', 'pf'); ?></button>
+				</div>
+			</div>
+			
+			<div class="pull-right text-right">
+			<!-- or http://thenounproject.com/noun/list/#icon-No9479? -->
+				<?php
+										add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+										add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+										$alerts = the_alert_box()->get_specimens();
+										remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+										remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+										
+					if ( 'pf-review' == $page ){
+						echo '<button type="submit" class="delete btn btn-danger btn-small pull-left" id="archivenoms" value="' . __('Archive all', 'pf') . '" >' . __('Archive all', 'pf') . '</button>'; 
+					}
+
+										if (!empty($alerts) && (0 != $alerts->post_count)){
+											echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i> (!)</a>';
+										} else {
+											echo '<a class="btn btn-small" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i></a>';
+										}
+										echo '<a class="btn btn-small" id="gofolders" href="#">' . __('Folders', 'pf') . '</a>';
+										?>
+
+			</div>
+		</div><!-- End btn-group -->
+		<?php 
+	}
 
 	public function toolbox($slug = 'allfeed', $version = 0, $deck = false){
 		global $hook_suffix;
@@ -697,6 +791,7 @@ class PF_Admin {
 		$extra_class = $extra_class.$view_state;
 
 	?>
+	<div class="pf-loader"></div>
 	<div class="pf_container full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">
@@ -711,47 +806,15 @@ class PF_Admin {
 					}
 				?>
 				<span id="h-after"> &#8226; </span>
-				<button type="submit" class="refreshfeed btn btn-small" id="refreshfeed" value="<?php  _e('Refresh', 'pf')  ?>"><?php  _e('Refresh', 'pf');  ?></button>
+				
 				<button class="btn btn-small" id="fullscreenfeed"> <?php  _e('Full Screen', 'pf');  ?> </button>
 			</div><!-- End title -->
 			<?php self::pf_search_template(); ?>
 
 		</header><!-- End Header -->
-		<div class="display">
-			<div class="pf-btns pull-left">
-			<button type="submit" id="gogrid" class="btn btn-small display-state">Grid</button>
-			<button type="submit" id="golist" class="btn btn-small display-state">List</button>
-
-			<?php echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
-			echo '<button type="submit" class="btn btn-small feedsort" id="sortbyfeedindate" value="' . __('Sort by date entered feed', 'pf') . '">' . __('Sort by date entered feed', 'pf') . '</button>'; ?>
-				<button type="submit" class="btn btn-info pull-right btn-small" id="showMyHidden" value="<?php  _e('Show hidden', 'pf');  ?>" ><?php  _e('Show hidden', 'pf');  ?></button>
-				<button type="submit" class="btn btn-info pull-right btn-small" id="showMyNominations" value="<?php  _e('Show my nominations', 'pf');  ?>" ><?php  _e('Show my nominations', 'pf');  ?></button>
-				<button type="submit" class="btn btn-info pull-right btn-small" id="showMyStarred" value="<?php  _e('Show my starred', 'pf');  ?>" ><?php  _e('Show my starred', 'pf');  ?></button>
-				<?php
-					if (isset($_GET['by']) || isset($_POST['search-terms']) || isset($_GET['reveal']) || isset($_GET['folder']) || isset($_GET['feed'])){
-						?><button type="submit" class="btn btn-info btn-small pull-right" id="showNormal" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php
-					}
-								?>
-			</div>
-			<div class="pull-right text-right">
-			<!-- or http://thenounproject.com/noun/list/#icon-No9479? -->
-				<?php
-					add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
-										add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
-										$alerts = the_alert_box()->get_specimens();
-										remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
-										remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
-
-										if (!empty($alerts) && (0 != $alerts->post_count)){
-											echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i> (!)</a>';
-										} else {
-											echo '<a class="btn btn-small" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i></a>';
-										}
-										echo '<a class="btn btn-small" id="gofolders" href="#">' . __('Folders', 'pf') . '</a>';
-										?>
-
-			</div>
-		</div><!-- End btn-group -->
+		<?php 
+			self::nav_bar();
+		?>
 		<div role="main">
 			<?php $this->toolbox(); ?>
 			<?php $this->folderbox(); ?>
@@ -1085,6 +1148,14 @@ class PF_Admin {
 				<p class="description"><?php _e('If your bookmarks toolbar is hidden: copy the code below, open your Bookmarks manager, create new bookmark, type Press This into the name field and paste the code into the URL field.', 'pf'); ?></p>
 				<p><textarea rows="5" cols="120" readonly="readonly"><?php echo htmlspecialchars( pf_get_shortcut_link() ); ?></textarea></p>
 				</div>
+				<p><br /></p>
+				<p>
+					<button type="submit" class="refreshfeed btn btn-small" id="refreshfeed" value="<?php  _e('Refresh', 'pf')  ?>"><?php  _e('Refresh', 'pf');  ?></button>
+					<?php 
+					_e( ' the feed retrieval process. This button will attempt to restart a broken refresh process. If a previous feed retrieval cycle was completed, it will start the next one early. However, if the process is currently ongoing it will notify the system that you believe there is an error in the retrieval process, and the next time your site steps through the cycle, the system will attempt to find and rectify the error.', 'pf');
+					?>
+				</p>
+
 			<?php
 			endif;
 
@@ -1639,7 +1710,7 @@ class PF_Admin {
 	 */
 	public function add_last_retrieved_date_column( $posts_columns ) {
 		unset( $posts_columns['date'] );
-		$posts_columns['last_retrieved'] = 'Last Retrieved';
+		$posts_columns['last_retrieved'] = __('Last Time Feed Item Retrieved', 'pf');
 		return $posts_columns;
 	}
 

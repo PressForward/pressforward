@@ -20,6 +20,7 @@
 			$extra_class .= '';
 		}
 	?>
+	<div class="pf-loader"></div>
 	<div class="list pf_container full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">
@@ -39,36 +40,8 @@
 				<?php pressforward()->admin->pf_search_template(); ?>
 		</header><!-- End Header -->
 
-		<div class="display">
-			<div class="pf-btns pull-left">
-			<!--<button type="submit" id="gogrid" class="btn btn-small">Grid</button>
-			<button type="submit" id="golist" class="btn btn-small">List</button>-->
+		<?php pressforward()->admin->nav_bar('pf-review'); ?>
 
-			<?php
-			echo '<button type="submit" class="btn btn-small feedsort" id="sort-reset" value="' . __('Reset Sorting', 'pf') . '" style="display:none;" >' . __('Reset Sort', 'pf') . '</button>';
-			echo '<button type="submit" class="btn btn-small feedsort" id="sortbyitemdate" value="' . __('Sort by item date', 'pf') . '" >' . __('Sort by item date', 'pf') . '</button>';
-			echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomdate" value="' . __('Sort by date nominated', 'pf') . '">' . __('Sort by date nominated', 'pf') . '</button>';
-			echo '<button type="submit" class="btn btn-small feedsort" id="sortbynomcount" value="' . __('Sort by nominations', 'pf') . '">' . __('Sort by nominations', 'pf') . '</button>';
-								echo '<button type="submit" class="btn btn-small starredonly" id="sortstarredonly" value="' . __('Show starred only', 'pf') . '">' . __('Show starred only', 'pf') . '</button>';
-			if (!isset($_GET['pf-see']) || ('archive-only' != $_GET['pf-see'])){
-				echo '<button type="submit" class="btn btn-small feedsort" id="showarchiveonly" value="' . __('Show only archived', 'pf') . '">' . __('Show only archived', 'pf') . '</button>';
-				if ((isset($_GET['by']) && ( 'archived' == $_GET['by'])) ){
-					echo '<button type="submit" class="showarchived btn btn-small" id="shownormal" value="' . __('Show non-archived', 'pf') . '">' . __('Show non-archived', 'pf') . '.</button>';
-				} else {
-					echo '<button type="submit" class="showarchived btn btn-small" id="showarchived" value="' . __('Show archived', 'pf') . '">' . __('Show archived', 'pf') . '.</button>';
-				}
-			}
-			if ( isset($_POST['search-terms']) || isset($_GET['by']) || isset($_GET['pf-see']) || isset($_GET['reveal']) ) {
-					?><button type="submit" class="btn btn-info btn-small pull-right" id="showNormalNominations" value="<?php  _e('Show all', 'pf');  ?>" ><?php  _e('Show all', 'pf');  ?></button><?php
-			}
-			?>
-			</div>
-			<div class="pull-right text-right">
-			<?php echo '<button type="submit" class="delete btn btn-danger btn-small pull-left" id="archivenoms" value="' . __('Archive all', 'pf') . '" >' . __('Archive all', 'pf') . '</button>'; ?>
-			<!-- or http://thenounproject.com/noun/list/#icon-No9479 ? -->
-			<a class="btn btn-small" id="gomenu" href="#">Menu <i class="icon-tasks"></i></a>
-			</div>
-		</div><!-- End btn-group -->
 
 		<div role="main">
 			<?php $this->toolbox();	?>

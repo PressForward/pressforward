@@ -144,7 +144,8 @@ function reshowModal(){
 			'margin': '0',
 			'width': '100%',
 			'height': '100%',
-			'overflow' : 'hidden'
+			'overflow' : 'hidden',
+			'z-index'  : '9999'
 		};
 		jQuery('#'+modalID+ '.pfmodal').css(bigModal).load(hide_non_modals());
 	});
@@ -290,8 +291,25 @@ function PFBootstrapInits() {
 	jQuery(".modal.pfmodal").on('show', function(evt){
 		jQuery(".itemInfobutton").popover('hide');
 	})
+	
+	attach_menu_on_scroll_past();
 
+}
 
+function attach_menu_on_scroll_past(){
+	jQuery(window).scroll(function() {
+		var y_scroll_pos = window.pageYOffset;
+		var scroll_pos_test = 190;             
+		// set to whatever you want it to be
+
+		if(y_scroll_pos > scroll_pos_test) {
+		   jQuery('.pf_container .display').addClass('nav-fix');
+		}
+		else
+		{
+			jQuery('.pf_container .display').removeClass('nav-fix');
+		}
+	});
 }
 
 function detect_view_change(){
@@ -314,21 +332,16 @@ function detect_view_change(){
 }
 
 
-function pf_load_wait_process(){
-	jQuery('.pf_container').hide();
-	jQuery('<div class="pf-loader"></div>').insertAfter('.update-nag');
 	console.log('Waiting for load.');
 	jQuery(window).load(function() {
 		 // executes when complete page is fully loaded, including all frames, objects and images
-		console.log('Load complete.');
-		 jQuery('.pf-loader').remove();
-		 jQuery('.pf_container').show();
-	});
 
-}
-jQuery(document).ready(function() {
-	pf_load_wait_process();
-});
+		 	jQuery('.pf-loader').delay(300).fadeOut( "slow", function() {
+				console.log('Load complete.');
+				jQuery('.pf_container').fadeIn("slow");
+			});;
+
+	});
 
 
 jQuery(window).load(function() {
@@ -341,7 +354,7 @@ jQuery(window).load(function() {
 				var itemID		= element.attr('id');
 				jQuery('#'+itemID+' footer .actions').appendTo('#'+itemID+' header');
 			});
-		});
+	});
 
 	jQuery('#golist').click(function (evt){
 			evt.preventDefault();

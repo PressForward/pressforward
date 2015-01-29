@@ -1004,10 +1004,41 @@ class PF_Feed_Item {
 
 	}
 
+	public function resolve_image_type($img_url){
+		$type = wp_check_filetype($img_url);
+		return $type['ext'];
+	}
+
+	public function assert_url_scheme($url){
+		$url_parts = parse_url($url);
+		$slash_check = substr ( $url , 0 , 2 );
+		if (empty($url_parts['scheme']) && ( '//' == $slash_check )){
+			$url = 'http:' . $url;
+		} elseif (empty($url_parts['scheme']) && ( '//' != $slash_check )) {
+			$url = 'http://' . $url;
+		}
+
+		return $url;
+
+	}
+
 	public static function get_ext_og_img($link){
-		$node = pressforward()->og_reader->fetch($itemLink);
+		$node = pressforward()->og_reader->fetch($link);
 		$itemFeatImg = $node->image;
+		
 		return $itemFeatImg;
+	}
+
+	public function assure_image($filepath){
+		$img_info = getimagesize($filepath);
+		# Your 1x1 tracking or dummy images have no domain here!
+		if ( ( 1 < $img_info[0] ) || ( 1 < $img_info[1] ) ){
+			# I assure you this is not an image
+			return false;	
+		} else {
+			# This is an image I assure you.
+			return true;
+		}
 	}
 
 	public static function set_ext_as_featured($postID,$ogImage){
@@ -1015,41 +1046,57 @@ class PF_Feed_Item {
 		if ( 5 < (strlen($ogImage)) ){
 
 				//Remove Queries from the URL
-				$ogImage = preg_replace('/\?.*/', '', $ogImage);
-
+				#$ogImage = preg_replace('/\?.*/', '', $ogImage);
+				$ogImage = pressforward()->pf_feed_items->assert_url_scheme($ogImage);
 				$imgParts = pathinfo($ogImage);
 				$imgExt = $imgParts['extension'];
 				$imgTitle = $imgParts['filename'];
-
-				if ($imgExt != ('jpg'||'png'||'jrpg'||'bmp'||'gif')){
+				$resolved_img_ext = pressforward()->pf_feed_items->resolve_image_type($ogImage);
+				if (($resolved_img_ext != ('jpg'||'png'||'jrpg'||'bmp'||'gif'||'jpeg')) || ($imgExt != ('jpg'||'png'||'jrpg'||'bmp'||'gif'||'jpeg'))){
 					//print_r('bad og img');
 					return;
 				}
 
+				$imgTitle = sanitize_file_name($imgTitle);
+				# Let's not get crazy here. 
+				$imgTitle = substr($imgTitle, 0, 100);
+				if (strpos($imgTitle, '.') !== FALSE){
+					$imgTitle = 'retrieved-featured-image';
+				} else {
+					$imgTitle = $imgTitle;
+				}
 
 				//'/' . get_option(upload_path, 'wp-content/uploads') . '/' . date("o")
 				$uploadDir = wp_upload_dir();
-				$ogCacheImg = $uploadDir['path'] . $postID . "-" . $imgTitle . "." . $imgExt;
+				$ogCacheImg = $uploadDir['path'] . '/' . $postID . "-" . $imgTitle . "." . $resolved_img_ext;
 
 				if ( !file_exists($ogCacheImg) ) {
 
 
 					$result  = copy($ogImage, $ogCacheImg);
 
+					if (!$result) {
+						return;
+					}
+
 
 				}
 
+
+			if ( false == pressforward()->pf_feed_items->assure_image($ogCacheImg) ) {
+				return;
+			}
 
 			//Methods within sourced from http://codex.wordpress.org/Function_Reference/wp_insert_attachment
 			//and http://wordpress.stackexchange.com/questions/26138/set-post-thumbnail-with-php
 
 			//Get the type of the image file. .jpg, .gif, or whatever
-			$filetype = wp_check_filetype( $ogCacheImg );
+			$filetype = pressforward()->pf_feed_items->resolve_image_type( $ogCacheImg );
 
 			//Set the identifying variables for the about to be featured image.
 			$imgData = array(
 							//tell WordPress what the filetype is.
-							'post_mime_type' => $filetype['type'],
+							'post_mime_type' => $filetype,
 							//set the image title to the title of the site you are pulling from
 							'post_title' => get_the_title($postID),
 							//WordPress tells us we must set this and set it to empty. Why? Dunno.

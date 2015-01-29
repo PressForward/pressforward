@@ -340,6 +340,7 @@ function pf_get_user_level($option, $default_level) {
 function pf_de_https($url, $function = false) {
 	$args = func_get_args();
 	$url = str_replace('&amp;','&', $url);
+	$url_first = $url;
 	if (!$function){
 		$r = set_url_scheme($url, 'http');
 	} else {
@@ -355,9 +356,15 @@ function pf_de_https($url, $function = false) {
 		        $r = call_user_func_array( $function, $args );
 		    }
 
-		    if ( is_wp_error( $r ) ) {
-		        // bail
-						return false;
+		    if ( !$r || is_wp_error( $r ) ) {
+		        # Last Chance!
+						if ('file_get_contents' != $function){
+							$r = file_get_contents($url_first);
+							#var_dump($r); die();
+						} else {
+								// bail
+								return false;
+						}
 		    }
 		}
 	}
@@ -665,6 +672,7 @@ function pf_forward_unto_source(){
 		$link = get_post_meta($post_ID, 'item_link', TRUE);
 		if (!empty($link)){
 			echo '<link rel="canonical" href="'.$link.'" />';
+			echo '<meta property="og:url" content="'.$link.'" />';
 			$wait = get_option('pf_link_to_source', 0);
 			if ($wait > 0){
 				echo '<META HTTP-EQUIV="refresh" CONTENT="'.$wait.';URL='.$link.'">';
