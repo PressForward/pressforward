@@ -381,21 +381,23 @@ class PF_Admin {
 							echo '<button class="btn btn-small nominate-now schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominate', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-single-licon.png" /></button>';
 							# Add option here for admin-level users to send items direct to draft.
 						?>
-							
-							<button type="button" class="btn btn-small pf-amplify btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="icon-bullhorn"></i><span class="caret"></button>
-							<ul class="dropdown-menu" role="menu">
+						<div class="dropdown btn-group" role="group">
+							<button type="button" class="btn btn-default btn-small dropdown-toggle pf-amplify" data-toggle="dropdown" aria-expanded="true" id="amplify-<?php echo $item['item_id']; ?>"><i class="icon-bullhorn"></i><span class="caret"></button>
+							<ul class="dropdown-menu" role="menu" aria-labelledby="amplify-<?php echo $item['item_id']; ?>">
 								<?php 
-									self::dropdown_option(__('Send to Draft', 'pf'), "amplify-draft", 'amplify-option'); 
+									self::dropdown_option(__('Send to Draft', 'pf'), "amplify-draft-".$item['item_id'], 'amplify-option'); 
 								?>
 								<li class="divider"></li>
 								<?php 
-									self::dropdown_option(__('Tweet', 'pf'), "amplify-draft", 'amplify-option'); 
-									self::dropdown_option(__('Facebook', 'pf'), "amplify-draft", 'amplify-option'); 
-									self::dropdown_option(__('Instapaper', 'pf'), "amplify-draft", 'amplify-option'); 
-									self::dropdown_option(__('Tumblr', 'pf'), "amplify-draft", 'amplify-option'); 
+									self::dropdown_option(__('Tweet', 'pf'), "amplify-tweet-".$item['item_id'], 'amplify-option'); 
+									self::dropdown_option(__('Facebook', 'pf'), "amplify-facebook-".$item['item_id'], 'amplify-option'); 
+									self::dropdown_option(__('Instapaper', 'pf'), "amplify-instapaper-".$item['item_id'], 'amplify-option'); 
+									self::dropdown_option(__('Tumblr', 'pf'), "amplify-tumblr-".$item['item_id'], 'amplify-option'); 
 									do_action( 'pf_amplify_buttons' );
 								?>
+
 							 </ul>
+						</div>
 						<?php
 						}
 					}
