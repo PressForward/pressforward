@@ -139,7 +139,7 @@ visibility:hidden;
     vertical-align: middle;
 }
 
-.pf-btns .btn.btn-unrounded {
+.pf-btns .btn.btn-unrounded, article .pf-btns .btn {
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     border-radius: 0;
