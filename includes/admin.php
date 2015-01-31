@@ -28,6 +28,7 @@ class PF_Admin {
 		// AJAX handlers
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
+		add_action( 'wp_ajax_simple_nom_to_draft', array( $this, 'simple_nom_to_draft') );
 		add_action( 'wp_ajax_assemble_feed_for_pull', array( $this, 'trigger_source_data') );
 		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
 		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );
@@ -163,8 +164,8 @@ class PF_Admin {
 		<?php
 	}
 	
-	public function dropdown_option($string, $id, $class = 'pf-top-menu-selection'){
-		?><li role="presentation"><a role="menuitem" id="<?php echo $id; ?>" tabindex="-1" class="<?php echo $class; ?>" href="#"><?php echo $string; ?></a></li><?php 
+	public function dropdown_option($string, $id, $class = 'pf-top-menu-selection', $form_id = ''){
+		?><li role="presentation"><a role="menuitem" id="<?php echo $id; ?>" tabindex="-1" class="<?php echo $class; ?>" data-form="<?php echo $form_id; ?>" href="#"><?php echo $string; ?></a></li><?php 
 	}
 	
 	public function nav_bar($page = 'pf-menu'){
@@ -389,14 +390,14 @@ class PF_Admin {
 							<button type="button" class="btn btn-default btn-small dropdown-toggle pf-amplify" data-toggle="dropdown" aria-expanded="true" id="amplify-<?php echo $item['item_id']; ?>"><i class="icon-bullhorn"></i><span class="caret"></button>
 							<ul class="dropdown-menu" role="menu" aria-labelledby="amplify-<?php echo $item['item_id']; ?>">
 								<?php 
-									self::dropdown_option(__('Send to Draft', 'pf'), "amplify-draft-".$item['item_id'], 'amplify-option amplify-draft'); 
+									self::dropdown_option(__('Send to Draft', 'pf'), "amplify-draft-".$item['item_id'], 'amplify-option amplify-draft', $item['item_id'] ); 
 								?>
 								<li class="divider"></li>
 								<?php 
-									self::dropdown_option(__('Tweet', 'pf'), "amplify-tweet-".$item['item_id'], 'amplify-option'); 
-									self::dropdown_option(__('Facebook', 'pf'), "amplify-facebook-".$item['item_id'], 'amplify-option'); 
-									self::dropdown_option(__('Instapaper', 'pf'), "amplify-instapaper-".$item['item_id'], 'amplify-option'); 
-									self::dropdown_option(__('Tumblr', 'pf'), "amplify-tumblr-".$item['item_id'], 'amplify-option'); 
+									self::dropdown_option(__('Tweet', 'pf'), "amplify-tweet-".$item['item_id'], 'amplify-option', $item['item_id'] ); 
+									self::dropdown_option(__('Facebook', 'pf'), "amplify-facebook-".$item['item_id'], 'amplify-option', $item['item_id'] ); 
+									self::dropdown_option(__('Instapaper', 'pf'), "amplify-instapaper-".$item['item_id'], 'amplify-option', $item['item_id'] ); 
+									self::dropdown_option(__('Tumblr', 'pf'), "amplify-tumblr-".$item['item_id'], 'amplify-option', $item['item_id'] ); 
 									do_action( 'pf_amplify_buttons' );
 								?>
 
@@ -1857,6 +1858,11 @@ class PF_Admin {
 
 	public function archive_a_nom() {
 		pressforward()->nominations->archive_a_nom();
+		die();
+	}
+
+	public function simple_nom_to_draft(){
+		pressforward()->nominations->simple_nom_to_draft();
 		die();
 	}
 }

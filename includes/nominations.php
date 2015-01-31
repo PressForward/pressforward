@@ -599,18 +599,20 @@ class PF_Nominations {
 		}
 	}
 	
-	function simple_nom_to_draft($id = false){
+	public function simple_nom_to_draft($id = false){
 		global $post;
-		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
-		if (! wp_verify_nonce($pf_drafted_nonce, 'drafter')){
+		$pf_drafted_nonce = $_POST['pf_nomination_nonce'];
+		if (! wp_verify_nonce($pf_drafted_nonce, 'nomination')){
 			die(__('Nonce not recieved. Are you sure you should be drafting?', 'pf'));
 		} else {
 			if (!$id){
 				$id = $_POST['nom_id'];
+				$nom = get_post($id);
+				$item_id = pf_retrieve_meta($id, 'item_id');
 			}
 			$post_check = $this->is_nominated($item_id, 'post', false);
 			if (true != $post_check) {
-				$nom = get_post($id);
+				
 				$item_link = pf_retrieve_meta($id, 'item_link');
 				$author = get_the_item_author($id);
 				$content = $nom->post_content;
@@ -663,7 +665,7 @@ class PF_Nominations {
 					'what' => 'draft',
 					'action' => 'simple_nom_to_draft',
 					'id' => $id,
-					'data' => 'Failed due to existing nomination.',
+					'data' => 'Failed due to existing nomination or lack of ID.',
 					'supplemental' => array(
 						'repeat' => $post_check,
 						'buffered' => ob_get_contents()

@@ -1,5 +1,9 @@
 jQuery(window).load(function() {
 
+	var nom_vars = {
+		the_nom_id: 0
+	};
+
 	jQuery('.pf_container').on('click', ".nominate-now", function (evt){ 
 		evt.preventDefault();
 		
@@ -49,7 +53,7 @@ jQuery(window).load(function() {
 		evt.preventDefault();
 		
 		var element		= jQuery(this);
-		var itemID		= element.attr('form');
+		var itemID		= element.attr('data-form');
 		var item_title 		= jQuery("#item_title_"+itemID).val();
 		var source_title 	= jQuery("#source_title_"+itemID).val(); 
 		var item_date 		= jQuery("#item_date_"+itemID).val(); 
@@ -64,39 +68,42 @@ jQuery(window).load(function() {
 		var postID 			= jQuery('#'+itemID).attr('pf-post-id');
 	//	var errorThrown		= 'Broken';
 		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());
-		var the_nom_id		= 0;
+		nom_vars.the_nom_id		= 0;
 		jQuery('.loading-'+itemID).show();
 		jQuery.post(ajaxurl, {
 			action: 'build_a_nomination',
-			item_title: item_title,
-			source_title: source_title,
-			item_date: item_date,
-			item_author: item_author,
-			item_content: item_content,
-			item_link: item_link,
-			item_feat_img: item_feat_img,
-			item_id: item_id,
-			item_wp_date: item_wp_date,
-			item_tags: item_tags,
-			item_post_id: postID,
-			source_repeat: source_repeat,
-			pf_nomination_nonce: theNonce
+				item_title: item_title,
+				source_title: source_title,
+				item_date: item_date,
+				item_author: item_author,
+				item_content: item_content,
+				item_link: item_link,
+				item_feat_img: item_feat_img,
+				item_id: item_id,
+				item_wp_date: item_wp_date,
+				item_tags: item_tags,
+				item_post_id: postID,
+				source_repeat: source_repeat,
+				pf_nomination_nonce: theNonce
 		},
 		function(response) {
 			//jQuery('.loading-'+itemID).hide();
 			//jQuery(".nominate-result-"+itemID).html(response);
 			//alert(response);
 			//jQuery("#test-div1").append(data);
-			the_nom_id = jQuery(response).find("response").attr('id');
+			nom_vars.the_nom_id = jQuery(response).find("nomination").attr('id');
+			//alert(jQuery(response).find("nomination").attr('id'));
+
+		}).promise().done(function(){
+			alert(nom_vars.the_nom_id);
 			jQuery.post(ajaxurl, {
 				action: 'simple_nom_to_draft',
-				nom_id: the_nom_id,
+				nom_id: nom_vars.the_nom_id,
 				pf_nomination_nonce: theNonce
 			},
 			function(response) {
 				jQuery('.loading-'+itemID).hide();	
 			});
-
 		});
 	});
 	  
