@@ -389,7 +389,7 @@ class PF_Admin {
 							<button type="button" class="btn btn-default btn-small dropdown-toggle pf-amplify" data-toggle="dropdown" aria-expanded="true" id="amplify-<?php echo $item['item_id']; ?>"><i class="icon-bullhorn"></i><span class="caret"></button>
 							<ul class="dropdown-menu" role="menu" aria-labelledby="amplify-<?php echo $item['item_id']; ?>">
 								<?php 
-									self::dropdown_option(__('Send to Draft', 'pf'), "amplify-draft-".$item['item_id'], 'amplify-option'); 
+									self::dropdown_option(__('Send to Draft', 'pf'), "amplify-draft-".$item['item_id'], 'amplify-option amplify-draft'); 
 								?>
 								<li class="divider"></li>
 								<?php 
