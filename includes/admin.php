@@ -394,7 +394,7 @@ class PF_Admin {
 						}
 						echo '<a class="btn btn-small nom-to-archive schema-actor '.$archive_status.'" pf-schema="archive" pf-schema-class="archived" data-toggle="tooltip" title="' . __('Archive', 'pf') .  '" form="' . $metadata['nom_id'] . '"><img src="' . PF_URL . 'assets/images/archive.png" /></button></a>';
 						$draft_status = "";
-						if ( 1 == pf_get_relationship_value( 'draft', $metadata['nom_id'], $user_id ) ){
+						if ( ( 1 == pf_get_relationship_value( 'draft', $metadata['nom_id'], $user_id ) ) || ( 1 == pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ){
 							$draft_status = 'btn-success';
 						}
 						echo '<a href="#nominate" class="btn btn-small nom-to-draft schema-actor '. $draft_status .'" pf-schema="draft" pf-schema-class="btn-success" form="' . $metadata['item_id'] . '" data-original-title="' . __('Draft', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></a>';
