@@ -93,9 +93,11 @@ jQuery(window).load(function() {
 			//jQuery("#test-div1").append(data);
 			nom_vars.the_nom_id = jQuery(response).find("nomination").attr('id');
 			//alert(jQuery(response).find("nomination").attr('id'));
+			var element_class = element.attr('pf-schema-class');
+			jQuery('.nominate-now[form='+itemID+']').addClass(element_class);
 
 		}).promise().done(function(){
-			alert(nom_vars.the_nom_id);
+			//alert(nom_vars.the_nom_id);
 			jQuery.post(ajaxurl, {
 				action: 'simple_nom_to_draft',
 				nom_id: nom_vars.the_nom_id,
