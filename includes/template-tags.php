@@ -37,8 +37,11 @@ function the_item_author(){
 	echo get_the_item_author();
 }
 
-function get_the_item_link(){
-	$m = pf_retrieve_meta(get_the_ID(), 'item_link');
+function get_the_item_link($id = false){
+	if ( !$id ){
+		$id = get_the_ID();
+	}
+	$m = pf_retrieve_meta($id, 'item_link');
 	return $m;
 }
 

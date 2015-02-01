@@ -163,15 +163,37 @@ class PF_Admin {
 			</div>
 		<?php
 	}
+
+	public function tweet_intent($id){
+
+		$url = 'https://twitter.com/intent/tweet?';
+		$url .= 'text=' . urlencode(get_the_title($id));
+		$url .= '&url=' . urlencode(get_the_item_link($id));
+		$url .= '&via=' . urlencode('pressfwd');
+		return $url;
+
+	}
 	
-	public function dropdown_option($string, $id, $class = 'pf-top-menu-selection', $form_id = '', $schema_action = '', $schema_class = ''){
+	public function dropdown_option($string, $id, $class = 'pf-top-menu-selection', $form_id = '', $schema_action = '', $schema_class = '', $href = '', $target = ''){
 		 
 		$option = '<li role="presentation"><a role="menuitem" id="';
 		$option .= $id;
 		$option .= '" tabindex="-1" class="';
 		$option .= $class;
 		$option .= '"';
-		$option .= ' href="#" ';
+
+		$option .= ' href="';
+		if (!empty($href)){
+			$option .= $href;
+		} else {
+			$option .= '#';
+		}
+		$option .= '"';
+
+		if (!empty($target)){
+			$option .= ' target="'.$target.'"';
+		}
+
 		
 		if (!empty($form_id)){
 			$option .= ' data-form="' . $form_id . '" ';
@@ -425,7 +447,8 @@ class PF_Admin {
 								?>
 								<li class="divider"></li>
 								<?php 
-									self::dropdown_option(__('Tweet', 'pf'), "amplify-tweet-".$item['item_id'], 'amplify-option', $item['item_id'] ); 
+									$tweet_intent = self::tweet_intent($id_for_comments);
+									self::dropdown_option(__('Tweet', 'pf'), "amplify-tweet-".$item['item_id'], 'amplify-option', $item['item_id'], '', '', $tweet_intent, '_blank' ); 
 									self::dropdown_option(__('Facebook', 'pf'), "amplify-facebook-".$item['item_id'], 'amplify-option', $item['item_id'] ); 
 									self::dropdown_option(__('Instapaper', 'pf'), "amplify-instapaper-".$item['item_id'], 'amplify-option', $item['item_id'] ); 
 									self::dropdown_option(__('Tumblr', 'pf'), "amplify-tumblr-".$item['item_id'], 'amplify-option', $item['item_id'] ); 
