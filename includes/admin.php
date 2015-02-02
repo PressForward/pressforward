@@ -1878,7 +1878,15 @@ class PF_Admin {
 				'key' => 'pf_feed_last_retrieved',
 				'compare' => 'NOT EXISTS',
 			),
+			array(
+				'key' => 'pf_feed_last_retrieved',
+				'compare' => 'EXISTS',
+			)
 		) );
+
+		#var_dump($query); die();
+
+		
 	}
 
 	/////////////////////////
