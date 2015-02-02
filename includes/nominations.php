@@ -598,6 +598,86 @@ class PF_Nominations {
 			return false;
 		}
 	}
+	
+	public function simple_nom_to_draft($id = false){
+		global $post;
+		$pf_drafted_nonce = $_POST['pf_nomination_nonce'];
+		if (! wp_verify_nonce($pf_drafted_nonce, 'nomination')){
+			die(__('Nonce not recieved. Are you sure you should be drafting?', 'pf'));
+		} else {
+			if (!$id){
+				$id = $_POST['nom_id'];
+				$nom = get_post($id);
+				$item_id = pf_retrieve_meta($id, 'item_id');
+			}
+			$post_check = $this->is_nominated($item_id, 'post', false);
+			if (true != $post_check) {
+				
+				$item_link = pf_retrieve_meta($id, 'item_link');
+				$author = get_the_item_author($id);
+				$content = $nom->post_content;
+				$title = $nom->post_title;
+				$data = array(
+					'post_status' => 'draft',
+					'post_type' => 'post',
+					'post_title' => $title,
+					'post_content' => $content
+				);
+				# Check if the item was rendered readable, if not, make it so.
+				$readable_state = pf_get_post_meta($id, 'readable_status', true);
+				if ($readable_state != 1){
+					$readArgs = array(
+						'force' => false,
+						'descrip' => htmlspecialchars_decode($content),
+						'url' => $item_link,
+						'authorship' => $author
+					);
+					$readReady = pressforward()->readability->get_readable_text($readArgs);
+					#var_dump($readReady); die();
+					$data['post_content'] = $readReady['readable'];
+				}
+				
+				$new_post_id = wp_insert_post( $data, true );
+##Check
+				add_post_meta($id, 'nom_id', $id, true);
+				pf_meta_transition_post($id, $new_post_id);
+				$already_has_thumb = has_post_thumbnail($id);
+				if ($already_has_thumb)  {
+					$post_thumbnail_id = get_post_thumbnail_id( $id );
+					set_post_thumbnail($new_post_id, $post_thumbnail_id);
+				}
+				
+				$response = array(
+					'what' => 'draft',
+					'action' => 'simple_nom_to_draft',
+					'id' => $new_post_id,
+					'data' => $data['post_content'] . ' drafted.',
+					'supplemental' => array(
+						'content' => $content,
+						'originID' => $id,
+						'repeat' => $post_check,
+						'buffered' => ob_get_contents()
+					)
+				);
+				
+			} else {
+				$response = array(
+					'what' => 'draft',
+					'action' => 'simple_nom_to_draft',
+					'id' => $id,
+					'data' => 'Failed due to existing nomination or lack of ID.',
+					'supplemental' => array(
+						'repeat' => $post_check,
+						'buffered' => ob_get_contents()
+					)
+				);
+			}
+			$xmlResponse = new WP_Ajax_Response($response);
+			$xmlResponse->send();
+			ob_end_flush();
+			die();
+		}
+	}
 
 	function build_nom_draft() {
 		global $post;

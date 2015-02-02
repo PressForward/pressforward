@@ -139,7 +139,7 @@ visibility:hidden;
     vertical-align: middle;
 }
 
-.pf-btns .btn.btn-unrounded {
+.pf-btns .btn.btn-unrounded, article .pf-btns .btn {
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     border-radius: 0;
@@ -365,6 +365,11 @@ h3 {
 
 .pressforward .grid.full #entries article.feed-item header {
 	margin-bottom: 1em;
+	overflow: visible;
+}
+
+.pressforward .pf-btns .amplify-group {
+	display: inline-block;
 }
 
 .box-controls {

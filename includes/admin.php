@@ -28,6 +28,7 @@ class PF_Admin {
 		// AJAX handlers
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
+		add_action( 'wp_ajax_simple_nom_to_draft', array( $this, 'simple_nom_to_draft') );
 		add_action( 'wp_ajax_assemble_feed_for_pull', array( $this, 'trigger_source_data') );
 		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
 		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );
@@ -162,9 +163,56 @@ class PF_Admin {
 			</div>
 		<?php
 	}
+
+	public function tweet_intent($id){
+
+		$url = 'https://twitter.com/intent/tweet?';
+		$url .= 'text=' . urlencode(get_the_title($id));
+		$url .= '&url=' . urlencode(get_the_item_link($id));
+		$url .= '&via=' . urlencode('pressfwd');
+		return $url;
+
+	}
 	
-	public function dropdown_option($string, $id, $class = 'pf-top-menu-selection'){
-		?><li role="presentation"><a role="menuitem" id="<?php echo $id; ?>" tabindex="-1" class="<?php echo $class; ?>" href="#"><?php echo $string; ?></a></li><?php 
+	public function dropdown_option($string, $id, $class = 'pf-top-menu-selection', $form_id = '', $schema_action = '', $schema_class = '', $href = '', $target = ''){
+		 
+		$option = '<li role="presentation"><a role="menuitem" id="';
+		$option .= $id;
+		$option .= '" tabindex="-1" class="';
+		$option .= $class;
+		$option .= '"';
+
+		$option .= ' href="';
+		if (!empty($href)){
+			$option .= $href;
+		} else {
+			$option .= '#';
+		}
+		$option .= '"';
+
+		if (!empty($target)){
+			$option .= ' target="'.$target.'"';
+		}
+
+		
+		if (!empty($form_id)){
+			$option .= ' data-form="' . $form_id . '" ';
+		}
+
+		if (!empty($schema_action)){
+			$option .= ' pf-schema="' . $schema_action . '" ';
+		}
+
+		if (!empty($schema_class)){
+			$option .= ' pf-schema-class="' . $schema_class . '" ';
+		}
+
+		$option .= '>';
+		$option .= $string;
+		$option .= '</a></li>';
+
+		echo $option;
+
 	}
 	
 	public function nav_bar($page = 'pf-menu'){
@@ -313,8 +361,9 @@ class PF_Admin {
 				$item_id = $metadata['item_id'];
 			} else {
 				$item_id = $item['item_id'];
-			}
+			}	
 			?>
+
 				<div class="actions pf-btns <?php if($modal){ echo 'modal-btns '; } ?>">
 					<?php
 					$infoPop = 'top';
@@ -367,20 +416,49 @@ class PF_Admin {
 						}
 						echo '<a class="btn btn-small nom-to-archive schema-actor '.$archive_status.'" pf-schema="archive" pf-schema-class="archived" data-toggle="tooltip" title="' . __('Archive', 'pf') .  '" form="' . $metadata['nom_id'] . '"><img src="' . PF_URL . 'assets/images/archive.png" /></button></a>';
 						$draft_status = "";
-						if ( 1 == pf_get_relationship_value( 'draft', $metadata['nom_id'], $user_id ) ){
+						if ( ( 1 == pf_get_relationship_value( 'draft', $metadata['nom_id'], $user_id ) ) || ( 1 == pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ){
 							$draft_status = 'btn-success';
 						}
 						echo '<a href="#nominate" class="btn btn-small nom-to-draft schema-actor '. $draft_status .'" pf-schema="draft" pf-schema-class="btn-success" form="' . $metadata['item_id'] . '" data-original-title="' . __('Draft', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></a>';
 
 					} else {
 						#var_dump(pf_get_relationship('nominate', $id_for_comments, $user_id));
-						if (1 == pf_get_relationship_value('nominate', $id_for_comments, $user_id)){
+						if ( ( 1 == pf_get_relationship_value('nominate', $id_for_comments, $user_id) ) || ( 1 == pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ){
 							echo '<button class="btn btn-small nominate-now btn-success schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominated', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-single-licon.png" /></button>';
 							# Add option here for admin-level users to send items direct to draft.
 						} else {
 							echo '<button class="btn btn-small nominate-now schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . $item['item_id'] . '" data-original-title="' . __('Nominate', 'pf') .  '"><img src="' . PF_URL . 'assets/images/pressforward-single-licon.png" /></button>';
 							# Add option here for admin-level users to send items direct to draft.
+
 						}
+
+						?>
+						<div class="dropdown btn-group amplify-group" role="group">
+							<button type="button" class="btn btn-default btn-small dropdown-toggle pf-amplify" data-toggle="dropdown" aria-expanded="true" id="amplify-<?php echo $item['item_id']; ?>"><i class="icon-bullhorn"></i><span class="caret"></button>
+							<ul class="dropdown-menu" role="menu" aria-labelledby="amplify-<?php echo $item['item_id']; ?>">
+								<?php 
+									$send_to_draft_classes = 'amplify-option amplify-draft schema-actor';
+
+									if ( 1 == pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ){
+										$send_to_draft_classes .= ' btn-success';
+									}
+
+									self::dropdown_option(__('Send to Draft', 'pf'), "amplify-draft-".$item['item_id'], $send_to_draft_classes, $item['item_id'], 'draft', 'btn-success' ); 
+								?>
+								<li class="divider"></li>
+								<?php 
+									$tweet_intent = self::tweet_intent($id_for_comments);
+									self::dropdown_option(__('Tweet', 'pf'), "amplify-tweet-".$item['item_id'], 'amplify-option', $item['item_id'], '', '', $tweet_intent, '_blank' ); 
+									#self::dropdown_option(__('Facebook', 'pf'), "amplify-facebook-".$item['item_id'], 'amplify-option', $item['item_id'] ); 
+									#self::dropdown_option(__('Instapaper', 'pf'), "amplify-instapaper-".$item['item_id'], 'amplify-option', $item['item_id'] ); 
+									#self::dropdown_option(__('Tumblr', 'pf'), "amplify-tumblr-".$item['item_id'], 'amplify-option', $item['item_id'] ); 
+									do_action( 'pf_amplify_buttons' );
+								?>
+
+							 </ul>
+						</div>
+						<?php 
+
 					}
 
 
@@ -395,6 +473,7 @@ class PF_Admin {
 					}
 					?>
 				</div>
+
 		<?php
 
 				if (has_action('pf_comment_action_modal')){
@@ -1833,6 +1912,11 @@ class PF_Admin {
 
 	public function archive_a_nom() {
 		pressforward()->nominations->archive_a_nom();
+		die();
+	}
+
+	public function simple_nom_to_draft(){
+		pressforward()->nominations->simple_nom_to_draft();
 		die();
 	}
 }

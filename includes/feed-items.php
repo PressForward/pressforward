@@ -196,7 +196,7 @@ class PF_Feed_Item {
 	public static function resolve_a_url($url){
 		$url_array = parse_url($url);
 		if (empty($url_array['host'])){
-
+			return;
 		} else {
 			$check = self::url_is_aggregation_service($url);
 			if ($check){
@@ -222,6 +222,9 @@ class PF_Feed_Item {
 	public static function set_source_link( $post_id, $item_url ) {
 		$url = self::resolve_a_url($item_url);
 		$url_array = parse_url($url);
+		if (empty($url_array['host'])){
+			return;
+		}
 		$source_url = 'http://' . $url_array['host'];
 		return pf_update_meta( $post_id, 'pf_source_link', $source_url );
 	}
@@ -250,6 +253,9 @@ class PF_Feed_Item {
 	public static function resolve_source_url($url){
 		$url = pressforward()->pf_feed_items->resolve_a_url($url);
 		$url_array = parse_url($url);
+		if (empty($url_array['host'])){
+			return;
+		}
 		$source_url = 'http://' . $url_array['host'];
 		return $source_url;
 	}
