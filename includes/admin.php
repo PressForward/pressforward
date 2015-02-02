@@ -437,16 +437,19 @@ class PF_Admin {
 							<button type="button" class="btn btn-default btn-small dropdown-toggle pf-amplify" data-toggle="dropdown" aria-expanded="true" id="amplify-<?php echo $item['item_id']; ?>"><i class="icon-bullhorn"></i><span class="caret"></button>
 							<ul class="dropdown-menu" role="menu" aria-labelledby="amplify-<?php echo $item['item_id']; ?>">
 								<?php 
-									$send_to_draft_classes = 'amplify-option amplify-draft schema-actor';
+									if (current_user_can( 'edit_posts' )){
+										$send_to_draft_classes = 'amplify-option amplify-draft schema-actor';
 
-									if ( 1 == pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ){
-										$send_to_draft_classes .= ' btn-success';
-									}
+										if ( 1 == pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ){
+											$send_to_draft_classes .= ' btn-success';
+										}
 
-									self::dropdown_option(__('Send to Draft', 'pf'), "amplify-draft-".$item['item_id'], $send_to_draft_classes, $item['item_id'], 'draft', 'btn-success' ); 
+										self::dropdown_option(__('Send to Draft', 'pf'), "amplify-draft-".$item['item_id'], $send_to_draft_classes, $item['item_id'], 'draft', 'btn-success' ); 
+
 								?>
-								<li class="divider"></li>
+										<li class="divider"></li>
 								<?php 
+									}
 									$tweet_intent = self::tweet_intent($id_for_comments);
 									self::dropdown_option(__('Tweet', 'pf'), "amplify-tweet-".$item['item_id'], 'amplify-option', $item['item_id'], '', '', $tweet_intent, '_blank' ); 
 									#self::dropdown_option(__('Facebook', 'pf'), "amplify-facebook-".$item['item_id'], 'amplify-option', $item['item_id'] ); 
