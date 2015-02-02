@@ -4,7 +4,7 @@ Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stable tag: 3.4.4
+Stable tag: 3.4.5
 License: GPL2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -87,6 +87,14 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 9. Edit and format items in the regular WordPress Posts panel.
 
 == Changelog ==
+
+= 3.4.5 =
+* Nominate This now works much more optimally.
+* Nominate This no longer creating crazy line breaks. 
+* OpenGraph image detection now working properly. 
+* Alert Box now more backwards compatible.
+* Turned off modules no longer show turned on menus. 
+* Mark As Read now works properly. 
 
 = 3.4.4 =
 * Resolved CSS overlay design conflicts.
