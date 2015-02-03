@@ -33,7 +33,7 @@ class PF_Admin {
 		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
 		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
-		add_action( 'wp_ajax_ajax_get_comments', array( $this, 'ajax_get_comments') );
+		add_action( 'wp_ajax_pf_ajax_get_comments', array( $this, 'pf_ajax_get_comments') );
 		add_action( 'wp_ajax_pf_ajax_thing_deleter', array( $this, 'pf_ajax_thing_deleter') );
 		add_action( 'wp_ajax_pf_ajax_retain_display_setting', array( $this, 'pf_ajax_retain_display_setting' ) );
 		add_action( 'init', array( $this, 'register_feed_item_removed_status') );
@@ -992,7 +992,7 @@ class PF_Admin {
 
 	}
 
-	function ajax_get_comments(){
+	function pf_ajax_get_comments(){
 			if (has_action('pf_modal_comments')){
 				$id_for_comments = $_POST['id_for_comments'];
 				do_action('pf_modal_comments', $id_for_comments);
