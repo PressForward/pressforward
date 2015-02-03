@@ -173,9 +173,9 @@ class PF_Admin {
 		return $url;
 
 	}
-	
+
 	public function dropdown_option($string, $id, $class = 'pf-top-menu-selection', $form_id = '', $schema_action = '', $schema_class = '', $href = '', $target = ''){
-		 
+
 		$option = '<li role="presentation"><a role="menuitem" id="';
 		$option .= $id;
 		$option .= '" tabindex="-1" class="';
@@ -194,7 +194,7 @@ class PF_Admin {
 			$option .= ' target="'.$target.'"';
 		}
 
-		
+
 		if (!empty($form_id)){
 			$option .= ' data-form="' . $form_id . '" ';
 		}
@@ -214,7 +214,7 @@ class PF_Admin {
 		echo $option;
 
 	}
-	
+
 	public function nav_bar($page = 'pf-menu'){
 		?>
 		<div class="display">
@@ -226,7 +226,7 @@ class PF_Admin {
 						<span class="caret"></span>
 					  </button>
 						<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-						<?php 
+						<?php
 							self::dropdown_option(__('Grid', 'pf'), "gogrid");
 							self::dropdown_option(__('List', 'pf'), "golist");
 						?>
@@ -239,7 +239,7 @@ class PF_Admin {
 					<span class="caret"></span>
 				  </button>
 				  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-					<?php 
+					<?php
 						if ( 'pf-review' != $page ){
 							self::dropdown_option(__('Starred', 'pf'), "showMyStarred");
 							self::dropdown_option(__('Show hidden', 'pf'), "showMyHidden");
@@ -262,9 +262,9 @@ class PF_Admin {
 					<span class="caret"></span>
 				  </button>
 				  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-					<?php 
+					<?php
 						self::dropdown_option(__('Reset', 'pf'), "sort-reset");
-						self::dropdown_option(__('Date of item', 'pf'), "sortbyitemdate"); 
+						self::dropdown_option(__('Date of item', 'pf'), "sortbyitemdate");
 						self::dropdown_option(__('Date retrieved', 'pf'), "sortbyfeedindate");
 						if ( 'pf-review' == $page ){
 							self::dropdown_option(__('Date nominated', 'pf'), "sortbynomdate");
@@ -278,7 +278,7 @@ class PF_Admin {
 					<button type="submit" id="pf-help" class="btn btn-small"><?php _e('Need help?', 'pf'); ?></button>
 				</div>
 			</div>
-			
+
 			<div class="pull-right text-right">
 			<!-- or http://thenounproject.com/noun/list/#icon-No9479? -->
 				<?php
@@ -287,9 +287,9 @@ class PF_Admin {
 										$alerts = the_alert_box()->get_specimens();
 										remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
 										remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
-										
+
 					if ( 'pf-review' == $page ){
-						echo '<button type="submit" class="delete btn btn-danger btn-small pull-left" id="archivenoms" value="' . __('Archive all', 'pf') . '" >' . __('Archive all', 'pf') . '</button>'; 
+						echo '<button type="submit" class="delete btn btn-danger btn-small pull-left" id="archivenoms" value="' . __('Archive all', 'pf') . '" >' . __('Archive all', 'pf') . '</button>';
 					}
 
 										if (!empty($alerts) && (0 != $alerts->post_count)){
@@ -302,7 +302,7 @@ class PF_Admin {
 
 			</div>
 		</div><!-- End btn-group -->
-		<?php 
+		<?php
 	}
 
 	public function toolbox($slug = 'allfeed', $version = 0, $deck = false){
@@ -361,7 +361,7 @@ class PF_Admin {
 				$item_id = $metadata['item_id'];
 			} else {
 				$item_id = $item['item_id'];
-			}	
+			}
 			?>
 
 				<div class="actions pf-btns <?php if($modal){ echo 'modal-btns '; } ?>">
@@ -436,7 +436,7 @@ class PF_Admin {
 						<div class="dropdown btn-group amplify-group" role="group">
 							<button type="button" class="btn btn-default btn-small dropdown-toggle pf-amplify" data-toggle="dropdown" aria-expanded="true" id="amplify-<?php echo $item['item_id']; ?>"><i class="icon-bullhorn"></i><span class="caret"></button>
 							<ul class="dropdown-menu" role="menu" aria-labelledby="amplify-<?php echo $item['item_id']; ?>">
-								<?php 
+								<?php
 									if (current_user_can( 'edit_posts' )){
 										$send_to_draft_classes = 'amplify-option amplify-draft schema-actor';
 
@@ -444,23 +444,23 @@ class PF_Admin {
 											$send_to_draft_classes .= ' btn-success';
 										}
 
-										self::dropdown_option(__('Send to Draft', 'pf'), "amplify-draft-".$item['item_id'], $send_to_draft_classes, $item['item_id'], 'draft', 'btn-success' ); 
+										self::dropdown_option(__('Send to Draft', 'pf'), "amplify-draft-".$item['item_id'], $send_to_draft_classes, $item['item_id'], 'draft', 'btn-success' );
 
 								?>
 										<li class="divider"></li>
-								<?php 
+								<?php
 									}
 									$tweet_intent = self::tweet_intent($id_for_comments);
-									self::dropdown_option(__('Tweet', 'pf'), "amplify-tweet-".$item['item_id'], 'amplify-option', $item['item_id'], '', '', $tweet_intent, '_blank' ); 
-									#self::dropdown_option(__('Facebook', 'pf'), "amplify-facebook-".$item['item_id'], 'amplify-option', $item['item_id'] ); 
-									#self::dropdown_option(__('Instapaper', 'pf'), "amplify-instapaper-".$item['item_id'], 'amplify-option', $item['item_id'] ); 
-									#self::dropdown_option(__('Tumblr', 'pf'), "amplify-tumblr-".$item['item_id'], 'amplify-option', $item['item_id'] ); 
+									self::dropdown_option(__('Tweet', 'pf'), "amplify-tweet-".$item['item_id'], 'amplify-option', $item['item_id'], '', '', $tweet_intent, '_blank' );
+									#self::dropdown_option(__('Facebook', 'pf'), "amplify-facebook-".$item['item_id'], 'amplify-option', $item['item_id'] );
+									#self::dropdown_option(__('Instapaper', 'pf'), "amplify-instapaper-".$item['item_id'], 'amplify-option', $item['item_id'] );
+									#self::dropdown_option(__('Tumblr', 'pf'), "amplify-tumblr-".$item['item_id'], 'amplify-option', $item['item_id'] );
 									do_action( 'pf_amplify_buttons' );
 								?>
 
 							 </ul>
 						</div>
-						<?php 
+						<?php
 
 					}
 
@@ -871,13 +871,13 @@ class PF_Admin {
 					}
 				?>
 				<span id="h-after"> &#8226; </span>
-				
+
 				<button class="btn btn-small" id="fullscreenfeed"> <?php  _e('Full Screen', 'pf');  ?> </button>
 			</div><!-- End title -->
 			<?php self::pf_search_template(); ?>
 
 		</header><!-- End Header -->
-		<?php 
+		<?php
 			self::nav_bar();
 		?>
 		<div role="main">
@@ -1216,7 +1216,7 @@ class PF_Admin {
 				<p><br /></p>
 				<p>
 					<button type="submit" class="refreshfeed btn btn-small" id="refreshfeed" value="<?php  _e('Refresh', 'pf')  ?>"><?php  _e('Refresh', 'pf');  ?></button>
-					<?php 
+					<?php
 					_e( ' the feed retrieval process. This button will attempt to restart a broken refresh process. If a previous feed retrieval cycle was completed, it will start the next one early. However, if the process is currently ongoing it will notify the system that you believe there is an error in the retrieval process, and the next time your site steps through the cycle, the system will attempt to find and rectify the error.', 'pf');
 					?>
 				</p>
@@ -1314,7 +1314,6 @@ class PF_Admin {
 
 		//This gets the current page the user is on.
 		global $pagenow;
-
 
 		$user_ID = get_current_user_id();
 		$pf_user_scroll_switch = get_user_option('pf_user_scroll_switch', $user_ID);
