@@ -242,7 +242,7 @@ function allContentModal(){
 		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());
 		
 		jQuery.post(ajaxurl, {
-				action: 'ajax_get_comments',
+				action: 'pf_ajax_get_comments',
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
 				id_for_comments: postID,
 			}, 
