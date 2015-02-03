@@ -43,7 +43,10 @@ class PF_Admin {
 		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
 		add_action( 'manage_edit-pf_feed_sortable_columns', array( $this, 'make_last_retrieved_column_sortable' ) );
 		add_action( 'pre_get_posts', array( $this, 'sort_by_last_retrieved' ) );
+		add_action( 'quick_edit_custom_box', array( $this, 'quick_edit_field' ), 10, 2 );
+		add_action( 'save_post', array( $this, 'quick_edit_save' ), 10, 2 );
 	}
+
 	/**
 	 * Register menu pages
 	 */
@@ -1333,6 +1336,7 @@ class PF_Admin {
 			wp_register_script(PF_SLUG . '-tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
 			wp_register_script(PF_SLUG . '-media-query-imp', PF_URL . 'assets/js/media-query-imp.js', array( 'jquery', 'thickbox', 'media-upload' ));
 			wp_register_script(PF_SLUG . '-sort-imp', PF_URL . 'assets/js/sort-imp.js', array( PF_SLUG . '-tinysort', PF_SLUG . '-twitter-bootstrap', PF_SLUG . '-jq-fullscreen' ));
+			wp_register_script( PF_SLUG . '-quick-edit', PF_URL . 'assets/js/quick-edit.js', array( 'jquery' ) );
 
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
@@ -1397,6 +1401,11 @@ class PF_Admin {
 		if (('nomination') == get_post_type()) {
 			wp_enqueue_script(PF_SLUG . '-add-nom-imp', PF_URL . 'assets/js/add-nom-imp.js', array( 'jquery' ));
 		}
+
+		if ( 'edit.php' === $hook && 'pf_feed' === get_post_type() ) {
+			wp_enqueue_script( PF_SLUG . '-quick-edit' );
+		}
+
 		if (('pressforward_page_pf-feeder') != $hook) { return; }
 		else {
 			//And now lets enqueue the script, ensuring that jQuery is already active.
@@ -1781,6 +1790,8 @@ class PF_Admin {
 	/**
 	 * Content of the Last Retrieved column.
 	 *
+	 * We also hide the feed URL in this column, so we can reveal it on Quick Edit.
+	 *
 	 * @since 3.4.0
 	 *
 	 * @param string $column_name Column ID.
@@ -1809,6 +1820,9 @@ class PF_Admin {
 
 			$lr_text = '<abbr title="' . $t_time . '">' . $lr_text . '</abbr>';
 		}
+
+		$feed_url = get_post_meta( $post_id, 'feedUrl', true );
+		$lr_text .= sprintf( '<input type="hidden" id="pf-feed-%d-url" value="%s" />', intval( $post_id ), esc_attr( $feed_url ) );
 
 		echo $lr_text;
 	}
@@ -1888,7 +1902,71 @@ class PF_Admin {
 
 		#var_dump($query); die();
 
-		
+
+	}
+
+	/**
+	 * Echo the output for the Feed URL field on Quick Edit.
+	 *
+	 * @since 3.5.0
+	 *
+	 * @param string $column_name Name of the Quick Edit column being output.
+	 * @param string $post_type   Name of the current post type.
+	 */
+	public function quick_edit_field( $column_name, $post_type ) {
+		if ( 'pf_feed' !== $post_type || 'last_retrieved' !== $column_name ) {
+			return;
+		}
+
+		wp_nonce_field( 'pf-quick-edit', '_pf_quick_edit_nonce', false );
+
+		?>
+		<fieldset class="inline-edit-pressforward">
+			<div class="inline-edit-col">
+				<label for="pf-feed-url">
+					<span class="title"><?php _e( 'Feed URL', 'pressforward' ) ?></span>
+					<span class="input-text-wrap">
+						<input class="inline-edit-pf-feed-input" type="text" value="" name="pf-quick-edit-feed-url" id="pf-quick-edit-feed-url" />
+					</span>
+				</label>
+			</div>
+		</fieldset>
+		<?php
+	}
+
+	/**
+	 * Process Quick Edit saves.
+	 *
+	 * Feed URL can be edited via Quick Save.
+	 *
+	 * @since 3.5.0
+	 *
+	 * @param int     $post_id ID of the post being edited.
+	 * @param WP_Post $post    Post object.
+	 */
+	public function quick_edit_save( $post_id, $post ) {
+		// Only process on the correct post type.
+		if ( 'pf_feed' !== $post->post_type ) {
+			return;
+		}
+
+		// Nonce check.
+		if ( ! isset( $_POST['_pf_quick_edit_nonce'] ) ) {
+			return;
+		}
+
+		if ( ! wp_verify_nonce( $_POST['_pf_quick_edit_nonce'], 'pf-quick-edit' ) ) {
+			return;
+		}
+
+		// Don't process if the URL field is not present in the request.
+		if ( ! isset( $_POST['pf-quick-edit-feed-url'] ) ) {
+			return;
+		}
+
+		$feed_url = stripslashes( $_POST['pf-quick-edit-feed-url'] );
+
+		update_post_meta( $post_id, 'feedUrl', $feed_url );
 	}
 
 	/////////////////////////
