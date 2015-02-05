@@ -14,25 +14,7 @@ class PF_Form_Of {
 
 	public function init() {
 		$this->parts = PF_ROOT . "/parts/";
-		$this->the_screen();
-	}
-
-	public function the_screen(){
-		#global $current_screen;
-		$screen = get_current_screen();
-		$id = $screen->id;
-		$action = $screen->action;
-		$base = $screen->base;
-		$parent_base = $screen->parent_base;
-		$parent_file = $screen->parent_file;
-		$post_type = $screen->post_type;
-		$taxonomy = $screen->taxonomy;
-		$is_pf = self::valid_pf_page_ids($id);
-		if (WP_DEBUG && $is_pf){
-			var_dump("PF screen trace: ID: $id; action: $action; base: $base; parent_base: $parent_base; parent_file: $parent_file; post_type: $post_type; taxonomy: $taxonomy;");
-		}
-		#echo $base;
-		return;
+		$this->the_screen = $this->the_screen();
 	}
 
 	public function valid_pf_page_ids($page_id = false){
@@ -52,6 +34,37 @@ class PF_Form_Of {
 		} else {
 			return $valid;
 		}
+	}
+
+	public function the_screen(){
+		#global $current_screen;
+		$screen = get_current_screen();
+		$id = $screen->id;
+		$action = $screen->action;
+		$base = $screen->base;
+		$parent_base = $screen->parent_base;
+		$parent_file = $screen->parent_file;
+		$post_type = $screen->post_type;
+		$taxonomy = $screen->taxonomy;
+		$is_pf = self::valid_pf_page_ids($id);
+		if (WP_DEBUG && $is_pf){
+			var_dump("PF screen trace: ID: $id; action: $action; base: $base; parent_base: $parent_base; parent_file: $parent_file; post_type: $post_type; taxonomy: $taxonomy;");
+		}
+		#echo $base;
+		$screen_array = array(
+
+				'screen' 		=> $screen,
+				'id'			=> $id,
+				'action'		=> $action,
+				'base'			=> $base,
+				'parent_base'	=> $parent_base,
+				'parent_file'	=> $parent_file,
+				'post_type'		=> $post_type,
+				'taxonomy'		=> $taxonomy
+
+			);
+		$screen_array = apply_filters('pf_screen', $screen_array);
+		return $screen_array;
 	}
 
 }
