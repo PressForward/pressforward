@@ -31,6 +31,8 @@ class PF_Form_Of {
 		if (WP_DEBUG && $is_pf){
 			var_dump("PF screen trace: ID: $id; action: $action; base: $base; parent_base: $parent_base; parent_file: $parent_file; post_type: $post_type; taxonomy: $taxonomy;");
 		}
+		#echo $base;
+		return;
 	}
 
 	public function valid_pf_page_ids($page_id = false){
