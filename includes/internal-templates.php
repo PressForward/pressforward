@@ -67,4 +67,11 @@ class PF_Form_Of {
 		return $screen_array;
 	}
 
+	public function is_a_pf_page(){
+		$screen = $this->the_screen;
+		$is_pf = self::valid_pf_page_ids($screen['id']);
+		$this->is_pf = $is_pf;
+		return $is_pf;
+	}
+
 }
