@@ -252,7 +252,27 @@ class PF_Feeds_Schema {
 
 	}
 
+	public function get_feeds_without_folders($ids = true){
+		   $q = new WP_Query( 
+		   				array( 
+		 		            'post_type' => pressforward()->pf_feeds->post_type,
+		 		            'fields'	=>	'ids',
+		 		            'tax_query' => array( 
+		 		                array( 
+		 		                    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy, 
+		 		                    'operator' => 'NOT EXISTS', 
+		 		                ), 
+		 		            ), 
+ 		       			) 
+		   	);
+		   $ids = $q->posts;
+		   return $ids;
+
+
+	}
+
 	public function the_feed_folders($obj = false){
+		global $wp_version;
 		if(!$obj){
 			$obj = $this->get_feed_folders();
 		}
@@ -267,6 +287,12 @@ class PF_Feeds_Schema {
 					?>
 					</li>
 					<?php
+				}
+				if ( 4 > (float)$wp_version){
+					$the_other_feeds = $this->get_feeds_without_folders();
+					foreach ($the_other_feeds as $a_feed_id){
+						$this->the_feed($a_feed_id);
+					}
 				}
 				?>
 		</ul>
