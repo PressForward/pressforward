@@ -1,3 +1,16 @@
+function pf_set_sort_statement(statement, sort_class){
+		if (jQuery('.'+sort_class).length){
+
+		} else if (jQuery('.title h1 .sorted').length) {
+			jQuery('.title h1 .sorted').remove();
+		}
+		if (jQuery('.'+sort_class).length){
+			jQuery('.title h1 .'+sort_class).html(' | '+statement);
+		} else {
+			jQuery('.title h1').append('<span class="sorted '+sort_class+'"> | '+statement+'</span>');
+		}
+}
+
 /**
  * Implementation of sort for pf
 **/
@@ -8,35 +21,43 @@ jQuery(window).load(function() {
 	jQuery('#sortbyitemdate').toggle(function (evt){
 		evt.preventDefault();
 		jQuery(".feed-item").tsort("span.sortableitemdate", {order:'desc'});
+		pf_set_sort_statement('Sorted by item date, descending', 'by-item-date');
 	}, function (evt){
 		evt.preventDefault();
 		jQuery(".feed-item").tsort("span.sortableitemdate", {order:'asc'});
+		pf_set_sort_statement('Sorted by item date, ascending', 'by-item-date');
 	}
 	);
 	jQuery('#sortbyfeedindate').toggle(function (evt){
 		evt.preventDefault();
 		jQuery(".feed-item").tsort("span.sortablerssdate", {order:'desc'});
+		pf_set_sort_statement('Sorted by time retrieved, descending', 'by-feed-in-date');
 	}, function (evt) {
 		evt.preventDefault();
 		jQuery(".feed-item").tsort("span.sortablerssdate", {order:'asc'});
+		pf_set_sort_statement('Sorted by time retrieved, ascending', 'by-feed-in-date');
 	}
 	);
 
 	jQuery('#sortbynomdate').toggle(function (evt){
 		evt.preventDefault();
 		jQuery(".feed-item").tsort("span.sortable_nom_timestamp", {order:'desc'});
+		pf_set_sort_statement('Sorted by time nominated, descending', 'by-nominated-date');
 	}, function (evt) {
 		evt.preventDefault();
 		jQuery(".feed-item").tsort("span.sortable_nom_timestamp", {order:'asc'});
+		pf_set_sort_statement('Sorted by time nominated, ascending', 'by-nominated-date');
 	}
 	);
 
 	jQuery('#sortbynomcount').toggle(function (evt){
 		evt.preventDefault();
 		jQuery(".feed-item").tsort("span.sortable_nom_count", {order:'desc'});
+		pf_set_sort_statement('Sorted by nominations, descending', 'by-nominations-date');
 	}, function (evt) {
 		evt.preventDefault();
 		jQuery(".feed-item").tsort("span.sortable_nom_count", {order:'asc'});
+		pf_set_sort_statement('Sorted by time nominations, ascending', 'by-nominations-date');
 	}
 	);
 
@@ -95,5 +116,6 @@ function pf_show_unsort(){
 	});
 	jQuery('#sort-reset').on('click', function(){
 		jQuery(".feed-item").tsort("span.sortable_nom_timestamp", {order:'desc'});
+		jQuery('.title h1 .sorted').remove();
 	});
 }
