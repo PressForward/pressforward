@@ -24,17 +24,7 @@
 	<div class="list pf_container full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">
-				<?php echo '<h1>' . PF_TITLE . ': '.__('Nominated', 'pf').'</h1>'; ?>
-				<?php
-					if ($page > 0) {
-						$pageNumForPrint = sprintf( __('Page %1$d', 'pf'), $page);
-						echo '<span> - ' . $pageNumForPrint . '</span>';
-					}
-					if (!empty($_POST['search-terms'])){
-						echo ' | <span class="search-term-title">' . __('Search for:', 'pf') . ' ' . $_POST['search-terms'] . '</span>';
-					}
-				?>
-				<span id="h-after"> &#8226; </span>
+				<?php pressforward()->form_of->the_page_head('Nominated'); ?>
 				<button class="btn btn-small" id="fullscreenfeed"> <?php  _e('Full Screen', 'pf');  ?> </button>
 			</div><!-- End title -->
 				<?php pressforward()->admin->pf_search_template(); ?>
