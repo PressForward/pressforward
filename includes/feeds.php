@@ -257,6 +257,8 @@ class PF_Feeds_Schema {
 		   				array( 
 		 		            'post_type' => pressforward()->pf_feeds->post_type,
 		 		            'fields'	=>	'ids',
+		 		            'orderby'	=> 'title',
+		 		            'order'		=> 'ASC',
 		 		            'nopaging' => true,
 		 		            'tax_query' => array( 
 		 		                array( 
