@@ -101,8 +101,7 @@ visibility:hidden;
 }
 
 #feed-folders{
-	overflow:auto;
-	max-height: 1110px;
+
 }
 
 #feed-accordion .well, #nom-accordion .well  {
