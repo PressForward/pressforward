@@ -304,16 +304,20 @@ function attach_menu_on_scroll_past(){
 
 		if(y_scroll_pos > scroll_pos_test) {
 		   jQuery('.pf_container .display').addClass('nav-fix');
+		   jQuery('.pf_container #feed-folders').addClass('right-bar-fix');
+		   jQuery('.pf_container #tools').addClass('right-bar-fix');
+		   
 		}
 		else
 		{
 			jQuery('.pf_container .display').removeClass('nav-fix');
+			jQuery('.pf_container #feed-folders').removeClass('right-bar-fix');
+			jQuery('.pf_container #tools').addClass('right-bar-fix');
 		}
 	});
 }
 
-function detect_view_change(){
-
+function detect_view_change(){right-bar-fix
 	jQuery('.pf_container').on('click', 'button.display-state', function(evt){
 		var element = jQuery(this);
 		var go_layout = element.attr('id');

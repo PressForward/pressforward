@@ -257,6 +257,7 @@ class PF_Feeds_Schema {
 		   				array( 
 		 		            'post_type' => pressforward()->pf_feeds->post_type,
 		 		            'fields'	=>	'ids',
+		 		            'nopaging' => true,
 		 		            'tax_query' => array( 
 		 		                array( 
 		 		                    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy, 
@@ -271,8 +272,30 @@ class PF_Feeds_Schema {
 
 	}
 
-	public function the_feed_folders($obj = false){
+	public function link_to_see_all_feeds_and_folders(){
+		?>
+		<li class="feed" id="the-whole-feed-list">
+		<?php
+
+			printf('<a href="%s" title="%s">%s</a>', $feed_obj->ID, $feed_obj->post_title, $feed_obj->post_title );
+
+		?>
+		</li>
+		<?php
+	}
+
+	public function the_feeds_without_folders(){
 		global $wp_version;
+		#var_dump((float)$wp_version);
+		if ( 4.0 < (float)$wp_version){
+			$the_other_feeds = $this->get_feeds_without_folders();
+			foreach ($the_other_feeds as $a_feed_id){
+				$this->the_feed($a_feed_id);
+			}
+		}
+	}
+
+	public function the_feed_folders($obj = false){
 		if(!$obj){
 			$obj = $this->get_feed_folders();
 		}
@@ -288,12 +311,8 @@ class PF_Feeds_Schema {
 					</li>
 					<?php
 				}
-				if ( 4 > (float)$wp_version){
-					$the_other_feeds = $this->get_feeds_without_folders();
-					foreach ($the_other_feeds as $a_feed_id){
-						$this->the_feed($a_feed_id);
-					}
-				}
+				
+				$this->the_feeds_without_folders();
 				?>
 		</ul>
 		<?php
