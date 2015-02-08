@@ -317,7 +317,7 @@ function attach_menu_on_scroll_past(){
 	});
 }
 
-function detect_view_change(){right-bar-fix
+function detect_view_change(){
 	jQuery('.pf_container').on('click', 'button.display-state', function(evt){
 		var element = jQuery(this);
 		var go_layout = element.attr('id');
