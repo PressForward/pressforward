@@ -74,4 +74,10 @@ class PF_Form_Of {
 		return $is_pf;
 	}
 
+	public function get_page_head(){
+		if ($this->is_a_pf_page()){
+			
+		}
+	}
+
 }
