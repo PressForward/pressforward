@@ -79,7 +79,10 @@
   #tools, #feed-folders {
     float: right;
     width: 25%;
-    padding: 40px;
+    padding: 30px;
+    padding-top:40px;
+    overflow:auto;
+    max-height: 1110px;
   }
   #tools h2, #feed-folders h2 {
     font-size: 1.125em;

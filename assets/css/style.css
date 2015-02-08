@@ -100,6 +100,10 @@ visibility:hidden;
 
 }
 
+#feed-folders{
+
+}
+
 #feed-accordion .well, #nom-accordion .well  {
 	padding: 0;
 	background-color: #FAFAFA;
@@ -674,6 +678,16 @@ h3 {
 		left: 200px;
 		
 	}
+
+	.right-bar-fix {
+		position: fixed;
+		top: 70px;
+		width: 25%;
+		z-index: 9991;
+		margin: 0;
+		right: 0px;
+	}
+
 /**
  * Specific override styles.
  *

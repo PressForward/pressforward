@@ -84,6 +84,7 @@ class PressForward {
 		$this->set_up_relationships();
 		$this->set_up_feed_retrieve();
 		$this->set_up_nominations();
+		$this->set_up_form_of();
 		$this->set_up_admin();
 
 		add_action( 'plugins_loaded', array( $this, 'pressforward_init' ) );
@@ -133,9 +134,10 @@ class PressForward {
 		require_once( PF_ROOT . '/includes/slurp.php' );
 		require_once( PF_ROOT . '/includes/relationships.php' );
 		require_once( PF_ROOT . '/includes/nominations.php' );
+		require_once( PF_ROOT . '/includes/internal-templates.php' );
 		require_once( PF_ROOT . '/includes/admin.php' );
-    require_once( PF_ROOT . '/includes/template-tags.php' );
-    require_once( PF_ROOT . '/includes/alert-box/alert-box.php' );
+    	require_once( PF_ROOT . '/includes/template-tags.php' );
+    	require_once( PF_ROOT . '/includes/alert-box/alert-box.php' );
 		require_once( PF_ROOT . '/lib/urlresolver/URLResolver.php' );
 
 	}
@@ -236,6 +238,17 @@ class PressForward {
 	function set_up_nominations() {
 		if ( empty( $this->nominations ) ) {
 			$this->nominations = new PF_Nominations;
+		}
+	}
+
+	/**
+	 * Sets up the Dashboard admin parts
+	 *
+	 * @since 1.7
+	 */
+	function set_up_form_of() {
+		if ( empty( $this->form_of ) ) {
+			$this->form_of = new PF_Form_Of;
 		}
 	}
 
