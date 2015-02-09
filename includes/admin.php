@@ -769,6 +769,10 @@ class PF_Admin {
 					</div>
 				</div>
 				<h3 id="modal-<?php echo $item['item_id']; ?>-label" class="modal_item_title"><?php echo $item['item_title']; ?></h3>
+				<?php 
+					echo '<em>' . __('Source', 'pf') . ': ' . get_the_source_title($id_for_comments) . '</em> | ';
+					echo __('Author', 'pf').': '.get_the_item_author($id_for_comments);
+				?>
 			  </div>
 			  <div class="row-fluid modal-body-row">
 				  <div class="modal-body span9" id="modal-body-<?php echo $item['item_id']; ?>">
@@ -810,8 +814,6 @@ class PF_Admin {
 				</div>
 				<div class="item-tags pull-left row-fluid">
 				<?php
-					echo '<em>' . __('Source', 'pf') . ': ' . get_the_source_title($id_for_comments) . '</em> | ';
-					echo __('Author', 'pf').': '.get_the_item_author($id_for_comments).' | ';
 					echo '<strong>' . __('Item Tags', 'pf') . '</strong>: ' . $item['item_tags'];
 				?>
 				</div>
