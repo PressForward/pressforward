@@ -74,10 +74,29 @@ class PF_Form_Of {
 		return $is_pf;
 	}
 
+	public function get_the_folder_view_title(){
+		if (isset($_GET['feed'])){
+			$title = get_the_title($_GET['feed']);
+		} else if (isset($_GET['folder'])){
+			
+			$term = get_term($_GET['folder'], pressforward()->pf_feeds->tag_taxonomy);
+			$title = $term->name;
+
+		} else {
+			$title = '';
+		}
+		return $title;
+	}
+
 	public function title_variant(){
 		$is_variant = false;
 		$variant = '';
 		$showing = __('Showing', 'pf');
+
+		if (isset($_GET['feed']) || isset($_GET['folder'])){
+			$variant .= ' ' . $this->get_the_folder_view_title();
+			$is_variant = true;
+		}
 
 		if (isset($_POST['search-terms'])){
 			$variant .= ' <span class="search-term-title">' . __('Search for:', 'pf') . ' ' . $_POST['search-terms'] . '</span>';
@@ -126,7 +145,7 @@ class PF_Form_Of {
 
 	}
 
-	public function get_page_head($page_title = ''){
+	public function get_page_headline($page_title = ''){
 		if ($this->is_a_pf_page()){
 			$title = '<h1>'.PF_TITLE;
 
@@ -148,8 +167,8 @@ class PF_Form_Of {
 		}
 	}
 
-	public function the_page_head($title = ''){
-		echo $this->get_page_head($title);
+	public function the_page_headline($title = ''){
+		echo $this->get_page_headline($title);
 	}
 
 }

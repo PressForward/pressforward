@@ -24,7 +24,7 @@
 	<div class="list pf_container full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">
-				<?php pressforward()->form_of->the_page_head('Nominated'); ?>
+				<?php pressforward()->form_of->the_page_headline('Nominated'); ?>
 				<button class="btn btn-small" id="fullscreenfeed"> <?php  _e('Full Screen', 'pf');  ?> </button>
 			</div><!-- End title -->
 				<?php pressforward()->admin->pf_search_template(); ?>

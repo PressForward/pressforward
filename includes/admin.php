@@ -867,7 +867,7 @@ class PF_Admin {
 			<div class="title-span title">
 				<?php 
 
-					pressforward()->form_of->the_page_head();
+					pressforward()->form_of->the_page_headline();
 
 				?>
 				<button class="btn btn-small" id="fullscreenfeed"> <?php  _e('Full Screen', 'pf');  ?> </button>
