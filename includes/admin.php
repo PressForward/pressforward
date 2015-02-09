@@ -278,7 +278,7 @@ class PF_Admin {
 				  </ul>
 				</div>
 				<div class="btn-group" role="group">
-					<button type="submit" id="pf-help" class="btn btn-small"><?php _e('Need help?', 'pf'); ?></button>
+					<a href="https://github.com/PressForward/pressforward/wiki" target="_blank" id="pf-help" class="btn btn-small"><?php _e('Need help?', 'pf'); ?></a>
 				</div>
 			</div>
 
