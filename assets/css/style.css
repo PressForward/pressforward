@@ -709,3 +709,8 @@ ul.wp-submenu {
 body {
 		background: 0;
 }
+
+.dropdown-menu-right {
+	right: 0;
+	left: auto;
+}
