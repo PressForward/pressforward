@@ -397,13 +397,15 @@ class PF_Admin {
 						}
 
 						$amplify_group_classes = 'dropdown btn-group amplify-group';
+						$amplify_id = 'amplify-'.$item['item_id'];
 
 						if($modal){ 
 							$amplify_group_classes .= ' dropup';
+							$amplify_id .= '-modal';
 						}
 						?>
 						<div class="<?php echo $amplify_group_classes; ?>" role="group">
-							<button type="button" class="btn btn-default btn-small dropdown-toggle pf-amplify" data-toggle="dropdown" aria-expanded="true" id="amplify-<?php echo $item['item_id']; ?>"><i class="icon-bullhorn"></i><span class="caret"></button>
+							<button type="button" class="btn btn-default btn-small dropdown-toggle pf-amplify" data-toggle="dropdown" aria-expanded="true" id="<?php echo $amplify_id; ?>"><i class="icon-bullhorn"></i><span class="caret"></button>
 							<ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="amplify-<?php echo $item['item_id']; ?>">
 								<?php
 									if (current_user_can( 'edit_posts' )){
