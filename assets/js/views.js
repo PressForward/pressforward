@@ -312,7 +312,7 @@ function attach_menu_on_scroll_past(){
 		{
 			jQuery('.pf_container .display').removeClass('nav-fix');
 			jQuery('.pf_container #feed-folders').removeClass('right-bar-fix');
-			jQuery('.pf_container #tools').addClass('right-bar-fix');
+			jQuery('.pf_container #tools').removeClass('right-bar-fix');
 		}
 	});
 }
