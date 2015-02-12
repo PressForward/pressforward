@@ -294,14 +294,18 @@ class PF_Admin {
 					if ( 'pf-review' == $page ){
 						echo '<button type="submit" class="delete btn btn-danger btn-small pull-left" id="archivenoms" value="' . __('Archive all', 'pf') . '" >' . __('Archive all', 'pf') . '</button>';
 					}
-
-										if (!empty($alerts) && (0 != $alerts->post_count)){
-											echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i> (!)</a>';
-										} else {
-											echo '<a class="btn btn-small" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i></a>';
-										}
-										echo '<a class="btn btn-small" id="gofolders" href="#">' . __('Folders', 'pf') . '</a>';
-										?>
+					
+					$user_ID = get_current_user_id();
+					$pf_user_menu_set = get_user_option('pf_user_menu_set', $user_ID);
+					if ('true' == $pf_user_menu_set){
+						if (!empty($alerts) && (0 != $alerts->post_count)){
+							echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i> (!)</a>';
+						} else {
+							echo '<a class="btn btn-small" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i></a>';
+						}
+					}
+					echo '<a class="btn btn-small" id="gofolders" href="#">' . __('Folders', 'pf') . '</a>';
+				?>
 
 			</div>
 		</div><!-- End btn-group -->
@@ -980,6 +984,48 @@ class PF_Admin {
 				?>
 					<br />
 
+					<p>
+					<?php
+					$user_ID = get_current_user_id();
+					$pf_user_scroll_switch = get_user_option('pf_user_scroll_switch', $user_ID);
+					if ( empty($pf_user_scroll_switch) || 'true' == $pf_user_scroll_switch){
+						$mark = 'checked';
+					} else {
+						$mark = '';
+					}
+					echo '<input id="pf_user_scroll_switch" type="checkbox" name="pf_user_scroll_switch" value="true" '.$mark.' class="user_setting" />
+								<label for="pf_user_scroll_switch" >' . 'Infinite Scroll Active' . '</label>';
+					?>
+					</p>
+					<p>
+					<?php
+					$user_ID = get_current_user_id();
+					$pf_user_menu_set = get_user_option('pf_user_menu_set', $user_ID);
+					if ( 'true' == $pf_user_menu_set){
+						$mark = 'checked';
+					} else {
+						$mark = '';
+					}
+					echo '<input id="pf_user_menu_set" type="checkbox" name="pf_user_menu_set" value="true" '.$mark.' class="user_setting" />
+								<label for="pf_user_menu_set" >' . 'Show side menu' . '</label>';
+					?>
+
+
+					</p>
+					<p>
+					<?php
+					$user_ID = get_current_user_id();
+					$default_pf_pagefull = get_user_option('pf_pagefull', $user_ID);
+					if ( empty($default_pf_pagefull)){
+						$default_pf_pagefull = 20;
+					}
+					echo '<input id="pf_pagefull" name="pf_pagefull" type="number" class="pf_pagefull" value="'.$default_pf_pagefull.'" />';
+
+					echo '<label class="description" for="pf_pagefull"> ' .__('Number of feed items per page.', 'pf'). ' </label>';
+					?></p>
+
+					<h3>Site Options</h3>
+
 					<p><?php
 					$default_pf_link_value = get_option('pf_link_to_source', 0);
 					echo '<input id="pf_link_to_source" name="pf_link_to_source" type="number" class="pf_link_to_source_class" value="'.$default_pf_link_value.'" />';
@@ -1030,30 +1076,6 @@ class PF_Admin {
 					<?php
 					}
 					?>
-					<p>
-					<?php
-					$user_ID = get_current_user_id();
-					$pf_user_scroll_switch = get_user_option('pf_user_scroll_switch', $user_ID);
-					if ( empty($pf_user_scroll_switch) || 'true' == $pf_user_scroll_switch){
-						$mark = 'checked';
-					} else {
-						$mark = '';
-					}
-					echo '<input id="pf_user_scroll_switch" type="checkbox" name="pf_user_scroll_switch" value="true" '.$mark.' class="user_setting" />
-								<label for="pf_user_scroll_switch" >' . 'Infinite Scroll Active' . '</label>';
-					?>
-					</p>
-					<p>
-					<?php
-					$user_ID = get_current_user_id();
-					$default_pf_pagefull = get_user_option('pf_pagefull', $user_ID);
-					if ( empty($default_pf_pagefull)){
-						$default_pf_pagefull = 20;
-					}
-					echo '<input id="pf_pagefull" name="pf_pagefull" type="number" class="pf_pagefull" value="'.$default_pf_pagefull.'" />';
-
-					echo '<label class="description" for="pf_pagefull"> ' .__('Number of feed items per page.', 'pf'). ' </label>';
-					?></p>
 					<p>
 					<?php
 					$default_pf_link_value = get_option('pf_retain_time', 2);
@@ -1477,6 +1499,14 @@ class PF_Admin {
 			update_user_option($user_ID, 'pf_user_scroll_switch', $pf_user_scroll_switch);
 		} else {
 			update_user_option($user_ID, 'pf_user_scroll_switch', 'false');
+		}
+
+		if (isset( $_POST['pf_user_menu_set'] )){
+			$pf_user_menu_set = $_POST['pf_user_menu_set'];
+			//var_dump($pf_user_scroll_switch); die();
+			update_user_option($user_ID, 'pf_user_menu_set', $pf_user_menu_set);
+		} else {
+			update_user_option($user_ID, 'pf_user_menu_set', 'false');
 		}
 
 		if (isset( $_POST['pf_pagefull'] )){

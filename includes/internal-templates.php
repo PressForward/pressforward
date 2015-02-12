@@ -67,13 +67,17 @@ class PF_Form_Of {
 	}
 
 	public function the_side_menu(){
-		$screen = $this->the_screen;
-		$vars = array(
-				'slug'		=> $screen['id'],
-				'version'	=> 0,
-				'deck'		=> false
-			);
-		echo $this->get_view('side-menu', $vars);
+		$user_ID = get_current_user_id();
+		$pf_user_menu_set = get_user_option('pf_user_menu_set', $user_ID);
+		if ('true' == $pf_user_menu_set){
+			$screen = $this->the_screen;
+			$vars = array(
+					'slug'		=> $screen['id'],
+					'version'	=> 0,
+					'deck'		=> false
+				);
+			echo $this->get_view('side-menu', $vars);
+		}
 	}
 
 	public function valid_pf_page_ids($page_id = false){
