@@ -230,8 +230,22 @@ class PF_Admin {
 					  </button>
 						<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
 						<?php
-							self::dropdown_option(__('Grid', 'pf'), "gogrid");
-							self::dropdown_option(__('List', 'pf'), "golist");
+							$view_check = get_user_meta(pressforward()->form_of->user_id(), 'pf_user_read_state', true);
+							if ('golist' == $view_check){
+								self::dropdown_option(__('Grid', 'pf'), "gogrid");
+								self::dropdown_option(__('List', 'pf'), "golist", 'pf-top-menu-selection unset');
+							} else {
+								self::dropdown_option(__('Grid', 'pf'), "gogrid", 'pf-top-menu-selection unset');
+								self::dropdown_option(__('List', 'pf'), "golist");
+							}
+							$pf_user_scroll_switch = get_user_option('pf_user_scroll_switch', pressforward()->form_of->user_id());
+							#empty or true
+							if ('false' == $pf_user_scroll_switch){
+								self::dropdown_option(__('Infinite Scroll', 'pf'), "goinfinite");
+							} else {
+								self::dropdown_option(__('Paginate', 'pf'), "gopaged");
+							}
+
 						?>
 						 </ul>
 					</div>

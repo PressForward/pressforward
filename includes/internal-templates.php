@@ -15,6 +15,7 @@ class PF_Form_Of {
 	public function init() {
 		$this->parts = $this->build_path(array(PF_ROOT, "parts"), false);
 		$this->the_screen = $this->the_screen();
+		$this->user_id = $this->user_id();
 	}
 
 	/**
@@ -45,6 +46,12 @@ class PF_Form_Of {
 			$string = $slash . $string;
 		}
 		return $string;
+	}
+
+	public function user_id(){
+		$userObj = wp_get_current_user();
+		$user_id = $userObj->ID;
+		return $user_id;
 	}
 
 	/**
