@@ -100,6 +100,14 @@ visibility:hidden;
 
 }
 
+.search-in-bar{
+	margin: 0 14px;
+	overflow: hidden;
+	max-height: 26px;
+	/* position: relative; */
+	width: 300px;
+}
+
 #feed-folders{
 
 }

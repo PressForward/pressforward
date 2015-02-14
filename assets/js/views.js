@@ -299,20 +299,30 @@ function PFBootstrapInits() {
 function attach_menu_on_scroll_past(){
 	jQuery(window).scroll(function() {
 		var y_scroll_pos = window.pageYOffset;
-		var scroll_pos_test = 190;             
+		var scroll_pos_test = 90;             
 		// set to whatever you want it to be
 
 		if(y_scroll_pos > scroll_pos_test) {
 		   jQuery('.pf_container .display').addClass('nav-fix');
 		   jQuery('.pf_container #feed-folders').addClass('right-bar-fix');
 		   jQuery('.pf_container #tools').addClass('right-bar-fix');
+
+		   jQuery('#fullscreenfeed').appendTo('.display .pf-btns');
 		   
+		   jQuery('#feeds-search').insertAfter('.display .pf-btns').addClass('pull-left search-in-bar');
+		   jQuery('#feeds-search > *').addClass('pull-left');
+		   jQuery('#feeds-search > label').hide();
 		}
 		else
 		{
 			jQuery('.pf_container .display').removeClass('nav-fix');
 			jQuery('.pf_container #feed-folders').removeClass('right-bar-fix');
 			jQuery('.pf_container #tools').removeClass('right-bar-fix');
+
+			jQuery('#fullscreenfeed').insertAfter('#h-after');
+			
+			jQuery('#feeds-search').appendTo('#app-banner').removeClass('pull-left search-in-bar');
+			jQuery('#feeds-search > *').removeClass('pull-left');
 		}
 	});
 }
