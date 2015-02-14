@@ -36,6 +36,7 @@ class PF_Admin {
 		add_action( 'wp_ajax_pf_ajax_get_comments', array( $this, 'pf_ajax_get_comments') );
 		add_action( 'wp_ajax_pf_ajax_thing_deleter', array( $this, 'pf_ajax_thing_deleter') );
 		add_action( 'wp_ajax_pf_ajax_retain_display_setting', array( $this, 'pf_ajax_retain_display_setting' ) );
+		add_action( 'wp_ajax_pf_ajax_user_setting', array( $this, 'pf_ajax_user_setting' ));
 		add_action( 'init', array( $this, 'register_feed_item_removed_status') );
 
 		// Modify the Subscribed Feeds panel
@@ -241,9 +242,9 @@ class PF_Admin {
 							$pf_user_scroll_switch = get_user_option('pf_user_scroll_switch', pressforward()->form_of->user_id());
 							#empty or true
 							if ('false' == $pf_user_scroll_switch){
-								self::dropdown_option(__('Infinite Scroll', 'pf'), "goinfinite");
+								self::dropdown_option(__('Infinite Scroll (Reloads Page)', 'pf'), "goinfinite", 'pf-top-menu-selection scroll-toggler');
 							} else {
-								self::dropdown_option(__('Paginate', 'pf'), "gopaged");
+								self::dropdown_option(__('Paginate (Reloads Page)', 'pf'), "gopaged", 'pf-top-menu-selection scroll-toggler');
 							}
 
 						?>
@@ -1718,11 +1719,30 @@ class PF_Admin {
 
 	}
 
+	function pf_bad_call($action, $msg = 'You made a bad call and it did not work. Try again.'){
+		$response = array(
+			'what'=>'pressforward',
+			'action'=>$action,
+			'id'=>pressforward()->form_of->user_id(),
+			'data'=>$msg,
+			'supplemental' => array(
+					'buffered' => ob_get_contents(),
+					'timestamp' => gmdate( 'd-M-Y H:i:s' )
+			)
+		);
+		$xmlResponse = new WP_Ajax_Response($response);
+		$xmlResponse->send();
+		ob_end_clean();
+		die();
+	}
+
 	function pf_ajax_thing_deleter() {
 		ob_start();
 		if(isset($_POST['post_id'])){
 			$id = $_POST['post_id'];
-		} else { die('Option not sent'); }
+		} else {
+			self::pf_bad_call('pf_ajax_thing_deleter','Option not sent'); 
+		}
 		if(isset($_POST['made_readable'])){
 			$read_status = $_POST['made_readable'];
 		} else { $read_status = false; }
@@ -1767,12 +1787,59 @@ class PF_Admin {
 
 	}
 
+	function pf_ajax_user_setting() {
+		ob_start();
+		if(isset($_POST['pf_user_setting'])){
+			$setting_name = $_POST['pf_user_setting'];
+		} else {
+			$setting_name = false;
+			self::pf_bad_call('pf_ajax_user_setting', 'No setting name, try again.');
+		}
+		if(isset($_POST['setting'])){
+			$setting = $_POST['setting'];
+		} else {
+			$setting = false;
+		}
+
+		$user_id = pressforward()->form_of->user_id();
+		$returned = self::pf_switch_user_option($user_id, $setting_name, $setting);
+		#var_dump($user_id);
+
+		$response = array(
+			'what'=>'pressforward',
+			'action'=>'pf_ajax_user_setting',
+			'id'=>$user_id,
+			'data'=>(string) $returned,
+			'supplemental' => array(
+					'buffered' => ob_get_contents(),
+					'setting' => $setting_name,
+					'set'		=> $setting
+			)
+		);
+		$xmlResponse = new WP_Ajax_Response($response);
+		$xmlResponse->send();
+		ob_end_clean();
+		die();
+
+	}
+
+
 	function pf_switch_display_setting($user_id, $read_state){
 		if ( !current_user_can( 'edit_user', $user_id ) ){
 			return false;
 		}
 
 		$check = update_user_meta($user_id, 'pf_user_read_state', $read_state);
+		return $check;
+	}
+
+
+	function pf_switch_user_option($user_id, $option, $state){
+		if ( !current_user_can( 'edit_user', $user_id ) ){
+			return false;
+		}
+
+		$check = update_user_option($user_id, $option, $state);
 		return $check;
 	}
 

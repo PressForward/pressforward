@@ -402,12 +402,12 @@ jQuery(window).load(function() {
 				jQuery("div.pf_container").removeClass('full');
 
 				jQuery(folderswin).show('slide',{direction:'right', easing:'linear'},150);
-		}, function() {
+	}, function() {
 				var folderswin = jQuery('#feed-folders');
 				//jQuery('#tools').hide('slide',{direction:'right', easing:'linear'},150);
 				jQuery(folderswin).hide('slide',{direction:'right', easing:'linear'},150);
 				jQuery("div.pf_container").addClass('full');
-		});
+	});
 
 
 
@@ -438,6 +438,33 @@ jQuery(window).load(function() {
 		}
 		window.location.href = url;
 	});
+
+	jQuery('.scroll-toggler').click(function (evt){
+		evt.preventDefault();
+		var element = jQuery(this);
+		var go_scroll_id = element.attr('id');
+		var scroll_setting = 'true';
+		console.log(go_scroll_id);
+		//alert(modalIDString);
+		if ('gopaged' == go_scroll_id) {
+			scroll_setting = 'false';
+		}
+		jQuery.post(ajaxurl, {
+				action: 'pf_ajax_user_setting',
+				pf_user_setting: 'pf_user_scroll_switch',
+				setting: scroll_setting
+
+		},
+		function(response) {
+				var check_set = html_entity_decode(jQuery(response).find("response_data").text());
+				if ('1' != check_set){
+					alert('PressForward has lost its connection to your server. Reload page and try again.');
+				} else {
+					location.reload();
+				}
+		});
+		
+	})
 
 
 	jQuery(".refreshfeed").click(function (evt){
