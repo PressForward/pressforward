@@ -1135,7 +1135,7 @@ class PF_Admin {
 			wp_register_script(PF_SLUG . '-media-query-imp', PF_URL . 'assets/js/media-query-imp.js', array( 'jquery', 'thickbox', 'media-upload' ));
 			wp_register_script(PF_SLUG . '-sort-imp', PF_URL . 'assets/js/sort-imp.js', array( PF_SLUG . '-tinysort', PF_SLUG . '-twitter-bootstrap', PF_SLUG . '-jq-fullscreen' ));
 			wp_register_script( PF_SLUG . '-quick-edit', PF_URL . 'assets/js/quick-edit.js', array( 'jquery' ) );
-			wp_register_script( PF_SLUG . '-settings-tools', PF_URL . 'assets/js/settings-tools.js', array( 'jquery' ) );
+			wp_register_script( PF_SLUG . '-settings-tools', PF_URL . 'assets/js/settings-tools.js', array( 'jquery',  'jquery-ui-tabs' ) );
 
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.

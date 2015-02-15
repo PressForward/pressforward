@@ -15,8 +15,8 @@
 					$tabs = pressforward()->form_of->permitted_tabs();
 					foreach( $tabs as $tab => $tab_meta ){
 						$title = $tab_meta['title'];
-				        $class = ( $tab == $current ) ? 'nav-tab-active' : '';
-				        echo "<a class='nav-tab $class' id='$tab-tab' href='#$tab' data-tab-target='$tab'>$title</a>";
+				        #$class = ( $tab == $current ) ? 'nav-tab-active' : '';
+				        echo "<a class='nav-tab' id='$tab-tab' href='#$tab' data-tab-target='$tab'>$title</a>";
 				    }
 				    ?>
 				</h2>
