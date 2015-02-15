@@ -411,51 +411,43 @@ class PF_Admin {
 
 						}
 
-						$amplify_group_classes = 'dropdown btn-group amplify-group';
-						$amplify_id = 'amplify-'.$item['item_id'];
-
-						if($modal){ 
-							$amplify_group_classes .= ' dropup';
-							$amplify_id .= '-modal';
-						}
-						?>
-						<div class="<?php echo $amplify_group_classes; ?>" role="group">
-							<button type="button" class="btn btn-default btn-small dropdown-toggle pf-amplify" data-toggle="dropdown" aria-expanded="true" id="<?php echo $amplify_id; ?>"><i class="icon-bullhorn"></i><span class="caret"></button>
-							<ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="amplify-<?php echo $item['item_id']; ?>">
-								<?php
-									if (current_user_can( 'edit_posts' )){
-										$send_to_draft_classes = 'amplify-option amplify-draft schema-actor';
-
-										if ( 1 == pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ){
-											$send_to_draft_classes .= ' btn-success';
-										}
-
-										self::dropdown_option(__('Send to Draft', 'pf'), "amplify-draft-".$item['item_id'], $send_to_draft_classes, $item['item_id'], 'draft', 'btn-success' );
-
-								?>
-										<li class="divider"></li>
-								<?php
-									}
-									$tweet_intent = self::tweet_intent($id_for_comments);
-									self::dropdown_option(__('Tweet', 'pf'), "amplify-tweet-".$item['item_id'], 'amplify-option', $item['item_id'], '', '', $tweet_intent, '_blank' );
-									#self::dropdown_option(__('Facebook', 'pf'), "amplify-facebook-".$item['item_id'], 'amplify-option', $item['item_id'] );
-									#self::dropdown_option(__('Instapaper', 'pf'), "amplify-instapaper-".$item['item_id'], 'amplify-option', $item['item_id'] );
-									#self::dropdown_option(__('Tumblr', 'pf'), "amplify-tumblr-".$item['item_id'], 'amplify-option', $item['item_id'] );
-									do_action( 'pf_amplify_buttons' );
-								?>
-
-							 </ul>
-						</div>
-						<?php
-
 					}
 
+					$amplify_group_classes = 'dropdown btn-group amplify-group';
+					$amplify_id = 'amplify-'.$item['item_id'];
 
-
+					if($modal){ 
+						$amplify_group_classes .= ' dropup';
+						$amplify_id .= '-modal';
+					} 
 					?>
-						<!-- <script type="text/javascript">
+					<div class="<?php echo $amplify_group_classes; ?>" role="group">
+						<button type="button" class="btn btn-default btn-small dropdown-toggle pf-amplify" data-toggle="dropdown" aria-expanded="true" id="<?php echo $amplify_id; ?>"><i class="icon-bullhorn"></i><span class="caret"></button>
+						<ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="amplify-<?php echo $item['item_id']; ?>">
+							<?php
+								if (current_user_can( 'edit_posts' ) && 'nomination' != $format ){
+									$send_to_draft_classes = 'amplify-option amplify-draft schema-actor';
 
-						 </script> -->
+									if ( 1 == pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ){
+										$send_to_draft_classes .= ' btn-success';
+									}
+
+									self::dropdown_option(__('Send to Draft', 'pf'), "amplify-draft-".$item['item_id'], $send_to_draft_classes, $item['item_id'], 'draft', 'btn-success' );
+
+							?>
+									<li class="divider"></li>
+							<?php
+								}
+								$tweet_intent = self::tweet_intent($id_for_comments);
+								self::dropdown_option(__('Tweet', 'pf'), "amplify-tweet-".$item['item_id'], 'amplify-option', $item['item_id'], '', '', $tweet_intent, '_blank' );
+								#self::dropdown_option(__('Facebook', 'pf'), "amplify-facebook-".$item['item_id'], 'amplify-option', $item['item_id'] );
+								#self::dropdown_option(__('Instapaper', 'pf'), "amplify-instapaper-".$item['item_id'], 'amplify-option', $item['item_id'] );
+								#self::dropdown_option(__('Tumblr', 'pf'), "amplify-tumblr-".$item['item_id'], 'amplify-option', $item['item_id'] );
+								do_action( 'pf_amplify_buttons' );
+							?>
+						 </ul>
+					</div>
+
 					<?php
 					if ($modal === true){
 						?><button class="btn btn-small" data-dismiss="modal" aria-hidden="true">Close</button><?php
