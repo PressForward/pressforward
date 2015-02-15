@@ -95,19 +95,19 @@ class PF_Form_Of {
 		$permitted_tabs = array(
 					'user' => array( 
 										'title' => __('User Options', 'pf'), 
-										'cap'  => pf_get_defining_capability_by_role('contributor')
+										'cap'  => get_option('pf_menu_all_content_access', pf_get_defining_capability_by_role('contributor'))
 									),
 					'site' => array( 
 										'title' => __('Site Options', 'pf'),
-										'cap'  => pf_get_defining_capability_by_role('administrator')
+										'cap'  => get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator'))
 									),
 					'user-control' => array( 
 										'title' => __('User Control', 'pf'),
-										'cap'  => pf_get_defining_capability_by_role('administrator')
+										'cap'  => get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator'))
 									),
 					'modules' => array( 
 										'title' =>__('Module Control', 'pf'),
-										'cap'  => pf_get_defining_capability_by_role('administrator')
+										'cap'  => get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator'))
 									)
 				);
 		$permitted_tabs = apply_filters('pf_settings_tabs', $permitted_tabs);

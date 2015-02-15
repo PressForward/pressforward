@@ -1271,7 +1271,7 @@ class PF_Admin {
 
 		check_admin_referer( 'pf_settings' );
 
-		if (current_user_can(pf_get_defining_capability_by_role('contributor'))){
+		if (current_user_can( get_option('pf_menu_all_content_access', pf_get_defining_capability_by_role('administrator')) ) ){
 			$user_ID = get_current_user_id();
 			if (isset( $_POST['pf_user_scroll_switch'] )){
 				$pf_user_scroll_switch = $_POST['pf_user_scroll_switch'];
@@ -1299,7 +1299,7 @@ class PF_Admin {
 
 		}
 
-		if (!current_user_can(pf_get_defining_capability_by_role('administrator'))){
+		if ( !current_user_can( get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator')) ) ){
 			return;
 		}
 
