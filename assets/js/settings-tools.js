@@ -7,5 +7,8 @@ jQuery(window).load(function() {
 		//console.log(target);
 		jQuery('.pftab').removeClass('active');
 		jQuery(target).addClass('active');
+
+		jQuery('.nav-tab').removeClass('nav-tab-active');
+		jQuery(tab).addClass('nav-tab-active');
 	});
 });
