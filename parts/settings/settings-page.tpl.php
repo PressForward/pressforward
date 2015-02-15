@@ -3,7 +3,7 @@
 ?>
 <div class="wrap">
 	<h2><?php _e('PressForward Settings', 'pf'); ?></h2>
-	<div class="metabox-holder">
+	<div class="metabox-holder" id="pf-settings-box">
 		<div class="meta-box-sortables ui-sortable">
 			<form action="<?php pf_admin_url(); ?>" method="post">
 				
@@ -16,7 +16,7 @@
 					foreach( $tabs as $tab => $tab_meta ){
 						$title = $tab_meta['title'];
 				        $class = ( $tab == $current ) ? 'nav-tab-active' : '';
-				        echo "<a class='nav-tab $class' id='$tab-tab' href='#top#$tab' data-tab-target='$tab'>$title</a>";
+				        echo "<a class='nav-tab $class' id='$tab-tab' href='#$tab' data-tab-target='$tab'>$title</a>";
 				    }
 				    ?>
 				</h2>
