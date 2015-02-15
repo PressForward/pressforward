@@ -128,8 +128,9 @@ class PF_Form_Of {
 		$tabs = $this->permitted_tabs();
 		foreach ($tabs as $tab=>$tab_meta){
 			if (current_user_can($tab_meta['cap'])){
+				if ($current == $tab) $class = 'pftab active'; else $class = 'pftab';
 				?>
-				<div id="<?php echo $tab; ?>" class="pftab">
+				<div id="<?php echo $tab; ?>" class="<?php echo $class; ?>">
 	            <h2><?php echo $tab_meta['title']; ?></h2>
 		            <?php 
 		            	if (has_action('pf_do_settings_tab_'.$tab) && !array_key_exists($tab, $tabs)){
