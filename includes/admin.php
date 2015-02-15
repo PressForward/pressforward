@@ -105,7 +105,7 @@ class PF_Admin {
 			PF_MENU_SLUG,
 			__('Preferences', 'pf'), // @todo sprintf
 			__('Preferences', 'pf'),
-			get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('contributor')),
+			pf_get_defining_capability_by_role('contributor'),
 			PF_SLUG . '-options',
 			array($this, 'display_options_builder')
 		);
