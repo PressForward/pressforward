@@ -137,42 +137,6 @@ class PF_Form_Of {
 		echo $this->get_view($this->build_path(array('settings',$tab), false), $vars);
 	}
 
-	public function the_settings_user_tab(){
-		$user_ID = get_current_user_id();
-		if ( isset ( $_GET['tab'] ) ) $tab = $_GET['tab']; else $tab = 'homepage';
-		$vars = array(
-				'current'		=> $tab
-			);
-		echo $this->get_view($this->build_path(array('settings','user'), false), $vars);
-	}
-
-	public function the_settings_site_tab(){
-		$user_ID = get_current_user_id();
-		if ( isset ( $_GET['tab'] ) ) $tab = $_GET['tab']; else $tab = 'homepage';
-		$vars = array(
-				'current'		=> $tab
-			);
-		echo $this->get_view($this->build_path(array('settings','site-tab'), false), $vars);
-	}
-
-	public function the_settings_user_control_tab(){
-		$user_ID = get_current_user_id();
-		if ( isset ( $_GET['tab'] ) ) $tab = $_GET['tab']; else $tab = 'homepage';
-		$vars = array(
-				'current'		=> $tab
-			);
-		echo $this->get_view($this->build_path(array('settings','user-control-tab'), false), $vars);
-	}
-
-	public function the_settings_modules_tab(){
-		$user_ID = get_current_user_id();
-		if ( isset ( $_GET['tab'] ) ) $tab = $_GET['tab']; else $tab = 'homepage';
-		$vars = array(
-				'current'		=> $tab
-			);
-		echo $this->get_view($this->build_path(array('settings','modules-tab'), false), $vars);
-	}
-
 	public function valid_pf_page_ids($page_id = false){
 		$valid = array(
 				'toplevel_page_pf-menu',
