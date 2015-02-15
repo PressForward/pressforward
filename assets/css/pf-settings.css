@@ -1,0 +1,8 @@
+.pftab {
+	margin-left:22px;
+	display:none;
+}
+
+.pftab.active {
+	display: block;
+}

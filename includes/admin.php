@@ -1123,6 +1123,8 @@ class PF_Admin {
 			wp_register_script(PF_SLUG . '-twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
 			wp_register_style( PF_SLUG . '-susy-style', PF_URL . 'assets/css/susy.css');
 			wp_register_style( PF_SLUG . '-reset-style', PF_URL . 'assets/css/reset.css');
+			wp_register_style( PF_SLUG . '-settings-style', PF_URL . 'assets/css/pf-settings.css');
+
 			wp_register_script(PF_SLUG . '-views', PF_URL . 'assets/js/views.js', array( PF_SLUG . '-twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide'  ));
 			wp_register_script(PF_SLUG . '-readability-imp', PF_URL . 'assets/js/readability-imp.js', array( PF_SLUG . '-twitter-bootstrap', 'jquery', PF_SLUG . '-views' ));
 			wp_register_script(PF_SLUG . '-infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery', PF_SLUG . '-views', PF_SLUG . '-readability-imp', 'jquery' ));
@@ -1194,6 +1196,11 @@ class PF_Admin {
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 		}
+		if (('pressforward_page_pf-options') == $hook) {
+			wp_enqueue_style( PF_SLUG . '-settings-style' );
+		}
+
+
 		if (('nomination') == get_post_type()) {
 			wp_enqueue_script(PF_SLUG . '-add-nom-imp', PF_URL . 'assets/js/add-nom-imp.js', array( 'jquery' ));
 		}
@@ -1271,7 +1278,7 @@ class PF_Admin {
 
 		check_admin_referer( 'pf_settings' );
 
-		if (current_user_can( get_option('pf_menu_all_content_access', pf_get_defining_capability_by_role('administrator')) ) ){
+		if (current_user_can( get_option('pf_menu_all_content_access', pf_get_defining_capability_by_role('contributor')) ) ){
 			$user_ID = get_current_user_id();
 			if (isset( $_POST['pf_user_scroll_switch'] )){
 				$pf_user_scroll_switch = $_POST['pf_user_scroll_switch'];
