@@ -16,7 +16,7 @@
 					foreach( $tabs as $tab => $tab_meta ){
 						$title = $tab_meta['title'];
 				        $class = ( $tab == $current ) ? 'nav-tab-active' : '';
-				        echo "<a class='nav-tab $class' id='$tab-tab' href='#$tab' data-tab-target='$tab'>$title</a>";
+				        echo "<a class='nav-tab $class' id='$tab-tab' href='#top#$tab' data-tab-target='#$tab'>$title</a>";
 				    }
 				    ?>
 				</h2>
