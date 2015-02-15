@@ -91,6 +91,88 @@ class PF_Form_Of {
 		}
 	}
 
+	public function permitted_tabs(){
+		$permitted_tabs = array(
+					'user' => 'User Options',
+					'site' => 'Site Options',
+					'user-control' => 'User Control',
+					'modules' => 'Module Control' 
+				);
+		$permitted_tabs = apply_filters('pf_settings_tabs', $permitted_tabs);
+	}
+
+	public function settings_tab_group($current){
+		$permitted_tabs = $this->permitted_tabs();
+		foreach ($tabs as $tab=>$tab_title){
+			?>
+			<tr>
+            <th><?php echo $tab_title; ?></th>
+	            <?php 
+	            	if (has_action('pf_do_settings_tab_'.$tab) && !in_array($tab, $permitted_tabs)){
+	            		do_action('pf_do_settings_tab_'.$tab);
+	            	} else {
+						$this->the_settings_tab($tab);
+					}
+				?>
+			</tr>
+			<?php 
+		}
+
+	}
+
+	public function the_settings_page(){
+		if ( isset ( $_GET['tab'] ) ) $tab = $_GET['tab']; else $tab = 'user';
+		$vars = array(
+				'current'		=> $tab
+			);
+		echo $this->get_view($this->build_path(array('settings','settings-page'), false), $vars);
+	}
+
+	public function the_settings_tab($tab){
+		$permitted_tabs = $this->permitted_tabs();
+		if ( in_array($tab, $permitted_tabs) ) $tab = $tab; else $tab = 'user';
+		$vars = array(
+				'current'		=> $tab
+			);
+		echo $this->get_view($this->build_path(array('settings',$tab), false), $vars);
+	}
+
+	public function the_settings_user_tab(){
+		$user_ID = get_current_user_id();
+		if ( isset ( $_GET['tab'] ) ) $tab = $_GET['tab']; else $tab = 'homepage';
+		$vars = array(
+				'current'		=> $tab
+			);
+		echo $this->get_view($this->build_path(array('settings','user'), false), $vars);
+	}
+
+	public function the_settings_site_tab(){
+		$user_ID = get_current_user_id();
+		if ( isset ( $_GET['tab'] ) ) $tab = $_GET['tab']; else $tab = 'homepage';
+		$vars = array(
+				'current'		=> $tab
+			);
+		echo $this->get_view($this->build_path(array('settings','site-tab'), false), $vars);
+	}
+
+	public function the_settings_user_control_tab(){
+		$user_ID = get_current_user_id();
+		if ( isset ( $_GET['tab'] ) ) $tab = $_GET['tab']; else $tab = 'homepage';
+		$vars = array(
+				'current'		=> $tab
+			);
+		echo $this->get_view($this->build_path(array('settings','user-control-tab'), false), $vars);
+	}
+
+	public function the_settings_modules_tab(){
+		$user_ID = get_current_user_id();
+		if ( isset ( $_GET['tab'] ) ) $tab = $_GET['tab']; else $tab = 'homepage';
+		$vars = array(
+				'current'		=> $tab
+			);
+		echo $this->get_view($this->build_path(array('settings','modules-tab'), false), $vars);
+	}
+
 	public function valid_pf_page_ids($page_id = false){
 		$valid = array(
 				'toplevel_page_pf-menu',
