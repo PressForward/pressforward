@@ -100,12 +100,12 @@ class PF_Admin {
 			'edit.php?post_type=' . pressforward()->pf_feeds->post_type
 		);
 
-		// Options page is accessible only to Administrators
+		// Options page is accessible to contributors, setting visibility controlled by tab
 		add_submenu_page(
 			PF_MENU_SLUG,
 			__('Preferences', 'pf'), // @todo sprintf
 			__('Preferences', 'pf'),
-			get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator')),
+			get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('contributor')),
 			PF_SLUG . '-options',
 			array($this, 'display_options_builder')
 		);
@@ -1271,6 +1271,38 @@ class PF_Admin {
 
 		check_admin_referer( 'pf_settings' );
 
+		if (current_user_can(pf_get_defining_capability_by_role('contributor'))){
+			$user_ID = get_current_user_id();
+			if (isset( $_POST['pf_user_scroll_switch'] )){
+				$pf_user_scroll_switch = $_POST['pf_user_scroll_switch'];
+				//var_dump($pf_user_scroll_switch); die();
+				update_user_option($user_ID, 'pf_user_scroll_switch', $pf_user_scroll_switch);
+			} else {
+				update_user_option($user_ID, 'pf_user_scroll_switch', 'false');
+			}
+
+			if (isset( $_POST['pf_user_menu_set'] )){
+				$pf_user_menu_set = $_POST['pf_user_menu_set'];
+				//var_dump($pf_user_scroll_switch); die();
+				update_user_option($user_ID, 'pf_user_menu_set', $pf_user_menu_set);
+			} else {
+				update_user_option($user_ID, 'pf_user_menu_set', 'false');
+			}
+
+			if (isset( $_POST['pf_pagefull'] )){
+				$pf_pagefull = $_POST['pf_pagefull'];
+				//var_dump($pf_user_scroll_switch); die();
+				update_user_option($user_ID, 'pf_pagefull', $pf_pagefull);
+			} else {
+				update_user_option($user_ID, 'pf_pagefull', 'false');
+			}
+
+		}
+
+		if (!current_user_can(pf_get_defining_capability_by_role('administrator'))){
+			return;
+		}
+
 		$arrayedAdminRights = array(
 			'pf_menu_group_access'	=>	array(
 											'default'=>'contributor',
@@ -1306,37 +1338,13 @@ class PF_Admin {
 				update_option( $right, $enabled );
 			}
 		}
+
 		if (isset( $_POST['pf_link_to_source'] )){
 			$pf_links_opt_check = $_POST['pf_link_to_source'];
 			//print_r($pf_links_opt_check); die();
 			update_option('pf_link_to_source', $pf_links_opt_check);
 		} else {
 			update_option('pf_link_to_source', 0);
-		}
-
-		$user_ID = get_current_user_id();
-		if (isset( $_POST['pf_user_scroll_switch'] )){
-			$pf_user_scroll_switch = $_POST['pf_user_scroll_switch'];
-			//var_dump($pf_user_scroll_switch); die();
-			update_user_option($user_ID, 'pf_user_scroll_switch', $pf_user_scroll_switch);
-		} else {
-			update_user_option($user_ID, 'pf_user_scroll_switch', 'false');
-		}
-
-		if (isset( $_POST['pf_user_menu_set'] )){
-			$pf_user_menu_set = $_POST['pf_user_menu_set'];
-			//var_dump($pf_user_scroll_switch); die();
-			update_user_option($user_ID, 'pf_user_menu_set', $pf_user_menu_set);
-		} else {
-			update_user_option($user_ID, 'pf_user_menu_set', 'false');
-		}
-
-		if (isset( $_POST['pf_pagefull'] )){
-			$pf_pagefull = $_POST['pf_pagefull'];
-			//var_dump($pf_user_scroll_switch); die();
-			update_user_option($user_ID, 'pf_pagefull', $pf_pagefull);
-		} else {
-			update_user_option($user_ID, 'pf_pagefull', 'false');
 		}
 
 
