@@ -312,6 +312,9 @@ function attach_menu_on_scroll_past(){
 		   jQuery('#feeds-search').insertAfter('.display .pf-btns').addClass('pull-left search-in-bar');
 		   jQuery('#feeds-search > *').addClass('pull-left');
 		   jQuery('#feeds-search > label').hide();
+		   
+		   var width = jQuery('#entries').innerWidth(); 
+		   jQuery('.nav-fix').width(width-80);
 		}
 		else
 		{
@@ -323,6 +326,18 @@ function attach_menu_on_scroll_past(){
 			
 			jQuery('#feeds-search').appendTo('#app-banner').removeClass('pull-left search-in-bar');
 			jQuery('#feeds-search > *').removeClass('pull-left');
+
+			jQuery('.pf_container .display').width('auto');
+		}
+	});
+
+	jQuery( window ).resize(function() {
+	  	var width = jQuery('#entries').innerWidth(); 
+		jQuery('.nav-fix').width(width-80);
+		if (40 > jQuery('#adminmenuback').width()){
+			//jQuery('.nav-fix').css('left', '80px');	
+		} else {
+			//jQuery('.nav-fix').css('left', '200px');	
 		}
 	});
 }

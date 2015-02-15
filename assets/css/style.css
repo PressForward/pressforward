@@ -3,7 +3,7 @@
 }
 @media only screen and (min-width: 900px) {
     .toplevel_page_pf-menu #wpcontent {
-        margin-left: 160px;
+        /**margin-left: 160px;**/
     }
 }
 .deck .card {
@@ -689,6 +689,13 @@ h3 {
 		margin: 0;
 		left: 200px;
 		
+	}
+
+	@media (max-width: 960px){
+
+		.nav-fix {
+			left: 80px;
+		}
 	}
 
 	.right-bar-fix {
