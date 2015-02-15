@@ -100,12 +100,12 @@ class PF_Admin {
 			'edit.php?post_type=' . pressforward()->pf_feeds->post_type
 		);
 
-		// Options page is accessible only to Administrators
+		// Options page is accessible to contributors, setting visibility controlled by tab
 		add_submenu_page(
 			PF_MENU_SLUG,
 			__('Preferences', 'pf'), // @todo sprintf
 			__('Preferences', 'pf'),
-			get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator')),
+			get_option('pf_menu_all_content_access', pf_get_defining_capability_by_role('contributor')),
 			PF_SLUG . '-options',
 			array($this, 'display_options_builder')
 		);
@@ -986,199 +986,7 @@ class PF_Admin {
 	 * Display function for the Options panel
 	 */
 	function display_options_builder() {
-		?>
-		<form action="<?php pf_admin_url(); ?>" method="post">
-			<div class="wrap">
-				<?php
-				echo '<h2>Preferences</h2>';
-				echo '<h3>Options</h3>';
-
-
-				wp_nonce_field( 'pf_settings' );
-				?>
-					<br />
-
-					<p>
-					<?php
-					$user_ID = get_current_user_id();
-					$pf_user_scroll_switch = get_user_option('pf_user_scroll_switch', $user_ID);
-					if ( empty($pf_user_scroll_switch) || 'true' == $pf_user_scroll_switch){
-						$mark = 'checked';
-					} else {
-						$mark = '';
-					}
-					echo '<input id="pf_user_scroll_switch" type="checkbox" name="pf_user_scroll_switch" value="true" '.$mark.' class="user_setting" />
-								<label for="pf_user_scroll_switch" >' . 'Infinite Scroll Active' . '</label>';
-					?>
-					</p>
-					<p>
-					<?php
-					$user_ID = get_current_user_id();
-					$pf_user_menu_set = get_user_option('pf_user_menu_set', $user_ID);
-					if ( 'true' == $pf_user_menu_set){
-						$mark = 'checked';
-					} else {
-						$mark = '';
-					}
-					echo '<input id="pf_user_menu_set" type="checkbox" name="pf_user_menu_set" value="true" '.$mark.' class="user_setting" />
-								<label for="pf_user_menu_set" >' . 'Show side menu' . '</label>';
-					?>
-
-
-					</p>
-					<p>
-					<?php
-					$user_ID = get_current_user_id();
-					$default_pf_pagefull = get_user_option('pf_pagefull', $user_ID);
-					if ( empty($default_pf_pagefull)){
-						$default_pf_pagefull = 20;
-					}
-					echo '<input id="pf_pagefull" name="pf_pagefull" type="number" class="pf_pagefull" value="'.$default_pf_pagefull.'" />';
-
-					echo '<label class="description" for="pf_pagefull"> ' .__('Number of feed items per page.', 'pf'). ' </label>';
-					?></p>
-
-					<h3>Site Options</h3>
-
-					<p><?php
-					$default_pf_link_value = get_option('pf_link_to_source', 0);
-					echo '<input id="pf_link_to_source" name="pf_link_to_source" type="number" class="pf_link_to_source_class" value="'.$default_pf_link_value.'" />';
-
-					echo '<label class="description" for="pf_link_to_source"> ' .__('Seconds to redirect user to source. (0 means no redirect)', 'pf'). ' </label>';
-					?></p>
-
-					<p>
-						<?php
-						$default_pf_use_advanced_user_roles = get_option('pf_use_advanced_user_roles', 'no');
-						?>
-						<select id="pf_use_advanced_user_roles" name="pf_use_advanced_user_roles">
-							<option value="yes" <?php if ($default_pf_use_advanced_user_roles == 'yes'){ echo 'selected="selected"'; }?>>Yes</option>
-							<option value="no" <?php if ($default_pf_use_advanced_user_roles == 'no'){ echo 'selected="selected"'; }?>>No</option>
-						</select>
-						<label class="description" for="pf_use_advanced_user_roles"> <?php _e('Use advanced user role management? (May be needed if you customize user roles or capabilities).', 'pf'); ?> </label>
-					</p>
-					<p><?php
-					$default_pf_present_author_value = get_option('pf_present_author_as_primary', 'yes');
-					?>
-						<select id="pf_present_author_as_primary" name="pf_present_author_as_primary">
-							<option value="yes" <?php if ($default_pf_present_author_value == 'yes'){ echo 'selected="selected"'; }?>>Yes</option>
-							<option value="no" <?php if ($default_pf_present_author_value == 'no'){ echo 'selected="selected"'; }?>>No</option>
-						</select>
-					<?php
-
-					echo '<label class="description" for="pf_present_author_as_primary"> ' .__('Show item author as source.', 'pf'). ' </label>';
-					?></p>
-					<?php
-					if (class_exists('The_Alert_Box')){ ?>
-					<p>
-					<?php
-						#if (class_exists('The_Alert_Box')){
-							$alert_settings = the_alert_box()->settings_fields();
-							$alert_switch = $alert_settings['switch'];
-							$check = the_alert_box()->setting($alert_switch, $alert_switch['default']);
-							#var_dump($check);
-								$check = the_alert_box()->setting($alert_switch, $alert_switch['default']);
-								if ('true' == $check){
-									$mark = 'checked';
-								} else {
-									$mark = '';
-								}
-							echo '<input id="alert_switch" type="checkbox" name="'.the_alert_box()->option_name().'['.$alert_switch['parent_element'].']['.$alert_switch['element'].']" value="true" '.$mark.' class="'.$alert_switch['parent_element'].' '.$alert_switch['element'].'" />  <label for="'.the_alert_box()->option_name().'['.$alert_switch['parent_element'].']['.$alert_switch['element'].']" class="'.$alert_switch['parent_element'].' '.$alert_switch['element'].'" >' . $alert_switch['label_for'] . '</label>';
-						#}
-					?>
-					</p>
-					<?php
-					}
-					?>
-					<p>
-					<?php
-					$default_pf_link_value = get_option('pf_retain_time', 2);
-					echo '<input id="pf_retain_time" name="pf_retain_time" type="number" class="pf_retain_time" value="'.$default_pf_link_value.'" />';
-
-					echo '<label class="description" for="pf_retain_time"> ' .__('Months to retain feed items.', 'pf'). ' </label>';
-					?></p>
-					<p><?php
-					$default_pf_link_value = get_option(PF_SLUG.'_errors_until_alert', 3);
-					echo '<input id="pf_errors_until_alert" name="pf_errors_until_alert" type="number" class="pf_errors_until_alert" value="'.$default_pf_link_value.'" />';
-
-					echo '<label class="description" for="pf_errors_until_alert"> ' .__('Number of errors before a feed is marked as malfunctioning.', 'pf'). ' </label>';
-					?></p>
-					<br />
-
-					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
-					<br />
-
-					<h3><?php _e( 'User Control', 'pf' ) ?></h3>
-
-				<?php
-
-		$arrayedAdminRights = array(
-			'pf_menu_group_access'	=>	array(
-											'default'=>'contributor',
-											'title'=>__( 'PressForward Menu Group', 'pf' )
-										),
-			'pf_menu_all_content_access'=>array(
-											'default'=>'contributor',
-											'title'=>__( 'All Content Menu', 'pf' )
-										),
-			'pf_menu_under_review_access'=>array(
-											'default'=>'contributor',
-											'title'=>__( 'Nominated Menu', 'pf' )
-										),
-			'pf_menu_preferences_access'=>array(
-											'default'=>'administrator',
-											'title'=>__( 'Preferences Menu', 'pf' )
-										),
-			'pf_menu_feeder_access'=>array(
-											'default'=>'editor',
-											'title'=>__( 'Feeder Menu', 'pf' )
-										),
-			'pf_menu_add_nomination_access'=>array(
-											'default'=>'contributor',
-											'title'=> __( 'Add Nomination Menu', 'pf' )
-										)
-		);
-
-		$arrayedAdminRights = apply_filters('pf_setup_admin_rights',$arrayedAdminRights);
-
-		foreach($arrayedAdminRights as $right=>$parts){
-
-			?>
-					<table class="form-table">
-						<tr>
-							<th scope="row">
-								<label for="<?php echo $right; ?>-enable"><?php echo $parts['title']; ?></label>
-							</th>
-
-							<td>
-								<select id="<?php echo $right; ?>" name="<?php echo $right; ?>">
-									<?php $this->pf_get_user_role_select($right, pf_get_defining_capability_by_role($parts['default'])); ?>
-								</select>
-							</td>
-						</tr>
-					</table>
-
-				<br />
-
-			<?php
-
-		}
-		?><input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" /><?php
-				do_action('pf_admin_user_settings');
-
-			?>
-
-				<h3><?php _e( 'Modules', 'pf' ) ?></h3>
-
-				<p class="description"><?php _e( '<strong>PressForward Modules</strong> are addons to alter or improve the functionality of the plugin.', 'pf' ) ?></p>
-					<?php
-					do_action( 'pf_admin_op_page' );
-					?>
-					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
-
-			</div>
-		</form>
-		<?php
+		pressforward()->form_of->the_settings_page();
 	}
 
 	/**
@@ -1315,6 +1123,8 @@ class PF_Admin {
 			wp_register_script(PF_SLUG . '-twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
 			wp_register_style( PF_SLUG . '-susy-style', PF_URL . 'assets/css/susy.css');
 			wp_register_style( PF_SLUG . '-reset-style', PF_URL . 'assets/css/reset.css');
+			wp_register_style( PF_SLUG . '-settings-style', PF_URL . 'assets/css/pf-settings.css');
+
 			wp_register_script(PF_SLUG . '-views', PF_URL . 'assets/js/views.js', array( PF_SLUG . '-twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide'  ));
 			wp_register_script(PF_SLUG . '-readability-imp', PF_URL . 'assets/js/readability-imp.js', array( PF_SLUG . '-twitter-bootstrap', 'jquery', PF_SLUG . '-views' ));
 			wp_register_script(PF_SLUG . '-infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery', PF_SLUG . '-views', PF_SLUG . '-readability-imp', 'jquery' ));
@@ -1325,6 +1135,7 @@ class PF_Admin {
 			wp_register_script(PF_SLUG . '-media-query-imp', PF_URL . 'assets/js/media-query-imp.js', array( 'jquery', 'thickbox', 'media-upload' ));
 			wp_register_script(PF_SLUG . '-sort-imp', PF_URL . 'assets/js/sort-imp.js', array( PF_SLUG . '-tinysort', PF_SLUG . '-twitter-bootstrap', PF_SLUG . '-jq-fullscreen' ));
 			wp_register_script( PF_SLUG . '-quick-edit', PF_URL . 'assets/js/quick-edit.js', array( 'jquery' ) );
+			wp_register_script( PF_SLUG . '-settings-tools', PF_URL . 'assets/js/settings-tools.js', array( 'jquery' ) );
 
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
@@ -1386,6 +1197,13 @@ class PF_Admin {
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 		}
+		if (('pressforward_page_pf-options') == $hook) {
+			wp_enqueue_style( PF_SLUG . '-settings-style' );
+
+			wp_enqueue_script(PF_SLUG . '-settings-tools' );
+		}
+
+
 		if (('nomination') == get_post_type()) {
 			wp_enqueue_script(PF_SLUG . '-add-nom-imp', PF_URL . 'assets/js/add-nom-imp.js', array( 'jquery' ));
 		}
@@ -1463,6 +1281,38 @@ class PF_Admin {
 
 		check_admin_referer( 'pf_settings' );
 
+		if (current_user_can( get_option('pf_menu_all_content_access', pf_get_defining_capability_by_role('contributor')) ) ){
+			$user_ID = get_current_user_id();
+			if (isset( $_POST['pf_user_scroll_switch'] )){
+				$pf_user_scroll_switch = $_POST['pf_user_scroll_switch'];
+				//var_dump($pf_user_scroll_switch); die();
+				update_user_option($user_ID, 'pf_user_scroll_switch', $pf_user_scroll_switch);
+			} else {
+				update_user_option($user_ID, 'pf_user_scroll_switch', 'false');
+			}
+
+			if (isset( $_POST['pf_user_menu_set'] )){
+				$pf_user_menu_set = $_POST['pf_user_menu_set'];
+				//var_dump($pf_user_scroll_switch); die();
+				update_user_option($user_ID, 'pf_user_menu_set', $pf_user_menu_set);
+			} else {
+				update_user_option($user_ID, 'pf_user_menu_set', 'false');
+			}
+
+			if (isset( $_POST['pf_pagefull'] )){
+				$pf_pagefull = $_POST['pf_pagefull'];
+				//var_dump($pf_user_scroll_switch); die();
+				update_user_option($user_ID, 'pf_pagefull', $pf_pagefull);
+			} else {
+				update_user_option($user_ID, 'pf_pagefull', 'false');
+			}
+
+		}
+
+		if ( !current_user_can( get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator')) ) ){
+			return;
+		}
+
 		$arrayedAdminRights = array(
 			'pf_menu_group_access'	=>	array(
 											'default'=>'contributor',
@@ -1498,37 +1348,13 @@ class PF_Admin {
 				update_option( $right, $enabled );
 			}
 		}
+
 		if (isset( $_POST['pf_link_to_source'] )){
 			$pf_links_opt_check = $_POST['pf_link_to_source'];
 			//print_r($pf_links_opt_check); die();
 			update_option('pf_link_to_source', $pf_links_opt_check);
 		} else {
 			update_option('pf_link_to_source', 0);
-		}
-
-		$user_ID = get_current_user_id();
-		if (isset( $_POST['pf_user_scroll_switch'] )){
-			$pf_user_scroll_switch = $_POST['pf_user_scroll_switch'];
-			//var_dump($pf_user_scroll_switch); die();
-			update_user_option($user_ID, 'pf_user_scroll_switch', $pf_user_scroll_switch);
-		} else {
-			update_user_option($user_ID, 'pf_user_scroll_switch', 'false');
-		}
-
-		if (isset( $_POST['pf_user_menu_set'] )){
-			$pf_user_menu_set = $_POST['pf_user_menu_set'];
-			//var_dump($pf_user_scroll_switch); die();
-			update_user_option($user_ID, 'pf_user_menu_set', $pf_user_menu_set);
-		} else {
-			update_user_option($user_ID, 'pf_user_menu_set', 'false');
-		}
-
-		if (isset( $_POST['pf_pagefull'] )){
-			$pf_pagefull = $_POST['pf_pagefull'];
-			//var_dump($pf_user_scroll_switch); die();
-			update_user_option($user_ID, 'pf_pagefull', $pf_pagefull);
-		} else {
-			update_user_option($user_ID, 'pf_pagefull', 'false');
 		}
 
 
