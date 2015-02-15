@@ -15,7 +15,7 @@
 									),
 		'pf_menu_preferences_access'=>array(
 										'default'=>'administrator',
-										'title'=>__( 'Preferences Menu', 'pf' )
+										'title'=>__( 'Non-User Preferences Tabs', 'pf' )
 									),
 		'pf_menu_feeder_access'=>array(
 										'default'=>'editor',
