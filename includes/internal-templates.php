@@ -93,31 +93,25 @@ class PF_Form_Of {
 
 	public function permitted_tabs(){
 		$permitted_tabs = array(
-					'user' => __('User Options', 'pf'),
-					'site' => __('Site Options', 'pf'),
-					'user-control' => __('User Control', 'pf'),
-					'modules' => __('Module Control', 'pf') 
+					'user' => array( 
+										'title' => __('User Options', 'pf'), 
+										'cap'  => pf_get_defining_capability_by_role('contributor')
+									),
+					'site' => array( 
+										'title' => __('Site Options', 'pf'),
+										'cap'  => pf_get_defining_capability_by_role('administrator')
+									),
+					'user-control' => array( 
+										'title' => __('User Control', 'pf'),
+										'cap'  => pf_get_defining_capability_by_role('administrator')
+									),
+					'modules' => array( 
+										'title' =>__('Module Control', 'pf'),
+										'cap'  => pf_get_defining_capability_by_role('administrator')
+									)
 				);
 		$permitted_tabs = apply_filters('pf_settings_tabs', $permitted_tabs);
 		return $permitted_tabs;
-	}
-
-	public function settings_tab_group($current){
-		$tabs = $this->permitted_tabs();
-		foreach ($tabs as $tab=>$tab_title){
-			?>
-			<div id="<?php echo $tab; ?>" class="pftab">
-            <h2><?php echo $tab_title; ?></h2>
-	            <?php 
-	            	if (has_action('pf_do_settings_tab_'.$tab) && !array_key_exists($tab, $tabs)){
-	            		do_action('pf_do_settings_tab_'.$tab);
-	            	} else {
-						$this->the_settings_tab($tab);
-					}
-				?>
-			</div>
-			<?php 
-		}
 	}
 
 	public function the_settings_page(){
@@ -129,6 +123,27 @@ class PF_Form_Of {
 			);
 		echo $this->get_view($this->build_path(array('settings','settings-page'), false), $vars);
 	}
+
+	public function settings_tab_group($current){
+		$tabs = $this->permitted_tabs();
+		foreach ($tabs as $tab=>$tab_meta){
+			if (current_user_can($tab_meta['cap'])){
+				?>
+				<div id="<?php echo $tab; ?>" class="pftab">
+	            <h2><?php echo $tab_meta['title']; ?></h2>
+		            <?php 
+		            	if (has_action('pf_do_settings_tab_'.$tab) && !array_key_exists($tab, $tabs)){
+		            		do_action('pf_do_settings_tab_'.$tab);
+		            	} else {
+							$this->the_settings_tab($tab);
+						}
+					?>
+				</div>
+				<?php 
+			}
+		}
+	}
+
 
 	public function the_settings_tab($tab){
 		$permitted_tabs = $this->permitted_tabs();
