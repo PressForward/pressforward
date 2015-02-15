@@ -27,6 +27,9 @@
 
 					?>
 				</div>
+				<br />
+					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
+				<br />
 			</form>
 		</div>
 	</div>
