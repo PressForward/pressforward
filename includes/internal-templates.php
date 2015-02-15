@@ -45,6 +45,10 @@ class PF_Form_Of {
 		if ($leading){
 			$string = $slash . $string;
 		}
+		# Let's make sure eh?
+		if ('/' != $slash){
+			$string = str_replace('/', $slash, $string);
+		}
 		return $string;
 	}
 

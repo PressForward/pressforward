@@ -1038,7 +1038,7 @@ class PF_Feed_Item {
 	public function assure_image($filepath){
 		$img_info = getimagesize($filepath);
 		# Your 1x1 tracking or dummy images have no domain here!
-		if ( ( 1 < $img_info[0] ) || ( 1 < $img_info[1] ) ){
+		if ( ( 2 > $img_info[0] ) || ( 2 > $img_info[1] ) ){
 			# I assure you this is not an image
 			return false;	
 		} else {
@@ -1059,7 +1059,7 @@ class PF_Feed_Item {
 				$imgTitle = $imgParts['filename'];
 				$resolved_img_ext = pressforward()->pf_feed_items->resolve_image_type($ogImage);
 				if (($resolved_img_ext != ('jpg'||'png'||'jrpg'||'bmp'||'gif'||'jpeg')) || ($imgExt != ('jpg'||'png'||'jrpg'||'bmp'||'gif'||'jpeg'))){
-					//print_r('bad og img');
+					#var_dump($resolved_img_ext); die();
 					return;
 				}
 
@@ -1075,6 +1075,7 @@ class PF_Feed_Item {
 				//'/' . get_option(upload_path, 'wp-content/uploads') . '/' . date("o")
 				$uploadDir = wp_upload_dir();
 				$ogCacheImg = $uploadDir['path'] . '/' . $postID . "-" . $imgTitle . "." . $resolved_img_ext;
+				#var_dump($ogCacheImg); die();
 
 				if ( !file_exists($ogCacheImg) ) {
 
@@ -1097,12 +1098,14 @@ class PF_Feed_Item {
 			//and http://wordpress.stackexchange.com/questions/26138/set-post-thumbnail-with-php
 
 			//Get the type of the image file. .jpg, .gif, or whatever
-			$filetype = pressforward()->pf_feed_items->resolve_image_type( $ogCacheImg );
-
+			$filetype = wp_check_filetype( $ogCacheImg );
+			
+			
 			//Set the identifying variables for the about to be featured image.
 			$imgData = array(
+							'guid'           => $ogCacheImg, 
 							//tell WordPress what the filetype is.
-							'post_mime_type' => $filetype,
+							'post_mime_type' => $filetype['type'],
 							//set the image title to the title of the site you are pulling from
 							'post_title' => get_the_title($postID),
 							//WordPress tells us we must set this and set it to empty. Why? Dunno.
