@@ -93,10 +93,10 @@ class PF_Form_Of {
 
 	public function permitted_tabs(){
 		$permitted_tabs = array(
-					'user' => 'User Options',
-					'site' => 'Site Options',
-					'user-control' => 'User Control',
-					'modules' => 'Module Control' 
+					'user' => __('User Options', 'pf'),
+					'site' => __('Site Options', 'pf'),
+					'user-control' => __('User Control', 'pf'),
+					'modules' => __('Module Control', 'pf') 
 				);
 		$permitted_tabs = apply_filters('pf_settings_tabs', $permitted_tabs);
 	}
@@ -105,8 +105,8 @@ class PF_Form_Of {
 		$permitted_tabs = $this->permitted_tabs();
 		foreach ($tabs as $tab=>$tab_title){
 			?>
-			<tr>
-            <th><?php echo $tab_title; ?></th>
+			<div id="<?php echo $tab; ?>" class="pftab">
+            <h3><?php echo $tab_title; ?></h3>
 	            <?php 
 	            	if (has_action('pf_do_settings_tab_'.$tab) && !in_array($tab, $permitted_tabs)){
 	            		do_action('pf_do_settings_tab_'.$tab);
@@ -114,7 +114,10 @@ class PF_Form_Of {
 						$this->the_settings_tab($tab);
 					}
 				?>
-			</tr>
+			</div>
+			<br />
+				<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
+			<br />
 			<?php 
 		}
 
@@ -122,8 +125,10 @@ class PF_Form_Of {
 
 	public function the_settings_page(){
 		if ( isset ( $_GET['tab'] ) ) $tab = $_GET['tab']; else $tab = 'user';
+		$user_ID = get_current_user_id();
 		$vars = array(
-				'current'		=> $tab
+				'current'		=> $tab,
+				'user_ID'		=> $user_ID
 			);
 		echo $this->get_view($this->build_path(array('settings','settings-page'), false), $vars);
 	}
@@ -134,7 +139,7 @@ class PF_Form_Of {
 		$vars = array(
 				'current'		=> $tab
 			);
-		echo $this->get_view($this->build_path(array('settings',$tab), false), $vars);
+		echo $this->get_view($this->build_path(array('settings','tab-'.$tab), false), $vars);
 	}
 
 	public function valid_pf_page_ids($page_id = false){
