@@ -1004,6 +1004,8 @@ class PF_Admin {
 
 		pressforward()->form_of->nominate_this('as_paragraph');	
 
+		do_action('pf_tools');
+
 	}
 
 	/**

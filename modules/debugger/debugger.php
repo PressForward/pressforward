@@ -8,6 +8,7 @@ class PF_Debugger extends PF_Module {
 	function __construct() {
 		parent::start();
 		add_filter('pf_setup_admin_rights', array($this, 'control_menu_access'));
+		add_action('pf_tools', array($this, 'debug_the_slurp'));
 	}
 
 	/**
@@ -226,6 +227,21 @@ class PF_Debugger extends PF_Module {
 		wp_register_style( PF_SLUG . '-debug-style', PF_URL . 'includes/debugger/css/style.css' );
 	}
 
+	function admin_enqueue_scripts() {
+		global $pagenow;
+
+		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
+
+		if ( !in_array( $pagenow, array( 'admin.php' ) ) )
+			return;
+
+		if(!in_array($hook, array('pressforward_page_pf-tools')) )
+			return;
+
+
+		wp_enqueue_script( 'feed_control_script', PF_URL . '/assets/js/feeds_control.js', array('jquery', PF_SLUG . '-twitter-bootstrap'), PF_VERSION );
+	}
+
 	function control_menu_access($arrayedAdminRights){
 		$arrayedAdminRights['pf_menu_log_access'] = array(
 															'default'=>'administrator',
@@ -236,7 +252,7 @@ class PF_Debugger extends PF_Module {
 
 	}
 
-	function add_to_feeder(){
+	function debug_the_slurp(){
 		?>
 		<p>
 		<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="<?php _e('Reset all Feed Retrieval Options', 'pf'); ?>"><?php _e('Reset all Feed Retrieval Options', 'pf'); ?></button>    <br />
