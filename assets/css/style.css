@@ -360,10 +360,16 @@ h3 {
     word-wrap: break-word;
 }
 
+.pf-opt-group {
+
+}
+
 .pf-opt-group .postbox{
     float:left;
-    width: 45%;
+    width: 30%;
     margin-right: 10px;
+    height:390px;
+    overflow:auto;
 }
 
 .pf_feeder_input_box {

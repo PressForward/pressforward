@@ -7,9 +7,10 @@ class PF_Nominations {
 	function __construct() {
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_action('edit_post', array( $this, 'send_nomination_for_publishing'));
-		add_filter( 'manage_edit-nomination_columns', array ($this, 'edit_nominations_columns') );
-		add_action( 'manage_nomination_posts_custom_column',  array ($this, 'nomination_custom_columns') );
-		add_filter( "manage_edit-nomination_sortable_columns", array ($this, "nomination_sortable_columns") );
+		add_filter( 'manage_edit-nomination_columns', array($this, 'edit_nominations_columns') );
+		add_action( 'manage_nomination_posts_custom_column',  array($this, 'nomination_custom_columns') );
+		add_filter( "manage_edit-nomination_sortable_columns", array($this, "nomination_sortable_columns") );
+		add_action( 'feeder_menu', array($this, "nominate_this_tile"), 11 );
 
 	}
 
@@ -155,6 +156,10 @@ class PF_Nominations {
 		/* Restore original Post Data */
 		wp_reset_postdata();
 		return $r;
+	}
+
+	public function nominate_this_tile(){
+		pressforward()->form_of->nominate_this('as_feed');	
 	}
 
 	public function change_nomination_count($id, $up = true){
