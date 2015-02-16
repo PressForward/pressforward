@@ -91,6 +91,19 @@ class PF_Form_Of {
 		}
 	}
 
+	public function nominate_this($context){
+		if ( current_user_can('edit_posts') ) :
+			$have_you_seen = get_user_option('have_you_seen_nominate_this');
+			if ( ('as_paragraph' == $context) || (!$have_you_seen) ){
+					$vars = array(
+						'context'	=> $context
+					);
+				echo $this->get_view('nominate-this', $vars);
+			}
+		endif;
+	}
+
+
 	public function permitted_tabs(){
 		$permitted_tabs = array(
 					'user' => array( 
