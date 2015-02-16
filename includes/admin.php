@@ -259,17 +259,18 @@ class PF_Admin {
 				  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
 					<?php
 						if ( 'pf-review' != $page ){
-							self::dropdown_option(__('Starred', 'pf'), "showMyStarred");
-							self::dropdown_option(__('Show hidden', 'pf'), "showMyHidden");
-							self::dropdown_option(__('Standard view', 'pf'), "showNormal");
+							self::dropdown_option(__('Reset filter', 'pf'), "showNormal");
+							self::dropdown_option(__('My starred', 'pf'), "showMyStarred");
+							self::dropdown_option(__('Show hidden', 'pf'), "showMyHidden");	
 							self::dropdown_option(__('My nominations', 'pf'), "showMyNominations");
 						} else {
-							self::dropdown_option(__('Starred', 'pf'), "sortstarredonly", 'starredonly');
-							self::dropdown_option(__('Toggle visibility of archived', 'pf'), "showarchived");
-							self::dropdown_option(__('Only archived', 'pf'), "showarchiveonly");
 							if ( isset($_POST['search-terms']) || isset($_GET['by']) || isset($_GET['pf-see']) || isset($_GET['reveal']) ) {
 								self::dropdown_option(__('Reset filter', 'pf'), "showNormalNominations");
 							}
+							self::dropdown_option(__('My starred', 'pf'), "sortstarredonly", 'starredonly');
+							self::dropdown_option(__('Toggle visibility of archived', 'pf'), "showarchived");
+							self::dropdown_option(__('Only archived', 'pf'), "showarchiveonly");
+
 						}
 					?>
 				  </ul>
