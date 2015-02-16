@@ -33,4 +33,8 @@
             </div>
 		</div>
 		<?php 
+	} elseif ( 'as_feed_item' == $context ){
+
+	} else {
+		
 	}
