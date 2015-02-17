@@ -89,18 +89,25 @@ class PF_Form_Of {
 				);
 			echo $this->get_view('side-menu', $vars);
 		}
+
+		return;
+
 	}
 
 	public function nominate_this($context){
 		if ( current_user_can('edit_posts') ) :
 			$have_you_seen = get_user_option('have_you_seen_nominate_this');
-			if ( ('as_paragraph' == $context) || (!$have_you_seen) ){
+			if ( ('as_paragraph' == $context) || (empty($have_you_seen)) ){
 					$vars = array(
 						'context'	=> $context
 					);
 				echo $this->get_view('nominate-this', $vars);
+			} else {
+				return;
 			}
 		endif;
+
+		return;
 	}
 
 
@@ -135,6 +142,8 @@ class PF_Form_Of {
 				'user_ID'		=> $user_ID
 			);
 		echo $this->get_view($this->build_path(array('settings','settings-page'), false), $vars);
+
+		return;
 	}
 
 	public function settings_tab_group($current){
@@ -156,6 +165,8 @@ class PF_Form_Of {
 				<?php 
 			}
 		}
+
+		return;
 	}
 
 
@@ -167,6 +178,8 @@ class PF_Form_Of {
 			);
 		#var_dump($tab);
 		echo $this->get_view($this->build_path(array('settings','tab-'.$tab), false), $vars);
+
+		return;
 	}
 
 	public function valid_pf_page_ids($page_id = false){
@@ -321,6 +334,7 @@ class PF_Form_Of {
 
 	public function the_page_headline($title = ''){
 		echo $this->get_page_headline($title);
+		return;
 	}
 
 }

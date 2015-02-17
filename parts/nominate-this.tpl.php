@@ -35,6 +35,47 @@
 		<?php 
 	} elseif ( 'as_feed_item' == $context ){
 
+		?>
+
+			<article class="feed-item entry nominate-this-preview">
+				<div class="box-controls">
+					<i class="icon-remove pf-item-remove remove-nom-this-prompt" id="remove_nominate_this_preview" title="Delete"></i>
+				</div>
+				<header>
+					<h1 class="item_title">
+						Nominate posts using PressForward's Bookmarklet
+					</h1>
+				</header>
+				<div class="content">
+					<div class="item_excerpt" id="excerpt1">
+						<p>
+							<?php 
+								_e('Use Nominate This to archive text, images and videos from any web page. 
+									Then you can edit, add author and category before 
+									you nominate or draft it in a post on your site.', 'pf'); 
+							?>
+						</p>
+						<p>
+							<?php printf( 
+										__('Drag the button up to your bookmark bar or <a href="%s" class="%s">click here to find out more in the Tools menu</a>.', 'pf'), 
+										esc_url('admin.php?page=pf-tools'),
+										esc_attr('remove-nom-this-prompt')
+									); 
+							?>
+						</p>
+						<p class="pressthis"><a onclick="return false;" oncontextmenu="if(window.navigator.userAgent.indexOf('WebKit')!=-1||window.navigator.userAgent.indexOf('MSIE')!=-1)jQuery('.pressthis-code').show().find('textarea').focus().select();return false;" href="<?php echo htmlspecialchars( pf_get_shortcut_link() ); ?>"><span><?php _e('Nominate This', 'pf'); ?></span></a></p>
+						
+					</div>
+				</div>
+
+				<footer>
+					<p class="pubdate">This item will stay in place until deleted with the top button or the link is clicked.</p>
+				</footer>
+
+			</article>
+
+		<?php 
+
 	} else {
-		
+		_e('Try Nominate This in PressForward\'s Tools menu.', 'pf');
 	}

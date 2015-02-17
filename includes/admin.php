@@ -870,6 +870,8 @@ class PF_Admin {
 
 			<?php
 
+				pressforward()->form_of->nominate_this('as_feed_item');
+
 				//Use this foreach loop to go through the overall feedlist, select each individual feed item (post) and do stuff with it.
 				//Based off SimplePie's tutorial at http://simplepie.org/wiki/tutorial/how_to_display_previous_feed_items_like_google_reader.
 				$c = 1;

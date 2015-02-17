@@ -548,6 +548,24 @@ jQuery(window).load(function() {
 		window.open("?page=pf-review", "_self")
 	});
 
+	//update_user_option(pressforward()->form_of->user_id(), 'have_you_seen_nominate_this', false);
+	jQuery('.pf_container').on('click', '.remove-nom-this-prompt', function(evt){
+		evt.preventDefault();
+		jQuery('article.nominate-this-preview').remove();
+		jQuery.post(ajaxurl, {
+				action: 'pf_ajax_user_setting',
+				pf_user_setting: 'have_you_seen_nominate_this',
+				setting: 'yes'
+
+		},
+		function(response) {
+				var check_set = html_entity_decode(jQuery(response).find("response_data").text());
+		});
+		if (jQuery(this).is('[href]')){
+			window.open("?page=pf-tools", "_self");
+		}
+	});	
+
 	reshowModal();
 	reviewModal();
 	hideModal();
