@@ -20,10 +20,6 @@
 		'pf_menu_feeder_access'=>array(
 										'default'=>'editor',
 										'title'=>__( 'Feeder Menu', 'pf' )
-									),
-		'pf_menu_add_nomination_access'=>array(
-										'default'=>'contributor',
-										'title'=> __( 'Add Nomination Menu', 'pf' )
 									)
 	);
 
