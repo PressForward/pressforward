@@ -489,7 +489,7 @@ jQuery(window).load(function() {
 				}
 		});
 		
-	})
+	});
 
 
 	jQuery(".refreshfeed").click(function (evt){
