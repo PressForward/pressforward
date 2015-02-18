@@ -178,35 +178,39 @@ class PF_Comments extends PF_Module {
 	 */
 	function the_comment_form($id_for_comments) {
 		//global $post;
+		$comments_allowed = get_option('pf_feature_comments_access', pf_get_defining_capability_by_role('editor'));
 
-		?>
-		<a href="#" id="ef-comment_respond" onclick="editorialCommentReply.open();return false;" class="button-primary alignright hide-if-no-js" title=" <?php _e( 'Respond to this post', 'pf' ); ?>"><span><?php _e( 'Add Comment', 'pf' ); ?></span></a>
+		if ((current_user_can($comments_allowed))){
 
-		<!-- Reply form, hidden until reply clicked by user -->
-		<div id="ef-replyrow" style="display: none;">
-			<div id="ef-replycontainer">
-				<textarea id="ef-replycontent" name="replycontent" cols="40" rows="5"></textarea>
+			?>
+			<a href="#" id="ef-comment_respond" onclick="editorialCommentReply.open();return false;" class="button-primary alignright hide-if-no-js" title=" <?php _e( 'Respond to this post', 'pf' ); ?>"><span><?php _e( 'Add Comment', 'pf' ); ?></span></a>
+
+			<!-- Reply form, hidden until reply clicked by user -->
+			<div id="ef-replyrow" style="display: none;">
+				<div id="ef-replycontainer">
+					<textarea id="ef-replycontent" name="replycontent" cols="40" rows="5"></textarea>
+				</div>
+
+				<p id="ef-replysubmit">
+					<a class="ef-replysave button-primary alignright" href="#comments-form">
+						<span id="ef-replybtn"><?php _e('Submit Response', 'edit-flow') ?></span>
+					</a>
+					<a class="ef-replycancel button-secondary alignright" href="#comments-form"><?php _e( 'Cancel', 'pf' ); ?></a>
+					<img alt="Sending comment..." src="<?php echo admin_url('/images/wpspin_light.gif') ?>" class="alignright" style="display: none;" id="ef-comment_loading" />
+					<br class="clear" style="margin-bottom:35px;" />
+					<span style="display: none;" class="error"></span>
+				</p>
+
+				<input type="hidden" value="" id="ef-comment_parent" name="ef-comment_parent" />
+				<input type="hidden" name="ef-post_id" id="ef-post_id" value="<?php echo esc_attr( $id_for_comments ); ?>" />
+
+				<?php wp_nonce_field('comment', 'ef_comment_nonce', false); ?>
+
+				<br class="clear" />
 			</div>
 
-			<p id="ef-replysubmit">
-				<a class="ef-replysave button-primary alignright" href="#comments-form">
-					<span id="ef-replybtn"><?php _e('Submit Response', 'edit-flow') ?></span>
-				</a>
-				<a class="ef-replycancel button-secondary alignright" href="#comments-form"><?php _e( 'Cancel', 'pf' ); ?></a>
-				<img alt="Sending comment..." src="<?php echo admin_url('/images/wpspin_light.gif') ?>" class="alignright" style="display: none;" id="ef-comment_loading" />
-				<br class="clear" style="margin-bottom:35px;" />
-				<span style="display: none;" class="error"></span>
-			</p>
-
-			<input type="hidden" value="" id="ef-comment_parent" name="ef-comment_parent" />
-			<input type="hidden" name="ef-post_id" id="ef-post_id" value="<?php echo esc_attr( $id_for_comments ); ?>" />
-
-			<?php wp_nonce_field('comment', 'ef_comment_nonce', false); ?>
-
-			<br class="clear" />
-		</div>
-
-		<?php
+			<?php
+		}
 	}
 
 
