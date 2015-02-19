@@ -358,14 +358,17 @@ function detect_view_change(){
 			});
 	});
 
-/**	jQuery('.pf_container').on('click', '.amplify-group .pf-amplify', function(evt){
+	jQuery('.pf_container').on('click', '.amplify-group .pf-amplify', function(evt){
 		var element = jQuery(this);
-		element.closest('.dropdown-menu').addClass('fullview');
-		element.closest('footer > *').children().hide();
-		element.closest('.fullview').show();
+		console.log(element);
+		var parent_e = element.parents('article');
+		var parent_h = parent_e.height();
+		console.log(parent_h);
+		jQuery(parent_e).addClass('show-overflow');
+		jQuery(parent_e).height(parent_h);
 
 	});
-**/
+
 }
 
 
