@@ -233,11 +233,11 @@ class PF_Admin {
 						<?php
 							$view_check = get_user_meta(pressforward()->form_of->user_id(), 'pf_user_read_state', true);
 							if ('golist' == $view_check){
-								self::dropdown_option(__('Grid', 'pf'), "gogrid");
-								self::dropdown_option(__('List', 'pf'), "golist", 'pf-top-menu-selection unset');
+								self::dropdown_option(__('Grid', 'pf'), "gogrid", 'pf-top-menu-selection display-state');
+								self::dropdown_option(__('List', 'pf'), "golist", 'pf-top-menu-selection unset display-state');
 							} else {
-								self::dropdown_option(__('Grid', 'pf'), "gogrid", 'pf-top-menu-selection unset');
-								self::dropdown_option(__('List', 'pf'), "golist");
+								self::dropdown_option(__('Grid', 'pf'), "gogrid", 'pf-top-menu-selection unset display-state');
+								self::dropdown_option(__('List', 'pf'), "golist", 'pf-top-menu-selection display-state');
 							}
 							$pf_user_scroll_switch = get_user_option('pf_user_scroll_switch', pressforward()->form_of->user_id());
 							#empty or true

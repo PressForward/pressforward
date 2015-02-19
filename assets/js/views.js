@@ -343,7 +343,7 @@ function attach_menu_on_scroll_past(){
 }
 
 function detect_view_change(){
-	jQuery('.pf_container').on('click', 'button.display-state', function(evt){
+	jQuery('.pf_container').on('click', '.pf-top-menu-selection.display-state', function(evt){
 		var element = jQuery(this);
 		var go_layout = element.attr('id');
 		console.log(go_layout);
@@ -358,6 +358,14 @@ function detect_view_change(){
 			});
 	});
 
+/**	jQuery('.pf_container').on('click', '.amplify-group .pf-amplify', function(evt){
+		var element = jQuery(this);
+		element.closest('.dropdown-menu').addClass('fullview');
+		element.closest('footer > *').children().hide();
+		element.closest('.fullview').show();
+
+	});
+**/
 }
 
 
