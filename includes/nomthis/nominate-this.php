@@ -11,13 +11,19 @@ define('IFRAME_REQUEST' , true);
 define('WP_ADMIN', false);
 global $pagenow;
 $wp_bootstrap = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))) );
+$wp_bootstrap_d = dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))) ));
 #echo '<pre>'; var_dump($_POST); die();
 if (is_dir($wp_bootstrap.'/wp-admin')){
    $wp_bootstrap = $wp_bootstrap.'/wp-admin';
 } elseif (is_dir($wp_bootstrap.'/wordpress/wp-admin')){
    $wp_bootstrap = $wp_bootstrap.'/wordpress/wp-admin';
+} elseif (is_dir($wp_bootstrap_d.'/wordpress/wp-admin')) {
+	$wp_bootstrap = $wp_bootstrap_d.'/wordpress/wp-admin';
+} elseif (is_dir($wp_bootstrap.'/app-root/data/current/wp-admin')) {
+	$wp_bootstrap = $wp_bootstrap.'/app-root/data/current/wp-admin';
 } else {
-  echo 'Nominate This can not find your WP-Admin directory'; die();
+	echo 'Base directory attempt at: <pre>'; var_dump($wp_bootstrap);
+  	echo 'Nominate This can not find your WP-Admin directory'; die();
 }
 
 /** WordPress Administration Bootstrap */
