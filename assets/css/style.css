@@ -398,6 +398,10 @@ h3 {
 	overflow: visible!important;
 }
 
+.list .box-controls {
+	margin-right: 26px;
+}
+
 .pressforward .list .dropdown-menu.fullview {
 	width: 100%;
 	position: relative;
