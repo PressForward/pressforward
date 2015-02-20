@@ -778,3 +778,7 @@ body {
 	right: 0;
 	left: auto;
 }
+
+#wpfooter {
+	position:relative;
+}
