@@ -254,8 +254,6 @@ class PF_RSS_Import extends PF_Module {
 
 	function add_to_feeder() {
 
-
-        settings_fields( PF_SLUG . '_feedlist_group' );
 		$feedlist = get_option( PF_SLUG . '_feedlist' );
 
         ?>

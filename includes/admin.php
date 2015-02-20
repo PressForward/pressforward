@@ -1038,8 +1038,9 @@ class PF_Admin {
 			?><form method="post" action="options.php" enctype="multipart/form-data"><?php
             //settings_fields(PF_SLUG . '_feeder_options');
             //$options = get_option(PF_SLUG . '_plugin_feeder_options');
-
+			settings_fields( PF_SLUG . '_feedlist_group' );
 			do_action( 'feeder_menu' );
+
 
 			#<input type="submit" class="button-primary" value="<?php _e('Save Options', 'pf'); />
 
