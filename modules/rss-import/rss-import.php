@@ -287,9 +287,7 @@ class PF_RSS_Import extends PF_Module {
                         <input type="submit" class="button-primary" value="<?php _e('Save Options', 'pf'); ?>" />
                     </div>
             </div>
-            <div class="clear"></div>
 		</div>
-		<div class="clear"></div>
 		<?php
 
 
