@@ -2,6 +2,10 @@
  * Display transform for pf
 **/
 
+function pf_make_url_hashed(hashed){
+	//via http://stackoverflow.com/questions/1844491/intercepting-call-to-the-back-button-in-my-ajax-application-i-dont-want-it-to
+	window.location.hash = '#'+hashed;
+}
 
 	//via http://stackoverflow.com/questions/1662308/javascript-substr-limit-by-word-not-char
 	function trim_words(theString, numWords) {
@@ -148,6 +152,7 @@ function reshowModal(){
 			'z-index'  : '9999'
 		};
 		jQuery('#'+modalID+ '.pfmodal').css(bigModal).load(hide_non_modals());
+		pf_make_url_hashed(modalID);
 	});
 }
 
@@ -394,6 +399,25 @@ function detect_view_change(){
 		}
 	});
 
+	setInterval(function(){
+		//var hash = window.location.hash;
+		//(hash.toLowerCase().indexOf("modal") >= 0)
+		var modal_shown = '#modal';
+	    if ((window.location.hash == '#ready')) {
+	        if (jQuery(modal_shown).hasClass('in')){
+	        	jQuery(modal_shown).modal('hide');
+	    	}
+	    }
+	    if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
+	        var hash = window.location.hash;
+	        if (!jQuery(hash).hasClass('in')){
+	        	jQuery(hash).modal('show');
+	    	} 
+	    	modal_shown = hash;
+	    }
+
+	}, 100);
+
 }
 
 
@@ -404,6 +428,7 @@ function detect_view_change(){
 		 	jQuery('.pf-loader').delay(300).fadeOut( "slow", function() {
 				console.log('Load complete.');
 				jQuery('.pf_container').fadeIn("slow");
+				window.location.hash = '#ready';
 			});;
 
 	});
