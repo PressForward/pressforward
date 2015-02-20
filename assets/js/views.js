@@ -2,6 +2,10 @@
  * Display transform for pf
 **/
 
+function pf_make_url_hashed(hashed){
+	//via http://stackoverflow.com/questions/1844491/intercepting-call-to-the-back-button-in-my-ajax-application-i-dont-want-it-to
+	window.location.hash = '#'+hashed;
+}
 
 	//via http://stackoverflow.com/questions/1662308/javascript-substr-limit-by-word-not-char
 	function trim_words(theString, numWords) {
@@ -130,6 +134,12 @@ function commentPopModal(){
 }
 
 function reshowModal(){
+	jQuery('.pf_container').on('show', '.modal.pfmodal', function(evt){
+		var element = jQuery(this);
+		var modalID = element.attr('id');
+		pf_make_url_hashed(modalID);
+	});
+
 	jQuery('.pf_container').on('shown', '.modal.pfmodal', function(evt){
 		var element = jQuery(this);
 		var modalID = element.attr('id');
@@ -148,6 +158,7 @@ function reshowModal(){
 			'z-index'  : '9999'
 		};
 		jQuery('#'+modalID+ '.pfmodal').css(bigModal).load(hide_non_modals());
+		
 	});
 }
 
@@ -203,6 +214,7 @@ function hideModal(){
 		jQuery('#adminmenuwrap').show();
 		jQuery('#wpfooter').show();
 		document.body.style.overflow = 'visible';
+		pf_make_url_hashed('ready');
 	});
 }
 function commentModal(){
@@ -394,6 +406,22 @@ function detect_view_change(){
 		}
 	});
 
+	setInterval(function(){
+		//var hash = window.location.hash;
+		//(hash.toLowerCase().indexOf("modal") >= 0)
+		//console.log(window.location.hash);
+	    if ((window.location.hash == '#ready')) {
+	        jQuery('.modal').modal('hide');
+	    }
+	    if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
+	        var hash = window.location.hash;
+	        if (!jQuery(hash).hasClass('in')){
+	        	jQuery(hash).modal('show');
+	    	} 
+	    }
+
+	}, 100);
+
 }
 
 
@@ -404,6 +432,9 @@ function detect_view_change(){
 		 	jQuery('.pf-loader').delay(300).fadeOut( "slow", function() {
 				console.log('Load complete.');
 				jQuery('.pf_container').fadeIn("slow");
+				if (window.location.hash.indexOf("#") < 0){
+					window.location.hash = '#ready';
+				}
 			});;
 
 	});
