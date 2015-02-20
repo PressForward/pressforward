@@ -394,6 +394,16 @@ h3 {
 	display: inline-block;
 }
 
+.pressforward article.show-overflow {
+	overflow: visible!important;
+}
+
+.pressforward .list .dropdown-menu.fullview {
+	width: 100%;
+	position: relative;
+	height: 83px;
+}
+
 .box-controls {
 	position:relative;
 	float: right;
