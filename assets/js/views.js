@@ -418,13 +418,15 @@ function detect_view_change(){
 				jQuery('.pf_container').fadeIn("slow");
 				if (window.location.hash.indexOf("#") < 0){
 					window.location.hash = '#ready';
+				} else if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
+				    var hash = window.location.hash;
+				    if (!jQuery(hash).hasClass('in')){
+				      	jQuery(hash).modal('show');
+				  	} 
 				}
-	
-				setInterval(function(){
-					//var hash = window.location.hash;
-					//(hash.toLowerCase().indexOf("modal") >= 0)
-					//console.log(window.location.hash);
-				    if ((window.location.hash == '#ready')) {
+
+				jQuery(window).on('hashchange', function() {
+  					if ((window.location.hash == '#ready')) {
 				        jQuery('.modal').modal('hide');
 				    }
 				    if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
@@ -433,8 +435,7 @@ function detect_view_change(){
 				        	jQuery(hash).modal('show');
 				    	} 
 				    }
-
-				}, 100);
+				});
 
 			});;
 
