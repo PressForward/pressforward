@@ -1033,7 +1033,6 @@ class PF_Admin {
                     ?>
                     </div>
                 </div>
-            </div>
 			<?php
 			endif;
 			?><form method="post" action="options.php" enctype="multipart/form-data"><?php
