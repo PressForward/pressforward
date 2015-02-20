@@ -134,6 +134,12 @@ function commentPopModal(){
 }
 
 function reshowModal(){
+	jQuery('.pf_container').on('show', '.modal.pfmodal', function(evt){
+		var element = jQuery(this);
+		var modalID = element.attr('id');
+		pf_make_url_hashed(modalID);
+	});
+
 	jQuery('.pf_container').on('shown', '.modal.pfmodal', function(evt){
 		var element = jQuery(this);
 		var modalID = element.attr('id');
@@ -152,7 +158,7 @@ function reshowModal(){
 			'z-index'  : '9999'
 		};
 		jQuery('#'+modalID+ '.pfmodal').css(bigModal).load(hide_non_modals());
-		pf_make_url_hashed(modalID);
+		
 	});
 }
 
@@ -208,6 +214,7 @@ function hideModal(){
 		jQuery('#adminmenuwrap').show();
 		jQuery('#wpfooter').show();
 		document.body.style.overflow = 'visible';
+		pf_make_url_hashed('ready');
 	});
 }
 function commentModal(){
@@ -402,18 +409,15 @@ function detect_view_change(){
 	setInterval(function(){
 		//var hash = window.location.hash;
 		//(hash.toLowerCase().indexOf("modal") >= 0)
-		var modal_shown = '#modal';
+		//console.log(window.location.hash);
 	    if ((window.location.hash == '#ready')) {
-	        if (jQuery(modal_shown).hasClass('in')){
-	        	jQuery(modal_shown).modal('hide');
-	    	}
+	        jQuery('.modal').modal('hide');
 	    }
 	    if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
 	        var hash = window.location.hash;
 	        if (!jQuery(hash).hasClass('in')){
 	        	jQuery(hash).modal('show');
 	    	} 
-	    	modal_shown = hash;
 	    }
 
 	}, 100);
@@ -428,7 +432,9 @@ function detect_view_change(){
 		 	jQuery('.pf-loader').delay(300).fadeOut( "slow", function() {
 				console.log('Load complete.');
 				jQuery('.pf_container').fadeIn("slow");
-				window.location.hash = '#ready';
+				if (window.location.hash.indexOf("#") < 0){
+					window.location.hash = '#ready';
+				}
 			});;
 
 	});
