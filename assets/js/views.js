@@ -361,7 +361,7 @@ function detect_view_change(){
 
 	var is_pf_open = false;
 
-	jQuery('.pf_container').on('click', '.amplify-group .pf-amplify', function(evt){
+	jQuery('.pressforward #wpbody').on('click', '.list .amplify-group .pf-amplify', function(evt){
 		var element = jQuery(this);
 		//console.log(element);
 		var parent_e = element.parents('article');
@@ -370,7 +370,7 @@ function detect_view_change(){
 		if (element.hasClass('amplify-down')){ 
 			element.removeClass('amplify-down');
 			jQuery(parent_e).removeClass('show-overflow');
-			jQuery(parent_e).height('auto');
+			jQuery(parent_e).css('height','');
 		} else {
 			element.addClass('amplify-down');
 			jQuery(parent_e).addClass('show-overflow');
@@ -379,7 +379,7 @@ function detect_view_change(){
 		}
 	});
 
-	jQuery('.pf_container').on('click', 'div:not(.amplify-group.open)', function(evt){
+	jQuery('.pressforward #wpbody').on('click', '.list div:not(.amplify-group.open)', function(evt){
 		var element_p = jQuery('.amplify-group.open');
 		//console.log(element_p);
 		if (is_pf_open){
@@ -390,7 +390,7 @@ function detect_view_change(){
 			//console.log(parent_h);
 			element.removeClass('amplify-down');
 			jQuery(parent_e).removeClass('show-overflow');
-			jQuery(parent_e).height('auto');
+			jQuery(parent_e).css('height', '');
 		}
 	});
 
