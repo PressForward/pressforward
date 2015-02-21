@@ -267,9 +267,9 @@ class PF_Admin {
 							if ( isset($_POST['search-terms']) || isset($_GET['by']) || isset($_GET['pf-see']) || isset($_GET['reveal']) ) {
 								self::dropdown_option(__('Reset filter', 'pf'), "showNormalNominations");
 							}
-							self::dropdown_option(__('My starred', 'pf'), "sortstarredonly", 'starredonly');
+							self::dropdown_option(__('My starred', 'pf'), "sortstarredonly", 'starredonly', null, null, null, get_admin_url(null, 'admin.php?page=pf-review&pf-see=starred-only'));
 							self::dropdown_option(__('Toggle visibility of archived', 'pf'), "showarchived");
-							self::dropdown_option(__('Only archived', 'pf'), "showarchiveonly");
+							self::dropdown_option(__('Only archived', 'pf'), "showarchiveonly", null, null, null, null, get_admin_url(null, 'admin.php?page=pf-review&pf-see=archive-only'));
 
 						}
 					?>

@@ -426,7 +426,7 @@ function detect_view_change(){
 				}
 
 				jQuery(window).on('hashchange', function() {
-  					if ((window.location.hash == '#ready')) {
+  					if (window.location.hash == '#ready') {
 				        jQuery('.modal').modal('hide');
 				    }
 				    if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {

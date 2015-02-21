@@ -20,6 +20,7 @@ jQuery(window).load(function() {
 var archivesVisible = 0;
 
 jQuery(window).load(function() {
+
 	jQuery(".showarchived").click().toggle(function (evt){ 
 		evt.preventDefault();
 		archivesVisible = 1;
@@ -69,17 +70,6 @@ jQuery(window).load(function() {
 			jQuery('#errors').html(response);
 		});
 	});	
-	
-	jQuery('.pf_container').on('click', "#showarchiveonly", function (evt){
-		evt.preventDefault();	
-		
-		window.open(location.href+'&pf-see=archive-only','_self');
-	});		
-    
-	jQuery('.pf_container').on('click', "#sortstarredonly", function (evt){
-		evt.preventDefault();	
-		
-		window.open(location.href+'&pf-see=starred-only','_self');
-	});	    
+
 	
 });	

@@ -296,8 +296,16 @@ class PF_Form_Of {
 		}
 
 		if (isset($_GET['pf-see'])){
-			$only_archived = __('only archived', 'pf');
-			$variant .= ' <span>'. $showing . ' ' . $only_archived . '</span>';
+			$only = ' ';
+			$and = 'only ';
+			if ('archive-only' == $_GET['pf-see']) {
+				$only .= $and . __('archived', 'pf');
+				$and = ' ';
+			}
+			if ('starred-only' == $_GET['pf-see']) {
+				$only .= $and . __('starred', 'pf');
+			}
+			$variant .= ' <span>'. $showing . $only . '</span>';
 			$is_variant = true;
 		}
 
