@@ -344,7 +344,7 @@ class PF_Admin {
 			}
 			?>
 
-				<div class="actions pf-btns <?php if($modal){ echo 'modal-btns '; } ?>">
+				<div class="actions pf-btns <?php if($modal){ echo 'modal-btns '; } else { echo ' article-btns '; } ?>">
 					<?php
 					$infoPop = 'top';
 					if ($modal == false){
