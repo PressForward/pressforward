@@ -34,7 +34,7 @@
             </div>
 		</div>
 		<?php 
-	} elseif ( 'as_feed_item' == $context ){
+	} elseif ( 'as_feed_item' == $context && empty($_GET["pc"]) ){
 
 		?>
 
