@@ -172,9 +172,10 @@ function pf_get_relationship_type_id( $relationship_type ) {
 	$types = array(
 		1 => 'read',
 		2 => 'star',
-		3 => 'archive',
+		3 => 'archive', #for weird historical reasons this is actually 'hide'
 		4 => 'nominate',
-		5 => 'draft'
+		5 => 'draft',
+		6 => 'archive_nomination'
 	);
 
 	$types = apply_filters('pf_relationship_types', $types);

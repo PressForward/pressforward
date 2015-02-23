@@ -185,7 +185,7 @@
 							$dependent_style = 'display:none;';
 						}
 					}
-				} elseif ( 1 == pf_get_relationship_value( 'archive', $nom_id, $user_id)) {
+				} elseif ( 1 == pf_get_relationship_value( 'archive_nomination', $nom_id, $user_id)) {
 					$archived_status_string = 'archived';
 					$dependent_style = 'display:none;';
 				} else {
