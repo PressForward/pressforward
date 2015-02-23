@@ -64,7 +64,7 @@ class PF_Feeds_Schema {
 	 */
 	public function register_feed_post_type() {
 		$labels = array(
-			'name'               => __( 'Feeds', 'pf' ),
+			'name'               => __( 'Subscribed Feeds', 'pf' ),
 			'singular_name'      => __( 'Feed', 'pf' ),
 			'add_new'            => _x( 'Add New', 'pf', 'add new feed' ),
 			'all_items'          => __( 'All Feeds', 'pf' ),
