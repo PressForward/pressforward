@@ -394,7 +394,7 @@ class PF_Admin {
 						if ( 1 == pf_get_relationship_value( 'archive', $metadata['nom_id'], $user_id ) ){
 							$archive_status = 'btn-warning';
 						}
-						echo '<a class="btn btn-small nom-to-archive schema-actor '.$archive_status.'" pf-schema="archive" pf-schema-class="archived" data-toggle="tooltip" title="' . __('Archive', 'pf') .  '" form="' . $metadata['nom_id'] . '"><img src="' . PF_URL . 'assets/images/archive.png" /></button></a>';
+						echo '<a class="btn btn-small nom-to-archive schema-switchable schema-actor '.$archive_status.'" pf-schema="archive" pf-schema-class="archived" pf-schema-class="btn-warning" data-toggle="tooltip" title="' . __('Archive', 'pf') .  '" form="' . $metadata['nom_id'] . '"><img src="' . PF_URL . 'assets/images/archive.png" /></button></a>';
 						$draft_status = "";
 						if ( ( 1 == pf_get_relationship_value( 'draft', $metadata['nom_id'], $user_id ) ) || ( 1 == pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ){
 							$draft_status = 'btn-success';
@@ -581,8 +581,8 @@ class PF_Admin {
 			}
 			$archiveStat = pf_get_relationship_value( 'archive', $id_for_comments, $user_id );
 			$extra_classes = '';
-			if ($archiveStat){ $extra_classes .= ' relationship-button-active'; }
-			echo '<i class="icon-eye-close hide-item pf-item-archive schema-archive schema-actor'.$extra_classes.'" pf-item-post-id="' . $id_for_comments .'" title="Hide" pf-schema="archive"></i>';
+			if ($archiveStat){ $extra_classes .= ' schema-active relationship-button-active'; }
+			echo '<i class="icon-eye-close hide-item pf-item-archive schema-archive schema-switchable schema-actor'.$extra_classes.'" pf-schema-class="relationship-button-active" pf-item-post-id="' . $id_for_comments .'" title="Hide" pf-schema="archive"></i>';
 
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'marked-read'; }
 

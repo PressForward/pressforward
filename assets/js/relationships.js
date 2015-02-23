@@ -143,7 +143,7 @@ jQuery(window).load(function() {
 	function do_schema_stuff(item_id, schema){
 		var objs = jQuery('article[pf-post-id="'+item_id+'"] [pf-schema="'+schema+'"]');
 		objs.each( function(index) {
-			console.log(this);
+			//console.log(this);
 			var obj = jQuery(this);
 			var is_active = obj.hasClass('schema-active');
 			var is_switchable = obj.hasClass('schema-switchable');
@@ -151,6 +151,7 @@ jQuery(window).load(function() {
 			if (obj.is('[pf-schema-class]')){
 				var added_class = obj.attr('pf-schema-class');
 				schema_class = schema_class+' '+added_class;
+				if (!is_active){ is_active = obj.hasClass(added_class); }
 			}
 			if (obj.is('[pf-schema-targets]')){
 				objs.push(jQuery(obj.attr('pf-schema-targets')));
