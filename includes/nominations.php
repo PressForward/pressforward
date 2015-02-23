@@ -627,8 +627,8 @@ class PF_Nominations {
 			$item_title = $_POST['nom_title'];
 
 			$data = array(
-				'post_status' => 'draft',
-				'post_type' => 'post',
+				'post_status' => get_option(PF_SLUG.'_draft_post_status', 'draft'),
+				'post_type' => get_option(PF_SLUG.'_draft_post_type', 'post'),
 				'post_title' => $item_title,
 				'post_content' => $item_content
 			);
