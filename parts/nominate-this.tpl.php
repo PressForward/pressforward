@@ -77,6 +77,6 @@
 
 		<?php 
 
-	} else {
+	} elseif ( empty($_GET["pc"]) ) {
 		_e('Try Nominate This in PressForward\'s Tools menu.', 'pf');
 	}
