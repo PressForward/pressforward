@@ -455,6 +455,10 @@ h3 {
 	position:absolute;
 }
 
+.pressforward_page_pf-review .pf-item-remove {
+	margin-left: -18px;
+}
+
 .pf-item-remove:hover {
 	background-color: lightGrey;
 }

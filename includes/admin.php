@@ -579,11 +579,12 @@ class PF_Admin {
 					echo '<i class="icon-remove pf-item-remove" pf-post-id="' . $id_for_comments .'" title="Delete"></i>';
 				}
 			}
-			$archiveStat = pf_get_relationship_value( 'archive', $id_for_comments, $user_id );
-			$extra_classes = '';
-			if ($archiveStat){ $extra_classes .= ' schema-active relationship-button-active'; }
-			echo '<i class="icon-eye-close hide-item pf-item-archive schema-archive schema-switchable schema-actor'.$extra_classes.'" pf-schema-class="relationship-button-active" pf-item-post-id="' . $id_for_comments .'" title="Hide" pf-schema="archive"></i>';
-
+		if ($format != 'nomination'){
+				$archiveStat = pf_get_relationship_value( 'archive', $id_for_comments, $user_id );
+				$extra_classes = '';
+				if ($archiveStat){ $extra_classes .= ' schema-active relationship-button-active'; }
+				echo '<i class="icon-eye-close hide-item pf-item-archive schema-archive schema-switchable schema-actor'.$extra_classes.'" pf-schema-class="relationship-button-active" pf-item-post-id="' . $id_for_comments .'" title="Hide" pf-schema="archive"></i>';
+		}
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'marked-read'; }
 
 			echo '<i class="icon-ok-sign schema-read schema-actor schema-switchable '.$readClass.'" pf-item-post-id="' . $id_for_comments .'" pf-schema="read" pf-schema-class="marked-read" title="Mark as Read"></i>';
