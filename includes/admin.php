@@ -1891,8 +1891,6 @@ class PF_Admin {
 			return;
 		}
 
-		$query->set( 'meta_key', 'pf_feed_last_checked' );
-		$query->set( 'meta_type', 'DATETIME' );
 		$query->set( 'orderby', 'pf_feed_last_checked' );
 
 		// In order to ensure that we get the items without a
@@ -1909,10 +1907,6 @@ class PF_Admin {
 				'compare' => 'EXISTS',
 			)
 		) );
-
-		#var_dump($query); die();
-
-
 	}
 
 	/**
