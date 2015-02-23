@@ -49,7 +49,7 @@ class PF_Admin {
 		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_checked_date_column_content' ), 10, 2 );
 		add_action( 'manage_edit-pf_feed_sortable_columns', array( $this, 'make_last_checked_column_sortable' ) );
 		add_action( 'pre_get_posts', array( $this, 'sort_by_last_checked' ) );
-		
+
 		add_action( 'quick_edit_custom_box', array( $this, 'quick_edit_field' ), 10, 2 );
 		add_action( 'save_post', array( $this, 'quick_edit_save' ), 10, 2 );
 	}
@@ -267,7 +267,7 @@ class PF_Admin {
 						if ( 'pf-review' != $page ){
 							self::dropdown_option(__('Reset filter', 'pf'), "showNormal");
 							self::dropdown_option(__('My starred', 'pf'), "showMyStarred");
-							self::dropdown_option(__('Show hidden', 'pf'), "showMyHidden");	
+							self::dropdown_option(__('Show hidden', 'pf'), "showMyHidden");
 							self::dropdown_option(__('My nominations', 'pf'), "showMyNominations");
 						} else {
 							if ( isset($_POST['search-terms']) || isset($_GET['by']) || isset($_GET['pf-see']) || isset($_GET['reveal']) ) {
@@ -316,7 +316,7 @@ class PF_Admin {
 					if ( 'pf-review' == $page ){
 						echo '<button type="submit" class="delete btn btn-danger btn-small pull-left" id="archivenoms" value="' . __('Archive all', 'pf') . '" >' . __('Archive all', 'pf') . '</button>';
 					}
-					
+
 					$user_ID = get_current_user_id();
 					$pf_user_menu_set = get_user_option('pf_user_menu_set', $user_ID);
 					if ('true' == $pf_user_menu_set){
@@ -423,10 +423,10 @@ class PF_Admin {
 					$amplify_group_classes = 'dropdown btn-group amplify-group';
 					$amplify_id = 'amplify-'.$item['item_id'];
 
-					if($modal){ 
+					if($modal){
 						$amplify_group_classes .= ' dropup';
 						$amplify_id .= '-modal';
-					} 
+					}
 					?>
 					<div class="<?php echo $amplify_group_classes; ?>" role="group">
 						<button type="button" class="btn btn-default btn-small dropdown-toggle pf-amplify" data-toggle="dropdown" aria-expanded="true" id="<?php echo $amplify_id; ?>"><i class="icon-bullhorn"></i><span class="caret"></button>
@@ -752,7 +752,7 @@ class PF_Admin {
 					</div>
 				</div>
 				<h3 id="modal-<?php echo $item['item_id']; ?>-label" class="modal_item_title"><?php echo $item['item_title']; ?></h3>
-				<?php 
+				<?php
 					echo '<em>' . __('Source', 'pf') . ': ' . get_the_source_title($id_for_comments) . '</em> | ';
 					echo __('Author', 'pf').': '.get_the_item_author($id_for_comments);
 				?>
@@ -848,7 +848,7 @@ class PF_Admin {
 	<div class="pf_container full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">
-				<?php 
+				<?php
 
 					pressforward()->form_of->the_page_headline();
 
@@ -1011,7 +1011,7 @@ class PF_Admin {
 			</div><!-- End title -->
 		</header>';
 
-		pressforward()->form_of->nominate_this('as_paragraph');	
+		pressforward()->form_of->nominate_this('as_paragraph');
 		?>
 		<p>
 			<button type="submit" class="refreshfeed btn btn-small" id="refreshfeed" value="<?php  _e('Refresh', 'pf')  ?>"><?php  _e('Refresh', 'pf');  ?></button>
@@ -1019,7 +1019,7 @@ class PF_Admin {
 				_e( ' the feed retrieval process. This button will attempt to restart a broken refresh process. If a previous feed retrieval cycle was completed, it will start the next one early. However, if the process is currently ongoing it will notify the system that you believe there is an error in the retrieval process, and the next time your site steps through the cycle, the system will attempt to find and rectify the error.', 'pf');
 			?>
 		</p>
-		<?php 
+		<?php
 		do_action('pf_tools');
 
 	}
@@ -1549,7 +1549,7 @@ class PF_Admin {
 		if(isset($_POST['post_id'])){
 			$id = $_POST['post_id'];
 		} else {
-			self::pf_bad_call('pf_ajax_thing_deleter','Option not sent'); 
+			self::pf_bad_call('pf_ajax_thing_deleter','Option not sent');
 		}
 		if(isset($_POST['made_readable'])){
 			$read_status = $_POST['made_readable'];
@@ -1783,7 +1783,7 @@ class PF_Admin {
 	public function make_last_checked_column_sortable( $sortable ) {
 		$sortable['last_checked'] = array( 'last_checked', true );
 		return $sortable;
-	}	
+	}
 
 	/**
 	 * Enable 'last_retrieved' sorting.
