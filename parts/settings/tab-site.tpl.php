@@ -59,7 +59,7 @@
 		$default_pf_link_value = get_option('pf_retain_time', 2);
 		echo '<input id="pf_retain_time" name="pf_retain_time" type="number" class="pf_retain_time" value="'.$default_pf_link_value.'" />';
 
-		echo '<label class="description" for="pf_retain_time"> ' .__('Months to retain feed items.', 'pf'). ' </label>';
+		echo '<label class="description" for="pf_retain_time"> ' .__('Months to retrieve and retain feed items.', 'pf'). ' </label>';
 	?>
 </p>
 <p>
