@@ -51,14 +51,14 @@
 					<div class="item_excerpt" id="excerpt1">
 						<p>
 							<?php 
-								_e('Use Nominate This to archive text, images and videos from any web page. 
+								_e('Use Nominate This to pull in text, images and videos from any web page. 
 									Then you can edit, add author and category before 
 									you nominate or draft it in a post on your site.', 'pf'); 
 							?>
 						</p>
 						<p>
 							<?php printf( 
-										__('Drag the button up to your bookmark bar or <a href="%s" class="%s">click here to find out more in the Tools menu</a>.', 'pf'), 
+										__('Drag the button up to your bookmark bar or <a href="%s" class="%s">click here to find out more</a>.', 'pf'), 
 										esc_url('admin.php?page=pf-tools'),
 										esc_attr('remove-nom-this-prompt')
 									); 
