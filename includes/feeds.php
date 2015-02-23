@@ -429,6 +429,26 @@ class PF_Feeds_Schema {
 
 	}
 
+	/**
+	 * Set the last_checked value for the parent feed.
+	 *
+	 * @since 3.5.0
+	 *
+	 * @param int $feed_item_id ID of the feed item.
+	 * @return bool
+	 */
+	public static function set_feed_last_checked( $feed_id ) {
+		if (empty($feed_id)){
+			$feed_id = get_the_ID();
+		}
+
+		if ( ! $feed_id ) {
+			return false;
+		}
+
+		return update_post_meta( $feed_id, 'pf_feed_last_checked', date( 'Y-m-d H:i:s' ) );
+	}
+
 	# Not only is this moving feeds over into feed CPT posts, but this methodology will insure a time-out won't force the process to restart.
 	# There should probably be a AJAX interface for this, same as the AB subscribe method.
 	public function progressive_feedlist_transformer($feedlist = array(), $xmlUrl, $key) {

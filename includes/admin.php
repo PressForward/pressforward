@@ -43,6 +43,11 @@ class PF_Admin {
 		add_filter( 'manage_pf_feed_posts_columns', array( $this, 'add_last_retrieved_date_column' ) );
 		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
 		add_action( 'manage_edit-pf_feed_sortable_columns', array( $this, 'make_last_retrieved_column_sortable' ) );
+
+		add_filter( 'manage_pf_feed_posts_columns', array( $this, 'add_last_checked_date_column' ) );
+		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_checked_date_column_content' ), 10, 2 );
+		add_action( 'manage_edit-pf_feed_sortable_columns', array( $this, 'make_last_checked_column_sortable' ) );
+
 		add_action( 'pre_get_posts', array( $this, 'sort_by_last_retrieved' ) );
 		add_action( 'quick_edit_custom_box', array( $this, 'quick_edit_field' ), 10, 2 );
 		add_action( 'save_post', array( $this, 'quick_edit_save' ), 10, 2 );
@@ -1651,6 +1656,20 @@ class PF_Admin {
 	}
 
 	/**
+	 * Add a Last Checked column to the pf_feed table.
+	 *
+	 * @since 3.5.0
+	 *
+	 * @param array $posts_columns Column headers.
+	 * @return array
+	 */
+	public function add_last_checked_date_column( $posts_columns ) {
+		#unset( $posts_columns['date'] );
+		$posts_columns['last_checked'] = __('Last Time Feed Checked', 'pf');
+		return $posts_columns;
+	}
+
+	/**
 	 * Content of the Last Retrieved column.
 	 *
 	 * We also hide the feed URL in this column, so we can reveal it on Quick Edit.
@@ -1691,6 +1710,46 @@ class PF_Admin {
 	}
 
 	/**
+	 * Content of the Last Checked column.
+	 *
+	 * We also hide the feed URL in this column, so we can reveal it on Quick Edit.
+	 *
+	 * @since 3.5.0
+	 *
+	 * @param string $column_name Column ID.
+	 * @param int $post_id ID of the post for the current row in the table.
+	 */
+	public function last_checked_date_column_content( $column_name, $post_id ) {
+		if ( 'last_checked' !== $column_name ) {
+			return;
+		}
+
+		$last_retrieved = get_post_meta( $post_id, 'pf_feed_last_checked', true );
+
+		if ( '' === $last_retrieved ) {
+			$lr_text = '-';
+		} else {
+			// Modified from WP_Posts_List_Table
+			$lr_unix = mysql2date( 'G', $last_retrieved, false );
+			$time_diff = time() - $lr_unix;
+			$t_time = date( 'Y/m/d g:i:s A', $lr_unix );
+
+			if ( $time_diff > 0 && $time_diff < DAY_IN_SECONDS ) {
+				$lr_text = sprintf( __( '%s ago' ), human_time_diff( $lr_unix ) );
+			} else {
+				$lr_text = mysql2date( __( 'Y/m/d' ), $last_retrieved );
+			}
+
+			$lr_text = '<abbr title="' . $t_time . '">' . $lr_text . '</abbr>';
+		}
+
+		$feed_url = get_post_meta( $post_id, 'feedUrl', true );
+		$lr_text .= sprintf( '<input type="hidden" id="pf-feed-%d-url" value="%s" />', intval( $post_id ), esc_attr( $feed_url ) );
+
+		echo $lr_text;
+	}
+
+	/**
 	 * Add the Last Retrieved column to the list of sortable columns.
 	 *
 	 * @since 3.4.0
@@ -1702,6 +1761,19 @@ class PF_Admin {
 		$sortable['last_retrieved'] = array( 'last_retrieved', true );
 		return $sortable;
 	}
+
+	/**
+	 * Add the Last Checked column to the list of sortable columns.
+	 *
+	 * @since 3.5.0
+	 *
+	 * @param array $sortable Sortable column identifiers.
+	 * @return array
+	 */
+	public function make_last_checked_column_sortable( $sortable ) {
+		$sortable['last_checked'] = array( 'last_checked', true );
+		return $sortable;
+	}	
 
 	/**
 	 * Enable 'last_retrieved' sorting.
@@ -1759,6 +1831,71 @@ class PF_Admin {
 			),
 			array(
 				'key' => 'pf_feed_last_retrieved',
+				'compare' => 'EXISTS',
+			)
+		) );
+
+		#var_dump($query); die();
+
+
+	}
+
+	/**
+	 * Enable 'last_checked' sorting.
+	 *
+	 * @since 3.5.0
+	 *
+	 * @param WP_Query
+	 */
+	public function sort_by_last_checked( $query ) {
+		// For now, only enable this sorting when on the edit-pf_feed screen
+		// This could be lifted in the future to enable last_retrieved
+		// sorting throughout PF
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return;
+		}
+
+		$screen = get_current_screen();
+		if ( empty( $screen->id ) || 'edit-pf_feed' !== $screen->id ) {
+			return;
+		}
+
+		// Sanity check: only modify pf_feed queries
+		$feed_post_type = '';
+		if ( ! empty( pressforward()->pf_feeds->post_type ) ) {
+			$feed_post_type = pressforward()->pf_feeds->post_type;
+		}
+
+		if ( empty( $query->query_vars['post_type'] ) || $feed_post_type !== $query->query_vars['post_type'] ) {
+			return;
+		}
+
+		// Only touch if we're sorting by last_retrieved
+		if ( 'last_checked' !== $query->query_vars['orderby'] ) {
+			return;
+		}
+
+		// Should never happen, but if someone's doing a meta_query,
+		// bail or we'll mess it up
+		if ( ! empty( $query->query_vars['meta_query'] ) ) {
+			return;
+		}
+
+		$query->set( 'meta_key', 'pf_feed_last_checked' );
+		$query->set( 'meta_type', 'DATETIME' );
+		$query->set( 'orderby', 'pf_feed_last_checked' );
+
+		// In order to ensure that we get the items without a
+		// Last Retrieved key set, force the meta_query to an OR with
+		// NOT EXISTS
+		$query->set( 'meta_query', array(
+			'relation' => 'OR',
+			array(
+				'key' => 'pf_feed_last_checked',
+				'compare' => 'NOT EXISTS',
+			),
+			array(
+				'key' => 'pf_feed_last_checked',
 				'compare' => 'EXISTS',
 			)
 		) );
