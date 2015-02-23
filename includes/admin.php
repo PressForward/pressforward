@@ -43,12 +43,13 @@ class PF_Admin {
 		add_filter( 'manage_pf_feed_posts_columns', array( $this, 'add_last_retrieved_date_column' ) );
 		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
 		add_action( 'manage_edit-pf_feed_sortable_columns', array( $this, 'make_last_retrieved_column_sortable' ) );
+		add_action( 'pre_get_posts', array( $this, 'sort_by_last_retrieved' ) );
 
 		add_filter( 'manage_pf_feed_posts_columns', array( $this, 'add_last_checked_date_column' ) );
 		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_checked_date_column_content' ), 10, 2 );
 		add_action( 'manage_edit-pf_feed_sortable_columns', array( $this, 'make_last_checked_column_sortable' ) );
-
-		add_action( 'pre_get_posts', array( $this, 'sort_by_last_retrieved' ) );
+		add_action( 'pre_get_posts', array( $this, 'sort_by_last_checked' ) );
+		
 		add_action( 'quick_edit_custom_box', array( $this, 'quick_edit_field' ), 10, 2 );
 		add_action( 'save_post', array( $this, 'quick_edit_save' ), 10, 2 );
 	}
@@ -1011,7 +1012,14 @@ class PF_Admin {
 		</header>';
 
 		pressforward()->form_of->nominate_this('as_paragraph');	
-
+		?>
+		<p>
+			<button type="submit" class="refreshfeed btn btn-small" id="refreshfeed" value="<?php  _e('Refresh', 'pf')  ?>"><?php  _e('Refresh', 'pf');  ?></button>
+			<?php
+				_e( ' the feed retrieval process. This button will attempt to restart a broken refresh process. If a previous feed retrieval cycle was completed, it will start the next one early. However, if the process is currently ongoing it will notify the system that you believe there is an error in the retrieval process, and the next time your site steps through the cycle, the system will attempt to find and rectify the error.', 'pf');
+			?>
+		</p>
+		<?php 
 		do_action('pf_tools');
 
 	}
@@ -1116,6 +1124,7 @@ class PF_Admin {
 			wp_register_script(PF_SLUG . '-sort-imp', PF_URL . 'assets/js/sort-imp.js', array( PF_SLUG . '-tinysort', PF_SLUG . '-twitter-bootstrap', PF_SLUG . '-jq-fullscreen' ));
 			wp_register_script( PF_SLUG . '-quick-edit', PF_URL . 'assets/js/quick-edit.js', array( 'jquery' ) );
 			wp_register_script( PF_SLUG . '-settings-tools', PF_URL . 'assets/js/settings-tools.js', array( 'jquery' ) );
+			wp_register_script( PF_SLUG . '-tools', PF_URL . 'assets/js/tools-imp.js', array( 'jquery' ) );
 
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
@@ -1170,6 +1179,7 @@ class PF_Admin {
 		if (('pressforward_page_pf-tools') == $hook) {
 			wp_enqueue_script(PF_SLUG . '-jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
 			wp_enqueue_script(PF_SLUG . '-twitter-bootstrap');
+			wp_enqueue_script(PF_SLUG . '-tools');
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style(PF_SLUG . '-bootstrap-style');
 			wp_enqueue_style(PF_SLUG . '-bootstrap-responsive-style');

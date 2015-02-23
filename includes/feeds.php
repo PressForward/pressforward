@@ -437,7 +437,7 @@ class PF_Feeds_Schema {
 	 * @param int $feed_item_id ID of the feed item.
 	 * @return bool
 	 */
-	public static function set_feed_last_checked( $feed_id ) {
+	public function set_feed_last_checked( $feed_id ) {
 		if (empty($feed_id)){
 			$feed_id = get_the_ID();
 		}
