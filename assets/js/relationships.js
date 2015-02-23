@@ -60,45 +60,10 @@ jQuery(window).load(function() {
 		var tschemaclass;
 		var selectableObj;
 		var objs;
-		objs = jQuery('article[pf-post-id="'+id+'"] [pf-schema="'+schema+'"]');
-		if (parent.hasClass('modal-btns')){
-			otherschema = item.find('article[pf-post-id="'+id+'"] header [pf-schema="'+schema+'"]');
-			selectableObj = item.find('article[pf-post-id="'+id+'"] .modal-btns [pf-schema="'+schema+'"]');
-		} else {
-			otherschema = item.find('article[pf-post-id="'+id+'"] .modal-btns [pf-schema="'+schema+'"]');
-			selectableObj = item.find('article[pf-post-id="'+id+'"] header [pf-schema="'+schema+'"]');
-		}
 		if (jQuery(obj).hasClass('schema-switchable')) {
 			isSwitch = 'on';
 		}
-		if(jQuery(selectableObj.selector).is('[pf-schema-class]')){
-			schemaclass = jQuery(selectableObj.selector).attr('pf-schema-class');
-		} else {
-			schemaclass = false;
-		}
-		
-		
-		
-		if(obj.is('[pf-schema-targets]')){
-			schematargets = jQuery(this).attr('pf-schema-targets');
-		} else {
-			schematargets = false;
-		}
-		
-		if ((schematargets != false) || (null != schematargets) || (typeof schematargets != 'undefined') ){
-			targetedObj = jQuery(this).closest('article').find('.'+schematargets);
-
-			if(targetedObj.is('[pf-schema-class]')){
-				tschemaclass = targetedObj.attr('pf-schema-class');
-			} else {
-				tschemaclass = false;
-			}
-			doschemastuff(targetedObj, item, id, parent, otherschema, tschemaclass, objs);
-		} else {
-
-			doschemastuff(selectableObj, item, id, parent, otherschema, schemaclass, objs);
-		
-		}
+		do_schema_stuff(id,schema);
 		jQuery.post(ajaxurl, {
 				action: 'pf_ajax_relate',
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
@@ -172,6 +137,39 @@ jQuery(window).load(function() {
 			}
 		});
 
+
+	}
+
+	function do_schema_stuff(item_id, schema){
+		var objs = jQuery('article[pf-post-id="'+item_id+'"] [pf-schema="'+schema+'"]');
+		objs.each( function(index) {
+			console.log(this);
+			var obj = jQuery(this);
+			var is_active = obj.hasClass('schema-active');
+			var is_switchable = obj.hasClass('schema-switchable');
+			var schema_class = 'schema-active';
+			if (obj.is('[pf-schema-class]')){
+				var added_class = obj.attr('pf-schema-class');
+				schema_class = schema_class+' '+added_class;
+			}
+			if (obj.is('[pf-schema-targets]')){
+				objs.push(jQuery(obj.attr('pf-schema-targets')));
+			}
+			if 		  (is_active && is_switchable)  {
+				obj.removeClass(schema_class);
+
+			} else if (is_active && !is_switchable) {
+				console.log('This is already active.')
+
+			} else if (!is_active && is_switchable) {
+				obj.addClass(schema_class);
+
+			} else if (!is_active && !is_switchable){
+				obj.addClass(schema_class);
+			} else {
+				console.log('Something has gone wrong with the schema switch.');
+			}
+		});
 
 	}
 
