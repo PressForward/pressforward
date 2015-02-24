@@ -11,23 +11,27 @@
 		'pf_menu_group_access'	=>	array(
 										'default'=>'contributor',
 										'title'=>__( 'PressForward Menu Group', 'pf' ),
-										'details'=>__('PressForward Menu Group sets the user role required in order to access the PressForward plugin from the WordPress dashboard.', 'pf')
+										'details'=>__( 'PressForward Menu Group sets the user role required in order to access the PressForward plugin from the WordPress dashboard.', 'pf' )
 									),
 		'pf_menu_all_content_access'=>array(
 										'default'=>'contributor',
-										'title'=>__( 'All Content Menu', 'pf' )
+										'title'=>__( 'All Content Menu', 'pf' ),
+										'details'=>__( 'All Content Menu sets the user role required to see items in All Content.', 'pf' )
 									),
 		'pf_menu_under_review_access'=>array(
 										'default'=>'contributor',
-										'title'=>__( 'Nominated Menu', 'pf' )
+										'title'=>__( 'Nominated Menu', 'pf' ),
+										'details'=>__( '' )
 									),
 		'pf_menu_preferences_access'=>array(
 										'default'=>'administrator',
-										'title'=>__( 'Non-User Preferences Tabs', 'pf' )
+										'title'=>__( 'Non-User Preferences Tabs', 'pf' ),
+										'details'=>__( 'Side-wide Preferences sets the user role required to access the preferences on this page.', 'pf' )
 									),
 		'pf_menu_feeder_access'=>array(
 										'default'=>'editor',
-										'title'=>__( 'Feeder Menu', 'pf' )
+										'title'=>__( 'Feeder Menu', 'pf' ),
+										'details'=>__( 'Feeder Menu sets the user role required to access the Add Feeds and Subscribed Feeds pages.', 'pf' )
 									)
 	);
 
@@ -49,8 +53,16 @@
 						</td>
 					</tr>
 				</table>
+			<p>
+				<?php 
+					if (!empty($parts['details'])){
+						echo $parts['details']; 
+					}
 
+				?>
+			</p>
 			<br />
+			<hr />
 
 		<?php
 
