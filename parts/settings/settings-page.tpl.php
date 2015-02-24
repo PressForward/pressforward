@@ -2,7 +2,7 @@
 # via http://www.smashingmagazine.com/2011/10/20/create-tabs-wordpress-settings-pages/
 ?>
 <div class="wrap">
-	<h2><?php _e('PressForward Settings', 'pf'); ?></h2>
+	<h2><?php _e('PressForward Preferences', 'pf'); ?></h2>
 	<div class="metabox-holder" id="pf-settings-box">
 		<div class="meta-box-sortables ui-sortable">
 			<form action="<?php pf_admin_url(); ?>" method="post">

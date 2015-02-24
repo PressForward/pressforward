@@ -1,6 +1,10 @@
 <?php 
 ?>
 <p>
+	<?php _e('These preferences are available only to users with an Administrator role in PressForward. Options set on this page will determine behavior across the site as a whole.', 'pf'); ?>
+</p>
+<hr />
+<p>
 	<?php
 		$default_pf_link_value = get_option('pf_link_to_source', 0);
 		echo '<input id="pf_link_to_source" name="pf_link_to_source" type="number" class="pf_link_to_source_class" value="'.$default_pf_link_value.'" />';
@@ -8,7 +12,9 @@
 		echo '<label class="description" for="pf_link_to_source"> ' .__('Seconds to redirect user to source. (0 means no redirect)', 'pf'). ' </label>';
 	?>
 </p>
-
+<p>
+	<?php _e('PressForward makes use of canonical URLs. If you would like to redirect your readers automatically to the items aggregated by the feed reader and published to your site, this setting will determine how long to wait before redirecting.', 'pf'); ?>
+<hr />
 <p>
 	<?php
 		$default_pf_use_advanced_user_roles = get_option('pf_use_advanced_user_roles', 'no');
@@ -19,6 +25,10 @@
 	</select>
 	<label class="description" for="pf_use_advanced_user_roles"> <?php _e('Use advanced user role management? (May be needed if you customize user roles or capabilities).', 'pf'); ?> </label>
 </p>
+<p>
+	<?php _e('For sites that manage multiple users using special plugins, administrators can use this option to insure PressForward respects customized user roles and capacities.', 'pf'); ?>
+</p>
+<hr />
 <p>
 	<?php
 		$default_pf_present_author_value = get_option('pf_present_author_as_primary', 'yes');
@@ -32,6 +42,10 @@
 	echo '<label class="description" for="pf_present_author_as_primary"> ' .__('Show item author as source.', 'pf'). ' </label>';
 	?>
 </p>
+<p>
+	<?php _e('When this preference is on, the name in the author field of the item in the feed automatically becomes the author of the post when it is sent to draft.', 'pf'); ?>
+</p>
+<hr />
 <?php
 	if (class_exists('The_Alert_Box')){ ?>
 		<p>
@@ -51,6 +65,10 @@
 				#}
 			?>
 		</p>
+		<p>
+			<?php _e('When alerts are on, feeds that continually return errors display as alerted. You can dismiss alerts in the Subscribed Feeds page.', 'pf'); ?>
+		</p>
+		<hr />
 <?php
 	}
 ?>
@@ -63,10 +81,17 @@
 	?>
 </p>
 <p>
+	<?php _e('This number determines the number of months that items aggregated by the PressForward feed reader will remain visible in All Content.', 'pf'); ?>
+</p>
+<hr />
+<p>
 	<?php
 		$default_pf_link_value = get_option(PF_SLUG.'_errors_until_alert', 3);
 		echo '<input id="pf_errors_until_alert" name="pf_errors_until_alert" type="number" class="pf_errors_until_alert" value="'.$default_pf_link_value.'" />';
 
 		echo '<label class="description" for="pf_errors_until_alert"> ' .__('Number of errors before a feed is marked as malfunctioning.', 'pf'). ' </label>';
 	?>
+</p>
+<p>
+	<?php _e('Feeds sometimes respond slowly or have errors that cause them to be unreadable. This setting determines the number of consecutive errors PressForward will allow from a feed before creating an alert and disabling it.', 'pf'); ?>
 </p>
