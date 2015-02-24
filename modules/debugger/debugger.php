@@ -245,7 +245,8 @@ class PF_Debugger extends PF_Module {
 	function control_menu_access($arrayedAdminRights){
 		$arrayedAdminRights['pf_menu_log_access'] = array(
 															'default'=>'administrator',
-															'title'=>'Debugging Log'
+															'title'=>__('Debugging Log', 'pf'),
+															'details'=>__( 'Debugging sets the user role required to access the Debugging page from the PressForward menu when it is turned on.' , 'pf')
 														);
 
 		return $arrayedAdminRights;
