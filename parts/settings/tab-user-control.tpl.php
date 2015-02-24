@@ -1,9 +1,17 @@
 <?php 
 
+?>
+<p>
+	<?php _e('These preferences determine the type of access granted to each user role within the PressForward plugin. The user roles allowed by PressForward in order of most restrictive to least restrictive include: Administrator, Editor, Contributor, and Subscriber.'); ?>
+</p>
+<hr />
+<?php 
+
 	$arrayedAdminRights = array(
 		'pf_menu_group_access'	=>	array(
 										'default'=>'contributor',
-										'title'=>__( 'PressForward Menu Group', 'pf' )
+										'title'=>__( 'PressForward Menu Group', 'pf' ),
+										'details'=>__('PressForward Menu Group sets the user role required in order to access the PressForward plugin from the WordPress dashboard.', 'pf')
 									),
 		'pf_menu_all_content_access'=>array(
 										'default'=>'contributor',
