@@ -21,7 +21,7 @@
 		'pf_menu_under_review_access'=>array(
 										'default'=>'contributor',
 										'title'=>__( 'Nominated Menu', 'pf' ),
-										'details'=>__( '' )
+										'details'=>__( 'Nominated Menu sets the user role required to see items in Nominated.', 'pf' )
 									),
 		'pf_menu_preferences_access'=>array(
 										'default'=>'administrator',

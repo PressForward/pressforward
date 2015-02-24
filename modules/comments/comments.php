@@ -85,7 +85,8 @@ class PF_Comments extends PF_Module {
 	function control_menu_access($arrayedAdminRights){
 		$arrayedAdminRights['pf_feature_comments_access'] = array(
 															'default'=>'contributor',
-															'title'=>'Internal Commenting Feature'
+															'title'=>__('Internal Commenting Feature', 'pf'),
+															'details'=>__( 'Internal Commenting Feature sets the user role required to be able to add comments in the All Content, Nominated, and Reader View pages. Comments are not publicly visible when an item is moved to draft status in the WordPress Posts menu.', 'pf' )
 														);
 
 		return $arrayedAdminRights;
