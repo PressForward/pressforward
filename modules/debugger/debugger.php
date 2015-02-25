@@ -254,7 +254,7 @@ class PF_Debugger extends PF_Module {
 	}
 
 	function debug_the_slurp(){
-		if (current_user_can(get_option('pf_menu_log_access', 'administrator')){
+		if (current_user_can(get_option('pf_menu_log_access', 'administrator'))){
 			?>
 			<p>
 			<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="<?php _e('Reset all Feed Retrieval Options', 'pf'); ?>"><?php _e('Reset all Feed Retrieval Options', 'pf'); ?></button>    <br />
