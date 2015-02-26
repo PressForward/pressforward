@@ -276,10 +276,10 @@ class PF_Form_Of {
 
 		if (isset($_GET["pc"])){
 			$page = $_GET["pc"];
-			$page = $page-1;
+			$page = $page;
 			if ($page > 0) {
 				$pageNumForPrint = sprintf( __('Page %1$d', 'pf'), $page);
-				$variant .= ' <span> - ' . $pageNumForPrint . '</span>';
+				$variant .= ' <span> ' . $pageNumForPrint . '</span>';
 				$is_variant = true;
 			}
 		}
