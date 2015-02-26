@@ -1273,18 +1273,6 @@ class PF_Admin {
 			return;
 		}
 
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-
-		$verifyPages = array();
-
-		$pf_admin_pages = apply_filters('pf_admin_pages',$verifyPages);
-
-		if (! in_array($_GET['page'], $pf_admin_pages)){
-			return;
-		}
-
 		check_admin_referer( 'pf_settings' );
 
 		if (current_user_can( get_option('pf_menu_all_content_access', pf_get_defining_capability_by_role('contributor')) ) ){
@@ -1315,96 +1303,104 @@ class PF_Admin {
 
 		}
 
-		if ( !current_user_can( get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator')) ) ){
+		$verifyPages = array();
+
+		$pf_admin_pages = apply_filters('pf_admin_pages',$verifyPages);
+
+		if (! in_array($_GET['page'], $pf_admin_pages)){
 			return;
 		}
 
-		$arrayedAdminRights = array(
-			'pf_menu_group_access'	=>	array(
-											'default'=>'contributor',
-											'title'=>__( 'PressForward Menu Group', 'pf' )
-										),
-			'pf_menu_all_content_access'=>array(
-											'default'=>'contributor',
-											'title'=>__( 'All Content Menu', 'pf' )
-										),
-			'pf_menu_under_review_access'=>array(
-											'default'=>'contributor',
-											'title'=>__( 'Nominated Menu', 'pf' )
-										),
-			'pf_menu_preferences_access'=>array(
-											'default'=>'administrator',
-											'title'=>__( 'Preferences Menu', 'pf' )
-										),
-			'pf_menu_feeder_access'=>array(
-											'default'=>'editor',
-											'title'=>__( 'Add Feeds', 'pf' )
-										),
-			'pf_menu_add_nomination_access'=>array(
-											'default'=>'contributor',
-											'title'=> __( 'Add Nomination Menu', 'pf' )
-										)
-		);
+		if ( current_user_can( get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator')) ) ){
 
-		$arrayedAdminRights = apply_filters('pf_setup_admin_rights',$arrayedAdminRights);
 
-		foreach($arrayedAdminRights as $right=>$parts){
-			if (isset( $_POST[$right] )){
-				$enabled = $_POST[$right];
-				update_option( $right, $enabled );
+			$arrayedAdminRights = array(
+				'pf_menu_group_access'	=>	array(
+												'default'=>'contributor',
+												'title'=>__( 'PressForward Menu Group', 'pf' )
+											),
+				'pf_menu_all_content_access'=>array(
+												'default'=>'contributor',
+												'title'=>__( 'All Content Menu', 'pf' )
+											),
+				'pf_menu_under_review_access'=>array(
+												'default'=>'contributor',
+												'title'=>__( 'Nominated Menu', 'pf' )
+											),
+				'pf_menu_preferences_access'=>array(
+												'default'=>'administrator',
+												'title'=>__( 'Preferences Menu', 'pf' )
+											),
+				'pf_menu_feeder_access'=>array(
+												'default'=>'editor',
+												'title'=>__( 'Add Feeds', 'pf' )
+											),
+				'pf_menu_add_nomination_access'=>array(
+												'default'=>'contributor',
+												'title'=> __( 'Add Nomination Menu', 'pf' )
+											)
+			);
+
+			$arrayedAdminRights = apply_filters('pf_setup_admin_rights',$arrayedAdminRights);
+
+			foreach($arrayedAdminRights as $right=>$parts){
+				if (isset( $_POST[$right] )){
+					$enabled = $_POST[$right];
+					update_option( $right, $enabled );
+				}
 			}
-		}
 
-		if (isset( $_POST['pf_link_to_source'] )){
-			$pf_links_opt_check = $_POST['pf_link_to_source'];
-			//print_r($pf_links_opt_check); die();
-			update_option('pf_link_to_source', $pf_links_opt_check);
-		} else {
-			update_option('pf_link_to_source', 0);
-		}
-
-
-		if (isset( $_POST['pf_retain_time'] )){
-			$pf_links_opt_check = $_POST['pf_retain_time'];
-			//print_r($pf_links_opt_check); die();
-			update_option('pf_retain_time', $pf_links_opt_check);
-		} else {
-			update_option('pf_retain_time', 2);
-		}
-
-		if (isset( $_POST['pf_errors_until_alert'] )){
-			$pf_errors_until_alert = $_POST['pf_errors_until_alert'];
-			//print_r($pf_links_opt_check); die();
-			update_option('pf_errors_until_alert', $pf_errors_until_alert);
-		} else {
-			update_option('pf_errors_until_alert', 3);
-		}
-
-
-		if (isset( $_POST['pf_present_author_as_primary'] )){
-			$pf_author_opt_check = $_POST['pf_present_author_as_primary'];
-			//print_r($pf_links_opt_check); die();
-			update_option('pf_present_author_as_primary', $pf_author_opt_check);
-		} else {
-			update_option('pf_present_author_as_primary', 'no');
-		}
-
-		if (class_exists('The_Alert_Box')){
-			#var_dump($_POST);
-			if(empty($_POST[the_alert_box()->option_name()])){
-				#var_dump('<pre>'); var_dump($_POST); var_dump('</pre>');
-				update_option(the_alert_box()->option_name(), 'false');
+			if (isset( $_POST['pf_link_to_source'] )){
+				$pf_links_opt_check = $_POST['pf_link_to_source'];
+				//print_r($pf_links_opt_check); die();
+				update_option('pf_link_to_source', $pf_links_opt_check);
 			} else {
-				update_option(the_alert_box()->option_name(), $_POST[the_alert_box()->option_name()]);
+				update_option('pf_link_to_source', 0);
 			}
-		}
 
-		if (isset( $_POST['pf_use_advanced_user_roles'] )){
-			$pf_author_opt_check = $_POST['pf_use_advanced_user_roles'];
-			//print_r($pf_links_opt_check); die();
-			update_option('pf_use_advanced_user_roles', $pf_author_opt_check);
-		} else {
-			update_option('pf_use_advanced_user_roles', 'no');
+
+			if (isset( $_POST['pf_retain_time'] )){
+				$pf_links_opt_check = $_POST['pf_retain_time'];
+				//print_r($pf_links_opt_check); die();
+				update_option('pf_retain_time', $pf_links_opt_check);
+			} else {
+				update_option('pf_retain_time', 2);
+			}
+
+			if (isset( $_POST['pf_errors_until_alert'] )){
+				$pf_errors_until_alert = $_POST['pf_errors_until_alert'];
+				//print_r($pf_links_opt_check); die();
+				update_option('pf_errors_until_alert', $pf_errors_until_alert);
+			} else {
+				update_option('pf_errors_until_alert', 3);
+			}
+
+
+			if (isset( $_POST['pf_present_author_as_primary'] )){
+				$pf_author_opt_check = $_POST['pf_present_author_as_primary'];
+				//print_r($pf_links_opt_check); die();
+				update_option('pf_present_author_as_primary', $pf_author_opt_check);
+			} else {
+				update_option('pf_present_author_as_primary', 'no');
+			}
+
+			if (class_exists('The_Alert_Box')){
+				#var_dump($_POST);
+				if(empty($_POST[the_alert_box()->option_name()])){
+					#var_dump('<pre>'); var_dump($_POST); var_dump('</pre>');
+					update_option(the_alert_box()->option_name(), 'false');
+				} else {
+					update_option(the_alert_box()->option_name(), $_POST[the_alert_box()->option_name()]);
+				}
+			}
+
+			if (isset( $_POST['pf_use_advanced_user_roles'] )){
+				$pf_author_opt_check = $_POST['pf_use_advanced_user_roles'];
+				//print_r($pf_links_opt_check); die();
+				update_option('pf_use_advanced_user_roles', $pf_author_opt_check);
+			} else {
+				update_option('pf_use_advanced_user_roles', 'no');
+			}
 		}
 
 		do_action( 'pf_admin_op_page_save' );
