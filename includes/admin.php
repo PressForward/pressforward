@@ -829,11 +829,12 @@ class PF_Admin {
 		//Calling the feedlist within the pf class.
 		if (isset($_GET["pc"])){
 			$page = $_GET["pc"];
-			$page = $page-1;
+			$page_c = $page-1;
 		} else {
 			$page = 0;
+			$page_c = 0;
 		}
-		$count = $page * 20;
+		$count = $page_c * 20;
 		$extra_class = '';
 		if(isset($_GET['reveal']) && ('no_hidden' == $_GET['reveal'])){
 			$extra_class .= ' archived_visible';
@@ -946,18 +947,29 @@ class PF_Admin {
 		}
 		$pagePrev = '?page=pf-menu'.$limit_q.'&pc=' . $pagePrev;
 		$pageNext = '?page=pf-menu'.$limit_q.'&pc=' . $pageNext;
-		if (isset($pageQ)){
-			$pageQ = $_GET['by'];
-			$pageQed = '&by=' . $pageQ;
+		if (isset($_GET['folder'])){
+			$pageQ = $_GET['folder'];
+			$pageQed = '&folder=' . $pageQ;
 			$pageNext .= $pageQed;
+			$pagePrev .= $pageQed;
+
+		}
+		if (isset($_GET['feed'])){
+			$pageQ = $_GET['feed'];
+			$pageQed = '&feed=' . $pageQ;
 			$pageNext .= $pageQed;
+			$pagePrev .= $pageQed;
 
 		}
         if ($c > 19){
 
             echo '<div class="pf-navigation">';
-            if ($pagePrev > -1){
-                echo '<span class="feedprev"><a class="prevnav" href="admin.php' . $pagePrev . '">Previous Page</a></span> | ';
+            if (-1 > $pagePrev){
+                echo '<!-- something has gone wrong -->';
+            } elseif (1 > $pagePrev){
+            	echo '<span class="feedprev"><a class="prevnav" href="admin.php?page=pf-menu">Previous Page</a></span> | ';
+            } elseif ($pagePrev > -1) {
+            	echo '<span class="feedprev"><a class="prevnav" href="admin.php' . $pagePrev . '">Previous Page</a></span> | ';
             }
             echo '<span class="feednext"><a class="nextnav" href="admin.php' . $pageNext . '">Next Page</a></span>';
             echo '</div>';
