@@ -237,7 +237,7 @@ color: #ffffff;
 }
 
 .modal.pfmodal {
-	z-index: 9999;
+	z-index: 9998;
 }
 
 h3 {
@@ -633,9 +633,13 @@ h3 {
 
 .info-box-popover {
 	background-color: #f5f5f5;
-	z-index: 9990;
+	z-index: 9996;
 	width: 310px;
 
+}
+
+.modal > .info-box-popover, .modal-popover {
+	z-index: 9999;
 }
 
 .info-box-popover.right {
@@ -734,7 +738,7 @@ h3 {
 		position: fixed;
 		top: 30px;
 		width: 100%;
-		z-index: 9991;
+		z-index: 9997;
 		margin: 0;
 		left: 200px;
 		

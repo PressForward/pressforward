@@ -355,8 +355,10 @@ class PF_Admin {
 				<div class="actions pf-btns <?php if($modal){ echo 'modal-btns '; } else { echo ' article-btns '; } ?>">
 					<?php
 					$infoPop = 'top';
+					$infoModalClass = ' modal-popover';
 					if ($modal == false){
 						$infoPop = 'bottom';
+						$infoModalClass = '';
 						if ($format === 'nomination'){
 							?><form name="form-<?php echo $metadata['item_id']; ?>" pf-form="<?php echo $metadata['item_id']; ?>"><?php
 							pf_prep_item_for_submit($metadata);
@@ -372,7 +374,7 @@ class PF_Admin {
 						echo '</form>';
 					}
 					# Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
-					echo '<button class="btn btn-small itemInfobutton" data-toggle="tooltip" title="' . __('Info', 'pf') .  '" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover" data-title="" data-target="'.$item['item_id'].'"><i class="icon-info-sign"></i></button>';
+					echo '<button class="btn btn-small itemInfobutton" data-toggle="tooltip" title="' . __('Info', 'pf') .  '" id="info-' . $item['item_id'] . '-' . $infoPop . '" data-placement="' . $infoPop . '" data-class="info-box-popover'.$infoModalClass.'" data-title="" data-target="'.$item['item_id'].'"><i class="icon-info-sign"></i></button>';
 
 					if (pf_is_item_starred_for_user( $id_for_comments, $user_id ) ){
 						echo '<!-- item_id selected = ' . $item_id . ' -->';

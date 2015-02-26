@@ -296,6 +296,7 @@ function PFBootstrapInits() {
 			var contentOutput = '<div class="feed-item-info-box">';
 			contentOutput += jQuery('#info-box-'+idCode).html();
 			contentOutput += '</div>';
+			console.log('Popover assembled');
 			return contentOutput;
 		}
 	})
