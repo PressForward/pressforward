@@ -357,7 +357,7 @@ class PF_Admin {
 					$infoPop = 'top';
 					$infoModalClass = ' modal-popover';
 					if ($modal == false){
-						$infoPop = 'bottom';
+						#$infoPop = 'bottom';
 						$infoModalClass = '';
 						if ($format === 'nomination'){
 							?><form name="form-<?php echo $metadata['item_id']; ?>" pf-form="<?php echo $metadata['item_id']; ?>"><?php
