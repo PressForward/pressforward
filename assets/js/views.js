@@ -282,6 +282,12 @@ function PFBootstrapInits() {
 		trigger: 'hover',
 		title: 'Nomination Count'
 	});
+	jQuery('.pf-amplify').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Amplify'
+	});
+
 	jQuery('.itemInfobutton').popover({
 		html : true,
 		container : '.actions',
