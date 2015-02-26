@@ -434,7 +434,7 @@ class PF_Admin {
 						<button type="button" class="btn btn-default btn-small dropdown-toggle pf-amplify" data-toggle="dropdown" aria-expanded="true" id="<?php echo $amplify_id; ?>"><i class="icon-bullhorn"></i><span class="caret"></button>
 						<ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="amplify-<?php echo $item['item_id']; ?>">
 							<?php
-								if (current_user_can( 'edit_posts' ) && 'nomination' != $format ){
+								if (current_user_can( 'edit_others_posts' ) && 'nomination' != $format ){
 									$send_to_draft_classes = 'amplify-option amplify-draft schema-actor';
 
 									if ( 1 == pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ){
