@@ -1828,8 +1828,6 @@ class PF_Admin {
 			return;
 		}
 
-		$query->set( 'meta_key', 'pf_feed_last_retrieved' );
-		$query->set( 'meta_type', 'DATETIME' );
 		$query->set( 'orderby', 'pf_feed_last_retrieved' );
 
 		// In order to ensure that we get the items without a
