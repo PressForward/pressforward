@@ -77,6 +77,10 @@ class PF_Form_Of {
 		return ob_get_clean();
 	}
 
+	public function the_view_for($view, $vars = array()){
+		echo $this->get_view($view, $vars);
+	}
+
 	public function the_side_menu(){
 		$user_ID = get_current_user_id();
 		$pf_user_menu_set = get_user_option('pf_user_menu_set', $user_ID);

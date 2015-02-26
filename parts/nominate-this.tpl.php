@@ -15,7 +15,7 @@
 <?php 
 	} elseif ( 'as_feed' == $context ) {
 		?>
-		<div class="pf-opt-group">
+		<div class="pf-opt-group span6">
             <div class="rss-box postbox">
                     <div class="handlediv"><br></div>
                     <h3 class="hndle"><span><?php _e('Nominate This', 'pf'); ?></span></h3>

@@ -360,16 +360,23 @@ h3 {
     word-wrap: break-word;
 }
 
+.pressforward_page_pf-feeder .container-fluid {
+	padding:0;
+}
+
 .pf-opt-group {
 
 }
 
 .pf-opt-group .postbox{
-    float:left;
-    width: 30%;
-    margin-right: 10px;
+
     height:390px;
-    overflow:auto;
+    overflow:hidden;
+    margin:0;
+}
+
+.pf-opt-group input[type="text"] {
+	max-width: 320px;
 }
 
 .pf_feeder_input_box {

@@ -257,7 +257,7 @@ class PF_RSS_Import extends PF_Module {
 		$feedlist = get_option( PF_SLUG . '_feedlist' );
 
         ?>
-		<div class="pf-opt-group">
+		<div class="pf-opt-group span6">
             <div class="rss-box postbox">
                     <div class="handlediv" title="Click to toggle"><br></div>
                     <h3 class="hndle"><span><?php _e('Subscribe to Feeds', 'pf'); ?></span></h3>
