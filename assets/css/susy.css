@@ -158,6 +158,7 @@
     border-bottom: 1px dotted #cccccc;
     margin: 0;
     padding: 10px 0;
+    padding-top: 16px;
     overflow: hidden;
     *zoom: 1;
   }

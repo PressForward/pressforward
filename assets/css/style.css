@@ -405,8 +405,13 @@ h3 {
 	overflow: visible!important;
 }
 
+.list article {
+	 
+}
+
 .list .box-controls {
 	margin-right: 26px;
+	margin-top: -10px; 
 }
 
 .pressforward .list .dropdown-menu.fullview {
