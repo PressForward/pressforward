@@ -26,7 +26,7 @@ function pf_make_url_hashed(hashed){
 			}
 			obj = jQuery('article[tabindex="'+tabindex+'"]');
 		}
-		if ((0 == obj.length  || obj.is(':hidden')) && (0 < tabindex) && (lastindex > tabindex)){
+		if ((0 == obj.length  || obj.is(':hidden')) && (0 <= tabindex) && (lastindex > tabindex)){
 				obj = assure_next_obj(tabindex, obj, advance);
 		}
 		return obj;
