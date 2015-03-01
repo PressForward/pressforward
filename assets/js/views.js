@@ -7,6 +7,12 @@ function pf_make_url_hashed(hashed){
 	window.location.hash = '#'+hashed;
 }
 
+function assure_closed_menus(){
+	jQuery('.dropdown').on('click', 'li > *', function(){
+		jQuery('.dropdown.open').removeClass('open');
+	});
+}
+
 	//via http://stackoverflow.com/questions/1662308/javascript-substr-limit-by-word-not-char
 	function trim_words(theString, numWords) {
 		expString = theString.split(/\s+/,numWords);
@@ -315,6 +321,7 @@ function PFBootstrapInits() {
 	})
 	
 	attach_menu_on_scroll_past();
+	assure_closed_menus();
 
 }
 

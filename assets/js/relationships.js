@@ -62,8 +62,10 @@ jQuery(window).load(function() {
 		var objs;
 		if (jQuery(obj).hasClass('schema-switchable')) {
 			isSwitch = 'on';
+		} else {
+			isSwitch = 'off';
 		}
-		do_schema_stuff(id,schema);
+		do_schema_stuff(id,schema,isSwitch);
 		jQuery.post(ajaxurl, {
 				action: 'pf_ajax_relate',
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
@@ -140,8 +142,13 @@ jQuery(window).load(function() {
 
 	}
 
-	function do_schema_stuff(item_id, schema){
+	function do_schema_stuff(item_id, schema, isSwitch){
 		var objs = jQuery('article[pf-post-id="'+item_id+'"] [pf-schema="'+schema+'"]');
+		var switchable = 'on';
+		if ('off' != isSwitch){
+			isSwitch = switchable;
+			//console.log('Switchable state is not set, or set to on.');
+		}
 		objs.each( function(index) {
 			//console.log(this);
 			var obj = jQuery(this);
@@ -152,6 +159,10 @@ jQuery(window).load(function() {
 				var added_class = obj.attr('pf-schema-class');
 				schema_class = schema_class+' '+added_class;
 				if (!is_active){ is_active = obj.hasClass(added_class); }
+			}
+			if ('off' == isSwitch){
+				is_switchable = false;
+				//console.log('Switchable is set to off.');
 			}
 			if (obj.is('[pf-schema-targets]')){
 				objs.push(jQuery(obj.attr('pf-schema-targets')));
