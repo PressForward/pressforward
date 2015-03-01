@@ -29,6 +29,9 @@ function pf_make_url_hashed(hashed){
 		if ((0 == obj.length  || obj.is(':hidden')) && (0 <= tabindex) && (lastindex > tabindex)){
 				obj = assure_next_obj(tabindex, obj, advance);
 		}
+		if (obj.is(':hidden')) {
+			return false;
+		}
 		return obj;
 	}
 
@@ -59,7 +62,7 @@ function pf_make_url_hashed(hashed){
 		}
 **/
 		//First lets assemble variables for the previous group.
-		if (jQuery(prevObj).is('*')){
+		if (false != jQuery(prevObj) && jQuery(prevObj).is('*')){
 			var prevItemID = jQuery(prevObj).children('header').children('h1').children('a').attr('href');
 			var prevTitle = jQuery(prevObj).children('header').children('h1').text();
 			var prevSource = jQuery(prevObj).children('header').children('p.source_title').text();
@@ -80,7 +83,7 @@ function pf_make_url_hashed(hashed){
 
 		}
 		//Next lets assemble variables for the next group.
-		if (jQuery(nextObj).is('*')){
+		if (false != jQuery(nextObj) && jQuery(nextObj).is('*')){
 			var nextItemID = jQuery(nextObj).children('header').children('h1').children('a').attr('href');
 			var nextTitle = jQuery(nextObj).children('header').children('h1').text();
 			var nextSource = jQuery(nextObj).children('header').children('p.source_title').text();
