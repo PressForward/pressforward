@@ -1483,7 +1483,7 @@ class PF_Admin {
 	 *
 	 */
 
-	function pf_thing_deleter($id = 0, $readability_status = false){
+	function pf_thing_deleter($id = 0, $readability_status = false, $item_type = 'feed_item'){
 		if ($id == 0)
 			return new WP_Error('noID', __("No ID supplied for deletion", 'pf'));
 
@@ -1500,7 +1500,7 @@ class PF_Admin {
 
 		$argup = array(
 			'ID'			=> $id,
-			'post_content' 	=> '',
+			'post_content' 	=> $item_type,
 			'post_status'	=>	'removed_feed_item'
 		);
 
