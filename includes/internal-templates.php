@@ -16,6 +16,8 @@ class PF_Form_Of {
 		$this->parts = $this->build_path(array(PF_ROOT, "parts"), false);
 		$this->the_screen = $this->the_screen();
 		$this->user_id = $this->user_id();
+		$this->is_a_pf_page();
+		add_filters('ab_alert_specimens_labels', array($this, 'alter_alert_boxes'))
 	}
 
 	/**
@@ -56,6 +58,37 @@ class PF_Form_Of {
 		$userObj = wp_get_current_user();
 		$user_id = $userObj->ID;
 		return $user_id;
+	}
+
+	public function alter_alert_boxes($alert_names){
+		if ($this->is_pf()){
+			$new_alert_names = array(
+				'name'                => _x( 'Feed Alerts', 'post type general name', 'pf' ),
+				'singular_name'       => _x( 'Feed Alert', 'post type singular name', 'pf' ),
+				'menu_name'           => _x( 'Feed Alerts', 'admin menu', 'pf' ),
+				'name_admin_bar'      => _x( 'Feed Alert', 'add new on admin bar', 'pf' ),
+				'add_new'             => _x( 'Add Feed Alert', 'alert', 'pf' ),
+				'add_new_item'        => __( 'Add New Feed Alert', 'pf' ),
+				'new_item'            => __( 'New Feed Alert', 'pf' ),
+				'edit_item'           => __( 'Edit Feed Alert', 'pf' ),
+				'view_item'           => __( 'View Feed Alert', 'pf' ),
+				'all_items'           => __( 'All Feed Alerts', 'pf' ),
+				'search_items'        => __( 'Search Feed Alerts', 'pf' ),
+				'parent_item_colon'   => __( 'Parent Alerts:', 'pf' ),
+				'not_found'           => __( 'No feed alerts found.', 'pf' ),
+				'not_found_in_trash'  => __( 'No feed alerts found in Trash.', 'pf' ),
+        		'dismiss_one_check'   => __( 'This will set the feed to inactive. Are you sure you want to dismiss the alert on', 'pf' ),
+        		'dismiss_all_check'   => __( 'Are you sure you want to dismiss all alerts? It will set all feeds to inactive.', 'pf' ),
+        		'dismiss_all'         => __( 'Dismiss all feed alerts', 'pf' ),
+        		'delete_all_check'    => __( 'Are you sure you want to delete all feeds with alerts?', 'pf' ),
+        		'delete_all'          => __( 'Delete all feeds with alerts', 'pf' ),
+        		'turned_off'		  => __( 'Feed alert boxes not active.', 'pf')
+			);
+			$new_alert_names = array_merge($alert_names, $new_alert_names);
+			return $new_alert_names;
+		} else {
+			return $alert_names;
+		}
 	}
 
 	/**
