@@ -7,6 +7,12 @@ function pf_make_url_hashed(hashed){
 	window.location.hash = '#'+hashed;
 }
 
+function assure_closed_menus(){
+	jQuery('.dropdown').on('click', 'li > *', function(){
+		jQuery('.dropdown.open').removeClass('open');
+	});
+}
+
 	//via http://stackoverflow.com/questions/1662308/javascript-substr-limit-by-word-not-char
 	function trim_words(theString, numWords) {
 		expString = theString.split(/\s+/,numWords);
@@ -26,8 +32,11 @@ function pf_make_url_hashed(hashed){
 			}
 			obj = jQuery('article[tabindex="'+tabindex+'"]');
 		}
-		if ((0 == obj.length  || obj.is(':hidden')) && (0 < tabindex) && (lastindex > tabindex)){
+		if ((0 == obj.length  || obj.is(':hidden')) && (0 <= tabindex) && (lastindex > tabindex)){
 				obj = assure_next_obj(tabindex, obj, advance);
+		}
+		if (obj.is(':hidden')) {
+			return false;
 		}
 		return obj;
 	}
@@ -59,7 +68,7 @@ function pf_make_url_hashed(hashed){
 		}
 **/
 		//First lets assemble variables for the previous group.
-		if (jQuery(prevObj).is('*')){
+		if (false != jQuery(prevObj) && jQuery(prevObj).is('*')){
 			var prevItemID = jQuery(prevObj).children('header').children('h1').children('a').attr('href');
 			var prevTitle = jQuery(prevObj).children('header').children('h1').text();
 			var prevSource = jQuery(prevObj).children('header').children('p.source_title').text();
@@ -80,7 +89,7 @@ function pf_make_url_hashed(hashed){
 
 		}
 		//Next lets assemble variables for the next group.
-		if (jQuery(nextObj).is('*')){
+		if (false != jQuery(nextObj) && jQuery(nextObj).is('*')){
 			var nextItemID = jQuery(nextObj).children('header').children('h1').children('a').attr('href');
 			var nextTitle = jQuery(nextObj).children('header').children('h1').text();
 			var nextSource = jQuery(nextObj).children('header').children('p.source_title').text();
@@ -312,6 +321,7 @@ function PFBootstrapInits() {
 	})
 	
 	attach_menu_on_scroll_past();
+	assure_closed_menus();
 
 }
 

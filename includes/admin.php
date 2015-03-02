@@ -258,11 +258,11 @@ class PF_Admin {
 					</div>
 				<?php } ?>
 				<div class="dropdown pf-filter-dropdown btn-group" role="group">
-				  <button class="btn btn-default dropdown-toggle btn-small" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+				  <button class="btn btn-default dropdown-toggle btn-small" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
 					<?php _e('Filter', 'pf'); ?>
 					<span class="caret"></span>
 				  </button>
-				  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+				  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
 					<?php
 						if ( 'pf-review' != $page ){
 							self::dropdown_option(__('Reset filter', 'pf'), "showNormal");
@@ -282,11 +282,11 @@ class PF_Admin {
 				  </ul>
 				</div>
 				<div class="dropdown pf-sort-dropdown btn-group" role="group">
-				  <button class="btn btn-default dropdown-toggle btn-small" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+				  <button class="btn btn-default dropdown-toggle btn-small" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-expanded="true">
 					<?php _e('Sort', 'pf'); ?>
 					<span class="caret"></span>
 				  </button>
-				  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+				  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu3">
 					<?php
 						self::dropdown_option(__('Reset', 'pf'), "sort-reset");
 						self::dropdown_option(__('Date of item', 'pf'), "sortbyitemdate");
@@ -1483,7 +1483,7 @@ class PF_Admin {
 	 *
 	 */
 
-	function pf_thing_deleter($id = 0, $readability_status = false){
+	function pf_thing_deleter($id = 0, $readability_status = false, $item_type = 'feed_item'){
 		if ($id == 0)
 			return new WP_Error('noID', __("No ID supplied for deletion", 'pf'));
 
@@ -1500,7 +1500,7 @@ class PF_Admin {
 
 		$argup = array(
 			'ID'			=> $id,
-			'post_content' 	=> '',
+			'post_content' 	=> $item_type,
 			'post_status'	=>	'removed_feed_item'
 		);
 

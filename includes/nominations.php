@@ -140,22 +140,53 @@ class PF_Nominations {
 
 	}
 
-	public function is_nominated($item_id, $post_type = false, $update = false){
-		if (!$post_type) {
-			$post_type = array('post', 'nomination');
-		}
+	public function get_first_nomination($item_id, $post_type){
 		$q = pf_get_posts_by_id_for_check($post_type, $item_id, true);
 		if ( 0 < $q->post_count ){
 			$nom = $q->posts;
 			$r = $nom[0];
-			pf_log('Existing post at '.$r);
+			return $r;
+		} else {
+			return false;
 		}
-		else {
+	}
+
+	public function is_nominated($item_id, $post_type = false, $update = false){
+		if (!$post_type) {
+			$post_type = array('post', 'nomination');
+		}
+		$attempt = $this->get_first_nomination($item_id, $post_type);
+		if (!empty($attempt)){
+			$r = $attempt;
+			pf_log('Existing post at '.$r);
+		} else {
 			$r = false;
 		}
 		/* Restore original Post Data */
 		wp_reset_postdata();
 		return $r;
+	}
+
+	public function resolve_nomination_state($item_id){
+		$pt = array('nomination');
+		if ($this->is_nominated($item_id, $pt)){
+			$attempt = $this->get_first_nomination($item_id, $pt);
+			if (!empty($attempt)){
+				$nomination_id = $attempt;
+				$nominators = pf_retrieve_meta($nomination_id, 'nominator_array');
+				if (empty($nominators)){
+					pf_log('There is no one left who nominated this item.');
+					pf_log('This nomination has been taken back. We will now remove the item.');
+					pressforward()->admin->pf_thing_deleter($nomination_id, true, 'nomination');
+				} else {
+					pf_log('Though one user retracted their nomination, there are still others who have nominated this item.');
+				}
+			} else {
+				pf_log('We could not find the nomination to resolve the state of.');
+			}
+		} else {
+			pf_log('There is no nomination to resolve the state of.');
+		}
 	}
 
 	public function nominate_this_tile(){
@@ -211,6 +242,7 @@ class PF_Nominations {
 				$this->toggle_nominator_array($nomination_state, false);
 				$check = false;
 				pf_log( 'user_unnonminated' );
+				$this->resolve_nomination_state($item_id);
 			} else {
 				$this->change_nomination_count($nomination_state);
 				$this->toggle_nominator_array($nomination_state);
