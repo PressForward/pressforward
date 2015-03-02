@@ -90,6 +90,7 @@ if (!class_exists('The_Alert_Box')){
         'dismiss_all'         => __( 'Dismiss all alerts', 'pf' ),
         'delete_all_check'    => __( 'Are you sure you want to delete all posts with alerts?', 'pf' ),
         'delete_all'          => __( 'Delete all posts with alerts', 'pf' ),
+        'dismissed'           => __( 'Draft' ),
         'turned_off'		      => __( 'Alert boxes not active.', 'pf')
 			);
       $alert_names =  self::depreciated_alert_name_filters($alert_names);

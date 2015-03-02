@@ -82,6 +82,7 @@ class PF_Form_Of {
         		'dismiss_all'         => __( 'Dismiss all feed alerts', 'pf' ),
         		'delete_all_check'    => __( 'Are you sure you want to delete all feeds with alerts?', 'pf' ),
         		'delete_all'          => __( 'Delete all feeds with alerts', 'pf' ),
+        		'dismissed'           => __( 'Inactive', 'pf' ),
         		'turned_off'		  => __( 'Feed alert boxes not active.', 'pf')
 			);
 			$new_alert_names = array_merge($alert_names, $new_alert_names);
