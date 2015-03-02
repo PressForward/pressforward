@@ -4,7 +4,7 @@
  * Test of module base class
  */
 
-define( 'FEED_LOG', PF_ROOT . "/modules/rss-import/rss-import.txt" );
+#define( 'FEED_LOG', PF_ROOT . "/modules/rss-import/rss-import.txt" );
 class PF_RSS_Import extends PF_Module {
 
 	/////////////////////////////
@@ -28,6 +28,21 @@ class PF_RSS_Import extends PF_Module {
 
 		}
 	}
+
+	function module_setup(){
+		$mod_settings = array(
+			'name' 			=> 'RSS Import Module',
+			'slug' 			=> 'rss-import',
+			'description' 	=> 'This module provides the core functionality to read RSS feeds and translate them into PressForward\'s system.',
+			'thumbnail' 	=> '',
+			'options' 		=> ''
+		);
+		
+		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
+
+		//return $test;
+	}
+
 
 	/**
 	 * Run any setup that has to happen after initial module registration
