@@ -116,6 +116,7 @@ class PF_Module {
 					</td>
 				</tr>
 			</table>
+			<hr />
 		<?php
 	}
 
