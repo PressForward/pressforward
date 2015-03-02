@@ -39,11 +39,11 @@
 	</select>
 	<?php
 
-	echo '<label class="description" for="pf_present_author_as_primary"> ' .__('Show item author as source.', 'pf'). ' </label>';
+	echo '<label class="description" for="pf_present_author_as_primary"> ' .__('Show item_author as source.', 'pf'). ' </label>';
 	?>
 </p>
 <p>
-	<?php _e('When this preference is on, the name in the author field of the item in the feed automatically becomes the author of the post when it is sent to draft.', 'pf'); ?>
+	<?php _e('When this preference is on, the name of the author in a PressFoward item will appear in the item_author custom field when the item is sent to Draft. This author will overwrite the creator of the post.', 'pf'); ?>
 </p>
 <hr />
 <?php
@@ -81,7 +81,7 @@
 	?>
 </p>
 <p>
-	<?php _e('This number determines the number of months that items aggregated by the PressForward feed reader will remain visible in All Content.', 'pf'); ?>
+	<?php _e('This number determines the number of previous months that PressForward will retrieve items for All Content from subscribed feeds and the number of months that items will remain in PressForward.', 'pf'); ?>
 </p>
 <hr />
 <p>
