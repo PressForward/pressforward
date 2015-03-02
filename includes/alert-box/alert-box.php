@@ -363,7 +363,7 @@ if (!class_exists('The_Alert_Box')){
           edit_post_link(__('Edit', 'pf'));
           echo ' ';
           if (current_user_can('edit_others_posts')){
-            echo '| <a href="#" class="alert-dismisser" title="'. __('Dismiss', 'pf') . '" data-alert-post-id="'. get_the_ID() .'" data-alert-dismiss-check="'.sprintf(__('Are you sure you want to dismiss the alert on %s', 'pf'), get_the_title()).'" '.self::alert_box_type_data( get_post_type( get_the_ID() ) ).' >' . __('Dismiss', 'pf').'</a>';
+            echo '| <a href="#" class="alert-dismisser" title="'. __('Dismiss', 'pf') . '" data-alert-post-id="'. get_the_ID() .'" data-alert-dismiss-check="'.sprintf(__('Are you sure you want to dismiss the alert on %s, it will move the post to draft.', 'pf'), get_the_title()).'" '.self::alert_box_type_data( get_post_type( get_the_ID() ) ).' >' . __('Dismiss', 'pf').'</a>';
           }
           echo ' ';
           if (current_user_can('delete_others_posts')){
@@ -397,7 +397,7 @@ if (!class_exists('The_Alert_Box')){
           if (current_user_can('edit_others_posts')){
                 $editText = __('Dismiss all alerts', 'pf');
                 $editText = apply_filters('ab_alert_specimens_dismiss_all_text', $editText);
-              $editCheck = __('Are you sure you want to dismiss all alerts?', 'pf');
+              $editCheck = __('Are you sure you want to dismiss all alerts? The posts will then be set to draft.', 'pf');
               $editCheck = apply_filters('ab_alert_specimens_check_dismiss_message', $editCheck);
 
                 echo '<p><a href="#" id="dismiss_all_alert_specimens" style="color:GoldenRod;font-weight:bold;" title="' . $editText . '" data-dismiss-all-check="' . $editCheck . '" '.self::alert_box_type_data($q).' >' . $editText . '</a></p>';
