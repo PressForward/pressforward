@@ -328,6 +328,12 @@ h3 {
 
 #feed-folders {
 	display:none;
+	padding-bottom:20px;
+	margin-bottom: 10px;
+}
+
+.feed_folders {
+	padding-bottom: 20px;
 }
 
 .primary-btn-tools .btn {

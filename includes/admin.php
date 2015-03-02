@@ -170,6 +170,7 @@ class PF_Admin {
 					<?php printf(__('<h3>Folders</h3>'));
 					pressforward()->pf_feeds->the_feed_folders();
 					?>
+				<div class="clear"></div>
 			</div>
 		<?php
 	}
