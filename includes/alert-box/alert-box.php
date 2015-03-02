@@ -208,7 +208,7 @@ if (!class_exists('The_Alert_Box')){
 
             $post_status_d = get_post_meta( $post_id, 'pre_alert_status', true);
             if (empty($post_status_d)){
-				$post_status_d = array();
+				        $post_status_d = array();
                 $post_status_d['status'] = 'draft';
                 $post_status_d['type'] = $_POST['post_type'];
             }
