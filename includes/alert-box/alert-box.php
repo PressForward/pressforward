@@ -21,7 +21,7 @@ if (!class_exists('The_Alert_Box')){
         /**
          * Constructor
          */
-        public function __construct() {
+    public function __construct() {
 			#$this->status = self::$status;
 			#$this->option_name = self::$option_name;
 			$this->settings = get_option( self::option_name(), array() );
@@ -36,7 +36,7 @@ if (!class_exists('The_Alert_Box')){
 			}
 			$this->alert_name = $this->alert_name_maker();
 			#add_action( 'admin_init', array($this, 'settings_field_settings_page') );
-        }
+    }
 
 		public function status(){
 			return self::$status;
@@ -71,26 +71,26 @@ if (!class_exists('The_Alert_Box')){
 
     public function alert_name_maker(){
 			$alert_names = array(
-				'name'               => _x( 'Alerts', 'post type general name', 'pf' ),
-				'singular_name'      => _x( 'Alert', 'post type singular name', 'pf' ),
-				'menu_name'          => _x( 'Alerts', 'admin menu', 'pf' ),
-				'name_admin_bar'     => _x( 'Alert', 'add new on admin bar', 'pf' ),
-				'add_new'            => _x( 'Add Alert', 'alert', 'pf' ),
-				'add_new_item'       => __( 'Add New Alert', 'pf' ),
-				'new_item'           => __( 'New Alert', 'pf' ),
-				'edit_item'          => __( 'Edit Alert', 'pf' ),
-				'view_item'          => __( 'View Alert', 'pf' ),
-				'all_items'          => __( 'All Alerts', 'pf' ),
-				'search_items'       => __( 'Search Alerts', 'pf' ),
-				'parent_item_colon'  => __( 'Parent Alerts:', 'pf' ),
-				'not_found'          => __( 'No alerts found.', 'pf' ),
-				'not_found_in_trash' => __( 'No alerts found in Trash.', 'pf' ),
-        'dismiss_one_check' => __( 'Are you sure you want to dismiss the alert on', 'pf' ),
-        'dismiss_all_check' => __( 'Are you sure you want to dismiss all alerts?', 'pf' ),
-        'dismiss_all'       => __( 'Dismiss all alerts', 'pf' ),
-        'delete_all_check'  => __( 'Are you sure you want to delete all posts with alerts?', 'pf' ),
-        'delete_all'         => __( 'Delete all posts with alerts', 'pf' ),
-        'turned_off'		 => __( 'Alert boxes not active.', 'pf')
+				'name'                => _x( 'Alerts', 'post type general name', 'pf' ),
+				'singular_name'       => _x( 'Alert', 'post type singular name', 'pf' ),
+				'menu_name'           => _x( 'Alerts', 'admin menu', 'pf' ),
+				'name_admin_bar'      => _x( 'Alert', 'add new on admin bar', 'pf' ),
+				'add_new'             => _x( 'Add Alert', 'alert', 'pf' ),
+				'add_new_item'        => __( 'Add New Alert', 'pf' ),
+				'new_item'            => __( 'New Alert', 'pf' ),
+				'edit_item'           => __( 'Edit Alert', 'pf' ),
+				'view_item'           => __( 'View Alert', 'pf' ),
+				'all_items'           => __( 'All Alerts', 'pf' ),
+				'search_items'        => __( 'Search Alerts', 'pf' ),
+				'parent_item_colon'   => __( 'Parent Alerts:', 'pf' ),
+				'not_found'           => __( 'No alerts found.', 'pf' ),
+				'not_found_in_trash'  => __( 'No alerts found in Trash.', 'pf' ),
+        'dismiss_one_check'   => __( 'Are you sure you want to dismiss the alert on', 'pf' ),
+        'dismiss_all_check'   => __( 'Are you sure you want to dismiss all alerts?', 'pf' ),
+        'dismiss_all'         => __( 'Dismiss all alerts', 'pf' ),
+        'delete_all_check'    => __( 'Are you sure you want to delete all posts with alerts?', 'pf' ),
+        'delete_all'          => __( 'Delete all posts with alerts', 'pf' ),
+        'turned_off'		      => __( 'Alert boxes not active.', 'pf')
 			);
       $alert_names =  self::depreciated_alert_name_filters($alert_names);
 			$alert_names = apply_filters('ab_alert_specimens_labels', $alert_names);
