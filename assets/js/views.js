@@ -312,15 +312,7 @@ function PFBootstrapInits() {
 	})
 	
 	attach_menu_on_scroll_past();
-	close_menu_on_other_clicks();
 
-}
-
-function close_menu_on_other_clicks(){
-	jQuery('.pf_container').on('click', '.dropdown > ul > *', function (){
-		console.log('Not menu');
-		jQuery(this).parents('.dropdown').removeClass('open');
-	});
 }
 
 function attach_menu_on_scroll_past(){
