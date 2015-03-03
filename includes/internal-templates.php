@@ -17,7 +17,7 @@ class PF_Form_Of {
 		$this->the_screen = $this->the_screen();
 		$this->user_id = $this->user_id();
 		$this->is_a_pf_page();
-		add_filters('ab_alert_specimens_labels', array($this, 'alter_alert_boxes'))
+		add_filter('ab_alert_specimens_labels', array($this, 'alter_alert_boxes'));
 	}
 
 	/**
@@ -61,10 +61,10 @@ class PF_Form_Of {
 	}
 
 	public function alter_alert_boxes($alert_names){
-		if ($this->is_pf()){
+		if ($this->is_pf){
 			$new_alert_names = array(
 				'name'                => _x( 'Feed Alerts', 'post type general name', 'pf' ),
-				'singular_name'       => _x( 'Feed Alert', 'post type singular name', 'pf' ),
+				'singular_name'       => _x( 'Alert', 'post type singular name', 'pf' ),
 				'menu_name'           => _x( 'Feed Alerts', 'admin menu', 'pf' ),
 				'name_admin_bar'      => _x( 'Feed Alert', 'add new on admin bar', 'pf' ),
 				'add_new'             => _x( 'Add Feed Alert', 'alert', 'pf' ),
@@ -78,11 +78,14 @@ class PF_Form_Of {
 				'not_found'           => __( 'No feed alerts found.', 'pf' ),
 				'not_found_in_trash'  => __( 'No feed alerts found in Trash.', 'pf' ),
         		'dismiss_one_check'   => __( 'This will set the feed to inactive. Are you sure you want to dismiss the alert on', 'pf' ),
-        		'dismiss_all_check'   => __( 'Are you sure you want to dismiss all alerts? It will set all feeds to inactive.', 'pf' ),
-        		'dismiss_all'         => __( 'Dismiss all feed alerts', 'pf' ),
+        		'dismiss_all_check'   => __( 'Are you sure you want to dismiss all alerts? It will set all alerted feeds to inactive.', 'pf' ),
+        		'dismiss_all'         => __( 'Dismiss all alerts', 'pf' ),
         		'delete_all_check'    => __( 'Are you sure you want to delete all feeds with alerts?', 'pf' ),
         		'delete_all'          => __( 'Delete all feeds with alerts', 'pf' ),
         		'dismissed'           => __( 'Inactive', 'pf' ),
+        		'all_well'			  => __( 'No problems!', 'pf' ),
+        		'turn_on'			  => __( 'Turn alerts on.', 'pf' ),
+        		'activate_q'		  => __( 'Active Alert Boxes?', 'pf' ),
         		'turned_off'		  => __( 'Feed alert boxes not active.', 'pf')
 			);
 			$new_alert_names = array_merge($alert_names, $new_alert_names);
