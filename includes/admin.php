@@ -1025,9 +1025,9 @@ class PF_Admin {
 
 		echo '<header id="app-banner">
 			<div class="title-span title">
-				<h1>PressForward: Tools</h1>								<span id="h-after"> • </span>
-				<button class="btn btn-small" id="fullscreenfeed"> Full Screen </button>
-			</div><!-- End title -->
+				<h1>PressForward: Tools</h1>								<span id="h-after"> • </span>' 
+				#. '<button class="btn btn-small" id="fullscreenfeed"> Full Screen </button>' .
+			. '</div><!-- End title -->
 		</header>';
 
 		pressforward()->form_of->nominate_this('as_paragraph');
