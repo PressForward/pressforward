@@ -21,21 +21,21 @@ var archivesVisible = 0;
 
 jQuery(window).load(function() {
 
-	jQuery("#showarchived").click().toggle(function (evt){ 
+	jQuery("#showarchived").click( function (evt){ 
 		evt.preventDefault();
-		archivesVisible = 1;
-		jQuery('.archived').show();
-		jQuery('#showarchived').html('Hide Archived');
-		jQuery('#showarchived').attr('value', 'Hide Archived');
-		jQuery('#showarchived').addClass('hidearchived');
-	
-	}, function (evt){ 
-		evt.preventDefault();
-		archivesVisible = 0;
-		jQuery('.archived').hide();
-		jQuery('#hidearchived').html('Show Archived');
-		jQuery('#hidearchived').attr('value', 'Show Archived');
-		jQuery('#showarchived').removeClass('hidearchived');
+		if(jQuery('#showarchived').hasClass('hidearchived')){
+			archivesVisible = 0;
+			jQuery('.archived').hide();
+			jQuery('#showarchived').html('Show Archived');
+			jQuery('#showarchived').attr('value', 'Show Archived');
+			jQuery('#showarchived').removeClass('hidearchived');
+		} else {
+			archivesVisible = 1;
+			jQuery('.archived').show();
+			jQuery('#showarchived').html('Hide Archived');
+			jQuery('#showarchived').attr('value', 'Hide Archived');
+			jQuery('#showarchived').addClass('hidearchived');
+		}
 	
 	}
 	);		
