@@ -8,7 +8,7 @@ function pf_make_url_hashed(hashed){
 }
 
 function assure_closed_menus(){
-	jQuery('.dropdown').on('click', 'li > *', function(){
+	jQuery('.dropdown li > *').on('click', function(){
 		jQuery('.dropdown.open').removeClass('open');
 	});
 }
