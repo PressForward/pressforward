@@ -423,6 +423,34 @@ function detect_view_change(){
 		}
 	});
 
+	jQuery('.pressforward #wpbody').on('click', '.grid .amplify-group .pf-amplify', function(evt){
+		var element = jQuery(this);
+		//console.log(element);
+		var parent_e = element.parents('article');
+		var parent_h = parent_e.height();
+		var parent_head = parent_e.find('header');
+		//console.log(parent_h);
+		if (element.hasClass('amplify-down')){ 
+			parent_e.removeClass('amplify-down');
+		} else {
+			parent_e.addClass('amplify-down');
+			is_pf_open = true;
+		}
+	});
+
+	jQuery('.pressforward #wpbody').on('click', '.grid div:not(.amplify-group.open)', function(evt){
+		var element_p = jQuery('.amplify-group.open');
+		//console.log(element_p);
+		if (is_pf_open){
+			//console.log(element_p.length);
+			var element = element_p.find('.pf-amplify');
+			var parent_e = element.parents('article');
+			var parent_h = parent_e.height();
+			//console.log(parent_h);
+			parent_e.removeClass('amplify-down');
+		}
+	});
+
 }
 
 
