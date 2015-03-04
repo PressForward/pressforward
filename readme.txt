@@ -88,6 +88,14 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 
 == Changelog ==
 
+= 3.4.5 =
+* Nominate This now works much more optimally.
+* Nominate This no longer creating crazy line breaks. 
+* OpenGraph image detection now working properly. 
+* Alert Box now more backwards compatible.
+* Turned off modules no longer show turned on menus. 
+* Mark As Read now works properly. 
+
 = 3.4.4 =
 * Resolved CSS overlay design conflicts.
 * Fixed Nominate to Draft in the Nominated page.
