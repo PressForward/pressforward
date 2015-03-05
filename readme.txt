@@ -89,7 +89,7 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 == Changelog ==
 
 = 3.5 =
-* Check for known aggregation services to insure proper resolution of URLs.
+* Now checks for known aggregation services to insure proper resolution of URLs.
 * Created the Amplify dropdown button in the actions bar. 
 * Added button to share to Twitter to the Amplify dropdown. 
 * Added button to Amplify to send from All Content directly to draft.
@@ -97,11 +97,10 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 * Added OG URL tag to forwarded pages.
 * Updated Readability script to detect Medium.
 * Updated Readability script to retrieve pages using File Get Contents when no other methods work.
-* Separate out a number of template functions into their own class.
+* Separated out a number of template functions into their own class.
 * Attach the navbar on scroll.
 * Moved Refresh button to Tools.
 * Better assure that the system retrieves open graph images and sets them as Featured Images.
-* Display and sort by Last Time Feed Retrieved.
 * Allows feed URLs to be changed via Quick Edit. 
 * Set up functions to better detect current page.
 * Set up a debug function for displaying current page.
