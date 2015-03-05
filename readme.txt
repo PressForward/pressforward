@@ -88,6 +88,57 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 
 == Changelog ==
 
+= 3.5 =
+* Check for known aggregation services to insure proper resolution of URLs.
+* Created the Amplify dropdown button in the actions bar. 
+* Added button to share to Twitter to the Amplify dropdown. 
+* Added button to Amplify to send from All Content directly to draft.
+* For clarity, changed Last Retrieved column title to Last Time Item Retrieved.
+* Added OG URL tag to forwarded pages.
+* Updated Readability script to detect Medium.
+* Updated Readability script to retrieve pages using File Get Contents when no other methods work.
+* Separate out a number of template functions into their own class.
+* Attach the navbar on scroll.
+* Moved Refresh button to Tools.
+* Better assure that the system retrieves open graph images and sets them as Featured Images.
+* Display and sort by Last Time Feed Retrieved.
+* Allows feed URLs to be changed via Quick Edit. 
+* Set up functions to better detect current page.
+* Set up a debug function for displaying current page.
+* If WordPress installs are greater than 3.1, all feeds not in folders will display under folders.
+* Set default sort for Feeds to alphabetical.
+* Set up breadcrumb titling for All Content and Nominated. 
+* Moved the source and byline to the head of the current article modal.
+* Added help button to menu.
+* Allows users to decide if they want the right menu displayed and turn it off by default. 
+* Allows users to set Grid or List and have the system remember it as a user preference. 
+* Allows users to set infinite scroll or pagination and have the system remember it as a user preference. 
+* Adds search to the nav menu on scroll-down.
+* New tabbed settings page, with user access to tabs based on user roles. 
+* Allows administrators to control tab access with settings. 
+* Allows users to always access their settings regardless of level. 
+* Moved Nominate This to the Tools menu. 
+* Added Nominate This as a source for the Feeds menu.
+* Added a Nominate This prompt for first-time users to the All Content menu. 
+* Allows administrators to control the display of comments based on user level.
+* Open modal now counts as a hashed page state. 
+* Pressing the browser back button while viewing an open modal will close the modal, not go to the previous page.
+* Compressed filtering options into a dropdown in the navbar. 
+* Opening a modal to read an item will now only set the item to Read, it will never unset the Read property. 
+* Added a column to the Feeds area to indicate last time the feed was retrieved. 
+* Allows feeds to be sorted by the last time they were retrieved. 
+* Fullscreen script patched to 1.2
+* Flipped infobox to display over the action bar. 
+* No hidden items in modal navigation.
+* The Folders sidebar now scrolls separately from the main page and is always fully available.
+* Clarify what exactly dismissing alerts does. (It sets those feeds to Inactive.)
+* Better descriptions of most settings. 
+* Fixed occasional content duplication on infinite scroll, when retrieval was active. 
+* Fixed a variety of user action responses so actions are clearer.
+
+= 3.4.6 =
+* Supports additional file path configurations for Nominate This.
+
 = 3.4.5 =
 * Nominate This now works much more optimally.
 * Nominate This no longer creating crazy line breaks. 
