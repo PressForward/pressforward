@@ -104,7 +104,7 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 * Allows feed URLs to be changed via Quick Edit. 
 * Set up functions to better detect current page.
 * Set up a debug function for displaying current page.
-* If WordPress installs are greater than 3.1, all feeds not in folders will display under folders.
+* If WordPress installs are greater than 4.0, all feeds not in folders will display under folders.
 * Set default sort for Feeds to alphabetical.
 * Set up breadcrumb titling for All Content and Nominated. 
 * Moved the source and byline to the head of the current article modal.
