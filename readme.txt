@@ -1,5 +1,5 @@
 === PressForward ===
-Contributors: PressForward, AramZS, boonebgorges, joanftroyano, clioweb
+Contributors: PressForward, AramZS, boonebgorges, lmrhody, regan008, joanftroyano, clioweb
 Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 3.0.1
@@ -34,22 +34,20 @@ PressForward is a free plugin that provides an editorial workflow for content ag
 
 **Tools for collaboration:**
 
-* Separate “Under Review” interface for editors to discuss and select nominations from all users
-* Commenting on each item
-* Customizable user privileges
+* Separate “Nominated” interface for editors to discuss and select nominations from all users
+* Internal commenting on each item
+* Customizable user roles
 
 **Publication features:**
 
-* Full content, attribution link, and metadata of posts accessible in WordPress dashboard
-* Republish any or all content in any format supported by your theme (text, image, quote, snippet, etc.)
+* Full content, canonical URLs, and metadata of posts accessible in WordPress dashboard
+* Accepts any media type supported by your theme (text, image, video, doc, etc.)
 * Optional auto-redirect back to original source
 * Produces a single RSS feed of all your aggregated content
 
 Instructions for use are found in our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki).
 
 [See how we compare to other WordPress plugins](https://github.com/PressForward/pressforward/wiki/FAQ#how-does-pressforward-compare-to-other-plugins).
-
-Sample instructions for editorial groups are available in the [Editors’ Corner](http://digitalhumanitiesnow.org/editors-corner/instructions/) on [Digital Humanities Now](http://digitalhumanitiesnow.org), the largest publication using the PressForward plugin.
 
 The PressForward Plugin is developed and maintained by the [Roy Rosenzweig Center for History and New Media](http://chnm.gmu.edu) at [George Mason University](http://gmu.edu) as part of the [PressForward Project](http://pressforward.org), generously funded by the Alfred P. Sloan Foundation. Our developers include [Aram Zucker-Scharff](http://aramzs.me), [Boone B. Gorges](http://boone.gorg.es), and [Jeremy Boggs](http://clioweb.org). PressForward is free to use and modify under a [GNU GPL2 license](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
 
@@ -82,9 +80,9 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 4. All Content List View provides title, source, snippet, and additional information for every item.
 5. Toolbar on every item provides easy access to see additional information, star items, add a comment, or nominate an item, sending it to Under Review.
 6. Reader View displays content in a comfortable reading environment, links to original source, and includes comments and the toolbar.
-7. Discussion visible in threaded comments.
-8. In Under Review the toolbar displays the number of comments and nominations, and provides ability to archive item or Send to Draft.
-9. Edit and format items in the regular WordPress Posts panel.
+7. Internal discussion visible in threaded comments.
+8. In Nominated the toolbar displays the number of comments and nominations, and provides ability to archive item or Send to Draft.
+9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
 
