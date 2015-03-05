@@ -98,9 +98,6 @@ class PF_Module {
 		}
 			//print_r( $this->is_enabled() );
 		?>
-			<h4><?php _e( $modsetup['name'], PF_SLUG ) ?></h4>
-
-			<p class="description"><?php _e( $modsetup['description'], PF_SLUG ) ?></p>
 
 			<table class="form-table">
 				<tr>
@@ -116,6 +113,7 @@ class PF_Module {
 					</td>
 				</tr>
 			</table>
+			<p><?php _e( $modsetup['description'], PF_SLUG ) ?></p>
 			<hr />
 		<?php
 	}

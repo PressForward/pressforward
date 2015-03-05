@@ -46,7 +46,7 @@ class PF_Comments extends PF_Module {
 		$mod_settings = array(
 			'name' => 'Internal Commenting',
 			'slug' => 'comments',
-			'description' => 'This module provides a for users to comment on posts throughout the editorial process.',
+			'description' => 'This module provides a way for users to comment on posts throughout the editorial process. Internal commenting is only visible in the PressForward plugin and will not be publicly visible when published as a Post.',
 			'thumbnail' => '',
 			'options' => ''
 		);
