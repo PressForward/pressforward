@@ -14,36 +14,30 @@ PressForward provides an integrated workflow for curating content aggregated fro
 == Description ==
 PressForward is a free plugin that provides an editorial workflow for content aggregation and curation within the WordPress dashboard. It is designed for bloggers and editorial teams who wish to collect, discuss, and share content from a variety of sources on the open web.
 
-**PressForward includes:**
+**PressForward helps you:**
 
-* a feed reader embedded within the WordPress dashboard
-* a bookmarklet to capture content from the web
-* tools for collaborative, editorial work
-* a process for republishing aggregated content
+* Collect content from the web via a feed reader and a bookmarklet
+* Discuss content through a collaborative editing interface
+* Share content using best practices for attribution and citation
 
-**The feed reader features:**
+**Collect**
+* Aggregate content using RSS/Atom feeds
+* Capture any web content with a bookmarklet
+* Import full text, image, video content, and post metadata 
+* Batch add feeds using OPML files
+* Integrate tandardized content with [Readability](https://www.readability.com/)
 
-* Readability integration to standardize the formatting of aggregated content
-* Full text, image, video content, and post metadata import for each item
-* Starring, allowing individual users to flag items of interest
-* Nomination of single items for further review prior to publication
-* Capture of any web content through the “Nominate This” bookmarklet
-* Batch import of feeds from OPML, including Google OPML
-* Temporary storage of aggregated content, enabling users to survey content without overwhelming their WordPress installation
-* Responsive design for grid or list viewing options
+**Discuss**
+* Discuss content internally with private commenting
+* Count nominations from teams of contributors and editors 
+* Expose item metadata, including the name of the source and method of nomination
 
-**Tools for collaboration:**
-
-* Separate “Nominated” interface for editors to discuss and select nominations from all users
-* Internal commenting on each item
-* Customizable user roles
-
-**Publication features:**
-
-* Full content, canonical URLs, and metadata of posts accessible in WordPress dashboard
-* Accepts any media type supported by your theme (text, image, video, doc, etc.)
+**Share**
+* Allow contributors to send items directly to their own Twitter account 
+* Attach full content, attribution link, canonical URL, and metadata to WordPress Posts as Draft
+* Republish any content type supported by your theme (text, image, quote, snippet, etc.)
 * Optional auto-redirect back to original source
-* Produces a single RSS feed of all your aggregated content
+* Export an RSS feed that combines all content from site's feed list
 
 Instructions for use are found in our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki).
 
@@ -66,7 +60,6 @@ Our [Five-Step Quick Start Guide](https://github.com/PressForward/pressforward/w
 * The PressForward menu should now appear in your Wordpress Dashboard. Clicking on the PressForward icon will display tabs.
 
 A complete [User Manual](https://github.com/PressForward/pressforward/wiki/User-Manual) also is available on our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki/).
-
 
 == Frequently Asked Questions ==
 
