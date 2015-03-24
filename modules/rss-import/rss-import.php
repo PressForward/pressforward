@@ -135,7 +135,7 @@ class PF_RSS_Import extends PF_Module {
 			if ($check_date <= $dead_date) {
 				pf_log('Feed item too old. Skip it.');
 			} else {
-				$id = md5($item->get_link() . $item->get_title()); //die();
+				$id = create_feed_item_id($item->get_link(), $item->get_title()); //die();
 				pf_log('Now on feed ID ' . $id . '.');
 				//print_r($item_categories_string); die();
 

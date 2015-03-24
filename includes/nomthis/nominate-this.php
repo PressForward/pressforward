@@ -106,7 +106,7 @@ function nominate_it() {
 		$post['post_date_gmt'] = gmdate('Y-m-d H:i:s');
 		# PF NOTE: This is where the inital post is created.
 		# PF NOTE: Put get_post_nomination_status here.
-		$item_id = md5($_POST['item_link'] . $post['post_title']);
+		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 			if (!isset($_POST['item_date'])){
 				$newDate = gmdate('Y-m-d H:i:s');
 				$item_date = $newDate;
@@ -132,8 +132,7 @@ function nominate_it() {
 				$post_thumbnail_url = false;
 			}
 			$pf_meta_args = array(
-				pf_meta_for_entry('item_id', $post_ID),
-				pf_meta_for_entry('origin_item_ID', $item_id),
+				pf_meta_for_entry('item_id', $item_id ),
 				pf_meta_for_entry('item_link', $_POST['item_link']),
 				pf_meta_for_entry('nomination_count', 1),
 				pf_meta_for_entry('source_title', 'Bookmarklet'),

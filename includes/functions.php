@@ -256,6 +256,11 @@ function pf_feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuth
 	return $itemArray;
 }
 
+function create_feed_item_id($url, $title){
+	$hash = md5($url . $title); 
+	return $hash;
+}
+
 /**
  * Get all posts with 'item_id' set to a given item id
  *
