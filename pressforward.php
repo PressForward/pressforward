@@ -123,6 +123,7 @@ class PressForward {
 
 		// Internal tools
 		require_once(PF_ROOT . "/includes/opml-reader/opml-reader.php");
+		require_once(PF_ROOT . "/includes/class-pf_metas.php")
 
 		// Load the module base class and our test module
 		require_once( PF_ROOT . "/includes/functions.php" );
