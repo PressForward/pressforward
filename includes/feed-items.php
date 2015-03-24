@@ -159,7 +159,8 @@ class PF_Feed_Item {
 	*/
 	public static function aggregation_services(){
 		return array(
-						'Google'  =>	'google.com'
+						'Google'  			=>	'google.com',
+						'Tweeted Times'		=>  'tweetedtimes.com'
 					);
 	}
 
