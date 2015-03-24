@@ -36,9 +36,10 @@ class PF_Feed_Retrieve {
 
 	 function cron_add_short( $schedules ) {
 		// Adds once weekly to the existing schedules.
-		$schedules['halfhour'] = array(
-			'interval' => 30*60,
-			'display' => __( 'Half-hour' )
+		$pf_interval = get_option(PF_SLUG.'_retrieval_frequency', 30);
+		$schedules['pf_interval'] = array(
+			'interval' => $pf_interval*60,
+			'display' => __( 'PressForward Retrieval Interval' )
 		);
 		return $schedules;
 	 }
@@ -49,7 +50,7 @@ class PF_Feed_Retrieve {
 	 */
 	public function schedule_feed_in() {
 		if ( ! wp_next_scheduled( 'pull_feed_in' ) ) {
-			wp_schedule_event( time(), 'halfhour', 'pull_feed_in' );
+			wp_schedule_event( time(), 'pf_interval', 'pull_feed_in' );
 		}
 	}
 

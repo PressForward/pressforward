@@ -95,3 +95,15 @@
 <p>
 	<?php _e('Feeds sometimes respond slowly or have errors that cause them to be unreadable. This setting determines the number of consecutive errors PressForward will allow from a feed before creating an alert and disabling it.', 'pf'); ?>
 </p>
+<hr />
+<p>
+	<?php
+		$default_pf_retrieval_frequency = get_option(PF_SLUG.'_retrieval_frequency', 30);
+		echo '<input id="'.PF_SLUG.'_retrieval_frequency" name="'.PF_SLUG.'_retrieval_frequency" type="number" class="'.PF_SLUG.'_retrieval_frequency" value="'.$default_pf_retrieval_frequency.'" />';
+
+		echo '<label class="description" for="'.PF_SLUG.'_retrieval_frequency"> ' .__('Minutes between feed retrieval cycles.', 'pf'). ' </label>';
+	?>
+</p>
+<p>
+	<?php _e('This setting is the frequency at which PressForward will attempt to start the process of retrieving all the feeds in your list. Warning: if you have a large number of feeds this setting should not go below 30 minutes.', 'pf'); ?>
+</p>
