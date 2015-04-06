@@ -327,9 +327,7 @@ class PF_Admin {
 							echo '<a class="btn btn-small" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i></a>';
 						}
 					}
-					if ( 'pf-review' != $page ){
-						echo '<a class="btn btn-small" id="gofolders" href="#">' . __('Folders', 'pf') . '</a>';
-					}
+					echo '<a class="btn btn-small" id="gofolders" href="#">' . __('Folders', 'pf') . '</a>';
 				?>
 
 			</div>
