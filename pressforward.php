@@ -84,6 +84,7 @@ class PressForward {
 		$this->set_up_relationships();
 		$this->set_up_feed_retrieve();
 		$this->set_up_nominations();
+		$this->set_up_folders();
 		$this->set_up_form_of();
 		$this->set_up_admin();
 
@@ -132,6 +133,7 @@ class PressForward {
 		require_once( PF_ROOT . '/includes/readable.php' );
 		require_once( PF_ROOT . '/includes/feed-items.php' );
 		require_once( PF_ROOT . '/includes/feeds.php' );
+		require_once( PF_ROOT . '/includes/class-pf_folders.php' );
 		require_once( PF_ROOT . '/includes/slurp.php' );
 		require_once( PF_ROOT . '/includes/relationships.php' );
 		require_once( PF_ROOT . '/includes/nominations.php' );
@@ -243,6 +245,17 @@ class PressForward {
 	}
 
 	/**
+	 * Sets up the Folders
+	 *
+	 * @since 1.7
+	 */
+	function set_up_folders() {
+		if ( empty( $this->pf_folders ) ) {
+			$this->pf_folders = new PF_Folders;
+		}
+	}
+
+	/**
 	 * Sets up the Dashboard admin parts
 	 *
 	 * @since 1.7
@@ -333,6 +346,21 @@ class PressForward {
 	}
 
 	/**
+	 * Get the feed post type
+	 *
+	 * @since 1.7
+	 *
+	 * @return string
+	 */
+	public function get_feed_post_type() {
+		if ( isset( $this->pf_feeds ) ) {
+			return $this->pf_feeds->post_type;
+		}
+
+		return '';
+	}
+
+	/**
 	 * Get the feed item tag taxonomy
 	 *
 	 * @since 1.7
@@ -347,6 +375,21 @@ class PressForward {
 		return '';
 	}
 
+
+	/**
+	 * Get the folder category taxonomy
+	 *
+	 * @since 1.7
+	 *
+	 * @return string
+	 */
+	public function get_feed_folder_taxonomy() {
+		if ( isset( $this->pf_folders ) ) {
+			return $this->pf_folders->tag_taxonomy;
+		}
+
+		return '';
+	}
 
 	/**
 	 * Set up first feed and other install/upgrade tasks

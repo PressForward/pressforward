@@ -5,6 +5,7 @@
  */
 class PF_Nominations {
 	function __construct() {
+		$this->post_type = 'nomination';
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_action('edit_post', array( $this, 'send_nomination_for_publishing'));
 		add_filter( 'manage_edit-nomination_columns', array($this, 'edit_nominations_columns') );
@@ -50,6 +51,9 @@ class PF_Nominations {
 		);
 
 		register_post_type('nomination', $args);
+
+
+		register_taxonomy_for_object_type( pressforward()->get_feed_folder_taxonomy(), $this->post_type ); 
 
 	}
 
