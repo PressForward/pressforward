@@ -663,6 +663,28 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 
 add_filter( 'author_link', 'pf_replace_author_uri_presentation' );
 
+function pf_canonical_url(){
+	if(is_single()){
+		$obj = get_queried_object();
+		$post_ID = $obj->ID;
+		$link = get_post_meta($post_ID, 'item_link', TRUE);	
+		return $link;
+	} else {
+		return false;
+	}
+}
+
+function pf_filter_canonical($url){
+	if ($link = pf_canonical_url()){
+		return $link;
+	} else {
+		return $url;
+	}
+}
+
+add_filter('wpseo_canonical', 'pf_filter_canonical');
+add_filter('wpseo_opengraph_url', 'pf_filter_canonical');
+
 /**
  * A function to set up the HEAD data to forward users to origonal articles.
  *
@@ -671,18 +693,16 @@ add_filter( 'author_link', 'pf_replace_author_uri_presentation' );
  * @since 3.x
  */
 function pf_forward_unto_source(){
-	if(is_single()){
-		$obj = get_queried_object();
-		$post_ID = $obj->ID;
-		$link = get_post_meta($post_ID, 'item_link', TRUE);
-		if (!empty($link)){
+	if($link = pf_canonical_url()){
+		if (has_action('wpseo_head')){
+
+		} else {
 			echo '<link rel="canonical" href="'.$link.'" />';
 			echo '<meta property="og:url" content="'.$link.'" />';
-			$wait = get_option('pf_link_to_source', 0);
-			if ($wait > 0){
-				echo '<META HTTP-EQUIV="refresh" CONTENT="'.$wait.';URL='.$link.'">';
-			}
-
+		}
+		$wait = get_option('pf_link_to_source', 0);
+		if ($wait > 0){
+			echo '<META HTTP-EQUIV="refresh" CONTENT="'.$wait.';URL='.$link.'">';
 		}
 	}
 }
