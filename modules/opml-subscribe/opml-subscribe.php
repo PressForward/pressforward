@@ -1,32 +1,32 @@
-<?php 
+<?php
 
 /**
  * This module will allow you to subscribe to OPML files.
  * These subscriptions will populate your feedlist with new feeds
- * as they are added to the OPML file. 
+ * as they are added to the OPML file.
  **/
- 
+
 class PF_OPML_Subscribe extends PF_Module {
 
 	/**
-	 * Constructor 
+	 * Constructor
 	 */
 	public function __construct(){
-		
+
 		global $pf;
 		$this->feed_type = 'opml';
 		parent::start();
-		
+
 		add_action ('admin_init', array($this, 'register_settings'));
 	}
-	
+
 	/**
 	 * Run any setup that has to happen after initial module registration
 	 */
 	public function post_setup_module_info() {
 		$this->includes();
-	}	
-	
+	}
+
 	/**
 	 * Includes necessary files
 	 */
@@ -39,7 +39,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	 * as expected by PF
 	 *
 	 * @global $pf Used to access the feed_object() method
-	 */	
+	 */
 	public function get_data_object($aOPML){
 		$feed_obj = new PF_Feeds_Schema();
 		pf_log( 'Invoked: PF_OPML_Subscribe::get_data_object()' );
@@ -51,7 +51,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		}
 		pf_log( 'Getting OPML Feed at '.$aOPML_url );
 		$OPML_reader = new OPML_reader;
-		$opml_array = $OPML_reader->get_OPML_data($aOPML_url, false);		
+		$opml_array = $OPML_reader->get_OPML_data($aOPML_url, false);
 		$c = 0;
 		$opmlObject = array();
 		foreach($opml_array as $feedObj){
@@ -59,20 +59,20 @@ class PF_OPML_Subscribe extends PF_Module {
 			#if ( false === ( $rssObject['opml_' . $c] = get_transient( 'pf_' . $id ) ) ) {
 				# Adding this as a 'quick' type so that we can process the list quickly.
 				if ($feedObj['type'] == 'rss'){ $feedObj['type'] = 'rss-quick'; }
-				
+
 				if(!empty($feedObj['text'])){
 					$contentObj = new pf_htmlchecker($feedObj['text']);
-					$feedObj['text'] = $contentObj->closetags($feedObj['text']);					
+					$feedObj['text'] = $contentObj->closetags($feedObj['text']);
 				}
-				
+
 				if(!empty($feedObj['title'])){
 					$contentObj = new pf_htmlchecker($feedObj['title']);
-					$feedObj['title'] = $contentObj->closetags($feedObj['title']);					
-				}				
-				
+					$feedObj['title'] = $contentObj->closetags($feedObj['title']);
+				}
+
 				if ($feedObj['title'] == ''){ $feedObj['title'] = $feedObj['text']; }
 				$check = $feed_obj->create(
-					$feedObj['xmlUrl'], 
+					$feedObj['xmlUrl'],
 					array(
 						'type' => $feedObj['type'],
 						'title' => $feedObj['title'],
@@ -97,22 +97,22 @@ class PF_OPML_Subscribe extends PF_Module {
 										date('r'),
 										'' #tags
 										);
-				
+
 				pf_log('Setting new transient for ' . $feedObj['xmlUrl'] . ' of ' . $source . '.');
 				set_transient( 'pf_' . $id, $opmlObject['opml_' . $c], 60*10 );
 				$c++;
-			
+
 			#}
 		}
 
 		return $opmlObject;
-		
+
 	}
-	
+
 	public function add_to_feeder(){
 		?><form method="post" action="options.php"><?php
         settings_fields( PF_SLUG . '_opml_group' );
-		$feedlist = get_option( PF_SLUG . '_opml_module' );	
+		$feedlist = get_option( PF_SLUG . '_opml_module' );
         ?>
 			<br />
 			<br />
@@ -128,18 +128,18 @@ class PF_OPML_Subscribe extends PF_Module {
 			</p>
 		</form><?php
 	}
-	
+
 	static function pf_opml_subscriber_validate($input){
 		$feed_obj = new PF_Feeds_Schema();
 		if (!empty($input['list'])){
 			if (!(is_array($input['list']))){
 				if (!$feed_obj->has_feed($input['list'])){
 					$check = $feed_obj->create(
-						$feedUrl, 
+						$feedUrl,
 						array(
 							'title' => 'OPML Subscription at ' . $input['list'],
 							'htmlUrl' => $input['list'],
-							'type' => 'opml', 
+							'type' => 'opml',
 							'tags' => 'OPML Subscription',
 							'module_added' => get_class($this)
 						)
@@ -155,11 +155,11 @@ class PF_OPML_Subscribe extends PF_Module {
 			}
 		}
 	}
-	
+
 	function register_settings(){
 		register_setting(PF_SLUG . '_opml_group', PF_SLUG . '_opml_sub', array('PF_OPML_Subscribe', 'pf_opml_subscriber_validate'));
-	}	
-	
-	
+	}
 
-} 
+
+
+}

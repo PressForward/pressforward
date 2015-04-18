@@ -24,7 +24,7 @@ class OPML_reader {
     #echo '<pre>'; var_dump($data); #die();
 		if (empty($file)) {
             pf_log('Received an empty file.');
-			return false;			
+			return false;
 		} else {
             pf_log('Received:');
             pf_log($file);
@@ -32,12 +32,12 @@ class OPML_reader {
 			return $opml_data;
 		}
 	}
-	
+
 	# Pass the URL and if you want to return an array of objects or of urls.
 	function get_OPML_data($url, $is_array = true){
 		pf_log('OPML Reader process invoked: get_OPML_data');
 		$opml_data = $this->open_OPML($url);
-        
+
         #var_dump($opml_data); die();
 		if (!$opml_data || empty($opml_data)){
 			pf_log('Could not open the OPML file.');
@@ -68,12 +68,12 @@ class OPML_reader {
                 pf_log('Not a folder.');
                 $b[] = $folder['xmlUrl']->__toString();
             }
-            
+
             foreach ($folder->outline as $data){
                 pf_log('A folder.');
 				$a[] = reset($data);
 			}
-			// Pulls out the feed location. 
+			// Pulls out the feed location.
 			foreach ($a as $outline) {
                 pf_log('Feed found:');
                 pf_log($outline['xmlUrl']);
@@ -92,8 +92,8 @@ class OPML_reader {
                 pf_log('Is not array:');
                 pf_log($a);
 				return $a;
-			}		
-		
+			}
+
 	}
 
 }
