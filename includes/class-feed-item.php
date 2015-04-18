@@ -42,7 +42,7 @@ class PF_Feed_Item_Object {
         }
         if ( method_exists($this,$f='set_'.$key) ){
             $value = call_user_func(array( $this, $f ), $value);
-        }        
+        }
         $this->data[$key] = $value;
     }
     /**
@@ -70,16 +70,37 @@ class PF_Feed_Item_Object {
     	$this->set( 'title', $item_title);
     	$this->set( 'link', $item_url );
     	$this->set( 'id', $this->create_hash_id( $item_url, $item_title ) );
+        $defaults = array(
+                            'source_title'      =>  'aggregated',
+                            'date'              =>  $this->date_maker( 'Y-m-d H:i:s', gmdate('Y-m-d H:i:s') ),
+                            'author'            =>  'aggregated',
+                            'content'           =>  ' ',
+                            'feat_img'          =>  '',
+                            'wp_date'           =>  $this->date_maker( 'U', time() ),
+                            'tags_array'        =>  array(),
+                            'added_date'        =>  $this->date_maker( 'U', time() ),
+                            'source_repeat'     =>  0,
+                            'post_id'           =>  -1,
+                            'readable_status'   =>  ''
+
+                );
+        foreach ( $defaults as $key=>$default ) {
+            $this->set($key, $default);
+        }
     }
 
     private function create_hash_id($url, $title){
-		$hash = md5($url . $title); 
+		$hash = md5($url . $title);
 		return $hash;
 	}
 
+    public function date_maker( $format, $raw ){
+        return DateTime::createFromFormat( $format, $raw );
+    }
+
 	private function set_date( $date ){
 		if ( is_array( $date ) ) {
-			$date_obj = DateTime::createFromFormat( $date['format'], $date['raw'] );
+			$date_obj = $this->date_maker( $date['format'], $date['raw'] );
 			$this->set( 'date_obj', $date_obj );
 			return $date_obj->format('Y-m-d');
 		} else {
