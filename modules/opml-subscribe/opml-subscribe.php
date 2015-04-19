@@ -58,7 +58,6 @@ class PF_OPML_Subscribe extends PF_Module {
 			$id = md5($aOPML_url . '_opml_sub_for_' . $feedObj['xmlUrl']);
 			#if ( false === ( $rssObject['opml_' . $c] = get_transient( 'pf_' . $id ) ) ) {
 				# Adding this as a 'quick' type so that we can process the list quickly.
-				if ($feedObj['type'] == 'rss'){ $feedObj['type'] = 'rss-quick'; }
 
 				if(!empty($feedObj['text'])){
 					$contentObj = new pf_htmlchecker($feedObj['text']);

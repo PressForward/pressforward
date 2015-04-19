@@ -33,6 +33,61 @@ class OPML_reader {
 		}
 	}
 
+	function get_OPML_obj($url){
+		$opml_data = $this->open_OPML($url);
+		$obj = new OPML_Object($url);
+		$this->opml = $obj;
+		foreach ( $opml_data->body->outline as $folder ){
+			$this->make_OPML_obj($folder);
+		}
+		return $this->opml;
+	}
+
+	function make_OPML_obj($entry, $parent = false) {
+		if (isset($entry['xmlUrl'])){
+			$feed_obj = $this->make_a_feed_obj($entry);
+			$this->opml->set_feed($feed_obj, $parent);
+		} else {
+			$feed_obj = $this->make_a_folder_obj($entry);
+			$this->opml->set_folder($feed_obj);
+			foreach ($entry as $feed){
+				$this->make_OPML_obj($feed, $feed_obj);
+			}
+		}
+	}
+
+	function make_a_folder_obj($entry){
+		$folder = new stdClass();
+		$entry['title'] = (!empty($entry['title']) ? $entry['title'] : false);
+		$entry['text'] = (!empty($entry['text']) ? $entry['text'] : false);
+		if (isset($entry['title']) && !$entry['text']){
+			$entry['text'] = $entry['title'];
+		} elseif (isset($entry['text']) && !$entry['title']) {
+			$entry['title'] = $entry['text'];
+		}
+		#var_dump($entry); die();
+		$folder->title = $entry['title'];
+		$folder->text = $entry['text'];
+		return $folder;
+	}
+
+	function make_a_feed_obj($entry){
+		$feed = new stdClass();
+		$feed->title = $entry['title'];
+		$feed->text = $entry['text'];
+		$feed->type = $entry['type'];
+		$feed->xmlUrl = $entry['xmlUrl'];
+		$feed->htmlUrl = $entry['htmlUrl'];
+		return $feed;
+	}
+
+	function add_to_opml_data($feed_obj, $param) {
+		$array = $obj->$param;
+		$array[] = $string;
+		$obj->$param =  $array;
+		return $obj;
+	}
+
 	# Pass the URL and if you want to return an array of objects or of urls.
 	function get_OPML_data($url, $is_array = true){
 		pf_log('OPML Reader process invoked: get_OPML_data');
@@ -97,4 +152,52 @@ class OPML_reader {
 	}
 
 }
+
+class OPML_Object {
+
+	function __construct($url){
+		$this->url = $url;
+		$this->folders = array();
+		$this->unsorted = array();
+		$this->feeds = array();
+	}
+
+	function set_folder($folder_obj){
+		$folder_obj->slug = $this->slugify($folder_obj->title);
+		$this->folders[$folder_obj->slug] = $folder_obj;
+	}
+	function set_feed($feed_obj, $folder = false){
+		if (!$folder){
+			$feed_obj->folder = false;
+			return array_push($this->feeds, $feed_obj);
+		} else {
+			$feed_obj->folder = $folder->slug;
+			$this->feeds[md5($feed_obj->xmlUrl)] = $feed_obj;
+		}
+	}
+	static public function slugify($text) {
+		// replace non letter or digits by -
+		$text = preg_replace('~[^\\pL\d]+~u', '-', $text);
+
+		// trim
+		$text = trim($text, '-');
+
+		// transliterate
+		$text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+
+		// lowercase
+		$text = strtolower($text);
+
+		// remove unwanted characters
+		$text = preg_replace('~[^-\w]+~', '', $text);
+
+		if (empty($text))
+		{
+			return 'n-a';
+		}
+
+		return $text;
+	}
+}
+
 ?>
