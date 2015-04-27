@@ -426,7 +426,14 @@ var photostorage = false;
 ?>
 
     <style type="text/css">
-
+    	#side-sortables {
+    		float: right;
+    		width: 29%;
+    	}
+    	.posting {
+    		float: left;
+    		width: 70%;
+    	}
     </style>
 
 	<script type="text/javascript">
