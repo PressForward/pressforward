@@ -363,34 +363,26 @@ class PF_Feed_Retrieve {
 
 	}
 
-	/*
+	/**
 	 * Check if the requested feed_type exists
 	 *
+	 * @param  string $type      feed_type to check against
+	 * @return string|bool       id of matching module, false if no match
 	 */
 	public function does_type_exist( $type ) {
-		$type_check = false;
-		$module_to_use = false;
 		if ( $type == 'rss-quick' ) {
 			$type = 'rss';
 		}
+
 		foreach ( pressforward()->modules as $module ) {
-			if ( $type_check ) {
-				return $module_to_use;
-			}
-			$module_type = $module->feed_type;
-			if ( $module_type == $type ) {
+			if ( $module->feed_type == $type ) {
 				# id and slug should be the same right?
-				$module_to_use = $module->id;
-				$type_check = true;
+				return $module->id;
 			}
 		}
 
-		if ( !$type_check ) {
-			# Needs to be a better error.
-			return false;
-		}
+		return false;
 	}
-
 
 	/*
 	 *
