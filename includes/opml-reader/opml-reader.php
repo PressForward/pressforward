@@ -45,40 +45,15 @@ class OPML_reader {
 
 	function make_OPML_obj($entry, $parent = false) {
 		if (isset($entry['xmlUrl'])){
-			$feed_obj = $this->make_a_feed_obj($entry);
+			$feed_obj = $this->opml->make_a_feed_obj($entry);
 			$this->opml->set_feed($feed_obj, $parent);
 		} else {
-			$feed_obj = $this->make_a_folder_obj($entry);
+			$folder_obj = $this->opml->make_a_folder_obj($entry);
 			$this->opml->set_folder($feed_obj);
 			foreach ($entry as $feed){
-				$this->make_OPML_obj($feed, $feed_obj);
+				$this->make_OPML_obj($feed, $folder_obj);
 			}
 		}
-	}
-
-	function make_a_folder_obj($entry){
-		$folder = new stdClass();
-		$entry['title'] = (!empty($entry['title']) ? $entry['title'] : false);
-		$entry['text'] = (!empty($entry['text']) ? $entry['text'] : false);
-		if (isset($entry['title']) && !$entry['text']){
-			$entry['text'] = $entry['title'];
-		} elseif (isset($entry['text']) && !$entry['title']) {
-			$entry['title'] = $entry['text'];
-		}
-		#var_dump($entry); die();
-		$folder->title = $entry['title'];
-		$folder->text = $entry['text'];
-		return $folder;
-	}
-
-	function make_a_feed_obj($entry){
-		$feed = new stdClass();
-		$feed->title = $entry['title'];
-		$feed->text = $entry['text'];
-		$feed->type = $entry['type'];
-		$feed->xmlUrl = $entry['xmlUrl'];
-		$feed->htmlUrl = $entry['htmlUrl'];
-		return $feed;
 	}
 
 	function add_to_opml_data($feed_obj, $param) {
@@ -175,6 +150,80 @@ class OPML_Object {
 			$this->feeds[md5($feed_obj->xmlUrl)] = $feed_obj;
 		}
 	}
+	public function check_keys($array, $keys, $strict = false){
+		foreach($keys as $key){
+			if ( !array_key_exists($key, $array) ){
+				if ($strict) {
+					return false;
+				} else {
+					$array[$key] = '';
+					$array['missing'][] = $key;
+				}
+			}
+		}
+		return $array;
+	}
+	function make_a_folder_obj($entry){
+		$folder = new stdClass();
+		$entry = $this->check_keys($entry, array('title', 'text') );
+		$entry['title'] = (!empty($entry['title']) ? $entry['title'] : false);
+		$entry['text'] = (!empty($entry['text']) ? $entry['text'] : false);
+		if (isset($entry['title']) && !$entry['text']){
+			$entry['text'] = $entry['title'];
+		} elseif (isset($entry['text']) && !$entry['title']) {
+			$entry['title'] = $entry['text'];
+		}
+		#var_dump($entry); die();
+		$folder->title = $entry['title'];
+		$folder->text = $entry['text'];
+		return $folder;
+	}
+	function make_a_feed_obj($entry){
+		$feed = new stdClass();
+		$entry = $this->check_keys($entry, array( 'title', 'text', 'type', 'xmlUrl', 'htmlUrl' ) );
+		$feed->title = $entry['title'];
+		$feed->text = $entry['text'];
+		$feed->type = $entry['type'];
+		$feed->xmlUrl = $entry['xmlUrl'];
+		$feed->htmlUrl = $entry['htmlUrl'];
+		return $feed;
+	}
+	function order_opml_entries($a, $b){
+		if (empty($a->folder)){
+			return 1;
+		}
+		if (empty($b->folder)){
+			return -1;
+		}
+		$a = $a->folder;
+		$b = $b->folder;
+		if (!$a){
+			return -1;
+		}
+		if (strcasecmp($a, $b) == 0){
+			return 0;
+		}
+		if (strcasecmp($a, $b) < 0){
+			return -1;
+		} else {
+			return 1;
+		}
+	}
+	function order_feeds_by_folder(){
+		usort($this->feeds, array($this, 'order_opml_entries'));
+	}
+	function get_feeds_by_folder($folder){
+		$folder = array();
+		foreach ( $this->feeds as $feed ){
+			if ( $this->slugify($folder) == $feed->folder ){
+				$folder[] = $feed;
+			}
+		}
+		if ( empty($folder) ){
+			return false;
+		}
+		return $folder;
+	}
 	static public function slugify($text) {
 		// replace non letter or digits by -
 		$text = preg_replace('~[^\\pL\d]+~u', '-', $text);
@@ -190,6 +239,9 @@ class OPML_Object {
 
 		// remove unwanted characters
 		$text = preg_replace('~[^-\w]+~', '', $text);
+
+		// Last gasp to insure no bad chars.
+		$text = htmlspecialchars( $text, null, null, false );
 
 		if (empty($text))
 		{
