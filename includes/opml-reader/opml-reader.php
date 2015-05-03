@@ -49,6 +49,7 @@ class OPML_reader {
 		}
 		$obj = new OPML_Object($url);
 		$this->opml = $obj;
+		$this->opml->set_title($opml_data->head->title);
 		foreach ( $opml_data->body->outline as $folder ){
 			//return $folder;
 			$this->make_OPML_obj($folder);
@@ -164,6 +165,13 @@ class OPML_Object {
 	function set_folder($folder_obj){
 		$folder_obj->slug = $this->slugify($folder_obj->title);
 		$this->folders[$folder_obj->slug] = $folder_obj;
+	}
+	function set_title($string){
+		if (empty($string)){
+			$this->title = $this->url;
+		} else {
+			$this->title = (string) $string;
+		}
 	}
 	function set_feed($feed_obj, $folder = false){
 		if (!$folder){
