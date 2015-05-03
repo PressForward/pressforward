@@ -47,7 +47,8 @@ class PF_OPML_Subscribe extends PF_Module {
 	public function subscribe_to_approved_feeds($data){
 		$opml_post_id = $data['post_parent'];
 		$subscription_link = $data['item_link'];
-		//feed_post_setup is what should go here.
+
+		//pressforward()->pf_feeds->create();
 		return $data;
 	}
 
