@@ -393,8 +393,12 @@ class OPML_Maker {
 		return $opml;
 	}
 
-	public function make_as_file(){
-		file_put_contents(plugin_dir_path( __FILE__ ).'blogroll.opml', $this->file_contents);
+	public function make_as_file($filepath = false){
+		if ( !$filepath ){
+			file_put_contents(plugin_dir_path( __FILE__ ).'blogroll.opml', $this->file_contents);
+		} else {
+			file_put_contents($filepath, $this->file_contents);
+		}
 	}
 
 }
