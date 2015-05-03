@@ -252,31 +252,54 @@ class OPML_Object {
 		}
 		return $folder;
 	}
-	static public function slugify($text) {
+	function sanitize($string, $force_lowercase = true, $anal = false) {
+		$strip = array("~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "[", "{", "]",
+					   "}", "\\", "|", ";", ":", "\"", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;",
+					   "", "", ",", "<", ".", ">", "/", "?");
+		if (is_array($string)){
+			$string = implode(' ', $string);
+		}
+		$clean = trim(str_replace($strip, "", strip_tags($string)));
+		$clean = preg_replace('/\s+/', "-", $clean);
+		$clean = ($anal) ? preg_replace("/[^a-zA-Z0-9]/", "", $clean) : $clean ;
+
+		return ($force_lowercase) ?
+			(function_exists('mb_strtolower')) ?
+				mb_strtolower($clean, 'UTF-8') :
+				strtolower($clean) :
+			$clean;
+	}
+	public function slugify($string, $case = true, $strict = false, $spaces = false) {
+		$string = strip_tags($string);
 		// replace non letter or digits by -
-//		$text = preg_replace('~[^\\pL\d]+~u', '-', $text);
-
-		// trim
-		$text = trim($text, '-');
-
-		// transliterate
-//		$text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
-
-		// lowercase
-		$text = strtolower($text);
-
-		// remove unwanted characters
-//		$text = preg_replace('~[^-\w]+~', '', $text);
-
-		// Last gasp to insure no bad chars.
-		$text = htmlspecialchars( $text, null, null, false );
-
-		if (empty($text))
-		{
-//			return 'n-a';
+		$string = preg_replace('~[^\\pL\d]+~u', '-', $string);
+		if ($spaces == false){
+			$stringSlug = str_replace(' ', '-', $string);
+			$stringSlug = trim($stringSlug);
+			$stringSlug = str_replace('&amp;','&', $stringSlug);
+			//$charsToElim = array('?','/','\\');
+			$stringSlug = $this->sanitize($stringSlug, $case, $strict);
+		} else {
+			//$string = strip_tags($string);
+			//$stringArray = explode(' ', $string);
+			//$stringSlug = '';
+			//foreach ($stringArray as $stringPart){
+			//	$stringSlug .= ucfirst($stringPart);
+			//}
+			$stringSlug = str_replace('&amp;','&', $string);
+			//$charsToElim = array('?','/','\\');
+			$stringSlug = $this->sanitize($stringSlug, $case, $strict);
 		}
 
-		return $text;
+		$stringSlug = htmlspecialchars( $stringSlug, null, null, false );
+
+		if (empty($stringSlug))
+		{
+			//var_dump('probs: ' .$string); die();
+			return 'empty';
+		}
+
+		return $stringSlug;
 	}
 }
 
