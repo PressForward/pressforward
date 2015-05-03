@@ -212,17 +212,22 @@ class OPML_Object {
 		}
 		return $array;
 	}
+	function assure_title_and_text($entry){
+		if (isset($entry['title']) && !$entry['text']){
+			$entry['text'] = $entry['title'];
+		} elseif (isset($entry['text']) && !$entry['title']) {
+			$entry['title'] = $entry['text'];
+		}
+		return $entry;
+	}
+
 	function make_a_folder_obj($entry){
 		$folder = new stdClass();
 		$entry = (array) $entry;
 		$entry = $this->check_keys($entry, array('title', 'text') );
 		$entry['title'] = (!empty($entry['title']) ? $entry['title'] : false);
 		$entry['text'] = (!empty($entry['text']) ? $entry['text'] : false);
-		if (isset($entry['title']) && !$entry['text']){
-			$entry['text'] = $entry['title'];
-		} elseif (isset($entry['text']) && !$entry['title']) {
-			$entry['title'] = $entry['text'];
-		}
+		$entry = assure_title_and_text($entry);
 		#var_dump($entry); die();
 		$folder->title = $entry['title'];
 		$folder->text = $entry['text'];
@@ -237,6 +242,7 @@ class OPML_Object {
 		if ( empty($entry['feedUrl']) ){
 			$entry['feedUrl'] = $entry['xmlUrl'];
 		}
+		$entry = assure_title_and_text($entry);
 		$entry = $this->check_keys($entry, array( 'title', 'text', 'type', 'xmlUrl', 'htmlUrl', 'feedUrl' ) );
 		$feed->title = $entry['title'];
 		$feed->text = $entry['text'];
