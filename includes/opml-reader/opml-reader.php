@@ -231,11 +231,18 @@ class OPML_Object {
 	function make_a_feed_obj($entry){
 		$feed = new stdClass();
 		$entry = (array) $entry;
-		$entry = $this->check_keys($entry, array( 'title', 'text', 'type', 'xmlUrl', 'htmlUrl' ) );
+		if ( empty( $entry['xmlUrl'] ) ){
+			$entry['xmlUrl'] = $entry['htmlUrl'];
+		}
+		if ( empty($entry['feedUrl']) ){
+			$entry['feedUrl'] = $entry['xmlUrl'];
+		}
+		$entry = $this->check_keys($entry, array( 'title', 'text', 'type', 'xmlUrl', 'htmlUrl', 'feedUrl' ) );
 		$feed->title = $entry['title'];
 		$feed->text = $entry['text'];
 		$feed->type = $entry['type'];
 		$feed->xmlUrl = str_replace('&amp;', '&', $entry['xmlUrl']);
+		$feed->feedUrl = str_replace('&amp;', '&', $entry['feedUrl']);
 		$feed->htmlUrl = str_replace('&amp;', '&', $entry['htmlUrl']);
 		return $feed;
 	}
@@ -350,7 +357,7 @@ class OPML_Maker {
 		}
 		$s = "<$tag";
 		foreach ($obj as $property=>$value){
-			if ($filter == $property ){
+			if ( !empty($filter) && in_array( $property, $filter ){
 				continue;
 			}
 			if ($this->force_safe){
@@ -391,7 +398,7 @@ class OPML_Maker {
 		    				$feeds = $this->obj->get_feeds_by_folder($folder->slug);
 		    				if (!empty($feeds)){
 			    				foreach ($feeds as $feed){
-			    					echo "\t\t\t\t\t\t".$this->assemble_tag('outline',$feed,true,'folder');
+			    					echo "\t\t\t\t\t\t".$this->assemble_tag('outline',$feed,true,array('folder','feedUrl'));
 			    				}
 			    			}
 		    			echo "\t\t\t\t\t".'</outline>';
