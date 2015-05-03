@@ -366,7 +366,7 @@ class OPML_Maker {
 		}
 		$s = "<$tag";
 		foreach ($obj as $property=>$value){
-			if ( !empty($filter) && in_array( $property, $filter ){
+			if ( !empty($filter) && in_array( $property, $filter ) ){
 				continue;
 			}
 			if ($this->force_safe){
