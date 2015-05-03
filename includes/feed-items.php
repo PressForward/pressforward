@@ -786,6 +786,7 @@ class PF_Feed_Item {
 				//The content is coming in from the rss_object assembler a-ok. But something here saves them to the database screwy.
 				//It looks like sanitize post is screwing them up terribly. But what to do about it without removing the security measures which we need to apply?
 				$worked = 1;
+				$data = apply_filter('about_to_insert_pf_feed_items', $data);
 				# The post gets created here, the $newNomID variable contains the new post's ID.
 				$newNomID = self::create( $data );
 				$post_inserted_bool = self::post_inserted($newNomID, $data);
@@ -1032,7 +1033,7 @@ class PF_Feed_Item {
 	public static function get_ext_og_img($link){
 		$node = pressforward()->og_reader->fetch($link);
 		$itemFeatImg = $node->image;
-		
+
 		return $itemFeatImg;
 	}
 
@@ -1041,7 +1042,7 @@ class PF_Feed_Item {
 		# Your 1x1 tracking or dummy images have no domain here!
 		if ( ( 2 > $img_info[0] ) || ( 2 > $img_info[1] ) ){
 			# I assure you this is not an image
-			return false;	
+			return false;
 		} else {
 			# This is an image I assure you.
 			return true;
@@ -1065,7 +1066,7 @@ class PF_Feed_Item {
 				}
 
 				$imgTitle = sanitize_file_name($imgTitle);
-				# Let's not get crazy here. 
+				# Let's not get crazy here.
 				$imgTitle = substr($imgTitle, 0, 100);
 				if (strpos($imgTitle, '.') !== FALSE){
 					$imgTitle = 'retrieved-featured-image';
@@ -1100,11 +1101,11 @@ class PF_Feed_Item {
 
 			//Get the type of the image file. .jpg, .gif, or whatever
 			$filetype = wp_check_filetype( $ogCacheImg );
-			
-			
+
+
 			//Set the identifying variables for the about to be featured image.
 			$imgData = array(
-							'guid'           => $ogCacheImg, 
+							'guid'           => $ogCacheImg,
 							//tell WordPress what the filetype is.
 							'post_mime_type' => $filetype['type'],
 							//set the image title to the title of the site you are pulling from

@@ -17,7 +17,8 @@ class PF_OPML_Subscribe extends PF_Module {
 		$this->feed_type = 'opml';
 		parent::start();
 
-		add_action ('admin_init', array($this, 'register_settings'));
+		add_action('admin_init', array($this, 'register_settings'));
+		add_action( 'about_to_insert_pf_feed_items', array($this, 'subscribe_to_approved_feeds') );
 	}
 
 	/**
@@ -32,6 +33,22 @@ class PF_OPML_Subscribe extends PF_Module {
 	 */
 	public function includes() {
 		require_once(PF_ROOT . "/includes/opml-reader/opml-reader.php");
+	}
+
+	/**
+	 * This function runs on the post data after it
+	 * has been approved for insertian as a 'new' item.
+	 * This means that the feed hasn't been passed into the database
+	 * before and can safely be attempted to add to the feed list.
+	 *
+	 * @param  array $data [description]
+	 * @return [type]       [description]
+	 */
+	public function subscribe_to_approved_feeds($data){
+		$opml_post_id = $data['post_parent'];
+		$subscription_link = $data['item_link'];
+		//feed_post_setup is what should go here.
+		return $data;
 	}
 
 	/**
