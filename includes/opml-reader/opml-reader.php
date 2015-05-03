@@ -217,6 +217,9 @@ class OPML_Object {
 			$entry['text'] = $entry['title'];
 		} elseif (isset($entry['text']) && !$entry['title']) {
 			$entry['title'] = $entry['text'];
+		} elseif ( empty($entry['title']) && empty($entry['text']) && !empty($entry['feedUrl']) ) {
+			$entry['text'] = $entry['feedUrl'];
+			$entry['title'] = $entry['feedUrl'];
 		}
 		return $entry;
 	}
