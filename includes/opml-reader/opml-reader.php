@@ -173,6 +173,13 @@ class OPML_Object {
 			$this->title = (string) $string;
 		}
 	}
+	function get_title(){
+		if (empty($this->title)){
+			return $this->url;
+		} else {
+			return $this->title;
+		}
+	}
 	function set_feed($feed_obj, $folder = false){
 		if (!$folder){
 			//Do not set an unsorted feed if it has already been set
