@@ -158,7 +158,6 @@ class OPML_Object {
 	function __construct($url){
 		$this->url = $url;
 		$this->folders = array();
-		$this->unsorted = array();
 		$this->feeds = array();
 	}
 
@@ -302,5 +301,6 @@ class OPML_Object {
 		return $stringSlug;
 	}
 }
+
 
 ?>
