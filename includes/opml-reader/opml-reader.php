@@ -7,8 +7,8 @@ class OPML_reader {
 	function __construct($file = ''){
 		if (!empty($file)){
 			$this->opml_file = $this->open_OPML($file);
-
 			$this->file_url = $file;
+//			$this->get_OPML_obj();
 		}
 	}
 
@@ -167,10 +167,19 @@ class OPML_Object {
 	}
 	function set_feed($feed_obj, $folder = false){
 		if (!$folder){
-			$feed_obj->folder = false;
-			return array_push($this->feeds, $feed_obj);
+			//Do not set an unsorted feed if it has already been set
+			//as a sorted feed.
+			if (!isset($this->feeds[md5($feed_obj->xmlUrl)])){
+				$feed_obj->folder = false;
+				return array_push($this->feeds, $feed_obj);
+			}
 		} else {
-			$feed_obj->folder = $folder->slug;
+			if (isset($this->feeds[md5($feed_obj->xmlUrl)])){
+				$feed_obj = $this->feeds[md5($feed_obj->xmlUrl)];
+				$feed_obj->folder[] = $folder->slug;
+			} else {
+				$feed_obj->folder = array($folder->slug);
+			}
 			$this->feeds[md5($feed_obj->xmlUrl)] = $feed_obj;
 		}
 	}
@@ -211,8 +220,8 @@ class OPML_Object {
 		$feed->title = $entry['title'];
 		$feed->text = $entry['text'];
 		$feed->type = $entry['type'];
-		$feed->xmlUrl = $entry['xmlUrl'];
-		$feed->htmlUrl = $entry['htmlUrl'];
+		$feed->xmlUrl = str_replace('&amp;', '&', $entry['xmlUrl']);
+		$feed->htmlUrl = str_replace('&amp;', '&', $entry['htmlUrl']);
 		return $feed;
 	}
 	function order_opml_entries($a, $b){
@@ -222,8 +231,8 @@ class OPML_Object {
 		if (empty($b->folder)){
 			return -1;
 		}
-		$a = $a->folder;
-		$b = $b->folder;
+		$a = $a->folder[0];
+		$b = $b->folder[0];
 		if (!$a){
 			return -1;
 		}
@@ -240,16 +249,16 @@ class OPML_Object {
 		usort($this->feeds, array($this, 'order_opml_entries'));
 	}
 	function get_feeds_by_folder($folder){
-		$folder = array();
+		$folder_a = array();
 		foreach ( $this->feeds as $feed ){
-			if ( $this->slugify($folder) == $feed->folder ){
-				$folder[] = $feed;
+			if ( in_array($this->slugify($folder), $feed->folder) ){
+				$folder_a[] = $feed;
 			}
 		}
-		if ( empty($folder) ){
+		if ( empty($folder_a) ){
 			return false;
 		}
-		return $folder;
+		return $folder_a;
 	}
 	function sanitize($string, $force_lowercase = true, $anal = false) {
 		$strip = array("~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "[", "{", "]",
