@@ -44,60 +44,64 @@ class PF_OPML_Subscribe extends PF_Module {
 		$feed_obj = new PF_Feeds_Schema();
 		pf_log( 'Invoked: PF_OPML_Subscribe::get_data_object()' );
 		$aOPML_id = $aOPML->ID;
-		$aOPML_url - get_post_meta($aOPML_id, 'feedUrl', true);
+		$aOPML_url = get_post_meta($aOPML_id, 'feedUrl', true);
 		if(empty($aOPML_url) || is_wp_error($aOPML_url) || !$aOPML_url){
 			$aOPML_url = $aOPML->post_title;
 			update_post_meta($aOPML_id, 'feedUrl', $aOPML_url);
 		}
 		pf_log( 'Getting OPML Feed at '.$aOPML_url );
-		$OPML_reader = new OPML_reader;
-		$opml_array = $OPML_reader->get_OPML_data($aOPML_url, false);
+		$OPML_reader = new OPML_reader($aOPML_url);
+		$opml_object = $OPML_reader->get_OPML_obj();
 		$c = 0;
 		$opmlObject = array();
-		foreach($opml_array as $feedObj){
-			$id = md5($aOPML_url . '_opml_sub_for_' . $feedObj['xmlUrl']);
+		foreach($opml_object->feeds as $feed_obj){
+			/**
+			 * The Unique ID for this feed.
+			 *
+			 * Ok, so why don't we use the ->title property of the feed here?
+			 * The reason is because a feed could potentially be added by more than
+			 * one OPML file. BUT the ->title property is set by the owner of the
+			 * OPML file, if it is even set at all. Which means it could be different
+			 * across more than one OPML file. But we don't want to add a feed more
+			 * than once, so we only use the feedUrl as a unique notifier.
+			 *
+			 * @var string
+			 */
+			$id = create_feed_item_id( $feed_obj->feedUrl, 'OPML' );
 			#if ( false === ( $rssObject['opml_' . $c] = get_transient( 'pf_' . $id ) ) ) {
 				# Adding this as a 'quick' type so that we can process the list quickly.
-
-				if(!empty($feedObj['text'])){
-					$contentObj = new pf_htmlchecker($feedObj['text']);
-					$feedObj['text'] = $contentObj->closetags($feedObj['text']);
+				if(!empty($feed_obj->type)){
+					$feed_obj->type = $feed_obj->type.'-quick';
+				} else {
+					$feed_obj->type = 'rss-quick';
+				}
+				if(!empty($feed_obj->text)){
+					$contentObj = new pf_htmlchecker($feed_obj['text']);
+					$feed_obj->text = $contentObj->closetags($feed_obj['text']);
 				}
 
-				if(!empty($feedObj['title'])){
-					$contentObj = new pf_htmlchecker($feedObj['title']);
-					$feedObj['title'] = $contentObj->closetags($feedObj['title']);
+				if(!empty($feed_obj->title)){
+					$contentObj = new pf_htmlchecker($feed_obj->title);
+					$feed_obj->title = $contentObj->closetags($feed_obj->title);
+				} else {
+					$feed_obj->title = $feed_obj->feedUrl;
 				}
 
-				if ($feedObj['title'] == ''){ $feedObj['title'] = $feedObj['text']; }
-				$check = $feed_obj->create(
-					$feedObj['xmlUrl'],
-					array(
-						'type' => $feedObj['type'],
-						'title' => $feedObj['title'],
-						'htmlUrl' => $feedObj['htmlUrl'],
-						'description' => $feedObj['text'],
-						'type'		=>	'rss-quick'
-					)
-				);
-				var_dump($check); die();
-				$content = 'Subscribed: ' . $feedObj['title'] . ' - ' . $feedObj['type'] . ' - ' . $feedObj['text'];
-				$source = $feedObj['htmlUrl'];
-				if (empty($source)){ $source = $feedObj['xmlUrl']; }
+				$content = 'Subscribed: ' . $feed_obj->title . ' - ' . $feed_obj->type . ' - ' . $feed_obj->feedUrl . ' on ' . date('r');
 				$opmlObject['opml_'.$c] = pf_feed_object(
-										$feedObj['title'],
-										'OPML Subscription ' . $aOPML_url,
+										$feed_obj->title,
+										'OPML Subscription from ' . $opml_object->get_title(),
 										date('r'),
-										'OPML Subscription',
+										'OPML Subscription ' . $opml_object->get_title(),
 										$content,
-										$source,
+										$feed_obj->feedUrl,
 										'',
 										$id,
 										date('r'),
 										'' #tags
 										);
 
-				pf_log('Setting new transient for ' . $feedObj['xmlUrl'] . ' of ' . $source . '.');
+				pf_log('Setting new transient for ' . $feed_obj->feedUrl . ' of ' . $source . '.');
 				set_transient( 'pf_' . $id, $opmlObject['opml_' . $c], 60*10 );
 				$c++;
 
