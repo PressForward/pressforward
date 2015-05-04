@@ -861,6 +861,8 @@ class PF_Feed_Item {
 
 				);
 				pf_meta_establish_post($newNomID, $pf_meta_args);
+				$parent_id = $feed_obj_id;
+				do_action('pf_post_established', $newNomID, $item_id, $parent_id);
 			}
 
 		}

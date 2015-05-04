@@ -184,18 +184,18 @@ class OPML_Object {
 		if (!$folder){
 			//Do not set an unsorted feed if it has already been set
 			//as a sorted feed.
-			if (!isset($this->feeds[md5($feed_obj->xmlUrl)])){
+			if (!isset($this->feeds[$feed_obj->id])){
 				$feed_obj->folder = false;
 				return array_push($this->feeds, $feed_obj);
 			}
 		} else {
-			if (isset($this->feeds[md5($feed_obj->xmlUrl)])){
-				$feed_obj = $this->feeds[md5($feed_obj->xmlUrl)];
+			if (isset($this->feeds[$feed_obj->id])){
+				$feed_obj = $this->feeds[$feed_obj->id];
 				$feed_obj->folder[] = $folder->slug;
 			} else {
 				$feed_obj->folder = array($folder->slug);
 			}
-			$this->feeds[md5($feed_obj->xmlUrl)] = $feed_obj;
+			$this->feeds[$feed_obj->id] = $feed_obj;
 		}
 	}
 	public function check_keys($array, $keys, $strict = false){
@@ -253,6 +253,7 @@ class OPML_Object {
 		$feed->xmlUrl = str_replace('&amp;', '&', $entry['xmlUrl']);
 		$feed->feedUrl = str_replace('&amp;', '&', $entry['feedUrl']);
 		$feed->htmlUrl = str_replace('&amp;', '&', $entry['htmlUrl']);
+		$feed->id = md5($feed->feedUrl);
 		return $feed;
 	}
 	function order_opml_entries($a, $b){
@@ -290,6 +291,9 @@ class OPML_Object {
 			return false;
 		}
 		return $folder_a;
+	}
+	function get_feed_by_id($unique_id){
+		return $this->feeds[$unique_id];
 	}
 	function sanitize($string, $force_lowercase = true, $anal = false) {
 		$strip = array("~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "[", "{", "]",

@@ -18,7 +18,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		parent::start();
 
 		add_action('admin_init', array($this, 'register_settings'));
-		add_action( 'about_to_insert_pf_feed_items', array($this, 'subscribe_to_approved_feeds') );
+		add_action( 'pf_post_established', array($this, 'subscribe_to_approved_feeds') );
 	}
 
 	/**
@@ -44,12 +44,31 @@ class PF_OPML_Subscribe extends PF_Module {
 	 * @param  array $data [description]
 	 * @return [type]       [description]
 	 */
-	public function subscribe_to_approved_feeds($data){
-		$opml_post_id = $data['post_parent'];
-		$subscription_link = $data['item_link'];
-
-		//pressforward()->pf_feeds->create();
-		return $data;
+	public function subscribe_to_approved_feeds($id, $item_id, $parent_id){
+		$post = get_post($id);
+		$parent = get_post($parent_id);
+		$a_OPML_url = get_post_meta($aOPML_id, 'feedUrl', true);
+		$OPML_reader = new OPML_reader($aOPML_url);
+		$opml_object = $OPML_reader->get_OPML_obj();
+		$feed = $opml_object->get_feed_by_id( pf_get_post_meta($id, 'item_id') );
+		$feed_array = array(
+			'title'   		=> $feed->title,
+			'url'     		=> $feed->feedUrl,
+			'htmlUrl' 		=> $feed->htmlUrl,
+			'type'	  		=> 'rss-quick',
+			'feedUrl'		=> $feed->feedUrl,
+			'description' 	=> $feed->text,
+			'feed_author' 	=> 'OPML',
+			'feed_icon'  	=> false,
+			'copyright'		=> false,
+			'thumbnail'  	=> false,
+			'user_added'    => false,
+			'module_added' 	=> 'rss-import',
+			'tags'    => array(),
+		);
+		$new_feed_id = pressforward()->pf_feeds->create($feed->feedUrl, $feed_array);
+		//Set up category here.
+		return $new_feed_id;
 	}
 
 	/**
@@ -59,7 +78,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	 * @global $pf Used to access the feed_object() method
 	 */
 	public function get_data_object($aOPML){
-		$feed_obj = new PF_Feeds_Schema();
+		//$feed_obj = new PF_Feeds_Schema();
 		pf_log( 'Invoked: PF_OPML_Subscribe::get_data_object()' );
 		$aOPML_id = $aOPML->ID;
 		$aOPML_url = get_post_meta($aOPML_id, 'feedUrl', true);
@@ -85,7 +104,7 @@ class PF_OPML_Subscribe extends PF_Module {
 			 *
 			 * @var string
 			 */
-			$id = create_feed_item_id( $feed_obj->feedUrl, 'OPML' );
+			$id = $feed_obj->id;
 			#if ( false === ( $rssObject['opml_' . $c] = get_transient( 'pf_' . $id ) ) ) {
 				# Adding this as a 'quick' type so that we can process the list quickly.
 				if(!empty($feed_obj->type)){
