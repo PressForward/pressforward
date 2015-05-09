@@ -520,14 +520,20 @@ class PF_Feed_Item {
 	public static function disassemble_feed_items() {
 		//delete rss feed items with a date past a certain point.
 		add_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older') );
-		$queryForDel = new WP_Query( array( 'post_type' => pf_feed_item_post_type() ) );
+		$queryForDel = new WP_Query(
+								array(
+										'post_type' => pf_feed_item_post_type(),
+										'posts_per_page' => '3000'
+									)
+							);
 		remove_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older') );
-
+		pf_log('Disassemble Feed Items Activated');
 		// The Loop
 		while ( $queryForDel->have_posts() ) : $queryForDel->the_post();
 			# All the posts in this loop are older than 60 days from 'now'.
 			# Delete them all.
 			$post_id = get_the_ID();
+			pf_log($post_id,true);
 			self::disassemble_feed_item_media( $post_id );
 			wp_delete_post( $post_id, true );
 
