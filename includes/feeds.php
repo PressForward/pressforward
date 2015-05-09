@@ -197,20 +197,20 @@ class PF_Feeds_Schema {
 	}
 
 	public function get_feeds_without_folders($ids = true){
-		   $q = new WP_Query( 
-		   				array( 
+		   $q = new WP_Query(
+		   				array(
 		 		            'post_type' => pressforward()->pf_feeds->post_type,
 		 		            'fields'	=>	'ids',
 		 		            'orderby'	=> 'title',
 		 		            'order'		=> 'ASC',
 		 		            'nopaging' => true,
-		 		            'tax_query' => array( 
-		 		                array( 
-		 		                    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy, 
-		 		                    'operator' => 'NOT EXISTS', 
-		 		                ), 
-		 		            ), 
- 		       			) 
+		 		            'tax_query' => array(
+		 		                array(
+		 		                    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy,
+		 		                    'operator' => 'NOT EXISTS',
+		 		                ),
+		 		            ),
+ 		       			)
 		   	);
 		   $ids = $q->posts;
 		   return $ids;
@@ -257,7 +257,7 @@ class PF_Feeds_Schema {
 					</li>
 					<?php
 				}
-				
+
 				$this->the_feeds_without_folders();
 				?>
 		</ul>
@@ -571,6 +571,7 @@ class PF_Feeds_Schema {
 			'copyright'		=> false,
 			'thumbnail'  	=> false,
 			'user_added'    => false,
+			'post_parent'	=> 0,
 			'module_added' 	=> 'rss-import',
 			'tags'    => array(),
 		) );

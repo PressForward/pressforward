@@ -62,8 +62,9 @@ class PF_OPML_Subscribe extends PF_Module {
 			'feed_icon'  	=> false,
 			'copyright'		=> false,
 			'thumbnail'  	=> false,
-			'user_added'    => false,
-			'module_added' 	=> 'rss-import',
+			'user_added'    => get_post_meta($parent_id, 'user_added', true),
+			'post_parent'	=> $parent_id,
+			'module_added' 	=> 'opml-subscribe',
 			'tags'    => array(),
 		);
 		$new_feed_id = pressforward()->pf_feeds->create($feed->feedUrl, $feed_array);
@@ -150,7 +151,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 
 	public function add_to_feeder(){
-		?><form method="post" action="options.php"><?php
+
         settings_fields( PF_SLUG . '_opml_group' );
 		$feedlist = get_option( PF_SLUG . '_opml_module' );
         ?>
@@ -166,7 +167,7 @@ class PF_OPML_Subscribe extends PF_Module {
 			<p class="submit">
 				<?php submit_button(); ?>
 			</p>
-		</form><?php
+		<?php
 	}
 
 	static function pf_opml_subscriber_validate($input){
@@ -194,6 +195,7 @@ class PF_OPML_Subscribe extends PF_Module {
 				wp_die('Bad feed input. Why are you trying to place an array?');
 			}
 		}
+		return $input;
 	}
 
 	function register_settings(){
