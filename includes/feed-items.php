@@ -527,9 +527,9 @@ class PF_Feed_Item {
 		while ( $queryForDel->have_posts() ) : $queryForDel->the_post();
 			# All the posts in this loop are older than 60 days from 'now'.
 			# Delete them all.
-			$postid = get_the_ID();
-			$this->disassemble_feed_item_media( $post_id );
-			wp_delete_post( $postid, true );
+			$post_id = get_the_ID();
+			self::disassemble_feed_item_media( $post_id );
+			wp_delete_post( $post_id, true );
 
 		endwhile;
 
@@ -1032,7 +1032,7 @@ class PF_Feed_Item {
 	public static function get_ext_og_img($link){
 		$node = pressforward()->og_reader->fetch($link);
 		$itemFeatImg = $node->image;
-		
+
 		return $itemFeatImg;
 	}
 
@@ -1041,7 +1041,7 @@ class PF_Feed_Item {
 		# Your 1x1 tracking or dummy images have no domain here!
 		if ( ( 2 > $img_info[0] ) || ( 2 > $img_info[1] ) ){
 			# I assure you this is not an image
-			return false;	
+			return false;
 		} else {
 			# This is an image I assure you.
 			return true;
@@ -1065,7 +1065,7 @@ class PF_Feed_Item {
 				}
 
 				$imgTitle = sanitize_file_name($imgTitle);
-				# Let's not get crazy here. 
+				# Let's not get crazy here.
 				$imgTitle = substr($imgTitle, 0, 100);
 				if (strpos($imgTitle, '.') !== FALSE){
 					$imgTitle = 'retrieved-featured-image';
@@ -1100,11 +1100,11 @@ class PF_Feed_Item {
 
 			//Get the type of the image file. .jpg, .gif, or whatever
 			$filetype = wp_check_filetype( $ogCacheImg );
-			
-			
+
+
 			//Set the identifying variables for the about to be featured image.
 			$imgData = array(
-							'guid'           => $ogCacheImg, 
+							'guid'           => $ogCacheImg,
 							//tell WordPress what the filetype is.
 							'post_mime_type' => $filetype['type'],
 							//set the image title to the title of the site you are pulling from
