@@ -24,14 +24,14 @@ class PF_Folders {
 		$this->tag_taxonomy = 'pf_feed_category';
 		$this->post_type = 'pf_feed';
 
-		add_action( 'init', array( $this, 'register_feed_tag_taxonomy' ) );
+		add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
 
 		if (is_admin()){
 			// Move the 'Feed Tags' item underneath 'pf-menu'
 			add_filter( 'parent_file', array( $this, 'move_feed_tags_submenu' ) );
 		}
 
-		add_action( 'pf_feed_post_type_registered', array( $this, 'register_folders_for_feeds' ) );
+		add_action( 'feed_folders_registered', array( $this, 'register_folders_for_feeds' ) );
 	}
 
 	public function register_feed_tag_taxonomy() {
@@ -57,6 +57,8 @@ class PF_Folders {
 			#'show_in_menu' => PF_MENU_SLUG,
 			'rewrite' => false
 		) ) );
+
+		do_action( 'feed_folders_registered' );
 	}
 
 	public function register_folders_for_feeds(){
