@@ -22,6 +22,7 @@ class PF_Folders {
 
 	public function __construct() {
 		$this->tag_taxonomy = 'pf_feed_category';
+		$this->post_type = 'pf_feed';
 
 		add_action( 'init', array( $this, 'register_feed_tag_taxonomy' ) );
 
@@ -184,20 +185,20 @@ class PF_Folders {
 	}
 
 	public function get_feeds_without_folders($ids = true){
-		   $q = new WP_Query( 
-		   				array( 
+		   $q = new WP_Query(
+		   				array(
 		 		            'post_type' => pressforward()->pf_feeds->post_type,
 		 		            'fields'	=>	'ids',
 		 		            'orderby'	=> 'title',
 		 		            'order'		=> 'ASC',
 		 		            'nopaging' => true,
-		 		            'tax_query' => array( 
-		 		                array( 
-		 		                    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy, 
-		 		                    'operator' => 'NOT EXISTS', 
-		 		                ), 
-		 		            ), 
- 		       			) 
+		 		            'tax_query' => array(
+		 		                array(
+		 		                    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy,
+		 		                    'operator' => 'NOT EXISTS',
+		 		                ),
+		 		            ),
+ 		       			)
 		   	);
 		   $ids = $q->posts;
 		   return $ids;
@@ -244,7 +245,7 @@ class PF_Folders {
 					</li>
 					<?php
 				}
-				
+
 				$this->the_feeds_without_folders();
 				?>
 		</ul>
