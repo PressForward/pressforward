@@ -37,7 +37,7 @@ class PF_RSS_Import extends PF_Module {
 			'thumbnail' 	=> '',
 			'options' 		=> ''
 		);
-		
+
 		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 
 		//return $test;
@@ -125,6 +125,7 @@ class PF_RSS_Import extends PF_Module {
 		}
 		$theFeed->set_timeout(60);
 		$rssObject = array();
+		#$rssObject['parent_feed_id'] = $aFeed->ID;
 		$c = 0;
 		pf_log('Begin processing the feed.');
 
