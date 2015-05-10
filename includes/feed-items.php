@@ -21,7 +21,7 @@ class PF_Feed_Item {
 
 	public static function get( $args = array() ) {
 		$wp_args = array(
-			'post_type'        => $this->post_type,
+			'post_type'        => pf_feed_item_post_type(),
 			'post_status'      => 'publish',
 			'suppress_filters' => false,
 		);
@@ -57,11 +57,24 @@ class PF_Feed_Item {
 			foreach ( $posts as &$post ) {
 				$post->word_count = get_post_meta( $post->ID, 'pf_feed_item_word_count', true );
 				$post->source     = get_post_meta( $post->ID, 'pf_feed_item_source', true );
-				$post->tags       = wp_get_post_terms( $post->ID, $this->tag_taxonomy );
+				$post->tags       = wp_get_post_terms( $post->ID, pf_feed_item_tag_taxonomy() );
 			}
 		}
 
 		return $posts;
+	}
+
+	public static function get_by_item_id( $item_id ){
+		$args = array(
+				'meta_key'	=>	pf_get_meta_key( 'item_id' ),
+				'meta_value' => $item_id
+			);
+		$post = self::get( $args );
+		if ( empty( $post ) ){
+			return false;
+		} else {
+			return $post[0];
+		}
 	}
 
 	public static function create( $args = array() ) {
