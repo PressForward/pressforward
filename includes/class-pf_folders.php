@@ -30,6 +30,8 @@ class PF_Folders {
 			// Move the 'Feed Tags' item underneath 'pf-menu'
 			add_filter( 'parent_file', array( $this, 'move_feed_tags_submenu' ) );
 		}
+
+		add_action( 'pf_feed_post_type_registered', array( $this, 'register_folders_for_feeds' ) );
 	}
 
 	public function register_feed_tag_taxonomy() {
@@ -56,6 +58,10 @@ class PF_Folders {
 			'rewrite' => false
 		) ) );
 	}
+
+	public function register_folders_for_feeds(){
+		register_taxonomy_for_object_type( $this->tag_taxonomy, pressforward()->pf_feeds->post_type );
+	}
 	/**
 	 * Ensure that 'Feed Tags' stays underneath the PressForward top-level item.
 	 *
@@ -74,7 +80,7 @@ class PF_Folders {
 		// Edit Feed page
 		if ( 'post.php' === $pagenow && ! empty( $_GET['post'] ) ) {
 			global $post;
-			if ( $this->post_type === $post->post_type ) {
+			if ( pressforward()->pf_feeds->post_type === $post->post_type ) {
 				$pf = 'pf-menu';
 			}
 		}

@@ -53,7 +53,7 @@ class PF_Nominations {
 		register_post_type('nomination', $args);
 
 
-		register_taxonomy_for_object_type( pressforward()->get_feed_folder_taxonomy(), $this->post_type );
+#		register_taxonomy_for_object_type( pressforward()->get_feed_folder_taxonomy(), $this->post_type );
 
 	}
 
