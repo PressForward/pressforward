@@ -35,6 +35,7 @@
 
 		<div role="main">
 			<?php $this->toolbox();	?>
+			<?php $this->folderbox(); ?>
 			<div id="entries">
 				<?php echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';  ?>
 				<div id="errors">
