@@ -154,19 +154,23 @@ class PF_OPML_Subscribe extends PF_Module {
 
         settings_fields( PF_SLUG . '_opml_group' );
 		$feedlist = get_option( PF_SLUG . '_opml_module' );
+
         ?>
-			<br />
-			<br />
-		<div><?php _e('Subscribe to OPML', 'pf'); ?></div>
-			<div>
-				<input id="<?php echo PF_SLUG . '_opml_sub[list]'; ?>" class="regular-text" type="text" name="<?php echo PF_SLUG . '_opml_sub[list]'; ?>" value="" />
-                <label class="description" for="<?php echo PF_SLUG . '_opml_sub[list]'; ?>"><?php _e('*Complete URL for an OPML subscription', 'pf'); ?></label>
+		<div class="pf-opt-group span6">
+            <div class="opml-box postbox">
+                    <div class="handlediv" title="Click to toggle"><br></div>
+                    <h3 class="hndle"><span><?php _e('Subscribe to OPML as Feed', 'pf'); ?></span></h3>
+                    <div class="inside">
+                        <div><?php _e('Add OPML Subscription', 'pf'); ?> (RSS or Atom)</div>
+                            <div class="pf_feeder_input_box">
+                                <input id="<?php echo PF_SLUG . '_opml_sub[single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo PF_SLUG . '_opml_sub[single]'; ?>" value="" />
+                                <label class="description" for="<?php echo PF_SLUG . '_opml_sub[single]'; ?>"><?php _e('*Complete URL path', 'pf'); ?></label>
 
-
-            </div>
-			<p class="submit">
-				<?php submit_button(); ?>
-			</p>
+                        		<input type="submit" class="button-primary" value="<?php _e('Save Options', 'pf'); ?>" />
+                    		</div>
+            		</div>
+			</div>
+		</div>
 		<?php
 	}
 
