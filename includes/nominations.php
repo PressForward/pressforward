@@ -53,7 +53,7 @@ class PF_Nominations {
 		register_post_type('nomination', $args);
 
 
-		register_taxonomy_for_object_type( pressforward()->get_feed_folder_taxonomy(), $this->post_type ); 
+#		register_taxonomy_for_object_type( pressforward()->get_feed_folder_taxonomy(), $this->post_type );
 
 	}
 
@@ -194,7 +194,7 @@ class PF_Nominations {
 	}
 
 	public function nominate_this_tile(){
-		pressforward()->form_of->nominate_this('as_feed');	
+		pressforward()->form_of->nominate_this('as_feed');
 	}
 
 	public function change_nomination_count($id, $up = true){
@@ -551,6 +551,8 @@ class PF_Nominations {
 				$item_link = pf_retrieve_meta($_POST['item_post_id'], 'item_link');
 				$readable_status = pf_retrieve_meta($_POST['item_post_id'], 'readable_status');
 				$item_author = pf_retrieve_meta($_POST['item_post_id'], 'item_author');
+				$parents = get_post_ancestors( $_POST['item_post_id'] );
+				$parent_id = ($parents) ? $parents[count($parents)-1] : false;
 				if ($readable_status != 1){
 					$read_args = array('force' => '', 'descrip' => $item_content, 'url' => $item_link, 'authorship' => $item_author );
 					$item_content_obj = pressforward()->readability->get_readable_text($read_args);
@@ -570,6 +572,7 @@ class PF_Nominations {
 						//Do we want this to be nomination date or origonal posted date? Prob. nomination date? Optimally we can store and later sort by both.
 					'post_title' => $item_title,//$item_title,
 					'post_content' => $item_content,
+					'post_parent' => $parent_id
 
 				);
 
@@ -639,7 +642,7 @@ class PF_Nominations {
 			return false;
 		}
 	}
-	
+
 	public function simple_nom_to_draft($id = false){
 		global $post;
 		$pf_drafted_nonce = $_POST['pf_nomination_nonce'];
@@ -653,7 +656,7 @@ class PF_Nominations {
 			}
 			$post_check = $this->is_nominated($item_id, 'post', false);
 			if (true != $post_check) {
-				
+
 				$item_link = pf_retrieve_meta($id, 'item_link');
 				$author = get_the_item_author($id);
 				$content = $nom->post_content;
@@ -677,7 +680,7 @@ class PF_Nominations {
 					#var_dump($readReady); die();
 					$data['post_content'] = $readReady['readable'];
 				}
-				
+
 				$new_post_id = wp_insert_post( $data, true );
 ##Check
 				add_post_meta($id, 'nom_id', $id, true);
@@ -687,7 +690,7 @@ class PF_Nominations {
 					$post_thumbnail_id = get_post_thumbnail_id( $id );
 					set_post_thumbnail($new_post_id, $post_thumbnail_id);
 				}
-				
+
 				$response = array(
 					'what' => 'draft',
 					'action' => 'simple_nom_to_draft',
@@ -700,7 +703,7 @@ class PF_Nominations {
 						'buffered' => ob_get_contents()
 					)
 				);
-				
+
 			} else {
 				$response = array(
 					'what' => 'draft',

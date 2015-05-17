@@ -35,6 +35,7 @@
 
 		<div role="main">
 			<?php $this->toolbox();	?>
+			<?php $this->folderbox(); ?>
 			<div id="entries">
 				<?php echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';  ?>
 				<div id="errors">
@@ -96,6 +97,26 @@
 							'offset' => $offset  #The query function will turn page into a 1 if it is a 0.
 
 							);
+			if (isset($_GET['feed'])) {
+				$nom_args['post_parent'] = $_GET['feed'];
+			} elseif (isset($_GET['folder'])){
+				$parents_in_folder = new WP_Query( array(
+					'post_type' => pressforward()->pf_feeds->post_type,
+					'fields'=> 'ids',
+					'update_post_term_cache' => false,
+					'update_post_meta_cache' => false,
+					'tax_query' => array(
+						array(
+							'taxonomy' => pressforward()->pf_feeds->tag_taxonomy,
+							'field'	=> 'term_id',
+							'terms'	=> $_GET['folder']
+						),
+					),
+				) );
+				#var_dump('<pre>'); var_dump($parents_in_folder); die();
+				$nom_args['post_parent__in'] = $parents_in_folder->posts;
+			}
+
 			add_filter( 'posts_request', 'prep_archives_query');
 			$nom_query = new WP_Query( $nom_args );
 			remove_filter( 'posts_request', 'prep_archives_query' );
@@ -206,10 +227,31 @@
 
 	echo '</div><!-- End main -->';
 	if ($countQT > $countQ){
-		//Nasty hack because infinite scroll only works starting with page 2 for some reason.
-		if ($page == 0){ $page = 1; }
+				if ($page == 0){ $page = 1; }
 		$pagePrev = $page-1;
 		$pageNext = $page+1;
+		if (!empty($_GET['by'])){
+			$limit_q = '&by=' . $limit;
+		} else {
+			$limit_q = '';
+		}
+		$pagePrev = '?page=pf-review'.$limit_q.'&pc=' . $pagePrev;
+		$pageNext = '?page=pf-review'.$limit_q.'&pc=' . $pageNext;
+		if (isset($_GET['folder'])){
+			$pageQ = $_GET['folder'];
+			$pageQed = '&folder=' . $pageQ;
+			$pageNext .= $pageQed;
+			$pagePrev .= $pageQed;
+
+		}
+		if (isset($_GET['feed'])){
+			$pageQ = $_GET['feed'];
+			$pageQed = '&feed=' . $pageQ;
+			$pageNext .= $pageQed;
+			$pagePrev .= $pageQed;
+
+		}
+		//Nasty hack because infinite scroll only works starting with page 2 for some reason.
 		echo '<div class="pf-navigation">';
 		if ($pagePrev > -1){
 			echo '<span class="feedprev"><a class="prevnav" href="admin.php?page=pf-review&pc=' . $pagePrev . '">Previous Page</a></span> | ';

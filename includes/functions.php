@@ -257,7 +257,7 @@ function pf_feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuth
 }
 
 function create_feed_item_id($url, $title){
-	$hash = md5($url . $title); 
+	$hash = md5($url . $title);
 	return $hash;
 }
 
@@ -667,7 +667,7 @@ function pf_canonical_url(){
 	if(is_single()){
 		$obj = get_queried_object();
 		$post_ID = $obj->ID;
-		$link = get_post_meta($post_ID, 'item_link', TRUE);	
+		$link = get_post_meta($post_ID, 'item_link', TRUE);
 		return $link;
 	} else {
 		return false;
@@ -838,6 +838,20 @@ function pf_meta_by_name($name){
 			return $meta;
 		}
 	}
+}
+
+function pf_assure_meta_key($name){
+	$meta = pf_meta_by_name($name);
+	if ( !empty( $meta['move'] ) ){
+		return pf_meta_by_name( $meta['move'] );
+	} else{
+		return $meta;
+	}
+}
+
+function pf_get_meta_key( $name ){
+	$meta = pf_assure_meta_key( $name );
+	return get_pf_meta_name( $meta );
 }
 
 /**

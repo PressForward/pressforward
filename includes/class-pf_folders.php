@@ -22,13 +22,16 @@ class PF_Folders {
 
 	public function __construct() {
 		$this->tag_taxonomy = 'pf_feed_category';
+		$this->post_type = 'pf_feed';
 
-		add_action( 'init', array( $this, 'register_feed_tag_taxonomy' ) );
+		add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
 
 		if (is_admin()){
 			// Move the 'Feed Tags' item underneath 'pf-menu'
 			add_filter( 'parent_file', array( $this, 'move_feed_tags_submenu' ) );
 		}
+
+		add_action( 'feed_folders_registered', array( $this, 'register_folders_for_feeds' ) );
 	}
 
 	public function register_feed_tag_taxonomy() {
@@ -54,6 +57,12 @@ class PF_Folders {
 			#'show_in_menu' => PF_MENU_SLUG,
 			'rewrite' => false
 		) ) );
+
+		do_action( 'feed_folders_registered' );
+	}
+
+	public function register_folders_for_feeds(){
+		register_taxonomy_for_object_type( $this->tag_taxonomy, pressforward()->pf_feeds->post_type );
 	}
 	/**
 	 * Ensure that 'Feed Tags' stays underneath the PressForward top-level item.
@@ -73,7 +82,7 @@ class PF_Folders {
 		// Edit Feed page
 		if ( 'post.php' === $pagenow && ! empty( $_GET['post'] ) ) {
 			global $post;
-			if ( $this->post_type === $post->post_type ) {
+			if ( pressforward()->pf_feeds->post_type === $post->post_type ) {
 				$pf = 'pf-menu';
 			}
 		}
@@ -184,20 +193,20 @@ class PF_Folders {
 	}
 
 	public function get_feeds_without_folders($ids = true){
-		   $q = new WP_Query( 
-		   				array( 
+		   $q = new WP_Query(
+		   				array(
 		 		            'post_type' => pressforward()->pf_feeds->post_type,
 		 		            'fields'	=>	'ids',
 		 		            'orderby'	=> 'title',
 		 		            'order'		=> 'ASC',
 		 		            'nopaging' => true,
-		 		            'tax_query' => array( 
-		 		                array( 
-		 		                    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy, 
-		 		                    'operator' => 'NOT EXISTS', 
-		 		                ), 
-		 		            ), 
- 		       			) 
+		 		            'tax_query' => array(
+		 		                array(
+		 		                    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy,
+		 		                    'operator' => 'NOT EXISTS',
+		 		                ),
+		 		            ),
+ 		       			)
 		   	);
 		   $ids = $q->posts;
 		   return $ids;
@@ -244,7 +253,7 @@ class PF_Folders {
 					</li>
 					<?php
 				}
-				
+
 				$this->the_feeds_without_folders();
 				?>
 		</ul>

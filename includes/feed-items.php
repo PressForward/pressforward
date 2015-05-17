@@ -21,7 +21,7 @@ class PF_Feed_Item {
 
 	public static function get( $args = array() ) {
 		$wp_args = array(
-			'post_type'        => $this->post_type,
+			'post_type'        => pf_feed_item_post_type(),
 			'post_status'      => 'publish',
 			'suppress_filters' => false,
 		);
@@ -57,11 +57,24 @@ class PF_Feed_Item {
 			foreach ( $posts as &$post ) {
 				$post->word_count = get_post_meta( $post->ID, 'pf_feed_item_word_count', true );
 				$post->source     = get_post_meta( $post->ID, 'pf_feed_item_source', true );
-				$post->tags       = wp_get_post_terms( $post->ID, $this->tag_taxonomy );
+				$post->tags       = wp_get_post_terms( $post->ID, pf_feed_item_tag_taxonomy() );
 			}
 		}
 
 		return $posts;
+	}
+
+	public static function get_by_item_id( $item_id ){
+		$args = array(
+				'meta_key'	=>	pf_get_meta_key( 'item_id' ),
+				'meta_value' => $item_id
+			);
+		$post = self::get( $args );
+		if ( empty( $post ) ){
+			return false;
+		} else {
+			return $post[0];
+		}
 	}
 
 	public static function create( $args = array() ) {
@@ -520,16 +533,22 @@ class PF_Feed_Item {
 	public static function disassemble_feed_items() {
 		//delete rss feed items with a date past a certain point.
 		add_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older') );
-		$queryForDel = new WP_Query( array( 'post_type' => pf_feed_item_post_type() ) );
+		$queryForDel = new WP_Query(
+								array(
+										'post_type' => pf_feed_item_post_type(),
+										'posts_per_page' => '3000'
+									)
+							);
 		remove_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older') );
-
+		pf_log('Disassemble Feed Items Activated');
 		// The Loop
 		while ( $queryForDel->have_posts() ) : $queryForDel->the_post();
 			# All the posts in this loop are older than 60 days from 'now'.
 			# Delete them all.
-			$postid = get_the_ID();
-			$this->disassemble_feed_item_media( $post_id );
-			wp_delete_post( $postid, true );
+			$post_id = get_the_ID();
+			pf_log($post_id,true);
+			self::disassemble_feed_item_media( $post_id );
+			wp_delete_post( $post_id, true );
 
 		endwhile;
 

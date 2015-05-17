@@ -167,7 +167,7 @@ function reshowModal(){
 			'z-index'  : '9999'
 		};
 		jQuery('#'+modalID+ '.pfmodal').css(bigModal).load(hide_non_modals());
-		
+
 	});
 }
 
@@ -319,7 +319,7 @@ function PFBootstrapInits() {
 	jQuery(".modal.pfmodal").on('show', function(evt){
 		jQuery(".itemInfobutton").popover('hide');
 	})
-	
+
 	attach_menu_on_scroll_past();
 	assure_closed_menus();
 
@@ -328,7 +328,7 @@ function PFBootstrapInits() {
 function attach_menu_on_scroll_past(){
 	jQuery(window).scroll(function() {
 		var y_scroll_pos = window.pageYOffset;
-		var scroll_pos_test = 90;             
+		var scroll_pos_test = 90;
 		// set to whatever you want it to be
 
 		if(y_scroll_pos > scroll_pos_test) {
@@ -337,12 +337,12 @@ function attach_menu_on_scroll_past(){
 		   jQuery('.pf_container #tools').addClass('right-bar-fix');
 
 		   jQuery('#fullscreenfeed').appendTo('.display .pf-btns');
-		   
+
 		   jQuery('#feeds-search').insertAfter('.display .pf-btns').addClass('pull-left search-in-bar');
 		   jQuery('#feeds-search > *').addClass('pull-left');
 		   jQuery('#feeds-search > label').hide();
-		   
-		   var width = jQuery('#entries').innerWidth(); 
+
+		   var width = jQuery('#entries').innerWidth();
 		   jQuery('.nav-fix').width(width-80);
 		}
 		else
@@ -352,7 +352,7 @@ function attach_menu_on_scroll_past(){
 			jQuery('.pf_container #tools').removeClass('right-bar-fix');
 
 			jQuery('#fullscreenfeed').insertAfter('#h-after');
-			
+
 			jQuery('#feeds-search').appendTo('#app-banner').removeClass('pull-left search-in-bar');
 			jQuery('#feeds-search > *').removeClass('pull-left');
 
@@ -361,12 +361,12 @@ function attach_menu_on_scroll_past(){
 	});
 
 	jQuery( window ).resize(function() {
-	  	var width = jQuery('#entries').innerWidth(); 
+	  	var width = jQuery('#entries').innerWidth();
 		jQuery('.nav-fix').width(width-80);
 		if (40 > jQuery('#adminmenuback').width()){
-			//jQuery('.nav-fix').css('left', '80px');	
+			//jQuery('.nav-fix').css('left', '80px');
 		} else {
-			//jQuery('.nav-fix').css('left', '200px');	
+			//jQuery('.nav-fix').css('left', '200px');
 		}
 	});
 }
@@ -396,7 +396,7 @@ function detect_view_change(){
 		var parent_e = element.parents('article');
 		var parent_h = parent_e.height();
 		//console.log(parent_h);
-		if (element.hasClass('amplify-down')){ 
+		if (element.hasClass('amplify-down')){
 			element.removeClass('amplify-down');
 			jQuery(parent_e).removeClass('show-overflow');
 			jQuery(parent_e).css('height','');
@@ -430,7 +430,7 @@ function detect_view_change(){
 		var parent_h = parent_e.height();
 		var parent_head = parent_e.find('header');
 		//console.log(parent_h);
-		if (element.hasClass('amplify-down')){ 
+		if (element.hasClass('amplify-down')){
 			parent_e.removeClass('amplify-down');
 		} else {
 			parent_e.addClass('amplify-down');
@@ -467,7 +467,7 @@ function detect_view_change(){
 				    var hash = window.location.hash;
 				    if (!jQuery(hash).hasClass('in')){
 				      	jQuery(hash).modal('show');
-				  	} 
+				  	}
 				}
 
 				jQuery(window).on('hashchange', function() {
@@ -478,7 +478,7 @@ function detect_view_change(){
 				        var hash = window.location.hash;
 				        if (!jQuery(hash).hasClass('in')){
 				        	jQuery(hash).modal('show');
-				    	} 
+				    	}
 				    }
 				});
 
@@ -554,8 +554,8 @@ jQuery(window).load(function() {
 		evt.preventDefault();
 		var obj = jQuery(this);
 		var id = obj.attr('href');
-		var url = window.location.origin+window.location.pathname+'?page=pf-menu';
-		//url = url.replace('#','');
+		var url = window.location.href;//window.location.origin+window.location.pathname+'?page=pf-menu';
+		url = url.replace('#','&');
 		if (url.indexOf('?') > -1){
 		   url += '&folder='+id;
 		}else{
@@ -568,8 +568,8 @@ jQuery(window).load(function() {
 		evt.preventDefault();
 		var obj = jQuery(this);
 		var id = obj.children('a').attr('href');
-		var url = window.location.origin+window.location.pathname+'?page=pf-menu';
-		//url = url.replace('#','');
+		var url = window.location.href;//window.location.origin+window.location.pathname+'?page=pf-menu';
+		url = url.replace('#','&');
 		if (url.indexOf('?') > -1){
 			url += '&feed='+id;
 		}else{
@@ -602,7 +602,7 @@ jQuery(window).load(function() {
 					location.reload();
 				}
 		});
-		
+
 	});
 
 	jQuery('#deletefeedarchive').click(function (evt) {
@@ -663,7 +663,7 @@ jQuery(window).load(function() {
 		if (jQuery(this).is('[href]')){
 			window.open("?page=pf-tools", "_self");
 		}
-	});	
+	});
 
 	reshowModal();
 	reviewModal();

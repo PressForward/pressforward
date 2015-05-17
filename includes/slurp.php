@@ -315,6 +315,7 @@ class PF_Feed_Retrieve {
 				pf_log( 'End of the update process. Return false.' );
 				return false;
 			}
+			#$theFeed['parent_feed_id'] = $aFeed->ID;
 			return $theFeed;
 		} else {
 			//An error state that should never, ever, ever, ever, ever happen.
