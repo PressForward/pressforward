@@ -34,14 +34,15 @@ class OPML_reader {
             pf_log('Received an empty file.');
 			return false;
 		} else {
-            pf_log('Received:');
-            pf_log($file);
+            pf_log('Received file.');
+            //pf_log($file);
 			$opml_data = $file;
 			return $opml_data;
 		}
 	}
 
 	function get_OPML_obj($url = false){
+		pf_log('get_OPML_obj invoked.');
 		if (false == $url){
 			$opml_data = $this->opml_file;
 		} else {
@@ -50,6 +51,7 @@ class OPML_reader {
 		$obj = new OPML_Object($url);
 		$this->opml = $obj;
 		$this->opml->set_title($opml_data->head->title);
+		pf_log('Reading out from OPML file named '.$opml_data->head->title);
 		foreach ( $opml_data->body->outline as $folder ){
 			//return $folder;
 			$this->make_OPML_obj($folder);
@@ -61,10 +63,14 @@ class OPML_reader {
 		//$entry = (array) $entry;
 		#return $entry; #die();
 		$entry_a = $this->get_opml_properties($entry);
+		pf_log('Making an OPML obj using properties of:');
+		pf_log($entry_a);
 		if ( isset($entry_a['xmlUrl']) ){
+			pf_log('Making a feed.');
 			$feed_obj = $this->opml->make_a_feed_obj($entry_a);
 			$this->opml->set_feed($feed_obj, $parent);
 		} else {
+			pf_log('Making a folder.');
 			$folder_obj = $this->opml->make_a_folder_obj($entry_a);
 			$this->opml->set_folder($folder_obj);
 			foreach ($entry as $feed){
@@ -230,10 +236,11 @@ class OPML_Object {
 		$entry = $this->check_keys($entry, array('title', 'text') );
 		$entry['title'] = (!empty($entry['title']) ? $entry['title'] : false);
 		$entry['text'] = (!empty($entry['text']) ? $entry['text'] : false);
-		$entry = assure_title_and_text($entry);
+		$entry = $this->assure_title_and_text($entry);
 		#var_dump($entry); die();
 		$folder->title = $entry['title'];
 		$folder->text = $entry['text'];
+		pf_log('Making folder with title of '.$folder->title);
 		return $folder;
 	}
 	function make_a_feed_obj($entry){
@@ -245,7 +252,7 @@ class OPML_Object {
 		if ( empty($entry['feedUrl']) ){
 			$entry['feedUrl'] = $entry['xmlUrl'];
 		}
-		$entry = assure_title_and_text($entry);
+		$entry = $this->assure_title_and_text($entry);
 		$entry = $this->check_keys($entry, array( 'title', 'text', 'type', 'xmlUrl', 'htmlUrl', 'feedUrl' ) );
 		$feed->title = $entry['title'];
 		$feed->text = $entry['text'];
@@ -254,6 +261,7 @@ class OPML_Object {
 		$feed->feedUrl = str_replace('&amp;', '&', $entry['feedUrl']);
 		$feed->htmlUrl = str_replace('&amp;', '&', $entry['htmlUrl']);
 		$feed->id = md5($feed->feedUrl);
+		pf_log('Making feed with URL of '.$feed->feedUrl);
 		return $feed;
 	}
 	function order_opml_entries($a, $b){
