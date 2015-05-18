@@ -90,6 +90,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		pf_log( 'Getting OPML Feed at '.$aOPML_url );
 		$OPML_reader = new OPML_reader($aOPML_url);
 		$opml_object = $OPML_reader->get_OPML_obj();
+		pf_log('OPML object received to turn into feeds.');
 		$c = 0;
 		$opmlObject = array();
 		foreach($opml_object->feeds as $feed_obj){
@@ -163,8 +164,8 @@ class PF_OPML_Subscribe extends PF_Module {
                     <div class="inside">
                         <div><?php _e('Add OPML Subscription', 'pf'); ?> (RSS or Atom)</div>
                             <div class="pf_feeder_input_box">
-                                <input id="<?php echo PF_SLUG . '_opml_sub[single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo PF_SLUG . '_opml_sub[single]'; ?>" value="" />
-                                <label class="description" for="<?php echo PF_SLUG . '_opml_sub[single]'; ?>"><?php _e('*Complete URL path', 'pf'); ?></label>
+                                <input id="<?php echo PF_SLUG . '_opml_sub[opml_single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo PF_SLUG . '_opml_sub[opml_single]'; ?>" value="" />
+                                <label class="description" for="<?php echo PF_SLUG . '_opml_sub[opml_single]'; ?>"><?php _e('*Complete URL path', 'pf'); ?></label>
 
                         		<input type="submit" class="button-primary" value="<?php _e('Save Options', 'pf'); ?>" />
                     		</div>
@@ -175,25 +176,26 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 
 	static function pf_opml_subscriber_validate($input){
-		$feed_obj = new PF_Feeds_Schema();
-		if (!empty($input['list'])){
-			if (!(is_array($input['list']))){
-				if (!$feed_obj->has_feed($input['list'])){
-					$check = $feed_obj->create(
-						$feedUrl,
+		//var_dump(get_class()); die();
+		if (!empty($input['opml_single'])){
+			if (!(is_array($input['opml_single']))){
+				if (!pressforward()->pf_feeds->has_feed($input['opml_single'])){
+					$check = pressforward()->pf_feeds->create(
+						$input['opml_single'],
 						array(
-							'title' => 'OPML Subscription at ' . $input['list'],
-							'htmlUrl' => $input['list'],
+							'title' => 'OPML Subscription at ' . $input['opml_single'],
+							'htmlUrl' => $input['opml_single'],
 							'type' => 'opml',
 							'tags' => 'OPML Subscription',
-							'module_added' => get_class($this)
+							'module_added' => get_class()
 						)
 					);
 					if (is_wp_error($check)){
 						wp_die($check);
 					}
 				} else {
-					$feed_obj->update_url($input['list']);
+					#var_dump($input); die();
+					#pressforward()->pf_feeds->update_url($input['opml_single']);
 				}
 			} else {
 				wp_die('Bad feed input. Why are you trying to place an array?');
