@@ -37,7 +37,7 @@ class PF_OPML_Subscribe extends PF_Module {
 
 	/**
 	 * This function runs on the post data after it
-	 * has been approved for insertian as a 'new' item.
+	 * has been approved for insertion as a 'new' item.
 	 * This means that the feed hasn't been passed into the database
 	 * before and can safely be attempted to add to the feed list.
 	 *
@@ -45,6 +45,9 @@ class PF_OPML_Subscribe extends PF_Module {
 	 * @return [type]       [description]
 	 */
 	public function subscribe_to_approved_feeds($item){
+		if (empty($item['obj']) || empty($items['obj']->feedUrl) ){
+			return $item;
+		}
 		$feed_obj = $item['obj'];
 		$feed_array = array(
 			'title'   		=> $feed_obj->title,
@@ -64,8 +67,26 @@ class PF_OPML_Subscribe extends PF_Module {
 		);
 		$new_feed_id = pressforward()->pf_feeds->create($feed->feedUrl, $feed_array);
 		//Set up category here.
-		foreach ($feed_obj->folder as $folders){
-
+		foreach ($feed_obj->folder as $folder){
+			$category = $folder->title;
+			$category = rawurlencode( urldecode( $category ) );
+			$category = str_replace( '%2F', ' ', $category );
+			$category = str_replace( '%20', ' ', $category );
+			$category = str_replace( '/', ' ', $category );
+			$slug  = sanitize_title( basename( $category ) );
+			if( false == ( $cat_obj = get_category_by_slug( $slug )) ){
+				$cat_id = wp_insert_category(
+						array(
+								'cat_name'	=>	$folder->title,
+								'category_description'	=>	$folder->text,
+								'category_nicename'	=>	$slug,
+								'taxonomy'	=>	pressforward()->pf_feeds->tag_taxonomy
+							)
+					);
+				$cat_obj = get_category($cat_id);
+			}
+			pf_log('Setting new category for '.$feed_obj->title . ' of ' . $slug);
+			wp_set_post_categories( $new_feed_id, array( $cat_obj->term_id ), true );
 		}
 		return $new_feed_id;
 	}
@@ -104,6 +125,7 @@ class PF_OPML_Subscribe extends PF_Module {
 			 *
 			 * @var string
 			 */
+			pf_log('Prepping item '.$feed_obj->title);
 			$id = $feed_obj->id;
 			#if ( false === ( $rssObject['opml_' . $c] = get_transient( 'pf_' . $id ) ) ) {
 				# Adding this as a 'quick' type so that we can process the list quickly.
@@ -113,8 +135,8 @@ class PF_OPML_Subscribe extends PF_Module {
 					$feed_obj->type = 'rss-quick';
 				}
 				if(!empty($feed_obj->text)){
-					$contentObj = new pf_htmlchecker($feed_obj['text']);
-					$feed_obj->text = $contentObj->closetags($feed_obj['text']);
+					$contentObj = new pf_htmlchecker($feed_obj->text);
+					$feed_obj->text = $contentObj->closetags($feed_obj->text);
 				}
 
 				if(!empty($feed_obj->title)){
@@ -143,7 +165,7 @@ class PF_OPML_Subscribe extends PF_Module {
 										$feed_obj
 										);
 
-				pf_log('Setting new transient for ' . $feed_obj->feedUrl . ' of ' . $source . '.');
+				pf_log('Setting new transient for ' . $feed_obj->feedUrl . ' of ' . $opml_object->get_title() . '.');
 				set_transient( 'pf_' . $id, $opmlObject['opml_' . $c], 60*10 );
 				$c++;
 
