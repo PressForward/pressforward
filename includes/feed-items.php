@@ -805,7 +805,7 @@ class PF_Feed_Item {
 				//The content is coming in from the rss_object assembler a-ok. But something here saves them to the database screwy.
 				//It looks like sanitize post is screwing them up terribly. But what to do about it without removing the security measures which we need to apply?
 				$worked = 1;
-				$data = apply_filter('about_to_insert_pf_feed_items', $item);
+				$data = apply_filters('about_to_insert_pf_feed_items', $item);
 				# The post gets created here, the $newNomID variable contains the new post's ID.
 				$newNomID = self::create( $data );
 				$post_inserted_bool = self::post_inserted($newNomID, $data);
