@@ -18,7 +18,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		parent::start();
 
 		add_action('admin_init', array($this, 'register_settings'));
-		add_action( 'pf_post_established', array($this, 'subscribe_to_approved_feeds') );
+		add_action( 'about_to_insert_pf_feed_items', array($this, 'subscribe_to_approved_feeds') );
 	}
 
 	/**
@@ -44,31 +44,29 @@ class PF_OPML_Subscribe extends PF_Module {
 	 * @param  array $data [description]
 	 * @return [type]       [description]
 	 */
-	public function subscribe_to_approved_feeds($id, $item_id, $parent_id){
-		$post = get_post($id);
-		$parent = get_post($parent_id);
-		$a_OPML_url = get_post_meta($aOPML_id, 'feedUrl', true);
-		$OPML_reader = new OPML_reader($aOPML_url);
-		$opml_object = $OPML_reader->get_OPML_obj();
-		$feed = $opml_object->get_feed_by_id( pf_get_post_meta($id, 'item_id') );
+	public function subscribe_to_approved_feeds($item){
+		$feed_obj = $item['obj'];
 		$feed_array = array(
-			'title'   		=> $feed->title,
-			'url'     		=> $feed->feedUrl,
-			'htmlUrl' 		=> $feed->htmlUrl,
+			'title'   		=> $feed_obj->title,
+			'url'     		=> $feed_obj->feedUrl,
+			'htmlUrl' 		=> $feed_obj->htmlUrl,
 			'type'	  		=> 'rss-quick',
-			'feedUrl'		=> $feed->feedUrl,
-			'description' 	=> $feed->text,
+			'feedUrl'		=> $feed_obj->feedUrl,
+			'description' 	=> $feed_obj->text,
 			'feed_author' 	=> 'OPML',
 			'feed_icon'  	=> false,
 			'copyright'		=> false,
 			'thumbnail'  	=> false,
 			'user_added'    => get_post_meta($parent_id, 'user_added', true),
-			'post_parent'	=> $parent_id,
+			'post_parent'	=> $item['parent_feed_id'],
 			'module_added' 	=> 'opml-subscribe',
 			'tags'    => array(),
 		);
 		$new_feed_id = pressforward()->pf_feeds->create($feed->feedUrl, $feed_array);
 		//Set up category here.
+		foreach ($feed_obj->folder as $folders){
+
+		}
 		return $new_feed_id;
 	}
 
@@ -137,7 +135,12 @@ class PF_OPML_Subscribe extends PF_Module {
 										'',
 										$id,
 										date('r'),
-										'' #tags
+										'', #tags
+										'', #added
+										'', #repeat
+										'',
+										'',
+										$feed_obj
 										);
 
 				pf_log('Setting new transient for ' . $feed_obj->feedUrl . ' of ' . $source . '.');

@@ -233,7 +233,7 @@ function pf_slugger($string, $case = false, $strict = true, $spaces = false){
  *
  * @return array $itemArray
  */
-function pf_feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='', $itemTags='', $addedDate='', $sourceRepeat='', $postid='', $readable_status = '' ) {
+function pf_feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='', $itemTags='', $addedDate='', $sourceRepeat='', $postid='', $readable_status = '', $obj = array() ) {
 
 	# Assemble all the needed variables into our fancy object!
 	$itemArray = array(
@@ -250,7 +250,8 @@ function pf_feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuth
 		'item_added_date' => $addedDate,
 		'source_repeat'   => $sourceRepeat,
 		'post_id'		  => $postid,
-		'readable_status' => $readable_status
+		'readable_status' => $readable_status,
+		'obj'				=> $obj
 	);
 
 	return $itemArray;
