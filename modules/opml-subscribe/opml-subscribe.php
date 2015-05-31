@@ -64,6 +64,11 @@ class PF_OPML_Subscribe extends PF_Module {
 							'slug'	=>	$slug
 						)
 				);
+			if (is_wp_error($cat) ){
+				pf_log('Insert term with slug of '.$slug.' has failed with the following error:');
+				pf_log($cat);
+				return;
+			}
 			$cat_id = $cat['term_id'];
 		}
 		$cat_obj = get_term($cat_id, pressforward()->pf_feeds->tag_taxonomy);
