@@ -5,9 +5,17 @@ function get_the_source_title($id = false){
 	if (!$id){
 		$id = get_the_ID();
 	}
+	if ( empty($id) ){
+		throw new Exception("get_source_title could not find an ID.", 1);
+		return;
+	}
 	$parent_id = get_post_ancestors($id);
-	if (!isset($parent_id[0])){ return __('Bookmarklet', 'pf'); }
+	if (empty($parent_id[0])){ return __('Bookmarklet', 'pf'); }
 	$parent = get_post($parent_id[0]);
+	if ( empty($parent) ){
+		pf_log("get_source_title could not find a post object checking with the ID of ".$parent_id[0]);
+		return __('Unknown Feed', 'pf');
+	}
 	$st = $parent->post_title;
 	return $st;
 }
