@@ -66,11 +66,11 @@ class OPML_reader {
 		pf_log('Making an OPML obj using properties of:');
 		pf_log($entry_a);
 		if ( isset($entry_a['xmlUrl']) ){
-			pf_log('Making a feed.');
+			//pf_log('Making a feed.');
 			$feed_obj = $this->opml->make_a_feed_obj($entry_a);
 			$this->opml->set_feed($feed_obj, $parent);
 		} else {
-			pf_log('Making a folder.');
+			//pf_log('Making a folder.');
 			$folder_obj = $this->opml->make_a_folder_obj($entry_a);
 			$this->opml->set_folder($folder_obj);
 			foreach ($entry as $feed){
@@ -97,14 +97,14 @@ class OPML_reader {
 
 	# Pass the URL and if you want to return an array of objects or of urls.
 	function get_OPML_data($url, $is_array = true){
-		pf_log('OPML Reader process invoked: get_OPML_data');
+		//pf_log('OPML Reader process invoked: get_OPML_data');
 		$opml_data = $this->open_OPML($url);
 
         #var_dump($opml_data); die();
 		if (!$opml_data || empty($opml_data)){
-			pf_log('Could not open the OPML file.');
-            pf_log('Resulted in:');
-            pf_log($opml_data);
+			//pf_log('Could not open the OPML file.');
+            //pf_log('Resulted in:');
+            //pf_log($opml_data);
 			return false;
 		}
 
@@ -123,22 +123,22 @@ class OPML_reader {
 		  * [htmlUrl] - The site home URI.
 		**/
 		foreach ($opml_data->body->outline as $folder){
-            pf_log($c++);
+            //pf_log($c++);
             #var_dump($folder); die();
 			# Check if there are no folders.
             if (isset($folder['xmlUrl'])){
-                pf_log('Not a folder.');
+                //pf_log('Not a folder.');
                 $b[] = $folder['xmlUrl']->__toString();
             }
 
             foreach ($folder->outline as $data){
-                pf_log('A folder.');
+                //pf_log('A folder.');
 				$a[] = reset($data);
 			}
 			// Pulls out the feed location.
 			foreach ($a as $outline) {
-                pf_log('Feed found:');
-                pf_log($outline['xmlUrl']);
+               // pf_log('Feed found:');
+                //pf_log($outline['xmlUrl']);
 				$b[] = $outline['xmlUrl'];
 			}
 
@@ -197,9 +197,9 @@ class OPML_Object {
 		} else {
 			if (isset($this->feeds[$feed_obj->id])){
 				$feed_obj = $this->feeds[$feed_obj->id];
-				$feed_obj->folder[] = $folder->slug;
+				$feed_obj->folder[] = $folder;
 			} else {
-				$feed_obj->folder = array($folder->slug);
+				$feed_obj->folder = array($folder);
 			}
 			$this->feeds[$feed_obj->id] = $feed_obj;
 		}
@@ -240,7 +240,7 @@ class OPML_Object {
 		#var_dump($entry); die();
 		$folder->title = $entry['title'];
 		$folder->text = $entry['text'];
-		pf_log('Making folder with title of '.$folder->title);
+		//pf_log('Making folder with title of '.$folder->title);
 		return $folder;
 	}
 	function make_a_feed_obj($entry){
@@ -261,7 +261,7 @@ class OPML_Object {
 		$feed->feedUrl = str_replace('&amp;', '&', $entry['feedUrl']);
 		$feed->htmlUrl = str_replace('&amp;', '&', $entry['htmlUrl']);
 		$feed->id = md5($feed->feedUrl);
-		pf_log('Making feed with URL of '.$feed->feedUrl);
+		//pf_log('Making feed with URL of '.$feed->feedUrl);
 		return $feed;
 	}
 	function order_opml_entries($a, $b){

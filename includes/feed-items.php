@@ -684,7 +684,10 @@ class PF_Feed_Item {
 						//print_r('< the ID');
 						if ((get_post_meta($post->ID, 'item_id', $item_id, true)) === $item_id){
 							$thepostscheck++;
-							pf_log('We already have post ' . $item_id);
+							$post_id_to_pass = $post->ID;
+							pf_log('We already have post ' . $post_id_to_pass . ' for ');
+							pf_log($item);
+							do_action('already_a_feed_item', array( 'item' => $item, 'post_id' => $post_id_to_pass) );
 						}
 
 					endforeach;
@@ -805,7 +808,7 @@ class PF_Feed_Item {
 				//The content is coming in from the rss_object assembler a-ok. But something here saves them to the database screwy.
 				//It looks like sanitize post is screwing them up terribly. But what to do about it without removing the security measures which we need to apply?
 				$worked = 1;
-				$data = apply_filters('about_to_insert_pf_feed_items', $item);
+				do_action('about_to_insert_pf_feed_items', $item);
 				# The post gets created here, the $newNomID variable contains the new post's ID.
 				$newNomID = self::create( $data );
 				$post_inserted_bool = self::post_inserted($newNomID, $data);
@@ -882,6 +885,8 @@ class PF_Feed_Item {
 				pf_meta_establish_post($newNomID, $pf_meta_args);
 				$parent_id = $feed_obj_id;
 				do_action('pf_post_established', $newNomID, $item_id, $parent_id);
+			} else {
+
 			}
 
 		}

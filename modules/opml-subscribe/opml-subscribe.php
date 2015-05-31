@@ -18,7 +18,8 @@ class PF_OPML_Subscribe extends PF_Module {
 		parent::start();
 
 		add_action('admin_init', array($this, 'register_settings'));
-		add_action( 'about_to_insert_pf_feed_items', array($this, 'subscribe_to_approved_feeds') );
+		//add_action( 'about_to_insert_pf_feed_items', array($this, 'subscribe_to_approved_feeds') );
+		add_action( 'already_a_feed_item', array($this, 'add_folders_to_items') );
 	}
 
 	/**
@@ -35,6 +36,63 @@ class PF_OPML_Subscribe extends PF_Module {
 		require_once(PF_ROOT . "/includes/opml-reader/opml-reader.php");
 	}
 
+	public function folder_to_slug($folder){
+		$category = $folder->title;
+		$category = rawurlencode( urldecode( $category ) );
+		$category = str_replace( '%2F', ' ', $category );
+		$category = str_replace( '%20', ' ', $category );
+		$category = str_replace( '/', ' ', $category );
+		$slug  = sanitize_title( basename( $category ) );
+		return $slug;
+	}
+
+	public function set_folder_as_term( $folder, $id ){
+		if ( empty( $folder ) ){
+			trigger_error('Attempting to set a folder with an empty folder object.');
+			return false;
+		}
+		$slug = $this->folder_to_slug($folder);
+		$tax = pressforward()->pf_feeds->tag_taxonomy;
+		$check = term_exists($slug, strval($tax) );
+		if ( !empty( $check ) ){
+			$cat = term_exists($slug, strval($tax) );
+			$cat_id = $cat['term_id'];
+		} else {
+			$cat = wp_insert_term( $folder->title, pressforward()->pf_feeds->tag_taxonomy,
+					array(
+							'description'	=>	$folder->text,
+							'slug'	=>	$slug
+						)
+				);
+			$cat_id = $cat['term_id'];
+		}
+		$cat_obj = get_term($cat_id, pressforward()->pf_feeds->tag_taxonomy);
+		pf_log('Set category with slug of '.$slug);
+		pf_log('Setting new category for '. $id . ' of ' . $slug . ' with term ID of '.$cat_obj->term_id);
+		$check = wp_set_object_terms( $id, array( $cat_obj->term_id ), pressforward()->pf_feeds->tag_taxonomy, true );
+		if ( is_wp_error($check) ){
+			pf_log('Could not add category error:');
+			pf_log($check);
+		}
+	}
+
+	public function add_folders_to_items($args){
+				$item = $args['item'];
+		if (empty($item['obj']) || empty($item['obj']->feedUrl) ){
+			return $item;
+		}
+		$post_id = $args['post_id'];
+		pf_log('Do something with post ID '.$post_id);
+		$feed_obj = $item['obj'];
+		foreach ($feed_obj->folder as $folder){
+			$slug = $this->folder_to_slug($folder);
+			if ( !has_category( $slug, $post_id ) ){
+				pf_log('Add category '.$slug. ' to existing feed '. $post_id);
+				$this->set_folder_as_term($folder, $post_id);
+			}
+		}
+	}
+
 	/**
 	 * This function runs on the post data after it
 	 * has been approved for insertion as a 'new' item.
@@ -45,10 +103,16 @@ class PF_OPML_Subscribe extends PF_Module {
 	 * @return [type]       [description]
 	 */
 	public function subscribe_to_approved_feeds($item){
-		if (empty($item['obj']) || empty($items['obj']->feedUrl) ){
+		if (empty($item['obj']) || empty($item['obj']->feedUrl) ){
 			return $item;
 		}
 		$feed_obj = $item['obj'];
+		if (empty($item['parent_feed_id'])){
+			$parent = 0;
+		}
+		else {
+			$parent = get_post_meta($item['parent_feed_id'], 'user_added', true);
+		}
 		$feed_array = array(
 			'title'   		=> $feed_obj->title,
 			'url'     		=> $feed_obj->feedUrl,
@@ -60,33 +124,16 @@ class PF_OPML_Subscribe extends PF_Module {
 			'feed_icon'  	=> false,
 			'copyright'		=> false,
 			'thumbnail'  	=> false,
-			'user_added'    => get_post_meta($parent_id, 'user_added', true),
+			'user_added'    => $parent,
 			'post_parent'	=> $item['parent_feed_id'],
 			'module_added' 	=> 'opml-subscribe',
 			'tags'    => array(),
 		);
-		$new_feed_id = pressforward()->pf_feeds->create($feed->feedUrl, $feed_array);
+		$new_feed_id = pressforward()->pf_feeds->create($feed_obj->feedUrl, $feed_array);
 		//Set up category here.
 		foreach ($feed_obj->folder as $folder){
-			$category = $folder->title;
-			$category = rawurlencode( urldecode( $category ) );
-			$category = str_replace( '%2F', ' ', $category );
-			$category = str_replace( '%20', ' ', $category );
-			$category = str_replace( '/', ' ', $category );
-			$slug  = sanitize_title( basename( $category ) );
-			if( false == ( $cat_obj = get_category_by_slug( $slug )) ){
-				$cat_id = wp_insert_category(
-						array(
-								'cat_name'	=>	$folder->title,
-								'category_description'	=>	$folder->text,
-								'category_nicename'	=>	$slug,
-								'taxonomy'	=>	pressforward()->pf_feeds->tag_taxonomy
-							)
-					);
-				$cat_obj = get_category($cat_id);
-			}
-			pf_log('Setting new category for '.$feed_obj->title . ' of ' . $slug);
-			wp_set_post_categories( $new_feed_id, array( $cat_obj->term_id ), true );
+			pf_log('Setting new category for '.$feed_obj->title);
+			$this->set_folder_as_term($folder, $new_feed_id);
 		}
 		return $new_feed_id;
 	}
@@ -145,6 +192,9 @@ class PF_OPML_Subscribe extends PF_Module {
 				} else {
 					$feed_obj->title = $feed_obj->feedUrl;
 				}
+
+				$item = array( 'obj' => $feed_obj, 'parent_feed_id' => $aOPML->ID );
+				$this->subscribe_to_approved_feeds($item);
 
 				$content = 'Subscribed: ' . $feed_obj->title . ' - ' . $feed_obj->type . ' - ' . $feed_obj->feedUrl . ' on ' . date('r');
 				$opmlObject['opml_'.$c] = pf_feed_object(
