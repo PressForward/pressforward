@@ -198,8 +198,10 @@ class OPML_Object {
 			if (isset($this->feeds[$feed_obj->id])){
 				$feed_obj = $this->feeds[$feed_obj->id];
 				$feed_obj->folder[] = $folder;
-			} else {
+			} elseif (!is_array($folder)) {
 				$feed_obj->folder = array($folder);
+			} else {
+				$feed_obj->folder = $folder;
 			}
 			$this->feeds[$feed_obj->id] = $feed_obj;
 		}
