@@ -288,6 +288,39 @@ class PF_OPML_Subscribe extends PF_Module {
 		register_setting(PF_SLUG . '_opml_group', PF_SLUG . '_opml_sub', array('PF_OPML_Subscribe', 'pf_opml_subscriber_validate'));
 	}
 
+	function make_OPML(){
+		$site_name = get_bloginfo('name');
+		if( empty($_GET['opml_folder']) ){
+			$this->master_opml_obj = new OPML_Object(get_site_url().'?pf=opml' );
+			$this->master_opml_obj->set_title('PressForward Subscription List for '.$site_name);
+			$folders = get_terms(pressforward()->pf_feeds->tag_taxonomy);
+			foreach ($folders as $folder){
+				$folder_obj = $this->make_a_folder_object_from_term($folder);
+				$this->master_opml_obj->set_folder($folder_obj);
+			}
+			$feed_query_args = array(
+										'post_type'			=>	pressforward()->pf_feeds->post_type,
+										'posts_per_page'	=>	-1
+									);
+			$feed_query = new WP_Query( $feed_query_args );
+			// The Loop
+			if ( $feed_query->have_posts() ) {
+				while ( $feed_query->have_posts() ) {
+					$feed_query->the_post();
+					$feed_obj = $this->make_a_feed_object_from_post( get_the_ID() );
+					//Use OPML internals to slugify attached terms, retrieve them from the OPML folder object, deliver them into feed.
+					$this->master_opml_obj->set_feed( $feed_obj, $parent );
+				}
+			} else {
+				// no posts found
+			}
+		} else {
+			$this->master_opml_obj = new OPML_Object(get_site_url().'?pf=opml&opml_folder='.$_GET['opml_folder'] );
+			$this->master_opml_obj->set_title('PressForward Subscription List for the '$_GET['opml_folder'].' folder on '.$site_name);
+		}
+
+	}
+
 
 
 }
