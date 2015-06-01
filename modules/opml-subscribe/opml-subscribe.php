@@ -303,20 +303,22 @@ class PF_OPML_Subscribe extends PF_Module {
 										'posts_per_page'	=>	-1
 									);
 			$feed_query = new WP_Query( $feed_query_args );
-			// The Loop
-			if ( $feed_query->have_posts() ) {
-				while ( $feed_query->have_posts() ) {
-					$feed_query->the_post();
-					$feed_obj = $this->make_a_feed_object_from_post( get_the_ID() );
-					//Use OPML internals to slugify attached terms, retrieve them from the OPML folder object, deliver them into feed.
-					$this->master_opml_obj->set_feed( $feed_obj, $parent );
-				}
-			} else {
-				// no posts found
+
+		} else {
+			$folder_obj = $this->make_a_folder_object_from_term_slug($_GET['opml_folder']);
+			$this->master_opml_obj = new OPML_Object(get_site_url().'?pf=opml&opml_folder='.$_GET['opml_folder'] );
+			$this->master_opml_obj->set_title('PressForward Subscription List for the '.$_GET['opml_folder'].' folder on '.$site_name);
+		}
+					// The Loop
+		if ( $feed_query->have_posts() ) {
+			while ( $feed_query->have_posts() ) {
+				$feed_query->the_post();
+				$feed_obj = $this->make_a_feed_object_from_post( get_the_ID() );
+				//Use OPML internals to slugify attached terms, retrieve them from the OPML folder object, deliver them into feed.
+				$this->master_opml_obj->set_feed( $feed_obj, $parent );
 			}
 		} else {
-			$this->master_opml_obj = new OPML_Object(get_site_url().'?pf=opml&opml_folder='.$_GET['opml_folder'] );
-			$this->master_opml_obj->set_title('PressForward Subscription List for the '$_GET['opml_folder'].' folder on '.$site_name);
+			// no posts found
 		}
 
 	}
