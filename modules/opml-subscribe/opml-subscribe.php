@@ -288,7 +288,28 @@ class PF_OPML_Subscribe extends PF_Module {
 		register_setting(PF_SLUG . '_opml_group', PF_SLUG . '_opml_sub', array('PF_OPML_Subscribe', 'pf_opml_subscriber_validate'));
 	}
 
-	function make_OPML(){
+	private function make_a_folder_object_from_term( $term ){
+		$entry['title'] = ( !empty( $term->name ) ? $term->name : $term->slug ) ;
+		$entry['text'] = ( !empty( $term->description ) ? $term->description : $entry['title'] );
+		return $this->master_opml_obj->make_a_folder_obj( $entry );
+	}
+
+	private function make_a_folder_object_from_term_slug( $slug ){
+		$obj = get_term_by( 'slug', $slug, pressforward()->pf_feeds->tag_taxonomy );
+		return $this->make_a_folder_object_from_term( $obj );
+	}
+
+	private function make_a_feed_object_from_post( $post_obj = false ){
+
+		return $this->master_opml_obj->make_a_feed_obj( $entry );
+	}
+
+	private function make_parent_folder_from_post( $post_obj = false ){
+
+
+	}
+
+	private function make_OPML(){
 		$site_name = get_bloginfo('name');
 		if( empty($_GET['opml_folder']) ){
 			$this->master_opml_obj = new OPML_Object(get_site_url().'?pf=opml' );
@@ -320,6 +341,8 @@ class PF_OPML_Subscribe extends PF_Module {
 		} else {
 			// no posts found
 		}
+
+		echo new OPML_Maker($this->master_opml_obj);
 
 	}
 
