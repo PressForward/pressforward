@@ -300,7 +300,16 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 
 	private function make_a_feed_object_from_post( $post_obj = false ){
-
+		$meta = get_post_meta(get_the_ID());
+		$url_parts = parse_url( $meta['feedUrl'] );
+		$entry = array(
+				'title'		=> get_the_title(),
+				'text'		=> get_the_content(),
+				'type'		=> ( 'rss-quick' == $meta['feed_type'] ? 'rss' : $meta['feed_type'] ),
+				'feedUrl'	=> $meta['feedUrl'],
+				'xmlUrl'	=> $meta['feedUrl'],
+				'htmlUrl'	=> $url_parts['scheme'] . '://' . $url_parts['host']
+			);
 		return $this->master_opml_obj->make_a_feed_obj( $entry );
 	}
 
