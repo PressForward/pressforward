@@ -186,6 +186,12 @@ class OPML_Object {
 			return $this->title;
 		}
 	}
+	function get_folder( $key ){
+		$folders = $this->folders;
+		$key = $this->slugify($key);
+		return $folders[$key];
+
+	}
 	function set_feed($feed_obj, $folder = false){
 		if (!$folder){
 			//Do not set an unsorted feed if it has already been set
@@ -292,6 +298,9 @@ class OPML_Object {
 	}
 	function get_feeds_by_folder($folder){
 		$folder_a = array();
+		if (!is_array($folder)){
+			$folder = array($folder);
+		}
 		foreach ( $this->feeds as $feed ){
 			if ( in_array($this->slugify($folder), $feed->folder) ){
 				$folder_a[] = $feed;
@@ -323,6 +332,10 @@ class OPML_Object {
 			$clean;
 	}
 	public function slugify($string, $case = true, $strict = false, $spaces = false) {
+		//var_dump($string);
+		if (is_array($string) ){
+			$string = $string[0];
+		}
 		$string = strip_tags($string);
 		// replace non letter or digits by -
 		$string = preg_replace('~[^\\pL\d]+~u', '-', $string);

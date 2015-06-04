@@ -300,25 +300,33 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 
 	private function make_a_feed_object_from_post( $post_obj = false ){
+		//var_dump(get_post_meta(get_the_ID()));
 		$meta = get_post_meta(get_the_ID());
-		$url_parts = parse_url( $meta['feedUrl'] );
+		$url_parts = parse_url( $meta['feedUrl'][0] );
+		//var_dump($url_parts);
 		$entry = array(
 				'title'		=> get_the_title(),
 				'text'		=> get_the_content(),
 				'type'		=> ( 'rss-quick' == $meta['feed_type'] ? 'rss' : $meta['feed_type'] ),
-				'feedUrl'	=> $meta['feedUrl'],
-				'xmlUrl'	=> $meta['feedUrl'],
+				'feedUrl'	=> $meta['feedUrl'][0],
+				'xmlUrl'	=> $meta['feedUrl'][0],
 				'htmlUrl'	=> $url_parts['scheme'] . '://' . $url_parts['host']
 			);
 		return $this->master_opml_obj->make_a_feed_obj( $entry );
 	}
 
-	private function make_parent_folder_from_post( $post_obj = false ){
-
+	private function make_parent_folder_from_post( ){
+		$terms = wp_get_post_terms( get_the_ID(), pressforward()->pf_feeds->tag_taxonomy );
+		$folders = array();
+		foreach ( $terms as $term ) {
+			//var_dump($term->name);
+			$folders[] = $this->master_opml_obj->get_folder($term->name);
+		}
+		return $folders;
 
 	}
 
-	private function make_OPML(){
+	public function make_OPML(){
 		$site_name = get_bloginfo('name');
 		if( empty($_GET['opml_folder']) ){
 			$this->master_opml_obj = new OPML_Object(get_site_url().'?pf=opml' );
@@ -343,15 +351,17 @@ class PF_OPML_Subscribe extends PF_Module {
 		if ( $feed_query->have_posts() ) {
 			while ( $feed_query->have_posts() ) {
 				$feed_query->the_post();
-				$feed_obj = $this->make_a_feed_object_from_post( get_the_ID() );
+				$feed_obj = $this->make_a_feed_object_from_post( );
 				//Use OPML internals to slugify attached terms, retrieve them from the OPML folder object, deliver them into feed.
+				$parent = $this->make_parent_folder_from_post();
 				$this->master_opml_obj->set_feed( $feed_obj, $parent );
 			}
 		} else {
 			// no posts found
 		}
 
-		echo new OPML_Maker($this->master_opml_obj);
+		$opml = new OPML_Maker($this->master_opml_obj);
+		echo $opml->template();
 
 	}
 
