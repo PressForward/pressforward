@@ -203,12 +203,21 @@ class OPML_Object {
 		} else {
 			if (isset($this->feeds[$feed_obj->id])){
 				$feed_obj = $this->feeds[$feed_obj->id];
-				$feed_obj->folder[] = $folder;
-			} elseif (!is_array($folder)) {
-				$feed_obj->folder = array($folder);
+				//$feed_obj->folder[] = $folder;
+			} elseif (empty($feed_obj->folder) || !is_array($feed_obj->folder)) {
+				$feed_obj->folder = array();
+				//$feed_obj->folder[] = $folder;
 			} else {
-				$feed_obj->folder = $folder;
+				//$feed_obj->folder[] = $folder;
 			}
+			if (is_array($folder)){
+				foreach ($folder as $folder_type){
+					$feed_obj->folder[] = $folder_type;
+				}
+			} else {
+				$feed_obj->folder[] = $folder;
+			}
+			//var_dump($feed_obj);
 			$this->feeds[$feed_obj->id] = $feed_obj;
 		}
 	}
@@ -298,12 +307,23 @@ class OPML_Object {
 	}
 	function get_feeds_by_folder($folder){
 		$folder_a = array();
-		if (!is_array($folder)){
-			$folder = array($folder);
+		if (is_array($folder)){
+			$folder = $folder[0];
 		}
 		foreach ( $this->feeds as $feed ){
-			if ( in_array($this->slugify($folder), $feed->folder) ){
-				$folder_a[] = $feed;
+			//var_dump($feed);
+			if ( !empty($feed->folder) ){
+				foreach($feed->folder as $feed_folder){
+					//var_dump('folder: '.$folder);
+					//var_dump($feed_folder);
+					if ( !is_object($feed_folder) ){
+						var_dump('Not an object');
+						var_dump($feed_folder);
+					}
+					if ($feed_folder->slug == $this->slugify($folder)){
+						$folder_a[] = $feed;
+					}
+				}
 			}
 		}
 		if ( empty($folder_a) ){
@@ -431,9 +451,12 @@ class OPML_Maker {
 		    				echo "\n\t\t\t\t\t";
 		    			}
 		    			echo $this->assemble_tag('outline', $folder);
+		    				//var_dump($folder);
 		    				$feeds = $this->obj->get_feeds_by_folder($folder->slug);
+		    				//var_dump($feeds);
 		    				if (!empty($feeds)){
 			    				foreach ($feeds as $feed){
+			    					//var_dump($feed);
 			    					echo "\t\t\t\t\t\t".$this->assemble_tag('outline',$feed,true,array('folder','feedUrl'));
 			    				}
 			    			}

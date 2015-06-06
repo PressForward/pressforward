@@ -20,6 +20,9 @@ class PF_OPML_Subscribe extends PF_Module {
 		add_action('admin_init', array($this, 'register_settings'));
 		//add_action( 'about_to_insert_pf_feed_items', array($this, 'subscribe_to_approved_feeds') );
 		add_action( 'already_a_feed_item', array($this, 'add_folders_to_items') );
+		if ( isset( $_GET['pf']) && ('opml' == $_GET['pf']) ){
+			add_action('init', array($this, 'make_OPML') );
+		}
 	}
 
 	/**
@@ -299,15 +302,22 @@ class PF_OPML_Subscribe extends PF_Module {
 		return $this->make_a_folder_object_from_term( $obj );
 	}
 
-	private function make_a_feed_object_from_post( $post_obj = false ){
+	private function make_a_feed_object_from_post( $post_id = false ){
 		//var_dump(get_post_meta(get_the_ID()));
-		$meta = get_post_meta(get_the_ID());
+		$meta = get_post_meta($post_id);
+		if ( !empty( $meta['feedUrl'][0] ) ){
+			if ( 'http' != substr( $meta['feedUrl'][0], 0, 4 ) ){
+				$meta['feedUrl'][0] = 'http://'.$meta['feedUrl'][0];
+			}
+		} else {
+			return '';
+		}
 		$url_parts = parse_url( $meta['feedUrl'][0] );
 		//var_dump($url_parts);
 		$entry = array(
-				'title'		=> get_the_title(),
-				'text'		=> get_the_content(),
-				'type'		=> ( 'rss-quick' == $meta['feed_type'] ? 'rss' : $meta['feed_type'] ),
+				'title'		=> get_the_title( $post_id ),
+				'text'		=> get_the_content( $post_id ),
+				'type'		=> ( 'rss-quick' == $meta['feed_type'] ? 'rss' : $meta['feed_type'][0] ),
 				'feedUrl'	=> $meta['feedUrl'][0],
 				'xmlUrl'	=> $meta['feedUrl'][0],
 				'htmlUrl'	=> $url_parts['scheme'] . '://' . $url_parts['host']
@@ -315,8 +325,8 @@ class PF_OPML_Subscribe extends PF_Module {
 		return $this->master_opml_obj->make_a_feed_obj( $entry );
 	}
 
-	private function make_parent_folder_from_post( ){
-		$terms = wp_get_post_terms( get_the_ID(), pressforward()->pf_feeds->tag_taxonomy );
+	private function make_parent_folder_from_post( $post_id ){
+		$terms = wp_get_post_terms( $post_id, pressforward()->pf_feeds->tag_taxonomy );
 		$folders = array();
 		foreach ( $terms as $term ) {
 			//var_dump($term->name);
@@ -338,7 +348,7 @@ class PF_OPML_Subscribe extends PF_Module {
 			}
 			$feed_query_args = array(
 										'post_type'			=>	pressforward()->pf_feeds->post_type,
-										'posts_per_page'	=>	-1
+										'posts_per_page'	=>	-1,
 									);
 			$feed_query = new WP_Query( $feed_query_args );
 
@@ -351,17 +361,24 @@ class PF_OPML_Subscribe extends PF_Module {
 		if ( $feed_query->have_posts() ) {
 			while ( $feed_query->have_posts() ) {
 				$feed_query->the_post();
-				$feed_obj = $this->make_a_feed_object_from_post( );
+				#var_dump(get_the_ID());
+				$feed_obj = $this->make_a_feed_object_from_post( get_the_ID() );
+				//var_dump($feed_obj);
 				//Use OPML internals to slugify attached terms, retrieve them from the OPML folder object, deliver them into feed.
-				$parent = $this->make_parent_folder_from_post();
+				$parent = $this->make_parent_folder_from_post( get_the_ID() );
+				//var_dump($parent);
+				if (empty($parent)){
+					$parent = false;
+				}
 				$this->master_opml_obj->set_feed( $feed_obj, $parent );
 			}
 		} else {
 			// no posts found
 		}
-
+		//var_dump($this->master_opml_obj); die();
 		$opml = new OPML_Maker($this->master_opml_obj);
 		echo $opml->template();
+		die();
 
 	}
 
