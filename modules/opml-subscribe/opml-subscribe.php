@@ -51,7 +51,7 @@ class PF_OPML_Subscribe extends PF_Module {
 
 	public function set_folder_as_term( $folder, $id ){
 		if ( empty( $folder ) ){
-			trigger_error('Attempting to set a folder with an empty folder object.');
+			pf_log('Attempting to set a folder with an empty folder object.');
 			return false;
 		}
 		$slug = $this->folder_to_slug($folder);
@@ -215,11 +215,11 @@ class PF_OPML_Subscribe extends PF_Module {
 										'',
 										$id,
 										date('r'),
-										'', #tags
+										'opml-feed', #tags
 										'', #added
 										'', #repeat
 										'',
-										'',
+										'made_readable',
 										$feed_obj
 										);
 
@@ -317,7 +317,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		$entry = array(
 				'title'		=> get_the_title( $post_id ),
 				'text'		=> get_the_content( $post_id ),
-				'type'		=> ( 'rss-quick' == $meta['feed_type'] ? 'rss' : $meta['feed_type'][0] ),
+				'type'		=> ( 'rss-quick' == $meta['feed_type'][0] ? 'rss' : $meta['feed_type'][0] ),
 				'feedUrl'	=> $meta['feedUrl'][0],
 				'xmlUrl'	=> $meta['feedUrl'][0],
 				'htmlUrl'	=> $url_parts['scheme'] . '://' . $url_parts['host']

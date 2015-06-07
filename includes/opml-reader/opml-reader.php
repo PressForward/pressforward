@@ -307,8 +307,10 @@ class OPML_Object {
 	}
 	function get_feeds_by_folder($folder){
 		$folder_a = array();
-		if (is_array($folder)){
+		if (is_array($folder) && !empty($folder[0]) ){
 			$folder = $folder[0];
+		} elseif ( is_array($folder) && !empty($folder['slug']) ){
+			$folder = $folder['slug'];
 		}
 		foreach ( $this->feeds as $feed ){
 			//var_dump($feed);
