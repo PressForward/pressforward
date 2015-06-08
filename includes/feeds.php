@@ -327,6 +327,9 @@ class PF_Feeds_Schema {
 
 	public function the_feed($feed){
 		$feed_obj = get_post($feed);
+		if (empty($feed_obj)){
+			return;
+		}
 		?>
 		<li class="feed" id="feed-<?php echo $feed_obj->ID; ?>">
 		<?php
@@ -422,6 +425,9 @@ class PF_Feeds_Schema {
 				$r[$k] = '';
 		}
 		pf_log('Replaced false meta with empty strings.');
+		if (empty($r['post_parent'])){
+			$r['post_parent'] = 0;
+		}
 
 		$wp_args = array(
 			'post_type' 	=> $this->post_type,
@@ -429,6 +435,7 @@ class PF_Feeds_Schema {
 			'post_title'	=> $r['title'],
 			'post_content'	=> $r['description'],
 			'guid'			=> $r['url'],
+			'post_parent'	=> $r['post_parent'],
 			'tax_input' 	=> array($this->tag_taxonomy => $r['tags'])
 		);
 		# Duplicate the function of WordPress where creating a pre-existing
@@ -609,6 +616,8 @@ class PF_Feeds_Schema {
 		pf_log($check);
 		if (!$check){
 			return false;
+		} else {
+			do_action( 'pf_feed_inserted', $check );
 		}
 		return $check;
 
