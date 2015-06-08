@@ -50,6 +50,8 @@ class PF_Admin {
 		add_action( 'manage_edit-pf_feed_sortable_columns', array( $this, 'make_last_checked_column_sortable' ) );
 		add_action( 'pre_get_posts', array( $this, 'sort_by_last_checked' ) );
 
+		add_action( 'before_delete_post', array( $this, 'pf_delete_children_of_feeds' ) );
+
 		add_action( 'quick_edit_custom_box', array( $this, 'quick_edit_field' ), 10, 2 );
 		add_action( 'save_post', array( $this, 'quick_edit_save' ), 10, 2 );
 	}
@@ -572,15 +574,15 @@ class PF_Admin {
 			#$item = array_merge($metadata, $item);
 			#var_dump($item);
 			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['item_tags'], $metadata['item_id'] )) . ' '.$readClass.'" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '" pf-schema="read" pf-schema-class="article-read">';
-			?> <a style="display:none;" name="modal-<?php echo $metadata['item_id']; ?>"></a> <?php 
+			?> <a style="display:none;" name="modal-<?php echo $metadata['item_id']; ?>"></a> <?php
 		} else {
 			$id_for_comments = $item['post_id'];
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
 			echo '<article class="feed-item entry ' . pf_slugger(get_the_source_title($id_for_comments), true, false, true) . ' ' . $itemTagClassesString . ' '.$readClass.'" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '" pf-item-post-id="' . $id_for_comments . '" >';
-			?> <a style="display:none;" name="modal-<?php echo $item['item_id']; ?>"></a> <?php 
+			?> <a style="display:none;" name="modal-<?php echo $item['item_id']; ?>"></a> <?php
 		}
-			
+
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
 			echo '<div class="box-controls">';
 			if (current_user_can( 'manage_options' )){
@@ -1023,7 +1025,7 @@ class PF_Admin {
 
 		echo '<header id="app-banner">
 			<div class="title-span title">
-				<h1>PressForward: Tools</h1>								<span id="h-after"> • </span>' 
+				<h1>PressForward: Tools</h1>								<span id="h-after"> • </span>'
 				#. '<button class="btn btn-small" id="fullscreenfeed"> Full Screen </button>' .
 			. '</div><!-- End title -->
 		</header>';
@@ -1471,6 +1473,22 @@ class PF_Admin {
         ) );
     }
 
+    public function dead_feed_status(){
+        register_post_status('removed_'.pressforward()->pf_feeds->post_type, array(
+            'label'                 =>     _x('Removed Feed', 'pf'),
+            'public'                =>      false,
+            'exclude_from_search'   =>      true,
+            'show_in_admin_all_list'=>      false
+        ) );
+    }
+
+    public function pf_delete_children_of_feeds( $post_id ){
+    	if ( pressforward()->pf_feeds->post_type == get_post_type( $post_id ) ){
+    		pf_log('Delete a feed and all its children.');
+    		$this->pf_thing_deleter( $post_id, true, pressforward()->pf_feeds->post_type );
+    	}
+    }
+
 	/*
 	 *
 	 * A method to allow users to delete any CPT or post through AJAX.
@@ -1501,6 +1519,8 @@ class PF_Admin {
 				'post_parent' => $id
 			);
 			$attachments = get_children($args);
+			pf_log('Get Children of '.$id);
+			pf_log($attachments);
 			foreach ($attachments as $attachment) {
 				wp_delete_post($attachment->ID, true);
 			}
@@ -1509,7 +1529,7 @@ class PF_Admin {
 		$argup = array(
 			'ID'			=> $id,
 			'post_content' 	=> $item_type,
-			'post_status'	=>	'removed_feed_item'
+			'post_status'	=>	'removed_'.$item_type
 		);
 
 		$result = wp_update_post($argup);

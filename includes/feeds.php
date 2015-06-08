@@ -609,6 +609,8 @@ class PF_Feeds_Schema {
 		pf_log($check);
 		if (!$check){
 			return false;
+		} else {
+			do_action( 'pf_feed_inserted', $check );
 		}
 		return $check;
 
