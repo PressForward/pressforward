@@ -51,6 +51,7 @@ class PF_Admin {
 		add_action( 'pre_get_posts', array( $this, 'sort_by_last_checked' ) );
 
 		add_action( 'before_delete_post', array( $this, 'pf_delete_children_of_feeds' ) );
+		add_action( 'wp_trash_post', array( $this, 'pf_trash_children_of_feeds' ) );
 
 		add_action( 'quick_edit_custom_box', array( $this, 'quick_edit_field' ), 10, 2 );
 		add_action( 'save_post', array( $this, 'quick_edit_save' ), 10, 2 );
@@ -1485,7 +1486,15 @@ class PF_Admin {
     public function pf_delete_children_of_feeds( $post_id ){
     	if ( pressforward()->pf_feeds->post_type == get_post_type( $post_id ) ){
     		pf_log('Delete a feed and all its children.');
+    		$this->pf_thing_deleter( $post_id, true, pf_feed_item_post_type() );
     		$this->pf_thing_deleter( $post_id, true, pressforward()->pf_feeds->post_type );
+    	}
+    }
+
+    public function pf_trash_children_of_feeds( $post_id ){
+    	if ( pressforward()->pf_feeds->post_type == get_post_type( $post_id ) ){
+    		pf_log('Trash a feed and all its children.');
+    		$this->pf_thing_trasher( $post_id, true, pressforward()->pf_feeds->post_type );
     	}
     }
 
@@ -1515,11 +1524,28 @@ class PF_Admin {
 
 		# Note: this will also remove feed items if a feed is deleted, is that something we want?
 		if ($readability_status || $readability_status > 0){
+			if ( 'feed_item' == $item_type ){
+				$post_type = pf_feed_item_post_type();
+			} else {
+				$post_type = $item_type;
+			}
 			$args = array(
-				'post_parent' => $id
+				'post_parent' => $id,
+				'post_type'   => $post_type
 			);
 			$attachments = get_children($args);
 			pf_log('Get Children of '.$id);
+			pf_log($attachments);
+			foreach ($attachments as $attachment) {
+				wp_delete_post($attachment->ID, true);
+			}
+			$args = array(
+				'post_parent' => $id,
+				'post_type'   => $post_type,
+				'post_status' => 'trash'
+			);
+			$attachments = get_children($args);
+			pf_log('Get Trash Children of '.$id);
 			pf_log($attachments);
 			foreach ($attachments as $attachment) {
 				wp_delete_post($attachment->ID, true);
@@ -1534,6 +1560,34 @@ class PF_Admin {
 
 		$result = wp_update_post($argup);
 		return $result;
+
+	}
+
+	function pf_thing_trasher($id = 0, $readability_status = false, $item_type = 'feed_item'){
+		if ($id == 0)
+			return new WP_Error('noID', __("No ID supplied for deletion", 'pf'));
+
+		pf_log('On trash hook:');
+		# Note: this will also remove feed items if a feed is deleted, is that something we want?
+		if ($readability_status || $readability_status > 0){
+			if ( 'feed_item' == $item_type ){
+				$post_type = pf_feed_item_post_type();
+			} else {
+				$post_type = $item_type;
+			}
+			$args = array(
+				'post_parent' => $id,
+				'post_type'   => $post_type
+			);
+			$attachments = get_children($args);
+			pf_log('Get Children of '.$id);
+			pf_log($attachments);
+			foreach ($attachments as $attachment) {
+				wp_trash_post($attachment->ID, true);
+			}
+		}
+
+		return $id;
 
 	}
 

@@ -422,6 +422,9 @@ class PF_Feeds_Schema {
 				$r[$k] = '';
 		}
 		pf_log('Replaced false meta with empty strings.');
+		if (empty($r['post_parent'])){
+			$r['post_parent'] = 0;
+		}
 
 		$wp_args = array(
 			'post_type' 	=> $this->post_type,
