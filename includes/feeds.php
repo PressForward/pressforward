@@ -327,6 +327,9 @@ class PF_Feeds_Schema {
 
 	public function the_feed($feed){
 		$feed_obj = get_post($feed);
+		if (empty($feed_obj)){
+			return;
+		}
 		?>
 		<li class="feed" id="feed-<?php echo $feed_obj->ID; ?>">
 		<?php
