@@ -429,6 +429,7 @@ class PF_Feeds_Schema {
 			'post_title'	=> $r['title'],
 			'post_content'	=> $r['description'],
 			'guid'			=> $r['url'],
+			'post_parent'	=> $r['post_parent'],
 			'tax_input' 	=> array($this->tag_taxonomy => $r['tags'])
 		);
 		# Duplicate the function of WordPress where creating a pre-existing
