@@ -486,6 +486,29 @@ function detect_view_change(){
 
 	});
 
+// Via http://stackoverflow.com/a/1634841/2522464
+function removeURLParameter(url, parameter) {
+    //prefer to use l.search if you have a location/link object
+    var urlparts= url.split('?');
+    if (urlparts.length>=2) {
+
+        var prefix= encodeURIComponent(parameter)+'=';
+        var pars= urlparts[1].split(/[&;]/g);
+
+        //reverse iteration as may be destructive
+        for (var i= pars.length; i-- > 0;) {
+            //idiom for string.startsWith
+            if (pars[i].lastIndexOf(prefix, 0) !== -1) {
+                pars.splice(i, 1);
+            }
+        }
+
+        url= urlparts[0]+'?'+pars.join('&');
+        return url;
+    } else {
+        return url;
+    }
+}
 
 jQuery(window).load(function() {
 
@@ -556,6 +579,9 @@ jQuery(window).load(function() {
 		var id = obj.attr('href');
 		var url = window.location.href;//window.location.origin+window.location.pathname+'?page=pf-menu';
 		url = url.replace('#','&');
+		url = removeURLParameter(url, 'folder');
+		url = removeURLParameter(url, 'feed');
+		url = removeURLParameter(url, 'ready');
 		if (url.indexOf('?') > -1){
 		   url += '&folder='+id;
 		}else{
@@ -570,6 +596,9 @@ jQuery(window).load(function() {
 		var id = obj.children('a').attr('href');
 		var url = window.location.href;//window.location.origin+window.location.pathname+'?page=pf-menu';
 		url = url.replace('#','&');
+		url = removeURLParameter(url, 'folder');
+		url = removeURLParameter(url, 'feed');
+		url = removeURLParameter(url, 'ready');
 		if (url.indexOf('?') > -1){
 			url += '&feed='+id;
 		}else{
