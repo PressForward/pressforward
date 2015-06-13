@@ -1214,12 +1214,12 @@ function pf_add_meta($id, $field, $value = '', $unique = false){
 
 }
 
-function pf_apply_meta(id, $field, $value = '', $state = null, $apply_type = 'update'){
+function pf_apply_meta($id, $field, $value = '', $state = null, $apply_type = 'update'){
 	switch ($field) {
 		case 'nominator_array':
 			$nominators = pf_get_post_meta($id, $field);
 			//We are doing a removal.
-			if ( 1 == count(array_diff($value, $nominators) ){
+			if ( 1 == count(array_diff($value, $nominators) ) ){
 				$nominators = array_unique( $value );
 				continue;
 			}
