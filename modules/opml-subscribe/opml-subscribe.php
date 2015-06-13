@@ -20,6 +20,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		add_action('admin_init', array($this, 'register_settings'));
 		//add_action( 'about_to_insert_pf_feed_items', array($this, 'subscribe_to_approved_feeds') );
 		add_action( 'already_a_feed_item', array($this, 'add_folders_to_items') );
+		add_action( 'pf_tools', array($this, 'opml_tools') );
 		if ( isset( $_GET['pf']) && ('opml' == $_GET['pf']) ){
 			add_action('init', array($this, 'make_OPML') );
 		}
@@ -380,6 +381,15 @@ class PF_OPML_Subscribe extends PF_Module {
 		echo $opml->template();
 		die();
 
+	}
+
+	public function opml_tools(){
+		?>
+			<p>
+				You can share your subscription list as an OPML file by linking people to
+				<a href="<?php echo home_url('/?pf=opml'); ?>" target="_blank"><?php echo home_url('/?pf=opml'); ?></a>.
+			</p>
+		<?php
 	}
 
 
