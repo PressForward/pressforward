@@ -906,6 +906,12 @@ class PF_Feeds_Schema {
 
 		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
 
+		if ( in_array( $pagenow, array( 'edit.php' ) ) ){
+			if ( false != pressforward()->form_of->is_a_pf_page() ){
+				wp_enqueue_script( 'feed_edit_manip', PF_URL . '/assets/js/subscribed-feeds-actions.js', array('jquery'), PF_VERSION );
+			}
+		}
+
 		if ( !in_array( $pagenow, array( 'post.php' ) ) )
 			return;
 
