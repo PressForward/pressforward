@@ -248,8 +248,8 @@ class PF_OPML_Subscribe extends PF_Module {
                     <div class="inside">
                         <div><?php _e('Add OPML Subscription', 'pf'); ?> (RSS or Atom)</div>
                             <div class="pf_feeder_input_box">
-                                <input id="<?php echo PF_SLUG . '_opml_sub[opml_single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo PF_SLUG . '_opml_sub[opml_single]'; ?>" value="" />
-                                <label class="description" for="<?php echo PF_SLUG . '_opml_sub[opml_single]'; ?>"><?php _e('*Complete URL path', 'pf'); ?></label>
+                                <input id="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>" value="" />
+                                <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>"><?php _e('*Complete URL path', 'pf'); ?></label>
 
                         		<input type="submit" class="button-primary" value="<?php _e('Save Options', 'pf'); ?>" />
                     		</div>
@@ -260,10 +260,13 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 
 	public static function pf_opml_subscriber_validate($input){
+		//var_dump($input); die();
 		//var_dump(get_class()); die();
 		if (!empty($input['opml_single'])){
+
 			if (!(is_array($input['opml_single']))){
 				if (!pressforward()->pf_feeds->has_feed($input['opml_single'])){
+					pf_log('Adding OPML with url'.$input['opml_single']);
 					$check = pressforward()->pf_feeds->create(
 						$input['opml_single'],
 						array(
@@ -274,9 +277,17 @@ class PF_OPML_Subscribe extends PF_Module {
 							'module_added' => get_class()
 						)
 					);
+					pf_log('With result of:');
+					pf_log($check);
 					if (is_wp_error($check)){
 						wp_die($check);
 					}
+					$subscribe_string = 'It could not be created.';
+					if ( !empty($check) ){
+						$edit_link = get_edit_post_link( $check );
+						$subscribe_string = " <a href=\"$edit_link\" target=\"_blank\">".__('Edit.', 'pf').'</a>';
+					}
+					add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', __('You have submitted an OPML feed.', 'pf').$subscribe_string, 'updated');
 				} else {
 					#var_dump($input); die();
 					#pressforward()->pf_feeds->update_url($input['opml_single']);

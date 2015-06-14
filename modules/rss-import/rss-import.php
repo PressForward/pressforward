@@ -428,7 +428,7 @@ class PF_RSS_Import extends PF_Module {
  		}
 		if ($something_broke){
 			add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', __('You have submitted ','pf').$subscribe_string.' ' . __('The feed was not found.', 'pf'), 'updated');
-		} else {
+		} elseif ( !empty($subscribe_string) ) {
 			add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', __('You have submitted ', 'pf').$subscribe_string, 'updated');
 		}
 		return $input;
