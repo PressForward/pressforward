@@ -237,8 +237,8 @@ class PF_OPML_Subscribe extends PF_Module {
 
 	public function add_to_feeder(){
 
-        settings_fields( PF_SLUG . '_opml_group' );
-		$feedlist = get_option( PF_SLUG . '_opml_module' );
+        //settings_fields( PF_SLUG . '_opml_group' );
+		//$feedlist = get_option( PF_SLUG . '_opml_module' );
 
         ?>
 		<div class="pf-opt-group span6">
@@ -259,7 +259,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		<?php
 	}
 
-	static function pf_opml_subscriber_validate($input){
+	public static function pf_opml_subscriber_validate($input){
 		//var_dump(get_class()); die();
 		if (!empty($input['opml_single'])){
 			if (!(is_array($input['opml_single']))){
@@ -289,7 +289,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 
 	function register_settings(){
-		register_setting(PF_SLUG . '_opml_group', PF_SLUG . '_opml_sub', array('PF_OPML_Subscribe', 'pf_opml_subscriber_validate'));
+		register_setting(PF_SLUG . '_feedlist_group', PF_SLUG . '_feedlist', array('PF_OPML_Subscribe', 'pf_opml_subscriber_validate') );
 	}
 
 	private function make_a_folder_object_from_term( $term ){
