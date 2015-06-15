@@ -1,16 +1,16 @@
 jQuery(window).load(function() {
-	jQuery(".redoFeeds").click(function (evt){ 
+	jQuery(".redoFeeds").click(function (evt){
 		evt.preventDefault();
 		jQuery.post(ajaxurl, {
 			action: 'deal_with_old_feedlists'
-		}, 
+		},
 		function (response) {
 			alert('Feeds moved. ' + response);
 		});
 	});
-	
-	  
-	jQuery(".resetFeedOps").click(function (evt){ 
+
+
+	jQuery(".resetFeedOps").click(function (evt){
 			evt.preventDefault();
 
 
@@ -24,7 +24,14 @@ jQuery(window).load(function() {
 				//jQuery("#test-div1").append(data);
 				alert('Feed options reset.');
 			});
-	});	  	  	  
-	  	
-	
+	});
+
+	jQuery('.pressforward_page_pf-feeder .rss-box').on('click', '.button-primary', function(evt){
+
+		jQuery( ".pressforward_page_pf-feeder .rss-box .button-primary:last" ).hide();
+		jQuery( ".pressforward_page_pf-feeder .rss-box" ).append( '<div class="pf-loader" style="margin-top:-80px;"></div>' );
+
+	});
+
+
 });
