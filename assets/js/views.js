@@ -299,7 +299,8 @@ function PFBootstrapInits() {
 
 	jQuery('.itemInfobutton').popover({
 		html : true,
-		container : '.actions',
+		title : '',
+		container : '.icon-info-sign',
 		content : function(){
 			var idCode = jQuery(this).attr('data-target');
 			var contentOutput = '<div class="feed-item-info-box">';
