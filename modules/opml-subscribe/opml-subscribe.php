@@ -86,7 +86,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 
 	public function add_folders_to_items($args){
-				$item = $args['item'];
+		$item = $args['item'];
 		if (empty($item['obj']) || empty($item['obj']->feedUrl) ){
 			return $item;
 		}
@@ -241,7 +241,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		//$feedlist = get_option( PF_SLUG . '_opml_module' );
 
         ?>
-		<div class="pf-opt-group span6">
+		<div class="pf-opt-group span5">
             <div class="opml-box postbox">
                     <div class="handlediv" title="Click to toggle"><br></div>
                     <h3 class="hndle"><span><?php _e('Subscribe to OPML as Feed', 'pf'); ?></span></h3>
