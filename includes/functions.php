@@ -764,9 +764,78 @@ function pf_meta_for_entry($key, $value){
  * @param int $idB The ID of the post that needs to have the meta info attached to it.
  *
  */
-function pf_meta_transition_post($idA, $idB){
+function pf_meta_transition_post($idA, $idB, $term_transition = false){
+	pf_log('Transition post '.$idA.' to '.$idB);
 	foreach(pf_meta_structure() as $meta){
 		pf_meta_transition(get_pf_meta_name($meta), $idA, $idB);
+	}
+	if ( $term_transition ){
+		pf_transition_terms($idA, $idB);
+	}
+}
+
+function pf_transition_terms($idA, $idB){
+	$parent = wp_get_post_parent_id($idA);
+	$ids = array($idA);
+	if ( !empty($parent) && !is_wp_error( $parent ) ){
+		$ids[] = $parent;
+	}
+	/**$parent_parent = wp_get_post_parent_id( $parent );
+	if ( !empty($parent_parent) && !is_wp_error( $parent_parent ) ){
+		$ids[] = $parent_parent;
+	}**/
+	$term_objects = wp_get_object_terms( $ids, array( pressforward()->pf_feeds->tag_taxonomy, 'post_tag', 'category' ) );
+	$item_tags = pf_get_post_meta($idA, 'item_tags');
+	if ( !empty($term_objects) ){
+		foreach ( $term_objects as $term ){
+			wp_set_object_terms($idB, $term->term_id, $term->taxonomy, true);
+			if ( pressforward()->pf_feeds->tag_taxonomy == $term->taxonomy ){
+				$check = pf_cascade_tagging($idB, $term->slug, 'slug');
+				if (!$check){
+					pf_build_and_assign_new_tag($idB, $$term->name);
+				}
+			}
+		}
+	}
+	if ( !empty($item_tags) ){
+		pf_log('Attempting to attach item_tags.');
+		if ( !is_array( $item_tags ) ){
+			pf_log($item_tags);
+			$item_tags = explode(',',$item_tags);
+		}
+		foreach ($item_tags as $tag){
+			$check = pf_cascade_tagging($idB, $tag, 'name');
+			if (!$check){
+				pf_build_and_assign_new_tag($idB, $tag);
+			}
+		}
+	}
+}
+
+function pf_cascade_tagging($idB, $term_id, $term_id_type = 'slug'){
+	pf_log('Trying to assign taxonomy for '.$idB);
+	$term_object = get_term_by($term_id_type, $term_id, 'category');
+	if ( empty( $term_object ) ){
+		pf_log('No category match.');
+		$term_object = get_term_by($term_id_type, $term_id, 'post_tag');
+		if ( empty( $term_object ) ){
+			pf_log('No post_tag match.');
+			return false;
+		} else {
+			wp_set_object_terms( $idB, $term_object->term_id, 'post_tag', true );
+		}
+	} else {
+		wp_set_object_terms( $idB, $term_object->term_id, 'category', true );
+	}
+	return true;
+}
+
+function pf_build_and_assign_new_tag($idB, $full_tag_name){
+	pf_log('Attaching new tag to '.$idB.' with a name of '.$full_tag_name);
+	$r = wp_insert_term($full_tag_name, 'post_tag');
+	pf_log('Making a new post_tag, ID:'.$r['term_id']);
+	if ( !empty($r['term_id']) && !is_wp_error( $r ) ){
+		wp_set_object_terms( $idB, $r['term_id'], 'post_tag', true );
 	}
 }
 
@@ -1218,6 +1287,12 @@ function pf_apply_meta($id, $field, $value = '', $state = null, $apply_type = 'u
 	switch ($field) {
 		case 'nominator_array':
 			$nominators = pf_get_post_meta($id, $field);
+			if ( !is_array( $value ) ){
+				$value = array( $value );
+			}
+			if ( !is_array( $nominators ) ){
+				$nominators = array( $nominators );
+			}
 			//We are doing a removal.
 			if ( 1 == count(array_diff($value, $nominators) ) ){
 				$nominators = array_unique( $value );

@@ -296,7 +296,7 @@ class PF_Nominations {
 			if ($post_check) {
 				$newPostID = wp_insert_post( $data );
 				#add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
-				pf_meta_transition_post($_POST['ID'], $newPostID);
+				pf_meta_transition_post($_POST['ID'], $newPostID, true);
 
 				$already_has_thumb = has_post_thumbnail($_POST['ID']);
 				if ($already_has_thumb)  {
@@ -552,7 +552,7 @@ class PF_Nominations {
 				$readable_status = pf_retrieve_meta($_POST['item_post_id'], 'readable_status');
 				$item_author = pf_retrieve_meta($_POST['item_post_id'], 'item_author');
 				$parents = get_post_ancestors( $_POST['item_post_id'] );
-				$parent_id = ($parents) ? $parents[count($parents)-1] : false;
+				$parent_id = ($parents) ? $parents[0] : false;
 				if ($readable_status != 1){
 					$read_args = array('force' => '', 'descrip' => $item_content, 'url' => $item_link, 'authorship' => $item_author );
 					$item_content_obj = pressforward()->readability->get_readable_text($read_args);
@@ -794,7 +794,7 @@ class PF_Nominations {
 				$newPostID = wp_insert_post( $data, true );
 ##Check
 				add_post_meta($_POST['nom_id'], 'nom_id', $_POST['nom_id'], true);
-				pf_meta_transition_post($_POST['nom_id'], $newPostID);
+				pf_meta_transition_post($_POST['nom_id'], $newPostID, true);
 
 				$already_has_thumb = has_post_thumbnail($_POST['nom_id']);
 				if ($already_has_thumb)  {
