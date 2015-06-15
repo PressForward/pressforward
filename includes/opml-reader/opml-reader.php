@@ -50,8 +50,8 @@ class OPML_reader {
 		}
 		$obj = new OPML_Object($url);
 		$this->opml = $obj;
-		$this->opml->set_title($opml_data->head->title);
-		pf_log('Reading out from OPML file named '.$opml_data->head->title);
+		$this->opml->set_title( (string) $opml_data->head->title );
+		pf_log('Reading out from OPML file named '.$this->opml->get_title());
 		foreach ( $opml_data->body->outline as $folder ){
 			//return $folder;
 			$this->make_OPML_obj($folder);
