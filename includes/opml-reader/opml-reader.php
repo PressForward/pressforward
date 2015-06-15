@@ -333,6 +333,19 @@ class OPML_Object {
 		}
 		return $folder_a;
 	}
+	public function get_feeds_without_folder(){
+		$folder_a = array();
+		foreach ( $this->feeds as $feed ){
+			//var_dump($feed);
+			if ( empty($feed->folder) ){
+				$folder_a[] = $feed;
+			}
+		}
+		if ( empty($folder_a) ){
+			return false;
+		}
+		return $folder_a;
+	}
 	function get_feed_by_id($unique_id){
 		return $this->feeds[$unique_id];
 	}
@@ -450,7 +463,9 @@ class OPML_Maker {
 		    		$c = 0;
 		    		foreach ($this->obj->folders as $folder){
 		    			if ($c > 0){
-		    				echo "\n\t\t\t\t\t";
+		    				echo "\n\t\t\t";
+		    			} else {
+
 		    			}
 		    			echo $this->assemble_tag('outline', $folder);
 		    				//var_dump($folder);
@@ -459,10 +474,19 @@ class OPML_Maker {
 		    				if (!empty($feeds)){
 			    				foreach ($feeds as $feed){
 			    					//var_dump($feed);
-			    					echo "\t\t\t\t\t\t".$this->assemble_tag('outline',$feed,true,array('folder','feedUrl'));
+			    					echo "\t\t\t\t".$this->assemble_tag('outline',$feed,true,array('folder','feedUrl'));
 			    				}
 			    			}
-		    			echo "\t\t\t\t\t".'</outline>';
+		    			echo "\t\t\t".'</outline>';
+		    			$c++;
+		    		}
+		    		echo "\n";
+		    		$folderless_count = 0;
+		    		foreach ($this->obj->get_feeds_without_folder() as $feed){
+		    			if ($c > 0){
+		    				echo "\t\t\t";
+		    			}
+		    			echo $this->assemble_tag('outline',$feed,true,array('folder','feedUrl'));
 		    			$c++;
 		    		}
 		    		echo "\n";

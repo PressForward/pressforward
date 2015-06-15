@@ -20,6 +20,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		add_action('admin_init', array($this, 'register_settings'));
 		//add_action( 'about_to_insert_pf_feed_items', array($this, 'subscribe_to_approved_feeds') );
 		add_action( 'already_a_feed_item', array($this, 'add_folders_to_items') );
+		add_action( 'pf_tools', array($this, 'opml_tools') );
 		if ( isset( $_GET['pf']) && ('opml' == $_GET['pf']) ){
 			add_action('init', array($this, 'make_OPML') );
 		}
@@ -236,8 +237,8 @@ class PF_OPML_Subscribe extends PF_Module {
 
 	public function add_to_feeder(){
 
-        settings_fields( PF_SLUG . '_opml_group' );
-		$feedlist = get_option( PF_SLUG . '_opml_module' );
+        //settings_fields( PF_SLUG . '_opml_group' );
+		//$feedlist = get_option( PF_SLUG . '_opml_module' );
 
         ?>
 		<div class="pf-opt-group span6">
@@ -247,8 +248,8 @@ class PF_OPML_Subscribe extends PF_Module {
                     <div class="inside">
                         <div><?php _e('Add OPML Subscription', 'pf'); ?> (RSS or Atom)</div>
                             <div class="pf_feeder_input_box">
-                                <input id="<?php echo PF_SLUG . '_opml_sub[opml_single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo PF_SLUG . '_opml_sub[opml_single]'; ?>" value="" />
-                                <label class="description" for="<?php echo PF_SLUG . '_opml_sub[opml_single]'; ?>"><?php _e('*Complete URL path', 'pf'); ?></label>
+                                <input id="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>" value="" />
+                                <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>"><?php _e('*Complete URL path', 'pf'); ?></label>
 
                         		<input type="submit" class="button-primary" value="<?php _e('Save Options', 'pf'); ?>" />
                     		</div>
@@ -258,11 +259,14 @@ class PF_OPML_Subscribe extends PF_Module {
 		<?php
 	}
 
-	static function pf_opml_subscriber_validate($input){
+	public static function pf_opml_subscriber_validate($input){
+		//var_dump($input); die();
 		//var_dump(get_class()); die();
 		if (!empty($input['opml_single'])){
+
 			if (!(is_array($input['opml_single']))){
 				if (!pressforward()->pf_feeds->has_feed($input['opml_single'])){
+					pf_log('Adding OPML with url'.$input['opml_single']);
 					$check = pressforward()->pf_feeds->create(
 						$input['opml_single'],
 						array(
@@ -273,9 +277,17 @@ class PF_OPML_Subscribe extends PF_Module {
 							'module_added' => get_class()
 						)
 					);
+					pf_log('With result of:');
+					pf_log($check);
 					if (is_wp_error($check)){
 						wp_die($check);
 					}
+					$subscribe_string = 'It could not be created.';
+					if ( !empty($check) ){
+						$edit_link = get_edit_post_link( $check );
+						$subscribe_string = " <a href=\"$edit_link\" target=\"_blank\">".__('Edit.', 'pf').'</a>';
+					}
+					add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', __('You have submitted an OPML feed.', 'pf').$subscribe_string, 'updated');
 				} else {
 					#var_dump($input); die();
 					#pressforward()->pf_feeds->update_url($input['opml_single']);
@@ -288,7 +300,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 
 	function register_settings(){
-		register_setting(PF_SLUG . '_opml_group', PF_SLUG . '_opml_sub', array('PF_OPML_Subscribe', 'pf_opml_subscriber_validate'));
+		register_setting(PF_SLUG . '_feedlist_group', PF_SLUG . '_feedlist', array('PF_OPML_Subscribe', 'pf_opml_subscriber_validate') );
 	}
 
 	private function make_a_folder_object_from_term( $term ){
@@ -380,6 +392,15 @@ class PF_OPML_Subscribe extends PF_Module {
 		echo $opml->template();
 		die();
 
+	}
+
+	public function opml_tools(){
+		?>
+			<p>
+				You can share your subscription list as an OPML file by linking people to
+				<a href="<?php echo home_url('/?pf=opml'); ?>" target="_blank"><?php echo home_url('/?pf=opml'); ?></a>.
+			</p>
+		<?php
 	}
 
 

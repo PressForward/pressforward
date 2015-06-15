@@ -740,7 +740,7 @@ function pf_debug_ipads(){
  */
 function pf_meta_establish_post($id, $args){
 	foreach ($args as $arg){
-		add_post_meta($id, $arg['name'], $arg['value'], true);
+		pf_add_meta($id, $arg['name'], $arg['value'], true);
 	}
 }
 
@@ -1192,7 +1192,7 @@ function pf_get_post_meta($id, $field, $single = true, $obj = false){
  */
 function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
     $field = pf_pass_meta($field, $id, $value);
-    $check = update_post_meta($id, $field, $value, $prev_value);
+    $check = pf_apply_meta($id, $field, $value, $prev_value);
     return $check;
 
 }
@@ -1209,9 +1209,37 @@ function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
  */
 function pf_add_meta($id, $field, $value = '', $unique = false){
     $field = pf_pass_meta($field, $id, $value, $unique);
-    $check = add_post_meta($id, $field, $value, $unique);
+    $check = pf_apply_meta($id, $field, $value, $unique);
     return $check;
 
+}
+
+function pf_apply_meta($id, $field, $value = '', $state = null, $apply_type = 'update'){
+	switch ($field) {
+		case 'nominator_array':
+			$nominators = pf_get_post_meta($id, $field);
+			//We are doing a removal.
+			if ( 1 == count(array_diff($value, $nominators) ) ){
+				$nominators = array_unique( $value );
+				continue;
+			}
+			if ( !is_array($value) ){
+				$value = array($value);
+			}
+			$nominators = array_merge( $nominators, $value );
+			$nominators = array_unique( $nominators );
+			$value = $nominators;
+			break;
+		default:
+			# code...
+			break;
+	}
+	if ( 'update' == $apply_type ){
+		$check = update_post_meta($id, $field, $value, $state);
+	} elseif ( 'add' == $apply_type ) {
+		$check = add_post_meta($id, $field, $value, $state);
+	}
+	return $check;
 }
 
 function pf_is_drafted($item_id){
