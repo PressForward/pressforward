@@ -123,7 +123,9 @@ class PressForward {
 		#$dom = new pf_simple_html_dom;
 
 		// Internal tools
-		require_once(PF_ROOT . "/includes/opml-reader/opml-reader.php");
+		require_once( PF_ROOT . '/includes/opml/maker.php' );
+		require_once( PF_ROOT . '/includes/opml/object.php' );
+		require_once( PF_ROOT . '/includes/opml/reader.php' );
 		require_once(PF_ROOT . "/includes/class-pf_metas.php");
 
 		// Load the module base class and our test module
