@@ -203,6 +203,7 @@ class PF_Feeds_Schema {
 		 		            'fields'	=>	'ids',
 		 		            'orderby'	=> 'title',
 		 		            'order'		=> 'ASC',
+		 		            'post_status' => array( 'pending', 'draft', 'future', 'publish', the_alert_box()->status() ),
 		 		            'nopaging' => true,
 		 		            'tax_query' => array(
 		 		                array(
