@@ -374,6 +374,7 @@ class PF_OPML_Subscribe extends PF_Module {
 			// no posts found
 		}
 		//var_dump($this->master_opml_obj); die();
+		header('Content-Type: text/x-opml');
 		$opml = new OPML_Maker($this->master_opml_obj);
 		echo $opml->template();
 		die();
