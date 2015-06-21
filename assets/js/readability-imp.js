@@ -9,7 +9,7 @@
 		  .replace(/"/g, "&quot;")
 		  .replace(/'/g, "&#039;");
 	}
-	
+
 	//via https://github.com/kvz/phpjs/blob/master/functions/strings/get_html_translation_table.js
 	function get_html_translation_table (table, quote_style) {
 	  // http://kevin.vanzonneveld.net
@@ -172,8 +172,8 @@
 	  }
 
 	  return hash_map;
-	}	
-	
+	}
+
 	//via https://github.com/kvz/phpjs/blob/master/functions/strings/html_entity_decode.js
 	function html_entity_decode (string, quote_style) {
 	  // http://kevin.vanzonneveld.net
@@ -220,55 +220,56 @@
 
 function allContentModal(){
 	//http://stackoverflow.com/questions/14242227/bootstrap-modal-body-max-height-100
-	//Need to fix this to only trigger on the specific model, but not sure how yet. 
+	//Need to fix this to only trigger on the specific model, but not sure how yet.
 	jQuery(".toplevel_page_pf-menu").on('shown', '.pfmodal.modal', function(evt){
 		//alert('Modal Triggered.');
 		document.body.style.overflow = 'hidden';
-		var element = jQuery(this);		
+		var element = jQuery(this);
 		var modalID = element.attr('id');
 		//alert(modalID);
-		//showDiv(jQuery('#entries'), jQuery('#'+modalID));		
+		//showDiv(jQuery('#entries'), jQuery('#'+modalID));
 		var itemID = element.attr('pf-item-id');
-		var postID = element.attr('pf-post-id');	
+		var postID = element.attr('pf-post-id');
 		var tabindex = element.parent().attr('tabindex');
-		modalNavigator(tabindex);			
+		modalNavigator(tabindex);
 		//At this point it should have grabbed the direct feeditem hashed ID. That allows us to do things specifically to that item past this point.
 		//BUG: Escaping everything incorrectly. <-one time issue?
 		var content = jQuery("#"+itemID+" #modal-body-"+itemID).html();
 		var url = jQuery("#"+itemID+" #item_link_"+itemID).val();
 		var authorship = jQuery("#"+itemID+" #item_author_"+itemID).val();
 		var read_status = element.attr('pf-readability-status');
-		//I suppose I should nonce here right? 
+		var opml_check_item_tags = jQuery("#"+itemID+" #item_tags_"+itemID).val();
+		//I suppose I should nonce here right?
 		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());
-		
+
 		jQuery.post(ajaxurl, {
 				action: 'pf_ajax_get_comments',
-				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
+				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
 				id_for_comments: postID,
-			}, 
+			},
 			function(comment_response) {
 				jQuery("#"+itemID+" #modal-"+itemID+" .modal-comments").html(comment_response);
-			});		
-		
-		if (read_status != 1){
-		//At some point a waiting graphic should go here. 
+			});
+
+		if ( ( read_status != 1 ) && ( 'opml-feed' != opml_check_item_tags ) ){
+		//At some point a waiting graphic should go here.
 		jQuery("#"+itemID+" #modal-"+itemID+" #modal-body-"+itemID).html('Attempting to retrieve full article.');
 			jQuery.post(ajaxurl, {
 				action: 'make_it_readable',
-				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
+				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
 				read_item_id: itemID,
 				url: url,
 				content: escape(content),
 				post_id: postID,
-				//We need to pull the source data to determine if it is aggregation as well. 
+				//We need to pull the source data to determine if it is aggregation as well.
 				authorship: authorship,
 				pf_nomination_nonce: theNonce,
 				force: 'noforce'
-			}, 
+			},
 			function(response) {
 				var read_content = html_entity_decode(jQuery(response).find("response_data").text());
 				var status = jQuery(response).find("readable_status").text();
-				
+
 				//alert(read_content);
 				// Don't bother doing anything if we don't need it.
 				if (status != 'readable') {
@@ -297,41 +298,41 @@ function allContentModal(){
 	});
 }
 
-function modalReadReset(){	
+function modalReadReset(){
 	jQuery('.toplevel_page_pf-menu .pf_container').on('click', ".modal-readability-reset", function(evt){
 		evt.preventDefault();
-		var element = jQuery(this);		
+		var element = jQuery(this);
 		var modalID = element.attr('pf-modal-id');
 		var itemID = element.attr('pf-item-id');
-		var postID = element.attr('pf-post-id');		
+		var postID = element.attr('pf-post-id');
 		//At this point it should have grabbed the direct feeditem hashed ID. That allows us to do things specifically to that item past this point.
 		//BUG: Escaping everything incorrectly. <-one time issue?
 		var content = jQuery("#"+itemID+" #modal-body-"+itemID).html();
 		var url = jQuery("#"+itemID+" #item_link_"+itemID).val();
 		var authorship = jQuery("#"+itemID+" #item_author_"+itemID).val();
-		//I suppose I should nonce here right? 
-		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());	
-		//At some point a waiting graphic should go here. 
+		//I suppose I should nonce here right?
+		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());
+		//At some point a waiting graphic should go here.
 		//alert(content);
 		jQuery("#"+itemID+" #modal-"+itemID+" #modal-body-"+itemID).html('Attempting to retrieve full article.');
 			jQuery.post(ajaxurl, {
 				action: 'make_it_readable',
-				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
+				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
 				read_item_id: itemID,
 				url: url,
 				content: escape(content),
 				post_id: postID,
-				//We need to pull the source data to determine if it is aggregation as well. 
+				//We need to pull the source data to determine if it is aggregation as well.
 				authorship: authorship,
 				pf_nomination_nonce: theNonce,
 				force: 'force'
-				
-			}, 
+
+			},
 			function(response) {
 				var check = jQuery(response).find("response_data").text();
 				var read_content = html_entity_decode(jQuery(response).find("response_data").text());
 				var status = jQuery(response).find("readable_status").text();
-				
+
 				//alert(read_content);
 				// Don't bother doing anything if we don't need it.
 				if (status != 'readable') {
@@ -357,47 +358,47 @@ function modalReadReset(){
 						jQuery(modalID).attr('pf-readability-status', 1);
 				}
 			});
-			
-	
-	});
-}	
 
-function modalNomReadReset(){	
+
+	});
+}
+
+function modalNomReadReset(){
 	jQuery('.pressforward_page_pf-review .pf_container').on('click', ".modal-readability-reset", function(evt){
 		evt.preventDefault();
 		//alert('NOMS');
-		var element = jQuery(this);		
+		var element = jQuery(this);
 		var modalID = element.attr('pf-modal-id');
 		var itemID = element.attr('pf-item-id');
-		var postID = element.attr('pf-post-id');		
+		var postID = element.attr('pf-post-id');
 		//At this point it should have grabbed the direct feeditem hashed ID. That allows us to do things specifically to that item past this point.
 		//BUG: Escaping everything incorrectly. <-one time issue?
 		var content = jQuery("#"+postID+" #modal-body-"+itemID).html();
 		var url = jQuery("#"+postID+" #permalink_"+itemID).val();
 		var authorship = jQuery("#"+postID+" #authors_"+itemID).val();
-		//I suppose I should nonce here right? 
-		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());	
-		//At some point a waiting graphic should go here. 
+		//I suppose I should nonce here right?
+		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());
+		//At some point a waiting graphic should go here.
 		//alert(content);
 		jQuery("#"+postID+" #modal-"+itemID+" #modal-body-"+itemID).html('Attempting to retrieve full article.');
 			jQuery.post(ajaxurl, {
 				action: 'make_it_readable',
-				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.			
+				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
 				read_item_id: itemID,
 				url: url,
 				content: escape(content),
 				post_id: postID,
-				//We need to pull the source data to determine if it is aggregation as well. 
+				//We need to pull the source data to determine if it is aggregation as well.
 				authorship: authorship,
 				pf_nomination_nonce: theNonce,
 				force: 'force'
-				
-			}, 
+
+			},
 			function(response) {
 				var check = jQuery(response).find("response_data").text();
 				var read_content = html_entity_decode(jQuery(response).find("response_data").text());
 				var status = jQuery(response).find("readable_status").text();
-				
+
 				//alert(read_content);
 				// Don't bother doing anything if we don't need it.
 				if (status != 'readable') {
@@ -423,13 +424,13 @@ function modalNomReadReset(){
 						jQuery(modalID).attr('pf-readability-status', 1);
 				}
 			});
-			
-	
+
+
 	});
 }
 
 jQuery(window).load(function() {
-allContentModal(); 
+allContentModal();
 modalReadReset();
 modalNomReadReset();
 });

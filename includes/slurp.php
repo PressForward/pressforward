@@ -498,7 +498,13 @@ class PF_Feed_Retrieve {
 				$ab_status =  $alert_box->status();
 				if ( $ab_status == $obj->post_status ) {
 					# The feed has been retrieved, therefor this is a good feed. We can remove the alert.
-					the_alert_box()->remove_alert_on_edit( $obj->ID );
+					the_alert_box()->dismiss_alert( $obj->ID );
+					# Assure the feed is back online.
+					$argup = array(
+		                'ID'			=> $obj->ID,
+		                'post_status'	=>	'publish',
+		            );
+		            $result = wp_update_post($argup);
 				}
 			}
 
