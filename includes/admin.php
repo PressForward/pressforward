@@ -1498,6 +1498,30 @@ class PF_Admin {
     	}
     }
 
+    public function delete_empty_taxonomies( $post_id ){
+    	$terms = wp_get_object_terms( $post_id, pressforward()->pf_feeds->tag_taxonomy, array( 'fields' => 'ids' ) );
+    	foreach ( $terms as $term ){
+			$args = array(
+			'post_type' => pressforward()->pf_feeds->post_type,
+			'posts_per_page'         => 2,
+			'update_post_term_cache' => false,
+			'cache_results'  => false,
+			'fields'		=>	'ids',
+			'tax_query' => array(
+			    array(
+			    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy,
+			    'field' => 'id',
+			    'terms' => $term
+			     )
+			  )
+			);
+			$query = new WP_Query( $args );
+			if ( $query->found_posts > 0 ){
+				wp_delete_term( $term, pressforward()->pf_feeds->tag_taxonomy );
+			}
+    	}
+    }
+
 	/*
 	 *
 	 * A method to allow users to delete any CPT or post through AJAX.
@@ -1559,6 +1583,7 @@ class PF_Admin {
 		);
 
 		$result = wp_update_post($argup);
+		$this->delete_empty_taxonomies($result);
 		return $result;
 
 	}
