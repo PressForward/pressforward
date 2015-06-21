@@ -770,6 +770,7 @@ function pf_meta_transition_post($idA, $idB, $term_transition = false){
 		pf_meta_transition(get_pf_meta_name($meta), $idA, $idB);
 	}
 	if ( $term_transition ){
+		pf_log('Transitioning Terms.');
 		pf_transition_terms($idA, $idB);
 	}
 }
@@ -779,6 +780,10 @@ function pf_transition_terms($idA, $idB){
 	$ids = array($idA);
 	if ( !empty($parent) && !is_wp_error( $parent ) ){
 		$ids[] = $parent;
+	}
+	$item_id = pf_get_post_meta($idA, 'pf_item_post_id');
+	if ( !empty($item_id) && !is_wp_error( $item_id ) ){
+		$ids[] = $item_id;
 	}
 	/**$parent_parent = wp_get_post_parent_id( $parent );
 	if ( !empty($parent_parent) && !is_wp_error( $parent_parent ) ){
@@ -832,7 +837,12 @@ function pf_cascade_tagging($idB, $term_id, $term_id_type = 'slug'){
 
 function pf_build_and_assign_new_tag($idB, $full_tag_name){
 	pf_log('Attaching new tag to '.$idB.' with a name of '.$full_tag_name);
-	$r = wp_insert_term($full_tag_name, 'post_tag');
+	$term_args = array(
+						'description'	=>	'Added by PressForward',
+						'parent'		=>	0,
+						'slug'			=>	pf_slugger($full_tag_name)
+					);
+	$r = wp_insert_term($full_tag_name, 'post_tag', $term_args);
 	pf_log('Making a new post_tag, ID:'.$r['term_id']);
 	if ( !empty($r['term_id']) && !is_wp_error( $r ) ){
 		wp_set_object_terms( $idB, $r['term_id'], 'post_tag', true );

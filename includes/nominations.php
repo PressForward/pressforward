@@ -599,7 +599,12 @@ class PF_Nominations {
 					$item_date = $newDate;
 				}
 			pf_update_meta($_POST['item_post_id'], 'posted_date', $item_date);
-			pf_meta_transition_post($_POST['item_post_id'], $newNomID);
+			if ( !empty( $_POST['pf_amplify'] ) && ( '1' == $_POST['pf_amplify'] ) ){
+				$amplify = true;
+			} else {
+				$amplify = false;
+			}
+			pf_meta_transition_post( $_POST['item_post_id'], $newNomID, $amplify );
 				$response = array(
 					'what' => 'nomination',
 					'action' => 'build_nomination',
@@ -684,7 +689,7 @@ class PF_Nominations {
 				$new_post_id = wp_insert_post( $data, true );
 ##Check
 				add_post_meta($id, 'nom_id', $id, true);
-				pf_meta_transition_post($id, $new_post_id);
+				pf_meta_transition_post($id, $new_post_id, true);
 				$already_has_thumb = has_post_thumbnail($id);
 				if ($already_has_thumb)  {
 					$post_thumbnail_id = get_post_thumbnail_id( $id );
