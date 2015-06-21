@@ -109,7 +109,7 @@ class PF_Feeds_Schema {
 		$cats = get_terms($terms,
 			array(
 				'parent' 				=> 0,
-				'hide_empty'		=> 0,
+				'hide_empty'		=> 1,
 				'hierarchical' 	=> 1
 			)
 		);
