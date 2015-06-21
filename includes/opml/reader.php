@@ -80,9 +80,9 @@ class OPML_reader {
 		pf_log( 'get_OPML_obj invoked.' );
 
 		$this->opml = new OPML_Object( $this->file_url );
-		$this->opml->set_title( $this->opml_file->head->title );
+		$this->opml->set_title( (string) $this->opml_file->head->title );
 
-		pf_log( 'Reading out from OPML file named '.$this->opml_file->head->title );
+		pf_log( 'Reading out from OPML file named '.$this->opml->get_title() );
 
 		foreach ( $this->opml_file->body->outline as $folder ) {
 			$this->make_OPML_obj( $folder );
