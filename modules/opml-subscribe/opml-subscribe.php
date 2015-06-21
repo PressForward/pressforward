@@ -26,20 +26,6 @@ class PF_OPML_Subscribe extends PF_Module {
 		}
 	}
 
-	/**
-	 * Run any setup that has to happen after initial module registration
-	 */
-	public function post_setup_module_info() {
-		$this->includes();
-	}
-
-	/**
-	 * Includes necessary files
-	 */
-	public function includes() {
-		require_once(PF_ROOT . "/includes/opml-reader/opml-reader.php");
-	}
-
 	public function folder_to_slug($folder){
 		$category = $folder->title;
 		$category = rawurlencode( urldecode( $category ) );
