@@ -331,6 +331,9 @@ class PF_Feeds_Schema {
 		if (empty($feed_obj)){
 			return;
 		}
+		if ( 'trash' == $feed_obj->post_status ){
+			return;
+		}
 		?>
 		<li class="feed" id="feed-<?php echo $feed_obj->ID; ?>">
 		<?php
