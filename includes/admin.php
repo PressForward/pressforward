@@ -1475,6 +1475,7 @@ class PF_Admin {
     	if ( pressforward()->pf_feeds->post_type == get_post_type( $post_id ) ){
     		pf_log('Delete a feed and all its children.');
     		$this->pf_thing_deleter( $post_id, true, pf_feed_item_post_type() );
+    		$this->pf_thing_deleter( $post_id, true, pressforward()->nominations->post_type );
     		$this->pf_thing_deleter( $post_id, true, pressforward()->pf_feeds->post_type );
     	}
     }
