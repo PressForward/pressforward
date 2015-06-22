@@ -22,7 +22,8 @@ class PF_Tools {
 				'current'		=> $tab,
 				'user_ID'		=> $user_ID,
 				'page_title'	=>	__('PressForward Tools', 'pf'),
-				'page_slug'		=>	'pf-tools'
+				'page_slug'		=>	'pf-tools',
+				'no_save_button'	=>	true,
 			);
 		echo pressforward()->form_of->get_view(pressforward()->form_of->build_path(array('settings','settings-page'), false), $vars);
 

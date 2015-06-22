@@ -30,7 +30,13 @@
 					?>
 				</div>
 				<br />
-					<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
+					<?php
+						if ( empty($no_save_button) ){
+					?>
+						<input type="submit" name="submit" class="button-primary" value="<?php _e( "Save Changes", 'pf' ) ?>" />
+					<?php
+						}
+					?>
 				<br />
 			</form>
 		</div>
