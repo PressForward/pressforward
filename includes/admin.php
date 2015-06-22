@@ -1195,6 +1195,8 @@ class PF_Admin {
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 			wp_enqueue_style('thickbox');
 			wp_enqueue_script( PF_SLUG . '-media-query-imp' );
+			wp_enqueue_style( PF_SLUG . '-settings-style' );
+			wp_enqueue_script(PF_SLUG . '-settings-tools' );
 
 		}
 
