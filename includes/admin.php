@@ -1493,6 +1493,7 @@ class PF_Admin {
 			$args = array(
 			'post_type' => pressforward()->pf_feeds->post_type,
 			'posts_per_page'         => 2,
+			'post_status'			=> array('publish', 'draft', 'pending', 'future', the_alert_box()->status()),
 			'update_post_term_cache' => false,
 			'cache_results'  => false,
 			'fields'		=>	'ids',
@@ -1505,7 +1506,7 @@ class PF_Admin {
 			  )
 			);
 			$query = new WP_Query( $args );
-			if ( $query->found_posts > 0 ){
+			if ( $query->post_count <= 0 ){
 				wp_delete_term( $term, pressforward()->pf_feeds->tag_taxonomy );
 			}
     	}
