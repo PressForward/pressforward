@@ -87,6 +87,7 @@ class PressForward {
 		$this->set_up_folders();
 		$this->set_up_form_of();
 		$this->set_up_admin();
+		$this->set_up_tools();
 
 		add_action( 'plugins_loaded', array( $this, 'pressforward_init' ) );
 
@@ -141,6 +142,7 @@ class PressForward {
 		require_once( PF_ROOT . '/includes/nominations.php' );
 		require_once( PF_ROOT . '/includes/internal-templates.php' );
 		require_once( PF_ROOT . '/includes/admin.php' );
+		require_once( PF_ROOT . '/includes/tools.php' );
     	require_once( PF_ROOT . '/includes/template-tags.php' );
     	require_once( PF_ROOT . '/includes/alert-box/alert-box.php' );
 		require_once( PF_ROOT . '/lib/urlresolver/URLResolver.php' );
@@ -276,6 +278,17 @@ class PressForward {
 	function set_up_admin() {
 		if ( empty( $this->admin ) ) {
 			$this->admin = new PF_Admin;
+		}
+	}
+
+	/**
+	 * Sets up the Tools admin
+	 *
+	 * @since 1.7
+	 */
+	function set_up_tools() {
+		if ( empty( $this->tools ) ) {
+			$this->tools = PF_Tools::init();
 		}
 	}
 

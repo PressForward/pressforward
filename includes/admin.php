@@ -1024,23 +1024,7 @@ class PF_Admin {
 	*/
 	function display_tools_builder() {
 
-		echo '<header id="app-banner">
-			<div class="title-span title">
-				<h1>PressForward: Tools</h1>								<span id="h-after"> • </span>'
-				#. '<button class="btn btn-small" id="fullscreenfeed"> Full Screen </button>' .
-			. '</div><!-- End title -->
-		</header>';
-
-		pressforward()->form_of->nominate_this('as_paragraph');
-		?>
-		<p>
-			<button type="submit" class="refreshfeed btn btn-small" id="refreshfeed" value="<?php  _e('Refresh', 'pf')  ?>"><?php  _e('Refresh', 'pf');  ?></button>
-			<?php
-				_e( ' the feed retrieval process. This button will attempt to restart a broken refresh process. If a previous feed retrieval cycle was completed, it will start the next one early. However, if the process is currently ongoing it will notify the system that you believe there is an error in the retrieval process, and the next time your site steps through the cycle, the system will attempt to find and rectify the error.', 'pf');
-			?>
-		</p>
-		<?php
-		do_action('pf_tools');
+		pressforward()->tools->the_settings_page();
 
 	}
 
@@ -1176,6 +1160,8 @@ class PF_Admin {
 			wp_enqueue_style( PF_SLUG . '-style' );
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
+			wp_enqueue_style( PF_SLUG . '-settings-style' );
+			wp_enqueue_script(PF_SLUG . '-settings-tools' );
 		}
 		if (('pressforward_page_pf-options') == $hook) {
 			wp_enqueue_style( PF_SLUG . '-settings-style' );

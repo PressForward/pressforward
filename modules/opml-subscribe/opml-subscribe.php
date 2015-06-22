@@ -20,10 +20,21 @@ class PF_OPML_Subscribe extends PF_Module {
 		add_action('admin_init', array($this, 'register_settings'));
 		//add_action( 'about_to_insert_pf_feed_items', array($this, 'subscribe_to_approved_feeds') );
 		add_action( 'already_a_feed_item', array($this, 'add_folders_to_items') );
-		add_action( 'pf_tools', array($this, 'opml_tools') );
+		//add_action( 'pf_tools', array($this, 'opml_tools') );
 		if ( isset( $_GET['pf']) && ('opml' == $_GET['pf']) ){
 			add_action('init', array($this, 'make_OPML') );
 		}
+
+		add_filter( 'pf_tabs_pf-tools', array($this, 'set_permitted_tools_tabs') );
+		add_action( 'pf_do_pf-tools_tab_opml', array($this, 'opml_tools') );
+	}
+
+	public function set_permitted_tools_tabs( $permitted_tabs ){
+		$permitted_tabs['opml'] = array(
+										'title' => __('OPML Link', 'pf'),
+										'cap'  => pf_get_defining_capability_by_role('contributor')
+									);
+		return $permitted_tabs;
 	}
 
 	public function folder_to_slug($folder){
