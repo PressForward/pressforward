@@ -1,4 +1,4 @@
-<?php 
+<?php
 ?>
 <p>
 	<?php _e('These preferences are available only to users with an Administrator role in PressForward. Options set on this page will determine behavior across the site as a whole.', 'pf'); ?>

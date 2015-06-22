@@ -1,18 +1,19 @@
-<?php 
+<?php
 # via http://www.smashingmagazine.com/2011/10/20/create-tabs-wordpress-settings-pages/
 ?>
 <div class="wrap">
-	<h2><?php _e('PressForward Preferences', 'pf'); ?></h2>
+	<h2><?php echo $page_title; ?></h2>
 	<div class="metabox-holder" id="pf-settings-box">
 		<div class="meta-box-sortables ui-sortable">
 			<form action="<?php pf_admin_url(); ?>" method="post">
-				
+
 				<?php
 					wp_nonce_field( 'pf_settings' );
 				?>
 				<h2 class="nav-tab-wrapper" id="pf-settings-tabs">
-				<?php 
-					$tabs = pressforward()->form_of->permitted_tabs();
+				<?php
+					$tabs = pressforward()->form_of->permitted_tabs($page_slug);
+
 					foreach( $tabs as $tab => $tab_meta ){
 						if (current_user_can($tab_meta['cap'])){
 							$title = $tab_meta['title'];
@@ -23,8 +24,8 @@
 				    ?>
 				</h2>
 				<div class="tabwrappper">
-					<?php 
-						pressforward()->form_of->settings_tab_group($current);
+					<?php
+						pressforward()->form_of->settings_tab_group($current, $page_slug);
 
 					?>
 				</div>
