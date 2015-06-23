@@ -64,7 +64,15 @@ class PF_Module {
 
 			add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_scripts' ) );
 			add_action( 'wp_enqueue_styles',  array( $this, 'wp_enqueue_styles' ) );
-			add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
+			if ( !empty( $this->feed_type ) ){
+				if ( 'rss' == $this->feed_type ){
+					$feed_type = 'primary_feed_type';
+				} else {
+					$feed_type = $this->feed_type;
+				}
+				add_action( 'pf_do_pf-add-feeds_tab_'.$feed_type, array( $this, 'add_to_feeder' ) );
+				add_filter( 'pf_tabs_pf-add-feeds', array($this, 'set_permitted_feeds_tabs') );
+			}
 			add_filter('dash_widget_bar', array($this, 'add_dash_widgets_filter') );
 		}
 

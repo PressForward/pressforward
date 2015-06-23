@@ -21,6 +21,8 @@ class PF_RSS_Import extends PF_Module {
 		//self::check_nonce = wp_create_nonce('retrieve-pressforward');
 		add_action( 'admin_init', array($this, 'register_settings') );
 
+		//add_action( 'pf_do_pf-add-feeds_tab_primary_feed_type', array($this, 'add_to_feeder') );
+
 		if( is_admin() )
 		{
 			add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
@@ -268,14 +270,21 @@ class PF_RSS_Import extends PF_Module {
 
 	}
 
+	public function set_permitted_feeds_tabs( $permitted_tabs ){
+		$permitted_tabs['primary_feed_type'] = array(
+										'title' => __('Subscribe to Feeds', 'pf'),
+										'cap'  => get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor'))
+									);
+		return $permitted_tabs;
+	}
+
 	function add_to_feeder() {
 
 		$feedlist = get_option( PF_SLUG . '_feedlist' );
 
         ?>
-		<div class="pf-opt-group span5">
-            <div class="rss-box postbox">
-                    <div class="handlediv" title="Click to toggle"><br></div>
+		<div class="pf-opt-group">
+            <div class="rss-box ">
                     <h3 class="hndle"><span><?php _e('Subscribe to Feeds', 'pf'); ?></span></h3>
                     <div class="inside">
                         <div><?php _e('Add Single Feed', 'pf'); ?> (RSS or Atom)</div>

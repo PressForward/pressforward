@@ -88,6 +88,7 @@ class PressForward {
 		$this->set_up_form_of();
 		$this->set_up_admin();
 		$this->set_up_tools();
+		$this->set_up_add_feeds();
 
 		add_action( 'plugins_loaded', array( $this, 'pressforward_init' ) );
 
@@ -128,6 +129,7 @@ class PressForward {
 		require_once( PF_ROOT . '/includes/opml/object.php' );
 		require_once( PF_ROOT . '/includes/opml/reader.php' );
 		require_once(PF_ROOT . "/includes/class-pf_metas.php");
+		require_once(PF_ROOT . "/includes/class-PF_Add_Feeds.php");
 
 		// Load the module base class and our test module
 		require_once( PF_ROOT . "/includes/functions.php" );
@@ -289,6 +291,17 @@ class PressForward {
 	function set_up_tools() {
 		if ( empty( $this->tools ) ) {
 			$this->tools = PF_Tools::init();
+		}
+	}
+
+	/**
+	 * Sets up the Tools admin
+	 *
+	 * @since 1.7
+	 */
+	function set_up_add_feeds() {
+		if ( empty( $this->add_feeds ) ) {
+			$this->add_feeds = PF_Add_Feeds::init();
 		}
 	}
 

@@ -1033,7 +1033,7 @@ class PF_Admin {
 	 */
 	function display_feeder_builder() {
 
-		pressforward()->form_of->the_view_for('feeder');
+		pressforward()->add_feeds->the_settings_page();
 
 
 	}

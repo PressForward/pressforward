@@ -37,6 +37,14 @@ class PF_OPML_Subscribe extends PF_Module {
 		return $permitted_tabs;
 	}
 
+	public function set_permitted_feeds_tabs( $permitted_tabs ){
+		$permitted_tabs['opml'] = array(
+										'title' => __('OPML as Feed', 'pf'),
+										'cap'  => get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor'))
+									);
+		return $permitted_tabs;
+	}
+
 	public function folder_to_slug($folder){
 		$category = $folder->title;
 		$category = rawurlencode( urldecode( $category ) );

@@ -21,6 +21,6 @@
 	   	//settings_fields(PF_SLUG . '_feeder_options');
 	    //$options = get_option(PF_SLUG . '_plugin_feeder_options');
 		settings_fields( PF_SLUG . '_feedlist_group' );
-		do_action( 'feeder_menu' );
+		//do_action( 'feeder_menu' );
 	?>
 	</form>
