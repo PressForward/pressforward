@@ -1029,9 +1029,7 @@ class PF_Feed_Item {
 				# Ugh... we can't get anything huh?
 				print_r($url . ' has no description we can find.');
 				# We'll want to return a false to loop with.
-				$descrip = false;
-
-				break;
+				return false;
 			}
 		}
 		return $descrip;
