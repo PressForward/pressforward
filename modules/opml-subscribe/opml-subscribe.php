@@ -244,13 +244,12 @@ class PF_OPML_Subscribe extends PF_Module {
 
         //settings_fields( PF_SLUG . '_opml_group' );
 		//$feedlist = get_option( PF_SLUG . '_opml_module' );
-
+		//<div class="pf-opt-group span5">
         ?>
-		<div class="pf-opt-group span5">
-            <div class="opml-box postbox">
-                    <div class="handlediv" title="Click to toggle"><br></div>
-                    <h3 class="hndle"><span><?php _e('Subscribe to OPML as Feed', 'pf'); ?></span></h3>
-                    <div class="inside">
+
+            <div class="opml-box">
+                    <h3><span><?php _e('Subscribe to OPML as Feed', 'pf'); ?></span></h3>
+                    <div>
                         <div><?php _e('Add OPML Subscription', 'pf'); ?> (RSS or Atom)</div>
                             <div class="pf_feeder_input_box">
                                 <input id="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>" value="" />
@@ -260,8 +259,9 @@ class PF_OPML_Subscribe extends PF_Module {
                     		</div>
             		</div>
 			</div>
-		</div>
+
 		<?php
+		//</div>
 	}
 
 	public static function pf_opml_subscriber_validate($input){

@@ -6,3 +6,11 @@
 .pftab.active {
 	display: block;
 }
+
+.pressforward_page_pf-feeder .pftab {
+	margin-top:10px;
+}
+
+.pressforward_page_pf-feeder .pftab h2 {
+	display:none;
+}

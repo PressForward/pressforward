@@ -5,10 +5,15 @@
 	<h2><?php echo $page_title; ?></h2>
 	<div class="metabox-holder" id="pf-settings-box">
 		<div class="meta-box-sortables ui-sortable">
+			<?php if (empty($form_head)){ ?>
 			<form action="<?php pf_admin_url(); ?>" method="post">
 
 				<?php
 					wp_nonce_field( 'pf_settings' );
+			} else {
+				echo $form_head;
+				settings_fields( $settings_field );
+			}
 				?>
 				<h2 class="nav-tab-wrapper" id="pf-settings-tabs">
 				<?php
