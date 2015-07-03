@@ -188,3 +188,6 @@ $RECYCLE.BIN/
 
 # Mergetool Diff files
 *.orig
+
+# IntelliJ IDE files
+.idea
