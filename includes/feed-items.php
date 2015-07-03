@@ -919,7 +919,7 @@ class PF_Feed_Item {
 	}
 
 	# Alternate function title - 'stop_pasting_junk_from_word'
-	public function extra_special_sanatize($string, $severe = false){
+	public static function extra_special_sanatize($string, $severe = false){
 
 		$search = array(chr(145),
 						chr(146),
