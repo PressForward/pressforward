@@ -959,7 +959,7 @@ class PF_Feed_Item {
 				$string = str_replace('&acirc;�', '&rdquo;', $string);
 
 				$search = array("&#39;", "\xc3\xa2\xc2\x80\xc2\x99", "\xc3\xa2\xc2\x80\xc2\x93", "\xc3\xa2\xc2\x80\xc2\x9d", "\xc3\xa2\x3f\x3f", "&#8220;", "&#8221;", "#8217;", "&not;", "&#8482;");
-				$resplace = array("'", "'", ' - ', '"', "'", '"', '"', "'", "-", "(TM)");
+				$replace = array("'", "'", ' - ', '"', "'", '"', '"', "'", "-", "(TM)");
 
 				$string = str_replace($search, $replace, $string);
 
