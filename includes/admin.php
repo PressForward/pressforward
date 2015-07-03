@@ -1544,25 +1544,31 @@ class PF_Admin {
 				$post_type = $item_type;
 			}
 			$args = array(
-				'post_parent' => $id,
-				'post_type'   => $post_type
+				'post_parent'            => $id,
+				'post_type'              => $post_type,
+				'fields'                 => 'ids',
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
 			);
 			$attachments = get_children($args);
 			pf_log('Get Children of '.$id);
 			pf_log($attachments);
 			foreach ($attachments as $attachment) {
-				wp_delete_post($attachment->ID, true);
+				wp_delete_post( $attachment, true );
 			}
 			$args = array(
-				'post_parent' => $id,
-				'post_type'   => $post_type,
-				'post_status' => 'trash'
+				'post_parent'            => $id,
+				'post_type'              => $post_type,
+				'post_status'            => 'trash',
+				'fields'                 => 'ids',
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
 			);
 			$attachments = get_children($args);
 			pf_log('Get Trash Children of '.$id);
 			pf_log($attachments);
 			foreach ($attachments as $attachment) {
-				wp_delete_post($attachment->ID, true);
+				wp_delete_post( $attachment, true );
 			}
 		}
 
