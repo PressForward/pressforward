@@ -444,7 +444,7 @@ class PF_RSS_Import extends PF_Module {
 
 	}
 
-	public function process_opml($opml){
+	public static function process_opml($opml){
 		$OPML_reader = new OPML_reader;
 		$opml_array = $OPML_reader->get_OPML_data($opml);
 		#print_r($opml_array); die();
