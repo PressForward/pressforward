@@ -1901,7 +1901,7 @@ class PF_Admin {
 		}
 
 		// Only touch if we're sorting by last_retrieved
-		if ( 'last_retrieved' !== $query->query_vars['orderby'] ) {
+		if ( ! isset( $query->query_vars['orderby'] ) || 'last_retrieved' !== $query->query_vars['orderby'] ) {
 			return;
 		}
 
@@ -1964,7 +1964,7 @@ class PF_Admin {
 		}
 
 		// Only touch if we're sorting by last_retrieved
-		if ( 'last_checked' !== $query->query_vars['orderby'] ) {
+		if ( ! isset( $query->query_vars['orderby'] ) || 'last_checked' !== $query->query_vars['orderby'] ) {
 			return;
 		}
 
