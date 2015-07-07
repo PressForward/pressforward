@@ -116,32 +116,33 @@ class PF_OPML_Subscribe extends PF_Module {
 	 * @param  array $data [description]
 	 * @return [type]       [description]
 	 */
-	public function subscribe_to_approved_feeds($item){
-		if (empty($item['obj']) || empty($item['obj']->feedUrl) ){
+	public function subscribe_to_approved_feeds( $item ){
+		if ( empty( $item['obj'] ) || empty( $item['obj']->feedUrl ) ){
 			return $item;
 		}
+
 		$feed_obj = $item['obj'];
-		if (empty($item['parent_feed_id'])){
+		if ( empty( $item['parent_feed_id'] ) ){
 			$parent = 0;
+		} else {
+			$parent = get_post_meta( $item['parent_feed_id'], 'user_added', true );
 		}
-		else {
-			$parent = get_post_meta($item['parent_feed_id'], 'user_added', true);
-		}
+
 		$feed_array = array(
-			'title'   		=> $feed_obj->title,
-			'url'     		=> $feed_obj->feedUrl,
-			'htmlUrl' 		=> $feed_obj->htmlUrl,
-			'type'	  		=> 'rss-quick',
-			'feedUrl'		=> $feed_obj->feedUrl,
-			'description' 	=> $feed_obj->text,
-			'feed_author' 	=> 'OPML',
-			'feed_icon'  	=> false,
-			'copyright'		=> false,
-			'thumbnail'  	=> false,
-			'user_added'    => $parent,
-			'post_parent'	=> $item['parent_feed_id'],
-			'module_added' 	=> 'opml-subscribe',
-			'tags'    => array(),
+			'title'        => $feed_obj->title,
+			'url'          => $feed_obj->feedUrl,
+			'htmlUrl'      => $feed_obj->htmlUrl,
+			'type'         => 'rss-quick',
+			'feedUrl'      => $feed_obj->feedUrl,
+			'description'  => $feed_obj->text,
+			'feed_author'  => 'OPML',
+			'feed_icon'    => false,
+			'copyright'    => false,
+			'thumbnail'    => false,
+			'user_added'   => $parent,
+			'post_parent'  => $item['parent_feed_id'],
+			'module_added' => 'opml-subscribe',
+			'tags'         => array(),
 		);
 		$new_feed_id = pressforward()->pf_feeds->create($feed_obj->feedUrl, $feed_array);
 		//Set up category here.
@@ -211,23 +212,24 @@ class PF_OPML_Subscribe extends PF_Module {
 				$this->subscribe_to_approved_feeds($item);
 
 				$content = 'Subscribed: ' . $feed_obj->title . ' - ' . $feed_obj->type . ' - ' . $feed_obj->feedUrl . ' on ' . date('r');
+
 				$opmlObject['opml_'.$c] = pf_feed_object(
-										$feed_obj->title,
-										'OPML Subscription from ' . $opml_object->get_title(),
-										date('r'),
-										'OPML Subscription ' . $opml_object->get_title(),
-										$content,
-										$feed_obj->feedUrl,
-										'',
-										$id,
-										date('r'),
-										'opml-feed', #tags
-										'', #added
-										'', #repeat
-										'',
-										'made_readable',
-										$feed_obj
-										);
+					$feed_obj->title,
+					'OPML Subscription from ' . $opml_object->get_title(),
+					date( 'r' ),
+					'OPML Subscription ' . $opml_object->get_title(),
+					$content,
+					$feed_obj->feedUrl,
+					'',
+					$id,
+					date('r'),
+					'opml-feed', #tags
+					'', #added
+					'', #repeat
+					'',
+					'made_readable',
+					$feed_obj
+				);
 
 				pf_log('Setting new transient for ' . $feed_obj->feedUrl . ' of ' . $opml_object->get_title() . '.');
 				set_transient( 'pf_' . $id, $opmlObject['opml_' . $c], 60*10 );
@@ -364,9 +366,9 @@ class PF_OPML_Subscribe extends PF_Module {
 				$this->master_opml_obj->set_folder($folder_obj);
 			}
 			$feed_query_args = array(
-										'post_type'			=>	pressforward()->pf_feeds->post_type,
-										'posts_per_page'	=>	-1,
-									);
+				'post_type'      => pressforward()->pf_feeds->post_type,
+				'posts_per_page' => -1,
+			);
 			$feed_query = new WP_Query( $feed_query_args );
 
 		} else {
