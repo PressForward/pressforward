@@ -181,7 +181,7 @@ class PF_Nominations {
 				if (empty($nominators)){
 					pf_log('There is no one left who nominated this item.');
 					pf_log('This nomination has been taken back. We will now remove the item.');
-					pressforward()->admin->pf_thing_deleter($nomination_id, true, 'nomination');
+					pf_delete_item_tree( $nomination_id );
 				} else {
 					pf_log('Though one user retracted their nomination, there are still others who have nominated this item.');
 				}

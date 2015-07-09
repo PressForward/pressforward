@@ -582,9 +582,9 @@ class PF_Feed_Item {
             if ( $archiveQuery->have_posts() ) :
 
                 while ( $archiveQuery->have_posts() ) : $archiveQuery->the_post();
-                    $post_id = get_the_ID();
-                     //Switch the delete on to wipe rss archive posts from the database for testing.
-                    pressforward()->admin->pf_thing_deleter( $post_id, true );
+			$post_id = get_the_ID();
+			// Switch the delete on to wipe rss archive posts from the database for testing.
+			pf_delete_item_tree( $post_id );
 
                 endwhile;
                 #print_r(__('All archives deleted.', 'pf'));
