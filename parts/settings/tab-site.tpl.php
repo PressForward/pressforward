@@ -1,4 +1,4 @@
-<?php 
+<?php
 ?>
 <p>
 	<?php _e('These preferences are available only to users with an Administrator role in PressForward. Options set on this page will determine behavior across the site as a whole.', 'pf'); ?>
@@ -94,4 +94,32 @@
 </p>
 <p>
 	<?php _e('Feeds sometimes respond slowly or have errors that cause them to be unreadable. This setting determines the number of consecutive errors PressForward will allow from a feed before creating an alert and disabling it.', 'pf'); ?>
+</p>
+<hr />
+<p>
+	<select name="<?php echo PF_SLUG; ?>_draft_post_status" id="<?php echo PF_SLUG; ?>_draft_post_status"><?php
+		$post_statuses = get_post_statuses();
+		$pf_draft_post_status_value = get_option(PF_SLUG.'_draft_post_status', 'draft');
+		foreach ($post_statuses as $status_name => $status_label): ?>
+			<option value="<?php echo $status_name; ?>" <?php if ($pf_draft_post_status_value === $status_name) echo 'selected="selected"'; ?>><?php echo $status_label; ?></option><?php
+		endforeach; ?>
+	</select>
+	<label class="description" for="<?php echo PF_SLUG; ?>_draft_post_status"><?php echo __('Post status for new content.', 'pf'); ?></label>
+</p>
+<p>
+	<?php _e('This setting allows you to set a default post status that gets set when you send nominations to become posts.', 'pf'); ?>
+</p>
+<hr />
+<p>
+	<select name="<?php echo PF_SLUG; ?>_draft_post_type" id="<?php echo PF_SLUG; ?>_draft_post_type"><?php
+		$post_types = get_post_types(array('public' => true), 'objects');
+		$pf_draft_post_type_value = get_option(PF_SLUG.'_draft_post_type', 'post');
+		foreach ($post_types as $post_type): ?>
+			<option value="<?php echo $post_type->name; ?>" <?php if ($pf_draft_post_type_value === $post_type->name) echo 'selected="selected"'; ?>><?php echo $post_type->label; ?></option><?php
+		endforeach; ?>
+	</select>
+	<label class="description" for="<?php echo PF_SLUG; ?>_draft_post_type"><?php echo __('Post type for new content.', 'pf'); ?></label>
+</p>
+<p>
+	<?php _e('Your WordPress site may have more than one Post Type installed, this setting will allow you to send nominations to the post type of your choice.', 'pf'); ?>
 </p>

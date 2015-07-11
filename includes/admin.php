@@ -574,15 +574,15 @@ class PF_Admin {
 			#$item = array_merge($metadata, $item);
 			#var_dump($item);
 			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['item_tags'], $metadata['item_id'] )) . ' '.$readClass.'" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '" pf-schema="read" pf-schema-class="article-read">';
-			?> <a style="display:none;" name="modal-<?php echo $metadata['item_id']; ?>"></a> <?php 
+			?> <a style="display:none;" name="modal-<?php echo $metadata['item_id']; ?>"></a> <?php
 		} else {
 			$id_for_comments = $item['post_id'];
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
 			echo '<article class="feed-item entry ' . pf_slugger(get_the_source_title($id_for_comments), true, false, true) . ' ' . $itemTagClassesString . ' '.$readClass.'" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '" pf-item-post-id="' . $id_for_comments . '" >';
-			?> <a style="display:none;" name="modal-<?php echo $item['item_id']; ?>"></a> <?php 
+			?> <a style="display:none;" name="modal-<?php echo $item['item_id']; ?>"></a> <?php
 		}
-			
+
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
 			echo '<div class="box-controls">';
 			if (current_user_can( 'manage_options' )){
@@ -1025,7 +1025,7 @@ class PF_Admin {
 
 		echo '<header id="app-banner">
 			<div class="title-span title">
-				<h1>PressForward: Tools</h1>								<span id="h-after"> • </span>' 
+				<h1>PressForward: Tools</h1>								<span id="h-after"> • </span>'
 				#. '<button class="btn btn-small" id="fullscreenfeed"> Full Screen </button>' .
 			. '</div><!-- End title -->
 		</header>';
@@ -1347,8 +1347,6 @@ class PF_Admin {
 			} else {
 				update_option('pf_errors_until_alert', 3);
 			}
-
-
 			if (isset( $_POST['pf_present_author_as_primary'] )){
 				$pf_author_opt_check = $_POST['pf_present_author_as_primary'];
 				//print_r($pf_links_opt_check); die();
@@ -1356,6 +1354,16 @@ class PF_Admin {
 			} else {
 				update_option('pf_present_author_as_primary', 'no');
 			}
+
+			$pf_draft_post_type = (!empty( $_POST[PF_SLUG . '_draft_post_type'] ) )
+				? $_POST[PF_SLUG . '_draft_post_type']
+				: 'post';
+			update_option(PF_SLUG . '_draft_post_type', $pf_draft_post_type);
+
+			$pf_draft_post_status = (!empty( $_POST[PF_SLUG . '_draft_post_status'] ) )
+				? $_POST[PF_SLUG . '_draft_post_status']
+				: 'draft';
+			update_option(PF_SLUG . '_draft_post_status', $pf_draft_post_status);
 
 			if (class_exists('The_Alert_Box')){
 				#var_dump($_POST);
