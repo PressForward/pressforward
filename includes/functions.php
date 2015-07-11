@@ -1333,7 +1333,7 @@ function pf_is_drafted($item_id){
 			'fields' => 'ids',
 			'meta_key' => 'item_id',
 			'meta_value' => $item_id,
-			'post_type'	=> 'post'
+			'post_type'	=> get_option(PF_SLUG.'_draft_post_type', 'post')
 		);
 	$q = new WP_Query($a);
 	if ( 0 < $q->post_count ){

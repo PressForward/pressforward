@@ -1023,9 +1023,7 @@ class PF_Admin {
 	* Display function for Feeder panel
 	*/
 	function display_tools_builder() {
-
 		pressforward()->tools->the_settings_page();
-
 	}
 
 	/**
@@ -1336,7 +1334,6 @@ class PF_Admin {
 			} else {
 				update_option('pf_errors_until_alert', 3);
 			}
-
 			if (isset( $_POST[PF_SLUG.'_retrieval_frequency'] )){
 				$pf_retrieval_frequency = $_POST[PF_SLUG.'_retrieval_frequency'];
 				//print_r($pf_links_opt_check); die();
@@ -1344,7 +1341,6 @@ class PF_Admin {
 			} else {
 				update_option(PF_SLUG.'_retrieval_frequency', 30);
 			}
-
 			if (isset( $_POST['pf_present_author_as_primary'] )){
 				$pf_author_opt_check = $_POST['pf_present_author_as_primary'];
 				//print_r($pf_links_opt_check); die();
@@ -1352,6 +1348,16 @@ class PF_Admin {
 			} else {
 				update_option('pf_present_author_as_primary', 'no');
 			}
+
+			$pf_draft_post_type = (!empty( $_POST[PF_SLUG . '_draft_post_type'] ) )
+				? $_POST[PF_SLUG . '_draft_post_type']
+				: 'post';
+			update_option(PF_SLUG . '_draft_post_type', $pf_draft_post_type);
+
+			$pf_draft_post_status = (!empty( $_POST[PF_SLUG . '_draft_post_status'] ) )
+				? $_POST[PF_SLUG . '_draft_post_status']
+				: 'draft';
+			update_option(PF_SLUG . '_draft_post_status', $pf_draft_post_status);
 
 			if (class_exists('The_Alert_Box')){
 				#var_dump($_POST);
