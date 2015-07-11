@@ -107,6 +107,8 @@
 <p>
 	<?php _e('This setting is the frequency at which PressForward will attempt to start the process of retrieving all the feeds in your list. Warning: if you have a large number of feeds this setting should not go below 30 minutes.', 'pf'); ?>
 </p>
+<hr />
+<p>
 	<select name="<?php echo PF_SLUG; ?>_draft_post_status" id="<?php echo PF_SLUG; ?>_draft_post_status"><?php
 		$post_statuses = get_post_statuses();
 		$pf_draft_post_status_value = get_option(PF_SLUG.'_draft_post_status', 'draft');
