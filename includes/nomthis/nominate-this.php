@@ -158,14 +158,14 @@ function nominate_it() {
 			);
 			pf_meta_establish_post($post_ID, $pf_meta_args);
 		}
-	if (isset($_POST['publish']) && ($_POST['publish'] == "Send to Draft")) {
+	if (isset($_POST['publish']) && ($_POST['publish'] == "Send to ".ucwords(get_option(PF_SLUG.'_draft_post_status', 'draft')) ) ) {
 
 		$post_check = $pf_nomination->is_nominated($item_id, 'post', false);
 		if ($post_check != true) {
 			pf_update_meta($post_ID, 'nom_id', $post_ID);
 			$d_post = $post;
-			$d_post['post_type'] = 'post';
-			$d_post['post_status'] = 'draft';
+			$d_post['post_type'] = get_option(PF_SLUG.'_draft_post_type', 'post');
+			$d_post['post_status'] = get_option(PF_SLUG.'_draft_post_status', 'draft');
 			$newPostID = wp_insert_post( $d_post, true );
 			#var_dump($newPostID); die();
 			#pf_meta_transition_post($post_ID, $newPostID);
@@ -595,7 +595,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 					<?php
 						submit_button( __( 'Nominate' ), 'button', 'draft', false, array( 'id' => 'save' ) );
 						if ( current_user_can('publish_posts') ) {
-							submit_button( __( 'Send to Draft' ), 'primary', 'publish', false );
+							submit_button( __( 'Send to '.ucwords(get_option(PF_SLUG.'_draft_post_status', 'draft')) ), 'primary', 'publish', false );
 						} else {
 
 						} ?>
