@@ -90,6 +90,13 @@ function nominate_it() {
 		$post['post_status'] = get_option(PF_SLUG.'_draft_post_status', 'draft');
 
 	$nom_check = false;
+    //var_dump('<pre>'); var_dump($_POST['pf-feed-subscribe']); die();
+    if ( !empty( $_POST['pf-feed-subscribe'] ) && ( 'subscribe' == $_POST['pf-feed-subscribe'] ) ){
+        $url_array = parse_url($_POST['item_link']);
+        $sourceLink = 'http://' . $url_array['host'];
+        //var_dump($sourceLink); die();
+        pressforward()->pf_feeds->create($sourceLink);
+    }
 	// error handling for media_sideload
 	if ( is_wp_error($upload) ) {
 		wp_delete_post($post_ID);
