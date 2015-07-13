@@ -434,14 +434,32 @@ var photostorage = false;
 ?>
 
     <style type="text/css">
-    	#side-sortables {
+    .postbox{
+        padding: 0 5px;
+    }
+
+    @media screen and (min-width: 670px) {
+        #side-sortables {
     		float: right;
-    		width: 29%;
+            width: 22%;
+            margin-right: 16%;
     	}
     	.posting {
     		float: left;
-    		width: 70%;
+            width: 58%;
+            margin-left: 2%;
     	}
+    }
+    @media screen and (max-width: 660px) {
+        #side-sortables {
+            width: 90%;
+            margin: 0 auto;
+    	}
+    	.posting {
+            width: 90%;
+            margin: 0 auto;
+    	}
+    }
     </style>
 
 	<script type="text/javascript">
