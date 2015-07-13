@@ -331,7 +331,7 @@ class PF_Feeds_Schema {
 		if (empty($feed_obj)){
 			return;
 		}
-		if ( ( 'trash' == $feed_obj->post_status ) || ( 'removed_'.$this->post_type == $feed_obj->post_status ) ){
+		if ( ( 'trash' == $feed_obj->post_status ) || ( 'removed_'.$this->post_type == $feed_obj->post_status ) || ( $this->post_type != $feed_obj->post_type ) ){
 			return;
 		}
 		?>
