@@ -3,24 +3,24 @@ jQuery(document).ready(function () {
 
 	// Check if certain hash flag set and take action
 	if (location.hash == '#editorialcomments/add') {
-		editorialCommentReply.open();
+		PFEditorialCommentReply.open();
 	} else if (location.hash.search(/#editorialcomments\/reply/) > -1) {
 		var reply_id = location.hash.substring(location.hash.lastIndexOf('/')+1);
-		editorialCommentReply.open(reply_id);
+		PFEditorialCommentReply.open(reply_id);
 	}
 });
 
 /**
  * Blatantly stolen and modified from /wp-admin/js/edit-comment.dev.js -- yay!
  */
-editorialCommentReply = {
+PFEditorialCommentReply = {
 
 	init : function() {
 		var row = jQuery('#ef-replyrow');
 
 		// Bind click events to cancel and submit buttons
-		jQuery('a.ef-replycancel', row).click(function() { return editorialCommentReply.revert(); });
-		jQuery('a.ef-replysave', row).click(function() { return editorialCommentReply.send(); });
+		jQuery('a.ef-replycancel', row).click(function() { return PFEditorialCommentReply.revert(); });
+		jQuery('a.ef-replysave', row).click(function() { return PFEditorialCommentReply.send(); });
 		jQuery('#ef-comment_respond').click();
 		//console.log('Init comments');
 	},
@@ -28,7 +28,7 @@ editorialCommentReply = {
 	revert : function() {
 		// Fade out slowly, slowly, slowly...
 		jQuery('#ef-replyrow').fadeOut('fast', function(){
-			editorialCommentReply.close();
+			PFEditorialCommentReply.close();
 		});
 		return false;
 	},
@@ -109,8 +109,8 @@ editorialCommentReply = {
 			type : 'POST',
 			url : (ajaxurl) ? ajaxurl : wpListL10n.url,
 			data : post,
-			success : function(x) { editorialCommentReply.show(x); },
-			error : function(r) { editorialCommentReply.error(r); }
+			success : function(x) { PFEditorialCommentReply.show(x); },
+			error : function(r) { PFEditorialCommentReply.error(r); }
 		});
 
 		return false;
