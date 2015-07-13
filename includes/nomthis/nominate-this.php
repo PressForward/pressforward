@@ -87,7 +87,7 @@ function nominate_it() {
 	elseif ( isset( $_POST['review'] ) )
 		$post['post_status'] = 'pending';
 	else
-		$post['post_status'] = 'draft';
+		$post['post_status'] = get_option(PF_SLUG.'_draft_post_status', 'draft');
 
 	$nom_check = false;
 	// error handling for media_sideload
@@ -603,6 +603,9 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 					</p>
 					<p>
 					<label for="authors"><input type="text" id="authors" name="authors" value="" /><br />&nbsp;<?php _e('Enter Authors', 'pf'); ?></label>
+					</p>
+                    <p>
+					<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php _e('Check box to subscribe to this site\'s feed, if available.', 'pf'); ?></label>
 					</p>
 					<?php if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) :
 							$post_formats = get_theme_support( 'post-formats' );
