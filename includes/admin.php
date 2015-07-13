@@ -445,7 +445,7 @@ class PF_Admin {
 										$send_to_draft_classes .= ' btn-success';
 									}
 
-									self::dropdown_option(__('Send to Draft', 'pf'), "amplify-draft-".$item['item_id'], $send_to_draft_classes, $item['item_id'], 'draft', 'btn-success' );
+									self::dropdown_option(__('Send to ', 'pf').ucwords( get_option(PF_SLUG.'_draft_post_status', 'draft') ), "amplify-draft-".$item['item_id'], $send_to_draft_classes, $item['item_id'], 'draft', 'btn-success' );
 
 							?>
 									<li class="divider"></li>
