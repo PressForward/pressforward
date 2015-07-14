@@ -1276,6 +1276,28 @@ function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
 
 }
 
+function pf_get_author_from_url($url){
+	$response = pf_file_get_html( $url );
+	if ( empty( $author_meta = $response->find('meta[name=author]', 0)) ){
+		if ( empty( $author_meta = $response->find('meta[name=Author]', 0)) ){
+			if ( empty( $author_meta = $response->find('meta[property=author]', 0)) ){
+				if ( empty( $author_meta = $response->find('meta[property=Author]', 0)) ){
+					if ( empty( $author_meta = $response->find('meta[name=parsely-author]', 0)) ){
+						if ( empty( $author_meta = $response->find('meta[name=sailthru.author]', 0)) ){
+							return false;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	$author = $author_meta->content;
+	$author = trim(str_replace("by","",$author));
+	$author = trim(str_replace("By","",$author));
+	return $author;
+}
+
 /**
  * Add post_meta on a post using PressForward post_meta standardization.
  *

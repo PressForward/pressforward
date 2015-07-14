@@ -80,6 +80,7 @@ function nominate_it() {
 			}
 		}
 	}
+	#var_dump('<pre>'); var_dump($_POST);
 	// set the post_content and status
 	$post['post_content'] = $content;
 	if ( isset( $_POST['publish'] ) && current_user_can( 'publish_posts' ) )
@@ -601,8 +602,14 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			<input type="hidden" id="original_post_status" name="original_post_status" value="draft" />
 			<input type="hidden" id="prev_status" name="prev_status" value="draft" />
 			<input type="hidden" id="post_id" name="post_id" value="<?php echo (int) $post_ID; ?>" />
-			<?php if ($url != '') { ?>
-				<?php //print_r($url); ?>
+			<?php if ($url != '') {
+
+				$author_retrieved = pf_get_author_from_url( $url );
+				//$response_body = wp_remote_retrieve_body( $response );
+				//$response_dom = pf_str_get_html( $response_body );
+
+			?>
+				<?php  ?>
 				<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr($title);?>" />
 				<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo date('c'); ?>" />
 				<?php #Metadata goes here. ?>
@@ -627,7 +634,14 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 						<span class="spinner" style="display: none;"></span>
 					</p>
 					<p>
-					<label for="authors"><input type="text" id="authors" name="authors" value="" /><br />&nbsp;<?php _e('Enter Authors', 'pf'); ?></label>
+						<?php
+							if ( !$author_retrieved ){
+								$author_value = '';
+							} else {
+								$author_value = $author_retrieved;
+							}
+						?>
+					<label for="authors"><input type="text" id="authors" name="authors" value="<?php echo $author_value; ?>" /><br />&nbsp;<?php _e('Enter Authors', 'pf'); ?></label>
 					</p>
                     <p>
 					<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php _e('Check box to subscribe to this site\'s feed, if available.', 'pf'); ?></label>
