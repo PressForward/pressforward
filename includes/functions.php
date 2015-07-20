@@ -1293,6 +1293,10 @@ function pf_get_author_from_url($url){
 		}
 	}
 
+	if ( empty($author_meta) ){
+		return false;
+	}
+
 	$author = $author_meta->content;
 	$author = trim(str_replace("by","",$author));
 	$author = trim(str_replace("By","",$author));
