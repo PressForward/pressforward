@@ -188,3 +188,8 @@ $RECYCLE.BIN/
 
 # Mergetool Diff files
 *.orig
+
+#############
+## Node etc
+#############
+node_modules/*
