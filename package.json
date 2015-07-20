@@ -1,0 +1,33 @@
+{
+  "name": "pressforward",
+  "version": "3.7.0",
+  "description": "PressForward is a free plugin that provides an editorial workflow for content aggregation and curation within the WordPress dashboard. It is designed for bloggers and editorial teams who wish to collect, discuss, and share content from a variety of sources on the open web. ",
+  "main": "assets/js/pf.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "gulp": "~3.9.0",
+    "gulp-sass": "~2.0.4"
+  },
+  "devDependencies": {
+    "gulp": "~3.9.0",
+    "gulp-sass": "~2.0.4"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PressForward/pressforward.git"
+  },
+  "keywords": [
+    "pressforward"
+  ],
+  "author": "Aram Zucker-Scharff, PressForward team",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PressForward/pressforward/issues"
+  },
+  "homepage": "https://github.com/PressForward/pressforward"
+}
