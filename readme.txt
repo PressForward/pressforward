@@ -90,8 +90,8 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 * Added an in browser screen that indicates loading when a large OPML is uploaded.
 * Added Folders and sorting by folders and feeds to the "Nominated" panel.
 * Layout enhancements to the Add Feeds and Tools panels.
-* Added subscribe to feed option in the Nominate This bookmarklet.
-* Added option for users to select what post type and status nominations take on when they are sent to the next step. 
+* Added a subscribe to feed option in the Nominate This bookmarklet.
+* Added an option for users to select what post type and status nominations take on when they are sent to the next step. 
 * Fixed bug where alerts weren't closed upon successful feed retrieval.
 * Fixed bug causing "Nominated" usernames to repeat.
 * 'Save Inactive' in the "Edit Feed" page no longer saves the feed as 'Pending'.
