@@ -96,7 +96,7 @@ function nominate_it() {
         $url_array = parse_url($_POST['item_link']);
         $sourceLink = 'http://' . $url_array['host'];
         //var_dump($sourceLink); die();
-        pressforward()->pf_feeds->create($sourceLink);
+        pressforward()->pf_feeds->create($sourceLink, array('post_status' => 'draft') );
     }
 	// error handling for media_sideload
 	if ( is_wp_error($upload) ) {
@@ -644,7 +644,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 					<label for="authors"><input type="text" id="authors" name="authors" value="<?php echo $author_value; ?>" /><br />&nbsp;<?php _e('Enter Authors', 'pf'); ?></label>
 					</p>
                     <p>
-					<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php _e('Check box to subscribe to this site\'s feed, if available.', 'pf'); ?></label>
+					<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php _e('Yes, I would also like to nominate the feed associated with this item (if any) to be added to the feed reader.', 'pf'); ?></label>
 					</p>
 					<?php if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) :
 							$post_formats = get_theme_support( 'post-formats' );
