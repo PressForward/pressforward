@@ -1276,6 +1276,33 @@ function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
 
 }
 
+function pf_get_author_from_url($url){
+	$response = pf_file_get_html( $url );
+	$possibles = array();
+	$possibles[] = $response->find('meta[name=author]', 0);
+	$possibles[] = $response->find('meta[name=Author]', 0);
+	$possibles[] = $response->find('meta[property=author]', 0);
+	$possibles[] = $response->find('meta[property=Author]', 0);
+	$possibles[] = $response->find('meta[name=parsely-author]', 0);
+	$possibles[] = $response->find('meta[name=sailthru.author]', 0);
+
+	foreach ($possibles as $possible){
+		if ( false != $possible ){
+			$author_meta = $possible;
+			break;
+		}
+	}
+
+	if ( empty($author_meta) ){
+		return false;
+	}
+
+	$author = $author_meta->content;
+	$author = trim(str_replace("by","",$author));
+	$author = trim(str_replace("By","",$author));
+	return $author;
+}
+
 /**
  * Add post_meta on a post using PressForward post_meta standardization.
  *
@@ -1333,7 +1360,7 @@ function pf_is_drafted($item_id){
 			'fields' => 'ids',
 			'meta_key' => 'item_id',
 			'meta_value' => $item_id,
-			'post_type'	=> 'post'
+			'post_type'	=> get_option(PF_SLUG.'_draft_post_type', 'post')
 		);
 	$q = new WP_Query($a);
 	if ( 0 < $q->post_count ){

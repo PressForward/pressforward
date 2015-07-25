@@ -270,15 +270,16 @@ class PF_Nominations {
 			$item_title = $_POST['post_title'];
 			$item_content = $_POST['post_content'];
 			$item_feed_post_id = pf_get_post_meta($_POST['ID'], 'item_feed_post_id', true);
+			$url = pf_get_post_meta($_POST['ID'], 'item_link', true);
 			$linked = get_option('pf_link_to_source', 0);
 			if ($linked < 1){
 				$item_content = $item_content . $this->get_the_source_statement( $item_feed_post_id );
 			}
 			$data = array(
-				'post_status' => 'draft',
-				'post_type' => 'post',
+				'post_status' => get_option(PF_SLUG.'_draft_post_status', 'draft'),
+				'post_type' => get_option(PF_SLUG.'_draft_post_type', 'post'),
 				'post_title' => $item_title,
-				'post_content' => $item_content,
+				'post_content' => $item_content
 			);
 			//Will need to use a meta field to pass the content's md5 id around to check if it has already been posted.
 
@@ -665,10 +666,14 @@ class PF_Nominations {
 				$item_link = pf_retrieve_meta($id, 'item_link');
 				$author = get_the_item_author($id);
 				$content = $nom->post_content;
+				$linked = get_option('pf_link_to_source', 0);
+				if ($linked < 1){
+					$content = $content . $this->get_the_source_statement( $_POST['nom_id']);
+				}
 				$title = $nom->post_title;
 				$data = array(
-					'post_status' => 'draft',
-					'post_type' => 'post',
+					'post_status' => get_option(PF_SLUG.'_draft_post_status', 'draft'),
+					'post_type' => get_option(PF_SLUG.'_draft_post_type', 'post'),
 					'post_title' => $title,
 					'post_content' => $content
 				);
@@ -754,10 +759,10 @@ class PF_Nominations {
 			}
 
 			$item_title = $_POST['nom_title'];
-
+			$url = pf_get_post_meta($_POST['nom_id'], 'source_title');
 			$data = array(
-				'post_status' => 'draft',
-				'post_type' => 'post',
+				'post_status' => get_option(PF_SLUG.'_draft_post_status', 'draft'),
+				'post_type' => get_option(PF_SLUG.'_draft_post_type', 'post'),
 				'post_title' => $item_title,
 				'post_content' => $item_content
 			);

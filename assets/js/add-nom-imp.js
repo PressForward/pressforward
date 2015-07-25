@@ -1,9 +1,9 @@
 jQuery(window).load(function() {
 
 	//jQuery('#pf-nominations').addClass('closed');
-	jQuery('#publish').removeClass('button-primary').addClass('button to-check').attr('value', 'Send to Draft');
+	jQuery('#publish').removeClass('button-primary').addClass('button to-check').attr('value', 'Send to Next Step');
 	jQuery('#save-post').addClass('button-primary to-check').attr('value', 'Nominate');
-	
+
 	jQuery('#save-action').on('click', '#save-post', function(e){
 		e.preventDefault();
 		var youFail = false;
