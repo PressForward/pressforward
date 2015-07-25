@@ -86,6 +86,7 @@ class PF_Feed_Item {
 			'item_wp_date'    => '',
 			'post_parent'    => '',
 			'item_tags'    => array(),
+			'post_status'	=> 'publish'
 		) );
 
 		// Sanitization
@@ -101,7 +102,7 @@ class PF_Feed_Item {
 
 		$wp_args = array(
 			'post_type'    => pf_feed_item_post_type(),
-			'post_status'  => 'publish',
+			'post_status'  => $r['post_status'],
 			'post_title'   => $r['item_title'],
 			'post_content' => wp_specialchars_decode( $r['item_content'], ENT_COMPAT ), // todo
 			'guid'         => $r['item_link'],

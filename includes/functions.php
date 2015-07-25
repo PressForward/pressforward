@@ -1561,7 +1561,7 @@ function pf_iterate_cycle_state($option_name, $option_limit = false, $echo = fal
  * @param int|WP_Post ID or WP_Post object.
  * @return bool|array False on failure, otherwise post ID deletion queue.
  */
-function pf_delete_item_tree( $item ) {
+function pf_delete_item_tree( $item, $fake_delete = false ) {
 	$item = get_post( $item );
 
 	if ( ! $item || ! ( $item instanceof WP_Post ) ) {
@@ -1605,6 +1605,22 @@ function pf_delete_item_tree( $item ) {
 
 			// Store the assembled queue.
 			update_option( 'pf_delete_queue', $queued );
+
+			if ($fake_delete){
+				$fake_status = 'removed_'.$item->post_type;
+
+				$wp_args = array(
+					'post_type'    => pf_feed_item_post_type(),
+					'post_status'  => $fake_status,
+					'post_title'   => $item->post_title,
+					'post_content' => '',
+					'guid'         => pf_get_post_meta($item->ID, 'item_link'),
+					'post_date'    => $item->post_date
+				);
+
+				$id = wp_insert_post($wp_args);
+				pf_update_meta($id, 'item_id', create_feed_item_id( pf_get_post_meta($item->ID, 'item_link'), $item->post_title ) );
+			}
 
 		break; // $feed_item_post_type
 

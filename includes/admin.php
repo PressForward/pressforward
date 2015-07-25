@@ -1549,7 +1549,7 @@ class PF_Admin {
 		if(isset($_POST['made_readable'])){
 			$read_status = $_POST['made_readable'];
 		} else { $read_status = false; }
-		$returned = pf_delete_item_tree( $id );
+		$returned = pf_delete_item_tree( $id, true );
 		var_dump($returned);
 		$vd = ob_get_clean();
 		ob_end_clean();
