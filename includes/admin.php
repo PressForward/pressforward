@@ -25,6 +25,9 @@ class PF_Admin {
 		add_action( 'admin_init', array($this, 'pf_options_admin_page_save') );
 		add_action( 'admin_notices', array($this, 'admin_notices_action' ));
 
+		// Launch a batch delete process, if necessary.
+		add_action( 'admin_init', array( $this, 'launch_batch_delete' ) );
+
 		// AJAX handlers
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
@@ -1480,9 +1483,7 @@ class PF_Admin {
     public function pf_delete_children_of_feeds( $post_id ){
     	if ( pressforward()->pf_feeds->post_type == get_post_type( $post_id ) ){
     		pf_log('Delete a feed and all its children.');
-    		$this->pf_thing_deleter( $post_id, true, pf_feed_item_post_type() );
-    		$this->pf_thing_deleter( $post_id, true, pressforward()->nominations->post_type );
-    		$this->pf_thing_deleter( $post_id, true, pressforward()->pf_feeds->post_type );
+		pf_delete_item_tree( $post_id );
     	}
     }
 
@@ -1492,103 +1493,6 @@ class PF_Admin {
     		$this->pf_thing_trasher( $post_id, true, pressforward()->pf_feeds->post_type );
     	}
     }
-
-    public function delete_empty_taxonomies( $post_id ){
-    	$terms = wp_get_object_terms( $post_id, pressforward()->pf_feeds->tag_taxonomy, array( 'fields' => 'ids' ) );
-    	foreach ( $terms as $term ){
-			$args = array(
-			'post_type' => pressforward()->pf_feeds->post_type,
-			'posts_per_page'         => 2,
-			'post_status'			=> array('publish', 'draft', 'pending', 'future', the_alert_box()->status()),
-			'update_post_term_cache' => false,
-			'cache_results'  => false,
-			'fields'		=>	'ids',
-			'tax_query' => array(
-			    array(
-			    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy,
-			    'field' => 'id',
-			    'terms' => $term
-			     )
-			  )
-			);
-			$query = new WP_Query( $args );
-			if ( $query->post_count <= 0 ){
-				wp_delete_term( $term, pressforward()->pf_feeds->tag_taxonomy );
-			}
-    	}
-    }
-
-	/*
-	 *
-	 * A method to allow users to delete any CPT or post through AJAX.
-	 * The goal here is to tie an easy use function to an AJAX action,
-	 * that also cleans up all the extra data that PressForward
-	 * can create.
-	 *
-	 * If a post is made readable, it will attempt (and often
-	 * succeed) at pulling in images. This should remove those
-	 * attached images and remove relationship schema data.
-	 *
-	 * We should also figure out the best way to call this when
-	 * posts are 'expired' after 60 days.
-	 *
-	 * Takes:
-	 *		Post ID
-	 *		Post Readability Status
-	 *
-	 */
-
-	function pf_thing_deleter($id = 0, $readability_status = false, $item_type = 'feed_item'){
-		if ($id == 0)
-			return new WP_Error('noID', __("No ID supplied for deletion", 'pf'));
-
-		# Note: this will also remove feed items if a feed is deleted, is that something we want?
-		if ($readability_status || $readability_status > 0){
-			if ( 'feed_item' == $item_type ){
-				$post_type = pf_feed_item_post_type();
-			} else {
-				$post_type = $item_type;
-			}
-			$args = array(
-				'post_parent'            => $id,
-				'post_type'              => $post_type,
-				'fields'                 => 'ids',
-				'update_post_meta_cache' => false,
-				'update_post_term_cache' => false,
-			);
-			$attachments = get_children($args);
-			pf_log('Get Children of '.$id);
-			pf_log($attachments);
-			foreach ($attachments as $attachment) {
-				wp_delete_post( $attachment, true );
-			}
-			$args = array(
-				'post_parent'            => $id,
-				'post_type'              => $post_type,
-				'post_status'            => 'trash',
-				'fields'                 => 'ids',
-				'update_post_meta_cache' => false,
-				'update_post_term_cache' => false,
-			);
-			$attachments = get_children($args);
-			pf_log('Get Trash Children of '.$id);
-			pf_log($attachments);
-			foreach ($attachments as $attachment) {
-				wp_delete_post( $attachment, true );
-			}
-		}
-
-		$argup = array(
-			'ID'			=> $id,
-			'post_content' 	=> $item_type,
-			'post_status'	=>	'removed_'.$item_type
-		);
-
-		$result = wp_update_post($argup);
-		$this->delete_empty_taxonomies($result);
-		return $result;
-
-	}
 
 	function pf_thing_trasher($id = 0, $readability_status = false, $item_type = 'feed_item'){
 		if ($id == 0)
@@ -1645,7 +1549,7 @@ class PF_Admin {
 		if(isset($_POST['made_readable'])){
 			$read_status = $_POST['made_readable'];
 		} else { $read_status = false; }
-		$returned = self::pf_thing_deleter($id, $read_status);
+		$returned = pf_delete_item_tree( $id, true );
 		var_dump($returned);
 		$vd = ob_get_clean();
 		ob_end_clean();
@@ -2060,6 +1964,19 @@ class PF_Admin {
 		$feed_url = stripslashes( $_POST['pf-quick-edit-feed-url'] );
 
 		update_post_meta( $post_id, 'feedUrl', $feed_url );
+	}
+
+	/**
+	 * Launch a batch delete, if one is queued.
+	 *
+	 * @since 3.6
+	 */
+	public function launch_batch_delete() {
+		if ( ! current_user_can( 'delete_posts' ) ) {
+			return;
+		}
+
+		pf_launch_batch_delete();
 	}
 
 	/////////////////////////
