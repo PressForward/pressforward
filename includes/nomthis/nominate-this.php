@@ -644,7 +644,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 					<label for="authors"><input type="text" id="authors" name="authors" value="<?php echo $author_value; ?>" /><br />&nbsp;<?php _e('Enter Authors', 'pf'); ?></label>
 					</p>
                     <p>
-					<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php _e('Yes, I would also like to nominate the feed associated with this item (if any) to be added to the feed reader.', 'pf'); ?></label>
+					<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php _e('Nominate feed associated with item.', 'pf'); ?></label>
 					</p>
 					<?php if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) :
 							$post_formats = get_theme_support( 'post-formats' );
