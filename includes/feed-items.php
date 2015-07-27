@@ -537,7 +537,7 @@ class PF_Feed_Item {
 		$queryForDel = new WP_Query(
 								array(
 										'post_type' => pf_feed_item_post_type(),
-										'posts_per_page' => '3000'
+										'posts_per_page' => '2500'
 									)
 							);
 		remove_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older') );
@@ -547,9 +547,8 @@ class PF_Feed_Item {
 			# All the posts in this loop are older than 60 days from 'now'.
 			# Delete them all.
 			$post_id = get_the_ID();
-			pf_log($post_id,true);
-			self::disassemble_feed_item_media( $post_id );
-			wp_delete_post( $post_id, true );
+			pf_log('Cleaning up '.$post_id);
+			pf_delete_item_tree( $post_id );
 
 		endwhile;
 
