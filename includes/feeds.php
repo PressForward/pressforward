@@ -40,7 +40,6 @@ class PF_Feeds_Schema {
 		// Post types and taxonomies must be registered after 'init'
 		add_action( 'init', array( $this, 'register_feed_post_type' ) );
 		#add_action('admin_init', array($this, 'deal_with_old_feedlists') );
-		add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
         add_action('admin_init', array($this, 'disallow_add_new'));
         add_filter('ab_alert_specimens_update_post_type', array($this, 'make_alert_return_to_publish'));
 		add_filter( 'views_edit-'.$this->post_type, array($this, 'modify_post_views') );
@@ -50,10 +49,6 @@ class PF_Feeds_Schema {
 			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_edit_feed_scripts' ) );
-
-
-			// Move the 'Feed Tags' item underneath 'pf-menu'
-			add_filter( 'parent_file', array( $this, 'move_feed_tags_submenu' ) );
 		}
 
 		add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
@@ -91,63 +86,12 @@ class PF_Feeds_Schema {
 		) ) );
 
 		do_action( 'pf_feed_post_type_registered' );
+
 	}
-
-	public function register_feed_tag_taxonomy() {
-		$labels = array(
-			'name'          => __( 'Folders', 'pf' ),
-			'singular_name' => __( 'Folder', 'pf' ),
-			'all_items'     => __( 'All Folders', 'pf' ),
-			'edit_item'     => __( 'Edit Folder', 'pf' ),
-			'update_item'   => __( 'Update Folder', 'pf' ),
-			'add_new_item'  => __( 'Add New Folder', 'pf' ),
-			'new_item_name' => __( 'New Folder', 'pf' ),
-			'search_items'  => __( 'Search Folders', 'pf' ),
-		);
-
-		register_taxonomy( $this->tag_taxonomy, $this->post_type, apply_filters( 'pf_register_feed_tag_taxonomy_args', array(
-			'labels' => $labels,
-			'public' => true,
-			'show_admin_columns' => TRUE,
-			'show_in_nav_menus' => TRUE,
-			'show_ui'           => TRUE,
-			'show_admin_column' => TRUE,
-			'hierarchical'			=> TRUE,
-			#'show_in_menu' => PF_MENU_SLUG,
-			'rewrite' => false
-		) ) );
-	}
-
 
 	public function custom_feed_column_name( $posts_columns ){
 			$posts_columns['author'] = 'Added by';
 			return $posts_columns;
-	}
-
-	/**
-	 * Ensure that 'Feed Tags' stays underneath the PressForward top-level item.
-	 *
-	 * @param string $pf The $parent_file value passed to the
-	 *        'parent_file' filter
-	 * @return string
-	 */
-	public function move_feed_tags_submenu( $pf ) {
-		global $typenow, $pagenow;
-
-		// Feed Tags edit page
-		if ( 'edit-tags.php' === $pagenow && ! empty( $_GET['taxonomy'] ) && $this->tag_taxonomy === stripslashes( $_GET['taxonomy'] ) ) {
-			$pf = 'pf-menu';
-		}
-
-		// Edit Feed page
-		if ( 'post.php' === $pagenow && ! empty( $_GET['post'] ) ) {
-			global $post;
-			if ( $this->post_type === $post->post_type ) {
-				$pf = 'pf-menu';
-			}
-		}
-
-		return $pf;
 	}
 
 	public function is_feed_term($id){
@@ -165,7 +109,7 @@ class PF_Feeds_Schema {
 		$cats = get_terms($terms,
 			array(
 				'parent' 				=> 0,
-				'hide_empty'		=> 0,
+				'hide_empty'		=> 1,
 				'hierarchical' 	=> 1
 			)
 		);
@@ -253,20 +197,21 @@ class PF_Feeds_Schema {
 	}
 
 	public function get_feeds_without_folders($ids = true){
-		   $q = new WP_Query( 
-		   				array( 
+		   $q = new WP_Query(
+		   				array(
 		 		            'post_type' => pressforward()->pf_feeds->post_type,
 		 		            'fields'	=>	'ids',
 		 		            'orderby'	=> 'title',
 		 		            'order'		=> 'ASC',
+		 		            'post_status' => array( 'pending', 'draft', 'future', 'publish', the_alert_box()->status() ),
 		 		            'nopaging' => true,
-		 		            'tax_query' => array( 
-		 		                array( 
-		 		                    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy, 
-		 		                    'operator' => 'NOT EXISTS', 
-		 		                ), 
-		 		            ), 
- 		       			) 
+		 		            'tax_query' => array(
+		 		                array(
+		 		                    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy,
+		 		                    'operator' => 'NOT EXISTS',
+		 		                ),
+		 		            ),
+ 		       			)
 		   	);
 		   $ids = $q->posts;
 		   return $ids;
@@ -313,7 +258,7 @@ class PF_Feeds_Schema {
 					</li>
 					<?php
 				}
-				
+
 				$this->the_feeds_without_folders();
 				?>
 		</ul>
@@ -383,6 +328,12 @@ class PF_Feeds_Schema {
 
 	public function the_feed($feed){
 		$feed_obj = get_post($feed);
+		if (empty($feed_obj)){
+			return;
+		}
+		if ( ( 'trash' == $feed_obj->post_status ) || ( 'removed_'.$this->post_type == $feed_obj->post_status ) || ( $this->post_type != $feed_obj->post_type ) ){
+			return;
+		}
 		?>
 		<li class="feed" id="feed-<?php echo $feed_obj->ID; ?>">
 		<?php
@@ -478,13 +429,17 @@ class PF_Feeds_Schema {
 				$r[$k] = '';
 		}
 		pf_log('Replaced false meta with empty strings.');
+		if (empty($r['post_parent'])){
+			$r['post_parent'] = 0;
+		}
 
 		$wp_args = array(
 			'post_type' 	=> $this->post_type,
-			'post_status' 	=> 'publish',
+			'post_status' 	=> $r['post_status'],
 			'post_title'	=> $r['title'],
 			'post_content'	=> $r['description'],
 			'guid'			=> $r['url'],
+			'post_parent'	=> $r['post_parent'],
 			'tax_input' 	=> array($this->tag_taxonomy => $r['tags'])
 		);
 		# Duplicate the function of WordPress where creating a pre-existing
@@ -627,6 +582,8 @@ class PF_Feeds_Schema {
 			'copyright'		=> false,
 			'thumbnail'  	=> false,
 			'user_added'    => false,
+			'post_parent'	=> 0,
+			'post_status'   => 'publish',
 			'module_added' 	=> 'rss-import',
 			'tags'    => array(),
 		) );
@@ -664,6 +621,8 @@ class PF_Feeds_Schema {
 		pf_log($check);
 		if (!$check){
 			return false;
+		} else {
+			do_action( 'pf_feed_inserted', $check );
 		}
 		return $check;
 
@@ -951,6 +910,12 @@ class PF_Feeds_Schema {
 		global $pagenow;
 
 		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
+
+		if ( in_array( $pagenow, array( 'edit.php' ) ) ){
+			if ( false != pressforward()->form_of->is_a_pf_page() ){
+				wp_enqueue_script( 'feed_edit_manip', PF_URL . '/assets/js/subscribed-feeds-actions.js', array('jquery'), PF_VERSION );
+			}
+		}
 
 		if ( !in_array( $pagenow, array( 'post.php' ) ) )
 			return;

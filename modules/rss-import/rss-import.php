@@ -21,6 +21,8 @@ class PF_RSS_Import extends PF_Module {
 		//self::check_nonce = wp_create_nonce('retrieve-pressforward');
 		add_action( 'admin_init', array($this, 'register_settings') );
 
+		//add_action( 'pf_do_pf-add-feeds_tab_primary_feed_type', array($this, 'add_to_feeder') );
+
 		if( is_admin() )
 		{
 			add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed') );
@@ -37,7 +39,7 @@ class PF_RSS_Import extends PF_Module {
 			'thumbnail' 	=> '',
 			'options' 		=> ''
 		);
-		
+
 		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 
 		//return $test;
@@ -125,6 +127,7 @@ class PF_RSS_Import extends PF_Module {
 		}
 		$theFeed->set_timeout(60);
 		$rssObject = array();
+		#$rssObject['parent_feed_id'] = $aFeed->ID;
 		$c = 0;
 		pf_log('Begin processing the feed.');
 
@@ -135,7 +138,7 @@ class PF_RSS_Import extends PF_Module {
 			if ($check_date <= $dead_date) {
 				pf_log('Feed item too old. Skip it.');
 			} else {
-				$id = md5($item->get_link() . $item->get_title()); //die();
+				$id = create_feed_item_id($item->get_link(), $item->get_title()); //die();
 				pf_log('Now on feed ID ' . $id . '.');
 				//print_r($item_categories_string); die();
 
@@ -267,14 +270,21 @@ class PF_RSS_Import extends PF_Module {
 
 	}
 
+	public function set_permitted_feeds_tabs( $permitted_tabs ){
+		$permitted_tabs['primary_feed_type'] = array(
+										'title' => __('Subscribe to Feeds', 'pf'),
+										'cap'  => get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor'))
+									);
+		return $permitted_tabs;
+	}
+
 	function add_to_feeder() {
 
 		$feedlist = get_option( PF_SLUG . '_feedlist' );
 
         ?>
-		<div class="pf-opt-group span6">
-            <div class="rss-box postbox">
-                    <div class="handlediv" title="Click to toggle"><br></div>
+		<div class="pf-opt-group">
+            <div class="rss-box ">
                     <h3 class="hndle"><span><?php _e('Subscribe to Feeds', 'pf'); ?></span></h3>
                     <div class="inside">
                         <div><?php _e('Add Single Feed', 'pf'); ?> (RSS or Atom)</div>
@@ -336,14 +346,14 @@ class PF_RSS_Import extends PF_Module {
 			pf_log('No, the current user can not edit posts.');
 		}
 		$feed_obj = pressforward()->pf_feeds;
-		$subed = '';
+		$subed = array();
 		$something_broke = false;
 		if (!empty($input['single'])){
 			if (!(is_array($input['single']))){
 				pf_log('The feed is not an array;');
 				if (!$feed_obj->has_feed($input['single'])){
 					pf_log('The feed does not already exist.');
-					$check = $feed_obj->create($input['single'], array('type' => 'rss', 'module_added' => get_class($this)));
+					$check = $feed_obj->create($input['single'], array('type' => 'rss', 'module_added' => get_class()));
 					if (is_wp_error($check) || !$check){
 						pf_log('The feed did not enter the database.');
 						#wp_die($check);
@@ -360,7 +370,7 @@ class PF_RSS_Import extends PF_Module {
 					pf_log($check);
 				}
 
-				$subed = 'a feed ';
+				$subed[] = 'a feed.';
 			} else {
 				pf_log('The feed was an array, this does not work');
 				wp_die('Bad feed input. Why are you trying to place an array?');
@@ -372,7 +382,7 @@ class PF_RSS_Import extends PF_Module {
 
 		if (!empty($input['opml'])){
 			self::process_opml($input['opml']);
-			$subed = 'an OPML file ';
+			$subed[] = 'an OPML file.';
 		}
 
 		if (!empty($input['opml_uploader'])){
@@ -407,7 +417,7 @@ class PF_RSS_Import extends PF_Module {
 				$i++;
 			}
 
-			$subed = 'an OPML uploaded file ';
+			$subed[] = 'an OPML uploaded file.';
 		}
 #var_dump($_FILES); die();
 		if (!empty($_POST['o_feed_url'])){
@@ -417,16 +427,24 @@ class PF_RSS_Import extends PF_Module {
 				}
 
 		}
+		$subscribe_string = '';
+		if ( ( 1 == count($subed) ) && !empty( $check ) ){
+			$edit_link = get_edit_post_link( $check );
+			$subed[99] = " <a href=\"$edit_link\" target=\"_blank\">".__('Edit.', 'pf').'</a>';
+ 		}
+ 		foreach ($subed as $sub){
+ 			$subscribe_string .= $sub;
+ 		}
 		if ($something_broke){
-			add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', __('You have submitted ','pf').$subed.'. ' . __('The feed was not found.', 'pf'), 'updated');
-		} else {
-			add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', __('You have submitted ', 'pf').$subed.'.', 'updated');
+			add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', __('You have submitted ','pf').$subscribe_string.' ' . __('The feed was not found.', 'pf'), 'updated');
+		} elseif ( !empty($subscribe_string) ) {
+			add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', __('You have submitted ', 'pf').$subscribe_string, 'updated');
 		}
 		return $input;
 
 	}
 
-	public function process_opml($opml){
+	public static function process_opml($opml){
 		$OPML_reader = new OPML_reader;
 		$opml_array = $OPML_reader->get_OPML_data($opml);
 		#print_r($opml_array); die();

@@ -5,6 +5,7 @@
  */
 class PF_Nominations {
 	function __construct() {
+		$this->post_type = 'nomination';
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_action('edit_post', array( $this, 'send_nomination_for_publishing'));
 		add_filter( 'manage_edit-nomination_columns', array($this, 'edit_nominations_columns') );
@@ -50,6 +51,9 @@ class PF_Nominations {
 		);
 
 		register_post_type('nomination', $args);
+
+
+#		register_taxonomy_for_object_type( pressforward()->get_feed_folder_taxonomy(), $this->post_type );
 
 	}
 
@@ -177,7 +181,7 @@ class PF_Nominations {
 				if (empty($nominators)){
 					pf_log('There is no one left who nominated this item.');
 					pf_log('This nomination has been taken back. We will now remove the item.');
-					pressforward()->admin->pf_thing_deleter($nomination_id, true, 'nomination');
+					pf_delete_item_tree( $nomination_id );
 				} else {
 					pf_log('Though one user retracted their nomination, there are still others who have nominated this item.');
 				}
@@ -190,7 +194,7 @@ class PF_Nominations {
 	}
 
 	public function nominate_this_tile(){
-		pressforward()->form_of->nominate_this('as_feed');	
+		pressforward()->form_of->nominate_this('as_feed');
 	}
 
 	public function change_nomination_count($id, $up = true){
@@ -266,15 +270,16 @@ class PF_Nominations {
 			$item_title = $_POST['post_title'];
 			$item_content = $_POST['post_content'];
 			$item_feed_post_id = pf_get_post_meta($_POST['ID'], 'item_feed_post_id', true);
+			$url = pf_get_post_meta($_POST['ID'], 'item_link', true);
 			$linked = get_option('pf_link_to_source', 0);
 			if ($linked < 1){
 				$item_content = $item_content . $this->get_the_source_statement( $item_feed_post_id );
 			}
 			$data = array(
-				'post_status' => 'draft',
-				'post_type' => 'post',
+				'post_status' => get_option(PF_SLUG.'_draft_post_status', 'draft'),
+				'post_type' => get_option(PF_SLUG.'_draft_post_type', 'post'),
 				'post_title' => $item_title,
-				'post_content' => $item_content,
+				'post_content' => $item_content
 			);
 			//Will need to use a meta field to pass the content's md5 id around to check if it has already been posted.
 
@@ -292,7 +297,7 @@ class PF_Nominations {
 			if ($post_check) {
 				$newPostID = wp_insert_post( $data );
 				#add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
-				pf_meta_transition_post($_POST['ID'], $newPostID);
+				pf_meta_transition_post($_POST['ID'], $newPostID, true);
 
 				$already_has_thumb = has_post_thumbnail($_POST['ID']);
 				if ($already_has_thumb)  {
@@ -547,6 +552,8 @@ class PF_Nominations {
 				$item_link = pf_retrieve_meta($_POST['item_post_id'], 'item_link');
 				$readable_status = pf_retrieve_meta($_POST['item_post_id'], 'readable_status');
 				$item_author = pf_retrieve_meta($_POST['item_post_id'], 'item_author');
+				$parents = get_post_ancestors( $_POST['item_post_id'] );
+				$parent_id = ($parents) ? $parents[0] : false;
 				if ($readable_status != 1){
 					$read_args = array('force' => '', 'descrip' => $item_content, 'url' => $item_link, 'authorship' => $item_author );
 					$item_content_obj = pressforward()->readability->get_readable_text($read_args);
@@ -566,6 +573,7 @@ class PF_Nominations {
 						//Do we want this to be nomination date or origonal posted date? Prob. nomination date? Optimally we can store and later sort by both.
 					'post_title' => $item_title,//$item_title,
 					'post_content' => $item_content,
+					'post_parent' => $parent_id
 
 				);
 
@@ -592,7 +600,12 @@ class PF_Nominations {
 					$item_date = $newDate;
 				}
 			pf_update_meta($_POST['item_post_id'], 'posted_date', $item_date);
-			pf_meta_transition_post($_POST['item_post_id'], $newNomID);
+			if ( !empty( $_POST['pf_amplify'] ) && ( '1' == $_POST['pf_amplify'] ) ){
+				$amplify = true;
+			} else {
+				$amplify = false;
+			}
+			pf_meta_transition_post( $_POST['item_post_id'], $newNomID, $amplify );
 				$response = array(
 					'what' => 'nomination',
 					'action' => 'build_nomination',
@@ -635,7 +648,7 @@ class PF_Nominations {
 			return false;
 		}
 	}
-	
+
 	public function simple_nom_to_draft($id = false){
 		global $post;
 		$pf_drafted_nonce = $_POST['pf_nomination_nonce'];
@@ -649,14 +662,18 @@ class PF_Nominations {
 			}
 			$post_check = $this->is_nominated($item_id, 'post', false);
 			if (true != $post_check) {
-				
+
 				$item_link = pf_retrieve_meta($id, 'item_link');
 				$author = get_the_item_author($id);
 				$content = $nom->post_content;
+				$linked = get_option('pf_link_to_source', 0);
+				if ($linked < 1){
+					$content = $content . $this->get_the_source_statement( $_POST['nom_id']);
+				}
 				$title = $nom->post_title;
 				$data = array(
-					'post_status' => 'draft',
-					'post_type' => 'post',
+					'post_status' => get_option(PF_SLUG.'_draft_post_status', 'draft'),
+					'post_type' => get_option(PF_SLUG.'_draft_post_type', 'post'),
 					'post_title' => $title,
 					'post_content' => $content
 				);
@@ -673,17 +690,17 @@ class PF_Nominations {
 					#var_dump($readReady); die();
 					$data['post_content'] = $readReady['readable'];
 				}
-				
+
 				$new_post_id = wp_insert_post( $data, true );
 ##Check
 				add_post_meta($id, 'nom_id', $id, true);
-				pf_meta_transition_post($id, $new_post_id);
+				pf_meta_transition_post($id, $new_post_id, true);
 				$already_has_thumb = has_post_thumbnail($id);
 				if ($already_has_thumb)  {
 					$post_thumbnail_id = get_post_thumbnail_id( $id );
 					set_post_thumbnail($new_post_id, $post_thumbnail_id);
 				}
-				
+
 				$response = array(
 					'what' => 'draft',
 					'action' => 'simple_nom_to_draft',
@@ -696,7 +713,7 @@ class PF_Nominations {
 						'buffered' => ob_get_contents()
 					)
 				);
-				
+
 			} else {
 				$response = array(
 					'what' => 'draft',
@@ -742,10 +759,10 @@ class PF_Nominations {
 			}
 
 			$item_title = $_POST['nom_title'];
-
+			$url = pf_get_post_meta($_POST['nom_id'], 'source_title');
 			$data = array(
-				'post_status' => 'draft',
-				'post_type' => 'post',
+				'post_status' => get_option(PF_SLUG.'_draft_post_status', 'draft'),
+				'post_type' => get_option(PF_SLUG.'_draft_post_type', 'post'),
 				'post_title' => $item_title,
 				'post_content' => $item_content
 			);
@@ -787,7 +804,7 @@ class PF_Nominations {
 				$newPostID = wp_insert_post( $data, true );
 ##Check
 				add_post_meta($_POST['nom_id'], 'nom_id', $_POST['nom_id'], true);
-				pf_meta_transition_post($_POST['nom_id'], $newPostID);
+				pf_meta_transition_post($_POST['nom_id'], $newPostID, true);
 
 				$already_has_thumb = has_post_thumbnail($_POST['nom_id']);
 				if ($already_has_thumb)  {

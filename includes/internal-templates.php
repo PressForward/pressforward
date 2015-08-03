@@ -18,6 +18,9 @@ class PF_Form_Of {
 		$this->user_id = $this->user_id();
 		$this->is_a_pf_page();
 		add_filter('ab_alert_specimens_labels', array($this, 'alter_alert_boxes'));
+		if (WP_DEBUG && $this->is_pf){
+			@trigger_error($this->pf_current_screen_trace, E_USER_NOTICE);
+		}
 	}
 
 	/**
@@ -97,7 +100,7 @@ class PF_Form_Of {
 
 	/**
 	 * Get a given view (if it exists)
-	 * 
+	 *
 	 * @param string     $view      The slug of the view
 	 * @return string
 	 */
@@ -153,26 +156,31 @@ class PF_Form_Of {
 	}
 
 
-	public function permitted_tabs(){
-		$permitted_tabs = array(
-					'user' => array( 
-										'title' => __('User Options', 'pf'), 
-										'cap'  => get_option('pf_menu_all_content_access', pf_get_defining_capability_by_role('contributor'))
-									),
-					'site' => array( 
-										'title' => __('Site Options', 'pf'),
-										'cap'  => get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator'))
-									),
-					'user-control' => array( 
-										'title' => __('User Control', 'pf'),
-										'cap'  => get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator'))
-									),
-					'modules' => array( 
-										'title' =>__('Module Control', 'pf'),
-										'cap'  => get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator'))
-									)
-				);
-		$permitted_tabs = apply_filters('pf_settings_tabs', $permitted_tabs);
+	public function permitted_tabs($slug = 'settings'){
+		if ( 'settings' == $slug ){
+			$permitted_tabs = array(
+						'user' => array(
+											'title' => __('User Options', 'pf'),
+											'cap'  => get_option('pf_menu_all_content_access', pf_get_defining_capability_by_role('contributor'))
+										),
+						'site' => array(
+											'title' => __('Site Options', 'pf'),
+											'cap'  => get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator'))
+										),
+						'user-control' => array(
+											'title' => __('User Control', 'pf'),
+											'cap'  => get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator'))
+										),
+						'modules' => array(
+											'title' =>__('Module Control', 'pf'),
+											'cap'  => get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator'))
+										)
+					);
+			$permitted_tabs = apply_filters('pf_settings_tabs', $permitted_tabs);
+		} else {
+			$permitted_tabs = array();
+			$permitted_tabs = apply_filters('pf_tabs_'.$slug, $permitted_tabs);
+		}
 		return $permitted_tabs;
 	}
 
@@ -180,31 +188,35 @@ class PF_Form_Of {
 		if ( isset ( $_GET['tab'] ) ) $tab = $_GET['tab']; else $tab = 'user';
 		$user_ID = get_current_user_id();
 		$vars = array(
-				'current'		=> $tab,
-				'user_ID'		=> $user_ID
+				'current'		=> 	$tab,
+				'user_ID'		=> 	$user_ID,
+				'page_title'	=>	__('PressForward Preferences', 'pf'),
+				'page_slug'		=>	'settings'
 			);
 		echo $this->get_view($this->build_path(array('settings','settings-page'), false), $vars);
 
 		return;
 	}
 
-	public function settings_tab_group($current){
-		$tabs = $this->permitted_tabs();
+	public function settings_tab_group($current, $page_slug = 'settings'){
+		$tabs = $this->permitted_tabs($page_slug);
+		#var_dump($tabs); die();
 		foreach ($tabs as $tab=>$tab_meta){
 			if (current_user_can($tab_meta['cap'])){
 				if ($current == $tab) $class = 'pftab tab active'; else $class = 'pftab tab';
 				?>
 				<div id="<?php echo $tab; ?>" class="<?php echo $class; ?>">
 	            <h2><?php echo $tab_meta['title']; ?></h2>
-		            <?php 
-		            	if (has_action('pf_do_settings_tab_'.$tab) && !array_key_exists($tab, $tabs)){
-		            		do_action('pf_do_settings_tab_'.$tab);
+		            <?php
+						if (has_action('pf_do_'.$page_slug.'_tab_'.$tab) || !array_key_exists($tab, $tabs)){
+							//var_dump('pf_do_'.$page_slug.'_tab_'.$tab); die();
+		            		do_action('pf_do_'.$page_slug.'_tab_'.$tab);
 		            	} else {
-							$this->the_settings_tab($tab);
+							$this->the_settings_tab($tab, $page_slug);
 						}
 					?>
 				</div>
-				<?php 
+				<?php
 			}
 		}
 
@@ -212,14 +224,14 @@ class PF_Form_Of {
 	}
 
 
-	public function the_settings_tab($tab){
-		$permitted_tabs = $this->permitted_tabs();
+	public function the_settings_tab($tab, $page_slug = 'settings'){
+		$permitted_tabs = $this->permitted_tabs($page_slug);
 		if ( array_key_exists($tab, $permitted_tabs) ) $tab = $tab; else return '';
 		$vars = array(
 				'current'		=> $tab
 			);
-		#var_dump($tab);
-		echo $this->get_view($this->build_path(array('settings','tab-'.$tab), false), $vars);
+		#var_dump($page_slug.' - '.$tab); die();
+		echo $this->get_view($this->build_path(array($page_slug,'tab-'.$tab), false), $vars);
 
 		return;
 	}
@@ -254,9 +266,7 @@ class PF_Form_Of {
 		$post_type = $screen->post_type;
 		$taxonomy = $screen->taxonomy;
 		$is_pf = self::valid_pf_page_ids($id);
-		if (WP_DEBUG && $is_pf){
-			var_dump("PF screen trace: ID: $id; action: $action; base: $base; parent_base: $parent_base; parent_file: $parent_file; post_type: $post_type; taxonomy: $taxonomy;");
-		}
+		$this->pf_current_screen_trace = "PF screen trace: ID: $id; action: $action; base: $base; parent_base: $parent_base; parent_file: $parent_file; post_type: $post_type; taxonomy: $taxonomy;";
 		#echo $base;
 		$screen_array = array(
 
@@ -285,7 +295,7 @@ class PF_Form_Of {
 		if (isset($_GET['feed'])){
 			$title = get_the_title($_GET['feed']);
 		} else if (isset($_GET['folder'])){
-			
+
 			$term = get_term($_GET['folder'], pressforward()->pf_feeds->tag_taxonomy);
 			$title = $term->name;
 
@@ -326,12 +336,12 @@ class PF_Form_Of {
 		}
 
 		if (isset($_GET['reveal'])){
-			
+
 			$revealing = '';
 			if ('no_hidden' == $_GET['reveal']){
 				$revealing = 'hidden';
 			}
-			
+
 			$variant .= ' <span>'. $showing . ' ' . $revealing . '</span>';
 			$is_variant = true;
 		}
@@ -351,11 +361,11 @@ class PF_Form_Of {
 		}
 
 		$variant = apply_filters('pf_title_variation', $variant, $is_variant);
-		
+
 		if (!empty($variant)){
 			$variant = ' |' . $variant;
 		}
-		
+
 		return $variant;
 
 	}

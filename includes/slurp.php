@@ -36,9 +36,10 @@ class PF_Feed_Retrieve {
 
 	 function cron_add_short( $schedules ) {
 		// Adds once weekly to the existing schedules.
-		$schedules['halfhour'] = array(
-			'interval' => 30*60,
-			'display' => __( 'Half-hour' )
+		$pf_interval = get_option(PF_SLUG.'_retrieval_frequency', 30);
+		$schedules['pf_interval'] = array(
+			'interval' => $pf_interval*60,
+			'display' => __( 'PressForward Retrieval Interval' )
 		);
 		return $schedules;
 	 }
@@ -49,7 +50,7 @@ class PF_Feed_Retrieve {
 	 */
 	public function schedule_feed_in() {
 		if ( ! wp_next_scheduled( 'pull_feed_in' ) ) {
-			wp_schedule_event( time(), 'halfhour', 'pull_feed_in' );
+			wp_schedule_event( time(), 'pf_interval', 'pull_feed_in' );
 		}
 	}
 
@@ -314,6 +315,7 @@ class PF_Feed_Retrieve {
 				pf_log( 'End of the update process. Return false.' );
 				return false;
 			}
+			#$theFeed['parent_feed_id'] = $aFeed->ID;
 			return $theFeed;
 		} else {
 			//An error state that should never, ever, ever, ever, ever happen.
@@ -496,7 +498,13 @@ class PF_Feed_Retrieve {
 				$ab_status =  $alert_box->status();
 				if ( $ab_status == $obj->post_status ) {
 					# The feed has been retrieved, therefor this is a good feed. We can remove the alert.
-					the_alert_box()->remove_alert_on_edit( $obj->ID );
+					the_alert_box()->dismiss_alert( $obj->ID );
+					# Assure the feed is back online.
+					$argup = array(
+		                'ID'			=> $obj->ID,
+		                'post_status'	=>	'publish',
+		            );
+		            $result = wp_update_post($argup);
 				}
 			}
 

@@ -25,6 +25,9 @@ class PF_Admin {
 		add_action( 'admin_init', array($this, 'pf_options_admin_page_save') );
 		add_action( 'admin_notices', array($this, 'admin_notices_action' ));
 
+		// Launch a batch delete process, if necessary.
+		add_action( 'admin_init', array( $this, 'launch_batch_delete' ) );
+
 		// AJAX handlers
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
@@ -49,6 +52,9 @@ class PF_Admin {
 		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_checked_date_column_content' ), 10, 2 );
 		add_action( 'manage_edit-pf_feed_sortable_columns', array( $this, 'make_last_checked_column_sortable' ) );
 		add_action( 'pre_get_posts', array( $this, 'sort_by_last_checked' ) );
+
+		add_action( 'before_delete_post', array( $this, 'pf_delete_children_of_feeds' ) );
+		add_action( 'wp_trash_post', array( $this, 'pf_trash_children_of_feeds' ) );
 
 		add_action( 'quick_edit_custom_box', array( $this, 'quick_edit_field' ), 10, 2 );
 		add_action( 'save_post', array( $this, 'quick_edit_save' ), 10, 2 );
@@ -327,9 +333,7 @@ class PF_Admin {
 							echo '<a class="btn btn-small" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i></a>';
 						}
 					}
-					if ( 'pf-review' != $page ){
-						echo '<a class="btn btn-small" id="gofolders" href="#">' . __('Folders', 'pf') . '</a>';
-					}
+					echo '<a class="btn btn-small" id="gofolders" href="#">' . __('Folders', 'pf') . '</a>';
 				?>
 
 			</div>
@@ -444,7 +448,7 @@ class PF_Admin {
 										$send_to_draft_classes .= ' btn-success';
 									}
 
-									self::dropdown_option(__('Send to Draft', 'pf'), "amplify-draft-".$item['item_id'], $send_to_draft_classes, $item['item_id'], 'draft', 'btn-success' );
+									self::dropdown_option(__('Send to ', 'pf').ucwords( get_option(PF_SLUG.'_draft_post_status', 'draft') ), "amplify-draft-".$item['item_id'], $send_to_draft_classes, $item['item_id'], 'draft', 'btn-success' );
 
 							?>
 									<li class="divider"></li>
@@ -574,15 +578,15 @@ class PF_Admin {
 			#$item = array_merge($metadata, $item);
 			#var_dump($item);
 			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['item_tags'], $metadata['item_id'] )) . ' '.$readClass.'" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '" pf-schema="read" pf-schema-class="article-read">';
-			?> <a style="display:none;" name="modal-<?php echo $metadata['item_id']; ?>"></a> <?php 
+			?> <a style="display:none;" name="modal-<?php echo $metadata['item_id']; ?>"></a> <?php
 		} else {
 			$id_for_comments = $item['post_id'];
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
 			echo '<article class="feed-item entry ' . pf_slugger(get_the_source_title($id_for_comments), true, false, true) . ' ' . $itemTagClassesString . ' '.$readClass.'" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '" pf-item-post-id="' . $id_for_comments . '" >';
-			?> <a style="display:none;" name="modal-<?php echo $item['item_id']; ?>"></a> <?php 
+			?> <a style="display:none;" name="modal-<?php echo $item['item_id']; ?>"></a> <?php
 		}
-			
+
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
 			echo '<div class="box-controls">';
 			if (current_user_can( 'manage_options' )){
@@ -1022,25 +1026,7 @@ class PF_Admin {
 	* Display function for Feeder panel
 	*/
 	function display_tools_builder() {
-
-		echo '<header id="app-banner">
-			<div class="title-span title">
-				<h1>PressForward: Tools</h1>								<span id="h-after"> • </span>' 
-				#. '<button class="btn btn-small" id="fullscreenfeed"> Full Screen </button>' .
-			. '</div><!-- End title -->
-		</header>';
-
-		pressforward()->form_of->nominate_this('as_paragraph');
-		?>
-		<p>
-			<button type="submit" class="refreshfeed btn btn-small" id="refreshfeed" value="<?php  _e('Refresh', 'pf')  ?>"><?php  _e('Refresh', 'pf');  ?></button>
-			<?php
-				_e( ' the feed retrieval process. This button will attempt to restart a broken refresh process. If a previous feed retrieval cycle was completed, it will start the next one early. However, if the process is currently ongoing it will notify the system that you believe there is an error in the retrieval process, and the next time your site steps through the cycle, the system will attempt to find and rectify the error.', 'pf');
-			?>
-		</p>
-		<?php
-		do_action('pf_tools');
-
+		pressforward()->tools->the_settings_page();
 	}
 
 	/**
@@ -1048,7 +1034,7 @@ class PF_Admin {
 	 */
 	function display_feeder_builder() {
 
-		pressforward()->form_of->the_view_for('feeder');
+		pressforward()->add_feeds->the_settings_page();
 
 
 	}
@@ -1175,6 +1161,8 @@ class PF_Admin {
 			wp_enqueue_style( PF_SLUG . '-style' );
 			wp_enqueue_style( PF_SLUG . '-susy-style' );
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
+			wp_enqueue_style( PF_SLUG . '-settings-style' );
+			wp_enqueue_script(PF_SLUG . '-settings-tools' );
 		}
 		if (('pressforward_page_pf-options') == $hook) {
 			wp_enqueue_style( PF_SLUG . '-settings-style' );
@@ -1208,6 +1196,8 @@ class PF_Admin {
 			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 			wp_enqueue_style('thickbox');
 			wp_enqueue_script( PF_SLUG . '-media-query-imp' );
+			wp_enqueue_style( PF_SLUG . '-settings-style' );
+			wp_enqueue_script(PF_SLUG . '-settings-tools' );
 
 		}
 
@@ -1347,8 +1337,13 @@ class PF_Admin {
 			} else {
 				update_option('pf_errors_until_alert', 3);
 			}
-
-
+			if (isset( $_POST[PF_SLUG.'_retrieval_frequency'] )){
+				$pf_retrieval_frequency = $_POST[PF_SLUG.'_retrieval_frequency'];
+				//print_r($pf_links_opt_check); die();
+				update_option(PF_SLUG.'_retrieval_frequency', $pf_retrieval_frequency);
+			} else {
+				update_option(PF_SLUG.'_retrieval_frequency', 30);
+			}
 			if (isset( $_POST['pf_present_author_as_primary'] )){
 				$pf_author_opt_check = $_POST['pf_present_author_as_primary'];
 				//print_r($pf_links_opt_check); die();
@@ -1356,6 +1351,16 @@ class PF_Admin {
 			} else {
 				update_option('pf_present_author_as_primary', 'no');
 			}
+
+			$pf_draft_post_type = (!empty( $_POST[PF_SLUG . '_draft_post_type'] ) )
+				? $_POST[PF_SLUG . '_draft_post_type']
+				: 'post';
+			update_option(PF_SLUG . '_draft_post_type', $pf_draft_post_type);
+
+			$pf_draft_post_status = (!empty( $_POST[PF_SLUG . '_draft_post_status'] ) )
+				? $_POST[PF_SLUG . '_draft_post_status']
+				: 'draft';
+			update_option(PF_SLUG . '_draft_post_status', $pf_draft_post_status);
 
 			if (class_exists('The_Alert_Box')){
 				#var_dump($_POST);
@@ -1466,49 +1471,54 @@ class PF_Admin {
         ) );
     }
 
-	/*
-	 *
-	 * A method to allow users to delete any CPT or post through AJAX.
-	 * The goal here is to tie an easy use function to an AJAX action,
-	 * that also cleans up all the extra data that PressForward
-	 * can create.
-	 *
-	 * If a post is made readable, it will attempt (and often
-	 * succeed) at pulling in images. This should remove those
-	 * attached images and remove relationship schema data.
-	 *
-	 * We should also figure out the best way to call this when
-	 * posts are 'expired' after 60 days.
-	 *
-	 * Takes:
-	 *		Post ID
-	 *		Post Readability Status
-	 *
-	 */
+    public function dead_feed_status(){
+        register_post_status('removed_'.pressforward()->pf_feeds->post_type, array(
+            'label'                 =>     _x('Removed Feed', 'pf'),
+            'public'                =>      false,
+            'exclude_from_search'   =>      true,
+            'show_in_admin_all_list'=>      false
+        ) );
+    }
 
-	function pf_thing_deleter($id = 0, $readability_status = false, $item_type = 'feed_item'){
+    public function pf_delete_children_of_feeds( $post_id ){
+    	if ( pressforward()->pf_feeds->post_type == get_post_type( $post_id ) ){
+    		pf_log('Delete a feed and all its children.');
+		pf_delete_item_tree( $post_id );
+    	}
+    }
+
+    public function pf_trash_children_of_feeds( $post_id ){
+    	if ( pressforward()->pf_feeds->post_type == get_post_type( $post_id ) ){
+    		pf_log('Trash a feed and all its children.');
+    		$this->pf_thing_trasher( $post_id, true, pressforward()->pf_feeds->post_type );
+    	}
+    }
+
+	function pf_thing_trasher($id = 0, $readability_status = false, $item_type = 'feed_item'){
 		if ($id == 0)
 			return new WP_Error('noID', __("No ID supplied for deletion", 'pf'));
 
+		pf_log('On trash hook:');
 		# Note: this will also remove feed items if a feed is deleted, is that something we want?
 		if ($readability_status || $readability_status > 0){
+			if ( 'feed_item' == $item_type ){
+				$post_type = pf_feed_item_post_type();
+			} else {
+				$post_type = $item_type;
+			}
 			$args = array(
-				'post_parent' => $id
+				'post_parent' => $id,
+				'post_type'   => $post_type
 			);
 			$attachments = get_children($args);
+			pf_log('Get Children of '.$id);
+			pf_log($attachments);
 			foreach ($attachments as $attachment) {
-				wp_delete_post($attachment->ID, true);
+				wp_trash_post($attachment->ID, true);
 			}
 		}
 
-		$argup = array(
-			'ID'			=> $id,
-			'post_content' 	=> $item_type,
-			'post_status'	=>	'removed_feed_item'
-		);
-
-		$result = wp_update_post($argup);
-		return $result;
+		return $id;
 
 	}
 
@@ -1539,7 +1549,7 @@ class PF_Admin {
 		if(isset($_POST['made_readable'])){
 			$read_status = $_POST['made_readable'];
 		} else { $read_status = false; }
-		$returned = self::pf_thing_deleter($id, $read_status);
+		$returned = pf_delete_item_tree( $id, true );
 		var_dump($returned);
 		$vd = ob_get_clean();
 		ob_end_clean();
@@ -1801,7 +1811,7 @@ class PF_Admin {
 		}
 
 		// Only touch if we're sorting by last_retrieved
-		if ( 'last_retrieved' !== $query->query_vars['orderby'] ) {
+		if ( ! isset( $query->query_vars['orderby'] ) || 'last_retrieved' !== $query->query_vars['orderby'] ) {
 			return;
 		}
 
@@ -1864,7 +1874,7 @@ class PF_Admin {
 		}
 
 		// Only touch if we're sorting by last_retrieved
-		if ( 'last_checked' !== $query->query_vars['orderby'] ) {
+		if ( ! isset( $query->query_vars['orderby'] ) || 'last_checked' !== $query->query_vars['orderby'] ) {
 			return;
 		}
 
@@ -1954,6 +1964,19 @@ class PF_Admin {
 		$feed_url = stripslashes( $_POST['pf-quick-edit-feed-url'] );
 
 		update_post_meta( $post_id, 'feedUrl', $feed_url );
+	}
+
+	/**
+	 * Launch a batch delete, if one is queued.
+	 *
+	 * @since 3.6
+	 */
+	public function launch_batch_delete() {
+		if ( ! current_user_can( 'delete_posts' ) ) {
+			return;
+		}
+
+		pf_launch_batch_delete();
 	}
 
 	/////////////////////////

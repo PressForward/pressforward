@@ -4,14 +4,14 @@ jQuery(window).load(function() {
 		the_nom_id: 0
 	};
 
-	jQuery('.pf_container').on('click', ".nominate-now", function (evt){ 
+	jQuery('.pf_container').on('click', ".nominate-now", function (evt){
 		evt.preventDefault();
-		
+
 		var element		= jQuery(this);
 		var itemID		= element.attr('form');
 	var item_title 		= jQuery("#item_title_"+itemID).val();
-	var source_title 	= jQuery("#source_title_"+itemID).val(); 
-	var item_date 		= jQuery("#item_date_"+itemID).val(); 
+	var source_title 	= jQuery("#source_title_"+itemID).val();
+	var item_date 		= jQuery("#item_date_"+itemID).val();
 	var item_author 	= jQuery("#item_author_"+itemID).val();
 	var item_content 	= jQuery("#item_content_"+itemID).val();
 	var item_link 		= jQuery("#item_link_"+itemID).val();
@@ -19,7 +19,7 @@ jQuery(window).load(function() {
 	var item_id 		= jQuery("#item_id_"+itemID).val();
 	var item_wp_date	= jQuery("#item_wp_date_"+itemID).val();
 	var item_tags		= jQuery("#item_tags_"+itemID).val();
-	var source_repeat	= jQuery("#source_repeat_"+itemID).val();	
+	var source_repeat	= jQuery("#source_repeat_"+itemID).val();
 	var postID 			= jQuery('#'+itemID).attr('pf-post-id');
 //	var errorThrown		= 'Broken';
 	var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());
@@ -48,15 +48,15 @@ jQuery(window).load(function() {
 		});
 	  });
 
-	
-	jQuery('.pf_container').on('click', ".amplify-draft", function (evt){ 
+
+	jQuery('.pf_container').on('click', ".amplify-draft", function (evt){
 		evt.preventDefault();
-		
+
 		var element		= jQuery(this);
 		var itemID		= element.attr('data-form');
 		var item_title 		= jQuery("#item_title_"+itemID).val();
-		var source_title 	= jQuery("#source_title_"+itemID).val(); 
-		var item_date 		= jQuery("#item_date_"+itemID).val(); 
+		var source_title 	= jQuery("#source_title_"+itemID).val();
+		var item_date 		= jQuery("#item_date_"+itemID).val();
 		var item_author 	= jQuery("#item_author_"+itemID).val();
 		var item_content 	= jQuery("#item_content_"+itemID).val();
 		var item_link 		= jQuery("#item_link_"+itemID).val();
@@ -64,7 +64,7 @@ jQuery(window).load(function() {
 		var item_id 		= jQuery("#item_id_"+itemID).val();
 		var item_wp_date	= jQuery("#item_wp_date_"+itemID).val();
 		var item_tags		= jQuery("#item_tags_"+itemID).val();
-		var source_repeat	= jQuery("#source_repeat_"+itemID).val();	
+		var source_repeat	= jQuery("#source_repeat_"+itemID).val();
 		var postID 			= jQuery('#'+itemID).attr('pf-post-id');
 	//	var errorThrown		= 'Broken';
 		var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());
@@ -84,6 +84,7 @@ jQuery(window).load(function() {
 				item_tags: item_tags,
 				item_post_id: postID,
 				source_repeat: source_repeat,
+				pf_amplify: '1',
 				pf_nomination_nonce: theNonce
 		},
 		function(response) {
@@ -104,11 +105,11 @@ jQuery(window).load(function() {
 				pf_nomination_nonce: theNonce
 			},
 			function(response) {
-				jQuery('.loading-'+itemID).hide();	
+				jQuery('.loading-'+itemID).hide();
 			});
 		});
 	});
-	  
 
-	
+
+
 });

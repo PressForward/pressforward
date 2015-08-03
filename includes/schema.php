@@ -93,6 +93,11 @@ class PF_Feed_Item_Schema {
 		) ) );
 	}
 
+	public function register_folders_for_items(){
+		#add_action( 'plugins_loaded', pressforward()->nominations->post_type );
+		#register_taxonomy_for_object_type( pressforward()->nominations->post_type, 'post_type_name');
+	}
+
 	/**
 	 * Checks to see whether the relationship table needs to be installed, and installs if so
 	 *

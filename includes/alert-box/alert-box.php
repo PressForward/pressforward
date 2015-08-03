@@ -216,11 +216,16 @@ if (!class_exists('The_Alert_Box')){
             $post_status_d = get_post_meta( $post_id, 'pre_alert_status', true);
             if (empty($post_status_d)){
 				        $post_status_d = array();
-                $post_status_d['status'] = 'draft';
-                $post_status_d['type'] = $_POST['post_type'];
+                $post_status_d['status'] = 'publish';
+                $post_status_d['id'] = $post_id;
+            } elseif ( !is_array($post_status_d) ) {
+                $a = array();
+                $a['id'] = $post_id;
+                $a['status'] = $post_status_d;
+                $post_status_d = $a;
             }
             $post_status = apply_filters('ab_alert_specimens_update_post_type', $post_status_d);
-
+            //var_dump($post_status);
 			// update the post, which calls save_post again
             $id = wp_update_post( array( 'ID' => $post_id, 'post_status' => $post_status['status'] ) );
 
@@ -407,16 +412,16 @@ if (!class_exists('The_Alert_Box')){
                 echo '<p><a href="#" id="dismiss_all_alert_specimens" style="color:GoldenRod;font-weight:bold;" title="' . $editText . '" data-dismiss-all-check="' . $editCheck . '" '.self::alert_box_type_data($q).' >' . $editText . '</a></p>';
           }
 				if (current_user_can('delete_others_posts')){
-    					$deleteText = self::alert_label('delete_all'); 
+    					$deleteText = self::alert_label('delete_all');
     					echo '<p><a href="#" id="delete_all_alert_specimens" style="color:red;font-weight:bold;" title="' . __('Delete all posts with alerts', 'pf') . '" alert-check="' . $alertCheck . '" '.self::alert_box_type_data($q).' >' . $deleteText . '</a></p>';
 				}
 				} else {
-					$return_string = self::alert_label('all_well'); 
+					$return_string = self::alert_label('all_well');
 					echo $return_string;
 
 				}
 			} else {
-				echo self::alert_label('turned_off'); 
+				echo self::alert_label('turned_off');
 			}
         }
 

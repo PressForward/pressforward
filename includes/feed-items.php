@@ -21,7 +21,7 @@ class PF_Feed_Item {
 
 	public static function get( $args = array() ) {
 		$wp_args = array(
-			'post_type'        => $this->post_type,
+			'post_type'        => pf_feed_item_post_type(),
 			'post_status'      => 'publish',
 			'suppress_filters' => false,
 		);
@@ -57,11 +57,24 @@ class PF_Feed_Item {
 			foreach ( $posts as &$post ) {
 				$post->word_count = get_post_meta( $post->ID, 'pf_feed_item_word_count', true );
 				$post->source     = get_post_meta( $post->ID, 'pf_feed_item_source', true );
-				$post->tags       = wp_get_post_terms( $post->ID, $this->tag_taxonomy );
+				$post->tags       = wp_get_post_terms( $post->ID, pf_feed_item_tag_taxonomy() );
 			}
 		}
 
 		return $posts;
+	}
+
+	public static function get_by_item_id( $item_id ){
+		$args = array(
+				'meta_key'	=>	pf_get_meta_key( 'item_id' ),
+				'meta_value' => $item_id
+			);
+		$post = self::get( $args );
+		if ( empty( $post ) ){
+			return false;
+		} else {
+			return $post[0];
+		}
 	}
 
 	public static function create( $args = array() ) {
@@ -73,6 +86,7 @@ class PF_Feed_Item {
 			'item_wp_date'    => '',
 			'post_parent'    => '',
 			'item_tags'    => array(),
+			'post_status'	=> 'publish'
 		) );
 
 		// Sanitization
@@ -88,7 +102,7 @@ class PF_Feed_Item {
 
 		$wp_args = array(
 			'post_type'    => pf_feed_item_post_type(),
-			'post_status'  => 'publish',
+			'post_status'  => $r['post_status'],
 			'post_title'   => $r['item_title'],
 			'post_content' => wp_specialchars_decode( $r['item_content'], ENT_COMPAT ), // todo
 			'guid'         => $r['item_link'],
@@ -159,7 +173,8 @@ class PF_Feed_Item {
 	*/
 	public static function aggregation_services(){
 		return array(
-						'Google'  =>	'google.com'
+						'Google'  			=>	'google.com',
+						'Tweeted Times'		=>  'tweetedtimes.com'
 					);
 	}
 
@@ -519,16 +534,21 @@ class PF_Feed_Item {
 	public static function disassemble_feed_items() {
 		//delete rss feed items with a date past a certain point.
 		add_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older') );
-		$queryForDel = new WP_Query( array( 'post_type' => pf_feed_item_post_type() ) );
+		$queryForDel = new WP_Query(
+								array(
+										'post_type' => pf_feed_item_post_type(),
+										'posts_per_page' => '2500'
+									)
+							);
 		remove_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older') );
-
+		pf_log('Disassemble Feed Items Activated');
 		// The Loop
 		while ( $queryForDel->have_posts() ) : $queryForDel->the_post();
 			# All the posts in this loop are older than 60 days from 'now'.
 			# Delete them all.
-			$postid = get_the_ID();
-			$this->disassemble_feed_item_media( $post_id );
-			wp_delete_post( $postid, true );
+			$post_id = get_the_ID();
+			pf_log('Cleaning up '.$post_id);
+			pf_delete_item_tree( $post_id );
 
 		endwhile;
 
@@ -562,9 +582,9 @@ class PF_Feed_Item {
             if ( $archiveQuery->have_posts() ) :
 
                 while ( $archiveQuery->have_posts() ) : $archiveQuery->the_post();
-                    $post_id = get_the_ID();
-                     //Switch the delete on to wipe rss archive posts from the database for testing.
-                    pressforward()->admin->pf_thing_deleter( $post_id, true );
+			$post_id = get_the_ID();
+			// Switch the delete on to wipe rss archive posts from the database for testing.
+			pf_delete_item_tree( $post_id );
 
                 endwhile;
                 #print_r(__('All archives deleted.', 'pf'));
@@ -664,7 +684,10 @@ class PF_Feed_Item {
 						//print_r('< the ID');
 						if ((get_post_meta($post->ID, 'item_id', $item_id, true)) === $item_id){
 							$thepostscheck++;
-							pf_log('We already have post ' . $item_id);
+							$post_id_to_pass = $post->ID;
+							pf_log('We already have post ' . $post_id_to_pass . ' for ');
+							pf_log($item);
+							do_action('already_a_feed_item', array( 'item' => $item, 'post_id' => $post_id_to_pass) );
 						}
 
 					endforeach;
@@ -785,6 +808,7 @@ class PF_Feed_Item {
 				//The content is coming in from the rss_object assembler a-ok. But something here saves them to the database screwy.
 				//It looks like sanitize post is screwing them up terribly. But what to do about it without removing the security measures which we need to apply?
 				$worked = 1;
+				do_action('about_to_insert_pf_feed_items', $item);
 				# The post gets created here, the $newNomID variable contains the new post's ID.
 				$newNomID = self::create( $data );
 				$post_inserted_bool = self::post_inserted($newNomID, $data);
@@ -859,6 +883,10 @@ class PF_Feed_Item {
 
 				);
 				pf_meta_establish_post($newNomID, $pf_meta_args);
+				$parent_id = $feed_obj_id;
+				do_action('pf_post_established', $newNomID, $item_id, $parent_id);
+			} else {
+
 			}
 
 		}
@@ -891,7 +919,7 @@ class PF_Feed_Item {
 	}
 
 	# Alternate function title - 'stop_pasting_junk_from_word'
-	public function extra_special_sanatize($string, $severe = false){
+	public static function extra_special_sanatize($string, $severe = false){
 
 		$search = array(chr(145),
 						chr(146),
@@ -931,7 +959,7 @@ class PF_Feed_Item {
 				$string = str_replace('&acirc;�', '&rdquo;', $string);
 
 				$search = array("&#39;", "\xc3\xa2\xc2\x80\xc2\x99", "\xc3\xa2\xc2\x80\xc2\x93", "\xc3\xa2\xc2\x80\xc2\x9d", "\xc3\xa2\x3f\x3f", "&#8220;", "&#8221;", "#8217;", "&not;", "&#8482;");
-				$resplace = array("'", "'", ' - ', '"', "'", '"', '"', "'", "-", "(TM)");
+				$replace = array("'", "'", ' - ', '"', "'", '"', '"', "'", "-", "(TM)");
 
 				$string = str_replace($search, $replace, $string);
 
@@ -1001,9 +1029,7 @@ class PF_Feed_Item {
 				# Ugh... we can't get anything huh?
 				print_r($url . ' has no description we can find.');
 				# We'll want to return a false to loop with.
-				$descrip = false;
-
-				break;
+				return false;
 			}
 		}
 		return $descrip;
@@ -1031,7 +1057,7 @@ class PF_Feed_Item {
 	public static function get_ext_og_img($link){
 		$node = pressforward()->og_reader->fetch($link);
 		$itemFeatImg = $node->image;
-		
+
 		return $itemFeatImg;
 	}
 
@@ -1040,7 +1066,7 @@ class PF_Feed_Item {
 		# Your 1x1 tracking or dummy images have no domain here!
 		if ( ( 2 > $img_info[0] ) || ( 2 > $img_info[1] ) ){
 			# I assure you this is not an image
-			return false;	
+			return false;
 		} else {
 			# This is an image I assure you.
 			return true;
@@ -1064,7 +1090,7 @@ class PF_Feed_Item {
 				}
 
 				$imgTitle = sanitize_file_name($imgTitle);
-				# Let's not get crazy here. 
+				# Let's not get crazy here.
 				$imgTitle = substr($imgTitle, 0, 100);
 				if (strpos($imgTitle, '.') !== FALSE){
 					$imgTitle = 'retrieved-featured-image';
@@ -1099,11 +1125,11 @@ class PF_Feed_Item {
 
 			//Get the type of the image file. .jpg, .gif, or whatever
 			$filetype = wp_check_filetype( $ogCacheImg );
-			
-			
+
+
 			//Set the identifying variables for the about to be featured image.
 			$imgData = array(
-							'guid'           => $ogCacheImg, 
+							'guid'           => $ogCacheImg,
 							//tell WordPress what the filetype is.
 							'post_mime_type' => $filetype['type'],
 							//set the image title to the title of the site you are pulling from

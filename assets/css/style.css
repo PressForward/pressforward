@@ -217,7 +217,7 @@ color: #ffffff;
 }
 
 .dropdown-menu {
-	
+
 }
 
 .unset {
@@ -416,12 +416,12 @@ h3 {
 }
 
 .list article {
-	 
+
 }
 
 .list .box-controls {
 	margin-right: 26px;
-	margin-top: -10px; 
+	margin-top: -10px;
 }
 
 .pressforward .list .dropdown-menu.fullview {
@@ -656,7 +656,6 @@ h3 {
 .info-box-popover {
 	background-color: #f5f5f5;
 	z-index: 9996;
-	width: 310px;
 
 }
 
@@ -756,14 +755,14 @@ h3 {
 	}
 
 	.nav-fix {
-		
+
 		position: fixed;
 		top: 30px;
 		width: 100%;
 		z-index: 9997;
 		margin: 0;
 		left: 200px;
-		
+
 	}
 
 	@media (max-width: 960px){
