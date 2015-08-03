@@ -93,7 +93,7 @@ function nominate_it() {
 	$nom_check = false;
     //var_dump('<pre>'); var_dump($_POST['pf-feed-subscribe']); die();
     if ( !empty( $_POST['pf-feed-subscribe'] ) && ( 'subscribe' == $_POST['pf-feed-subscribe'] ) ){
-        $url_array = parse_url($_POST['item_link']);
+        $url_array = parse_url(esc_url($_POST['item_link']));
         $sourceLink = 'http://' . $url_array['host'];
         //var_dump($sourceLink); die();
         pressforward()->pf_feeds->create($sourceLink, array('post_status' => 'draft') );
