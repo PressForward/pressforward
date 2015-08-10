@@ -86,6 +86,7 @@ class PF_Feed_Item {
 			'item_wp_date'    => '',
 			'post_parent'    => '',
 			'item_tags'    => array(),
+			'post_status'	=> 'publish'
 		) );
 
 		// Sanitization
@@ -101,7 +102,7 @@ class PF_Feed_Item {
 
 		$wp_args = array(
 			'post_type'    => pf_feed_item_post_type(),
-			'post_status'  => 'publish',
+			'post_status'  => $r['post_status'],
 			'post_title'   => $r['item_title'],
 			'post_content' => wp_specialchars_decode( $r['item_content'], ENT_COMPAT ), // todo
 			'guid'         => $r['item_link'],
@@ -536,7 +537,7 @@ class PF_Feed_Item {
 		$queryForDel = new WP_Query(
 								array(
 										'post_type' => pf_feed_item_post_type(),
-										'posts_per_page' => '3000'
+										'posts_per_page' => '2500'
 									)
 							);
 		remove_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older') );
@@ -546,9 +547,8 @@ class PF_Feed_Item {
 			# All the posts in this loop are older than 60 days from 'now'.
 			# Delete them all.
 			$post_id = get_the_ID();
-			pf_log($post_id,true);
-			self::disassemble_feed_item_media( $post_id );
-			wp_delete_post( $post_id, true );
+			pf_log('Cleaning up '.$post_id);
+			pf_delete_item_tree( $post_id );
 
 		endwhile;
 
@@ -582,9 +582,9 @@ class PF_Feed_Item {
             if ( $archiveQuery->have_posts() ) :
 
                 while ( $archiveQuery->have_posts() ) : $archiveQuery->the_post();
-                    $post_id = get_the_ID();
-                     //Switch the delete on to wipe rss archive posts from the database for testing.
-                    pressforward()->admin->pf_thing_deleter( $post_id, true );
+			$post_id = get_the_ID();
+			// Switch the delete on to wipe rss archive posts from the database for testing.
+			pf_delete_item_tree( $post_id );
 
                 endwhile;
                 #print_r(__('All archives deleted.', 'pf'));

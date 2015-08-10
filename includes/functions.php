@@ -1276,6 +1276,33 @@ function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
 
 }
 
+function pf_get_author_from_url($url){
+	$response = pf_file_get_html( $url );
+	$possibles = array();
+	$possibles[] = $response->find('meta[name=author]', 0);
+	$possibles[] = $response->find('meta[name=Author]', 0);
+	$possibles[] = $response->find('meta[property=author]', 0);
+	$possibles[] = $response->find('meta[property=Author]', 0);
+	$possibles[] = $response->find('meta[name=parsely-author]', 0);
+	$possibles[] = $response->find('meta[name=sailthru.author]', 0);
+
+	foreach ($possibles as $possible){
+		if ( false != $possible ){
+			$author_meta = $possible;
+			break;
+		}
+	}
+
+	if ( empty($author_meta) ){
+		return false;
+	}
+
+	$author = $author_meta->content;
+	$author = trim(str_replace("by","",$author));
+	$author = trim(str_replace("By","",$author));
+	return $author;
+}
+
 /**
  * Add post_meta on a post using PressForward post_meta standardization.
  *
@@ -1520,6 +1547,211 @@ function pf_iterate_cycle_state($option_name, $option_limit = false, $echo = fal
 		update_option(PF_SLUG.'_'.$option_name, $retrieval_cycle);
 		return $retrieval_cycle;
 	}
+}
+
+/**
+ * Delete a PF item and its descendants.
+ *
+ * PF content (OPML feeds, RSS feeds, feed items) is often arranged hierarchically, and deleting one item should delete
+ * all descendants as well. However, this process can take a long time. So this function assembles a descendant tree
+ * for the item to be deleted, and places them in a queue to be deleted on subsequent pageloads.
+ *
+ * @since 3.6
+ *
+ * @param int|WP_Post ID or WP_Post object.
+ * @return bool|array False on failure, otherwise post ID deletion queue.
+ */
+function pf_delete_item_tree( $item, $fake_delete = false ) {
+	$item = get_post( $item );
+
+	if ( ! $item || ! ( $item instanceof WP_Post ) ) {
+		return false;
+	}
+
+	$feed_item_post_type = pf_feed_item_post_type();
+	$feed_post_type      = pressforward()->pf_feeds->post_type;
+
+	if ( ! in_array( $item->post_type, array( $feed_item_post_type, $feed_post_type, 'nomination' ) ) ) {
+		return false;
+	}
+
+	$queued = get_option( 'pf_delete_queue', array() );
+	if ( in_array( $item->ID, $queued ) ) {
+		return false;
+	}
+
+	$queued[] = $item->ID;
+
+	// Store immediately so that subsequent calls to this function are accurate.
+	update_option( 'pf_delete_queue', $queued );
+
+	switch ( $item->post_type ) {
+		// Feed item: queue all attachments.
+		case $feed_item_post_type :
+		case 'nomination' :
+			$atts = get_posts( array(
+				'post_parent' => $item->ID,
+				'post_type'   => 'attachment',
+				'post_status' => 'inherit',
+				'fields'      => 'ids',
+				'numberposts' => -1,
+			) );
+
+			foreach ( $atts as $att ) {
+				if ( ! in_array( $att, $queued ) ) {
+					$queued[] = $att;
+				}
+			}
+
+			// Store the assembled queue.
+			update_option( 'pf_delete_queue', $queued );
+
+			if ($fake_delete){
+				$fake_status = 'removed_'.$item->post_type;
+
+				$wp_args = array(
+					'post_type'    => pf_feed_item_post_type(),
+					'post_status'  => $fake_status,
+					'post_title'   => $item->post_title,
+					'post_content' => '',
+					'guid'         => pf_get_post_meta($item->ID, 'item_link'),
+					'post_date'    => $item->post_date
+				);
+
+				$id = wp_insert_post($wp_args);
+				pf_update_meta($id, 'item_id', create_feed_item_id( pf_get_post_meta($item->ID, 'item_link'), $item->post_title ) );
+			}
+
+		break; // $feed_item_post_type
+
+		// Feed: queue all children (OPML only) and all feed items.
+		case $feed_post_type :
+			// Child feeds (applies only to OPML subscriptions).
+			$child_feeds = get_posts( array(
+				'post_parent' => $item->ID,
+				'post_type'   => $feed_post_type,
+				'post_status' => 'any',
+				'fields'      => 'ids',
+				'numberposts' => -1,
+			) );
+
+			foreach ( $child_feeds as $child_feed ) {
+				pf_delete_item_tree( $child_feed );
+			}
+
+			// Feed items.
+			$feed_items = get_posts( array(
+				'post_parent' => $item->ID,
+				'post_type'   => $feed_item_post_type,
+				'post_status' => 'any',
+				'fields'      => 'ids',
+				'numberposts' => -1,
+			) );
+
+			foreach ( $feed_items as $feed_item ) {
+				pf_delete_item_tree( $feed_item );
+			}
+
+		break; // $feed_post_type
+	}
+
+	// Fetch an updated copy of the queue, which may have been updated recursively.
+	$queued = get_option( 'pf_delete_queue', array() );
+
+	return $queued;
+}
+
+/**
+ * Prevent items waiting to be queued from appearing in any query results.
+ *
+ * This is primarily meant to hide from the Trash screen, where the deletion of a queued item could result in
+ * various weirdnesses.
+ *
+ * @since 3.6
+ *
+ * @param WP_Query $query
+ */
+function pf_exclude_queued_items_from_queries( $query ) {
+	$queued = get_option( 'pf_delete_queue' );
+	if ( ! $queued || ! is_array( $queued ) ) {
+		return;
+	}
+
+	$post__not_in = $query->get( 'post__not_in' );
+	$post__not_in = array_merge( $post__not_in, $queued );
+	$query->set( 'post__not_in', $post__not_in );
+}
+add_action( 'pre_get_posts', 'pf_exclude_queued_items_from_queries', 999 );
+
+/**
+ * Detect and process a delete queue request.
+ *
+ * Request URLs are of the form example.com?pf_process_delete_queue=123, where '123' is a single-use nonce stored in
+ * the 'pf_delete_queue_nonce' option.
+ *
+ * @since 3.6
+ */
+function pf_process_delete_queue() {
+	if ( ! isset( $_GET['pf_process_delete_queue'] ) ) {
+		return;
+	}
+
+	$nonce = $_GET['pf_process_delete_queue'];
+	$saved_nonce = get_option( 'pf_delete_queue_nonce' );
+	if ( $saved_nonce !== $nonce ) {
+		return;
+	}
+
+	$queued = get_option( 'pf_delete_queue', array() );
+	for ( $i = 0; $i <= 1; $i++ ) {
+		$post_id = array_shift( $queued );
+		if ( null !== $post_id ) {
+			wp_delete_post( $post_id, true );
+		}
+	}
+	update_option( 'pf_delete_queue', $queued );
+	delete_option( 'pf_delete_queue_nonce' );
+
+	if ( ! $queued ) {
+		delete_option( 'pf_delete_queue' );
+
+		// Clean up empty taxonomy terms.
+		$terms = get_terms( pressforward()->pf_feeds->tag_taxonomy, array(
+			'hide_empty' => false,
+		) );
+
+		foreach ( $terms as $term ) {
+			if ( 0 == $term->count ) {
+				wp_delete_term( $term->term_id, pressforward()->pf_feeds->tag_taxonomy );
+			}
+		}
+	} else {
+		pf_launch_batch_delete();
+	}
+}
+add_action( 'wp_loaded', 'pf_process_delete_queue' );
+
+/**
+ * Launch the processing of the delete queue.
+ *
+ * @since 3.6
+ */
+function pf_launch_batch_delete() {
+	// Nothing to do.
+	$queued = get_option( 'pf_delete_queue' );
+	if ( ! $queued ) {
+		return;
+	}
+
+	// If a nonce is saved, then a deletion is pending, and we should do nothing.
+	$saved_nonce = get_option( 'pf_delete_queue_nonce' );
+	if ( $saved_nonce ) {
+		return;
+	}
+
+	$nonce = rand( 10000000, 99999999 );
+	add_option( 'pf_delete_queue_nonce', $nonce );
+	wp_remote_get( add_query_arg( 'pf_process_delete_queue', $nonce, home_url() ) );
 }
 
 /**

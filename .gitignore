@@ -193,3 +193,4 @@ $RECYCLE.BIN/
 ## Node etc
 #############
 node_modules/*
+node_modules

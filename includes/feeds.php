@@ -435,7 +435,7 @@ class PF_Feeds_Schema {
 
 		$wp_args = array(
 			'post_type' 	=> $this->post_type,
-			'post_status' 	=> 'publish',
+			'post_status' 	=> $r['post_status'],
 			'post_title'	=> $r['title'],
 			'post_content'	=> $r['description'],
 			'guid'			=> $r['url'],
@@ -583,6 +583,7 @@ class PF_Feeds_Schema {
 			'thumbnail'  	=> false,
 			'user_added'    => false,
 			'post_parent'	=> 0,
+			'post_status'   => 'publish',
 			'module_added' 	=> 'rss-import',
 			'tags'    => array(),
 		) );

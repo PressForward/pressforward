@@ -132,6 +132,35 @@ class OPML_reader {
 		return $array;
 	}
 
+	function open_OPML($file) {
+        pf_log('open_OPML invoked.');
+		if(1 == ini_get('allow_url_fopen')){
+			pf_log('Using simplexml_load_file to load OPML.');
+            $file = simplexml_load_file($file);
+		} else {
+            pf_log('Using cURL to load OPML file.');
+			$ch = curl_init();
+			$timeout = 5;
+			curl_setopt($ch, CURLOPT_URL, $file);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+			$data = curl_exec($ch);
+			curl_close($ch);
+			$file = simplexml_load_string($data);
+		}
+    #echo '<pre>'; var_dump($data); #die();
+		if (empty($file)) {
+            pf_log('Received an empty file.');
+			return false;			
+		} else {
+            pf_log('Received:');
+            pf_log($file);
+			$opml_data = $file;
+			return $opml_data;
+		}
+	}
+	
+
 	# Pass the URL and if you want to return an array of objects or of urls.
 	# @todo remove this function
 	function get_OPML_data($url, $is_array = true){
