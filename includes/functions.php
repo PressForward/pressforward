@@ -1279,6 +1279,9 @@ function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
 function pf_get_author_from_url($url){
 	$response = pf_file_get_html( $url );
 	$possibles = array();
+	if (empty($response)){
+		return false;
+	}
 	$possibles[] = $response->find('meta[name=author]', 0);
 	$possibles[] = $response->find('meta[name=Author]', 0);
 	$possibles[] = $response->find('meta[property=author]', 0);
