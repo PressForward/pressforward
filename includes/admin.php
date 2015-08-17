@@ -1574,7 +1574,7 @@ class PF_Admin {
 		}
 		$userObj = wp_get_current_user();
 		$user_id = $userObj->ID;
-		$returned = self::pf_switch_display_setting($user_id, $read_state);
+		$returned = $this->pf_switch_display_setting($user_id, $read_state);
 		#var_dump($user_id);
 
 		$response = array(
@@ -1605,7 +1605,7 @@ class PF_Admin {
 		}
 
 		$user_id = pressforward()->form_of->user_id();
-		$returned = self::pf_switch_user_option($user_id, $setting_name, $setting);
+		$returned = $this->pf_switch_user_option($user_id, $setting_name, $setting);
 		#var_dump($user_id);
 
 		$response = array(
@@ -1627,7 +1627,7 @@ class PF_Admin {
 	}
 
 
-	function pf_switch_display_setting($user_id, $read_state){
+	public function pf_switch_display_setting($user_id, $read_state){
 		if ( !current_user_can( 'edit_user', $user_id ) ){
 			return false;
 		}

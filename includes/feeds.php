@@ -23,7 +23,7 @@ class PF_Feeds_Schema {
 	#var $post_type;
 	#var $tag_taxonomy;
 
-	public function init() {
+	public static function init() {
 		static $instance;
 
 		if ( empty( $instance ) ) {
@@ -33,7 +33,7 @@ class PF_Feeds_Schema {
 		return $instance;
 	}
 
-	public function __construct() {
+	private function __construct() {
 		$this->post_type = 'pf_feed';
 		$this->tag_taxonomy = 'pf_feed_category';
 

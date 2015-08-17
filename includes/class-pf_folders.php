@@ -10,7 +10,7 @@ class PF_Folders {
 	#var $post_type;
 	#var $tag_taxonomy;
 
-	public function init() {
+	public static function init() {
 		static $instance;
 
 		if ( empty( $instance ) ) {
@@ -20,7 +20,7 @@ class PF_Folders {
 		return $instance;
 	}
 
-	public function __construct() {
+	private function __construct() {
 		$this->tag_taxonomy = 'pf_feed_category';
 		$this->post_type = 'pf_feed';
 
