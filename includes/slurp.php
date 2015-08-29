@@ -408,6 +408,7 @@ class PF_Feed_Retrieve {
 
 	public function ajax_update_feed_handler() {
 		global $pf;
+		pf_log( 'Starting ajax_update_feed_handler with ID of '.$_POST['feed_id'] );
 		$obj = get_post($_POST['feed_id']);
 		$Feeds = new PF_Feeds_Schema();
 		$id = $obj->ID;

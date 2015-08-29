@@ -38,9 +38,13 @@ function pf_switch_status_look(){
     setTimeout(function(){ jQuery('body.post-type-pf_feed').find('#save-post').attr('value', 'Save Inactive'); console.log('Change save button.'); }, 50);
   });
 
+}
+
+
   jQuery('body.post-type-pf_feed').on('click', ".refresh-feed", (function(evt){
       evt.preventDefault();
       var element			= jQuery(this);
+      console.log(element);
       var feed_id           = element.attr('data-pf-feed');
       jQuery.post(ajaxurl, {
               action: 'ajax_update_feed_handler',
@@ -52,7 +56,5 @@ function pf_switch_status_look(){
               //alert(response);
               //jQuery("#test-div1").append(data);
           });
-        });
-  });
-
-}
+      })
+  );
