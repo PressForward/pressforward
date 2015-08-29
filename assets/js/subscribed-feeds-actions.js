@@ -25,7 +25,7 @@ function pf_switch_status_look(){
 
   var button = jQuery('body.post-type-pf_feed').find('#publish').attr('value');
   if ('Publish' == button){
-    var button = jQuery('body.post-type-pf_feed').find('#publish').attr('value', 'Make Active');
+    button = jQuery('body.post-type-pf_feed').find('#publish').attr('value', 'Make Active');
   }
 
   jQuery( "body.post-type-pf_feed .post-state" ).each(function( index ) {
