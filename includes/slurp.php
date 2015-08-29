@@ -30,6 +30,7 @@ class PF_Feed_Retrieve {
 		if ( is_admin() ) {
 			add_action( 'wp_ajax_nopriv_feed_retrieval_reset', array( $this, 'feed_retrieval_reset' ) );
 			add_action( 'wp_ajax_feed_retrieval_reset', array( $this, 'feed_retrieval_reset' ) );
+			add_action( 'wp_ajax_ajax_update_feed_handler', array( $this, 'ajax_update_feed_handler' ) );
 			add_action( 'get_more_feeds', array( 'PF_Feed_Item', 'assemble_feed_for_pull' ) );
 		}
 	}
@@ -403,6 +404,62 @@ class PF_Feed_Retrieve {
 			return $feedObj;
 		}
 
+	}
+
+	public function ajax_update_feed_handler() {
+		global $pf;
+		$obj = get_post($_POST['feed_id']);
+		$Feeds = new PF_Feeds_Schema();
+		$id = $obj->ID;
+		pf_log( 'Feed ID ' . $id );
+		$type = $Feeds->get_pf_feed_type( $id );
+		pf_log( 'Checking for feed type ' . $type );
+		$module_to_use = $this->does_type_exist( $type );
+		if ( !$module_to_use ) {
+			# Be a better error.
+			pf_log( 'The feed type does not exist.' );
+			return false;
+		}
+
+		pf_log( 'Begin the process to retrieve the object full of feed items.' );
+		//Has this process already occurring?
+		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0 );
+		pf_log( 'The Feeds go switch has been updated?' );
+		pf_log( $feed_go );
+		$is_it_going = get_option( PF_SLUG . '_iterate_going_switch', 1 );
+		if ( $is_it_going == 0 ) {
+			//WE ARE? SHUT IT DOWN!!!
+			update_option( PF_SLUG . '_feeds_go_switch', 0 );
+			update_option( PF_SLUG . '_feeds_iteration', 0 );
+			update_option( PF_SLUG . '_iterate_going_switch', 0 );
+			//print_r( '<br /> We\'re doing this thing already in the data object. <br />' );
+			if ( ( get_option( PF_SLUG . '_ready_to_chunk', 1 ) ) === 0 ) {
+				pf_log( 'The chunk is still open because there are no more feeds. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]' );
+				# Wipe the checking option for use next time.
+				update_option( PF_SLUG . '_feeds_meta_state', array() );
+				update_option( PF_SLUG .  '_ready_to_chunk', 1 );
+			} else {
+				pf_log( 'We\'re doing this thing already in the data object.', true );
+			}
+			//return false;
+			die();
+		}
+
+		if ( 'rss-quick' == $type ) {
+			# Let's update the RSS-Quick so it has real data.
+			$rq_update = array(
+				'type'		=>		'rss-quick',
+				'ID'		=>		$id,
+				'url'		=>		$obj->guid
+			);
+			$Feeds->update( $id, $rq_update );
+		}
+
+		# module function to return a set of standard pf feed_item object
+		# Like get_items in SimplePie
+		$feedObj = $this->get_the_feed_object( $module_to_use, $obj );
+
+		pressforward()->pf_feed_items->assemble_feed_for_pull($feedObj);
 	}
 
 	# Take the feed type and the feed id

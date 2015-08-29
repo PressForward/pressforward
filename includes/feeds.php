@@ -50,6 +50,7 @@ class PF_Feeds_Schema {
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_edit_feed_scripts' ) );
 			add_filter( 'page_row_actions', array($this, 'url_feed_row_action'), 10, 2 );
+			add_filter( 'page_row_actions', array($this, 'refresh_feed_row_action'), 10, 2 );
 		}
 
 		add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
@@ -112,10 +113,13 @@ class PF_Feeds_Schema {
 	    }
 
 		$url = $post->guid;
-		$actions['edit'] = '<span class="inline" style="visibility:visible;color:grey;">'.$url.'</span><br/>'.$actions['edit'];
-		//<span class="inline hide-if-no-js"><a href="#" class="editinline" title="Edit this item inline">Quick&nbsp;Edit</a> | </span>
-	    #$actions['wpse8170-pdf'] = 'http://your/url/here';
+		$actions['edit'] = '<span class="inline pf-url" style="visibility:visible;color:grey;">'.$url.'</span><br/>'.$actions['edit'];
 	    return $actions;
+	}
+
+	public function refresh_feed_row_action( $actions, $post ){
+		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="'.$post->ID.'" title="Refresh this feed">Refresh&nbsp;Feed&nbsp;Items</a> | ';
+		return $actions;
 	}
 
 	public function get_top_feed_folders(){
