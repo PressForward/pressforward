@@ -408,9 +408,11 @@ class PF_Feed_Retrieve {
 
 	public function ajax_update_feed_handler() {
 		global $pf;
+		#pf_log( $_POST );
 		pf_log( 'Starting ajax_update_feed_handler with ID of '.$_POST['feed_id'] );
 		$obj = get_post($_POST['feed_id']);
-		$Feeds = new PF_Feeds_Schema();
+		pf_log( $obj );
+		$Feeds = pressforward()->pf_feeds;
 		$id = $obj->ID;
 		pf_log( 'Feed ID ' . $id );
 		$type = $Feeds->get_pf_feed_type( $id );
@@ -428,18 +430,11 @@ class PF_Feed_Retrieve {
 		pf_log( 'The Feeds go switch has been updated?' );
 		pf_log( $feed_go );
 		$is_it_going = get_option( PF_SLUG . '_iterate_going_switch', 1 );
-		if ( $is_it_going == 0 ) {
-			//WE ARE? SHUT IT DOWN!!!
-			update_option( PF_SLUG . '_feeds_go_switch', 0 );
-			update_option( PF_SLUG . '_feeds_iteration', 0 );
-			update_option( PF_SLUG . '_iterate_going_switch', 0 );
+		if ( $is_it_going == 1 ) {
 			//print_r( '<br /> We\'re doing this thing already in the data object. <br />' );
 			if ( ( get_option( PF_SLUG . '_ready_to_chunk', 1 ) ) === 0 ) {
-				pf_log( 'The chunk is still open because there are no more feeds. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]' );
-				# Wipe the checking option for use next time.
-				update_option( PF_SLUG . '_feeds_meta_state', array() );
-				update_option( PF_SLUG .  '_ready_to_chunk', 1 );
-			} else {
+				pf_log( 'The chunk is still open.' );
+			} elseif ( ( $id == get_option( '_feeds_iteration' ) ) || ( $id == get_option( '_prev_iteration' ) ) ) {
 				pf_log( 'We\'re doing this thing already in the data object.', true );
 			}
 			//return false;
@@ -461,6 +456,8 @@ class PF_Feed_Retrieve {
 		$feedObj = $this->get_the_feed_object( $module_to_use, $obj );
 
 		pressforward()->pf_feed_items->assemble_feed_for_pull($feedObj);
+		pressforward()->pf_feeds->set_feed_last_checked($id);
+		$this->feed_retrieval_reset();
 	}
 
 	# Take the feed type and the feed id
@@ -470,7 +467,7 @@ class PF_Feed_Retrieve {
 	# If check = true than this is just a validator for feeds.
 	public function feed_handler( $obj, $check = false ) {
 		global $pf;
-		$Feeds = new PF_Feeds_Schema();
+		$Feeds = pressforward()->pf_feeds;
 		pf_log( 'Invoked: PF_Feed_retrieve::feed_handler()' );
 		pf_log( 'Are we just checking?' );
 		pf_log( $check );

@@ -1845,7 +1845,7 @@ function pf_log( $message = '', $display = false, $reset = false ) {
 		$message = $message->get_error_message();
 	}
 
-	if ( is_array( $message ) ) {
+	if ( is_array( $message ) || is_object( $message ) ) {
 		$message = print_r( $message, true );
 	}
 

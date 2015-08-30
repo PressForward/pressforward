@@ -6,6 +6,25 @@ jQuery(window).load(function() {
     pf_switch_status_look();
   });
 
+  jQuery('body.post-type-pf_feed').on('click', ".refresh-feed", (function(evt){
+      evt.preventDefault();
+      var element			= jQuery(this);
+      console.log('Refreshing feed.');
+      console.log( element );
+      var feed_id           = element.attr('data-pf-feed');
+      jQuery.post(ajaxurl, {
+              action: 'ajax_update_feed_handler',
+              feed_id: feed_id
+          },
+          function(response) {
+              //jQuery('.loading-'+itemID).hide();
+              //jQuery(".result-status-"+itemID+" .msg-box").html(response);
+              //alert(response);
+              //jQuery("#test-div1").append(data);
+          });
+      })
+  );
+
 });
 
 function pf_switch_status_look(){
@@ -39,22 +58,3 @@ function pf_switch_status_look(){
   });
 
 }
-
-
-  jQuery('body.post-type-pf_feed').on('click', ".refresh-feed", (function(evt){
-      evt.preventDefault();
-      var element			= jQuery(this);
-      console.log(element);
-      var feed_id           = element.attr('data-pf-feed');
-      jQuery.post(ajaxurl, {
-              action: 'ajax_update_feed_handler',
-              feed_id: feed_id
-          },
-          function(response) {
-              //jQuery('.loading-'+itemID).hide();
-              //jQuery(".result-status-"+itemID+" .msg-box").html(response);
-              //alert(response);
-              //jQuery("#test-div1").append(data);
-          });
-      })
-  );
