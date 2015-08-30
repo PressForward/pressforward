@@ -96,6 +96,55 @@ class PF_Feeds_Schema {
 			return $posts_columns;
 	}
 
+	//$count = pressforward()->pf_feeds->count_feed_items_collected(207);
+	//var_dump( $count->publish );
+	public function count_feed_items_collected( $parent_id, $perm = '' ){
+		global $wpdb;
+		$type = pressforward()->get_feed_item_post_type();
+		if ( ! post_type_exists( $type ) )
+			return new stdClass;
+
+		$counts = wp_cache_get( $type.'_'.$parent_id, 'pf_counts' );
+		if ( false !== $counts ) {
+			/** This filter is documented in wp-includes/post.php */
+			return apply_filters( 'pf_count_items', $counts, $parent_id, $perm );
+		}
+
+		$query = "SELECT post_status, COUNT( * ) AS num_posts FROM {$wpdb->posts} WHERE post_type = %s AND post_parent = %d";
+		if ( 'readable' == $perm && is_user_logged_in() ) {
+			$post_type_object = get_post_type_object($type);
+			if ( ! current_user_can( $post_type_object->cap->read_private_posts ) ) {
+				$query .= $wpdb->prepare( " AND (post_status != 'private' OR ( post_author = %d AND post_status = 'private' ))",
+					get_current_user_id()
+				);
+			}
+		}
+		$query .= ' GROUP BY post_status';
+
+		$results = (array) $wpdb->get_results( $wpdb->prepare( $query, $type, $parent_id ), ARRAY_A );
+		$counts = array_fill_keys( get_post_stati(), 0 );
+
+		foreach ( $results as $row ) {
+			$counts[ $row['post_status'] ] = $row['num_posts'];
+		}
+
+		$counts = (object) $counts;
+		wp_cache_set( $type.'_'.$parent_id, $counts, 'pf_counts' );
+
+		/**
+		 * Modify returned post counts by status for the current post type.
+		 *
+		 * @since 3.7.0
+		 *
+		 * @param object $counts An object containing the current post_type's post
+		 *                       counts by status.
+		 * @param string $type   Post type.
+		 * @param string $perm   The permission to determine if the posts are 'readable'
+		 *                       by the current user.
+		 */
+		return apply_filters( 'pf_count_items', $counts, $parent_id, $perm );
+	}
+
 	public function is_feed_term($id){
 		#var_dump($id);
 		$termcheck = term_exists((int) $id, $this->tag_taxonomy);
