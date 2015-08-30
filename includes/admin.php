@@ -1655,7 +1655,7 @@ class PF_Admin {
 	 * @return array
 	 */
 	public function add_last_retrieved_date_column( $posts_columns ) {
-		unset( $posts_columns['date'] );
+		#unset( $posts_columns['date'] );
 		$posts_columns['last_retrieved'] = __('Last Time Feed Item Retrieved', 'pf');
 		return $posts_columns;
 	}
