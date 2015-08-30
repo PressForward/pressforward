@@ -54,6 +54,7 @@ class PF_Feeds_Schema {
 		}
 
 		add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
+		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
 	}
 
 	/**
@@ -93,11 +94,50 @@ class PF_Feeds_Schema {
 
 	public function custom_feed_column_name( $posts_columns ){
 			$posts_columns['author'] = 'Added by';
+			$posts_columns['items_retrieved'] = "Items";
+			$posts_columns['date'] = 'Date Added';
 			return $posts_columns;
 	}
 
-	//$count = pressforward()->pf_feeds->count_feed_items_collected(207);
-	//var_dump( $count->publish );
+
+	/**
+	 * Content of the Items Retrieved column.
+	 *
+	 * We also hide the feed URL in this column, so we can reveal it on Quick Edit.
+	 *
+	 * @since 3.7.0
+	 *
+	 * @param string $column_name Column ID.
+	 * @param int $post_id ID of the post for the current row in the table.
+	 */
+	public function last_retrieved_date_column_content( $column_name, $post_id ) {
+		if ( 'items_retrieved' !== $column_name ) {
+			return;
+		}
+		$counts = $this->count_feed_items_collected($post_id);
+		echo $counts->publish;
+	}
+
+	/**
+	* Count number of published items that are children of a feed and more if
+	* user has permissions to view.
+	*
+	* This function provides an efficient method of finding the amount of feed
+	* items a feed post has as children. Another method is to count the amount
+	* of items in get_posts(), but that method has a lot of overhead with doing
+	* so. Therefore, use this function instead. Based on WP4.3 wp_count_posts.
+	*
+	* The $perm parameter checks for 'readable' value and if the user can read
+	* private posts, it will display that for the user that is signed in.
+	*
+	* @since 3.7.0
+	*
+	* @global wpdb $wpdb
+	*
+	* @param int $parent_id Parent feed post ID.
+	* @param string $perm Optional. 'readable' or empty. Default empty.
+	* @return object Number of posts for each status.
+	*/
 	public function count_feed_items_collected( $parent_id, $perm = '' ){
 		global $wpdb;
 		$type = pressforward()->get_feed_item_post_type();
@@ -129,7 +169,7 @@ class PF_Feeds_Schema {
 		}
 
 		$counts = (object) $counts;
-		wp_cache_set( $type.'_'.$parent_id, $counts, 'pf_counts' );
+		wp_cache_set( $type.'_'.$parent_id, $counts, 'pf_counts', 1740 );
 
 		/**
 		 * Modify returned post counts by status for the current post type.
