@@ -20,21 +20,22 @@ jQuery(window).load(function() {
 var archivesVisible = 0;
 
 jQuery(window).load(function() {
-	jQuery(".showarchived").click().toggle(function (evt){ 
+
+	jQuery("#showarchived").click( function (evt){ 
 		evt.preventDefault();
-		archivesVisible = 1;
-		jQuery('.archived').show();
-		jQuery('.showarchived').html('Hide Archived');
-		jQuery('.showarchived').attr('value', 'Hide Archived');
-		jQuery('.showarchived').addClass('hidearchived');
-	
-	}, function (evt){ 
-		evt.preventDefault();
-		archivesVisible = 0;
-		jQuery('.archived').hide();
-		jQuery('.hidearchived').html('Show Archived');
-		jQuery('.hidearchived').attr('value', 'Show Archived');
-		jQuery('.showarchived').removeClass('hidearchived');
+		if(jQuery('#showarchived').hasClass('hidearchived')){
+			archivesVisible = 0;
+			jQuery('.archived').hide();
+			jQuery('#showarchived').html('Show Archived');
+			jQuery('#showarchived').attr('value', 'Show Archived');
+			jQuery('#showarchived').removeClass('hidearchived');
+		} else {
+			archivesVisible = 1;
+			jQuery('.archived').show();
+			jQuery('#showarchived').html('Hide Archived');
+			jQuery('#showarchived').attr('value', 'Hide Archived');
+			jQuery('#showarchived').addClass('hidearchived');
+		}
 	
 	}
 	);		
@@ -69,17 +70,6 @@ jQuery(window).load(function() {
 			jQuery('#errors').html(response);
 		});
 	});	
-	
-	jQuery('.pf_container').on('click', "#showarchiveonly", function (evt){
-		evt.preventDefault();	
-		
-		window.open(location.href+'&pf-see=archive-only','_self');
-	});		
-    
-	jQuery('.pf_container').on('click', "#sortstarredonly", function (evt){
-		evt.preventDefault();	
-		
-		window.open(location.href+'&pf-see=starred-only','_self');
-	});	    
+
 	
 });	

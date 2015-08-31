@@ -49,9 +49,9 @@ class PF_OpenGraph implements Iterator
    * @param $URI    URI to page to parse for Open Graph data
    * @return OpenGraph
    */
-	static public function fetch($url) {
-		$URI_data = pf_de_https($url, 'wp_remote_get', array('timeout' => '30'));
-    		return self::_parse($URI_data);
+	static public function fetch($URI) {
+		$URI_data = pf_de_https($URI, 'wp_remote_get', array('timeout' => '30'));
+    return self::_parse($URI_data);
 	}
 
   /**
@@ -68,8 +68,11 @@ class PF_OpenGraph implements Iterator
 		$doc = new DOMDocument();
 		if (is_array($HTML)){
 			pf_log('Attempt to parse URL for OpenGraph.');
-			pf_log($HTML);
-			return false;
+			#pf_log($HTML);
+			$HTML = $HTML['body'];
+			if (empty($HTML)){
+				return false;
+			}
 		}
 		$doc->loadHTML($HTML);
 
@@ -112,6 +115,20 @@ class PF_OpenGraph implements Iterator
         }
         if (!isset($page->_values['description']) && $nonOgDescription) {
             $page->_values['description'] = $nonOgDescription;
+        }
+
+        //Fallback to use image_src if ogp::image isn't set.
+        if (!isset($page->_values['image'])) {
+            $domxpath = new DOMXPath($doc);
+            $elements = $domxpath->query("//link[@rel='image_src']");
+
+            if ($elements->length > 0) {
+                $domattr = $elements->item(0)->attributes->getNamedItem('href');
+                if ($domattr) {
+                    $page->_values['image'] = $domattr->value;
+                    $page->_values['image_src'] = $domattr->value;
+                }
+            }
         }
 
 		if (empty($page->_values)) { return false; }

@@ -8,6 +8,7 @@ class PF_Debugger extends PF_Module {
 	function __construct() {
 		parent::start();
 		add_filter('pf_setup_admin_rights', array($this, 'control_menu_access'));
+		add_action('pf_tools', array($this, 'debug_the_slurp'));
 	}
 
 	/**
@@ -226,33 +227,51 @@ class PF_Debugger extends PF_Module {
 		wp_register_style( PF_SLUG . '-debug-style', PF_URL . 'includes/debugger/css/style.css' );
 	}
 
+	function admin_enqueue_scripts() {
+		global $pagenow;
+
+		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
+
+		if ( !in_array( $pagenow, array( 'admin.php' ) ) )
+			return;
+
+		if(!in_array($hook, array('pressforward_page_pf-tools')) )
+			return;
+
+
+		wp_enqueue_script( 'feed_control_script', PF_URL . '/assets/js/feeds_control.js', array('jquery', PF_SLUG . '-twitter-bootstrap'), PF_VERSION );
+	}
+
 	function control_menu_access($arrayedAdminRights){
 		$arrayedAdminRights['pf_menu_log_access'] = array(
 															'default'=>'administrator',
-															'title'=>'Debugging Log'
+															'title'=>__('Debugging Log', 'pf'),
+															'details'=>__( 'Debugging sets the user role required to access the Debugging page from the PressForward menu when it is turned on.' , 'pf')
 														);
 
 		return $arrayedAdminRights;
 
 	}
 
-	function add_to_feeder(){
-		?>
-		<p>
-		<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="<?php _e('Reset all Feed Retrieval Options', 'pf'); ?>"><?php _e('Reset all Feed Retrieval Options', 'pf'); ?></button>    <br />
-		<?php
-			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0);
-			$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
-			$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
-			$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );
-			$retrieval_state = sprintf(__('Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d  Ready to chunk? %4$d', 'pf'), $feed_go, $feed_iteration, $retrieval_state, $chunk_state);
-			echo $retrieval_state;
+	function debug_the_slurp(){
+		if (current_user_can(get_option('pf_menu_log_access', 'administrator'))){
+			?>
+			<p>
+			<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="<?php _e('Reset all Feed Retrieval Options', 'pf'); ?>"><?php _e('Reset all Feed Retrieval Options', 'pf'); ?></button>    <br />
+			<?php
+				$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0);
+				$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0);
+				$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0);
+				$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );
+				$retrieval_state = sprintf(__('Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d  Ready to chunk? %4$d', 'pf'), $feed_go, $feed_iteration, $retrieval_state, $chunk_state);
+				echo $retrieval_state;
 
-		?>
-		<br />
-		<button type="button" class="redoFeeds btn btn-warning" id="resetFeedOps" value="<?php _e('Switch feeds to new retrieval setup', 'pf'); ?>"><?php _e('Switch feeds to new retrieval setup', 'pf'); ?></button>    <br />
-		</p>
-		<?php
+			?>
+			<br />
+			<button type="button" class="redoFeeds btn btn-warning" id="resetFeedOps" value="<?php _e('Switch feeds to new retrieval setup', 'pf'); ?>"><?php _e('Switch feeds to new retrieval setup', 'pf'); ?></button>    <br />
+			</p>
+			<?php
+		}
 	}
 
 }

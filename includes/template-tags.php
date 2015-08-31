@@ -5,8 +5,17 @@ function get_the_source_title($id = false){
 	if (!$id){
 		$id = get_the_ID();
 	}
+	if ( empty($id) ){
+		throw new Exception("get_source_title could not find an ID.", 1);
+		return;
+	}
 	$parent_id = get_post_ancestors($id);
+	if (empty($parent_id[0])){ return __('Bookmarklet', 'pf'); }
 	$parent = get_post($parent_id[0]);
+	if ( empty($parent) ){
+		pf_log("get_source_title could not find a post object checking with the ID of ".$parent_id[0]);
+		return __('Unknown Feed', 'pf');
+	}
 	$st = $parent->post_title;
 	return $st;
 }
@@ -36,8 +45,11 @@ function the_item_author(){
 	echo get_the_item_author();
 }
 
-function get_the_item_link(){
-	$m = pf_retrieve_meta(get_the_ID(), 'item_link');
+function get_the_item_link($id = false){
+	if ( !$id ){
+		$id = get_the_ID();
+	}
+	$m = pf_retrieve_meta($id, 'item_link');
 	return $m;
 }
 

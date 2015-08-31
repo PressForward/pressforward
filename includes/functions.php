@@ -6,6 +6,25 @@
  * @since 1.7
  */
 
+/**
+ * Register a PressForward module.
+ *
+ * This function allows developers to register modules into the array
+ * of PressForward modules. Developers can do this to take advantage
+ * of a variaty of PressForward function and to makeit appear in
+ * the PressForward dashboard.
+ *
+ * @since 2.x.x
+ *
+ * @param  array $args {
+ *     Required. An array of arguments describing the module.
+ *
+ *     @var string $slug A non-capatalized safe string.
+ *     @var string $class The name of the module's class.
+ * 												Must match the folder name.
+ * }
+ * @return null
+ */
 function pressforward_register_module( $args ) {
 	$defaults = array(
 		'slug' => '',
@@ -15,13 +34,13 @@ function pressforward_register_module( $args ) {
 
 	// We need the 'class' and 'slug' terms
 	if ( empty( $r['class'] ) || empty( $r['slug'] ) ) {
-		continue;
+		return;
 	}
 
 	// Ensure the class exists before attempting to initialize it
 	// @todo Should probably have better error reporting
 	if ( ! class_exists( $r['class'] ) ) {
-		continue;
+		return;
 	}
 
 	add_filter( 'pressforward_register_modules', create_function( '$modules', '
@@ -97,7 +116,7 @@ function pf_shortcut_link() {
  *
  * @since 1.7
  *
- * @return string
+ * @return string The name of the feed item post_type for PressForward.
  */
 function pf_feed_item_post_type() {
 	return pressforward()->get_feed_item_post_type();
@@ -108,7 +127,7 @@ function pf_feed_item_post_type() {
  *
  * @since 1.7
  *
- * @return string
+ * @return string The slug for the taxonomy used by feed items.
  */
 function pf_feed_item_tag_taxonomy() {
 	return pressforward()->get_feed_item_tag_taxonomy();
@@ -214,7 +233,7 @@ function pf_slugger($string, $case = false, $strict = true, $spaces = false){
  *
  * @return array $itemArray
  */
-function pf_feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='', $itemTags='', $addedDate='', $sourceRepeat='', $postid='', $readable_status = '' ) {
+function pf_feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuthor='', $itemContent='', $itemLink='', $itemFeatImg='', $itemUID='', $itemWPDate='', $itemTags='', $addedDate='', $sourceRepeat='', $postid='', $readable_status = '', $obj = array() ) {
 
 	# Assemble all the needed variables into our fancy object!
 	$itemArray = array(
@@ -231,54 +250,54 @@ function pf_feed_object( $itemTitle='', $sourceTitle='', $itemDate='', $itemAuth
 		'item_added_date' => $addedDate,
 		'source_repeat'   => $sourceRepeat,
 		'post_id'		  => $postid,
-		'readable_status' => $readable_status
+		'readable_status' => $readable_status,
+		'obj'				=> $obj
 	);
 
 	return $itemArray;
 }
 
+function create_feed_item_id($url, $title){
+	$hash = md5($url . $title);
+	return $hash;
+}
+
 /**
- * Get all posts with 'origin_item_ID' set to a given item id
+ * Get all posts with 'item_id' set to a given item id
  *
  * @since 1.7
  *
- * @param string $theDate MySQL-formatted date. Posts will only be fetched
- *   starting from this date
- * @param string $post_type The post type to limit results to
- * @param int $item_id The origin item id
- * @return object
+ * @param string $post_type The post type to limit results to.
+ * @param string $item_id The origin item id.
+ * @param bool $ids_only Set to true if you want only an array of IDs returned in the query.
+ *
+ * @return object A standard WP_Query object.
  */
-function pf_get_posts_by_id_for_check( $theDate, $post_type, $item_id ) {
+function pf_get_posts_by_id_for_check( $post_type = false, $item_id, $ids_only = false ) {
 	global $wpdb;
 	# If the item is less than 24 hours old on nomination, check the whole database.
-	 $querystr = $wpdb->prepare("
-			SELECT {$wpdb->posts}.*
-			FROM {$wpdb->posts}, {$wpdb->postmeta}
-			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-			AND {$wpdb->postmeta}.meta_key = 'origin_item_ID'
-			AND {$wpdb->postmeta}.meta_value = '%s'
-			AND {$wpdb->posts}.post_type = '%s'
-			AND {$wpdb->posts}.post_date >= '%s'
-			ORDER BY {$wpdb->posts}.post_date DESC
-		 ", $item_id, $post_type, $theDate);
+#	$theDate = getdate();
+	#$w = date('W');
+	$r = array(
+							'meta_key' => 'item_id',
+							'meta_value' => $item_id,
+							'post_type'	=> array('post', pf_feed_item_post_type())
+						);
 
-	$postsAfter = $wpdb->get_results($querystr, OBJECT);
-	if ($wpdb->num_rows >= 1){
+	if ($ids_only){
+		$r['fields'] = 'ids';
+		$r['no_found_rows'] = true;
+		$r['cache_results'] = false;
 
-	} else {
-		$querystr = $wpdb->prepare("
-			SELECT {$wpdb->posts}.*
-			FROM {$wpdb->posts}, {$wpdb->postmeta}
-			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-			AND {$wpdb->postmeta}.meta_key = 'origin_item_ID'
-			AND {$wpdb->postmeta}.meta_value = '%s'
-			AND {$wpdb->posts}.post_type = '%s'
-			AND {$wpdb->posts}.post_date <= '%s'
-			ORDER BY {$wpdb->posts}.post_date DESC
-		 ", $item_id, $post_type, $theDate);
-
-		$postsAfter = $wpdb->get_results($querystr, OBJECT);
 	}
+
+	if (false != $post_type){
+		$r['post_type'] = $post_type;
+	}
+
+	$postsAfter =  new WP_Query( $r );
+	pf_log(' Checking for posts with item ID '. $item_id .' returned query with ' . $postsAfter->post_count . ' items.');
+	#pf_log($postsAfter);
 	return $postsAfter;
 }
 
@@ -321,11 +340,13 @@ function pf_get_user_level($option, $default_level) {
  * @param string $url
  * @param string|array $function Function to call first to try and get the URL.
  * @return string|object $r Returns the string URL, converted, when no function is passed.
+ *
  * otherwise returns the result of the function after being checked for accessability.
  */
 function pf_de_https($url, $function = false) {
 	$args = func_get_args();
 	$url = str_replace('&amp;','&', $url);
+	$url_first = $url;
 	if (!$function){
 		$r = set_url_scheme($url, 'http');
 	} else {
@@ -341,9 +362,15 @@ function pf_de_https($url, $function = false) {
 		        $r = call_user_func_array( $function, $args );
 		    }
 
-		    if ( is_wp_error( $r ) ) {
-		        // bail
-						return false;
+		    if ( !$r || is_wp_error( $r ) ) {
+		        # Last Chance!
+						if ('file_get_contents' != $function){
+							$r = file_get_contents($url_first);
+							#var_dump($r); die();
+						} else {
+								// bail
+								return false;
+						}
 		    }
 		}
 	}
@@ -351,7 +378,7 @@ function pf_de_https($url, $function = false) {
 }
 
 /**
- * Converts a list of terms to a set of slugs to be listed in the nomination CSS selector
+ * Converts and echos a list of terms to a set of slugs to be listed in the nomination CSS selector
  */
 function pf_nom_class_tagger($array = array()){
 
@@ -374,6 +401,16 @@ function pf_nom_class_tagger($array = array()){
 
 }
 
+/**
+* Converts and returns a list of terms as a set of slugs useful for nominations
+*
+* @since 1.7
+*
+* @param array $array A set of terms.
+*
+* @return string|object $tags A string containing a comma-seperated list of slugged tags.
+*
+*/
 function get_pf_nom_class_tags($array = array()){
 
 	foreach ($array as $class){
@@ -398,7 +435,7 @@ function get_pf_nom_class_tags($array = array()){
 }
 
 /**
- * Build an excerpt for a nomination
+ * Build an excerpt for a nomination. For filtering.
  *
  * @param string $text
  */
@@ -423,6 +460,16 @@ function pf_noms_filter( $text ) {
 	return $text;
 }
 
+
+/**
+* Build an excerpt for nominations.
+*
+* @since 1.7
+*
+* @param string $text
+*
+* @return string $r Returns the adjusted excerpt.
+*/
 function pf_noms_excerpt( $text ) {
 
 	$text = apply_filters('the_content', $text);
@@ -442,6 +489,16 @@ function pf_noms_excerpt( $text ) {
 
 	return $text;
 }
+
+/**
+ * Get an object with capabilities as keys pointing to roles that contain those capabilities.
+ *
+ * @since 3.x
+ *
+ * @param string $cap Optional. If given, the function will return a set of roles that have that capability.
+ *
+ * @return array $role_reversal An array with capailities as keys pointing to what roles they match to.
+ */
 
 function pf_get_capabilities($cap = false){
   # Get the WP_Roles object.
@@ -466,6 +523,22 @@ function pf_get_capabilities($cap = false){
   }
 }
 
+/**
+ * Request a role string or object by asking for its capability.
+ *
+ * Function allows the user to find out a role by a capability that it holds.
+ * The user may specify the higest role with that capability or the lowest.
+ * The lowest is the default.
+ *
+ * @since 3.x
+ *
+ * @param string $cap The slug for the capacity being checked against.
+ * @param bool $lowest Optional. If the function should return the lowest capable role. Default true.
+ * @param bool $obj Optional. If the function should return a role object instead of a string. Default false.
+ *
+ * @return string|object Returns either the string name of the role or the WP object created by get_role.
+ */
+
 function pf_get_role_by_capability($cap, $lowest = true, $obj = false){
 	# Get set of roles for capability.
 	$roles = pf_get_capabilities($cap);
@@ -485,10 +558,22 @@ function pf_get_role_by_capability($cap, $lowest = true, $obj = false){
 }
 
 
-# If we want to allow users to set access by role, we need to give
-# the users the names of the roles, but WordPress needs a capability.
-# This function lets you match the role with the first capability
-# that only it can do, the defining capability.
+/**
+ * Get the capability that uniquely matches a specific role.
+ *
+ * If we want to allow users to set access by role, we need to give users the names
+ * of all roles. But Wordpress takes capabilities. This function matches the role with
+ * its first capability, so users can set by Role but WordPress takes capability.
+ *
+ * However, it will check against the system options and either attempt to return
+ * this information based on WordPress defaults or by checking the current system.
+ *
+ * @since 3.x
+ *
+ * @param string $role_slug The slug for the role being checked against.
+ *
+ * @return string The slug for the defining capability of the given role.
+ */
 function pf_get_defining_capability_by_role($role_slug){
 	$pf_use_advanced_user_roles = get_option('pf_use_advanced_user_roles', 'no');
     # For those who wish to ignore the super-cool auto-detection for fringe-y sites that
@@ -523,7 +608,17 @@ function pf_get_defining_capability_by_role($role_slug){
     }
 }
 
-//Based on http://seoserpent.com/wordpress/custom-author-byline
+/**
+ * A function to filter authors and, if available, replace their display with the origonal item author.
+ *
+ * Based on http://seoserpent.com/wordpress/custom-author-byline
+ *
+ * @since 3.x
+ *
+ * @param string $author The author string currently being displayed.
+ *
+ * @return string Returns the author.
+ */
 function pf_replace_author_presentation( $author ) {
 	global $post;
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')){
@@ -537,6 +632,15 @@ function pf_replace_author_presentation( $author ) {
 }
 add_filter( 'the_author', 'pf_replace_author_presentation' );
 
+/**
+ * A function to filter author urls and, if available, replace their display with the origonal item author urls.
+ *
+ * @since 3.x
+ *
+ * @param string $author_uri The author URI currently in use.
+ *
+ * @return string Returns the author URI.
+ */
 function pf_replace_author_uri_presentation( $author_uri ) {
 	global $post, $authordata;
 	if(is_object($post)){
@@ -560,36 +664,92 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 
 add_filter( 'author_link', 'pf_replace_author_uri_presentation' );
 
-function pf_forward_unto_source(){
+function pf_canonical_url(){
 	if(is_single()){
 		$obj = get_queried_object();
 		$post_ID = $obj->ID;
 		$link = get_post_meta($post_ID, 'item_link', TRUE);
-		if (!empty($link)){
-			echo '<link rel="canonical" href="'.$link.'" />';
-			$wait = get_option('pf_link_to_source', 0);
-			if ($wait > 0){
-				echo '<META HTTP-EQUIV="refresh" CONTENT="'.$wait.';URL='.$link.'">';
-			}
+		return $link;
+	} else {
+		return false;
+	}
+}
 
+function pf_filter_canonical($url){
+	if ($link = pf_canonical_url()){
+		return $link;
+	} else {
+		return $url;
+	}
+}
+
+add_filter('wpseo_canonical', 'pf_filter_canonical');
+add_filter('wpseo_opengraph_url', 'pf_filter_canonical');
+
+/**
+ * A function to set up the HEAD data to forward users to origonal articles.
+ *
+ * Echos the approprite code to forward users.
+ *
+ * @since 3.x
+ */
+function pf_forward_unto_source(){
+	if($link = pf_canonical_url()){
+		if (has_action('wpseo_head')){
+
+		} else {
+			echo '<link rel="canonical" href="'.$link.'" />';
+			echo '<meta property="og:url" content="'.$link.'" />';
+		}
+		$wait = get_option('pf_link_to_source', 0);
+		if ($wait > 0){
+			echo '<META HTTP-EQUIV="refresh" CONTENT="'.$wait.';URL='.$link.'">';
 		}
 	}
 }
 
 add_action ('wp_head', 'pf_forward_unto_source');
 
+/**
+* Echos the script link to use phonegap's debugging tools.
+*
+* @since 3.x
+*
+*/
 function pf_debug_ipads(){
 	echo '<script src="http://debug.phonegap.com/target/target-script-min.js#pressforward"></script>';
 }
 #add_action ('wp_head', 'pf_debug_ipads');
 #add_action ('admin_head', 'pf_debug_ipads');
 
+/**
+ * Take an array of objects describing post_metas and set them to the id of a post.
+ *
+ * @since 3.x
+ *
+ * @param int $id A post object ID number.
+ * @param array $args {
+ * 			An array of objects containing post_meta data.
+ *
+ * 			@var array {
+ *						@var string $name The post_meta slug.
+ * 						@var string $value The post_meta's value.
+ *			}
+ * }
+ *
+ */
 function pf_meta_establish_post($id, $args){
 	foreach ($args as $arg){
-		add_post_meta($id, $arg['name'], $arg['value'], true);
+		pf_add_meta($id, $arg['name'], $arg['value'], true);
 	}
 }
 
+/**
+ * Takes a post_meta name and a post_meta value and turns it into an for use.
+ *
+ * @return array An array useful in thevarious parts of the post_meta setting process.
+ *
+ */
 function pf_meta_for_entry($key, $value){
 	return array(
 		'name'	=>	$key,
@@ -597,12 +757,108 @@ function pf_meta_for_entry($key, $value){
 	);
 }
 
-function pf_meta_transition_post($idA, $idB){
+/**
+ * With two post IDs copy all the standard PressForward meta from one post to another.
+ *
+ * @param int $idA The ID of the post that has all the meta info already set.
+ * @param int $idB The ID of the post that needs to have the meta info attached to it.
+ *
+ */
+function pf_meta_transition_post($idA, $idB, $term_transition = false){
+	pf_log('Transition post '.$idA.' to '.$idB);
 	foreach(pf_meta_structure() as $meta){
 		pf_meta_transition(get_pf_meta_name($meta), $idA, $idB);
 	}
+	if ( $term_transition ){
+		pf_log('Transitioning Terms.');
+		pf_transition_terms($idA, $idB);
+	}
 }
 
+function pf_transition_terms($idA, $idB){
+	$parent = wp_get_post_parent_id($idA);
+	$ids = array($idA);
+	if ( !empty($parent) && !is_wp_error( $parent ) ){
+		$ids[] = $parent;
+	}
+	$item_id = pf_get_post_meta($idA, 'pf_item_post_id');
+	if ( !empty($item_id) && !is_wp_error( $item_id ) ){
+		$ids[] = $item_id;
+	}
+	/**$parent_parent = wp_get_post_parent_id( $parent );
+	if ( !empty($parent_parent) && !is_wp_error( $parent_parent ) ){
+		$ids[] = $parent_parent;
+	}**/
+	$term_objects = wp_get_object_terms( $ids, array( pressforward()->pf_feeds->tag_taxonomy, 'post_tag', 'category' ) );
+	$item_tags = pf_get_post_meta($idA, 'item_tags');
+	if ( !empty($term_objects) ){
+		foreach ( $term_objects as $term ){
+			wp_set_object_terms($idB, $term->term_id, $term->taxonomy, true);
+			if ( pressforward()->pf_feeds->tag_taxonomy == $term->taxonomy ){
+				$check = pf_cascade_tagging($idB, $term->slug, 'slug');
+				if (!$check){
+					pf_build_and_assign_new_tag($idB, $$term->name);
+				}
+			}
+		}
+	}
+	if ( !empty($item_tags) ){
+		pf_log('Attempting to attach item_tags.');
+		if ( !is_array( $item_tags ) ){
+			pf_log($item_tags);
+			$item_tags = explode(',',$item_tags);
+		}
+		foreach ($item_tags as $tag){
+			$check = pf_cascade_tagging($idB, $tag, 'name');
+			if (!$check){
+				pf_build_and_assign_new_tag($idB, $tag);
+			}
+		}
+	}
+}
+
+function pf_cascade_tagging($idB, $term_id, $term_id_type = 'slug'){
+	pf_log('Trying to assign taxonomy for '.$idB);
+	$term_object = get_term_by($term_id_type, $term_id, 'category');
+	if ( empty( $term_object ) ){
+		pf_log('No category match.');
+		$term_object = get_term_by($term_id_type, $term_id, 'post_tag');
+		if ( empty( $term_object ) ){
+			pf_log('No post_tag match.');
+			return false;
+		} else {
+			wp_set_object_terms( $idB, $term_object->term_id, 'post_tag', true );
+		}
+	} else {
+		wp_set_object_terms( $idB, $term_object->term_id, 'category', true );
+	}
+	return true;
+}
+
+function pf_build_and_assign_new_tag($idB, $full_tag_name){
+	pf_log('Attaching new tag to '.$idB.' with a name of '.$full_tag_name);
+	$term_args = array(
+						'description'	=>	'Added by PressForward',
+						'parent'		=>	0,
+						'slug'			=>	pf_slugger($full_tag_name)
+					);
+	$r = wp_insert_term($full_tag_name, 'post_tag', $term_args);
+	pf_log('Making a new post_tag, ID:'.$r['term_id']);
+	if ( !empty($r['term_id']) && !is_wp_error( $r ) ){
+		wp_set_object_terms( $idB, $r['term_id'], 'post_tag', true );
+	}
+}
+
+/**
+ * With a post_meta slug and two post IDs copy a post_meta from one post to another.
+ *
+ * @param string $name The post_meta slug.
+ * @param int $idA The post which already has the post_meta data.
+ * @param int $idB The post which needs the post_meta copied to it.
+ *
+ * @return int The result of the update_post_meta function.
+ *
+ */
 function pf_meta_transition($name, $idA, $idB){
 	$meta_value = get_post_meta($idA, $name, true);
 	#$result = pf_prep_for_depreciation($name, $meta_value, $idA, $idB);
@@ -613,6 +869,23 @@ function pf_meta_transition($name, $idA, $idB){
 	return $result;
 }
 
+/**
+ * Check a post_meta slug and insure that the correct post_meta is being set.
+ *
+ * Considers a post_meta slug and checkes it against a list for depreciation.
+ * If the post_meta slug has been depreciated update the new slug and the old one.
+ *
+ * Based on http://seoserpent.com/wordpress/custom-author-byline
+ *
+ * @since 3.x
+ *
+ * @param string $name The post_meta slug.
+ * @param string $value The post_meta value.
+ * @param int $idA The id of the post that already has the post_meta set.
+ * @param int $idB The id of the post that needs the post_meta set.
+ *
+ * @return bool True if the post_meta is supported by PressForward.
+ */
 function pf_prep_for_depreciation($name, $value, $idA, $idB){
 	foreach (pf_meta_structure() as $meta){
 		if ($meta['name'] == $name){
@@ -630,6 +903,15 @@ function pf_prep_for_depreciation($name, $value, $idA, $idB){
 	return false;
 }
 
+/**
+ * Get the meta by its name, if it is supported by PressForward.
+ *
+ * @since 3.x
+ *
+ * @param string $author The author string currently being displayed.
+ *
+ * @return string Returns the author.
+ */
 function pf_meta_by_name($name){
 	foreach (pf_meta_structure() as $meta){
 		if($name == $meta['name']){
@@ -638,13 +920,38 @@ function pf_meta_by_name($name){
 	}
 }
 
+function pf_assure_meta_key($name){
+	$meta = pf_meta_by_name($name);
+	if ( !empty( $meta['move'] ) ){
+		return pf_meta_by_name( $meta['move'] );
+	} else{
+		return $meta;
+	}
+}
+
+function pf_get_meta_key( $name ){
+	$meta = pf_assure_meta_key( $name );
+	return get_pf_meta_name( $meta );
+}
+
+/**
+ * Get the name out of the meta object.
+ */
 function get_pf_meta_name($meta){
 	return $meta['name'];
 }
 
-#Inspired by http://www.loc.gov/standards/metable.html
-#Adm=Administrative, Struc=Structural, Desc=Descriptive, Req=Required, Rep=Repeatable, Set=Set, Aggr=Aggregate, Dep = Depreciated
+/**
+ * Get an array representing all the approved post_meta objects for PressForward.
+ *
+ * @since 3.x
+ *
+ * @return array An object describing all the post_metas used by PressForward.
+ */
 function pf_meta_structure(){
+	#Inspired by http://www.loc.gov/standards/metable.html
+	#Adm=Administrative, Struc=Structural, Desc=Descriptive, Req=Required, Rep=Repeatable, Set=Set, Aggr=Aggregate, Dep = Depreciated
+
 	$metas = array(
 		'item_id' => array(
 			'name' => 'item_id',
@@ -882,7 +1189,7 @@ function pf_pass_meta($field, $id = false, $value = '', $single = true){
     # Check if it exists.
     if (empty($metas[$field])){
         pf_log('The field ' . $field . ' is not supported.');
-		return false;
+				return $field;
     }
 	# Check if it has been depreciated (dep). If so retrieve
     if (in_array('dep',$metas[$field]['type'])){
@@ -895,6 +1202,10 @@ function pf_pass_meta($field, $id = false, $value = '', $single = true){
 
 }
 
+/**
+ * Transitions meta values from old depreciated meta_slugs to new ones.
+ *
+ */
 function pf_transition_deped_meta($field, $id, $value, $single, $new_field){
 	$result = false;
 	# Note - empty checks for FALSE
@@ -910,6 +1221,21 @@ function pf_transition_deped_meta($field, $id, $value, $single, $new_field){
 	return $result;
 }
 
+/**
+ * Retrieve post_meta data in a way that insures the correct value is pulled.
+ *
+ * Function allows users to retrieve the post_meta in a safe way standerdizing against
+ * the list of accepted PressForward meta_slugs. It deals with depreciated post_meta.
+ *
+ * @since 3.x
+ *
+ * @param int $id Post ID.
+ * @param string $field The post_meta field to retrieve.
+ * @param bool $obj If the user wants to return a PressForward post_meta description object. Default false.
+ * @param bool $single If the user wants to use the WordPress post_meta Single decleration. Default true.
+ *
+ * @return string|array Returns the result of retrieving the post_meta or the self-descriptive meta-object with value.
+ */
 function pf_retrieve_meta($id, $field, $obj = false, $single = true){
     $field = pf_pass_meta($field, $id);
     $meta = get_post_meta($id, $field, $single);
@@ -923,18 +1249,130 @@ function pf_retrieve_meta($id, $field, $obj = false, $single = true){
 
 }
 
+/**
+ * An alias for pf_retrieve_meta that allows you to use the standard argument set from get_post_meta.
+ *
+ */
+function pf_get_post_meta($id, $field, $single = true, $obj = false){
+
+		return pf_retrieve_meta($id, $field, $obj, $single);
+
+}
+
+/**
+ * Update post_meta on a post using PressForward post_meta standardization.
+ *
+ * @param int|string $id The post ID.
+ * @param string $field The post_meta field slug.
+ * @param string $value The post_meta value.
+ * @param string $prev_value The previous value to insure proper replacement.
+ *
+ * @return int The check value from update_post_meta.
+ */
 function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
     $field = pf_pass_meta($field, $id, $value);
-    $check = update_post_meta($id, $field, $value, $prev_value);
+    $check = pf_apply_meta($id, $field, $value, $prev_value);
     return $check;
 
 }
 
+function pf_get_author_from_url($url){
+	$response = pf_file_get_html( $url );
+	$possibles = array();
+	if (empty($response)){
+		return false;
+	}
+	$possibles[] = $response->find('meta[name=author]', 0);
+	$possibles[] = $response->find('meta[name=Author]', 0);
+	$possibles[] = $response->find('meta[property=author]', 0);
+	$possibles[] = $response->find('meta[property=Author]', 0);
+	$possibles[] = $response->find('meta[name=parsely-author]', 0);
+	$possibles[] = $response->find('meta[name=sailthru.author]', 0);
+
+	foreach ($possibles as $possible){
+		if ( false != $possible ){
+			$author_meta = $possible;
+			break;
+		}
+	}
+
+	if ( empty($author_meta) ){
+		return false;
+	}
+
+	$author = $author_meta->content;
+	$author = trim(str_replace("by","",$author));
+	$author = trim(str_replace("By","",$author));
+	return $author;
+}
+
+/**
+ * Add post_meta on a post using PressForward post_meta standardization.
+ *
+ * @param int|string $id The post ID.
+ * @param string $field The post_meta field slug.
+ * @param string $value The post_meta value.
+ * @param string $unique If the post_meta is unique.
+ *
+ * @return int The check value from add_post_meta.
+ */
 function pf_add_meta($id, $field, $value = '', $unique = false){
     $field = pf_pass_meta($field, $id, $value, $unique);
-    $check = add_post_meta($id, $field, $value, $unique);
+    $check = pf_apply_meta($id, $field, $value, $unique);
     return $check;
 
+}
+
+function pf_apply_meta($id, $field, $value = '', $state = null, $apply_type = 'update'){
+	switch ($field) {
+		case 'nominator_array':
+			$nominators = pf_get_post_meta($id, $field);
+			if ( !is_array( $value ) ){
+				$value = array( $value );
+			}
+			if ( !is_array( $nominators ) ){
+				$nominators = array( $nominators );
+			}
+			//We are doing a removal.
+			if ( 1 == count(array_diff($value, $nominators) ) ){
+				$nominators = array_unique( $value );
+				continue;
+			}
+			if ( !is_array($value) ){
+				$value = array($value);
+			}
+			$nominators = array_merge( $nominators, $value );
+			$nominators = array_unique( $nominators );
+			$value = $nominators;
+			break;
+		default:
+			# code...
+			break;
+	}
+	if ( 'update' == $apply_type ){
+		$check = update_post_meta($id, $field, $value, $state);
+	} elseif ( 'add' == $apply_type ) {
+		$check = add_post_meta($id, $field, $value, $state);
+	}
+	return $check;
+}
+
+function pf_is_drafted($item_id){
+	$a = array(
+			'no_found_rows' => true,
+			'fields' => 'ids',
+			'meta_key' => 'item_id',
+			'meta_value' => $item_id,
+			'post_type'	=> get_option(PF_SLUG.'_draft_post_type', 'post')
+		);
+	$q = new WP_Query($a);
+	if ( 0 < $q->post_count ){
+		$draft = $q->posts;
+		return $draft[0];
+	}
+	else {
+		return false;
+	}
 }
 
 function filter_for_pf_archives_only($sql){
@@ -1114,6 +1552,231 @@ function pf_iterate_cycle_state($option_name, $option_limit = false, $echo = fal
 	}
 }
 
+/**
+ * Delete a PF item and its descendants.
+ *
+ * PF content (OPML feeds, RSS feeds, feed items) is often arranged hierarchically, and deleting one item should delete
+ * all descendants as well. However, this process can take a long time. So this function assembles a descendant tree
+ * for the item to be deleted, and places them in a queue to be deleted on subsequent pageloads.
+ *
+ * @since 3.6
+ *
+ * @param int|WP_Post ID or WP_Post object.
+ * @return bool|array False on failure, otherwise post ID deletion queue.
+ */
+function pf_delete_item_tree( $item, $fake_delete = false ) {
+	$item = get_post( $item );
+
+	if ( ! $item || ! ( $item instanceof WP_Post ) ) {
+		return false;
+	}
+
+	$feed_item_post_type = pf_feed_item_post_type();
+	$feed_post_type      = pressforward()->pf_feeds->post_type;
+
+	if ( ! in_array( $item->post_type, array( $feed_item_post_type, $feed_post_type, 'nomination' ) ) ) {
+		return false;
+	}
+
+	$queued = get_option( 'pf_delete_queue', array() );
+	if ( in_array( $item->ID, $queued ) ) {
+		return false;
+	}
+
+	$queued[] = $item->ID;
+
+	// Store immediately so that subsequent calls to this function are accurate.
+	update_option( 'pf_delete_queue', $queued );
+
+	switch ( $item->post_type ) {
+		// Feed item: queue all attachments.
+		case $feed_item_post_type :
+		case 'nomination' :
+			$atts = get_posts( array(
+				'post_parent' => $item->ID,
+				'post_type'   => 'attachment',
+				'post_status' => 'inherit',
+				'fields'      => 'ids',
+				'numberposts' => -1,
+			) );
+
+			foreach ( $atts as $att ) {
+				if ( ! in_array( $att, $queued ) ) {
+					$queued[] = $att;
+				}
+			}
+
+			// Store the assembled queue.
+			update_option( 'pf_delete_queue', $queued );
+
+			if ($fake_delete){
+				$fake_status = 'removed_'.$item->post_type;
+
+				$wp_args = array(
+					'post_type'    => pf_feed_item_post_type(),
+					'post_status'  => $fake_status,
+					'post_title'   => $item->post_title,
+					'post_content' => '',
+					'guid'         => pf_get_post_meta($item->ID, 'item_link'),
+					'post_date'    => $item->post_date
+				);
+
+				$id = wp_insert_post($wp_args);
+				pf_update_meta($id, 'item_id', create_feed_item_id( pf_get_post_meta($item->ID, 'item_link'), $item->post_title ) );
+			}
+
+		break; // $feed_item_post_type
+
+		// Feed: queue all children (OPML only) and all feed items.
+		case $feed_post_type :
+			// Child feeds (applies only to OPML subscriptions).
+			$child_feeds = get_posts( array(
+				'post_parent' => $item->ID,
+				'post_type'   => $feed_post_type,
+				'post_status' => 'any',
+				'fields'      => 'ids',
+				'numberposts' => -1,
+			) );
+
+			foreach ( $child_feeds as $child_feed ) {
+				pf_delete_item_tree( $child_feed );
+			}
+
+			// Feed items.
+			$feed_items = get_posts( array(
+				'post_parent' => $item->ID,
+				'post_type'   => $feed_item_post_type,
+				'post_status' => 'any',
+				'fields'      => 'ids',
+				'numberposts' => -1,
+			) );
+
+			foreach ( $feed_items as $feed_item ) {
+				pf_delete_item_tree( $feed_item );
+			}
+
+		break; // $feed_post_type
+	}
+
+	// Fetch an updated copy of the queue, which may have been updated recursively.
+	$queued = get_option( 'pf_delete_queue', array() );
+
+	return $queued;
+}
+
+/**
+ * Prevent items waiting to be queued from appearing in any query results.
+ *
+ * This is primarily meant to hide from the Trash screen, where the deletion of a queued item could result in
+ * various weirdnesses.
+ *
+ * @since 3.6
+ *
+ * @param WP_Query $query
+ */
+function pf_exclude_queued_items_from_queries( $query ) {
+	$queued = get_option( 'pf_delete_queue' );
+	if ( ! $queued || ! is_array( $queued ) ) {
+		return;
+	}
+
+	$post__not_in = $query->get( 'post__not_in' );
+	$post__not_in = array_merge( $post__not_in, $queued );
+	$query->set( 'post__not_in', $post__not_in );
+}
+add_action( 'pre_get_posts', 'pf_exclude_queued_items_from_queries', 999 );
+
+/**
+ * Detect and process a delete queue request.
+ *
+ * Request URLs are of the form example.com?pf_process_delete_queue=123, where '123' is a single-use nonce stored in
+ * the 'pf_delete_queue_nonce' option.
+ *
+ * @since 3.6
+ */
+function pf_process_delete_queue() {
+	if ( ! isset( $_GET['pf_process_delete_queue'] ) ) {
+		return;
+	}
+
+	$nonce = $_GET['pf_process_delete_queue'];
+	$saved_nonce = get_option( 'pf_delete_queue_nonce' );
+	if ( $saved_nonce !== $nonce ) {
+		return;
+	}
+
+	$queued = get_option( 'pf_delete_queue', array() );
+	for ( $i = 0; $i <= 1; $i++ ) {
+		$post_id = array_shift( $queued );
+		if ( null !== $post_id ) {
+			wp_delete_post( $post_id, true );
+		}
+	}
+	update_option( 'pf_delete_queue', $queued );
+	delete_option( 'pf_delete_queue_nonce' );
+
+	if ( ! $queued ) {
+		delete_option( 'pf_delete_queue' );
+
+		// Clean up empty taxonomy terms.
+		$terms = get_terms( pressforward()->pf_feeds->tag_taxonomy, array(
+			'hide_empty' => false,
+		) );
+
+		foreach ( $terms as $term ) {
+			if ( 0 == $term->count ) {
+				wp_delete_term( $term->term_id, pressforward()->pf_feeds->tag_taxonomy );
+			}
+		}
+	} else {
+		pf_launch_batch_delete();
+	}
+}
+add_action( 'wp_loaded', 'pf_process_delete_queue' );
+
+/**
+ * Launch the processing of the delete queue.
+ *
+ * @since 3.6
+ */
+function pf_launch_batch_delete() {
+	// Nothing to do.
+	$queued = get_option( 'pf_delete_queue' );
+	if ( ! $queued ) {
+		return;
+	}
+
+	// If a nonce is saved, then a deletion is pending, and we should do nothing.
+	$saved_nonce = get_option( 'pf_delete_queue_nonce' );
+	if ( $saved_nonce ) {
+		return;
+	}
+
+	$nonce = rand( 10000000, 99999999 );
+	add_option( 'pf_delete_queue_nonce', $nonce );
+	wp_remote_get( add_query_arg( 'pf_process_delete_queue', $nonce, home_url() ) );
+}
+
+/**
+* Send takes an array dimension from a backtrace and puts it in log format
+*
+* As part of the effort to create the most informative log we want to auto
+* include the information about what function is adding to the log.
+*
+* @since 3.4
+*
+* @param array $caller The sub-array from a step in a debug_backtrace
+*/
+
+function pf_function_auto_logger($caller){
+	if (isset($caller['class'])){
+		$func_statement = '[ ' . $caller['class'] . '->' . $caller['function'] . ' ] ';
+	} else {
+		$func_statement = '[ ' . $caller['function'] . ' ] ';
+	}
+	return $func_statement;
+}
+
 
 /**
  * Send status messages to a custom log
@@ -1182,7 +1845,7 @@ function pf_log( $message = '', $display = false, $reset = false ) {
 		$message = $message->get_error_message();
 	}
 
-	if ( is_array( $message ) ) {
+	if ( is_array( $message ) || is_object( $message ) ) {
 		$message = print_r( $message, true );
 	}
 
@@ -1194,5 +1857,35 @@ function pf_log( $message = '', $display = false, $reset = false ) {
 		$message = 'False';
 	}
 
-	error_log( '[' . gmdate( 'd-M-Y H:i:s' ) . '] ' . $message . "\n", 3, $log_path );
+	$trace=debug_backtrace();
+	foreach ($trace as $key=>$call) {
+
+		if ( in_array( $call['function'], array('call_user_func_array','do_action','apply_filter', 'call_user_func', 'do_action_ref_array', 'require_once') ) ){
+			unset($trace[$key]);
+		}
+
+	}
+	reset($trace);
+	$first_call = next($trace);
+	if (!empty($first_call)){
+		$func_statement = pf_function_auto_logger( $first_call );
+	} else {
+		$func_statement = '[ ? ] ';
+	}
+	$second_call = next($trace);
+	if ( !empty($second_call) ){
+		if ( ('call_user_func_array' == $second_call['function']) ){
+			$third_call = next($trace);
+			if ( !empty($third_call) ) {
+				$upper_func_statement = pf_function_auto_logger($third_call);
+			} else {
+				$upper_func_statement = '[ ? ] ';
+			}
+		} else {
+			$upper_func_statement = pf_function_auto_logger($second_call);
+		}
+		$func_statement = $upper_func_statement . $func_statement;
+	}
+
+	error_log( '[' . gmdate( 'd-M-Y H:i:s' ) . '] ' . $func_statement . $message . "\n", 3, $log_path );
 }

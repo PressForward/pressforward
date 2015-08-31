@@ -48,8 +48,9 @@ class PF_Module {
 			$this->module_dir = trailingslashit( PF_ROOT . '/modules/' . $this->id );
 			$this->module_url = trailingslashit( PF_URL . 'modules/' . $this->id );
 		}
+		$modId = $this->id;
 
-		$enabled = get_option( PF_SLUG . '_' . $this->id . '_enable' );
+		$enabled = get_option( PF_SLUG . '_' . $modId . '_enable' );
 		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
 			$enabled = 'yes';
 		}
@@ -63,7 +64,15 @@ class PF_Module {
 
 			add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_scripts' ) );
 			add_action( 'wp_enqueue_styles',  array( $this, 'wp_enqueue_styles' ) );
-			add_action( 'feeder_menu', array( $this, 'add_to_feeder' ) );
+			if ( !empty( $this->feed_type ) ){
+				if ( 'rss' == $this->feed_type ){
+					$feed_type = 'primary_feed_type';
+				} else {
+					$feed_type = $this->feed_type;
+				}
+				add_action( 'pf_do_pf-add-feeds_tab_'.$feed_type, array( $this, 'add_to_feeder' ) );
+				add_filter( 'pf_tabs_pf-add-feeds', array($this, 'set_permitted_feeds_tabs') );
+			}
 			add_filter('dash_widget_bar', array($this, 'add_dash_widgets_filter') );
 		}
 
@@ -97,14 +106,11 @@ class PF_Module {
 		}
 			//print_r( $this->is_enabled() );
 		?>
-			<h4><?php _e( $modsetup['name'], PF_SLUG ) ?></h4>
-
-			<p class="description"><?php _e( $modsetup['description'], PF_SLUG ) ?></p>
 
 			<table class="form-table">
 				<tr>
 					<th scope="row">
-						<label for="participad-dashboard-enable"><?php _e( 'Enable '. $modsetup['name'], PF_SLUG ) ?></label>
+						<label for="pressforward-dashboard-enable"><?php _e( 'Enable '. $modsetup['name'], PF_SLUG ) ?></label>
 					</th>
 
 					<td>
@@ -115,6 +121,8 @@ class PF_Module {
 					</td>
 				</tr>
 			</table>
+			<p><?php _e( $modsetup['description'], PF_SLUG ) ?></p>
+			<hr />
 		<?php
 	}
 
@@ -126,22 +134,31 @@ class PF_Module {
 	}
 
 	function setup_admin_menus( $admin_menus ) {
-		foreach ( (array) $admin_menus as $admin_menu ) {
-			$defaults = array(
-				'page_title' => '',
-				'menu_title' => '',
-				'cap'        => 'edit_posts',
-				'slug'       => '',
-				'callback'   => '',
-			);
-			$r = wp_parse_args( $admin_menu, $defaults );
+		$modId = $this->id;
 
-			// add_submenu_page() will fail if any arguments aren't passed
-			if ( empty( $r['page_title'] ) || empty( $r['menu_title'] ) || empty( $r['cap'] ) || empty( $r['slug'] ) || empty( $r['callback'] ) ) {
-				continue;
+		$enabled = get_option( PF_SLUG . '_' . $modId . '_enable' );
+		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
+			$enabled = 'yes';
+		}
+
+		if ( 'yes' == $enabled ) {
+			foreach ( (array) $admin_menus as $admin_menu ) {
+				$defaults = array(
+					'page_title' => '',
+					'menu_title' => '',
+					'cap'        => 'edit_posts',
+					'slug'       => '',
+					'callback'   => '',
+				);
+				$r = wp_parse_args( $admin_menu, $defaults );
+
+				// add_submenu_page() will fail if any arguments aren't passed
+				if ( empty( $r['page_title'] ) || empty( $r['menu_title'] ) || empty( $r['cap'] ) || empty( $r['slug'] ) || empty( $r['callback'] ) ) {
+					continue;
+				}
+
+				add_submenu_page( PF_MENU_SLUG, $r['page_title'], $r['menu_title'], $r['cap'], $r['slug'], $r['callback'] );
 			}
-
-			add_submenu_page( PF_MENU_SLUG, $r['page_title'], $r['menu_title'], $r['cap'], $r['slug'], $r['callback'] );
 		}
 	}
 /**

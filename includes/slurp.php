@@ -30,15 +30,17 @@ class PF_Feed_Retrieve {
 		if ( is_admin() ) {
 			add_action( 'wp_ajax_nopriv_feed_retrieval_reset', array( $this, 'feed_retrieval_reset' ) );
 			add_action( 'wp_ajax_feed_retrieval_reset', array( $this, 'feed_retrieval_reset' ) );
+			add_action( 'wp_ajax_ajax_update_feed_handler', array( $this, 'ajax_update_feed_handler' ) );
 			add_action( 'get_more_feeds', array( 'PF_Feed_Item', 'assemble_feed_for_pull' ) );
 		}
 	}
 
 	 function cron_add_short( $schedules ) {
 		// Adds once weekly to the existing schedules.
-		$schedules['halfhour'] = array(
-			'interval' => 30*60,
-			'display' => __( 'Half-hour' )
+		$pf_interval = get_option(PF_SLUG.'_retrieval_frequency', 30);
+		$schedules['pf_interval'] = array(
+			'interval' => $pf_interval*60,
+			'display' => __( 'PressForward Retrieval Interval' )
 		);
 		return $schedules;
 	 }
@@ -49,7 +51,7 @@ class PF_Feed_Retrieve {
 	 */
 	public function schedule_feed_in() {
 		if ( ! wp_next_scheduled( 'pull_feed_in' ) ) {
-			wp_schedule_event( time(), 'halfhour', 'pull_feed_in' );
+			wp_schedule_event( time(), 'pf_interval', 'pull_feed_in' );
 		}
 	}
 
@@ -206,6 +208,9 @@ class PF_Feed_Retrieve {
 #			pf_log( $feed_url );
 			pf_log( ' from ' );
 			pf_log( $aFeed->guid );
+			pf_log('Set last_checked for '.$aFeed->ID);
+			$result = pressforward()->pf_feeds->set_feed_last_checked($aFeed->ID);
+			pf_log($result);
 
 			# @todo the above log may not work what what is being retrieved is an object.
 
@@ -311,6 +316,7 @@ class PF_Feed_Retrieve {
 				pf_log( 'End of the update process. Return false.' );
 				return false;
 			}
+			#$theFeed['parent_feed_id'] = $aFeed->ID;
 			return $theFeed;
 		} else {
 			//An error state that should never, ever, ever, ever, ever happen.
@@ -360,34 +366,26 @@ class PF_Feed_Retrieve {
 
 	}
 
-	/*
+	/**
 	 * Check if the requested feed_type exists
 	 *
+	 * @param  string $type      feed_type to check against
+	 * @return string|bool       id of matching module, false if no match
 	 */
 	public function does_type_exist( $type ) {
-		$type_check = false;
-		$module_to_use = false;
 		if ( $type == 'rss-quick' ) {
 			$type = 'rss';
 		}
+
 		foreach ( pressforward()->modules as $module ) {
-			if ( $type_check ) {
-				return $module_to_use;
-			}
-			$module_type = $module->feed_type;
-			if ( $module_type == $type ) {
+			if ( $module->feed_type == $type ) {
 				# id and slug should be the same right?
-				$module_to_use = $module->id;
-				$type_check = true;
+				return $module->id;
 			}
 		}
 
-		if ( !$type_check ) {
-			# Needs to be a better error.
-			return false;
-		}
+		return false;
 	}
-
 
 	/*
 	 *
@@ -408,6 +406,60 @@ class PF_Feed_Retrieve {
 
 	}
 
+	public function ajax_update_feed_handler() {
+		global $pf;
+		#pf_log( $_POST );
+		pf_log( 'Starting ajax_update_feed_handler with ID of '.$_POST['feed_id'] );
+		$obj = get_post($_POST['feed_id']);
+		pf_log( $obj );
+		$Feeds = pressforward()->pf_feeds;
+		$id = $obj->ID;
+		pf_log( 'Feed ID ' . $id );
+		$type = $Feeds->get_pf_feed_type( $id );
+		pf_log( 'Checking for feed type ' . $type );
+		$module_to_use = $this->does_type_exist( $type );
+		if ( !$module_to_use ) {
+			# Be a better error.
+			pf_log( 'The feed type does not exist.' );
+			return false;
+		}
+
+		pf_log( 'Begin the process to retrieve the object full of feed items.' );
+		//Has this process already occurring?
+		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0 );
+		pf_log( 'The Feeds go switch has been updated?' );
+		pf_log( $feed_go );
+		$is_it_going = get_option( PF_SLUG . '_iterate_going_switch', 1 );
+		if ( $is_it_going == 1 ) {
+			//print_r( '<br /> We\'re doing this thing already in the data object. <br />' );
+			if ( ( get_option( PF_SLUG . '_ready_to_chunk', 1 ) ) === 0 ) {
+				pf_log( 'The chunk is still open.' );
+			} elseif ( ( $id == get_option( '_feeds_iteration' ) ) || ( $id == get_option( '_prev_iteration' ) ) ) {
+				pf_log( 'We\'re doing this thing already in the data object.', true );
+			}
+			//return false;
+			die();
+		}
+
+		if ( 'rss-quick' == $type ) {
+			# Let's update the RSS-Quick so it has real data.
+			$rq_update = array(
+				'type'		=>		'rss-quick',
+				'ID'		=>		$id,
+				'url'		=>		$obj->guid
+			);
+			$Feeds->update( $id, $rq_update );
+		}
+
+		# module function to return a set of standard pf feed_item object
+		# Like get_items in SimplePie
+		$feedObj = $this->get_the_feed_object( $module_to_use, $obj );
+
+		pressforward()->pf_feed_items->assemble_feed_for_pull($feedObj);
+		pressforward()->pf_feeds->set_feed_last_checked($id);
+		$this->feed_retrieval_reset();
+	}
+
 	# Take the feed type and the feed id
 	# and apply filters so that we know which
 	# function to call to handle the feed
@@ -415,7 +467,7 @@ class PF_Feed_Retrieve {
 	# If check = true than this is just a validator for feeds.
 	public function feed_handler( $obj, $check = false ) {
 		global $pf;
-		$Feeds = new PF_Feeds_Schema();
+		$Feeds = pressforward()->pf_feeds;
 		pf_log( 'Invoked: PF_Feed_retrieve::feed_handler()' );
 		pf_log( 'Are we just checking?' );
 		pf_log( $check );
@@ -498,9 +550,16 @@ class PF_Feed_Retrieve {
 
 			} else if ( function_exists( 'the_alert_box' ) ) {
 				$alert_box = the_alert_box();
-				if ( $alert_box::$status == $obj->post_status ) {
+				$ab_status =  $alert_box->status();
+				if ( $ab_status == $obj->post_status ) {
 					# The feed has been retrieved, therefor this is a good feed. We can remove the alert.
-					the_alert_box()->remove_alert_on_edit( $obj->ID );
+					the_alert_box()->dismiss_alert( $obj->ID );
+					# Assure the feed is back online.
+					$argup = array(
+		                'ID'			=> $obj->ID,
+		                'post_status'	=>	'publish',
+		            );
+		            $result = wp_update_post($argup);
 				}
 			}
 

@@ -23,7 +23,7 @@ class PF_Feeds_Schema {
 	#var $post_type;
 	#var $tag_taxonomy;
 
-	public function init() {
+	public static function init() {
 		static $instance;
 
 		if ( empty( $instance ) ) {
@@ -33,14 +33,13 @@ class PF_Feeds_Schema {
 		return $instance;
 	}
 
-	public function __construct() {
+	private function __construct() {
 		$this->post_type = 'pf_feed';
 		$this->tag_taxonomy = 'pf_feed_category';
 
 		// Post types and taxonomies must be registered after 'init'
 		add_action( 'init', array( $this, 'register_feed_post_type' ) );
 		#add_action('admin_init', array($this, 'deal_with_old_feedlists') );
-		add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
         add_action('admin_init', array($this, 'disallow_add_new'));
         add_filter('ab_alert_specimens_update_post_type', array($this, 'make_alert_return_to_publish'));
 		add_filter( 'views_edit-'.$this->post_type, array($this, 'modify_post_views') );
@@ -50,12 +49,12 @@ class PF_Feeds_Schema {
 			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_edit_feed_scripts' ) );
-
-
-			// Move the 'Feed Tags' item underneath 'pf-menu'
-			add_filter( 'parent_file', array( $this, 'move_feed_tags_submenu' ) );
+			add_filter( 'page_row_actions', array($this, 'url_feed_row_action'), 10, 2 );
+			add_filter( 'page_row_actions', array($this, 'refresh_feed_row_action'), 10, 2 );
 		}
 
+		add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
+		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
 	}
 
 	/**
@@ -63,7 +62,7 @@ class PF_Feeds_Schema {
 	 */
 	public function register_feed_post_type() {
 		$labels = array(
-			'name'               => __( 'Feeds', 'pf' ),
+			'name'               => __( 'Subscribed Feeds', 'pf' ),
 			'singular_name'      => __( 'Feed', 'pf' ),
 			'add_new'            => _x( 'Add New', 'pf', 'add new feed' ),
 			'all_items'          => __( 'All Feeds', 'pf' ),
@@ -90,57 +89,100 @@ class PF_Feeds_Schema {
 		) ) );
 
 		do_action( 'pf_feed_post_type_registered' );
+
 	}
 
-	public function register_feed_tag_taxonomy() {
-		$labels = array(
-			'name'          => __( 'Folders', 'pf' ),
-			'singular_name' => __( 'Folder', 'pf' ),
-			'all_items'     => __( 'All Folders', 'pf' ),
-			'edit_item'     => __( 'Edit Folder', 'pf' ),
-			'update_item'   => __( 'Update Folder', 'pf' ),
-			'add_new_item'  => __( 'Add New Folder', 'pf' ),
-			'new_item_name' => __( 'New Folder', 'pf' ),
-			'search_items'  => __( 'Search Folders', 'pf' ),
-		);
+	public function custom_feed_column_name( $posts_columns ){
+			$posts_columns['author'] = 'Added by';
+			$posts_columns['items_retrieved'] = "Items";
+			$posts_columns['date'] = 'Date Added';
+			return $posts_columns;
+	}
 
-		register_taxonomy( $this->tag_taxonomy, $this->post_type, apply_filters( 'pf_register_feed_tag_taxonomy_args', array(
-			'labels' => $labels,
-			'public' => true,
-			'show_admin_columns' => TRUE,
-			'show_in_nav_menus' => TRUE,
-			'show_ui'           => TRUE,
-			'show_admin_column' => TRUE,
-			'hierarchical'			=> TRUE,
-			#'show_in_menu' => PF_MENU_SLUG,
-			'rewrite' => false
-		) ) );
+
+	/**
+	 * Content of the Items Retrieved column.
+	 *
+	 * We also hide the feed URL in this column, so we can reveal it on Quick Edit.
+	 *
+	 * @since 3.7.0
+	 *
+	 * @param string $column_name Column ID.
+	 * @param int $post_id ID of the post for the current row in the table.
+	 */
+	public function last_retrieved_date_column_content( $column_name, $post_id ) {
+		if ( 'items_retrieved' !== $column_name ) {
+			return;
+		}
+		$counts = $this->count_feed_items_collected($post_id);
+		echo $counts->publish;
 	}
 
 	/**
-	 * Ensure that 'Feed Tags' stays underneath the PressForward top-level item.
-	 *
-	 * @param string $pf The $parent_file value passed to the
-	 *        'parent_file' filter
-	 * @return string
-	 */
-	public function move_feed_tags_submenu( $pf ) {
-		global $typenow, $pagenow;
+	* Count number of published items that are children of a feed and more if
+	* user has permissions to view.
+	*
+	* This function provides an efficient method of finding the amount of feed
+	* items a feed post has as children. Another method is to count the amount
+	* of items in get_posts(), but that method has a lot of overhead with doing
+	* so. Therefore, use this function instead. Based on WP4.3 wp_count_posts.
+	*
+	* The $perm parameter checks for 'readable' value and if the user can read
+	* private posts, it will display that for the user that is signed in.
+	*
+	* @since 3.7.0
+	*
+	* @global wpdb $wpdb
+	*
+	* @param int $parent_id Parent feed post ID.
+	* @param string $perm Optional. 'readable' or empty. Default empty.
+	* @return object Number of posts for each status.
+	*/
+	public function count_feed_items_collected( $parent_id, $perm = '' ){
+		global $wpdb;
+		$type = pressforward()->get_feed_item_post_type();
+		if ( ! post_type_exists( $type ) )
+			return new stdClass;
 
-		// Feed Tags edit page
-		if ( 'edit-tags.php' === $pagenow && ! empty( $_GET['taxonomy'] ) && $this->tag_taxonomy === stripslashes( $_GET['taxonomy'] ) ) {
-			$pf = 'pf-menu';
+		$counts = wp_cache_get( $type.'_'.$parent_id, 'pf_counts' );
+		if ( false !== $counts ) {
+			/** This filter is documented in wp-includes/post.php */
+			return apply_filters( 'pf_count_items', $counts, $parent_id, $perm );
 		}
 
-		// Edit Feed page
-		if ( 'post.php' === $pagenow && ! empty( $_GET['post'] ) ) {
-			global $post;
-			if ( $this->post_type === $post->post_type ) {
-				$pf = 'pf-menu';
+		$query = "SELECT post_status, COUNT( * ) AS num_posts FROM {$wpdb->posts} WHERE post_type = %s AND post_parent = %d";
+		if ( 'readable' == $perm && is_user_logged_in() ) {
+			$post_type_object = get_post_type_object($type);
+			if ( ! current_user_can( $post_type_object->cap->read_private_posts ) ) {
+				$query .= $wpdb->prepare( " AND (post_status != 'private' OR ( post_author = %d AND post_status = 'private' ))",
+					get_current_user_id()
+				);
 			}
 		}
+		$query .= ' GROUP BY post_status';
 
-		return $pf;
+		$results = (array) $wpdb->get_results( $wpdb->prepare( $query, $type, $parent_id ), ARRAY_A );
+		$counts = array_fill_keys( get_post_stati(), 0 );
+
+		foreach ( $results as $row ) {
+			$counts[ $row['post_status'] ] = $row['num_posts'];
+		}
+
+		$counts = (object) $counts;
+		wp_cache_set( $type.'_'.$parent_id, $counts, 'pf_counts', 1740 );
+
+		/**
+		 * Modify returned post counts by status for the current post type.
+		 *
+		 * @since 3.7.0
+		 *
+		 * @param object $counts An object containing the current post_type's post
+		 *                       counts by status.
+		 * @param string $type   Post type.
+		 * @param string $perm   The permission to determine if the posts are 'readable'
+		 *                       by the current user.
+		 */
+		return apply_filters( 'pf_count_items', $counts, $parent_id, $perm );
 	}
 
 	public function is_feed_term($id){
@@ -153,12 +195,28 @@ class PF_Feeds_Schema {
 		}
 	}
 
+	public function url_feed_row_action( $actions, $post ) {
+	    if ( $post->post_type != $this->post_type ) {
+	        return $actions;
+			#var_dump($actions); die();
+	    }
+
+		$url = $post->guid;
+		$actions['edit'] = '<span class="inline pf-url" style="visibility:visible;color:grey;">'.$url.'</span><br/>'.$actions['edit'];
+	    return $actions;
+	}
+
+	public function refresh_feed_row_action( $actions, $post ){
+		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="'.$post->ID.'" title="Refresh this feed">Refresh&nbsp;Feed&nbsp;Items</a> | ';
+		return $actions;
+	}
+
 	public function get_top_feed_folders(){
 		$terms = array($this->tag_taxonomy);
 		$cats = get_terms($terms,
 			array(
 				'parent' 				=> 0,
-				'hide_empty'		=> 0,
+				'hide_empty'		=> 1,
 				'hierarchical' 	=> 1
 			)
 		);
@@ -245,6 +303,52 @@ class PF_Feeds_Schema {
 
 	}
 
+	public function get_feeds_without_folders($ids = true){
+		   $q = new WP_Query(
+		   				array(
+		 		            'post_type' => pressforward()->pf_feeds->post_type,
+		 		            'fields'	=>	'ids',
+		 		            'orderby'	=> 'title',
+		 		            'order'		=> 'ASC',
+		 		            'post_status' => array( 'pending', 'draft', 'future', 'publish', the_alert_box()->status() ),
+		 		            'nopaging' => true,
+		 		            'tax_query' => array(
+		 		                array(
+		 		                    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy,
+		 		                    'operator' => 'NOT EXISTS',
+		 		                ),
+		 		            ),
+ 		       			)
+		   	);
+		   $ids = $q->posts;
+		   return $ids;
+
+
+	}
+
+	public function link_to_see_all_feeds_and_folders(){
+		?>
+		<li class="feed" id="the-whole-feed-list">
+		<?php
+
+			printf('<a href="%s" title="%s">%s</a>', $feed_obj->ID, $feed_obj->post_title, $feed_obj->post_title );
+
+		?>
+		</li>
+		<?php
+	}
+
+	public function the_feeds_without_folders(){
+		global $wp_version;
+		#var_dump((float)$wp_version);
+		if ( 4.0 < (float)$wp_version){
+			$the_other_feeds = $this->get_feeds_without_folders();
+			foreach ($the_other_feeds as $a_feed_id){
+				$this->the_feed($a_feed_id);
+			}
+		}
+	}
+
 	public function the_feed_folders($obj = false){
 		if(!$obj){
 			$obj = $this->get_feed_folders();
@@ -261,6 +365,8 @@ class PF_Feeds_Schema {
 					</li>
 					<?php
 				}
+
+				$this->the_feeds_without_folders();
 				?>
 		</ul>
 		<?php
@@ -329,6 +435,12 @@ class PF_Feeds_Schema {
 
 	public function the_feed($feed){
 		$feed_obj = get_post($feed);
+		if (empty($feed_obj)){
+			return;
+		}
+		if ( ( 'trash' == $feed_obj->post_status ) || ( 'removed_'.$this->post_type == $feed_obj->post_status ) || ( $this->post_type != $feed_obj->post_type ) ){
+			return;
+		}
 		?>
 		<li class="feed" id="feed-<?php echo $feed_obj->ID; ?>">
 		<?php
@@ -375,6 +487,26 @@ class PF_Feeds_Schema {
 
 	}
 
+	/**
+	 * Set the last_checked value for the parent feed.
+	 *
+	 * @since 3.5.0
+	 *
+	 * @param int $feed_item_id ID of the feed item.
+	 * @return bool
+	 */
+	public function set_feed_last_checked( $feed_id ) {
+		if (empty($feed_id)){
+			$feed_id = get_the_ID();
+		}
+
+		if ( ! $feed_id ) {
+			return false;
+		}
+
+		return update_post_meta( $feed_id, 'pf_feed_last_checked', date( 'Y-m-d H:i:s' ) );
+	}
+
 	# Not only is this moving feeds over into feed CPT posts, but this methodology will insure a time-out won't force the process to restart.
 	# There should probably be a AJAX interface for this, same as the AB subscribe method.
 	public function progressive_feedlist_transformer($feedlist = array(), $xmlUrl, $key) {
@@ -404,13 +536,17 @@ class PF_Feeds_Schema {
 				$r[$k] = '';
 		}
 		pf_log('Replaced false meta with empty strings.');
+		if (empty($r['post_parent'])){
+			$r['post_parent'] = 0;
+		}
 
 		$wp_args = array(
 			'post_type' 	=> $this->post_type,
-			'post_status' 	=> 'publish',
+			'post_status' 	=> $r['post_status'],
 			'post_title'	=> $r['title'],
 			'post_content'	=> $r['description'],
 			'guid'			=> $r['url'],
+			'post_parent'	=> $r['post_parent'],
 			'tax_input' 	=> array($this->tag_taxonomy => $r['tags'])
 		);
 		# Duplicate the function of WordPress where creating a pre-existing
@@ -553,6 +689,8 @@ class PF_Feeds_Schema {
 			'copyright'		=> false,
 			'thumbnail'  	=> false,
 			'user_added'    => false,
+			'post_parent'	=> 0,
+			'post_status'   => 'publish',
 			'module_added' 	=> 'rss-import',
 			'tags'    => array(),
 		) );
@@ -590,6 +728,8 @@ class PF_Feeds_Schema {
 		pf_log($check);
 		if (!$check){
 			return false;
+		} else {
+			do_action( 'pf_feed_inserted', $check );
 		}
 		return $check;
 
@@ -852,7 +992,7 @@ class PF_Feeds_Schema {
 	}
 
     public function make_alert_return_to_publish($status_data){
-        if ($this->post_type == $status_data['type']){
+        if ( (!empty($status_data['type'])) && ($this->post_type == $status_data['type']) ){
             $status_data['status'] = 'publish';
             return $status_data;
         }
@@ -877,6 +1017,12 @@ class PF_Feeds_Schema {
 		global $pagenow;
 
 		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
+
+		if ( in_array( $pagenow, array( 'edit.php' ) ) ){
+			if ( false != pressforward()->form_of->is_a_pf_page() ){
+				wp_enqueue_script( 'feed_edit_manip', PF_URL . '/assets/js/subscribed-feeds-actions.js', array('jquery'), PF_VERSION );
+			}
+		}
 
 		if ( !in_array( $pagenow, array( 'post.php' ) ) )
 			return;

@@ -46,7 +46,7 @@ class PF_Comments extends PF_Module {
 		$mod_settings = array(
 			'name' => 'Internal Commenting',
 			'slug' => 'comments',
-			'description' => 'This module provides a for users to comment on posts throughout the editorial process.',
+			'description' => 'This module provides a way for users to comment on posts throughout the editorial process. Internal commenting is only visible in the PressForward plugin and will not be publicly visible when published as a Post.',
 			'thumbnail' => '',
 			'options' => ''
 		);
@@ -75,7 +75,7 @@ class PF_Comments extends PF_Module {
 		}
 		if ($commentSet['modal_state'] == false){
 
-			echo '<a role="button" class="btn '.$btnstate.' itemCommentModal comments-expander" data-toggle="modal" href="#comment_modal_' . $commentSet['id'] . '" id="comments-expander-' . esc_attr( $commentSet['id'] ) . '" ><span class="comments-expander-count">' . $count . '</span><i class="'.$iconstate.'"></i></a>';
+			echo '<a role="button" class="btn '.$btnstate.' itemCommentModal comments-expander" title="' . __('Comment', 'pf') .  '" data-toggle="modal" href="#comment_modal_' . $commentSet['id'] . '" id="comments-expander-' . esc_attr( $commentSet['id'] ) . '" ><span class="comments-expander-count">' . $count . '</span><i class="'.$iconstate.'"></i></a>';
 
 		} else {
 			echo '<a role="button" class="btn '.$btnstate.' btn-small itemCommentModal comments-expander active" ><span class="comments-expander-count">' . $count . '</span><i class="'.$iconstate.'"></i></a>';
@@ -83,13 +83,10 @@ class PF_Comments extends PF_Module {
 	}
 
 	function control_menu_access($arrayedAdminRights){
-		$arrayedAdminRights['pf_menu_comments_access'] = array(
-															'default'=>'editor',
-															'title'=>'Internal Commenting Menu'
-														);
 		$arrayedAdminRights['pf_feature_comments_access'] = array(
 															'default'=>'contributor',
-															'title'=>'Internal Commenting Feature'
+															'title'=>__('Internal Commenting Feature', 'pf'),
+															'details'=>__( 'This module provides a text box for users to comment on posts throughout the editorial process. Comments are not publicly visible when the post is published.', 'pf' )
 														);
 
 		return $arrayedAdminRights;
@@ -122,7 +119,7 @@ class PF_Comments extends PF_Module {
 
 		//echo $id_for_comments;
 		echo '<script>
-		editorialCommentReply.init();
+		PFEditorialCommentReply.init();
 		</script>';
 		$comments_allowed = get_option('pf_feature_comments_access', pf_get_defining_capability_by_role('editor'));
 
@@ -182,35 +179,39 @@ class PF_Comments extends PF_Module {
 	 */
 	function the_comment_form($id_for_comments) {
 		//global $post;
+		$comments_allowed = get_option('pf_feature_comments_access', pf_get_defining_capability_by_role('editor'));
 
-		?>
-		<a href="#" id="ef-comment_respond" onclick="editorialCommentReply.open();return false;" class="button-primary alignright hide-if-no-js" title=" <?php _e( 'Respond to this post', 'pf' ); ?>"><span><?php _e( 'Add Comment', 'pf' ); ?></span></a>
+		if ((current_user_can($comments_allowed))){
 
-		<!-- Reply form, hidden until reply clicked by user -->
-		<div id="ef-replyrow" style="display: none;">
-			<div id="ef-replycontainer">
-				<textarea id="ef-replycontent" name="replycontent" cols="40" rows="5"></textarea>
+			?>
+			<a href="#" id="ef-comment_respond" onclick="PFEditorialCommentReply.open();return false;" class="button-primary alignright hide-if-no-js" title=" <?php _e( 'Respond to this post', 'pf' ); ?>"><span><?php _e( 'Add Comment', 'pf' ); ?></span></a>
+
+			<!-- Reply form, hidden until reply clicked by user -->
+			<div id="ef-replyrow" style="display: none;">
+				<div id="ef-replycontainer">
+					<textarea id="ef-replycontent" name="replycontent" cols="40" rows="5"></textarea>
+				</div>
+
+				<p id="ef-replysubmit">
+					<a class="ef-replysave button-primary alignright" href="#comments-form">
+						<span id="ef-replybtn"><?php _e('Submit Response', 'edit-flow') ?></span>
+					</a>
+					<a class="ef-replycancel button-secondary alignright" href="#comments-form"><?php _e( 'Cancel', 'pf' ); ?></a>
+					<img alt="Sending comment..." src="<?php echo admin_url('/images/wpspin_light.gif') ?>" class="alignright" style="display: none;" id="ef-comment_loading" />
+					<br class="clear" style="margin-bottom:35px;" />
+					<span style="display: none;" class="error"></span>
+				</p>
+
+				<input type="hidden" value="" id="ef-comment_parent" name="ef-comment_parent" />
+				<input type="hidden" name="ef-post_id" id="ef-post_id" value="<?php echo esc_attr( $id_for_comments ); ?>" />
+
+				<?php wp_nonce_field('comment', 'ef_comment_nonce', false); ?>
+
+				<br class="clear" />
 			</div>
 
-			<p id="ef-replysubmit">
-				<a class="ef-replysave button-primary alignright" href="#comments-form">
-					<span id="ef-replybtn"><?php _e('Submit Response', 'edit-flow') ?></span>
-				</a>
-				<a class="ef-replycancel button-secondary alignright" href="#comments-form"><?php _e( 'Cancel', 'pf' ); ?></a>
-				<img alt="Sending comment..." src="<?php echo admin_url('/images/wpspin_light.gif') ?>" class="alignright" style="display: none;" id="ef-comment_loading" />
-				<br class="clear" style="margin-bottom:35px;" />
-				<span style="display: none;" class="error"></span>
-			</p>
-
-			<input type="hidden" value="" id="ef-comment_parent" name="ef-comment_parent" />
-			<input type="hidden" name="ef-post_id" id="ef-post_id" value="<?php echo esc_attr( $id_for_comments ); ?>" />
-
-			<?php wp_nonce_field('comment', 'ef_comment_nonce', false); ?>
-
-			<br class="clear" />
-		</div>
-
-		<?php
+			<?php
+		}
 	}
 
 
@@ -236,7 +237,7 @@ class PF_Comments extends PF_Module {
 		$comments_allowed = get_option('pf_feature_comments_access', pf_get_defining_capability_by_role('editor'));
 		// Comments can only be added by users that can edit the post
 		if ( current_user_can($comments_allowed, $comment->comment_post_ID) ) {
-			$actions['reply'] = '<a onclick="editorialCommentReply.open(\''.$comment->comment_ID.'\',\''.$comment->comment_post_ID.'\');return false;" class="vim-r hide-if-no-js" title="'.__( 'Reply to this comment', 'pf' ).'" href="#">' . __( 'Reply', 'pf' ) . '</a>';
+			$actions['reply'] = '<a onclick="PFEditorialCommentReply.open(\''.$comment->comment_ID.'\',\''.$comment->comment_post_ID.'\');return false;" class="vim-r hide-if-no-js" title="'.__( 'Reply to this comment', 'pf' ).'" href="#">' . __( 'Reply', 'pf' ) . '</a>';
 
 			$sep = ' ';
 			$i = 0;

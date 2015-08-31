@@ -3,7 +3,7 @@
 Plugin Name: PressForward
 Plugin URI: http://pressforward.org/
 Description: The PressForward Plugin is a tool by the Roy Rosenzweig Center for History and New Media for aggregating and curating web-based content within the WordPress dashboard.
-Version: 3.3.0
+Version: 3.6.3
 GitHub Plugin URI: https://github.com/PressForward/pressforward
 Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
 Author URI: http://pressforward.org/about/team/
@@ -35,7 +35,7 @@ define( 'PF_NOM_POSTER', 'post-new.php?post_type=nomination' );
 define( 'PF_ROOT', dirname(__FILE__) );
 define( 'PF_FILE_PATH', PF_ROOT . '/' . basename(__FILE__) );
 define( 'PF_URL', plugins_url('/', __FILE__) );
-define( 'PF_VERSION', '3.1.3' );
+define( 'PF_VERSION', '3.6' );
 
 class PressForward {
 	var $modules = array();
@@ -50,6 +50,7 @@ class PressForward {
 	var $og_reader;
 	var $readability;
 	var $relationships;
+	var $subscribed_feeds;
 
 	public static function init() {
 		static $instance;
@@ -61,7 +62,15 @@ class PressForward {
 		return $instance;
 	}
 
-	// See http://php.net/manual/en/language.oop5.decon.php to get a better understanding of what's going on here.
+
+	/**
+	 * Construct function.
+	 *
+	 * See http://php.net/manual/en/language.oop5.decon.php to get a better understanding of what's going on here.
+	 *
+	 * @since 1.7
+	 *
+	 */
 	private function __construct() {
 
 		$this->includes();
@@ -76,7 +85,12 @@ class PressForward {
 		$this->set_up_relationships();
 		$this->set_up_feed_retrieve();
 		$this->set_up_nominations();
+		$this->set_up_folders();
+		$this->set_up_form_of();
 		$this->set_up_admin();
+		$this->set_up_tools();
+		$this->set_up_add_feeds();
+		$this->set_up_subscribed_feeds();
 
 		add_action( 'plugins_loaded', array( $this, 'pressforward_init' ) );
 
@@ -88,7 +102,7 @@ class PressForward {
 	}
 
 	/**
-	 * Include necessary files
+	 * Include necessary files.
 	 *
 	 * @since 1.7
 	 */
@@ -113,7 +127,11 @@ class PressForward {
 		#$dom = new pf_simple_html_dom;
 
 		// Internal tools
-		require_once(PF_ROOT . "/includes/opml-reader/opml-reader.php");
+		require_once( PF_ROOT . '/includes/opml/maker.php' );
+		require_once( PF_ROOT . '/includes/opml/object.php' );
+		require_once( PF_ROOT . '/includes/opml/reader.php' );
+		require_once(PF_ROOT . "/includes/class-pf_metas.php");
+		require_once(PF_ROOT . "/includes/class-PF_Add_Feeds.php");
 
 		// Load the module base class and our test module
 		require_once( PF_ROOT . "/includes/functions.php" );
@@ -122,12 +140,16 @@ class PressForward {
 		require_once( PF_ROOT . '/includes/readable.php' );
 		require_once( PF_ROOT . '/includes/feed-items.php' );
 		require_once( PF_ROOT . '/includes/feeds.php' );
+		require_once( PF_ROOT . '/includes/class-PF_Subscribed_Feeds.php' );
+		require_once( PF_ROOT . '/includes/class-pf_folders.php' );
 		require_once( PF_ROOT . '/includes/slurp.php' );
 		require_once( PF_ROOT . '/includes/relationships.php' );
 		require_once( PF_ROOT . '/includes/nominations.php' );
+		require_once( PF_ROOT . '/includes/internal-templates.php' );
 		require_once( PF_ROOT . '/includes/admin.php' );
-    require_once( PF_ROOT . '/includes/template-tags.php' );
-    require_once( PF_ROOT . '/includes/alert-box/alert-box.php' );
+		require_once( PF_ROOT . '/includes/tools.php' );
+    	require_once( PF_ROOT . '/includes/template-tags.php' );
+    	require_once( PF_ROOT . '/includes/alert-box/alert-box.php' );
 		require_once( PF_ROOT . '/lib/urlresolver/URLResolver.php' );
 
 	}
@@ -205,7 +227,7 @@ class PressForward {
 	 */
 	function set_up_feeds() {
 		if ( empty( $this->pf_feeds ) ) {
-			$this->pf_feeds = new PF_Feeds_Schema;
+			$this->pf_feeds = PF_Feeds_Schema::init();
 		}
 	}
 
@@ -232,6 +254,28 @@ class PressForward {
 	}
 
 	/**
+	 * Sets up the Folders
+	 *
+	 * @since 1.7
+	 */
+	function set_up_folders() {
+		if ( empty( $this->pf_folders ) ) {
+			$this->pf_folders = PF_Folders::init();
+		}
+	}
+
+	/**
+	 * Sets up the Dashboard admin parts
+	 *
+	 * @since 1.7
+	 */
+	function set_up_form_of() {
+		if ( empty( $this->form_of ) ) {
+			$this->form_of = new PF_Form_Of;
+		}
+	}
+
+	/**
 	 * Sets up the Dashboard admin
 	 *
 	 * @since 1.7
@@ -239,6 +283,39 @@ class PressForward {
 	function set_up_admin() {
 		if ( empty( $this->admin ) ) {
 			$this->admin = new PF_Admin;
+		}
+	}
+
+	/**
+	 * Sets up the Tools admin
+	 *
+	 * @since 3.5
+	 */
+	function set_up_tools() {
+		if ( empty( $this->tools ) ) {
+			$this->tools = PF_Tools::init();
+		}
+	}
+
+	/**
+	 * Sets up the Tools admin
+	 *
+	 * @since 3.6
+	 */
+	function set_up_add_feeds() {
+		if ( empty( $this->add_feeds ) ) {
+			$this->add_feeds = PF_Add_Feeds::init();
+		}
+	}
+
+	/**
+	 * Sets up the Subscribed Feeds admin
+	 *
+	 * @since 3.7
+	 */
+	function set_up_subscribed_feeds() {
+		if ( empty( $this->subscribed_feeds ) ) {
+			$this->subscribed_feeds = PF_Subscribed_Feeds::init();
 		}
 	}
 
@@ -311,6 +388,21 @@ class PressForward {
 	}
 
 	/**
+	 * Get the feed post type
+	 *
+	 * @since 1.7
+	 *
+	 * @return string
+	 */
+	public function get_feed_post_type() {
+		if ( isset( $this->pf_feeds ) ) {
+			return $this->pf_feeds->post_type;
+		}
+
+		return '';
+	}
+
+	/**
 	 * Get the feed item tag taxonomy
 	 *
 	 * @since 1.7
@@ -325,6 +417,21 @@ class PressForward {
 		return '';
 	}
 
+
+	/**
+	 * Get the folder category taxonomy
+	 *
+	 * @since 1.7
+	 *
+	 * @return string
+	 */
+	public function get_feed_folder_taxonomy() {
+		if ( isset( $this->pf_folders ) ) {
+			return $this->pf_folders->tag_taxonomy;
+		}
+
+		return '';
+	}
 
 	/**
 	 * Set up first feed and other install/upgrade tasks

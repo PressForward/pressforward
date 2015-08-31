@@ -12,12 +12,21 @@ define('WP_ADMIN', false);
 global $pagenow;
 $wp_bootstrap = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))) );
 #echo '<pre>'; var_dump($_POST); die();
+$wp_bootstrap_d = dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))) ));
+
 if (is_dir($wp_bootstrap.'/wp-admin')){
    $wp_bootstrap = $wp_bootstrap.'/wp-admin';
 } elseif (is_dir($wp_bootstrap.'/wordpress/wp-admin')){
    $wp_bootstrap = $wp_bootstrap.'/wordpress/wp-admin';
+} elseif (is_dir($wp_bootstrap_d.'/wordpress/wp-admin')) {
+	$wp_bootstrap = $wp_bootstrap_d.'/wordpress/wp-admin';
+} elseif (is_dir($wp_bootstrap.'/data/current/wp-admin')) {
+	$wp_bootstrap = $wp_bootstrap.'/data/current/wp-admin';
+} elseif (is_dir($wp_bootstrap.'/wp/wp-admin')) {
+	$wp_bootstrap = $wp_bootstrap.'/wp/wp-admin';
 } else {
-  echo 'Nominate This can not find your WP-Admin directory'; die();
+	echo 'Base directory attempt at: <pre>'; var_dump($wp_bootstrap);
+  	echo 'Nominate This can not find your WP-Admin directory'; die();
 }
 
 /** WordPress Administration Bootstrap */
@@ -71,6 +80,7 @@ function nominate_it() {
 			}
 		}
 	}
+	#var_dump('<pre>'); var_dump($_POST);
 	// set the post_content and status
 	$post['post_content'] = $content;
 	if ( isset( $_POST['publish'] ) && current_user_can( 'publish_posts' ) )
@@ -78,9 +88,16 @@ function nominate_it() {
 	elseif ( isset( $_POST['review'] ) )
 		$post['post_status'] = 'pending';
 	else
-		$post['post_status'] = 'draft';
+		$post['post_status'] = get_option(PF_SLUG.'_draft_post_status', 'draft');
 
 	$nom_check = false;
+    //var_dump('<pre>'); var_dump($_POST['pf-feed-subscribe']); die();
+    if ( !empty( $_POST['pf-feed-subscribe'] ) && ( 'subscribe' == $_POST['pf-feed-subscribe'] ) ){
+        $url_array = parse_url(esc_url($_POST['item_link']));
+        $sourceLink = 'http://' . $url_array['host'];
+        //var_dump($sourceLink); die();
+        pressforward()->pf_feeds->create($sourceLink, array('post_status' => 'draft') );
+    }
 	// error handling for media_sideload
 	if ( is_wp_error($upload) ) {
 		wp_delete_post($post_ID);
@@ -99,7 +116,7 @@ function nominate_it() {
 		$post['post_date_gmt'] = gmdate('Y-m-d H:i:s');
 		# PF NOTE: This is where the inital post is created.
 		# PF NOTE: Put get_post_nomination_status here.
-		$item_id = md5($_POST['item_link'] . $post['post_title']);
+		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 			if (!isset($_POST['item_date'])){
 				$newDate = gmdate('Y-m-d H:i:s');
 				$item_date = $newDate;
@@ -107,7 +124,7 @@ function nominate_it() {
 				$item_date = $_POST['item_date'];
 			}
 		$pf_nomination = new PF_Nominations();
-		$nom_check = $pf_nomination->get_post_nomination_status($item_date, $item_id, 'nomination');
+		$nom_check = $pf_nomination->is_nominated($item_id);
 
 		if (!$nom_check){
 
@@ -125,8 +142,7 @@ function nominate_it() {
 				$post_thumbnail_url = false;
 			}
 			$pf_meta_args = array(
-				pf_meta_for_entry('item_id', $post_ID),
-				pf_meta_for_entry('origin_item_ID', $item_id),
+				pf_meta_for_entry('item_id', $item_id ),
 				pf_meta_for_entry('item_link', $_POST['item_link']),
 				pf_meta_for_entry('nomination_count', 1),
 				pf_meta_for_entry('source_title', 'Bookmarklet'),
@@ -150,14 +166,14 @@ function nominate_it() {
 			);
 			pf_meta_establish_post($post_ID, $pf_meta_args);
 		}
-	if (isset($_POST['publish']) && ($_POST['publish'] == "Send to Draft")) {
+	if (isset($_POST['publish']) && ($_POST['publish'] == "Send to ".ucwords(get_option(PF_SLUG.'_draft_post_status', 'draft')) ) ) {
 
-		$post_check = $pf_nomination->get_post_nomination_status($item_date, $item_id, 'post', false);
+		$post_check = $pf_nomination->is_nominated($item_id, 'post', false);
 		if ($post_check != true) {
-			add_post_meta($post_ID, 'nom_id', $post_ID, true);
+			pf_update_meta($post_ID, 'nom_id', $post_ID);
 			$d_post = $post;
-			$d_post['post_type'] = 'post';
-			$d_post['post_status'] = 'draft';
+			$d_post['post_type'] = get_option(PF_SLUG.'_draft_post_type', 'post');
+			$d_post['post_status'] = get_option(PF_SLUG.'_draft_post_status', 'draft');
 			$newPostID = wp_insert_post( $d_post, true );
 			#var_dump($newPostID); die();
 			#pf_meta_transition_post($post_ID, $newPostID);
@@ -419,7 +435,32 @@ var photostorage = false;
 ?>
 
     <style type="text/css">
+    .postbox{
+        padding: 0 5px;
+    }
 
+    @media screen and (min-width: 670px) {
+        #side-sortables {
+    		float: right;
+            width: 22%;
+            margin-right: 16%;
+    	}
+    	.posting {
+    		float: left;
+            width: 58%;
+            margin-left: 2%;
+    	}
+    }
+    @media screen and (max-width: 660px) {
+        #side-sortables {
+            width: 90%;
+            margin: 0 auto;
+    	}
+    	.posting {
+            width: 90%;
+            margin: 0 auto;
+    	}
+    }
     </style>
 
 	<script type="text/javascript">
@@ -561,8 +602,14 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			<input type="hidden" id="original_post_status" name="original_post_status" value="draft" />
 			<input type="hidden" id="prev_status" name="prev_status" value="draft" />
 			<input type="hidden" id="post_id" name="post_id" value="<?php echo (int) $post_ID; ?>" />
-			<?php if ($url != '') { ?>
-				<?php //print_r($url); ?>
+			<?php if ($url != '') {
+
+				$author_retrieved = pf_get_author_from_url( $url );
+				//$response_body = wp_remote_retrieve_body( $response );
+				//$response_dom = pf_str_get_html( $response_body );
+
+			?>
+				<?php  ?>
 				<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr($title);?>" />
 				<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo date('c'); ?>" />
 				<?php #Metadata goes here. ?>
@@ -580,14 +627,24 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 					<?php
 						submit_button( __( 'Nominate' ), 'button', 'draft', false, array( 'id' => 'save' ) );
 						if ( current_user_can('publish_posts') ) {
-							submit_button( __( 'Send to Draft' ), 'primary', 'publish', false );
+							submit_button( __( 'Send to '.ucwords(get_option(PF_SLUG.'_draft_post_status', 'draft')) ), 'primary', 'publish', false );
 						} else {
 
 						} ?>
 						<span class="spinner" style="display: none;"></span>
 					</p>
 					<p>
-					<label for="authors"><input type="text" id="authors" name="authors" value="" /><br />&nbsp;<?php _e('Enter Authors', 'pf'); ?></label>
+						<?php
+							if ( !$author_retrieved ){
+								$author_value = '';
+							} else {
+								$author_value = $author_retrieved;
+							}
+						?>
+					<label for="authors"><input type="text" id="authors" name="authors" value="<?php echo $author_value; ?>" /><br />&nbsp;<?php _e('Enter Authors', 'pf'); ?></label>
+					</p>
+                    <p>
+					<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php _e('Nominate feed associated with item.', 'pf'); ?></label>
 					</p>
 					<?php if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) :
 							$post_formats = get_theme_support( 'post-formats' );
@@ -658,24 +715,6 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 				</div>
 			</div>
 
-			<div id="tagsdiv-post_tag" class="postbox">
-				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle','pf' ); ?>"><br /></div>
-				<h3><span><?php _e('Tags'); ?></span></h3>
-				<div class="inside">
-					<div class="tagsdiv" id="post_tag">
-						<div class="jaxtag">
-							<label class="screen-reader-text" for="newtag"><?php _e('Tags','pf'); ?></label>
-							<input type="hidden" name="tax_input[post_tag]" class="the-tags" id="tax-input[post_tag]" value="" />
-							<div class="ajaxtag">
-								<input type="text" name="newtag[post_tag]" class="newtag form-input-tip" size="16" autocomplete="off" value="" />
-								<input type="button" class="button tagadd" value="<?php esc_attr_e('Add','pf'); ?>" />
-							</div>
-						</div>
-						<div class="tagchecklist"></div>
-					</div>
-					<p class="tagcloud-link"><a href="#titlediv" class="tagcloud-link" id="link-post_tag"><?php _e('Choose from the most used tags','pf'); ?></a></p>
-				</div>
-			</div>
 		</div>
 	</div>
     <?php } ?>
@@ -706,8 +745,8 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
                 ?>
                 <div id="message" class="updated">
                 <p><strong><?php _e('Your post has been saved.'); ?></strong>
-                <a onclick="window.opener.location.replace(this.href); window.close();" href="<?php echo get_permalink($post_ID); ?>"><?php _e('View post'); ?></a>
-                | <a href="<?php echo get_edit_post_link( $post_ID ); ?>" onclick="window.opener.location.replace(this.href); window.close();"><?php _e('Edit Post'); ?></a>
+                <a onclick="window.opener.location.assign(this.href); window.close();" href="<?php echo get_permalink($post_ID); ?>"><?php _e('View post'); ?></a>
+                | <a href="<?php echo get_edit_post_link( $post_ID ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php _e('Edit Post'); ?></a>
                 | <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a></p>
                 </div>
 		      <?php

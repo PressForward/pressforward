@@ -25,6 +25,16 @@ jQuery(document).ready(function () {
 			jQuery('.feed-item').each(function (index){
 				var element		= jQuery(this);
 				var itemID		= element.attr('id');
+        //Function here via http://stackoverflow.com/questions/482763/jquery-to-check-for-duplicate-ids-in-a-dom
+         var ids = jQuery('[id="'+itemID+'"]');
+          if(ids.length>1){
+            console.warn('Multiple IDs #'+itemID);
+            ids.each(function (index){
+              if (index > 0){
+                jQuery(this).remove();
+              }
+            });
+          }
         if (jQuery('.nom-container').length != 0) {
           jQuery('.list #'+itemID+' header .actions').appendTo('#'+itemID+' footer');
           //console.log('Item Actions in foot.');

@@ -2,6 +2,16 @@
  * Display transform for pf
 **/
 
+function pf_make_url_hashed(hashed){
+	//via http://stackoverflow.com/questions/1844491/intercepting-call-to-the-back-button-in-my-ajax-application-i-dont-want-it-to
+	window.location.hash = '#'+hashed;
+}
+
+function assure_closed_menus(){
+	jQuery('.dropdown li > *').on('click', function(){
+		jQuery('.dropdown.open').removeClass('open');
+	});
+}
 
 	//via http://stackoverflow.com/questions/1662308/javascript-substr-limit-by-word-not-char
 	function trim_words(theString, numWords) {
@@ -22,8 +32,11 @@
 			}
 			obj = jQuery('article[tabindex="'+tabindex+'"]');
 		}
-		if ((0 == obj.length) && (0 < tabindex) && (lastindex > tabindex)){
+		if ((0 == obj.length  || obj.is(':hidden')) && (0 <= tabindex) && (lastindex > tabindex)){
 				obj = assure_next_obj(tabindex, obj, advance);
+		}
+		if (obj.is(':hidden')) {
+			return false;
 		}
 		return obj;
 	}
@@ -55,7 +68,7 @@
 		}
 **/
 		//First lets assemble variables for the previous group.
-		if (jQuery(prevObj).is('*')){
+		if (false != jQuery(prevObj) && jQuery(prevObj).is('*')){
 			var prevItemID = jQuery(prevObj).children('header').children('h1').children('a').attr('href');
 			var prevTitle = jQuery(prevObj).children('header').children('h1').text();
 			var prevSource = jQuery(prevObj).children('header').children('p.source_title').text();
@@ -64,7 +77,7 @@
 			prevExcerpt = trim_words(prevExcerpt, 20);
 			var prevDate = jQuery(prevObj).children('footer').children('p.pubdate').text();
 
-			var prevHTML = '<h5 class="prev_title">Previously: <a href="'+prevItemID+'" role="button" class="modal-nav" data-dismiss="modal" data-toggle="modal" data-backdrop="false">'+prevTitle+'</a></h5>';
+			var prevHTML = '<h5 class="prev_title">Previous: <a href="'+prevItemID+'" role="button" class="modal-nav" data-dismiss="modal" data-toggle="modal" data-backdrop="false">'+prevTitle+'</a></h5>';
 			prevHTML += '<p class="prev_source_title">'+prevSource+'</p>';
 			prevHTML += '<p class="prev_author">'+prevAuthor+'</p>';
 			prevHTML += '<p class="prev_excerpt">'+prevExcerpt+'</p>';
@@ -76,7 +89,7 @@
 
 		}
 		//Next lets assemble variables for the next group.
-		if (jQuery(nextObj).is('*')){
+		if (false != jQuery(nextObj) && jQuery(nextObj).is('*')){
 			var nextItemID = jQuery(nextObj).children('header').children('h1').children('a').attr('href');
 			var nextTitle = jQuery(nextObj).children('header').children('h1').text();
 			var nextSource = jQuery(nextObj).children('header').children('p.source_title').text();
@@ -115,7 +128,7 @@ function commentPopModal(){
         jQuery('#ef-comments_wrapper').remove();
 		//alert(modalIDString);
 		jQuery.post(ajaxurl, {
-				action: 'ajax_get_comments',
+				action: 'pf_ajax_get_comments',
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
 				id_for_comments: item_post_ID,
 			},
@@ -130,10 +143,13 @@ function commentPopModal(){
 }
 
 function reshowModal(){
+	jQuery('.pf_container').on('show', '.modal.pfmodal', function(evt){
+		var element = jQuery(this);
+		var modalID = element.attr('id');
+		pf_make_url_hashed(modalID);
+	});
+
 	jQuery('.pf_container').on('shown', '.modal.pfmodal', function(evt){
-		jQuery('#wpadminbar').hide();
-		jQuery('#adminmenuback').hide();
-		jQuery('#adminmenuwrap').hide();
 		var element = jQuery(this);
 		var modalID = element.attr('id');
 		document.body.style.overflow = 'hidden';
@@ -147,11 +163,21 @@ function reshowModal(){
 			'margin': '0',
 			'width': '100%',
 			'height': '100%',
-			'overflow' : 'hidden'
+			'overflow' : 'hidden',
+			'z-index'  : '9999'
 		};
-		jQuery('#'+modalID+ '.pfmodal').css(bigModal);
+		jQuery('#'+modalID+ '.pfmodal').css(bigModal).load(hide_non_modals());
+
 	});
 }
+
+function hide_non_modals(){
+	jQuery('#wpadminbar').hide();
+	jQuery('#adminmenuback').hide();
+	jQuery('#adminmenuwrap').hide();
+	jQuery('#wpfooter').hide();
+}
+
 function reviewModal(){
 	//Need to fix this to only trigger on the specific model, but not sure how yet.
 
@@ -169,7 +195,7 @@ function reviewModal(){
 		var item_post_ID = element.parent().attr('pf-item-post-id');
 
 		jQuery.post(ajaxurl, {
-				action: 'ajax_get_comments',
+				action: 'pf_ajax_get_comments',
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
 				id_for_comments: item_post_ID,
 			},
@@ -195,7 +221,9 @@ function hideModal(){
 		jQuery('#wpadminbar').show();
 		jQuery('#adminmenuback').show();
 		jQuery('#adminmenuwrap').show();
+		jQuery('#wpfooter').show();
 		document.body.style.overflow = 'visible';
+		pf_make_url_hashed('ready');
 	});
 }
 function commentModal(){
@@ -211,7 +239,7 @@ function commentModal(){
 		var item_post_ID = element.parent().attr('pf-item-post-id');
 
 		jQuery.post(ajaxurl, {
-				action: 'ajax_get_comments',
+				action: 'pf_ajax_get_comments',
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
 				id_for_comments: item_post_ID,
 			},
@@ -241,14 +269,44 @@ function PFBootstrapInits() {
 		title: 'Nominate'
 
 	});
+	jQuery('.star-item').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Star'
+
+	});
+	jQuery('.itemInfobutton').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Star'
+
+	});
+	jQuery('.itemCommentModal').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Comment'
+	});
+	jQuery('.nom-count').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Nomination Count'
+	});
+	jQuery('.pf-amplify').tooltip({
+		placement : 'top',
+		trigger: 'hover',
+		title: 'Amplify'
+	});
+
 	jQuery('.itemInfobutton').popover({
 		html : true,
-		container : '.actions',
+		title : '',
+		container : '.icon-info-sign',
 		content : function(){
 			var idCode = jQuery(this).attr('data-target');
 			var contentOutput = '<div class="feed-item-info-box">';
 			contentOutput += jQuery('#info-box-'+idCode).html();
 			contentOutput += '</div>';
+			console.log('Popover assembled');
 			return contentOutput;
 		}
 	})
@@ -263,12 +321,60 @@ function PFBootstrapInits() {
 		jQuery(".itemInfobutton").popover('hide');
 	})
 
+	attach_menu_on_scroll_past();
+	assure_closed_menus();
 
+}
+
+function attach_menu_on_scroll_past(){
+	jQuery(window).scroll(function() {
+		var y_scroll_pos = window.pageYOffset;
+		var scroll_pos_test = 90;
+		// set to whatever you want it to be
+
+		if(y_scroll_pos > scroll_pos_test) {
+		   jQuery('.pf_container .display').addClass('nav-fix');
+		   jQuery('.pf_container #feed-folders').addClass('right-bar-fix');
+		   jQuery('.pf_container #tools').addClass('right-bar-fix');
+
+		   jQuery('#fullscreenfeed').appendTo('.display .pf-btns');
+
+		   jQuery('#feeds-search').insertAfter('.display .pf-btns').addClass('pull-left search-in-bar');
+		   jQuery('#feeds-search > *').addClass('pull-left');
+		   jQuery('#feeds-search > label').hide();
+
+		   var width = jQuery('#entries').innerWidth();
+		   jQuery('.nav-fix').width(width-80);
+		}
+		else
+		{
+			jQuery('.pf_container .display').removeClass('nav-fix');
+			jQuery('.pf_container #feed-folders').removeClass('right-bar-fix');
+			jQuery('.pf_container #tools').removeClass('right-bar-fix');
+
+			jQuery('#fullscreenfeed').insertAfter('#h-after');
+
+			jQuery('#feeds-search').appendTo('#app-banner').removeClass('pull-left search-in-bar');
+			jQuery('#feeds-search > *').removeClass('pull-left');
+
+			jQuery('.pf_container .display').width('auto');
+		}
+	});
+
+	jQuery( window ).resize(function() {
+	  	var width = jQuery('#entries').innerWidth();
+		jQuery('.nav-fix').width(width-80);
+		if (40 > jQuery('#adminmenuback').width()){
+			//jQuery('.nav-fix').css('left', '80px');
+		} else {
+			//jQuery('.nav-fix').css('left', '200px');
+		}
+	});
 }
 
 function detect_view_change(){
 
-	jQuery('.pf_container').on('click', 'button.display-state', function(evt){
+	jQuery('.pf_container').on('click', '.pf-top-menu-selection.display-state', function(evt){
 		var element = jQuery(this);
 		var go_layout = element.attr('id');
 		console.log(go_layout);
@@ -283,23 +389,147 @@ function detect_view_change(){
 			});
 	});
 
+	var is_pf_open = false;
+
+	jQuery('.pressforward #wpbody').on('click', '.list .amplify-group .pf-amplify', function(evt){
+		var element = jQuery(this);
+		//console.log(element);
+		var parent_e = element.parents('article');
+		var parent_h = parent_e.height();
+		//console.log(parent_h);
+		if (element.hasClass('amplify-down')){
+			element.removeClass('amplify-down');
+			jQuery(parent_e).removeClass('show-overflow');
+			jQuery(parent_e).css('height','');
+		} else {
+			element.addClass('amplify-down');
+			jQuery(parent_e).addClass('show-overflow');
+			jQuery(parent_e).height(parent_h);
+			is_pf_open = true;
+		}
+	});
+
+	jQuery('.pressforward #wpbody').on('click', '.list div:not(.amplify-group.open)', function(evt){
+		var element_p = jQuery('.amplify-group.open');
+		//console.log(element_p);
+		if (is_pf_open){
+			//console.log(element_p.length);
+			var element = element_p.find('.pf-amplify');
+			var parent_e = element.parents('article');
+			var parent_h = parent_e.height();
+			//console.log(parent_h);
+			element.removeClass('amplify-down');
+			jQuery(parent_e).removeClass('show-overflow');
+			jQuery(parent_e).css('height', '');
+		}
+	});
+
+	jQuery('.pressforward #wpbody').on('click', '.grid .amplify-group .pf-amplify', function(evt){
+		var element = jQuery(this);
+		//console.log(element);
+		var parent_e = element.parents('article');
+		var parent_h = parent_e.height();
+		var parent_head = parent_e.find('header');
+		//console.log(parent_h);
+		if (element.hasClass('amplify-down')){
+			parent_e.removeClass('amplify-down');
+		} else {
+			parent_e.addClass('amplify-down');
+			is_pf_open = true;
+		}
+	});
+
+	jQuery('.pressforward #wpbody').on('click', '.grid div:not(.amplify-group.open)', function(evt){
+		var element_p = jQuery('.amplify-group.open');
+		//console.log(element_p);
+		if (is_pf_open){
+			//console.log(element_p.length);
+			var element = element_p.find('.pf-amplify');
+			var parent_e = element.parents('article');
+			var parent_h = parent_e.height();
+			//console.log(parent_h);
+			parent_e.removeClass('amplify-down');
+		}
+	});
+
+}
+
+
+	console.log('Waiting for load.');
+	jQuery(window).load(function() {
+		 // executes when complete page is fully loaded, including all frames, objects and images
+
+		 	jQuery('.pf-loader').delay(300).fadeOut( "slow", function() {
+				console.log('Load complete.');
+				jQuery('.pf_container').fadeIn("slow");
+				if (window.location.hash.indexOf("#") < 0){
+					window.location.hash = '#ready';
+				} else if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
+				    var hash = window.location.hash;
+				    if (!jQuery(hash).hasClass('in')){
+				      	jQuery(hash).modal('show');
+				  	}
+				}
+
+				jQuery(window).on('hashchange', function() {
+  					if (window.location.hash == '#ready') {
+				        jQuery('.modal').modal('hide');
+				    }
+				    if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
+				        var hash = window.location.hash;
+				        if (!jQuery(hash).hasClass('in')){
+				        	jQuery(hash).modal('show');
+				    	}
+				    }
+				});
+
+			});;
+
+	});
+
+// Via http://stackoverflow.com/a/1634841/2522464
+function removeURLParameter(url, parameter) {
+    //prefer to use l.search if you have a location/link object
+    var urlparts= url.split('?');
+    if (urlparts.length>=2) {
+
+        var prefix= encodeURIComponent(parameter)+'=';
+        var pars= urlparts[1].split(/[&;]/g);
+
+        //reverse iteration as may be destructive
+        for (var i= pars.length; i-- > 0;) {
+            //idiom for string.startsWith
+            if (pars[i].lastIndexOf(prefix, 0) !== -1) {
+                pars.splice(i, 1);
+            }
+        }
+
+        url= urlparts[0]+'?'+pars.join('&');
+        return url;
+    } else {
+        return url;
+    }
 }
 
 jQuery(window).load(function() {
-    
+
 	jQuery('#gogrid').click(function (evt){
 			evt.preventDefault();
 			jQuery("div.pf_container").removeClass('list').addClass('grid');
+			jQuery('#gogrid').addClass('unset');
+			jQuery('#golist').removeClass('unset');
 			jQuery('.feed-item').each(function (index){
 				var element		= jQuery(this);
 				var itemID		= element.attr('id');
 				jQuery('#'+itemID+' footer .actions').appendTo('#'+itemID+' header');
 			});
-		});
+	});
 
 	jQuery('#golist').click(function (evt){
 			evt.preventDefault();
 			jQuery("div.pf_container").removeClass('grid').addClass('list');
+			jQuery('#golist').addClass('unset');
+			jQuery('#gogrid').removeClass('unset');
 			jQuery('.feed-item').each(function (index){
 				var element		= jQuery(this);
 				var itemID		= element.attr('id');
@@ -335,12 +565,12 @@ jQuery(window).load(function() {
 				jQuery("div.pf_container").removeClass('full');
 
 				jQuery(folderswin).show('slide',{direction:'right', easing:'linear'},150);
-		}, function() {
+	}, function() {
 				var folderswin = jQuery('#feed-folders');
 				//jQuery('#tools').hide('slide',{direction:'right', easing:'linear'},150);
 				jQuery(folderswin).hide('slide',{direction:'right', easing:'linear'},150);
 				jQuery("div.pf_container").addClass('full');
-		});
+	});
 
 
 
@@ -348,8 +578,11 @@ jQuery(window).load(function() {
 		evt.preventDefault();
 		var obj = jQuery(this);
 		var id = obj.attr('href');
-		var url = window.location.origin+window.location.pathname+'?page=pf-menu';
-		//url = url.replace('#','');
+		var url = window.location.href;//window.location.origin+window.location.pathname+'?page=pf-menu';
+		url = url.replace('#','&');
+		url = removeURLParameter(url, 'folder');
+		url = removeURLParameter(url, 'feed');
+		url = removeURLParameter(url, 'ready');
 		if (url.indexOf('?') > -1){
 		   url += '&folder='+id;
 		}else{
@@ -362,8 +595,11 @@ jQuery(window).load(function() {
 		evt.preventDefault();
 		var obj = jQuery(this);
 		var id = obj.children('a').attr('href');
-		var url = window.location.origin+window.location.pathname+'?page=pf-menu';
-		//url = url.replace('#','');
+		var url = window.location.href;//window.location.origin+window.location.pathname+'?page=pf-menu';
+		url = url.replace('#','&');
+		url = removeURLParameter(url, 'folder');
+		url = removeURLParameter(url, 'feed');
+		url = removeURLParameter(url, 'ready');
 		if (url.indexOf('?') > -1){
 			url += '&feed='+id;
 		}else{
@@ -372,17 +608,29 @@ jQuery(window).load(function() {
 		window.location.href = url;
 	});
 
-
-	jQuery(".refreshfeed").click(function (evt){
+	jQuery('.scroll-toggler').click(function (evt){
 		evt.preventDefault();
-		jQuery('.loading-top').show();
+		var element = jQuery(this);
+		var go_scroll_id = element.attr('id');
+		var scroll_setting = 'true';
+		console.log(go_scroll_id);
+		//alert(modalIDString);
+		if ('gopaged' == go_scroll_id) {
+			scroll_setting = 'false';
+		}
 		jQuery.post(ajaxurl, {
-			action: 'assemble_feed_for_pull'
+				action: 'pf_ajax_user_setting',
+				pf_user_setting: 'pf_user_scroll_switch',
+				setting: scroll_setting
+
 		},
 		function(response) {
-			jQuery('.loading-top').hide();
-			jQuery('#errors').html(response);
-			//jQuery("#test-div1").append(data);
+				var check_set = html_entity_decode(jQuery(response).find("response_data").text());
+				if ('1' != check_set){
+					alert('PressForward has lost its connection to your server. Reload page and try again.');
+				} else {
+					location.reload();
+				}
 		});
 
 	});
@@ -398,7 +646,7 @@ jQuery(window).load(function() {
 			jQuery('#errors').html(response);
 		});
 	});
-	
+
     if (jQuery('.list').length != 0) {
        var actionButtons = jQuery('.list article');
 		jQuery.each(actionButtons, function(index, value) {
@@ -427,6 +675,24 @@ jQuery(window).load(function() {
 	jQuery('.pf_container').on('click', '#showNormalNominations', function(evt){
 		evt.preventDefault();
 		window.open("?page=pf-review", "_self")
+	});
+
+	//update_user_option(pressforward()->form_of->user_id(), 'have_you_seen_nominate_this', false);
+	jQuery('.pf_container').on('click', '.remove-nom-this-prompt', function(evt){
+		evt.preventDefault();
+		jQuery('article.nominate-this-preview').remove();
+		jQuery.post(ajaxurl, {
+				action: 'pf_ajax_user_setting',
+				pf_user_setting: 'have_you_seen_nominate_this',
+				setting: 'yes'
+
+		},
+		function(response) {
+				var check_set = html_entity_decode(jQuery(response).find("response_data").text());
+		});
+		if (jQuery(this).is('[href]')){
+			window.open("?page=pf-tools", "_self");
+		}
 	});
 
 	reshowModal();
