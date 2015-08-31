@@ -1,0 +1,23 @@
+
+.feed-alerts {
+    display: inline-block;
+    background-color: #d54e21;
+    color: #fff;
+    font-size: 9px;
+    line-height: 17px;
+    font-weight: 600;
+    margin: -2px 0 0 2px;
+    vertical-align: top;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    z-index: 26;
+}
+
+.alert-count {
+    display: block;
+    padding: 0 6px;
+}
+
+#toplevel_page_pf-menu a[href="edit.php?post_type=pf_feed"], #adminmenu .wp-has-current-submenu ul>li>a[href="edit.php?post_type=pf_feed"] {
+    padding-right: 4px!important;
+}

@@ -104,10 +104,17 @@ class PF_Admin {
 			array($this, 'display_feeder_builder')
 		);
 
+		if ( $alert_count = The_Alert_Box::alert_count() ) {
+			$alert_count_notice = '<span class="feed-alerts count-' . intval( $alert_count ) . '"><span class="alert-count">' . number_format_i18n( $alert_count ) . '</span></span>';
+			$subscribed_feeds_menu_text = sprintf( __( 'Subscribed Feeds %s', 'pf' ), $alert_count_notice );
+		} else {
+			$subscribed_feeds_menu_text = __( 'Subscribed Feeds', 'pf' );
+		}
+
 		add_submenu_page(
 			PF_MENU_SLUG,
 			__('Subscribed Feeds', 'pf'),
-			__('Subscribed Feeds', 'pf'),
+			$subscribed_feeds_menu_text,
 			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')),
 			'edit.php?post_type=' . pressforward()->pf_feeds->post_type
 		);
@@ -1101,6 +1108,8 @@ class PF_Admin {
 			wp_register_script( PF_SLUG . '-settings-tools', PF_URL . 'assets/js/settings-tools.js', array( 'jquery' ) );
 			wp_register_script( PF_SLUG . '-tools', PF_URL . 'assets/js/tools-imp.js', array( 'jquery' ) );
 
+		wp_register_style('pf-alert-styles', PF_URL . 'assets/css/alert-styles.css');
+		wp_enqueue_style( PF_SLUG . '-alert-styles' );
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
 		if (('toplevel_page_pf-menu') == $hook) {

@@ -61,7 +61,17 @@ if (!class_exists('The_Alert_Box')){
             ) );
         }
 
-		private static function depreciated_alert_name_filters($alert_names){
+	public static function alert_count() {
+		$q = new WP_Query( array(
+			'post_type' => get_post_types( '', 'names' ),
+			'post_status' => self::$status,
+			'fields' => 'ids',
+			'posts_per_page' => '-1',
+		) );
+		return $q->post_count;
+	}
+
+	private static function depreciated_alert_name_filters($alert_names){
       $alert_names['dismiss_all'] =  apply_filters('ab_alert_specimens_dismiss_all_text', $alert_names['dismiss_all']);
       $alert_names['delete_all_check'] =  apply_filters('ab_alert_specimens_check_message', $alert_names['delete_all_check']);
       $alert_names['dismiss_all_check'] =  apply_filters('ab_alert_specimens_check_dismiss_message', $alert_names['dismiss_all_check']);
