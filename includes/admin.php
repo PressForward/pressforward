@@ -177,6 +177,27 @@ class PF_Admin {
 		return $classes;
 	}
 
+	function posted_submitbox_pf_actions(){
+	    $value = get_post_meta($post->ID, 'pf_forward_to_origin', true);
+	    echo '<div class="misc-pub-section misc-pub-section-last">
+	         <span id="timestamp">'
+	         . '<label><input type="checkbox"' . (!empty($value) ? ' checked="checked" ' : null) . 'value="1" name="pf_forward_to_origin" /> Publish to frontpage</label>'
+	    .'</span></div>';
+	}
+
+	function save_submitbox_pf_actions( )
+	{
+	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return false;
+	    if ( !current_user_can( 'edit_page', $postid ) ) return false;
+	    if(empty($postid) || $_POST['post_type'] != 'article' ) return false;
+
+	    if($_POST['action'] == 'editpost'){
+	        delete_post_meta($postid, 'pf_forward_to_origin');
+	    }
+
+	    add_post_meta($postid, 'pf_forward_to_origin', $_POST['pf_forward_to_origin']);
+	}
+
 	public function folderbox(){
 		?>
 			<div id="feed-folders">
