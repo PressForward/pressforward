@@ -28,6 +28,10 @@ class PF_Admin {
 		// Launch a batch delete process, if necessary.
 		add_action( 'admin_init', array( $this, 'launch_batch_delete' ) );
 
+		//Modify the Singleton page.
+		add_action( 'post_submitbox_misc_actions', array( $this, 'posted_submitbox_pf_actions' ) );
+		add_action( 'save_post', array( $this, 'save_submitbox_pf_actions' ) );
+
 		// AJAX handlers
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
@@ -178,10 +182,16 @@ class PF_Admin {
 	}
 
 	function posted_submitbox_pf_actions(){
+		global $post;
 	    $value = get_post_meta($post->ID, 'pf_forward_to_origin', true);
+	    if (empty($value)){
+	    	//If the user does not want to forward all things this setting is 0, 
+	    	//which evaluates to empty.
+	    	$value = get_option('pf_link_to_source', 0);
+	    }
 	    echo '<div class="misc-pub-section misc-pub-section-last">
-	         <span id="timestamp">'
-	         . '<label><input type="checkbox"' . (!empty($value) ? ' checked="checked" ' : null) . 'value="1" name="pf_forward_to_origin" /> Publish to frontpage</label>'
+	         <span id="pf_forward_to_origin_single">'
+	         . '<label><input type="checkbox"' . (!empty($value) ? ' checked="checked" ' : null) . 'value="1" name="pf_forward_to_origin" /> Forward to PressForward origin</label>'
 	    .'</span></div>';
 	}
 
@@ -189,7 +199,7 @@ class PF_Admin {
 	{
 	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return false;
 	    if ( !current_user_can( 'edit_page', $postid ) ) return false;
-	    if(empty($postid) || $_POST['post_type'] != 'article' ) return false;
+	    if(empty($postid) || $_POST['post_type'] != 'post' ) return false;
 
 	    if($_POST['action'] == 'editpost'){
 	        delete_post_meta($postid, 'pf_forward_to_origin');
