@@ -695,6 +695,10 @@ add_filter('wpseo_opengraph_url', 'pf_filter_canonical');
  */
 function pf_forward_unto_source(){
 	if($link = pf_canonical_url()){
+
+		$obj = get_queried_object();
+		$post_id = $obj->ID;
+
 		if (has_action('wpseo_head')){
 
 		} else {
@@ -702,7 +706,8 @@ function pf_forward_unto_source(){
 			echo '<meta property="og:url" content="'.$link.'" />';
 		}
 		$wait = get_option('pf_link_to_source', 0);
-		if ($wait > 0){
+		$post_check = pf_get_post_meta($post_id, 'pf_forward_to_origin', true);
+		if ( ( $wait > 0 ) && ( "0" !== $post_check ) ){
 			echo '<META HTTP-EQUIV="refresh" CONTENT="'.$wait.';URL='.$link.'">';
 		}
 	}
