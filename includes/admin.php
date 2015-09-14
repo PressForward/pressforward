@@ -28,7 +28,7 @@ class PF_Admin {
 		// Launch a batch delete process, if necessary.
 		add_action( 'admin_init', array( $this, 'launch_batch_delete' ) );
 
-		//Modify the Singleton page.
+		//Modify the Singleton Edit page.
 		add_action( 'post_submitbox_misc_actions', array( $this, 'posted_submitbox_pf_actions' ) );
 		add_action( 'save_post', array( $this, 'save_submitbox_pf_actions' ) );
 
@@ -183,29 +183,35 @@ class PF_Admin {
 
 	function posted_submitbox_pf_actions(){
 		global $post;
-	    $value = get_post_meta($post->ID, 'pf_forward_to_origin', true);
-	    if (empty($value)){
-	    	//If the user does not want to forward all things this setting is 0, 
+		$check = pf_get_post_meta($post->ID, 'item_link', true);
+		if ( empty($check) ){
+			return;
+		}
+	    $value = pf_get_post_meta($post->ID, 'pf_forward_to_origin', true);
+	    if ('' === $value){
+	    	//If the user does not want to forward all things this setting is 0,
 	    	//which evaluates to empty.
 	    	$value = get_option('pf_link_to_source', 0);
 	    }
 	    echo '<div class="misc-pub-section misc-pub-section-last">
 	         <span id="pf_forward_to_origin_single">'
-	         . '<label><input type="checkbox"' . (!empty($value) ? ' checked="checked" ' : null) . 'value="1" name="pf_forward_to_origin" /> Forward to PressForward origin</label>'
+	         . '<label><input type="checkbox"' . (!empty($value) ? ' checked="checked" ' : null) . 'value="1" name="pf_forward_to_origin" /> Forward to item\'s original URL</label>'
 	    .'</span></div>';
 	}
 
-	function save_submitbox_pf_actions( )
+	function save_submitbox_pf_actions( $post_id )
 	{
-	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return false;
-	    if ( !current_user_can( 'edit_page', $postid ) ) return false;
-	    if(empty($postid) || $_POST['post_type'] != 'post' ) return false;
+	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ){ return false; }
+	    if ( !current_user_can( 'edit_page', $post_id ) ){ return false; }
+		#var_dump($_POST['pf_forward_to_origin']); die();
+		#$current = pf_get_post_meta();
+	    if( empty($_POST['pf_forward_to_origin']) ){
+	        pf_update_meta($post_id, 'pf_forward_to_origin', 0);
+	    } else {
+			pf_update_meta($post_id, 'pf_forward_to_origin', $_POST['pf_forward_to_origin']);
+		}
 
-	    if($_POST['action'] == 'editpost'){
-	        delete_post_meta($postid, 'pf_forward_to_origin');
-	    }
-
-	    add_post_meta($postid, 'pf_forward_to_origin', $_POST['pf_forward_to_origin']);
+		return $post_id;
 	}
 
 	public function folderbox(){
