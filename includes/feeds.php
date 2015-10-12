@@ -207,6 +207,11 @@ class PF_Feeds_Schema {
 	}
 
 	public function refresh_feed_row_action( $actions, $post ){
+		if ( $post->post_type != $this->post_type ) {
+				return $actions;
+		#var_dump($actions); die();
+		}
+
 		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="'.$post->ID.'" title="Refresh this feed">Refresh&nbsp;Feed&nbsp;Items</a> | ';
 		return $actions;
 	}
