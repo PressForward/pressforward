@@ -802,7 +802,7 @@ function pf_transition_terms($idA, $idB){
 			if ( pressforward()->pf_feeds->tag_taxonomy == $term->taxonomy ){
 				$check = pf_cascade_tagging($idB, $term->slug, 'slug');
 				if (!$check){
-					pf_build_and_assign_new_tag($idB, $$term->name);
+					pf_build_and_assign_new_tag($idB, $term->name);
 				}
 			}
 		}
