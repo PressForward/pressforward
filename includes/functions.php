@@ -1438,6 +1438,33 @@ function prep_archives_query($q){
 				ORDER BY {$wpdb->postmeta}.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$offset}
 			 ", 'nomination');
+		} elseif (isset($_GET['pf-see']) && ('unread-only' == $_GET['pf-see'])){
+			$pagefull = 20;
+			$relate = new PF_RSS_Import_Relationship();
+			$rt = $relate->table_name;
+			$user_id = get_current_user_id();
+			$read_id = pf_get_relationship_type_id('read');
+			#var_dump($read_id); die();
+			$q = $wpdb->prepare("
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+				AND {$wpdb->posts}.post_type = %s
+				AND {$wpdb->posts}.post_status = 'draft'
+				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+				AND {$wpdb->postmeta}.meta_value > 0
+				AND {$wpdb->posts}.ID
+				NOT IN (
+					SELECT item_id
+					FROM {$rt}
+					WHERE {$rt}.user_id = {$user_id}
+					AND {$rt}.relationship_type = {$read_id}
+					AND {$rt}.value = 1
+				)
+				GROUP BY {$wpdb->posts}.ID
+				ORDER BY {$wpdb->postmeta}.meta_value DESC
+				LIMIT {$pagefull} OFFSET {$offset}
+			 ", 'nomination');
 		} elseif (isset($_GET['action']) && (isset($_POST['search-terms']))){
 			$pagefull = 20;
 			$relate = new PF_RSS_Import_Relationship();

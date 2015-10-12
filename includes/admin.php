@@ -320,6 +320,7 @@ class PF_Admin {
 							self::dropdown_option(__('My starred', 'pf'), "showMyStarred");
 							self::dropdown_option(__('Show hidden', 'pf'), "showMyHidden");
 							self::dropdown_option(__('My nominations', 'pf'), "showMyNominations");
+							self::dropdown_option(__('Unread', 'pf'), "showUnread");
 						} else {
 							if ( isset($_POST['search-terms']) || isset($_GET['by']) || isset($_GET['pf-see']) || isset($_GET['reveal']) ) {
 								self::dropdown_option(__('Reset filter', 'pf'), "showNormalNominations");
@@ -327,6 +328,7 @@ class PF_Admin {
 							self::dropdown_option(__('My starred', 'pf'), "sortstarredonly", 'starredonly', null, null, null, get_admin_url(null, 'admin.php?page=pf-review&pf-see=starred-only'));
 							self::dropdown_option(__('Toggle visibility of archived', 'pf'), "showarchived");
 							self::dropdown_option(__('Only archived', 'pf'), "showarchiveonly", null, null, null, null, get_admin_url(null, 'admin.php?page=pf-review&pf-see=archive-only'));
+							self::dropdown_option(__('Unread', 'pf'), "showUnreadOnly", null, null, null, null, get_admin_url(null, 'admin.php?page=pf-review&pf-see=unread-only'));
 
 						}
 					?>
@@ -595,12 +597,12 @@ class PF_Admin {
 					$feed_item_id = $metadata['item_id'];
 					$id_for_comments = $metadata['item_feed_post_id'];
 
-			$id_for_comments = $metadata['item_feed_post_id'];
-			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
-			if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
-			if (!isset($metadata['nom_id']) || empty($metadata['nom_id'])){ $metadata['nom_id'] = md5($item['item_title']); }
-			if (empty($id_for_comments)){ $id_for_comments = $metadata['nom_id']; }
-			if (empty($metadata['item_id'])){ $metadata['item_id'] = md5($item['item_title']); }
+					$id_for_comments = $metadata['item_feed_post_id'];
+					$readStat = pf_get_relationship_value( 'read', $metadata['nom_id'], wp_get_current_user()->ID );
+					if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
+					if (!isset($metadata['nom_id']) || empty($metadata['nom_id'])){ $metadata['nom_id'] = md5($item['item_title']); }
+					if (empty($id_for_comments)){ $id_for_comments = $metadata['nom_id']; }
+					if (empty($metadata['item_id'])){ $metadata['item_id'] = md5($item['item_title']); }
 
 				} else {
 					$feed_item_id = $item['item_id'];
@@ -631,7 +633,9 @@ class PF_Admin {
 			?> <a style="display:none;" name="modal-<?php echo $item['item_id']; ?>"></a> <?php
 		}
 
-			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
+			if (empty($readStat)) {
+				$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
+			}
 			echo '<div class="box-controls">';
 			if (current_user_can( 'manage_options' )){
 				if ($format === 'nomination'){

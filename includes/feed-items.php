@@ -419,6 +419,9 @@ class PF_Feed_Item {
 					$rel_items = pf_get_relationships_for_user( 'archive', get_current_user_id() );
 					break;
 
+				case 'unread' :
+					$rel_not_items = pf_get_relationships_for_user( 'read', get_current_user_id() );
+					break;
 			}
 
 			if ( ! empty( $rel_items ) ) {
@@ -427,6 +430,15 @@ class PF_Feed_Item {
 					$post_args['post__in'] = array_merge($post_args['post__in'], $posts_in);
 				} else {
 					$post_args['post__in'] = $posts_in;
+				}
+			}
+
+			if ( ! empty( $rel_not_items ) ) {
+				$posts_not_in = wp_list_pluck( $rel_not_items, 'item_id' );
+				if ( ! empty( $post_args['post__not_in'] ) ){
+					$post_args['post__not_in'] = array_merge($post_args['post__not_in'], $posts_not_in);
+				} else {
+					$post_args['post__not_in'] = $posts_not_in;
 				}
 			}
 

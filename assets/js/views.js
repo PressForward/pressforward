@@ -664,6 +664,10 @@ jQuery(window).load(function() {
 		evt.preventDefault();
 		window.open("?page=pf-menu&reveal=no_hidden", "_self")
 	});
+	jQuery('.pf_container').on('click', '#showUnread', function(evt){
+		evt.preventDefault();
+		window.open("?page=pf-menu&reveal=unread", "_self")
+	});
 	jQuery('.pf_container').on('click', '#showMyStarred', function(evt){
 		evt.preventDefault();
 		window.open("?page=pf-menu&by=starred", "_self")

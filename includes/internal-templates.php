@@ -340,6 +340,8 @@ class PF_Form_Of {
 			$revealing = '';
 			if ('no_hidden' == $_GET['reveal']){
 				$revealing = 'hidden';
+			} else {
+				$revealing = $_GET['reveal'];
 			}
 
 			$variant .= ' <span>'. $showing . ' ' . $revealing . '</span>';
@@ -355,6 +357,9 @@ class PF_Form_Of {
 			}
 			if ('starred-only' == $_GET['pf-see']) {
 				$only .= $and . __('starred', 'pf');
+			}
+			if ('unread-only' == $_GET['pf-see']) {
+				$only .= $and . __('unread', 'pf');
 			}
 			$variant .= ' <span>'. $showing . $only . '</span>';
 			$is_variant = true;

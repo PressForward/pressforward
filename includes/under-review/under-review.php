@@ -223,7 +223,7 @@
 		// Reset Post Data
 		wp_reset_postdata();
 		?><div class="clear"></div><?php
-		echo '</div><!-- End entries -->';
+		echo '</div><!-- End under review entries -->';
 
 	echo '</div><!-- End main -->';
 	if ($countQT > $countQ){
