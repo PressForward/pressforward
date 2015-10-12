@@ -45,12 +45,15 @@ class PF_Feeds_Schema {
 		add_filter( 'views_edit-'.$this->post_type, array($this, 'modify_post_views') );
 		add_filter( 'status_edit_pre', array($this, 'modify_post_edit_status') );
 
+		add_action( 'save_post', array( $this, 'save_submitbox_pf_actions' ) );
+
 		if (is_admin()){
 			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_edit_feed_scripts' ) );
 			add_filter( 'page_row_actions', array($this, 'url_feed_row_action'), 10, 2 );
 			add_filter( 'page_row_actions', array($this, 'refresh_feed_row_action'), 10, 2 );
+			add_action( 'post_submitbox_misc_actions', array( $this, 'feed_submitbox_pf_actions' ) );
 		}
 
 		add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
@@ -90,6 +93,37 @@ class PF_Feeds_Schema {
 
 		do_action( 'pf_feed_post_type_registered' );
 
+	}
+
+	function feed_submitbox_pf_actions()
+	{
+		global $post;
+		if ( $post->post_type != $this->post_type ) {
+				return;
+		}
+	    $value = get_post_meta($post->ID, 'pf_no_feed_alert', true);
+	    if ('' === $value){
+	    	//If the user does not want to forward all things this setting is 0,
+	    	//which evaluates to empty.
+	    	$value = 0;
+	    }
+	    echo '<div class="misc-pub-section misc-pub-section-last">
+	         <span id="pf_no_feed_alert_single">'
+	         . '<label><input type="checkbox"' . (!empty($value) ? ' checked="checked" ' : null) . 'value="1" name="pf_no_feed_alert" /> No alerts, never let feed go inactive.</label>'
+	    .'</span></div>';
+	}
+
+	function save_submitbox_pf_actions( $post_id )
+	{
+	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ){ return false; }
+	    if ( !current_user_can( 'edit_page', $post_id ) ){ return false; }
+	    if( empty($_POST['pf_no_feed_alert']) ){
+	        pf_update_meta($post_id, 'pf_no_feed_alert', 0);
+	    } else {
+				pf_update_meta($post_id, 'pf_no_feed_alert', $_POST['pf_no_feed_alert']);
+			}
+
+		return $post_id;
 	}
 
 	public function custom_feed_column_name( $posts_columns ){
