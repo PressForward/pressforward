@@ -141,6 +141,14 @@ function nominate_it() {
 			} else {
 				$post_thumbnail_url = false;
 			}
+
+      $url_parts = parse_url($_POST['item_link']);
+      if (!empty($url_parts['host'])){
+        $source = $url_parts['host'];
+      } else {
+        $source = '';
+      }
+
 			$pf_meta_args = array(
 				pf_meta_for_entry('item_id', $item_id ),
 				pf_meta_for_entry('item_link', $_POST['item_link']),
@@ -151,7 +159,7 @@ function nominate_it() {
 				pf_meta_for_entry('date_nominated', $_POST['date_nominated']),
 				pf_meta_for_entry('item_author', $_POST['authors']),
 				pf_meta_for_entry('authors', $_POST['authors']),
-				pf_meta_for_entry('item_link', $_POST['item_link']),
+				pf_meta_for_entry('pf_source_link', $source),
 				pf_meta_for_entry('item_feat_img', $post_thumbnail_url),
 				pf_meta_for_entry('nominator_array', array(get_current_user_id())),
 				// The item_wp_date allows us to sort the items with a query.
