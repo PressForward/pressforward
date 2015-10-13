@@ -321,6 +321,7 @@ class PF_Admin {
 							self::dropdown_option(__('Show hidden', 'pf'), "showMyHidden");
 							self::dropdown_option(__('My nominations', 'pf'), "showMyNominations");
 							self::dropdown_option(__('Unread', 'pf'), "showUnread");
+							self::dropdown_option( __( 'Drafted', 'pf' ), "showDrafted" );
 						} else {
 							if ( isset($_POST['search-terms']) || isset($_GET['by']) || isset($_GET['pf-see']) || isset($_GET['reveal']) ) {
 								self::dropdown_option(__('Reset filter', 'pf'), "showNormalNominations");

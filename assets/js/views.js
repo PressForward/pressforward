@@ -668,6 +668,10 @@ jQuery(window).load(function() {
 		evt.preventDefault();
 		window.open("?page=pf-menu&reveal=unread", "_self")
 	});
+	jQuery('.pf_container').on('click', '#showDrafted', function(evt){
+		evt.preventDefault();
+		window.open("?page=pf-menu&reveal=drafted", "_self")
+	});
 	jQuery('.pf_container').on('click', '#showMyStarred', function(evt){
 		evt.preventDefault();
 		window.open("?page=pf-menu&by=starred", "_self")

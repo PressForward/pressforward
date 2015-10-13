@@ -1380,6 +1380,47 @@ function pf_is_drafted($item_id){
 	}
 }
 
+/**
+ * Get a list of all drafted items.
+ *
+ * @return array
+ */
+function pf_get_drafted_items() {
+	$drafts = get_posts( array(
+		'no_found_rows' => true,
+		'post_type' => get_option( PF_SLUG . '_draft_post_type', 'post' ),
+		'post_status' => 'any',
+		'meta_query' => array(
+			array(
+				'key' => 'item_id',
+			),
+		),
+		'update_post_meta_cache' => true,
+		'update_post_term_cache' => false,
+	) );
+
+	$item_hashes = array();
+	foreach ( $drafts as $p ) {
+		$item_hashes[] = get_post_meta( $p->ID, 'item_id', true );
+	}
+
+	$drafted_query = new WP_Query( array(
+		'no_found_rows' => true,
+		'post_status' => 'any',
+		'post_type' => array( 'pf_feed_item' ),
+		'fields' => 'ids',
+		'meta_query' => array(
+			array(
+				'key' => 'item_id',
+				'value' => $item_hashes,
+				'compare' => 'IN',
+			),
+		),
+	) );
+
+	return array_map( 'intval', $drafted_query->posts );
+}
+
 function filter_for_pf_archives_only($sql){
 	global $wpdb;
 #	if (isset($_GET['pf-see']) && ('archive-only' == $_GET['pf-see'])){

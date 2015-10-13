@@ -422,6 +422,13 @@ class PF_Feed_Item {
 				case 'unread' :
 					$rel_not_items = pf_get_relationships_for_user( 'read', get_current_user_id() );
 					break;
+
+				case 'drafted' :
+					$drafted_items = pf_get_drafted_items();
+					if ( empty( $drafted_items ) ) {
+						$drafted_items = array( 0 );
+					}
+					break;
 			}
 
 			if ( ! empty( $rel_items ) ) {
@@ -442,6 +449,14 @@ class PF_Feed_Item {
 				}
 			}
 
+			if ( isset( $drafted_items ) ) {
+				// Intersect to match only those items that have drafts.
+				if ( ! empty( $post_args['post__in'] ) && array( 0 ) != $drafted_items ) {
+					$post_args['post__in'] = array_intersect( $post_args['post__in'], $drafted_items );
+				} else {
+					$post_args['post__in'] = $drafted_items;
+				}
+			}
 		}
 
 		if ( ! empty( $r['exclude_archived'] ) ) {
