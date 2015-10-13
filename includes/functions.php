@@ -1385,7 +1385,7 @@ function pf_is_drafted($item_id){
  *
  * @return array
  */
-function pf_get_drafted_items() {
+function pf_get_drafted_items( $post_type = 'pf_feed_item' ) {
 	$drafts = get_posts( array(
 		'no_found_rows' => true,
 		'post_type' => get_option( PF_SLUG . '_draft_post_type', 'post' ),
@@ -1407,7 +1407,7 @@ function pf_get_drafted_items() {
 	$drafted_query = new WP_Query( array(
 		'no_found_rows' => true,
 		'post_status' => 'any',
-		'post_type' => array( 'pf_feed_item' ),
+		'post_type' => $post_type,
 		'fields' => 'ids',
 		'meta_query' => array(
 			array(
@@ -1442,6 +1442,38 @@ function filter_for_pf_archives_only($sql){
 	return $sql;
 
 }
+
+/**
+ * Filter the Nominated query for the Drafted filter.
+ *
+ * @param WP_Query $query WP_Query object.
+ */
+function pf_filter_nominated_query_for_drafted( $query ) {
+	global $pagenow;
+
+	if ( 'admin.php' !== $pagenow
+		|| empty( $_GET['page'] )
+		|| 'pf-review' !== $_GET['page']
+		|| empty( $_GET['pf-see'] )
+		|| 'drafted-only' !== $_GET['pf-see']
+	) {
+		return;
+	}
+
+	if ( 'nomination' !== $query->get( 'post_type' ) ) {
+		return;
+	}
+
+	remove_action( 'pre_get_posts', 'pf_filter_nominated_query_for_drafted' );
+	$drafted = pf_get_drafted_items( 'nomination' );
+	add_action( 'pre_get_posts', 'pf_filter_nominated_query_for_drafted' );
+
+	if ( ! $drafted ) {
+		$drafted = array( 0 );
+	}
+	$query->set( 'post__in', $drafted );
+}
+add_action( 'pre_get_posts', 'pf_filter_nominated_query_for_drafted' );
 
 function prep_archives_query($q){
 		global $wpdb;

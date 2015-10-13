@@ -668,7 +668,7 @@ jQuery(window).load(function() {
 		evt.preventDefault();
 		window.open("?page=pf-menu&reveal=unread", "_self")
 	});
-	jQuery('.pf_container').on('click', '#showDrafted', function(evt){
+	jQuery('.pf_container.pf-all-content').on('click', '#showDrafted', function(evt){
 		evt.preventDefault();
 		window.open("?page=pf-menu&reveal=drafted", "_self")
 	});

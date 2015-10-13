@@ -330,6 +330,7 @@ class PF_Admin {
 							self::dropdown_option(__('Toggle visibility of archived', 'pf'), "showarchived");
 							self::dropdown_option(__('Only archived', 'pf'), "showarchiveonly", null, null, null, null, get_admin_url(null, 'admin.php?page=pf-review&pf-see=archive-only'));
 							self::dropdown_option(__('Unread', 'pf'), "showUnreadOnly", null, null, null, null, get_admin_url(null, 'admin.php?page=pf-review&pf-see=unread-only'));
+							self::dropdown_option( __( 'Drafted', 'pf' ), "showDrafted", null, null, null, null, get_admin_url(null, 'admin.php?page=pf-review&pf-see=drafted-only') );
 
 						}
 					?>
@@ -906,7 +907,7 @@ class PF_Admin {
 
 	?>
 	<div class="pf-loader"></div>
-	<div class="pf_container full<?php echo $extra_class; ?>">
+	<div class="pf_container pf-all-content full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">
 				<?php

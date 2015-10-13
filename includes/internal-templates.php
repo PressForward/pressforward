@@ -361,6 +361,9 @@ class PF_Form_Of {
 			if ('unread-only' == $_GET['pf-see']) {
 				$only .= $and . __('unread', 'pf');
 			}
+			if ('drafted-only' == $_GET['pf-see']) {
+				$only .= $and . __( 'drafted', 'pf' );
+			}
 			$variant .= ' <span>'. $showing . $only . '</span>';
 			$is_variant = true;
 		}

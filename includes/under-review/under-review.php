@@ -21,7 +21,7 @@
 		}
 	?>
 	<div class="pf-loader"></div>
-	<div class="list pf_container full<?php echo $extra_class; ?>">
+	<div class="list pf_container pf-nominated full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">
 				<?php pressforward()->form_of->the_page_headline('Nominated'); ?>
