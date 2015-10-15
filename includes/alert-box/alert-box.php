@@ -47,18 +47,20 @@ if (!class_exists('The_Alert_Box')){
 		}
 
         public function register_bug_status(){
-            register_post_status(self::$status, array(
-                'label'                 =>     __('Alert', 'pf'),
-                'public'                =>      false,
-                'exclude_from_search'   =>      true,
-                'show_in_admin_all_list'=>      true,
-                'label_count'           =>      _n_noop(
-                					'Alert <span class="count">(%s)</span>',
-                					'Alerts <span class="count">(%s)</span>',
-                					'pf'
+          $default_args = array(
+              'label'                 =>     __('Alert', 'pf'),
+              'public'                =>      false,
+              'exclude_from_search'   =>      true,
+              'show_in_admin_all_list'=>      true,
+              'label_count'           =>      _n_noop(
+              					'Alert <span class="count">(%s)</span>',
+              					'Alerts <span class="count">(%s)</span>',
+              					'pf'
 
-                				)
-            ) );
+              				)
+          );
+          $args = apply_filters( 'ab_bug_status_args', $default_args );
+          register_post_status(self::$status, $args );
         }
 
 	public static function alert_count() {
