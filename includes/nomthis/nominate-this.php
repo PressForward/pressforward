@@ -96,7 +96,9 @@ function nominate_it() {
         $url_array = parse_url(esc_url($_POST['item_link']));
         $sourceLink = 'http://' . $url_array['host'];
         //var_dump($sourceLink); die();
-        pressforward()->pf_feeds->create($sourceLink, array('post_status' => 'draft') );
+        if (current_user_can('edit_posts')){
+          pressforward()->pf_feeds->create($sourceLink, array('post_status' => 'under_review') );
+        }
     }
 	// error handling for media_sideload
 	if ( is_wp_error($upload) ) {
