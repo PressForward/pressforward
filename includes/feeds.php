@@ -46,6 +46,7 @@ class PF_Feeds_Schema {
 		add_filter( 'status_edit_pre', array($this, 'modify_post_edit_status') );
 
 		add_action( 'save_post', array( $this, 'save_submitbox_pf_actions' ) );
+		add_action( 'pf_feed_post_type_registered', array($this, 'under_review_post_status') );
 
 		if (is_admin()){
 			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
@@ -93,6 +94,17 @@ class PF_Feeds_Schema {
 
 		do_action( 'pf_feed_post_type_registered' );
 
+	}
+
+	function under_review_post_status(){
+		register_post_status( 'under_review', array(
+			'label'                     => _x( 'Under Review', 'pf' ),
+			'public'                    => true,
+			'exclude_from_search'       => false,
+			'show_in_admin_all_list'    => true,
+			'show_in_admin_status_list' => true,
+			'label_count'               => _n_noop( 'Under Review <span class="count">(%s)</span>', 'Under Review <span class="count">(%s)</span>' ),
+		) );
 	}
 
 	function feed_submitbox_pf_actions()
