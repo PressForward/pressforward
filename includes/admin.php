@@ -1222,13 +1222,13 @@ class PF_Admin {
 			wp_enqueue_script(PF_SLUG . '-settings-tools' );
 		}
 
-
 		if (('nomination') == get_post_type()) {
 			wp_enqueue_script(PF_SLUG . '-add-nom-imp', PF_URL . 'assets/js/add-nom-imp.js', array( 'jquery' ));
 		}
 
 		if ( 'edit.php' === $hook && 'pf_feed' === get_post_type() ) {
 			wp_enqueue_script( PF_SLUG . '-quick-edit' );
+			wp_enqueue_style(PF_SLUG . '-subscribed-styles', PF_URL . 'assets/css/pf-subscribed.css' );
 		}
 
 		if (('pressforward_page_pf-feeder') != $hook) { return; }
