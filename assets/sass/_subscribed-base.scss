@@ -10,5 +10,11 @@
   .post-title:before {
     content:"Alert: "
   }
+  .pf-alert-msg {
+    visibility:visible;
+    color:black;
+    background-color:red;
+    padding: 2px;
+  }
 
 }

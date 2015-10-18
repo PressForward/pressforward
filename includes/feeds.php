@@ -248,7 +248,11 @@ class PF_Feeds_Schema {
 	    }
 
 		$url = $post->guid;
-		$actions['edit'] = '<span class="inline pf-url" style="visibility:visible;color:grey;">'.$url.'</span><br/>'.$actions['edit'];
+		$edit_actions = $actions['edit'];
+		$actions['edit'] = '<span class="inline pf-url" style="visibility:visible;color:grey;">'.$url.'</span><br/>';
+		if ( !empty( get_post_meta($post->ID, 'ab_alert_msg', true) ) ){
+			$actions['edit'] .= '<span class="inline pf-alert-msg" style="">'.get_post_meta($post->ID, 'ab_alert_msg', true).'</span><br/>';
+		}
 	    return $actions;
 	}
 
