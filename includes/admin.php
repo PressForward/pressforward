@@ -51,7 +51,8 @@ class PF_Admin {
 		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
 		add_action( 'manage_edit-pf_feed_sortable_columns', array( $this, 'make_last_retrieved_column_sortable' ) );
 		add_action( 'pre_get_posts', array( $this, 'sort_by_last_retrieved' ) );
-		add_filter( 'parse_query', array( $this, 'include_alerts_in_edit_feeds' ) );
+		#add_filter( 'parse_query', array( $this, 'include_alerts_in_edit_feeds' ) );
+		add_filter( 'ab_bug_status_args', array( $this, 'pf_ab_bug_status_args' ) );
 
 		add_filter( 'manage_pf_feed_posts_columns', array( $this, 'add_last_checked_date_column' ) );
 		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_checked_date_column_content' ), 10, 2 );
@@ -1127,9 +1128,16 @@ class PF_Admin {
 		if ( is_admin() && 'edit.php' === $pagenow && 'pf_feed' === $_GET['post_type'] ) {
 			#$statuses = $query->query['post_status'];
 			#var_dump('<pre>'); var_dump( $query ); die();
-			$query->query['post_status'] = '';
-			$query->query_vars['post_status'] = '';
+			#$query->query['post_status'] = '';
+			#$query->query_vars['post_status'] = '';
 		}
+		return $query;
+	}
+
+	function pf_ab_bug_status_args( $args ){
+		$args['public'] = true;
+
+		return $args;
 	}
 
 	//This function can add js and css that we need to specific admin pages.

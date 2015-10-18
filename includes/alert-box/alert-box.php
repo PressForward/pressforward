@@ -49,8 +49,8 @@ if (!class_exists('The_Alert_Box')){
         public function register_bug_status(){
           $default_args = array(
               'label'                 =>     __('Alert', 'pf'),
-              'public'                =>      true,
-              'exclude_from_search'   =>      false,
+              'public'                =>      false,
+              'exclude_from_search'   =>      true,
               'show_in_admin_all_list'=>      true,
               'label_count'           =>      _n_noop(
               					'Alert <span class="count">(%s)</span>',
