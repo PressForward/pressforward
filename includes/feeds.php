@@ -255,7 +255,8 @@ class PF_Feeds_Schema {
 			$edit_actions = '';
 		}
 		$actions['edit'] = '<span class="inline pf-url" style="visibility:visible;color:grey;">'.$url.'</span><br/>';
-		if ( !empty( get_post_meta($post->ID, 'ab_alert_msg', true) ) ){
+		$ab_msg =  get_post_meta($post->ID, 'ab_alert_msg', true);
+		if ( !empty( $ab_msg ) ){
 			$actions['edit'] .= '<span class="inline pf-alert-msg" style="">'.get_post_meta($post->ID, 'ab_alert_msg', true).'</span><br/>';
 		}
 		$actions['edit'] .= $edit_actions;
