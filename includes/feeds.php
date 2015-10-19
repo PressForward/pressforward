@@ -601,6 +601,12 @@ class PF_Feeds_Schema {
 			$r['post_parent'] = 0;
 		}
 
+		if ( empty($r['post_status']) ){
+			pf_log('Post status will be set to published because none supplied.');
+			pf_log($r);
+			$r['post_status'] = 'published';
+		}
+
 		$wp_args = array(
 			'post_type' 	=> $this->post_type,
 			'post_status' 	=> $r['post_status'],
