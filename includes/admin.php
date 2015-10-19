@@ -405,9 +405,10 @@ class PF_Admin {
 
 				$feed_hb_state = get_option( PF_SLUG.'_feeds_hb_state' );
 				$iteration = $feed_hb_state['feeds_iteration']+1;
-				echo 'Retrieving feeds. Currently at '.$feed_hb_state['feed_title'].' feed number '.$iteration.' of '.$feed_hb_state['total_feeds'].'.'
+				echo 'Retrieving feeds. Currently at <span id="rf-feed-title">'.$feed_hb_state['feed_title'].'</span> feed number <span id="rf-iteration">'.$iteration.'</span> of <span id="rf-total-feeds">'.$feed_hb_state['total_feeds'].'</span>.'
 			?>
 			</span>
+			<div id="rf-progressbar"></div>
 		</div>
 		<?php
 	}
@@ -1196,7 +1197,8 @@ class PF_Admin {
 		if ( false != pressforward()->form_of->is_a_pf_page() ){
 			//var_dump('heartbeat'); die();
 			wp_enqueue_script( 'heartbeat' );
-			wp_enqueue_script( PF_SLUG . '-heartbeat', PF_URL . 'assets/js/pf-heartbeat.js', array( 'heartbeat', 'jquery' ) );
+			wp_enqueue_script( 'jquery-ui-progressbar' );
+			wp_enqueue_script( PF_SLUG . '-heartbeat', PF_URL . 'assets/js/pf-heartbeat.js', array( 'heartbeat', 'jquery-ui-progressbar', 'jquery' ) );
 
 		}
 		//print_r($hook);

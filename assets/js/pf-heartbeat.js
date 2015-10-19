@@ -1,3 +1,4 @@
+
 (function($){
   console.log('hb_test');
 //  'feed_id'	=>	$aFeed->ID,
@@ -25,7 +26,7 @@
             function(){
               console.log('hb_write');
               var iterate = (parseInt(data['pf_feeds_iteration'],10))+1;
-              return 'Retrieving feeds. Currently at '+data['pf_feed_title']+' feed number '+iterate+' of '+ data['pf_total_feeds']+'.';
+              return 'Retrieving feeds. Currently at <span id="rf-feed-title">'+data['pf_feed_title']+'</span> feed number <span id="rf-iteration">'+iterate+'</span> of <span id="rf-total-feeds">'+ data['pf_total_feeds']+'</span>.';
             }
           );
         } else {
@@ -47,6 +48,25 @@
         //setTimeout(function(){
         //    $('.edd_dashboard_widget .b.b-sales').css( 'font-weight', 'normal' );;
         //}, 2000);
-
+        var percentComplete = (( (parseInt(data['pf_feeds_iteration'],10)) / (parseInt(data['pf_total_feeds'],10)) ))*100;
+        if ( 1 > percentComplete ){
+          percentComplete = 1;
+        }
+        console.log(percentComplete);
+        jQuery( "#rf-progressbar" ).progressbar({
+           value: (( (parseInt(data['pf_feeds_iteration'],10)) / (parseInt(data['pf_total_feeds'],10)) ))*100
+        });
     });
 }(jQuery));
+
+jQuery(window).load(function() {
+  var percentComplete = 0;
+  percentComplete = ((parseInt(jQuery("#rf-iteration").text(),10)) / (parseInt(jQuery("#rf-total-feeds").text(),10)))*100;
+  console.log(percentComplete);
+  if ( 1 > percentComplete ){
+    percentComplete = 1;
+  }
+  jQuery( "#rf-progressbar" ).progressbar({
+     value: percentComplete
+  });
+});
