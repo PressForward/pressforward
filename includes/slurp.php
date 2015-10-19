@@ -221,6 +221,15 @@ class PF_Feed_Retrieve {
 			$are_we_going = get_option( PF_SLUG . '_iterate_going_switch', 1 );
 			pf_log( 'Iterate going switch is set to: ' . $are_we_going );
 
+			$feed_hb_state = array(
+				'feed_id'	=>	$aFeed->ID,
+				'feed_title'	=> $aFeed->post_title,
+				'last_key'	=> $last_key,
+				'feeds_iteration'	=>	$feeds_iteration,
+				'total_feeds'	=>	count($feedlist)
+			);
+			$this->update_option_w_check( '_feeds_hb_state', $feed_hb_state );
+
 			# The last key of the array is equal to our current key? Then we are
 			# at the end of the feedlist. Set options appropriately to indicate to
 			# other processes that the iterate state will soon be terminated.

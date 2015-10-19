@@ -248,12 +248,18 @@ class PF_Feeds_Schema {
 	    }
 
 		$url = $post->guid;
-		$edit_actions = $actions['edit'];
+		#var_dump($actions); die();
+		if (isset($actions['edit'])){
+			$edit_actions = $actions['edit'];
+		} else {
+			$edit_actions = '';
+		}
 		$actions['edit'] = '<span class="inline pf-url" style="visibility:visible;color:grey;">'.$url.'</span><br/>';
 		if ( !empty( get_post_meta($post->ID, 'ab_alert_msg', true) ) ){
 			$actions['edit'] .= '<span class="inline pf-alert-msg" style="">'.get_post_meta($post->ID, 'ab_alert_msg', true).'</span><br/>';
 		}
-	    return $actions;
+		$actions['edit'] .= $edit_actions;
+	  return $actions;
 	}
 
 	public function refresh_feed_row_action( $actions, $post ){

@@ -64,6 +64,8 @@ class PF_Admin {
 
 		add_action( 'quick_edit_custom_box', array( $this, 'quick_edit_field' ), 10, 2 );
 		add_action( 'save_post', array( $this, 'quick_edit_save' ), 10, 2 );
+
+		add_filter( 'heartbeat_received', array( $this, 'hb_check_feed_retrieve_status' ), 10, 2 );
 	}
 
 	/**
@@ -388,6 +390,25 @@ class PF_Admin {
 
 			</div>
 		</div><!-- End btn-group -->
+		<div id="status_check">
+			<span id="retrieving_feeds">
+			<?php
+				/**
+				* $feed_hb_state = array(
+				* 'feed_id'	=>	$aFeed->ID,
+				* 'feed_title'	=> $aFeed->post_title,
+				* 'last_key'	=> $last_key,
+				* 'feeds_iteration'	=>	$feeds_iteration,
+				* 'total_feeds'	=>	count($feedlist)
+				* );
+				**/
+
+				$feed_hb_state = get_option( PF_SLUG.'_feeds_hb_state' );
+				$iteration = $feed_hb_state['feeds_iteration']+1;
+				echo 'Retrieving feeds. Currently at '.$feed_hb_state['feed_title'].' feed number '.$iteration.' of '.$feed_hb_state['total_feeds'].'.'
+			?>
+			</span>
+		</div>
 		<?php
 	}
 
@@ -1172,6 +1193,12 @@ class PF_Admin {
 
 		wp_register_style('pf-alert-styles', PF_URL . 'assets/css/alert-styles.css');
 		wp_enqueue_style( PF_SLUG . '-alert-styles' );
+		if ( false != pressforward()->form_of->is_a_pf_page() ){
+			//var_dump('heartbeat'); die();
+			wp_enqueue_script( 'heartbeat' );
+			wp_enqueue_script( PF_SLUG . '-heartbeat', PF_URL . 'assets/js/pf-heartbeat.js', array( 'heartbeat', 'jquery' ) );
+
+		}
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
 		if (('toplevel_page_pf-menu') == $hook) {
@@ -2035,6 +2062,27 @@ class PF_Admin {
 		$feed_url = stripslashes( $_POST['pf-quick-edit-feed-url'] );
 
 		update_post_meta( $post_id, 'feedUrl', $feed_url );
+	}
+
+	public function hb_check_feed_retrieve_status( $response, $data, $screen_id = '' ){
+		/**
+		 * $feed_hb_state = array(
+		 * 'feed_id'	=>	$aFeed->ID,
+		 * 'feed_title'	=> $aFeed->post_title,
+		 * 'last_key'	=> $last_key,
+		 * 'feeds_iteration'	=>	$feeds_iteration,
+		 * 'total_feeds'	=>	count($feedlist)
+		 * );
+		**/
+		if ( 'feed_state' == $data['pf_heartbeat_request'] ){
+			$feed_hb_state = get_option( PF_SLUG.'_feeds_hb_state' );
+			foreach ( $feed_hb_state as $key=>$state ){
+				$response['pf_'.$key] = $state;
+			}
+		}
+
+		return $response;
+
 	}
 
 	/**
