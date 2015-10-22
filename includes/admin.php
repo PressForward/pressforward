@@ -2084,7 +2084,7 @@ class PF_Admin {
 		 * 'total_feeds'	=>	count($feedlist)
 		 * );
 		**/
-		if ( 'feed_state' == $data['pf_heartbeat_request'] ){
+		if ( (array_key_exists('pf_heartbeat_request', $data)) && ('feed_state' == $data['pf_heartbeat_request']) ){
 			$feed_hb_state = get_option( PF_SLUG.'_feeds_hb_state' );
 			foreach ( $feed_hb_state as $key=>$state ){
 				$response['pf_'.$key] = $state;
