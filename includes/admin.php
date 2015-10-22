@@ -192,28 +192,36 @@ class PF_Admin {
 			return;
 		}
 	    $value = pf_get_post_meta($post->ID, 'pf_forward_to_origin', true);
-	    if ('' === $value){
-	    	//If the user does not want to forward all things this setting is 0,
-	    	//which evaluates to empty.
-	    	$value = get_option('pf_link_to_source', 0);
+	    if ( empty($value) ){
+
+	    	$option_value = get_option('pf_link_to_source');
+				if ( empty($option_value) ){
+					$value = 'no-forward';
+				} else {
+					$value = 'forward';
+				}
 	    }
+
 	    echo '<div class="misc-pub-section misc-pub-section-last">
-	         <span id="pf_forward_to_origin_single">'
-	         . '<label><input type="checkbox"' . (!empty($value) ? ' checked="checked" ' : null) . 'value="1" name="pf_forward_to_origin" /> Forward to item\'s original URL</label>'
-	    .'</span></div>';
+				<label>
+				<select id="pf_forward_to_origin_single" name="pf_forward_to_origin">
+				  <option value="forward"'.( 'forward' == $value ? ' selected ' : '') .'>Forward</option>
+				  <option value="no-forward"'.( 'no-forward' == $value ? ' selected ' : '') .'>Don\'t Forward</option>
+				</select><br />
+				to item\'s original URL</label></div>';
 	}
 
 	function save_submitbox_pf_actions( $post_id )
 	{
-	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ){ return false; }
-	    if ( !current_user_can( 'edit_page', $post_id ) ){ return false; }
+	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ){ return $post_id; }
+	    if ( !current_user_can( 'edit_page', $post_id ) ){ return $post_id; }
 		#var_dump($_POST['pf_forward_to_origin']); die();
 		#$current = pf_get_post_meta();
-	    if( empty($_POST['pf_forward_to_origin']) ){
-	        pf_update_meta($post_id, 'pf_forward_to_origin', 0);
-	    } else {
-			pf_update_meta($post_id, 'pf_forward_to_origin', $_POST['pf_forward_to_origin']);
-		}
+			if ( !array_key_exists('pf_forward_to_origin', $_POST) ) {
+
+ 			} else {
+				pf_update_meta($post_id, 'pf_forward_to_origin', $_POST['pf_forward_to_origin']);
+			}
 
 		return $post_id;
 	}
