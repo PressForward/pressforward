@@ -21,6 +21,7 @@
             return;
 
         if ( data['pf_last_key'] != data['pf_feeds_iteration'] ){
+          jQuery('#status_check').css('display','block');
           console.log('hb_not_done');
           jQuery("#retrieving_feeds").html(
             function(){
@@ -29,8 +30,9 @@
               return 'Retrieving feeds. Currently at <span id="rf-feed-title">'+data['pf_feed_title']+'</span> feed number <span id="rf-iteration">'+iterate+'</span> of <span id="rf-total-feeds">'+ data['pf_total_feeds']+'</span>.';
             }
           );
+          jQuery('#status_check').css('display', 'block');
         } else {
-          jQuery('#retrieving_feeds').hide();
+
         }
         // Log the response for easy proof it works
         console.log( data['pf_feed_id'] );
@@ -48,13 +50,16 @@
         //setTimeout(function(){
         //    $('.edd_dashboard_widget .b.b-sales').css( 'font-weight', 'normal' );;
         //}, 2000);
-        var percentComplete = (( (parseInt(data['pf_feeds_iteration'],10)) / (parseInt(data['pf_total_feeds'],10)) ))*100;
+        var percentComplete = (( ((parseInt(data['pf_feeds_iteration'],10))+1) / (parseInt(data['pf_total_feeds'],10)) ))*100;
         if ( 1 > percentComplete ){
           percentComplete = 1;
         }
+        if ( 100 == percentComplete ){
+          jQuery('#status_check').css('display', 'none');
+        }
         console.log(percentComplete);
         jQuery( "#rf-progressbar" ).progressbar({
-           value: (( (parseInt(data['pf_feeds_iteration'],10)) / (parseInt(data['pf_total_feeds'],10)) ))*100
+           value: percentComplete
         });
     });
 }(jQuery));
@@ -66,7 +71,11 @@ jQuery(window).load(function() {
   if ( 1 > percentComplete ){
     percentComplete = 1;
   }
-  jQuery( "#rf-progressbar" ).progressbar({
-     value: percentComplete
-  });
+  if ( 100 == percentComplete ){
+    jQuery('#status_check').css('display', 'none');
+  } else {
+    jQuery( "#rf-progressbar" ).progressbar({
+       value: percentComplete
+    });
+  }
 });
