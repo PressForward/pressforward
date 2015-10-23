@@ -316,10 +316,23 @@ function PFBootstrapInits() {
 
 	jQuery(".modal.pfmodal").on('hide', function(evt){
 		jQuery(".itemInfobutton").popover('hide');
-	})
+	});
 	jQuery(".modal.pfmodal").on('show', function(evt){
 		jQuery(".itemInfobutton").popover('hide');
-	})
+	});
+
+	jQuery('.info-box-popover').on('click', function(e) {
+    e.stopPropagation();
+	});
+
+	jQuery('.itemInfobutton').on('click', function(e) {
+    e.stopPropagation();
+	});
+
+	jQuery(document).on('click', function (e) {
+	 	// Do whatever you want; the event that'd fire if the "special" element has been clicked on has been cancelled.
+		jQuery(".itemInfobutton").popover('hide');
+	});
 
 	attach_menu_on_scroll_past();
 	assure_closed_menus();
