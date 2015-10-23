@@ -983,7 +983,9 @@ class PF_Feeds_Schema {
 		if ('rss-quick' == $r['type']){
 			pf_log('Updating a rss-quick');
 			$check_exists = wp_get_http_headers($feedURL);
-			if ( !array_key_exists('content-length', $check_exists) || ( 41943000 > $check_exists['content-length'] ) ) {
+			if( !$check_exists ) {
+				pf_log('Cannot get feed headers.');
+		  } else if ( !array_key_exists('content-length', $check_exists) || ( 41943000 > $check_exists['content-length'] ) ) {
 				pf_log('Cannot find the length of the feed. It is unsafe to continue with that feed.');
 			} else {
 				if ( false !== $check_exists ){
