@@ -818,7 +818,7 @@ class PF_Feeds_Schema {
 
         $post_status = array('publish');
         if (class_exists('The_Alert_Box')){
-            $post_status[] = the_alert_box()->status();
+            //$post_status[] = the_alert_box()->status();
         }
 
         $defaults = array(
