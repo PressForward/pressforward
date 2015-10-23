@@ -357,6 +357,7 @@ class PF_Feed_Retrieve {
 
 		if ( !isset( $theFeeds ) ) {
 			# @todo a better error report
+			pf_log('No Feedlist for some reason.');
 			return false;
 		} elseif ( is_wp_error( $theFeeds ) ) {
 			return $theFeeds;
@@ -516,16 +517,6 @@ class PF_Feed_Retrieve {
 			die();
 		}
 
-		if ( ( 'rss-quick' == $type ) && ( 'publish' == $obj->post_status ) ) {
-			# Let's update the RSS-Quick so it has real data.
-			$rq_update = array(
-				'type'		=>		'rss-quick',
-				'ID'		=>		$id,
-				'url'		=>		$obj->guid
-			);
-			$Feeds->update( $id, $rq_update );
-		}
-
 		# module function to return a set of standard pf feed_item object
 		# Like get_items in SimplePie
 		$feedObj = $this->get_the_feed_object( $module_to_use, $obj );
@@ -570,6 +561,16 @@ class PF_Feed_Retrieve {
 		            );
 		            $result = wp_update_post($argup);
 				}
+			}
+
+			if ( ( 'rss-quick' == $type ) && ( 'publish' == $obj->post_status ) ) {
+				# Let's update the RSS-Quick so it has real data.
+				$rq_update = array(
+					'type'		=>		'rss-quick',
+					'ID'		=>		$id,
+					'url'		=>		$obj->guid
+				);
+				$Feeds->update( $id, $rq_update );
 			}
 
 			return $feedObj;

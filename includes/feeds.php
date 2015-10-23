@@ -644,6 +644,7 @@ class PF_Feeds_Schema {
 				$r['ID'] = $post_obj->ID;
 			}
 			$wp_args['ID'] = $r['ID'];
+			$wp_args = array_merge( $r, $wp_args );
 			wp_update_post( $wp_args );
 			$post_id = $r['ID'];
 		}
@@ -812,6 +813,7 @@ class PF_Feeds_Schema {
 
 	# A function to pull feeds from the database.
 	public function get( $args = array() ) {
+		pf_log('Invoked.');
 		if ( ! post_type_exists( 'pf_feed' ) ) { $this->register_feed_post_type(); }
 
         $post_status = array('publish');
@@ -851,7 +853,8 @@ class PF_Feeds_Schema {
 
 		// Other WP_Query args pass through
 		$wp_args = wp_parse_args( $args, $defaults );
-
+		pf_log('Get posts with arguments ');
+		pf_log($wp_args);
 		$posts = get_posts( $wp_args );
 
 		foreach ( $query_filters as $hook => $filters ) {
@@ -979,19 +982,28 @@ class PF_Feeds_Schema {
 		}
 		if ('rss-quick' == $r['type']){
 			pf_log('Updating a rss-quick');
-			$theFeed = fetch_feed($feedURL);
-			if (is_wp_error($theFeed)){
-				return new WP_Error('badfeed', __('The feed fails verification.'));
+			$check_exists = wp_get_http_headers($feedURL);
+			if ( !array_key_exists('content-length', $check_exists) || ( 41943000 > $check_exists['content-length'] ) ) {
+				pf_log('Cannot find the length of the feed. It is unsafe to continue with that feed.');
 			} else {
-				$r = self::setup_rss_meta($r, $theFeed);
-			}
+				if ( false !== $check_exists ){
+					$theFeed = fetch_feed($feedURL);
+					if (is_wp_error($theFeed)){
+						return new WP_Error('badfeed', __('The feed fails verification.'));
+					} else {
+						$r = self::setup_rss_meta($r, $theFeed);
+					}
 
-			$type_updated = self::set_pf_feed_type($r['ID'], 'rss');
-			if ($type_updated){
-				$r['type'] = 'rss';
+					$type_updated = self::set_pf_feed_type($r['ID'], 'rss');
+					if ($type_updated){
+						$r['type'] = 'rss';
+					}
+				}
 			}
 		}
-
+		pf_log($r);
+		$r_old = get_post($r['ID'], ARRAY_A);
+		$r = array_merge($r_old, $r);
 		$check = self::feed_post_setup($r, 'update');
 		return $check;
 
@@ -1037,7 +1049,8 @@ class PF_Feeds_Schema {
 		#var_dump($args);
 		#echo '</pre>';
 		foreach ($args as $k=>$a){
-			pf_log('Setting ' . $post_id . ' Feed Meta: ' . $k . ' - ' . $a);
+			pf_log('Setting ' . $post_id . ' Feed Meta: ' . $k . ' - ');
+			pf_log($a);
 			if(!$a){
 
 			} else {
