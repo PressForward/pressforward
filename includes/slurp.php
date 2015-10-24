@@ -60,7 +60,7 @@ class PF_Feed_Retrieve {
 	 */
 	function schedule_feed_out() {
 		if ( ! wp_next_scheduled( 'take_feed_out' ) ) {
-			wp_schedule_event( time(), 'monthly', 'take_feed_out' );
+			wp_schedule_event( time(), 'hourly', 'take_feed_out' );
 		}
 	}
 
