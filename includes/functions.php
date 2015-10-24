@@ -2012,7 +2012,7 @@ function pf_log( $message = '', $display = false, $reset = false, $return = fals
 	}
 }
 
-function pf_message( $message ){
-	$returned_message = pf_log( $message, false, false, true );
+function pf_message( $message = '', $display = false, $reset = false ){
+	$returned_message = pf_log( $message, $display, $reset, true );
 	return $returned_message;
 }

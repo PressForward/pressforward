@@ -2123,7 +2123,8 @@ class PF_Admin {
 	}
 
 	public function trigger_source_data() {
-		pressforward()->pf_retrieve->trigger_source_data();
+		$message = pressforward()->pf_retrieve->trigger_source_data(true);
+		wp_send_json($message);
 		die();
 	}
 

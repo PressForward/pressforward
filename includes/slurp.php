@@ -667,27 +667,27 @@ class PF_Feed_Retrieve {
 
  	}
 
-	public function trigger_source_data() {
+	public function trigger_source_data($return = false) {
+		$message = array();
 			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0 );
 			$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0 );
 			$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0 );
 			$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );
 		pf_log( 'Invoked: PF_Feed_Retrieve::trigger_source_data()' );
-		pf_log( 'Feeds go?: ' . $feed_go );
-		pf_log( 'Feed iteration: ' . $feed_iteration );
-		pf_log( 'Retrieval state: ' . $retrieval_state );
-		pf_log( 'Chunk state: ' . $chunk_state );
+		$message['go_switch'] = pf_message( 'Feeds go?: ' . $feed_go );
+		$message['iteration'] = pf_message( 'Feed iteration: ' . $feed_iteration );
+		$message['iterating_check'] = pf_message( 'Retrieval state: ' . $retrieval_state );
+		$message['chunk_ready'] = pf_message( 'Chunk state: ' . $chunk_state );
 		if ( $feed_iteration == 0 && $retrieval_state == 0 && $chunk_state == 1 ) {
 			$status = update_option( PF_SLUG . '_iterate_going_switch', 1 );
 			# Echo to the user.
-			pf_log( __( 'Beginning the retrieval process', 'pf' ), true, true );
+			$message['action_taken'] = pf_message( __( 'Beginning the retrieval process', 'pf' ), true, true );
 			pf_iterate_cycle_state('retrieval_cycles_begun', true);
 			if ( $status ) {
 				pf_log( __( 'Iterate switched to going.', 'pf' ) );
 			} else {
 				pf_log( __( 'Iterate option not switched.', 'pf' ) );
 			}
-
 			pressforward()->pf_feed_items->assemble_feed_for_pull();
 		} else {
 
@@ -701,17 +701,17 @@ class PF_Feed_Retrieve {
 											'retrigger'		=>	time() + ( 2 * 60 * 60 )
 										);
 				update_option( PF_SLUG . '_feeds_meta_state', $feeds_meta_state );
-				pf_log( __( 'Created new metastate.', 'pf' ), true );
+				$message['action_taken'] = pf_message( __( 'Created new metastate to check on next retrieval step.', 'pf' ), true );
 			} else {
-				pf_log( __( 'Metastate saved and active for check.', 'pf' ), true );
+				$message['action_taken'] = pf_message( __( 'Metastate is already saved and active for next check.', 'pf' ), true );
 				pf_log( $feeds_meta_state );
 			}
 
 			if ( $feeds_meta_state['retrigger'] > time() ) {
-					pf_log( __( 'The sources are already being retrieved.', 'pf' ), true );
+					$message['action_taken'] = pf_message( __( 'The sources are already being retrieved.', 'pf' ), true );
 			} else {
 					if ( ( $feed_go == $feeds_meta_state['feed_go'] ) && ( $feed_iteration == $feeds_meta_state['feed_iteration'] ) && ( $retrieval_state == $feeds_meta_state['retrieval_state'] ) && ($chunk_state == $feeds_meta_state['chunk_state'] )) {
-						pf_log( __( 'The sources are stuck.', 'pf' ), true );
+						$message['action_taken'] = pf_message( __( 'The sources are stuck, clearing system to activate on next retrieve.', 'pf' ), true );
 						# Wipe the checking option for use next time.
 						update_option( PF_SLUG . '_feeds_meta_state', array() );
 						update_option( PF_SLUG . '_ready_to_chunk', 1 );
@@ -735,7 +735,7 @@ class PF_Feed_Retrieve {
 													'retrigger'		=>	$feeds_meta_state['retrigger']
 												);
 						update_option( PF_SLUG . '_feeds_meta_state', $double_check );
-						pf_log( __( 'The meta-state is too old. It is now reset. Next time, we should start over.', 'pf' ), true );
+						$message['action_taken'] = pf_message( __( 'The meta-state is too old. It is now reset. Next time, we will start retrieval over.', 'pf' ), true );
 					} else {
 						$double_check = array(
 													'feed_go' => $feeds_meta_state['feed_go'],
@@ -746,10 +746,13 @@ class PF_Feed_Retrieve {
 												);
 						update_option( PF_SLUG . '_feeds_meta_state', $double_check );
 						pf_log( $double_check );
-						pf_log( __( 'The sources are already being retrieved.', 'pf' ), true );
+						$message['action_taken'] = pf_message( __( 'The sources are already being retrieved.', 'pf' ), true );
 					}
 
 			}
+		}
+		if ($return){
+			return $message;
 		}
 	}
 
