@@ -6,7 +6,8 @@ jQuery(window).load(function() {
 			action: 'assemble_feed_for_pull'
 		},
 		function(response) {
-			jQuery('.loading-top').hide();
+			//jQuery('.loading-top').hide();
+			jQuery('#refreshfeed').before('<span class="basic-response">'+response.action_taken+'</span>');
 			jQuery('#errors').html(response);
 			//jQuery("#test-div1").append(data);
 		});
