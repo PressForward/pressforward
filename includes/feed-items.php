@@ -585,6 +585,14 @@ class PF_Feed_Item {
 
 	}
 
+	public static function ajax_feed_items_disassembler(){
+		$this::disassemble_feed_items();
+		$message = array(
+			'action_taken'	=>	'Feed items being removed'
+		);
+		wp_send_json($message);
+	}
+
 	# Method to manually delete rssarchival entries on user action.
 	public static function reset_feed() {
 		global $wpdb, $post;

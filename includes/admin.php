@@ -37,6 +37,7 @@ class PF_Admin {
 		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
 		add_action( 'wp_ajax_simple_nom_to_draft', array( $this, 'simple_nom_to_draft') );
 		add_action( 'wp_ajax_assemble_feed_for_pull', array( $this, 'trigger_source_data') );
+		add_action( 'wp_ajax_disassemble_item', array( $this, 'trigger_item_disassembly' ) );
 		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
 		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
@@ -2125,6 +2126,12 @@ class PF_Admin {
 	public function trigger_source_data() {
 		$message = pressforward()->pf_retrieve->trigger_source_data(true);
 		wp_send_json($message);
+		die();
+	}
+
+	public function trigger_item_disassembly() {
+		$message = pressforward()->pf_retrieve->ajax_feed_items_disassembler();
+		#wp_send_json($message);
 		die();
 	}
 
