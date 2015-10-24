@@ -688,6 +688,9 @@ class PF_Feed_Retrieve {
 			} else {
 				pf_log( __( 'Iterate option not switched.', 'pf' ) );
 			}
+			if ($return){
+				print_r(json_encode($message));
+			}
 			pressforward()->pf_feed_items->assemble_feed_for_pull();
 		} else {
 
@@ -750,10 +753,11 @@ class PF_Feed_Retrieve {
 					}
 
 			}
+			if ($return){
+				return $message;
+			}
 		}
-		if ($return){
-			return $message;
-		}
+
 	}
 
 
