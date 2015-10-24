@@ -1885,6 +1885,27 @@ function pf_function_auto_logger($caller){
 	return $func_statement;
 }
 
+function assure_log_string( $message ){
+	if ( is_array( $message ) || is_object( $message ) ) {
+		$message = print_r( $message, true );
+	}
+
+	// Make sure we've got a string to log
+	if ( is_wp_error( $message ) ) {
+		$message = $message->get_error_message();
+	}
+
+	if ( $message === true ) {
+		$message = 'True';
+	}
+
+	if ( $message === false ) {
+		$message = 'False';
+	}
+
+	return $message;
+}
+
 
 /**
  * Send status messages to a custom log
@@ -1906,7 +1927,7 @@ function pf_log( $message = '', $display = false, $reset = false, $return = fals
 	static $debug;
 
 	if ( $return && ( 0 === $debug ) ){
-		return print_r( $message, true );
+		return assure_log_string($message);
 	}
 
 	if ( 0 === $debug ) {
@@ -1952,22 +1973,7 @@ function pf_log( $message = '', $display = false, $reset = false, $return = fals
 		}
 	}
 
-	// Make sure we've got a string to log
-	if ( is_wp_error( $message ) ) {
-		$message = $message->get_error_message();
-	}
-
-	if ( is_array( $message ) || is_object( $message ) ) {
-		$message = print_r( $message, true );
-	}
-
-	if ( $message === true ) {
-		$message = 'True';
-	}
-
-	if ( $message === false ) {
-		$message = 'False';
-	}
+	$message = assure_log_string($message);
 
 	$trace=debug_backtrace();
 	foreach ($trace as $key=>$call) {
@@ -2004,4 +2010,9 @@ function pf_log( $message = '', $display = false, $reset = false, $return = fals
 	if ($return){
 		return $message;
 	}
+}
+
+function pf_message( $message ){
+	$returned_message = pf_log( $message, false, false, true );
+	return $returned_message;
 }
