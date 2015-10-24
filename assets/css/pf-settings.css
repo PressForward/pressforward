@@ -14,3 +14,10 @@
 .pressforward_page_pf-feeder .pftab h2 {
 	display:none;
 }
+
+#responses{
+	display: none;
+    padding: 10px;
+    border: 2px gold solid;
+    margin: 12px;
+}

@@ -7,7 +7,8 @@ jQuery(window).load(function() {
 		},
 		function(response) {
 			//jQuery('.loading-top').hide();
-			jQuery('#refreshfeed').before('<span class="basic-response">'+response.action_taken+'</span>');
+			jQuery('#responses').css('display', 'block');
+			jQuery('#responses').html('<span class="basic-response">'+response.action_taken+'</span>');
 			jQuery('#errors').html(response);
 			//jQuery("#test-div1").append(data);
 		});

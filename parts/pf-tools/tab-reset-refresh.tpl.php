@@ -3,6 +3,7 @@
 				_e('The following options are advanced tools for admins attempting to test, debug, or execute advanced functionality. They are capable of breaking your retrieval process.', 'pf');
 			?>
 		</p>
+		<div id="responses"></div>
 		<p>
 			<button type="submit" class="refreshfeed btn btn-small" id="refreshfeed" value="<?php  _e('Refresh', 'pf')  ?>"><?php  _e('Refresh', 'pf');  ?></button>
 			<?php
