@@ -1906,7 +1906,7 @@ function pf_log( $message = '', $display = false, $reset = false, $return = fals
 	static $debug;
 
 	if ( $return && ( 0 === $debug ) ){
-		return $message;
+		return print_r( $message, true );
 	}
 
 	if ( 0 === $debug ) {
