@@ -1902,8 +1902,12 @@ function pf_function_auto_logger($caller){
  *
  * @param string $message The message to log
  */
-function pf_log( $message = '', $display = false, $reset = false ) {
+function pf_log( $message = '', $display = false, $reset = false, $return = false ) {
 	static $debug;
+
+	if ( $return && ( 0 === $debug ) ){
+		return $message;
+	}
 
 	if ( 0 === $debug ) {
 		return;
@@ -1996,4 +2000,8 @@ function pf_log( $message = '', $display = false, $reset = false ) {
 	}
 
 	error_log( '[' . gmdate( 'd-M-Y H:i:s' ) . '] ' . $func_statement . $message . "\n", 3, $log_path );
+
+	if ($return){
+		return $message;
+	}
 }
