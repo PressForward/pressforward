@@ -564,6 +564,17 @@ body {
   right: 0;
   left: auto; }
 
+#status_check {
+  margin: 10px;
+  padding: 0px;
+  border: 3px solid darkgray;
+  border-radius: 14px;
+  overflow: hidden;
+  background-color: white; }
+
+#retrieving_feeds {
+  padding: 0 16px; }
+
 /* Susy Variables */
 @media screen {
   * {
@@ -839,3 +850,16 @@ p {
 
 article {
   background-color: white; }
+
+  #status_check {
+  	margin: 10px;
+  	padding: 0px;
+  	border: 3px solid rgb(169, 169, 169);
+  	border-radius: 14px;
+  	overflow: hidden;
+  	background-color: white;
+  }
+
+  #retrieving_feeds {
+  	padding: 0 16px;
+  }
