@@ -2,14 +2,14 @@
 	var archivesVisible = 0;
 
 jQuery(window).load(function() {
-	
-	jQuery('.pf_container').on('click', ".nom-to-archive", function (evt){ 
+
+	jQuery('.pf_container').on('click', ".nom-to-archive", function (evt){
 		evt.preventDefault();
-		
+
 	var element			= jQuery(this);
 	var nomID			= element.attr('form');
 	var theNonce		= jQuery.trim(jQuery('#pf_drafted_nonce').val())
-	
+
 			jQuery('#'+nomID).addClass('archived');
 			if (archivesVisible == 0){
 				jQuery('#'+nomID).hide();
@@ -21,7 +21,7 @@ var archivesVisible = 0;
 
 jQuery(window).load(function() {
 
-	jQuery("#showarchived").click( function (evt){ 
+	jQuery("#showarchived").click( function (evt){
 		evt.preventDefault();
 		if(jQuery('#showarchived').hasClass('hidearchived')){
 			archivesVisible = 0;
@@ -36,10 +36,10 @@ jQuery(window).load(function() {
 			jQuery('#showarchived').attr('value', 'Hide Archived');
 			jQuery('#showarchived').addClass('hidearchived');
 		}
-	
+
 	}
-	);		
-	
+	);
+
 	jQuery("#archivenoms").click(function(evt){
 		jQuery('.loading-top').show();
 		jQuery('.nom-container').hide();
@@ -55,21 +55,21 @@ jQuery(window).load(function() {
 			jQuery('#errors').html(response);
 		});
 	});
-	
+
 	jQuery('.pf_container').on('click', "#archivebefore", function (evt){
-		evt.preventDefault();	
+		evt.preventDefault();
 		var element		= jQuery(this);
 		var date_limit  = jQuery('#archiveBeforeOption').val();
-		
-		
+
+
 		jQuery.post(ajaxurl, {
 			action: 'pf_archive_nominations',
 			date_limit:  date_limit
 		},
-		function(response) {		
+		function(response) {
 			jQuery('#errors').html(response);
 		});
-	});	
+	});
 
-	
-});	
+
+});
