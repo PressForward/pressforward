@@ -106,7 +106,12 @@ function nominate_it() {
           } else {
             $feed_nom['id'] = 0;
             $message_one = pf_message('An error occured when adding the feed:');
-            $message_two = pf_message($create);
+            if (is_wp_error($create)){
+              $create_wp_error = $create->get_error_message();
+              $message_two = pf_message($create_wp_error);
+            } else {
+              $message_two = pf_message($create);
+            }
             $create = $message_one.$message_two;
           }
         } else {
@@ -114,6 +119,7 @@ function nominate_it() {
           $feed_nom['id'] = 0;
         }
         $feed_nom['msg'] = $create_started.$create;
+        update_option( 'pf_last_nominated_feed', $feed_nom );
 
     }
 	// error handling for media_sideload
@@ -777,10 +783,12 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
                 </div>
 		      <?php
             }
+            $feed_nom = get_option( 'pf_last_nominated_feed', array() );
             if ( !empty($feed_nom) ){
+              #var_dump($feed_nom); die();
               ?>
                 <div id="nom-message" class="updated">
-                  <p><strong><?php $feed_nom['msg']; ?></strong>
+                  <p><strong><?php print_r($feed_nom['msg']); ?></strong>
                   <?php
                     if(0 !== $feed_nom['id']){
                       ?>
