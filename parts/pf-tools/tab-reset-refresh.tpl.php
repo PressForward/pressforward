@@ -10,5 +10,11 @@
 				_e( ' the feed retrieval process. This button will attempt to restart a broken refresh process. If a previous feed retrieval cycle was completed, it will start the next one early. However, if the process is currently ongoing it will notify the system that you believe there is an error in the retrieval process, and the next time your site steps through the cycle, the system will attempt to find and rectify the error.', 'pf');
 			?>
 		</p>
+		<p>
+			<button type="submit" class="cleanfeeds btn btn-small" id="cleanfeeds" value="<?php  _e('Clean Up', 'pf')  ?>"><?php  _e('Clean Up', 'pf');  ?></button>
+			<?php
+				_e( ' the feed items. You can press this button to manually iniate the process of selecting feed items more than 2 months old. Be careful, there is a chance of iniating this process simultaniously with a process triggered automatically every 30 minutes.', 'pf');
+			?>
+		</p>
 		<?php
 		do_action('pf_tools');

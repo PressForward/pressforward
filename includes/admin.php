@@ -2130,7 +2130,7 @@ class PF_Admin {
 	}
 
 	public function trigger_item_disassembly() {
-		$message = pressforward()->pf_retrieve->ajax_feed_items_disassembler();
+		$message = pressforward()->pf_feed_items->ajax_feed_items_disassembler();
 		#wp_send_json($message);
 		die();
 	}

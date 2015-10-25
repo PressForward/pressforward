@@ -586,7 +586,7 @@ class PF_Feed_Item {
 	}
 
 	public static function ajax_feed_items_disassembler(){
-		$this::disassemble_feed_items();
+		pressforward()->pf_feed_items->disassemble_feed_items();
 		$message = array(
 			'action_taken'	=>	'Feed items being removed'
 		);
