@@ -91,14 +91,30 @@ function nominate_it() {
 		$post['post_status'] = get_option(PF_SLUG.'_draft_post_status', 'draft');
 
 	$nom_check = false;
+    $feed_nom = array();
     //var_dump('<pre>'); var_dump($_POST['pf-feed-subscribe']); die();
     if ( !empty( $_POST['pf-feed-subscribe'] ) && ( 'subscribe' == $_POST['pf-feed-subscribe'] ) ){
         $url_array = parse_url(esc_url($_POST['item_link']));
         $sourceLink = 'http://' . $url_array['host'];
+        $create_started = 'Attempting to nominate a feed with the result of: ';
         //var_dump($sourceLink); die();
         if (current_user_can('edit_posts')){
-          pressforward()->pf_feeds->create($sourceLink, array('post_status' => 'under_review') );
+          $create = pressforward()->pf_feeds->create($sourceLink, array('post_status' => 'under_review') );
+          if ( is_numeric($create) ){
+            $feed_nom['id'] = $create;
+            $create = 'Post created with ID of '.$create;
+          } else {
+            $feed_nom['id'] = 0;
+            $message_one = pf_message('An error occured when adding the feed:');
+            $message_two = pf_message($create);
+            $create = $message_one.$message_two;
+          }
+        } else {
+          $create = 'User doesn\'t have permission to create feeds.';
+          $feed_nom['id'] = 0;
         }
+        $feed_nom['msg'] = $create_started.$create;
+
     }
 	// error handling for media_sideload
 	if ( is_wp_error($upload) ) {
@@ -760,6 +776,19 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
                 | <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a></p>
                 </div>
 		      <?php
+            }
+            if ( !empty($feed_nom) ){
+              ?>
+                <div id="nom-message" class="updated">
+                  <p><strong><?php $feed_nom['msg']; ?></strong>
+                  <?php
+                    if(0 !== $feed_nom['id']){
+                      ?>
+                      <a href="<?php echo get_edit_post_link( $feed_nom['id'] ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php _e('Edit Post'); ?></a>
+                    <?php } ?>
+                  | <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a></p>
+                </div>
+              <?php
             }
             die();
         } ?>
