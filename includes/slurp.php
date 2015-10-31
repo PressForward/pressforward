@@ -689,6 +689,7 @@ class PF_Feed_Retrieve {
 				pf_log( __( 'Iterate option not switched.', 'pf' ) );
 			}
 			if ($return){
+				@header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ) );
 				print_r(json_encode($message));
 			}
 			pressforward()->pf_feed_items->assemble_feed_for_pull();
