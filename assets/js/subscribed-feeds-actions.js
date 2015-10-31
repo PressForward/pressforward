@@ -5,7 +5,10 @@ jQuery(window).load(function() {
     console.log('click edit status');
     pf_switch_status_look();
   });
-
+  jQuery('body.post-type-pf_feed').on('click', '.save-post-status', function(){
+    console.log('save edit status');
+    pf_switch_status_look();
+  });
   jQuery('body.post-type-pf_feed').on('click', ".refresh-feed", (function(evt){
       evt.preventDefault();
       var element			= jQuery(this);
