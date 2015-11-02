@@ -55,6 +55,7 @@ class PF_Feeds_Schema {
 			add_filter( 'page_row_actions', array($this, 'url_feed_row_action'), 10, 2 );
 			add_filter( 'page_row_actions', array($this, 'refresh_feed_row_action'), 10, 2 );
 			add_action( 'post_submitbox_misc_actions', array( $this, 'feed_submitbox_pf_actions' ) );
+			add_filter( 'post_updated_messages', array( $this, 'feed_save_message' ) );
 		}
 
 		add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
@@ -1116,5 +1117,49 @@ class PF_Feeds_Schema {
 
 		wp_enqueue_script( 'feed_edit_manip', PF_URL . '/assets/js/subscribed-feeds-actions.js', array('jquery'), PF_VERSION );
 	}
+
+	function feed_save_message($messages){
+		//add_filter( 'post_updated_messages', array( $this, 'feed_save_message' ) );
+
+		$post             = get_post();
+		$post_type        = get_post_type( $post );
+		$post_type_object = get_post_type_object( $post_type );
+
+		$messages[$this->post_type] = array(
+			0  => '', // Unused. Messages start at index 1.
+			1  => __( 'Feed updated.', 'pf' ),
+			2  => __( 'Custom field updated.', 'pf' ),
+			3  => __( 'Custom field deleted.', 'pf' ),
+			4  => __( 'Feed updated.', 'pf' ),
+			/* translators: %s: date and time of the revision */
+			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Feed restored to revision from %s', 'pf' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6  => __( 'The feed was made successfully active.', 'pf' ),
+			7  => __( 'The feed was saved successfully.', 'pf' ),
+			8  => __( 'Feed submitted.', 'pf' ),
+			9  => sprintf(
+				__( 'Feed scheduled for: <strong>%1$s</strong>.', 'pf' ),
+				// translators: Publish box date format, see http://php.net/date
+				date_i18n( __( 'M j, Y @ G:i', 'pf' ), strtotime( $post->post_date ) )
+			),
+			10 => __( 'Feed draft updated.', 'pf' )
+		);
+
+		if ( $post_type_object->publicly_queryable ) {
+			$permalink = get_permalink( $post->ID );
+
+			$view_link = ' ';
+			$messages[ $post_type ][1] .= $view_link;
+			$messages[ $post_type ][6] .= $view_link;
+			$messages[ $post_type ][9] .= $view_link;
+
+			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
+			$preview_link = ' ';
+			$messages[ $post_type ][8]  .= $preview_link;
+			$messages[ $post_type ][10] .= $preview_link;
+		}
+
+		return $messages;
+	}
+
 
 }
