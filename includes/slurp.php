@@ -304,6 +304,7 @@ class PF_Feed_Retrieve {
 			# If the array entry is empty and this isn't the end of the feedlist,
 			# then get the next item from the feedlist while iterating the count.
 			if ( ( ( empty( $aFeed ) ) || ($aFeed == '' ) || (is_wp_error($theFeed ))) && ($feeds_iteration <= $last_key)) {
+				//Feed failure happening here.
 				pf_log( 'The feed is either an empty entry or un-retrievable AND the iteration is less than or equal to the last key.' );
 
 				# The feed is somehow bad, lets get the next one.
