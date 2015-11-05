@@ -276,8 +276,8 @@ class PF_Feed_Retrieve {
 
 			# If the feed retrieved is empty and we haven't hit the last feed item.
 
-			if ( ( ( empty( $aFeed ) ) || ( ( 'publish' != $aFeed->post_status ) ) || ($aFeed == '' ) ) && ($feeds_iteration <= $last_key)) {
-				pf_log( 'The feed is either an empty entry or un-retrievable, or not published AND the iteration is less than or equal to the last key.' );
+			if ( ( ( empty( $aFeed ) ) || ($aFeed == '' ) ) && ($feeds_iteration <= $last_key)) {
+				pf_log( 'The feed is either an empty entry or un-retrievable AND the iteration is less than or equal to the last key.' );
 				$theFeed = call_user_func( array( $this, 'step_through_feedlist' ) );
 			} elseif ( ( ( empty( $aFeed ) ) || ($aFeed == '' ) ) && ($feeds_iteration > $last_key)) {
 				pf_log( 'The feed is either an empty entry or un-retrievable AND the iteration is greater than the last key.' );
