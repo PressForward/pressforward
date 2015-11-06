@@ -980,17 +980,9 @@ class PF_Feeds_Schema {
 		}
 		if ('rss-quick' == $r['type']){
 			pf_log('Updating a rss-quick');
-<<<<<<< HEAD
-			$check_exists = wp_get_http_headers($feedURL);
-			if( !$check_exists ) {
-				pf_log('Cannot get feed headers.');
-		  } else if ( !array_key_exists('content-length', $check_exists) || ( 41943000 > $check_exists['content-length'] ) ) {
-				pf_log('Cannot find the length of the feed. It is unsafe to continue with that feed.');
-=======
 			$theFeed = fetch_feed($feedURL);
 			if (is_wp_error($theFeed)){
 				return new WP_Error('badfeed', __('The feed fails verification.'));
->>>>>>> parent of 71f4881... Checking feeds to avoid retrieving feed files too large for memory
 			} else {
 				$r = self::setup_rss_meta($r, $theFeed);
 			}
