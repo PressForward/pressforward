@@ -91,7 +91,7 @@ function nominate_it() {
 		$post['post_status'] = get_option(PF_SLUG.'_draft_post_status', 'draft');
 
 	$nom_check = false;
-    $feed_nom = array( 'error' => false );
+    $feed_nom = array( 'error' => false, 'simple' => '' );
     //var_dump('<pre>'); var_dump($_POST['pf-feed-subscribe']); die();
     if ( !empty( $_POST['pf-feed-subscribe'] ) && ( 'subscribe' == $_POST['pf-feed-subscribe'] ) ){
         $url_array = parse_url(esc_url($_POST['item_link']));
@@ -103,13 +103,16 @@ function nominate_it() {
           if ( is_numeric($create) ){
             $feed_nom['id'] = $create;
             $create = 'Feed created with ID of '.$create;
+            $feed_nom['simple'] = "The feed has been nominated successfully.";
             $error_check = get_post_meta($feed_nom['id'], 'ab_alert_msg', true);
             if ( !empty( $error_check ) ){
             	$create .= ' But the following error occured: '.$error_check;
+            	$feed_nom['simple'] = "There is a problem with the feed associated with this post. The feed could not be verified.";
         	}
         	$feed_nom['error'] = $error_check;
           } else {
             $feed_nom['id'] = 0;
+            $feed_nom['simple'] = "PressForward was unable to identify a feed associated with this site. Please contact the site administrator or add the feed manually in the 'Add Feeds' panel.";
             $message_one = pf_message('An error occured when adding the feed: ');
             if (is_wp_error($create)){
               $create_wp_error = $create->get_error_message();
@@ -124,6 +127,7 @@ function nominate_it() {
           $create = 'User doesn\'t have permission to create feeds.';
           $feed_nom['id'] = 0;
           $feed_nom['error'] = $create;
+          $feed_nom['simple'] = $create;
         }
         $feed_nom['msg'] = $create_started.$create;
 
@@ -807,7 +811,14 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
               #var_dump($feed_nom); die();
               ?>
                 <div id="nom-message" class="<?php echo $feed_nom_class; ?>">
-                  <p><strong><?php print_r($feed_nom['msg']); ?></strong>
+                  <p><strong><?php
+                  	if ( !current_user_can('publish_posts') || ( false == WP_DEBUG ) ){
+                  		print_r( $feed_nom['simple'] );
+                  	} else {
+                  		print_r( $feed_nom['msg'] );
+                  	}
+
+                  ?></strong>
                   <?php
                     if(0 !== $feed_nom['id']){
                       ?>
