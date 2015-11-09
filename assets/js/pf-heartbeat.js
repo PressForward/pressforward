@@ -21,7 +21,7 @@
             return;
 
         if ( data['pf_last_key'] != data['pf_feeds_iteration'] ){
-          jQuery('#status_check').css('display','block');
+          //jQuery('#status_check').css('display','block');
           console.log('hb_not_done');
           jQuery("#retrieving_feeds").html(
             function(){
@@ -30,7 +30,7 @@
               return 'Retrieving feeds. Currently at <span id="rf-feed-title">'+data['pf_feed_title']+'</span> feed number <span id="rf-iteration">'+iterate+'</span> of <span id="rf-total-feeds">'+ data['pf_total_feeds']+'</span>.';
             }
           );
-          jQuery('#status_check').css('display', 'block');
+          //jQuery('#status_check').css('display', 'block');
         } else {
 
         }
@@ -55,7 +55,7 @@
           percentComplete = 1;
         }
         if ( 100 == percentComplete ){
-          jQuery('#status_check').css('display', 'none');
+          //jQuery('#status_check').css('display', 'none');
         }
         console.log(percentComplete);
         jQuery( "#rf-progressbar" ).progressbar({
@@ -72,7 +72,9 @@ jQuery(window).load(function() {
     percentComplete = 1;
   }
   if ( 100 == percentComplete ){
-    jQuery('#status_check').css('display', 'none');
+    jQuery( "#rf-progressbar" ).progressbar({
+       value: percentComplete
+    });
   } else {
     jQuery( "#rf-progressbar" ).progressbar({
        value: percentComplete

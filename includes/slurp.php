@@ -304,6 +304,7 @@ class PF_Feed_Retrieve {
 			# If the array entry is empty and this isn't the end of the feedlist,
 			# then get the next item from the feedlist while iterating the count.
 			if ( ( ( empty( $aFeed ) ) || ($aFeed == '' ) || (is_wp_error($theFeed ))) && ($feeds_iteration <= $last_key)) {
+				//Feed failure happening here.
 				pf_log( 'The feed is either an empty entry or un-retrievable AND the iteration is less than or equal to the last key.' );
 
 				# The feed is somehow bad, lets get the next one.
@@ -357,7 +358,6 @@ class PF_Feed_Retrieve {
 
 		if ( !isset( $theFeeds ) ) {
 			# @todo a better error report
-			pf_log('No Feedlist for some reason.');
 			return false;
 		} elseif ( is_wp_error( $theFeeds ) ) {
 			return $theFeeds;
@@ -517,6 +517,16 @@ class PF_Feed_Retrieve {
 			die();
 		}
 
+		if ( ( 'rss-quick' == $type ) && ( 'publish' == $obj->post_status ) ) {
+			# Let's update the RSS-Quick so it has real data.
+			$rq_update = array(
+				'type'		=>		'rss-quick',
+				'ID'		=>		$id,
+				'url'		=>		$obj->guid
+			);
+			$Feeds->update( $id, $rq_update );
+		}
+
 		# module function to return a set of standard pf feed_item object
 		# Like get_items in SimplePie
 		$feedObj = $this->get_the_feed_object( $module_to_use, $obj );
@@ -561,16 +571,6 @@ class PF_Feed_Retrieve {
 		            );
 		            $result = wp_update_post($argup);
 				}
-			}
-
-			if ( ( 'rss-quick' == $type ) && ( 'publish' == $obj->post_status ) ) {
-				# Let's update the RSS-Quick so it has real data.
-				$rq_update = array(
-					'type'		=>		'rss-quick',
-					'ID'		=>		$id,
-					'url'		=>		$obj->guid
-				);
-				$Feeds->update( $id, $rq_update );
 			}
 
 			return $feedObj;
@@ -689,6 +689,7 @@ class PF_Feed_Retrieve {
 				pf_log( __( 'Iterate option not switched.', 'pf' ) );
 			}
 			if ($return){
+				@header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ) );
 				print_r(json_encode($message));
 			}
 			pressforward()->pf_feed_items->assemble_feed_for_pull();

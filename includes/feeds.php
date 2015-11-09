@@ -55,6 +55,7 @@ class PF_Feeds_Schema {
 			add_filter( 'page_row_actions', array($this, 'url_feed_row_action'), 10, 2 );
 			add_filter( 'page_row_actions', array($this, 'refresh_feed_row_action'), 10, 2 );
 			add_action( 'post_submitbox_misc_actions', array( $this, 'feed_submitbox_pf_actions' ) );
+			add_filter( 'post_updated_messages', array( $this, 'feed_save_message' ) );
 		}
 
 		add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
@@ -644,7 +645,6 @@ class PF_Feeds_Schema {
 				$r['ID'] = $post_obj->ID;
 			}
 			$wp_args['ID'] = $r['ID'];
-			$wp_args = array_merge( $r, $wp_args );
 			wp_update_post( $wp_args );
 			$post_id = $r['ID'];
 		}
@@ -813,7 +813,6 @@ class PF_Feeds_Schema {
 
 	# A function to pull feeds from the database.
 	public function get( $args = array() ) {
-		pf_log('Invoked.');
 		if ( ! post_type_exists( 'pf_feed' ) ) { $this->register_feed_post_type(); }
 
         $post_status = array('publish');
@@ -853,8 +852,7 @@ class PF_Feeds_Schema {
 
 		// Other WP_Query args pass through
 		$wp_args = wp_parse_args( $args, $defaults );
-		pf_log('Get posts with arguments ');
-		pf_log($wp_args);
+
 		$posts = get_posts( $wp_args );
 
 		foreach ( $query_filters as $hook => $filters ) {
@@ -982,30 +980,19 @@ class PF_Feeds_Schema {
 		}
 		if ('rss-quick' == $r['type']){
 			pf_log('Updating a rss-quick');
-			$check_exists = wp_get_http_headers($feedURL);
-			if( !$check_exists ) {
-				pf_log('Cannot get feed headers.');
-		  } else if ( !array_key_exists('content-length', $check_exists) || ( 41943000 > $check_exists['content-length'] ) ) {
-				pf_log('Cannot find the length of the feed. It is unsafe to continue with that feed.');
+			$theFeed = fetch_feed($feedURL);
+			if (is_wp_error($theFeed)){
+				return new WP_Error('badfeed', __('The feed fails verification.'));
 			} else {
-				if ( false !== $check_exists ){
-					$theFeed = fetch_feed($feedURL);
-					if (is_wp_error($theFeed)){
-						return new WP_Error('badfeed', __('The feed fails verification.'));
-					} else {
-						$r = self::setup_rss_meta($r, $theFeed);
-					}
+				$r = self::setup_rss_meta($r, $theFeed);
+			}
 
-					$type_updated = self::set_pf_feed_type($r['ID'], 'rss');
-					if ($type_updated){
-						$r['type'] = 'rss';
-					}
-				}
+			$type_updated = self::set_pf_feed_type($r['ID'], 'rss');
+			if ($type_updated){
+				$r['type'] = 'rss';
 			}
 		}
-		pf_log($r);
-		$r_old = get_post($r['ID'], ARRAY_A);
-		$r = array_merge($r_old, $r);
+
 		$check = self::feed_post_setup($r, 'update');
 		return $check;
 
@@ -1051,8 +1038,7 @@ class PF_Feeds_Schema {
 		#var_dump($args);
 		#echo '</pre>';
 		foreach ($args as $k=>$a){
-			pf_log('Setting ' . $post_id . ' Feed Meta: ' . $k . ' - ');
-			pf_log($a);
+			pf_log('Setting ' . $post_id . ' Feed Meta: ' . $k . ' - ' . $a);
 			if(!$a){
 
 			} else {
@@ -1116,5 +1102,49 @@ class PF_Feeds_Schema {
 
 		wp_enqueue_script( 'feed_edit_manip', PF_URL . '/assets/js/subscribed-feeds-actions.js', array('jquery'), PF_VERSION );
 	}
+
+	function feed_save_message($messages){
+		//add_filter( 'post_updated_messages', array( $this, 'feed_save_message' ) );
+
+		$post             = get_post();
+		$post_type        = get_post_type( $post );
+		$post_type_object = get_post_type_object( $post_type );
+
+		$messages[$this->post_type] = array(
+			0  => '', // Unused. Messages start at index 1.
+			1  => __( 'Feed updated.', 'pf' ),
+			2  => __( 'Custom field updated.', 'pf' ),
+			3  => __( 'Custom field deleted.', 'pf' ),
+			4  => __( 'Feed updated.', 'pf' ),
+			/* translators: %s: date and time of the revision */
+			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Feed restored to revision from %s', 'pf' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6  => __( 'The feed was made successfully active.', 'pf' ),
+			7  => __( 'The feed was saved successfully.', 'pf' ),
+			8  => __( 'Feed submitted.', 'pf' ),
+			9  => sprintf(
+				__( 'Feed scheduled for: <strong>%1$s</strong>.', 'pf' ),
+				// translators: Publish box date format, see http://php.net/date
+				date_i18n( __( 'M j, Y @ G:i', 'pf' ), strtotime( $post->post_date ) )
+			),
+			10 => __( 'Feed draft updated.', 'pf' )
+		);
+
+		if ( $post_type_object->publicly_queryable ) {
+			$permalink = get_permalink( $post->ID );
+
+			$view_link = ' ';
+			$messages[ $post_type ][1] .= $view_link;
+			$messages[ $post_type ][6] .= $view_link;
+			$messages[ $post_type ][9] .= $view_link;
+
+			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
+			$preview_link = ' ';
+			$messages[ $post_type ][8]  .= $preview_link;
+			$messages[ $post_type ][10] .= $preview_link;
+		}
+
+		return $messages;
+	}
+
 
 }

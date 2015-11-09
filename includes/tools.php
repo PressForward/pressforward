@@ -39,6 +39,10 @@ class PF_Tools {
 										'title' => __('Debug and Refresh', 'pf'),
 										'cap'  => pf_get_defining_capability_by_role('administrator')
 									);
+		$permitted_tabs['retrieval-status'] = array(
+										'title' => __('Retrieval Status', 'pf'),
+										'cap'  => pf_get_defining_capability_by_role('contributor')
+									);
 		return $permitted_tabs;
 	}
 
