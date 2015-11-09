@@ -44,6 +44,8 @@ class PF_Admin {
 		add_action( 'wp_ajax_pf_ajax_get_comments', array( $this, 'pf_ajax_get_comments') );
 		add_action( 'wp_ajax_pf_ajax_thing_deleter', array( $this, 'pf_ajax_thing_deleter') );
 		add_action( 'wp_ajax_pf_ajax_retain_display_setting', array( $this, 'pf_ajax_retain_display_setting' ) );
+		add_action( 'wp_ajax_pf_ajax_move_to_archive', array( $this, 'pf_ajax_move_to_archive' ) );
+		add_action( 'wp_ajax_pf_ajax_move_out_of_archive', array( $this, 'pf_ajax_move_out_of_archive' ) );
 		add_action( 'wp_ajax_pf_ajax_user_setting', array( $this, 'pf_ajax_user_setting' ));
 		add_action( 'init', array( $this, 'register_feed_item_removed_status') );
 
@@ -467,7 +469,7 @@ class PF_Admin {
 
 						echo '<a class="'.$nom_count_classes.'" data-toggle="tooltip" title="' . __('Nomination Count', 'pf') .  '" form="' . $metadata['nom_id'] . '">'.$metadata['nom_count'].'<i class="icon-play"></i></button></a>';
 						$archive_status = '';
-						if ( 1 == pf_get_relationship_value( 'archive', $metadata['nom_id'], $user_id ) ){
+						if ( 1 == get_post_meta( $metadata['nom_id'], 'pf_archive', true ) ){
 							$archive_status = 'btn-warning';
 						}
 						echo '<a class="btn btn-small nom-to-archive schema-switchable schema-actor '.$archive_status.'" pf-schema="archive" pf-schema-class="archived" pf-schema-class="btn-warning" data-toggle="tooltip" title="' . __('Archive', 'pf') .  '" form="' . $metadata['nom_id'] . '"><img src="' . PF_URL . 'assets/images/archive.png" /></button></a>';
@@ -610,7 +612,7 @@ class PF_Admin {
 
 				if ($format === 'nomination'){
 					$feed_item_id = $metadata['item_id'];
-					$id_for_comments = $metadata['item_feed_post_id'];
+					$id_for_comments = $metadata['item_feed_post_id']; //orig item post ID
 
 					$id_for_comments = $metadata['item_feed_post_id'];
 					$readStat = pf_get_relationship_value( 'read', $metadata['nom_id'], wp_get_current_user()->ID );
@@ -621,19 +623,20 @@ class PF_Admin {
 
 				} else {
 					$feed_item_id = $item['item_id'];
-					$id_for_comments = $item['post_id'];
+					$id_for_comments = $item['post_id']; //orig item post ID
 				}
-				$archive_status = pf_get_relationship_value( 'archive', $id_for_comments, wp_get_current_user()->ID );
+				#$archive_status = pf_get_relationship_value( 'archive', $id_for_comments, wp_get_current_user()->ID );
+				$archive_status = get_post_meta($id_for_comments, 'pf_archive', true);
 				if (isset($_GET['pf-see'])){ } else { $_GET['pf-see'] = false; }
 				if ($archive_status == 1 && ('archive-only' != $_GET['pf-see'])){
 					$archived_status_string = 'archived';
 					$dependent_style = 'display:none;';
-				} elseif ( ($format === 'nomination') && (1 == pf_get_relationship_value( 'archive', $metadata['nom_id'], $user_id))  && ('archive-only' != $_GET['pf-see'])) {
+				} elseif ( ($format === 'nomination') && (1 == get_post_meta($metadata['nom_id'], 'pf_archive', true))  && ('archive-only' != $_GET['pf-see'])) {
 					$archived_status_string = 'archived';
 					$dependent_style = 'display:none;';
 				} else {
 					$dependent_style = '';
-					$archived_status_string = '';
+					$archived_status_string = 'not-archived';
 				}
 		if ($format === 'nomination'){
 			#$item = array_merge($metadata, $item);
@@ -644,7 +647,7 @@ class PF_Admin {
 			$id_for_comments = $item['post_id'];
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
-			echo '<article class="feed-item entry ' . pf_slugger(get_the_source_title($id_for_comments), true, false, true) . ' ' . $itemTagClassesString . ' '.$readClass.'" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '" pf-item-post-id="' . $id_for_comments . '" >';
+			echo '<article class="feed-item entry ' . pf_slugger(get_the_source_title($id_for_comments), true, false, true) . ' ' . $itemTagClassesString . ' '.$readClass.'" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '" pf-item-post-id="' . $id_for_comments . '" style="' . $dependent_style . '" >';
 			?> <a style="display:none;" name="modal-<?php echo $item['item_id']; ?>"></a> <?php
 		}
 
@@ -660,7 +663,7 @@ class PF_Admin {
 				}
 			}
 		if ($format != 'nomination'){
-				$archiveStat = pf_get_relationship_value( 'archive', $id_for_comments, $user_id );
+				$archiveStat =  pf_get_relationship_value( 'archive', $id_for_comments, $user_id );
 				$extra_classes = '';
 				if ($archiveStat){ $extra_classes .= ' schema-active relationship-button-active'; }
 				echo '<i class="icon-eye-close hide-item pf-item-archive schema-archive schema-switchable schema-actor'.$extra_classes.'" pf-schema-class="relationship-button-active" pf-item-post-id="' . $id_for_comments .'" title="Hide" pf-schema="archive"></i>';
@@ -1549,6 +1552,35 @@ class PF_Admin {
 		$q = WP_Query($args);
 		return $q;
 
+	}
+
+
+	public function pf_ajax_move_to_archive(){
+		$item_post_id = $_POST['item_post_id'];
+		$nom_id = $_POST['nom_id'];
+		update_post_meta($nom_id, 'pf_archive', 1);
+		update_post_meta($item_post_id, 'pf_archive', 1);
+		$check = wp_update_post( array(
+					'ID'			=>	$item_post_id,
+					'post_status'	=>	'removed_feed_item'
+				)
+			);
+		pf_log($check);
+		die();
+	}
+
+	public function pf_ajax_move_out_of_archive(){
+		$item_post_id = $_POST['item_post_id'];
+		$nom_id = $_POST['nom_id'];
+		update_post_meta($nom_id, 'pf_archive', 'false');
+		update_post_meta($item_post_id, 'pf_archive', 'false');
+		$check = wp_update_post( array(
+					'ID'			=>	$item_post_id,
+					'post_status'	=>	'publish'
+				)
+			);
+		pf_log($check);
+		die();
 	}
 
     public function dead_post_status(){

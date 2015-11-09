@@ -473,6 +473,9 @@ class PF_Feed_Item {
 			$post_args['s'] = '"' . $r['search_terms'] . '"';
 		}
 
+		$post_args['post_status'] = 'publish';
+		//die();
+
 		if (isset($_GET['feed'])) {
 			$post_args['post_parent'] = $_GET['feed'];
 		} elseif (isset($_GET['folder'])){

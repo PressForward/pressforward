@@ -533,6 +533,7 @@ function pf_archive_nominations($limit = false){
 				#$feed_post_id = get_post_meta($post_id, 'item_feed_post_id', true);
 				#pf_set_relationship( 'archive', $feed_post_id, $user_id, '1' );
 				pf_set_relationship( 'archive', $post_id, $user_id, '1' );
+				update_post_meta( $post_id, 'pf_archive', 1 );
 			endwhile;
 
 
