@@ -94,6 +94,8 @@ jQuery(window).load(function() {
 //	var errorThrown		= 'Broken';
 	var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());
 	jQuery('.loading-'+itemID).show();
+	jQuery(this).addClass('btn-warning');
+	jQuery('#'+itemID).addClass('archive');
 	jQuery.post(ajaxurl, {
 			action: 'pf_ajax_move_to_archive',
 			item_post_id: postID,
@@ -130,6 +132,8 @@ jQuery(window).load(function() {
 //	var errorThrown		= 'Broken';
 	var theNonce		= jQuery.trim(jQuery('#pf_nomination_nonce').val());
 	jQuery('.loading-'+itemID).show();
+	jQuery('#'+itemID).removeClass('archived');
+	jQuery(this).removeClass('btn-warning');
 	jQuery.post(ajaxurl, {
 			action: 'pf_ajax_move_out_of_archive',
 			item_post_id: postID,
