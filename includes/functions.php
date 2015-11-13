@@ -1502,16 +1502,9 @@ function prep_archives_query($q){
 				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 				AND {$wpdb->posts}.post_type = %s
 				AND {$wpdb->posts}.post_status = 'draft'
-				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
+				AND {$wpdb->postmeta}.meta_key = 'pf_archive'
 				AND {$wpdb->postmeta}.meta_value > 0
 				AND {$wpdb->posts}.ID
-				IN (
-					SELECT item_id
-					FROM {$rt}
-					WHERE {$rt}.user_id = {$user_id}
-					AND {$rt}.relationship_type = {$read_id}
-					AND {$rt}.value = 1
-				)
 				GROUP BY {$wpdb->posts}.ID
 				ORDER BY {$wpdb->postmeta}.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$offset}
