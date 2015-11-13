@@ -111,7 +111,7 @@ jQuery(window).load(function() {
 		});
 	  });
 
-	jQuery('.pf_container').on('click', ".archived .nom-to-archive", function (evt){
+	jQuery('.pf_container').on('click', ".nom-to-archive.btn-warning", function (evt){
 		evt.preventDefault();
 		console.log('Move out of archive.');
 		var element		= jQuery(this);
