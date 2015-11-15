@@ -81,6 +81,31 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+= 3.7 =
+* Administrators and Contributors can now submit a feed through the Nominate This bookmarklet.  Feeds are drafted and appear in yellow as “Under Review” in subscribed feeds.
+* Created a template tag that can be added to a theme’s post template to reveal any internal PressForward comments on an item.
+* Added a “Filter by Drafted” option to both All Content and Nominated.
+* Added the ability to filter by unread items in All Content.
+* Individual feeds can now be manually refreshed in Subscribed Feeds. 
+* The Site Redirect preference can now be overridden on a post by post basis in the Edit Post page.
+* Created a “Clean Up” button to trigger the deletion process of old feed items.
+* Leveraging the Heartbeat API, a new Feed retrieval progress bar appears in the Tools menu and indicates where PressForward is in the feed retrieval process.
+* New column in Subscribed Feeds displays the total number of items retrieved from each feed.
+* The feed url is now displayed in the Subscribed Feeds list.
+* Alerted feeds now display the error message beneath the feed title in Subscribed Feeds.
+* A count of alerted feeds now displays next to the Subscribed Feeds menu item. 
+* Alerted and pending feeds are now colored either red (alerted) or yellow (under review) in Subscribed feeds rather than appearing hidden. 
+* Added an option to set Press Forward’s feed reader to ignore all alerts and never make the feed inactive. 
+* Added an “Edit feed” link to the success and failure messages in Add Feeds.
+* Adjusted transient feed ids to prevent problems with adding, removing, and readding OPML files.
+* The archive action in Nominated is now a site wide action while the hide action in All Content is user specific. 
+* Archived items can now be unarchived. 
+* Fixed bug where the Refresh button wasn’t showing responses outside of Debug mode.
+* Fixed a bug that caused the info box to remain open once the user has clicked out.
+* Fixed a bug where the scroll location would reset when opening the comments dialog box.
+* Fixed bug where the source link was sporadically generated for posts nominated or drafted using Nominate This!
+* Nominate This now generates an error message rather than failing when no HTML is found.
+* Fixed a bug where Send to Draft wasn’t working on some items.
 = 3.6 =
 * Added the ability to subscribe to an OPML file.
 * OPML subscription imports any folders included in the OPML file.
