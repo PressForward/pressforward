@@ -316,10 +316,23 @@ function PFBootstrapInits() {
 
 	jQuery(".modal.pfmodal").on('hide', function(evt){
 		jQuery(".itemInfobutton").popover('hide');
-	})
+	});
 	jQuery(".modal.pfmodal").on('show', function(evt){
 		jQuery(".itemInfobutton").popover('hide');
-	})
+	});
+
+	jQuery('.info-box-popover').on('click', function(e) {
+    e.stopPropagation();
+	});
+
+	jQuery('.itemInfobutton').on('click', function(e) {
+    e.stopPropagation();
+	});
+
+	jQuery(document).on('click', function (e) {
+	 	// Do whatever you want; the event that'd fire if the "special" element has been clicked on has been cancelled.
+		jQuery(".itemInfobutton").popover('hide');
+	});
 
 	attach_menu_on_scroll_past();
 	assure_closed_menus();
@@ -663,6 +676,14 @@ jQuery(window).load(function() {
 	jQuery('.pf_container').on('click', '#showMyHidden', function(evt){
 		evt.preventDefault();
 		window.open("?page=pf-menu&reveal=no_hidden", "_self")
+	});
+	jQuery('.pf_container').on('click', '#showUnread', function(evt){
+		evt.preventDefault();
+		window.open("?page=pf-menu&reveal=unread", "_self")
+	});
+	jQuery('.pf_container.pf-all-content').on('click', '#showDrafted', function(evt){
+		evt.preventDefault();
+		window.open("?page=pf-menu&reveal=drafted", "_self")
 	});
 	jQuery('.pf_container').on('click', '#showMyStarred', function(evt){
 		evt.preventDefault();

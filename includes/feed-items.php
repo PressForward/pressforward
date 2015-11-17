@@ -419,6 +419,16 @@ class PF_Feed_Item {
 					$rel_items = pf_get_relationships_for_user( 'archive', get_current_user_id() );
 					break;
 
+				case 'unread' :
+					$rel_not_items = pf_get_relationships_for_user( 'read', get_current_user_id() );
+					break;
+
+				case 'drafted' :
+					$drafted_items = pf_get_drafted_items();
+					if ( empty( $drafted_items ) ) {
+						$drafted_items = array( 0 );
+					}
+					break;
 			}
 
 			if ( ! empty( $rel_items ) ) {
@@ -430,6 +440,23 @@ class PF_Feed_Item {
 				}
 			}
 
+			if ( ! empty( $rel_not_items ) ) {
+				$posts_not_in = wp_list_pluck( $rel_not_items, 'item_id' );
+				if ( ! empty( $post_args['post__not_in'] ) ){
+					$post_args['post__not_in'] = array_merge($post_args['post__not_in'], $posts_not_in);
+				} else {
+					$post_args['post__not_in'] = $posts_not_in;
+				}
+			}
+
+			if ( isset( $drafted_items ) ) {
+				// Intersect to match only those items that have drafts.
+				if ( ! empty( $post_args['post__in'] ) && array( 0 ) != $drafted_items ) {
+					$post_args['post__in'] = array_intersect( $post_args['post__in'], $drafted_items );
+				} else {
+					$post_args['post__in'] = $drafted_items;
+				}
+			}
 		}
 
 		if ( ! empty( $r['exclude_archived'] ) ) {
@@ -445,6 +472,9 @@ class PF_Feed_Item {
 			 */
 			$post_args['s'] = '"' . $r['search_terms'] . '"';
 		}
+
+		$post_args['post_status'] = 'publish';
+		//die();
 
 		if (isset($_GET['feed'])) {
 			$post_args['post_parent'] = $_GET['feed'];
@@ -532,16 +562,17 @@ class PF_Feed_Item {
 
 	# The function we add to the action to clean our database.
 	public static function disassemble_feed_items() {
+		pf_log('Disassemble Feed Items Activated');
 		//delete rss feed items with a date past a certain point.
 		add_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older') );
 		$queryForDel = new WP_Query(
 								array(
 										'post_type' => pf_feed_item_post_type(),
-										'posts_per_page' => '2500'
+										'posts_per_page' => '150'
 									)
 							);
 		remove_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older') );
-		pf_log('Disassemble Feed Items Activated');
+		#pf_log( $queryForDel );
 		// The Loop
 		while ( $queryForDel->have_posts() ) : $queryForDel->the_post();
 			# All the posts in this loop are older than 60 days from 'now'.
@@ -555,6 +586,14 @@ class PF_Feed_Item {
 		// Reset Post Data
 		wp_reset_postdata();
 
+	}
+
+	public static function ajax_feed_items_disassembler(){
+		pressforward()->pf_feed_items->disassemble_feed_items();
+		$message = array(
+			'action_taken'	=>	'Feed items being removed'
+		);
+		wp_send_json($message);
 	}
 
 	# Method to manually delete rssarchival entries on user action.

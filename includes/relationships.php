@@ -452,13 +452,13 @@ function pf_archive_nominations($limit = false){
 		$args = array(
 			'post_type'		=>	'nomination',
 			'posts_per_page' => -1
-			
-		);		
-		
+
+		);
+
 		//$archiveQuery = new WP_Query( $args );
 		if (isset( $_POST['date_limit'] )){
 			$date_limit = $_POST['date_limit'];
-			
+
 			switch ($date_limit){
 				case '1week':
 					$before = '1 week ago';
@@ -472,14 +472,14 @@ function pf_archive_nominations($limit = false){
 				case '1year':
 					$before = array('year'	=> date('Y')-1);
 					break;
-				
+
 			}
 			$args['date_query']	= array(
 									'before' => $before
 								);
 		} elseif (false != $limit) {
 				$date_limit = $limit;
-			
+
 			switch ($date_limit){
 				case '1week':
 					$before = array('week' => date('W')-1);
@@ -493,15 +493,15 @@ function pf_archive_nominations($limit = false){
 				case '1year':
 					$before = array('year'	=> date('Y')-1);
 					break;
-				
+
 			}
 			$args['date_query']	= array(
 									'before' => $before
-								);		
+								);
 		}
-		
 
-		
+
+
 		$q = new WP_Query($args);
 		#echo '<pre>';
 		#var_dump($q);# die();
@@ -521,7 +521,7 @@ function pf_archive_nominations($limit = false){
 		if ($q->have_posts()):
 
 			while ($q->have_posts()) : $q->the_post();
-				
+
 				# This takes the $post objects and translates them into something I can do the standard WP functions on.
 				#setup_postdata($post);
 				$post_id = get_the_ID();
@@ -530,14 +530,15 @@ function pf_archive_nominations($limit = false){
 				//Switch the delete on to wipe rss archive posts from the database for testing.
 				$userObj = wp_get_current_user();
 				$user_id = $userObj->ID;
-				$feed_post_id = get_post_meta($post_id, 'item_feed_post_id', true);
-				pf_set_relationship( 'archive', $feed_post_id, $user_id, '1' );
+				#$feed_post_id = get_post_meta($post_id, 'item_feed_post_id', true);
+				#pf_set_relationship( 'archive', $feed_post_id, $user_id, '1' );
 				pf_set_relationship( 'archive', $post_id, $user_id, '1' );
+				update_post_meta( $post_id, 'pf_archive', 1 );
 			endwhile;
 
-		
+
 		endif;
-		
+
 		wp_reset_postdata();
 		#var_dump('IDs: ');
 		#var_dump($id_list); die();
@@ -558,6 +559,6 @@ function pf_archive_nominations($limit = false){
 		$xmlResponse = new WP_Ajax_Response($response);
 		$xmlResponse->send();
 		ob_end_flush();
-		die();		
-		#print_r(__('All archives deleted.', 'pf'));	
+		die();
+		#print_r(__('All archives deleted.', 'pf'));
 }

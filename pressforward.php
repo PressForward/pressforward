@@ -50,6 +50,7 @@ class PressForward {
 	var $og_reader;
 	var $readability;
 	var $relationships;
+	var $subscribed_feeds;
 
 	public static function init() {
 		static $instance;
@@ -89,6 +90,7 @@ class PressForward {
 		$this->set_up_admin();
 		$this->set_up_tools();
 		$this->set_up_add_feeds();
+		$this->set_up_subscribed_feeds();
 
 		add_action( 'plugins_loaded', array( $this, 'pressforward_init' ) );
 
@@ -138,6 +140,7 @@ class PressForward {
 		require_once( PF_ROOT . '/includes/readable.php' );
 		require_once( PF_ROOT . '/includes/feed-items.php' );
 		require_once( PF_ROOT . '/includes/feeds.php' );
+		require_once( PF_ROOT . '/includes/class-PF_Subscribed_Feeds.php' );
 		require_once( PF_ROOT . '/includes/class-pf_folders.php' );
 		require_once( PF_ROOT . '/includes/slurp.php' );
 		require_once( PF_ROOT . '/includes/relationships.php' );
@@ -224,7 +227,7 @@ class PressForward {
 	 */
 	function set_up_feeds() {
 		if ( empty( $this->pf_feeds ) ) {
-			$this->pf_feeds = new PF_Feeds_Schema;
+			$this->pf_feeds = PF_Feeds_Schema::init();
 		}
 	}
 
@@ -257,7 +260,7 @@ class PressForward {
 	 */
 	function set_up_folders() {
 		if ( empty( $this->pf_folders ) ) {
-			$this->pf_folders = new PF_Folders;
+			$this->pf_folders = PF_Folders::init();
 		}
 	}
 
@@ -286,7 +289,7 @@ class PressForward {
 	/**
 	 * Sets up the Tools admin
 	 *
-	 * @since 1.7
+	 * @since 3.5
 	 */
 	function set_up_tools() {
 		if ( empty( $this->tools ) ) {
@@ -297,11 +300,22 @@ class PressForward {
 	/**
 	 * Sets up the Tools admin
 	 *
-	 * @since 1.7
+	 * @since 3.6
 	 */
 	function set_up_add_feeds() {
 		if ( empty( $this->add_feeds ) ) {
 			$this->add_feeds = PF_Add_Feeds::init();
+		}
+	}
+
+	/**
+	 * Sets up the Subscribed Feeds admin
+	 *
+	 * @since 3.7
+	 */
+	function set_up_subscribed_feeds() {
+		if ( empty( $this->subscribed_feeds ) ) {
+			$this->subscribed_feeds = PF_Subscribed_Feeds::init();
 		}
 	}
 

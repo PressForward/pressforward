@@ -101,7 +101,7 @@ function pf_shortcut_link() {
 				l=d.location,
 				e=encodeURIComponent,
 				u=f+'?u='+e(l.href)+'&t='+e(d.title)+'&s='+e(s)+'&v=4';
-				a=function(){if(!w.open(u,'t','toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=570'))l.href=u;};
+				a=function(){if(!w.open(u,'t','toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=620'))l.href=u;};
 				if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0); else a();
 				void(0)";
 
@@ -694,7 +694,12 @@ add_filter('wpseo_opengraph_url', 'pf_filter_canonical');
  * @since 3.x
  */
 function pf_forward_unto_source(){
-	if($link = pf_canonical_url()){
+	$link = pf_canonical_url();
+	if(!empty($link)){
+
+		$obj = get_queried_object();
+		$post_id = $obj->ID;
+
 		if (has_action('wpseo_head')){
 
 		} else {
@@ -702,7 +707,9 @@ function pf_forward_unto_source(){
 			echo '<meta property="og:url" content="'.$link.'" />';
 		}
 		$wait = get_option('pf_link_to_source', 0);
-		if ($wait > 0){
+		$post_check = pf_get_post_meta($post_id, 'pf_forward_to_origin', true);
+		//var_dump($post_check); die();
+		if ( ( $wait > 0 ) && ( "no-forward" !== $post_check ) ){
 			echo '<META HTTP-EQUIV="refresh" CONTENT="'.$wait.';URL='.$link.'">';
 		}
 	}
@@ -797,7 +804,7 @@ function pf_transition_terms($idA, $idB){
 			if ( pressforward()->pf_feeds->tag_taxonomy == $term->taxonomy ){
 				$check = pf_cascade_tagging($idB, $term->slug, 'slug');
 				if (!$check){
-					pf_build_and_assign_new_tag($idB, $$term->name);
+					pf_build_and_assign_new_tag($idB, $term->name);
 				}
 			}
 		}
@@ -843,9 +850,12 @@ function pf_build_and_assign_new_tag($idB, $full_tag_name){
 						'slug'			=>	pf_slugger($full_tag_name)
 					);
 	$r = wp_insert_term($full_tag_name, 'post_tag', $term_args);
-	pf_log('Making a new post_tag, ID:'.$r['term_id']);
-	if ( !empty($r['term_id']) && !is_wp_error( $r ) ){
+	if ( !is_wp_error( $r ) && !empty($r['term_id']) ){
+		pf_log('Making a new post_tag, ID:'.$r['term_id']);
 		wp_set_object_terms( $idB, $r['term_id'], 'post_tag', true );
+	} else {
+		pf_log('Failed making a new post_tag');
+		pf_log($r);
 	}
 }
 
@@ -1279,6 +1289,9 @@ function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
 function pf_get_author_from_url($url){
 	$response = pf_file_get_html( $url );
 	$possibles = array();
+	if (empty($response)){
+		return false;
+	}
 	$possibles[] = $response->find('meta[name=author]', 0);
 	$possibles[] = $response->find('meta[name=Author]', 0);
 	$possibles[] = $response->find('meta[property=author]', 0);
@@ -1372,6 +1385,47 @@ function pf_is_drafted($item_id){
 	}
 }
 
+/**
+ * Get a list of all drafted items.
+ *
+ * @return array
+ */
+function pf_get_drafted_items( $post_type = 'pf_feed_item' ) {
+	$drafts = get_posts( array(
+		'no_found_rows' => true,
+		'post_type' => get_option( PF_SLUG . '_draft_post_type', 'post' ),
+		'post_status' => 'any',
+		'meta_query' => array(
+			array(
+				'key' => 'item_id',
+			),
+		),
+		'update_post_meta_cache' => true,
+		'update_post_term_cache' => false,
+	) );
+
+	$item_hashes = array();
+	foreach ( $drafts as $p ) {
+		$item_hashes[] = get_post_meta( $p->ID, 'item_id', true );
+	}
+
+	$drafted_query = new WP_Query( array(
+		'no_found_rows' => true,
+		'post_status' => 'any',
+		'post_type' => $post_type,
+		'fields' => 'ids',
+		'meta_query' => array(
+			array(
+				'key' => 'item_id',
+				'value' => $item_hashes,
+				'compare' => 'IN',
+			),
+		),
+	) );
+
+	return array_map( 'intval', $drafted_query->posts );
+}
+
 function filter_for_pf_archives_only($sql){
 	global $wpdb;
 #	if (isset($_GET['pf-see']) && ('archive-only' == $_GET['pf-see'])){
@@ -1393,6 +1447,38 @@ function filter_for_pf_archives_only($sql){
 	return $sql;
 
 }
+
+/**
+ * Filter the Nominated query for the Drafted filter.
+ *
+ * @param WP_Query $query WP_Query object.
+ */
+function pf_filter_nominated_query_for_drafted( $query ) {
+	global $pagenow;
+
+	if ( 'admin.php' !== $pagenow
+		|| empty( $_GET['page'] )
+		|| 'pf-review' !== $_GET['page']
+		|| empty( $_GET['pf-see'] )
+		|| 'drafted-only' !== $_GET['pf-see']
+	) {
+		return;
+	}
+
+	if ( 'nomination' !== $query->get( 'post_type' ) ) {
+		return;
+	}
+
+	remove_action( 'pre_get_posts', 'pf_filter_nominated_query_for_drafted' );
+	$drafted = pf_get_drafted_items( 'nomination' );
+	add_action( 'pre_get_posts', 'pf_filter_nominated_query_for_drafted' );
+
+	if ( ! $drafted ) {
+		$drafted = array( 0 );
+	}
+	$query->set( 'post__in', $drafted );
+}
+add_action( 'pre_get_posts', 'pf_filter_nominated_query_for_drafted' );
 
 function prep_archives_query($q){
 		global $wpdb;
@@ -1416,10 +1502,30 @@ function prep_archives_query($q){
 				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 				AND {$wpdb->posts}.post_type = %s
 				AND {$wpdb->posts}.post_status = 'draft'
+				AND {$wpdb->postmeta}.meta_key = 'pf_archive'
+				AND {$wpdb->postmeta}.meta_value > 0
+				AND {$wpdb->posts}.ID
+				GROUP BY {$wpdb->posts}.ID
+				ORDER BY {$wpdb->postmeta}.meta_value DESC
+				LIMIT {$pagefull} OFFSET {$offset}
+			 ", 'nomination');
+		} elseif (isset($_GET['pf-see']) && ('unread-only' == $_GET['pf-see'])){
+			$pagefull = 20;
+			$relate = new PF_RSS_Import_Relationship();
+			$rt = $relate->table_name;
+			$user_id = get_current_user_id();
+			$read_id = pf_get_relationship_type_id('read');
+			#var_dump($read_id); die();
+			$q = $wpdb->prepare("
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+				AND {$wpdb->posts}.post_type = %s
+				AND {$wpdb->posts}.post_status = 'draft'
 				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
 				AND {$wpdb->postmeta}.meta_value > 0
 				AND {$wpdb->posts}.ID
-				IN (
+				NOT IN (
 					SELECT item_id
 					FROM {$rt}
 					WHERE {$rt}.user_id = {$user_id}
@@ -1774,6 +1880,27 @@ function pf_function_auto_logger($caller){
 	return $func_statement;
 }
 
+function assure_log_string( $message ){
+	if ( is_array( $message ) || is_object( $message ) ) {
+		$message = print_r( $message, true );
+	}
+
+	// Make sure we've got a string to log
+	if ( is_wp_error( $message ) ) {
+		$message = $message->get_error_message();
+	}
+
+	if ( $message === true ) {
+		$message = 'True';
+	}
+
+	if ( $message === false ) {
+		$message = 'False';
+	}
+
+	return $message;
+}
+
 
 /**
  * Send status messages to a custom log
@@ -1791,8 +1918,12 @@ function pf_function_auto_logger($caller){
  *
  * @param string $message The message to log
  */
-function pf_log( $message = '', $display = false, $reset = false ) {
+function pf_log( $message = '', $display = false, $reset = false, $return = false ) {
 	static $debug;
+
+	if ( $return && ( 0 === $debug ) ){
+		return assure_log_string($message);
+	}
 
 	if ( 0 === $debug ) {
 		return;
@@ -1803,7 +1934,7 @@ function pf_log( $message = '', $display = false, $reset = false ) {
 		return;
 	}
 
-	if ( ( true === $display ) ) {
+	if ( ( ( true === $display ) ) ) {
 		print_r($message);
 	}
 
@@ -1837,22 +1968,7 @@ function pf_log( $message = '', $display = false, $reset = false ) {
 		}
 	}
 
-	// Make sure we've got a string to log
-	if ( is_wp_error( $message ) ) {
-		$message = $message->get_error_message();
-	}
-
-	if ( is_array( $message ) ) {
-		$message = print_r( $message, true );
-	}
-
-	if ( $message === true ) {
-		$message = 'True';
-	}
-
-	if ( $message === false ) {
-		$message = 'False';
-	}
+	$message = assure_log_string($message);
 
 	$trace=debug_backtrace();
 	foreach ($trace as $key=>$call) {
@@ -1885,4 +2001,13 @@ function pf_log( $message = '', $display = false, $reset = false ) {
 	}
 
 	error_log( '[' . gmdate( 'd-M-Y H:i:s' ) . '] ' . $func_statement . $message . "\n", 3, $log_path );
+
+	if ($return){
+		return $message;
+	}
+}
+
+function pf_message( $message = '', $display = false, $reset = false ){
+	$returned_message = pf_log( $message, false, $reset, true );
+	return $returned_message;
 }

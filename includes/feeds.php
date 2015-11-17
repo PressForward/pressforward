@@ -23,7 +23,7 @@ class PF_Feeds_Schema {
 	#var $post_type;
 	#var $tag_taxonomy;
 
-	public function init() {
+	public static function init() {
 		static $instance;
 
 		if ( empty( $instance ) ) {
@@ -33,7 +33,7 @@ class PF_Feeds_Schema {
 		return $instance;
 	}
 
-	public function __construct() {
+	private function __construct() {
 		$this->post_type = 'pf_feed';
 		$this->tag_taxonomy = 'pf_feed_category';
 
@@ -45,13 +45,21 @@ class PF_Feeds_Schema {
 		add_filter( 'views_edit-'.$this->post_type, array($this, 'modify_post_views') );
 		add_filter( 'status_edit_pre', array($this, 'modify_post_edit_status') );
 
+		add_action( 'save_post', array( $this, 'save_submitbox_pf_actions' ) );
+		add_action( 'pf_feed_post_type_registered', array($this, 'under_review_post_status') );
+
 		if (is_admin()){
 			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_edit_feed_scripts' ) );
+			add_filter( 'page_row_actions', array($this, 'url_feed_row_action'), 10, 2 );
+			add_filter( 'page_row_actions', array($this, 'refresh_feed_row_action'), 10, 2 );
+			add_action( 'post_submitbox_misc_actions', array( $this, 'feed_submitbox_pf_actions' ) );
+			add_filter( 'post_updated_messages', array( $this, 'feed_save_message' ) );
 		}
 
 		add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
+		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
 	}
 
 	/**
@@ -89,9 +97,139 @@ class PF_Feeds_Schema {
 
 	}
 
+	function under_review_post_status(){
+		register_post_status( 'under_review', array(
+			'label'                     => _x( 'Under Review', 'pf' ),
+			'public'                    => true,
+			'exclude_from_search'       => false,
+			'show_in_admin_all_list'    => true,
+			'show_in_admin_status_list' => true,
+			'label_count'               => _n_noop( 'Under Review <span class="count">(%s)</span>', 'Under Review <span class="count">(%s)</span>' ),
+		) );
+	}
+
+	function feed_submitbox_pf_actions()
+	{
+		global $post;
+		if ( $post->post_type != $this->post_type ) {
+				return;
+		}
+	    $value = get_post_meta($post->ID, 'pf_no_feed_alert', true);
+	    if ('' === $value){
+	    	//If the user does not want to forward all things this setting is 0,
+	    	//which evaluates to empty.
+	    	$value = 0;
+	    }
+	    echo '<div class="misc-pub-section misc-pub-section-last">
+	         <span id="pf_no_feed_alert_single">'
+	         . '<label><input type="checkbox"' . (!empty($value) ? ' checked="checked" ' : null) . 'value="1" name="pf_no_feed_alert" /> No alerts, never let feed go inactive.</label>'
+	    .'</span></div>';
+	}
+
+	function save_submitbox_pf_actions( $post_id )
+	{
+	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ){ return false; }
+	    if ( !current_user_can( 'edit_page', $post_id ) ){ return false; }
+	    if( empty($_POST['pf_no_feed_alert']) ){
+	        pf_update_meta($post_id, 'pf_no_feed_alert', 0);
+	    } else {
+				pf_update_meta($post_id, 'pf_no_feed_alert', $_POST['pf_no_feed_alert']);
+			}
+
+		return $post_id;
+	}
+
 	public function custom_feed_column_name( $posts_columns ){
 			$posts_columns['author'] = 'Added by';
+			$posts_columns['items_retrieved'] = "Items";
+			$posts_columns['date'] = 'Date Added';
 			return $posts_columns;
+	}
+
+
+	/**
+	 * Content of the Items Retrieved column.
+	 *
+	 * We also hide the feed URL in this column, so we can reveal it on Quick Edit.
+	 *
+	 * @since 3.7.0
+	 *
+	 * @param string $column_name Column ID.
+	 * @param int $post_id ID of the post for the current row in the table.
+	 */
+	public function last_retrieved_date_column_content( $column_name, $post_id ) {
+		if ( 'items_retrieved' !== $column_name ) {
+			return;
+		}
+		$counts = $this->count_feed_items_collected($post_id);
+		echo $counts->publish;
+	}
+
+	/**
+	* Count number of published items that are children of a feed and more if
+	* user has permissions to view.
+	*
+	* This function provides an efficient method of finding the amount of feed
+	* items a feed post has as children. Another method is to count the amount
+	* of items in get_posts(), but that method has a lot of overhead with doing
+	* so. Therefore, use this function instead. Based on WP4.3 wp_count_posts.
+	*
+	* The $perm parameter checks for 'readable' value and if the user can read
+	* private posts, it will display that for the user that is signed in.
+	*
+	* @since 3.7.0
+	*
+	* @global wpdb $wpdb
+	*
+	* @param int $parent_id Parent feed post ID.
+	* @param string $perm Optional. 'readable' or empty. Default empty.
+	* @return object Number of posts for each status.
+	*/
+	public function count_feed_items_collected( $parent_id, $perm = '' ){
+		global $wpdb;
+		$type = pressforward()->get_feed_item_post_type();
+		if ( ! post_type_exists( $type ) )
+			return new stdClass;
+
+		$counts = wp_cache_get( $type.'_'.$parent_id, 'pf_counts' );
+		if ( false !== $counts ) {
+			/** This filter is documented in wp-includes/post.php */
+			return apply_filters( 'pf_count_items', $counts, $parent_id, $perm );
+		}
+
+		$query = "SELECT post_status, COUNT( * ) AS num_posts FROM {$wpdb->posts} WHERE post_type = %s AND post_parent = %d";
+		if ( 'readable' == $perm && is_user_logged_in() ) {
+			$post_type_object = get_post_type_object($type);
+			if ( ! current_user_can( $post_type_object->cap->read_private_posts ) ) {
+				$query .= $wpdb->prepare( " AND (post_status != 'private' OR ( post_author = %d AND post_status = 'private' ))",
+					get_current_user_id()
+				);
+			}
+		}
+		$query .= ' GROUP BY post_status';
+
+		$results = (array) $wpdb->get_results( $wpdb->prepare( $query, $type, $parent_id ), ARRAY_A );
+		$counts = array_fill_keys( get_post_stati(), 0 );
+
+		foreach ( $results as $row ) {
+			$counts[ $row['post_status'] ] = $row['num_posts'];
+		}
+
+		$counts = (object) $counts;
+		wp_cache_set( $type.'_'.$parent_id, $counts, 'pf_counts', 1740 );
+
+		/**
+		 * Modify returned post counts by status for the current post type.
+		 *
+		 * @since 3.7.0
+		 *
+		 * @param object $counts An object containing the current post_type's post
+		 *                       counts by status.
+		 * @param string $type   Post type.
+		 * @param string $perm   The permission to determine if the posts are 'readable'
+		 *                       by the current user.
+		 */
+		return apply_filters( 'pf_count_items', $counts, $parent_id, $perm );
 	}
 
 	public function is_feed_term($id){
@@ -102,6 +240,38 @@ class PF_Feeds_Schema {
 		} else {
 			return true;
 		}
+	}
+
+	public function url_feed_row_action( $actions, $post ) {
+	    if ( $post->post_type != $this->post_type ) {
+	        return $actions;
+			#var_dump($actions); die();
+	    }
+
+		$url = $post->guid;
+		#var_dump($actions); die();
+		if (isset($actions['edit'])){
+			$edit_actions = $actions['edit'];
+		} else {
+			$edit_actions = '';
+		}
+		$actions['edit'] = '<span class="inline pf-url" style="visibility:visible;color:grey;">'.$url.'</span><br/>';
+		$ab_msg =  get_post_meta($post->ID, 'ab_alert_msg', true);
+		if ( !empty( $ab_msg ) ){
+			$actions['edit'] .= '<span class="inline pf-alert-msg" style="">'.get_post_meta($post->ID, 'ab_alert_msg', true).'</span><br/>';
+		}
+		$actions['edit'] .= $edit_actions;
+	  return $actions;
+	}
+
+	public function refresh_feed_row_action( $actions, $post ){
+		if ( $post->post_type != $this->post_type ) {
+				return $actions;
+		#var_dump($actions); die();
+		}
+
+		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="'.$post->ID.'" title="Refresh this feed">Refresh&nbsp;Feed&nbsp;Items</a> | ';
+		return $actions;
 	}
 
 	public function get_top_feed_folders(){
@@ -433,6 +603,12 @@ class PF_Feeds_Schema {
 			$r['post_parent'] = 0;
 		}
 
+		if ( empty($r['post_status']) ){
+			pf_log('Post status will be set to published because none supplied.');
+			pf_log($r);
+			$r['post_status'] = 'publish';
+		}
+
 		$wp_args = array(
 			'post_type' 	=> $this->post_type,
 			'post_status' 	=> $r['post_status'],
@@ -641,7 +817,7 @@ class PF_Feeds_Schema {
 
         $post_status = array('publish');
         if (class_exists('The_Alert_Box')){
-            $post_status[] = the_alert_box()->status();
+            //$post_status[] = the_alert_box()->status();
         }
 
         $defaults = array(
@@ -926,5 +1102,49 @@ class PF_Feeds_Schema {
 
 		wp_enqueue_script( 'feed_edit_manip', PF_URL . '/assets/js/subscribed-feeds-actions.js', array('jquery'), PF_VERSION );
 	}
+
+	function feed_save_message($messages){
+		//add_filter( 'post_updated_messages', array( $this, 'feed_save_message' ) );
+
+		$post             = get_post();
+		$post_type        = get_post_type( $post );
+		$post_type_object = get_post_type_object( $post_type );
+
+		$messages[$this->post_type] = array(
+			0  => '', // Unused. Messages start at index 1.
+			1  => __( 'Feed updated.', 'pf' ),
+			2  => __( 'Custom field updated.', 'pf' ),
+			3  => __( 'Custom field deleted.', 'pf' ),
+			4  => __( 'Feed updated.', 'pf' ),
+			/* translators: %s: date and time of the revision */
+			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Feed restored to revision from %s', 'pf' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6  => __( 'The feed was made successfully active.', 'pf' ),
+			7  => __( 'The feed was saved successfully.', 'pf' ),
+			8  => __( 'Feed submitted.', 'pf' ),
+			9  => sprintf(
+				__( 'Feed scheduled for: <strong>%1$s</strong>.', 'pf' ),
+				// translators: Publish box date format, see http://php.net/date
+				date_i18n( __( 'M j, Y @ G:i', 'pf' ), strtotime( $post->post_date ) )
+			),
+			10 => __( 'Feed draft updated.', 'pf' )
+		);
+
+		if ( $post_type_object->publicly_queryable ) {
+			$permalink = get_permalink( $post->ID );
+
+			$view_link = ' ';
+			$messages[ $post_type ][1] .= $view_link;
+			$messages[ $post_type ][6] .= $view_link;
+			$messages[ $post_type ][9] .= $view_link;
+
+			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
+			$preview_link = ' ';
+			$messages[ $post_type ][8]  .= $preview_link;
+			$messages[ $post_type ][10] .= $preview_link;
+		}
+
+		return $messages;
+	}
+
 
 }

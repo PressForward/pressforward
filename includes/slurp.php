@@ -30,6 +30,7 @@ class PF_Feed_Retrieve {
 		if ( is_admin() ) {
 			add_action( 'wp_ajax_nopriv_feed_retrieval_reset', array( $this, 'feed_retrieval_reset' ) );
 			add_action( 'wp_ajax_feed_retrieval_reset', array( $this, 'feed_retrieval_reset' ) );
+			add_action( 'wp_ajax_ajax_update_feed_handler', array( $this, 'ajax_update_feed_handler' ) );
 			add_action( 'get_more_feeds', array( 'PF_Feed_Item', 'assemble_feed_for_pull' ) );
 		}
 	}
@@ -59,7 +60,7 @@ class PF_Feed_Retrieve {
 	 */
 	function schedule_feed_out() {
 		if ( ! wp_next_scheduled( 'take_feed_out' ) ) {
-			wp_schedule_event( time(), 'monthly', 'take_feed_out' );
+			wp_schedule_event( time(), 'hourly', 'take_feed_out' );
 		}
 	}
 
@@ -220,6 +221,15 @@ class PF_Feed_Retrieve {
 			$are_we_going = get_option( PF_SLUG . '_iterate_going_switch', 1 );
 			pf_log( 'Iterate going switch is set to: ' . $are_we_going );
 
+			$feed_hb_state = array(
+				'feed_id'	=>	$aFeed->ID,
+				'feed_title'	=> $aFeed->post_title,
+				'last_key'	=> $last_key,
+				'feeds_iteration'	=>	$feeds_iteration,
+				'total_feeds'	=>	count($feedlist)
+			);
+			$this->update_option_w_check( '_feeds_hb_state', $feed_hb_state );
+
 			# The last key of the array is equal to our current key? Then we are
 			# at the end of the feedlist. Set options appropriately to indicate to
 			# other processes that the iterate state will soon be terminated.
@@ -266,8 +276,8 @@ class PF_Feed_Retrieve {
 
 			# If the feed retrieved is empty and we haven't hit the last feed item.
 
-			if ( ( ( empty( $aFeed ) ) || ($aFeed == '' ) ) && ($feeds_iteration <= $last_key)) {
-				pf_log( 'The feed is either an empty entry or un-retrievable AND the iteration is less than or equal to the last key.' );
+			if ( ( ( empty( $aFeed ) ) || ( ( 'publish' != $aFeed->post_status ) ) || ($aFeed == '' ) ) && ($feeds_iteration <= $last_key)) {
+				pf_log( 'The feed is either an empty entry or un-retrievable, or not published AND the iteration is less than or equal to the last key.' );
 				$theFeed = call_user_func( array( $this, 'step_through_feedlist' ) );
 			} elseif ( ( ( empty( $aFeed ) ) || ($aFeed == '' ) ) && ($feeds_iteration > $last_key)) {
 				pf_log( 'The feed is either an empty entry or un-retrievable AND the iteration is greater than the last key.' );
@@ -294,6 +304,7 @@ class PF_Feed_Retrieve {
 			# If the array entry is empty and this isn't the end of the feedlist,
 			# then get the next item from the feedlist while iterating the count.
 			if ( ( ( empty( $aFeed ) ) || ($aFeed == '' ) || (is_wp_error($theFeed ))) && ($feeds_iteration <= $last_key)) {
+				//Feed failure happening here.
 				pf_log( 'The feed is either an empty entry or un-retrievable AND the iteration is less than or equal to the last key.' );
 
 				# The feed is somehow bad, lets get the next one.
@@ -405,6 +416,60 @@ class PF_Feed_Retrieve {
 
 	}
 
+	public function ajax_update_feed_handler() {
+		global $pf;
+		#pf_log( $_POST );
+		pf_log( 'Starting ajax_update_feed_handler with ID of '.$_POST['feed_id'] );
+		$obj = get_post($_POST['feed_id']);
+		pf_log( $obj );
+		$Feeds = pressforward()->pf_feeds;
+		$id = $obj->ID;
+		pf_log( 'Feed ID ' . $id );
+		$type = $Feeds->get_pf_feed_type( $id );
+		pf_log( 'Checking for feed type ' . $type );
+		$module_to_use = $this->does_type_exist( $type );
+		if ( !$module_to_use ) {
+			# Be a better error.
+			pf_log( 'The feed type does not exist.' );
+			return false;
+		}
+
+		pf_log( 'Begin the process to retrieve the object full of feed items.' );
+		//Has this process already occurring?
+		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0 );
+		pf_log( 'The Feeds go switch has been updated?' );
+		pf_log( $feed_go );
+		$is_it_going = get_option( PF_SLUG . '_iterate_going_switch', 1 );
+		if ( $is_it_going == 1 ) {
+			//print_r( '<br /> We\'re doing this thing already in the data object. <br />' );
+			if ( ( get_option( PF_SLUG . '_ready_to_chunk', 1 ) ) === 0 ) {
+				pf_log( 'The chunk is still open.' );
+			} elseif ( ( $id == get_option( '_feeds_iteration' ) ) || ( $id == get_option( '_prev_iteration' ) ) ) {
+				pf_log( 'We\'re doing this thing already in the data object.', true );
+			}
+			//return false;
+			die();
+		}
+
+		if ( 'rss-quick' == $type ) {
+			# Let's update the RSS-Quick so it has real data.
+			$rq_update = array(
+				'type'		=>		'rss-quick',
+				'ID'		=>		$id,
+				'url'		=>		$obj->guid
+			);
+			$Feeds->update( $id, $rq_update );
+		}
+
+		# module function to return a set of standard pf feed_item object
+		# Like get_items in SimplePie
+		$feedObj = $this->get_the_feed_object( $module_to_use, $obj );
+
+		pressforward()->pf_feed_items->assemble_feed_for_pull($feedObj);
+		pressforward()->pf_feeds->set_feed_last_checked($id);
+		$this->feed_retrieval_reset();
+	}
+
 	# Take the feed type and the feed id
 	# and apply filters so that we know which
 	# function to call to handle the feed
@@ -412,7 +477,7 @@ class PF_Feed_Retrieve {
 	# If check = true than this is just a validator for feeds.
 	public function feed_handler( $obj, $check = false ) {
 		global $pf;
-		$Feeds = new PF_Feeds_Schema();
+		$Feeds = pressforward()->pf_feeds;
 		pf_log( 'Invoked: PF_Feed_retrieve::feed_handler()' );
 		pf_log( 'Are we just checking?' );
 		pf_log( $check );
@@ -452,7 +517,7 @@ class PF_Feed_Retrieve {
 			die();
 		}
 
-		if ( 'rss-quick' == $type ) {
+		if ( ( 'rss-quick' == $type ) && ( 'publish' == $obj->post_status ) ) {
 			# Let's update the RSS-Quick so it has real data.
 			$rq_update = array(
 				'type'		=>		'rss-quick',
@@ -602,27 +667,31 @@ class PF_Feed_Retrieve {
 
  	}
 
-	public function trigger_source_data() {
+	public function trigger_source_data($return = false) {
+		$message = array();
 			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0 );
 			$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0 );
 			$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0 );
 			$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );
 		pf_log( 'Invoked: PF_Feed_Retrieve::trigger_source_data()' );
-		pf_log( 'Feeds go?: ' . $feed_go );
-		pf_log( 'Feed iteration: ' . $feed_iteration );
-		pf_log( 'Retrieval state: ' . $retrieval_state );
-		pf_log( 'Chunk state: ' . $chunk_state );
+		$message['go_switch'] = pf_message( 'Feeds go?: ' . $feed_go );
+		$message['iteration'] = pf_message( 'Feed iteration: ' . $feed_iteration );
+		$message['iterating_check'] = pf_message( 'Retrieval state: ' . $retrieval_state );
+		$message['chunk_ready'] = pf_message( 'Chunk state: ' . $chunk_state );
 		if ( $feed_iteration == 0 && $retrieval_state == 0 && $chunk_state == 1 ) {
 			$status = update_option( PF_SLUG . '_iterate_going_switch', 1 );
 			# Echo to the user.
-			pf_log( __( 'Beginning the retrieval process', 'pf' ), true, true );
+			$message['action_taken'] = pf_message( __( 'Beginning the retrieval process', 'pf' ), true, true );
 			pf_iterate_cycle_state('retrieval_cycles_begun', true);
 			if ( $status ) {
 				pf_log( __( 'Iterate switched to going.', 'pf' ) );
 			} else {
 				pf_log( __( 'Iterate option not switched.', 'pf' ) );
 			}
-
+			if ($return){
+				@header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ) );
+				print_r(json_encode($message));
+			}
 			pressforward()->pf_feed_items->assemble_feed_for_pull();
 		} else {
 
@@ -636,17 +705,17 @@ class PF_Feed_Retrieve {
 											'retrigger'		=>	time() + ( 2 * 60 * 60 )
 										);
 				update_option( PF_SLUG . '_feeds_meta_state', $feeds_meta_state );
-				pf_log( __( 'Created new metastate.', 'pf' ), true );
+				$message['action_taken'] = pf_message( __( 'Created new metastate to check on next retrieval step.', 'pf' ), true );
 			} else {
-				pf_log( __( 'Metastate saved and active for check.', 'pf' ), true );
+				$message['action_taken'] = pf_message( __( 'Metastate is already saved and active for next check.', 'pf' ), true );
 				pf_log( $feeds_meta_state );
 			}
 
 			if ( $feeds_meta_state['retrigger'] > time() ) {
-					pf_log( __( 'The sources are already being retrieved.', 'pf' ), true );
+					$message['action_taken'] = pf_message( __( 'The sources are already being retrieved.', 'pf' ), true );
 			} else {
 					if ( ( $feed_go == $feeds_meta_state['feed_go'] ) && ( $feed_iteration == $feeds_meta_state['feed_iteration'] ) && ( $retrieval_state == $feeds_meta_state['retrieval_state'] ) && ($chunk_state == $feeds_meta_state['chunk_state'] )) {
-						pf_log( __( 'The sources are stuck.', 'pf' ), true );
+						$message['action_taken'] = pf_message( __( 'The sources are stuck, clearing system to activate on next retrieve.', 'pf' ), true );
 						# Wipe the checking option for use next time.
 						update_option( PF_SLUG . '_feeds_meta_state', array() );
 						update_option( PF_SLUG . '_ready_to_chunk', 1 );
@@ -670,7 +739,7 @@ class PF_Feed_Retrieve {
 													'retrigger'		=>	$feeds_meta_state['retrigger']
 												);
 						update_option( PF_SLUG . '_feeds_meta_state', $double_check );
-						pf_log( __( 'The meta-state is too old. It is now reset. Next time, we should start over.', 'pf' ), true );
+						$message['action_taken'] = pf_message( __( 'The meta-state is too old. It is now reset. Next time, we will start retrieval over.', 'pf' ), true );
 					} else {
 						$double_check = array(
 													'feed_go' => $feeds_meta_state['feed_go'],
@@ -681,11 +750,15 @@ class PF_Feed_Retrieve {
 												);
 						update_option( PF_SLUG . '_feeds_meta_state', $double_check );
 						pf_log( $double_check );
-						pf_log( __( 'The sources are already being retrieved.', 'pf' ), true );
+						$message['action_taken'] = pf_message( __( 'The sources are already being retrieved.', 'pf' ), true );
 					}
 
 			}
+			if ($return){
+				return $message;
+			}
 		}
+
 	}
 
 

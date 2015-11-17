@@ -125,7 +125,7 @@ function get_the_nominators(){
 	# So this is a stupid way to do it, but it is really the
 	# best way.
 
-	$nominating_user_ids = explode(",", $nomers);
+	$nominating_user_ids = array_filter( explode( ",", $nomers ) );
 	$nominating_users = array();
 	foreach ($nominating_user_ids as $user_id){
 		$user_obj = get_user_by('id', $user_id);
@@ -154,4 +154,41 @@ function get_the_word_count(){
 
 function the_word_count(){
 	echo get_the_word_count();
+}
+
+function the_pf_comments( $id_for_comments = 0 ){
+
+		if ( 0 == $id_for_comments ){
+			$id_for_comments = get_the_ID();
+		}
+		$item_post_id = get_post_meta($id_for_comments, 'pf_item_post_id', true);
+		if ( $item_post_id ){
+			$id_for_comments = $item_post_id;
+		}
+	?>
+	<ul id="ef-comments">
+		<?php
+		$comments = new PF_Comments;
+					$editorial_comments = $comments->ef_get_comments_plus (
+						array(
+							'post_id' => $id_for_comments,
+							'comment_type' => 'pressforward-comment',
+							'orderby' => 'comment_date',
+							'order' => 'ASC',
+							'status' => 'pressforward-comment'
+						)
+					);
+			// We use this so we can take advantage of threading and such
+
+			wp_list_comments(
+				array(
+					'type' => 'pressforward-comment',
+					'callback' => array($comments, 'the_comment'),
+					'end-callback' => '__return_false'
+				),
+				$editorial_comments
+			);
+		?>
+	</ul>
+	<?php
 }

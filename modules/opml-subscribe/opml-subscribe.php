@@ -189,7 +189,7 @@ class PF_OPML_Subscribe extends PF_Module {
 			 */
 			pf_log('Prepping item '.$feed_obj->title);
 			$id = $feed_obj->id;
-			#if ( false === ( $rssObject['opml_' . $c] = get_transient( 'pf_' . $id ) ) ) {
+			if ( false === ( $rssObject['opml_' . $c] = get_transient( 'pf_opml_' . $id ) ) ) {
 				# Adding this as a 'quick' type so that we can process the list quickly.
 				if(!empty($feed_obj->type)){
 					$feed_obj->type = $feed_obj->type.'-quick';
@@ -235,7 +235,7 @@ class PF_OPML_Subscribe extends PF_Module {
 				set_transient( 'pf_' . $id, $opmlObject['opml_' . $c], 60*10 );
 				$c++;
 
-			#}
+			}
 		}
 
 		return $opmlObject;

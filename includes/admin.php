@@ -28,17 +28,24 @@ class PF_Admin {
 		// Launch a batch delete process, if necessary.
 		add_action( 'admin_init', array( $this, 'launch_batch_delete' ) );
 
+		//Modify the Singleton Edit page.
+		add_action( 'post_submitbox_misc_actions', array( $this, 'posted_submitbox_pf_actions' ) );
+		add_action( 'save_post', array( $this, 'save_submitbox_pf_actions' ) );
+
 		// AJAX handlers
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
 		add_action( 'wp_ajax_simple_nom_to_draft', array( $this, 'simple_nom_to_draft') );
 		add_action( 'wp_ajax_assemble_feed_for_pull', array( $this, 'trigger_source_data') );
+		add_action( 'wp_ajax_disassemble_item', array( $this, 'trigger_item_disassembly' ) );
 		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
 		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
 		add_action( 'wp_ajax_pf_ajax_get_comments', array( $this, 'pf_ajax_get_comments') );
 		add_action( 'wp_ajax_pf_ajax_thing_deleter', array( $this, 'pf_ajax_thing_deleter') );
 		add_action( 'wp_ajax_pf_ajax_retain_display_setting', array( $this, 'pf_ajax_retain_display_setting' ) );
+		add_action( 'wp_ajax_pf_ajax_move_to_archive', array( $this, 'pf_ajax_move_to_archive' ) );
+		add_action( 'wp_ajax_pf_ajax_move_out_of_archive', array( $this, 'pf_ajax_move_out_of_archive' ) );
 		add_action( 'wp_ajax_pf_ajax_user_setting', array( $this, 'pf_ajax_user_setting' ));
 		add_action( 'init', array( $this, 'register_feed_item_removed_status') );
 
@@ -47,6 +54,8 @@ class PF_Admin {
 		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
 		add_action( 'manage_edit-pf_feed_sortable_columns', array( $this, 'make_last_retrieved_column_sortable' ) );
 		add_action( 'pre_get_posts', array( $this, 'sort_by_last_retrieved' ) );
+		#add_filter( 'parse_query', array( $this, 'include_alerts_in_edit_feeds' ) );
+		add_filter( 'ab_bug_status_args', array( $this, 'pf_ab_bug_status_args' ) );
 
 		add_filter( 'manage_pf_feed_posts_columns', array( $this, 'add_last_checked_date_column' ) );
 		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_checked_date_column_content' ), 10, 2 );
@@ -58,6 +67,8 @@ class PF_Admin {
 
 		add_action( 'quick_edit_custom_box', array( $this, 'quick_edit_field' ), 10, 2 );
 		add_action( 'save_post', array( $this, 'quick_edit_save' ), 10, 2 );
+
+		add_filter( 'heartbeat_received', array( $this, 'hb_check_feed_retrieve_status' ), 10, 2 );
 	}
 
 	/**
@@ -104,10 +115,17 @@ class PF_Admin {
 			array($this, 'display_feeder_builder')
 		);
 
+		if ( $alert_count = The_Alert_Box::alert_count() ) {
+			$alert_count_notice = '<span class="feed-alerts count-' . intval( $alert_count ) . '"><span class="alert-count">' . number_format_i18n( $alert_count ) . '</span></span>';
+			$subscribed_feeds_menu_text = sprintf( __( 'Subscribed Feeds %s', 'pf' ), $alert_count_notice );
+		} else {
+			$subscribed_feeds_menu_text = __( 'Subscribed Feeds', 'pf' );
+		}
+
 		add_submenu_page(
 			PF_MENU_SLUG,
 			__('Subscribed Feeds', 'pf'),
-			__('Subscribed Feeds', 'pf'),
+			$subscribed_feeds_menu_text,
 			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')),
 			'edit.php?post_type=' . pressforward()->pf_feeds->post_type
 		);
@@ -168,6 +186,47 @@ class PF_Admin {
 		$classes .= strtolower(PF_TITLE);
 
 		return $classes;
+	}
+
+	function posted_submitbox_pf_actions(){
+		global $post;
+		$check = pf_get_post_meta($post->ID, 'item_link', true);
+		if ( empty($check) ){
+			return;
+		}
+	    $value = pf_get_post_meta($post->ID, 'pf_forward_to_origin', true);
+	    if ( empty($value) ){
+
+	    	$option_value = get_option('pf_link_to_source');
+				if ( empty($option_value) ){
+					$value = 'no-forward';
+				} else {
+					$value = 'forward';
+				}
+	    }
+
+	    echo '<div class="misc-pub-section misc-pub-section-last">
+				<label>
+				<select id="pf_forward_to_origin_single" name="pf_forward_to_origin">
+				  <option value="forward"'.( 'forward' == $value ? ' selected ' : '') .'>Forward</option>
+				  <option value="no-forward"'.( 'no-forward' == $value ? ' selected ' : '') .'>Don\'t Forward</option>
+				</select><br />
+				to item\'s original URL</label></div>';
+	}
+
+	function save_submitbox_pf_actions( $post_id )
+	{
+	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ){ return $post_id; }
+	    if ( !current_user_can( 'edit_page', $post_id ) ){ return $post_id; }
+		#var_dump($_POST['pf_forward_to_origin']); die();
+		#$current = pf_get_post_meta();
+			if ( !array_key_exists('pf_forward_to_origin', $_POST) ) {
+
+ 			} else {
+				pf_update_meta($post_id, 'pf_forward_to_origin', $_POST['pf_forward_to_origin']);
+			}
+
+		return $post_id;
 	}
 
 	public function folderbox(){
@@ -276,6 +335,8 @@ class PF_Admin {
 							self::dropdown_option(__('My starred', 'pf'), "showMyStarred");
 							self::dropdown_option(__('Show hidden', 'pf'), "showMyHidden");
 							self::dropdown_option(__('My nominations', 'pf'), "showMyNominations");
+							self::dropdown_option(__('Unread', 'pf'), "showUnread");
+							self::dropdown_option( __( 'Drafted', 'pf' ), "showDrafted" );
 						} else {
 							if ( isset($_POST['search-terms']) || isset($_GET['by']) || isset($_GET['pf-see']) || isset($_GET['reveal']) ) {
 								self::dropdown_option(__('Reset filter', 'pf'), "showNormalNominations");
@@ -283,6 +344,8 @@ class PF_Admin {
 							self::dropdown_option(__('My starred', 'pf'), "sortstarredonly", 'starredonly', null, null, null, get_admin_url(null, 'admin.php?page=pf-review&pf-see=starred-only'));
 							self::dropdown_option(__('Toggle visibility of archived', 'pf'), "showarchived");
 							self::dropdown_option(__('Only archived', 'pf'), "showarchiveonly", null, null, null, null, get_admin_url(null, 'admin.php?page=pf-review&pf-see=archive-only'));
+							self::dropdown_option(__('Unread', 'pf'), "showUnreadOnly", null, null, null, null, get_admin_url(null, 'admin.php?page=pf-review&pf-see=unread-only'));
+							self::dropdown_option( __( 'Drafted', 'pf' ), "showDrafted", null, null, null, null, get_admin_url(null, 'admin.php?page=pf-review&pf-see=drafted-only') );
 
 						}
 					?>
@@ -406,7 +469,7 @@ class PF_Admin {
 
 						echo '<a class="'.$nom_count_classes.'" data-toggle="tooltip" title="' . __('Nomination Count', 'pf') .  '" form="' . $metadata['nom_id'] . '">'.$metadata['nom_count'].'<i class="icon-play"></i></button></a>';
 						$archive_status = '';
-						if ( 1 == pf_get_relationship_value( 'archive', $metadata['nom_id'], $user_id ) ){
+						if ( 1 == get_post_meta( $metadata['nom_id'], 'pf_archive', true ) ){
 							$archive_status = 'btn-warning';
 						}
 						echo '<a class="btn btn-small nom-to-archive schema-switchable schema-actor '.$archive_status.'" pf-schema="archive" pf-schema-class="archived" pf-schema-class="btn-warning" data-toggle="tooltip" title="' . __('Archive', 'pf') .  '" form="' . $metadata['nom_id'] . '"><img src="' . PF_URL . 'assets/images/archive.png" /></button></a>';
@@ -549,30 +612,31 @@ class PF_Admin {
 
 				if ($format === 'nomination'){
 					$feed_item_id = $metadata['item_id'];
-					$id_for_comments = $metadata['item_feed_post_id'];
+					$id_for_comments = $metadata['item_feed_post_id']; //orig item post ID
 
-			$id_for_comments = $metadata['item_feed_post_id'];
-			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
-			if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
-			if (!isset($metadata['nom_id']) || empty($metadata['nom_id'])){ $metadata['nom_id'] = md5($item['item_title']); }
-			if (empty($id_for_comments)){ $id_for_comments = $metadata['nom_id']; }
-			if (empty($metadata['item_id'])){ $metadata['item_id'] = md5($item['item_title']); }
+					$id_for_comments = $metadata['item_feed_post_id'];
+					$readStat = pf_get_relationship_value( 'read', $metadata['nom_id'], wp_get_current_user()->ID );
+					if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
+					if (!isset($metadata['nom_id']) || empty($metadata['nom_id'])){ $metadata['nom_id'] = md5($item['item_title']); }
+					if (empty($id_for_comments)){ $id_for_comments = $metadata['nom_id']; }
+					if (empty($metadata['item_id'])){ $metadata['item_id'] = md5($item['item_title']); }
 
 				} else {
 					$feed_item_id = $item['item_id'];
-					$id_for_comments = $item['post_id'];
+					$id_for_comments = $item['post_id']; //orig item post ID
 				}
-				$archive_status = pf_get_relationship_value( 'archive', $id_for_comments, wp_get_current_user()->ID );
+				#$archive_status = pf_get_relationship_value( 'archive', $id_for_comments, wp_get_current_user()->ID );
+				$archive_status = get_post_meta($id_for_comments, 'pf_archive', true);
 				if (isset($_GET['pf-see'])){ } else { $_GET['pf-see'] = false; }
 				if ($archive_status == 1 && ('archive-only' != $_GET['pf-see'])){
 					$archived_status_string = 'archived';
 					$dependent_style = 'display:none;';
-				} elseif ( ($format === 'nomination') && (1 == pf_get_relationship_value( 'archive', $metadata['nom_id'], $user_id))  && ('archive-only' != $_GET['pf-see'])) {
+				} elseif ( ($format === 'nomination') && (1 == get_post_meta($metadata['nom_id'], 'pf_archive', true))  && ('archive-only' != $_GET['pf-see'])) {
 					$archived_status_string = 'archived';
 					$dependent_style = 'display:none;';
 				} else {
 					$dependent_style = '';
-					$archived_status_string = '';
+					$archived_status_string = 'not-archived';
 				}
 		if ($format === 'nomination'){
 			#$item = array_merge($metadata, $item);
@@ -583,11 +647,13 @@ class PF_Admin {
 			$id_for_comments = $item['post_id'];
 			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
 			if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
-			echo '<article class="feed-item entry ' . pf_slugger(get_the_source_title($id_for_comments), true, false, true) . ' ' . $itemTagClassesString . ' '.$readClass.'" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '" pf-item-post-id="' . $id_for_comments . '" >';
+			echo '<article class="feed-item entry ' . pf_slugger(get_the_source_title($id_for_comments), true, false, true) . ' ' . $itemTagClassesString . ' '.$readClass.'" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '" pf-item-post-id="' . $id_for_comments . '" style="' . $dependent_style . '" >';
 			?> <a style="display:none;" name="modal-<?php echo $item['item_id']; ?>"></a> <?php
 		}
 
-			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
+			if (empty($readStat)) {
+				$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
+			}
 			echo '<div class="box-controls">';
 			if (current_user_can( 'manage_options' )){
 				if ($format === 'nomination'){
@@ -597,7 +663,7 @@ class PF_Admin {
 				}
 			}
 		if ($format != 'nomination'){
-				$archiveStat = pf_get_relationship_value( 'archive', $id_for_comments, $user_id );
+				$archiveStat =  pf_get_relationship_value( 'archive', $id_for_comments, $user_id );
 				$extra_classes = '';
 				if ($archiveStat){ $extra_classes .= ' schema-active relationship-button-active'; }
 				echo '<i class="icon-eye-close hide-item pf-item-archive schema-archive schema-switchable schema-actor'.$extra_classes.'" pf-schema-class="relationship-button-active" pf-item-post-id="' . $id_for_comments .'" title="Hide" pf-schema="archive"></i>';
@@ -857,7 +923,7 @@ class PF_Admin {
 
 	?>
 	<div class="pf-loader"></div>
-	<div class="pf_container full<?php echo $extra_class; ?>">
+	<div class="pf_container pf-all-content full<?php echo $extra_class; ?>">
 		<header id="app-banner">
 			<div class="title-span title">
 				<?php
@@ -1071,6 +1137,23 @@ class PF_Admin {
 		settings_errors( 'add_pf_feeds' );
 	}
 
+	function include_alerts_in_edit_feeds( $query ){
+		global $pagenow;
+		if ( is_admin() && 'edit.php' === $pagenow && 'pf_feed' === $_GET['post_type'] ) {
+			#$statuses = $query->query['post_status'];
+			#var_dump('<pre>'); var_dump( $query ); die();
+			#$query->query['post_status'] = '';
+			#$query->query_vars['post_status'] = '';
+		}
+		return $query;
+	}
+
+	function pf_ab_bug_status_args( $args ){
+		$args['public'] = true;
+
+		return $args;
+	}
+
 	//This function can add js and css that we need to specific admin pages.
 	function add_admin_scripts($hook) {
 
@@ -1101,6 +1184,15 @@ class PF_Admin {
 			wp_register_script( PF_SLUG . '-settings-tools', PF_URL . 'assets/js/settings-tools.js', array( 'jquery' ) );
 			wp_register_script( PF_SLUG . '-tools', PF_URL . 'assets/js/tools-imp.js', array( 'jquery' ) );
 
+		wp_register_style('pf-alert-styles', PF_URL . 'assets/css/alert-styles.css');
+		wp_enqueue_style( PF_SLUG . '-alert-styles' );
+		if ( false != pressforward()->form_of->is_a_pf_page() ){
+			//var_dump('heartbeat'); die();
+			wp_enqueue_script( 'heartbeat' );
+			wp_enqueue_script( 'jquery-ui-progressbar' );
+			wp_enqueue_script( PF_SLUG . '-heartbeat', PF_URL . 'assets/js/pf-heartbeat.js', array( 'heartbeat', 'jquery-ui-progressbar', 'jquery' ) );
+
+		}
 		//print_r($hook);
 		//This if loop will check to make sure we are on the right page for the js we are going to use.
 		if (('toplevel_page_pf-menu') == $hook) {
@@ -1170,13 +1262,13 @@ class PF_Admin {
 			wp_enqueue_script(PF_SLUG . '-settings-tools' );
 		}
 
-
 		if (('nomination') == get_post_type()) {
 			wp_enqueue_script(PF_SLUG . '-add-nom-imp', PF_URL . 'assets/js/add-nom-imp.js', array( 'jquery' ));
 		}
 
 		if ( 'edit.php' === $hook && 'pf_feed' === get_post_type() ) {
 			wp_enqueue_script( PF_SLUG . '-quick-edit' );
+			wp_enqueue_style(PF_SLUG . '-subscribed-styles', PF_URL . 'assets/css/pf-subscribed.css' );
 		}
 
 		if (('pressforward_page_pf-feeder') != $hook) { return; }
@@ -1462,6 +1554,35 @@ class PF_Admin {
 
 	}
 
+
+	public function pf_ajax_move_to_archive(){
+		$item_post_id = $_POST['item_post_id'];
+		$nom_id = $_POST['nom_id'];
+		update_post_meta($nom_id, 'pf_archive', 1);
+		update_post_meta($item_post_id, 'pf_archive', 1);
+		$check = wp_update_post( array(
+					'ID'			=>	$item_post_id,
+					'post_status'	=>	'removed_feed_item'
+				)
+			);
+		pf_log($check);
+		die();
+	}
+
+	public function pf_ajax_move_out_of_archive(){
+		$item_post_id = $_POST['item_post_id'];
+		$nom_id = $_POST['nom_id'];
+		update_post_meta($nom_id, 'pf_archive', 'false');
+		update_post_meta($item_post_id, 'pf_archive', 'false');
+		$check = wp_update_post( array(
+					'ID'			=>	$item_post_id,
+					'post_status'	=>	'publish'
+				)
+			);
+		pf_log($check);
+		die();
+	}
+
     public function dead_post_status(){
         register_post_status('removed_feed_item', array(
             'label'                 =>     _x('Removed Feed Item', 'pf'),
@@ -1574,7 +1695,7 @@ class PF_Admin {
 		}
 		$userObj = wp_get_current_user();
 		$user_id = $userObj->ID;
-		$returned = self::pf_switch_display_setting($user_id, $read_state);
+		$returned = $this->pf_switch_display_setting($user_id, $read_state);
 		#var_dump($user_id);
 
 		$response = array(
@@ -1605,7 +1726,7 @@ class PF_Admin {
 		}
 
 		$user_id = pressforward()->form_of->user_id();
-		$returned = self::pf_switch_user_option($user_id, $setting_name, $setting);
+		$returned = $this->pf_switch_user_option($user_id, $setting_name, $setting);
 		#var_dump($user_id);
 
 		$response = array(
@@ -1627,7 +1748,7 @@ class PF_Admin {
 	}
 
 
-	function pf_switch_display_setting($user_id, $read_state){
+	public function pf_switch_display_setting($user_id, $read_state){
 		if ( !current_user_can( 'edit_user', $user_id ) ){
 			return false;
 		}
@@ -1655,7 +1776,7 @@ class PF_Admin {
 	 * @return array
 	 */
 	public function add_last_retrieved_date_column( $posts_columns ) {
-		unset( $posts_columns['date'] );
+		#unset( $posts_columns['date'] );
 		$posts_columns['last_retrieved'] = __('Last Time Feed Item Retrieved', 'pf');
 		return $posts_columns;
 	}
@@ -1966,6 +2087,27 @@ class PF_Admin {
 		update_post_meta( $post_id, 'feedUrl', $feed_url );
 	}
 
+	public function hb_check_feed_retrieve_status( $response, $data, $screen_id = '' ){
+		/**
+		 * $feed_hb_state = array(
+		 * 'feed_id'	=>	$aFeed->ID,
+		 * 'feed_title'	=> $aFeed->post_title,
+		 * 'last_key'	=> $last_key,
+		 * 'feeds_iteration'	=>	$feeds_iteration,
+		 * 'total_feeds'	=>	count($feedlist)
+		 * );
+		**/
+		if ( (array_key_exists('pf_heartbeat_request', $data)) && ('feed_state' == $data['pf_heartbeat_request']) ){
+			$feed_hb_state = get_option( PF_SLUG.'_feeds_hb_state' );
+			foreach ( $feed_hb_state as $key=>$state ){
+				$response['pf_'.$key] = $state;
+			}
+		}
+
+		return $response;
+
+	}
+
 	/**
 	 * Launch a batch delete, if one is queued.
 	 *
@@ -1994,7 +2136,14 @@ class PF_Admin {
 	}
 
 	public function trigger_source_data() {
-		pressforward()->pf_retrieve->trigger_source_data();
+		$message = pressforward()->pf_retrieve->trigger_source_data(true);
+		wp_send_json($message);
+		die();
+	}
+
+	public function trigger_item_disassembly() {
+		$message = pressforward()->pf_feed_items->ajax_feed_items_disassembler();
+		#wp_send_json($message);
 		die();
 	}
 

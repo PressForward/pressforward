@@ -119,7 +119,7 @@ class PF_Comments extends PF_Module {
 
 		//echo $id_for_comments;
 		echo '<script>
-		editorialCommentReply.init();
+		PFEditorialCommentReply.init();
 		</script>';
 		$comments_allowed = get_option('pf_feature_comments_access', pf_get_defining_capability_by_role('editor'));
 
@@ -184,7 +184,7 @@ class PF_Comments extends PF_Module {
 		if ((current_user_can($comments_allowed))){
 
 			?>
-			<a href="#" id="ef-comment_respond" onclick="editorialCommentReply.open();return false;" class="button-primary alignright hide-if-no-js" title=" <?php _e( 'Respond to this post', 'pf' ); ?>"><span><?php _e( 'Add Comment', 'pf' ); ?></span></a>
+			<a href="#" id="ef-comment_respond" onclick="PFEditorialCommentReply.open();return false;" class="button-primary alignright hide-if-no-js" title=" <?php _e( 'Respond to this post', 'pf' ); ?>"><span><?php _e( 'Add Comment', 'pf' ); ?></span></a>
 
 			<!-- Reply form, hidden until reply clicked by user -->
 			<div id="ef-replyrow" style="display: none;">
@@ -237,7 +237,7 @@ class PF_Comments extends PF_Module {
 		$comments_allowed = get_option('pf_feature_comments_access', pf_get_defining_capability_by_role('editor'));
 		// Comments can only be added by users that can edit the post
 		if ( current_user_can($comments_allowed, $comment->comment_post_ID) ) {
-			$actions['reply'] = '<a onclick="editorialCommentReply.open(\''.$comment->comment_ID.'\',\''.$comment->comment_post_ID.'\');return false;" class="vim-r hide-if-no-js" title="'.__( 'Reply to this comment', 'pf' ).'" href="#">' . __( 'Reply', 'pf' ) . '</a>';
+			$actions['reply'] = '<a onclick="PFEditorialCommentReply.open(\''.$comment->comment_ID.'\',\''.$comment->comment_post_ID.'\');return false;" class="vim-r hide-if-no-js" title="'.__( 'Reply to this comment', 'pf' ).'" href="#">' . __( 'Reply', 'pf' ) . '</a>';
 
 			$sep = ' ';
 			$i = 0;

@@ -73,6 +73,10 @@ class PF_RSS_Import extends PF_Module {
 	 }
 
 	function set_to_alert($id, $theFeed){
+		$immune_to_alert_check = get_post_meta($id, 'pf_no_feed_alert', true);
+		if (1 == $immune_to_alert_check){
+			return;
+		}
 		$error_to_alert = get_option(PF_SLUG.'_errors_until_alert', 3);
 		$error_count = pf_retrieve_meta($id, PF_SLUG.'_feed_error_count');
 		if ((!is_numeric($error_count)) || ('' == $error_count)){ $error_count = 0; }

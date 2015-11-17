@@ -91,12 +91,54 @@ function nominate_it() {
 		$post['post_status'] = get_option(PF_SLUG.'_draft_post_status', 'draft');
 
 	$nom_check = false;
+    $feed_nom = array( 'error' => false, 'simple' => '' );
     //var_dump('<pre>'); var_dump($_POST['pf-feed-subscribe']); die();
     if ( !empty( $_POST['pf-feed-subscribe'] ) && ( 'subscribe' == $_POST['pf-feed-subscribe'] ) ){
         $url_array = parse_url(esc_url($_POST['item_link']));
         $sourceLink = 'http://' . $url_array['host'];
+        $create_started = 'Attempting to nominate a feed with the result of: <br />';
         //var_dump($sourceLink); die();
-        pressforward()->pf_feeds->create($sourceLink, array('post_status' => 'draft') );
+        if (current_user_can('edit_posts')){
+          $create = pressforward()->pf_feeds->create($sourceLink, array('post_status' => 'under_review') );
+          if ( is_numeric($create) ){
+            $feed_nom['id'] = $create;
+            $create = 'Feed created with ID of '.$create;
+            $feed_nom['simple'] = "The feed has been nominated successfully.";
+            $error_check = get_post_meta($feed_nom['id'], 'ab_alert_msg', true);
+            if ( !empty( $error_check ) ){
+            	$create .= ' But the following error occured: '.$error_check;
+            	$feed_nom['simple'] = "There is a problem with the feed associated with this post. The feed could not be verified.";
+        	}
+        	$feed_nom['error'] = $error_check;
+          } else {
+            $feed_nom['id'] = 0;
+            $feed_nom['simple'] = "PressForward was unable to identify a feed associated with this site. Please contact the site administrator or add the feed manually in the 'Add Feeds' panel.";
+            $message_one = pf_message('An error occured when adding the feed: ');
+            if (is_wp_error($create)){
+              $create_wp_error = $create->get_error_message();
+              $message_two = pf_message($create_wp_error);
+              $feed_nom['error'] = $message_two;
+            } else {
+              $message_two = pf_message($create);
+            }
+            $create = $message_one.$message_two;
+          }
+        } else {
+          $create = 'User doesn\'t have permission to create feeds.';
+          $feed_nom['id'] = 0;
+          $feed_nom['error'] = $create;
+          $feed_nom['simple'] = $create;
+        }
+        $feed_nom['msg'] = $create_started.$create;
+
+        update_option( 'pf_last_nominated_feed', $feed_nom );
+
+    } else {
+    	$feed_nom = array(
+    		'id' => 0,
+    		'msg'	=> 'No feed was nominated.'
+    	);
+    	update_option( 'pf_last_nominated_feed', $feed_nom );
     }
 	// error handling for media_sideload
 	if ( is_wp_error($upload) ) {
@@ -141,6 +183,14 @@ function nominate_it() {
 			} else {
 				$post_thumbnail_url = false;
 			}
+
+      $url_parts = parse_url($_POST['item_link']);
+      if (!empty($url_parts['host'])){
+        $source = $url_parts['host'];
+      } else {
+        $source = '';
+      }
+
 			$pf_meta_args = array(
 				pf_meta_for_entry('item_id', $item_id ),
 				pf_meta_for_entry('item_link', $_POST['item_link']),
@@ -151,7 +201,7 @@ function nominate_it() {
 				pf_meta_for_entry('date_nominated', $_POST['date_nominated']),
 				pf_meta_for_entry('item_author', $_POST['authors']),
 				pf_meta_for_entry('authors', $_POST['authors']),
-				pf_meta_for_entry('item_link', $_POST['item_link']),
+				pf_meta_for_entry('pf_source_link', $source),
 				pf_meta_for_entry('item_feat_img', $post_thumbnail_url),
 				pf_meta_for_entry('nominator_array', array(get_current_user_id())),
 				// The item_wp_date allows us to sort the items with a query.
@@ -750,6 +800,38 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
                 | <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a></p>
                 </div>
 		      <?php
+            }
+            $feed_nom = get_option( 'pf_last_nominated_feed', array() );
+            if ( !empty($feed_nom) ){
+            	if ( !empty( $feed_nom['error'] ) ){
+            		$feed_nom_class = 'error';
+            	} else {
+            		$feed_nom_class = 'updated';
+            	}
+              #var_dump($feed_nom); die();
+              ?>
+                <div id="nom-message" class="<?php echo $feed_nom_class; ?>">
+                  <p><strong><?php
+                  	if ( !current_user_can('publish_posts') || ( false == WP_DEBUG ) ){
+                  		print_r( $feed_nom['simple'] );
+                  	} else {
+                  		print_r( $feed_nom['msg'] );
+                  	}
+
+                  ?></strong>
+                  <?php
+                    if(0 !== $feed_nom['id']){
+                      ?>
+                      <a href="<?php echo get_edit_post_link( $feed_nom['id'] ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php _e('Edit Feed'); ?></a>
+                    <?php
+                	} else {
+
+                	}
+                    ?>
+                  | <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a></p>
+                </div>
+              <?php
+              update_option( 'pf_last_nominated_feed', array() );
             }
             die();
         } ?>

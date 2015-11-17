@@ -98,15 +98,18 @@ jQuery(window).load(function() {
 			jQuery('.nominate-now[form='+itemID+']').addClass(element_class);
 
 		}).promise().done(function(){
-			//alert(nom_vars.the_nom_id);
-			jQuery.post(ajaxurl, {
-				action: 'simple_nom_to_draft',
-				nom_id: nom_vars.the_nom_id,
-				pf_nomination_nonce: theNonce
-			},
-			function(response) {
-				jQuery('.loading-'+itemID).hide();
-			});
+			if ( ( 0 === nom_vars.the_nom_id ) || ( '' === nom_vars.the_nom_id ) ){
+				alert("Nomination failed and could not be continued into draft process.");
+			} else {
+				jQuery.post(ajaxurl, {
+					action: 'simple_nom_to_draft',
+					nom_id: nom_vars.the_nom_id,
+					pf_nomination_nonce: theNonce
+				},
+				function(response) {
+					jQuery('.loading-'+itemID).hide();
+				});
+			}
 		});
 	});
 

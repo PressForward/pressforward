@@ -1,0 +1,14 @@
+.status-under_review {
+  background-color: lightyellow !important; }
+  .status-under_review .post-title:before {
+    content: "Awaiting Review: "; }
+
+.status-alert_specimen {
+  background-color: #FFB5B5 !important; }
+  .status-alert_specimen .post-title:before {
+    content: "Alert: "; }
+  .status-alert_specimen .pf-alert-msg {
+    visibility: visible;
+    color: black;
+    background-color: red;
+    padding: 2px; }
