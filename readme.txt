@@ -97,7 +97,7 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 * Alerted and pending feeds are now colored either red (alerted) or yellow (under review) in Subscribed feeds rather than appearing hidden.
 * Added an option to set Press Forward’s feed reader to ignore all alerts and never make the feed inactive.
 * Added an “Edit feed” link to the success and failure messages in Add Feeds.
-* Adjusted transient feed ids to prevent problems with adding, removing, and readding OPML files.
+* Adjusted transient feed ids to prevent problems with adding, removing, and reading OPML files.
 * The archive action in Nominated is now a site wide action while the hide action in All Content is user specific.
 * Archived items can now be unarchived.
 * Fixed bug where the Refresh button wasn’t showing responses outside of Debug mode.
