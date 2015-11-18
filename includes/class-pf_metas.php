@@ -149,7 +149,8 @@ class PF_Metas {
 				'function'	=> __('Stores hashed ID based on title and URL of retrieved item', 'pf'),
 				'type'	=> array('struc'),
 				'use'	=> array('req'),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> false
 			),
 			'origin_item_ID' => array(
 				'name' => 'origin_item_ID',
@@ -158,7 +159,8 @@ class PF_Metas {
 				'type'	=> array('struc', 'dep'),
 				'use'	=> array('req'),
 				'move'	=> 'item_id',
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> true
 			),
 			'pf_item_post_id' => array(
 				'name' => 'pf_item_post_id',
@@ -166,7 +168,8 @@ class PF_Metas {
 				'function'	=> __('Stores hashed WP post_ID associated with the original item', 'pf'),
 				'type'	=> array('struc'),
 				'use'	=> array('req'),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> true
 			),
 			'pf_nomination_post_id' => array(
 				'name' => 'pf_nomination_post_id',
@@ -174,7 +177,8 @@ class PF_Metas {
 				'function'	=> __('Stores postID associated with the nominated item', 'pf'),
 				'type'	=> array('struc'),
 				'use'	=> array(),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> true
 			),
 			'item_feed_post_id' => array(
 				'name' => 'item_feed_post_id',
@@ -183,7 +187,8 @@ class PF_Metas {
 				'type'	=> array('struc', 'dep'),
 				'use'	=> array('req'),
 				'move'	=> 'pf_item_post_id',
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> true
 			),
 			'source_title' => array(
 				'name' => 'source_title',
@@ -191,7 +196,8 @@ class PF_Metas {
 				'function'	=> __('Stores the title retrieved from the feed.', 'pf'),
 				'type'	=> array('adm'),
 				'use'	=> array(),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> true
 			),
 			'pf_source_link' => array(
 				'name' => 'pf_source_link',
@@ -199,7 +205,8 @@ class PF_Metas {
 				'function'	=> __('Stores the url of feed source.', 'pf'),
 				'type'	=> array('adm'),
 				'use'	=> array(),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> true
 			),
 			'pf_feed_item_source' => array(
 				'name' => 'pf_feed_item_source',
@@ -208,7 +215,8 @@ class PF_Metas {
 				'type'	=> array('desc','dep'),
 				'use'	=> array('req'),
 				'move'	=> 'source_title',
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> true
 			),
 			'item_date' => array(
 				'name' => 'item_date',
@@ -216,7 +224,8 @@ class PF_Metas {
 				'function'	=> __('Stores the date the item was posted on the original site', 'pf'),
 				'type'	=> array('desc'),
 				'use'	=> array('req'),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> false
 			),
 			'posted_date' => array(
 				'name' => 'posted_date',
@@ -225,7 +234,8 @@ class PF_Metas {
 				'type'	=> array('struc', 'dep'),
 				'use'	=> array('req'),
 				'move'	=> 'item_date',
-				'level'	=> array('nomination', 'post')
+				'level'	=> array('nomination', 'post'),
+				'serialize'	=> true
 			),
 			'item_author' => array(
 				'name' => 'item_author',
@@ -233,7 +243,8 @@ class PF_Metas {
 				'function'	=> __('Stores array value containing authors listed in the source feed.', 'pf'),
 				'type'	=> array('struc'),
 				'use'	=> array(),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> false
 			),
 			'authors' => array(
 				'name' => 'authors',
@@ -242,7 +253,8 @@ class PF_Metas {
 				'type'	=> array('struc','dep'),
 				'use'	=> array(),
 				'move'	=> 'item_author',
-				'level'	=> array('nomination', 'post')
+				'level'	=> array('nomination', 'post'),
+				'serialize'	=> true
 			),
 			'item_link' => array(
 				'name' => 'item_link',
@@ -250,7 +262,8 @@ class PF_Metas {
 				'function'	=> __('Stores link to the origonal post.', 'pf'),
 				'type'	=> array('struc'),
 				'use'	=> array('req'),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> true
 			),
 			'nomination_permalink' => array(
 				'name' => 'item_link',
@@ -259,7 +272,8 @@ class PF_Metas {
 				'type'	=> array('struc','dep'),
 				'use'	=> array('req'),
 				'move'	=> 'item_link',
-				'level'	=> array('nomination', 'post')
+				'level'	=> array('nomination', 'post'),
+				'serialize'	=> true
 			),
 			'item_feat_img' => array(
 				'name' => 'item_feat_img',
@@ -267,7 +281,8 @@ class PF_Metas {
 				'function'	=> __('A featured image associated with the item, when it is available', 'pf'),
 				'type'	=> array('struc'),
 				'use'	=> array(),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> true
 			),
 			'item_wp_date' => array(
 				'name' => 'item_wp_date',
@@ -275,7 +290,8 @@ class PF_Metas {
 				'function'	=> __('The datetime an item was added to WordPress via PressForward', 'pf'),
 				'type'	=> array('desc'),
 				'use'	=> array('req'),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> true
 			),
 			'date_nominated' => array(
 				'name' => 'date_nominated',
@@ -283,7 +299,8 @@ class PF_Metas {
 				'function'	=> __('The datetime the item was made a nomination', 'pf'),
 				'type'	=> array('desc'),
 				'use'	=> array('req'),
-				'level'	=> array('nomination', 'post')
+				'level'	=> array('nomination', 'post'),
+				'serialize'	=> true
 			),
 			'item_tags' => array(
 				'name' => 'item_tags',
@@ -291,7 +308,8 @@ class PF_Metas {
 				'function'	=> __('An array of tags associated with the item, as created in the feed', 'pf'),
 				'type'	=> array('desc'),
 				'use'	=> array(),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> true
 			),
 			'source_repeat' => array(
 				'name' => 'source_repeat',
@@ -299,7 +317,8 @@ class PF_Metas {
 				'function'	=> __('Counts number of times the item has been collected from the multiple feeds (Ex: from origin feed and Twitter)', 'pf'),
 				'type'	=> array('adm'),
 				'use'	=> array(),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> false
 			),
 			'nomination_count' => array(
 				'name' => 'nomination_count',
@@ -307,7 +326,8 @@ class PF_Metas {
 				'function'	=> __('Counts number of times users have nominated an item', 'pf'),
 				'type'	=> array('adm'),
 				'use'	=> array('req'),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> false
 			),
 			'submitted_by' => array(
 				'name' => 'submitted_by',
@@ -315,7 +335,8 @@ class PF_Metas {
 				'function'	=> __('The first user who submitted the nomination (if it has been nominated). User ID number', 'pf'),
 				'type'	=> array('adm'),
 				'use'	=> array('req'),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> false
 			),
 			'nominator_array' => array(
 				'name' => 'nominator_array',
@@ -323,7 +344,8 @@ class PF_Metas {
 				'function'	=> __('Stores and array of all userIDs that nominated the item in an array', 'pf'),
 				'type'	=> array('adm'),
 				'use'	=> array('req'),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> true
 			),
 			'sortable_item_date' => array(
 				'name' => 'sortable_item_date',
@@ -331,7 +353,9 @@ class PF_Metas {
 				'function'	=> __('A version of the item_date meta that\'s ready for sorting. Should be a Unix timestamp', 'pf'),
 				'type'	=> array('adm'),
 				'use'	=> array('req'),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> false
+				
 			),
 			'readable_status' => array(
 				'name' => 'readable_status',
@@ -339,7 +363,8 @@ class PF_Metas {
 				'function'	=> __('A check to determine if the content of the item has been made readable', 'pf'),
 				'type'	=> array('desc'),
 				'use'	=> array('req'),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> true
 			),
 			'revertible_feed_text' => array(
 				'name' => 'revertible_feed_text',
@@ -347,7 +372,8 @@ class PF_Metas {
 				'function'	=> __('The original description, excerpt or content text given by the feed', 'pf'),
 				'type'	=> array('adm'),
 				'use'	=> array(),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> true
 			),
 			'pf_feed_item_word_count' => array(
 				'name' => 'pf_feed_item_word_count',
@@ -355,7 +381,8 @@ class PF_Metas {
 				'function'	=> __('Stores the count of the original words retrieved with the feed item', 'pf'),
 				'type'	=> array('desc'),
 				'use'	=> array(),
-				'level'	=> array('item', 'nomination', 'post')
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> true
 			),
 			'pf_feed_error_count' => array(
 				'name' => 'pf_feed_error_count',
@@ -363,7 +390,8 @@ class PF_Metas {
 				'function'	=> __('Stores a count of the number of errors a feed has experianced', 'pf'),
 				'type'	=> array('adm'),
 				'use'	=> array(),
-				'level'	=> array('feed', 'post')
+				'level'	=> array('feed', 'post'),
+				'serialize'	=> false
 			)
 		);
 
