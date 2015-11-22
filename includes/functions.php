@@ -772,6 +772,13 @@ function pf_meta_for_entry($key, $value){
  *
  */
 function pf_meta_transition_post($idA, $idB, $term_transition = false){
+	if ( !is_string( $idA ) || !is_string( $idB ) ){
+		pf_log( 'Post meta transition failed.' );
+		pf_log( $idA );
+		pf_log( $idB );
+		pf_log( $term_transition );
+		return;
+	}
 	pf_log('Transition post '.$idA.' to '.$idB);
 	foreach(pf_meta_structure() as $meta){
 		pf_meta_transition(get_pf_meta_name($meta), $idA, $idB);
