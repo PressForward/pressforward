@@ -1177,7 +1177,7 @@ class PF_Admin {
 
 			//SASS-generated styles
 			//wp_register_style( PF_SLUG . 'sass-settings-style', PF_URL . 'assets/css/pf-settings.css');
-			wp_register_style( PF_SLUG . '-susy-style', PF_URL . 'assets/css/pressforward.css', array( PF_SLUG . '-bootstrap-style', PF_SLUG . '-bootstrap-responsive-style' ) );
+			wp_register_style( PF_SLUG . '-style', PF_URL . 'assets/css/pressforward.css', array( PF_SLUG . '-bootstrap-style', PF_SLUG . '-bootstrap-responsive-style' ) );
 			wp_register_style( PF_SLUG . '-settings-style', PF_URL . 'assets/css/pf-settings.css' );
 			wp_register_style( PF_SLUG . '-subscribed-styles', PF_URL . 'assets/css/pf-subscribed.css' );
 
