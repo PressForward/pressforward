@@ -1,12 +1,12 @@
-@import "basestyle",
+@import
+		"mixins",
+		"base",
 //		"bootstrap",
 //		"bootstrap-responsive",
 		"susy",
-		"reset",
-		"pf-settings",
-		"pf-responsive",
-		"mixins",
-		"base",
-		"item",
-		"nominations",
-		"pf-settings";
+//		"reset",
+		"pf-responsive";
+
+//		"base",
+//		"item",
+//		"nominations";

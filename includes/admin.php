@@ -1163,20 +1163,33 @@ class PF_Admin {
 		$user_ID = get_current_user_id();
 		$pf_user_scroll_switch = get_user_option('pf_user_scroll_switch', $user_ID);
 
-			wp_register_style( PF_SLUG . '-style', PF_URL . 'assets/css/style.css');
-			wp_register_style( PF_SLUG . '-bootstrap-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
-			wp_register_style( PF_SLUG . '-bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
-			wp_register_script(PF_SLUG . '-twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
-			wp_register_style( PF_SLUG . '-susy-style', PF_URL . 'assets/css/susy.css');
+			//wp_register_style( PF_SLUG . '-style', PF_URL . 'assets/css/style.css');
+
+			//wp_register_style( PF_SLUG . '-susy-style', PF_URL . 'assets/css/susy.css');
 			wp_register_style( PF_SLUG . '-reset-style', PF_URL . 'assets/css/reset.css');
-			wp_register_style( PF_SLUG . '-settings-style', PF_URL . 'assets/css/pf-settings.css');
+			//wp_register_style( PF_SLUG . '-settings-style', PF_URL . 'assets/css/pf-settings.css');
+
+			// Dependencies
+			wp_register_style( PF_SLUG . '-bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
+			wp_register_style( PF_SLUG . '-bootstrap-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
+			wp_register_script(PF_SLUG . '-twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
+
+
+			//SASS-generated styles
+			//wp_register_style( PF_SLUG . 'sass-settings-style', PF_URL . 'assets/css/pf-settings.css');
+			wp_register_style( PF_SLUG . '-susy-style', PF_URL . 'assets/css/pressforward.css', array( PF_SLUG . '-bootstrap-style', PF_SLUG . '-bootstrap-responsive-style' ) );
+			wp_register_style( PF_SLUG . '-settings-style', PF_URL . 'assets/css/pf-settings.css' );
+			wp_register_style( PF_SLUG . '-subscribed-styles', PF_URL . 'assets/css/pf-subscribed.css' );
+
+			//wp_register_style( PF_SLUG . '-responsive-style', PF_URL . 'assets/css/pf-responsive.css', array(PF_SLUG . '-reset-style', PF_SLUG . '-style', PF_SLUG . '-bootstrap-style', PF_SLUG . '-susy-style'));
+			wp_register_style('pf-alert-styles', PF_URL . 'assets/css/alert-styles.css');
+			wp_enqueue_style( PF_SLUG . '-alert-styles' );
 
 			wp_register_script(PF_SLUG . '-views', PF_URL . 'assets/js/views.js', array( PF_SLUG . '-twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide'  ));
 			wp_register_script(PF_SLUG . '-readability-imp', PF_URL . 'assets/js/readability-imp.js', array( PF_SLUG . '-twitter-bootstrap', 'jquery', PF_SLUG . '-views' ));
 			wp_register_script(PF_SLUG . '-infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery', PF_SLUG . '-views', PF_SLUG . '-readability-imp', 'jquery' ));
 			wp_register_script(PF_SLUG . '-scrollimp', PF_URL . 'assets/js/scroll-imp.js', array( PF_SLUG . '-infiniscroll', 'pf-relationships', PF_SLUG . '-views'));
 			wp_register_script('pf-relationships', PF_URL . 'assets/js/relationships.js', array( 'jquery' ));
-			wp_register_style( PF_SLUG . '-responsive-style', PF_URL . 'assets/css/pf-responsive.css', array(PF_SLUG . '-reset-style', PF_SLUG . '-style', PF_SLUG . '-bootstrap-style', PF_SLUG . '-susy-style'));
 			wp_register_script(PF_SLUG . '-tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
 			wp_register_script(PF_SLUG . '-media-query-imp', PF_URL . 'assets/js/media-query-imp.js', array( 'jquery', 'thickbox', 'media-upload' ));
 			wp_register_script(PF_SLUG . '-sort-imp', PF_URL . 'assets/js/sort-imp.js', array( PF_SLUG . '-tinysort', PF_SLUG . '-twitter-bootstrap', PF_SLUG . '-jq-fullscreen' ));
@@ -1184,8 +1197,7 @@ class PF_Admin {
 			wp_register_script( PF_SLUG . '-settings-tools', PF_URL . 'assets/js/settings-tools.js', array( 'jquery' ) );
 			wp_register_script( PF_SLUG . '-tools', PF_URL . 'assets/js/tools-imp.js', array( 'jquery' ) );
 
-		wp_register_style('pf-alert-styles', PF_URL . 'assets/css/alert-styles.css');
-		wp_enqueue_style( PF_SLUG . '-alert-styles' );
+
 		if ( false != pressforward()->form_of->is_a_pf_page() ){
 			//var_dump('heartbeat'); die();
 			wp_enqueue_script( 'heartbeat' );
@@ -1210,12 +1222,14 @@ class PF_Admin {
 				wp_enqueue_script(PF_SLUG . '-scrollimp');
 			}
 			wp_enqueue_script('pf-relationships');
+
+			//Styles
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style(PF_SLUG . '-bootstrap-style');
 			wp_enqueue_style(PF_SLUG . '-bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
-			wp_enqueue_style( PF_SLUG . '-susy-style' );
-			wp_enqueue_style( PF_SLUG . '-responsive-style' );
+			//wp_enqueue_style( PF_SLUG . '-susy-style' );
+			//wp_enqueue_style( PF_SLUG . '-responsive-style' );
 
 		}
 		if (('pressforward_page_pf-review') == $hook) {
@@ -1234,31 +1248,40 @@ class PF_Admin {
 			}
 
 			wp_enqueue_script('pf-relationships');
+
+			//Styles
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style(PF_SLUG . '-bootstrap-style');
 			wp_enqueue_style(PF_SLUG . '-bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
-			wp_enqueue_style( PF_SLUG . '-susy-style' );
+			//wp_enqueue_style( PF_SLUG . '-susy-style' );
+			//wp_enqueue_style( PF_SLUG . '-responsive-style' );
+
+			//Core
 			wp_enqueue_script( 'post' );
-			wp_enqueue_style( PF_SLUG . '-responsive-style' );
 		}
 
 		if (('pressforward_page_pf-tools') == $hook) {
 			wp_enqueue_script(PF_SLUG . '-jq-fullscreen', PF_URL . 'lib/jquery-fullscreen/jquery.fullscreen.js', array( 'jquery' ));
 			wp_enqueue_script(PF_SLUG . '-twitter-bootstrap');
 			wp_enqueue_script(PF_SLUG . '-tools');
+			wp_enqueue_script(PF_SLUG . '-settings-tools' );
+
+			//Styles
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style(PF_SLUG . '-bootstrap-style');
 			wp_enqueue_style(PF_SLUG . '-bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
-			wp_enqueue_style( PF_SLUG . '-susy-style' );
-			wp_enqueue_style( PF_SLUG . '-responsive-style' );
+			//wp_enqueue_style( PF_SLUG . '-susy-style' );
+			//wp_enqueue_style( PF_SLUG . '-responsive-style' );
 			wp_enqueue_style( PF_SLUG . '-settings-style' );
-			wp_enqueue_script(PF_SLUG . '-settings-tools' );
 		}
 		if (('pressforward_page_pf-options') == $hook) {
+
+			//Styles
 			wp_enqueue_style( PF_SLUG . '-settings-style' );
 
+			//Scripts
 			wp_enqueue_script(PF_SLUG . '-settings-tools' );
 		}
 
@@ -1267,8 +1290,12 @@ class PF_Admin {
 		}
 
 		if ( 'edit.php' === $hook && 'pf_feed' === get_post_type() ) {
+
+			//Scripts
 			wp_enqueue_script( PF_SLUG . '-quick-edit' );
-			wp_enqueue_style(PF_SLUG . '-subscribed-styles', PF_URL . 'assets/css/pf-subscribed.css' );
+
+			//Styles
+			wp_enqueue_style( PF_SLUG . '-subscribed-styles' );
 		}
 
 		if (('pressforward_page_pf-feeder') != $hook) { return; }
@@ -1277,20 +1304,24 @@ class PF_Admin {
 
 			wp_enqueue_media();
 
+			//Scripts
 			wp_enqueue_script(PF_SLUG . '-tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
 			wp_enqueue_script(PF_SLUG . '-twitter-bootstrap');
+			wp_enqueue_script( PF_SLUG . '-media-query-imp' );
+			wp_enqueue_script(PF_SLUG . '-settings-tools' );
 
+
+			//Styles
 			wp_enqueue_style( PF_SLUG . '-reset-style' );
 			wp_enqueue_style(PF_SLUG . '-bootstrap-style');
 			wp_enqueue_style(PF_SLUG . '-bootstrap-responsive-style');
 			wp_enqueue_style( PF_SLUG . '-style' );
-			wp_enqueue_style( PF_SLUG . '-susy-style' );
-			wp_enqueue_style( PF_SLUG . '-responsive-style' );
-			wp_enqueue_style('thickbox');
-			wp_enqueue_script( PF_SLUG . '-media-query-imp' );
 			wp_enqueue_style( PF_SLUG . '-settings-style' );
-			wp_enqueue_script(PF_SLUG . '-settings-tools' );
+			//wp_enqueue_style( PF_SLUG . '-susy-style' );
+			//wp_enqueue_style( PF_SLUG . '-responsive-style' );
 
+			//Core
+			wp_enqueue_style('thickbox');
 		}
 
 	}
