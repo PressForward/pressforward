@@ -865,3 +865,9 @@ body {
     width: 100%; }
   .pressforward .grid.full #entries article.feed-item {
     width: 100%; } }
+
+.list #entries article.feed-item {
+  background-color: white;
+  padding-left: 8px; }
+  .list #entries article.feed-item header {
+    width: 24%; }
