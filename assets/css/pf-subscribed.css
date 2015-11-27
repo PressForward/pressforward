@@ -12,3 +12,9 @@
     color: black;
     background-color: red;
     padding: 2px; }
+
+.list #entries article.feed-item {
+  background-color: white;
+  padding-left: 8px; }
+  .list #entries article.feed-item header {
+    width: 24%; }
