@@ -126,25 +126,6 @@ visibility:hidden;
 	margin: 0;
 }
 
-.item_title {
-	margin-bottom: 3px;
-	line-height: 16px;
-    overflow:hidden;
-}
-
-.grid .item_title {
-	height: 63px;
-}
-
-.source_title {
-	line-height: 1.5em;
-    overflow:hidden;
-}
-
-.grid .source_title {
-	height: 18px;
-}
-
 .pf-btns {
 	margin: 0 0;
     font-size: 0;
@@ -222,28 +203,6 @@ color: #ffffff;
 
 .unset {
 	display:none!important;
-}
-
-.actions form {
-	margin: 0;
-}
-
-.item-tags {
-	text-align: left;
-}
-
-.modal .original-link {
-	margin-top: 2px;
-}
-
-.modal.pfmodal {
-	z-index: 9998;
-}
-
-h3 {
-	font-size: 18px;
-	line-height: 19px;
-	margin: 4px 0;
 }
 
 /**.feed-item div.feed-item-info-box {

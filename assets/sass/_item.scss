@@ -1,3 +1,24 @@
-article {
-	background-color: white;
+.item_title {
+	margin-bottom: 3px;
+	line-height: 16px;
+    overflow:hidden;
+}
+
+.source_title {
+	line-height: 1.5em;
+    overflow:hidden;
+}
+
+.actions form {
+	margin: 0;
+}
+
+.item-tags {
+	text-align: left;
+}
+
+h3 {
+	font-size: 18px;
+	line-height: 19px;
+	margin: 4px 0;
 }
