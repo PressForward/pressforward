@@ -22,3 +22,21 @@ h3 {
 	line-height: 19px;
 	margin: 4px 0;
 }
+
+
+.feed-item {
+	.item_meta {
+		font-size: 10px;
+		line-height: 11px;
+		margin-bottom: 6px;
+	}
+
+	.item_excerpt {
+		font-size: 12px;
+		line-height: 16px;
+		color: #494949;
+		font-family: sans-serif;
+		padding: 3px;
+	    overflow:hidden;
+	}
+}

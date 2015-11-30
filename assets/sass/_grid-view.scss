@@ -10,8 +10,11 @@
 
   #entries {
 
-    article.feed-item {
+  }
+  .feed-item {
 
-    }
+    .item_excerpt {
+  	   height: 92px;
+     }
   }
 }
