@@ -136,7 +136,8 @@ function nominate_it() {
     } else {
     	$feed_nom = array(
     		'id' => 0,
-    		'msg'	=> 'No feed was nominated.'
+    		'msg'	=> 'No feed was nominated.',
+        'simple'  => 'User hasn\'t nominated a feed.'
     	);
     	update_option( 'pf_last_nominated_feed', $feed_nom );
     }
