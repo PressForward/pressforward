@@ -866,14 +866,22 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 
 		}
 
+    $source_position = get_option('pf_source_statement_position', 'bottom');
 
 		if ( $url ) {
-			$content .= '<p>';
 
-			if ( $selection )
-				$content .= __('via ');
+      $source_statement = '<p>';
 
-			$content .= sprintf( "<a href='%s'>%s</a>.</p>", esc_url( $url ), esc_html( $title ) );
+      if ( $selection )
+        $source_statement .= __('via ');
+
+      $source_statement .= sprintf( "<a href='%s'>%s</a>.</p>", esc_url( $url ), esc_html( $title ) );
+
+      if ( 'bottom' == $source_position ){
+  			$content .= $source_statement;
+      } else {
+        $content = $source_statement.$content;
+      }
 		}
 
 		remove_action( 'media_buttons', 'media_buttons' );

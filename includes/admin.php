@@ -1475,6 +1475,14 @@ class PF_Admin {
 				update_option('pf_present_author_as_primary', 'no');
 			}
 
+			if (isset( $_POST['pf_source_statement_position'] )){
+				$pf_author_opt_check = $_POST['pf_source_statement_position'];
+				//print_r($pf_links_opt_check); die();
+				update_option('pf_source_statement_position', $pf_author_opt_check);
+			} else {
+				update_option('pf_source_statement_position', 'no');
+			}
+
 			$pf_draft_post_type = (!empty( $_POST[PF_SLUG . '_draft_post_type'] ) )
 				? $_POST[PF_SLUG . '_draft_post_type']
 				: 'post';

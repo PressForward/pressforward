@@ -46,6 +46,23 @@
 	<?php _e('When this preference is on, the name of the author in a PressFoward item will appear in the item_author custom field when the item is sent to Draft. This author will overwrite the creator of the post.', 'pf'); ?>
 </p>
 <hr />
+<p>
+	<?php
+		$pf_source_statement_position = get_option('pf_source_statement_position', 'bottom');
+	?>
+	<select id="pf_present_author_as_primary" name="pf_source_statement_position">
+		<option value="top" <?php if ($pf_source_statement_position == 'top'){ echo 'selected="selected"'; }?>>Top</option>
+		<option value="bottom" <?php if ($pf_source_statement_position == 'bottom'){ echo 'selected="selected"'; }?>>Bottom</option>
+	</select>
+	<?php
+
+	echo '<label class="description" for="pf_source_statement_position"> ' .__('Source statement position.', 'pf'). ' </label>';
+	?>
+</p>
+<p>
+	<?php _e('Choose the position for source title and link on published content.', 'pf'); ?>
+</p>
+<hr />
 <?php
 	if (class_exists('The_Alert_Box')){ ?>
 		<p>

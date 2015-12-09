@@ -273,7 +273,12 @@ class PF_Nominations {
 			$url = pf_get_post_meta($_POST['ID'], 'item_link', true);
 #			$linked = get_option('pf_link_to_source', 0);
 #			if ($linked < 1){
-				$item_content = $item_content . $this->get_the_source_statement( $item_feed_post_id );
+				$source_position = get_option('pf_source_statement_position', 'bottom');
+				if ('bottom' == $source_position){
+					$item_content = $item_content . $this->get_the_source_statement( $item_feed_post_id );
+				} else {
+					$item_content = $this->get_the_source_statement( $item_feed_post_id ) . $item_content;
+				}
 #			}
 			$data = array(
 				'post_status' => get_option(PF_SLUG.'_draft_post_status', 'draft'),
