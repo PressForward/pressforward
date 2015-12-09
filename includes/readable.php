@@ -186,7 +186,14 @@ class PF_Readability {
 		set_time_limit(0);
 		$url =  pressforward()->pf_feed_items->resolve_full_url($url);
 
-		$request = pf_de_https($url, 'wp_remote_get', array('timeout' => '30', 'user-agent' => 'AdsBot-Google (+http://www.google.com/adsbot.html)'));
+		$request = pf_de_https($url, 'wp_remote_get', array(
+																												'timeout' => '30',
+																												'user-agent' => 'AdsBot-Google (+http://www.google.com/adsbot.html)',
+																												'headers'		=> array(
+																													'X-PressForward'	=>	get_site_url()
+																												)
+																											)
+														);
 		//var_dump($request); die();
 		//print_r($url); print_r(' - Readability<br />');
 		// change from Boone - use wp_remote_get() instead of file_get_contents()
