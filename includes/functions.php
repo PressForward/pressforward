@@ -351,17 +351,19 @@ function pf_de_https($url, $function = false) {
 		$r = set_url_scheme($url, 'http');
 	} else {
 		$args[0] = $url;
-		#unset($args[1]);
+		unset($args[1]);
 		#var_dump($args);
 		$r = call_user_func_array( $function, $args );
+		//var_dump($r); die();
 		# "A variable is considered empty if it does not exist or if its value equals FALSE"
 		if ( is_wp_error( $r ) || empty($r) ) {
 		    $non_ssl_url = pf_de_https( $url );
 		    if ( $non_ssl_url != $url ) {
 						$args[0] = $non_ssl_url;
 		        $r = call_user_func_array( $function, $args );
+						//var_dump($url); die();
 		    }
-
+				//$r = false;
 		    if ( !$r || is_wp_error( $r ) ) {
 		        # Last Chance!
 						if ('file_get_contents' != $function){
