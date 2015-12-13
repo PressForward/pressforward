@@ -1,4 +1,7 @@
 <?php
+
+pressforward()->pf_update_php_notice->does_it_meet_required_php_version();
+
 ?>
 <p>
 	<?php _e('These preferences are available only to users with an Administrator role in PressForward. Options set on this page will determine behavior across the site as a whole.', 'pf'); ?>

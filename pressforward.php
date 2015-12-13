@@ -91,6 +91,7 @@ class PressForward {
 		$this->set_up_tools();
 		$this->set_up_add_feeds();
 		$this->set_up_subscribed_feeds();
+		$this->set_up_WP_Update_PHP();
 
 		add_action( 'plugins_loaded', array( $this, 'pressforward_init' ) );
 
@@ -151,6 +152,7 @@ class PressForward {
     	require_once( PF_ROOT . '/includes/template-tags.php' );
     	require_once( PF_ROOT . '/includes/alert-box/alert-box.php' );
 		require_once( PF_ROOT . '/lib/urlresolver/URLResolver.php' );
+		require_once( PF_ROOT . '/lib/class-WPUpdatePHP.php' );
 
 	}
 
@@ -433,6 +435,13 @@ class PressForward {
 		return '';
 	}
 
+	public function set_up_WP_Update_PHP() {
+		if ( empty( $this->pf_update_php_notice ) ) {
+			$this->pf_update_php_notice = new PF_WPUpdatePHP('5.3.0');
+		}
+
+		return '';
+	}
 	/**
 	 * Set up first feed and other install/upgrade tasks
 	 * Code via Boone
