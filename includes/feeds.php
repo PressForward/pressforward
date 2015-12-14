@@ -88,9 +88,10 @@ class PF_Feeds_Schema {
 			'hierarchical' => true,
 			'supports' 	=> array('title','editor','author','thumbnail','excerpt','custom-fields','page-attributes'),
 			'taxonomies' => array('post_tag'),
-			'show_in_menu' => PF_MENU_SLUG
+			'show_in_menu' => PF_MENU_SLUG,
+			'show_in_admin_bar' => true,
 			#'menu_position' => 100
-			#'show_ui'     => true, // for testing only
+			'show_ui'     => true, // for testing only
 		) ) );
 
 		do_action( 'pf_feed_post_type_registered' );

@@ -87,6 +87,8 @@ class PF_Admin {
 			24 // Position (just above comments - 25)
 		);
 
+		remove_submenu_page( PF_MENU_SLUG, 'edit.php?post_type=pf_feed' );
+
 		add_submenu_page(
 			PF_MENU_SLUG,
 			__('All Content', 'pf'),
