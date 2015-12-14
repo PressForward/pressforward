@@ -573,9 +573,9 @@ class PF_Feeds_Schema {
 
 	# Not only is this moving feeds over into feed CPT posts, but this methodology will insure a time-out won't force the process to restart.
 	# There should probably be a AJAX interface for this, same as the AB subscribe method.
-	public function progressive_feedlist_transformer($feedlist = array(), $xmlUrl, $key) {
-
-		$check = $this->create($xmlUrl, array('type' => 'rss-quick'));
+	public function progressive_feedlist_transformer($feedlist = array(), $xmlUrl, $key, $args = array()) {
+		$post_args = array_merge(array('type' => 'rss-quick'), $args);
+		$check = $this->create($xmlUrl, $post_args);
 		if (is_numeric($check) && (0 < $check)){
 			unset($feedlist[$key]);
 		}
