@@ -449,13 +449,23 @@ class PF_RSS_Import extends PF_Module {
 	}
 
 	public static function process_opml($opml){
-		$OPML_reader = new OPML_reader;
-		$opml_array = $OPML_reader->get_OPML_data($opml);
+		$OPML = new OPML_reader($opml);
+		$OPML_obj = $OPML->get_OPML_obj();
+		$opml_array = $OPML_obj->feeds;
 		#print_r($opml_array); die();
-		foreach($opml_array as $key=>$feedXml){
+		foreach($opml_array as $key=>$feedObj){
+			$feedXml = $feedObj->feedUrl;
+			$args = array(
+				'title' => $feedObj->title,
+				'description' => $feedObj->text,
+				'tags'				=>	array()
+			);
+			foreach ($feedObj->folder as $folder){
+				$args['tags'][$folder->slug] = $folder->title;
+			}
 			# Adding this as a 'quick' type so that we can process the list quickly.
 			pf_log('Adding this as a quick type so that we can process the list quickly');
-			$opml_array = pressforward()->pf_feeds->progressive_feedlist_transformer($opml_array, $feedXml, $key);
+			$opml_array = pressforward()->pf_feeds->progressive_feedlist_transformer($opml_array, $feedXml, $key, $args);
 			# @todo Tag based on folder structure
 		}
 		#$check_up = update_option( PF_SLUG . '_feedlist', $opml_array );

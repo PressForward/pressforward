@@ -88,9 +88,10 @@ class PF_Feeds_Schema {
 			'hierarchical' => true,
 			'supports' 	=> array('title','editor','author','thumbnail','excerpt','custom-fields','page-attributes'),
 			'taxonomies' => array('post_tag'),
-			'show_in_menu' => PF_MENU_SLUG
+			'show_in_menu' => PF_MENU_SLUG,
+			'show_in_admin_bar' => true,
 			#'menu_position' => 100
-			#'show_ui'     => true, // for testing only
+			'show_ui'     => true, // for testing only
 		) ) );
 
 		do_action( 'pf_feed_post_type_registered' );
@@ -572,9 +573,9 @@ class PF_Feeds_Schema {
 
 	# Not only is this moving feeds over into feed CPT posts, but this methodology will insure a time-out won't force the process to restart.
 	# There should probably be a AJAX interface for this, same as the AB subscribe method.
-	public function progressive_feedlist_transformer($feedlist = array(), $xmlUrl, $key) {
-
-		$check = $this->create($xmlUrl, array('type' => 'rss-quick'));
+	public function progressive_feedlist_transformer($feedlist = array(), $xmlUrl, $key, $args = array()) {
+		$post_args = array_merge(array('type' => 'rss-quick'), $args);
+		$check = $this->create($xmlUrl, $post_args);
 		if (is_numeric($check) && (0 < $check)){
 			unset($feedlist[$key]);
 		}
@@ -622,6 +623,7 @@ class PF_Feeds_Schema {
 		# post results in an update to that post.
 		pf_log('We have initially formed the following post args:');
 		pf_log($wp_args);
+
 		if (!self::has_feed($r['url'])){
 			$insert_type = 'insert';
 		} else {
@@ -663,7 +665,33 @@ class PF_Feeds_Schema {
 			pf_log('The post_id is numeric and greater than 0, complete the ' .$insert_type. ' process');
 			self::set_pf_feed_type($post_id, $r['type']);
 			$r['feedUrl'] = $r['url'];
+			pf_log('Tags found:');
+			pf_log($r['tags']);
+			//@TODO make this a function of the PF_Folders class.
+			foreach ($r['tags'] as $slug=>$tag){
+				//Assume that OPML files have folder structures that
+				//users would want to maintain.
+				if ( 'rss-quick' == $r['type'] ){
+					$term = wp_insert_term($tag, $this->tag_taxonomy);
+					//var_dump($term_id); die();
+					if (is_wp_error($term)){
+						$term_id = $term->error_data['term_exists'];
+					} elseif (is_array($term)){
+						$term_id = $term['term_id'];
+					} else {
+						$term_id = false;
+					}
+					if ( false !== $term_id ){
+						pf_log('Adding folder with ID of '.$term_id);
+						wp_add_object_terms($post_id, $term_id, $this->tag_taxonomy);
+					}
+				} else {
+					//@TODO Add as post tag instead
+				}
+			}
+
 			$unsetables = array('title', 'description', 'tags', 'type', 'url');
+
 			foreach ($unsetables as $k=>$a){
 				unset($r[$a]);
 			}
