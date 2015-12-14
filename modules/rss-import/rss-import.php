@@ -457,8 +457,12 @@ class PF_RSS_Import extends PF_Module {
 			$feedXml = $feedObj->feedUrl;
 			$args = array(
 				'title' => $feedObj->title,
-				'description' => $feedObj->text
+				'description' => $feedObj->text,
+				'tags'				=>	array()
 			);
+			foreach ($feedObj->folder as $folder){
+				$args['tags'][$folder->slug] = $folder->title;
+			}
 			# Adding this as a 'quick' type so that we can process the list quickly.
 			pf_log('Adding this as a quick type so that we can process the list quickly');
 			$opml_array = pressforward()->pf_feeds->progressive_feedlist_transformer($opml_array, $feedXml, $key, $args);
