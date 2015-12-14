@@ -76,9 +76,9 @@ class OPML_Object {
 		return $array;
 	}
 	function assure_title_and_text($entry){
-		if (!empty($entry['title']) && !empty($entry['text']) ){
+		if (!empty($entry['title']) && empty($entry['text']) ){
 			$entry['text'] = $entry['title'];
-		} elseif (!empty($entry['text']) && !empty($entry['title'])) {
+		} elseif (!empty($entry['text']) && empty($entry['title'])) {
 			$entry['title'] = $entry['text'];
 		} elseif ( empty($entry['title']) && empty($entry['text']) && !empty($entry['feedUrl']) ) {
 			$entry['text'] = $entry['feedUrl'];
