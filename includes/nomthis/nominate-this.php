@@ -234,7 +234,12 @@ function nominate_it() {
 				set_post_thumbnail($newPostID, $post_thumbnail_id);
 			}
 			pf_meta_transition_post($post_ID, $newPostID);
-		}
+      return $newPostID;
+		} else {
+      //@TODO We should increment nominations for this item maybe?
+      //Some sort of signal should occur here.
+      return $post_check;
+    }
 	}
 	#var_dump($post); die();
 	return $post_ID;
