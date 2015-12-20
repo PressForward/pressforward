@@ -624,7 +624,7 @@ function pf_get_defining_capability_by_role($role_slug){
 function pf_replace_author_presentation( $author ) {
 	global $post;
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')){
-		$custom_author = pf_retrieve_meta($post->ID, 'item_author');
+		$custom_author = pressforward()->metas->retrieve_meta($post->ID, 'item_author');
 		if($custom_author)
 			return $custom_author;
 		return $author;
@@ -653,7 +653,7 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 		return $author_uri;
 	}
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')) {
-		$custom_author_uri = pf_retrieve_meta($id, 'item_link');
+		$custom_author_uri = pressforward()->metas->retrieve_meta($id, 'item_link');
 		if(!$custom_author_uri || 0 == $custom_author_uri || empty($custom_author_uri)){
 			return $author_uri;
 		} else {
@@ -709,7 +709,7 @@ function pf_forward_unto_source(){
 			echo '<meta property="og:url" content="'.$link.'" />';
 		}
 		$wait = get_option('pf_link_to_source', 0);
-		$post_check = pf_get_post_meta($post_id, 'pf_forward_to_origin', true);
+		$post_check = pressforward()->metas->get_post_pf_meta($post_id, 'pf_forward_to_origin', true);
 		//var_dump($post_check); die();
 		if ( ( $wait > 0 ) && ( "no-forward" !== $post_check ) ){
 			echo '<META HTTP-EQUIV="refresh" CONTENT="'.$wait.';URL='.$link.'">';
@@ -1084,12 +1084,12 @@ function pf_delete_item_tree( $item, $fake_delete = false ) {
 					'post_status'  => $fake_status,
 					'post_title'   => $item->post_title,
 					'post_content' => '',
-					'guid'         => pf_get_post_meta($item->ID, 'item_link'),
+					'guid'         => pressforward()->metas->get_post_pf_meta($item->ID, 'item_link'),
 					'post_date'    => $item->post_date
 				);
 
 				$id = wp_insert_post($wp_args);
-				pf_update_meta($id, 'item_id', create_feed_item_id( pf_get_post_meta($item->ID, 'item_link'), $item->post_title ) );
+				pressforward()->metas->update_pf_meta($id, 'item_id', create_feed_item_id( pressforward()->metas->get_post_pf_meta($item->ID, 'item_link'), $item->post_title ) );
 			}
 
 		break; // $feed_item_post_type

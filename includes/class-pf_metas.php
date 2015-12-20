@@ -23,7 +23,7 @@ class PF_Metas {
 	 */
 	function establish_post($id, $args){
 		foreach ($args as $arg){
-			pf_add_meta($id, $arg['name'], $arg['value'], true);
+			pressforward()->metas->add_pf_meta($id, $arg['name'], $arg['value'], true);
 		}
 	}
 
@@ -56,8 +56,8 @@ class PF_Metas {
 			return;
 		}
 		pf_log('Transition post '.$idA.' to '.$idB);
-		foreach(pf_meta_structure() as $meta){
-			pressforward()->metas->transition_meta(get_pf_meta_name($meta), $idA, $idB);
+		foreach(pressforward()->metas->structure() as $meta){
+			pressforward()->metas->transition_meta(pressforward()->metas->get_name($meta), $idA, $idB);
 		}
 		if ( $term_transition ){
 			pf_log('Transitioning Terms.');
@@ -71,7 +71,7 @@ class PF_Metas {
 		if ( !empty($parent) && !is_wp_error( $parent ) ){
 			$ids[] = $parent;
 		}
-		$item_id = pf_get_post_meta($idA, 'pf_item_post_id');
+		$item_id = pressforward()->metas->get_post_pf_meta($idA, 'pf_item_post_id');
 		if ( !empty($item_id) && !is_wp_error( $item_id ) ){
 			$ids[] = $item_id;
 		}
@@ -80,7 +80,7 @@ class PF_Metas {
 			$ids[] = $parent_parent;
 		}**/
 		$term_objects = wp_get_object_terms( $ids, array( pressforward()->pf_feeds->tag_taxonomy, 'post_tag', 'category' ) );
-		$item_tags = pf_get_post_meta($idA, 'item_tags');
+		$item_tags = pressforward()->metas->get_post_pf_meta($idA, 'item_tags');
 		if ( !empty($term_objects) ){
 			foreach ( $term_objects as $term ){
 				wp_set_object_terms($idB, $term->term_id, $term->taxonomy, true);
@@ -154,7 +154,7 @@ class PF_Metas {
 	 */
 	function transition_meta($name, $idA, $idB){
 		$meta_value = get_post_meta($idA, $name, true);
-		$result = pf_prep_for_depreciation($name, $meta_value, $idA, $idB);
+		$result = pressforward()->metas->check_for_and_transfer_depreciated_meta($name, $meta_value, $idA, $idB);
 		if (!$result){
 			$result = update_post_meta($idB, $name, $meta_value);
 		}
@@ -179,8 +179,8 @@ class PF_Metas {
 	 *
 	 * @return bool True if the post_meta is supported by PressForward.
 	 */
-	function pf_prep_for_depreciation($name, $value, $idA, $idB){
-		foreach (pf_meta_structure() as $meta){
+	function check_for_and_transfer_depreciated_meta($name, $value, $idA, $idB){
+		foreach (pressforward()->metas->structure() as $meta){
 			if ($meta['name'] == $name){
 				if (in_array('dep', $meta['type'])){
 					if ((!isset($value)) || (false == $value) || ('' == $value) || (0 == $value) || (empty($value))){
@@ -205,32 +205,34 @@ class PF_Metas {
 	 *
 	 * @return string Returns the author.
 	 */
-	function pf_meta_by_name($name){
-		foreach (pf_meta_structure() as $meta){
+	function by_name($name){
+		foreach (pressforward()->metas->structure() as $meta){
 			if($name == $meta['name']){
 				return $meta;
+			} else {
+				return false;
 			}
 		}
 	}
 
-	function pf_assure_meta_key($name){
-		$meta = pf_meta_by_name($name);
-		if ( !empty( $meta['move'] ) ){
-			return pf_meta_by_name( $meta['move'] );
-		} else{
-			return $meta;
+	function assure_key($name){
+		$meta = pressforward()->metas->by_name($name);
+		if ( ( false !== $meta ) && !empty( $meta['move'] ) ){
+			return pressforward()->metas->by_name( $meta['move'] );
+		} else {
+			return array( 'name' => $name, 'error' => 'not_pf_meta' );
 		}
 	}
 
-	function pf_get_meta_key( $name ){
-		$meta = pf_assure_meta_key( $name );
-		return get_pf_meta_name( $meta );
+	function get_key( $name ){
+		$meta = pressforward()->metas->assure_key( $name );
+		return pressforward()->metas->get_name( $meta );
 	}
 
 	/**
 	 * Get the name out of the meta object.
 	 */
-	function get_pf_meta_name($meta){
+	function get_name($meta){
 		return $meta['name'];
 	}
 
@@ -241,7 +243,7 @@ class PF_Metas {
 	 *
 	 * @return array An object describing all the post_metas used by PressForward.
 	 */
-	function pf_meta_structure(){
+	function structure(){
 		#Inspired by http://www.loc.gov/standards/metable.html
 		#Adm=Administrative, Struc=Structural, Desc=Descriptive, Req=Required, Rep=Repeatable, Set=Set, Aggr=Aggregate, Dep = Depreciated
 
@@ -477,8 +479,8 @@ class PF_Metas {
 	/*
 	 * A function to check and retrieve the right meta field for a post.
 	 */
-	function pf_pass_meta($field, $id = false, $value = '', $single = true){
-	    $metas = pf_meta_structure();
+	function pass_meta($field, $id = false, $value = '', $single = true){
+	    $metas = pressforward()->metas->structure();
 	    # Check if it exists.
 	    if (empty($metas[$field])){
 	        pf_log('The field ' . $field . ' is not supported.');
@@ -488,7 +490,7 @@ class PF_Metas {
 	    if (in_array('dep',$metas[$field]['type'])){
 			$new_field = $metas[$field]['move'];
 			pf_log('You tried to use depreciated field '.$field.' it was moved to '.$new_field);
-			pf_transition_deped_meta($field, $id, $value, $single, $new_field);
+			pressforward()->metas->transition_depreciated_meta($field, $id, $value, $single, $new_field);
 	        $field = $new_field;
 	    }
 	    return $field;
@@ -499,7 +501,7 @@ class PF_Metas {
 	 * Transitions meta values from old depreciated meta_slugs to new ones.
 	 *
 	 */
-	function pf_transition_deped_meta($field, $id, $value, $single, $new_field){
+	function transition_depreciated_meta($field, $id, $value, $single, $new_field){
 		$result = false;
 		# Note - empty checks for FALSE
 		$old = get_post_meta($id, $field, $single);
@@ -529,11 +531,11 @@ class PF_Metas {
 	 *
 	 * @return string|array Returns the result of retrieving the post_meta or the self-descriptive meta-object with value.
 	 */
-	function pf_retrieve_meta($id, $field, $obj = false, $single = true){
-	    $field = pf_pass_meta($field, $id);
+	function retrieve_meta($id, $field, $obj = false, $single = true){
+	    $field = pressforward()->metas->pass_meta($field, $id);
 	    $meta = get_post_meta($id, $field, $single);
 	    if ($obj){
-	        $metas = pf_meta_structure();
+	        $metas = pressforward()->metas->structure();
 	        $meta_obj = $metas[$field];
 	        $meta_obj['value'] = $meta;
 	        return $meta_obj;
@@ -543,12 +545,12 @@ class PF_Metas {
 	}
 
 	/**
-	 * An alias for pf_retrieve_meta that allows you to use the standard argument set from get_post_meta.
+	 * An alias for pressforward()->metas->retrieve_meta that allows you to use the standard argument set from get_post_meta.
 	 *
 	 */
-	function pf_get_post_meta($id, $field, $single = true, $obj = false){
+	function get_post_pf_meta($id, $field, $single = true, $obj = false){
 
-			return pf_retrieve_meta($id, $field, $obj, $single);
+			return pressforward()->metas->retrieve_meta($id, $field, $obj, $single);
 
 	}
 
@@ -562,14 +564,14 @@ class PF_Metas {
 	 *
 	 * @return int The check value from update_post_meta.
 	 */
-	function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
-	    $field = pf_pass_meta($field, $id, $value);
-	    $check = pf_apply_meta($id, $field, $value, $prev_value);
+	function update_pf_meta($id, $field, $value = '', $prev_value = NULL){
+	    $field = pressforward()->metas->pass_meta($field, $id, $value);
+	    $check = pressforward()->metas->apply_pf_meta($id, $field, $value, $prev_value);
 	    return $check;
 
 	}
 
-	function pf_get_author_from_url($url){
+	function get_author_from_url($url){
 		$response = pf_file_get_html( $url );
 		$possibles = array();
 		if (empty($response)){
@@ -609,17 +611,17 @@ class PF_Metas {
 	 *
 	 * @return int The check value from add_post_meta.
 	 */
-	function pf_add_meta($id, $field, $value = '', $unique = false){
-	    $field = pf_pass_meta($field, $id, $value, $unique);
-	    $check = pf_apply_meta($id, $field, $value, $unique);
+	function add_pf_meta($id, $field, $value = '', $unique = false){
+	    $field = pressforward()->metas->pass_meta($field, $id, $value, $unique);
+	    $check = pressforward()->metas->apply_pf_meta($id, $field, $value, $unique);
 	    return $check;
 
 	}
 
-	function pf_apply_meta($id, $field, $value = '', $state = null, $apply_type = 'update'){
+	function apply_pf_meta($id, $field, $value = '', $state = null, $apply_type = 'update'){
 		switch ($field) {
 			case 'nominator_array':
-				$nominators = pf_get_post_meta($id, $field);
+				$nominators = pressforward()->metas->get_post_pf_meta($id, $field);
 				if ( !is_array( $value ) ){
 					$value = array( $value );
 				}

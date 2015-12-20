@@ -135,26 +135,26 @@
 				// Nomination (post) ID
 				$metadata['nom_id'] = $nom_id = get_the_ID();
 				//Get the WP database ID of the original item in the database.
-				$metadata['item_feed_post_id'] = pf_get_post_meta($nom_id, 'item_feed_post_id', true);
+				$metadata['item_feed_post_id'] = pressforward()->metas->get_post_pf_meta($nom_id, 'item_feed_post_id', true);
 				//Number of Nominations recieved.
-				$metadata['nom_count'] = $nom_count = pf_retrieve_meta($nom_id, 'nomination_count');
+				$metadata['nom_count'] = $nom_count = pressforward()->metas->retrieve_meta($nom_id, 'nomination_count');
 				//Permalink to orig content
-				$metadata['permalink'] = $nom_permalink = pf_get_post_meta($nom_id, 'item_link', true);
+				$metadata['permalink'] = $nom_permalink = pressforward()->metas->get_post_pf_meta($nom_id, 'item_link', true);
 				$urlArray = parse_url($nom_permalink);
 				//Source Site
 				$metadata['source_link'] = isset( $urlArray['host'] ) ? $sourceLink = 'http://' . $urlArray['host'] : '';
 				//Source site slug
 				$metadata['source_slug'] = $sourceSlug = isset( $urlArray['host'] ) ? pf_slugger($urlArray['host'], true, false, true) : '';
 				//RSS Author designation
-				$metadata['authors'] = $item_authorship = pf_get_post_meta($nom_id, 'item_author', true);
+				$metadata['authors'] = $item_authorship = pressforward()->metas->get_post_pf_meta($nom_id, 'item_author', true);
 				//Datetime item was nominated
-				$metadata['date_nominated'] = $date_nomed = pf_get_post_meta($nom_id, 'date_nominated', true);
+				$metadata['date_nominated'] = $date_nomed = pressforward()->metas->get_post_pf_meta($nom_id, 'date_nominated', true);
 				//Datetime item was posted to its home RSS
-				$metadata['posted_date'] = $date_posted = pf_get_post_meta($nom_id, 'posted_date', true);
+				$metadata['posted_date'] = $date_posted = pressforward()->metas->get_post_pf_meta($nom_id, 'posted_date', true);
 				//Unique RSS item ID
-				$metadata['item_id'] = $rss_item_id = pf_get_post_meta($nom_id, 'origin_item_ID', true);
+				$metadata['item_id'] = $rss_item_id = pressforward()->metas->get_post_pf_meta($nom_id, 'origin_item_ID', true);
 				//RSS-passed tags, comma seperated.
-				$item_nom_tags = $nom_tags = pf_get_post_meta($nom_id, 'item_tags', true);
+				$item_nom_tags = $nom_tags = pressforward()->metas->get_post_pf_meta($nom_id, 'item_tags', true);
 				$wp_nom_tags = '';
 				$getTheTags = get_the_tags();
 				if (empty($getTheTags)){
@@ -180,9 +180,9 @@
 				//RSS-passed tags as slugs.
 				$metadata['item_tags'] = $nom_tag_slugs = $nomTagClassesString;
 				//All users who nominated.
-				$metadata['nominators'] = $nominators = pf_get_post_meta($nom_id, 'nominator_array', true);
+				$metadata['nominators'] = $nominators = pressforward()->metas->get_post_pf_meta($nom_id, 'nominator_array', true);
 				//Number of times repeated in source.
-				$metadata['source_repeat'] = $source_repeat = pf_get_post_meta($nom_id, 'source_repeat', true);
+				$metadata['source_repeat'] = $source_repeat = pressforward()->metas->get_post_pf_meta($nom_id, 'source_repeat', true);
 				//Post-object tags
 				$metadata['item_title'] = $item_title = get_the_title();
 				$metadata['item_content'] = get_the_content();
@@ -192,7 +192,7 @@
 				$metadata['timestamp_unix_date_nomed'] = $timestamp_unix_date_nomed = strtotime($date_nomed);
 				//UNIX datetime item was posted to its home RSS.
 				$metadata['timestamp_item_posted'] = $timestamp_item_posted = strtotime($date_posted);
-				$metadata['archived_status'] = $archived_status = pf_get_post_meta($nom_id, 'archived_by_user_status');
+				$metadata['archived_status'] = $archived_status = pressforward()->metas->get_post_pf_meta($nom_id, 'archived_by_user_status');
 				$userObj = wp_get_current_user();
 				$user_id = $userObj->ID;
 
@@ -213,7 +213,7 @@
 					$dependent_style = '';
 					$archived_status_string = '';
 				}
-			$item = pf_feed_object(get_the_title(), pf_get_post_meta($nom_id, 'source_title', true), $date_posted, $item_authorship, get_the_content(), $nom_permalink, get_the_post_thumbnail($nom_id /**, 'nom_thumb'**/), $rss_item_id, pf_get_post_meta($nom_id, 'item_wp_date', true), $nom_tags, $date_nomed, $source_repeat, $nom_id, '1');
+			$item = pf_feed_object(get_the_title(), pressforward()->metas->get_post_pf_meta($nom_id, 'source_title', true), $date_posted, $item_authorship, get_the_content(), $nom_permalink, get_the_post_thumbnail($nom_id /**, 'nom_thumb'**/), $rss_item_id, pressforward()->metas->get_post_pf_meta($nom_id, 'item_wp_date', true), $nom_tags, $date_nomed, $source_repeat, $nom_id, '1');
 
 			$this->form_of_an_item($item, $c, 'nomination', $metadata);
 			$count++;

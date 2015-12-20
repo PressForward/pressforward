@@ -66,7 +66,7 @@ class PF_Feed_Item {
 
 	public static function get_by_item_id( $item_id ){
 		$args = array(
-				'meta_key'	=>	pf_get_meta_key( 'item_id' ),
+				'meta_key'	=>	pressforward()->metas->get_key( 'item_id' ),
 				'meta_value' => $item_id
 			);
 		$post = self::get( $args );
@@ -148,7 +148,7 @@ class PF_Feed_Item {
 		$content_array = explode( ' ', strip_tags( $content ) );
 		$word_count = count( $content_array );
 
-		return pf_update_meta( $post_id, 'pf_feed_item_word_count', $word_count );
+		return pressforward()->metas->update_pf_meta( $post_id, 'pf_feed_item_word_count', $word_count );
 	}
 
 
@@ -160,7 +160,7 @@ class PF_Feed_Item {
 	*
 	*/
 	public static function set_source( $post_id, $source ) {
-		return pf_update_meta( $post_id, 'pf_feed_item_source', $source );
+		return pressforward()->metas->update_pf_meta( $post_id, 'pf_feed_item_source', $source );
 	}
 
 	/**
@@ -241,7 +241,7 @@ class PF_Feed_Item {
 			return;
 		}
 		$source_url = 'http://' . $url_array['host'];
-		return pf_update_meta( $post_id, 'pf_source_link', $source_url );
+		return pressforward()->metas->update_pf_meta( $post_id, 'pf_source_link', $source_url );
 	}
 
 
@@ -256,12 +256,12 @@ class PF_Feed_Item {
 	*
 	*/
 	public static function get_source_link( $post_id ) {
-		$url = pf_retrieve_meta($post_id, 'pf_source_link');
+		$url = pressforward()->metas->retrieve_meta($post_id, 'pf_source_link');
 		if (empty($url)){
-			$url = pf_retrieve_meta($post_id, 'item_link');
+			$url = pressforward()->metas->retrieve_meta($post_id, 'item_link');
 		}
 		$source_url = pressforward()->pf_feed_items->resolve_a_url($url);
-		pf_update_meta( $post_id, 'pf_source_link', $source_url );
+		pressforward()->metas->update_pf_meta( $post_id, 'pf_source_link', $source_url );
 		return $source_url;
 	}
 

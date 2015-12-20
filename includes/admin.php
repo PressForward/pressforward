@@ -192,11 +192,11 @@ class PF_Admin {
 
 	function posted_submitbox_pf_actions(){
 		global $post;
-		$check = pf_get_post_meta($post->ID, 'item_link', true);
+		$check = pressforward()->metas->get_post_pf_meta($post->ID, 'item_link', true);
 		if ( empty($check) ){
 			return;
 		}
-	    $value = pf_get_post_meta($post->ID, 'pf_forward_to_origin', true);
+	    $value = pressforward()->metas->get_post_pf_meta($post->ID, 'pf_forward_to_origin', true);
 	    if ( empty($value) ){
 
 	    	$option_value = get_option('pf_link_to_source');
@@ -221,11 +221,11 @@ class PF_Admin {
 	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ){ return $post_id; }
 	    if ( !current_user_can( 'edit_page', $post_id ) ){ return $post_id; }
 		#var_dump($_POST['pf_forward_to_origin']); die();
-		#$current = pf_get_post_meta();
+		#$current = pressforward()->metas->get_post_pf_meta();
 			if ( !array_key_exists('pf_forward_to_origin', $_POST) ) {
 
  			} else {
-				pf_update_meta($post_id, 'pf_forward_to_origin', $_POST['pf_forward_to_origin']);
+				pressforward()->metas->update_pf_meta($post_id, 'pf_forward_to_origin', $_POST['pf_forward_to_origin']);
 			}
 
 		return $post_id;

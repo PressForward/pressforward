@@ -221,7 +221,7 @@ function nominate_it() {
 
 		$post_check = $pf_nomination->is_nominated($item_id, 'post', false);
 		if ($post_check != true) {
-			pf_update_meta($post_ID, 'nom_id', $post_ID);
+			pressforward()->metas->update_pf_meta($post_ID, 'nom_id', $post_ID);
 			$d_post = $post;
 			$d_post['post_type'] = get_option(PF_SLUG.'_draft_post_type', 'post');
 			$d_post['post_status'] = get_option(PF_SLUG.'_draft_post_status', 'draft');
@@ -660,7 +660,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			<input type="hidden" id="post_id" name="post_id" value="<?php echo (int) $post_ID; ?>" />
 			<?php if ($url != '') {
 
-				$author_retrieved = pf_get_author_from_url( $url );
+				$author_retrieved = pressforward()->metas->get_author_from_url( $url );
 				//$response_body = wp_remote_retrieve_body( $response );
 				//$response_dom = pf_str_get_html( $response_body );
 

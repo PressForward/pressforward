@@ -77,17 +77,17 @@ class PF_Nominations {
 	public function nominations_box_builder() {
 		global $post;
 		//wp_nonce_field( 'nominate_meta', 'nominate_meta_nonce' );
-		$origin_item_ID = pf_get_post_meta($post->ID, 'origin_item_ID', true);
-		$nomination_count = pf_get_post_meta($post->ID, 'nomination_count', true);
-		$submitted_by = pf_get_post_meta($post->ID, 'submitted_by', true);
-		$source_title = pf_get_post_meta($post->ID, 'source_title', true);
-		$posted_date = pf_get_post_meta($post->ID, 'posted_date', true);
-		$nom_authors = pf_get_post_meta($post->ID, 'authors', true);
-		$item_link = pf_get_post_meta($post->ID, 'item_link', true);
-		$date_nominated = pf_get_post_meta($post->ID, 'date_nominated', true);
+		$origin_item_ID = pressforward()->metas->get_post_pf_meta($post->ID, 'origin_item_ID', true);
+		$nomination_count = pressforward()->metas->get_post_pf_meta($post->ID, 'nomination_count', true);
+		$submitted_by = pressforward()->metas->get_post_pf_meta($post->ID, 'submitted_by', true);
+		$source_title = pressforward()->metas->get_post_pf_meta($post->ID, 'source_title', true);
+		$posted_date = pressforward()->metas->get_post_pf_meta($post->ID, 'posted_date', true);
+		$nom_authors = pressforward()->metas->get_post_pf_meta($post->ID, 'authors', true);
+		$item_link = pressforward()->metas->get_post_pf_meta($post->ID, 'item_link', true);
+		$date_nominated = pressforward()->metas->get_post_pf_meta($post->ID, 'date_nominated', true);
 		$user = get_user_by('id', $submitted_by);
-		$item_tags = pf_get_post_meta($post->ID, 'item_tags', true);
-		$source_repeat = pf_get_post_meta($post->ID, 'source_repeat', true);
+		$item_tags = pressforward()->metas->get_post_pf_meta($post->ID, 'item_tags', true);
+		$source_repeat = pressforward()->metas->get_post_pf_meta($post->ID, 'source_repeat', true);
 		if (!empty($origin_item_ID)){
 			$this->meta_box_printer(__('Item ID', 'pf'), $origin_item_ID);
 		}
@@ -117,7 +117,7 @@ class PF_Nominations {
 	public function get_the_source_statement($nom_id){
 
 		$title_of_item = get_the_title($nom_id);
-		$link_to_item = pf_get_post_meta($nom_id, 'item_link', true);
+		$link_to_item = pressforward()->metas->get_post_pf_meta($nom_id, 'item_link', true);
 		$args = array(
 		  'html_before' => "<p>",
 		  'source_statement' => "Source: ",
@@ -177,7 +177,7 @@ class PF_Nominations {
 			$attempt = $this->get_first_nomination($item_id, $pt);
 			if (!empty($attempt)){
 				$nomination_id = $attempt;
-				$nominators = pf_retrieve_meta($nomination_id, 'nominator_array');
+				$nominators = pressforward()->metas->retrieve_meta($nomination_id, 'nominator_array');
 				if (empty($nominators)){
 					pf_log('There is no one left who nominated this item.');
 					pf_log('This nomination has been taken back. We will now remove the item.');
@@ -198,19 +198,19 @@ class PF_Nominations {
 	}
 
 	public function change_nomination_count($id, $up = true){
-		$nom_count = pf_retrieve_meta($id, 'nomination_count');
+		$nom_count = pressforward()->metas->retrieve_meta($id, 'nomination_count');
 		if ( $up ) {
 			$nom_count++;
 		} else {
 			$nom_count--;
 		}
-		$check = pf_update_meta($id, 'nomination_count', $nom_count);
+		$check = pressforward()->metas->update_pf_meta($id, 'nomination_count', $nom_count);
 		pf_log('Nomination now has a nomination count of ' . $nom_count . ' applied to post_meta with the result of '.$check);
 		return $check;
 	}
 
 	public function toggle_nominator_array($id, $update = true){
-		$nominators = pf_retrieve_meta($id, 'nominator_array');
+		$nominators = pressforward()->metas->retrieve_meta($id, 'nominator_array');
 		$current_user = wp_get_current_user();
 		$user_id = $current_user->ID;
 		if ($update){
@@ -220,12 +220,12 @@ class PF_Nominations {
 				unset($nominators[$key]);
 			}
 		}
-		$check = pf_update_meta($id, 'nominator_array', $nominators);
+		$check = pressforward()->metas->update_pf_meta($id, 'nominator_array', $nominators);
 		return $check;
 	}
 
 	public function did_user_nominate($id, $user_id = false){
-		$nominators = pf_retrieve_meta($id, 'nominator_array');
+		$nominators = pressforward()->metas->retrieve_meta($id, 'nominator_array');
 		if (!$user_id){
 			$current_user = wp_get_current_user();
 			$user_id = $current_user->ID;
@@ -269,8 +269,8 @@ class PF_Nominations {
 		//print_r($_POST); die();
 			$item_title = $_POST['post_title'];
 			$item_content = $_POST['post_content'];
-			$item_feed_post_id = pf_get_post_meta($_POST['ID'], 'item_feed_post_id', true);
-			$url = pf_get_post_meta($_POST['ID'], 'item_link', true);
+			$item_feed_post_id = pressforward()->metas->get_post_pf_meta($_POST['ID'], 'item_feed_post_id', true);
+			$url = pressforward()->metas->get_post_pf_meta($_POST['ID'], 'item_link', true);
 #			$linked = get_option('pf_link_to_source', 0);
 #			if ($linked < 1){
 				$source_position = get_option('pf_source_statement_position', 'bottom');
@@ -290,7 +290,7 @@ class PF_Nominations {
 
 			//We assume that it is already in nominations, so no need to check there. This might be why we can't use post_exists here.
 			//No need to origonate the check at the time of the feed item either. It can't become a post with the proper meta if it wasn't a nomination first.
-			$item_id = pf_get_post_meta($_POST['ID'], 'origin_item_ID', true);
+			$item_id = pressforward()->metas->get_post_pf_meta($_POST['ID'], 'origin_item_ID', true);
 			$nom_date = $_POST['aa'] . '-' . $_POST['mm'] . '-' . $_POST['jj'];
 
 			$check = false;
@@ -322,21 +322,21 @@ class PF_Nominations {
 		if ( $postsAfter->have_posts() ) : while ( $postsAfter->have_posts() ) : $postsAfter->the_post();
 
 					$id = get_the_ID();
-					$origin_item_id = pf_retrieve_meta($id, 'origin_item_ID');
+					$origin_item_id = pressforward()->metas->retrieve_meta($id, 'origin_item_ID');
 					$current_user = wp_get_current_user();
 					if ($origin_item_id == $item_id) {
 						$check = true;
-						$nomCount = pf_retrieve_meta($id, 'nomination_count');
+						$nomCount = pressforward()->metas->retrieve_meta($id, 'nomination_count');
 						$nomCount--;
-						pf_update_meta($id, 'nomination_count', $nomCount);
+						pressforward()->metas->update_pf_meta($id, 'nomination_count', $nomCount);
 						if ( 0 != $current_user->ID ) {
-							$nominators_orig = pf_retrieve_meta($id, 'nominator_array');
+							$nominators_orig = pressforward()->metas->retrieve_meta($id, 'nominator_array');
 							if (true == in_array($current_user->ID, $nominators_orig)){
 								$nominators_new = array_diff($nominators_orig, array($current_user->ID));
 								if (empty($nominators_new)){
 									wp_delete_post( $id );
 								} else {
-									pf_update_meta( $id, 'nominator_array', $nominators_new );
+									pressforward()->metas->update_pf_meta( $id, 'nominator_array', $nominators_new );
 								}
 							}
 						}
@@ -359,7 +359,7 @@ class PF_Nominations {
 
 				$id = get_the_ID();
 				pf_log('Deal with nominated post '.$id);
-				$origin_item_id = pf_retrieve_meta($id, 'origin_item_ID');
+				$origin_item_id = pressforward()->metas->retrieve_meta($id, 'origin_item_ID');
                 $current_user = wp_get_current_user();
 				if ($origin_item_id == $item_id) {
 					$check = true;
@@ -369,22 +369,22 @@ class PF_Nominations {
 							//Not logged in.
 							//If we ever reveal this to non users and want to count nominations by all, here is where it will go.
 							pf_log('Can not find user for updating nomionation count.');
-                            $nomCount = pf_retrieve_meta($id, 'nomination_count');
+                            $nomCount = pressforward()->metas->retrieve_meta($id, 'nomination_count');
                             $nomCount++;
-                            pf_update_meta($id, 'nomination_count', $nomCount);
+                            pressforward()->metas->update_pf_meta($id, 'nomination_count', $nomCount);
 														$check = 'no_user';
 						} else {
-							$nominators_orig = pf_retrieve_meta($id, 'nominator_array');
+							$nominators_orig = pressforward()->metas->retrieve_meta($id, 'nominator_array');
                             if (!in_array($current_user->ID, $nominators_orig)){
                                 $nominators = $nominators_orig;
                                 $nominator = $current_user->ID;
 																$nominators[] = $current_user->ID;
-                                pf_update_meta($id, 'nominator_array', $nominator);
-                                $nomCount = pf_get_post_meta($id, 'nomination_count', true);
+                                pressforward()->metas->update_pf_meta($id, 'nominator_array', $nominator);
+                                $nomCount = pressforward()->metas->get_post_pf_meta($id, 'nomination_count', true);
                                 pf_log('So far we have a nominating count of '.$nomCount);
 																$nomCount++;
 																pf_log('Now we have a nominating count of '.	$nomCount);
-                                $check_meta = pf_update_meta($id, 'nomination_count', $nomCount);
+                                $check_meta = pressforward()->metas->update_pf_meta($id, 'nomination_count', $nomCount);
 																pf_log('Attempt to update the meta for nomination_count resulted in: ');
 																pf_log($check_meta);
 																$check = true;
@@ -473,21 +473,21 @@ class PF_Nominations {
 		global $post;
 		switch ($column) {
 			case 'nomcount':
-				echo pf_get_post_meta($post->ID, 'nomination_count', true);
+				echo pressforward()->metas->get_post_pf_meta($post->ID, 'nomination_count', true);
 				break;
 			case 'nominatedby':
-				$nominatorID = pf_get_post_meta($post->ID, 'submitted_by', true);
+				$nominatorID = pressforward()->metas->get_post_pf_meta($post->ID, 'submitted_by', true);
 				$user = get_user_by('id', $nominatorID);
 				if ( is_a( $user, 'WP_User' ) ) {
 					echo $user->display_name;
 				}
 				break;
 			case 'original_author':
-				$orig_auth = pf_get_post_meta($post->ID, 'authors', true);
+				$orig_auth = pressforward()->metas->get_post_pf_meta($post->ID, 'authors', true);
 				echo $orig_auth;
 				break;
 			case 'date_nominated':
-				$dateNomed = pf_get_post_meta($post->ID, 'date_nominated', true);
+				$dateNomed = pressforward()->metas->get_post_pf_meta($post->ID, 'date_nominated', true);
 				echo $dateNomed;
 				break;
 
@@ -554,9 +554,9 @@ class PF_Nominations {
 				//set up rest of nomination data
 				$item_title = $_POST['item_title'];
 				$item_content = $_POST['item_content'];
-				$item_link = pf_retrieve_meta($_POST['item_post_id'], 'item_link');
-				$readable_status = pf_retrieve_meta($_POST['item_post_id'], 'readable_status');
-				$item_author = pf_retrieve_meta($_POST['item_post_id'], 'item_author');
+				$item_link = pressforward()->metas->retrieve_meta($_POST['item_post_id'], 'item_link');
+				$readable_status = pressforward()->metas->retrieve_meta($_POST['item_post_id'], 'readable_status');
+				$item_author = pressforward()->metas->retrieve_meta($_POST['item_post_id'], 'item_author');
 				$parents = get_post_ancestors( $_POST['item_post_id'] );
 				$parent_id = ($parents) ? $parents[0] : false;
 				if ($readable_status != 1){
@@ -584,27 +584,27 @@ class PF_Nominations {
 
 				$newNomID = wp_insert_post( $data );
 				if ((1 == $readable_status) && ((!empty($item_content_obj['status'])) && ('secured' != $item_content_obj['status']))){
-					pf_update_meta($_POST['item_post_id'], 'readable_status', 1);
+					pressforward()->metas->update_pf_meta($_POST['item_post_id'], 'readable_status', 1);
 				} elseif ((1 != $readable_status)) {
-					pf_update_meta($_POST['item_post_id'], 'readable_status', 0);
+					pressforward()->metas->update_pf_meta($_POST['item_post_id'], 'readable_status', 0);
 				}
 
 		if ($_POST['item_feat_img'] != '')
 			pressforward()->pf_feed_items->set_ext_as_featured($newNomID, $_POST['item_feat_img']);
 			//die($_POST['item_feat_img']);
-			pf_update_meta($_POST['item_post_id'], 'nomination_count', 1);
-			pf_update_meta($_POST['item_post_id'], 'submitted_by', $userString);
-			pf_update_meta($_POST['item_post_id'], 'nominator_array', array($userID));
-			pf_update_meta($_POST['item_post_id'], 'date_nominated', date('c'));
-			pf_update_meta($_POST['item_post_id'], 'origin_item_ID', $item_id);
-			pf_update_meta($_POST['item_post_id'], 'item_feed_post_id', $_POST['item_post_id']);
-			pf_update_meta($_POST['item_post_id'], 'item_link', $_POST['item_link']);
+			pressforward()->metas->update_pf_meta($_POST['item_post_id'], 'nomination_count', 1);
+			pressforward()->metas->update_pf_meta($_POST['item_post_id'], 'submitted_by', $userString);
+			pressforward()->metas->update_pf_meta($_POST['item_post_id'], 'nominator_array', array($userID));
+			pressforward()->metas->update_pf_meta($_POST['item_post_id'], 'date_nominated', date('c'));
+			pressforward()->metas->update_pf_meta($_POST['item_post_id'], 'origin_item_ID', $item_id);
+			pressforward()->metas->update_pf_meta($_POST['item_post_id'], 'item_feed_post_id', $_POST['item_post_id']);
+			pressforward()->metas->update_pf_meta($_POST['item_post_id'], 'item_link', $_POST['item_link']);
 				$item_date = $_POST['item_date'];
 				if (empty($_POST['item_date'])){
 					$newDate = gmdate('Y-m-d H:i:s');
 					$item_date = $newDate;
 				}
-			pf_update_meta($_POST['item_post_id'], 'posted_date', $item_date);
+			pressforward()->metas->update_pf_meta($_POST['item_post_id'], 'posted_date', $item_date);
 			if ( !empty( $_POST['pf_amplify'] ) && ( '1' == $_POST['pf_amplify'] ) ){
 				$amplify = true;
 			} else {
@@ -663,12 +663,12 @@ class PF_Nominations {
 			if (!$id){
 				$id = $_POST['nom_id'];
 				$nom = get_post($id);
-				$item_id = pf_retrieve_meta($id, 'item_id');
+				$item_id = pressforward()->metas->retrieve_meta($id, 'item_id');
 			}
 			$post_check = $this->is_nominated($item_id, 'post', false);
 			if (true != $post_check) {
 
-				$item_link = pf_retrieve_meta($id, 'item_link');
+				$item_link = pressforward()->metas->retrieve_meta($id, 'item_link');
 				$author = get_the_item_author($id);
 				$content = $nom->post_content;
 #				$linked = get_option('pf_link_to_source', 0);
@@ -683,7 +683,7 @@ class PF_Nominations {
 					'post_content' => $content
 				);
 				# Check if the item was rendered readable, if not, make it so.
-				$readable_state = pf_get_post_meta($id, 'readable_status', true);
+				$readable_state = pressforward()->metas->get_post_pf_meta($id, 'readable_status', true);
 				if ($readable_state != 1){
 					$readArgs = array(
 						'force' => false,
@@ -764,7 +764,7 @@ class PF_Nominations {
 #			}
 
 			$item_title = $_POST['nom_title'];
-			$url = pf_get_post_meta($_POST['nom_id'], 'source_title');
+			$url = pressforward()->metas->get_post_pf_meta($_POST['nom_id'], 'source_title');
 			$data = array(
 				'post_status' => get_option(PF_SLUG.'_draft_post_status', 'draft'),
 				'post_type' => get_option(PF_SLUG.'_draft_post_type', 'post'),
@@ -786,7 +786,7 @@ class PF_Nominations {
 
 #
 			# Check if the item was rendered readable, if not, make it so.
-			$readable_state = pf_get_post_meta($_POST['nom_id'], 'readable_status', true);
+			$readable_state = pressforward()->metas->get_post_pf_meta($_POST['nom_id'], 'readable_status', true);
 			if ($readable_state != 1){
 				$readArgs = array(
 					'force' => false,
