@@ -193,29 +193,29 @@ function nominate_it() {
       }
 
 			$pf_meta_args = array(
-				pf_meta_for_entry('item_id', $item_id ),
-				pf_meta_for_entry('item_link', $_POST['item_link']),
-				pf_meta_for_entry('nomination_count', 1),
-				pf_meta_for_entry('source_title', 'Bookmarklet'),
-				pf_meta_for_entry('item_date', $item_date),
-				pf_meta_for_entry('posted_date', $item_date),
-				pf_meta_for_entry('date_nominated', $_POST['date_nominated']),
-				pf_meta_for_entry('item_author', $_POST['authors']),
-				pf_meta_for_entry('authors', $_POST['authors']),
-				pf_meta_for_entry('pf_source_link', $source),
-				pf_meta_for_entry('item_feat_img', $post_thumbnail_url),
-				pf_meta_for_entry('nominator_array', array(get_current_user_id())),
+				pressforward()->metas->meta_for_entry('item_id', $item_id ),
+				pressforward()->metas->meta_for_entry('item_link', $_POST['item_link']),
+				pressforward()->metas->meta_for_entry('nomination_count', 1),
+				pressforward()->metas->meta_for_entry('source_title', 'Bookmarklet'),
+				pressforward()->metas->meta_for_entry('item_date', $item_date),
+				pressforward()->metas->meta_for_entry('posted_date', $item_date),
+				pressforward()->metas->meta_for_entry('date_nominated', $_POST['date_nominated']),
+				pressforward()->metas->meta_for_entry('item_author', $_POST['authors']),
+				pressforward()->metas->meta_for_entry('authors', $_POST['authors']),
+				pressforward()->metas->meta_for_entry('pf_source_link', $source),
+				pressforward()->metas->meta_for_entry('item_feat_img', $post_thumbnail_url),
+				pressforward()->metas->meta_for_entry('nominator_array', array(get_current_user_id())),
 				// The item_wp_date allows us to sort the items with a query.
-				pf_meta_for_entry('item_wp_date', $item_date),
+				pressforward()->metas->meta_for_entry('item_wp_date', $item_date),
 				//We can't just sort by the time the item came into the system (for when mult items come into the system at once)
 				//So we need to create a machine sortable date for use in the later query.
-				pf_meta_for_entry('sortable_item_date', strtotime($item_date)),
-				pf_meta_for_entry('item_tags', 'via bookmarklet'),
-				pf_meta_for_entry('source_repeat', 1),
-				pf_meta_for_entry('revertible_feed_text', $post['post_content'])
+				pressforward()->metas->meta_for_entry('sortable_item_date', strtotime($item_date)),
+				pressforward()->metas->meta_for_entry('item_tags', 'via bookmarklet'),
+				pressforward()->metas->meta_for_entry('source_repeat', 1),
+				pressforward()->metas->meta_for_entry('revertible_feed_text', $post['post_content'])
 
 			);
-			pf_meta_establish_post($post_ID, $pf_meta_args);
+			pressforward()->metas->establish_post($post_ID, $pf_meta_args);
 		}
 	if (isset($_POST['publish']) && ($_POST['publish'] == "Send to ".ucwords(get_option(PF_SLUG.'_draft_post_status', 'draft')) ) ) {
 
@@ -227,13 +227,13 @@ function nominate_it() {
 			$d_post['post_status'] = get_option(PF_SLUG.'_draft_post_status', 'draft');
 			$newPostID = wp_insert_post( $d_post, true );
 			#var_dump($newPostID); die();
-			#pf_meta_transition_post($post_ID, $newPostID);
+			#pressforward()->metas->transition_post_meta($post_ID, $newPostID);
 			$already_has_thumb = has_post_thumbnail($post_ID);
 			if ($already_has_thumb)  {
 				$post_thumbnail_id = get_post_thumbnail_id( $post_ID );
 				set_post_thumbnail($newPostID, $post_thumbnail_id);
 			}
-			pf_meta_transition_post($post_ID, $newPostID);
+			pressforward()->metas->transition_post_meta($post_ID, $newPostID);
       return $newPostID;
 		} else {
       //@TODO We should increment nominations for this item maybe?

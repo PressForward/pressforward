@@ -21,9 +21,9 @@ class PF_Metas {
 	 * }
 	 *
 	 */
-	function pf_meta_establish_post($id, $args){
+	function establish_post($id, $args){
 		foreach ($args as $arg){
-			add_post_meta($id, $arg['name'], $arg['value'], true);
+			pf_add_meta($id, $arg['name'], $arg['value'], true);
 		}
 	}
 
@@ -33,7 +33,7 @@ class PF_Metas {
 	 * @return array An array useful in thevarious parts of the post_meta setting process.
 	 *
 	 */
-	function pf_meta_for_entry($key, $value){
+	function meta_for_entry($key, $value){
 		return array(
 			'name'	=>	$key,
 			'value'	=>	$value
@@ -47,9 +47,98 @@ class PF_Metas {
 	 * @param int $idB The ID of the post that needs to have the meta info attached to it.
 	 *
 	 */
-	function pf_meta_transition_post($idA, $idB){
+	function transition_post_meta($idA, $idB, $term_transition = false){
+		if ( !is_string( $idA ) || !is_string( $idB ) ){
+			pf_log( 'Post meta transition failed.' );
+			pf_log( $idA );
+			pf_log( $idB );
+			pf_log( $term_transition );
+			return;
+		}
+		pf_log('Transition post '.$idA.' to '.$idB);
 		foreach(pf_meta_structure() as $meta){
-			pf_meta_transition(get_pf_meta_name($meta), $idA, $idB);
+			pressforward()->metas->transition_meta(get_pf_meta_name($meta), $idA, $idB);
+		}
+		if ( $term_transition ){
+			pf_log('Transitioning Terms.');
+			pressforward()->metas->transition_meta_terms($idA, $idB);
+		}
+	}
+
+	function transition_meta_terms($idA, $idB){
+		$parent = wp_get_post_parent_id($idA);
+		$ids = array($idA);
+		if ( !empty($parent) && !is_wp_error( $parent ) ){
+			$ids[] = $parent;
+		}
+		$item_id = pf_get_post_meta($idA, 'pf_item_post_id');
+		if ( !empty($item_id) && !is_wp_error( $item_id ) ){
+			$ids[] = $item_id;
+		}
+		/**$parent_parent = wp_get_post_parent_id( $parent );
+		if ( !empty($parent_parent) && !is_wp_error( $parent_parent ) ){
+			$ids[] = $parent_parent;
+		}**/
+		$term_objects = wp_get_object_terms( $ids, array( pressforward()->pf_feeds->tag_taxonomy, 'post_tag', 'category' ) );
+		$item_tags = pf_get_post_meta($idA, 'item_tags');
+		if ( !empty($term_objects) ){
+			foreach ( $term_objects as $term ){
+				wp_set_object_terms($idB, $term->term_id, $term->taxonomy, true);
+				if ( pressforward()->pf_feeds->tag_taxonomy == $term->taxonomy ){
+					$check = pressforward()->metas->cascade_taxonomy_tagging($idB, $term->slug, 'slug');
+					if (!$check){
+						pressforward()->metas->build_and_assign_new_taxonomy_tag($idB, $term->name);
+					}
+				}
+			}
+		}
+		if ( !empty($item_tags) ){
+			pf_log('Attempting to attach item_tags.');
+			if ( !is_array( $item_tags ) ){
+				pf_log($item_tags);
+				$item_tags = explode(',',$item_tags);
+			}
+			foreach ($item_tags as $tag){
+				$check = pressforward()->metas->cascade_taxonomy_tagging($idB, $tag, 'name');
+				if (!$check){
+					pressforward()->metas->build_and_assign_new_taxonomy_tag($idB, $tag);
+				}
+			}
+		}
+	}
+
+	function cascade_taxonomy_tagging($idB, $term_id, $term_id_type = 'slug'){
+		pf_log('Trying to assign taxonomy for '.$idB);
+		$term_object = get_term_by($term_id_type, $term_id, 'category');
+		if ( empty( $term_object ) ){
+			pf_log('No category match.');
+			$term_object = get_term_by($term_id_type, $term_id, 'post_tag');
+			if ( empty( $term_object ) ){
+				pf_log('No post_tag match.');
+				return false;
+			} else {
+				wp_set_object_terms( $idB, $term_object->term_id, 'post_tag', true );
+			}
+		} else {
+			wp_set_object_terms( $idB, $term_object->term_id, 'category', true );
+		}
+		return true;
+	}
+
+	function build_and_assign_new_taxonomy_tag($idB, $full_tag_name){
+		pf_log('Attaching new tag to '.$idB.' with a name of '.$full_tag_name);
+		$term_args = array(
+							'description'	=>	'Added by PressForward',
+							'parent'		=>	0,
+							'slug'			=>	pf_slugger($full_tag_name)
+						);
+		$r = wp_insert_term($full_tag_name, 'post_tag', $term_args);
+		if ( !is_wp_error( $r ) && !empty($r['term_id']) ){
+			pf_log('Making a new post_tag, ID:'.$r['term_id']);
+			wp_set_object_terms( $idB, $r['term_id'], 'post_tag', true );
+		} else {
+			pf_log('Failed making a new post_tag');
+			pf_log($r);
 		}
 	}
 
@@ -63,12 +152,12 @@ class PF_Metas {
 	 * @return int The result of the update_post_meta function.
 	 *
 	 */
-	function pf_meta_transition($name, $idA, $idB){
+	function transition_meta($name, $idA, $idB){
 		$meta_value = get_post_meta($idA, $name, true);
-		#$result = pf_prep_for_depreciation($name, $meta_value, $idA, $idB);
-		#if (!$result){
+		$result = pf_prep_for_depreciation($name, $meta_value, $idA, $idB);
+		if (!$result){
 			$result = update_post_meta($idB, $name, $meta_value);
-		#}
+		}
 
 		return $result;
 	}
@@ -94,12 +183,12 @@ class PF_Metas {
 		foreach (pf_meta_structure() as $meta){
 			if ($meta['name'] == $name){
 				if (in_array('dep', $meta['type'])){
-					#if ((!isset($value)) || (false == $value) || ('' == $value) || (0 == $value) || (empty($value))){
+					if ((!isset($value)) || (false == $value) || ('' == $value) || (0 == $value) || (empty($value))){
 						$value = get_post_meta($idA, $meta['move'], true);
-					#}
-					#update_post_meta($idA, $name, $value);
+					}
+					//update_post_meta($idA, $name, $value);
 					update_post_meta($idB, $meta['move'], $value);
-					update_post_meta($idB, $name, $value);
+					//update_post_meta($idB, $name, $value);
 					return true;
 				}
 			}
@@ -122,6 +211,20 @@ class PF_Metas {
 				return $meta;
 			}
 		}
+	}
+
+	function pf_assure_meta_key($name){
+		$meta = pf_meta_by_name($name);
+		if ( !empty( $meta['move'] ) ){
+			return pf_meta_by_name( $meta['move'] );
+		} else{
+			return $meta;
+		}
+	}
+
+	function pf_get_meta_key( $name ){
+		$meta = pf_assure_meta_key( $name );
+		return get_pf_meta_name( $meta );
 	}
 
 	/**
@@ -461,9 +564,39 @@ class PF_Metas {
 	 */
 	function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
 	    $field = pf_pass_meta($field, $id, $value);
-	    $check = update_post_meta($id, $field, $value, $prev_value);
+	    $check = pf_apply_meta($id, $field, $value, $prev_value);
 	    return $check;
 
+	}
+
+	function pf_get_author_from_url($url){
+		$response = pf_file_get_html( $url );
+		$possibles = array();
+		if (empty($response)){
+			return false;
+		}
+		$possibles[] = $response->find('meta[name=author]', 0);
+		$possibles[] = $response->find('meta[name=Author]', 0);
+		$possibles[] = $response->find('meta[property=author]', 0);
+		$possibles[] = $response->find('meta[property=Author]', 0);
+		$possibles[] = $response->find('meta[name=parsely-author]', 0);
+		$possibles[] = $response->find('meta[name=sailthru.author]', 0);
+
+		foreach ($possibles as $possible){
+			if ( false != $possible ){
+				$author_meta = $possible;
+				break;
+			}
+		}
+
+		if ( empty($author_meta) ){
+			return false;
+		}
+
+		$author = $author_meta->content;
+		$author = trim(str_replace("by","",$author));
+		$author = trim(str_replace("By","",$author));
+		return $author;
 	}
 
 	/**
@@ -478,9 +611,43 @@ class PF_Metas {
 	 */
 	function pf_add_meta($id, $field, $value = '', $unique = false){
 	    $field = pf_pass_meta($field, $id, $value, $unique);
-	    $check = add_post_meta($id, $field, $value, $unique);
+	    $check = pf_apply_meta($id, $field, $value, $unique);
 	    return $check;
 
+	}
+
+	function pf_apply_meta($id, $field, $value = '', $state = null, $apply_type = 'update'){
+		switch ($field) {
+			case 'nominator_array':
+				$nominators = pf_get_post_meta($id, $field);
+				if ( !is_array( $value ) ){
+					$value = array( $value );
+				}
+				if ( !is_array( $nominators ) ){
+					$nominators = array( $nominators );
+				}
+				//We are doing a removal.
+				if ( 1 == count(array_diff($value, $nominators) ) ){
+					$nominators = array_unique( $value );
+					continue;
+				}
+				if ( !is_array($value) ){
+					$value = array($value);
+				}
+				$nominators = array_merge( $nominators, $value );
+				$nominators = array_unique( $nominators );
+				$value = $nominators;
+				break;
+			default:
+				# code...
+				break;
+		}
+		if ( 'update' == $apply_type ){
+			$check = update_post_meta($id, $field, $value, $state);
+		} elseif ( 'add' == $apply_type ) {
+			$check = add_post_meta($id, $field, $value, $state);
+		}
+		return $check;
 	}
 
 }

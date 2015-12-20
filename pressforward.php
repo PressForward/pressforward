@@ -136,6 +136,7 @@ class PressForward {
 
 		// Load the module base class and our test module
 		require_once( PF_ROOT . "/includes/functions.php" );
+		require_once( PF_ROOT . "/includes/class-pf_metas.php" );
 		require_once( PF_ROOT . "/includes/module-base.php" );
 		require_once( PF_ROOT . '/includes/schema.php' );
 		require_once( PF_ROOT . '/includes/readable.php' );
@@ -442,6 +443,15 @@ class PressForward {
 
 		return '';
 	}
+
+	public function set_up_pf_metas() {
+		if ( empty( $this->metas ) ) {
+			$this->metas = new PF_Metas;
+		}
+
+		return '';
+	}
+
 	/**
 	 * Set up first feed and other install/upgrade tasks
 	 * Code via Boone

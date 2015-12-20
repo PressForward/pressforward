@@ -302,7 +302,7 @@ class PF_Nominations {
 			if ($post_check) {
 				$newPostID = wp_insert_post( $data );
 				#add_post_meta($newPostID, 'origin_item_ID', $item_id, true);
-				pf_meta_transition_post($_POST['ID'], $newPostID, true);
+				pressforward()->metas->transition_post_meta($_POST['ID'], $newPostID, true);
 
 				$already_has_thumb = has_post_thumbnail($_POST['ID']);
 				if ($already_has_thumb)  {
@@ -610,7 +610,7 @@ class PF_Nominations {
 			} else {
 				$amplify = false;
 			}
-			pf_meta_transition_post( $_POST['item_post_id'], $newNomID, $amplify );
+			pressforward()->metas->transition_post_meta( $_POST['item_post_id'], $newNomID, $amplify );
 				$response = array(
 					'what' => 'nomination',
 					'action' => 'build_nomination',
@@ -699,7 +699,7 @@ class PF_Nominations {
 				$new_post_id = wp_insert_post( $data, true );
 ##Check
 				add_post_meta($id, 'nom_id', $id, true);
-				pf_meta_transition_post($id, $new_post_id, true);
+				pressforward()->metas->transition_post_meta($id, $new_post_id, true);
 				$already_has_thumb = has_post_thumbnail($id);
 				if ($already_has_thumb)  {
 					$post_thumbnail_id = get_post_thumbnail_id( $id );
@@ -809,7 +809,7 @@ class PF_Nominations {
 				$newPostID = wp_insert_post( $data, true );
 ##Check
 				add_post_meta($_POST['nom_id'], 'nom_id', $_POST['nom_id'], true);
-				pf_meta_transition_post($_POST['nom_id'], $newPostID, true);
+				pressforward()->metas->transition_post_meta($_POST['nom_id'], $newPostID, true);
 
 				$already_has_thumb = has_post_thumbnail($_POST['nom_id']);
 				if ($already_has_thumb)  {
