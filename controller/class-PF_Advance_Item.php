@@ -22,8 +22,8 @@ class PF_Advance {
 		$this->post_interface = pressforward()->pf_item_interface;
 	}
 
-	public function to_item( $args ){
-		return $this->post_interface->insert_post();
+	public function to_item( $args = array() ){
+		return $this->post_interface->insert_post( $args );
 	}
 
 	public function item_to_post( $item_ID ){

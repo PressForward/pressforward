@@ -1147,7 +1147,7 @@ class PF_Admin {
 			#$query->query['post_status'] = '';
 			#$query->query_vars['post_status'] = '';
 		}
-		return $query;
+		#return $query;
 	}
 
 	function pf_ab_bug_status_args( $args ){
