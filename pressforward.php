@@ -46,6 +46,8 @@ class PressForward {
 	var $pf_feed_items;
 	var $pf_feeds;
 	var $pf_retrieve;
+	var $pf_folders;
+	var $metas;
 	var $opml_reader;
 	var $og_reader;
 	var $readability;
@@ -74,7 +76,8 @@ class PressForward {
 	private function __construct() {
 
 		$this->includes();
-
+		
+		$this->set_up_pf_metas();
 		$this->set_up_opml_reader();
 		$this->set_up_og_reader();
 		$this->set_up_readability();
@@ -136,7 +139,7 @@ class PressForward {
 
 		// Load the module base class and our test module
 		require_once( PF_ROOT . "/includes/functions.php" );
-		require_once( PF_ROOT . "/includes/class-pf_metas.php" );
+		//require_once( PF_ROOT . "/includes/class-pf_metas.php" );
 		require_once( PF_ROOT . "/includes/module-base.php" );
 		require_once( PF_ROOT . '/includes/schema.php' );
 		require_once( PF_ROOT . '/includes/readable.php' );
@@ -265,6 +268,14 @@ class PressForward {
 		if ( empty( $this->pf_folders ) ) {
 			$this->pf_folders = PF_Folders::init();
 		}
+	}
+
+	public function set_up_pf_metas() {
+		if ( empty( $this->metas ) ) {
+			$this->metas = PF_Metas::init();
+		}
+
+		return '';
 	}
 
 	/**
@@ -439,14 +450,6 @@ class PressForward {
 	public function set_up_WP_Update_PHP() {
 		if ( empty( $this->pf_update_php_notice ) ) {
 			$this->pf_update_php_notice = new PF_WPUpdatePHP('5.3.0');
-		}
-
-		return '';
-	}
-
-	public function set_up_pf_metas() {
-		if ( empty( $this->metas ) ) {
-			$this->metas = new PF_Metas;
 		}
 
 		return '';
