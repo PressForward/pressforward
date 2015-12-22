@@ -67,7 +67,7 @@ class PF_Feed_Item_Schema {
 			'labels'      => $labels,
 			'description' => __( 'Feed items imported by PressForward&#8217;s RSS Importer', 'pf' ),
 			'public'      => false,
-			'show_ui'     => false, // for testing only
+			'show_ui'     => true, // for testing only
 		) ) );
 
 		do_action( 'pf_feed_item_post_type_registered' );

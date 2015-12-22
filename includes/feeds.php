@@ -667,29 +667,30 @@ class PF_Feeds_Schema {
 			$r['feedUrl'] = $r['url'];
 			pf_log('Tags found:');
 			pf_log($r['tags']);
-			//@TODO make this a function of the PF_Folders class.
-			foreach ($r['tags'] as $slug=>$tag){
-				//Assume that OPML files have folder structures that
-				//users would want to maintain.
-				if ( 'rss-quick' == $r['type'] ){
-					$term = wp_insert_term($tag, $this->tag_taxonomy);
-					//var_dump($term_id); die();
-					if (is_wp_error($term)){
-						$term_id = $term->error_data['term_exists'];
-					} elseif (is_array($term)){
-						$term_id = $term['term_id'];
+			if (array_key_exists('tags', $r) && !empty($r['tags'])){
+				//@TODO make this a function of the PF_Folders class.
+				foreach ($r['tags'] as $slug=>$tag){
+					//Assume that OPML files have folder structures that
+					//users would want to maintain.
+					if ( 'rss-quick' == $r['type'] ){
+						$term = wp_insert_term($tag, $this->tag_taxonomy);
+						//var_dump($term_id); die();
+						if (is_wp_error($term)){
+							$term_id = $term->error_data['term_exists'];
+						} elseif (is_array($term)){
+							$term_id = $term['term_id'];
+						} else {
+							$term_id = false;
+						}
+						if ( false !== $term_id ){
+							pf_log('Adding folder with ID of '.$term_id);
+							wp_add_object_terms($post_id, $term_id, $this->tag_taxonomy);
+						}
 					} else {
-						$term_id = false;
+						//@TODO Add as post tag instead
 					}
-					if ( false !== $term_id ){
-						pf_log('Adding folder with ID of '.$term_id);
-						wp_add_object_terms($post_id, $term_id, $this->tag_taxonomy);
-					}
-				} else {
-					//@TODO Add as post tag instead
 				}
 			}
-
 			$unsetables = array('title', 'description', 'tags', 'type', 'url');
 
 			foreach ($unsetables as $k=>$a){
@@ -758,7 +759,7 @@ class PF_Feeds_Schema {
 			if (!$r['thumbnail']){
 				$r['thumbnail'] = $theFeed->get_image_url();
 			}
-			if (empty($r['tags'])){
+			if (array_key_exists('tags', $r) && empty($r['tags'])){
 				#$r['tags'] = $theFeed->get_feed_tags();
 			}
 		}

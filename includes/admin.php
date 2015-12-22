@@ -76,6 +76,8 @@ class PF_Admin {
 	 */
 	function register_pf_custom_menu_pages() {
 
+		remove_menu_page('edit.php?post_type=pf_feed_item');
+
 		// Top-level menu page
 		add_menu_page(
 			PF_TITLE, // <title>
