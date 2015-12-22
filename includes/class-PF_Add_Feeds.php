@@ -36,7 +36,7 @@ class PF_Add_Feeds {
 	public function set_permitted_tools_tabs( $permitted_tabs ){
 		$permitted_tabs['primary_feed_type'] = array(
 										'title' => __('Subscribe to Feeds', 'pf'),
-										'cap'  => pf_get_defining_capability_by_role('contributor')
+										'cap'  => get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor'))
 									);
 		$permitted_tabs['alerts'] = array(
 										'title' => __('Alerts', 'pf'),

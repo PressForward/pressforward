@@ -76,6 +76,7 @@ class PF_Admin {
 	 */
 	function register_pf_custom_menu_pages() {
 
+		remove_menu_page('edit.php?post_type=pf_feed_item');
 		// Top-level menu page
 		add_menu_page(
 			PF_TITLE, // <title>
@@ -1402,39 +1403,20 @@ class PF_Admin {
 		if ( current_user_can( get_option('pf_menu_preferences_access', pf_get_defining_capability_by_role('administrator')) ) ){
 
 
-			$arrayedAdminRights = array(
-				'pf_menu_group_access'	=>	array(
-												'default'=>'contributor',
-												'title'=>__( 'PressForward Menu Group', 'pf' )
-											),
-				'pf_menu_all_content_access'=>array(
-												'default'=>'contributor',
-												'title'=>__( 'All Content Menu', 'pf' )
-											),
-				'pf_menu_under_review_access'=>array(
-												'default'=>'contributor',
-												'title'=>__( 'Nominated Menu', 'pf' )
-											),
-				'pf_menu_preferences_access'=>array(
-												'default'=>'administrator',
-												'title'=>__( 'Preferences Menu', 'pf' )
-											),
-				'pf_menu_feeder_access'=>array(
-												'default'=>'editor',
-												'title'=>__( 'Add Feeds', 'pf' )
-											),
-				'pf_menu_add_nomination_access'=>array(
-												'default'=>'contributor',
-												'title'=> __( 'Add Nomination Menu', 'pf' )
-											)
-			);
-
-			$arrayedAdminRights = apply_filters('pf_setup_admin_rights',$arrayedAdminRights);
+			$arrayedAdminRights = pf_user_caps();
 
 			foreach($arrayedAdminRights as $right=>$parts){
 				if (isset( $_POST[$right] )){
 					$enabled = $_POST[$right];
+					$feed_caps = pressforward()->pf_feeds->map_feed_caps();
+					$old_role = get_role(pf_get_role_by_capability(get_option( $right )));
+					if ( array_key_exists($enabled, $feed_caps) ){
+						$old_role->remove_cap( $feed_caps[$enabled] );
+					}
+					assign_pf_to_standard_roles();
 					update_option( $right, $enabled );
+					$role = get_role(pf_get_role_by_capability($enabled));
+					pf_capability_mapper($enabled, pf_get_role_by_capability($enabled));
 				}
 			}
 

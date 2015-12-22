@@ -492,6 +492,39 @@ function pf_noms_excerpt( $text ) {
 	return $text;
 }
 
+function pf_user_caps(){
+	$arrayedAdminRights = array(
+		'pf_menu_group_access'	=>	array(
+										'default'=>'contributor',
+										'title'=>__( 'PressForward Menu Group', 'pf' )
+									),
+		'pf_menu_all_content_access'=>array(
+										'default'=>'contributor',
+										'title'=>__( 'All Content Menu', 'pf' )
+									),
+		'pf_menu_under_review_access'=>array(
+										'default'=>'contributor',
+										'title'=>__( 'Nominated Menu', 'pf' )
+									),
+		'pf_menu_preferences_access'=>array(
+										'default'=>'administrator',
+										'title'=>__( 'Preferences Menu', 'pf' )
+									),
+		'pf_menu_feeder_access'=>array(
+										'default'=>'editor',
+										'title'=>__( 'Add Feeds', 'pf' )
+									),
+		'pf_menu_add_nomination_access'=>array(
+										'default'=>'contributor',
+										'title'=> __( 'Add Nomination Menu', 'pf' )
+									)
+	);
+
+	$arrayedAdminRights = apply_filters('pf_setup_admin_rights',$arrayedAdminRights);
+
+	return $arrayedAdminRights;
+}
+
 /**
  * Get an object with capabilities as keys pointing to roles that contain those capabilities.
  *
@@ -559,6 +592,36 @@ function pf_get_role_by_capability($cap, $lowest = true, $obj = false){
 
 }
 
+function pf_capability_mapper($cap, $role_slug){
+	$feed_caps = pressforward()->pf_feeds->map_feed_caps();
+	$feed_item_caps = pressforward()->schema->map_feed_item_caps();
+	if (array_key_exists($cap, $feed_caps)){
+		$role = get_role($role_slug);
+		$role->add_cap( $feed_caps[$cap] );
+	}
+	if (array_key_exists($cap, $feed_item_caps)){
+		$role = get_role($role_slug);
+		$role->add_cap( $feed_item_caps[$cap] );
+	}
+}
+
+function assign_pf_to_standard_roles(){
+	$roles = array(
+		'administrator',
+		'editor',
+		'author',
+		'contributor',
+		'subscriber'
+	);
+	$caps = pf_get_capabilities();
+	$feed_caps = pressforward()->pf_feeds->map_feed_caps();
+	$feed_item_caps = pressforward()->schema->map_feed_item_caps();
+	foreach ($caps as $cap=>$role){
+		foreach ($role as $a_role){
+			pf_capability_mapper($cap, $a_role);
+		}
+	}
+}
 
 /**
  * Get the capability that uniquely matches a specific role.

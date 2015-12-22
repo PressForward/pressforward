@@ -344,7 +344,7 @@ class PF_RSS_Import extends PF_Module {
 		set_time_limit(0);
 		pf_log('Add Feed Process Invoked: PF_RSS_IMPORT::pf_feedlist_validate');
 		pf_log($input);
-		if ( current_user_can('edit_posts') ) {
+		if ( current_user_can( get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')) ) ) {
  			pf_log('Yes, the current user can edit posts.');
 		} else {
 			pf_log('No, the current user can not edit posts.');
