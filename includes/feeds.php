@@ -58,6 +58,8 @@ class PF_Feeds_Schema {
 			add_filter( 'post_updated_messages', array( $this, 'feed_save_message' ) );
 		}
 
+		//add_filter( 'map_meta_cap', array( $this, 'feeds_map_meta_cap'), 10, 4 );
+
 		add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
 		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
 	}
@@ -92,10 +94,70 @@ class PF_Feeds_Schema {
 			'show_in_admin_bar' => true,
 			#'menu_position' => 100
 			'show_ui'     => true, // for testing only
+			'capability_type' => $this->post_type,
+			'capabilities' => $this->map_feed_caps()
 		) ) );
 
 		do_action( 'pf_feed_post_type_registered' );
 
+	}
+
+	public function map_feed_caps(){
+		return array(
+			'publish_posts' => 'publish_'.$this->post_type.'s',
+			'edit_posts' => 'edit_'.$this->post_type.'s',
+			'edit_others_posts' => 'edit_others_'.$this->post_type.'s',
+			'delete_posts' => 'delete_'.$this->post_type.'s',
+			'delete_others_posts' => 'delete_others_'.$this->post_type.'s',
+			'read_private_posts' => 'read_private_'.$this->post_type.'s',
+			'edit_post' => 'edit_'.$this->post_type,
+			'delete_post' => 'delete_'.$this->post_type,
+			'read_post' => 'read_'.$this->post_type,
+		);
+	}
+
+	function feeds_map_meta_cap( $caps, $cap, $user_id, $args ) {
+		if (  empty($args) ){
+			return $caps;
+		}
+		/* If editing, deleting, or reading a feed, get the post and post type object. */
+		if ( 'edit_'.$this->post_type == $cap || 'delete_'.$this->post_type == $cap || 'read_'.$this->post_type == $cap ) {
+			$post = get_post( $args[0] );
+			$post_type = get_post_type_object( $post->post_type );
+
+			/* Set an empty array for the caps. */
+			$caps = array();
+		}
+
+		/* If editing a feed, assign the required capability. */
+		if ( 'edit_'.$this->post_type == $cap ) {
+			if ( $user_id == $post->post_author )
+				$caps[] = $post_type->cap->edit_posts;
+			else
+				$caps[] = $post_type->cap->edit_others_posts;
+		}
+
+		/* If deleting a feed, assign the required capability. */
+		elseif ( 'delete_'.$this->post_type == $cap ) {
+			if ( $user_id == $post->post_author )
+				$caps[] = $post_type->cap->delete_posts;
+			else
+				$caps[] = $post_type->cap->delete_others_posts;
+		}
+
+		/* If reading a private feed, assign the required capability. */
+		elseif ( 'read_'.$this->post_type == $cap ) {
+
+			if ( 'private' != $post->post_status )
+				$caps[] = 'read';
+			elseif ( $user_id == $post->post_author )
+				$caps[] = 'read';
+			else
+				$caps[] = $post_type->cap->read_private_posts;
+		}
+
+		/* Return the capabilities required by the user. */
+		return $caps;
 	}
 
 	function under_review_post_status(){
