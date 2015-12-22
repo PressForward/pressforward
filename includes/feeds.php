@@ -58,7 +58,9 @@ class PF_Feeds_Schema {
 			add_filter( 'post_updated_messages', array( $this, 'feed_save_message' ) );
 		}
 
-		//add_filter( 'map_meta_cap', array( $this, 'feeds_map_meta_cap'), 10, 4 );
+		add_filter( 'map_meta_cap', array( $this, 'feeds_map_meta_cap'), 10, 4 );
+		add_filter('user_has_cap', array( $this, 'alter_cap_on_fly' ) );
+		add_filter( "option_page_capability_pf_feedlist_group", array( $this, 'feed_option_page_cap' ) );
 
 		add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
 		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
@@ -110,10 +112,29 @@ class PF_Feeds_Schema {
 			'delete_posts' => 'delete_'.$this->post_type.'s',
 			'delete_others_posts' => 'delete_others_'.$this->post_type.'s',
 			'read_private_posts' => 'read_private_'.$this->post_type.'s',
+			'publish_pages' => 'publish_'.$this->post_type.'s',
+			'edit_pages' => 'edit_'.$this->post_type.'s',
+			'edit_others_pages' => 'edit_others_'.$this->post_type.'s',
+			'delete_pages' => 'delete_'.$this->post_type.'s',
+			'delete_others_pages' => 'delete_others_'.$this->post_type.'s',
+			'read_private_pages' => 'read_private_'.$this->post_type.'s',
 			'edit_post' => 'edit_'.$this->post_type,
 			'delete_post' => 'delete_'.$this->post_type,
 			'read_post' => 'read_'.$this->post_type,
+			'edit_page' => 'edit_'.$this->post_type,
+			'delete_page' => 'delete_'.$this->post_type,
+			'read_page' => 'read_'.$this->post_type,
 		);
+	}
+
+	function alter_cap_on_fly( $caps ){
+
+		foreach ($this->map_feed_caps() as $core_cap => $cap){
+			if (! empty( $caps[$core_cap] ) ) { // user has edit capabilities
+				$caps[$cap] = true;
+			}
+		}
+		return $caps;
 	}
 
 	function feeds_map_meta_cap( $caps, $cap, $user_id, $args ) {
@@ -158,6 +179,12 @@ class PF_Feeds_Schema {
 
 		/* Return the capabilities required by the user. */
 		return $caps;
+	}
+
+	function feed_option_page_cap($cap){
+		//apply_filters( "option_page_capability_{$option_page}", $capability );
+		$caps = $this->map_feed_caps();
+		return $caps['edit_posts'];
 	}
 
 	function under_review_post_status(){
@@ -856,6 +883,7 @@ class PF_Feeds_Schema {
 		) );
 		pf_log('Received a create command with the following arguments:');
 		pf_log($r);
+		//var_dump('yo'); die();
 		if ($r['type'] == 'rss'){
 			pf_log('We are creating an RSS feed');
 			$theFeed = fetch_feed($feedUrl);

@@ -1437,6 +1437,28 @@ class PF_Admin {
 				if (isset( $_POST[$right] )){
 					$enabled = $_POST[$right];
 					update_option( $right, $enabled );
+					$feed_caps = pressforward()->pf_feeds->map_feed_caps();
+					$feed_item_caps = pressforward()->schema->map_feed_item_caps();
+					if ( 'pf_menu_feeder_access' == $right){
+						$all_roles = get_editable_roles();
+						foreach ($all_roles as $a_role=>$permissions ){
+							$a_role = get_role($a_role);
+							foreach ($feed_caps as $feed_cap){
+								$a_role->remove_cap($feed_cap);
+							}
+							foreach ($feed_item_caps as $feed_item_cap){
+								$a_role->remove_cap($feed_item_cap);
+							}
+						}
+//						assign_pf_to_standard_roles();
+						$role = get_role(pf_get_role_by_capability($enabled));
+						//var_dump($role); die();
+						$role->add_cap($feed_caps['edit_posts']);
+						$role->add_cap($feed_item_caps['edit_posts']);
+						//var_dump($role); die();
+					}
+
+
 				}
 			}
 

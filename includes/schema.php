@@ -42,6 +42,9 @@ class PF_Feed_Item_Schema {
 
 		// Maybe install custom table for relationships
 		add_action( 'admin_init', array( $this, 'maybe_install_relationship_table' ) );
+
+		add_filter('user_has_cap', array( $this, 'alter_cap_on_fly' ) );
+		add_filter( 'map_meta_cap', array( $this, 'feeds_item_map_meta_cap'), 10, 4 );
 	}
 
 	/**
@@ -85,10 +88,30 @@ class PF_Feed_Item_Schema {
 			'delete_posts' => 'delete_'.$this->feed_item_post_type.'s',
 			'delete_others_posts' => 'delete_others_'.$this->feed_item_post_type.'s',
 			'read_private_posts' => 'read_private_'.$this->feed_item_post_type.'s',
+			'publish_pages' => 'publish_'.$this->feed_item_post_type.'s',
+			'edit_pages' => 'edit_'.$this->feed_item_post_type.'s',
+			'edit_others_pages' => 'edit_others_'.$this->feed_item_post_type.'s',
+			'delete_pages' => 'delete_'.$this->feed_item_post_type.'s',
+			'delete_others_pages' => 'delete_others_'.$this->feed_item_post_type.'s',
+			'read_private_pages' => 'read_private_'.$this->feed_item_post_type.'s',
 			'edit_post' => 'edit_'.$this->feed_item_post_type,
 			'delete_post' => 'delete_'.$this->feed_item_post_type,
 			'read_post' => 'read_'.$this->feed_item_post_type,
+			'edit_page' => 'edit_'.$this->feed_item_post_type,
+			'delete_page' => 'delete_'.$this->feed_item_post_type,
+			'read_page' => 'read_'.$this->feed_item_post_type,
 		);
+	}
+
+
+	function alter_cap_on_fly( $caps ){
+
+		foreach ($this->map_feed_item_caps() as $core_cap => $cap){
+			if (! empty( $caps[$core_cap] ) ) { // user has edit capabilities
+				$caps[$cap] = true;
+			}
+		}
+		return $caps;
 	}
 
 	function feeds_item_map_meta_cap( $caps, $cap, $user_id, $args ) {

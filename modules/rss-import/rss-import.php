@@ -349,6 +349,7 @@ class PF_RSS_Import extends PF_Module {
 		} else {
 			pf_log('No, the current user can not edit posts.');
 		}
+		
 		$feed_obj = pressforward()->pf_feeds;
 		$subed = array();
 		$something_broke = false;

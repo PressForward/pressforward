@@ -610,6 +610,37 @@ function pf_get_defining_capability_by_role($role_slug){
     }
 }
 
+function pf_capability_mapper($cap, $role_slug){
+	$feed_caps = pressforward()->pf_feeds->map_feed_caps();
+	$feed_item_caps = pressforward()->schema->map_feed_item_caps();
+	if (array_key_exists($cap, $feed_caps)){
+		$role = get_role($role_slug);
+		$role->add_cap( $feed_caps[$cap] );
+	}
+	if (array_key_exists($cap, $feed_item_caps)){
+		$role = get_role($role_slug);
+		$role->add_cap( $feed_item_caps[$cap] );
+	}
+}
+
+function assign_pf_to_standard_roles(){
+	$roles = array(
+		'administrator',
+		'editor',
+		'author',
+		'contributor',
+		'subscriber'
+	);
+	$caps = pf_get_capabilities();
+//	$feed_caps = pressforward()->pf_feeds->map_feed_caps();
+//	$feed_item_caps = pressforward()->schema->map_feed_item_caps();
+	foreach ($caps as $cap=>$role){
+		foreach ($role as $a_role){
+			pf_capability_mapper($cap, $a_role);
+		}
+	}
+}
+
 /**
  * A function to filter authors and, if available, replace their display with the origonal item author.
  *
