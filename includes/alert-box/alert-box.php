@@ -250,7 +250,7 @@ if (!class_exists('The_Alert_Box')){
             }
             //var_dump($post_status);
 			      // update the post, which calls save_post again
-            //var_dump(self::alert_meta_key().' b'); die();
+            //var_dump(self::alert_meta_key().' b'); die(); 
             update_post_meta($post_id, self::alert_meta_key(), '');
 
             // re-hook this function

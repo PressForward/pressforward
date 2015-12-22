@@ -35,7 +35,7 @@ define( 'PF_NOM_POSTER', 'post-new.php?post_type=nomination' );
 define( 'PF_ROOT', dirname(__FILE__) );
 define( 'PF_FILE_PATH', PF_ROOT . '/' . basename(__FILE__) );
 define( 'PF_URL', plugins_url('/', __FILE__) );
-define( 'PF_VERSION', '3.8' );
+define( 'PF_VERSION', '3.6' );
 
 class PressForward {
 	var $modules = array();
@@ -496,16 +496,6 @@ class PressForward {
 		// This is an upgrade
 		} else if ( version_compare( $saved_version, $current_version, '<' ) ) {
 			// Do whatever you need to do on an upgrade
-			$arrayedAdminRights = pf_user_caps();
-			assign_pf_to_standard_roles();
-			foreach($arrayedAdminRights as $right=>$parts){
-				$enabled = get_option( $right );
-				$role = get_role(pf_get_role_by_capability($enabled));
-				$feed_caps = pressforward()->pf_feeds->map_feed_caps();
-				if ( array_key_exists($enabled, $feed_caps) ){
-					$role->add_cap( $feed_caps[$enabled] );
-				}
-			}
 
 		// Version is up to date - do nothing
 		} else {
