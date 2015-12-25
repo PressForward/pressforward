@@ -610,6 +610,14 @@ class PF_Metas {
 
 	}
 
+	function get_all_meta_keys(){
+		$meta_keys = array();
+		foreach(pressforward()->metas->structure() as $meta){
+			$meta_keys[] = pressforward()->metas->get_name($meta);
+		}
+		return $meta_keys;
+	}
+
 	/**
 	 * Update post_meta on a post using PressForward post_meta standardization.
 	 *

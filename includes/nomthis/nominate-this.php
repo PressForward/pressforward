@@ -145,8 +145,12 @@ function nominate_it() {
 	if ( is_wp_error($upload) ) {
 		wp_delete_post($post_ID);
 		wp_die($upload);
+		// Why is this here?
+		// Oh, because it is trying to upload the images in the item into our
+		// system. But if that doesn't work, something has gone pretty wrong.
 		$nom_check = true;
 	} else {
+		// Why does this hinge on $upload?
 		// Post formats
 		if ( isset( $_POST['post_format'] ) ) {
 			if ( current_theme_supports( 'post-formats', $_POST['post_format'] ) )
@@ -234,12 +238,12 @@ function nominate_it() {
 				set_post_thumbnail($newPostID, $post_thumbnail_id);
 			}
 			pressforward()->metas->transition_post_meta($post_ID, $newPostID);
-      return $newPostID;
+      		return $newPostID;
 		} else {
-      //@TODO We should increment nominations for this item maybe?
-      //Some sort of signal should occur here.
-      return $post_check;
-    }
+	      //@TODO We should increment nominations for this item maybe?
+	      //Some sort of signal should occur here.
+	      return $post_check;
+    	}
 	}
 	#var_dump($post); die();
 	return $post_ID;
