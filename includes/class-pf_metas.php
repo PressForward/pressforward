@@ -70,7 +70,7 @@ class PF_Metas {
 	 *
 	 */
 	function transition_post_meta($idA, $idB, $term_transition = false){
-		if ( !is_string( $idA ) || !is_string( $idB ) ){
+		if ( ( !is_string( $idA ) || !is_string( $idB ) ) && ( !is_numeric($idA) || !is_numeric($idB) ) ){
 			pf_log( 'Post meta transition failed.' );
 			pf_log( $idA );
 			pf_log( $idB );
