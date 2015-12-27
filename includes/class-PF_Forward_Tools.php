@@ -23,35 +23,36 @@ class PF_Forward_Tools {
 	}
 
 	private function __construct() {
-		$this->post_interface = pressforward()->pf_item_interface;
-		$this->advance_interface = pressforward()->pf_advance_interface;
+		//var_dump('a');
+		//$this->post_interface = pressforward()->pf_item_interface;
+		//$this->advance_interface = pressforward()->pf_advance_interface;
 	}
 
 	// Transition to next step Tools
 	public function transition_to_last_step($nomination_id){
-		$post = $this->post_interface->get_post($nomination_id, ARRAY_A);
+		$post = pressforward()->pf_item_interface->get_post($nomination_id, ARRAY_A);
 		$d_post = $post;
-		$newPostID = $this->advance_interface->to_last_step($d_post);
-		#var_dump($newPostID); die();
+		$newPostID = pressforward()->pf_advance_interface->to_last_step($d_post);
+		pf_log($newPostID);
 		#pressforward()->metas->transition_post_meta($post_ID, $newPostID);
 		if ( is_wp_error($newPostID) ){
 			pf_log($newPostID);
 			return false;
 		} else {
-			$this->advance_interface->transition( $nomination_id, $newPostID );
+			pressforward()->pf_advance_interface->transition( $nomination_id, $newPostID );
 			return $newPostID;
 		}
 	}
 
 	public function transition_to_nomination($item_post_id){
 		// Create
-		$post = $this->post_interface->get_post($item_post_id, ARRAY_A);
-		$nomination_id = $this->advance_interface->to_nomination($post);
+		$post = pressforward()->pf_item_interface->get_post($item_post_id, ARRAY_A);
+		$nomination_id = pressforward()->pf_advance_interface->to_nomination($post);
 		if ( $this->post_interface->is_error($nomination_id) ){
 			pf_log($nomination_id);
 			return false;
 		} else {
-			$this->advance_interface->transition( $item_post_id, $nomination_id );
+			pressforward()->pf_advance_interface->transition( $item_post_id, $nomination_id );
 			return $nomination_id;
 		}
 	}
@@ -63,7 +64,7 @@ class PF_Forward_Tools {
 		$nomination_and_post_check = $this->is_a_pf_type( $item_id );
 		//$post_check = $this->is_a_pf_type( $item_id, pressforward()->nominations->post_type );
 		//pressforward()->metas->update_pf_meta($post_ID, 'nom_id', $post_ID);
-		if ($nomination_and_post_check != false){
+		if ($nomination_and_post_check == false){
 			$nomination_id = $this->transition_to_nomination($item_post_id);
 			// Assign user status as well here.
 			return $nomination_id;
@@ -78,12 +79,15 @@ class PF_Forward_Tools {
 		//pressforward()->metas->update_pf_meta($post_ID, 'nom_id', $post_ID);
 		//
 		// Assign user status as well here.
-		if ($post_check != false){
-			return $this->transition_to_last_step($nomination_id);
+		if ($post_check == false){
+			$id = $this->transition_to_last_step($nomination_id);
+			pf_log($id);
+			return $id;
 		} else {
 			//@TODO We should increment nominations for this item maybe?
 			//Some sort of signal should occur here to indicate that the item was
 			//already sent to last step.
+
 			return $post_check;
 		}
 
@@ -101,9 +105,9 @@ class PF_Forward_Tools {
 		}
 		$nom_and_post_check = $this->is_a_pf_type( $item_id );
 
-		$this->pf_advance_interface->prep_bookmarklet( $post['ID'] );
+		pressforward()->pf_advance_interface->prep_bookmarklet( $post['ID'] );
 		# PF NOTE: Switching post type to nomination.
-		$post['post_type'] = 'nomination';
+		$post['post_type'] = pressforward()->nominations->post_type;
 		$post['post_date_gmt'] = gmdate('Y-m-d H:i:s');
 		# PF NOTE: This is where the inital post is created.
 		# PF NOTE: Put get_post_nomination_status here.
@@ -118,7 +122,7 @@ class PF_Forward_Tools {
 		if (!$nom_and_post_check){
 			// Update post here because we're working with the blank post
 			// inited by the Nominate This page, at the beginning.
-			$post_ID = pressforward()->pf_item_interface->update_post($post);
+			$post_ID = pressforward()->pf_item_interface->update_post($post, true);
 			// Check if thumbnail already exists, if not, set it up.
 			$already_has_thumb = has_post_thumbnail($post_ID);
 			if ($already_has_thumb)  {
@@ -174,7 +178,8 @@ class PF_Forward_Tools {
 		if (!$item_id){
 			$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 		}
-		$nomination_id = $this->bookmarklet_to_nomination($item_id);
+		$nomination_id = $this->bookmarklet_to_nomination($item_id, $post);
+		pf_log($nomination_id);
 		return $this->nomination_to_last_step($item_id, $nomination_id);
 	}
 
@@ -182,7 +187,7 @@ class PF_Forward_Tools {
 		if (!$post_type) {
 			$post_type = array('post', pressforward()->nominations->post_type);
 		}
-		$attempt = $this->advance_interface->get_pf_type_by_id($item_id, $post_type);
+		$attempt = pressforward()->pf_advance_interface->get_pf_type_by_id($item_id, $post_type);
 		if (!empty($attempt)){
 			$r = $attempt;
 			pf_log('Existing post at '.$r);

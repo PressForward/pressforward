@@ -17,7 +17,7 @@ class PF_to_WP_Posts implements System_Items {
 	}
 
 	public function get_post(  $post = null, $output = OBJECT, $filter = 'raw' ){
-		return get_post( $post, $output, $object, $filter );
+		return get_post( $post, $output, $filter );
 	}
 
 	public function is_error( $post ){

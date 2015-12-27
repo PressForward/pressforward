@@ -8,5 +8,5 @@ interface Advance_System
 	public function prep_bookmarklet( $post_id );
 	public function to_last_step( $post = array() );
 	public function to_nomination(  $post = array() );
-	public function get_pf_type_by_id( $item_id, $post_type )
+	public function get_pf_type_by_id( $item_id, $post_type );
 }

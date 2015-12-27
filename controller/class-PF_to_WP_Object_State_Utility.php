@@ -8,22 +8,12 @@ require_once(dirname(dirname(__FILE__)).'/interfaces/interface-advancement.php')
  */
 
 class PF_Advance_Interface implements Advance_System {
-	var $last_step_state;
-	var $last_step_post_type;
+	//var $last_step_state;
+	//var $last_step_post_type;
 
-	public static function init() {
-		static $instance;
-
-		if ( empty( $instance ) ) {
-			$instance = new self;
-		}
-
-		return $instance;
-	}
-
-	private function __construct() {
-		$this->last_step_state = $this->last_step_state();
-		$this->last_step_post_type = $this->last_step_post_type();
+	public function __construct() {
+		//$this->last_step_state = $this->last_step_state();
+		//$this->last_step_post_type = $this->last_step_post_type();
 	}
 
 	public function last_step_state(){
@@ -51,8 +41,9 @@ class PF_Advance_Interface implements Advance_System {
 	// Step Tools
 	public function to_last_step( $post = array() ){
 		unset($post['ID']);
-		$post['post_type'] = $this->last_step_post_type;
-		$post['post_status'] = $this->last_step_state;
+		$post['post_type'] = $this->last_step_post_type();
+		$post['post_status'] = $this->last_step_state();
+		pf_log($post);
 		return wp_insert_post( $post, true );
 	}
 
@@ -130,7 +121,7 @@ class PF_Advance_Interface implements Advance_System {
 
 	// Utility Functions
 	function pull_content_images_into_pf($post_ID, $item_content, $photo_src, $photo_description){
-		$content = isset($item_content) ? $item_content] : '';
+		$content = isset($item_content) ? $item_content : '';
 
 		$upload = false;
 		if ( !empty($photo_src) && current_user_can('upload_files') ) {
