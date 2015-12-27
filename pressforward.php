@@ -54,6 +54,7 @@ class PressForward {
 	var $relationships;
 	var $subscribed_feeds;
 	var $pf_item_interface;
+	var $pf_advance_interface;
 
 	public static function init() {
 		static $instance;
@@ -80,6 +81,7 @@ class PressForward {
 
 		$this->set_up_item_interface();
 		$this->set_up_pf_metas();
+		$this->set_up_pf_advance_interface();
 		$this->set_up_opml_reader();
 		$this->set_up_og_reader();
 		$this->set_up_readability();
@@ -139,6 +141,7 @@ class PressForward {
 		require_once(PF_ROOT . "/includes/class-pf_metas.php");
 		require_once(PF_ROOT . "/includes/class-PF_Add_Feeds.php");
 		require_once( PF_ROOT . "/controller/class-PF_to_WP_Posts.php" );
+		require_once( PF_ROOT . "/controller/class-PF_to_WP_Object_State_Utility.php" );
 
 		// Load the module base class and our test module
 		require_once( PF_ROOT . "/includes/functions.php" );
@@ -339,6 +342,12 @@ class PressForward {
 	function set_up_item_interface() {
 		if ( empty( $this->pf_item_interface ) ) {
 			$this->pf_item_interface = new PF_to_WP_Posts;
+		}
+	}
+
+	function set_up_pf_advance_interface(){
+		if ( empty( $this->pf_advance_interface ) ) {
+			$this->subscribed_feeds = PF_Advance_Interface::init();
 		}
 	}
 

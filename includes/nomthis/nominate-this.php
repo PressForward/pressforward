@@ -172,6 +172,9 @@ function nominate_it() {
 			}
 		$pf_nomination = new PF_Nominations();
 		$nom_check = $pf_nomination->is_nominated($item_id);
+		if (0 != $feed_nom['id']){
+			$post['post_parent'] = $feed_nom['id'];
+		}
 
 		if (!$nom_check){
 

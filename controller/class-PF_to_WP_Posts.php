@@ -20,4 +20,8 @@ class PF_to_WP_Posts implements System_Items {
 		return get_post( $post, $output, $object, $filter );
 	}
 
+	public function is_error( $post ){
+		return is_wp_error( $post );
+	}
+
 }
