@@ -76,6 +76,8 @@ class PF_Admin {
 	 */
 	function register_pf_custom_menu_pages() {
 
+		remove_menu_page('edit.php?post_type=pf_feed_item');
+
 		// Top-level menu page
 		add_menu_page(
 			PF_TITLE, // <title>
@@ -192,11 +194,11 @@ class PF_Admin {
 
 	function posted_submitbox_pf_actions(){
 		global $post;
-		$check = pf_get_post_meta($post->ID, 'item_link', true);
+		$check = pressforward()->metas->get_post_pf_meta($post->ID, 'item_link', true);
 		if ( empty($check) ){
 			return;
 		}
-	    $value = pf_get_post_meta($post->ID, 'pf_forward_to_origin', true);
+	    $value = pressforward()->metas->get_post_pf_meta($post->ID, 'pf_forward_to_origin', true);
 	    if ( empty($value) ){
 
 	    	$option_value = get_option('pf_link_to_source');
@@ -221,11 +223,11 @@ class PF_Admin {
 	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ){ return $post_id; }
 	    if ( !current_user_can( 'edit_page', $post_id ) ){ return $post_id; }
 		#var_dump($_POST['pf_forward_to_origin']); die();
-		#$current = pf_get_post_meta();
+		#$current = pressforward()->metas->get_post_pf_meta();
 			if ( !array_key_exists('pf_forward_to_origin', $_POST) ) {
 
  			} else {
-				pf_update_meta($post_id, 'pf_forward_to_origin', $_POST['pf_forward_to_origin']);
+				pressforward()->metas->update_pf_meta($post_id, 'pf_forward_to_origin', $_POST['pf_forward_to_origin']);
 			}
 
 		return $post_id;
@@ -1147,7 +1149,7 @@ class PF_Admin {
 			#$query->query['post_status'] = '';
 			#$query->query_vars['post_status'] = '';
 		}
-		return $query;
+		#return $query;
 	}
 
 	function pf_ab_bug_status_args( $args ){
@@ -1435,6 +1437,28 @@ class PF_Admin {
 				if (isset( $_POST[$right] )){
 					$enabled = $_POST[$right];
 					update_option( $right, $enabled );
+					$feed_caps = pressforward()->pf_feeds->map_feed_caps();
+					$feed_item_caps = pressforward()->schema->map_feed_item_caps();
+					if ( 'pf_menu_feeder_access' == $right){
+						$all_roles = get_editable_roles();
+						foreach ($all_roles as $a_role=>$permissions ){
+							$a_role = get_role($a_role);
+							foreach ($feed_caps as $feed_cap){
+								$a_role->remove_cap($feed_cap);
+							}
+							foreach ($feed_item_caps as $feed_item_cap){
+								$a_role->remove_cap($feed_item_cap);
+							}
+						}
+//						assign_pf_to_standard_roles();
+						$role = get_role(pf_get_role_by_capability($enabled));
+						//var_dump($role); die();
+						$role->add_cap($feed_caps['edit_posts']);
+						$role->add_cap($feed_item_caps['edit_posts']);
+						//var_dump($role); die();
+					}
+
+
 				}
 			}
 

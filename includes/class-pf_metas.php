@@ -5,6 +5,28 @@
  */
 
 class PF_Metas {
+
+	var $meta_interface;
+
+	public static function init() {
+		static $instance;
+
+		if ( ! is_a( $instance, 'PF_Metas' ) ) {
+			$instance = new self();
+		}
+
+		return $instance;
+	}
+
+	private function includes(){
+		require_once(dirname(dirname(__FILE__)).'/controller/class-PF_to_WP_Meta.php');
+	}
+
+	private function __construct() {
+		$this->includes();
+		$this->meta_interface = new PF_to_WP_Meta;
+	}
+
 	/**
 	 * Take an array of objects describing post_metas and set them to the id of a post.
 	 *
@@ -21,9 +43,9 @@ class PF_Metas {
 	 * }
 	 *
 	 */
-	function pf_meta_establish_post($id, $args){
+	function establish_post($id, $args){
 		foreach ($args as $arg){
-			add_post_meta($id, $arg['name'], $arg['value'], true);
+			pressforward()->metas->add_pf_meta($id, $arg['name'], $arg['value'], true);
 		}
 	}
 
@@ -33,7 +55,7 @@ class PF_Metas {
 	 * @return array An array useful in thevarious parts of the post_meta setting process.
 	 *
 	 */
-	function pf_meta_for_entry($key, $value){
+	function meta_for_entry($key, $value){
 		return array(
 			'name'	=>	$key,
 			'value'	=>	$value
@@ -47,9 +69,113 @@ class PF_Metas {
 	 * @param int $idB The ID of the post that needs to have the meta info attached to it.
 	 *
 	 */
-	function pf_meta_transition_post($idA, $idB){
-		foreach(pf_meta_structure() as $meta){
-			pf_meta_transition(get_pf_meta_name($meta), $idA, $idB);
+	function transition_post_meta($idA, $idB, $term_transition = false){
+		if ( ( !is_string( $idA ) || !is_string( $idB ) ) && ( !is_numeric($idA) || !is_numeric($idB) ) ){
+			pf_log( 'Post meta transition failed.' );
+			pf_log( $idA );
+			pf_log( $idB );
+			pf_log( $term_transition );
+			return;
+		}
+		pf_log('Transition post '.$idA.' to '.$idB);
+		foreach(pressforward()->metas->structure() as $meta){
+			pressforward()->metas->transition_meta(pressforward()->metas->get_name($meta), $idA, $idB);
+		}
+		if ( $term_transition ){
+			pf_log('Transitioning Terms.');
+			pressforward()->metas->transition_meta_terms($idA, $idB);
+		}
+	}
+
+	function transition_meta_terms($idA, $idB){
+		$parent = wp_get_post_parent_id($idA);
+		$ids = array($idA);
+		if ( !empty($parent) && !is_wp_error( $parent ) ){
+			$ids[] = $parent;
+		}
+		$item_id = pressforward()->metas->get_post_pf_meta($idA, 'pf_item_post_id');
+		if ( !empty($item_id) && !is_wp_error( $item_id ) ){
+			$ids[] = $item_id;
+		}
+		/**$parent_parent = wp_get_post_parent_id( $parent );
+		if ( !empty($parent_parent) && !is_wp_error( $parent_parent ) ){
+			$ids[] = $parent_parent;
+		}**/
+		$term_objects = wp_get_object_terms( $ids, array( pressforward()->pf_feeds->tag_taxonomy, 'post_tag', 'category' ) );
+		$item_tags = pressforward()->metas->get_post_pf_meta($idA, 'item_tags');
+		if ( !empty($term_objects) ){
+			foreach ( $term_objects as $term ){
+				wp_set_object_terms($idB, $term->term_id, $term->taxonomy, true);
+				if ( pressforward()->pf_feeds->tag_taxonomy == $term->taxonomy ){
+					$check = pressforward()->metas->cascade_taxonomy_tagging($idB, $term->slug, 'slug');
+					if (!$check){
+						pressforward()->metas->build_and_assign_new_taxonomy_tag($idB, $term->name);
+					}
+				}
+			}
+		}
+		if ( !empty($item_tags) ){
+			pf_log('Attempting to attach item_tags.');
+			if ( !is_array( $item_tags ) ){
+				pf_log($item_tags);
+				$item_tags = explode(',',$item_tags);
+			}
+			foreach ($item_tags as $tag){
+				$check = pressforward()->metas->cascade_taxonomy_tagging($idB, $tag, 'name');
+				if (!$check){
+					pressforward()->metas->build_and_assign_new_taxonomy_tag($idB, $tag);
+				}
+			}
+		}
+	}
+
+	/**
+	 * If term exists among current categories or terms, assign it.
+	 * @param  [type] $idB          [description]
+	 * @param  [type] $term_id      [description]
+	 * @param  string $term_id_type [description]
+	 * @return [type]               [description]
+	 */
+	function cascade_taxonomy_tagging($idB, $term_id, $term_id_type = 'slug'){
+		pf_log('Trying to assign taxonomy for '.$idB);
+		$term_object = get_term_by($term_id_type, $term_id, 'category');
+		if ( empty( $term_object ) ){
+			pf_log('No category match.');
+			$term_object = get_term_by($term_id_type, $term_id, 'post_tag');
+			if ( empty( $term_object ) ){
+				pf_log('No post_tag match.');
+				return false;
+			} else {
+				return wp_set_object_terms( $idB, $term_object->term_id, 'post_tag', true );
+
+			}
+		} else {
+			return wp_set_object_terms( $idB, $term_object->term_id, 'category', true );
+		}
+		return true;
+	}
+
+	/**
+	 * When no tag exists, PF will use this function to build and assign a new
+	 * post tag.
+	 * @param  [type] $idB           [description]
+	 * @param  [type] $full_tag_name [description]
+	 * @return [type]                [description]
+	 */
+	function build_and_assign_new_taxonomy_tag($idB, $full_tag_name){
+		pf_log('Attaching new tag to '.$idB.' with a name of '.$full_tag_name);
+		$term_args = array(
+							'description'	=>	'Added by PressForward',
+							'parent'		=>	0,
+							'slug'			=>	pf_slugger($full_tag_name)
+						);
+		$r = wp_insert_term($full_tag_name, 'post_tag', $term_args);
+		if ( !is_wp_error( $r ) && !empty($r['term_id']) ){
+			pf_log('Making a new post_tag, ID:'.$r['term_id']);
+			wp_set_object_terms( $idB, $r['term_id'], 'post_tag', true );
+		} else {
+			pf_log('Failed making a new post_tag');
+			pf_log($r);
 		}
 	}
 
@@ -63,12 +189,14 @@ class PF_Metas {
 	 * @return int The result of the update_post_meta function.
 	 *
 	 */
-	function pf_meta_transition($name, $idA, $idB){
-		$meta_value = get_post_meta($idA, $name, true);
-		#$result = pf_prep_for_depreciation($name, $meta_value, $idA, $idB);
-		#if (!$result){
-			$result = update_post_meta($idB, $name, $meta_value);
-		#}
+	function transition_meta($name, $idA, $idB){
+		pf_log('Transition '.$idA.' meta field '.$name);
+		$meta_value = $this->meta_interface->get_meta($idA, $name, true);
+		$result = pressforward()->metas->check_for_and_transfer_depreciated_meta($name, $meta_value, $idA, $idB);
+		if (!$result){
+			pf_log($name.' not depreciated, updating on post '.$idB);
+			$result = $this->meta_interface->update_meta($idB, $name, $meta_value);
+		}
 
 		return $result;
 	}
@@ -90,16 +218,18 @@ class PF_Metas {
 	 *
 	 * @return bool True if the post_meta is supported by PressForward.
 	 */
-	function pf_prep_for_depreciation($name, $value, $idA, $idB){
-		foreach (pf_meta_structure() as $meta){
+	function check_for_and_transfer_depreciated_meta($name, $value, $idA, $idB){
+		foreach (pressforward()->metas->structure() as $meta){
 			if ($meta['name'] == $name){
 				if (in_array('dep', $meta['type'])){
-					#if ((!isset($value)) || (false == $value) || ('' == $value) || (0 == $value) || (empty($value))){
-						$value = get_post_meta($idA, $meta['move'], true);
-					#}
-					#update_post_meta($idA, $name, $value);
-					update_post_meta($idB, $meta['move'], $value);
-					update_post_meta($idB, $name, $value);
+					pf_log( $name.' is a depreciated meta type. Prepping to transfer to '.$meta['move'] );
+					if ((!isset($value)) || (false == $value) || ('' == $value) || (0 == $value) || (empty($value))){
+						pf_log('No value was passed. Get meta data from new meta key.');
+						$value = $this->meta_interface->get_meta($idA, $meta['move'], true);
+					}
+					//update_post_meta($idA, $name, $value);
+					$this->meta_interface->update_meta($idB, $meta['move'], $value);
+					//update_post_meta($idB, $name, $value);
 					return true;
 				}
 			}
@@ -112,22 +242,53 @@ class PF_Metas {
 	 *
 	 * @since 3.x
 	 *
-	 * @param string $author The author string currently being displayed.
+	 * @param string $name The meta name we're checking to see if it is an
+	 *						an official PF meta.
 	 *
-	 * @return string Returns the author.
+	 * @return string|bool 	Returns PF meta object, false if not.
 	 */
-	function pf_meta_by_name($name){
-		foreach (pf_meta_structure() as $meta){
+	function by_name($name){
+		foreach (pressforward()->metas->structure() as $meta){
 			if($name == $meta['name']){
 				return $meta;
+			} else {
+				pf_log($name. ' is not a PF meta type.');
+				return false;
 			}
 		}
 	}
 
 	/**
-	 * Get the name out of the meta object.
+	 * Return a PF Meta Object that is assuredly not depreciated.
+	 * @param  [type] $name [description]
+	 * @return [type]       [description]
 	 */
-	function get_pf_meta_name($meta){
+	function assure_key($name){
+		$meta = pressforward()->metas->by_name($name);
+		pf_log('Assuring '.$name.' is PF meta.');
+		if ( ( false !== $meta ) && !empty( $meta['move'] ) ){
+			return pressforward()->metas->by_name( $meta['move'] );
+		} else {
+			pf_log($name.' is not PF meta.');
+			return array( 'name' => $name, 'error' => 'not_pf_meta' );
+		}
+	}
+
+	/**
+	 * Return the meta database key.
+	 *
+	 * @param  [type] $name [description]
+	 * @return [type]       [description]
+	 */
+	function get_key( $name ){
+		$meta = pressforward()->metas->assure_key( $name );
+		return pressforward()->metas->get_name( $meta );
+	}
+
+	/**
+	 * Get the name (database key) out of the meta object.
+	 */
+	function get_name($meta){
 		return $meta['name'];
 	}
 
@@ -138,7 +299,7 @@ class PF_Metas {
 	 *
 	 * @return array An object describing all the post_metas used by PressForward.
 	 */
-	function pf_meta_structure(){
+	function structure(){
 		#Inspired by http://www.loc.gov/standards/metable.html
 		#Adm=Administrative, Struc=Structural, Desc=Descriptive, Req=Required, Rep=Repeatable, Set=Set, Aggr=Aggregate, Dep = Depreciated
 
@@ -374,8 +535,8 @@ class PF_Metas {
 	/*
 	 * A function to check and retrieve the right meta field for a post.
 	 */
-	function pf_pass_meta($field, $id = false, $value = '', $single = true){
-	    $metas = pf_meta_structure();
+	function pass_meta($field, $id = false, $value = '', $single = true){
+	    $metas = pressforward()->metas->structure();
 	    # Check if it exists.
 	    if (empty($metas[$field])){
 	        pf_log('The field ' . $field . ' is not supported.');
@@ -385,7 +546,7 @@ class PF_Metas {
 	    if (in_array('dep',$metas[$field]['type'])){
 			$new_field = $metas[$field]['move'];
 			pf_log('You tried to use depreciated field '.$field.' it was moved to '.$new_field);
-			pf_transition_deped_meta($field, $id, $value, $single, $new_field);
+			pressforward()->metas->transition_depreciated_meta($field, $id, $value, $single, $new_field);
 	        $field = $new_field;
 	    }
 	    return $field;
@@ -396,16 +557,16 @@ class PF_Metas {
 	 * Transitions meta values from old depreciated meta_slugs to new ones.
 	 *
 	 */
-	function pf_transition_deped_meta($field, $id, $value, $single, $new_field){
+	function transition_depreciated_meta($field, $id, $value, $single, $new_field){
 		$result = false;
 		# Note - empty checks for FALSE
-		$old = get_post_meta($id, $field, $single);
-		$new = get_post_meta($id, $new_field, $single);
+		$old = $this->meta_interface->get_meta($id, $field, $single);
+		$new = $this->meta_interface->get_meta($id, $new_field, $single);
 		if ((false != $id) && !empty($old) && empty($new)){
 			if (empty($value)){
-				$result = update_post_meta($id, $new_field, $old);
+				$result = $this->meta_interface->update_meta($id, $new_field, $old);
 			} else {
-				$result = update_post_meta($id, $new_field, $value);
+				$result = $this->meta_interface->update_meta($id, $new_field, $value);
 			}
 		}
 		return $result;
@@ -426,11 +587,11 @@ class PF_Metas {
 	 *
 	 * @return string|array Returns the result of retrieving the post_meta or the self-descriptive meta-object with value.
 	 */
-	function pf_retrieve_meta($id, $field, $obj = false, $single = true){
-	    $field = pf_pass_meta($field, $id);
-	    $meta = get_post_meta($id, $field, $single);
+	function retrieve_meta($id, $field, $obj = false, $single = true){
+	    $field = pressforward()->metas->pass_meta($field, $id);
+	    $meta = $this->meta_interface->get_meta($id, $field, $single);
 	    if ($obj){
-	        $metas = pf_meta_structure();
+	        $metas = pressforward()->metas->structure();
 	        $meta_obj = $metas[$field];
 	        $meta_obj['value'] = $meta;
 	        return $meta_obj;
@@ -440,13 +601,21 @@ class PF_Metas {
 	}
 
 	/**
-	 * An alias for pf_retrieve_meta that allows you to use the standard argument set from get_post_meta.
+	 * An alias for pressforward()->metas->retrieve_meta that allows you to use the standard argument set from get_post_meta.
 	 *
 	 */
-	function pf_get_post_meta($id, $field, $single = true, $obj = false){
+	function get_post_pf_meta($id, $field, $single = true, $obj = false){
 
-			return pf_retrieve_meta($id, $field, $obj, $single);
+			return pressforward()->metas->retrieve_meta($id, $field, $obj, $single);
 
+	}
+
+	function get_all_meta_keys(){
+		$meta_keys = array();
+		foreach(pressforward()->metas->structure() as $meta){
+			$meta_keys[] = pressforward()->metas->get_name($meta);
+		}
+		return $meta_keys;
 	}
 
 	/**
@@ -459,11 +628,41 @@ class PF_Metas {
 	 *
 	 * @return int The check value from update_post_meta.
 	 */
-	function pf_update_meta($id, $field, $value = '', $prev_value = NULL){
-	    $field = pf_pass_meta($field, $id, $value);
-	    $check = update_post_meta($id, $field, $value, $prev_value);
+	function update_pf_meta($id, $field, $value = '', $prev_value = NULL){
+	    $field = pressforward()->metas->pass_meta($field, $id, $value);
+	    $check = pressforward()->metas->apply_pf_meta($id, $field, $value, $prev_value);
 	    return $check;
 
+	}
+
+	function get_author_from_url($url){
+		$response = pf_file_get_html( $url );
+		$possibles = array();
+		if (empty($response)){
+			return false;
+		}
+		$possibles[] = $response->find('meta[name=author]', 0);
+		$possibles[] = $response->find('meta[name=Author]', 0);
+		$possibles[] = $response->find('meta[property=author]', 0);
+		$possibles[] = $response->find('meta[property=Author]', 0);
+		$possibles[] = $response->find('meta[name=parsely-author]', 0);
+		$possibles[] = $response->find('meta[name=sailthru.author]', 0);
+
+		foreach ($possibles as $possible){
+			if ( false != $possible ){
+				$author_meta = $possible;
+				break;
+			}
+		}
+
+		if ( empty($author_meta) ){
+			return false;
+		}
+
+		$author = $author_meta->content;
+		$author = trim(str_replace("by","",$author));
+		$author = trim(str_replace("By","",$author));
+		return $author;
 	}
 
 	/**
@@ -476,11 +675,45 @@ class PF_Metas {
 	 *
 	 * @return int The check value from add_post_meta.
 	 */
-	function pf_add_meta($id, $field, $value = '', $unique = false){
-	    $field = pf_pass_meta($field, $id, $value, $unique);
-	    $check = add_post_meta($id, $field, $value, $unique);
+	function add_pf_meta($id, $field, $value = '', $unique = false){
+	    $field = pressforward()->metas->pass_meta($field, $id, $value, $unique);
+	    $check = pressforward()->metas->apply_pf_meta($id, $field, $value, $unique);
 	    return $check;
 
+	}
+
+	function apply_pf_meta($id, $field, $value = '', $state = null, $apply_type = 'update'){
+		switch ($field) {
+			case 'nominator_array':
+				$nominators = pressforward()->metas->get_post_pf_meta($id, $field);
+				if ( !is_array( $value ) ){
+					$value = array( $value );
+				}
+				if ( !is_array( $nominators ) ){
+					$nominators = array( $nominators );
+				}
+				//We are doing a removal.
+				if ( 1 == count(array_diff($value, $nominators) ) ){
+					$nominators = array_unique( $value );
+					continue;
+				}
+				if ( !is_array($value) ){
+					$value = array($value);
+				}
+				$nominators = array_merge( $nominators, $value );
+				$nominators = array_unique( $nominators );
+				$value = $nominators;
+				break;
+			default:
+				# code...
+				break;
+		}
+		if ( 'update' == $apply_type ){
+			$check = $this->meta_interface->update_meta($id, $field, $value, $state);
+		} elseif ( 'add' == $apply_type ) {
+			$check = $this->meta_interface->add_meta($id, $field, $value, $state);
+		}
+		return $check;
 	}
 
 }

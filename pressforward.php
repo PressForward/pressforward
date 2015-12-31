@@ -46,11 +46,16 @@ class PressForward {
 	var $pf_feed_items;
 	var $pf_feeds;
 	var $pf_retrieve;
+	var $pf_folders;
+	var $metas;
 	var $opml_reader;
 	var $og_reader;
 	var $readability;
 	var $relationships;
 	var $subscribed_feeds;
+	var $pf_item_interface;
+	var $pf_advance_interface;
+	var $forward_tools;
 
 	public static function init() {
 		static $instance;
@@ -74,6 +79,11 @@ class PressForward {
 	private function __construct() {
 
 		$this->includes();
+
+		$this->set_up_item_interface();
+		$this->set_up_pf_metas();
+		$this->set_up_pf_advance_interface();
+		$this->set_up_forward_tools();
 
 		$this->set_up_opml_reader();
 		$this->set_up_og_reader();
@@ -133,9 +143,13 @@ class PressForward {
 		require_once( PF_ROOT . '/includes/opml/reader.php' );
 		require_once(PF_ROOT . "/includes/class-pf_metas.php");
 		require_once(PF_ROOT . "/includes/class-PF_Add_Feeds.php");
+		require_once( PF_ROOT . "/controller/class-PF_to_WP_Posts.php" );
+		require_once( PF_ROOT . "/controller/class-PF_to_WP_Object_State_Utility.php" );
+		require_once(PF_ROOT . "/includes/class-PF_Forward_Tools.php");
 
 		// Load the module base class and our test module
 		require_once( PF_ROOT . "/includes/functions.php" );
+		//require_once( PF_ROOT . "/includes/class-pf_metas.php" );
 		require_once( PF_ROOT . "/includes/module-base.php" );
 		require_once( PF_ROOT . '/includes/schema.php' );
 		require_once( PF_ROOT . '/includes/readable.php' );
@@ -266,6 +280,14 @@ class PressForward {
 		}
 	}
 
+	public function set_up_pf_metas() {
+		if ( empty( $this->metas ) ) {
+			$this->metas = PF_Metas::init();
+		}
+
+		return '';
+	}
+
 	/**
 	 * Sets up the Dashboard admin parts
 	 *
@@ -318,6 +340,24 @@ class PressForward {
 	function set_up_subscribed_feeds() {
 		if ( empty( $this->subscribed_feeds ) ) {
 			$this->subscribed_feeds = PF_Subscribed_Feeds::init();
+		}
+	}
+
+	function set_up_item_interface() {
+		if ( empty( $this->pf_item_interface ) ) {
+			$this->pf_item_interface = new PF_to_WP_Posts;
+		}
+	}
+
+	function set_up_pf_advance_interface(){
+		if ( empty( $this->pf_advance_interface ) ) {
+			$this->pf_advance_interface = new PF_Advance_Interface;
+		}
+	}
+
+	function set_up_forward_tools(){
+		if ( empty( $this->forward_tools ) ) {
+			$this->forward_tools = PF_Forward_Tools::init();
 		}
 	}
 
@@ -442,6 +482,7 @@ class PressForward {
 
 		return '';
 	}
+
 	/**
 	 * Set up first feed and other install/upgrade tasks
 	 * Code via Boone
