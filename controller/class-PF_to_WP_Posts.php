@@ -12,7 +12,7 @@ class PF_to_WP_Posts implements System_Items {
 		return wp_update_post( $post, $error );
 	}
 
-	public function delete_post( $postid, $force_delete ){
+	public function delete_post( $postid, $force_delete = false ){
 		return wp_delete_post( $postid, $force_delete );
 	}
 
