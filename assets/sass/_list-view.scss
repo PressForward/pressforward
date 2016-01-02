@@ -1,15 +1,16 @@
 .list {
+	margin-right: 20px;
+	#entries {
+		background-color: white;
 
-  #entries {
+		article.feed-item {
 
-    article.feed-item {
-      background-color: white;
-      padding-left: 8px;
+			padding-left: 8px;
 
-      header {
-        width: 24%;
-      }
+			header {
+				width: 24%;
+			}
 
-    }
-  }
+		}
+	}
 }

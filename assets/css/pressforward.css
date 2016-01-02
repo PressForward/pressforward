@@ -619,11 +619,14 @@ h3 {
   padding: 3px;
   overflow: hidden; }
 
-.list #entries article.feed-item {
-  background-color: white;
-  padding-left: 8px; }
-  .list #entries article.feed-item header {
-    width: 24%; }
+.list {
+  margin-right: 20px; }
+  .list #entries {
+    background-color: white; }
+    .list #entries article.feed-item {
+      padding-left: 8px; }
+      .list #entries article.feed-item header {
+        width: 24%; }
 
 .grid .item_title {
   height: 63px; }
