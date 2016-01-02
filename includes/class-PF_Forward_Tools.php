@@ -314,7 +314,8 @@ class PF_Forward_Tools {
 			return $post_ID;
 		} else {
 			// Do something with the returned ID.
-
+			// Increment the nomination count if the nomination exists.
+			$this->nomination_user_transition_check( $nom_and_post_check );
 			return $nom_and_post_check;
 		}
 
