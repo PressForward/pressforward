@@ -81,6 +81,19 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+= 3.8 =
+* A new option in preferences allows site administrators to change the location of the source link from the bottom of the post to the top.
+* Restored “Send to Draft” functionality in All Content.
+* List view now has a white background to conform to accessibility standards.
+* Fixed a bug where the RSS-Quick add methodology would fail upon upload of an OPML that includes broken links.
+* Fixed a bug where the “Nominate This” bookmarklet failed when nominating the same article twice.
+* Fixed a user permissions error which prevented Author level contributors from adding a feed (when the Feeder menu preference was changed to allow author access).
+* Fixed a bug where the “Nominate” button appeared as “Submit for Review” for contributors in the Bookmarklet.
+* Ensured that feeds in OPMLs will have their title retrieved after submission.
+* Made adjustments to ensure that Gothamist and Medium articles can be nominated via the Nominate This bookmarklet
+* Changed quick edit post statuses to feed statuses in Subscribed Feeds.
+
+
 = 3.7 =
 * Administrators and Contributors can now submit a feed through the Nominate This bookmarklet.  Feeds are drafted and appear in yellow as “Under Review” in subscribed feeds.
 * Created a template tag that can be added to a theme’s post template to reveal any internal PressForward comments on an item.
@@ -108,6 +121,7 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 * Nominate This button styling updated.
 * Source link is now properly attached to Nominate This nominations.
 * Fixed a bug where Send to Draft wasn’t working on some items.
+
 = 3.6 =
 * Added the ability to subscribe to an OPML file.
 * OPML subscription imports any folders included in the OPML file.
@@ -128,6 +142,7 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 * Fixed bug related to insure PressForward properly hooks to the Yoast SEO plugin's Open Graph and Canonical values.
 * Fixed bug where the author custom field was no longer overriding WordPress author.
 * Fixed bug where clean-up of old posts after user-set period was not cleaning up posts.
+
 = 3.5 =
 * Now checks for known aggregation services to insure proper resolution of URLs.
 * Created the Amplify dropdown button in the actions bar.
