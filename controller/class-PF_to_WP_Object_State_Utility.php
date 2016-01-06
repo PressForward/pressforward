@@ -28,6 +28,30 @@ class PF_Advance_Interface implements Advance_System {
 	public function transition($old_post, $new_post){
 		$this->transition_post_image($old_post, $new_post);
 		pressforward()->metas->transition_post_meta($old_post, $new_post);
+		$this->transition_taxonomy_info($old_post, $new_post);
+	}
+
+	public function transition_taxonomy_info($old_post, $new_post){
+		//$old_terms = array();
+		$taxonomies = apply_filters( 'pf_valid_post_taxonomies', array('category', 'post_tag') );
+		foreach ($taxonomies as $taxonomy) {
+			$old_tax_terms = get_the_terms($old_post, $taxonomy);
+
+			if ( ( false !== $old_tax_terms ) && ( !is_wp_error($old_tax_terms) ) && ( is_array($old_tax_terms) ) ){
+				$old_term_ids = array();
+				foreach($old_tax_terms as $term){
+					$old_term_ids[] = $term->term_id;
+				}
+				wp_set_object_terms($new_post, $old_term_ids, $taxonomy, false);
+			}
+		}
+		//$old_category_terms = get_the_terms($old_post, 'category');
+		//var_dump($old_terms); die();
+		//foreach ($old_terms as $old_term){
+		//	wp_set_object_terms($new_post, $old_term->term_id, $old_term->taxonomy, true);
+		//}
+
+
 	}
 
 	public function transition_post_image($old_post, $new_post){
@@ -77,6 +101,15 @@ class PF_Advance_Interface implements Advance_System {
 				set_post_format( $post_id, $_POST['post_format'] );
 			elseif ( '0' == $_POST['post_format'] )
 				set_post_format( $post_id, false );
+		}
+
+		if ( isset( $_POST['post_category'] ) ){
+			//var_dump($_POST['post_category']); die();
+			$categories = array();
+			foreach ( $_POST['post_category'] as $category_id ){
+				$categories[$category_id] = intval($category_id);
+			}
+			wp_set_object_terms($post_id, $categories, 'category', false);
 		}
 	}
 

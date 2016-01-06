@@ -47,7 +47,8 @@ class PF_Nominations {
 			//The type of input (besides the metaboxes) that it supports.
 			'supports' => array('title', 'editor', 'thumbnail', 'revisions'),
 			//I think this is set to false by the public argument, but better safe.
-			'has_archive' => false
+			'has_archive' => false,
+			'taxonomies'	=> array('category', 'post_tag')
 		);
 
 		register_post_type('nomination', $args);
@@ -262,7 +263,7 @@ class PF_Nominations {
 
 	public function send_nomination_for_publishing() {
 		global $post;
-		
+
 		ob_start();
 		// verify if this is an auto save routine.
 		// If it is our form has not been submitted, so we dont want to do anything
