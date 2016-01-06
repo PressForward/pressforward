@@ -235,6 +235,8 @@ class PF_Folders {
 			foreach ($the_other_feeds as $a_feed_id){
 				$this->the_feed($a_feed_id);
 			}
+		} else{
+			_e("You must run version 4.0 of WordPress or higher to access the folders feature.", 'pf');
 		}
 	}
 

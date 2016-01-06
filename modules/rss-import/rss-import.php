@@ -78,14 +78,14 @@ class PF_RSS_Import extends PF_Module {
 			return;
 		}
 		$error_to_alert = get_option(PF_SLUG.'_errors_until_alert', 3);
-		$error_count = pf_retrieve_meta($id, PF_SLUG.'_feed_error_count');
+		$error_count = pressforward()->metas->retrieve_meta($id, PF_SLUG.'_feed_error_count');
 		if ((!is_numeric($error_count)) || ('' == $error_count)){ $error_count = 0; }
 		if ($error_count >= $error_to_alert){
 			the_alert_box()->switch_post_type($id);
 			the_alert_box()->add_bug_type_to_post($id, __('Broken RSS feed.', 'pf'));
 			$post_obj = get_post( $id );
 			$old_content = $post_obj->post_content;
-			$update_result = pf_update_meta($id, PF_SLUG.'_feed_error_count', 0);
+			$update_result = pressforward()->metas->update_pf_meta($id, PF_SLUG.'_feed_error_count', 0);
 			if(is_wp_error($theFeed)){
 				$argup = array(
 					'ID'			=> $id,
@@ -96,7 +96,7 @@ class PF_RSS_Import extends PF_Module {
 			}
 			return true;
 		} else {
-			$update_result = pf_update_meta($id, PF_SLUG.'_feed_error_count', $error_count+1);
+			$update_result = pressforward()->metas->update_pf_meta($id, PF_SLUG.'_feed_error_count', $error_count+1);
 			return $update_result;
 		}
 	}
@@ -349,6 +349,7 @@ class PF_RSS_Import extends PF_Module {
 		} else {
 			pf_log('No, the current user can not edit posts.');
 		}
+		
 		$feed_obj = pressforward()->pf_feeds;
 		$subed = array();
 		$something_broke = false;
@@ -449,13 +450,23 @@ class PF_RSS_Import extends PF_Module {
 	}
 
 	public static function process_opml($opml){
-		$OPML_reader = new OPML_reader;
-		$opml_array = $OPML_reader->get_OPML_data($opml);
+		$OPML = new OPML_reader($opml);
+		$OPML_obj = $OPML->get_OPML_obj();
+		$opml_array = $OPML_obj->feeds;
 		#print_r($opml_array); die();
-		foreach($opml_array as $key=>$feedXml){
+		foreach($opml_array as $key=>$feedObj){
+			$feedXml = $feedObj->feedUrl;
+			$args = array(
+				'title' => $feedObj->title,
+				'description' => $feedObj->text,
+				'tags'				=>	array()
+			);
+			foreach ($feedObj->folder as $folder){
+				$args['tags'][$folder->slug] = $folder->title;
+			}
 			# Adding this as a 'quick' type so that we can process the list quickly.
 			pf_log('Adding this as a quick type so that we can process the list quickly');
-			$opml_array = pressforward()->pf_feeds->progressive_feedlist_transformer($opml_array, $feedXml, $key);
+			$opml_array = pressforward()->pf_feeds->progressive_feedlist_transformer($opml_array, $feedXml, $key, $args);
 			# @todo Tag based on folder structure
 		}
 		#$check_up = update_option( PF_SLUG . '_feedlist', $opml_array );

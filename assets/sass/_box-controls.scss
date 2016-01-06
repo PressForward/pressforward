@@ -1,0 +1,123 @@
+.pressforward .pf-btns .amplify-group {
+	display: inline-block;
+}
+
+
+.list .box-controls {
+	margin-right: 26px;
+	margin-top: -10px;
+}
+
+.pressforward .list .dropdown-menu.fullview {
+	width: 100%;
+	position: relative;
+	height: 83px;
+}
+
+.box-controls {
+	position:relative;
+	float: right;
+	display: inline;
+}
+
+.box-controls i {
+	background-color:#0085B0;
+}
+
+.schema-read {
+	float: right;
+	margin-right: -12px;
+	margin-top: -12px;
+	display: block;
+	cursor: pointer;
+	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
+	border-radius:6px;
+	position:absolute;
+}
+
+.list .schema-read {
+	margin-right: 0;
+	margin-top: 0;
+}
+
+.marked-read {
+	background-color:none;
+	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings.png");
+}
+
+.schema-read:hover {
+	background-color: lightGrey;
+}
+
+.pf-item-remove {
+	float: right;
+	margin-left: -48px;
+	margin-top: -12px;
+	display: block;
+	cursor: pointer;
+	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
+	background-color:lavender;
+	border-radius:6px;
+	position:absolute;
+}
+
+.pressforward_page_pf-review .pf-item-remove {
+	margin-left: -18px;
+}
+
+.pf-item-remove:hover {
+	background-color: lightGrey;
+}
+
+.list .pf-item-remove {
+	margin-right: 0;
+	margin-top: 0;
+}
+
+.hide-item {
+	float: right;
+	margin-left: -24px;
+	margin-top: -12px;
+	display: block;
+	cursor: pointer;
+	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
+	background-color:lavender;
+	border-radius:6px;
+	position:absolute;
+}
+
+.hide-item:hover {
+	background-color: lightGrey;
+}
+
+.list .hide-item {
+	margin-right: 0;
+	margin-top: 0;
+}
+
+.relationship-button-active {
+	background-color:none;
+	background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings.png");
+}
+
+#infscr-loading {
+	width:100%;
+	float: left;
+	padding-left: 40px;
+}
+
+.list .actions {
+
+}
+
+.list .modal .actions {
+	display: block;
+}
+
+.grid .go-actions-bar {
+	display: none;
+}
+
+.actions .btn {
+	height: 26px;
+}

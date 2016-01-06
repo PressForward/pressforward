@@ -58,6 +58,10 @@ class PF_Feeds_Schema {
 			add_filter( 'post_updated_messages', array( $this, 'feed_save_message' ) );
 		}
 
+		add_filter( 'map_meta_cap', array( $this, 'feeds_map_meta_cap'), 10, 4 );
+		add_filter('user_has_cap', array( $this, 'alter_cap_on_fly' ) );
+		add_filter( "option_page_capability_pf_feedlist_group", array( $this, 'feed_option_page_cap' ) );
+
 		add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
 		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
 	}
@@ -88,13 +92,99 @@ class PF_Feeds_Schema {
 			'hierarchical' => true,
 			'supports' 	=> array('title','editor','author','thumbnail','excerpt','custom-fields','page-attributes'),
 			'taxonomies' => array('post_tag'),
-			'show_in_menu' => PF_MENU_SLUG
+			'show_in_menu' => PF_MENU_SLUG,
+			'show_in_admin_bar' => true,
 			#'menu_position' => 100
-			#'show_ui'     => true, // for testing only
+			'show_ui'     => true, // for testing only
+			'capability_type' => $this->post_type,
+			'capabilities' => $this->map_feed_caps()
 		) ) );
 
 		do_action( 'pf_feed_post_type_registered' );
 
+	}
+
+	public function map_feed_caps(){
+		return array(
+			'publish_posts' => 'publish_'.$this->post_type.'s',
+			'edit_posts' => 'edit_'.$this->post_type.'s',
+			'edit_others_posts' => 'edit_others_'.$this->post_type.'s',
+			'delete_posts' => 'delete_'.$this->post_type.'s',
+			'delete_others_posts' => 'delete_others_'.$this->post_type.'s',
+			'read_private_posts' => 'read_private_'.$this->post_type.'s',
+			'publish_pages' => 'publish_'.$this->post_type.'s',
+			'edit_pages' => 'edit_'.$this->post_type.'s',
+			'edit_others_pages' => 'edit_others_'.$this->post_type.'s',
+			'delete_pages' => 'delete_'.$this->post_type.'s',
+			'delete_others_pages' => 'delete_others_'.$this->post_type.'s',
+			'read_private_pages' => 'read_private_'.$this->post_type.'s',
+			'edit_post' => 'edit_'.$this->post_type,
+			'delete_post' => 'delete_'.$this->post_type,
+			'read_post' => 'read_'.$this->post_type,
+			'edit_page' => 'edit_'.$this->post_type,
+			'delete_page' => 'delete_'.$this->post_type,
+			'read_page' => 'read_'.$this->post_type,
+		);
+	}
+
+	function alter_cap_on_fly( $caps ){
+
+		foreach ($this->map_feed_caps() as $core_cap => $cap){
+			if (! empty( $caps[$core_cap] ) ) { // user has edit capabilities
+				$caps[$cap] = true;
+			}
+		}
+		return $caps;
+	}
+
+	function feeds_map_meta_cap( $caps, $cap, $user_id, $args ) {
+		if (  empty($args) ){
+			return $caps;
+		}
+		/* If editing, deleting, or reading a feed, get the post and post type object. */
+		if ( 'edit_'.$this->post_type == $cap || 'delete_'.$this->post_type == $cap || 'read_'.$this->post_type == $cap ) {
+			$post = get_post( $args[0] );
+			$post_type = get_post_type_object( $post->post_type );
+
+			/* Set an empty array for the caps. */
+			$caps = array();
+		}
+
+		/* If editing a feed, assign the required capability. */
+		if ( 'edit_'.$this->post_type == $cap ) {
+			if ( $user_id == $post->post_author )
+				$caps[] = $post_type->cap->edit_posts;
+			else
+				$caps[] = $post_type->cap->edit_others_posts;
+		}
+
+		/* If deleting a feed, assign the required capability. */
+		elseif ( 'delete_'.$this->post_type == $cap ) {
+			if ( $user_id == $post->post_author )
+				$caps[] = $post_type->cap->delete_posts;
+			else
+				$caps[] = $post_type->cap->delete_others_posts;
+		}
+
+		/* If reading a private feed, assign the required capability. */
+		elseif ( 'read_'.$this->post_type == $cap ) {
+
+			if ( 'private' != $post->post_status )
+				$caps[] = 'read';
+			elseif ( $user_id == $post->post_author )
+				$caps[] = 'read';
+			else
+				$caps[] = $post_type->cap->read_private_posts;
+		}
+
+		/* Return the capabilities required by the user. */
+		return $caps;
+	}
+
+	function feed_option_page_cap($cap){
+		//apply_filters( "option_page_capability_{$option_page}", $capability );
+		$caps = $this->map_feed_caps();
+		return $caps['edit_posts'];
 	}
 
 	function under_review_post_status(){
@@ -131,9 +221,9 @@ class PF_Feeds_Schema {
 	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ){ return false; }
 	    if ( !current_user_can( 'edit_page', $post_id ) ){ return false; }
 	    if( empty($_POST['pf_no_feed_alert']) ){
-	        pf_update_meta($post_id, 'pf_no_feed_alert', 0);
+	        pressforward()->metas->update_pf_meta($post_id, 'pf_no_feed_alert', 0);
 	    } else {
-				pf_update_meta($post_id, 'pf_no_feed_alert', $_POST['pf_no_feed_alert']);
+				pressforward()->metas->update_pf_meta($post_id, 'pf_no_feed_alert', $_POST['pf_no_feed_alert']);
 			}
 
 		return $post_id;
@@ -572,9 +662,9 @@ class PF_Feeds_Schema {
 
 	# Not only is this moving feeds over into feed CPT posts, but this methodology will insure a time-out won't force the process to restart.
 	# There should probably be a AJAX interface for this, same as the AB subscribe method.
-	public function progressive_feedlist_transformer($feedlist = array(), $xmlUrl, $key) {
-
-		$check = $this->create($xmlUrl, array('type' => 'rss-quick'));
+	public function progressive_feedlist_transformer($feedlist = array(), $xmlUrl, $key, $args = array()) {
+		$post_args = array_merge(array('type' => 'rss-quick'), $args);
+		$check = $this->create($xmlUrl, $post_args);
 		if (is_numeric($check) && (0 < $check)){
 			unset($feedlist[$key]);
 		}
@@ -622,6 +712,7 @@ class PF_Feeds_Schema {
 		# post results in an update to that post.
 		pf_log('We have initially formed the following post args:');
 		pf_log($wp_args);
+
 		if (!self::has_feed($r['url'])){
 			$insert_type = 'insert';
 		} else {
@@ -663,7 +754,34 @@ class PF_Feeds_Schema {
 			pf_log('The post_id is numeric and greater than 0, complete the ' .$insert_type. ' process');
 			self::set_pf_feed_type($post_id, $r['type']);
 			$r['feedUrl'] = $r['url'];
+			pf_log('Tags found:');
+			pf_log($r['tags']);
+			if (array_key_exists('tags', $r) && !empty($r['tags'])){
+				//@TODO make this a function of the PF_Folders class.
+				foreach ($r['tags'] as $slug=>$tag){
+					//Assume that OPML files have folder structures that
+					//users would want to maintain.
+					if ( 'rss-quick' == $r['type'] ){
+						$term = wp_insert_term($tag, $this->tag_taxonomy);
+						//var_dump($term_id); die();
+						if (is_wp_error($term)){
+							$term_id = $term->error_data['term_exists'];
+						} elseif (is_array($term)){
+							$term_id = $term['term_id'];
+						} else {
+							$term_id = false;
+						}
+						if ( false !== $term_id ){
+							pf_log('Adding folder with ID of '.$term_id);
+							wp_add_object_terms($post_id, $term_id, $this->tag_taxonomy);
+						}
+					} else {
+						//@TODO Add as post tag instead
+					}
+				}
+			}
 			$unsetables = array('title', 'description', 'tags', 'type', 'url');
+
 			foreach ($unsetables as $k=>$a){
 				unset($r[$a]);
 			}
@@ -730,7 +848,7 @@ class PF_Feeds_Schema {
 			if (!$r['thumbnail']){
 				$r['thumbnail'] = $theFeed->get_image_url();
 			}
-			if (empty($r['tags'])){
+			if (array_key_exists('tags', $r) && empty($r['tags'])){
 				#$r['tags'] = $theFeed->get_feed_tags();
 			}
 		}
@@ -765,6 +883,7 @@ class PF_Feeds_Schema {
 		) );
 		pf_log('Received a create command with the following arguments:');
 		pf_log($r);
+		//var_dump('yo'); die();
 		if ($r['type'] == 'rss'){
 			pf_log('We are creating an RSS feed');
 			$theFeed = fetch_feed($feedUrl);

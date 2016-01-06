@@ -23,6 +23,7 @@ class PF_Readability {
 			set_time_limit(0);
 			$readability_stat = $url;
 			$url = pressforward()->pf_feed_items->resolve_full_url($url);
+			//var_dump($url); die();
 			$descrip = rawurldecode($descrip);
 			if (get_magic_quotes_gpc())
 				$descrip = stripslashes($descrip);
@@ -184,7 +185,16 @@ class PF_Readability {
 
 		set_time_limit(0);
 		$url =  pressforward()->pf_feed_items->resolve_full_url($url);
-		$request = pf_de_https($url, 'wp_remote_get', array('timeout' => '30'));
+
+		$request = pf_de_https($url, 'wp_remote_get', array(
+																												'timeout' => '30',
+																												'user-agent' => 'AdsBot-Google (+http://www.google.com/adsbot.html)',
+																												'headers'		=> array(
+																													'X-PressForward'	=>	get_site_url()
+																												)
+																											)
+														);
+		//var_dump($request); die();
 		//print_r($url); print_r(' - Readability<br />');
 		// change from Boone - use wp_remote_get() instead of file_get_contents()
 		//$request = wp_remote_get( $url, array('timeout' => '30') );

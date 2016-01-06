@@ -404,21 +404,21 @@ function modalNomReadReset(){
 				if (status != 'readable') {
 					if (status == 'secured') {
 						alert('The content cannot be retrieved. The post may be on a secure page or it may have been removed.');
-						jQuery("#"+postID+" #modal-"+itemID+" #modal-body-"+itemID).html(read_content);
+						jQuery("#modal-"+itemID+" #modal-body-"+itemID).html(read_content);
 						var safeResponse = escapeHtml(read_content);
 						jQuery("#item_content_"+itemID).attr('value', safeResponse);
 						jQuery(modalID).attr('pf-readability-status', 1);
 					} else if (status == 'already_readable') {
-						jQuery("#"+postID+" #modal-"+itemID+" #modal-body-"+itemID).html(unescape(content));
+						jQuery("#modal-"+itemID+" #modal-body-"+itemID).html(unescape(content));
 						jQuery(modalID).attr('pf-readability-status', 1);
 					} else {
-						jQuery("#"+postID+" #modal-"+itemID+" #modal-body-"+itemID).html(read_content);
+						jQuery("#modal-"+itemID+" #modal-body-"+itemID).html(read_content);
 						var safeResponse = escapeHtml(read_content);
 						jQuery("#item_content_"+itemID).attr('value', safeResponse);
 					}
 				} else {
 						//alert('readable')
-						jQuery("#"+postID+" #modal-"+itemID+" #modal-body-"+itemID).html(read_content);
+						jQuery("#modal-"+itemID+" #modal-body-"+itemID).html(read_content);
 						var safeResponse = escapeHtml(read_content);
 						jQuery("#item_content_"+itemID).attr('value', safeResponse);
 						jQuery(modalID).attr('pf-readability-status', 1);
