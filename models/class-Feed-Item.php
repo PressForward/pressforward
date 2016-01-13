@@ -123,7 +123,7 @@ class PF_Feed_Item_Object {
 	private function get_tags() {
 		$tags = $this->get('tags_array');
 		if ( isset( $tags ) && is_array( $tags ) ){
-			return implode(',' $tags);
+			return implode(',', $tags);
 		} else {
 			return $this->get('tags_string');
 		}

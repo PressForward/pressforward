@@ -40,6 +40,7 @@ define( 'PF_VERSION', '3.8' );
 class PressForward {
 	var $modules = array();
 
+	var $model;
 	var $schema;
 	var $admin;
 	var $nominations;
@@ -79,6 +80,8 @@ class PressForward {
 	private function __construct() {
 
 		$this->includes();
+
+		$this->set_up_models();
 
 		$this->set_up_item_interface();
 		$this->set_up_pf_metas();
@@ -137,6 +140,9 @@ class PressForward {
 		require_once( PF_ROOT . "/lib/pf_simple_html_dom.php" );
 		#$dom = new pf_simple_html_dom;
 
+		// Object Models
+		require_once( PF_ROOT . '/models/class-Feed-Item.php' );
+
 		// Internal tools
 		require_once( PF_ROOT . '/includes/opml/maker.php' );
 		require_once( PF_ROOT . '/includes/opml/object.php' );
@@ -168,6 +174,17 @@ class PressForward {
 		require_once( PF_ROOT . '/lib/urlresolver/URLResolver.php' );
 		require_once( PF_ROOT . '/lib/class-WPUpdatePHP.php' );
 
+	}
+
+	function set_up_models() {
+		if ( empty( $this->model ) ){
+			$this->model = new stdClass();
+		}
+		if ( empty( $this->model->feed_item ) ){
+			$this->model->feed_item = function( $item_url, $item_title, $post_type = false ) {
+												return new PF_Feed_Item_Object($item_url, $item_title, $post_type);
+											};
+		}
 	}
 
 	/**
