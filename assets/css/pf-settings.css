@@ -1,22 +1,26 @@
 .pftab {
-	margin-left:22px;
-	display:none;
-}
+  margin-left: 22px;
+  display: none; }
 
 .pftab.active {
-	display: block;
-}
+  display: block; }
 
 .pressforward_page_pf-feeder .pftab {
-	margin-top:10px;
-}
+  margin-top: 10px; }
 
 .pressforward_page_pf-feeder .pftab h2 {
-	display:none;
-}
+  display: none; }
 
-#responses{
-	display: none;
-    padding: 10px;
-    margin: 12px;
-}
+#responses {
+  display: none;
+  padding: 10px;
+  margin: 12px; }
+
+.wp-core-ui .button-primary {
+  background: #000000;
+  border-color: #0073aa; }
+
+.pf-opt-group .inside a:not(.button-primary) {
+  background-color: white;
+  padding: 8px;
+  border-radius: 10px; }

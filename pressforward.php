@@ -3,7 +3,7 @@
 Plugin Name: PressForward
 Plugin URI: http://pressforward.org/
 Description: The PressForward Plugin is a tool by the Roy Rosenzweig Center for History and New Media for aggregating and curating web-based content within the WordPress dashboard.
-Version: 3.7.0
+Version: 3.8.0
 GitHub Plugin URI: https://github.com/PressForward/pressforward
 Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
 Author URI: http://pressforward.org/about/team/
@@ -35,7 +35,7 @@ define( 'PF_NOM_POSTER', 'post-new.php?post_type=nomination' );
 define( 'PF_ROOT', dirname(__FILE__) );
 define( 'PF_FILE_PATH', PF_ROOT . '/' . basename(__FILE__) );
 define( 'PF_URL', plugins_url('/', __FILE__) );
-define( 'PF_VERSION', '3.6' );
+define( 'PF_VERSION', '3.8' );
 
 class PressForward {
 	var $modules = array();
@@ -46,11 +46,16 @@ class PressForward {
 	var $pf_feed_items;
 	var $pf_feeds;
 	var $pf_retrieve;
+	var $pf_folders;
+	var $metas;
 	var $opml_reader;
 	var $og_reader;
 	var $readability;
 	var $relationships;
 	var $subscribed_feeds;
+	var $pf_item_interface;
+	var $pf_advance_interface;
+	var $forward_tools;
 
 	public static function init() {
 		static $instance;
@@ -75,6 +80,11 @@ class PressForward {
 
 		$this->includes();
 
+		$this->set_up_item_interface();
+		$this->set_up_pf_metas();
+		$this->set_up_pf_advance_interface();
+		$this->set_up_forward_tools();
+
 		$this->set_up_opml_reader();
 		$this->set_up_og_reader();
 		$this->set_up_readability();
@@ -91,6 +101,7 @@ class PressForward {
 		$this->set_up_tools();
 		$this->set_up_add_feeds();
 		$this->set_up_subscribed_feeds();
+		$this->set_up_WP_Update_PHP();
 
 		add_action( 'plugins_loaded', array( $this, 'pressforward_init' ) );
 
@@ -132,9 +143,13 @@ class PressForward {
 		require_once( PF_ROOT . '/includes/opml/reader.php' );
 		require_once(PF_ROOT . "/includes/class-pf_metas.php");
 		require_once(PF_ROOT . "/includes/class-PF_Add_Feeds.php");
+		require_once( PF_ROOT . "/controller/class-PF_to_WP_Posts.php" );
+		require_once( PF_ROOT . "/controller/class-PF_to_WP_Object_State_Utility.php" );
+		require_once(PF_ROOT . "/includes/class-PF_Forward_Tools.php");
 
 		// Load the module base class and our test module
 		require_once( PF_ROOT . "/includes/functions.php" );
+		//require_once( PF_ROOT . "/includes/class-pf_metas.php" );
 		require_once( PF_ROOT . "/includes/module-base.php" );
 		require_once( PF_ROOT . '/includes/schema.php' );
 		require_once( PF_ROOT . '/includes/readable.php' );
@@ -151,6 +166,7 @@ class PressForward {
     	require_once( PF_ROOT . '/includes/template-tags.php' );
     	require_once( PF_ROOT . '/includes/alert-box/alert-box.php' );
 		require_once( PF_ROOT . '/lib/urlresolver/URLResolver.php' );
+		require_once( PF_ROOT . '/lib/class-WPUpdatePHP.php' );
 
 	}
 
@@ -264,6 +280,14 @@ class PressForward {
 		}
 	}
 
+	public function set_up_pf_metas() {
+		if ( empty( $this->metas ) ) {
+			$this->metas = PF_Metas::init();
+		}
+
+		return '';
+	}
+
 	/**
 	 * Sets up the Dashboard admin parts
 	 *
@@ -316,6 +340,24 @@ class PressForward {
 	function set_up_subscribed_feeds() {
 		if ( empty( $this->subscribed_feeds ) ) {
 			$this->subscribed_feeds = PF_Subscribed_Feeds::init();
+		}
+	}
+
+	function set_up_item_interface() {
+		if ( empty( $this->pf_item_interface ) ) {
+			$this->pf_item_interface = new PF_to_WP_Posts;
+		}
+	}
+
+	function set_up_pf_advance_interface(){
+		if ( empty( $this->pf_advance_interface ) ) {
+			$this->pf_advance_interface = new PF_Advance_Interface;
+		}
+	}
+
+	function set_up_forward_tools(){
+		if ( empty( $this->forward_tools ) ) {
+			$this->forward_tools = PF_Forward_Tools::init();
 		}
 	}
 
@@ -428,6 +470,14 @@ class PressForward {
 	public function get_feed_folder_taxonomy() {
 		if ( isset( $this->pf_folders ) ) {
 			return $this->pf_folders->tag_taxonomy;
+		}
+
+		return '';
+	}
+
+	public function set_up_WP_Update_PHP() {
+		if ( empty( $this->pf_update_php_notice ) ) {
+			$this->pf_update_php_notice = new PF_WPUpdatePHP('5.3.0');
 		}
 
 		return '';

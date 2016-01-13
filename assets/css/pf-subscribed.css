@@ -12,3 +12,12 @@
     color: black;
     background-color: red;
     padding: 2px; }
+
+.list {
+  margin-right: 20px; }
+  .list #entries {
+    background-color: white; }
+    .list #entries article.feed-item {
+      padding-left: 8px; }
+      .list #entries article.feed-item header {
+        width: 24%; }

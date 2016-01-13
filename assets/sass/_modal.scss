@@ -1,0 +1,107 @@
+.modal .original-link {
+	margin-top: 2px;
+}
+
+.modal.pfmodal {
+	z-index: 9998;
+}
+
+.pfmodal.fade.in {
+	top: 0;
+}
+
+
+
+.pfmodal {
+	background-color: #f5f5f5;
+	max-height: 100%;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 100%;
+	left: 0;
+	margin: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+
+	.modal-header {
+		background-color: white;
+		max-height: 13%;
+
+	}
+
+	.modal-mobile-nav {
+		margin: 0 8px;
+	}
+
+	.mobile-goPrev, .mobile-goNext {
+
+	}
+
+	.modal-body-row {
+		background:white;
+	}
+
+	.modal-body {
+		min-height: 100%
+	}
+
+	.modal-body-row {
+		height:80%;
+		overflow:hidden;
+	}
+
+	.modal-sidebar {
+		height:100%;
+		margin: 0;
+		/**width: 25.64102564102563%;**/
+		width:25.5%
+	}
+
+	.modal-side-item {
+		border: 1px solid #eee;
+		border-right: transparent;
+		padding: 1%;
+		margin: 0;
+	}
+
+	.modal-comments {
+		overflow-y: auto;
+	}
+
+	.goPrev, .goNext {
+		height: 25%;
+		font-size: .7rem;
+		line-height: .7rem;
+		overflow:hidden;
+		text-align: right;
+	}
+
+	.goPrev p, .goNext p {
+		margin-bottom: 8px;
+	}
+
+	.goPrev h5, .goNext h5 {
+		margin-bottom: 8px;
+	}
+
+	.modal-comments {
+		height: 50%;
+	}
+
+	.modal-footer {
+		max-height: 80%;
+		min-height: 48px;
+	}
+
+	.modal-body p, .modal-body div, .modal-body {
+		margin: 1.5em 0;
+		font-size: 18px;
+		line-height: 1.7em;
+	}
+
+	& > div {
+		z-index: 2000;
+	}
+}

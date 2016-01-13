@@ -136,7 +136,8 @@ function nominate_it() {
     } else {
     	$feed_nom = array(
     		'id' => 0,
-    		'msg'	=> 'No feed was nominated.'
+    		'msg'	=> 'No feed was nominated.',
+        'simple'  => 'User hasn\'t nominated a feed.'
     	);
     	update_option( 'pf_last_nominated_feed', $feed_nom );
     }
@@ -144,96 +145,23 @@ function nominate_it() {
 	if ( is_wp_error($upload) ) {
 		wp_delete_post($post_ID);
 		wp_die($upload);
-		$nom_check = true;
-	} else {
-		// Post formats
-		if ( isset( $_POST['post_format'] ) ) {
-			if ( current_theme_supports( 'post-formats', $_POST['post_format'] ) )
-				set_post_format( $post_ID, $_POST['post_format'] );
-			elseif ( '0' == $_POST['post_format'] )
-				set_post_format( $post_ID, false );
-		}
-		# PF NOTE: Switching post type to nomination.
-		$post['post_type'] = 'nomination';
-		$post['post_date_gmt'] = gmdate('Y-m-d H:i:s');
-		# PF NOTE: This is where the inital post is created.
-		# PF NOTE: Put get_post_nomination_status here.
-		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
-			if (!isset($_POST['item_date'])){
-				$newDate = gmdate('Y-m-d H:i:s');
-				$item_date = $newDate;
-			} else {
-				$item_date = $_POST['item_date'];
-			}
-		$pf_nomination = new PF_Nominations();
-		$nom_check = $pf_nomination->is_nominated($item_id);
-
-		if (!$nom_check){
-
-			$post_ID = wp_update_post($post);
-		}
+		// Why is this here?
+		// Oh, because it is trying to upload the images in the item into our
+		// system. But if that doesn't work, something has gone pretty wrong.
+		//$nom_check = true;
 	}
-			# var_dump($_POST); die();
-		if (!$nom_check){
+	// Why does this hinge on $upload?
+	// Post formats
+	if (0 != $feed_nom['id']){
+		$post['post_parent'] = $feed_nom['id'];
+	}
 
-			$already_has_thumb = has_post_thumbnail($post_ID);
-			if ($already_has_thumb)  {
-				$post_thumbnail_id = get_post_thumbnail_id( $post_ID );
-				$post_thumbnail_url = wp_get_attachment_image_src( $attachment_id );
-			} else {
-				$post_thumbnail_url = false;
-			}
-
-      $url_parts = parse_url($_POST['item_link']);
-      if (!empty($url_parts['host'])){
-        $source = $url_parts['host'];
-      } else {
-        $source = '';
-      }
-
-			$pf_meta_args = array(
-				pf_meta_for_entry('item_id', $item_id ),
-				pf_meta_for_entry('item_link', $_POST['item_link']),
-				pf_meta_for_entry('nomination_count', 1),
-				pf_meta_for_entry('source_title', 'Bookmarklet'),
-				pf_meta_for_entry('item_date', $item_date),
-				pf_meta_for_entry('posted_date', $item_date),
-				pf_meta_for_entry('date_nominated', $_POST['date_nominated']),
-				pf_meta_for_entry('item_author', $_POST['authors']),
-				pf_meta_for_entry('authors', $_POST['authors']),
-				pf_meta_for_entry('pf_source_link', $source),
-				pf_meta_for_entry('item_feat_img', $post_thumbnail_url),
-				pf_meta_for_entry('nominator_array', array(get_current_user_id())),
-				// The item_wp_date allows us to sort the items with a query.
-				pf_meta_for_entry('item_wp_date', $item_date),
-				//We can't just sort by the time the item came into the system (for when mult items come into the system at once)
-				//So we need to create a machine sortable date for use in the later query.
-				pf_meta_for_entry('sortable_item_date', strtotime($item_date)),
-				pf_meta_for_entry('item_tags', 'via bookmarklet'),
-				pf_meta_for_entry('source_repeat', 1),
-				pf_meta_for_entry('revertible_feed_text', $post['post_content'])
-
-			);
-			pf_meta_establish_post($post_ID, $pf_meta_args);
-		}
 	if (isset($_POST['publish']) && ($_POST['publish'] == "Send to ".ucwords(get_option(PF_SLUG.'_draft_post_status', 'draft')) ) ) {
+		//var_dump($_POST); die();
+		$post_ID = pressforward()->forward_tools->bookmarklet_to_last_step(false, $post);
 
-		$post_check = $pf_nomination->is_nominated($item_id, 'post', false);
-		if ($post_check != true) {
-			pf_update_meta($post_ID, 'nom_id', $post_ID);
-			$d_post = $post;
-			$d_post['post_type'] = get_option(PF_SLUG.'_draft_post_type', 'post');
-			$d_post['post_status'] = get_option(PF_SLUG.'_draft_post_status', 'draft');
-			$newPostID = wp_insert_post( $d_post, true );
-			#var_dump($newPostID); die();
-			#pf_meta_transition_post($post_ID, $newPostID);
-			$already_has_thumb = has_post_thumbnail($post_ID);
-			if ($already_has_thumb)  {
-				$post_thumbnail_id = get_post_thumbnail_id( $post_ID );
-				set_post_thumbnail($newPostID, $post_thumbnail_id);
-			}
-			pf_meta_transition_post($post_ID, $newPostID);
-		}
+	} else {
+		$post_ID = pressforward()->forward_tools->bookmarklet_to_nomination(false, $post);
 	}
 	#var_dump($post); die();
 	return $post_ID;
@@ -654,7 +582,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			<input type="hidden" id="post_id" name="post_id" value="<?php echo (int) $post_ID; ?>" />
 			<?php if ($url != '') {
 
-				$author_retrieved = pf_get_author_from_url( $url );
+				$author_retrieved = pressforward()->metas->get_author_from_url( $url );
 				//$response_body = wp_remote_retrieve_body( $response );
 				//$response_dom = pf_str_get_html( $response_body );
 
@@ -865,14 +793,22 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 
 		}
 
+    $source_position = get_option('pf_source_statement_position', 'bottom');
 
 		if ( $url ) {
-			$content .= '<p>';
 
-			if ( $selection )
-				$content .= __('via ');
+      $source_statement = '<p>';
 
-			$content .= sprintf( "<a href='%s'>%s</a>.</p>", esc_url( $url ), esc_html( $title ) );
+      if ( $selection )
+        $source_statement .= __('via ');
+
+      $source_statement .= sprintf( "<a href='%s'>%s</a>.</p>", esc_url( $url ), esc_html( $title ) );
+
+      if ( 'bottom' == $source_position ){
+  			$content .= $source_statement;
+      } else {
+        $content = $source_statement.$content;
+      }
 		}
 
 		remove_action( 'media_buttons', 'media_buttons' );
