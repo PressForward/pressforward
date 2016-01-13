@@ -70,20 +70,17 @@ class PF_Feed_Item_Object {
     	$this->set( 'title', $item_title);
     	$this->set( 'link', $item_url );
     	$this->set( 'id', $this->create_hash_id( $item_url, $item_title ) );
-        $defaults = array(
-                            'source_title'      =>  'aggregated',
-                            'date'              =>  $this->date_maker( 'Y-m-d H:i:s', gmdate('Y-m-d H:i:s') ),
-                            'author'            =>  'aggregated',
-                            'content'           =>  ' ',
-                            'feat_img'          =>  '',
-                            'wp_date'           =>  $this->date_maker( 'U', time() ),
-                            'tags_array'        =>  array(),
-                            'added_date'        =>  $this->date_maker( 'U', time() ),
-                            'source_repeat'     =>  0,
-                            'post_id'           =>  -1,
-                            'readable_status'   =>  ''
-
-                );
+		$metas = array();
+		foreach ( pressforward()->metas->structure as $meta_key=>$meta_data ){
+			if ( in_array('item', $meta_data['level']) ){
+				if ( !empty( $meta_data['defaults'] ) ){
+					$metas[$meta_key] = $meta_data['default'];
+				} else {
+					$metas[$meta_key] = '';
+				}
+			}
+		}
+		$defaults = $metas;
         foreach ( $defaults as $key=>$default ) {
             $this->set($key, $default);
         }

@@ -140,6 +140,9 @@ class PressForward {
 		require_once( PF_ROOT . "/lib/pf_simple_html_dom.php" );
 		#$dom = new pf_simple_html_dom;
 
+		// Dictate the form of objects via post meta structures.
+		require_once(PF_ROOT . "/includes/class-pf_metas.php");
+
 		// Object Models
 		require_once( PF_ROOT . '/models/class-Feed-Item.php' );
 
@@ -147,7 +150,6 @@ class PressForward {
 		require_once( PF_ROOT . '/includes/opml/maker.php' );
 		require_once( PF_ROOT . '/includes/opml/object.php' );
 		require_once( PF_ROOT . '/includes/opml/reader.php' );
-		require_once(PF_ROOT . "/includes/class-pf_metas.php");
 		require_once(PF_ROOT . "/includes/class-PF_Add_Feeds.php");
 		require_once( PF_ROOT . "/controller/class-PF_to_WP_Posts.php" );
 		require_once( PF_ROOT . "/controller/class-PF_to_WP_Object_State_Utility.php" );
