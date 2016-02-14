@@ -27,6 +27,7 @@ class Loader {
 		//}
 		//die();
 		$classLoader = new JaxionClassLoader('Intraxia\\Jaxion', dirname(__FILE__).'/lib/Jaxion/src');
+		$classLoader->filterFinalPath("Intraxia\\Jaxion\\", '');
 		$classLoader->register();
 
 	}

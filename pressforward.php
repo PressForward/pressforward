@@ -52,3 +52,12 @@ if ( ! $PHPCheck->does_it_meet_required_php_version( PHP_VERSION ) ) {
 
 $obj = new Loader;
 //$obj->test();
+
+use Intraxia\Jaxion\Core\Application as JaxionCore;
+//use Intraxia\Jaxion\Contract\Core\Application as ApplicationContract;
+
+class Application extends JaxionCore {
+	const VERSION = '3.9.0';
+}
+$pf = new Application( __FILE__ );
+var_dump($pf->VERSION);
