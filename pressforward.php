@@ -58,6 +58,6 @@ use Intraxia\Jaxion\Core\Application as JaxionCore;
 
 class Application extends JaxionCore {
 	const VERSION = '3.9.0';
+	var $ver = 3.9;
 }
 $pf = new Application( __FILE__ );
-var_dump($pf->VERSION);
