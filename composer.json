@@ -1,0 +1,37 @@
+{
+  "name": "intraxia/jaxion",
+  "description": "A WordPress plugin framework for modern WordPress development.",
+  "require": {
+    "php": ">=5.3.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~4.7.7",
+    "mockery/mockery": "~0.9.4",
+    "10up/wp_mock": "0.1.*",
+    "scrutinizer/ocular": "~1.1",
+    "intraxia/codestyle": "dev-master"
+  },
+  "license": "MIT",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "mAAdhaTTah",
+      "email": "jamesorodig@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Intraxia\\Jaxion\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Intraxia\\Jaxion\\Test\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit",
+    "sniff": "phpcs -s --runtime-set installed_paths vendor/wp-coding-standards/wpcs  -p src/ --standard=vendor/intraxia/codestyle/ruleset.xml --report=full",
+    "clean": "phpcbf --runtime-set installed_paths vendor/wp-coding-standards/wpcs -p src/ --standard=vendor/intraxia/codestyle/ruleset.xml --report=full"
+  }
+}
