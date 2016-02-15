@@ -101,4 +101,4 @@ class Application extends JaxionCore {
 
 }
 
-$pf = new Application( __FILE__ );
+call_user_func(array(new Application(__FILE__), 'boot'));
