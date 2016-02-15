@@ -22,16 +22,6 @@ $classLoader = new ClassLoader('PressForward', dirname(__FILE__));
 $classLoader->filterFinalPath("PressForward\\", '');
 $classLoader->register();
 
-/**
-// we've writen this code where we need
-spl_autoload_register(function ($classname) {
-    $classname = str_replace('PressForward', '', $classname);
-    $filename = "./". $classname .".php";
-    var_dump('fn: '.$filename);
-    include_once($filename);
-});
-**/
-
 //use PressForward\Loader;
 
 // Protect File.
@@ -59,5 +49,56 @@ use Intraxia\Jaxion\Core\Application as JaxionCore;
 class Application extends JaxionCore {
 	const VERSION = '3.9.0';
 	var $ver = 3.9;
+		/**
+	 * ServiceProviders to register with the Application
+	 *
+	 * @var string[]
+	 */
+	protected $providers = array(
+		'PressForward\Core\Providers\OptionsServiceProvider',
+//		'PressForward\Core\Providers\AssetsServiceProvider',
+//		'PressForward\Core\Providers\ControllerServiceProvider',
+//		'PressForward\Core\Providers\CoreServiceProvider',
+//		'PressForward\Core\Providers\EmbedServiceProvider',
+//		'PressForward\Core\Providers\RouterServiceProvider',
+	);
+	/**
+	 * {@inheritdoc}
+	 */
+	public function activate() {
+		global $wp_rewrite;
+		$current_version = VERSION; // define this constant in the loader file
+		$saved_version = get_option( 'pf_version' );
+
+		// This is a new installation
+		if ( ! $saved_version ) {
+			// Do whatever you need to do during first installation
+			$check = pressforward()->pf_feeds->create(
+				'http://pressforward.org/feed/',
+				array(
+					'title'         => 'PressForward',
+					'htmlUrl'       => 'http://pressforward.org/',
+					'description'   => 'The news feed for the PressForward project.',
+					'type'          => 'rss',
+					'module_added'  => 'rss-import'
+				)
+			);
+
+			$wp_rewrite->flush_rules(false);
+
+		// This is an upgrade
+		} else if ( version_compare( $saved_version, $current_version, '<' ) ) {
+			// Do whatever you need to do on an upgrade
+
+		// Version is up to date - do nothing
+		} else {
+			return;
+		}
+
+		// Update the version number stored in the db (so this does not run again)
+		update_option( 'pf_version', PF_VERSION );
+	}
+
 }
+
 $pf = new Application( __FILE__ );
