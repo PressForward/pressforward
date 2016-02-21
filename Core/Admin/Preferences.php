@@ -1,5 +1,6 @@
 <?php
 namespace PressForward\Core\Admin;
+use PressForward\Core\Admin\PFTemplater;
 
 use Intraxia\Jaxion\Contract\Core\HasActions as HasActions;
 
@@ -7,8 +8,9 @@ class Preferences implements HasActions {
 
 	protected $basename;
 
-	function __construct( $basename ){
+	function __construct( $basename, PFTemplater $templates ){
 		$this->basename = $basename;
+		$this->templates = $templates;
 		//return true;
 	}
 
@@ -34,7 +36,26 @@ class Preferences implements HasActions {
 	}
 
 	public function display_options_builder(){
+		if ( isset ( $_GET['tab'] ) ) $tab = $_GET['tab']; else $tab = 'user';
+		$vars = array(
+				'current'		=> 	$tab,
+				'user_ID'		=> 	true,
+				'page_title'	=>	__('PressForward Preferences', 'pf'),
+				'page_slug'		=>	'settings',
+				'settings_tab_group'	=> $this->prefrences_tab($tab),
+				'tabs'			=>	$this->tabs()
+			);
+		echo $this->templates->get_view(array('settings','settings-page'), $vars);
 
+		return;
+	}
+
+	public function prefrences_tab($tab){
+		return $this->templates->settings_tab_group($tab, 'settings');
+	}
+
+	public function tabs(){
+		return $this->templates->permitted_tabs('settings');
 	}
 
 }

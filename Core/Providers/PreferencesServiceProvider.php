@@ -33,7 +33,7 @@ class PreferencesServiceProvider extends ServiceProvider {
 	public function register( Container $container ){
 		$container->define(
 			'admin.settings',
-			new Preferences( $container->fetch( 'basename' ) )
+			new Preferences( $container->fetch( 'basename' ), $container->fetch( 'admin.templates' ) )
 		);
 
 		parent::register( $container );

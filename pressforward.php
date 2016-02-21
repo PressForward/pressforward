@@ -66,10 +66,9 @@ class Application extends JaxionCore {
 	 * @var string[]
 	 */
 	protected $providers = array(
+		'PressForward\Core\Providers\ControllerServiceProvider',
 		'PressForward\Core\Providers\AdminAreaServiceProvider',
 		'PressForward\Core\Providers\PreferencesServiceProvider',
-//		'PressForward\Core\Providers\AssetsServiceProvider',
-//		'PressForward\Core\Providers\ControllerServiceProvider',
 //		'PressForward\Core\Providers\CoreServiceProvider',
 //		'PressForward\Core\Providers\EmbedServiceProvider',
 //		'PressForward\Core\Providers\RouterServiceProvider',

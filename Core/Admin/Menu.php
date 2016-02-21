@@ -7,8 +7,8 @@ class Menu implements HasActions {
 
 	protected $basename;
 
-	function __construct( $basename ){
-		$this->basename = $basename;
+	function __construct( $container ){
+		$this->basename = $container->fetch( 'basename' );
 
 	}
 

@@ -17,7 +17,7 @@
 				?>
 				<h2 class="nav-tab-wrapper" id="pf-settings-tabs">
 				<?php
-					$tabs = pressforward()->form_of->permitted_tabs($page_slug);
+					//$tabs = pressforward()->form_of->permitted_tabs($page_slug);
 
 					foreach( $tabs as $tab => $tab_meta ){
 						if (current_user_can($tab_meta['cap'])){
@@ -30,7 +30,8 @@
 				</h2>
 				<div class="tabwrappper">
 					<?php
-						pressforward()->form_of->settings_tab_group($current, $page_slug);
+						//pressforward()->form_of->settings_tab_group($current, $page_slug);
+						echo $settings_tab_group;
 
 					?>
 				</div>
