@@ -12,6 +12,7 @@ class PFtoWPTemplates implements Template_Interface {
 		$this->the_screen = $this->the_screen();
 		$this->user_id = $this->user_id();
 		$this->is_a_pf_page();
+		define( 'IS_A_PF', $this->is_a_pf_page() );
 		add_filter('ab_alert_specimens_labels', array($this, 'alter_alert_boxes'));
 		if (WP_DEBUG && $this->is_pf){
 			@trigger_error($this->pf_current_screen_trace, E_USER_NOTICE);
@@ -92,23 +93,6 @@ class PFtoWPTemplates implements Template_Interface {
 		}
 	}
 
-	public function the_side_menu(){
-		$user_ID = get_current_user_id();
-		$pf_user_menu_set = get_user_option('pf_user_menu_set', $user_ID);
-		if ('true' == $pf_user_menu_set){
-			$screen = $this->the_screen;
-			$vars = array(
-					'slug'		=> $screen['id'],
-					'version'	=> 0,
-					'deck'		=> false
-				);
-			echo $this->get_view('side-menu', $vars);
-		}
-
-		return;
-
-	}
-
 	public function valid_pf_page_ids($page_id = false){
 		$valid = array(
 				'toplevel_page_pf-menu',
@@ -158,8 +142,8 @@ class PFtoWPTemplates implements Template_Interface {
 	}
 
 	public function is_a_pf_page(){
-		$screen = $this->the_screen;
-		$is_pf = self::valid_pf_page_ids($screen['id']);
+		$screen = $this->the_screen();
+		$is_pf = $this->valid_pf_page_ids($screen['id']);
 		$this->is_pf = $is_pf;
 		return $is_pf;
 	}

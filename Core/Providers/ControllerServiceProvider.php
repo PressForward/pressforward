@@ -12,14 +12,14 @@ use PressForward\Controllers\PFtoWPUsers as Users;
 class ControllerServiceProvider extends ServiceProvider {
 
 	public function register( Container $container ){
-		$container->define(
+		$container->share(
 			'controller.users',
 			function( ){
 				return new Users;
 			}
 		);
 
-		$container->define(
+		$container->share(
 			'controller.template_factory',
 			function( ){
 				return new Template_Factory;

@@ -26,7 +26,7 @@ class PFTemplater {
 		if (isset($vars['user_ID']) && ( true === $vars['user_ID'] ) ){
 			$vars['user_ID'] = $this->users->get_current_user_id();
 		}
-		#if (WP_DEBUG){ var_dump( $view_file ); }
+		//if (WP_DEBUG){ var_dump( $view_file ); }
 		if ( ! file_exists( $view_file ) ){
 			if (PF_DEBUG){ var_dump( $view_file ); }
 			return ' ';
@@ -96,14 +96,13 @@ class PFTemplater {
 				'page_title'	=>	__('PressForward Preferences', 'pf'),
 				'page_slug'		=>	'settings'
 			);
-		echo $this->get_view($this->build_path(array('settings','settings-page'), false), $vars);
-
-		return;
+		return $this->get_view($this->build_path(array('settings','settings-page'), false), $vars);
 	}
 
 	public function settings_tab_group($current, $page_slug = 'settings'){
 		$tabs = $this->permitted_tabs($page_slug);
 		#var_dump($tabs); die();
+		ob_start();
 		foreach ($tabs as $tab=>$tab_meta){
 			if (current_user_can($tab_meta['cap'])){
 				if ($current == $tab) $class = 'pftab tab active'; else $class = 'pftab tab';
@@ -115,7 +114,7 @@ class PFTemplater {
 							//var_dump('pf_do_'.$page_slug.'_tab_'.$tab); die();
 		            		do_action('pf_do_'.$page_slug.'_tab_'.$tab);
 		            	} else {
-							$this->the_settings_tab($tab, $page_slug);
+							echo $this->the_settings_tab($tab, $page_slug);
 						}
 					?>
 				</div>
@@ -123,7 +122,7 @@ class PFTemplater {
 			}
 		}
 
-		return;
+		return ob_get_clean();
 	}
 
 
@@ -134,9 +133,7 @@ class PFTemplater {
 				'current'		=> $tab
 			);
 		#var_dump($page_slug.' - '.$tab); die();
-		echo $this->get_view(array($page_slug,'tab-'.$tab), $vars);
-
-		return;
+		return $this->get_view(array($page_slug,'tab-'.$tab), $vars);
 	}
 
 	public function add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function = '' ){
@@ -166,6 +163,23 @@ class PFTemplater {
 			$icon_url,
 			$position
 		);
+	}
+
+	public function the_side_menu(){
+		$user_ID = get_current_user_id();
+		$pf_user_menu_set = get_user_option('pf_user_menu_set', $user_ID);
+		if ('true' == $pf_user_menu_set){
+			$screen = $this->the_screen;
+			$vars = array(
+					'slug'		=> $screen['id'],
+					'version'	=> 0,
+					'deck'		=> false
+				);
+			return $this->get_view('side-menu', $vars);
+		}
+
+		return;
+
 	}
 
 }
