@@ -277,4 +277,12 @@ class PFtoWPTemplates implements Template_Interface {
 		echo $this->get_page_headline($title);
 		return;
 	}
+
+	public function add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function = '', $icon_url = '', $position = null ){
+		add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position );
+	}
+
+	public function add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function = '' ){
+		add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
+	}
 }

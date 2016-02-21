@@ -139,4 +139,33 @@ class PFTemplater {
 		return;
 	}
 
+	public function add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function = '' ){
+		if (is_array($capability)){
+			$capability = $this->users->user_level( $capability[0], $capability[1] );
+		}
+		$this->factory->add_submenu_page(
+			$parent_slug,
+			$page_title,
+			$menu_title,
+			$capability,
+			$menu_slug,
+			$function
+		);
+	}
+
+	public function add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function = '', $icon_url = '', $position = null ){
+		if (is_array($capability)){
+			$capability = $this->users->user_level( $capability[0], $capability[1] );
+		}
+		$this->factory->add_menu_page(
+			$page_title,
+			$menu_title,
+			$capability,
+			$menu_slug,
+			$function,
+			$icon_url,
+			$position
+		);
+	}
+
 }

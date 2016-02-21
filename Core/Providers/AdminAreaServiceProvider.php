@@ -8,6 +8,7 @@ use Intraxia\Jaxion\Assets\Register as Assets;
 use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 
 use PressForward\Core\Admin\PFTemplater;
+use PressForward\Core\Admin\Tools;
 
 class AdminAreaServiceProvider extends ServiceProvider {
 
@@ -21,6 +22,12 @@ class AdminAreaServiceProvider extends ServiceProvider {
 		$container->define(
 			'admin.menu',
 			new Menu( $container )
+		);
+		$container->define(
+			'admin.tools',
+			function( $container ){
+				return new Tools( $container->fetch( 'basename' ), $container->fetch( 'admin.templates' ) );
+			}
 		);
 		//parent::register( $container );
 		//var_dump(__METHOD__); die();

@@ -179,4 +179,8 @@ class PFtoWPUsers implements System_Users {
 		}
 	}
 
+	public function user_level( $option_name, $role ){
+		return get_option( $option_name, $this->pf_get_defining_capability_by_role($role));
+	}
+
 }
