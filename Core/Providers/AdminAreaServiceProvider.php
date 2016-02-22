@@ -19,28 +19,41 @@ class AdminAreaServiceProvider extends ServiceProvider {
 
 		$assets->register_style(array(
 			'type'	=>	'admin',
-			'condition'	=> function($hook){ return $this->check_hook_for_pressforward_string($hook); },
+			'condition'	=> (function($hook){
+								$exclusions = array('pf-options');
+								//return true;
+								return $this->check_hook_for_pressforward_string($hook, $exclusions);
+							}),
 			'handle'	=> $slug.'-reset-style',
 			'src'		=> 'assets/css/reset'
 		));
 
 		$assets->register_style(array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook){
+								$exclusions = array('pf-options');
+								return $this->check_hook_for_pressforward_string($hook, $exclusions);
+							},
 			'handle'	=> $slug.'-bootstrap-style',
 			'src'		=> 'lib/twitter-bootstrap/css/bootstrap'
 		));
 
 		$assets->register_style(array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook){
+								$exclusions = array('pf-options');
+								return $this->check_hook_for_pressforward_string($hook, $exclusions);
+							},
 			'handle'	=> $slug.'-bootstrap-responsive-style',
 			'src'		=> 'lib/twitter-bootstrap/css/bootstrap-responsive'
 		));
 
 		$assets->register_style( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook){
+								$exclusions = array('pf-options');
+								return $this->check_hook_for_pressforward_string($hook, $exclusions);
+							},
 			'handle'	=>	$slug.'-style',
 			'src'		=>	'assets/css/pressforward',
 			'deps'		=>	array( $slug . '-bootstrap-style', $slug . '-bootstrap-responsive-style' )
@@ -48,18 +61,13 @@ class AdminAreaServiceProvider extends ServiceProvider {
 
 		$assets->register_style(array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook){
+								$exclusions = array();
+								return $this->check_hook_for_pressforward_string($hook, $exclusions);
+							},
 			'handle'	=> $slug.'-settings-style',
 			'src'		=> 'assets/css/pf-settings'
 		));
-
-		$assets->register_style( array(
-			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
-			'handle'	=>	$slug.'-settings-tools',
-			'src'		=>	'assets/js/settings-tools',
-			'deps'		=>	array( 'jquery' )
-		) );
 
 
 
@@ -128,9 +136,18 @@ class AdminAreaServiceProvider extends ServiceProvider {
 		parent::register( $container );
 	}
 
-	public function check_hook_for_pressforward_string($hook){
+	public function check_hook_for_pressforward_string($hook, $exclusions = array()){
 		 $position = strpos($hook, 'pressforward');
-		 if (!$position){ return false; }
+		 if (false === $position){ return false; }
+
+		 if (!empty($exclusions)){
+		 		 foreach ($exclusions as $exclusion){
+		 		 	if (false !== strpos($hook, $exclusion)){
+		 		 		return false;
+		 		 	}
+		 		 }
+		 }
+
 		 return true;
 	}
 
