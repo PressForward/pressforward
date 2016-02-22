@@ -19,7 +19,7 @@ class AdminAreaServiceProvider extends ServiceProvider {
 
 		$assets->register_style(array(
 			'type'	=>	'admin',
-			'condition'	=> function($hook){ return IS_A_PF; },
+			'condition'	=> function($hook){ return $this->check_hook_for_pressforward_string($hook); },
 			'handle'	=> $slug.'-reset-style',
 			'src'		=> 'assets/css/reset'
 		));
@@ -126,6 +126,12 @@ class AdminAreaServiceProvider extends ServiceProvider {
 		//var_dump(__METHOD__); die();
 		//
 		parent::register( $container );
+	}
+
+	public function check_hook_for_pressforward_string($hook){
+		 $position = strpos($hook, 'pressforward');
+		 if (!$position){ return false; }
+		 return true;
 	}
 
 }
