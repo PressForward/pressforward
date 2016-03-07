@@ -619,7 +619,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 								$author_value = $author_retrieved;
 							}
 						?>
-					<label for="authors"><input type="text" id="authors" name="authors" value="<?php echo $author_value; ?>" /><br />&nbsp;<?php _e('Enter Authors', 'pf'); ?></label>
+					<label for="authors"><input type="text" id="authors" name="authors" value="<?php echo $author_value; ?>" /><br />&nbsp;<?php echo apply_filters('pf_author_nominate_this_prompt', __('Enter Authors', 'pf')); ?></label>
 					</p>
                     <p>
 					<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php _e('Nominate feed associated with item.', 'pf'); ?></label>
@@ -638,11 +638,15 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 						<?php endforeach; ?>
 						</select></label>
 					</p>
-					<?php endif; endif; ?>
+					<?php endif; endif;
+						do_action('nominate_this_sidebar_head');
+					?>
 				</div>
 			</div>
 
-			<?php $tax = get_taxonomy( 'category' ); ?>
+			<?php
+			do_action('nominate_this_sidebar_top');
+			$tax = get_taxonomy( 'category' ); ?>
 			<div id="categorydiv" class="postbox">
 				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
 				<h3 class="hndle"><?php _e('Categories') ?></h3>
@@ -692,7 +696,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 				</div>
 				</div>
 			</div>
-
+			<?php do_action('nominate_this_sidebar_bottom'); ?>
 		</div>
 	</div>
     <?php } ?>
