@@ -30,7 +30,7 @@ require 'class-SplClassLoader.php';
 use SplClassLoader as ClassLoader;
 $classLoader = new ClassLoader('PressForward', dirname(__FILE__));
 //var_dump($classLoader->getIncludePath());
-$classLoader->filterFinalPath("PressForward\\", '');
+$classLoader->filterFinalPath("PressForward".DIRECTORY_SEPARATOR, '');
 $classLoader->register();
 
 //use PressForward\Loader;
@@ -42,9 +42,9 @@ if ( ! defined( 'WPINC' ) ) {
 
 //var_dump(__NAMESPACE__); //die();
 
-//use PressForward\lib\WPUpdatePHP as PHPChecker;
+use PressForward\lib\WPUpdatePHP as PHPChecker;
 
-$PHPCheck = new lib\WPUpdatePHP( '5.3.0', 'PressForward' );
+$PHPCheck = new PHPChecker( '5.3.0', 'PressForward' );
 
 
 if ( ! $PHPCheck->does_it_meet_required_php_version( PHP_VERSION ) ) {
