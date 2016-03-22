@@ -149,7 +149,10 @@ class SplClassLoader
             }
             $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . $this->_fileExtension;
             if (false !== $this->_filterPattern){
+				//var_dump($this->_filterPattern);
+				//var_dump($fileName);
             	$fileName = str_replace($this->_filterPattern['pattern'], $this->_filterPattern['replace'], $fileName);
+				//var_dump($fileName); die();
             }
             //var_dump(($this->_includePath !== null ? $this->_includePath . DIRECTORY_SEPARATOR : '') . $fileName );
             require ($this->_includePath !== null ? $this->_includePath . DIRECTORY_SEPARATOR : '') . $fileName;
