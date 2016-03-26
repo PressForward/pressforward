@@ -6,7 +6,7 @@
 	<div class="metabox-holder" id="pf-settings-box">
 		<div class="meta-box-sortables ui-sortable">
 			<?php if (empty($form_head)){ ?>
-			<form action="<?php pf_admin_url(); ?>" method="post">
+			<form action="<?php pressforward('admin.settings')->pf_admin_url(); ?>" method="post">
 
 				<?php
 					wp_nonce_field( 'pf_settings' );
@@ -17,7 +17,7 @@
 				?>
 				<h2 class="nav-tab-wrapper" id="pf-settings-tabs">
 				<?php
-					//$tabs = pressforward()->form_of->permitted_tabs($page_slug);
+					$tabs = pressforward('admin.templates')->permitted_tabs($page_slug);
 
 					foreach( $tabs as $tab => $tab_meta ){
 						if (current_user_can($tab_meta['cap'])){
@@ -30,7 +30,7 @@
 				</h2>
 				<div class="tabwrappper">
 					<?php
-						//pressforward()->form_of->settings_tab_group($current, $page_slug);
+						pressforward('admin.templates')->settings_tab_group($current, $page_slug);
 						echo $settings_tab_group;
 
 					?>

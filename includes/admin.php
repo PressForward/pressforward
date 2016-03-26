@@ -1073,18 +1073,6 @@ class PF_Admin {
 			die();
 	}
 
-	function pf_get_user_role_select($option, $default){
-		global $wp_roles;
-		$roles = $wp_roles->get_names();
-		$enabled = get_option($option, $default);
-#		$roleObj = pf_get_role_by_capability($enabled, true, true);
-#		$enabled_role = $roleObj->name;
-		foreach ($roles as $slug=>$role){
-			$defining_capability = pf_get_defining_capability_by_role($slug);
-			?><option value="<?php echo $defining_capability ?>" <?php selected( $enabled, $defining_capability ) ?>><?php _e( $role, PF_SLUG ) ?></option><?php
-		}
-	}
-
 	/**
 	 * Display function for the Options panel
 	 */
