@@ -39,7 +39,7 @@ if ( ! defined( 'WPINC' ) ) {
 	//die;
 }
 
-function pressforward() {
+function pressforward($prop = false) {
 	$instance = new stdClass();
 	try {
 		$instance = new PressForward\Application(__FILE__);
@@ -50,7 +50,11 @@ function pressforward() {
 		$instance = PressForward\Application::instance();
 
 	}
-	return $instance;
+	if (!$prop){
+		return $instance;
+	} else {
+		return $instance[$prop];
+	}
 }
 pressforward();
 //call_user_func(array(new Application(__FILE__), 'boot'));
