@@ -32,12 +32,12 @@ interface Register extends HasActions {
 	/**
 	 * Enqueues the web & shared scripts on the Register.
 	 */
-	public function enqueue_web_scripts( $hook );
+	public function enqueue_web_scripts( );
 
 	/**
 	 * Enqueues the web & shared styles on the Register.
 	 */
-	public function enqueue_web_styles( $hook );
+	public function enqueue_web_styles( );
 
 	/**
 	 * Enqueues the admin & shared scripts on the Register.

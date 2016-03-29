@@ -98,10 +98,10 @@ class Register implements RegisterContract {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function enqueue_web_scripts($hook) {
+	public function enqueue_web_scripts() {
 		foreach ( $this->scripts as $script ) {
 			if ( in_array( $script['type'], array( 'web', 'shared' ) ) ) {
-				$this->enqueue_script( $script, $hook );
+				$this->enqueue_script( $script );
 			}
 		}
 	}
@@ -109,10 +109,10 @@ class Register implements RegisterContract {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function enqueue_web_styles($hook) {
+	public function enqueue_web_styles() {
 		foreach ( $this->styles as $style ) {
 			if ( in_array( $style['type'], array( 'web', 'shared' ) ) ) {
-				$this->enqueue_style( $style, $hook );
+				$this->enqueue_style( $style );
 			}
 		}
 	}
@@ -170,7 +170,7 @@ class Register implements RegisterContract {
 	 *
 	 * @param array $script
 	 */
-	protected function enqueue_script( $script, $hook ) {
+	protected function enqueue_script( $script, $hook = false ) {
 		if ( $script['condition']($hook) ) {
 			wp_enqueue_script(
 				$script['handle'],
@@ -199,7 +199,7 @@ class Register implements RegisterContract {
 	 *
 	 * @param array $style
 	 */
-	protected function enqueue_style( $style, $hook ) {
+	protected function enqueue_style( $style, $hook = false ) {
 		if ( $style['condition']($hook) ) {
 			wp_enqueue_style(
 				$style['handle'],
