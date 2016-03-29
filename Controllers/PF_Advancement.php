@@ -1,13 +1,13 @@
 <?php
-
-require_once(dirname(dirname(__FILE__)).'/interfaces/interface-advancement.php');
+namespace PressForward\Controllers;
 
 /**
  * PressForward to WP post object lifecycle tools
  *
  */
 
-class PF_Advance_Interface implements Advance_System {
+use PressForward\Interfaces\Advance_System as Advance_System;
+class PF_Advancement implements Advance_System {
 	//var $last_step_state;
 	//var $last_step_post_type;
 

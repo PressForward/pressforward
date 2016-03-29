@@ -1,5 +1,6 @@
 <?php
-interface System_Items
+namespace PressForward\Interfaces;
+interface Items
 {
     public function insert_post( $post, $error );
     public function update_post( $post, $error );

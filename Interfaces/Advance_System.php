@@ -1,4 +1,5 @@
 <?php
+namespace PressForward\Interfaces;
 interface Advance_System
 {
 	public function last_step_state();

@@ -1,8 +1,10 @@
 <?php
 
-require_once(dirname(dirname(__FILE__)).'/interfaces/interface-items.php');
+namespace PressForward\Controllers;
 
-class PF_to_WP_Posts implements System_Items {
+use PressForward\Interfaces\Items as Items;
+
+class PF_to_WP_Posts implements Items {
 
 	public function insert_post( $post, $error ){
 		return wp_insert_post( $post, $error );
