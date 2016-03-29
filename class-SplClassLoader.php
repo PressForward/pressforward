@@ -48,11 +48,12 @@ class SplClassLoader
      *
      * @param string $ns The namespace to use.
      */
-    public function __construct($ns = null, $includePath = null)
+    public function __construct($ns = null, $includePath = null, $useUnderlines = true)
     {
         //var_dump(__METHOD__);
         $this->_namespace = $ns;
         $this->_includePath = $includePath;
+        $this->_useUnderlines = $useUnderlines;
     }
     /**
      * Sets the namespace separator used by classes in the namespace of this class loader.
@@ -147,7 +148,12 @@ class SplClassLoader
                 $className = substr($className, $lastNsPos + 1);
                 $fileName = str_replace($this->_namespaceSeparator, DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
             }
-            $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . $this->_fileExtension;
+            if ($this->_useUnderlines){
+              $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . $this->_fileExtension;
+            } else {
+              $fileName .= $className . $this->_fileExtension;
+            }
+
             if (false !== $this->_filterPattern){
 				//var_dump($this->_filterPattern);
 				//var_dump($fileName);

@@ -27,7 +27,7 @@ define( 'PF_VERSION', '3.8' );
 require 'class-SplClassLoader.php';
 
 use SplClassLoader as ClassLoader;
-$classLoader = new ClassLoader('PressForward', dirname(__FILE__));
+$classLoader = new ClassLoader('PressForward', dirname(__FILE__), false);
 //var_dump($classLoader->getIncludePath());
 $classLoader->filterFinalPath("PressForward".DIRECTORY_SEPARATOR, '');
 $classLoader->register();

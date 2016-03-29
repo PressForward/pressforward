@@ -8,6 +8,7 @@ use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 //use Intraxia\Jaxion\Contract\Core\ServiceProvider as ServiceProvider;
 use PressForward\Controllers\PFtoWPTemplates as Template_Factory;
 use PressForward\Controllers\PFtoWPUsers as Users;
+use PressForward\Controllers\PF_to_WP_Meta as PF_to_WP_Meta;
 
 class ControllerServiceProvider extends ServiceProvider {
 
@@ -23,6 +24,13 @@ class ControllerServiceProvider extends ServiceProvider {
 			'controller.template_factory',
 			function( ){
 				return new Template_Factory;
+			}
+		);
+
+		$container->share(
+			'controller.metas',
+			function( ){
+				return new PF_to_WP_Meta;
 			}
 		);
 

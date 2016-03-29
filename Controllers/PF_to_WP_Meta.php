@@ -1,8 +1,10 @@
 <?php
 
-require_once(dirname(dirname(__FILE__)).'/interfaces/interface-meta_data.php');
+namespace PressForward\Controllers;
 
-class PF_to_WP_Meta implements System_Meta {
+use PressForward\Interfaces\SystemMeta as SystemMeta;
+
+class PF_to_WP_Meta implements SystemMeta {
 
 	public function add_meta($post_id, $meta_key, $meta_value, $unique = false){
 		return add_post_meta( $post_id, $meta_key, $meta_value, $unique );
