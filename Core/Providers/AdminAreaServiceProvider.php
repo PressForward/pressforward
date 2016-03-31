@@ -133,7 +133,7 @@ class AdminAreaServiceProvider extends ServiceProvider {
 		//parent::register( $container );
 		//var_dump(__METHOD__); die();
 		//
-		parent::register( $container );
+		//parent::register( $container );
 	}
 
 	public function check_hook_for_pressforward_string($hook, $exclusions = array()){

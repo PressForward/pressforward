@@ -4,11 +4,11 @@ namespace PressForward\Controllers;
 use PressForward\Interfaces\Templates as Template_Interface;
 
 class PFtoWPTemplates implements Template_Interface {
-	public function __construct() {
-		add_action( 'current_screen', array( $this, 'init' ) );
+	function __construct() {
+		add_action( 'current_screen', array( $this, 'build_screen_obj' ) );
 	}
 
-	public function init() {
+	public function build_screen_obj() {
 		$this->the_screen = $this->the_screen();
 		$this->user_id = $this->user_id();
 		$this->is_a_pf_page();
