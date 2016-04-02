@@ -11,6 +11,7 @@ use PressForward\Core\Schema\Nominations;
 class SchemaServiceProvider extends ServiceProvider {
 
 	public function register( Container $container ){
+
 		$container->share(
 			'schema.nominations',
 			function( ){

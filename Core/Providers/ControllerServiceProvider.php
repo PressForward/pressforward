@@ -11,6 +11,7 @@ use PressForward\Controllers\PFtoWPUsers as Users;
 use PressForward\Controllers\PF_to_WP_Meta as PF_to_WP_Meta;
 use PressForward\Controllers\PF_to_WP_Posts as PF_to_WP_Posts;
 use PressForward\Controllers\PF_Advancement as PF_Advancement;
+use PressForward\Core\Admin\Metas;
 
 class ControllerServiceProvider extends ServiceProvider {
 
@@ -30,7 +31,7 @@ class ControllerServiceProvider extends ServiceProvider {
 		);
 
 		$container->share(
-			'controller.metas',
+			'controller.meta_interface',
 			function( ){
 				return new PF_to_WP_Meta;
 			}
@@ -47,6 +48,13 @@ class ControllerServiceProvider extends ServiceProvider {
 			'controller.advancement',
 			function( ){
 				return new PF_Advancement;
+			}
+		);
+
+		$container->share(
+			'controller.metas',
+			function( $container ){
+				return new Metas( $container->fetch('controller.meta_interface') );
 			}
 		);
 
