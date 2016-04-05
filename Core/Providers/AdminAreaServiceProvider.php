@@ -9,6 +9,7 @@ use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 
 use PressForward\Core\Admin\PFTemplater;
 use PressForward\Core\Admin\Tools;
+use PressForward\Core\Admin\Nominated;
 
 class AdminAreaServiceProvider extends ServiceProvider {
 
@@ -128,6 +129,17 @@ class AdminAreaServiceProvider extends ServiceProvider {
 			'admin.tools',
 			function( $container ){
 				return new Tools( $container->fetch( 'basename' ), $container->fetch( 'admin.templates' ) );
+			}
+		);
+		$container->share(
+			'admin.nominated',
+			function( $container ){
+				return new Nominated(
+									$container->fetch('controller.metas'),
+									$container->fetch('admin.templates'),
+									$container->fetch('utility.forward_tools'),
+									$container->fetch('schema.nominations') // Switch this to a modal
+								);
 			}
 		);
 		//parent::register( $container );

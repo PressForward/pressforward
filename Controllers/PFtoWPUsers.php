@@ -5,8 +5,13 @@ use PressForward\Interfaces\SystemUsers as System_Users;
 
 class PFtoWPUsers implements System_Users {
 
+	function __construct( Metas $metas ) {
+		//var_dump('a');
+		$this->metas = $metas;
+	}
+
 	public function did_user_nominate($post_id, $user_id = false){
-		$nominators = pressforward()->metas->retrieve_meta($id, 'nominator_array');
+		$nominators = $this->metas->retrieve_meta($id, 'nominator_array');
 		if (!$user_id){
 			$current_user = wp_get_current_user();
 			$user_id = $current_user->ID;

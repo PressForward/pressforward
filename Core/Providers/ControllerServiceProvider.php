@@ -11,15 +11,32 @@ use PressForward\Controllers\PFtoWPUsers as Users;
 use PressForward\Controllers\PF_to_WP_Meta as PF_to_WP_Meta;
 use PressForward\Controllers\PF_to_WP_Posts as PF_to_WP_Posts;
 use PressForward\Controllers\PF_Advancement as PF_Advancement;
-use PressForward\Core\Admin\Metas;
+use PressForward\Controllers\Metas;
 
 class ControllerServiceProvider extends ServiceProvider {
 
 	public function register( Container $container ){
+
+		$container->share(
+			'controller.meta_interface',
+			function( ){
+				return new PF_to_WP_Meta;
+			}
+		);
+
+		$container->share(
+			'controller.metas',
+			function( $container ){
+				return new Metas(
+									$container->fetch('controller.meta_interface')
+								);
+			}
+		);
+
 		$container->share(
 			'controller.users',
-			function( ){
-				return new Users;
+			function( $container ){
+				return new Users( $container->fetch('controller.metas') );
 			}
 		);
 
@@ -27,13 +44,6 @@ class ControllerServiceProvider extends ServiceProvider {
 			'controller.template_factory',
 			function( ){
 				return new Template_Factory;
-			}
-		);
-
-		$container->share(
-			'controller.meta_interface',
-			function( ){
-				return new PF_to_WP_Meta;
 			}
 		);
 
@@ -46,15 +56,8 @@ class ControllerServiceProvider extends ServiceProvider {
 
 		$container->share(
 			'controller.advancement',
-			function( ){
-				return new PF_Advancement;
-			}
-		);
-
-		$container->share(
-			'controller.metas',
 			function( $container ){
-				return new Metas( $container->fetch('controller.meta_interface') );
+				return new PF_Advancement( $container->fetch('controller.metas') );
 			}
 		);
 

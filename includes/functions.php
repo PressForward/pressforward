@@ -655,7 +655,7 @@ function assign_pf_to_standard_roles(){
 function pf_replace_author_presentation( $author ) {
 	global $post;
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')){
-		$custom_author = pressforward()->metas->retrieve_meta($post->ID, 'item_author');
+		$custom_author = pressforward('controller.metas')->retrieve_meta($post->ID, 'item_author');
 		if($custom_author)
 			return $custom_author;
 		return $author;
@@ -684,7 +684,7 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 		return $author_uri;
 	}
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')) {
-		$custom_author_uri = pressforward()->metas->retrieve_meta($id, 'item_link');
+		$custom_author_uri = pressforward('controller.metas')->retrieve_meta($id, 'item_link');
 		if(!$custom_author_uri || 0 == $custom_author_uri || empty($custom_author_uri)){
 			return $author_uri;
 		} else {
@@ -740,7 +740,7 @@ function pf_forward_unto_source(){
 			echo '<meta property="og:url" content="'.$link.'" />';
 		}
 		$wait = get_option('pf_link_to_source', 0);
-		$post_check = pressforward()->metas->get_post_pf_meta($post_id, 'pf_forward_to_origin', true);
+		$post_check = pressforward('controller.metas')->get_post_pf_meta($post_id, 'pf_forward_to_origin', true);
 		//var_dump($post_check); die();
 		if ( ( $wait > 0 ) && ( "no-forward" !== $post_check ) ){
 			echo '<META HTTP-EQUIV="refresh" CONTENT="'.$wait.';URL='.$link.'">';
@@ -1115,12 +1115,12 @@ function pf_delete_item_tree( $item, $fake_delete = false ) {
 					'post_status'  => $fake_status,
 					'post_title'   => $item->post_title,
 					'post_content' => '',
-					'guid'         => pressforward()->metas->get_post_pf_meta($item->ID, 'item_link'),
+					'guid'         => pressforward('controller.metas')->get_post_pf_meta($item->ID, 'item_link'),
 					'post_date'    => $item->post_date
 				);
 
 				$id = wp_insert_post($wp_args);
-				pressforward()->metas->update_pf_meta($id, 'item_id', create_feed_item_id( pressforward()->metas->get_post_pf_meta($item->ID, 'item_link'), $item->post_title ) );
+				pressforward('controller.metas')->update_pf_meta($id, 'item_id', create_feed_item_id( pressforward('controller.metas')->get_post_pf_meta($item->ID, 'item_link'), $item->post_title ) );
 			}
 
 		break; // $feed_item_post_type

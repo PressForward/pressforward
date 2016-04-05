@@ -1,7 +1,7 @@
 <?php
 
 function get_the_source_title($id = false){
-	#$st = pressforward()->metas->retrieve_meta(get_the_ID(), 'source_title');
+	#$st = pressforward('controller.metas')->retrieve_meta(get_the_ID(), 'source_title');
 	if (!$id){
 		$id = get_the_ID();
 	}
@@ -25,7 +25,7 @@ function the_source_title(){
 }
 
 function get_the_original_post_date(){
-	$opd = pressforward()->metas->retrieve_meta(get_the_ID(), 'item_date');
+	$opd = pressforward('controller.metas')->retrieve_meta(get_the_ID(), 'item_date');
 	return $opd;
 }
 
@@ -37,7 +37,7 @@ function get_the_item_author($id = false){
 	if (!$id){
 		$id = get_the_ID();
 	}
-	$ia = pressforward()->metas->retrieve_meta($id, 'item_author');
+	$ia = pressforward('controller.metas')->retrieve_meta($id, 'item_author');
 	return $ia;
 }
 
@@ -49,7 +49,7 @@ function get_the_item_link($id = false){
 	if ( !$id ){
 		$id = get_the_ID();
 	}
-	$m = pressforward()->metas->retrieve_meta($id, 'item_link');
+	$m = pressforward('controller.metas')->retrieve_meta($id, 'item_link');
 	return $m;
 }
 
@@ -58,7 +58,7 @@ function the_item_link(){
 }
 
 function get_the_item_feat_image(){
-	$m = pressforward()->metas->retrieve_meta(get_the_ID(), 'item_feat_img');
+	$m = pressforward('controller.metas')->retrieve_meta(get_the_ID(), 'item_feat_img');
 	return $m;
 }
 
@@ -67,7 +67,7 @@ function the_item_feat_image(){
 }
 
 function get_the_item_tags(){
-	$m = pressforward()->metas->retrieve_meta(get_the_ID(), 'item_tags');
+	$m = pressforward('controller.metas')->retrieve_meta(get_the_ID(), 'item_tags');
 	return $m;
 }
 
@@ -76,7 +76,7 @@ function the_item_tags(){
 }
 
 function get_the_repeats(){
-	$m = pressforward()->metas->retrieve_meta(get_the_ID(), 'source_repeat');
+	$m = pressforward('controller.metas')->retrieve_meta(get_the_ID(), 'source_repeat');
 	return $m;
 }
 
@@ -85,7 +85,7 @@ function the_item_repeats(){
 }
 
 function get_the_nomination_count(){
-	$m = pressforward()->metas->retrieve_meta(get_the_ID(), 'nomination_count');
+	$m = pressforward('controller.metas')->retrieve_meta(get_the_ID(), 'nomination_count');
 	return $m;
 }
 
@@ -94,7 +94,7 @@ function the_nomination_count(){
 }
 
 function get_the_nominator_ids(){
-	$m = pressforward()->metas->retrieve_meta(get_the_ID(), 'nominator_array', false, false);
+	$m = pressforward('controller.metas')->retrieve_meta(get_the_ID(), 'nominator_array', false, false);
 	return $m;
 }
 
@@ -148,7 +148,7 @@ function the_nominators(){
 }
 
 function get_the_word_count(){
-	$m = pressforward()->metas->retrieve_meta(get_the_ID(), 'pf_feed_item_word_count');
+	$m = pressforward('controller.metas')->retrieve_meta(get_the_ID(), 'pf_feed_item_word_count');
 	return $m;
 }
 

@@ -221,9 +221,9 @@ class PF_Feeds_Schema {
 	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ){ return false; }
 	    if ( !current_user_can( 'edit_page', $post_id ) ){ return false; }
 	    if( empty($_POST['pf_no_feed_alert']) ){
-	        pressforward()->metas->update_pf_meta($post_id, 'pf_no_feed_alert', 0);
+	        pressforward('controller.metas')->update_pf_meta($post_id, 'pf_no_feed_alert', 0);
 	    } else {
-				pressforward()->metas->update_pf_meta($post_id, 'pf_no_feed_alert', $_POST['pf_no_feed_alert']);
+				pressforward('controller.metas')->update_pf_meta($post_id, 'pf_no_feed_alert', $_POST['pf_no_feed_alert']);
 			}
 
 		return $post_id;

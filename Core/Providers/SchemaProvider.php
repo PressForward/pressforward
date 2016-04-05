@@ -8,7 +8,7 @@ use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 use PressForward\Core\Schema\Nominations;
 
 
-class SchemaServiceProvider extends ServiceProvider {
+class SchemaProvider extends ServiceProvider {
 
 	public function register( Container $container ){
 

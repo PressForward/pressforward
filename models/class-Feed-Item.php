@@ -71,7 +71,7 @@ class PF_Feed_Item_Object {
     	$this->set( 'link', $item_url );
     	$this->set( 'id', $this->create_hash_id( $item_url, $item_title ) );
 		$metas = array();
-		foreach ( pressforward()->metas->structure as $meta_key=>$meta_data ){
+		foreach ( pressforward('controller.metas')->structure as $meta_key=>$meta_data ){
 			if ( in_array('item', $meta_data['level']) ){
 				if ( !empty( $meta_data['defaults'] ) ){
 					$metas[$meta_key] = $meta_data['default'];

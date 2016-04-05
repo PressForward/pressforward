@@ -1,5 +1,5 @@
 <?php
-namespace PressForward\Core\Admin;
+namespace PressForward\Controllers;
 
 use PressForward\Interfaces\SystemMeta;
 /**
@@ -7,7 +7,7 @@ use PressForward\Interfaces\SystemMeta;
  */
 class Metas {
 
-    var $meta_interface;
+    //var $meta_interface;
 
     function __construct( SystemMeta $metas ) {
         $this->meta_interface = $metas;

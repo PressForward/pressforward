@@ -11,7 +11,8 @@ class PF_Advancement implements Advance_System {
 	//var $last_step_state;
 	//var $last_step_post_type;
 
-	public function __construct() {
+	public function __construct( Metas $metas ) {
+		$this->metas = $metas;
 		//$this->last_step_state = $this->last_step_state();
 		//$this->last_step_post_type = $this->last_step_post_type();
 	}
@@ -27,7 +28,7 @@ class PF_Advancement implements Advance_System {
 	// Transition Tools
 	public function transition($old_post, $new_post){
 		$this->transition_post_image($old_post, $new_post);
-		pressforward()->metas->transition_post_meta($old_post, $new_post);
+		$this->metas->transition_post_meta($old_post, $new_post);
 		$this->transition_taxonomy_info($old_post, $new_post);
 	}
 

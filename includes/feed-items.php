@@ -66,7 +66,7 @@ class PF_Feed_Item {
 
 	public static function get_by_item_id( $item_id ){
 		$args = array(
-				'meta_key'	=>	pressforward()->metas->get_key( 'item_id' ),
+				'meta_key'	=>	pressforward('controller.metas')->get_key( 'item_id' ),
 				'meta_value' => $item_id
 			);
 		$post = self::get( $args );
@@ -148,7 +148,7 @@ class PF_Feed_Item {
 		$content_array = explode( ' ', strip_tags( $content ) );
 		$word_count = count( $content_array );
 
-		return pressforward()->metas->update_pf_meta( $post_id, 'pf_feed_item_word_count', $word_count );
+		return pressforward('controller.metas')->update_pf_meta( $post_id, 'pf_feed_item_word_count', $word_count );
 	}
 
 
@@ -160,7 +160,7 @@ class PF_Feed_Item {
 	*
 	*/
 	public static function set_source( $post_id, $source ) {
-		return pressforward()->metas->update_pf_meta( $post_id, 'pf_feed_item_source', $source );
+		return pressforward('controller.metas')->update_pf_meta( $post_id, 'pf_feed_item_source', $source );
 	}
 
 	/**
@@ -241,7 +241,7 @@ class PF_Feed_Item {
 			return;
 		}
 		$source_url = 'http://' . $url_array['host'];
-		return pressforward()->metas->update_pf_meta( $post_id, 'pf_source_link', $source_url );
+		return pressforward('controller.metas')->update_pf_meta( $post_id, 'pf_source_link', $source_url );
 	}
 
 
@@ -256,12 +256,12 @@ class PF_Feed_Item {
 	*
 	*/
 	public static function get_source_link( $post_id ) {
-		$url = pressforward()->metas->retrieve_meta($post_id, 'pf_source_link');
+		$url = pressforward('controller.metas')->retrieve_meta($post_id, 'pf_source_link');
 		if (empty($url)){
-			$url = pressforward()->metas->retrieve_meta($post_id, 'item_link');
+			$url = pressforward('controller.metas')->retrieve_meta($post_id, 'item_link');
 		}
 		$source_url = pressforward()->pf_feed_items->resolve_a_url($url);
-		pressforward()->metas->update_pf_meta( $post_id, 'pf_source_link', $source_url );
+		pressforward('controller.metas')->update_pf_meta( $post_id, 'pf_source_link', $source_url );
 		return $source_url;
 	}
 
@@ -905,23 +905,23 @@ class PF_Feed_Item {
 
 				# adding the meta info about the feed item to the post's meta.
 				$pf_meta_args = array(
-					pressforward()->metas->meta_for_entry('item_id', $item_id),
-					pressforward()->metas->meta_for_entry('source_title', $source_title),
-					pressforward()->metas->meta_for_entry('item_date', $item_date),
-					pressforward()->metas->meta_for_entry('item_author', $item_author),
-					pressforward()->metas->meta_for_entry('item_link', $item_link),
-					pressforward()->metas->meta_for_entry('item_feat_img', $item_feat_img),
+					pressforward('controller.metas')->meta_for_entry('item_id', $item_id),
+					pressforward('controller.metas')->meta_for_entry('source_title', $source_title),
+					pressforward('controller.metas')->meta_for_entry('item_date', $item_date),
+					pressforward('controller.metas')->meta_for_entry('item_author', $item_author),
+					pressforward('controller.metas')->meta_for_entry('item_link', $item_link),
+					pressforward('controller.metas')->meta_for_entry('item_feat_img', $item_feat_img),
 					// The item_wp_date allows us to sort the items with a query.
-					pressforward()->metas->meta_for_entry('item_wp_date', $item_wp_date),
+					pressforward('controller.metas')->meta_for_entry('item_wp_date', $item_wp_date),
 					//We can't just sort by the time the item came into the system (for when mult items come into the system at once)
 					//So we need to create a machine sortable date for use in the later query.
-					pressforward()->metas->meta_for_entry('sortable_item_date', strtotime($item_date)),
-					pressforward()->metas->meta_for_entry('item_tags', $item_tags),
-					pressforward()->metas->meta_for_entry('source_repeat', $source_repeat),
-					pressforward()->metas->meta_for_entry('revertible_feed_text', $item_content)
+					pressforward('controller.metas')->meta_for_entry('sortable_item_date', strtotime($item_date)),
+					pressforward('controller.metas')->meta_for_entry('item_tags', $item_tags),
+					pressforward('controller.metas')->meta_for_entry('source_repeat', $source_repeat),
+					pressforward('controller.metas')->meta_for_entry('revertible_feed_text', $item_content)
 
 				);
-				pressforward()->metas->establish_post($newNomID, $pf_meta_args);
+				pressforward('controller.metas')->establish_post($newNomID, $pf_meta_args);
 				$parent_id = $feed_obj_id;
 				do_action('pf_post_established', $newNomID, $item_id, $parent_id);
 			} else {
