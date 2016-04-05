@@ -119,7 +119,7 @@ function pf_shortcut_link() {
  * @return string The name of the feed item post_type for PressForward.
  */
 function pf_feed_item_post_type() {
-	return pressforward()->get_feed_item_post_type();
+	return pressforward('schema.feed_item')->post_type;
 }
 
 /**
@@ -130,7 +130,7 @@ function pf_feed_item_post_type() {
  * @return string The slug for the taxonomy used by feed items.
  */
 function pf_feed_item_tag_taxonomy() {
-	return pressforward()->get_feed_item_tag_taxonomy();
+	return pressforward('schema.feed_item')->tag_taxonomy;
 }
 
 /**

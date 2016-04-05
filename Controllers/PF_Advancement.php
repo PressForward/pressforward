@@ -147,7 +147,7 @@ class PF_Advancement implements Advance_System {
 			$r['post_type'] = $post_type;
 		}
 
-		$postsAfter =  new WP_Query( $r );
+		$postsAfter =  new \WP_Query( $r );
 		pf_log(' Checking for posts with item ID '. $item_id .' returned query with ' . $postsAfter->post_count . ' items.');
 		#pf_log($postsAfter);
 		return $postsAfter;

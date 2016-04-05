@@ -184,7 +184,7 @@ class Folders {
 	}
 
 	public function get_feeds_without_folders($ids = true){
-		   $q = new WP_Query(
+		   $q = new \WP_Query(
 		   				array(
 		 		            'post_type' => $this->post_type,
 		 		            'fields'	=>	'ids',

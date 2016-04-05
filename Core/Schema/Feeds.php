@@ -434,7 +434,7 @@ class Feeds {
 	}
 
 	public function get_feeds_without_folders($ids = true){
-		   $q = new WP_Query(
+		   $q = new \WP_Query(
 		   				array(
 		 		            'post_type' => pressforward()->pf_feeds->post_type,
 		 		            'fields'	=>	'ids',
