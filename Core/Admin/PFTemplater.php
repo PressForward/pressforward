@@ -182,4 +182,170 @@ class PFTemplater {
 
 	}
 
+	public function search_template(){
+		?>
+			<form id="feeds-search" method="post" action="<?php echo basename($_SERVER['PHP_SELF']) . '?' . $_SERVER['QUERY_STRING'] . '&action=post'; ?>">
+					<label for="search-terms">Search</label>
+				<input type="text" name="search-terms" id="search-terms" placeholder="Enter search terms">
+				<input type="submit" class="btn btn-small" value="Search">
+			</form>
+		<?php
+	}
+
+	public function nav_bar($page = 'pf-menu'){
+		?>
+		<div class="display">
+			<div class="pf-btns pull-left btn-toolbar">
+				<?php if ( 'pf-review' != $page ) { ?>
+					<div class="dropdown pf-view-dropdown btn-group" role="group">
+					  <button class="btn btn-default btn-small dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+						<?php _e('View', 'pf'); ?>
+						<span class="caret"></span>
+					  </button>
+						<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+						<?php
+							$view_check = get_user_meta(pressforward('controller.template_factory')->user_id(), 'pf_user_read_state', true);
+							if ('golist' == $view_check){
+								$this->dropdown_option(__('Grid', 'pf'), "gogrid", 'pf-top-menu-selection display-state');
+								$this->dropdown_option(__('List', 'pf'), "golist", 'pf-top-menu-selection unset display-state');
+							} else {
+								$this->dropdown_option(__('Grid', 'pf'), "gogrid", 'pf-top-menu-selection unset display-state');
+								$this->dropdown_option(__('List', 'pf'), "golist", 'pf-top-menu-selection display-state');
+							}
+							$pf_user_scroll_switch = get_user_option('pf_user_scroll_switch', pressforward('controller.template_factory')->user_id());
+							#empty or true
+							if ('false' == $pf_user_scroll_switch){
+								$this->dropdown_option(__('Infinite Scroll (Reloads Page)', 'pf'), "goinfinite", 'pf-top-menu-selection scroll-toggler');
+							} else {
+								$this->dropdown_option(__('Paginate (Reloads Page)', 'pf'), "gopaged", 'pf-top-menu-selection scroll-toggler');
+							}
+
+						?>
+						 </ul>
+					</div>
+				<?php } ?>
+				<div class="dropdown pf-filter-dropdown btn-group" role="group">
+				  <button class="btn btn-default dropdown-toggle btn-small" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
+					<?php _e('Filter', 'pf'); ?>
+					<span class="caret"></span>
+				  </button>
+				  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
+					<?php
+						if ( 'pf-review' != $page ){
+							$this->dropdown_option(__('Reset filter', 'pf'), "showNormal");
+							$this->dropdown_option(__('My starred', 'pf'), "showMyStarred");
+							$this->dropdown_option(__('Show hidden', 'pf'), "showMyHidden");
+							$this->dropdown_option(__('My nominations', 'pf'), "showMyNominations");
+							$this->dropdown_option(__('Unread', 'pf'), "showUnread");
+							$this->dropdown_option( __( 'Drafted', 'pf' ), "showDrafted" );
+						} else {
+							if ( isset($_POST['search-terms']) || isset($_GET['by']) || isset($_GET['pf-see']) || isset($_GET['reveal']) ) {
+								$this->dropdown_option(__('Reset filter', 'pf'), "showNormalNominations");
+							}
+							$this->dropdown_option(__('My starred', 'pf'), "sortstarredonly", 'starredonly', null, null, null, get_admin_url(null, 'admin.php?page=pf-review&pf-see=starred-only'));
+							$this->dropdown_option(__('Toggle visibility of archived', 'pf'), "showarchived");
+							$this->dropdown_option(__('Only archived', 'pf'), "showarchiveonly", null, null, null, null, get_admin_url(null, 'admin.php?page=pf-review&pf-see=archive-only'));
+							$this->dropdown_option(__('Unread', 'pf'), "showUnreadOnly", null, null, null, null, get_admin_url(null, 'admin.php?page=pf-review&pf-see=unread-only'));
+							$this->dropdown_option( __( 'Drafted', 'pf' ), "showDrafted", null, null, null, null, get_admin_url(null, 'admin.php?page=pf-review&pf-see=drafted-only') );
+
+						}
+					?>
+				  </ul>
+				</div>
+				<div class="dropdown pf-sort-dropdown btn-group" role="group">
+				  <button class="btn btn-default dropdown-toggle btn-small" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-expanded="true">
+					<?php _e('Sort', 'pf'); ?>
+					<span class="caret"></span>
+				  </button>
+				  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu3">
+					<?php
+						$this->dropdown_option(__('Reset', 'pf'), "sort-reset");
+						$this->dropdown_option(__('Date of item', 'pf'), "sortbyitemdate");
+						$this->dropdown_option(__('Date retrieved', 'pf'), "sortbyfeedindate");
+						if ( 'pf-review' == $page ){
+							$this->dropdown_option(__('Date nominated', 'pf'), "sortbynomdate");
+							$this->dropdown_option(__('Nominations received', 'pf'), "sortbynomcount");
+						}
+					?>
+					<?php #<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Feed name</a></li> ?>
+				  </ul>
+				</div>
+				<div class="btn-group" role="group">
+					<a href="https://github.com/PressForward/pressforward/wiki" target="_blank" id="pf-help" class="btn btn-small"><?php _e('Need help?', 'pf'); ?></a>
+				</div>
+			</div>
+
+			<div class="pull-right text-right">
+			<!-- or http://thenounproject.com/noun/list/#icon-No9479? -->
+				<?php
+				if ( function_exists('the_alert_box') ){
+										add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+										add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+										$alerts = the_alert_box()->get_specimens();
+										remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
+										remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
+				}
+
+					if ( 'pf-review' == $page ){
+						echo '<button type="submit" class="delete btn btn-danger btn-small pull-left" id="archivenoms" value="' . __('Archive all', 'pf') . '" >' . __('Archive all', 'pf') . '</button>';
+					}
+
+					$user_ID = get_current_user_id();
+					$pf_user_menu_set = get_user_option('pf_user_menu_set', $user_ID);
+					if ('true' == $pf_user_menu_set){
+						if (!empty($alerts) && (0 != $alerts->post_count)){
+							echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i> (!)</a>';
+						} else {
+							echo '<a class="btn btn-small" id="gomenu" href="#">' . __('Menu', 'pf') . ' <i class="icon-tasks"></i></a>';
+						}
+					}
+					echo '<a class="btn btn-small" id="gofolders" href="#">' . __('Folders', 'pf') . '</a>';
+				?>
+
+			</div>
+		</div><!-- End btn-group -->
+		<?php
+	}
+
+	public function dropdown_option($string, $id, $class = 'pf-top-menu-selection', $form_id = '', $schema_action = '', $schema_class = '', $href = '', $target = ''){
+
+		$option = '<li role="presentation"><a role="menuitem" id="';
+		$option .= $id;
+		$option .= '" tabindex="-1" class="';
+		$option .= $class;
+		$option .= '"';
+
+		$option .= ' href="';
+		if (!empty($href)){
+			$option .= $href;
+		} else {
+			$option .= '#';
+		}
+		$option .= '"';
+
+		if (!empty($target)){
+			$option .= ' target="'.$target.'"';
+		}
+
+
+		if (!empty($form_id)){
+			$option .= ' data-form="' . $form_id . '" ';
+		}
+
+		if (!empty($schema_action)){
+			$option .= ' pf-schema="' . $schema_action . '" ';
+		}
+
+		if (!empty($schema_class)){
+			$option .= ' pf-schema-class="' . $schema_class . '" ';
+		}
+
+		$option .= '>';
+		$option .= $string;
+		$option .= '</a></li>';
+
+		echo $option;
+
+	}
+
 }

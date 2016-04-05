@@ -1,29 +1,16 @@
 <?php
-
+namespace PressForward\Core\Schema;
 /**
- * Feeds data schema
- *
- * The RSS Import module stores several different types of data. The schemas
- * are described below.
- *
- * (1) FEEDS
- *     Feeds are stored in a custom post type ('pf_feed'). Data
- *     is mapped as follows:
- *
- *     [data type]       -> [WP location]
- *     feed title   	 -> wp_posts.post_title
- *     feed notes 		 -> wp_posts.post_content
- *     xmlUrl        	 -> wp_postmeta ('pf_feed_xmlUrl')
- *     htmlUrl           -> wp_postmeta ('pf_feed_htmlUrl')
- *     type           	 -> wp_postmeta ('pf_feed_type')
- *     created           -> wp_posts.post_date_gmt
+ * Classes and functions for dealing with feed items
  */
 
-class PF_Feeds_Schema {
-	#var $post_type;
-	#var $tag_taxonomy;
-	
-	private function __construct() {
+/**
+ * Database class for manipulating feed items
+ */
+class Feeds {
+	protected $filter_data = array();
+
+    public function __construct() {
 		$this->post_type = 'pf_feed';
 		$this->tag_taxonomy = 'pf_feed_category';
 
@@ -1197,7 +1184,7 @@ class PF_Feeds_Schema {
 		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
 
 		if ( in_array( $pagenow, array( 'edit.php' ) ) ){
-			if ( false != pressforward()->form_of->is_a_pf_page() ){
+			if ( false != pressforward('controller.template_factory')->is_a_pf_page() ){
 				wp_enqueue_script( 'feed_edit_manip', PF_URL . '/assets/js/subscribed-feeds-actions.js', array('jquery'), PF_VERSION );
 			}
 		}
@@ -1254,6 +1241,7 @@ class PF_Feeds_Schema {
 
 		return $messages;
 	}
+
 
 
 }

@@ -123,7 +123,7 @@ class AdminAreaServiceProvider extends ServiceProvider {
 		);
 		$container->share(
 			'admin.menu',
-			new Menu( $container )
+			new Menu(  $container->fetch( 'basename' ), $container->fetch( 'controller.users' )  )
 		);
 		$container->share(
 			'admin.tools',

@@ -1,5 +1,5 @@
 <?php
-
+namespace PressForward\Core\Schema;
 /**
  * Classes and functions for dealing with feed items
  */
@@ -7,7 +7,7 @@
 /**
  * Database class for manipulating feed items
  */
-class PF_Feed_Item {
+class Feed_Item {
 	protected $filter_data = array();
 
 	public function __construct() {

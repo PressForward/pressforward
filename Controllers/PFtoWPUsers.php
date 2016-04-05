@@ -1,9 +1,9 @@
 <?php
 namespace PressForward\Controllers;
 
-use PressForward\Interfaces\SystemUsers as System_Users;
+use PressForward\Interfaces\SystemUsers as SystemUsers;
 
-class PFtoWPUsers implements System_Users {
+class PFtoWPUsers implements SystemUsers {
 
 	function __construct( Metas $metas ) {
 		//var_dump('a');
