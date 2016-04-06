@@ -154,7 +154,8 @@ class AdminAreaServiceProvider extends ServiceProvider {
 									$container->fetch('controller.metas'),
 									$container->fetch('admin.templates'),
 									$container->fetch('utility.forward_tools'),
-									$container->fetch('schema.nominations') // Switch this to a modal
+									$container->fetch('schema.nominations'), // Switch this to a modal
+									$container->fetch( 'controller.users' )
 								);
 			}
 		);

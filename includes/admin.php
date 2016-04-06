@@ -85,15 +85,6 @@ class PF_Admin {
 			array($this, 'display_reader_builder')
 		);
 
-		add_submenu_page(
-			PF_MENU_SLUG,
-			__('Nominated', 'pf'),
-			__('Nominated', 'pf'),
-			get_option('pf_menu_under_review_access', pf_get_defining_capability_by_role('contributor')),
-			PF_SLUG . '-review',
-			array($this, 'display_review_builder')
-		);
-
 
 
 		if ( $alert_count = The_Alert_Box::alert_count() ) {

@@ -41,7 +41,7 @@ class AddFeeds implements HasActions, HasFilters {
 			PF_MENU_SLUG,
 			__('Add Feeds', 'pf'),
 			__('Add Feeds', 'pf'),
-			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')),
+			get_option('pf_menu_feeder_access', $this->user_interface->pf_get_defining_capability_by_role('editor')),
 			PF_SLUG . '-feeder',
 			array($this, 'display_feeder_builder')
 		);
@@ -69,11 +69,11 @@ class AddFeeds implements HasActions, HasFilters {
     public function set_permitted_tools_tabs( $permitted_tabs ){
         $permitted_tabs['primary_feed_type'] = array(
                                         'title' => __('Subscribe to Feeds', 'pf'),
-                                        'cap'  => pf_get_defining_capability_by_role('contributor')
+                                        'cap'  => $this->user_interface->pf_get_defining_capability_by_role('contributor')
                                     );
         $permitted_tabs['alerts'] = array(
                                         'title' => __('Alerts', 'pf'),
-                                        'cap'  => pf_get_defining_capability_by_role('administrator')
+                                        'cap'  => $this->user_interface->pf_get_defining_capability_by_role('administrator')
                                     );
         return $permitted_tabs;
     }
