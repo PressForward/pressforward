@@ -25,8 +25,8 @@ define( 'PF_URL', plugins_url('/', __FILE__) );
 define( 'PF_VERSION', '3.8' );
 
 require 'class-SplClassLoader.php';
-require 'includes\functions.php';
-require 'includes\template-tags.php';
+require 'includes/functions.php';
+require 'includes/template-tags.php';
 
 use SplClassLoader as ClassLoader;
 $classLoader = new ClassLoader('PressForward', dirname(__FILE__), false);
