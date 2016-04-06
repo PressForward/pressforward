@@ -96,7 +96,7 @@ class PFTemplater {
 				'page_title'	=>	__('PressForward Preferences', 'pf'),
 				'page_slug'		=>	'settings'
 			);
-		return $this->get_view($this->build_path(array('settings','settings-page'), false), $vars);
+		return $this->get_view($this->factory->build_path(array('settings','settings-page'), false), $vars);
 	}
 
 	public function settings_tab_group($current, $page_slug = 'settings'){

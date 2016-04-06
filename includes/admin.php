@@ -94,15 +94,7 @@ class PF_Admin {
 			array($this, 'display_review_builder')
 		);
 
-		// Feed-listing page is accessible only to Editors and above
-		add_submenu_page(
-			PF_MENU_SLUG,
-			__('Add Feeds', 'pf'),
-			__('Add Feeds', 'pf'),
-			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')),
-			PF_SLUG . '-feeder',
-			array($this, 'display_feeder_builder')
-		);
+
 
 		if ( $alert_count = The_Alert_Box::alert_count() ) {
 			$alert_count_notice = '<span class="feed-alerts count-' . intval( $alert_count ) . '"><span class="alert-count">' . number_format_i18n( $alert_count ) . '</span></span>';
@@ -136,15 +128,6 @@ class PF_Admin {
 			get_option('pf_menu_tools_access', pf_get_defining_capability_by_role('contributor')),
 			PF_SLUG . '-tools',
 			array($this, 'display_tools_builder')
-		);
-
-		add_submenu_page(
-			PF_MENU_SLUG,
-			__('Folders', 'pf'),
-			__('Folders', 'pf'),
-			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')),
-			'edit-tags.php?taxonomy=' . pressforward()->pf_feeds->tag_taxonomy,
-			''
 		);
 /**
 		add_submenu_page(
