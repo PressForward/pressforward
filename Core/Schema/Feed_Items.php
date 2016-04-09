@@ -215,7 +215,7 @@ class Feed_Items {
 		}
 	}
 
-	public static function create( $args = array() ) {
+	public function create( $args = array() ) {
 		$r = wp_parse_args( $args, array(
 			'item_title'   => '',
 			'item_link'     => '',
@@ -277,7 +277,7 @@ class Feed_Items {
 	*
 	*
 	*/
-	public static function set_word_count( $post_id, $content = false ) {
+	public function set_word_count( $post_id, $content = false ) {
 		if ( false === $content ) {
 			$post = get_post( $post_id );
 			$content = $post->post_content;
@@ -297,7 +297,7 @@ class Feed_Items {
 	*
 	*
 	*/
-	public static function set_source( $post_id, $source ) {
+	public function set_source( $post_id, $source ) {
 		return pressforward('controller.metas')->update_pf_meta( $post_id, 'pf_feed_item_source', $source );
 	}
 
@@ -309,7 +309,7 @@ class Feed_Items {
 	* @return array An array of URLs with aggregation URL host parts.
 	*
 	*/
-	public static function aggregation_services(){
+	public function aggregation_services(){
 		return array(
 						'Google'  			=>	'google.com',
 						'Tweeted Times'		=>  'tweetedtimes.com'
@@ -325,7 +325,7 @@ class Feed_Items {
 	* @return bool True value for a submitted URL that matches an aggregation service.
 	*
 	*/
-	public static function url_is_aggregation_service($url){
+	public function url_is_aggregation_service($url){
 		$check = false;
 		$services = self::aggregation_services();
 		foreach ($services as $service){
@@ -346,7 +346,7 @@ class Feed_Items {
 	* @return bool True value for a submitted URL that matches an aggregation service.
 	*
 	*/
-	public static function resolve_a_url($url){
+	public function resolve_a_url($url){
 		$url_array = parse_url($url);
 		if (empty($url_array['host'])){
 			return;
@@ -372,7 +372,7 @@ class Feed_Items {
 	*
 	*
 	*/
-	public static function set_source_link( $post_id, $item_url ) {
+	public function set_source_link( $post_id, $item_url ) {
 		$url = self::resolve_a_url($item_url);
 		$url_array = parse_url($url);
 		if (empty($url_array['host'])){
@@ -393,18 +393,18 @@ class Feed_Items {
 	*
 	*
 	*/
-	public static function get_source_link( $post_id ) {
+	public function get_source_link( $post_id ) {
 		$url = pressforward('controller.metas')->retrieve_meta($post_id, 'pf_source_link');
 		if (empty($url)){
 			$url = pressforward('controller.metas')->retrieve_meta($post_id, 'item_link');
 		}
-		$source_url = pressforward()->pf_feed_items->resolve_a_url($url);
+		$source_url = $this->resolve_a_url($url);
 		pressforward('controller.metas')->update_pf_meta( $post_id, 'pf_source_link', $source_url );
 		return $source_url;
 	}
 
-	public static function resolve_source_url($url){
-		$url = pressforward()->pf_feed_items->resolve_a_url($url);
+	public function resolve_source_url($url){
+		$url = $this->resolve_a_url($url);
 		$url_array = parse_url($url);
 		if (empty($url_array['host'])){
 			return;
@@ -413,8 +413,8 @@ class Feed_Items {
 		return $source_url;
 	}
 
-	public static function resolve_full_url($url){
-		$url = pressforward()->pf_feed_items->resolve_a_url($url);
+	public function resolve_full_url($url){
+		$url = $this->resolve_a_url($url);
 		return $url;
 	}
 
@@ -426,7 +426,7 @@ class Feed_Items {
 	 * @param int $feed_item_id ID of the feed item.
 	 * @return bool
 	 */
-	public static function set_parent_last_retrieved( $feed_item_id ) {
+	public function set_parent_last_retrieved( $feed_item_id ) {
 		$feed_item = get_post( $feed_item_id );
 
 		if ( ! is_a( $feed_item, 'WP_Post' ) || empty( $feed_item->post_parent ) ) {
@@ -442,246 +442,8 @@ class Feed_Items {
 		return update_post_meta( $feed_id, 'pf_feed_last_retrieved', date( 'Y-m-d H:i:s' ) );
 	}
 
-	# This function feeds items to our display feed function pf_reader_builder.
-	# It is just taking our database of rssarchival items and putting them into a
-	# format that the builder understands.
-	/**
-	 * Fetch a collection of feed items and format for use in the reader.
-	 *
-	 * @param  int    $pageTop      First item to display on the page. Note that it
-	 *                              is decremented by 1, so should not be 0.
-	 * @param  int    $pagefull     Number of items to show per page.
-	 * @param  int    $fromUnixTime Feed items will only be returned when their
-	 *                              publish date is later than this. Must be in
-	 *                              UNIX format.
-	 * @param  bool   $limitless    True to show all feed items. Skips pagination,
-	 *                              but obeys $fromUnixTime. Default: false.
-	 * @param  string $limit        Limit to feed items with certain relationships
-	 *                              set. Note that relationships are relative to
-	 *                              logged-in user. (starred|nominated)
-	 * @return array
-	 */
-	public static function archive_feed_to_display( $args = array() ) {
-
-		// Backward compatibility.
-		$func_args = func_get_args();
-		if ( ! is_array( $func_args[0] ) || 1 < count( $func_args ) ) {
-			$args = array(
-				'start' => $func_args[0],
-			);
-
-			if ( isset( $func_args[1] ) ) {
-				$args['posts_per_page'] = $func_args[1];
-			}
-
-			if ( isset( $func_args[2] ) ) {
-				$args['from_unix_time'] = $func_args[2];
-			}
-
-			if ( isset( $func_args[3] ) ) {
-				$args['no_limit'] = $func_args[3];
-			}
-
-			if ( isset( $func_args[4] ) ) {
-				$args['relationship'] = $func_args[4];
-			}
-		} else {
-			$args = func_get_arg( 0 );
-		}
-
-		// Make sure default values are set.
-		$r = array_merge( array(
-			'start'            => 0,
-			'posts_per_page'   => 20,
-			'from_unix_time'   => 0,
-			'no_limit'         => false,
-			'relationship'     => false,
-			'search_terms'     => '',
-			'exclude_archived' => false,
-		), $args );
-
-		if ( empty( $r['from_unix_time'] ) || ( $r['from_unix_time'] < 100 ) ) {
-			$r['from_unix_time'] = 0;
-		}
-
-		$r['start'] = $r['start'] - 1;
-
-		if (!$r['posts_per_page']){
-			$user_obj = wp_get_current_user();
-			$user_id = $user_obj->ID;
-			$r['posts_per_page'] = get_user_option('pf_pagefull', $user_id);
-			if (empty($r['posts_per_page'])){
-				$r['posts_per_page'] = 20;
-			}
-		}
-
-		$post_args = array(
-			'post_type' => pf_feed_item_post_type(),
-
-			// Ordering by 'sortable_item_date' > 0.
-			'meta_key'     => 'sortable_item_date',
-			'meta_value'   => $r['from_unix_time'],
-			'meta_type'    => 'SIGNED',
-			'meta_compare' => '>',
-			'orderby'      => 'meta_value',
-			'order'        => 'DESC',
-
-			// Pagination
-			'posts_per_page' => $r['posts_per_page'],
-			'offset'         => $r['start'],
-		);
-
-		if ( $r['no_limit'] ) {
-			$post_args['posts_per_page'] = -1;
-		}
-
-		if ( ! empty( $r['relationship'] ) ) {
-			switch ( $r['relationship'] ) {
-				case 'starred' :
-					$rel_items = pf_get_relationships_for_user( 'star', get_current_user_id() );
-					break;
-
-				case 'nominated' :
-					$rel_items = pf_get_relationships_for_user( 'nominate', get_current_user_id() );
-					break;
-			}
-
-			if ( ! empty( $rel_items ) ) {
-				$post_args['post__in'] = wp_list_pluck( $rel_items, 'item_id' );
-			}
-		}
-
-		if ( ! empty( $r['reveal'] ) ) {
-			switch ( $r['reveal'] ) {
-				case 'no_hidden' :
-					$rel_items = pf_get_relationships_for_user( 'archive', get_current_user_id() );
-					break;
-
-				case 'unread' :
-					$rel_not_items = pf_get_relationships_for_user( 'read', get_current_user_id() );
-					break;
-
-				case 'drafted' :
-					$drafted_items = pf_get_drafted_items();
-					if ( empty( $drafted_items ) ) {
-						$drafted_items = array( 0 );
-					}
-					break;
-			}
-
-			if ( ! empty( $rel_items ) ) {
-				$posts_in = wp_list_pluck( $rel_items, 'item_id' );
-				if ( ! empty( $post_args['post__in'] ) ){
-					$post_args['post__in'] = array_merge($post_args['post__in'], $posts_in);
-				} else {
-					$post_args['post__in'] = $posts_in;
-				}
-			}
-
-			if ( ! empty( $rel_not_items ) ) {
-				$posts_not_in = wp_list_pluck( $rel_not_items, 'item_id' );
-				if ( ! empty( $post_args['post__not_in'] ) ){
-					$post_args['post__not_in'] = array_merge($post_args['post__not_in'], $posts_not_in);
-				} else {
-					$post_args['post__not_in'] = $posts_not_in;
-				}
-			}
-
-			if ( isset( $drafted_items ) ) {
-				// Intersect to match only those items that have drafts.
-				if ( ! empty( $post_args['post__in'] ) && array( 0 ) != $drafted_items ) {
-					$post_args['post__in'] = array_intersect( $post_args['post__in'], $drafted_items );
-				} else {
-					$post_args['post__in'] = $drafted_items;
-				}
-			}
-		}
-
-		if ( ! empty( $r['exclude_archived'] ) ) {
-			$archived = pf_get_relationships_for_user( 'archive', get_current_user_id() );
-			$post_args['post__not_in'] = wp_list_pluck( $archived, 'item_id' );
-		}
-
-		if ( ! empty( $r['search_terms'] ) ) {
-			/*
-			 * Quote so as to get only exact matches. This is for
-			 * backward compatibility - might want to remove it for
-			 * a more flexible search.
-			 */
-			$post_args['s'] = '"' . $r['search_terms'] . '"';
-		}
-
-		$post_args['post_status'] = 'publish';
-		//die();
-
-		if (isset($_GET['feed'])) {
-			$post_args['post_parent'] = $_GET['feed'];
-		} elseif (isset($_GET['folder'])){
-			$parents_in_folder = new \WP_Query( array(
-				'post_type' => pressforward()->pf_feeds->post_type,
-				'fields'=> 'ids',
-				'update_post_term_cache' => false,
-				'update_post_meta_cache' => false,
-				'tax_query' => array(
-					array(
-						'taxonomy' => pressforward()->pf_feeds->tag_taxonomy,
-						'field'	=> 'term_id',
-						'terms'	=> $_GET['folder']
-					),
-				),
-			) );
-			#var_dump('<pre>'); var_dump($parents_in_folder); die();
-			$post_args['post_parent__in'] = $parents_in_folder->posts;
-		}
-
-		$feed_items = new \WP_Query( $post_args );
-
-		$feedObject = array();
-		$c = 0;
-
-		foreach ( $feed_items->posts as $post ) {
-			$post_id = $post->ID;
-
-			$item_id            = get_post_meta( $post_id, 'item_id', true );
-			$source_title       = get_post_meta( $post_id, 'source_title', true );
-			$item_date          = get_post_meta( $post_id, 'item_date', true );
-			$item_author        = get_post_meta( $post_id, 'item_author', true );
-			$item_link          = get_post_meta( $post_id, 'item_link', true );
-			$item_feat_img      = get_post_meta( $post_id, 'item_feat_img', true );
-			$item_wp_date       = get_post_meta( $post_id, 'item_wp_date', true );
-			$item_tags          = get_post_meta( $post_id, 'item_tags', true );
-			$source_repeat      = get_post_meta( $post_id, 'source_repeat', true );
-			$readable_status    = get_post_meta( $post_id, 'readable_status', true );
-
-			$contentObj   = new pf_htmlchecker( $post->post_content );
-			$item_content = $contentObj->closetags( $post->post_content );
-
-			$feedObject['rss_archive_' . $c] = pf_feed_object(
-				$post->post_title,
-				$source_title,
-				$item_date,
-				$item_author,
-				$item_content,
-				$item_link,
-				$item_feat_img,
-				$item_id,
-				$item_wp_date,
-				$item_tags,
-				// Manual ISO 8601 date for pre-PHP5 systems.
-				date( 'o-m-d\TH:i:sO', strtotime( $post->post_date ) ),
-				$source_repeat,
-				$post_id,
-				$readable_status
-			);
-
-			$c++;
-		}
-
-		return $feedObject;
-	}
-
 	#via http://wordpress.stackexchange.com/questions/109793/delete-associated-media-upon-page-deletion
-	public static function disassemble_feed_item_media( $post_id ) {
+	public function disassemble_feed_item_media( $post_id ) {
 
 		$attachments = get_posts( array(
 			'post_type'      => 'attachment',
@@ -699,7 +461,7 @@ class Feed_Items {
 
 
 	# The function we add to the action to clean our database.
-	public static function disassemble_feed_items() {
+	public function disassemble_feed_items() {
 		pf_log('Disassemble Feed Items Activated');
 		//delete rss feed items with a date past a certain point.
 		add_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older') );
@@ -726,7 +488,7 @@ class Feed_Items {
 
 	}
 
-	public static function ajax_feed_items_disassembler(){
+	public function ajax_feed_items_disassembler(){
 		pressforward()->pf_feed_items->disassemble_feed_items();
 		$message = array(
 			'action_taken'	=>	'Feed items being removed'
@@ -735,7 +497,7 @@ class Feed_Items {
 	}
 
 	# Method to manually delete rssarchival entries on user action.
-	public static function reset_feed() {
+	public function reset_feed() {
 		global $wpdb, $post;
 
         $count = wp_count_posts(pf_feed_item_post_type());
@@ -777,7 +539,7 @@ class Feed_Items {
 
 	}
 
-	public static function get_the_feed_object(){
+	public function get_the_feed_object(){
 		pf_log( 'Invoked: PF_Feed_Item::get_the_feed_object()' );
 		#$PF_Feed_Retrieve = new PF_Feed_Retrieve();
 		# This pulls the RSS feed into a set of predetermined objects.
@@ -795,7 +557,7 @@ class Feed_Items {
 		return $theFeed;
 	}
 
-	public static function assemble_feed_for_pull($feedObj = 0) {
+	public function assemble_feed_for_pull($feedObj = 0) {
 		pf_log( 'Invoked: PF_Feed_Item::assemble_feed_for_pull()' );
 
 		ignore_user_abort(true);
@@ -1391,4 +1153,5 @@ class Feed_Items {
 	public static function get_term_slug_from_tag( $tag ) {
 //		return 'pf_feed_item_' .
 	}
+
 }

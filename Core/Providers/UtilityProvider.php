@@ -7,6 +7,7 @@ use Intraxia\Jaxion\Assets\Register as Assets;
 use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 
 use PressForward\Core\Utility\Forward_Tools;
+use PressForward\Core\Utility\Relate;
 
 class UtilityProvider extends ServiceProvider {
 
@@ -19,6 +20,18 @@ class UtilityProvider extends ServiceProvider {
 									$container->fetch('controller.items'),
 									$container->fetch('controller.advancement'),
 									$container->fetch('controller.metas')
+								);
+			}
+		);
+
+		$container->share(
+			'utility.relate',
+			function( $container ){
+				return new Relate(
+									$container->fetch('controller.items'),
+									$container->fetch('controller.advancement'),
+									$container->fetch('controller.metas'),
+									$container->fetch('schema.relationships')
 								);
 			}
 		);

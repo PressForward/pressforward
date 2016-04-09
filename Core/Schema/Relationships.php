@@ -11,6 +11,9 @@ class Relationships {
 
 
 	public function __construct() {
+		global $wpdb;
+
+		$this->table_name = $wpdb->prefix . 'pf_relationships';
         // Maybe install custom table for relationships
         add_action( 'admin_init', array( $this, 'maybe_install_relationship_table' ) );
     }
@@ -57,6 +60,150 @@ class Relationships {
 			)";
 
 		dbDelta( $sql );
+	}
+
+	public function create( $args = array() ) {
+		global $wpdb;
+
+		$r = wp_parse_args( $args, array(
+			'user_id' => 0,
+			'item_id' => 0,
+			'relationship_type' => 0,
+			'value' => '',
+			'unique' => true, // Generally you want one entry per user_id+item_id+relationship_type combo
+		) );
+
+		if ( $r['unique'] ) {
+			$existing = $this->get( $r );
+			if ( ! empty( $existing ) ) {
+				return false;
+			}
+		}
+
+		$wpdb->insert(
+			$this->table_name,
+			array(
+				'user_id' => $r['user_id'],
+				'item_id' => $r['item_id'],
+				'relationship_type' => $r['relationship_type'],
+				'value' => $r['value'],
+			),
+			array(
+				'%d',
+				'%d',
+				'%d',
+				'%s',
+			)
+		);
+
+		return $wpdb->insert_id;
+	}
+
+	/**
+	 * We assume that only the value ever needs to change.
+	 *
+	 * Any other params are interpreted as WHERE conditions
+	 */
+	public function update( $args = array() ) {
+		global $wpdb;
+
+		$r = wp_parse_args( $args, array(
+			'id' => 0,
+			'user_id' => false,
+			'item_id' => false,
+			'relationship_type' => false,
+			'value' => false,
+		) );
+
+		// If an 'id' is passed, use it. Otherwise build a WHERE
+		$where = array();
+		$where_format = array();
+		if ( $r['id'] ) {
+			$where['id']    = (int) $r['id'];
+			$where_format[] = '%d';
+		} else {
+			foreach ( $r as $rk => $rv ) {
+				if ( in_array( $rk, array( 'id', 'value' ) ) ) {
+					continue;
+				}
+
+				if ( false !== $rv ) {
+					$where[ $rk ]   = $rv;
+					$where_format[] = '%d';
+				}
+			}
+		}
+
+		$updated = false;
+
+		// Sanity: Don't allow for empty $where
+		if ( ! empty( $where ) ) {
+			$updated = $wpdb->update(
+				$this->table_name,
+				array( 'value' => $r['value'] ),
+				$where,
+				array( '%s' ),
+				$where_format
+			);
+		}
+
+		return (bool) $updated;
+	}
+
+	public function get( $args = array() ) {
+		global $wpdb;
+
+		$r = wp_parse_args( $args, array(
+			'id' => 0,
+			'user_id' => false,
+			'item_id' => false,
+			'relationship_type' => false,
+		) );
+
+		$sql[] = "SELECT * FROM {$this->table_name}";
+
+		// If an ID is passed, use it. Otherwise build WHERE from params
+		$where = array();
+		if ( $r['id'] ) {
+			$where[] = $wpdb->prepare( "id = %d", $r['id'] );
+		} else {
+			foreach ( $r as $rk => $rv ) {
+				if ( ! in_array( $rk, array( 'id', 'unique', 'value' ) ) && false !== $rv ) {
+					$where[] = $wpdb->prepare( "{$rk} = %d", $rv );
+				}
+			}
+		}
+
+		if ( ! empty( $where ) ) {
+			$sql[] = "WHERE " . implode( " AND ", $where );
+		}
+
+		$sql = implode( ' ', $sql );
+
+		return $wpdb->get_results( $sql );
+
+	}
+
+	function delete( $args = array() ) {
+		global $wpdb;
+
+		if ( ! empty( $args['id'] ) ) {
+			$id = $args['id'];
+		} else {
+			$relationships = $this->get( $args );
+			// Assume it's the first one!
+			if ( ! empty( $relationships ) ) {
+				$id = $relationships[0]->id;
+			}
+		}
+
+		$deleted = false;
+		if ( $id ) {
+			$d = $wpdb->query( $wpdb->prepare( "DELETE FROM {$this->table_name} WHERE id = %d", $id ) );
+			$deleted = false !== $d;
+		}
+
+		return $deleted;
 	}
 
 }

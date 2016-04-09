@@ -22,7 +22,7 @@ use Intraxia\Jaxion\Core\Application as JaxionCore;
 //use Intraxia\Jaxion\Contract\Core\Application as ApplicationContract;
 
 class Application extends JaxionCore {
-	const PF_VERSION = '3.9.0';
+	const VERSION = '3.9.0';
 	var $ver = 3.9;
 		/**
 	 * ServiceProviders to register with the Application
@@ -30,6 +30,7 @@ class Application extends JaxionCore {
 	 * @var string[]
 	 */
 	protected $providers = array(
+		'PressForward\Core\Providers\LibrariesProvider',
 		'PressForward\Core\Providers\SchemaProvider',
 		'PressForward\Core\Providers\ControllerServiceProvider',
 		'PressForward\Core\Providers\UtilityProvider',
@@ -44,13 +45,13 @@ class Application extends JaxionCore {
 	 */
 	public function activate() {
 		global $wp_rewrite;
-		$current_version = self::PF_VERSION; // define this constant in the loader file
+		$current_version = VERSION; // define this constant in the loader file
 		$saved_version = get_option( 'pf_version' );
 
 		// This is a new installation
 		if ( ! $saved_version ) {
 			// Do whatever you need to do during first installation
-			$check = pressforward('schema.feeds')->create(
+			$check = pressforward()->pf_feeds->create(
 				'http://pressforward.org/feed/',
 				array(
 					'title'         => 'PressForward',
@@ -73,7 +74,7 @@ class Application extends JaxionCore {
 		}
 
 		// Update the version number stored in the db (so this does not run again)
-		update_option( 'pf_version', self::PF_VERSION );
+		update_option( 'pf_version', PF_VERSION );
 	}
 
 }

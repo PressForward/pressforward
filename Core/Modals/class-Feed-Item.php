@@ -127,7 +127,7 @@ class PF_Feed_Item_Object {
 	}
 
 	private function set_content( $content ) {
-		$content_obj = new pf_htmlchecker($contet);
+		$content_obj = pressforward('library.htmlchecker');
 		return $content_obj->closetags($content);
 	}
 

@@ -41,8 +41,6 @@ class Menu implements HasActions {
 
 		remove_submenu_page( PF_MENU_SLUG, 'edit.php?post_type=pf_feed' );
 	}
-
-
 	/**
 	 * Display function for the main All Content panel
 	 */
@@ -138,9 +136,9 @@ class Menu implements HasActions {
 					$archive_feed_args['reveal'] = stripslashes( $_GET['reveal'] );
 				}
 
-				foreach ( pressforward('schema.feed_item')->archive_feed_to_display( $archive_feed_args ) as $item ) {
+				foreach ( pressforward('controller.loops')->archive_feed_to_display( $archive_feed_args ) as $item ) {
 
-					$this->form_of_an_item($item, $c);
+					pressforward('admin.templates')->form_of_an_item($item, $c);
 
 					$c++;
 

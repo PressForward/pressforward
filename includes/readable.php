@@ -123,7 +123,7 @@ class PF_Readability {
 			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
 		}
 
-		$contentObj = new pf_htmlchecker($itemReadReady);
+		$contentObj = pressforward('library.htmlchecker');
 		$itemReadReady = $contentObj->closetags($itemReadReady);
 
 		# BIG FREAKING WARNING: This WILL NOT WORK if you have WP_DEBUG and WP_DEBUG_DISPLAY true and either your theme or plugins have bad functions on the save_post hook.
@@ -302,7 +302,7 @@ class PF_Readability {
 			//print_r($url . ' fails Readability.<br />');
 		}
 		if ($content != false){
-				$contentObj = new pf_htmlchecker($content);
+				$contentObj = pressforward('library.htmlchecker');
 				$content = $contentObj->closetags($content);
 		}
 

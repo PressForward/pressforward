@@ -149,7 +149,7 @@ function pf_feed_excerpt( $text ) {
 	array_push($words, '...');
 	$text = implode(' ', $words);
 
-	$contentObj = new pf_htmlchecker($text);
+	$contentObj = pressforward('library.htmlchecker');
 	$item_content = $contentObj->closetags($text);
 
 	return $text;
@@ -447,7 +447,7 @@ function pf_noms_filter( $text ) {
 	$text = apply_filters('the_content', $text);
 	$text = str_replace('\]\]\>', ']]&gt;', $text);
 	$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
-	$contentObj = new pf_htmlchecker($text);
+	$contentObj = pressforward('library.htmlchecker');
 	$text = $contentObj->closetags($text);
 	$text = strip_tags($text, '<p>');
 
@@ -477,7 +477,7 @@ function pf_noms_excerpt( $text ) {
 	$text = apply_filters('the_content', $text);
 	$text = str_replace('\]\]\>', ']]&gt;', $text);
 	$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
-	$contentObj = new pf_htmlchecker($text);
+	$contentObj = pressforward('library.htmlchecker');
 	$text = $contentObj->closetags($text);
 	$text = strip_tags($text, '<p>');
 

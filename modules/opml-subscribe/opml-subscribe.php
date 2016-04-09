@@ -201,12 +201,12 @@ class PF_OPML_Subscribe extends PF_Module {
 					$feed_obj->type = 'rss';
 				}
 				if(!empty($feed_obj->text)){
-					$contentObj = new pf_htmlchecker($feed_obj->text);
+					$contentObj = pressforward('library.htmlchecker');
 					$feed_obj->text = $contentObj->closetags($feed_obj->text);
 				}
 
 				if(!empty($feed_obj->title)){
-					$contentObj = new pf_htmlchecker($feed_obj->title);
+					$contentObj = pressforward('library.htmlchecker');
 					$feed_obj->title = $contentObj->closetags($feed_obj->title);
 				} else {
 					$feed_obj->title = $feed_obj->feedUrl;
