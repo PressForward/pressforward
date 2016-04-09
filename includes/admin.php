@@ -76,15 +76,6 @@ class PF_Admin {
 	 */
 	function register_pf_custom_menu_pages() {
 
-		add_submenu_page(
-			PF_MENU_SLUG,
-			__('All Content', 'pf'),
-			__('All Content', 'pf'),
-			get_option('pf_menu_all_content_access', pf_get_defining_capability_by_role('contributor')),
-			PF_MENU_SLUG,
-			array($this, 'display_reader_builder')
-		);
-
 
 
 		if ( $alert_count = The_Alert_Box::alert_count() ) {

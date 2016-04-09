@@ -12,6 +12,8 @@ use PressForward\Core\Admin\Tools;
 use PressForward\Core\Admin\Nominated;
 use PressForward\Core\Admin\AddFeeds;
 use PressForward\Core\Admin\FoldersMenu;
+use PressForward\Core\Admin\AllContent;
+use PressForward\Core\Admin\SubscribedFeeds;
 
 class AdminAreaServiceProvider extends ServiceProvider {
 
@@ -130,13 +132,25 @@ class AdminAreaServiceProvider extends ServiceProvider {
 			}
 		);
 		$container->share(
+			'admin.all_content',
+			function( $container ){
+				return new AllContent( $container->fetch( 'controller.users' )  );
+			}
+		);
+		$container->share(
+			'admin.subscribed_feeds',
+			function( $container ){
+				return new SubscribedFeeds( $container->fetch( 'controller.users' )  );
+			}
+		);
+		$container->share(
 			'admin.tools',
 			function( $container ){
 				return new Tools( $container->fetch( 'basename' ), $container->fetch( 'admin.templates' ) );
 			}
 		);
 		$container->share(
-			'admin.all_feeds',
+			'admin.add_feeds',
 			function( $container ){
 				return new AddFeeds( $container->fetch( 'controller.users' ) );
 			}

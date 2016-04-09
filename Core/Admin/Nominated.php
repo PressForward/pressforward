@@ -85,18 +85,18 @@ class Nominated implements HasActions {
             	<div class="list pf_container pf-nominated full<?php echo $extra_class; ?>">
             		<header id="app-banner">
             			<div class="title-span title">
-            				<?php pressforward()->form_of->the_page_headline('Nominated'); ?>
+            				<?php pressforward('controller.template_factory')->the_page_headline('Nominated'); ?>
             				<button class="btn btn-small" id="fullscreenfeed"> <?php  _e('Full Screen', 'pf');  ?> </button>
             			</div><!-- End title -->
-            				<?php pressforward()->admin->pf_search_template(); ?>
+            				<?php pressforward('admin.templates')->search_template(); ?>
             		</header><!-- End Header -->
 
-            		<?php pressforward()->admin->nav_bar('pf-review'); ?>
+            		<?php pressforward('admin.templates')->nav_bar('pf-review'); ?>
 
 
             		<div role="main">
-            			<?php $this->toolbox();	?>
-            			<?php $this->folderbox(); ?>
+            			<?php pressforward('admin.templates')->the_side_menu();	?>
+            			<?php pressforward('schema.folders')->folderbox(); ?>
             			<div id="entries">
             				<?php echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';  ?>
             				<div id="errors">
@@ -162,13 +162,13 @@ class Nominated implements HasActions {
             				$nom_args['post_parent'] = $_GET['feed'];
             			} elseif (isset($_GET['folder'])){
             				$parents_in_folder = new WP_Query( array(
-            					'post_type' => pressforward()->pf_feeds->post_type,
+            					'post_type' => pressforward('schema.feeds')->post_type,
             					'fields'=> 'ids',
             					'update_post_term_cache' => false,
             					'update_post_meta_cache' => false,
             					'tax_query' => array(
             						array(
-            							'taxonomy' => pressforward()->pf_feeds->tag_taxonomy,
+            							'taxonomy' => pressforward('schema.feeds')->tag_taxonomy,
             							'field'	=> 'term_id',
             							'terms'	=> $_GET['folder']
             						),
