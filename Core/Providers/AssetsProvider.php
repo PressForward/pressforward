@@ -24,7 +24,7 @@ class AssetsProvider extends ServiceProvider {
 
     protected function add_assets( Assets $assets ){
         //$this->container =
-        $slug = $this->container->fetch( 'slug' );
+        $slug = 'pf';
 		$url  = $this->container->fetch( 'url' );
 		$debug = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG;
 		if ( $debug ) {
@@ -32,6 +32,15 @@ class AssetsProvider extends ServiceProvider {
 		}
 
         $provider = $this;
+
+		$assets->register_style(array(
+			'type'	=>	'admin',
+			'condition'	=> function($hook) use ($provider){
+								return true;
+							},
+			'handle'	=> $slug.'-alert-styles',
+			'src'		=> 'assets/css/alert-styles'
+		));
 
 		$assets->register_style(array(
 			'type'	=>	'admin',
@@ -94,27 +103,34 @@ class AssetsProvider extends ServiceProvider {
 			'src'		=> 'assets/css/pf-subscribed'
 		));
 
-		$assets->register_style(array(
-			'type'	=>	'admin',
-			'condition'	=> function($hook) use ($provider){
-								return true;
-							},
-			'handle'	=> $slug.'-alert-styles',
-			'src'		=> 'assets/css/alert-styles'
-		));
 
 		# Scripts
 
 
-		$assets->register_script(
-			array(
-				'type'	=>	'admin',
-				'condition'	=> function(){ return true; },
-				'handle'	=>	$slug.'-jq-fullscreen',
-				'src'		=>	'lib/jquery-fullscreen/jquery.fullscreen',
-				'deps'		=>	array( 'jquery' )
-			)
-		);
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-heartbeat',
+			'src'		=>	'assets/js/pf-heartbeat',
+			'deps'		=>	array( 'heartbeat', 'jquery-ui-progressbar', 'jquery' )
+		) );
+
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-settings-tools',
+			'src'		=>	'assets/js/settings-tools',
+			'deps'		=>	array( 'jquery' )
+		) );
+
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-tinysort',
+			'src'		=>	'lib/jquery-tinysort/jquery.tinysort',
+			'deps'		=>	array( 'jquery' )
+		) );
+
 
 		$assets->register_script(
 			array(
@@ -132,6 +148,16 @@ class AssetsProvider extends ServiceProvider {
 				'condition'	=> function(){ return true; },
 				'handle'	=>	$slug.'-tools',
 				'src'		=>	'assets/js/tools-imp',
+				'deps'		=>	array( 'jquery', $slug.'-twitter-bootstrap' )
+			)
+		);
+
+		$assets->register_script(
+			array(
+				'type'	=>	'admin',
+				'condition'	=> function(){ return true; },
+				'handle'	=>	$slug.'-jq-fullscreen',
+				'src'		=>	'lib/jquery-fullscreen/jquery.fullscreen',
 				'deps'		=>	array( 'jquery' )
 			)
 		);
@@ -139,9 +165,9 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_script( array(
 			'type'	=>	'admin',
 			'condition'	=> function(){ return true; },
-			'handle'	=>	$slug.'-settings-tools',
-			'src'		=>	'assets/js/settings-tools',
-			'deps'		=>	array( 'jquery' )
+			'handle'	=>	$slug.'-sort-imp',
+			'src'		=>	'assets/js/sort-imp',
+			'deps'		=>	array( $slug . '-tinysort', $slug . '-twitter-bootstrap', $slug . '-jq-fullscreen' )
 		) );
 
 		$assets->register_script( array(
@@ -149,7 +175,7 @@ class AssetsProvider extends ServiceProvider {
 			'condition'	=> function(){ return true; },
 			'handle'	=>	$slug.'-views',
 			'src'		=>	'assets/js/views',
-			'deps'		=>	array( PF_SLUG . '-twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide'  )
+			'deps'		=>	array( $slug . '-twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide'  )
 		) );
 
 		$assets->register_script( array(
@@ -157,7 +183,15 @@ class AssetsProvider extends ServiceProvider {
 			'condition'	=> function(){ return true; },
 			'handle'	=>	$slug.'-readability-imp',
 			'src'		=>	'assets/js/readability-imp',
-			'deps'		=>	array( PF_SLUG . '-twitter-bootstrap', 'jquery', PF_SLUG . '-views' )
+			'deps'		=>	array( $slug . '-twitter-bootstrap', 'jquery', $slug . '-views' )
+		) );
+
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-nomination-imp',
+			'src'		=>	'assets/js/nomination-imp',
+			'deps'		=>	array( 'jquery' )
 		) );
 
 		$assets->register_script( array(
@@ -165,19 +199,12 @@ class AssetsProvider extends ServiceProvider {
 			'condition'	=> function(){ return true; },
 			'handle'	=>	$slug.'-infiniscroll',
 			'src'		=>	'lib/jquery.infinitescroll',
-			'deps'		=>	array( 'jquery', PF_SLUG . '-views', PF_SLUG . '-readability-imp', 'jquery' )
+			'deps'		=>	array( 'jquery', $slug . '-views', $slug . '-readability-imp', 'jquery' )
 		) );
 
-		$assets->register_script( array(
-			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
-			'handle'	=>	$slug.'-scrollimp',
-			'src'		=>	'assets/js/scroll-imp',
-			'deps'		=>	array( PF_SLUG . '-infiniscroll', 'pf-relationships', PF_SLUG . '-views' )
-		) );
 
 		$assets->register_script( array(
-			'type'	=>	'admin',
+			'type'		=>	'admin',
 			'condition'	=> function(){ return true; },
 			'handle'	=>	$slug.'-relationships',
 			'src'		=>	'assets/js/relationships',
@@ -187,9 +214,9 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_script( array(
 			'type'	=>	'admin',
 			'condition'	=> function(){ return true; },
-			'handle'	=>	$slug.'-tinysort',
-			'src'		=>	'lib/jquery-tinysort/jquery.tinysort',
-			'deps'		=>	array( 'jquery' )
+			'handle'	=>	$slug.'-scrollimp',
+			'src'		=>	'assets/js/scroll-imp',
+			'deps'		=>	array( $slug . '-infiniscroll', 'pf-relationships', $slug . '-views' )
 		) );
 
 		$assets->register_script( array(
@@ -198,14 +225,6 @@ class AssetsProvider extends ServiceProvider {
 			'handle'	=>	$slug.'-media-query-imp',
 			'src'		=>	'assets/js/media-query-imp',
 			'deps'		=>	 array( 'jquery', 'thickbox', 'media-upload' )
-		) );
-
-		$assets->register_script( array(
-			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
-			'handle'	=>	$slug.'-sort-imp',
-			'src'		=>	'assets/js/sort-imp',
-			'deps'		=>	array( PF_SLUG . '-tinysort', PF_SLUG . '-twitter-bootstrap', PF_SLUG . '-jq-fullscreen' )
 		) );
 
 		$assets->register_script( array(
@@ -227,17 +246,17 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_script( array(
 			'type'	=>	'admin',
 			'condition'	=> function(){ return true; },
-			'handle'	=>	$slug.'-tools',
-			'src'		=>	'assets/js/tools-imp',
-			'deps'		=>	array( 'jquery' )
+			'handle'	=>	'feed_control_script',
+			'src'		=>	'assets/js/feeds_control',
+			'deps'		=>	array( 'jquery', $slug.'-settings-tools', $slug . '-twitter-bootstrap' )
 		) );
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
 			'condition'	=> function(){ return true; },
-			'handle'	=>	$slug.'-heartbeat',
-			'src'		=>	'assets/js/pf-heartbeat',
-			'deps'		=>	array( 'heartbeat', 'jquery-ui-progressbar', 'jquery' )
+			'handle'	=>	$slug.'-tools',
+			'src'		=>	'assets/js/tools-imp',
+			'deps'		=>	array( 'jquery' )
 		) );
 
 		$assets->register_script( array(

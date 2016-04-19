@@ -1175,7 +1175,7 @@ class Feeds {
 			return;
 
 
-		wp_enqueue_script( 'feed_control_script', PF_URL . '/assets/js/feeds_control.js', array('jquery', PF_SLUG . '-twitter-bootstrap'), PF_VERSION );
+		#wp_enqueue_script( 'feed_control_script', PF_URL . '/assets/js/feeds_control.js', array('jquery', PF_SLUG . '-twitter-bootstrap'), PF_VERSION );
 	}
 
 	function admin_enqueue_edit_feed_scripts() {
