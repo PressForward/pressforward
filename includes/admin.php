@@ -293,43 +293,44 @@ class PF_Admin {
 			//wp_register_style( PF_SLUG . '-style', PF_URL . 'assets/css/style.css');
 
 			//wp_register_style( PF_SLUG . '-susy-style', PF_URL . 'assets/css/susy.css');
-			wp_register_style( PF_SLUG . '-reset-style', PF_URL . 'assets/css/reset.css');
+			#wp_register_style( PF_SLUG . '-reset-style', PF_URL . 'assets/css/reset.css');
 			//wp_register_style( PF_SLUG . '-settings-style', PF_URL . 'assets/css/pf-settings.css');
 
 			// Dependencies
-			wp_register_style( PF_SLUG . '-bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
-			wp_register_style( PF_SLUG . '-bootstrap-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
-			wp_register_script(PF_SLUG . '-twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
+			#wp_register_style( PF_SLUG . '-bootstrap-responsive-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap-responsive.css');
+			#wp_register_style( PF_SLUG . '-bootstrap-style', PF_URL . 'lib/twitter-bootstrap/css/bootstrap.css');
+
+			#wp_register_script(PF_SLUG . '-twitter-bootstrap', PF_URL . 'lib/twitter-bootstrap/js/bootstrap.js' , array( 'jquery' ));
 
 
 			//SASS-generated styles
 			//wp_register_style( PF_SLUG . 'sass-settings-style', PF_URL . 'assets/css/pf-settings.css');
-			wp_register_style( PF_SLUG . '-style', PF_URL . 'assets/css/pressforward.css', array( PF_SLUG . '-bootstrap-style', PF_SLUG . '-bootstrap-responsive-style' ) );
-			wp_register_style( PF_SLUG . '-settings-style', PF_URL . 'assets/css/pf-settings.css' );
-			wp_register_style( PF_SLUG . '-subscribed-styles', PF_URL . 'assets/css/pf-subscribed.css' );
+			# wp_register_style( PF_SLUG . '-style', PF_URL . 'assets/css/pressforward.css', array( PF_SLUG . '-bootstrap-style', PF_SLUG . '-bootstrap-responsive-style' ) );
+			# wp_register_style( PF_SLUG . '-settings-style', PF_URL . 'assets/css/pf-settings.css' );
+			# wp_register_style( PF_SLUG . '-subscribed-styles', PF_URL . 'assets/css/pf-subscribed.css' );
 
 			//wp_register_style( PF_SLUG . '-responsive-style', PF_URL . 'assets/css/pf-responsive.css', array(PF_SLUG . '-reset-style', PF_SLUG . '-style', PF_SLUG . '-bootstrap-style', PF_SLUG . '-susy-style'));
-			wp_register_style('pf-alert-styles', PF_URL . 'assets/css/alert-styles.css');
-			wp_enqueue_style( PF_SLUG . '-alert-styles' );
+			# wp_register_style('pf-alert-styles', PF_URL . 'assets/css/alert-styles.css');
+			# wp_enqueue_style( PF_SLUG . '-alert-styles' );
 
-			wp_register_script(PF_SLUG . '-views', PF_URL . 'assets/js/views.js', array( PF_SLUG . '-twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide'  ));
-			wp_register_script(PF_SLUG . '-readability-imp', PF_URL . 'assets/js/readability-imp.js', array( PF_SLUG . '-twitter-bootstrap', 'jquery', PF_SLUG . '-views' ));
-			wp_register_script(PF_SLUG . '-infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery', PF_SLUG . '-views', PF_SLUG . '-readability-imp', 'jquery' ));
-			wp_register_script(PF_SLUG . '-scrollimp', PF_URL . 'assets/js/scroll-imp.js', array( PF_SLUG . '-infiniscroll', 'pf-relationships', PF_SLUG . '-views'));
-			wp_register_script('pf-relationships', PF_URL . 'assets/js/relationships.js', array( 'jquery' ));
-			wp_register_script(PF_SLUG . '-tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
-			wp_register_script(PF_SLUG . '-media-query-imp', PF_URL . 'assets/js/media-query-imp.js', array( 'jquery', 'thickbox', 'media-upload' ));
-			wp_register_script(PF_SLUG . '-sort-imp', PF_URL . 'assets/js/sort-imp.js', array( PF_SLUG . '-tinysort', PF_SLUG . '-twitter-bootstrap', PF_SLUG . '-jq-fullscreen' ));
-			wp_register_script( PF_SLUG . '-quick-edit', PF_URL . 'assets/js/quick-edit.js', array( 'jquery' ) );
-			wp_register_script( PF_SLUG . '-settings-tools', PF_URL . 'assets/js/settings-tools.js', array( 'jquery' ) );
-			wp_register_script( PF_SLUG . '-tools', PF_URL . 'assets/js/tools-imp.js', array( 'jquery' ) );
+			# wp_register_script(PF_SLUG . '-views', PF_URL . 'assets/js/views.js', array( PF_SLUG . '-twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide'  ));
+			# wp_register_script(PF_SLUG . '-readability-imp', PF_URL . 'assets/js/readability-imp.js', array( PF_SLUG . '-twitter-bootstrap', 'jquery', PF_SLUG . '-views' ));
+			# wp_register_script(PF_SLUG . '-infiniscroll', PF_URL . 'lib/jquery.infinitescroll.js', array( 'jquery', PF_SLUG . '-views', PF_SLUG . '-readability-imp', 'jquery' ));
+			# wp_register_script(PF_SLUG . '-scrollimp', PF_URL . 'assets/js/scroll-imp.js', array( PF_SLUG . '-infiniscroll', 'pf-relationships', PF_SLUG . '-views'));
+			# wp_register_script('pf-relationships', PF_URL . 'assets/js/relationships.js', array( 'jquery' ));
+			# wp_register_script(PF_SLUG . '-tinysort', PF_URL . 'lib/jquery-tinysort/jquery.tinysort.js', array( 'jquery' ));
+			# wp_register_script(PF_SLUG . '-media-query-imp', PF_URL . 'assets/js/media-query-imp.js', array( 'jquery', 'thickbox', 'media-upload' ));
+			# wp_register_script(PF_SLUG . '-sort-imp', PF_URL . 'assets/js/sort-imp.js', array( PF_SLUG . '-tinysort', PF_SLUG . '-twitter-bootstrap', PF_SLUG . '-jq-fullscreen' ));
+			# wp_register_script( PF_SLUG . '-quick-edit', PF_URL . 'assets/js/quick-edit.js', array( 'jquery' ) );
+			# wp_register_script( PF_SLUG . '-settings-tools', PF_URL . 'assets/js/settings-tools.js', array( 'jquery' ) );
+			# wp_register_script( PF_SLUG . '-tools', PF_URL . 'assets/js/tools-imp.js', array( 'jquery' ) );
 
 
 		if ( false != pressforward()->form_of->is_a_pf_page() ){
 			//var_dump('heartbeat'); die();
 			wp_enqueue_script( 'heartbeat' );
 			wp_enqueue_script( 'jquery-ui-progressbar' );
-			wp_enqueue_script( PF_SLUG . '-heartbeat', PF_URL . 'assets/js/pf-heartbeat.js', array( 'heartbeat', 'jquery-ui-progressbar', 'jquery' ) );
+			# wp_enqueue_script( PF_SLUG . '-heartbeat', PF_URL . 'assets/js/pf-heartbeat.js', array( 'heartbeat', 'jquery-ui-progressbar', 'jquery' ) );
 
 		}
 		//print_r($hook);
@@ -413,7 +414,7 @@ class PF_Admin {
 		}
 
 		if (('nomination') == get_post_type()) {
-			wp_enqueue_script(PF_SLUG . '-add-nom-imp', PF_URL . 'assets/js/add-nom-imp.js', array( 'jquery' ));
+			# wp_enqueue_script(PF_SLUG . '-add-nom-imp', PF_URL . 'assets/js/add-nom-imp.js', array( 'jquery' ));
 		}
 
 		if ( 'edit.php' === $hook && 'pf_feed' === get_post_type() ) {

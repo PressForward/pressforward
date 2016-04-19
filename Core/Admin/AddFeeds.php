@@ -61,9 +61,9 @@ class AddFeeds implements HasActions, HasFilters {
                 'form_head'		 => $form_head,
                 'settings_field' => PF_SLUG . '_feedlist_group'
             );
-        echo pressforward('admin.templates')->get_view(pressforward( 'controller.template_factory' )->build_path(array('settings','settings-page'), false), $vars);
+        pressforward('admin.templates')->the_view_for(pressforward( 'controller.template_factory' )->build_path(array('settings','settings-page'), false), $vars);
 
-        return;
+        return '';
     }
 
     public function set_permitted_tools_tabs( $permitted_tabs ){

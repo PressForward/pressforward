@@ -85,6 +85,25 @@ class AssetsProvider extends ServiceProvider {
 			'src'		=> 'assets/css/pf-settings'
 		));
 
+		$assets->register_style(array(
+			'type'	=>	'admin',
+			'condition'	=> function($hook) use ($provider){
+								return true;
+							},
+			'handle'	=> $slug.'-subscribed-styles',
+			'src'		=> 'assets/css/pf-subscribed'
+		));
+
+		$assets->register_style(array(
+			'type'	=>	'admin',
+			'condition'	=> function($hook) use ($provider){
+								return true;
+							},
+			'handle'	=> $slug.'-alert-styles',
+			'src'		=> 'assets/css/alert-styles'
+		));
+
+		# Scripts
 
 
 		$assets->register_script(
@@ -125,7 +144,125 @@ class AssetsProvider extends ServiceProvider {
 			'deps'		=>	array( 'jquery' )
 		) );
 
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-views',
+			'src'		=>	'assets/js/views',
+			'deps'		=>	array( PF_SLUG . '-twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide'  )
+		) );
 
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-readability-imp',
+			'src'		=>	'assets/js/readability-imp',
+			'deps'		=>	array( PF_SLUG . '-twitter-bootstrap', 'jquery', PF_SLUG . '-views' )
+		) );
+
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-infiniscroll',
+			'src'		=>	'lib/jquery.infinitescroll',
+			'deps'		=>	array( 'jquery', PF_SLUG . '-views', PF_SLUG . '-readability-imp', 'jquery' )
+		) );
+
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-scrollimp',
+			'src'		=>	'assets/js/scroll-imp',
+			'deps'		=>	array( PF_SLUG . '-infiniscroll', 'pf-relationships', PF_SLUG . '-views' )
+		) );
+
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-relationships',
+			'src'		=>	'assets/js/relationships',
+			'deps'		=>	array( 'jquery' )
+		) );
+
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-tinysort',
+			'src'		=>	'lib/jquery-tinysort/jquery.tinysort',
+			'deps'		=>	array( 'jquery' )
+		) );
+
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-media-query-imp',
+			'src'		=>	'assets/js/media-query-imp',
+			'deps'		=>	 array( 'jquery', 'thickbox', 'media-upload' )
+		) );
+
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-sort-imp',
+			'src'		=>	'assets/js/sort-imp',
+			'deps'		=>	array( PF_SLUG . '-tinysort', PF_SLUG . '-twitter-bootstrap', PF_SLUG . '-jq-fullscreen' )
+		) );
+
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-quick-edit',
+			'src'		=>	'assets/js/quick-edit',
+			'deps'		=>	array( 'jquery' )
+		) );
+
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-settings-tools',
+			'src'		=>	'assets/js/settings-tools',
+			'deps'		=>	array( 'jquery' )
+		) );
+
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-tools',
+			'src'		=>	'assets/js/tools-imp',
+			'deps'		=>	array( 'jquery' )
+		) );
+
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-heartbeat',
+			'src'		=>	'assets/js/pf-heartbeat',
+			'deps'		=>	array( 'heartbeat', 'jquery-ui-progressbar', 'jquery' )
+		) );
+
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-send-to-draft-imp',
+			'src'		=>	'assets/js/send-to-draft-imp',
+			'deps'		=>	array( 'jquery' )
+		) );
+
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-archive-nom-imp',
+			'src'		=>	'assets/js/nom-archive-imp',
+			'deps'		=>	array( 'jquery' )
+		) );
+
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function(){ return true; },
+			'handle'	=>	$slug.'-add-nom-imp',
+			'src'		=>	'assets/js/add-nom-imp',
+			'deps'		=>	array( 'jquery' )
+		) );
 		//var_dump($assets); die();
 	}
 
