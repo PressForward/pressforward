@@ -101,25 +101,6 @@ class PF_Admin {
 			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')),
 			'edit.php?post_type=' . pressforward()->pf_feeds->post_type
 		);
-
-		// Options page is accessible to contributors, setting visibility controlled by tab
-		add_submenu_page(
-			PF_MENU_SLUG,
-			__('Preferences', 'pf'), // @todo sprintf
-			__('Preferences', 'pf'),
-			get_option('pf_menu_all_content_access', pf_get_defining_capability_by_role('contributor')),
-			PF_SLUG . '-options',
-			array($this, 'display_options_builder')
-		);
-
-		add_submenu_page(
-			PF_MENU_SLUG,
-			__('Tools', 'pf'),
-			__('Tools', 'pf'),
-			get_option('pf_menu_tools_access', pf_get_defining_capability_by_role('contributor')),
-			PF_SLUG . '-tools',
-			array($this, 'display_tools_builder')
-		);
 /**
 		add_submenu_page(
 			PF_MENU_SLUG,

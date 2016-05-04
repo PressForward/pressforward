@@ -24,7 +24,9 @@ define( 'PF_FILE_PATH', PF_ROOT . '/' . basename(__FILE__) );
 define( 'PF_URL', plugins_url('/', __FILE__) );
 define( 'PF_VERSION', '3.8' );
 
+//Out-of-namespace dependencies
 require 'class-SplClassLoader.php';
+require 'Libraries/AlertBox/The_Alert_Box.php';
 //Files included to maintain back-compat
 require 'includes/functions.php';
 require 'includes/relationships.php';
