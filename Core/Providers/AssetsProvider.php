@@ -117,7 +117,10 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								$exclusions = array('toplevel_page_pf-menu');
+								return $provider->check_hook_for_pressforward_string($hook, $exclusions);
+							},
 			'handle'	=>	$slug.'-settings-tools',
 			'src'		=>	'assets/js/settings-tools',
 			'deps'		=>	array( 'jquery' )
@@ -145,7 +148,10 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'	=>	'admin',
-				'condition'	=> function(){ return true; },
+				'condition'	=> function($hook) use ($provider){
+									$exclusions = array('toplevel_page_pf-menu');
+									return $provider->check_hook_for_pressforward_string($hook, $exclusions);
+								},
 				'handle'	=>	$slug.'-tools',
 				'src'		=>	'assets/js/tools-imp',
 				'deps'		=>	array( 'jquery', $slug.'-twitter-bootstrap' )
@@ -221,7 +227,10 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								$exclusions = array('toplevel_page_pf-menu');
+								return $provider->check_hook_for_pressforward_string($hook, $exclusions);
+							},
 			'handle'	=>	$slug.'-media-query-imp',
 			'src'		=>	'assets/js/media-query-imp',
 			'deps'		=>	 array( 'jquery', 'thickbox', 'media-upload' )
@@ -229,7 +238,10 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								$exclusions = array('toplevel_page_pf-menu');
+								return $provider->check_hook_for_pressforward_string($hook, $exclusions);
+							},
 			'handle'	=>	$slug.'-quick-edit',
 			'src'		=>	'assets/js/quick-edit',
 			'deps'		=>	array( 'jquery' )
@@ -237,7 +249,10 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								$exclusions = array('toplevel_page_pf-menu');
+								return $provider->check_hook_for_pressforward_string($hook, $exclusions);
+							},
 			'handle'	=>	$slug.'-settings-tools',
 			'src'		=>	'assets/js/settings-tools',
 			'deps'		=>	array( 'jquery' )
@@ -245,7 +260,10 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								$exclusions = array('toplevel_page_pf-menu');
+								return $provider->check_hook_for_pressforward_string($hook, $exclusions);
+							},
 			'handle'	=>	'feed_control_script',
 			'src'		=>	'assets/js/feeds_control',
 			'deps'		=>	array( 'jquery', $slug.'-settings-tools', $slug . '-twitter-bootstrap' )
@@ -253,7 +271,10 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								$exclusions = array('toplevel_page_pf-menu');
+								return $provider->check_hook_for_pressforward_string($hook, $exclusions);
+							},
 			'handle'	=>	$slug.'-tools',
 			'src'		=>	'assets/js/tools-imp',
 			'deps'		=>	array( 'jquery' )

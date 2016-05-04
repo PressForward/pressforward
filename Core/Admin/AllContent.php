@@ -40,7 +40,7 @@ class AllContent implements HasActions {
     }
 
     public function display_reader_builder(){
-        pressforward('admin.menu')->display_reader_builder();
+        //Provided in pressforward('admin.menu')->display_reader_builder();
     }
 
 }
