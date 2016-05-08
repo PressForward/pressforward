@@ -36,16 +36,11 @@ class PF_Admin {
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
 		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
 		add_action( 'wp_ajax_simple_nom_to_draft', array( $this, 'simple_nom_to_draft') );
-		add_action( 'wp_ajax_assemble_feed_for_pull', array( $this, 'trigger_source_data') );
-		add_action( 'wp_ajax_disassemble_item', array( $this, 'trigger_item_disassembly' ) );
 		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
-		add_action( 'wp_ajax_make_it_readable', array( $this, 'make_it_readable') );
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
 		add_action( 'wp_ajax_pf_ajax_get_comments', array( $this, 'pf_ajax_get_comments') );
 		add_action( 'wp_ajax_pf_ajax_thing_deleter', array( $this, 'pf_ajax_thing_deleter') );
 		add_action( 'wp_ajax_pf_ajax_retain_display_setting', array( $this, 'pf_ajax_retain_display_setting' ) );
-		add_action( 'wp_ajax_pf_ajax_move_to_archive', array( $this, 'pf_ajax_move_to_archive' ) );
-		add_action( 'wp_ajax_pf_ajax_move_out_of_archive', array( $this, 'pf_ajax_move_out_of_archive' ) );
 		add_action( 'wp_ajax_pf_ajax_user_setting', array( $this, 'pf_ajax_user_setting' ));
 		add_action( 'init', array( $this, 'register_feed_item_removed_status') );
 
@@ -677,48 +672,6 @@ class PF_Admin {
 
 	}
 
-	public function search_the_posts($s, $post_type){
-
-		$args = array(
-			's'			=>  $s,
-			'post_type' => $post_type
-
-		);
-
-		$q = WP_Query($args);
-		return $q;
-
-	}
-
-
-	public function pf_ajax_move_to_archive(){
-		$item_post_id = $_POST['item_post_id'];
-		$nom_id = $_POST['nom_id'];
-		update_post_meta($nom_id, 'pf_archive', 1);
-		update_post_meta($item_post_id, 'pf_archive', 1);
-		$check = wp_update_post( array(
-					'ID'			=>	$item_post_id,
-					'post_status'	=>	'removed_feed_item'
-				)
-			);
-		pf_log($check);
-		die();
-	}
-
-	public function pf_ajax_move_out_of_archive(){
-		$item_post_id = $_POST['item_post_id'];
-		$nom_id = $_POST['nom_id'];
-		update_post_meta($nom_id, 'pf_archive', 'false');
-		update_post_meta($item_post_id, 'pf_archive', 'false');
-		$check = wp_update_post( array(
-					'ID'			=>	$item_post_id,
-					'post_status'	=>	'publish'
-				)
-			);
-		pf_log($check);
-		die();
-	}
-
     public function dead_post_status(){
         register_post_status('removed_feed_item', array(
             'label'                 =>     _x('Removed Feed Item', 'pf'),
@@ -1271,27 +1224,11 @@ class PF_Admin {
 		die();
 	}
 
-	public function trigger_source_data() {
-		$message = pressforward()->pf_retrieve->trigger_source_data(true);
-		wp_send_json($message);
-		die();
-	}
-
-	public function trigger_item_disassembly() {
-		$message = pressforward()->pf_feed_items->ajax_feed_items_disassembler();
-		#wp_send_json($message);
-		die();
-	}
-
 	public function reset_feed() {
 		pressforward()->pf_feed_items->reset_feed();
 		die();
 	}
 
-	public function make_it_readable() {
-		pressforward()->readability->make_it_readable();
-		die();
-	}
 
 	public function archive_a_nom() {
 		pressforward()->nominations->archive_a_nom();

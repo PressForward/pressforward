@@ -13,6 +13,8 @@ use PressForward\Controllers\PF_to_WP_Posts as PF_to_WP_Posts;
 use PressForward\Controllers\PF_Advancement as PF_Advancement;
 use PressForward\Controllers\Metas;
 use PressForward\Controllers\PF_Loops;
+use PressForward\Controllers\PF_Readability;
+use PressForward\Controllers\HTTPTools;
 
 class ControllerServiceProvider extends ServiceProvider {
 
@@ -35,6 +37,13 @@ class ControllerServiceProvider extends ServiceProvider {
 		);
 
 		$container->share(
+			'controller.http_tools',
+			function( $container ){
+				return new HTTPTools( $container->fetch('library.url_resolver') );
+			}
+		);
+
+		$container->share(
 			'controller.users',
 			function( $container ){
 				return new Users( $container->fetch('controller.metas') );
@@ -45,6 +54,13 @@ class ControllerServiceProvider extends ServiceProvider {
 			'controller.template_factory',
 			function( ){
 				return new Template_Factory;
+			}
+		);
+
+		$container->share(
+			'controller.readability',
+			function( ){
+				return new PF_Readability;
 			}
 		);
 

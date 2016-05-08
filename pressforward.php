@@ -26,6 +26,8 @@ define( 'PF_VERSION', '3.8' );
 
 //Out-of-namespace dependencies
 require 'class-SplClassLoader.php';
+require 'Libraries/URLResolver/URLResolver.php';
+require 'Libraries/FiveFiltersReadability/Readability.php';
 require 'Libraries/AlertBox/The_Alert_Box.php';
 //Files included to maintain back-compat
 require 'includes/functions.php';
