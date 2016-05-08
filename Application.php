@@ -8,6 +8,8 @@ namespace PressForward;
 
 use PressForward\lib\WPUpdatePHP as PHPChecker;
 
+ # @TODO Move this forward sometime before release. 
+
 $PHPCheck = new PHPChecker( '5.3.0', 'PressForward' );
 
 
