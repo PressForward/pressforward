@@ -32,6 +32,10 @@ class ItemsAJAX implements HasActions {
 				'hook' => 'wp_ajax_disassemble_item',
 				'method' => 'trigger_item_disassembly',
 			),
+			array(
+				'hook' 		=> 'wp_ajax_pf_ajax_thing_deleter'
+				'method'	=> 'pf_ajax_thing_deleter'
+			)
 		);
 	}
 
@@ -70,6 +74,32 @@ class ItemsAJAX implements HasActions {
 		);
 		wp_send_json($message);
 		die();
+	}
+
+	function pf_ajax_thing_deleter() {
+		ob_start();
+		if(isset($_POST['post_id'])){
+			$id = $_POST['post_id'];
+		} else {
+			self::pf_bad_call('pf_ajax_thing_deleter','Option not sent');
+		}
+		if(isset($_POST['made_readable'])){
+			$read_status = $_POST['made_readable'];
+		} else { $read_status = false; }
+		$returned = pf_delete_item_tree( $id, true );
+		var_dump($returned);
+		$vd = ob_get_clean();
+		ob_end_clean();
+		$response = array(
+		   'what'=>'pressforward',
+		   'action'=>'pf_ajax_thing_deleter',
+		   'id'=>$id,
+		   'data'=>(string)$vd
+		);
+		$xmlResponse = new WP_Ajax_Response($response);
+		$xmlResponse->send();
+		die();
+
 	}
 
 

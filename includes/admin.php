@@ -39,7 +39,6 @@ class PF_Admin {
 		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
 		add_action( 'wp_ajax_pf_ajax_get_comments', array( $this, 'pf_ajax_get_comments') );
-		add_action( 'wp_ajax_pf_ajax_thing_deleter', array( $this, 'pf_ajax_thing_deleter') );
 		add_action( 'wp_ajax_pf_ajax_retain_display_setting', array( $this, 'pf_ajax_retain_display_setting' ) );
 		add_action( 'wp_ajax_pf_ajax_user_setting', array( $this, 'pf_ajax_user_setting' ));
 		add_action( 'init', array( $this, 'register_feed_item_removed_status') );
@@ -747,32 +746,6 @@ class PF_Admin {
 		$xmlResponse->send();
 		ob_end_clean();
 		die();
-	}
-
-	function pf_ajax_thing_deleter() {
-		ob_start();
-		if(isset($_POST['post_id'])){
-			$id = $_POST['post_id'];
-		} else {
-			self::pf_bad_call('pf_ajax_thing_deleter','Option not sent');
-		}
-		if(isset($_POST['made_readable'])){
-			$read_status = $_POST['made_readable'];
-		} else { $read_status = false; }
-		$returned = pf_delete_item_tree( $id, true );
-		var_dump($returned);
-		$vd = ob_get_clean();
-		ob_end_clean();
-		$response = array(
-		   'what'=>'pressforward',
-		   'action'=>'pf_ajax_thing_deleter',
-		   'id'=>$id,
-		   'data'=>(string)$vd
-		);
-		$xmlResponse = new WP_Ajax_Response($response);
-		$xmlResponse->send();
-		die();
-
 	}
 
 	function pf_ajax_retain_display_setting() {
