@@ -1,7 +1,7 @@
 <?php
 namespace PressForward\Core\Admin;
 use Intraxia\Jaxion\Contract\Core\HasActions;
-
+use Intraxia\Jaxion\Contract\Core\HasFilters;
 
 use PressForward\Interfaces\SystemUsers;
 

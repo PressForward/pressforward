@@ -33,7 +33,7 @@ class ItemsAJAX implements HasActions {
 				'method' => 'trigger_item_disassembly',
 			),
 			array(
-				'hook' 		=> 'wp_ajax_pf_ajax_thing_deleter'
+				'hook' 		=> 'wp_ajax_pf_ajax_thing_deleter',
 				'method'	=> 'pf_ajax_thing_deleter'
 			)
 		);
