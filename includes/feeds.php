@@ -22,7 +22,7 @@
 class PF_Feeds_Schema {
 	#var $post_type;
 	#var $tag_taxonomy;
-	
+
 	private function __construct() {
 		$this->post_type = 'pf_feed';
 		$this->tag_taxonomy = 'pf_feed_category';
@@ -267,7 +267,7 @@ class PF_Feeds_Schema {
 	*/
 	public function count_feed_items_collected( $parent_id, $perm = '' ){
 		global $wpdb;
-		$type = pressforward()->get_feed_item_post_type();
+		$type = pressforward('schema.feed_item')->post_type;
 		if ( ! post_type_exists( $type ) )
 			return new stdClass;
 

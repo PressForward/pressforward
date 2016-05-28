@@ -254,7 +254,7 @@ class Feeds {
 	*/
 	public function count_feed_items_collected( $parent_id, $perm = '' ){
 		global $wpdb;
-		$type = pressforward()->get_feed_item_post_type();
+		$type = pressforward('schema.feed_item')->post_type;
 		if ( ! post_type_exists( $type ) )
 			return new stdClass;
 
