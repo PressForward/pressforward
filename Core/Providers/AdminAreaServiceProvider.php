@@ -40,7 +40,7 @@ class AdminAreaServiceProvider extends ServiceProvider {
 		$container->share(
 			'admin.subscribed_feeds',
 			function( $container ){
-				return new SubscribedFeeds( $container->fetch( 'controller.users' ), $container->fetch( 'library.alertbox' )  );
+				return new SubscribedFeeds( $container->fetch( 'controller.users' ), $container->fetch( 'library.alertbox' ), $container->fetch( 'controller.metas' )  );
 			}
 		);
 		$container->share(

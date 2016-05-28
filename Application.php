@@ -8,6 +8,8 @@ namespace PressForward;
 
 use PressForward\lib\WPUpdatePHP as PHPChecker;
 
+ # @TODO Move this forward sometime before release.
+
 $PHPCheck = new PHPChecker( '5.3.0', 'PressForward' );
 
 
@@ -38,6 +40,7 @@ class Application extends JaxionCore {
 		'PressForward\Core\Providers\AdminAreaServiceProvider',
 		'PressForward\Core\Providers\PreferencesServiceProvider',
 		'PressForward\Core\Providers\ModulesProvider',
+		'PressForward\Core\Providers\AJAXServiceProvider'
 //		'PressForward\Core\Providers\CoreServiceProvider',
 //		'PressForward\Core\Providers\EmbedServiceProvider',
 //		'PressForward\Core\Providers\RouterServiceProvider',

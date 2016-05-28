@@ -8,6 +8,7 @@ use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 
 use PressForward\Core\Utility\Forward_Tools;
 use PressForward\Core\Utility\Relate;
+use PressForward\Core\Utility\Retrieval;
 
 class UtilityProvider extends ServiceProvider {
 
@@ -33,6 +34,13 @@ class UtilityProvider extends ServiceProvider {
 									$container->fetch('controller.metas'),
 									$container->fetch('schema.relationships')
 								);
+			}
+		);
+
+		$container->share(
+			'utility.retrieval',
+			function( $container ){
+				return new Retrieval();
 			}
 		);
 
