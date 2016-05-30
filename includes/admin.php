@@ -13,13 +13,13 @@ class PF_Admin {
 	 * @since 1.7
 	 */
 	function __construct() {
-		add_action( 'admin_menu', array( $this, 'register_pf_custom_menu_pages' ) );
-        add_action( 'init', array( $this, 'dead_post_status') );
+		//add_action( 'admin_menu', array( $this, 'register_pf_custom_menu_pages' ) );
+
 
 		// Adding javascript and css to admin pages
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ) );
 		add_action( 'wp_head', array( $this, 'pf_aggregation_forwarder'));
-		add_filter( 'admin_body_class',  array( $this, 'add_pf_body_class'));
+
 		add_filter( 'pf_admin_pages', array($this, 'state_pf_admin_pages'), 10,3);
 		// Catch form submits
 		add_action( 'admin_init', array($this, 'pf_options_admin_page_save') );
@@ -27,10 +27,6 @@ class PF_Admin {
 
 		// Launch a batch delete process, if necessary.
 		add_action( 'admin_init', array( $this, 'launch_batch_delete' ) );
-
-		//Modify the Singleton Edit page.
-		add_action( 'post_submitbox_misc_actions', array( $this, 'posted_submitbox_pf_actions' ) );
-		add_action( 'save_post', array( $this, 'save_submitbox_pf_actions' ) );
 
 		// AJAX handlers
 		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
@@ -41,7 +37,7 @@ class PF_Admin {
 		add_action( 'wp_ajax_pf_ajax_get_comments', array( $this, 'pf_ajax_get_comments') );
 		add_action( 'wp_ajax_pf_ajax_retain_display_setting', array( $this, 'pf_ajax_retain_display_setting' ) );
 		add_action( 'wp_ajax_pf_ajax_user_setting', array( $this, 'pf_ajax_user_setting' ));
-		add_action( 'init', array( $this, 'register_feed_item_removed_status') );
+
 
 		// Modify the Subscribed Feeds panel
 		#add_filter( 'parse_query', array( $this, 'include_alerts_in_edit_feeds' ) );
@@ -62,23 +58,6 @@ class PF_Admin {
 			get_option('pf_menu_all_content_access', pf_get_defining_capability_by_role('contributor')),
 			PF_MENU_SLUG,
 			array($this, 'display_reader_builder')
-		);
-
-
-
-		if ( $alert_count = The_Alert_Box::alert_count() ) {
-			$alert_count_notice = '<span class="feed-alerts count-' . intval( $alert_count ) . '"><span class="alert-count">' . number_format_i18n( $alert_count ) . '</span></span>';
-			$subscribed_feeds_menu_text = sprintf( __( 'Subscribed Feeds %s', 'pf' ), $alert_count_notice );
-		} else {
-			$subscribed_feeds_menu_text = __( 'Subscribed Feeds', 'pf' );
-		}
-
-		add_submenu_page(
-			PF_MENU_SLUG,
-			__('Subscribed Feeds', 'pf'),
-			$subscribed_feeds_menu_text,
-			get_option('pf_menu_feeder_access', pf_get_defining_capability_by_role('editor')),
-			'edit.php?post_type=' . pressforward()->pf_feeds->post_type
 		);
 /**
 		add_submenu_page(
@@ -102,54 +81,6 @@ class PF_Admin {
 		$thepages = array_merge($basePages, (array)$thepages);
 		return $thepages;
 
-	}
-
-	function add_pf_body_class($classes) {
-
-		$classes .= strtolower(PF_TITLE);
-
-		return $classes;
-	}
-
-	function posted_submitbox_pf_actions(){
-		global $post;
-		$check = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'item_link', true);
-		if ( empty($check) ){
-			return;
-		}
-	    $value = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'pf_forward_to_origin', true);
-	    if ( empty($value) ){
-
-	    	$option_value = get_option('pf_link_to_source');
-				if ( empty($option_value) ){
-					$value = 'no-forward';
-				} else {
-					$value = 'forward';
-				}
-	    }
-
-	    echo '<div class="misc-pub-section misc-pub-section-last">
-				<label>
-				<select id="pf_forward_to_origin_single" name="pf_forward_to_origin">
-				  <option value="forward"'.( 'forward' == $value ? ' selected ' : '') .'>Forward</option>
-				  <option value="no-forward"'.( 'no-forward' == $value ? ' selected ' : '') .'>Don\'t Forward</option>
-				</select><br />
-				to item\'s original URL</label></div>';
-	}
-
-	function save_submitbox_pf_actions( $post_id )
-	{
-	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ){ return $post_id; }
-	    if ( !current_user_can( 'edit_page', $post_id ) ){ return $post_id; }
-		#var_dump($_POST['pf_forward_to_origin']); die();
-		#$current = pressforward('controller.metas')->get_post_pf_meta();
-			if ( !array_key_exists('pf_forward_to_origin', $_POST) ) {
-
- 			} else {
-				pressforward('controller.metas')->update_pf_meta($post_id, 'pf_forward_to_origin', $_POST['pf_forward_to_origin']);
-			}
-
-		return $post_id;
 	}
 
 	/**
@@ -640,30 +571,6 @@ class PF_Admin {
 		}
 	}
 
-
-	public function register_feed_item_removed_status(){
-
-		$args = array(
-			'label'						=>	_x('Removed Feed Item', 'pf' ),
-			'public'					=>	false,
-			'exclude_from_search'		=>	true,
-			'show_in_admin_all_list'	=>	false,
-			'show_in_admin_status_list'	=>	false,
-			'label_count'				=>	_n_noop( 'Removed <span class="count">(%s)</span>', 'Removed <span class="count">(%s)</span>' )
-		);
-
-		register_post_status('removed_feed_item', $args);
-
-	}
-
-    public function dead_post_status(){
-        register_post_status('removed_feed_item', array(
-            'label'                 =>     _x('Removed Feed Item', 'pf'),
-            'public'                =>      false,
-            'exclude_from_search'   =>      true,
-            'show_in_admin_all_list'=>      false
-        ) );
-    }
 
     public function dead_feed_status(){
         register_post_status('removed_'.pressforward()->pf_feeds->post_type, array(
