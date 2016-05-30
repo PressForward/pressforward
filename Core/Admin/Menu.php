@@ -60,6 +60,7 @@ class Menu implements HasActions, HasFilters {
 		}
 		return $classes;
 	}
+
 	/**
 	 * Display function for the main All Content panel
 	 */

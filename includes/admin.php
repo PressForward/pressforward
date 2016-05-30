@@ -34,9 +34,8 @@ class PF_Admin {
 		add_action( 'wp_ajax_simple_nom_to_draft', array( $this, 'simple_nom_to_draft') );
 		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
 		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
-		add_action( 'wp_ajax_pf_ajax_get_comments', array( $this, 'pf_ajax_get_comments') );
-		add_action( 'wp_ajax_pf_ajax_retain_display_setting', array( $this, 'pf_ajax_retain_display_setting' ) );
-		add_action( 'wp_ajax_pf_ajax_user_setting', array( $this, 'pf_ajax_user_setting' ));
+
+		
 
 
 		// Modify the Subscribed Feeds panel
@@ -89,14 +88,6 @@ class PF_Admin {
 	function display_review_builder() {
 		include( PF_ROOT . "/includes/under-review/under-review.php" );
 
-	}
-
-	function pf_ajax_get_comments(){
-			if (has_action('pf_modal_comments')){
-				$id_for_comments = $_POST['id_for_comments'];
-				do_action('pf_modal_comments', $id_for_comments);
-			}
-			die();
 	}
 
 	/**
@@ -580,104 +571,6 @@ class PF_Admin {
             'show_in_admin_all_list'=>      false
         ) );
     }
-
-	function pf_bad_call($action, $msg = 'You made a bad call and it did not work. Try again.'){
-		$response = array(
-			'what'=>'pressforward',
-			'action'=>$action,
-			'id'=>pressforward()->form_of->user_id(),
-			'data'=>$msg,
-			'supplemental' => array(
-					'buffered' => ob_get_contents(),
-					'timestamp' => gmdate( 'd-M-Y H:i:s' )
-			)
-		);
-		$xmlResponse = new WP_Ajax_Response($response);
-		$xmlResponse->send();
-		ob_end_clean();
-		die();
-	}
-
-	function pf_ajax_retain_display_setting() {
-		ob_start();
-		if(isset($_POST['pf_read_state'])){
-			$read_state = $_POST['pf_read_state'];
-		} else {
-			$read_status = false;
-		}
-		$userObj = wp_get_current_user();
-		$user_id = $userObj->ID;
-		$returned = $this->pf_switch_display_setting($user_id, $read_state);
-		#var_dump($user_id);
-
-		$response = array(
-			'what'=>'pressforward',
-			'action'=>'pf_ajax_retain_display_setting',
-			'id'=>$user_id,
-			'data'=>(string) $returned
-		);
-		$xmlResponse = new WP_Ajax_Response($response);
-		$xmlResponse->send();
-		ob_end_clean();
-		die();
-
-	}
-
-	function pf_ajax_user_setting() {
-		ob_start();
-		if(isset($_POST['pf_user_setting'])){
-			$setting_name = $_POST['pf_user_setting'];
-		} else {
-			$setting_name = false;
-			self::pf_bad_call('pf_ajax_user_setting', 'No setting name, try again.');
-		}
-		if(isset($_POST['setting'])){
-			$setting = $_POST['setting'];
-		} else {
-			$setting = false;
-		}
-
-		$user_id = pressforward()->form_of->user_id();
-		$returned = $this->pf_switch_user_option($user_id, $setting_name, $setting);
-		#var_dump($user_id);
-
-		$response = array(
-			'what'=>'pressforward',
-			'action'=>'pf_ajax_user_setting',
-			'id'=>$user_id,
-			'data'=>(string) $returned,
-			'supplemental' => array(
-					'buffered' => ob_get_contents(),
-					'setting' => $setting_name,
-					'set'		=> $setting
-			)
-		);
-		$xmlResponse = new WP_Ajax_Response($response);
-		$xmlResponse->send();
-		ob_end_clean();
-		die();
-
-	}
-
-
-	public function pf_switch_display_setting($user_id, $read_state){
-		if ( !current_user_can( 'edit_user', $user_id ) ){
-			return false;
-		}
-
-		$check = update_user_meta($user_id, 'pf_user_read_state', $read_state);
-		return $check;
-	}
-
-
-	function pf_switch_user_option($user_id, $option, $state){
-		if ( !current_user_can( 'edit_user', $user_id ) ){
-			return false;
-		}
-
-		$check = update_user_option($user_id, $option, $state);
-		return $check;
-	}
 
 	/**
 	 * Launch a batch delete, if one is queued.
