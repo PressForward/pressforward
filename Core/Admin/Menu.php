@@ -55,8 +55,9 @@ class Menu implements HasActions, HasFilters {
 
 	function add_pf_body_class($classes) {
 
-		$classes .= strtolower(PF_TITLE);
-
+		if (pressforward( 'controller.template_factory' )->is_a_pf_page()){
+			$classes .= strtolower(PF_TITLE);
+		}
 		return $classes;
 	}
 	/**
