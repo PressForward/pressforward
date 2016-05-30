@@ -21,6 +21,8 @@ class Feed_Items {
 
 		add_filter('user_has_cap', array( $this, 'alter_cap_on_fly' ) );
 		add_filter( 'map_meta_cap', array( $this, 'feeds_item_map_meta_cap'), 10, 4 );
+		add_action( 'init', array( $this, 'dead_post_status') );
+		add_action( 'init', array( $this, 'register_feed_item_removed_status') );
 	}
 
 	public function register_feed_item_post_type() {
@@ -1067,6 +1069,31 @@ class Feed_Items {
 
 	public static function get_term_slug_from_tag( $tag ) {
 //		return 'pf_feed_item_' .
+	}
+
+	public function dead_post_status(){
+		register_post_status('removed_feed_item', array(
+			'label'                 =>     _x('Removed Feed Item', 'pf'),
+			'public'                =>      false,
+			'exclude_from_search'   =>      true,
+			'show_in_admin_all_list'=>      false
+		) );
+	}
+
+
+	public function register_feed_item_removed_status(){
+
+		$args = array(
+			'label'						=>	_x('Removed Feed Item', 'pf' ),
+			'public'					=>	false,
+			'exclude_from_search'		=>	true,
+			'show_in_admin_all_list'	=>	false,
+			'show_in_admin_status_list'	=>	false,
+			'label_count'				=>	_n_noop( 'Removed <span class="count">(%s)</span>', 'Removed <span class="count">(%s)</span>' )
+		);
+
+		register_post_status('removed_feed_item', $args);
+
 	}
 
 }

@@ -28,7 +28,7 @@ class PFTemplater {
 		}
 		//if (WP_DEBUG){ var_dump( $view_file ); }
 		if ( ! file_exists( $view_file ) ){
-			if (PF_DEBUG){ var_dump( $view_file ); }
+			if (PF_DEBUG){ pf_log( $view_file, true, false, true ); }
 			return ' ';
 		}
 		extract( $vars, EXTR_SKIP );
@@ -110,10 +110,12 @@ class PFTemplater {
 				<div id="<?php echo $tab; ?>" class="<?php echo $class; ?>">
 	            <h2><?php echo $tab_meta['title']; ?></h2>
 		            <?php
+						// like: pf_do_pf-add-feeds_tab_primary_feed_type
 						if (has_action('pf_do_'.$page_slug.'_tab_'.$tab) || !array_key_exists($tab, $tabs)){
 							//var_dump('pf_do_'.$page_slug.'_tab_'.$tab); die();
 		            		do_action('pf_do_'.$page_slug.'_tab_'.$tab);
 		            	} else {
+							//var_dump('pf_do_'.$page_slug.'_tab_'.$tab); //die();
 							echo $this->the_settings_tab($tab, $page_slug);
 						}
 					?>
@@ -132,6 +134,8 @@ class PFTemplater {
 		$vars = array(
 				'current'		=> $tab
 			);
+//		var_dump('<pre>');
+//		var_dump(debug_backtrace());
 		#var_dump($page_slug.' - '.$tab); die();
 		return $this->get_view(array($page_slug,'tab-'.$tab), $vars);
 	}

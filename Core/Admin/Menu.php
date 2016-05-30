@@ -2,9 +2,10 @@
 namespace PressForward\Core\Admin;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
+use Intraxia\Jaxion\Contract\Core\HasFilters;
 use PressForward\Interfaces\SystemUsers;
 
-class Menu implements HasActions {
+class Menu implements HasActions, HasFilters {
 
 	protected $basename;
 
@@ -20,6 +21,15 @@ class Menu implements HasActions {
 			array(
 				'hook' => 'admin_menu',
 				'method' => 'add_plugin_admin_menu',
+			),
+		);
+	}
+
+	public function filter_hooks(){
+		return array(
+			array(
+				'hook' => 'admin_body_class',
+				'method' => 'add_pf_body_class',
 			),
 		);
 	}
@@ -40,6 +50,14 @@ class Menu implements HasActions {
 		);
 
 		remove_submenu_page( PF_MENU_SLUG, 'edit.php?post_type=pf_feed' );
+	}
+
+
+	function add_pf_body_class($classes) {
+
+		$classes .= strtolower(PF_TITLE);
+
+		return $classes;
 	}
 	/**
 	 * Display function for the main All Content panel

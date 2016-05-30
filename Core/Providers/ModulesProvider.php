@@ -20,16 +20,7 @@ class ModulesProvider extends ServiceProvider {
 			}
 		);
 
-		$this->pressforward_init();
-
 		//parent::register( $container );
 
-	}
-	/**
-	 * Fire the pressforward_init action, to let plugins know that our
-	 * libraries are available
-	 */
-	function pressforward_init() {
-		do_action( 'pressforward_init' );
 	}
 }

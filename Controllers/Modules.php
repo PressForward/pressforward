@@ -11,9 +11,18 @@ class Modules {
 	var $modules = array();
 
 	public function __construct() {
-
+		add_action( 'plugins_loaded', array( $this, 'pressforward_init' ) );
 		add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
 
+	}
+
+	/**
+	 * Fire the pressforward_init action, to let plugins know that our
+	 * libraries are available
+	 */
+	function pressforward_init() {
+		//var_dump('PFI');
+		do_action( 'pressforward_init' );
 	}
 
 	/**

@@ -11,6 +11,7 @@ use PressForward\Core\Admin\PFTemplater;
 use PressForward\Core\Admin\Tools;
 use PressForward\Core\Admin\Nominated;
 use PressForward\Core\Admin\AddFeeds;
+use PressForward\Core\Admin\EditPost;
 use PressForward\Core\Admin\FoldersMenu;
 use PressForward\Core\Admin\AllContent;
 use PressForward\Core\Admin\SubscribedFeeds;
@@ -29,6 +30,12 @@ class AdminAreaServiceProvider extends ServiceProvider {
 			'admin.menu',
 			function( $container ){
 				return new Menu(  $container->fetch( 'basename' ), $container->fetch( 'controller.users' )  );
+			}
+		);
+		$container->share(
+			'admin.edit_post',
+			function( $container ){
+				return new EditPost(  $container->fetch( 'basename' ) );
 			}
 		);
 		$container->share(
