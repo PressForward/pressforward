@@ -12,7 +12,6 @@ class Menu implements HasActions, HasFilters {
 	function __construct( $basename, SystemUsers $user_interface ){
 		$this->basename = $basename;
 		$this->user_interface = $user_interface;
-
 	}
 
 
@@ -22,6 +21,10 @@ class Menu implements HasActions, HasFilters {
 				'hook' => 'admin_menu',
 				'method' => 'add_plugin_admin_menu',
 			),
+			array(
+				'hook'		=>	'admin_notices',
+				'method'	=>	'admin_notices_action'
+			)
 		);
 	}
 
@@ -34,6 +37,9 @@ class Menu implements HasActions, HasFilters {
 		);
 	}
 
+	function admin_notices_action() {
+		settings_errors( 'add_pf_feeds' );
+	}
 
 	public function add_plugin_admin_menu() {
 		remove_menu_page('edit.php?post_type=pf_feed_item');

@@ -9,6 +9,7 @@ use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 use PressForward\Core\AJAX\ConfigurationAJAX;
 use PressForward\Core\AJAX\ItemsAJAX;
 use PressForward\Core\AJAX\SourceAJAX;
+use PressForward\Core\AJAX\NominationsAJAX;
 
 class AJAXServiceProvider extends ServiceProvider {
 
@@ -32,6 +33,13 @@ class AJAXServiceProvider extends ServiceProvider {
             'ajax.source',
             function( $container ){
                 return new SourceAJAX( $container->fetch('controller.readability'), $container->fetch('utility.retrieval'), $container->fetch('schema.feed_item') );
+            }
+        );
+
+        $container->share(
+            'ajax.nominations',
+            function( $container ){
+                return new NominationsAJAX( $container->fetch('controller.metas'), $container->fetch('controller.items'), $container->fetch('schema.feed_item') );
             }
         );
 

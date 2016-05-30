@@ -23,7 +23,7 @@ class PF_Admin {
 		add_filter( 'pf_admin_pages', array($this, 'state_pf_admin_pages'), 10,3);
 		// Catch form submits
 		add_action( 'admin_init', array($this, 'pf_options_admin_page_save') );
-		add_action( 'admin_notices', array($this, 'admin_notices_action' ));
+
 
 		// Launch a batch delete process, if necessary.
 		add_action( 'admin_init', array( $this, 'launch_batch_delete' ) );
@@ -132,10 +132,6 @@ class PF_Admin {
     public function alert_safe_filterer($safe_msg){
         return __('All feeds are ok!', 'pf');
     }
-
-	function admin_notices_action() {
-		settings_errors( 'add_pf_feeds' );
-	}
 
 	function include_alerts_in_edit_feeds( $query ){
 		global $pagenow;
