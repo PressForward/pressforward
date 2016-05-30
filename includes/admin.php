@@ -28,15 +28,6 @@ class PF_Admin {
 		// Launch a batch delete process, if necessary.
 		add_action( 'admin_init', array( $this, 'launch_batch_delete' ) );
 
-		// AJAX handlers
-		add_action( 'wp_ajax_build_a_nomination', array( $this, 'build_a_nomination') );
-		add_action( 'wp_ajax_build_a_nom_draft', array( $this, 'build_a_nom_draft') );
-		add_action( 'wp_ajax_simple_nom_to_draft', array( $this, 'simple_nom_to_draft') );
-		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
-		add_action( 'wp_ajax_archive_a_nom', array( $this, 'archive_a_nom') );
-
-		
-
 
 		// Modify the Subscribed Feeds panel
 		#add_filter( 'parse_query', array( $this, 'include_alerts_in_edit_feeds' ) );
@@ -589,29 +580,4 @@ class PF_Admin {
 	//    AJAX HANDLERS    //
 	/////////////////////////
 
-	public function build_a_nomination() {
-		pressforward()->nominations->build_nomination();
-		die();
-	}
-
-	public function build_a_nom_draft() {
-		pressforward()->nominations->build_nom_draft();
-		die();
-	}
-
-	public function reset_feed() {
-		pressforward()->pf_feed_items->reset_feed();
-		die();
-	}
-
-
-	public function archive_a_nom() {
-		pressforward()->nominations->archive_a_nom();
-		die();
-	}
-
-	public function simple_nom_to_draft(){
-		pressforward()->nominations->simple_nom_to_draft();
-		die();
-	}
 }

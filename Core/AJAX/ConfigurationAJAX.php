@@ -14,7 +14,7 @@ class ConfigurationAJAX implements HasActions {
 		$this->metas = $metas;
 		$this->posts = $posts;
 		$this->items = $items;
-
+				add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed') );
 	}
 
 
@@ -127,6 +127,11 @@ class ConfigurationAJAX implements HasActions {
 
 		$check = update_user_option($user_id, $option, $state);
 		return $check;
+	}
+
+	public function reset_feed() {
+		pressforward('schema.feed_item')->reset_feed();
+		die();
 	}
 
 }
