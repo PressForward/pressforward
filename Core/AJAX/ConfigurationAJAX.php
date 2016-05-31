@@ -35,7 +35,7 @@ class ConfigurationAJAX implements HasActions {
 		$response = array(
 			'what'=>'pressforward',
 			'action'=>$action,
-			'id'=>pressforward()->form_of->user_id(),
+			'id'=>pressforward('controller.template_factory')->user_id(),
 			'data'=>$msg,
 			'supplemental' => array(
 					'buffered' => ob_get_contents(),
@@ -87,7 +87,7 @@ class ConfigurationAJAX implements HasActions {
 			$setting = false;
 		}
 
-		$user_id = pressforward()->form_of->user_id();
+		$user_id = pressforward('controller.template_factory')->user_id();
 		$returned = $this->pf_switch_user_option($user_id, $setting_name, $setting);
 		#var_dump($user_id);
 

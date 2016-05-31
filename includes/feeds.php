@@ -449,7 +449,7 @@ class PF_Feeds_Schema {
 	public function get_feeds_without_folders($ids = true){
 		   $q = new WP_Query(
 		   				array(
-		 		            'post_type' => pressforward()->pf_feeds->post_type,
+		 		            'post_type' => pressforward('schema.feeds')->post_type,
 		 		            'fields'	=>	'ids',
 		 		            'orderby'	=> 'title',
 		 		            'order'		=> 'ASC',
@@ -457,7 +457,7 @@ class PF_Feeds_Schema {
 		 		            'nopaging' => true,
 		 		            'tax_query' => array(
 		 		                array(
-		 		                    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy,
+		 		                    'taxonomy' => pressforward('schema.feeds')->tag_taxonomy,
 		 		                    'operator' => 'NOT EXISTS',
 		 		                ),
 		 		            ),
@@ -1197,7 +1197,7 @@ class PF_Feeds_Schema {
 		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
 
 		if ( in_array( $pagenow, array( 'edit.php' ) ) ){
-			if ( false != pressforward()->form_of->is_a_pf_page() ){
+			if ( false != pressforward('controller.template_factory')->is_a_pf_page() ){
 				wp_enqueue_script( 'feed_edit_manip', PF_URL . '/assets/js/subscribed-feeds-actions.js', array('jquery'), PF_VERSION );
 			}
 		}

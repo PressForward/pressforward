@@ -91,7 +91,7 @@ class PF_RSS_Out extends PF_Module {
 				<ttl>30</ttl>
 				<?php
 					$c = 0;
-					foreach(pressforward()->pf_feed_items->archive_feed_to_display(0, 50, $fromUT, $limitless) as $item) {
+					foreach(pressforward('schema.feed_item')->archive_feed_to_display(0, 50, $fromUT, $limitless) as $item) {
 						echo '<item>';
 							?>
 							<title><![CDATA[<?php echo strip_tags($item['item_title']); ?>]]></title>

@@ -611,8 +611,8 @@ function pf_get_defining_capability_by_role($role_slug){
 }
 
 function pf_capability_mapper($cap, $role_slug){
-	$feed_caps = pressforward()->pf_feeds->map_feed_caps();
-	$feed_item_caps = pressforward()->schema->map_feed_item_caps();
+	$feed_caps = pressforward('schema.feeds')->map_feed_caps();
+	$feed_item_caps = pressforward('schema.feed_item')->map_feed_item_caps();
 	if (array_key_exists($cap, $feed_caps)){
 		$role = get_role($role_slug);
 		$role->add_cap( $feed_caps[$cap] );
@@ -632,7 +632,7 @@ function assign_pf_to_standard_roles(){
 		'subscriber'
 	);
 	$caps = pf_get_capabilities();
-//	$feed_caps = pressforward()->pf_feeds->map_feed_caps();
+//	$feed_caps = pressforward('schema.feeds')->map_feed_caps();
 //	$feed_item_caps = pressforward()->schema->map_feed_item_caps();
 	foreach ($caps as $cap=>$role){
 		foreach ($role as $a_role){
@@ -1070,7 +1070,7 @@ function pf_delete_item_tree( $item, $fake_delete = false ) {
 	}
 
 	$feed_item_post_type = pf_feed_item_post_type();
-	$feed_post_type      = pressforward()->pf_feeds->post_type;
+	$feed_post_type      = pressforward('schema.feeds')->post_type;
 
 	if ( ! in_array( $item->post_type, array( $feed_item_post_type, $feed_post_type, 'nomination' ) ) ) {
 		return false;
@@ -1217,13 +1217,13 @@ function pf_process_delete_queue() {
 		delete_option( 'pf_delete_queue' );
 
 		// Clean up empty taxonomy terms.
-		$terms = get_terms( pressforward()->pf_feeds->tag_taxonomy, array(
+		$terms = get_terms( pressforward('schema.feeds')->tag_taxonomy, array(
 			'hide_empty' => false,
 		) );
 
 		foreach ( $terms as $term ) {
 			if ( 0 == $term->count ) {
-				wp_delete_term( $term->term_id, pressforward()->pf_feeds->tag_taxonomy );
+				wp_delete_term( $term->term_id, pressforward('schema.feeds')->tag_taxonomy );
 			}
 		}
 	} else {

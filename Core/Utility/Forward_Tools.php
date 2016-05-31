@@ -70,13 +70,13 @@ class Forward_Tools {
 				'url' => $this->metas->get_post_pf_meta($post_id, 'item_link', true),
 				'authorship' => 'auto'
 			);
-			$item_content_obj = pressforward()->readability->get_readable_text($readArgs);
+			$item_content_obj = pressforward('library.readability')->get_readable_text($readArgs);
 			$item_content = htmlspecialchars_decode($item_content_obj['readable']);
 			$source_position = get_option('pf_source_statement_position', 'bottom');
 			if ( ( 'bottom' == $source_position ) && $source ){
-				$item_content = $item_content . pressforward()->nominations->get_the_source_statement( $post_id );
+				$item_content = $item_content . pressforward('admin.nominated')->get_the_source_statement( $post_id );
 			} else {
-				$item_content = pressforward()->nominations->get_the_source_statement( $post_id ) . $item_content;
+				$item_content = pressforward('admin.nominated')->get_the_source_statement( $post_id ) . $item_content;
 			}
 			$post_id = $this->item_interface->update_post( array(
 				'ID'	=>	$post_id,
@@ -163,7 +163,7 @@ class Forward_Tools {
 
 	public function item_to_nomination($item_id, $item_post_id){
 		$nomination_and_post_check = $this->is_a_pf_type( $item_id );
-		//$post_check = $this->is_a_pf_type( $item_id, pressforward()->nominations->post_type );
+		//$post_check = $this->is_a_pf_type( $item_id, pressforward('admin.nominated')->post_type );
 		//$this->metas->update_pf_meta($post_ID, 'nom_id', $post_ID);
 		if ($nomination_and_post_check == false){
 			$this->transition_to_readable_text($item_post_id, false);
@@ -251,7 +251,7 @@ class Forward_Tools {
 
 		$this->advance_interface->prep_bookmarklet( $post['ID'] );
 		# PF NOTE: Switching post type to nomination.
-		$post['post_type'] = pressforward()->nominations->post_type;
+		$post['post_type'] = pressforward('admin.nominated')->post_type;
 		$post['post_date_gmt'] = gmdate('Y-m-d H:i:s');
 		# PF NOTE: This is where the inital post is created.
 		# PF NOTE: Put get_post_nomination_status here.
@@ -330,7 +330,7 @@ class Forward_Tools {
 
 	public function is_a_pf_type($item_id, $post_type = false, $update = false){
 		if (!$post_type) {
-			$post_type = array('post', pressforward()->nominations->post_type);
+			$post_type = array('post', pressforward('admin.nominated')->post_type);
 		}
 		$attempt = $this->advance_interface->get_pf_type_by_id($item_id, $post_type);
 		if (!empty($attempt)){

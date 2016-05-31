@@ -74,7 +74,7 @@ class PF_Advancement implements Advance_System {
 
 	public function to_nomination( $post = array() ){
 		$post['post_status'] = 'draft';
-		$post['post_type'] = pressforward()->nominations->post_type;
+		$post['post_type'] = pressforward('schema.nominations')->post_type;
 		unset($post['post_date']);
 		unset($post['post_date_gmt']);
 		$orig_post_id = $post['ID'];

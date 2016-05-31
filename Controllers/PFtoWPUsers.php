@@ -154,8 +154,8 @@ class PFtoWPUsers implements SystemUsers {
 	}
 
 	function pf_capability_mapper($cap, $role_slug){
-		$feed_caps = pressforward()->pf_feeds->map_feed_caps();
-		$feed_item_caps = pressforward()->schema->map_feed_item_caps();
+		$feed_caps = pressforward('schema.feeds')->map_feed_caps();
+		$feed_item_caps = pressforward('schema.feed_item')->map_feed_item_caps();
 		if (array_key_exists($cap, $feed_caps)){
 			$role = get_role($role_slug);
 			$role->add_cap( $feed_caps[$cap] );
@@ -175,7 +175,7 @@ class PFtoWPUsers implements SystemUsers {
 			'subscriber'
 		);
 		$caps = $this->pf_get_capabilities();
-	//	$feed_caps = pressforward()->pf_feeds->map_feed_caps();
+	//	$feed_caps = pressforward('schema.feeds')->map_feed_caps();
 	//	$feed_item_caps = pressforward()->schema->map_feed_item_caps();
 		foreach ($caps as $cap=>$role){
 			foreach ($role as $a_role){

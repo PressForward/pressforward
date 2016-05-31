@@ -401,8 +401,8 @@ class Menu implements HasActions, HasFilters {
 				if (isset( $_POST[$right] )){
 					$enabled = $_POST[$right];
 					update_option( $right, $enabled );
-					$feed_caps = pressforward()->pf_feeds->map_feed_caps();
-					$feed_item_caps = pressforward()->schema->map_feed_item_caps();
+					$feed_caps = pressforward('schema.feeds')->map_feed_caps();
+					$feed_item_caps = pressforward('schema.feed_item')->map_feed_item_caps();
 					if ( 'pf_menu_feeder_access' == $right){
 						$all_roles = get_editable_roles();
 						foreach ($all_roles as $a_role=>$permissions ){
@@ -485,11 +485,11 @@ class Menu implements HasActions, HasFilters {
 
 			if (class_exists('The_Alert_Box')){
 				#var_dump($_POST);
-				if(empty($_POST[the_alert_box()->option_name()])){
+				if(empty($_POST[pressforward('library.alertbox')->option_name()])){
 					#var_dump('<pre>'); var_dump($_POST); var_dump('</pre>');
-					update_option(the_alert_box()->option_name(), 'false');
+					update_option(pressforward('library.alertbox')->option_name(), 'false');
 				} else {
-					update_option(the_alert_box()->option_name(), $_POST[the_alert_box()->option_name()]);
+					update_option(pressforward('library.alertbox')->option_name(), $_POST[the_alert_box()->option_name()]);
 				}
 			}
 
@@ -510,7 +510,7 @@ class Menu implements HasActions, HasFilters {
         add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
         add_filter('ab_alert_specimens_check_message', array($this, 'alert_check_message'));
         add_filter('ab_alert_specimens_delete_all_text', array($this, 'alert_delete_all_message'));
-            the_alert_box()->alert_box_outsides();
+            pressforward('library.alertbox')->alert_box_outsides();
         remove_filter('ab_alert_specimens_delete_all_text', array($this, 'alert_delete_all_message'));
         remove_filter('ab_alert_specimens_check_message', array($this, 'alert_check_message'));
         remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
@@ -518,7 +518,7 @@ class Menu implements HasActions, HasFilters {
     }
 
     public function alert_filterer($post_types){
-        return array(pressforward()->pf_feeds->post_type);
+        return array(pressforward('schema.feeds')->post_type);
     }
 
     public function alert_check_message($msg){

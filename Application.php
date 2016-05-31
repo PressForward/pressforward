@@ -56,7 +56,7 @@ class Application extends JaxionCore {
 		// This is a new installation
 		if ( ! $saved_version ) {
 			// Do whatever you need to do during first installation
-			$check = pressforward()->pf_feeds->create(
+			$check = pressforward('schema.feeds')->create(
 				'http://pressforward.org/feed/',
 				array(
 					'title'         => 'PressForward',

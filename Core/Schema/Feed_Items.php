@@ -155,8 +155,8 @@ class Feed_Items {
 	}
 
 	public function register_folders_for_items(){
-		#add_action( 'plugins_loaded', pressforward()->nominations->post_type );
-		#register_taxonomy_for_object_type( pressforward()->nominations->post_type, 'post_type_name');
+		#add_action( 'plugins_loaded', pressforward('admin.nominated')->post_type );
+		#register_taxonomy_for_object_type( pressforward('admin.nominated')->post_type, 'post_type_name');
 	}
 
 	public static function get( $args = array() ) {
@@ -314,7 +314,7 @@ class Feed_Items {
 	*
 	*/
 	public function set_source_link( $post_id, $item_url ) {
-		$url = self::resolve_a_url($item_url);
+		$url = pressforward('controller.http_tools')->resolve_a_url($item_url);
 		$url_array = parse_url($url);
 		if (empty($url_array['host'])){
 			return;
@@ -339,7 +339,7 @@ class Feed_Items {
 		if (empty($url)){
 			$url = pressforward('controller.metas')->retrieve_meta($post_id, 'item_link');
 		}
-		$source_url = $this->resolve_a_url($url);
+		$source_url = pressforward('controller.http_tools')->resolve_a_url($url);
 		pressforward('controller.metas')->update_pf_meta( $post_id, 'pf_source_link', $source_url );
 		return $source_url;
 	}
@@ -461,7 +461,7 @@ class Feed_Items {
 		#$PF_Feed_Retrieve = new PF_Feed_Retrieve();
 		# This pulls the RSS feed into a set of predetermined objects.
 		# The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
-		$theFeed = pressforward()->pf_retrieve->step_through_feedlist();
+		$theFeed = pressforward('utility.retrieval')->step_through_feedlist();
 		if ((!$theFeed) || is_wp_error($theFeed)){
 			pf_log('The feed is false, exit process. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]');
 			pf_iterate_cycle_state('retrieval_cycles_ended', true);
@@ -700,9 +700,9 @@ class Feed_Items {
 						set_time_limit(0);
 						# if it forces the issue when we try and get the image, there's nothing we can do.
 						$itemLink = str_replace('&amp;','&', $itemLink);
-						if (pressforward()->og_reader->fetch($itemLink)){
+						if (pressforward('library.opengraph')->fetch($itemLink)){
 							//If there is no featured image passed, let's try and grab the opengraph image.
-							$node = pressforward()->og_reader->fetch($itemLink);
+							$node = pressforward('library.opengraph')->fetch($itemLink);
 							$itemFeatImg = $node->image;
 
 						}
@@ -748,7 +748,7 @@ class Feed_Items {
 		}
 		update_option( PF_SLUG . '_ready_to_chunk', 1 );
 		#$Feed_Retrieve = new PF_Feed_Retrieve();
-		pressforward()->pf_retrieve->advance_feeds();
+		pressforward('utility.retrieval')->advance_feeds();
 		//die('Refreshing...');
 
 	}
@@ -864,14 +864,14 @@ class Feed_Items {
 		//$url = http_build_url($urlParts, HTTP_URL_STRIP_AUTH | HTTP_URL_JOIN_PATH | HTTP_URL_JOIN_QUERY | HTTP_URL_STRIP_FRAGMENT);
 		//print_r($url);
 		# First run it through Readability.
-		$descrip = pressforward()->readability->readability_object($url);
+		$descrip = pressforward('library.readability')->readability_object($url);
 		//print_r($url);
 		# If that doesn't work...
 		if (!$descrip) {
 			$url = str_replace('&amp;','&', $url);
 			#Try and get the OpenGraph description.
-			if (pressforward()->og_reader->fetch($url)){
-				$node = pressforward()->og_reader->fetch($url);
+			if (pressforward('library.opengraph')->fetch($url)){
+				$node = pressforward('library.opengraph')->fetch($url);
 				$descrip = $node->description;
 			} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
 			elseif ('' != ($contentHtml = @get_meta_tags($url))) {
@@ -911,7 +911,7 @@ class Feed_Items {
 	}
 
 	public static function get_ext_og_img($link){
-		$node = pressforward()->og_reader->fetch($link);
+		$node = pressforward('library.opengraph')->fetch($link);
 		$itemFeatImg = $node->image;
 
 		return $itemFeatImg;
@@ -935,11 +935,11 @@ class Feed_Items {
 
 				//Remove Queries from the URL
 				#$ogImage = preg_replace('/\?.*/', '', $ogImage);
-				$ogImage = pressforward()->pf_feed_items->assert_url_scheme($ogImage);
+				$ogImage = pressforward('schema.feed_item')->assert_url_scheme($ogImage);
 				$imgParts = pathinfo($ogImage);
 				$imgExt = $imgParts['extension'];
 				$imgTitle = $imgParts['filename'];
-				$resolved_img_ext = pressforward()->pf_feed_items->resolve_image_type($ogImage);
+				$resolved_img_ext = pressforward('schema.feed_item')->resolve_image_type($ogImage);
 				if (($resolved_img_ext != ('jpg'||'png'||'jrpg'||'bmp'||'gif'||'jpeg')) || ($imgExt != ('jpg'||'png'||'jrpg'||'bmp'||'gif'||'jpeg'))){
 					#var_dump($resolved_img_ext); die();
 					return;
@@ -972,7 +972,7 @@ class Feed_Items {
 				}
 
 
-			if ( false == pressforward()->pf_feed_items->assure_image($ogCacheImg) ) {
+			if ( false == pressforward('schema.feed_item')->assure_image($ogCacheImg) ) {
 				return;
 			}
 
@@ -1051,7 +1051,7 @@ class Feed_Items {
 	public function source_data_object() {
 		// Loop through each module to get its source data
 		$source_data_object = array();
-		foreach ( pressforward()->modules as $module ) {
+		foreach ( pressforward('modules')->modules as $module ) {
 			$source_data_object = array_merge( $source_data_object, $module->get_data_object() );
 		}
 		return $source_data_object;

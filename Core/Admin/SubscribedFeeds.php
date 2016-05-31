@@ -272,8 +272,8 @@ class SubscribedFeeds implements HasActions, HasFilters {
 
 		// Sanity check: only modify pf_feed queries
 		$feed_post_type = '';
-		if ( ! empty( pressforward()->pf_feeds->post_type ) ) {
-			$feed_post_type = pressforward()->pf_feeds->post_type;
+		if ( ! empty( pressforward('schema.feeds')->post_type ) ) {
+			$feed_post_type = pressforward('schema.feeds')->post_type;
 		}
 
 		if ( empty( $query->query_vars['post_type'] ) || $feed_post_type !== $query->query_vars['post_type'] ) {
@@ -335,8 +335,8 @@ class SubscribedFeeds implements HasActions, HasFilters {
 
 		// Sanity check: only modify pf_feed queries
 		$feed_post_type = '';
-		if ( ! empty( pressforward()->pf_feeds->post_type ) ) {
-			$feed_post_type = pressforward()->pf_feeds->post_type;
+		if ( ! empty( pressforward('schema.feeds')->post_type ) ) {
+			$feed_post_type = pressforward('schema.feeds')->post_type;
 		}
 
 		if ( empty( $query->query_vars['post_type'] ) || $feed_post_type !== $query->query_vars['post_type'] ) {
@@ -374,7 +374,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 
 
     public function pf_delete_children_of_feeds( $post_id ){
-    	if ( pressforward()->pf_feeds->post_type == get_post_type( $post_id ) ){
+    	if ( pressforward('schema.feeds')->post_type == get_post_type( $post_id ) ){
     		pf_log('Delete a feed and all its children.');
 		pf_delete_item_tree( $post_id );
     	}
@@ -382,9 +382,9 @@ class SubscribedFeeds implements HasActions, HasFilters {
 
 
     public function pf_trash_children_of_feeds( $post_id ){
-    	if ( pressforward()->pf_feeds->post_type == get_post_type( $post_id ) ){
+    	if ( pressforward('schema.feeds')->post_type == get_post_type( $post_id ) ){
     		pf_log('Trash a feed and all its children.');
-    		$this->pf_thing_trasher( $post_id, true, pressforward()->pf_feeds->post_type );
+    		$this->pf_thing_trasher( $post_id, true, pressforward('schema.feeds')->post_type );
     	}
     }
 

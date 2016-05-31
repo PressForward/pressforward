@@ -1,4 +1,5 @@
 <?php
+namespace PressForward\Libraries;
 /*
   Copyright 2010 Scott MacVicar
 
@@ -18,7 +19,7 @@
 
 */
 
-class PF_OpenGraph implements Iterator
+class PFOpenGraph implements Iterator
 {
   /**
    * There are base schema's based on type, this is just

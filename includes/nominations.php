@@ -195,7 +195,7 @@ class PF_Nominations {
 	}
 
 	public function nominate_this_tile(){
-		pressforward()->form_of->nominate_this('as_feed');
+		pressforward('admin.templates')->nominate_this('as_feed');
 	}
 
 	public function change_nomination_count($id, $up = true){
@@ -272,7 +272,7 @@ class PF_Nominations {
 		//print_r($_POST); die();
 			$item_id = pressforward('controller.metas')->get_post_pf_meta($_POST['ID'], 'origin_item_ID', true);
 			pf_log('Sending to last step '.$item_id.' from Nomination post '.$_POST['ID']);
-			return pressforward()->forward_tools->nomination_to_last_step($item_id, $_POST['ID']);
+			return pressforward('utility.forward_tools')->nomination_to_last_step($item_id, $_POST['ID']);
 		}
 
 	}
@@ -501,7 +501,7 @@ class PF_Nominations {
 			} else {
 				$amplify = false;
 			}
-			$nomination_id = pressforward()->forward_tools->item_to_nomination( $item_id, $_POST['item_post_id'] );
+			$nomination_id = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $_POST['item_post_id'] );
 			if ( is_wp_error($nomination_id) || !$nomination_id ){
 				pf_log('Nomination has gone wrong somehow.');
 				pf_log($nomination_id);
@@ -571,7 +571,7 @@ class PF_Nominations {
 				$item_id = pressforward('controller.metas')->retrieve_meta($id, 'item_id');
 			}
 			$item_id = pressforward('controller.metas')->retrieve_meta($id, 'item_id');
-			$last_step_id = pressforward()->forward_tools->nomination_to_last_step( $item_id, $id );
+			$last_step_id = pressforward('utility.forward_tools')->nomination_to_last_step( $item_id, $id );
 ##Check
 				add_post_meta($id, 'nom_id', $id, true);
 				//pressforward('controller.metas')->transition_post_meta($id, $new_post_id, true);
@@ -615,7 +615,7 @@ class PF_Nominations {
 		ob_start();
 
 		$item_id = $_POST['item_id'];
-			$nomination_id = pressforward()->forward_tools->nomination_to_last_step( $item_id, $_POST['nom_id'] );
+			$nomination_id = pressforward('utility.forward_tools')->nomination_to_last_step( $item_id, $_POST['nom_id'] );
 			$response = array(
 				'what' => 'draft',
 				'action' => 'build_nom_draft',

@@ -153,7 +153,7 @@ class PFtoWPTemplates implements Template_Interface {
 			$title = get_the_title($_GET['feed']);
 		} else if (isset($_GET['folder'])){
 
-			$term = get_term($_GET['folder'], pressforward()->pf_feeds->tag_taxonomy);
+			$term = get_term($_GET['folder'], pressforward('schema.feeds')->tag_taxonomy);
 			$title = $term->name;
 
 		} else {

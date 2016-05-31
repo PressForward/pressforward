@@ -6,6 +6,7 @@ use Intraxia\Jaxion\Assets\Register as Assets;
 use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 
 use PressForward\Libraries\HTMLChecker as HTMLChecker;
+use PressForward\Libraries\PFOpenGraph as PFOpenGraph;
 use AlertBox\The_Alert_Box as The_Alert_Box;
 use Readability;
 use URLResolver;
@@ -25,6 +26,13 @@ class LibrariesProvider extends ServiceProvider {
 			'library.htmlchecker',
 			function( $container ){
 				return new HTMLChecker;
+			}
+		);
+
+		$container->share(
+			'library.opengraph',
+			function( $container ){
+				return new PFOpenGraph;
 			}
 		);
 

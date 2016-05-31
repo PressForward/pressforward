@@ -350,7 +350,7 @@ class PF_RSS_Import extends PF_Module {
 			pf_log('No, the current user can not edit posts.');
 		}
 
-		$feed_obj = pressforward()->pf_feeds;
+		$feed_obj = pressforward('schema.feeds');
 		$subed = array();
 		$something_broke = false;
 		if (!empty($input['single'])){
@@ -466,7 +466,7 @@ class PF_RSS_Import extends PF_Module {
 			}
 			# Adding this as a 'quick' type so that we can process the list quickly.
 			pf_log('Adding this as a quick type so that we can process the list quickly');
-			$opml_array = pressforward()->pf_feeds->progressive_feedlist_transformer($opml_array, $feedXml, $key, $args);
+			$opml_array = pressforward('schema.feeds')->progressive_feedlist_transformer($opml_array, $feedXml, $key, $args);
 			# @todo Tag based on folder structure
 		}
 		#$check_up = update_option( PF_SLUG . '_feedlist', $opml_array );

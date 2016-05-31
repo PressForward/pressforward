@@ -25,7 +25,7 @@ class PF_Tools {
 				'page_slug'		=>	'pf-tools',
 				'no_save_button'	=>	true,
 			);
-		echo pressforward()->form_of->get_view(pressforward()->form_of->build_path(array('settings','settings-page'), false), $vars);
+		echo pressforward('admin.templates')->get_view(pressforward('controller.template_factory')->build_path(array('settings','settings-page'), false), $vars);
 
 		return;
 	}

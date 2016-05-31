@@ -92,12 +92,12 @@ class Metas {
 		if ( !empty($parent_parent) && !is_wp_error( $parent_parent ) ){
 			$ids[] = $parent_parent;
 		}**/
-		$term_objects = wp_get_object_terms( $ids, array( pressforward()->pf_feeds->tag_taxonomy, 'post_tag', 'category' ) );
+		$term_objects = wp_get_object_terms( $ids, array( pressforward('schema.feeds')->tag_taxonomy, 'post_tag', 'category' ) );
 		$item_tags = $this->get_post_pf_meta($idA, 'item_tags');
 		if ( !empty($term_objects) ){
 			foreach ( $term_objects as $term ){
 				wp_set_object_terms($idB, $term->term_id, $term->taxonomy, true);
-				if ( pressforward()->pf_feeds->tag_taxonomy == $term->taxonomy ){
+				if ( pressforward('schema.feeds')->tag_taxonomy == $term->taxonomy ){
 					$check = $this->cascade_taxonomy_tagging($idB, $term->slug, 'slug');
 					if (!$check){
 						$this->build_and_assign_new_taxonomy_tag($idB, $term->name);

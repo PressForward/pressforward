@@ -436,7 +436,7 @@ class Feeds {
 	public function get_feeds_without_folders($ids = true){
 		   $q = new \WP_Query(
 		   				array(
-		 		            'post_type' => pressforward()->pf_feeds->post_type,
+		 		            'post_type' => pressforward('schema.feeds')->post_type,
 		 		            'fields'	=>	'ids',
 		 		            'orderby'	=> 'title',
 		 		            'order'		=> 'ASC',
@@ -444,7 +444,7 @@ class Feeds {
 		 		            'nopaging' => true,
 		 		            'tax_query' => array(
 		 		                array(
-		 		                    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy,
+		 		                    'taxonomy' => pressforward('schema.feeds')->tag_taxonomy,
 		 		                    'operator' => 'NOT EXISTS',
 		 		                ),
 		 		            ),

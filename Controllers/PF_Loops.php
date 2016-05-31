@@ -183,13 +183,13 @@ class PF_Loops {
     		$post_args['post_parent'] = $_GET['feed'];
     	} elseif (isset($_GET['folder'])){
     		$parents_in_folder = new \WP_Query( array(
-    			'post_type' => pressforward()->pf_feeds->post_type,
+    			'post_type' => pressforward('schema.feeds')->post_type,
     			'fields'=> 'ids',
     			'update_post_term_cache' => false,
     			'update_post_meta_cache' => false,
     			'tax_query' => array(
     				array(
-    					'taxonomy' => pressforward()->pf_feeds->tag_taxonomy,
+    					'taxonomy' => pressforward('schema.feeds')->tag_taxonomy,
     					'field'	=> 'term_id',
     					'terms'	=> $_GET['folder']
     				),

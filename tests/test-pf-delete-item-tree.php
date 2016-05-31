@@ -66,7 +66,7 @@ class PF_Tests_PfDeleteItemTree extends PF_UnitTestCase {
 		update_option( 'pf_delete_queue', array( $posts[1] ) );
 
 		$q = new WP_Query( array(
-			'post_type' => pressforward()->pf_feeds->post_type,
+			'post_type' => pressforward('schema.feeds')->post_type,
 			'post_status' => 'any',
 			'numberposts' => -1,
 			'fields' => 'ids',
@@ -79,7 +79,7 @@ class PF_Tests_PfDeleteItemTree extends PF_UnitTestCase {
 		$f1 = $this->factory->feed->create();
 		$f2 = $this->factory->feed->create();
 
-		$tax = pressforward()->pf_feeds->tag_taxonomy;
+		$tax = pressforward('schema.feeds')->tag_taxonomy;
 
 		$t1 = $this->factory->term->create( array( 'taxonomy' => $tax ) );
 		$t2 = $this->factory->term->create( array( 'taxonomy' => $tax ) );
