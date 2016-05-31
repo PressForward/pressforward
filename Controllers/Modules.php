@@ -1,7 +1,5 @@
 <?php
 namespace PressForward\Controllers;
-
-use Intraxia\Jaxion\Contract\Core\HasActions;
 /**
  * Classes and functions for dealing with feed items
  */
@@ -9,27 +7,13 @@ use Intraxia\Jaxion\Contract\Core\HasActions;
 /**
  * Database class for manipulating feed items
  */
-class Modules implements HasActions {
+class Modules {
 	var $modules = array();
 
 	public function __construct() {
-		//add_action( 'plugins_loaded', array( $this, 'pressforward_init' ) );
-		//add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
+		add_action( 'plugins_loaded', array( $this, 'pressforward_init' ) );
+		add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
 
-	}
-
-	public function action_hooks() {
-		return array(
-			array(
-				'hook' => 'plugins_loaded',
-				'method' => 'pressforward_init',
-			),
-			array(
-				'hook' => 'pressforward_init',
-				'method' => 'setup_modules',
-				'priority' => 1000
-			),
-		);
 	}
 
 	/**

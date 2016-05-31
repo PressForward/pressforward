@@ -489,7 +489,7 @@ class Menu implements HasActions, HasFilters {
 					#var_dump('<pre>'); var_dump($_POST); var_dump('</pre>');
 					update_option(pressforward('library.alertbox')->option_name(), 'false');
 				} else {
-					update_option(pressforward('library.alertbox')->option_name(), $_POST[the_alert_box()->option_name()]);
+					update_option(pressforward('library.alertbox')->option_name(), $_POST[pressforward('library.alertbox')->option_name()]);
 				}
 			}
 
@@ -510,7 +510,7 @@ class Menu implements HasActions, HasFilters {
         add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
         add_filter('ab_alert_specimens_check_message', array($this, 'alert_check_message'));
         add_filter('ab_alert_specimens_delete_all_text', array($this, 'alert_delete_all_message'));
-            pressforward('library.alertbox')->alert_box_outsides();
+            the_alert_box()->alert_box_outsides();
         remove_filter('ab_alert_specimens_delete_all_text', array($this, 'alert_delete_all_message'));
         remove_filter('ab_alert_specimens_check_message', array($this, 'alert_check_message'));
         remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
