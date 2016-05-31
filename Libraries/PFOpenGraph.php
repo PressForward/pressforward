@@ -1,5 +1,4 @@
 <?php
-namespace PressForward\Libraries;
 /*
   Copyright 2010 Scott MacVicar
 

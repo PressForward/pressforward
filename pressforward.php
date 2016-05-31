@@ -29,6 +29,7 @@ require 'class-SplClassLoader.php';
 require 'Libraries/URLResolver/URLResolver.php';
 require 'Libraries/FiveFiltersReadability/Readability.php';
 require 'Libraries/AlertBox/The_Alert_Box.php';
+require 'Libraries/PFOpenGraph.php';
 //Files included to maintain back-compat
 require 'includes/functions.php';
 require 'includes/relationships.php';
