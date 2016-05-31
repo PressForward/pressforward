@@ -1,15 +1,25 @@
 <?php
 namespace PressForward\Controllers;
 
+use Intraxia\Jaxion\Contract\Core\HasActions;
 use URLResolver;
 /**
  * Readability stuff
  */
 
-class HTTPTools {
+class HTTPTools implements HasActions {
 
 	function __construct( URLResolver $resolver ) {
         $this->url_resolver = $resolver;
+	}
+
+	public function action_hooks() {
+		return array(
+			array(
+				'hook' => 'wp_head',
+				'method' => 'pf_aggregation_forwarder',
+			),
+		);
 	}
 
 	public function resolve_source_url($url){
@@ -86,6 +96,21 @@ class HTTPTools {
 			}
 		}
 		return $check;
+	}
+
+	function pf_aggregation_forwarder(){
+		if(1 == get_option('pf_link_to_source',0)){
+			//http://webmaster.iu.edu/tools-and-guides/maintenance/redirect-meta-refresh.phtml ?
+			$linked = get_post_meta('item_link', true);
+			//Need syndicate tag here.
+			if (is_single() && ('' != $linked)){
+				?>
+				 <script type="text/javascript">alert('You are being redirected to the source item.');</script>
+				<META HTTP-EQUIV="refresh" CONTENT="10;URL=<?php echo get_post_meta('item_link', true); ?>">
+				<?php
+
+			}
+		}
 	}
 
 }

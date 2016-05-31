@@ -85,7 +85,14 @@ class SubscribedFeeds implements HasActions, HasFilters {
 			array(
 				'hook' => 'manage_pf_feed_posts_columns',
 				'method' => 'add_last_retrieved_date_column',
-			)
+			),
+            // add_filter( 'heartbeat_received', array( $this, 'hb_check_feed_retrieve_status' ), 10, 2 );
+            array(
+                'hook' => 'heartbeat_received',
+                'method' => 'hb_check_feed_retrieve_status',
+                'priority' => 10,
+                'args'	=> 2
+            ),
 		);
 	}
 

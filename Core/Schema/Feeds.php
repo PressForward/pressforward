@@ -582,14 +582,14 @@ class Feeds {
 		<?php
 	}
 
-  public function disallow_add_new(){
+  	public function disallow_add_new(){
         global $pagenow;
         /* Check current admin page. */
         if($pagenow == 'post-new.php' && isset($_GET['post_type']) && $_GET['post_type'] == $this->post_type){
             wp_redirect(admin_url('/admin.php?page=pf-feeder', 'http'), 301);
             exit;
         }
-    }
+	}
 
 	public function deal_with_old_feedlists() {
 
@@ -657,6 +657,16 @@ class Feeds {
 			// Set to False if you want to send them to Trash.
 		   }
 	}
+
+
+    public function dead_feed_status(){
+        register_post_status('removed_'.$this->post_type, array(
+            'label'                 =>     _x('Removed Feed', 'pf'),
+            'public'                =>      false,
+            'exclude_from_search'   =>      true,
+            'show_in_admin_all_list'=>      false
+        ) );
+    }
 
 	# A function to take an argument array and turn it into a Feed CPT entry.
 	public function feed_post_setup($r, $insert_type = 'insert'){

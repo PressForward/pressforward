@@ -97,7 +97,7 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_style(array(
 			'type'	=>	'admin',
 			'condition'	=> function($hook) use ($provider){
-								return true;
+								return $provider->check_hook_for_pressforward_string($hook);
 							},
 			'handle'	=> $slug.'-subscribed-styles',
 			'src'		=> 'assets/css/pf-subscribed'
@@ -109,7 +109,9 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								return $provider->check_hook_for_pressforward_string($hook);
+							},
 			'handle'	=>	$slug.'-heartbeat',
 			'src'		=>	'assets/js/pf-heartbeat',
 			'deps'		=>	array( 'heartbeat', 'jquery-ui-progressbar', 'jquery' )
@@ -128,7 +130,9 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								return $provider->check_hook_for_pressforward_string($hook);
+							},
 			'handle'	=>	$slug.'-tinysort',
 			'src'		=>	'lib/jquery-tinysort/jquery.tinysort',
 			'deps'		=>	array( 'jquery' )
@@ -138,7 +142,9 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'	=>	'admin',
-				'condition'	=> function(){ return true; },
+				'condition'	=> function($hook) use ($provider){
+									return $provider->check_hook_for_pressforward_string($hook);
+								},
 				'handle'	=>	$slug.'-twitter-bootstrap',
 				'src'		=>	'lib/twitter-bootstrap/js/bootstrap',
 				'deps'		=>	array( 'jquery' )
@@ -161,7 +167,9 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'	=>	'admin',
-				'condition'	=> function(){ return true; },
+				'condition'	=> function($hook) use ($provider){
+									return $provider->check_hook_for_pressforward_string($hook);
+								},
 				'handle'	=>	$slug.'-jq-fullscreen',
 				'src'		=>	'lib/jquery-fullscreen/jquery.fullscreen',
 				'deps'		=>	array( 'jquery' )
@@ -170,7 +178,9 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								return $provider->check_hook_for_pressforward_string($hook);
+							},
 			'handle'	=>	$slug.'-sort-imp',
 			'src'		=>	'assets/js/sort-imp',
 			'deps'		=>	array( $slug . '-tinysort', $slug . '-twitter-bootstrap', $slug . '-jq-fullscreen' )
@@ -178,7 +188,9 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								return $provider->check_hook_for_pressforward_string($hook);
+							},
 			'handle'	=>	$slug.'-views',
 			'src'		=>	'assets/js/views',
 			'deps'		=>	array( $slug . '-twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide'  )
@@ -186,7 +198,9 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								return $provider->check_hook_for_pressforward_string($hook);
+							},
 			'handle'	=>	$slug.'-readability-imp',
 			'src'		=>	'assets/js/readability-imp',
 			'deps'		=>	array( $slug . '-twitter-bootstrap', 'jquery', $slug . '-views' )
@@ -194,7 +208,9 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								return $provider->check_hook_for_pressforward_string($hook);
+							},
 			'handle'	=>	$slug.'-nomination-imp',
 			'src'		=>	'assets/js/nomination-imp',
 			'deps'		=>	array( 'jquery' )
@@ -202,7 +218,9 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								return $provider->check_hook_for_pressforward_string($hook);
+							},
 			'handle'	=>	$slug.'-infiniscroll',
 			'src'		=>	'lib/jquery.infinitescroll',
 			'deps'		=>	array( 'jquery', $slug . '-views', $slug . '-readability-imp', 'jquery' )
@@ -211,7 +229,9 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'		=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								return $provider->check_hook_for_pressforward_string($hook);
+							},
 			'handle'	=>	$slug.'-relationships',
 			'src'		=>	'assets/js/relationships',
 			'deps'		=>	array( 'jquery' )
@@ -219,7 +239,9 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								return $provider->check_hook_for_pressforward_string($hook);
+							},
 			'handle'	=>	$slug.'-scrollimp',
 			'src'		=>	'assets/js/scroll-imp',
 			'deps'		=>	array( $slug . '-infiniscroll', 'pf-relationships', $slug . '-views' )
@@ -272,8 +294,8 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_script( array(
 			'type'	=>	'admin',
 			'condition'	=> function($hook) use ($provider){
-								$exclusions = array('toplevel_page_pf-menu');
-								return $provider->check_hook_for_pressforward_string($hook, $exclusions);
+								//$exclusions = array('toplevel_page_pf-menu');
+								return $provider->check_hook_for_pressforward_string($hook);
 							},
 			'handle'	=>	$slug.'-tools',
 			'src'		=>	'assets/js/tools-imp',
@@ -282,7 +304,10 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								$inclusions = array('pressforward_page_pf-review');
+								return $provider->check_hook_for_pressforward_string($hook, array(), $inclusions);
+							},
 			'handle'	=>	$slug.'-send-to-draft-imp',
 			'src'		=>	'assets/js/send-to-draft-imp',
 			'deps'		=>	array( 'jquery' )
@@ -290,7 +315,10 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								$inclusions = array('pressforward_page_pf-review');
+								return $provider->check_hook_for_pressforward_string($hook, array(), $inclusions);
+							},
 			'handle'	=>	$slug.'-archive-nom-imp',
 			'src'		=>	'assets/js/nom-archive-imp',
 			'deps'		=>	array( 'jquery' )
@@ -298,7 +326,9 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
-			'condition'	=> function(){ return true; },
+			'condition'	=> function($hook) use ($provider){
+								return $provider->check_hook_for_pressforward_string($hook);
+							},
 			'handle'	=>	$slug.'-add-nom-imp',
 			'src'		=>	'assets/js/add-nom-imp',
 			'deps'		=>	array( 'jquery' )
@@ -306,7 +336,7 @@ class AssetsProvider extends ServiceProvider {
 		//var_dump($assets); die();
 	}
 
-	public function check_hook_for_pressforward_string($hook, $exclusions = array()){
+	public function check_hook_for_pressforward_string($hook, $exclusions = array(), $inclusions = array() ){
 
          $position_test_one = strpos($hook, 'pressforward');
          $position_test_two = strpos($hook, 'pf');
@@ -318,6 +348,16 @@ class AssetsProvider extends ServiceProvider {
 		 		 		return false;
 		 		 	}
 		 		 }
+		 }
+
+		 if ( !empty($inclusions) ){
+			 $include = false;
+			 foreach ( $inclusions as $inclusion ){
+				 if (false !== strpos($hook, $exclusion)){
+					 $include = true;
+				 }
+			 }
+			 return $include;
 		 }
 
 		 return true;
