@@ -81,7 +81,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-style',
 			'src'		=>	'assets/css/pressforward',
-			'deps'		=>	array( $slug . '-bootstrap-style', $slug . '-bootstrap-responsive-style' )
+			'deps'		=>	array( $slug . '-bootstrap-style', $slug . '-bootstrap-responsive-style', 'thickbox' )
 		) );
 
 		$assets->register_style(array(
@@ -353,7 +353,7 @@ class AssetsProvider extends ServiceProvider {
 		 if ( !empty($inclusions) ){
 			 $include = false;
 			 foreach ( $inclusions as $inclusion ){
-				 if (false !== strpos($hook, $exclusion)){
+				 if (false !== strpos($hook, $inclusion)){
 					 $include = true;
 				 }
 			 }
