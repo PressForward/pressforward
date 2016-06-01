@@ -184,15 +184,15 @@ class PF_Readability {
 	public static function readability_object($url) {
 
 		set_time_limit(0);
-		$url =  pressforward('schema.feed_item')->pf_feed_items->resolve_full_url($url);
+		$url =  pressforward('controller.http_tools')->resolve_full_url($url);
 
 		$request = pf_de_https($url, 'wp_remote_get', array(
-																												'timeout' => '30',
-																												'user-agent' => 'AdsBot-Google (+http://www.google.com/adsbot.html)',
-																												'headers'		=> array(
-																													'X-PressForward'	=>	get_site_url()
-																												)
-																											)
+																'timeout' => '30',
+																'user-agent' => 'AdsBot-Google (+http://www.google.com/adsbot.html)',
+																'headers'		=> array(
+																	'X-PressForward'	=>	get_site_url()
+																)
+															)
 														);
 		//var_dump($request); die();
 		//print_r($url); print_r(' - Readability<br />');
@@ -219,7 +219,8 @@ class PF_Readability {
 			$html = $tidy->value;
 		}
 		// give it to Readability
-		$readability = new Readability($html, $url);
+		$readabilitizer = pressforward('library.readability');
+		$readability = $readabilitizer($html, $url);
 
 		// print debug output?
 		// useful to compare against Arc90's original JS version -
@@ -249,7 +250,7 @@ class PF_Readability {
 			$content = ent2ncr($content);
 			$content = convert_chars($content);
 			$domRotated = 0;
-			$dom = new domDocument('1.0', 'utf-8');
+			$dom = new \domDocument('1.0', 'utf-8');
 
 
 			$dom->preserveWhiteSpace = true;

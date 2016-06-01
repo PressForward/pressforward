@@ -65,7 +65,7 @@ class PFOpenGraph implements Iterator
 		if (empty($HTML)){ return false; }
 		$old_libxml_error = libxml_use_internal_errors(true);
 
-		$doc = new DOMDocument();
+		$doc = new \DOMDocument();
 		if (is_array($HTML)){
 			pf_log('Attempt to parse URL for OpenGraph.');
 			#pf_log($HTML);

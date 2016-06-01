@@ -864,7 +864,7 @@ class Feed_Items {
 		//$url = http_build_url($urlParts, HTTP_URL_STRIP_AUTH | HTTP_URL_JOIN_PATH | HTTP_URL_JOIN_QUERY | HTTP_URL_STRIP_FRAGMENT);
 		//print_r($url);
 		# First run it through Readability.
-		$descrip = pressforward('library.readability')->readability_object($url);
+		$descrip = pressforward('controller.readability')->readability_object($url);
 		//print_r($url);
 		# If that doesn't work...
 		if (!$descrip) {
