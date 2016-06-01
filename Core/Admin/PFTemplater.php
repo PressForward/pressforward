@@ -360,7 +360,7 @@ class PFTemplater {
 	**/
 	public function form_of_an_item($item, $c, $format = 'standard', $metadata = array()){
 		global $current_user;
-		get_currentuserinfo();
+		wp_get_current_user();
 		if ('' !== get_option('timezone_string')){
 			//Allows plugins to introduce their own item format output.
 			date_default_timezone_set(get_option('timezone_string'));

@@ -222,7 +222,7 @@ class PF_Comments extends PF_Module {
 		global $current_user, $userdata;
 
 		// Get current user
-		get_currentuserinfo() ;
+		wp_get_current_user() ;
 
 		$GLOBALS['comment'] = $comment;
 
@@ -284,7 +284,7 @@ class PF_Comments extends PF_Module {
 			die( __( "Nonce check failed. Please ensure you're supposed to be adding editorial comments.", 'pf' ) );
 
 		// Get user info
-      	get_currentuserinfo();
+      	wp_get_current_user();
 		$comments_allowed = get_option('pf_feature_comments_access', pf_get_defining_capability_by_role('editor'));
       	// Set up comment data
 		$post_id = absint( $_POST['post_id'] );
