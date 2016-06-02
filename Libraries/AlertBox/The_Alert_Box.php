@@ -1,6 +1,7 @@
 <?php
 namespace AlertBox;
 use WP_Query;
+use WP_Ajax_Response;
 
 if (!class_exists('The_Alert_Box')){
 

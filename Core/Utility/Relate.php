@@ -9,6 +9,9 @@ use PressForward\Interfaces\Advance_System as Advance_System;
 use PressForward\Controllers\Metas;
 use PressForward\Core\Schema\Relationships;
 
+use WP_Query;
+use WP_Ajax_Response;
+
 /**
  * PressForward relationships tools
  */

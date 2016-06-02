@@ -1,5 +1,7 @@
 <?php
 namespace PressForward\Controllers;
+
+use WP_Ajax_Response;
 /**
  * Readability stuff
  */

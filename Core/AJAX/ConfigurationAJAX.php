@@ -6,6 +6,8 @@ use PressForward\Controllers\Metas;
 use PressForward\Controllers\PF_to_WP_Posts;
 use PressForward\Core\Schema\Feed_Items;
 
+use WP_Ajax_Response;
+
 class ConfigurationAJAX implements HasActions {
 
 	protected $basename;
