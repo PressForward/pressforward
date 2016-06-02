@@ -692,7 +692,7 @@ class Nominated implements HasActions {
             echo '<br />';
         }
 
-        function build_nomination() {
+        public function build_nomination() {
 
             // Verify nonce
             if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )
@@ -723,7 +723,11 @@ class Nominated implements HasActions {
                 } else {
                     $amplify = false;
                 }
+                pf_log('Amplification?');
+                pf_log($amplify);
                 $nomination_id = $this->forward_tools->item_to_nomination( $item_id, $_POST['item_post_id'] );
+                pf_log('ID received:');
+                pf_log($nomination_id);
                 if ( is_wp_error($nomination_id) || !$nomination_id ){
                     pf_log('Nomination has gone wrong somehow.');
                     pf_log($nomination_id);

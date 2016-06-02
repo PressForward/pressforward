@@ -24,7 +24,7 @@ class PF_Readability {
 			extract( $args, EXTR_SKIP );
 			set_time_limit(0);
 			$readability_stat = $url;
-			$url = pressforward('schema.feed_item')->resolve_full_url($url);
+			$url = pressforward('controller.http_tools')->resolve_full_url($url);
 			//var_dump($url); die();
 			$descrip = rawurldecode($descrip);
 			if (get_magic_quotes_gpc())

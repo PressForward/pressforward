@@ -4,7 +4,7 @@ namespace PressForward\Core\Utility;
 use PressForward\Interfaces\Items as Items;
 use PressForward\Interfaces\Advance_System as Advance_System;
 
-use PressForward\Controllers\Metas; 
+use PressForward\Controllers\Metas;
 
 /**
  * PressForward object lifecycle tools
@@ -70,7 +70,7 @@ class Forward_Tools {
 				'url' => $this->metas->get_post_pf_meta($post_id, 'item_link', true),
 				'authorship' => 'auto'
 			);
-			$item_content_obj = pressforward('library.readability')->get_readable_text($readArgs);
+			$item_content_obj = pressforward('controller.readability')->get_readable_text($readArgs);
 			$item_content = htmlspecialchars_decode($item_content_obj['readable']);
 			$source_position = get_option('pf_source_statement_position', 'bottom');
 			if ( ( 'bottom' == $source_position ) && $source ){
@@ -163,12 +163,17 @@ class Forward_Tools {
 
 	public function item_to_nomination($item_id, $item_post_id){
 		$nomination_and_post_check = $this->is_a_pf_type( $item_id );
+		pf_log('Is this a PF Type?');
+		pf_log($nomination_and_post_check);
 		//$post_check = $this->is_a_pf_type( $item_id, pressforward('admin.nominated')->post_type );
 		//$this->metas->update_pf_meta($post_ID, 'nom_id', $post_ID);
 		if ($nomination_and_post_check == false){
+			pf_log('Start Transition.');
 			$this->transition_to_readable_text($item_post_id, false);
 
 			$current_user = wp_get_current_user();
+			pf_log('User: ');
+			pf_log($current_user);
 			if ( 0 == $current_user->ID ) {
 				//Not logged in.
 				$userSlug = "external";
@@ -330,7 +335,7 @@ class Forward_Tools {
 
 	public function is_a_pf_type($item_id, $post_type = false, $update = false){
 		if (!$post_type) {
-			$post_type = array('post', pressforward('admin.nominated')->post_type);
+			$post_type = array('post', pressforward('schema.nominations')->post_type);
 		}
 		$attempt = $this->advance_interface->get_pf_type_by_id($item_id, $post_type);
 		if (!empty($attempt)){
