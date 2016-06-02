@@ -7,6 +7,8 @@ use PressForward\Core\Utility\Forward_Tools as Forward_Tools;
 use PressForward\Core\Schema\Nominations as Nominations;
 use PressForward\Controllers\Metas;
 use PressForward\Interfaces\SystemUsers;
+use WP_Ajax_Response;
+use WP_Query;
 
 class Nominated implements HasActions {
 
@@ -276,7 +278,7 @@ class Nominated implements HasActions {
             				}
             			$item = pf_feed_object(get_the_title(), pressforward('controller.metas')->get_post_pf_meta($nom_id, 'source_title', true), $date_posted, $item_authorship, get_the_content(), $nom_permalink, get_the_post_thumbnail($nom_id /**, 'nom_thumb'**/), $rss_item_id, pressforward('controller.metas')->get_post_pf_meta($nom_id, 'item_wp_date', true), $nom_tags, $date_nomed, $source_repeat, $nom_id, '1');
 
-            			$this->form_of_an_item($item, $c, 'nomination', $metadata);
+            			pressforward('admin.templates')->form_of_an_item($item, $c, 'nomination', $metadata);
             			$count++;
             			$c++;
             			endwhile;
