@@ -824,7 +824,7 @@ function pf_get_drafted_items( $post_type = 'pf_feed_item' ) {
 function filter_for_pf_archives_only($sql){
 	global $wpdb;
 #	if (isset($_GET['pf-see']) && ('archive-only' == $_GET['pf-see'])){
-		$relate = new PF_RSS_Import_Relationship();
+		$relate = pressforward('schema.relationships');
 		$rt = $relate->table_name;
 		$user_id = get_current_user_id();
 		$read_id = pf_get_relationship_type_id('archive');
