@@ -953,7 +953,7 @@ function prep_archives_query($q){
 			 ", 'nomination', '%'.$search.'%', '%'.$search.'%');
 		} elseif (isset($_GET['pf-see']) && ('starred-only' == $_GET['pf-see'])){
 			$pagefull = 20;
-			$relate = new PF_RSS_Import_Relationship();
+			$relate = pressforward('schema.relationships');
 			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('star');
