@@ -256,7 +256,7 @@ class Forward_Tools {
 
 		$this->advance_interface->prep_bookmarklet( $post['ID'] );
 		# PF NOTE: Switching post type to nomination.
-		$post['post_type'] = pressforward('admin.nominated')->post_type;
+		$post['post_type'] = pressforward('schema.nominations')->post_type;
 		$post['post_date_gmt'] = gmdate('Y-m-d H:i:s');
 		# PF NOTE: This is where the inital post is created.
 		# PF NOTE: Put get_post_nomination_status here.
