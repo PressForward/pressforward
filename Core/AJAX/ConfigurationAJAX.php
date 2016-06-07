@@ -81,7 +81,7 @@ class ConfigurationAJAX implements HasActions {
 			$setting_name = $_POST['pf_user_setting'];
 		} else {
 			$setting_name = false;
-			self::pf_bad_call('pf_ajax_user_setting', 'No setting name, try again.');
+			$this->pf_bad_call('pf_ajax_user_setting', 'No setting name, try again.');
 		}
 		if(isset($_POST['setting'])){
 			$setting = $_POST['setting'];

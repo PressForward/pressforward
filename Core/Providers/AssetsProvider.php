@@ -240,6 +240,10 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_script( array(
 			'type'	=>	'admin',
 			'condition'	=> function($hook) use ($provider){
+								if ("false" == get_user_option('pf_user_scroll_switch', pressforward('controller.template_factory')->user_id())){
+
+									return false;
+								}
 								return $provider->check_hook_for_pressforward_string($hook);
 							},
 			'handle'	=>	$slug.'-scrollimp',
