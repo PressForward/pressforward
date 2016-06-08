@@ -1195,7 +1195,7 @@ class Feeds {
 
 		if ( in_array( $pagenow, array( 'edit.php' ) ) ){
 			if ( false != pressforward('controller.template_factory')->is_a_pf_page() ){
-				wp_enqueue_script( 'feed_edit_manip', PF_URL . '/assets/js/subscribed-feeds-actions.js', array('jquery'), PF_VERSION );
+				wp_enqueue_script( 'feed_edit_manip', PF_URL . 'assets/js/subscribed-feeds-actions.js', array('jquery'), PF_VERSION );
 			}
 		}
 
@@ -1206,7 +1206,7 @@ class Feeds {
 			#return;
 
 
-		wp_enqueue_script( 'feed_edit_manip', PF_URL . '/assets/js/subscribed-feeds-actions.js', array('jquery'), PF_VERSION );
+		wp_enqueue_script( 'feed_edit_manip', PF_URL . 'assets/js/subscribed-feeds-actions.js', array('jquery'), PF_VERSION );
 	}
 
 	function feed_save_message($messages){

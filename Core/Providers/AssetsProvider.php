@@ -97,7 +97,7 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_style(array(
 			'type'	=>	'admin',
 			'condition'	=> function($hook) use ($provider){
-								return $provider->check_hook_for_pressforward_string($hook);
+								return pressforward('controller.template_factory')->is_a_pf_page();
 							},
 			'handle'	=> $slug.'-subscribed-styles',
 			'src'		=> 'assets/css/pf-subscribed'
