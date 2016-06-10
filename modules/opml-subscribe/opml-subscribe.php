@@ -25,7 +25,7 @@ class PF_OPML_Subscribe extends PF_Module {
 			add_action('init', array($this, 'make_OPML') );
 		}
 
-		add_filter( 'pf_tabs_pf-tools', array($this, 'set_permitted_tools_tabs') );
+		add_filter( 'pf_tabs_pf-tools', array($this, 'set_permitted_tools_tabs'), 20, 1 );
 		add_action( 'pf_do_pf-tools_tab_opml', array($this, 'opml_tools') );
 	}
 
@@ -256,7 +256,7 @@ class PF_OPML_Subscribe extends PF_Module {
             <div class="opml-box">
                     <h3><span><?php _e('Subscribe to OPML as Feed', 'pf'); ?></span></h3>
                     <div>
-                        <div><?php _e('Add OPML Subscription', 'pf'); ?> (RSS or Atom)</div>
+                        <div><?php _e('Add OPML Subscription', 'pf'); ?> (OPML or XML)</div>
                             <div class="pf_feeder_input_box">
                                 <input id="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>" value="" />
                                 <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>"><?php _e('*Complete URL path', 'pf'); ?></label>
@@ -328,6 +328,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	private function make_a_feed_object_from_post( $post_id = false ){
 		//var_dump(get_post_meta(get_the_ID()));
 		$meta = get_post_meta($post_id);
+		//var_dump($meta);
 		if ( !empty( $meta['feedUrl'][0] ) ){
 			if ( 'http' != substr( $meta['feedUrl'][0], 0, 4 ) ){
 				$meta['feedUrl'][0] = 'http://'.$meta['feedUrl'][0];
@@ -384,7 +385,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		if ( $feed_query->have_posts() ) {
 			while ( $feed_query->have_posts() ) {
 				$feed_query->the_post();
-				#var_dump(get_the_ID());
+				//var_dump(get_the_ID());
 				$feed_obj = $this->make_a_feed_object_from_post( get_the_ID() );
 				//var_dump($feed_obj);
 				//Use OPML internals to slugify attached terms, retrieve them from the OPML folder object, deliver them into feed.
