@@ -572,6 +572,15 @@ class Metas {
 				'level'	=> array('feed'),
 				'serialize'	=> true
 			),
+            'pf_feed_last_checked' => array(
+				'name' => 'pf_feed_last_checked',
+				'definition' => __('Last time feed was checked', 'pf'),
+				'function'	=> __('Stores last timestamp feed was checked.', 'pf'),
+				'type'	=> array('adm'),
+				'use'	=> array(),
+				'level'	=> array('feed'),
+				'serialize'	=> true
+			),
 		);
 
 		$metas = apply_filters('pf_meta_terms',$metas);
