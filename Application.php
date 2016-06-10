@@ -6,17 +6,6 @@ namespace PressForward;
 
 //var_dump(__NAMESPACE__); //die();
 
-use PressForward\lib\WPUpdatePHP as PHPChecker;
-
- # @TODO Move this forward sometime before release.
-
-$PHPCheck = new PHPChecker( '5.3.0', 'PressForward' );
-
-
-if ( ! $PHPCheck->does_it_meet_required_php_version( PHP_VERSION ) ) {
-	return;
-}
-
 $obj = new Loader;
 //$obj->test();
 

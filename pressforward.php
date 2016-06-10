@@ -39,6 +39,7 @@ require 'includes/functions.php';
 require 'includes/relationships.php';
 require 'includes/template-tags.php';
 
+
 use SplClassLoader as ClassLoader;
 $classLoader = new ClassLoader('PressForward', dirname(__FILE__), false);
 //var_dump($classLoader->getIncludePath());
@@ -50,6 +51,18 @@ $classLoader->register();
 // Protect File.
 if ( ! defined( 'WPINC' ) ) {
 	//die;
+}
+
+
+
+use PressForward\lib\WPUpdatePHP as PHPChecker;
+
+$PHPCheck = new PHPChecker( '5.3.0', 'PressForward' );
+
+
+if ( ! $PHPCheck->does_it_meet_required_php_version( PHP_VERSION ) ) {
+	\wp_die('PressForward requires at least PHP 5.3.');
+	return;
 }
 
 function pressforward($prop = false) {
