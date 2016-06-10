@@ -31,6 +31,14 @@ class AddFeeds implements HasActions, HasFilters {
             array(
                 'hook' => 'pf_tabs_pf-add-feeds',
                 'method' => 'set_permitted_tools_tabs',
+                'priority'  => 1,
+                'args' => 1
+            ),
+            array(
+                'hook' => 'pf_tabs_pf-add-feeds',
+                'method' => 'set_permitted_tools_tabs_alerts',
+                'priority'  => 200,
+                'args' => 1
             ),
         );
     }
@@ -73,6 +81,10 @@ class AddFeeds implements HasActions, HasFilters {
                                         'title' => __('Subscribe to Feeds', 'pf'),
                                         'cap'  => $this->user_interface->pf_get_defining_capability_by_role('contributor')
                                     );
+        return $permitted_tabs;
+    }
+
+    public function set_permitted_tools_tabs_alerts( $permitted_tabs ){
         $permitted_tabs['alerts'] = array(
                                         'title' => __('Alerts', 'pf'),
                                         'cap'  => $this->user_interface->pf_get_defining_capability_by_role('administrator')
