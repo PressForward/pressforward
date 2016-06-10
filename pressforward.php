@@ -30,6 +30,9 @@ require 'Libraries/PFSimpleHtmlDom.php';
 require 'Libraries/URLResolver/URLResolver.php';
 require 'Libraries/FiveFiltersReadability/Readability.php';
 require 'Libraries/AlertBox/The_Alert_Box.php';
+require 'includes/opml/object.php';
+require 'includes/opml/reader.php';
+require 'includes/opml/maker.php';
 require 'Libraries/PFOpenGraph.php';
 //Files included to maintain back-compat
 require 'includes/functions.php';
