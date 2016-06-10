@@ -60,6 +60,7 @@ class AddFeeds implements HasActions, HasFilters {
                 'page_slug'		=>	'pf-add-feeds',
                 'no_save_button' =>	true,
                 'form_head'		 => $form_head,
+				'settings_tab_group'	=> pressforward( 'admin.tools' )->tab_group($tab),
                 'settings_field' => PF_SLUG . '_feedlist_group'
             );
         pressforward('admin.templates')->the_view_for(pressforward( 'controller.template_factory' )->build_path(array('settings','settings-page'), false), $vars);

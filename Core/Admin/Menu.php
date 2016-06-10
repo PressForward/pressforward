@@ -511,7 +511,7 @@ class Menu implements HasActions, HasFilters {
         add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
         add_filter('ab_alert_specimens_check_message', array($this, 'alert_check_message'));
         add_filter('ab_alert_specimens_delete_all_text', array($this, 'alert_delete_all_message'));
-            the_alert_box()->alert_box_outsides();
+        pressforward('library.alertbox')->alert_box_outsides();
         remove_filter('ab_alert_specimens_delete_all_text', array($this, 'alert_delete_all_message'));
         remove_filter('ab_alert_specimens_check_message', array($this, 'alert_check_message'));
         remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));

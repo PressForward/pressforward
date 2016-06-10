@@ -100,10 +100,13 @@ class PFTemplater {
 	}
 
 	public function settings_tab_group($current, $page_slug = 'settings'){
+		//var_dump($page_slug); die();
 		$tabs = $this->permitted_tabs($page_slug);
-		#var_dump($tabs); die();
+		//var_dump($page_slug); die();
+
 		ob_start();
 		foreach ($tabs as $tab=>$tab_meta){
+			//var_dump( 'pf_do_'.$page_slug.'_tab_'.$tab ); //die();
 			if (current_user_can($tab_meta['cap'])){
 				if ($current == $tab) $class = 'pftab tab active'; else $class = 'pftab tab';
 				?>
@@ -111,10 +114,13 @@ class PFTemplater {
 	            <h2><?php echo $tab_meta['title']; ?></h2>
 		            <?php
 						// like: pf_do_pf-add-feeds_tab_primary_feed_type
+
 						if (has_action('pf_do_'.$page_slug.'_tab_'.$tab) || !array_key_exists($tab, $tabs)){
 							//var_dump('pf_do_'.$page_slug.'_tab_'.$tab); die();
+							//var_dump( 'pf_do_'.$page_slug.'_tab_'.$tab );
 		            		do_action('pf_do_'.$page_slug.'_tab_'.$tab);
 		            	} else {
+							//var_dump( 'pf_do_'.$page_slug.'_tab_'.$tab );
 							//var_dump('pf_do_'.$page_slug.'_tab_'.$tab); //die();
 							echo $this->the_settings_tab($tab, $page_slug);
 						}
@@ -285,7 +291,7 @@ class PFTemplater {
 				if ( function_exists('the_alert_box') ){
 										add_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
 										add_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
-										$alerts = the_alert_box()->get_specimens();
+										$alerts = pressforward('library.alertbox')->get_specimens();
 										remove_filter('ab_alert_safe', array($this, 'alert_safe_filterer'));
 										remove_filter('ab_alert_specimens_post_types', array($this, 'alert_filterer'));
 				}

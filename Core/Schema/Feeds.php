@@ -434,13 +434,14 @@ class Feeds {
 	}
 
 	public function get_feeds_without_folders($ids = true){
+			//var_dump(pressforward('library.alertbox')->status()); die();
 		   $q = new \WP_Query(
 		   				array(
 		 		            'post_type' => $this->post_type,
 		 		            'fields'	=>	'ids',
 		 		            'orderby'	=> 'title',
 		 		            'order'		=> 'ASC',
-		 		            'post_status' => array( 'pending', 'draft', 'future', 'publish', the_alert_box()->status() ),
+		 		            'post_status' => array( 'pending', 'draft', 'future', 'publish', pressforward('library.alertbox')->status() ),
 		 		            'nopaging' => true,
 		 		            'tax_query' => array(
 		 		                array(

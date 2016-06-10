@@ -544,7 +544,34 @@ class Metas {
 				'use'	=> array(),
 				'level'	=> array('feed', 'post'),
 				'serialize'	=> false
-			)
+			),
+			'pf_feed_last_retrieved' => array(
+				'name' => 'pf_feed_last_retrieved',
+				'definition' => __('Last time feed was retrieved', 'pf'),
+				'function'	=> __('Stores last timestamp feed was retrieved.', 'pf'),
+				'type'	=> array('adm'),
+				'use'	=> array(),
+				'level'	=> array('feed'),
+				'serialize'	=> true
+			),
+			'pf_feed_last_retrieved' => array(
+				'name' => 'pf_feed_last_retrieved',
+				'definition' => __('Last time feed was retrieved', 'pf'),
+				'function'	=> __('Stores last timestamp feed was retrieved.', 'pf'),
+				'type'	=> array('adm'),
+				'use'	=> array(),
+				'level'	=> array('feed'),
+				'serialize'	=> true
+			),
+			'feedUrl' => array(
+				'name' => 'feedUrl',
+				'definition' => __('URL for a feed', 'pf'),
+				'function'	=> __('Stores location online for feed.', 'pf'),
+				'type'	=> array('adm'),
+				'use'	=> array(),
+				'level'	=> array('feed'),
+				'serialize'	=> true
+			),
 		);
 
 		$metas = apply_filters('pf_meta_terms',$metas);

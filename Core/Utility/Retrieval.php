@@ -23,7 +23,7 @@ class Retrieval {
 		add_action( 'init', array( $this, 'schedule_feed_in' ) );
 		add_action( 'init', array( $this, 'schedule_feed_out' ) );
 
-		add_action( 'take_feed_out', array( 'PF_Feed_Item', 'disassemble_feed_items' ) );
+		add_action( 'take_feed_out', array( pressforward('schema.feed_item'), 'disassemble_feed_items' ) );
 		add_action( 'pull_feed_in', array( $this, 'trigger_source_data' ) );
 		add_filter( 'cron_schedules', array( $this, 'cron_add_short' ) );
 
@@ -31,7 +31,7 @@ class Retrieval {
 			add_action( 'wp_ajax_nopriv_feed_retrieval_reset', array( $this, 'feed_retrieval_reset' ) );
 			add_action( 'wp_ajax_feed_retrieval_reset', array( $this, 'feed_retrieval_reset' ) );
 			add_action( 'wp_ajax_ajax_update_feed_handler', array( $this, 'ajax_update_feed_handler' ) );
-			add_action( 'get_more_feeds', array( 'PF_Feed_Item', 'assemble_feed_for_pull' ) );
+			add_action( 'get_more_feeds', array( pressforward('schema.feed_item'), 'assemble_feed_for_pull' ) );
 		}
 	}
 
@@ -559,11 +559,11 @@ class Retrieval {
 			if ( ( false == $feedObj ) || ( is_wp_error( $feedObj ) ) ) {
 
 			} else if ( function_exists( 'the_alert_box' ) ) {
-				$alert_box = the_alert_box();
+				$alert_box = pressforward('library.alertbox');
 				$ab_status =  $alert_box->status();
 				if ( $ab_status == $obj->post_status ) {
 					# The feed has been retrieved, therefor this is a good feed. We can remove the alert.
-					the_alert_box()->dismiss_alert( $obj->ID );
+					pressforward('library.alertbox')->dismiss_alert( $obj->ID );
 					# Assure the feed is back online.
 					$argup = array(
 		                'ID'			=> $obj->ID,
