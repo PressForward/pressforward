@@ -24,6 +24,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
             array(
                 'hook' => 'admin_menu',
                 'method' => 'add_plugin_admin_menu',
+				'priority'	=>	14
             ),
 			array(
 				'hook' => 'manage_edit-pf_feed_sortable_columns',

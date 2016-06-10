@@ -57,7 +57,7 @@ class PF_Module {
 		//$enabled = 'yes';
 		if ( 'yes' == $enabled ) {
 			// Run at 15 to make sure the core menu is loaded first
-			add_action( 'admin_menu', array( $this, 'setup_admin_menus' ), 15 );
+			add_action( 'admin_menu', array( $this, 'setup_admin_menus' ), 20 );
 
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ) );	// There's no admin_enqueue_styles action

@@ -19,6 +19,7 @@ class Menu implements HasActions, HasFilters {
 			array(
 				'hook' => 'admin_menu',
 				'method' => 'add_plugin_admin_menu',
+				'priority'	=>	10
 			),
 			array(
 				'hook'		=>	'admin_notices',

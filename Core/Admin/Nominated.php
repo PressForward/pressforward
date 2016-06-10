@@ -25,6 +25,7 @@ class Nominated implements HasActions {
                 array(
                     'hook' => 'admin_menu',
                     'method' => 'add_plugin_admin_menu',
+					'priority'	=>	12
                 ),
                 array(
                     'hook' => 'feeder_menu',
