@@ -43,7 +43,7 @@ class Tools implements HasActions {
 				'page_title'	=>	__('PressForward Tools', 'pf'),
 				'page_slug'		=>	'pf-tools',
 				'no_save_button'	=>	true,
-				'settings_tab_group'	=> $this->tab_group($tab),
+				'settings_tab_group'	=> '',
 				'tabs'			=>	$this->tabs()
 			);
 		echo $this->templates->get_view(array('settings','settings-page'), $vars);
