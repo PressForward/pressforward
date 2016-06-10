@@ -390,14 +390,14 @@ class Feed_Items {
 	public function disassemble_feed_items() {
 		pf_log('Disassemble Feed Items Activated');
 		//delete rss feed items with a date past a certain point.
-		add_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older') );
+		add_filter( 'posts_where', array( $this, 'filter_where_older') );
 		$queryForDel = new \WP_Query(
 								array(
 										'post_type' => pf_feed_item_post_type(),
 										'posts_per_page' => '150'
 									)
 							);
-		remove_filter( 'posts_where', array( 'PF_Feed_Item', 'filter_where_older') );
+		remove_filter( 'posts_where', array( $this, 'filter_where_older') );
 		#pf_log( $queryForDel );
 		// The Loop
 		while ( $queryForDel->have_posts() ) : $queryForDel->the_post();
