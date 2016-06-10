@@ -741,7 +741,6 @@ class Feeds {
 		if ( is_numeric($post_id) && (0 < $post_id) ){
 			pf_log('The post_id is numeric and greater than 0, complete the ' .$insert_type. ' process');
 			self::set_pf_feed_type($post_id, $r['type']);
-			$r['feedUrl'] = $r['url'];
 			pf_log('Tags found:');
 			pf_log($r['tags']);
 			if (array_key_exists('tags', $r) && !empty($r['tags'])){
@@ -877,7 +876,7 @@ class Feeds {
 			$theFeed = fetch_feed($feedUrl);
 			if (is_wp_error($theFeed)){
 				pf_log('The RSS feed failed verification');
-				return new WP_Error('badfeed', __('The feed fails verification.'));
+				return new \WP_Error('badfeed', __('The feed fails verification.'));
 			} else {
 				pf_log('The RSS feed was verified, setting up meta');
 				$r = self::setup_rss_meta($r, $theFeed);
@@ -1080,7 +1079,7 @@ class Feeds {
 		if ($r['type'] == 'rss'){
 			$theFeed = fetch_feed($feedURL);
 			if (is_wp_error($theFeed)){
-				return new WP_Error('badfeed', __('The feed fails verification.'));
+				return new \WP_Error('badfeed', __('The feed fails verification.'));
 			} else {
 				$r = self::setup_rss_meta($r, $theFeed);
 			}
@@ -1089,7 +1088,7 @@ class Feeds {
 			pf_log('Updating a rss-quick');
 			$theFeed = fetch_feed($feedURL);
 			if (is_wp_error($theFeed)){
-				return new WP_Error('badfeed', __('The feed fails verification.'));
+				return new \WP_Error('badfeed', __('The feed fails verification.'));
 			} else {
 				$r = self::setup_rss_meta($r, $theFeed);
 			}

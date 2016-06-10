@@ -234,7 +234,7 @@ class Feed_Items {
 		if ( ! is_numeric( $r['item_wp_date'] ) ) {
 			$r['item_wp_date'] = strtotime($r['item_wp_date']);
 			if (!$r['item_wp_date']){
-				return new WP_Error( 'Date should be in UNIX format' );
+				return new \WP_Error( 'Date should be in UNIX format' );
 			}
 		}
 
