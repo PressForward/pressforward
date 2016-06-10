@@ -127,6 +127,7 @@ class PF_Readability {
 
 		$contentObj = pressforward('library.htmlchecker');
 		$itemReadReady = $contentObj->closetags($itemReadReady);
+		pf_log('Making readable');
 
 		# BIG FREAKING WARNING: This WILL NOT WORK if you have WP_DEBUG and WP_DEBUG_DISPLAY true and either your theme or plugins have bad functions on the save_post hook.
 		if ($post_id != 0){
