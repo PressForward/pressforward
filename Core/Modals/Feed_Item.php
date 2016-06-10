@@ -1,6 +1,6 @@
 <?php
 
-class PF_Feed_Item_Object {
+class Feed_Item {
 	protected $data = array();
 
 	public function __construct( $item_url, $item_title, $post_type = false ) {
