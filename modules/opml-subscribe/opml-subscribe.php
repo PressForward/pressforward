@@ -98,6 +98,11 @@ class PF_OPML_Subscribe extends PF_Module {
 		$post_id = $args['post_id'];
 		pf_log('Do something with post ID '.$post_id);
 		$feed_obj = $item['obj'];
+		if ( !method_exists($feed_obj, 'folder') || empty($feed_obj->folder) ){
+			pf_log('No folder available on');
+			pf_log($args);
+			return $item;
+		}
 		foreach ($feed_obj->folder as $folder){
 			$slug = $this->folder_to_slug($folder);
 			if ( !has_category( $slug, $post_id ) ){
@@ -145,6 +150,10 @@ class PF_OPML_Subscribe extends PF_Module {
 			'tags'         => array(),
 		);
 		$new_feed_id = pressforward('schema.feeds')->create($feed_obj->feedUrl, $feed_array);
+		pf_log('New feed created with ID of '.$new_feed_id);
+		if ( !method_exists($feed_obj, 'folder') || empty($feed_obj->folder) ){
+			return $new_feed_id;
+		}
 		//Set up category here.
 		foreach ($feed_obj->folder as $folder){
 			pf_log('Setting new category for '.$feed_obj->title);
