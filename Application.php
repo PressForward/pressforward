@@ -13,7 +13,6 @@ use Intraxia\Jaxion\Core\Application as JaxionCore;
 //use Intraxia\Jaxion\Contract\Core\Application as ApplicationContract;
 
 class Application extends JaxionCore {
-	const VERSION = '3.9.0';
 	var $ver = 3.9;
 		/**
 	 * ServiceProviders to register with the Application
@@ -40,6 +39,7 @@ class Application extends JaxionCore {
 	 */
 	public function activate() {
 		global $wp_rewrite;
+		define( 'VERSION', '3.9.0' );
 		$current_version = VERSION; // define this constant in the loader file
 		$saved_version = get_option( 'pf_version' );
 
