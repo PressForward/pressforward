@@ -383,7 +383,6 @@ class PFTemplater {
 					$feed_item_id = $metadata['item_id'];
 					$id_for_comments = $metadata['pf_item_post_id']; //orig item post ID
 
-					$id_for_comments = $metadata['pf_item_post_id'];
 					$readStat = pf_get_relationship_value( 'read', $metadata['nom_id'], wp_get_current_user()->ID );
 					if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
 					if (!isset($metadata['nom_id']) || empty($metadata['nom_id'])){ $metadata['nom_id'] = md5($item['item_title']); }
@@ -472,7 +471,12 @@ class PFTemplater {
 									#$urlArray = parse_url($item['item_link']);
 									$sourceLink = pressforward('schema.feed_item')->get_source_link($id_for_comments);
 									$url_array = parse_url($sourceLink);
-									$sourceLink = 'http://' . $url_array['host'];
+									if (!$url_array){
+										pf_log('Could not find the source link for '.$id_for_comments);
+										$sourceLink = "Source URL not found.";
+									} else {
+										$sourceLink = 'http://' . $url_array['host'];
+									}
 									//http://nicolasgallagher.com/pure-css-speech-bubbles/demo/
 
 									$ibox = '<div class="feed-item-info-box" id="info-box-' . $item['item_id'] . '">';
