@@ -936,6 +936,10 @@ class Feed_Items {
 				//Remove Queries from the URL
 				#$ogImage = preg_replace('/\?.*/', '', $ogImage);
 				$ogImage = pressforward('schema.feed_item')->assert_url_scheme($ogImage);
+				if ( !is_file($ogImage) ){
+					pf_log('It looked like we received a file, but PHP could not understand the filename: '.$ogImage);
+					return '';
+				}
 				$imgParts = pathinfo($ogImage);
 				$imgExt = $imgParts['extension'];
 				$imgTitle = $imgParts['filename'];
