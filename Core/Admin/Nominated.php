@@ -199,7 +199,7 @@ class Nominated implements HasActions {
             				// Nomination (post) ID
             				$metadata['nom_id'] = $nom_id = get_the_ID();
             				//Get the WP database ID of the original item in the database.
-            				$metadata['item_feed_post_id'] = pressforward('controller.metas')->get_post_pf_meta($nom_id, 'item_feed_post_id', true);
+            				$metadata['pf_item_post_id'] = pressforward('controller.metas')->get_post_pf_meta($nom_id, 'pf_item_post_id', true);
             				//Number of Nominations recieved.
             				$metadata['nom_count'] = $nom_count = pressforward('controller.metas')->retrieve_meta($nom_id, 'nomination_count');
             				//Permalink to orig content

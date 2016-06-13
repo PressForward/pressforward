@@ -381,9 +381,9 @@ class PFTemplater {
 
 				if ($format === 'nomination'){
 					$feed_item_id = $metadata['item_id'];
-					$id_for_comments = $metadata['item_feed_post_id']; //orig item post ID
+					$id_for_comments = $metadata['pf_item_post_id']; //orig item post ID
 
-					$id_for_comments = $metadata['item_feed_post_id'];
+					$id_for_comments = $metadata['pf_item_post_id'];
 					$readStat = pf_get_relationship_value( 'read', $metadata['nom_id'], wp_get_current_user()->ID );
 					if (!$readStat){ $readClass = ''; } else { $readClass = 'article-read'; }
 					if (!isset($metadata['nom_id']) || empty($metadata['nom_id'])){ $metadata['nom_id'] = md5($item['item_title']); }

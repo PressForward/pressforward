@@ -332,8 +332,8 @@ class Metas {
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> true
 			),
-			'item_feed_post_id' => array(
-				'name' => 'item_feed_post_id',
+			'pf_item_post_id' => array(
+				'name' => 'pf_item_post_id',
 				'definition' => __('DUPE Soon to be depreciated version of pf_item_post_id', 'pf'),
 				'function'	=> __('Stores hashed ID based on title and URL of retrieved item', 'pf'),
 				'type'	=> array('struc', 'dep'),

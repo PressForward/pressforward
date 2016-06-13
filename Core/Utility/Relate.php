@@ -416,7 +416,7 @@ class Relate implements HasActions {
     				//Switch the delete on to wipe rss archive posts from the database for testing.
     				$userObj = wp_get_current_user();
     				$user_id = $userObj->ID;
-    				#$feed_post_id = get_post_meta($post_id, 'item_feed_post_id', true);
+    				#$feed_post_id = get_post_meta($post_id, 'pf_item_post_id', true);
     				#pf_set_relationship( 'archive', $feed_post_id, $user_id, '1' );
     				pf_set_relationship( 'archive', $post_id, $user_id, '1' );
     				update_post_meta( $post_id, 'pf_archive', 1 );
