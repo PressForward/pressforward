@@ -959,7 +959,7 @@ function prep_archives_query($q){
 					AND wpm1.meta_key = 'sortable_item_date' AND wpm1.meta_value > 0 AND wposts.post_type = %s
 				)
 				LEFT JOIN {$wpdb->postmeta} wpm2 ON  (wposts.ID = wpm2.post_id
-                       AND wpm2.meta_key = 'item_feed_post_id' AND wposts.post_type = %s )
+                       AND wpm2.meta_key = 'pf_item_post_id' AND wposts.post_type = %s )
 				WHERE wposts.post_status = 'draft'
 				AND wpm1.meta_value > 0
 				AND wposts.ID
