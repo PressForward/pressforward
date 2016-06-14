@@ -912,7 +912,7 @@ class Feeds {
 
 	public function get_feed($url){
 
-			$posts = self::has_feed($url);
+			$posts = $this->has_feed($url);
 			return $posts[0];
 
 	}
@@ -980,7 +980,7 @@ class Feeds {
 		if(!isset($parsed['scheme'])){
 			$url = 'http://' . $url;
 		}
-		$posts = self::get(array('url' => $url));
+		$posts = $this->get(array('url' => $url));
 		pf_log('Checked for feed ' . $url);
 		pf_log($posts);
 		if (count($posts) > 0){
