@@ -545,6 +545,15 @@ class Metas {
 				'level'	=> array('feed', 'post'),
 				'serialize'	=> false
 			),
+            'pf_forward_to_origin'  => array(
+				'name' => 'pf_forward_to_origin',
+				'definition' => __('User override for forwarding to origin of link', 'pf'),
+				'function'	=> __('Stores forwarding override for posts', 'pf'),
+				'type'	=> array('adm'),
+				'use'	=> array(),
+				'level'	=> array('post'),
+				'serialize'	=> false
+			),
 			'pf_feed_last_retrieved' => array(
 				'name' => 'pf_feed_last_retrieved',
 				'definition' => __('Last time feed was retrieved', 'pf'),
