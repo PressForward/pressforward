@@ -1,8 +1,8 @@
 <?php
 namespace PressForward\Core\Admin;
 
-use PressForward\Interfaces\Templates;
-use PressForward\Interfaces\SystemUsers;
+use PressForward\Interfaces\Templates as Templates;
+use PressForward\Interfaces\SystemUsers as SystemUsers;
 class PFTemplater {
 
 	public function __construct( Templates $template_factory, SystemUsers $users ) {
