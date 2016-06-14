@@ -203,7 +203,7 @@ class Forward_Tools {
 			} else {
 				$item_date = $_POST['item_date'];
 			}
-			$this->metas->update_pf_meta($item_post_id, 'posted_date', $item_date);
+			$this->metas->update_pf_meta($item_post_id, 'item_date', $item_date);
 
 			$nomination_id = $this->transition_to_nomination($item_post_id);
 			//$this->nomination_user_transition_check( $nomination_id );
@@ -295,7 +295,7 @@ class Forward_Tools {
 				$this->metas->meta_for_entry('nomination_count', 1),
 				$this->metas->meta_for_entry('source_title', 'Bookmarklet'),
 				$this->metas->meta_for_entry('item_date', $item_date),
-				$this->metas->meta_for_entry('posted_date', $item_date),
+				$this->metas->meta_for_entry('item_date', $item_date),
 				$this->metas->meta_for_entry('date_nominated', $_POST['date_nominated']),
 				$this->metas->meta_for_entry('item_author', $_POST['authors']),
 				$this->metas->meta_for_entry('authors', $_POST['authors']),

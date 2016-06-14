@@ -214,7 +214,7 @@ class Nominated implements HasActions {
             				//Datetime item was nominated
             				$metadata['date_nominated'] = $date_nomed = pressforward('controller.metas')->get_post_pf_meta($nom_id, 'date_nominated', true);
             				//Datetime item was posted to its home RSS
-            				$metadata['posted_date'] = $date_posted = pressforward('controller.metas')->get_post_pf_meta($nom_id, 'posted_date', true);
+            				$metadata['item_date'] = $date_posted = pressforward('controller.metas')->get_post_pf_meta($nom_id, 'item_date', true);
             				//Unique RSS item ID
             				$metadata['item_id'] = $rss_item_id = pressforward('controller.metas')->get_post_pf_meta($nom_id, 'origin_item_ID', true);
             				//RSS-passed tags, comma seperated.
@@ -383,7 +383,7 @@ class Nominated implements HasActions {
             $nomination_count = $this->metas->get_post_pf_meta($post->ID, 'nomination_count', true);
             $submitted_by = $this->metas->get_post_pf_meta($post->ID, 'submitted_by', true);
             $source_title = $this->metas->get_post_pf_meta($post->ID, 'source_title', true);
-            $posted_date = $this->metas->get_post_pf_meta($post->ID, 'posted_date', true);
+            $posted_date = $this->metas->get_post_pf_meta($post->ID, 'item_date', true);
             $nom_authors = $this->metas->get_post_pf_meta($post->ID, 'authors', true);
             $item_link = $this->metas->get_post_pf_meta($post->ID, 'item_link', true);
             $date_nominated = $this->metas->get_post_pf_meta($post->ID, 'date_nominated', true);
