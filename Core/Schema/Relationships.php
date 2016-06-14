@@ -179,6 +179,9 @@ class Relationships {
 		}
 
 		$sql = implode( ' ', $sql );
+		if ( $r['user_id'] ){
+			$sql .= " AND user_id = ".$r['user_id'];
+		}
 
 		return $wpdb->get_results( $sql );
 
