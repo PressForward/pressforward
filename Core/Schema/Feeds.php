@@ -890,14 +890,14 @@ class Feeds {
 			pf_log('The feed was added with the RSS-Quick type, normalizing by setting the title to the URL.');
 			$r['title'] = $r['url'];
 		}
-		if (self::has_feed($feedUrl)){
+		if ($this->has_feed($feedUrl)){
 			pf_log('We checked for this feed and found it.');
 			pf_log('Doing the feed_post_setup process as an update.');
-			$check = self::feed_post_setup($r, 'update');
+			$check = $this->feed_post_setup($r, 'update');
 		} else {
 			pf_log('We checked for this feed and did not find it.');
 			pf_log('Doing the feed_post_setup process as a new post');
-			$check = self::feed_post_setup($r);
+			$check = $this->feed_post_setup($r);
 		}
 		pf_log('Attempt to create or update the post has resulted in a post_id or false:');
 		pf_log($check);
