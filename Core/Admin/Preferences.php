@@ -43,7 +43,7 @@ class Preferences implements HasActions {
 				'user_ID'		=> 	true,
 				'page_title'	=>	__('PressForward Preferences', 'pf'),
 				'page_slug'		=>	'settings',
-				'settings_tab_group'	=> $this->prefrences_tab($tab),
+				'settings_tab_group'	=> '', //$this->prefrences_tab($tab)
 				'tabs'			=>	$this->tabs()
 			);
 		echo $this->templates->get_view(array('settings','settings-page'), $vars);
