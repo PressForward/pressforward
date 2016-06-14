@@ -581,6 +581,15 @@ class Metas {
 				'level'	=> array('feed'),
 				'serialize'	=> true
 			),
+            'pf_no_feed_alert' => array(
+				'name' => 'pf_no_feed_alert',
+				'definition' => __('Feed Alert Status', 'pf'),
+				'function'	=> __('A check to see if an alert is on the feed.', 'pf'),
+				'type'	=> array('adm'),
+				'use'	=> array(),
+				'level'	=> array('feed'),
+				'serialize'	=> true
+			),
 		);
 
 		$metas = apply_filters('pf_meta_terms',$metas);
