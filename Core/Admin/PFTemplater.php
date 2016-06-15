@@ -471,7 +471,7 @@ class PFTemplater {
 									#$urlArray = parse_url($item['item_link']);
 									$sourceLink = pressforward('schema.feed_item')->get_source_link($id_for_comments);
 									$url_array = parse_url($sourceLink);
-									if (!$url_array){
+									if ( !$url_array || empty($url_array['host']) ){
 										pf_log('Could not find the source link for '.$id_for_comments);
 										$sourceLink = "Source URL not found.";
 									} else {
