@@ -701,7 +701,7 @@ class Feeds {
 		pf_log('We have initially formed the following post args:');
 		pf_log($wp_args);
 
-		if (!self::has_feed($r['url'])){
+		if (!$this->has_feed($r['url'])){
 			$insert_type = 'insert';
 		} else {
 			$insert_type = 'update';
@@ -720,9 +720,10 @@ class Feeds {
 		if ($insert_type == 'update') {
 
 			if  (!isset($r['ID'])){
-				$post_obj = self::get_feed($r['url']);
+				$post_obj = $this->get_feed($r['url']);
 				$r['ID'] = $post_obj->ID;
 			}
+			unset($wp_args['post_status']);
 			$wp_args['ID'] = $r['ID'];
 			wp_update_post( $wp_args );
 			$post_id = $r['ID'];
@@ -740,7 +741,7 @@ class Feeds {
 		#echo '</pre>';
 		if ( is_numeric($post_id) && (0 < $post_id) ){
 			pf_log('The post_id is numeric and greater than 0, complete the ' .$insert_type. ' process');
-			self::set_pf_feed_type($post_id, $r['type']);
+			$this->set_pf_feed_type($post_id, $r['type']);
 			pf_log('Tags found:');
 			pf_log($r['tags']);
 			if (array_key_exists('tags', $r) && !empty($r['tags'])){
@@ -772,7 +773,7 @@ class Feeds {
 			foreach ($unsetables as $k=>$a){
 				unset($r[$a]);
 			}
-			self::set_feed_meta($post_id, $r);
+			$this->set_feed_meta($post_id, $r);
 #echo '</pre>';
 			return $post_id;
 		} else {
@@ -879,7 +880,7 @@ class Feeds {
 				return new \WP_Error('badfeed', __('The feed fails verification.'));
 			} else {
 				pf_log('The RSS feed was verified, setting up meta');
-				$r = self::setup_rss_meta($r, $theFeed);
+				$r = $this->setup_rss_meta($r, $theFeed);
 			}
 		}
 		if (!$r['user_added']){
@@ -923,7 +924,7 @@ class Feeds {
 
         $post_status = array('publish');
         if (class_exists('The_Alert_Box')){
-            //$post_status[] = the_alert_box()->status();
+            $post_status[] = the_alert_box()->status();
         }
 
         $defaults = array(
@@ -1023,9 +1024,9 @@ class Feeds {
 	public function update_url($url){
 		global $post;
         pf_log('Invoked: PF_Feeds_Schema::update_url');
-		$posts = self::has_feed($url);
+		$posts = $this->has_feed($url);
 		if (!$posts){
-			$check = self::create($url);
+			$check = $this->create($url);
 			return $check;
 		}
 		$c = 0;
@@ -1034,7 +1035,7 @@ class Feeds {
 			$post_id = $post->ID;
 			if (is_numeric($post_id)){
 				if (($c == 0)){
-					self::update($post_id, array('url' => $url));
+					$this->update($post_id, array('url' => $url));
 				} else {
 					if ($url == get_post_meta($post_id, 'feedUrl', true)){
 						wp_delete_post( $post_id, true );
@@ -1043,7 +1044,7 @@ class Feeds {
 				$c++;
 			} else {
 				# Let's duplicate WordPress's mechanic of 'update' creating a new post if it doesn't exist.
-				$id = self::create($url);
+				$id = $this->create($url);
 				wp_reset_postdata();
 				return $id;
 			}
@@ -1081,7 +1082,7 @@ class Feeds {
 			if (is_wp_error($theFeed)){
 				return new \WP_Error('badfeed', __('The feed fails verification.'));
 			} else {
-				$r = self::setup_rss_meta($r, $theFeed);
+				$r = $this->setup_rss_meta($r, $theFeed);
 			}
 		}
 		if ('rss-quick' == $r['type']){
@@ -1090,16 +1091,16 @@ class Feeds {
 			if (is_wp_error($theFeed)){
 				return new \WP_Error('badfeed', __('The feed fails verification.'));
 			} else {
-				$r = self::setup_rss_meta($r, $theFeed);
+				$r = $this->setup_rss_meta($r, $theFeed);
 			}
 
-			$type_updated = self::set_pf_feed_type($r['ID'], 'rss');
+			$type_updated = $this->set_pf_feed_type($r['ID'], 'rss');
 			if ($type_updated){
 				$r['type'] = 'rss';
 			}
 		}
 
-		$check = self::feed_post_setup($r, 'update');
+		$check = $this->feed_post_setup($r, 'update');
 		return $check;
 
 	}
