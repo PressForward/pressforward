@@ -292,7 +292,7 @@ class Retrieval {
 			}
 
 			# If the feed isn't empty, attempt to retrieve it.
-			$theFeed = self::feed_handler( $aFeed );
+			$theFeed = $this->feed_handler( $aFeed );
 			if ( !$theFeed ) {
 
 				pf_log( 'This feed is empty, too old, or has had all items retrieved:' );
@@ -598,7 +598,7 @@ class Retrieval {
 	public function advance_feeds() {
 		pf_log( 'Begin advance_feeds.' );
 		//Here: If feedlist_iteration is not == to feedlist_count, scheduale a cron and trigger it before returning.
-				$feedlist = self::pf_feedlist();
+				$feedlist = $this->pf_feedlist();
 		//The array keys start with zero, as does the iteration number. This will account for that.
 		$feedcount = count( $feedlist ) - 1;
 		//Get the iteration state. If this variable doesn't exist the planet will break in half.
