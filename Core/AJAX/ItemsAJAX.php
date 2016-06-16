@@ -95,7 +95,7 @@ class ItemsAJAX implements HasActions {
 		$returned = pf_delete_item_tree( $id, true );
 		var_dump($returned);
 		$vd = ob_get_clean();
-		ob_end_clean();
+
 		$response = array(
 		   'what'=>'pressforward',
 		   'action'=>'pf_ajax_thing_deleter',
@@ -104,6 +104,7 @@ class ItemsAJAX implements HasActions {
 		);
 		$xmlResponse = new WP_Ajax_Response($response);
 		$xmlResponse->send();
+		ob_end_clean();
 		die();
 
 	}

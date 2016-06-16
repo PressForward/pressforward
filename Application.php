@@ -62,7 +62,7 @@ class Application extends JaxionCore {
 		// This is an upgrade
 		} else if ( version_compare( $saved_version, $current_version, '<' ) ) {
 			// Do whatever you need to do on an upgrade
-
+			delete_option( 'pf_delete_queue_nonce' );
 		// Version is up to date - do nothing
 		} else {
 			return;

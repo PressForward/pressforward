@@ -884,7 +884,7 @@ function prep_archives_query($q){
 		} else {
 			$offset = 0;
 		}
-
+		//var_dump('see'); die();
 		$relate = pressforward('schema.relationships');
 		$rt = $relate->table_name;
 
@@ -909,7 +909,7 @@ function prep_archives_query($q){
 			$pagefull = 20;
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('read');
-			#var_dump($read_id); die();
+			//var_dump($user_id); die();
 			$q = $wpdb->prepare("
 				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
@@ -986,6 +986,7 @@ function prep_archives_query($q){
 		}
 	#$archivalposts = $wpdb->get_results($dquerystr, OBJECT);
 	#return $archivalposts;
+	//var_dump('<pre>'); var_dump($q); die();
 	return $q;
 }
 
@@ -1061,19 +1062,19 @@ function pf_delete_item_tree( $item, $fake_delete = false ) {
 	$item = get_post( $item );
 
 	if ( ! $item || ! ( $item instanceof WP_Post ) ) {
-		return false;
+		return 'Post Not Found.';
 	}
 
 	$feed_item_post_type = pf_feed_item_post_type();
 	$feed_post_type      = pressforward('schema.feeds')->post_type;
 
 	if ( ! in_array( $item->post_type, array( $feed_item_post_type, $feed_post_type, 'nomination' ) ) ) {
-		return false;
+		return 'Post Type Not Matched';
 	}
 
 	$queued = get_option( 'pf_delete_queue', array() );
 	if ( in_array( $item->ID, $queued ) ) {
-		return false;
+		return 'Post Type Already Queued';
 	}
 
 	$queued[] = $item->ID;
@@ -1106,6 +1107,7 @@ function pf_delete_item_tree( $item, $fake_delete = false ) {
 				$fake_status = 'removed_'.$item->post_type;
 
 				$wp_args = array(
+					'ID'		=>	$item->ID,
 					'post_type'    => pf_feed_item_post_type(),
 					'post_status'  => $fake_status,
 					'post_title'   => $item->post_title,
@@ -1114,7 +1116,7 @@ function pf_delete_item_tree( $item, $fake_delete = false ) {
 					'post_date'    => $item->post_date
 				);
 
-				$id = wp_insert_post($wp_args);
+				$id = wp_update_post($wp_args);
 				pressforward('controller.metas')->update_pf_meta($id, 'item_id', create_feed_item_id( pressforward('controller.metas')->get_post_pf_meta($item->ID, 'item_link'), $item->post_title ) );
 			}
 
@@ -1169,6 +1171,7 @@ function pf_delete_item_tree( $item, $fake_delete = false ) {
  */
 function pf_exclude_queued_items_from_queries( $query ) {
 	$queued = get_option( 'pf_delete_queue' );
+	//var_dump($queued); die();
 	if ( ! $queued || ! is_array( $queued ) ) {
 		return;
 	}
@@ -1188,17 +1191,22 @@ add_action( 'pre_get_posts', 'pf_exclude_queued_items_from_queries', 999 );
  * @since 3.6
  */
 function pf_process_delete_queue() {
+	pf_log('pf_process_delete_queue');
 	if ( ! isset( $_GET['pf_process_delete_queue'] ) ) {
+		pf_log("Not set to go on ");
+		pf_log($_GET);
 		return;
 	}
 
 	$nonce = $_GET['pf_process_delete_queue'];
 	$saved_nonce = get_option( 'pf_delete_queue_nonce' );
 	if ( $saved_nonce !== $nonce ) {
+		pf_log('nonce indicates ready.');
 		return;
 	}
 
 	$queued = get_option( 'pf_delete_queue', array() );
+	pf_log('Queue ready');
 	for ( $i = 0; $i <= 1; $i++ ) {
 		$post_id = array_shift( $queued );
 		if ( null !== $post_id ) {
@@ -1236,6 +1244,7 @@ function pf_launch_batch_delete() {
 	// Nothing to do.
 	$queued = get_option( 'pf_delete_queue' );
 	if ( ! $queued ) {
+		delete_option( 'pf_delete_queue_nonce' );
 		return;
 	}
 
