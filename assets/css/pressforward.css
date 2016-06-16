@@ -738,7 +738,8 @@ h3 {
   height: 38px; }
 
 .grid .nominate-this-preview .item_excerpt {
-  height: 172px; }
+  height: 172px;
+  font-size: 11px; }
 
 .alert-box {
   margin-right: 14px;
