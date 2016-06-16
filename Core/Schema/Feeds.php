@@ -924,7 +924,7 @@ class Feeds {
 
         $post_status = array('publish');
         if (class_exists('The_Alert_Box')){
-            $post_status[] = the_alert_box()->status();
+            $post_status[] = pressforward('library.alertbox')->status();
         }
 
         $defaults = array(

@@ -81,8 +81,8 @@ class PF_RSS_Import extends PF_Module {
 		$error_count = pressforward('controller.metas')->retrieve_meta($id, PF_SLUG.'_feed_error_count');
 		if ((!is_numeric($error_count)) || ('' == $error_count)){ $error_count = 0; }
 		if ($error_count >= $error_to_alert){
-			the_alert_box()->switch_post_type($id);
-			the_alert_box()->add_bug_type_to_post($id, __('Broken RSS feed.', 'pf'));
+			pressforward('library.alertbox')->switch_post_type($id);
+			pressforward('library.alertbox')->add_bug_type_to_post($id, __('Broken RSS feed.', 'pf'));
 			$post_obj = get_post( $id );
 			$old_content = $post_obj->post_content;
 			$update_result = pressforward('controller.metas')->update_pf_meta($id, PF_SLUG.'_feed_error_count', 0);
@@ -365,8 +365,8 @@ class PF_RSS_Import extends PF_Module {
 						$something_broke = true;
 						$description = 'Feed failed initial attempt to add to database | ' . $check->get_error_message();
 						$broken_id = $feed_obj->create($input['single'], array('type' => 'rss-quick', 'description' => $description, 'module_added' => get_called_class()));
-						the_alert_box()->switch_post_type($broken_id);
-						the_alert_box()->add_bug_type_to_post($broken_id, 'Broken feed.');
+						pressforward('library.alertbox')->switch_post_type($broken_id);
+						pressforward('library.alertbox')->add_bug_type_to_post($broken_id, 'Broken feed.');
 					}
 				} else {
 					pf_log('The feed already exists, sending it to update.');
