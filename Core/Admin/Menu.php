@@ -177,7 +177,7 @@ class Menu implements HasActions, HasFilters {
 					<?php echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';  ?>
 					<div id="errors">
 					<?php
-						if (0 >= $this->count_the_posts('pf_feed')){
+						if (0 >= self::count_the_posts('pf_feed')){
 							echo '<p>You need to add feeds, there are none in the system.</p>';
 						}
 					?>

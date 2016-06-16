@@ -209,7 +209,7 @@ class Feed_Items {
 				'meta_key'	=>	pressforward('controller.metas')->get_key( 'item_id' ),
 				'meta_value' => $item_id
 			);
-		$post = $this->get( $args );
+		$post = self::get( $args );
 		if ( empty( $post ) ){
 			return false;
 		} else {
@@ -255,10 +255,10 @@ class Feed_Items {
 		pf_log('Post created with ID of '.$post_id);
 
 		if ( is_numeric($post_id) ) {
-			$this->set_word_count( $post_id, $r['item_content'] );
-			$this->set_source( $post_id, $r['source_title'] );
-			$this->set_source_link( $post_id, $r['item_link'] );
-			$this->set_parent_last_retrieved( $post_id );
+			self::set_word_count( $post_id, $r['item_content'] );
+			self::set_source( $post_id, $r['source_title'] );
+			self::set_source_link( $post_id, $r['item_link'] );
+			self::set_parent_last_retrieved( $post_id );
 		}
 
 		return $post_id;
@@ -494,7 +494,7 @@ class Feed_Items {
 		}
 
 		if ($feedObj == 0){
-			$theFeed = $this->get_the_feed_object();
+			$theFeed = self::get_the_feed_object();
 			$feedObj = $theFeed;
 		}
 
@@ -666,20 +666,20 @@ class Feed_Items {
 				$worked = 1;
 				do_action('about_to_insert_pf_feed_items', $item);
 				# The post gets created here, the $newNomID variable contains the new post's ID.
-				$newNomID = $this->create( $data );
-				$post_inserted_bool = $this->post_inserted($newNomID, $data);
+				$newNomID = self::create( $data );
+				$post_inserted_bool = self::post_inserted($newNomID, $data);
 
 				if (!$post_inserted_bool) {
 					# It's the end of the world! Let's throw everything at this.
 					pf_log('Post will not go into the database. We will try again.');
 					$item_content = htmlentities(strip_tags($item_content), ENT_QUOTES, "UTF-8");
 					$item_content = wp_kses(stripslashes($item_content), array('p', 'a', 'b', 'em', 'strong'));
-					$item_content = $this->extra_special_sanatize($item_content, true);
+					$item_content = self::extra_special_sanatize($item_content, true);
 					$item_content = wpautop($item_content);
-					$item_title = $this->extra_special_sanatize($item_title, true);
+					$item_title = self::extra_special_sanatize($item_title, true);
 					$data['item_content'] = $item_content;
-					$newNomID = $this->create( $data );
-					$post_inserted_bool = $this->post_inserted($newNomID, $data);
+					$newNomID = self::create( $data );
+					$post_inserted_bool = self::post_inserted($newNomID, $data);
 				}
 				pf_log('End of wp_insert_post process.');
 				//$posttest = get_post($newNomID);

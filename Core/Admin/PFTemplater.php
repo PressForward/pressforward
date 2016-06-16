@@ -443,8 +443,8 @@ class PFTemplater {
 			echo '</div>';
 			?>
 			<header> <?php
-				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander schema-actor" role="button" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . $this->display_a($item['item_title'], 'title') . '</a></h1>';
-				echo '<p class="source_title">' . $this->display_a(get_the_source_title($id_for_comments), 'source') . '</p>';
+				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander schema-actor" role="button" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . self::display_a($item['item_title'], 'title') . '</a></h1>';
+				echo '<p class="source_title">' . self::display_a(get_the_source_title($id_for_comments), 'source') . '</p>';
 				if ($format === 'nomination'){
 				?>
 						<div class="sortable-hidden-meta" style="display:none;">
@@ -554,7 +554,7 @@ class PFTemplater {
 						if ($format === 'nomination'){
 							echo'<p>' . pf_noms_excerpt($item['item_content']) . '</p>';
 						} else {
-							echo'<p>' . $this->display_a(pf_feed_excerpt($item['item_content']), 'graf') . '</p>';
+							echo'<p>' . self::display_a(pf_feed_excerpt($item['item_content']), 'graf') . '</p>';
 						}
 					echo '</div>';
 /**
@@ -812,17 +812,17 @@ class PFTemplater {
 										$send_to_draft_classes .= ' btn-success';
 									}
 
-									$this->dropdown_option(__('Send to ', 'pf').ucwords( get_option(PF_SLUG.'_draft_post_status', 'draft') ), "amplify-draft-".$item['item_id'], $send_to_draft_classes, $item['item_id'], 'draft', 'btn-success' );
+									self::dropdown_option(__('Send to ', 'pf').ucwords( get_option(PF_SLUG.'_draft_post_status', 'draft') ), "amplify-draft-".$item['item_id'], $send_to_draft_classes, $item['item_id'], 'draft', 'btn-success' );
 
 							?>
 									<li class="divider"></li>
 							<?php
 								}
-								$tweet_intent = $this->tweet_intent($id_for_comments);
-								$this->dropdown_option(__('Tweet', 'pf'), "amplify-tweet-".$item['item_id'], 'amplify-option', $item['item_id'], '', '', $tweet_intent, '_blank' );
-								#$this->dropdown_option(__('Facebook', 'pf'), "amplify-facebook-".$item['item_id'], 'amplify-option', $item['item_id'] );
-								#$this->dropdown_option(__('Instapaper', 'pf'), "amplify-instapaper-".$item['item_id'], 'amplify-option', $item['item_id'] );
-								#$this->dropdown_option(__('Tumblr', 'pf'), "amplify-tumblr-".$item['item_id'], 'amplify-option', $item['item_id'] );
+								$tweet_intent = self::tweet_intent($id_for_comments);
+								self::dropdown_option(__('Tweet', 'pf'), "amplify-tweet-".$item['item_id'], 'amplify-option', $item['item_id'], '', '', $tweet_intent, '_blank' );
+								#self::dropdown_option(__('Facebook', 'pf'), "amplify-facebook-".$item['item_id'], 'amplify-option', $item['item_id'] );
+								#self::dropdown_option(__('Instapaper', 'pf'), "amplify-instapaper-".$item['item_id'], 'amplify-option', $item['item_id'] );
+								#self::dropdown_option(__('Tumblr', 'pf'), "amplify-tumblr-".$item['item_id'], 'amplify-option', $item['item_id'] );
 								do_action( 'pf_amplify_buttons' );
 							?>
 						 </ul>

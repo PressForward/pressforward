@@ -37,7 +37,7 @@ class PF_Readability {
 			}
 			$stripped_descrip = strip_tags($descrip);
 			if ((str_word_count($stripped_descrip) <= 150) || $aggregated || $force == 'force') {
-				$itemReadReady = $this->readability_object($url);
+				$itemReadReady = self::readability_object($url);
 				#print_r(  wp_richedit_pre($itemReadReady));
 				if ($itemReadReady != 'error-secured') {
 					if (!$itemReadReady) {
@@ -116,7 +116,7 @@ class PF_Readability {
 				'post_id'		=> $_POST['post_id']
 			);
 
-			$readable_ready = $this->get_readable_text($args);
+			$readable_ready = self::get_readable_text($args);
 
 			$read_status = $readable_ready['status'];
 			$itemReadReady = $readable_ready['readable'];

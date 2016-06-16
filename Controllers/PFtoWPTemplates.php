@@ -23,7 +23,7 @@ class PFtoWPTemplates implements Template_Interface {
 	 * Build file paths.
 	 *
 	 * Build paths with arrays Call out of static function class_name->build_path
-	 * or $this->build_path. Use like:
+	 * or self::build_path. Use like:
 	 *
 	 * 		build_path(array("home", "alice", "Documents", "example.txt"));
 	 *
@@ -122,7 +122,7 @@ class PFtoWPTemplates implements Template_Interface {
 		$parent_file = $screen->parent_file;
 		$post_type = $screen->post_type;
 		$taxonomy = $screen->taxonomy;
-		$is_pf = $this->valid_pf_page_ids($id);
+		$is_pf = self::valid_pf_page_ids($id);
 		$this->pf_current_screen_trace = "PF screen trace: ID: $id; action: $action; base: $base; parent_base: $parent_base; parent_file: $parent_file; post_type: $post_type; taxonomy: $taxonomy;";
 		#echo $base;
 		$screen_array = array(
