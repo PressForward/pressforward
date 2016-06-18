@@ -1210,6 +1210,7 @@ function pf_process_delete_queue() {
 	for ( $i = 0; $i <= 1; $i++ ) {
 		$post_id = array_shift( $queued );
 		if ( null !== $post_id ) {
+			pf_log('Deleting '.$post_id);
 			wp_delete_post( $post_id, true );
 		}
 	}

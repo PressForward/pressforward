@@ -216,7 +216,7 @@ class Nominated implements HasActions {
             				//Datetime item was posted to its home RSS
             				$metadata['item_date'] = $date_posted = pressforward('controller.metas')->get_post_pf_meta($nom_id, 'item_date', true);
             				//Unique RSS item ID
-            				$metadata['item_id'] = $rss_item_id = pressforward('controller.metas')->get_post_pf_meta($nom_id, 'origin_item_ID', true);
+            				$metadata['item_id'] = $rss_item_id = pressforward('controller.metas')->get_post_pf_meta($nom_id, 'item_id', true);
             				//RSS-passed tags, comma seperated.
             				$item_nom_tags = $nom_tags = pressforward('controller.metas')->get_post_pf_meta($nom_id, 'item_tags', true);
             				$wp_nom_tags = '';
@@ -338,7 +338,7 @@ class Nominated implements HasActions {
             //if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
             if ( isset( $_POST['post_status'] ) && isset( $_POST['post_type'] ) && ( ($_POST['post_status'] == 'publish') || ($_POST['post_status'] == 'draft') ) && ($_POST['post_type'] == $this->nomination_slug )){
             //print_r($_POST); die();
-                $item_id = $this->metas->get_post_pf_meta($_POST['ID'], 'origin_item_ID', true);
+                $item_id = $this->metas->get_post_pf_meta($_POST['ID'], 'item_id', true);
                 pf_log('Sending to last step '.$item_id.' from Nomination post '.$_POST['ID']);
                 return $this->forward_tools->nomination_to_last_step($item_id, $_POST['ID']);
             }
@@ -379,7 +379,7 @@ class Nominated implements HasActions {
 
         public function nominations_box_builder(){
             //wp_nonce_field( 'nominate_meta', 'nominate_meta_nonce' );
-            $origin_item_ID = $this->metas->get_post_pf_meta($post->ID, 'origin_item_ID', true);
+            $origin_item_ID = $this->metas->get_post_pf_meta($post->ID, 'item_id', true);
             $nomination_count = $this->metas->get_post_pf_meta($post->ID, 'nomination_count', true);
             $submitted_by = $this->metas->get_post_pf_meta($post->ID, 'submitted_by', true);
             $source_title = $this->metas->get_post_pf_meta($post->ID, 'source_title', true);
@@ -564,7 +564,7 @@ class Nominated implements HasActions {
     		if ( $postsAfter->have_posts() ) : while ( $postsAfter->have_posts() ) : $postsAfter->the_post();
 
     					$id = get_the_ID();
-    					$origin_item_id = $this->metas->retrieve_meta($id, 'origin_item_ID');
+    					$origin_item_id = $this->metas->retrieve_meta($id, 'item_id');
     					$current_user = wp_get_current_user();
     					if ($origin_item_id == $item_id) {
     						$check = true;
@@ -601,7 +601,7 @@ class Nominated implements HasActions {
 
                     $id = get_the_ID();
                     pf_log('Deal with nominated post '.$id);
-                    $origin_item_id = $this->metas->retrieve_meta($id, 'origin_item_ID');
+                    $origin_item_id = $this->metas->retrieve_meta($id, 'item_id');
                     $current_user = wp_get_current_user();
                     if ($origin_item_id == $item_id) {
                         $check = true;
