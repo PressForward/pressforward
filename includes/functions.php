@@ -1333,7 +1333,7 @@ function pf_log( $message = '', $display = false, $reset = false, $return = fals
 		$debug = 0;
 		return;
 	}
-
+	$display = apply_filters('force_pf_log_print', $display);
 	if ( ( ( true === $display ) ) ) {
 		print_r($message);
 	}
