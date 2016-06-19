@@ -922,7 +922,7 @@ class Feeds {
 	public function get( $args = array() ) {
 		if ( ! post_type_exists( 'pf_feed' ) ) { $this->register_feed_post_type(); }
 
-        $post_status = array('publish');
+        $post_status = array('publish','under_review','draft');
         if (class_exists('The_Alert_Box')){
             $post_status[] = pressforward('library.alertbox')->status();
         }
