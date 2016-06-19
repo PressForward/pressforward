@@ -786,7 +786,7 @@ function pf_is_drafted($item_id){
  * @return array
  */
 function pf_get_drafted_items( $post_type = 'pf_feed_item' ) {
-	$drafts = get_posts( array(
+	$drafts = new WP_Query( array(
 		'no_found_rows' => true,
 		'post_type' => get_option( PF_SLUG . '_draft_post_type', 'post' ),
 		'post_status' => 'any',
@@ -800,7 +800,7 @@ function pf_get_drafted_items( $post_type = 'pf_feed_item' ) {
 	) );
 
 	$item_hashes = array();
-	foreach ( $drafts as $p ) {
+	foreach ( $drafts->posts as $p ) {
 		$item_hashes[] = get_post_meta( $p->ID, 'item_id', true );
 	}
 
