@@ -741,6 +741,14 @@ h3 {
   height: 172px;
   font-size: 11px; }
 
+@media (max-width: 1245px) {
+  .grid .nominate-this-preview .item_title {
+    height: 60px; }
+  .grid .nominate-this-preview .item_excerpt {
+    height: 100px; }
+  .grid .nominate-this-preview .item_excerpt p:first-of-type {
+    display: none; } }
+
 .alert-box {
   margin-right: 14px;
   background: #f1f1f1; }
