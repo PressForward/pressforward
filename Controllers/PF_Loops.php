@@ -197,6 +197,9 @@ class PF_Loops {
     		) );
     		#var_dump('<pre>'); var_dump($parents_in_folder); die();
     		$post_args['post_parent__in'] = $parents_in_folder->posts;
+			if (empty($post_args['post_parent__in'])){
+				return array();
+			}
     	}
 
     	$feed_items = new \WP_Query( $post_args );
