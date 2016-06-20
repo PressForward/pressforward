@@ -1191,10 +1191,10 @@ add_action( 'pre_get_posts', 'pf_exclude_queued_items_from_queries', 999 );
  * @since 3.6
  */
 function pf_process_delete_queue() {
-	pf_log('pf_process_delete_queue');
+	//pf_log('pf_process_delete_queue');
 	if ( ! isset( $_GET['pf_process_delete_queue'] ) ) {
-		pf_log("Not set to go on ");
-		pf_log($_GET);
+		//pf_log("Not set to go on ");
+		//pf_log($_GET);
 		return;
 	}
 
