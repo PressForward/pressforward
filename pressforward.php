@@ -22,7 +22,7 @@ define( 'PF_NOM_POSTER', 'post-new.php?post_type=nomination' );
 define( 'PF_ROOT', dirname(__FILE__) );
 define( 'PF_FILE_PATH', PF_ROOT . '/' . basename(__FILE__) );
 define( 'PF_URL', plugins_url('/', __FILE__) );
-define( 'PF_VERSION', '3.8' );
+define( 'PF_VERSION', '3.9' );
 
 //Out-of-namespace dependencies
 require 'class-SplClassLoader.php';

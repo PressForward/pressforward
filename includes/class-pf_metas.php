@@ -47,6 +47,7 @@ class PF_Metas {
 		foreach ($args as $arg){
 			pressforward('controller.metas')->add_pf_meta($id, $arg['name'], $arg['value'], true);
 		}
+		add_action('establish_pf_metas', $id, $args);
 	}
 
 	/**
@@ -516,7 +517,7 @@ class PF_Metas {
 				'use'	=> array('req'),
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> false
-				
+
 			),
 			'readable_status' => array(
 				'name' => 'readable_status',
