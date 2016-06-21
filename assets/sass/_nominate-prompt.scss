@@ -1,0 +1,40 @@
+.nominate-this-preview p.pressthis {
+	margin:0;
+}
+
+.nominate-this-preview .pf-item-remove {
+	margin-top: -6px;
+	margin-left: -12px;
+}
+
+.nominate-this-preview footer p.pubdate {
+	line-height:1.2em;
+}
+
+.list .nominate-this-preview .pf-item-remove {
+	margin-left: -30px;
+}
+
+.grid .nominate-this-preview .item_title {
+	height:38px;
+}
+
+.grid .nominate-this-preview .item_excerpt {
+	height: 172px;
+	font-size: 11px;
+}
+@media (max-width: 1245px) {
+
+	.grid .nominate-this-preview .item_title {
+		height:60px;
+	}
+
+	.grid .nominate-this-preview .item_excerpt {
+		height: 100px;
+	}
+
+	.grid .nominate-this-preview .item_excerpt p:first-of-type {
+		display:none;
+	}
+
+}

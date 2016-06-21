@@ -119,7 +119,7 @@ function pf_shortcut_link() {
  * @return string The name of the feed item post_type for PressForward.
  */
 function pf_feed_item_post_type() {
-	return pressforward()->get_feed_item_post_type();
+	return pressforward('schema.feed_item')->post_type;
 }
 
 /**
@@ -130,7 +130,7 @@ function pf_feed_item_post_type() {
  * @return string The slug for the taxonomy used by feed items.
  */
 function pf_feed_item_tag_taxonomy() {
-	return pressforward()->get_feed_item_tag_taxonomy();
+	return pressforward('schema.feed_item')->tag_taxonomy;
 }
 
 /**
@@ -149,7 +149,7 @@ function pf_feed_excerpt( $text ) {
 	array_push($words, '...');
 	$text = implode(' ', $words);
 
-	$contentObj = new pf_htmlchecker($text);
+	$contentObj = pressforward('library.htmlchecker');
 	$item_content = $contentObj->closetags($text);
 
 	return $text;
@@ -447,7 +447,7 @@ function pf_noms_filter( $text ) {
 	$text = apply_filters('the_content', $text);
 	$text = str_replace('\]\]\>', ']]&gt;', $text);
 	$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
-	$contentObj = new pf_htmlchecker($text);
+	$contentObj = pressforward('library.htmlchecker');
 	$text = $contentObj->closetags($text);
 	$text = strip_tags($text, '<p>');
 
@@ -477,7 +477,7 @@ function pf_noms_excerpt( $text ) {
 	$text = apply_filters('the_content', $text);
 	$text = str_replace('\]\]\>', ']]&gt;', $text);
 	$text = preg_replace('@<script[^>]*?>.*?</script>@si', '', $text);
-	$contentObj = new pf_htmlchecker($text);
+	$contentObj = pressforward('library.htmlchecker');
 	$text = $contentObj->closetags($text);
 	$text = strip_tags($text, '<p>');
 
@@ -611,8 +611,8 @@ function pf_get_defining_capability_by_role($role_slug){
 }
 
 function pf_capability_mapper($cap, $role_slug){
-	$feed_caps = pressforward()->pf_feeds->map_feed_caps();
-	$feed_item_caps = pressforward()->schema->map_feed_item_caps();
+	$feed_caps = pressforward('schema.feeds')->map_feed_caps();
+	$feed_item_caps = pressforward('schema.feed_item')->map_feed_item_caps();
 	if (array_key_exists($cap, $feed_caps)){
 		$role = get_role($role_slug);
 		$role->add_cap( $feed_caps[$cap] );
@@ -632,7 +632,7 @@ function assign_pf_to_standard_roles(){
 		'subscriber'
 	);
 	$caps = pf_get_capabilities();
-//	$feed_caps = pressforward()->pf_feeds->map_feed_caps();
+//	$feed_caps = pressforward('schema.feeds')->map_feed_caps();
 //	$feed_item_caps = pressforward()->schema->map_feed_item_caps();
 	foreach ($caps as $cap=>$role){
 		foreach ($role as $a_role){
@@ -655,7 +655,7 @@ function assign_pf_to_standard_roles(){
 function pf_replace_author_presentation( $author ) {
 	global $post;
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')){
-		$custom_author = pressforward()->metas->retrieve_meta($post->ID, 'item_author');
+		$custom_author = pressforward('controller.metas')->retrieve_meta($post->ID, 'item_author');
 		if($custom_author)
 			return $custom_author;
 		return $author;
@@ -684,7 +684,7 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 		return $author_uri;
 	}
 	if ('yes' == get_option('pf_present_author_as_primary', 'yes')) {
-		$custom_author_uri = pressforward()->metas->retrieve_meta($id, 'item_link');
+		$custom_author_uri = pressforward('controller.metas')->retrieve_meta($id, 'item_link');
 		if(!$custom_author_uri || 0 == $custom_author_uri || empty($custom_author_uri)){
 			return $author_uri;
 		} else {
@@ -740,7 +740,7 @@ function pf_forward_unto_source(){
 			echo '<meta property="og:url" content="'.$link.'" />';
 		}
 		$wait = get_option('pf_link_to_source', 0);
-		$post_check = pressforward()->metas->get_post_pf_meta($post_id, 'pf_forward_to_origin', true);
+		$post_check = pressforward('controller.metas')->get_post_pf_meta($post_id, 'pf_forward_to_origin', true);
 		//var_dump($post_check); die();
 		if ( ( $wait > 0 ) && ( "no-forward" !== $post_check ) ){
 			echo '<META HTTP-EQUIV="refresh" CONTENT="'.$wait.';URL='.$link.'">';
@@ -786,7 +786,7 @@ function pf_is_drafted($item_id){
  * @return array
  */
 function pf_get_drafted_items( $post_type = 'pf_feed_item' ) {
-	$drafts = get_posts( array(
+	$drafts = new WP_Query( array(
 		'no_found_rows' => true,
 		'post_type' => get_option( PF_SLUG . '_draft_post_type', 'post' ),
 		'post_status' => 'any',
@@ -800,7 +800,7 @@ function pf_get_drafted_items( $post_type = 'pf_feed_item' ) {
 	) );
 
 	$item_hashes = array();
-	foreach ( $drafts as $p ) {
+	foreach ( $drafts->posts as $p ) {
 		$item_hashes[] = get_post_meta( $p->ID, 'item_id', true );
 	}
 
@@ -824,7 +824,7 @@ function pf_get_drafted_items( $post_type = 'pf_feed_item' ) {
 function filter_for_pf_archives_only($sql){
 	global $wpdb;
 #	if (isset($_GET['pf-see']) && ('archive-only' == $_GET['pf-see'])){
-		$relate = new PF_RSS_Import_Relationship();
+		$relate = pressforward('schema.relationships');
 		$rt = $relate->table_name;
 		$user_id = get_current_user_id();
 		$read_id = pf_get_relationship_type_id('archive');
@@ -884,11 +884,12 @@ function prep_archives_query($q){
 		} else {
 			$offset = 0;
 		}
+		//var_dump('see'); die();
+		$relate = pressforward('schema.relationships');
+		$rt = $relate->table_name;
 
 		if (isset($_GET['pf-see']) && ('archive-only' == $_GET['pf-see'])){
 			$pagefull = 20;
-			$relate = new PF_RSS_Import_Relationship();
-			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('archive');
 			$q = $wpdb->prepare("
@@ -906,11 +907,9 @@ function prep_archives_query($q){
 			 ", 'nomination');
 		} elseif (isset($_GET['pf-see']) && ('unread-only' == $_GET['pf-see'])){
 			$pagefull = 20;
-			$relate = new PF_RSS_Import_Relationship();
-			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('read');
-			#var_dump($read_id); die();
+			//var_dump($user_id); die();
 			$q = $wpdb->prepare("
 				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
@@ -933,8 +932,6 @@ function prep_archives_query($q){
 			 ", 'nomination');
 		} elseif (isset($_GET['action']) && (isset($_POST['search-terms']))){
 			$pagefull = 20;
-			$relate = new PF_RSS_Import_Relationship();
-			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('archive');
 			$search = $_POST['search-terms'];
@@ -953,8 +950,6 @@ function prep_archives_query($q){
 			 ", 'nomination', '%'.$search.'%', '%'.$search.'%');
 		} elseif (isset($_GET['pf-see']) && ('starred-only' == $_GET['pf-see'])){
 			$pagefull = 20;
-			$relate = new PF_RSS_Import_Relationship();
-			$rt = $relate->table_name;
 			$user_id = get_current_user_id();
 			$read_id = pf_get_relationship_type_id('star');
 			$q = $wpdb->prepare("
@@ -964,7 +959,7 @@ function prep_archives_query($q){
 					AND wpm1.meta_key = 'sortable_item_date' AND wpm1.meta_value > 0 AND wposts.post_type = %s
 				)
 				LEFT JOIN {$wpdb->postmeta} wpm2 ON  (wposts.ID = wpm2.post_id
-                       AND wpm2.meta_key = 'item_feed_post_id' AND wposts.post_type = %s )
+                       AND wpm2.meta_key = 'pf_item_post_id' AND wposts.post_type = %s )
 				WHERE wposts.post_status = 'draft'
 				AND wpm1.meta_value > 0
 				AND wposts.ID
@@ -991,6 +986,7 @@ function prep_archives_query($q){
 		}
 	#$archivalposts = $wpdb->get_results($dquerystr, OBJECT);
 	#return $archivalposts;
+	//var_dump('<pre>'); var_dump($q); die();
 	return $q;
 }
 
@@ -1066,19 +1062,19 @@ function pf_delete_item_tree( $item, $fake_delete = false ) {
 	$item = get_post( $item );
 
 	if ( ! $item || ! ( $item instanceof WP_Post ) ) {
-		return false;
+		return 'Post Not Found.';
 	}
 
 	$feed_item_post_type = pf_feed_item_post_type();
-	$feed_post_type      = pressforward()->pf_feeds->post_type;
+	$feed_post_type      = pressforward('schema.feeds')->post_type;
 
 	if ( ! in_array( $item->post_type, array( $feed_item_post_type, $feed_post_type, 'nomination' ) ) ) {
-		return false;
+		return 'Post Type Not Matched';
 	}
 
 	$queued = get_option( 'pf_delete_queue', array() );
 	if ( in_array( $item->ID, $queued ) ) {
-		return false;
+		return 'Post Type Already Queued';
 	}
 
 	$queued[] = $item->ID;
@@ -1111,16 +1107,17 @@ function pf_delete_item_tree( $item, $fake_delete = false ) {
 				$fake_status = 'removed_'.$item->post_type;
 
 				$wp_args = array(
+					'ID'		=>	$item->ID,
 					'post_type'    => pf_feed_item_post_type(),
 					'post_status'  => $fake_status,
 					'post_title'   => $item->post_title,
 					'post_content' => '',
-					'guid'         => pressforward()->metas->get_post_pf_meta($item->ID, 'item_link'),
+					'guid'         => pressforward('controller.metas')->get_post_pf_meta($item->ID, 'item_link'),
 					'post_date'    => $item->post_date
 				);
 
-				$id = wp_insert_post($wp_args);
-				pressforward()->metas->update_pf_meta($id, 'item_id', create_feed_item_id( pressforward()->metas->get_post_pf_meta($item->ID, 'item_link'), $item->post_title ) );
+				$id = wp_update_post($wp_args);
+				pressforward('controller.metas')->update_pf_meta($id, 'item_id', create_feed_item_id( pressforward('controller.metas')->get_post_pf_meta($item->ID, 'item_link'), $item->post_title ) );
 			}
 
 		break; // $feed_item_post_type
@@ -1174,6 +1171,7 @@ function pf_delete_item_tree( $item, $fake_delete = false ) {
  */
 function pf_exclude_queued_items_from_queries( $query ) {
 	$queued = get_option( 'pf_delete_queue' );
+	//var_dump($queued); die();
 	if ( ! $queued || ! is_array( $queued ) ) {
 		return;
 	}
@@ -1193,20 +1191,26 @@ add_action( 'pre_get_posts', 'pf_exclude_queued_items_from_queries', 999 );
  * @since 3.6
  */
 function pf_process_delete_queue() {
+	//pf_log('pf_process_delete_queue');
 	if ( ! isset( $_GET['pf_process_delete_queue'] ) ) {
+		//pf_log("Not set to go on ");
+		//pf_log($_GET);
 		return;
 	}
 
 	$nonce = $_GET['pf_process_delete_queue'];
 	$saved_nonce = get_option( 'pf_delete_queue_nonce' );
 	if ( $saved_nonce !== $nonce ) {
+		pf_log('nonce indicates ready.');
 		return;
 	}
 
 	$queued = get_option( 'pf_delete_queue', array() );
+	pf_log('Queue ready');
 	for ( $i = 0; $i <= 1; $i++ ) {
 		$post_id = array_shift( $queued );
 		if ( null !== $post_id ) {
+			pf_log('Deleting '.$post_id);
 			wp_delete_post( $post_id, true );
 		}
 	}
@@ -1217,13 +1221,13 @@ function pf_process_delete_queue() {
 		delete_option( 'pf_delete_queue' );
 
 		// Clean up empty taxonomy terms.
-		$terms = get_terms( pressforward()->pf_feeds->tag_taxonomy, array(
+		$terms = get_terms( pressforward('schema.feeds')->tag_taxonomy, array(
 			'hide_empty' => false,
 		) );
 
 		foreach ( $terms as $term ) {
 			if ( 0 == $term->count ) {
-				wp_delete_term( $term->term_id, pressforward()->pf_feeds->tag_taxonomy );
+				wp_delete_term( $term->term_id, pressforward('schema.feeds')->tag_taxonomy );
 			}
 		}
 	} else {
@@ -1241,6 +1245,7 @@ function pf_launch_batch_delete() {
 	// Nothing to do.
 	$queued = get_option( 'pf_delete_queue' );
 	if ( ! $queued ) {
+		delete_option( 'pf_delete_queue_nonce' );
 		return;
 	}
 
@@ -1328,7 +1333,7 @@ function pf_log( $message = '', $display = false, $reset = false, $return = fals
 		$debug = 0;
 		return;
 	}
-
+	$display = apply_filters('force_pf_log_print', $display);
 	if ( ( ( true === $display ) ) ) {
 		print_r($message);
 	}

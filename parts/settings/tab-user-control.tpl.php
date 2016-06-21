@@ -1,11 +1,11 @@
-<?php 
+<?php
 
 ?>
 <p>
 	<?php _e('These preferences determine the type of access granted to each user role within the PressForward plugin. The user roles allowed by PressForward in order of most restrictive to least restrictive include: Administrator, Editor, Contributor, and Subscriber.'); ?>
 </p>
 <hr />
-<?php 
+<?php
 
 	$arrayedAdminRights = array(
 		'pf_menu_group_access'	=>	array(
@@ -48,15 +48,15 @@
 
 						<td>
 							<select id="<?php echo $right; ?>" name="<?php echo $right; ?>">
-								<?php pressforward()->admin->pf_get_user_role_select($right, pf_get_defining_capability_by_role($parts['default'])); ?>
+								<?php pressforward('admin.settings')->pf_get_user_role_select($right, pressforward('controller.users')->pf_get_defining_capability_by_role($parts['default'])); ?>
 							</select>
 						</td>
 					</tr>
 				</table>
 			<p>
-				<?php 
+				<?php
 					if (!empty($parts['details'])){
-						echo $parts['details']; 
+						echo $parts['details'];
 					}
 
 				?>
@@ -67,5 +67,5 @@
 		<?php
 
 	}
-	
+
 	do_action('pf_admin_user_settings');

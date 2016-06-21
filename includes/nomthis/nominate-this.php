@@ -99,7 +99,7 @@ function nominate_it() {
         $create_started = 'Attempting to nominate a feed with the result of: <br />';
         //var_dump($sourceLink); die();
         if (current_user_can('edit_posts')){
-          $create = pressforward()->pf_feeds->create($sourceLink, array('post_status' => 'under_review') );
+          $create = pressforward('schema.feeds')->create($sourceLink, array('post_status' => 'under_review') );
           if ( is_numeric($create) ){
             $feed_nom['id'] = $create;
             $create = 'Feed created with ID of '.$create;
@@ -158,10 +158,10 @@ function nominate_it() {
 
 	if (isset($_POST['publish']) && ($_POST['publish'] == "Send to ".ucwords(get_option(PF_SLUG.'_draft_post_status', 'draft')) ) ) {
 		//var_dump($_POST); die();
-		$post_ID = pressforward()->forward_tools->bookmarklet_to_last_step(false, $post);
+		$post_ID = pressforward('utility.forward_tools')->bookmarklet_to_last_step(false, $post);
 
 	} else {
-		$post_ID = pressforward()->forward_tools->bookmarklet_to_nomination(false, $post);
+		$post_ID = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
 	}
 	#var_dump($post); die();
 	return $post_ID;
@@ -179,11 +179,11 @@ if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 				global $pf_nt;
 				if (isset($_POST['item_link']) && !empty($_POST['item_link']) && ($_POST['item_link']) != ''){
 					//Gets OG image
-					$itemFeatImg = pressforward()->pf_feed_items->get_ext_og_img($_POST['item_link']);
+					$itemFeatImg = pressforward('schema.feed_item')->get_ext_og_img($_POST['item_link']);
 				}
 
 	if (!empty($_POST['item_link']) && ($_POST['item_link']) != ''){
-		pressforward()->pf_feed_items->set_ext_as_featured($post_ID, $itemFeatImg);
+		pressforward('schema.feed_item')->set_ext_as_featured($post_ID, $itemFeatImg);
 	}
 
 // Set Variables
@@ -582,7 +582,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			<input type="hidden" id="post_id" name="post_id" value="<?php echo (int) $post_ID; ?>" />
 			<?php if ($url != '') {
 
-				$author_retrieved = pressforward()->metas->get_author_from_url( $url );
+				$author_retrieved = pressforward('controller.metas')->get_author_from_url( $url );
 				//$response_body = wp_remote_retrieve_body( $response );
 				//$response_dom = pf_str_get_html( $response_body );
 
@@ -619,7 +619,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 								$author_value = $author_retrieved;
 							}
 						?>
-					<label for="authors"><input type="text" id="authors" name="authors" value="<?php echo $author_value; ?>" /><br />&nbsp;<?php _e('Enter Authors', 'pf'); ?></label>
+					<label for="authors"><input type="text" id="authors" name="authors" value="<?php echo $author_value; ?>" /><br />&nbsp;<?php echo apply_filters('pf_author_nominate_this_prompt', __('Enter Authors', 'pf')); ?></label>
 					</p>
                     <p>
 					<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php _e('Nominate feed associated with item.', 'pf'); ?></label>
@@ -638,11 +638,15 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 						<?php endforeach; ?>
 						</select></label>
 					</p>
-					<?php endif; endif; ?>
+					<?php endif; endif;
+						do_action('nominate_this_sidebar_head');
+					?>
 				</div>
 			</div>
 
-			<?php $tax = get_taxonomy( 'category' ); ?>
+			<?php
+			do_action('nominate_this_sidebar_top');
+			$tax = get_taxonomy( 'category' ); ?>
 			<div id="categorydiv" class="postbox">
 				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
 				<h3 class="hndle"><?php _e('Categories') ?></h3>
@@ -692,7 +696,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 				</div>
 				</div>
 			</div>
-
+			<?php do_action('nominate_this_sidebar_bottom'); ?>
 		</div>
 	</div>
     <?php } ?>
@@ -788,7 +792,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 
 		if ( !$selection ){
 			if ($url != ''){
-				$content .= pressforward()->pf_feed_items->get_content_through_aggregator($url);
+				$content .= pressforward('schema.feed_item')->get_content_through_aggregator($url);
 			}
 
 		}

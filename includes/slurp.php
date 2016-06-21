@@ -209,7 +209,7 @@ class PF_Feed_Retrieve {
 			pf_log( ' from ' );
 			pf_log( $aFeed->guid );
 			pf_log('Set last_checked for '.$aFeed->ID);
-			$result = pressforward()->pf_feeds->set_feed_last_checked($aFeed->ID);
+			$result = pressforward('schema.feeds')->set_feed_last_checked($aFeed->ID);
 			pf_log($result);
 
 			# @todo the above log may not work what what is being retrieved is an object.
@@ -353,7 +353,7 @@ class PF_Feed_Retrieve {
 		$args = array(
 				'posts_per_page'=>-1
 			);
-		$theFeeds = pressforward()->pf_feeds->get( $args );
+		$theFeeds = pressforward('schema.feeds')->get( $args );
 		$feedlist = array();
 
 		if ( !isset( $theFeeds ) ) {
@@ -387,7 +387,7 @@ class PF_Feed_Retrieve {
 			$type = 'rss';
 		}
 
-		foreach ( pressforward()->modules as $module ) {
+		foreach ( pressforward('modules')->modules as $module ) {
 			if ( $module->feed_type == $type ) {
 				# id and slug should be the same right?
 				return $module->id;
@@ -405,7 +405,7 @@ class PF_Feed_Retrieve {
 	*/
 	public function get_the_feed_object( $module_to_use, $aFeedObj ) {
 
-		$module = pressforward()->modules[$module_to_use];
+		$module = pressforward('modules')->modules[$module_to_use];
 		$feedObj = $module->get_data_object( $aFeedObj );
 		if ( empty( $feedObj ) || !$feedObj ) {
 			return false;
@@ -422,7 +422,7 @@ class PF_Feed_Retrieve {
 		pf_log( 'Starting ajax_update_feed_handler with ID of '.$_POST['feed_id'] );
 		$obj = get_post($_POST['feed_id']);
 		pf_log( $obj );
-		$Feeds = pressforward()->pf_feeds;
+		$Feeds = pressforward('schema.feeds');
 		$id = $obj->ID;
 		pf_log( 'Feed ID ' . $id );
 		$type = $Feeds->get_pf_feed_type( $id );
@@ -465,8 +465,8 @@ class PF_Feed_Retrieve {
 		# Like get_items in SimplePie
 		$feedObj = $this->get_the_feed_object( $module_to_use, $obj );
 
-		pressforward()->pf_feed_items->assemble_feed_for_pull($feedObj);
-		pressforward()->pf_feeds->set_feed_last_checked($id);
+		pressforward('schema.feed_item')->assemble_feed_for_pull($feedObj);
+		pressforward('schema.feeds')->set_feed_last_checked($id);
 		$this->feed_retrieval_reset();
 	}
 
@@ -477,7 +477,7 @@ class PF_Feed_Retrieve {
 	# If check = true than this is just a validator for feeds.
 	public function feed_handler( $obj, $check = false ) {
 		global $pf;
-		$Feeds = pressforward()->pf_feeds;
+		$Feeds = pressforward('schema.feeds');
 		pf_log( 'Invoked: PF_Feed_retrieve::feed_handler()' );
 		pf_log( 'Are we just checking?' );
 		pf_log( $check );
@@ -650,7 +650,7 @@ class PF_Feed_Retrieve {
 		pf_log( 'Pressing forward.' );
 		pf_log( 'Beginning import chunk' );
 
-		pressforward()->pf_feed_items->assemble_feed_for_pull();
+		pressforward('schema.feed_item')->assemble_feed_for_pull();
 
 		delete_option( 'chunk_nonce' );
 
@@ -692,7 +692,7 @@ class PF_Feed_Retrieve {
 				@header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ) );
 				print_r(json_encode($message));
 			}
-			pressforward()->pf_feed_items->assemble_feed_for_pull();
+			pressforward('schema.feed_item')->assemble_feed_for_pull();
 		} else {
 
 			$feeds_meta_state = get_option( PF_SLUG . '_feeds_meta_state', array() );
@@ -720,7 +720,7 @@ class PF_Feed_Retrieve {
 						update_option( PF_SLUG . '_feeds_meta_state', array() );
 						update_option( PF_SLUG . '_ready_to_chunk', 1 );
 						update_option( PF_SLUG . '_iterate_going_switch', 1 );
-						pressforward()->pf_feed_items->assemble_feed_for_pull();
+						pressforward('schema.feed_item')->assemble_feed_for_pull();
 					} elseif ( ( $feeds_meta_state['retrigger'] < ( time() + 86400 ) ) && !( empty($feeds_meta_state ) )) {
 						# If it has been more than 24 hours and retrieval has been frozen in place
 						# and the retrieval state hasn't been reset, reset the check values and reset

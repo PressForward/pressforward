@@ -78,17 +78,17 @@ class PF_Nominations {
 	public function nominations_box_builder() {
 		global $post;
 		//wp_nonce_field( 'nominate_meta', 'nominate_meta_nonce' );
-		$origin_item_ID = pressforward()->metas->get_post_pf_meta($post->ID, 'origin_item_ID', true);
-		$nomination_count = pressforward()->metas->get_post_pf_meta($post->ID, 'nomination_count', true);
-		$submitted_by = pressforward()->metas->get_post_pf_meta($post->ID, 'submitted_by', true);
-		$source_title = pressforward()->metas->get_post_pf_meta($post->ID, 'source_title', true);
-		$posted_date = pressforward()->metas->get_post_pf_meta($post->ID, 'posted_date', true);
-		$nom_authors = pressforward()->metas->get_post_pf_meta($post->ID, 'authors', true);
-		$item_link = pressforward()->metas->get_post_pf_meta($post->ID, 'item_link', true);
-		$date_nominated = pressforward()->metas->get_post_pf_meta($post->ID, 'date_nominated', true);
+		$origin_item_ID = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'origin_item_ID', true);
+		$nomination_count = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'nomination_count', true);
+		$submitted_by = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'submitted_by', true);
+		$source_title = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'source_title', true);
+		$posted_date = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'posted_date', true);
+		$nom_authors = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'authors', true);
+		$item_link = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'item_link', true);
+		$date_nominated = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'date_nominated', true);
 		$user = get_user_by('id', $submitted_by);
-		$item_tags = pressforward()->metas->get_post_pf_meta($post->ID, 'item_tags', true);
-		$source_repeat = pressforward()->metas->get_post_pf_meta($post->ID, 'source_repeat', true);
+		$item_tags = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'item_tags', true);
+		$source_repeat = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'source_repeat', true);
 		if (!empty($origin_item_ID)){
 			$this->meta_box_printer(__('Item ID', 'pf'), $origin_item_ID);
 		}
@@ -118,7 +118,7 @@ class PF_Nominations {
 	public function get_the_source_statement($nom_id){
 
 		$title_of_item = get_the_title($nom_id);
-		$link_to_item = pressforward()->metas->get_post_pf_meta($nom_id, 'item_link', true);
+		$link_to_item = pressforward('controller.metas')->get_post_pf_meta($nom_id, 'item_link', true);
 		$args = array(
 		  'html_before' => "<p>",
 		  'source_statement' => "Source: ",
@@ -178,7 +178,7 @@ class PF_Nominations {
 			$attempt = $this->get_first_nomination($item_id, $pt);
 			if (!empty($attempt)){
 				$nomination_id = $attempt;
-				$nominators = pressforward()->metas->retrieve_meta($nomination_id, 'nominator_array');
+				$nominators = pressforward('controller.metas')->retrieve_meta($nomination_id, 'nominator_array');
 				if (empty($nominators)){
 					pf_log('There is no one left who nominated this item.');
 					pf_log('This nomination has been taken back. We will now remove the item.');
@@ -195,23 +195,23 @@ class PF_Nominations {
 	}
 
 	public function nominate_this_tile(){
-		pressforward()->form_of->nominate_this('as_feed');
+		pressforward('admin.templates')->nominate_this('as_feed');
 	}
 
 	public function change_nomination_count($id, $up = true){
-		$nom_count = pressforward()->metas->retrieve_meta($id, 'nomination_count');
+		$nom_count = pressforward('controller.metas')->retrieve_meta($id, 'nomination_count');
 		if ( $up ) {
 			$nom_count++;
 		} else {
 			$nom_count--;
 		}
-		$check = pressforward()->metas->update_pf_meta($id, 'nomination_count', $nom_count);
+		$check = pressforward('controller.metas')->update_pf_meta($id, 'nomination_count', $nom_count);
 		pf_log('Nomination now has a nomination count of ' . $nom_count . ' applied to post_meta with the result of '.$check);
 		return $check;
 	}
 
 	public function toggle_nominator_array($id, $update = true){
-		$nominators = pressforward()->metas->retrieve_meta($id, 'nominator_array');
+		$nominators = pressforward('controller.metas')->retrieve_meta($id, 'nominator_array');
 		$current_user = wp_get_current_user();
 		$user_id = $current_user->ID;
 		if ($update){
@@ -221,12 +221,12 @@ class PF_Nominations {
 				unset($nominators[$key]);
 			}
 		}
-		$check = pressforward()->metas->update_pf_meta($id, 'nominator_array', $nominators);
+		$check = pressforward('controller.metas')->update_pf_meta($id, 'nominator_array', $nominators);
 		return $check;
 	}
 
 	public function did_user_nominate($id, $user_id = false){
-		$nominators = pressforward()->metas->retrieve_meta($id, 'nominator_array');
+		$nominators = pressforward('controller.metas')->retrieve_meta($id, 'nominator_array');
 		if (!$user_id){
 			$current_user = wp_get_current_user();
 			$user_id = $current_user->ID;
@@ -270,9 +270,9 @@ class PF_Nominations {
 		//if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
 		if ( isset( $_POST['post_status'] ) && isset( $_POST['post_type'] ) && ( ($_POST['post_status'] == 'publish') || ($_POST['post_status'] == 'draft') ) && ($_POST['post_type'] == 'nomination')){
 		//print_r($_POST); die();
-			$item_id = pressforward()->metas->get_post_pf_meta($_POST['ID'], 'origin_item_ID', true);
+			$item_id = pressforward('controller.metas')->get_post_pf_meta($_POST['ID'], 'origin_item_ID', true);
 			pf_log('Sending to last step '.$item_id.' from Nomination post '.$_POST['ID']);
-			return pressforward()->forward_tools->nomination_to_last_step($item_id, $_POST['ID']);
+			return pressforward('utility.forward_tools')->nomination_to_last_step($item_id, $_POST['ID']);
 		}
 
 	}
@@ -284,21 +284,21 @@ class PF_Nominations {
 		if ( $postsAfter->have_posts() ) : while ( $postsAfter->have_posts() ) : $postsAfter->the_post();
 
 					$id = get_the_ID();
-					$origin_item_id = pressforward()->metas->retrieve_meta($id, 'origin_item_ID');
+					$origin_item_id = pressforward('controller.metas')->retrieve_meta($id, 'origin_item_ID');
 					$current_user = wp_get_current_user();
 					if ($origin_item_id == $item_id) {
 						$check = true;
-						$nomCount = pressforward()->metas->retrieve_meta($id, 'nomination_count');
+						$nomCount = pressforward('controller.metas')->retrieve_meta($id, 'nomination_count');
 						$nomCount--;
-						pressforward()->metas->update_pf_meta($id, 'nomination_count', $nomCount);
+						pressforward('controller.metas')->update_pf_meta($id, 'nomination_count', $nomCount);
 						if ( 0 != $current_user->ID ) {
-							$nominators_orig = pressforward()->metas->retrieve_meta($id, 'nominator_array');
+							$nominators_orig = pressforward('controller.metas')->retrieve_meta($id, 'nominator_array');
 							if (true == in_array($current_user->ID, $nominators_orig)){
 								$nominators_new = array_diff($nominators_orig, array($current_user->ID));
 								if (empty($nominators_new)){
 									wp_delete_post( $id );
 								} else {
-									pressforward()->metas->update_pf_meta( $id, 'nominator_array', $nominators_new );
+									pressforward('controller.metas')->update_pf_meta( $id, 'nominator_array', $nominators_new );
 								}
 							}
 						}
@@ -321,7 +321,7 @@ class PF_Nominations {
 
 				$id = get_the_ID();
 				pf_log('Deal with nominated post '.$id);
-				$origin_item_id = pressforward()->metas->retrieve_meta($id, 'origin_item_ID');
+				$origin_item_id = pressforward('controller.metas')->retrieve_meta($id, 'origin_item_ID');
                 $current_user = wp_get_current_user();
 				if ($origin_item_id == $item_id) {
 					$check = true;
@@ -331,22 +331,22 @@ class PF_Nominations {
 							//Not logged in.
 							//If we ever reveal this to non users and want to count nominations by all, here is where it will go.
 							pf_log('Can not find user for updating nomionation count.');
-                            $nomCount = pressforward()->metas->retrieve_meta($id, 'nomination_count');
+                            $nomCount = pressforward('controller.metas')->retrieve_meta($id, 'nomination_count');
                             $nomCount++;
-                            pressforward()->metas->update_pf_meta($id, 'nomination_count', $nomCount);
+                            pressforward('controller.metas')->update_pf_meta($id, 'nomination_count', $nomCount);
 														$check = 'no_user';
 						} else {
-							$nominators_orig = pressforward()->metas->retrieve_meta($id, 'nominator_array');
+							$nominators_orig = pressforward('controller.metas')->retrieve_meta($id, 'nominator_array');
                             if (!in_array($current_user->ID, $nominators_orig)){
                                 $nominators = $nominators_orig;
                                 $nominator = $current_user->ID;
 																$nominators[] = $current_user->ID;
-                                pressforward()->metas->update_pf_meta($id, 'nominator_array', $nominator);
-                                $nomCount = pressforward()->metas->get_post_pf_meta($id, 'nomination_count', true);
+                                pressforward('controller.metas')->update_pf_meta($id, 'nominator_array', $nominator);
+                                $nomCount = pressforward('controller.metas')->get_post_pf_meta($id, 'nomination_count', true);
                                 pf_log('So far we have a nominating count of '.$nomCount);
 																$nomCount++;
 																pf_log('Now we have a nominating count of '.	$nomCount);
-                                $check_meta = pressforward()->metas->update_pf_meta($id, 'nomination_count', $nomCount);
+                                $check_meta = pressforward('controller.metas')->update_pf_meta($id, 'nomination_count', $nomCount);
 																pf_log('Attempt to update the meta for nomination_count resulted in: ');
 																pf_log($check_meta);
 																$check = true;
@@ -436,21 +436,21 @@ class PF_Nominations {
 		global $post;
 		switch ($column) {
 			case 'nomcount':
-				echo pressforward()->metas->get_post_pf_meta($post->ID, 'nomination_count', true);
+				echo pressforward('controller.metas')->get_post_pf_meta($post->ID, 'nomination_count', true);
 				break;
 			case 'nominatedby':
-				$nominatorID = pressforward()->metas->get_post_pf_meta($post->ID, 'submitted_by', true);
+				$nominatorID = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'submitted_by', true);
 				$user = get_user_by('id', $nominatorID);
 				if ( is_a( $user, 'WP_User' ) ) {
 					echo $user->display_name;
 				}
 				break;
 			case 'original_author':
-				$orig_auth = pressforward()->metas->get_post_pf_meta($post->ID, 'authors', true);
+				$orig_auth = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'authors', true);
 				echo $orig_auth;
 				break;
 			case 'date_nominated':
-				$dateNomed = pressforward()->metas->get_post_pf_meta($post->ID, 'date_nominated', true);
+				$dateNomed = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'date_nominated', true);
 				echo $dateNomed;
 				break;
 
@@ -501,7 +501,7 @@ class PF_Nominations {
 			} else {
 				$amplify = false;
 			}
-			$nomination_id = pressforward()->forward_tools->item_to_nomination( $item_id, $_POST['item_post_id'] );
+			$nomination_id = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $_POST['item_post_id'] );
 			if ( is_wp_error($nomination_id) || !$nomination_id ){
 				pf_log('Nomination has gone wrong somehow.');
 				pf_log($nomination_id);
@@ -517,7 +517,7 @@ class PF_Nominations {
 					)
 				);
 			} else {
-			//pressforward()->metas->transition_post_meta( $_POST['item_post_id'], $newNomID, $amplify );
+			//pressforward('controller.metas')->transition_post_meta( $_POST['item_post_id'], $newNomID, $amplify );
 				$response = array(
 					'what' => 'nomination',
 					'action' => 'build_nomination',
@@ -568,13 +568,13 @@ class PF_Nominations {
 			if (!$id){
 				$id = $_POST['nom_id'];
 				//$nom = get_post($id);
-				$item_id = pressforward()->metas->retrieve_meta($id, 'item_id');
+				$item_id = pressforward('controller.metas')->retrieve_meta($id, 'item_id');
 			}
-			$item_id = pressforward()->metas->retrieve_meta($id, 'item_id');
-			$last_step_id = pressforward()->forward_tools->nomination_to_last_step( $item_id, $id );
+			$item_id = pressforward('controller.metas')->retrieve_meta($id, 'item_id');
+			$last_step_id = pressforward('utility.forward_tools')->nomination_to_last_step( $item_id, $id );
 ##Check
 				add_post_meta($id, 'nom_id', $id, true);
-				//pressforward()->metas->transition_post_meta($id, $new_post_id, true);
+				//pressforward('controller.metas')->transition_post_meta($id, $new_post_id, true);
 				$already_has_thumb = has_post_thumbnail($id);
 				if ($already_has_thumb)  {
 					$post_thumbnail_id = get_post_thumbnail_id( $id );
@@ -615,7 +615,7 @@ class PF_Nominations {
 		ob_start();
 
 		$item_id = $_POST['item_id'];
-			$nomination_id = pressforward()->forward_tools->nomination_to_last_step( $item_id, $_POST['nom_id'] );
+			$nomination_id = pressforward('utility.forward_tools')->nomination_to_last_step( $item_id, $_POST['nom_id'] );
 			$response = array(
 				'what' => 'draft',
 				'action' => 'build_nom_draft',

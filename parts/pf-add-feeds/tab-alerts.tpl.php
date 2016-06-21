@@ -9,7 +9,7 @@
 	            <h3 class="hndle"><span>Feed Problems</span></h3>
 	            <div class="inside">
 					<?php
-	                    pressforward()->admin->pf_alert_displayer();
+	                    pressforward('admin.menu')->pf_alert_displayer();
 	                ?>
 	            </div>
 	        </div>

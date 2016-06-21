@@ -1,6 +1,6 @@
 <?php
 
-pressforward()->pf_update_php_notice->does_it_meet_required_php_version();
+//pressforward()->pf_update_php_notice->does_it_meet_required_php_version();
 
 ?>
 <p>
@@ -70,19 +70,19 @@ pressforward()->pf_update_php_notice->does_it_meet_required_php_version();
 	if (class_exists('The_Alert_Box')){ ?>
 		<p>
 			<?php
-				#if (class_exists('The_Alert_Box')){
-					$alert_settings = the_alert_box()->settings_fields();
+				if (class_exists('The_Alert_Box')){
+					$alert_settings = pressforward('library.alertbox')->settings_fields();
 					$alert_switch = $alert_settings['switch'];
-					$check = the_alert_box()->setting($alert_switch, $alert_switch['default']);
+					$check = pressforward('library.alertbox')->setting($alert_switch, $alert_switch['default']);
 					#var_dump($check);
-						$check = the_alert_box()->setting($alert_switch, $alert_switch['default']);
+						$check = pressforward('library.alertbox')->setting($alert_switch, $alert_switch['default']);
 						if ('true' == $check){
 							$mark = 'checked';
 						} else {
 							$mark = '';
 						}
-					echo '<input id="alert_switch" type="checkbox" name="'.the_alert_box()->option_name().'['.$alert_switch['parent_element'].']['.$alert_switch['element'].']" value="true" '.$mark.' class="'.$alert_switch['parent_element'].' '.$alert_switch['element'].'" />  <label for="'.the_alert_box()->option_name().'['.$alert_switch['parent_element'].']['.$alert_switch['element'].']" class="'.$alert_switch['parent_element'].' '.$alert_switch['element'].'" >' . $alert_switch['label_for'] . '</label>';
-				#}
+					echo '<input id="alert_switch" type="checkbox" name="'.pressforward('library.alertbox')->option_name().'['.$alert_switch['parent_element'].']['.$alert_switch['element'].']" value="true" '.$mark.' class="'.$alert_switch['parent_element'].' '.$alert_switch['element'].'" />  <label for="'.pressforward('library.alertbox')->option_name().'['.$alert_switch['parent_element'].']['.$alert_switch['element'].']" class="'.$alert_switch['parent_element'].' '.$alert_switch['element'].'" >' . $alert_switch['label_for'] . '</label>';
+				}
 			?>
 		</p>
 		<p>

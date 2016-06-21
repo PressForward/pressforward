@@ -63,7 +63,7 @@ class PF_Folders {
 	}
 
 	public function register_folders_for_feeds(){
-		register_taxonomy_for_object_type( $this->tag_taxonomy, pressforward()->pf_feeds->post_type );
+		register_taxonomy_for_object_type( $this->tag_taxonomy, pressforward('schema.feeds')->post_type );
 	}
 	/**
 	 * Ensure that 'Feed Tags' stays underneath the PressForward top-level item.
@@ -83,7 +83,7 @@ class PF_Folders {
 		// Edit Feed page
 		if ( 'post.php' === $pagenow && ! empty( $_GET['post'] ) ) {
 			global $post;
-			if ( pressforward()->pf_feeds->post_type === $post->post_type ) {
+			if ( pressforward('schema.feeds')->post_type === $post->post_type ) {
 				$pf = 'pf-menu';
 			}
 		}
@@ -196,14 +196,14 @@ class PF_Folders {
 	public function get_feeds_without_folders($ids = true){
 		   $q = new WP_Query(
 		   				array(
-		 		            'post_type' => pressforward()->pf_feeds->post_type,
+		 		            'post_type' => pressforward('schema.feeds')->post_type,
 		 		            'fields'	=>	'ids',
 		 		            'orderby'	=> 'title',
 		 		            'order'		=> 'ASC',
 		 		            'nopaging' => true,
 		 		            'tax_query' => array(
 		 		                array(
-		 		                    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy,
+		 		                    'taxonomy' => pressforward('schema.feeds')->tag_taxonomy,
 		 		                    'operator' => 'NOT EXISTS',
 		 		                ),
 		 		            ),
