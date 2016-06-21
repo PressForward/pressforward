@@ -81,6 +81,16 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+
+= 3.9 =
+
+* Moved Core code to dependency injection system.
+* Removed compatibility with PHP5.2 and added warning for those attempting to activate on PHP5.2 or lower.
+* Added additional hooks to the Nominate This bookmarklet and process to allow for additional functionality. 
+* Improve OpenGraph parsing
+* Better remove errors from the response in AJAX handlers
+* Resolve occasional activation error due to interface mis-match. 
+
 = 3.8 =
 * A new option in preferences allows site administrators to change the location of the source link from the bottom of the post to the top.
 * Restored “Send to Draft” functionality in All Content.
