@@ -22,7 +22,7 @@ class PF_Readability {
 			extract( $args, EXTR_SKIP );
 			set_time_limit(0);
 			$readability_stat = $url;
-			$url = pressforward()->pf_feed_items->resolve_full_url($url);
+			$url = pressforward('schema.feed_item')->resolve_full_url($url);
 			//var_dump($url); die();
 			$descrip = rawurldecode($descrip);
 			if (get_magic_quotes_gpc())
@@ -44,8 +44,8 @@ class PF_Readability {
 						//$itemReadReady .= '<br />';
 						$url = str_replace('&amp;','&', $url);
 						#Try and get the OpenGraph description.
-						if (pressforward()->og_reader->fetch($url)){
-							$node = pressforward()->og_reader->fetch($url);
+						if (pressforward('library.opengraph')->fetch($url)){
+							$node = pressforward('library.opengraph')->fetch($url);
 							$itemReadReady .= $node->description;
 						} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
 						elseif ('' != ($contentHtml = @get_meta_tags($url))) {
@@ -123,7 +123,7 @@ class PF_Readability {
 			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
 		}
 
-		$contentObj = new pf_htmlchecker($itemReadReady);
+		$contentObj = pressforward('library.htmlchecker');
 		$itemReadReady = $contentObj->closetags($itemReadReady);
 
 		# BIG FREAKING WARNING: This WILL NOT WORK if you have WP_DEBUG and WP_DEBUG_DISPLAY true and either your theme or plugins have bad functions on the save_post hook.
@@ -184,7 +184,7 @@ class PF_Readability {
 	public static function readability_object($url) {
 
 		set_time_limit(0);
-		$url =  pressforward()->pf_feed_items->resolve_full_url($url);
+		$url =  pressforward('schema.feed_item')->resolve_full_url($url);
 
 		$request = pf_de_https($url, 'wp_remote_get', array(
 																												'timeout' => '30',
@@ -302,7 +302,7 @@ class PF_Readability {
 			//print_r($url . ' fails Readability.<br />');
 		}
 		if ($content != false){
-				$contentObj = new pf_htmlchecker($content);
+				$contentObj = pressforward('library.htmlchecker');
 				$content = $contentObj->closetags($content);
 		}
 

@@ -32,7 +32,7 @@ class PF_Module {
 	 * Also sets up the module_dir and module_url for use throughout
 	 */
 	function setup_module_info() {
-		$pf = pressforward();
+		$pf = pressforward('modules');
 
 		// Determine the ID by checking which module this class belongs to
 		$module_class = get_class( $this );
@@ -54,14 +54,13 @@ class PF_Module {
 		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
 			$enabled = 'yes';
 		}
-
+		//$enabled = 'yes';
 		if ( 'yes' == $enabled ) {
 			// Run at 15 to make sure the core menu is loaded first
-			add_action( 'admin_menu', array( $this, 'setup_admin_menus' ), 15 );
+			add_action( 'admin_menu', array( $this, 'setup_admin_menus' ), 20 );
 
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ) );	// There's no admin_enqueue_styles action
-
 			add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_scripts' ) );
 			add_action( 'wp_enqueue_styles',  array( $this, 'wp_enqueue_styles' ) );
 			if ( !empty( $this->feed_type ) ){
@@ -71,6 +70,7 @@ class PF_Module {
 					$feed_type = $this->feed_type;
 				}
 				add_action( 'pf_do_pf-add-feeds_tab_'.$feed_type, array( $this, 'add_to_feeder' ) );
+				//var_dump('mb: pf_do_pf-add-feeds_tab_'.$feed_type);
 				add_filter( 'pf_tabs_pf-add-feeds', array($this, 'set_permitted_feeds_tabs') );
 			}
 			add_filter('dash_widget_bar', array($this, 'add_dash_widgets_filter') );

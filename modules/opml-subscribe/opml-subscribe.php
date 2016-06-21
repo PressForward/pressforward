@@ -25,7 +25,7 @@ class PF_OPML_Subscribe extends PF_Module {
 			add_action('init', array($this, 'make_OPML') );
 		}
 
-		add_filter( 'pf_tabs_pf-tools', array($this, 'set_permitted_tools_tabs') );
+		add_filter( 'pf_tabs_pf-tools', array($this, 'set_permitted_tools_tabs'), 20, 1 );
 		add_action( 'pf_do_pf-tools_tab_opml', array($this, 'opml_tools') );
 	}
 
@@ -61,13 +61,13 @@ class PF_OPML_Subscribe extends PF_Module {
 			return false;
 		}
 		$slug = $this->folder_to_slug($folder);
-		$tax = pressforward()->pf_feeds->tag_taxonomy;
+		$tax = pressforward('schema.feeds')->tag_taxonomy;
 		$check = term_exists($slug, strval($tax) );
 		if ( !empty( $check ) ){
 			$cat = term_exists($slug, strval($tax) );
 			$cat_id = $cat['term_id'];
 		} else {
-			$cat = wp_insert_term( $folder->title, pressforward()->pf_feeds->tag_taxonomy,
+			$cat = wp_insert_term( $folder->title, pressforward('schema.feeds')->tag_taxonomy,
 					array(
 							'description'	=>	$folder->text,
 							'slug'	=>	$slug
@@ -80,10 +80,10 @@ class PF_OPML_Subscribe extends PF_Module {
 			}
 			$cat_id = $cat['term_id'];
 		}
-		$cat_obj = get_term($cat_id, pressforward()->pf_feeds->tag_taxonomy);
+		$cat_obj = get_term($cat_id, pressforward('schema.feeds')->tag_taxonomy);
 		pf_log('Set category with slug of '.$slug);
 		pf_log('Setting new category for '. $id . ' of ' . $slug . ' with term ID of '.$cat_obj->term_id);
-		$check = wp_set_object_terms( $id, array( $cat_obj->term_id ), pressforward()->pf_feeds->tag_taxonomy, true );
+		$check = wp_set_object_terms( $id, array( $cat_obj->term_id ), pressforward('schema.feeds')->tag_taxonomy, true );
 		if ( is_wp_error($check) ){
 			pf_log('Could not add category error:');
 			pf_log($check);
@@ -98,6 +98,11 @@ class PF_OPML_Subscribe extends PF_Module {
 		$post_id = $args['post_id'];
 		pf_log('Do something with post ID '.$post_id);
 		$feed_obj = $item['obj'];
+		if ( !method_exists($feed_obj, 'folder') || empty($feed_obj->folder) ){
+			pf_log('No folder available on');
+			pf_log($args);
+			return $item;
+		}
 		foreach ($feed_obj->folder as $folder){
 			$slug = $this->folder_to_slug($folder);
 			if ( !has_category( $slug, $post_id ) ){
@@ -144,7 +149,11 @@ class PF_OPML_Subscribe extends PF_Module {
 			'module_added' => 'opml-subscribe',
 			'tags'         => array(),
 		);
-		$new_feed_id = pressforward()->pf_feeds->create($feed_obj->feedUrl, $feed_array);
+		$new_feed_id = pressforward('schema.feeds')->create($feed_obj->feedUrl, $feed_array);
+		pf_log('New feed created with ID of '.$new_feed_id);
+		if ( !method_exists($feed_obj, 'folder') || empty($feed_obj->folder) ){
+			return $new_feed_id;
+		}
 		//Set up category here.
 		foreach ($feed_obj->folder as $folder){
 			pf_log('Setting new category for '.$feed_obj->title);
@@ -201,12 +210,12 @@ class PF_OPML_Subscribe extends PF_Module {
 					$feed_obj->type = 'rss';
 				}
 				if(!empty($feed_obj->text)){
-					$contentObj = new pf_htmlchecker($feed_obj->text);
+					$contentObj = pressforward('library.htmlchecker');
 					$feed_obj->text = $contentObj->closetags($feed_obj->text);
 				}
 
 				if(!empty($feed_obj->title)){
-					$contentObj = new pf_htmlchecker($feed_obj->title);
+					$contentObj = pressforward('library.htmlchecker');
 					$feed_obj->title = $contentObj->closetags($feed_obj->title);
 				} else {
 					$feed_obj->title = $feed_obj->feedUrl;
@@ -256,7 +265,7 @@ class PF_OPML_Subscribe extends PF_Module {
             <div class="opml-box">
                     <h3><span><?php _e('Subscribe to OPML as Feed', 'pf'); ?></span></h3>
                     <div>
-                        <div><?php _e('Add OPML Subscription', 'pf'); ?> (RSS or Atom)</div>
+                        <div><?php _e('Add OPML Subscription', 'pf'); ?> (OPML or XML)</div>
                             <div class="pf_feeder_input_box">
                                 <input id="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>" value="" />
                                 <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>"><?php _e('*Complete URL path', 'pf'); ?></label>
@@ -276,9 +285,9 @@ class PF_OPML_Subscribe extends PF_Module {
 		if (!empty($input['opml_single'])){
 
 			if (!(is_array($input['opml_single']))){
-				if (!pressforward()->pf_feeds->has_feed($input['opml_single'])){
+				if (!pressforward('schema.feeds')->has_feed($input['opml_single'])){
 					pf_log('Adding OPML with url'.$input['opml_single']);
-					$check = pressforward()->pf_feeds->create(
+					$check = pressforward('schema.feeds')->create(
 						$input['opml_single'],
 						array(
 							'title' => 'OPML Subscription at ' . $input['opml_single'],
@@ -301,7 +310,7 @@ class PF_OPML_Subscribe extends PF_Module {
 					add_settings_error('add_pf_feeds', 'pf_feeds_validation_response', __('You have submitted an OPML feed.', 'pf').$subscribe_string, 'updated');
 				} else {
 					#var_dump($input); die();
-					#pressforward()->pf_feeds->update_url($input['opml_single']);
+					#pressforward('schema.feeds')->update_url($input['opml_single']);
 				}
 			} else {
 				wp_die('Bad feed input. Why are you trying to place an array?');
@@ -321,13 +330,14 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 
 	private function make_a_folder_object_from_term_slug( $slug ){
-		$obj = get_term_by( 'slug', $slug, pressforward()->pf_feeds->tag_taxonomy );
+		$obj = get_term_by( 'slug', $slug, pressforward('schema.feeds')->tag_taxonomy );
 		return $this->make_a_folder_object_from_term( $obj );
 	}
 
 	private function make_a_feed_object_from_post( $post_id = false ){
 		//var_dump(get_post_meta(get_the_ID()));
 		$meta = get_post_meta($post_id);
+		//var_dump($meta);
 		if ( !empty( $meta['feedUrl'][0] ) ){
 			if ( 'http' != substr( $meta['feedUrl'][0], 0, 4 ) ){
 				$meta['feedUrl'][0] = 'http://'.$meta['feedUrl'][0];
@@ -349,7 +359,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 
 	private function make_parent_folder_from_post( $post_id ){
-		$terms = wp_get_post_terms( $post_id, pressforward()->pf_feeds->tag_taxonomy );
+		$terms = wp_get_post_terms( $post_id, pressforward('schema.feeds')->tag_taxonomy );
 		$folders = array();
 		foreach ( $terms as $term ) {
 			//var_dump($term->name);
@@ -364,13 +374,13 @@ class PF_OPML_Subscribe extends PF_Module {
 		if( empty($_GET['opml_folder']) ){
 			$this->master_opml_obj = new OPML_Object(get_site_url().'?pf=opml' );
 			$this->master_opml_obj->set_title('PressForward Subscription List for '.$site_name);
-			$folders = get_terms(pressforward()->pf_feeds->tag_taxonomy);
+			$folders = get_terms(pressforward('schema.feeds')->tag_taxonomy);
 			foreach ($folders as $folder){
 				$folder_obj = $this->make_a_folder_object_from_term($folder);
 				$this->master_opml_obj->set_folder($folder_obj);
 			}
 			$feed_query_args = array(
-				'post_type'      => pressforward()->pf_feeds->post_type,
+				'post_type'      => pressforward('schema.feeds')->post_type,
 				'posts_per_page' => -1,
 			);
 			$feed_query = new WP_Query( $feed_query_args );
@@ -384,7 +394,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		if ( $feed_query->have_posts() ) {
 			while ( $feed_query->have_posts() ) {
 				$feed_query->the_post();
-				#var_dump(get_the_ID());
+				//var_dump(get_the_ID());
 				$feed_obj = $this->make_a_feed_object_from_post( get_the_ID() );
 				//var_dump($feed_obj);
 				//Use OPML internals to slugify attached terms, retrieve them from the OPML folder object, deliver them into feed.

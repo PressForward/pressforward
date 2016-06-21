@@ -78,14 +78,14 @@ class PF_RSS_Import extends PF_Module {
 			return;
 		}
 		$error_to_alert = get_option(PF_SLUG.'_errors_until_alert', 3);
-		$error_count = pressforward()->metas->retrieve_meta($id, PF_SLUG.'_feed_error_count');
+		$error_count = pressforward('controller.metas')->retrieve_meta($id, PF_SLUG.'_feed_error_count');
 		if ((!is_numeric($error_count)) || ('' == $error_count)){ $error_count = 0; }
 		if ($error_count >= $error_to_alert){
-			the_alert_box()->switch_post_type($id);
-			the_alert_box()->add_bug_type_to_post($id, __('Broken RSS feed.', 'pf'));
+			pressforward('library.alertbox')->switch_post_type($id);
+			pressforward('library.alertbox')->add_bug_type_to_post($id, __('Broken RSS feed.', 'pf'));
 			$post_obj = get_post( $id );
 			$old_content = $post_obj->post_content;
-			$update_result = pressforward()->metas->update_pf_meta($id, PF_SLUG.'_feed_error_count', 0);
+			$update_result = pressforward('controller.metas')->update_pf_meta($id, PF_SLUG.'_feed_error_count', 0);
 			if(is_wp_error($theFeed)){
 				$argup = array(
 					'ID'			=> $id,
@@ -96,7 +96,7 @@ class PF_RSS_Import extends PF_Module {
 			}
 			return true;
 		} else {
-			$update_result = pressforward()->metas->update_pf_meta($id, PF_SLUG.'_feed_error_count', $error_count+1);
+			$update_result = pressforward('controller.metas')->update_pf_meta($id, PF_SLUG.'_feed_error_count', $error_count+1);
 			return $update_result;
 		}
 	}
@@ -197,7 +197,7 @@ class PF_RSS_Import extends PF_Module {
 						$item_categories_string = implode(',',$itemTerms);
 					} else { $item_categories_string = ''; }
 					//one final cleanup of the content.
-					$contentObj = new pf_htmlchecker($item_content);
+					$contentObj = pressforward('library.htmlchecker');
 					$item_content = $contentObj->closetags($item_content);
 					#print_r($c);
 					$rssObject['rss_' . $c] = pf_feed_object(
@@ -349,8 +349,8 @@ class PF_RSS_Import extends PF_Module {
 		} else {
 			pf_log('No, the current user can not edit posts.');
 		}
-		
-		$feed_obj = pressforward()->pf_feeds;
+
+		$feed_obj = pressforward('schema.feeds');
 		$subed = array();
 		$something_broke = false;
 		if (!empty($input['single'])){
@@ -365,8 +365,8 @@ class PF_RSS_Import extends PF_Module {
 						$something_broke = true;
 						$description = 'Feed failed initial attempt to add to database | ' . $check->get_error_message();
 						$broken_id = $feed_obj->create($input['single'], array('type' => 'rss-quick', 'description' => $description, 'module_added' => get_called_class()));
-						the_alert_box()->switch_post_type($broken_id);
-						the_alert_box()->add_bug_type_to_post($broken_id, 'Broken feed.');
+						pressforward('library.alertbox')->switch_post_type($broken_id);
+						pressforward('library.alertbox')->add_bug_type_to_post($broken_id, 'Broken feed.');
 					}
 				} else {
 					pf_log('The feed already exists, sending it to update.');
@@ -466,7 +466,7 @@ class PF_RSS_Import extends PF_Module {
 			}
 			# Adding this as a 'quick' type so that we can process the list quickly.
 			pf_log('Adding this as a quick type so that we can process the list quickly');
-			$opml_array = pressforward()->pf_feeds->progressive_feedlist_transformer($opml_array, $feedXml, $key, $args);
+			$opml_array = pressforward('schema.feeds')->progressive_feedlist_transformer($opml_array, $feedXml, $key, $args);
 			# @todo Tag based on folder structure
 		}
 		#$check_up = update_option( PF_SLUG . '_feedlist', $opml_array );
@@ -541,7 +541,7 @@ class PF_RSS_Import extends PF_Module {
 
 	public function admin_enqueue_scripts() {
 		global $pagenow;
-		$pf = pressforward();
+		$pf = pressforward('modules');
 
 		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
 

@@ -23,16 +23,6 @@ class PF_Feeds_Schema {
 	#var $post_type;
 	#var $tag_taxonomy;
 
-	public static function init() {
-		static $instance;
-
-		if ( empty( $instance ) ) {
-			$instance = new self;
-		}
-
-		return $instance;
-	}
-
 	private function __construct() {
 		$this->post_type = 'pf_feed';
 		$this->tag_taxonomy = 'pf_feed_category';
@@ -221,9 +211,9 @@ class PF_Feeds_Schema {
 	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ){ return false; }
 	    if ( !current_user_can( 'edit_page', $post_id ) ){ return false; }
 	    if( empty($_POST['pf_no_feed_alert']) ){
-	        pressforward()->metas->update_pf_meta($post_id, 'pf_no_feed_alert', 0);
+	        pressforward('controller.metas')->update_pf_meta($post_id, 'pf_no_feed_alert', 0);
 	    } else {
-				pressforward()->metas->update_pf_meta($post_id, 'pf_no_feed_alert', $_POST['pf_no_feed_alert']);
+				pressforward('controller.metas')->update_pf_meta($post_id, 'pf_no_feed_alert', $_POST['pf_no_feed_alert']);
 			}
 
 		return $post_id;
@@ -277,7 +267,7 @@ class PF_Feeds_Schema {
 	*/
 	public function count_feed_items_collected( $parent_id, $perm = '' ){
 		global $wpdb;
-		$type = pressforward()->get_feed_item_post_type();
+		$type = pressforward('schema.feed_item')->post_type;
 		if ( ! post_type_exists( $type ) )
 			return new stdClass;
 
@@ -459,7 +449,7 @@ class PF_Feeds_Schema {
 	public function get_feeds_without_folders($ids = true){
 		   $q = new WP_Query(
 		   				array(
-		 		            'post_type' => pressforward()->pf_feeds->post_type,
+		 		            'post_type' => pressforward('schema.feeds')->post_type,
 		 		            'fields'	=>	'ids',
 		 		            'orderby'	=> 'title',
 		 		            'order'		=> 'ASC',
@@ -467,7 +457,7 @@ class PF_Feeds_Schema {
 		 		            'nopaging' => true,
 		 		            'tax_query' => array(
 		 		                array(
-		 		                    'taxonomy' => pressforward()->pf_feeds->tag_taxonomy,
+		 		                    'taxonomy' => pressforward('schema.feeds')->tag_taxonomy,
 		 		                    'operator' => 'NOT EXISTS',
 		 		                ),
 		 		            ),
@@ -1207,7 +1197,7 @@ class PF_Feeds_Schema {
 		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
 
 		if ( in_array( $pagenow, array( 'edit.php' ) ) ){
-			if ( false != pressforward()->form_of->is_a_pf_page() ){
+			if ( false != pressforward('controller.template_factory')->is_a_pf_page() ){
 				wp_enqueue_script( 'feed_edit_manip', PF_URL . '/assets/js/subscribed-feeds-actions.js', array('jquery'), PF_VERSION );
 			}
 		}
