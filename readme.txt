@@ -4,7 +4,7 @@ Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 3.0.1
 Tested up to: 4.5.3
-Stable tag: 3.9.0
+Stable tag: 3.9.1
 License: GPL2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -82,14 +82,18 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 
 == Changelog ==
 
+= 3.9.1 =
+
+* Added check for potential conflict of shared library file.
+
 = 3.9 =
 
 * Moved Core code to dependency injection system.
 * Removed compatibility with PHP5.2 and added warning for those attempting to activate on PHP5.2 or lower.
-* Added additional hooks to the Nominate This bookmarklet and process to allow for additional functionality. 
+* Added additional hooks to the Nominate This bookmarklet and process to allow for additional functionality.
 * Improve OpenGraph parsing
 * Better remove errors from the response in AJAX handlers
-* Resolve occasional activation error due to interface mis-match. 
+* Resolve occasional activation error due to interface mis-match.
 
 = 3.8 =
 * A new option in preferences allows site administrators to change the location of the source link from the bottom of the post to the top.
