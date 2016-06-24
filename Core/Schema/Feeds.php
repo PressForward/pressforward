@@ -18,137 +18,118 @@ class Feeds implements HasActions, HasFilters {
 		$this->tag_taxonomy = 'pf_feed_category';
 
 		// Post types and taxonomies must be registered after 'init'
-		//add_action( 'init', array( $this, 'register_feed_post_type' ) );
-		#add_action('admin_init', array($this, 'deal_with_old_feedlists') );
-
-
-
-
-
-
-		//add_action( 'pf_feed_post_type_registered', array($this, 'under_review_post_status') );
-
-		if (is_admin()){
-
-		}
-
-
-
-
-
-
 
 	}
 
 
-	    public function action_hooks() {
-	        $hooks = array(
-	            array(
-	                'hook' => 'init',
-	                'method' => 'register_feed_post_type',
-					'priority'	=>	10
-	            ),
-				//add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
+    public function action_hooks() {
+        $hooks = array(
+            array(
+                'hook' => 'init',
+                'method' => 'register_feed_post_type',
+				'priority'	=>	10
+            ),
+			//add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
+			array(
+				'hook' 		=> 'admin_init',
+				'method'	=> 'disallow_add_new'
+			),
+			array(
+				'hook' 		=> 'save_post',
+				'method'	=> 'save_submitbox_pf_actions'
+			),
+			array(
+				'hook' 		=> 'pf_feed_post_type_registered',
+				'method'	=> 'under_review_post_status'
+			),
+			array(
+				'hook' => 'manage_pf_feed_posts_custom_column',
+				'method' => 'last_retrieved_date_column_content',
+				'priority'  => 10,
+				'args' => 2
+			),
+        );
+		if ( is_admin() ){
+			$admin_hooks = array(
 				array(
-					'hook' 		=> 'admin_init',
-					'method'	=> 'disallow_add_new'
+					'hook' 		=> 'wp_ajax_deal_with_old_feedlists',
+					'method'	=> 'deal_with_old_feedlists'
 				),
 				array(
-					'hook' 		=> 'save_post',
-					'method'	=> 'save_submitbox_pf_actions'
+					'hook' 		=> 'admin_enqueue_scripts',
+					'method'	=> 'admin_enqueue_scripts'
 				),
 				array(
-					'hook' 		=> 'pf_feed_post_type_registered',
-					'method'	=> 'under_review_post_status'
+					'hook' 		=> 'admin_enqueue_scripts',
+					'method'	=> 'admin_enqueue_edit_feed_scripts'
 				),
 				array(
-					'hook' => 'manage_pf_feed_posts_custom_column',
-					'method' => 'last_retrieved_date_column_content',
-					'priority'  => 10,
-					'args' => 2
+					'hook' 		=> 'post_submitbox_misc_actions',
+					'method'	=> 'feed_submitbox_pf_actions'
 				),
-	        );
-			if ( is_admin() ){
-				$admin_hooks = array(
-					array(
-						'hook' 		=> 'wp_ajax_deal_with_old_feedlists',
-						'method'	=> 'deal_with_old_feedlists'
-					),
-					array(
-						'hook' 		=> 'admin_enqueue_scripts',
-						'method'	=> 'admin_enqueue_scripts'
-					),
-					array(
-						'hook' 		=> 'admin_enqueue_scripts',
-						'method'	=> 'admin_enqueue_edit_feed_scripts'
-					),
-					array(
-						'hook' 		=> 'post_submitbox_misc_actions',
-						'method'	=> 'feed_submitbox_pf_actions'
-					),
-				);
-				$hooks = array_merge( $hooks, $admin_hooks );
-			}
-			return $hooks;
-	    }
+			);
+			$hooks = array_merge( $hooks, $admin_hooks );
+		}
+		return $hooks;
+    }
 
-	    public function filter_hooks(){
-	        $filters = array(
-	            array(
-	                'hook' => 'ab_alert_specimens_update_post_type-add-feeds',
-	                'method' => 'make_alert_return_to_publish',
-	                'priority'  => 10,
-	                'args' => 1
-	            ),
+    public function filter_hooks(){
+        $filters = array(
+            array(
+                'hook' => 'ab_alert_specimens_update_post_type-add-feeds',
+                'method' => 'make_alert_return_to_publish',
+                'priority'  => 10,
+                'args' => 1
+            ),
+			array(
+				'hook'	=>	'views_edit-'.$this->post_type,
+				'method'	=>	'modify_post_views',
+				'priority'	=>	10,
+				'args'	=> 1
+			),
+			//add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
+			array(
+				'hook'	=>	'map_meta_cap',
+				'method'	=>	'feeds_map_meta_cap',
+				'priority'	=>	10,
+				'args'	=> 4
+			),
+			array(
+				'hook'	=>	'user_has_cap',
+				'method'	=>	'alter_cap_on_fly'
+			),
+			array(
+				'hook'	=>	'option_page_capability_pf_feedlist_group',
+				'method'	=>	'feed_option_page_cap'
+			),
+			array(
+				'hook'	=>	'manage_edit-'.$this->post_type.'_columns',
+				'method'	=>	'custom_feed_column_name'
+			),
+        );
+		if ( is_admin() ){
+			$admin_filters = array(
 				array(
-					'hook'	=>	'views_edit-'.$this->post_type,
-					'method'	=>	'modify_post_views',
+					'hook'	=>	'page_row_actions',
+					'method'	=>	'url_feed_row_action',
 					'priority'	=>	10,
-					'args'	=> 1
+					'args'	=> 2
 				),
-				//add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
 				array(
-					'hook'	=>	'map_meta_cap',
-					'method'	=>	'feeds_map_meta_cap',
+					'hook'	=>	'page_row_actions',
+					'method'	=>	'refresh_feed_row_action',
 					'priority'	=>	10,
-					'args'	=> 4
+					'args'	=> 2
 				),
 				array(
-					'hook'	=>	'user_has_cap',
-					'method'	=>	'alter_cap_on_fly'
+					'hook'	=>	'post_updated_messages',
+					'method'	=>	'feed_save_message',
 				),
-				array(
-					'hook'	=>	'option_page_capability_pf_feedlist_group',
-					'method'	=>	'feed_option_page_cap'
-				),
-				array(
-					'hook'	=>	'manage_edit-'.$this->post_type.'_columns',
-					'method'	=>	'custom_feed_column_name'
-				),
-	        );
-			if ( is_admin() ){
-				$admin_filters = array(
-					array(
-						'hook'	=>	'page_row_actions',
-						'method'	=>	'url_feed_row_action',
-						'priority'	=>	10,
-						'args'	=> 2
-					),
-					array(
-						'hook'	=>	'page_row_actions',
-						'method'	=>	'refresh_feed_row_action',
-						'priority'	=>	10,
-						'args'	=> 2
-					),
-					array(
-						'hook'	=>	'post_updated_messages',
-						'method'	=>	'feed_save_message',
-					),
-				);
-				$filters = array_merge( $filters, $admin_filters );
-			}
-			return $filters;
-	    }
+			);
+			$filters = array_merge( $filters, $admin_filters );
+		}
+		return $filters;
+    }
 
 	/**
 	 * Feed items are stored in a CPT, which is registered here

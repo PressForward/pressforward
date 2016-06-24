@@ -1,5 +1,8 @@
 <?php
 namespace PressForward\Core\Schema;
+
+use Intraxia\Jaxion\Contract\Core\HasActions;
+use Intraxia\Jaxion\Contract\Core\HasFilters;
 /**
  * Classes and functions for dealing with feed items
  */
@@ -7,7 +10,7 @@ namespace PressForward\Core\Schema;
 /**
  * Database class for manipulating feed items
  */
-class Feed_Items {
+class Feed_Items implements HasActions, HasFilters {
 	protected $filter_data = array();
 	var $post_type;
 	var $tag_taxonomy;
@@ -16,13 +19,43 @@ class Feed_Items {
 		$this->post_type = 'pf_feed_item';
 		$this->tag_taxonomy = 'pf_feed_item_tag';
 		// Post types and taxonomies must be registered after 'init'
-		add_action( 'init', array( $this, 'register_feed_item_post_type' ) );
-		add_action( 'pf_feed_item_post_type_registered', array( $this, 'register_feed_item_tag_taxonomy' ) );
+	}
 
-		add_filter('user_has_cap', array( $this, 'alter_cap_on_fly' ) );
-		add_filter( 'map_meta_cap', array( $this, 'feeds_item_map_meta_cap'), 10, 4 );
-		add_action( 'init', array( $this, 'dead_post_status') );
-		add_action( 'init', array( $this, 'register_feed_item_removed_status') );
+	public function action_hooks() {
+		$hooks = array(
+            array(
+                'hook' => 'init',
+                'method' => 'register_feed_item_post_type'
+            ),
+			array(
+				'hook' 		=> 'pf_feed_item_post_type_registered',
+				'method'	=> 'register_feed_item_tag_taxonomy'
+			),
+			array(
+				'hook' 		=> 'init',
+				'method'	=> 'dead_post_status'
+			),
+			array(
+				'hook' 		=> 'init',
+				'method'	=> 'register_feed_item_removed_status'
+			)
+        );
+		return $hooks;
+	}
+
+    public function filter_hooks(){
+		return array(
+				array(
+					'hook' => 'user_has_cap',
+	                'method' => 'alter_cap_on_fly'
+				),
+				array(
+					'hook' => 'map_meta_cap',
+					'method' => 'feeds_item_map_meta_cap',
+					'priority'  => 10,
+					'args' => 4
+				),
+		);
 	}
 
 	public function register_feed_item_post_type() {
