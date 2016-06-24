@@ -11,7 +11,7 @@ use Intraxia\Jaxion\Core\Application as JaxionCore;
 //use Intraxia\Jaxion\Contract\Core\Application as ApplicationContract;
 
 class Application extends JaxionCore {
-	var $ver = 3.9;
+	var $ver = 4.0;
 		/**
 	 * ServiceProviders to register with the Application
 	 *

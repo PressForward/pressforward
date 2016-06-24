@@ -1,5 +1,8 @@
 <?php
 namespace PressForward\Core\Schema;
+
+use Intraxia\Jaxion\Contract\Core\HasActions;
+use Intraxia\Jaxion\Contract\Core\HasFilters;
 /**
  * Classes and functions for dealing with feed items
  */
@@ -7,7 +10,7 @@ namespace PressForward\Core\Schema;
 /**
  * Database class for manipulating feed items
  */
-class Feeds {
+class Feeds implements HasActions, HasFilters {
 	protected $filter_data = array();
 
     public function __construct() {
@@ -15,33 +18,137 @@ class Feeds {
 		$this->tag_taxonomy = 'pf_feed_category';
 
 		// Post types and taxonomies must be registered after 'init'
-		add_action( 'init', array( $this, 'register_feed_post_type' ) );
+		//add_action( 'init', array( $this, 'register_feed_post_type' ) );
 		#add_action('admin_init', array($this, 'deal_with_old_feedlists') );
-        add_action('admin_init', array($this, 'disallow_add_new'));
-        add_filter('ab_alert_specimens_update_post_type', array($this, 'make_alert_return_to_publish'));
-		add_filter( 'views_edit-'.$this->post_type, array($this, 'modify_post_views') );
-		add_filter( 'status_edit_pre', array($this, 'modify_post_edit_status') );
 
-		add_action( 'save_post', array( $this, 'save_submitbox_pf_actions' ) );
-		add_action( 'pf_feed_post_type_registered', array($this, 'under_review_post_status') );
+
+
+
+
+
+		//add_action( 'pf_feed_post_type_registered', array($this, 'under_review_post_status') );
 
 		if (is_admin()){
-			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
-			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_edit_feed_scripts' ) );
-			add_filter( 'page_row_actions', array($this, 'url_feed_row_action'), 10, 2 );
-			add_filter( 'page_row_actions', array($this, 'refresh_feed_row_action'), 10, 2 );
-			add_action( 'post_submitbox_misc_actions', array( $this, 'feed_submitbox_pf_actions' ) );
-			add_filter( 'post_updated_messages', array( $this, 'feed_save_message' ) );
+
 		}
 
-		add_filter( 'map_meta_cap', array( $this, 'feeds_map_meta_cap'), 10, 4 );
-		add_filter('user_has_cap', array( $this, 'alter_cap_on_fly' ) );
-		add_filter( "option_page_capability_pf_feedlist_group", array( $this, 'feed_option_page_cap' ) );
 
-		add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
-		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
+
+
+
+
+
 	}
+
+
+	    public function action_hooks() {
+	        $hooks = array(
+	            array(
+	                'hook' => 'init',
+	                'method' => 'register_feed_post_type',
+					'priority'	=>	10
+	            ),
+				//add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
+				array(
+					'hook' 		=> 'admin_init',
+					'method'	=> 'disallow_add_new'
+				),
+				array(
+					'hook' 		=> 'save_post',
+					'method'	=> 'save_submitbox_pf_actions'
+				),
+				array(
+					'hook' 		=> 'pf_feed_post_type_registered',
+					'method'	=> 'under_review_post_status'
+				),
+				array(
+					'hook' => 'manage_pf_feed_posts_custom_column',
+					'method' => 'last_retrieved_date_column_content',
+					'priority'  => 10,
+					'args' => 2
+				),
+	        );
+			if ( is_admin() ){
+				$admin_hooks = array(
+					array(
+						'hook' 		=> 'wp_ajax_deal_with_old_feedlists',
+						'method'	=> 'deal_with_old_feedlists'
+					),
+					array(
+						'hook' 		=> 'admin_enqueue_scripts',
+						'method'	=> 'admin_enqueue_scripts'
+					),
+					array(
+						'hook' 		=> 'admin_enqueue_scripts',
+						'method'	=> 'admin_enqueue_edit_feed_scripts'
+					),
+					array(
+						'hook' 		=> 'post_submitbox_misc_actions',
+						'method'	=> 'feed_submitbox_pf_actions'
+					),
+				);
+				$hooks = array_merge( $hooks, $admin_hooks );
+			}
+			return $hooks;
+	    }
+
+	    public function filter_hooks(){
+	        $filters = array(
+	            array(
+	                'hook' => 'ab_alert_specimens_update_post_type-add-feeds',
+	                'method' => 'make_alert_return_to_publish',
+	                'priority'  => 10,
+	                'args' => 1
+	            ),
+				array(
+					'hook'	=>	'views_edit-'.$this->post_type,
+					'method'	=>	'modify_post_views',
+					'priority'	=>	10,
+					'args'	=> 1
+				),
+				//add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
+				array(
+					'hook'	=>	'map_meta_cap',
+					'method'	=>	'feeds_map_meta_cap',
+					'priority'	=>	10,
+					'args'	=> 4
+				),
+				array(
+					'hook'	=>	'user_has_cap',
+					'method'	=>	'alter_cap_on_fly'
+				),
+				array(
+					'hook'	=>	'option_page_capability_pf_feedlist_group',
+					'method'	=>	'feed_option_page_cap'
+				),
+				array(
+					'hook'	=>	'manage_edit-'.$this->post_type.'_columns',
+					'method'	=>	'custom_feed_column_name'
+				),
+	        );
+			if ( is_admin() ){
+				$admin_filters = array(
+					array(
+						'hook'	=>	'page_row_actions',
+						'method'	=>	'url_feed_row_action',
+						'priority'	=>	10,
+						'args'	=> 2
+					),
+					array(
+						'hook'	=>	'page_row_actions',
+						'method'	=>	'refresh_feed_row_action',
+						'priority'	=>	10,
+						'args'	=> 2
+					),
+					array(
+						'hook'	=>	'post_updated_messages',
+						'method'	=>	'feed_save_message',
+					),
+				);
+				$filters = array_merge( $filters, $admin_filters );
+			}
+			return $filters;
+	    }
 
 	/**
 	 * Feed items are stored in a CPT, which is registered here
