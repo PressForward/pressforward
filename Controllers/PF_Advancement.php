@@ -30,6 +30,7 @@ class PF_Advancement implements Advance_System {
 		$this->transition_post_image($old_post, $new_post);
 		$this->metas->transition_post_meta($old_post, $new_post);
 		$this->transition_taxonomy_info($old_post, $new_post);
+		do_action('transition_pf_post_meta', $old_post, $new_post);
 	}
 
 	public function transition_taxonomy_info($old_post, $new_post){
@@ -69,7 +70,9 @@ class PF_Advancement implements Advance_System {
 		$post['post_type'] = $this->last_step_post_type();
 		$post['post_status'] = $this->last_step_state();
 		pf_log($post);
-		return wp_insert_post( $post, true );
+		$id = wp_insert_post( $post, true );
+		do_action( 'pf_transition_to_last_step', $id );
+		return $id;
 	}
 
 	public function to_nomination( $post = array() ){
@@ -79,7 +82,9 @@ class PF_Advancement implements Advance_System {
 		unset($post['post_date_gmt']);
 		$orig_post_id = $post['ID'];
 		unset($post['ID']);
-		return wp_insert_post( $post );
+		$id = wp_insert_post( $post );
+		do_action( 'pf_transition_to_nomination', $id );
+		return $id;
 	}
 
 	// Checking for the existence of posts in previous PF states.

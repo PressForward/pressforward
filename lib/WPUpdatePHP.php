@@ -1,6 +1,5 @@
 <?php
 // via https://github.com/WPupdatePHP/wp-update-php
-namespace PressForward\lib;
 
 //var_dump('method: '.__METHOD__);
 class WPUpdatePHP {
@@ -20,8 +19,8 @@ class WPUpdatePHP {
 	 *
 	 * @return bool
 	 */
-	public function does_it_meet_required_php_version(  ) {
-		if ( $this->is_minimum_php_version( phpversion() ) ) {
+	public function does_it_meet_required_php_version( $ver ) {
+		if ( $this->is_minimum_php_version( $ver ) ) {
 			return true;
 		}
 
