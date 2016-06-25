@@ -1,15 +1,28 @@
 <?php
 namespace PressForward\Core\Admin;
 
+use Intraxia\Jaxion\Contract\Core\HasActions;
 
-class EditPost {
+class EditPost implements HasActions {
 
 	function __construct() {
 		$this->post_type = 'post';
-		//Modify the Singleton Edit page.
-		add_action( 'post_submitbox_misc_actions', array( $this, 'posted_submitbox_pf_actions' ) );
-		add_action( 'save_post', array( $this, 'save_submitbox_pf_actions' ) );
 
+	}
+
+	public function action_hooks() {
+		//Modify the Singleton Edit page.
+		$hooks = array(
+			array(
+				'hook' => 'post_submitbox_misc_actions',
+				'method' => 'posted_submitbox_pf_actions'
+			),
+			array(
+				'hook' 		=> 'save_post',
+				'method'	=> 'save_submitbox_pf_actions'
+			)
+		);
+		return $hooks;
 	}
 
 	function posted_submitbox_pf_actions(){
