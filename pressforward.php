@@ -30,7 +30,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 if (!class_exists('WPUpdatePHP')){
-	require 'lib/WPUpdatePHP.php';
+	require 'Libraries/WPUpdatePHP.php';
 }
 
 $PHPCheck = new WPUpdatePHP( '5.3.0', 'PressForward' );

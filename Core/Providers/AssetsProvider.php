@@ -60,7 +60,7 @@ class AssetsProvider extends ServiceProvider {
 								return $provider->check_hook_for_pressforward_string($hook, $exclusions);
 							},
 			'handle'	=> $slug.'-bootstrap-style',
-			'src'		=> 'lib/twitter-bootstrap/css/bootstrap'
+			'src'		=> 'Libraries/twitter-bootstrap/css/bootstrap'
 		));
 
 		$assets->register_style(array(
@@ -70,7 +70,7 @@ class AssetsProvider extends ServiceProvider {
 								return $provider->check_hook_for_pressforward_string($hook, $exclusions);
 							},
 			'handle'	=> $slug.'-bootstrap-responsive-style',
-			'src'		=> 'lib/twitter-bootstrap/css/bootstrap-responsive'
+			'src'		=> 'Libraries/twitter-bootstrap/css/bootstrap-responsive'
 		));
 
 		$assets->register_style( array(
@@ -134,7 +134,7 @@ class AssetsProvider extends ServiceProvider {
 								return $provider->check_hook_for_pressforward_string($hook);
 							},
 			'handle'	=>	$slug.'-tinysort',
-			'src'		=>	'lib/jquery-tinysort/jquery.tinysort',
+			'src'		=>	'Libraries/jquery-tinysort/jquery.tinysort',
 			'deps'		=>	array( 'jquery' )
 		) );
 
@@ -146,7 +146,7 @@ class AssetsProvider extends ServiceProvider {
 									return $provider->check_hook_for_pressforward_string($hook);
 								},
 				'handle'	=>	$slug.'-twitter-bootstrap',
-				'src'		=>	'lib/twitter-bootstrap/js/bootstrap',
+				'src'		=>	'Libraries/twitter-bootstrap/js/bootstrap',
 				'deps'		=>	array( 'jquery' )
 			)
 		);
@@ -171,7 +171,7 @@ class AssetsProvider extends ServiceProvider {
 									return $provider->check_hook_for_pressforward_string($hook);
 								},
 				'handle'	=>	$slug.'-jq-fullscreen',
-				'src'		=>	'lib/jquery-fullscreen/jquery.fullscreen',
+				'src'		=>	'Libraries/jquery-fullscreen/jquery.fullscreen',
 				'deps'		=>	array( 'jquery' )
 			)
 		);
@@ -222,7 +222,7 @@ class AssetsProvider extends ServiceProvider {
 								return $provider->check_hook_for_pressforward_string($hook);
 							},
 			'handle'	=>	$slug.'-infiniscroll',
-			'src'		=>	'lib/jquery.infinitescroll',
+			'src'		=>	'Libraries/jquery.infinitescroll',
 			'deps'		=>	array( 'jquery', $slug . '-views', $slug . '-readability-imp', 'jquery' )
 		) );
 

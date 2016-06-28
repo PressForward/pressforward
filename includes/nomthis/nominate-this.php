@@ -32,7 +32,7 @@ if (is_dir($wp_bootstrap.'/wp-admin')){
 /** WordPress Administration Bootstrap */
 require_once( $wp_bootstrap . '/admin.php');
 	//PF Correction - this will need to be changed to a constant later.
-//require_once( dirname(dirname(dirname(__FILE__))) . "/lib/OpenGraph.php");
+//require_once( dirname(dirname(dirname(__FILE__))) . "/Libraries/OpenGraph.php");
 //	global $pf_nt;
 //	$pf_nt = new PressForward();
 

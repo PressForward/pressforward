@@ -797,7 +797,7 @@ h3 {
   margin-top: -12px;
   display: block;
   cursor: pointer;
-  background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
+  background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings-white.png");
   border-radius: 6px;
   position: absolute; }
 
@@ -807,7 +807,7 @@ h3 {
 
 .marked-read {
   background-color: none;
-  background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings.png"); }
+  background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings.png"); }
 
 .schema-read:hover {
   background-color: lightGrey; }
@@ -818,7 +818,7 @@ h3 {
   margin-top: -12px;
   display: block;
   cursor: pointer;
-  background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
+  background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings-white.png");
   background-color: lavender;
   border-radius: 6px;
   position: absolute; }
@@ -839,7 +839,7 @@ h3 {
   margin-top: -12px;
   display: block;
   cursor: pointer;
-  background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings-white.png");
+  background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings-white.png");
   background-color: lavender;
   border-radius: 6px;
   position: absolute; }
@@ -853,7 +853,7 @@ h3 {
 
 .relationship-button-active {
   background-color: none;
-  background-image: url("../../lib/twitter-bootstrap/img/glyphicons-halflings.png"); }
+  background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings.png"); }
 
 #infscr-loading {
   width: 100%;
