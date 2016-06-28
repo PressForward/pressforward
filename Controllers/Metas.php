@@ -2,6 +2,7 @@
 namespace PressForward\Controllers;
 
 use PressForward\Interfaces\SystemMeta;
+use PressForward\Interfaces\System;
 /**
  * Functionality related to nominations
  */
@@ -9,12 +10,9 @@ class Metas {
 
     //var $meta_interface;
 
-    function __construct( SystemMeta $metas ) {
+    function __construct( SystemMeta $metas, System $system ) {
         $this->meta_interface = $metas;
-		//add_action('edit_post', array( $this, 'send_nomination_for_publishing'));
-		//add_action( 'manage_nomination_posts_custom_column',  array($this, 'nomination_custom_columns') );
-		//add_filter( "manage_edit-nomination_sortable_columns", array($this, "nomination_sortable_columns") );
-		//add_action( 'feeder_menu', array($this, "nominate_this_tile"), 11 );
+		$this->system = $system;
 
 	}
 
