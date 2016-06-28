@@ -1,4 +1,7 @@
 <?php
+namespace PressForward\Core\Modals;
+
+use PressForward\Interfaces\Items as Items;
 
 class Feed_Item {
 	protected $data = array();
@@ -56,13 +59,18 @@ class Feed_Item {
      * @param  string $key  The name of the property.
      * @return any          Property value.
      */
-    public function get( $key ) {
+    public function get( $key, $sub_key = false ) {
         if ( 0 === strpos($key, 'item_') ) {
             $key = str_replace('item_', '', $key);
         }
         if ( method_exists($this,$f='get_'.$key) ){
             $value = call_user_func(array( $this, $f ));
+			return $value;
         }
+		if ( false !== $sub_key ){
+			$array_property = $this->data[$key];
+			return $array_property[$sub_key];
+		}
         return isset( $this->data[$key] ) ? $this->data[$key] : null;
     }
 
@@ -86,6 +94,12 @@ class Feed_Item {
         }
     }
 
+	public function build_item( $post, Items $processer ){
+		if ( is_numeric( $post ) ){
+
+		}
+	}
+
     private function create_hash_id($url, $title){
 		$hash = md5($url . $title);
 		return $hash;
@@ -95,7 +109,7 @@ class Feed_Item {
         return DateTime::createFromFormat( $format, $raw );
     }
 
-	private function set_date( $date ){
+	public function set_date( $date ){
 		if ( is_array( $date ) ) {
 			$date_obj = $this->date_maker( $date['format'], $date['raw'] );
 			$this->set( 'date_obj', $date_obj );
@@ -117,7 +131,7 @@ class Feed_Item {
 		return $tag_string;
 	}
 
-	private function get_tags() {
+	public function get_tags() {
 		$tags = $this->get('tags_array');
 		if ( isset( $tags ) && is_array( $tags ) ){
 			return implode(',', $tags);
@@ -126,9 +140,10 @@ class Feed_Item {
 		}
 	}
 
-	private function set_content( $content ) {
+	public function set_content( $content ) {
 		$content_obj = pressforward('library.htmlchecker');
-		return $content_obj->closetags($content);
+		$this->content = $content_obj->closetags($content);
+		return $this->content;
 	}
 
 }
