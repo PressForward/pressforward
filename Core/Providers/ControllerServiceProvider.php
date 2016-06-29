@@ -49,7 +49,10 @@ class ControllerServiceProvider extends ServiceProvider {
 		$container->share(
 			'controller.http_tools',
 			function( $container ){
-				return new HTTPTools( $container->fetch('library.url_resolver') );
+				return new HTTPTools( 	$container->fetch('library.url_resolver'),
+										$container->fetch('controller.system'),
+										$container->fetch('controller.metas')
+									);
 			}
 		);
 

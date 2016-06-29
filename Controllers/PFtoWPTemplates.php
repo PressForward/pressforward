@@ -3,9 +3,18 @@ namespace PressForward\Controllers;
 
 use PressForward\Interfaces\Templates as Template_Interface;
 
-class PFtoWPTemplates implements Template_Interface {
+class PFtoWPTemplates implements Template_Interface, HasActions {
 	function __construct() {
-		add_action( 'current_screen', array( $this, 'build_screen_obj' ) );
+
+	}
+
+	public function action_hooks() {
+		return array(
+			array(
+				'hook' => 'current_screen',
+				'method' => 'build_screen_obj',
+			),
+		);
 	}
 
 	public function build_screen_obj() {

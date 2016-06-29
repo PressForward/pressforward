@@ -6,4 +6,6 @@ interface System
     public function delete_option($option);
 	public function get_option($option, $default);
 	public function update_option($option, $value = '', $autoload = 'yes' );
+	public function apply_filters( $tag, $values );
+	public function add_action( $tag, $value );
 }
