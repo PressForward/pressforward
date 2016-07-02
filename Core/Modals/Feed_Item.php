@@ -6,13 +6,16 @@ use PressForward\Interfaces\Items as Items;
 class Feed_Item {
 	protected $data = array();
 
-	public function __construct( $item_url, $item_title, $post_type = false ) {
+	public function __construct( $item = array(), $item_url, $item_title, $post_type = false ) {
 		if (!$post_type) {
 			$this->post_type = pf_feed_item_post_type();
 		}
 		$this->tag_taxonomy = pf_feed_item_tag_taxonomy();
-		$this->set_up_item( $item_url, $item_title );
-
+		if ( is_array( $item ) ){
+			$this->set_up_item( $item['item_url'], $item['item_title'] );
+		} else {
+			$setup = $this->build_item( $item, $item['processor'] );
+		}
 	}
     /**
      * Magic methods are apparently not super perfomant.
@@ -74,10 +77,15 @@ class Feed_Item {
         return isset( $this->data[$key] ) ? $this->data[$key] : null;
     }
 
+	/**
+	 * Private function to set up the feed item object
+	 * @param [type] $item_url   [description]
+	 * @param [type] $item_title [description]
+	 */
     private function set_up_item( $item_url, $item_title ) {
     	$this->set( 'title', $item_title);
     	$this->set( 'link', $item_url );
-    	$this->set( 'id', $this->create_hash_id( $item_url, $item_title ) );
+    	$this->set( 'item_id', $this->create_hash_id( $item_url, $item_title ) );
 		$metas = array();
 		foreach ( pressforward('controller.metas')->structure as $meta_key=>$meta_data ){
 			if ( in_array('item', $meta_data['level']) ){
@@ -94,10 +102,20 @@ class Feed_Item {
         }
     }
 
-	public function build_item( $post, Items $processer ){
-		if ( is_numeric( $post ) ){
-
-		}
+	public function build_item( $post, Items $processor ){
+		$post = $processor->get_post( $post );
+		$this->set( 'id', $post->ID );
+		$this->set( 'user', $post->post_author );
+		$this->set( 'slug', $post->post_name );
+		$this->set( 'title', $post->post_title );
+		$this->set( 'date', $post->post_date );
+		$this->set( 'date_gmt', $post->post_date_gmt );
+		$this->set( 'content', $post->post_content );
+		$this->set( 'excerpt', $post->post_excerpt );
+		$this->set( 'status', $post->post_status );
+		$this->set( 'parent', $post->post_parent );
+		$this->set( 'modified', $post->post_modified );
+		$this->set( 'modified_gmt', $post->post_modified_gmt );
 	}
 
     private function create_hash_id($url, $title){
