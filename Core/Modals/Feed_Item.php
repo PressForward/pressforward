@@ -6,7 +6,7 @@ use PressForward\Interfaces\Items as Items;
 class Feed_Item {
 	protected $data = array();
 
-	public function __construct( $item = array(), $item_url, $item_title, $post_type = false ) {
+	public function __construct( $item = array(), $handlers = array(), $post_type = false ) {
 		if (!$post_type) {
 			$this->post_type = pf_feed_item_post_type();
 		}
@@ -14,7 +14,7 @@ class Feed_Item {
 		if ( is_array( $item ) ){
 			$this->set_up_item( $item['item_url'], $item['item_title'] );
 		} else {
-			$setup = $this->build_item( $item, $item['processor'] );
+			$setup = $this->build_item( $item, $handlers['processor'], $handlers['metas'] );
 		}
 	}
     /**
@@ -46,6 +46,9 @@ class Feed_Item {
         if ( 0 === strpos($key, 'item_') ) {
         	$key = str_replace('item_', '', $key);
         }
+		if ( 0 === strpos($key, 'post_') ) {
+			$key = str_replace('post_', '', $key);
+		}
         if ( method_exists($this,$f='set_'.$key) ){
             $value = call_user_func(array( $this, $f ), $value);
         }
@@ -66,6 +69,9 @@ class Feed_Item {
         if ( 0 === strpos($key, 'item_') ) {
             $key = str_replace('item_', '', $key);
         }
+		if ( 0 === strpos($key, 'post_') ) {
+			$key = str_replace('post_', '', $key);
+		}
         if ( method_exists($this,$f='get_'.$key) ){
             $value = call_user_func(array( $this, $f ));
 			return $value;
@@ -102,7 +108,7 @@ class Feed_Item {
         }
     }
 
-	public function build_item( $post, Items $processor ){
+	public function build_item( $post, Items $processor, SystemMeta $metas ){
 		$post = $processor->get_post( $post );
 		$this->set( 'id', $post->ID );
 		$this->set( 'user', $post->post_author );
@@ -116,6 +122,10 @@ class Feed_Item {
 		$this->set( 'parent', $post->post_parent );
 		$this->set( 'modified', $post->post_modified );
 		$this->set( 'modified_gmt', $post->post_modified_gmt );
+		$this->set( 'post', $post );
+		$link = $metas->get_meta( $post->ID, 'link' );
+		$this->set( 'link', $link );
+		$this->set( 'item_id', $this->create_hash_id( $link, $post->post_title ) );
 	}
 
     private function create_hash_id($url, $title){
