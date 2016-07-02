@@ -1,6 +1,8 @@
 <?php
 namespace PressForward\Core\Schema;
 
+use PressForward\Interfaces\Items as Items;
+
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
 /**
@@ -15,9 +17,11 @@ class Feed_Items implements HasActions, HasFilters {
 	var $post_type;
 	var $tag_taxonomy;
 
-	public function __construct() {
+	public function __construct( Items $items, SystemMeta $metas ) {
 		$this->post_type = 'pf_feed_item';
 		$this->tag_taxonomy = 'pf_feed_item_tag';
+		$this->items = $items;
+		$this->metas = $metas;
 		// Post types and taxonomies must be registered after 'init'
 	}
 
@@ -217,7 +221,7 @@ class Feed_Items implements HasActions, HasFilters {
 		// Other WP_Query args pass through
 		$wp_args = wp_parse_args( $args, $wp_args );
 
-		$posts = get_posts( $wp_args );
+		$posts = $this->items->get_posts( $wp_args );
 
 		foreach ( $query_filters as $hook => $filters ) {
 			foreach ( $filters as $f ) {
@@ -228,8 +232,8 @@ class Feed_Items implements HasActions, HasFilters {
 		// Fetch some handy pf-specific data
 		if ( ! empty( $posts ) ) {
 			foreach ( $posts as &$post ) {
-				$post->word_count = get_post_meta( $post->ID, 'pf_feed_item_word_count', true );
-				$post->source     = get_post_meta( $post->ID, 'pf_feed_item_source', true );
+				$post->word_count = $this->metas->get_meta( $post->ID, 'pf_feed_item_word_count', true );
+				$post->source     = $this->metas->get_meta( $post->ID, 'pf_feed_item_source', true );
 				$post->tags       = wp_get_post_terms( $post->ID, pf_feed_item_tag_taxonomy() );
 			}
 		}

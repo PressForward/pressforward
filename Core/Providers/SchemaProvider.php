@@ -32,7 +32,7 @@ class SchemaProvider extends ServiceProvider {
 		$container->share(
 			'schema.feed_item',
 			function( ){
-				return new Feed_Items;
+				return new Feed_Items( pressforward('controller.items'), pressforward('controller.metas') );
 			}
 		);
 
