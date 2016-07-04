@@ -13,6 +13,7 @@ class BasicModal {
 		}
 		$this->metas = $handlers['metas'];
 		$this->processor = $handlers['processor'];
+		$this->set_up_metas( $item, $handlers['metas'] );
 		$this->init( $item, $handlers, $post_type );
 	}
 	/**
@@ -79,6 +80,21 @@ class BasicModal {
 			return $array_property[$sub_key];
 		}
 		return isset( $this->data[$key] ) ? $this->data[$key] : null;
+	}
+
+	public function set_up_metas( $set_metas = array(), $meta_system ){
+		foreach ( $meta_system->structure as $meta_key=>$meta_data ){
+			if ( in_array( $this->type, $meta_data['level']) ){
+				if ( ( array_key_exists( $meta_key, $set_metas ) || empty( $set_metas[$meta_key] ) ) && !empty( $meta_data['defaults'] ) ){
+					$metas[$meta_key] = $meta_data['default'];
+				} else {
+					$metas[$meta_key] = '';
+				}
+			}
+		}
+		foreach ( $defaults as $key=>$default ) {
+			$this->set($key, $default);
+		}
 	}
 
 

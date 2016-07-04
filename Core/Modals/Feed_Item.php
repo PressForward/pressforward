@@ -17,7 +17,7 @@ class Feed_Item extends BasicModal {
 		$this->tag_taxonomy = pf_feed_item_tag_taxonomy();
 		if ( is_array( $item ) ){
 			$this->set_up_item( $item['item_url'], $item['item_title'] );
-			$this->set_up_metas( $item['metas'], $handlers['metas'] );
+			//$this->set_up_metas( $item, $handlers['metas'] );
 		} else {
 			$setup = $this->build_item( $item, $handlers['processor'], $handlers['metas'] );
 			$this->build_metas();
@@ -35,21 +35,6 @@ class Feed_Item extends BasicModal {
     	$this->set( 'item_id', $this->create_hash_id( $item_url, $item_title ) );
 
     }
-
-	private function set_up_metas( $set_metas = array() ,  SystemMeta $meta_system ){
-		foreach ( $meta_system->structure as $meta_key=>$meta_data ){
-			if ( in_array('item', $meta_data['level']) ){
-				if ( ( array_key_exists( $meta_key, $set_metas ) || empty( $set_metas[$meta_key] ) ) && !empty( $meta_data['defaults'] ) ){
-					$metas[$meta_key] = $meta_data['default'];
-				} else {
-					$metas[$meta_key] = '';
-				}
-			}
-		}
-		foreach ( $defaults as $key=>$default ) {
-			$this->set($key, $default);
-		}
-	}
 
 	public function build_item( $post, Items $processor, SystemMeta $metas ){
 		$post = $processor->get_post( $post );
