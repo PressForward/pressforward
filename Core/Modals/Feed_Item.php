@@ -7,14 +7,24 @@ class Feed_Item {
 	protected $data = array();
 
 	public function __construct( $item = array(), $handlers = array(), $post_type = false ) {
+		if (empty($handlers)){
+			$handlers = array(
+				'processor'	=>	pressforward('controller.items'),
+				'metas'		=>	pressforward('controller.metas')
+			);
+		}
+		$this->metas = $handlers['metas'];
+		$this->processor = $handlers['processor'];
 		if (!$post_type) {
 			$this->post_type = pf_feed_item_post_type();
 		}
 		$this->tag_taxonomy = pf_feed_item_tag_taxonomy();
 		if ( is_array( $item ) ){
 			$this->set_up_item( $item['item_url'], $item['item_title'] );
+			$this->set_up_metas( $item['metas'], $handlers['metas'] );
 		} else {
 			$setup = $this->build_item( $item, $handlers['processor'], $handlers['metas'] );
+			$this->build_metas();
 		}
 	}
     /**
@@ -92,21 +102,23 @@ class Feed_Item {
     	$this->set( 'title', $item_title);
     	$this->set( 'link', $item_url );
     	$this->set( 'item_id', $this->create_hash_id( $item_url, $item_title ) );
-		$metas = array();
-		foreach ( pressforward('controller.metas')->structure as $meta_key=>$meta_data ){
+
+    }
+
+	private function set_up_metas( $set_metas = array() ,  SystemMeta $meta_system ){
+		foreach ( $meta_system->structure as $meta_key=>$meta_data ){
 			if ( in_array('item', $meta_data['level']) ){
-				if ( !empty( $meta_data['defaults'] ) ){
+				if ( ( array_key_exists( $meta_key, $set_metas ) || empty( $set_metas[$meta_key] ) ) && !empty( $meta_data['defaults'] ) ){
 					$metas[$meta_key] = $meta_data['default'];
 				} else {
 					$metas[$meta_key] = '';
 				}
 			}
 		}
-		$defaults = $metas;
-        foreach ( $defaults as $key=>$default ) {
-            $this->set($key, $default);
-        }
-    }
+		foreach ( $defaults as $key=>$default ) {
+			$this->set($key, $default);
+		}
+	}
 
 	public function build_item( $post, Items $processor, SystemMeta $metas ){
 		$post = $processor->get_post( $post );
@@ -123,9 +135,17 @@ class Feed_Item {
 		$this->set( 'modified', $post->post_modified );
 		$this->set( 'modified_gmt', $post->post_modified_gmt );
 		$this->set( 'post', $post );
-		$link = $metas->get_meta( $post->ID, 'link' );
+		$link = $metas->get_post_pf_meta( $post->ID, 'link' );
 		$this->set( 'link', $link );
 		$this->set( 'item_id', $this->create_hash_id( $link, $post->post_title ) );
+	}
+
+	public function build_metas(  ){
+		foreach ( $this->metas->structure as $meta_key=>$meta_data ){
+			if ( in_array('item', $meta_data['level']) ){
+				$this->set( $meta_key, $this->metas->get_post_pf_meta( $this->id, $meta_key ) );
+			}
+		}
 	}
 
     private function create_hash_id($url, $title){
