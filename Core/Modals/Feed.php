@@ -1,8 +1,11 @@
 <?php
 namespace PressForward\Core\Modals;
 
-use PressForward\Interfaces\Items as Items;
+class Feed extends BasicModal {
+	protected $data = array();
 
-class Feed {
-
+	function init( $item = array(), $handlers = array(), $post_type = false ){
+		$this->type = 'feed';
+		$this->type_key = 'feed';
+	}
 }
