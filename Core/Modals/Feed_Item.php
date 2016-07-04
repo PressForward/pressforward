@@ -1,20 +1,16 @@
 <?php
 namespace PressForward\Core\Modals;
 
+use PressForward\Modals\BasicModal;
 use PressForward\Interfaces\Items as Items;
+use PressForward\Interfaces\SystemMeta as SystemMeta;
 
-class Feed_Item {
+class Feed_Item extends BasicModal {
 	protected $data = array();
 
-	public function __construct( $item = array(), $handlers = array(), $post_type = false ) {
-		if (empty($handlers)){
-			$handlers = array(
-				'processor'	=>	pressforward('controller.items'),
-				'metas'		=>	pressforward('controller.metas')
-			);
-		}
-		$this->metas = $handlers['metas'];
-		$this->processor = $handlers['processor'];
+	function init( $item = array(), $handlers = array(), $post_type = false ){
+		$this->type = 'feed_item';
+		$this->type_key = 'item';
 		if (!$post_type) {
 			$this->post_type = pf_feed_item_post_type();
 		}
@@ -27,71 +23,6 @@ class Feed_Item {
 			$this->build_metas();
 		}
 	}
-    /**
-     * Magic methods are apparently not super perfomant.
-     * Avoid using them if you don't have to. Devs should
-     * prefer the custom getters and setters that follow.
-     */
-    public function __isset( $key ) {
-        return isset( $this->data[$key] );
-    }
-    public function __get( $key ) {
-        return $this->get( $key );
-    }
-    public function __set( $key, $value ) {
-        $this->set($key, $value);
-    }
-
-    //Setters and getters
-
-    /**
-     * Set a property for the object.
-     *
-     * @param string $key   Key to access the property
-     * @param any $value    Value to store in the property.
-     *
-     */
-    public function set( $key, $value ) {
-        $value = apply_filters('pf_feed_item_property_'.$key, $value, $this);
-        if ( 0 === strpos($key, 'item_') ) {
-        	$key = str_replace('item_', '', $key);
-        }
-		if ( 0 === strpos($key, 'post_') ) {
-			$key = str_replace('post_', '', $key);
-		}
-        if ( method_exists($this,$f='set_'.$key) ){
-            $value = call_user_func(array( $this, $f ), $value);
-        }
-        $this->data[$key] = $value;
-    }
-    /**
-     * Get an untreated property of the object.
-     *
-     * This function will retrieve the exact stored value
-     * of a property within the object. If you want properties
-     * that have been treated in accordance with their accepted
-     * use then use the specific getter for that property type.
-     *
-     * @param  string $key  The name of the property.
-     * @return any          Property value.
-     */
-    public function get( $key, $sub_key = false ) {
-        if ( 0 === strpos($key, 'item_') ) {
-            $key = str_replace('item_', '', $key);
-        }
-		if ( 0 === strpos($key, 'post_') ) {
-			$key = str_replace('post_', '', $key);
-		}
-        if ( method_exists($this,$f='get_'.$key) ){
-            $value = call_user_func(array( $this, $f ));
-			return $value;
-        }
-		if ( false !== $sub_key ){
-			$array_property = $this->data[$key];
-			return $array_property[$sub_key];
-		}
-        return isset( $this->data[$key] ) ? $this->data[$key] : null;
-    }
 
 	/**
 	 * Private function to set up the feed item object
