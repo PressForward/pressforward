@@ -757,8 +757,7 @@ class Feeds implements HasActions, HasFilters {
         ) );
     }
 
-	# A function to take an argument array and turn it into a Feed CPT entry.
-	public function feed_post_setup($r, $insert_type = 'insert'){
+	public function feed_post_setup_inital( $r, $insert_type = 'insert' ){
 		pf_log('Invoked: feed_post_setup');
 		foreach ($r as $k=>$e){
 			if (!$e)
@@ -814,6 +813,18 @@ class Feeds implements HasActions, HasFilters {
 			unset($wp_args['post_status']);
 			$wp_args['ID'] = $r['ID'];
 			wp_update_post( $wp_args );
+			//$post_id = $r['ID'];
+		}
+
+		return $r;
+	}
+
+	# A function to take an argument array and turn it into a Feed CPT entry.
+	public function feed_post_setup($r, $insert_type = 'insert'){
+		pf_log('Invoked: feed_post_setup');
+		$r = feed_post_setup_inital( $r, $insert_type );
+
+		if ($insert_type == 'update') {
 			$post_id = $r['ID'];
 		}
 
@@ -1191,6 +1202,50 @@ class Feeds implements HasActions, HasFilters {
 		$check = $this->feed_post_setup($r, 'update');
 		return $check;
 
+	}
+
+	public function update_title($post_id, $args){
+		pf_log('Invoked: PF_FEEDS_SCHEMA::update');
+		$r = wp_parse_args( $args, array(
+			'ID'			=> $post_id,
+			'title'   		=> false,
+			'url'     		=> false,
+			'htmlUrl' 		=> false,
+			'type'	  		=> 'rss',
+			'description' 	=> false,
+			'feed_author' 	=> false,
+			'feed_icon'  	=> false,
+			'copyright'		=> false,
+			'thumbnail'  	=> false,
+			'module_added' 	=> 'rss-import',
+			'tags'    		=> array(),
+		) );
+		if (!$r['url']){
+			$feedURL = get_the_guid($post_id);
+			if (empty($feedURL)){
+				return false;
+			}
+		} else {
+			$feedURL = $r['url'];
+		}
+		if ('rss-quick' == $r['type']){
+			pf_log('Updating a rss-quick');
+			$theFeed = fetch_feed($feedURL);
+			if (is_wp_error($theFeed)){
+				return new \WP_Error('badfeed', __('The feed fails verification.'));
+			} else {
+				$r = $this->setup_rss_meta($r, $theFeed);
+			}
+
+			$type_updated = $this->set_pf_feed_type($r['ID'], 'rss');
+			if ($type_updated){
+				$r['type'] = 'rss';
+			}
+		}
+
+		$check = $this->feed_post_setup_inital($r, 'update');
+
+		return $check['ID'];
 	}
 
 	# This function makes it easy to set the type of 'feed', which is important when we move to using something other than RSS.

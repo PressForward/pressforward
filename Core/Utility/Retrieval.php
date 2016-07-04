@@ -458,7 +458,7 @@ class Retrieval {
 				'ID'		=>		$id,
 				'url'		=>		$obj->guid
 			);
-			$Feeds->update( $id, $rq_update );
+			$Feeds->update_title( $id, $rq_update );
 		}
 
 		# module function to return a set of standard pf feed_item object
