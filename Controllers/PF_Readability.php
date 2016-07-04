@@ -151,6 +151,7 @@ class PF_Readability {
 					update_post_meta($post_id, 'readable_status', 0);
 					$error = $update_check->get_error_message();
 				}
+				$responseItemReadReady = self::get_embed($_POST['url']).$itemReadReady;
 			} else {
 				$error = 'Not Updated, retrieved content is longer than stored content.';
 			}
@@ -165,7 +166,7 @@ class PF_Readability {
 				'what' => 'full_item_content',
 				'action' => 'make_readable',
 				'id' => $item_id,
-				'data' => htmlspecialchars($itemReadReady),
+				'data' => htmlspecialchars($responseItemReadReady),
 				'supplemental' => array(
 					'readable_status' => $read_status,
 					'error' => $error,
@@ -332,5 +333,20 @@ class PF_Readability {
 		}
 		return $item_content;
 
+	}
+
+	public function get_embed( $item_link ){
+		$oembed = wp_oembed_get( $item_link );
+		if ( false != $oembed ){
+			$providers = pressforward('schema.feed_item')->oembed_capables();
+			foreach ($providers as $provider){
+				if ( 0 != strpos($item_link, $provider) ) {
+					return $oembed;
+				}
+			}
+		} else {
+			return false;
+		}
+		return false;
 	}
 }

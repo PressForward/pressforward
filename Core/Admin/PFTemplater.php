@@ -856,18 +856,7 @@ class PFTemplater {
 
 	public function show_embed( $id_for_comments ){
 		$item_link = pressforward('controller.metas')->get_post_pf_meta($id_for_comments, 'item_link');
-		$oembed = wp_oembed_get( $item_link );
-		if ( false != $oembed ){
-			$providers = pressforward('schema.feed_item')->oembed_capables();
-			foreach ($providers as $provider){
-				if ( 0 != strpos($item_link, $provider) ) {
-					return $oembed;
-				}
-			}
-		} else {
-			return false;
-		}
-		return false;
+		return pressforward('controller.readability')->get_embed($item_link);
 	}
 
 }
