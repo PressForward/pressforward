@@ -192,3 +192,21 @@ function the_pf_comments( $id_for_comments = 0 ){
 	</ul>
 	<?php
 }
+
+function get_pf_feed_list( $status = 'publish', $page = 1, $order = 'ASC' ){
+
+	$return_string = '<ul class="feedlist">';
+	$query = new WP_Query(array('post_type' => pressforward('schema.feeds')->post_type, 'post_status' =>
+	$status, 'paged' => $page, 'orderby' => 'title', 'order' => $order));
+
+	if ($query->have_posts()) :
+		while ($query->have_posts())  : $query->the_post();
+		  $return_string .= '<li class="feeditem"><a href="'.pressforward('controller.metas')->get_post_pf_meta(get_the_ID(), 'feedUrl', true).'"target="_blank">'.get_the_title().'</a></li>';
+		endwhile;
+	endif;
+	$return_string .= '</ul>';
+	wp_reset_postdata();
+	wp_reset_query();
+	return $return_string;
+
+}
