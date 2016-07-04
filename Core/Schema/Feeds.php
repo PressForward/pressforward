@@ -816,14 +816,17 @@ class Feeds implements HasActions, HasFilters {
 			//$post_id = $r['ID'];
 		}
 
+		$r['wp_args'] = $wp_args;
+
 		return $r;
 	}
 
 	# A function to take an argument array and turn it into a Feed CPT entry.
 	public function feed_post_setup($r, $insert_type = 'insert'){
 		pf_log('Invoked: feed_post_setup');
-		$r = feed_post_setup_inital( $r, $insert_type );
-
+		$r = $this->feed_post_setup_inital( $r, $insert_type );
+		$wp_args = $r['wp_args'];
+		unset($r['wp_args']);
 		if ($insert_type == 'update') {
 			$post_id = $r['ID'];
 		}
