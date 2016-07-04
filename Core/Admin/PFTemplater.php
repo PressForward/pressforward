@@ -858,10 +858,16 @@ class PFTemplater {
 		$item_link = pressforward('controller.metas')->get_post_pf_meta($id_for_comments, 'item_link');
 		$oembed = wp_oembed_get( $item_link );
 		if ( false != $oembed ){
-			return $oembed;
+			$providers = pressforward('schema.feed_item')->oembed_capables();
+			foreach ($providers as $provider){
+				if ( 0 != strpos($item_link, $provider) ) {
+					return $oembed;
+				}
+			}
 		} else {
 			return false;
 		}
+		return false;
 	}
 
 }

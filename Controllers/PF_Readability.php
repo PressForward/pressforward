@@ -319,9 +319,7 @@ class PF_Readability {
 	}
 
 	public function process_in_oembeds( $item_link, $item_content ){
-		$providers = array(
-			'youtube.com'
-		);
+		$providers = pressforward('schema.feed_item')->oembed_capables();
 		foreach ($providers as $provider){
 			if ( ( false == strpos($item_content, $item_link) ) && ( 0 != strpos($item_link, $provider) ) ){
 				$added_content = '

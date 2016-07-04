@@ -1138,4 +1138,10 @@ class Feed_Items implements HasActions, HasFilters {
 
 	}
 
+	public function oembed_capables(){
+		return array(
+			'youtube.com'
+		);
+	}
+
 }
