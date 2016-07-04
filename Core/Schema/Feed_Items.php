@@ -2,6 +2,7 @@
 namespace PressForward\Core\Schema;
 
 use PressForward\Interfaces\Items as Items;
+use PressForward\Controllers\Metas;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
@@ -17,7 +18,7 @@ class Feed_Items implements HasActions, HasFilters {
 	var $post_type;
 	var $tag_taxonomy;
 
-	public function __construct( Items $items, SystemMeta $metas ) {
+	public function __construct( Items $items, Metas $metas ) {
 		$this->post_type = 'pf_feed_item';
 		$this->tag_taxonomy = 'pf_feed_item_tag';
 		$this->items = $items;

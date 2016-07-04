@@ -2,6 +2,7 @@
 namespace PressForward\Controllers;
 
 use PressForward\Interfaces\Templates as Template_Interface;
+use Intraxia\Jaxion\Contract\Core\HasActions;
 
 class PFtoWPTemplates implements Template_Interface, HasActions {
 	function __construct() {
