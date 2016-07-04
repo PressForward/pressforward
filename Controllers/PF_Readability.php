@@ -48,7 +48,7 @@ class PF_Readability {
 						#Try and get the OpenGraph description.
 						if (pressforward('library.opengraph')->fetch($url)){
 							$node = pressforward('library.opengraph')->fetch($url);
-							$itemReadReady .= $node->description;
+							$itemReadReady = $node->description;
 						} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
 						elseif ('' != ($contentHtml = @get_meta_tags($url))) {
 							# Try and get the HEAD > META DESCRIPTION tag.
@@ -71,9 +71,10 @@ class PF_Readability {
 							$readability_stat .= ' Retrieved text is less than original text.';
 							$read_status = 'already_readable';
 						}
-
+						$itemReadReady = self::process_in_oembeds($url, $itemReadReady);
 					} else {
 						$read_status = 'made_readable';
+						$itemReadReady = self::process_in_oembeds($url, $itemReadReady);
 					}
 				} else {
 					$read_status = 'secured';
@@ -121,6 +122,9 @@ class PF_Readability {
 			$read_status = $readable_ready['status'];
 			$itemReadReady = $readable_ready['readable'];
 			$url = $readable_ready['url'];
+			if ( !strpos($itemReadReady, $url) ){
+				$itemReadReady = self::process_in_oembeds($url, $itemReadReady);
+			}
 
 			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
 		}
@@ -308,8 +312,27 @@ class PF_Readability {
 		if ($content != false){
 				$contentObj = pressforward('library.htmlchecker');
 				$content = $contentObj->closetags($content);
+				$content = self::process_in_oembeds($url, $content);
 		}
 
 		return $content;
+	}
+
+	public function process_in_oembeds( $item_link, $item_content ){
+		$providers = array(
+			'youtube.com'
+		);
+		foreach ($providers as $provider){
+			if ( ( false == strpos($item_content, $item_link) ) && ( 0 != strpos($item_link, $provider) ) ){
+				$added_content = '
+
+				'.$item_link.'
+
+				';
+				$item_content = $added_content.$item_content;
+			}
+		}
+		return $item_content;
+
 	}
 }

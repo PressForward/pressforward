@@ -199,6 +199,7 @@ class PF_RSS_Import extends PF_Module {
 					//one final cleanup of the content.
 					$contentObj = pressforward('library.htmlchecker');
 					$item_content = $contentObj->closetags($item_content);
+					$item_content = pressforward('controller.readability')->process_in_oembeds($item->get_link(), $item_content);
 					#print_r($c);
 					$rssObject['rss_' . $c] = pf_feed_object(
 												$item->get_title(),

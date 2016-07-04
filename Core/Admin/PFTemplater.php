@@ -612,7 +612,14 @@ class PFTemplater {
 					<?php
 					$contentObj = pressforward('library.htmlchecker');
 					$text = $contentObj->closetags($item['item_content']);
-					echo $text;
+					$text = apply_filters( 'the_content', $text );
+					//global $wp_embed;
+					//$wp_embed->autoembed($text);
+					$embed = $this->show_embed( $id_for_comments );
+					if ( false != $embed ){
+						echo $embed;
+					}
+					print_r($text);
 
 					?>
 				  </div>
@@ -845,6 +852,16 @@ class PFTemplater {
 
 					}
 
+	}
+
+	public function show_embed( $id_for_comments ){
+		$item_link = pressforward('controller.metas')->get_post_pf_meta($id_for_comments, 'item_link');
+		$oembed = wp_oembed_get( $item_link );
+		if ( false != $oembed ){
+			return $oembed;
+		} else {
+			return false;
+		}
 	}
 
 }
