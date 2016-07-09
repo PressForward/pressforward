@@ -130,7 +130,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		if ( empty( $item['parent_feed_id'] ) ){
 			$parent = 0;
 		} else {
-			$parent = get_post_meta( $item['parent_feed_id'], 'user_added', true );
+			$parent = pressforward('controller.metas')->get_post_pf_meta( $item['parent_feed_id'], 'user_added', true );
 		}
 
 		$feed_array = array(
@@ -172,10 +172,10 @@ class PF_OPML_Subscribe extends PF_Module {
 		//$feed_obj = new PF_Feeds_Schema();
 		pf_log( 'Invoked: PF_OPML_Subscribe::get_data_object()' );
 		$aOPML_id = $aOPML->ID;
-		$aOPML_url = get_post_meta($aOPML_id, 'feedUrl', true);
+		$aOPML_url = pressforward('controller.metas')->get_post_pf_meta($aOPML_id, 'feedUrl', true);
 		if(empty($aOPML_url) || is_wp_error($aOPML_url) || !$aOPML_url){
 			$aOPML_url = $aOPML->post_title;
-			update_post_meta($aOPML_id, 'feedUrl', $aOPML_url);
+			pressforward('controller.metas')->update_pf_meta($aOPML_id, 'feedUrl', $aOPML_url);
 		}
 		pf_log( 'Getting OPML Feed at '.$aOPML_url );
 		$OPML_reader = new OPML_reader($aOPML_url);
@@ -335,8 +335,8 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 
 	private function make_a_feed_object_from_post( $post_id = false ){
-		//var_dump(get_post_meta(get_the_ID()));
-		$meta = get_post_meta($post_id);
+		//var_dump(pressforward('controller.metas')->get_post_pf_meta(get_the_ID()));
+		$meta = pressforward('controller.metas')->get_post_pf_meta($post_id);
 		//var_dump($meta);
 		if ( !empty( $meta['feedUrl'][0] ) ){
 			if ( 'http' != substr( $meta['feedUrl'][0], 0, 4 ) ){

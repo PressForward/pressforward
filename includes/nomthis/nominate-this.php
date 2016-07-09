@@ -104,7 +104,7 @@ function nominate_it() {
             $feed_nom['id'] = $create;
             $create = 'Feed created with ID of '.$create;
             $feed_nom['simple'] = "The feed has been nominated successfully.";
-            $error_check = get_post_meta($feed_nom['id'], 'ab_alert_msg', true);
+            $error_check = pressforward('controller.metas')->get_post_pf_meta($feed_nom['id'], 'ab_alert_msg', true);
             if ( !empty( $error_check ) ){
             	$create .= ' But the following error occured: '.$error_check;
             	$feed_nom['simple'] = "There is a problem with the feed associated with this post. The feed could not be verified.";

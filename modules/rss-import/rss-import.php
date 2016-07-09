@@ -73,7 +73,7 @@ class PF_RSS_Import extends PF_Module {
 	 }
 
 	function set_to_alert($id, $theFeed){
-		$immune_to_alert_check = get_post_meta($id, 'pf_no_feed_alert', true);
+		$immune_to_alert_check = pressforward('controller.metas')->get_post_pf_meta($id, 'pf_no_feed_alert', true);
 		if (1 == $immune_to_alert_check){
 			return;
 		}
@@ -111,7 +111,7 @@ class PF_RSS_Import extends PF_Module {
 		pf_log( 'Invoked: PF_RSS_Import::get_data_object()' );
 		$aFeed_url = $aFeed->guid;
 #		$aFeed_id = $aFeed->ID;
-#		$aFeed_url = get_post_meta($aFeed_id, 'feedUrl', true);
+#		$aFeed_url = pressforward('controller.metas')->get_post_pf_meta($aFeed_id, 'feedUrl', true);
 #		if(empty($aFeed_url) || is_wp_error($aFeed_url) || !$aFeed_url){
 #			$aFeed_url = $aFeed->post_title;
 #			update_post_meta($aFeed_id, 'feedUrl', $aFeed_url);

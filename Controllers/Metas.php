@@ -13,6 +13,7 @@ class Metas {
     function __construct( SystemMeta $metas, System $system ) {
         $this->meta_interface = $metas;
 		$this->system = $system;
+		$this->master_field = 'pf_meta';
 
 	}
 
@@ -413,7 +414,7 @@ class Metas {
 				'type'	=> array('struc'),
 				'use'	=> array('req'),
 				'level'	=> array('item', 'nomination', 'post'),
-				'serialize'	=> true
+				'serialize'	=> false
 			),
 			'nomination_permalink' => array(
 				'name' => 'item_link',
@@ -534,6 +535,15 @@ class Metas {
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> true
 			),
+			'pf_archive' => array(
+				'name' => 'pf_archive',
+				'definition' => __('Archive state of the item', 'pf'),
+				'function'	=> __('Stores if the item has been archived', 'pf'),
+				'type'	=> array('adm'),
+				'use'	=> array(),
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> false
+			),
 			'pf_feed_error_count' => array(
 				'name' => 'pf_feed_error_count',
 				'definition' => __('Count of feed errors', 'pf'),
@@ -559,7 +569,7 @@ class Metas {
 				'type'	=> array('adm'),
 				'use'	=> array(),
 				'level'	=> array('feed'),
-				'serialize'	=> true
+				'serialize'	=> false
 			),
 			'pf_feed_last_retrieved' => array(
 				'name' => 'pf_feed_last_retrieved',
@@ -568,7 +578,7 @@ class Metas {
 				'type'	=> array('adm'),
 				'use'	=> array(),
 				'level'	=> array('feed'),
-				'serialize'	=> true
+				'serialize'	=> false
 			),
 			'feedUrl' => array(
 				'name' => 'feedUrl',
@@ -577,7 +587,7 @@ class Metas {
 				'type'	=> array('adm'),
 				'use'	=> array(),
 				'level'	=> array('feed'),
-				'serialize'	=> true
+				'serialize'	=> false
 			),
             'pf_feed_last_checked' => array(
 				'name' => 'pf_feed_last_checked',
@@ -586,7 +596,7 @@ class Metas {
 				'type'	=> array('adm'),
 				'use'	=> array(),
 				'level'	=> array('feed'),
-				'serialize'	=> true
+				'serialize'	=> false
 			),
             'pf_no_feed_alert' => array(
 				'name' => 'pf_no_feed_alert',
@@ -595,7 +605,16 @@ class Metas {
 				'type'	=> array('adm'),
 				'use'	=> array(),
 				'level'	=> array('feed'),
-				'serialize'	=> true
+				'serialize'	=> false
+			),
+			'feed_type' => array(
+				'name' => 'feed_type',
+				'definition' => __('Type of feed', 'pf'),
+				'function'	=> __('Field stores the type of feed (like RSS or OPML) the object holds.', 'pf'),
+				'type'	=> array('adm'),
+				'use'	=> array(),
+				'level'	=> array('feed'),
+				'serialize'	=> false
 			),
 		);
 
@@ -620,6 +639,10 @@ class Metas {
 			$this->transition_depreciated_meta($field, $id, $value, $single, $new_field);
 	        $field = $new_field;
 	    }
+
+		if ( $metas[$field]['serialize'] ){
+			return array('field' => $field, 'master_field' => $this->master_field);
+		}
 	    return $field;
 
 	}
@@ -660,7 +683,28 @@ class Metas {
 	 */
 	function retrieve_meta($id, $field, $obj = false, $single = true){
 	    $field = $this->pass_meta($field, $id);
+		$serialized = false;
+		if ( is_array($field) ){
+			$key = $field['field'];
+			$field = $field['master_field'];
+			$serialized = true;
+		}
 	    $meta = $this->meta_interface->get_meta($id, $field, $single);
+		if ( $serialized ){
+			if ( empty($meta) || !array_key_exists($key, $meta) ){
+				$old_meta = $this->meta_interface->get_meta($id, $key, $single);
+				$meta[$key] = $old_meta;
+				$this->meta_interface->update_meta($id, $field, $meta);
+				$this->meta_interface->delete_meta($id, $field, $old_meta);
+				$meta = $old_meta;
+			} else {
+				$meta = $meta[$key];
+			}
+			$meta = $this->check_value($meta, $id, $key);
+		} else {
+			$meta = $this->check_value($meta, $id, $field);
+		}
+
 	    if ($obj){
 	        $metas = $this->structure();
 	        $meta_obj = $metas[$field];
@@ -669,6 +713,21 @@ class Metas {
 	    }
 	    return $meta;
 
+	}
+
+	public function check_value($meta_value, $id, $field){
+		switch ($field) {
+			case 'item_link':
+				if (empty($meta_value)){
+					$meta_value = pressforward('controller.system')->get_the_guid($id);
+				}
+				break;
+
+			default:
+				# code...
+				break;
+		}
+		return $meta_value;
 	}
 
 	/**
@@ -754,6 +813,13 @@ class Metas {
 	}
 
 	function apply_pf_meta($id, $field, $value = '', $state = null, $apply_type = 'update'){
+		$serialized = false;
+		if ( is_array($field) ){
+			$key = $field['field'];
+			$field = $field['master_field'];
+			$serialized = true;
+		}
+		$master_meta = $this->meta_interface->get_meta($id, $field, true);
 		switch ($field) {
 			case 'nominator_array':
 				$nominators = $this->get_post_pf_meta($id, $field);
@@ -779,7 +845,14 @@ class Metas {
 				# code...
 				break;
 		}
+		if ( $serialized ){
+			$master_meta[$key] = $value;
+			$value = $master_meta;
+		}
 		if ( 'update' == $apply_type ){
+			if ( $serialized ){
+				$this->meta_interface->delete_meta($id, $key, '');
+			}
 			$check = $this->meta_interface->update_meta($id, $field, $value, $state);
 		} elseif ( 'add' == $apply_type ) {
 			$check = $this->meta_interface->add_meta($id, $field, $value, $state);

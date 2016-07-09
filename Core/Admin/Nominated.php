@@ -663,7 +663,7 @@ class Nominated implements HasActions {
             } else {
                 $current_user = wp_get_current_user();
                 $current_user_id = $current_user->ID;
-                add_post_meta($_POST['nom_id'], 'archived_by_user_status', 'archived_' . $current_user_id);
+                pressforward('controller.metas')->add_pf_meta($_POST['nom_id'], 'archived_by_user_status', 'archived_' . $current_user_id);
                 print_r(__('Archived.', 'pf'));
                 # @TODO This should have a real AJAX response.
                 die();

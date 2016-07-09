@@ -8,4 +8,5 @@ interface System
 	public function update_option($option, $value = '', $autoload = 'yes' );
 	public function apply_filters( $tag, $values );
 	public function add_action( $tag, $value );
+	public function get_the_guid( $id );
 }

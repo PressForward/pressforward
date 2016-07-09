@@ -269,7 +269,7 @@ class Feeds implements HasActions, HasFilters {
 		if ( $post->post_type != $this->post_type ) {
 				return;
 		}
-	    $value = get_post_meta($post->ID, 'pf_no_feed_alert', true);
+	    $value = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'pf_no_feed_alert', true);
 	    if ('' === $value){
 	    	//If the user does not want to forward all things this setting is 0,
 	    	//which evaluates to empty.
@@ -411,9 +411,9 @@ class Feeds implements HasActions, HasFilters {
 			$edit_actions = '';
 		}
 		$actions['edit'] = '<span class="inline pf-url" style="visibility:visible;color:grey;">'.$url.'</span><br/>';
-		$ab_msg =  get_post_meta($post->ID, 'ab_alert_msg', true);
+		$ab_msg =  pressforward('controller.metas')->get_post_pf_meta($post->ID, 'ab_alert_msg', true);
 		if ( !empty( $ab_msg ) ){
-			$actions['edit'] .= '<span class="inline pf-alert-msg" style="">'.get_post_meta($post->ID, 'ab_alert_msg', true).'</span><br/>';
+			$actions['edit'] .= '<span class="inline pf-alert-msg" style="">'.pressforward('controller.metas')->get_post_pf_meta($post->ID, 'ab_alert_msg', true).'</span><br/>';
 		}
 		$actions['edit'] .= $edit_actions;
 	  return $actions;
@@ -723,7 +723,7 @@ class Feeds implements HasActions, HasFilters {
 			return false;
 		}
 
-		return update_post_meta( $feed_id, 'pf_feed_last_checked', date( 'Y-m-d H:i:s' ) );
+		return pressforward('controller.metas')->update_pf_meta( $feed_id, 'pf_feed_last_checked', date( 'Y-m-d H:i:s' ) );
 	}
 
 	# Not only is this moving feeds over into feed CPT posts, but this methodology will insure a time-out won't force the process to restart.
@@ -1139,7 +1139,7 @@ class Feeds implements HasActions, HasFilters {
 				if (($c == 0)){
 					$this->update($post_id, array('url' => $url));
 				} else {
-					if ($url == get_post_meta($post_id, 'feedUrl', true)){
+					if ($url == pressforward('controller.metas')->get_post_pf_meta($post_id, 'feedUrl', true)){
 						wp_delete_post( $post_id, true );
 					}
 				}
@@ -1255,7 +1255,7 @@ class Feeds implements HasActions, HasFilters {
 
 	public function set_pf_feed_type($id, $type = "rss") {
 		pf_log( 'Invoked: PF_Feed_Schema::set_pf_feed_type for ' . $id  );
-		$updateResult = update_post_meta($id, 'feed_type', $type);
+		$updateResult = pressforward('controller.metas')->update_pf_meta($id, 'feed_type', $type);
 		pf_log( 'Attempted to update to type ' . $type . ' with results of: ');
 		pf_log( $updateResult );
 		if (is_wp_error($updateResult)){
@@ -1268,7 +1268,7 @@ class Feeds implements HasActions, HasFilters {
 
 	public function get_pf_feed_type($id) {
 		pf_log( 'Invoked: PF_Feed_Schema::get_pf_feed_type('.$id.')' );
-		$updateResult = get_post_meta($id, 'feed_type', true);
+		$updateResult = pressforward('controller.metas')->get_post_pf_meta($id, 'feed_type', true);
 		if (is_wp_error($updateResult)){
 			return $updateResult->get_error_message();
 		} elseif ( !$updateResult ) {
@@ -1295,14 +1295,14 @@ class Feeds implements HasActions, HasFilters {
 			if(!$a){
 
 			} else {
-				update_post_meta($post_id, $k, $a);
+				pressforward('controller.metas')->update_pf_meta($post_id, $k, $a);
 			}
 			$c++;
 
 		}
 
 		if ($c+1 == count($args)){
-			update_post_meta($post_id, 'meta_data', 'complete');
+			pressforward('controller.metas')->update_pf_meta($post_id, 'meta_data', 'complete');
 
 		}
 	}

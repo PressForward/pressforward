@@ -200,7 +200,7 @@ class Retrieval {
 
 			$aFeed = $feedlist[$feeds_iteration];
 			pf_log( 'Retrieved feed' );
-#			$feed_url = get_post_meta( $aFeed->ID, 'feedUrl', true );
+#			$feed_url = pressforward('controller.metas')->get_post_pf_meta( $aFeed->ID, 'feedUrl', true );
 #			if ( empty( $feed_url ) ) {
 #				update_post_meta( $aFeed->ID, 'feedUrl', $aFeed->post_title );
 #				$feed_url = $aFeed->post_title;

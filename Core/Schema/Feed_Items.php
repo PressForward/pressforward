@@ -234,7 +234,7 @@ class Feed_Items implements HasActions, HasFilters {
 		if ( ! empty( $posts ) ) {
 			foreach ( $posts as &$post ) {
 				$post->word_count = $this->metas->get_meta( $post->ID, 'pf_feed_item_word_count', true );
-				$post->source     = $this->metas->get_meta( $post->ID, 'pf_feed_item_source', true );
+				$post->source     = $this->metas->get_meta( $post->ID, 'source_title', true );
 				$post->tags       = wp_get_post_terms( $post->ID, pf_feed_item_tag_taxonomy() );
 			}
 		}
@@ -338,7 +338,7 @@ class Feed_Items implements HasActions, HasFilters {
 	*
 	*/
 	public function set_source( $post_id, $source ) {
-		return pressforward('controller.metas')->update_pf_meta( $post_id, 'pf_feed_item_source', $source );
+		return pressforward('controller.metas')->update_pf_meta( $post_id, 'source_title', $source );
 	}
 
 	/**
@@ -376,6 +376,7 @@ class Feed_Items implements HasActions, HasFilters {
 		$url = pressforward('controller.metas')->retrieve_meta($post_id, 'pf_source_link');
 		if (empty($url)){
 			$url = pressforward('controller.metas')->retrieve_meta($post_id, 'item_link');
+			//pf_log($url);
 		}
 		$source_url = pressforward('controller.http_tools')->resolve_a_url($url);
 		pressforward('controller.metas')->update_pf_meta( $post_id, 'pf_source_link', $source_url );
@@ -403,7 +404,7 @@ class Feed_Items implements HasActions, HasFilters {
 			return false;
 		}
 
-		return update_post_meta( $feed_id, 'pf_feed_last_retrieved', date( 'Y-m-d H:i:s' ) );
+		return pressforward('controller.metas')->update_pf_meta( $feed_id, 'pf_feed_last_retrieved', date( 'Y-m-d H:i:s' ) );
 	}
 
 	#via http://wordpress.stackexchange.com/questions/109793/delete-associated-media-upon-page-deletion
@@ -576,7 +577,7 @@ class Feed_Items implements HasActions, HasFilters {
 						setup_postdata($post);
 						//print_r(get_the_ID());
 						//print_r('< the ID');
-						if ((get_post_meta($post->ID, 'item_id', $item_id, true)) === $item_id){
+						if ((pressforward('controller.metas')->get_post_pf_meta($post->ID, 'item_id', $item_id, true)) === $item_id){
 							$thepostscheck++;
 							$post_id_to_pass = $post->ID;
 							pf_log('We already have post ' . $post_id_to_pass . ' for ');
@@ -608,7 +609,7 @@ class Feed_Items implements HasActions, HasFilters {
 								$postID = $post->ID;
 
 								$postDate = strtotime($post->post_date);
-								$postItemLink = get_post_meta($post->ID, 'item_link', true);
+								$postItemLink = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'item_link', true);
 								# Item comparative values.
 								$itemDate = strtotime($item['item_date']);
 								$itemTitle = $item['item_title'];
@@ -618,7 +619,7 @@ class Feed_Items implements HasActions, HasFilters {
 								if((($theTitle == $itemTitle) || ($postItemLink == $itemLink))){
 									$thePostsDoubleCheck++;
 									pf_log('We already have the post ' . $theTitle . ' with the link ' . $itemLink);
-									$sourceRepeat = get_post_meta($postID, 'source_repeat', true);
+									$sourceRepeat = pressforward('controller.metas')->get_post_pf_meta($postID, 'source_repeat', true);
 									if (($itemDate > $postDate)) {
 										# If it is more recent, than this is the new dominant post.
 										$sourceRepeat++;
@@ -626,7 +627,7 @@ class Feed_Items implements HasActions, HasFilters {
 										# if it is less recent, then we need to increment the source count.
 										$sourceRepeat++;
 										if ($thePostsDoubleCheck > $sourceRepeat) {
-											update_post_meta($postID, 'source_repeat', $sourceRepeat);
+											pressforward('controller.metas')->update_pf_meta($postID, 'source_repeat', $sourceRepeat);
 										}
 										$thepostscheck++;
 									} else {
@@ -1052,7 +1053,7 @@ class Feed_Items implements HasActions, HasFilters {
 			wp_update_attachment_metadata( $thumbid, $metadata );
 
 			//Now that we have a correctly meta-ed and attached image we can finally turn it into a post thumbnail.
-			update_post_meta($postID, '_thumbnail_id', $thumbid);
+			pressforward('controller.metas')->update_pf_meta($postID, '_thumbnail_id', $thumbid);
 
 		}
 	}

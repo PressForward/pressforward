@@ -23,5 +23,8 @@ class PF_to_WP_System implements System {
 	public function add_action( $tag, $value ){
 		return add_action($tag, $value);
 	}
+	public function get_the_guid( $id ){
+		return get_the_guid( $id );
+	}
 
 }

@@ -144,11 +144,11 @@ class PF_Readability {
 			if ( strlen($_POST['content']) < strlen($content)){
 				$update_check = wp_update_post($update_ready, true);
 				if (!is_wp_error($update_check)){
-					update_post_meta($post_id, 'readable_status', 1);
+					pressforward('controller.metas')->update_pf_meta($post_id, 'readable_status', 1);
 					$error = 'no error';
 				} else {
 					$read_status = 'post_not_updated_readable';
-					update_post_meta($post_id, 'readable_status', 0);
+					pressforward('controller.metas')->update_pf_meta($post_id, 'readable_status', 0);
 					$error = $update_check->get_error_message();
 				}
 				$responseItemReadReady = self::get_embed($_POST['url']).$itemReadReady;

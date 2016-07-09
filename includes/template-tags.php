@@ -161,7 +161,7 @@ function the_pf_comments( $id_for_comments = 0 ){
 		if ( 0 == $id_for_comments ){
 			$id_for_comments = get_the_ID();
 		}
-		$item_post_id = get_post_meta($id_for_comments, 'pf_item_post_id', true);
+		$item_post_id = pressforward('controller.metas')->get_post_pf_meta($id_for_comments, 'pf_item_post_id', true);
 		if ( $item_post_id ){
 			$id_for_comments = $item_post_id;
 		}
