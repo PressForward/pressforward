@@ -365,7 +365,7 @@ class Nominated implements HasActions {
                     }
                     break;
                 case 'original_author':
-                    $orig_auth = $this->metas->get_post_pf_meta($post->ID, 'authors', true);
+                    $orig_auth = $this->metas->get_post_pf_meta($post->ID, 'item_author', true);
                     echo $orig_auth;
                     break;
                 case 'date_nominated':
@@ -384,7 +384,7 @@ class Nominated implements HasActions {
             $submitted_by = $this->metas->get_post_pf_meta($post->ID, 'submitted_by', true);
             $source_title = $this->metas->get_post_pf_meta($post->ID, 'source_title', true);
             $posted_date = $this->metas->get_post_pf_meta($post->ID, 'item_date', true);
-            $nom_authors = $this->metas->get_post_pf_meta($post->ID, 'authors', true);
+            $nom_authors = $this->metas->get_post_pf_meta($post->ID, 'item_author', true);
             $item_link = $this->metas->get_post_pf_meta($post->ID, 'item_link', true);
             $date_nominated = $this->metas->get_post_pf_meta($post->ID, 'date_nominated', true);
             $user = get_user_by('id', $submitted_by);

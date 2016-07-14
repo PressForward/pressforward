@@ -37,7 +37,7 @@ class PF_Readability {
 			}
 			$stripped_descrip = strip_tags($descrip);
 			if ((str_word_count($stripped_descrip) <= 150) || $aggregated || $force == 'force') {
-				$itemReadReady = self::readability_object($url);
+				$itemReadReady = $this->readability_object($url);
 				#print_r(  wp_richedit_pre($itemReadReady));
 				if ($itemReadReady != 'error-secured') {
 					if (!$itemReadReady) {
@@ -189,7 +189,7 @@ class PF_Readability {
 	 * @see http://www.keyvan.net/2010/08/php-readability/
 	 * @param $url
 	 */
-	public static function readability_object($url) {
+	public function readability_object($url) {
 
 		set_time_limit(0);
 		$url =  pressforward('controller.http_tools')->resolve_full_url($url);
@@ -313,7 +313,7 @@ class PF_Readability {
 		if ($content != false){
 				$contentObj = pressforward('library.htmlchecker');
 				$content = $contentObj->closetags($content);
-				$content = self::process_in_oembeds($url, $content);
+				$content = $this->process_in_oembeds($url, $content);
 		}
 
 		return $content;

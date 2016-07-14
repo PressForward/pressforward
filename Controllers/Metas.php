@@ -320,7 +320,16 @@ class Metas {
 				'type'	=> array('struc'),
 				'use'	=> array('req'),
 				'level'	=> array('item', 'nomination', 'post'),
-				'serialize'	=> true
+				'serialize'	=> false
+			),
+			'nom_id' => array(
+				'name' => 'nom_id',
+				'definition' => __('The WordPress postID associated with the nomination item', 'pf'),
+				'function'	=> __('Stores nomination id', 'pf'),
+				'type'	=> array('struc'),
+				'use'	=> array('req'),
+				'level'	=> array('nomination', 'post'),
+				'serialize'	=> false
 			),
 			'pf_nomination_post_id' => array(
 				'name' => 'pf_nomination_post_id',
@@ -542,6 +551,24 @@ class Metas {
 				'type'	=> array('adm'),
 				'use'	=> array(),
 				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> false
+			),
+			'_thumbnail_id' => array(
+				'name' => '_thumbnail_id',
+				'definition' => __('Thumbnail id', 'pf'),
+				'function'	=> __('The ID of the featured item', 'pf'),
+				'type'	=> array('adm','struc'),
+				'use'	=> array(),
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> false
+			),
+			'archived_by_user_status' => array(
+				'name' => 'archived_by_user_status',
+				'definition' => __('Users who have archived', 'pf'),
+				'function'	=> __('Stores users who have archived.', 'pf'),
+				'type'	=> array('adm'),
+				'use'	=> array(),
+				'level'	=> array('item', 'nomination' ),
 				'serialize'	=> false
 			),
 			'pf_feed_error_count' => array(
