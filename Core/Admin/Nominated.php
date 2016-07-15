@@ -387,6 +387,7 @@ class Nominated implements HasActions {
             $nom_authors = $this->metas->get_post_pf_meta($post->ID, 'item_author', true);
             $item_link = $this->metas->get_post_pf_meta($post->ID, 'item_link', true);
             $date_nominated = $this->metas->get_post_pf_meta($post->ID, 'date_nominated', true);
+			//var_dump($date_nominated); die();
             $user = get_user_by('id', $submitted_by);
             $item_tags = $this->metas->get_post_pf_meta($post->ID, 'item_tags', true);
             $source_repeat = $this->metas->get_post_pf_meta($post->ID, 'source_repeat', true);

@@ -451,7 +451,7 @@ class Metas {
 				'type'	=> array('desc'),
 				'use'	=> array('req'),
 				'level'	=> array('item', 'nomination', 'post'),
-				'serialize'	=> true
+				'serialize'	=> false
 			),
 			'date_nominated' => array(
 				'name' => 'date_nominated',
@@ -478,7 +478,7 @@ class Metas {
 				'type'	=> array('adm'),
 				'use'	=> array(),
 				'level'	=> array('item', 'nomination', 'post'),
-				'serialize'	=> false
+				'serialize'	=> true
 			),
 			'nomination_count' => array(
 				'name' => 'nomination_count',
@@ -578,7 +578,7 @@ class Metas {
 				'type'	=> array('adm'),
 				'use'	=> array(),
 				'level'	=> array('feed', 'post'),
-				'serialize'	=> false
+				'serialize'	=> true
 			),
             'pf_forward_to_origin'  => array(
 				'name' => 'pf_forward_to_origin',
