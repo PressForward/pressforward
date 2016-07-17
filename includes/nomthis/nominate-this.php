@@ -155,9 +155,9 @@ function nominate_it() {
 	if (0 != $feed_nom['id']){
 		$post['post_parent'] = $feed_nom['id'];
 	}
-
+/////var_dump($_POST); die();
 	if (isset($_POST['publish']) && ($_POST['publish'] == "Send to ".ucwords(get_option(PF_SLUG.'_draft_post_status', 'draft')) ) ) {
-		//var_dump($_POST); die();
+
 		$post_ID = pressforward('utility.forward_tools')->bookmarklet_to_last_step(false, $post);
 
 	} else {
