@@ -688,6 +688,15 @@ class Metas {
 				'level'	=> array('feed'),
 				'serialize'	=> false
 			),
+			'meta_data' => array(
+				'name' => 'meta_data',
+				'definition' => __('Has metadata been compleatly added to a feed?', 'pf'),
+				'function'	=> __('Store a value to indicate the meta-processing of a feed has completed.', 'pf'),
+				'type'	=> array('adm'),
+				'use'	=> array(),
+				'level'	=> array('feed'),
+				'serialize'	=> false
+			),
 		);
 
 		$metas = apply_filters('pf_meta_terms',$metas);

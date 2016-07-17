@@ -870,7 +870,7 @@ class Feeds implements HasActions, HasFilters {
 					}
 				}
 			}
-			$unsetables = array('title', 'description', 'tags', 'type', 'url');
+			$unsetables = array('title', 'description', 'tags', 'type', 'url', 'post_status', 'ID', 'post_type', 'post_title', 'post_content', 'guid', 'post_parent', 'tax_input');
 
 			foreach ($unsetables as $k=>$a){
 				unset($r[$a]);
