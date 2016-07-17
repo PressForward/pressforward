@@ -178,6 +178,9 @@ if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 
 				global $pf_nt;
 				if (isset($_POST['item_link']) && !empty($_POST['item_link']) && ($_POST['item_link']) != ''){
+					pf_log('Getting OpenGraph image on ');
+					pf_log($_POST['item_link']);
+					//var_dump($_POST['item_link']); die();
 					//Gets OG image
 					$itemFeatImg = pressforward('schema.feed_item')->get_ext_og_img($_POST['item_link']);
 				}
