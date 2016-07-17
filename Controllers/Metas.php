@@ -932,6 +932,16 @@ class Metas {
 				$nominators = array_unique( $nominators );
 				$value = $nominators;
 				break;
+			case 'item_author':
+				if ( empty($value) ){
+					$site = $this->get_post_pf_meta($id, 'source_title');
+					if ( empty( $site ) ){
+						$value = 'Author on source';
+					} else {
+						$value = $site;
+					}
+				}
+				break;
 			default:
 				# code...
 				break;
