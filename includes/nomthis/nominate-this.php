@@ -31,6 +31,7 @@ if (is_dir($wp_bootstrap.'/wp-admin')){
 
 /** WordPress Administration Bootstrap */
 require_once( $wp_bootstrap . '/admin.php');
+//require_once( $wp_bootstrap . '/includes/meta-boxes.php' );
 	//PF Correction - this will need to be changed to a constant later.
 //require_once( dirname(dirname(dirname(__FILE__))) . "/Libraries/OpenGraph.php");
 //	global $pf_nt;
@@ -586,6 +587,20 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			<?php if ($url != '') {
 
 				$author_retrieved = pressforward('controller.metas')->get_author_from_url( $url );
+				$tags_retrieved = array();
+				$og = pressforward('library.opengraph')->fetch($url);
+				if ( !empty($og) && !empty($og->article_tag) ){
+					$tags_retrieved[] = $og->article_tag;
+				}
+				if ( !empty($og) && !empty($og->article_tag_additional) ){
+					$tags_retrieved = array_merge($tags_retrieved, $og->article_tag_additional);
+				}
+				if ( !empty($tags_retrieved) ){
+					$tags_retrieved[] = 'via bookmarklet';
+					$tags_retrieved = implode(', ', $tags_retrieved);
+				} else {
+					$tags_retrieved = 'via bookmarklet';
+				}
 				//$response_body = wp_remote_retrieve_body( $response );
 				//$response_dom = pf_str_get_html( $response_body );
 
@@ -696,6 +711,16 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 							</p>
 						</div>
 					<?php endif; ?>
+					<p>
+						<?php
+							if ( !$tags_retrieved ){
+								$post_tags = '';
+							} else {
+								$post_tags = $tags_retrieved;
+							}
+						?>
+						<label for="post_tags"><input type="text" id="post_tags" name="post_tags" value="<?php echo $post_tags; ?>" /><br />&nbsp;<?php echo apply_filters('pf_tags_prompt', __('Enter Tags', 'pf')); ?></label>
+					</p>
 				</div>
 				</div>
 			</div>

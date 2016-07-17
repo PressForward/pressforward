@@ -104,6 +104,10 @@ class Metas {
 				}
 			}
 		}
+		$this->handle_item_tags($idB, $item_tags);
+	}
+
+	public function handle_item_tags( $idB, $item_tags ){
 		if ( !empty($item_tags) ){
 			pf_log('Attempting to attach item_tags.');
 			if ( !is_array( $item_tags ) ){
@@ -111,6 +115,7 @@ class Metas {
 				$item_tags = explode(',',$item_tags);
 			}
 			foreach ($item_tags as $tag){
+				$tag = trim($tag);
 				$check = $this->cascade_taxonomy_tagging($idB, $tag, 'name');
 				if (!$check){
 					$this->build_and_assign_new_taxonomy_tag($idB, $tag);

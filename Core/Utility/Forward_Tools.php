@@ -289,6 +289,8 @@ class Forward_Tools {
 			} else {
 			  $source = '';
 			}
+			$tags = $_POST['post_tags'];
+			//$tags[] = 'via bookmarklet';
 
 			//pf_log($_POST);
 			$pf_meta_args = array(
@@ -309,13 +311,14 @@ class Forward_Tools {
 				//We can't just sort by the time the item came into the system (for when mult items come into the system at once)
 				//So we need to create a machine sortable date for use in the later query.
 				$this->metas->meta_for_entry('sortable_item_date', strtotime($item_date)),
-				$this->metas->meta_for_entry('item_tags', 'via bookmarklet'),
+				$this->metas->meta_for_entry('item_tags', $tags),
 				$this->metas->meta_for_entry('source_repeat', 1),
 				$this->metas->meta_for_entry('revertible_feed_text', $post['post_content'])
 
 			);
 			$this->metas->establish_post($post_ID, $pf_meta_args);
 			$this->metas->update_pf_meta($post_ID, 'nom_id', $post_ID);
+			$this->metas->handle_item_tags($post_ID, $tags);
 			return $post_ID;
 		} else {
 			// Do something with the returned ID.
