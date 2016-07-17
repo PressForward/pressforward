@@ -652,6 +652,42 @@ class Metas {
 				'level'	=> array('feed'),
 				'serialize'	=> false
 			),
+			'htmlUrl'	=>	array(
+				'name' => 'htmlUrl',
+				'definition' => __('Site URL of a feed.', 'pf'),
+				'function'	=> __('The home URL of a feed.', 'pf'),
+				'type'	=> array('adm'),
+				'use'	=> array(),
+				'level'	=> array('feed'),
+				'serialize'	=> false
+			),
+			'user_added'	=>	array(
+				'name' => 'user_added',
+				'definition' => __('User who added a feed..', 'pf'),
+				'function'	=> __('Track who added a subscribed or under review feed.', 'pf'),
+				'type'	=> array('adm','struc'),
+				'use'	=> array(),
+				'level'	=> array('feed'),
+				'serialize'	=> false
+			),
+			'module_added'	=>	array(
+				'name' => 'module_added',
+				'definition' => __('Module to process a feed.', 'pf'),
+				'function'	=> __('The feed should be processed with this module.', 'pf'),
+				'type'	=> array('adm','struc'),
+				'use'	=> array(),
+				'level'	=> array('feed'),
+				'serialize'	=> false
+			),
+			'ab_alert_msg'	=>	array(
+				'name' => 'ab_alert_msg',
+				'definition' => __('Alert Message processing and storage.', 'pf'),
+				'function'	=> __('Stores a feed alert to be processed.', 'pf'),
+				'type'	=> array('adm'),
+				'use'	=> array(),
+				'level'	=> array('feed'),
+				'serialize'	=> false
+			),
 		);
 
 		$metas = apply_filters('pf_meta_terms',$metas);
