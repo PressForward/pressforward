@@ -768,7 +768,7 @@ class Nominated implements HasActions {
         function user_nomination_meta($increase = true){
             $current_user = wp_get_current_user();
             $userID = $current_user->ID;
-            if (get_user_meta( $userID, 'nom_count', true )){
+            if (!empty(get_user_meta( $userID, 'nom_count', true ))){
 
                             $nom_counter = get_user_meta( $userID, 'nom_count', true );
                             if ($increase) {

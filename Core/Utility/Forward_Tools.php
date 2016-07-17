@@ -181,7 +181,7 @@ class Forward_Tools {
 				$userID = 0;
 			} else {
 				// Logged in.
-				//self::user_nomination_meta();
+				pressforward('admin.nominated')->user_nomination_meta();
 				$userID = $current_user->ID;
 				$userString = $userID;
 			}
