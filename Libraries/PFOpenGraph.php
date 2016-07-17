@@ -91,6 +91,8 @@ class PFOpenGraph implements Iterator
         $response = mb_convert_encoding(curl_exec($curl), 'HTML-ENTITIES', 'UTF-8');
 
         curl_close($curl);
+      } else {
+        $response = $response['body'];
       }
       if (!empty($response)) {
           return self::_parse($response);
