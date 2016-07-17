@@ -951,7 +951,11 @@ class Feed_Items implements HasActions, HasFilters {
 
 	public static function get_ext_og_img($link){
 		$node = pressforward('library.opengraph')->fetch($link);
-		$itemFeatImg = $node->image;
+		if ( !empty($node) ){
+			$itemFeatImg = $node->image;
+		} else {
+			return false;
+		}
 
 		return $itemFeatImg;
 	}
