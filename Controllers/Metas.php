@@ -303,6 +303,15 @@ class Metas {
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> false
 			),
+			'pf_meta' => array(
+				'name' => 'pf_meta',
+				'definition' => __('Serialized PF data', 'pf'),
+				'function'	=> __('Array of PF data that can be serialized', 'pf'),
+				'type'	=> array('struc'),
+				'use'	=> array('req'),
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> false
+			),
 			'origin_item_ID' => array(
 				'name' => 'origin_item_ID',
 				'definition' => __('DUPE Soon to be depreciated version of item_id', 'pf'),
@@ -496,7 +505,7 @@ class Metas {
 				'type'	=> array('adm'),
 				'use'	=> array('req'),
 				'level'	=> array('item', 'nomination', 'post'),
-				'serialize'	=> false
+				'serialize'	=> true
 			),
 			'nominator_array' => array(
 				'name' => 'nominator_array',
@@ -722,16 +731,19 @@ class Metas {
 				$old_meta = $this->meta_interface->get_meta($id, $key, $single);
 				$meta[$key] = $old_meta;
 				$this->meta_interface->update_meta($id, $field, $meta);
-				$this->meta_interface->delete_meta($id, $field, $old_meta);
+				$this->meta_interface->delete_meta($id, $key, $old_meta);
 				$meta = $old_meta;
 			} else {
 				$meta = $meta[$key];
 			}
+			//pf_log($key);
+			//pf_log($meta);
 			$meta = $this->check_value($meta, $id, $key);
 		} else {
 			$meta = $this->check_value($meta, $id, $field);
 		}
-
+		//pf_log($field);
+		//pf_log($meta);
 	    if ($obj){
 	        $metas = $this->structure();
 	        $meta_obj = $metas[$field];
@@ -832,9 +844,9 @@ class Metas {
 	 *
 	 * @return int The check value from add_post_meta.
 	 */
-	function add_pf_meta($id, $field, $value = '', $unique = false){
+	function add_pf_meta($id, $field, $value = '', $unique = true){
 	    $field = $this->pass_meta($field, $id, $value, $unique);
-	    $check = $this->apply_pf_meta($id, $field, $value, $unique);
+	    $check = $this->apply_pf_meta($id, $field, $value, $unique, 'add');
 	    return $check;
 
 	}
@@ -845,9 +857,16 @@ class Metas {
 			$key = $field['field'];
 			$field = $field['master_field'];
 			$serialized = true;
+			//pf_log($key);
 		}
-		$master_meta = $this->meta_interface->get_meta($id, $field, true);
-		switch ($field) {
+		//pf_log($field.': ');
+		//pf_log($value);
+		if ( $serialized ){
+			$switch_value = $key;
+		} else {
+			$switch_value = $field;
+		}
+		switch ($switch_value) {
 			case 'nominator_array':
 				$nominators = $this->get_post_pf_meta($id, $field);
 				if ( !is_array( $value ) ){
@@ -873,17 +892,33 @@ class Metas {
 				break;
 		}
 		if ( $serialized ){
+			$master_meta = $this->meta_interface->get_meta($id, $field, true);
+			if ( empty($master_meta) ){
+				$master_meta = array();
+				$apply_type = 'add';
+				$state = true;
+			} else {
+				$apply_type = 'update';
+				$state = $master_meta;
+			}
 			$master_meta[$key] = $value;
 			$value = $master_meta;
 		}
 		if ( 'update' == $apply_type ){
 			if ( $serialized ){
+				pf_log($key);
 				$this->meta_interface->delete_meta($id, $key, '');
 			}
 			$check = $this->meta_interface->update_meta($id, $field, $value, $state);
+			if (!$check){
+				$check = $this->meta_interface->update_meta($id, $field, $value, $state);
+			}
 		} elseif ( 'add' == $apply_type ) {
 			$check = $this->meta_interface->add_meta($id, $field, $value, $state);
 		}
+		pf_log($field);
+		pf_log($value);
+		pf_log($check);
 		return $check;
 	}
 

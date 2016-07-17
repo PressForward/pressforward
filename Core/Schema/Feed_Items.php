@@ -373,9 +373,9 @@ class Feed_Items implements HasActions, HasFilters {
 	*
 	*/
 	public function get_source_link( $post_id ) {
-		$url = pressforward('controller.metas')->retrieve_meta($post_id, 'pf_source_link');
+		$url = pressforward('controller.metas')->get_post_pf_meta($post_id, 'pf_source_link');
 		if (empty($url)){
-			$url = pressforward('controller.metas')->retrieve_meta($post_id, 'item_link');
+			$url = pressforward('controller.metas')->get_post_pf_meta($post_id, 'item_link');
 			//pf_log($url);
 		}
 		$source_url = pressforward('controller.http_tools')->resolve_a_url($url);

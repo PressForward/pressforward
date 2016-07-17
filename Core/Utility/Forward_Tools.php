@@ -199,7 +199,7 @@ class Forward_Tools {
 
 			if (empty($_POST['item_date'])){
 				$newDate = date('Y-m-d H:i:s');
-				$_POST['item_date'] = $newDate;
+				//$_POST['item_date'] = $newDate;
 				$item_date = $newDate;
 			} else {
 				$item_date = $_POST['item_date'];
@@ -290,14 +290,14 @@ class Forward_Tools {
 			  $source = '';
 			}
 
-
+			//pf_log($_POST);
 			$pf_meta_args = array(
 				$this->metas->meta_for_entry('item_id', $item_id ),
 				$this->metas->meta_for_entry('item_link', $_POST['item_link']),
 				$this->metas->meta_for_entry('nomination_count', 1),
 				$this->metas->meta_for_entry('source_title', 'Bookmarklet'),
 				$this->metas->meta_for_entry('item_date', $item_date),
-				$this->metas->meta_for_entry('item_date', $item_date),
+				//$this->metas->meta_for_entry('item_date', $item_date),
 				$this->metas->meta_for_entry('date_nominated', $_POST['date_nominated']),
 				$this->metas->meta_for_entry('item_author', $_POST['authors']),
 				//$this->metas->meta_for_entry('authors', $_POST['authors']),
