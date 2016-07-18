@@ -712,6 +712,14 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 							</p>
 						</div>
 					<?php endif; ?>
+				</div>
+				</div>
+			</div>
+			<div id="tagdiv" class="postbox">
+				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
+				<h3 class="hndle"><?php _e('Tags') ?></h3>
+				<div class="inside">
+				<div id="taxonomy-category" class="tagdiv">
 					<p>
 						<?php
 							if ( !$tags_retrieved ){
@@ -725,6 +733,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 				</div>
 				</div>
 			</div>
+
 			<?php do_action('nominate_this_sidebar_bottom'); ?>
 		</div>
 	</div>
