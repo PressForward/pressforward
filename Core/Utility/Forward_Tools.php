@@ -259,6 +259,7 @@ class Forward_Tools {
 		# PF NOTE: Switching post type to nomination.
 		$post['post_type'] = pressforward('schema.nominations')->post_type;
 		$post['post_date_gmt'] = date('Y-m-d H:i:s');
+		$post['guid'] = $_POST['item_link'];
 		# PF NOTE: This is where the inital post is created.
 		# PF NOTE: Put get_post_nomination_status here.
 		//$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
