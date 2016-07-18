@@ -156,6 +156,7 @@ function nominate_it() {
 	if (0 != $feed_nom['id']){
 		$post['post_parent'] = $feed_nom['id'];
 	}
+	$post['post_author'] = get_current_user_id();
 /////var_dump($_POST); die();
 	if (isset($_POST['publish']) && ($_POST['publish'] == "Send to ".ucwords(get_option(PF_SLUG.'_draft_post_status', 'draft')) ) ) {
 

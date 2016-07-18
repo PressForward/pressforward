@@ -195,7 +195,7 @@ class Nominated implements HasActions {
             				//1773 in rssforward.php for various post meta.
 
             				//Get the submitter's user slug
-            				$metadata['submitters'] = $submitter_slug = get_the_author_meta('user_nicename');
+            				$metadata['submitters'] = $submitter_slug = get_the_author_meta('nicename');
             				// Nomination (post) ID
             				$metadata['nom_id'] = $nom_id = get_the_ID();
             				//Get the WP database ID of the original item in the database.
