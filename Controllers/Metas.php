@@ -774,6 +774,7 @@ class Metas {
 			$key = $field['field'];
 			$field = $field['master_field'];
 			$serialized = true;
+			$single = true;
 		}
 	    $meta = $this->meta_interface->get_meta($id, $field, $single);
 		if ( $serialized ){
@@ -953,6 +954,7 @@ class Metas {
 		}
 		if ( $serialized ){
 			$master_meta = $this->meta_interface->get_meta($id, $field, true);
+			//pf_log($master_meta);
 			if ( empty($master_meta) ){
 				$master_meta = array();
 				$apply_type = 'add';
@@ -963,6 +965,7 @@ class Metas {
 			}
 			$master_meta[$key] = $value;
 			$value = $master_meta;
+			//pf_log($value);
 		}
 		if ( 'update' == $apply_type ){
 			if ( $serialized ){
