@@ -101,20 +101,8 @@ function get_the_nominator_ids(){
 function get_the_nominators(){
 	#var_dump(get_the_nominators());
 	$nominators = get_the_nominator_ids();
-	if (is_array($nominators)){
-		$nomers = '';
-		$lastElement = end($nominators);
-		$lastKey = key($nominators);
-		foreach ($nominators as $k => $nomer){
-			if (is_array($nomer)){
-				$nomers .= implode("," , $nomer);
-			} else {
-				$nomers .= $nomer;
-			}
-			if ($lastKey != $k){
-				$nomers .= ',';
-			}
-		}
+	if ( !empty($nominators) && !is_array($nominators)){
+		$nomers = explode( ",", $nomers );
 		#$nomers = implode(", " , get_the_nominators());
 	} else {
 		$nomers = get_the_nominator_ids();
@@ -125,7 +113,7 @@ function get_the_nominators(){
 	# So this is a stupid way to do it, but it is really the
 	# best way.
 
-	$nominating_user_ids = array_filter( explode( ",", $nomers ) );
+	$nominating_user_ids = array_filter( $nomers, 'strlen' );
 	$nominating_users = array();
 	foreach ($nominating_user_ids as $user_id){
 		$user_obj = get_user_by('id', $user_id);
