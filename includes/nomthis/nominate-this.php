@@ -58,7 +58,7 @@ function nominate_it() {
 	$post = array();
 	//$post_ID = $post['ID'] = (int) $_POST['post_id'];
 
-	if ( !current_user_can(get_option( 'pf_menu_all_content_access', $this->user_interface->pf_get_defining_capability_by_role('contributor') )) )
+	if ( !current_user_can(get_option( 'pf_menu_all_content_access', pressforward('controller.users')->user_interface->pf_get_defining_capability_by_role('contributor') )) )
 		wp_die(__('You are not allowed to edit this post.'));
 
 	$post['post_category'] = isset($_POST['post_category']) ? $_POST['post_category'] : '';
