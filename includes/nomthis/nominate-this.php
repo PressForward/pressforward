@@ -55,11 +55,10 @@ if ( ! current_user_can( 'edit_posts' ) || ! current_user_can( get_post_type_obj
  */
 function nominate_it() {
 
-	$post = get_default_post_to_edit();
-	$post = get_object_vars($post);
-	$post_ID = $post['ID'] = (int) $_POST['post_id'];
+	$post = array();
+	//$post_ID = $post['ID'] = (int) $_POST['post_id'];
 
-	if ( !current_user_can('edit_post', $post_ID) )
+	if ( !current_user_can('edit_posts') )
 		wp_die(__('You are not allowed to edit this post.'));
 
 	$post['post_category'] = isset($_POST['post_category']) ? $_POST['post_category'] : '';
@@ -93,6 +92,7 @@ function nominate_it() {
 
 	$nom_check = false;
     $feed_nom = array( 'error' => false, 'simple' => '' );
+    $post['guid'] = $_POST['item_link'];
     //var_dump('<pre>'); var_dump($_POST['pf-feed-subscribe']); die();
     if ( !empty( $_POST['pf-feed-subscribe'] ) && ( 'subscribe' == $_POST['pf-feed-subscribe'] ) ){
         $url_array = parse_url(esc_url($_POST['item_link']));
@@ -157,6 +157,7 @@ function nominate_it() {
 		$post['post_parent'] = $feed_nom['id'];
 	}
 	$post['post_author'] = get_current_user_id();
+	$post['post_type'] = 'nomination';
 /////var_dump($_POST); die();
 	if (isset($_POST['publish']) && ($_POST['publish'] == "Send to ".ucwords(get_option(PF_SLUG.'_draft_post_status', 'draft')) ) ) {
 
@@ -174,8 +175,11 @@ if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 	check_admin_referer('nominate-this');
 	$posted = $post_ID = nominate_it();
 } else {
-	$post = get_default_post_to_edit('post', true);
-	$post_ID = $post->ID;
+	$title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( stripslashes( $_GET['t'] ) , ENT_QUOTES) ) ) : '';
+	//$post_ID = wp_insert_post(array('post_title' => $title, 'post_type' => 'nomination', 'guid' => $_GET['u']));
+	//$post_ID = $post->ID;
+	//pf_log('Establish post '.$post_ID);
+	//var_dump($_GET['u']); die();
 }
 
 				global $pf_nt;
@@ -188,12 +192,12 @@ if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 					//var_dump($itemFeatImg); die();
 				}
 
-	if (!empty($_POST['item_link']) && ($_POST['item_link']) != ''){
+	if ( ( !empty($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) && !empty($_POST['item_link']) && ($_POST['item_link']) != ''){
 		pressforward('schema.feed_item')->set_ext_as_featured($post_ID, $itemFeatImg);
 	}
 
 // Set Variables
-$title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( stripslashes( $_GET['t'] ) , ENT_QUOTES) ) ) : '';
+
 
 $selection = '';
 if ( !empty($_GET['s']) ) {
@@ -585,7 +589,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			<input type="hidden" name="autosave" id="autosave" />
 			<input type="hidden" id="original_post_status" name="original_post_status" value="draft" />
 			<input type="hidden" id="prev_status" name="prev_status" value="draft" />
-			<input type="hidden" id="post_id" name="post_id" value="<?php echo (int) $post_ID; ?>" />
+			<input type="hidden" id="post_id" name="post_id" value="0" />
 			<?php if ($url != '') {
 
 				$author_retrieved = pressforward('controller.metas')->get_author_from_url( $url );
@@ -686,7 +690,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 
 					<div id="category-all" class="tabs-panel">
 						<ul id="categorychecklist" data-wp-lists="list:category" class="categorychecklist form-no-clear">
-							<?php wp_terms_checklist($post_ID, array( 'taxonomy' => 'category', 'popular_cats' => $popular_ids ) ) ?>
+							<?php wp_terms_checklist(0, array( 'taxonomy' => 'category', 'popular_cats' => $popular_ids ) ) ?>
 						</ul>
 					</div>
 

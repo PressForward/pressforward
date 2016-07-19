@@ -252,17 +252,19 @@ class Forward_Tools {
 	public function bookmarklet_to_nomination($item_id = false, $post){
 		if (!$item_id){
 			$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+			$post['item_id'] = $item_id;
 		}
-		$nom_and_post_check = $this->is_a_pf_type( $item_id );
 
-		$this->advance_interface->prep_bookmarklet( $post['ID'] );
+		//$nom_and_post_check = $this->is_a_pf_type( $item_id );
+
 		# PF NOTE: Switching post type to nomination.
 		$post['post_type'] = pressforward('schema.nominations')->post_type;
 		$post['post_date_gmt'] = date('Y-m-d H:i:s');
 		$post['guid'] = $_POST['item_link'];
 		# PF NOTE: This is where the inital post is created.
 		# PF NOTE: Put get_post_nomination_status here.
-		//$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+		$post = $this->item_interface->insert_post($post, false);
+		$this->advance_interface->prep_bookmarklet( $post );
 		if (!isset($_POST['item_date'])){
 			$newDate = date('Y-m-d H:i:s');
 			$item_date = $newDate;
@@ -271,10 +273,10 @@ class Forward_Tools {
 			$item_date = $_POST['item_date'];
 		}
 		// Does not exist in the system.
-		if (!$nom_and_post_check){
+		if ( false != $post ){
 			// Update post here because we're working with the blank post
 			// inited by the Nominate This page, at the beginning.
-			$post_ID = $this->item_interface->update_post($post, true);
+			$post_ID = $this->item_interface->update_post(get_post($post), true);
 			// Check if thumbnail already exists, if not, set it up.
 			$already_has_thumb = has_post_thumbnail($post_ID);
 			if ($already_has_thumb)  {
