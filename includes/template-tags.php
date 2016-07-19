@@ -101,7 +101,7 @@ function get_the_nominator_ids(){
 function get_the_nominators(){
 	#var_dump(get_the_nominators());
 	$nominators = get_the_nominator_ids();
-	if ( !empty($nominators) && !is_array($nominators)){
+	if ( !empty($nominators) && !is_array($nominators) && is_string( $nominators ) ){
 		$nomers = explode( ",", $nomers );
 		#$nomers = implode(", " , get_the_nominators());
 	} else {
