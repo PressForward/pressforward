@@ -220,7 +220,7 @@ class Nominated implements HasActions {
             				//RSS-passed tags, comma seperated.
             				$item_nom_tags = $nom_tags = pressforward('controller.metas')->get_post_pf_meta($nom_id, 'item_tags', true);
             				$wp_nom_tags = '';
-            				$getTheTags = get_the_tags();
+            				$getTheTags = array();// get_the_tags();
             				if (empty($getTheTags)){
             					$getTheTags[] = '';
             					$wp_nom_tags = '';
