@@ -185,6 +185,7 @@ if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 					//var_dump($_POST['item_link']); die();
 					//Gets OG image
 					$itemFeatImg = pressforward('schema.feed_item')->get_ext_og_img($_POST['item_link']);
+					//var_dump($itemFeatImg); die();
 				}
 
 	if (!empty($_POST['item_link']) && ($_POST['item_link']) != ''){
