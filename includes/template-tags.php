@@ -117,7 +117,9 @@ function get_the_nominators(){
 	$nominating_users = array();
 	foreach ($nominating_user_ids as $user_id){
 		$user_obj = get_user_by('id', $user_id);
-		$nominating_users[] = $user_obj->display_name;
+		if ( !empty($user_obj) ){
+			$nominating_users[] = $user_obj->display_name;
+		}
 	}
 
 	return $nominating_users;
