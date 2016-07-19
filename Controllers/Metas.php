@@ -583,7 +583,7 @@ class Metas {
 				'type'	=> array('adm'),
 				'use'	=> array(),
 				'level'	=> array('item', 'nomination' ),
-				'serialize'	=> false
+				'serialize'	=> true
 			),
 			'pf_feed_error_count' => array(
 				'name' => 'pf_feed_error_count',
