@@ -102,10 +102,10 @@ function get_the_nominators(){
 	#var_dump(get_the_nominators());
 	$nominators = get_the_nominator_ids();
 	if ( !empty($nominators) && !is_array($nominators) && is_string( $nominators ) ){
-		$nomers = explode( ",", $nomers );
+		$nomers = explode( ",", $nominators );
 		#$nomers = implode(", " , get_the_nominators());
 	} else {
-		$nomers = get_the_nominator_ids();
+		$nomers = $nominators;
 	}
 
 	# Look, there are a lot of weird things that can happen
@@ -115,7 +115,7 @@ function get_the_nominators(){
 
 	$nominating_user_ids = array_filter( $nomers, 'strlen' );
 	$nominating_users = array();
-	if ( empty($nominating_users) ){
+	if ( empty($nominating_user_ids) ){
 		return array();
 	}
 	foreach ($nominating_user_ids as $user_id){
