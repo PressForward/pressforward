@@ -179,6 +179,7 @@ class Forward_Tools {
 				$userSlug = "external";
 				$userName = __('External User', 'pf');
 				$userID = 0;
+				pf_log('Can not find a user to add to the nominated count of.');
 			} else {
 				// Logged in.
 				pressforward('admin.nominated')->user_nomination_meta();

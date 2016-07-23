@@ -769,19 +769,23 @@ class Nominated implements HasActions {
             $current_user = wp_get_current_user();
             $userID = $current_user->ID;
             if (!empty(get_user_meta( $userID, 'nom_count', true ))){
-
+                    pf_log('Update nom_count in user meta for user '.$userID);
                             $nom_counter = get_user_meta( $userID, 'nom_count', true );
+                            $old_nom_counter = $nom_counter;
                             if ($increase) {
-                                $nom_counter++;
+                                $nom_counter = $nom_counter+1;
                             }	else {
-                                $nom_counter--;
+                                $nom_counter = $nom_counter-1;
                             }
-                            update_user_meta( $userID, 'nom_count', $nom_counter, true );
+                            pf_log('Update nom_count in user meta for user '.$userID.' with value of '.$nom_counter);
+                            update_user_meta( $userID, 'nom_count', $nom_counter, $old_nom_counter );
 
             } elseif ($increase) {
+                pf_log('Create nom_count in user meta for user '.$userID);
                             add_user_meta( $userID, 'nom_count', 1, true );
 
             } else {
+                pf_log('Nothing to do with nom_count in user meta for user '.$userID);
                 return false;
             }
         }

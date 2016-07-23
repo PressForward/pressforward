@@ -271,7 +271,7 @@ class Metas {
 	 */
 	function assure_key($name){
 		$meta = $this->by_name($name);
-		pf_log('Assuring '.$name.' is PF meta.');
+		//pf_log('Assuring '.$name.' is PF meta.');
 		if ( ( false !== $meta ) && !empty( $meta['move'] ) ){
 			return $this->by_name( $meta['move'] );
 		} else {
@@ -980,7 +980,7 @@ class Metas {
 		}
 		if ( 'update' == $apply_type ){
 			if ( $serialized ){
-				pf_log($key);
+				//pf_log($key);
 				$this->meta_interface->delete_meta($id, $key, '');
 			}
 			$check = $this->meta_interface->update_meta($id, $field, $value, $state);
@@ -990,9 +990,9 @@ class Metas {
 		} elseif ( 'add' == $apply_type ) {
 			$check = $this->meta_interface->add_meta($id, $field, $value, $state);
 		}
-		pf_log($field);
-		pf_log($value);
-		pf_log($check);
+		//pf_log($field);
+		//pf_log($value);
+		//pf_log($check);
 		return $check;
 	}
 
