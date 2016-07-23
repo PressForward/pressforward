@@ -70,7 +70,13 @@ class Metas {
 		pf_log('Transition post '.$idA.' to '.$idB);
 		foreach($this->structure() as $meta){
             $post_types = apply_filters( 'pf_transition_post_meta', array('item', 'nomination', 'post'));
-            if ( in_array( $post_types, $meta['level'] ) ){
+            $level_check = false;
+            foreach ( $meta['level'] as $level ){
+                if ( in_array( $level, $post_types ) ){
+                    $level_check = true;
+                }
+            }
+            if ( $level_check ){
 			    $this->transition_meta($this->get_name($meta), $idA, $idB);
             } else {
                 return;
