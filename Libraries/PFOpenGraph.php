@@ -51,7 +51,7 @@ class PFOpenGraph implements Iterator
      */
   	static public function fetch($URI) {
       $response = pf_de_https($URI, 'wp_remote_get', array('timeout' => '30'));
-      if ( empty($response) || is_wp_error($response) || ( !empty($response) && !empty($response['headers']) && 50 > $response['headers']['content-length'] ) ){
+      if ( empty($response) || is_wp_error($response) || ( !empty($response) && !empty($response['headers']) && !empty($response['headers']['content-length']) && 50 > $response['headers']['content-length'] ) ){
         $cookie_path = 'cookie.txt';
         if ( defined('COOKIE_PATH_FOR_CURL') && !empty(COOKIE_PATH_FOR_CURL) ){
           $cookie_path = COOKIE_PATH_FOR_CURL;
