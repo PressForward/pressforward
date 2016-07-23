@@ -69,7 +69,12 @@ class Metas {
 		}
 		pf_log('Transition post '.$idA.' to '.$idB);
 		foreach($this->structure() as $meta){
-			$this->transition_meta($this->get_name($meta), $idA, $idB);
+            $post_types = apply_filters( 'pf_transition_post_meta', array('item', 'nomination', 'post'));
+            if ( in_array( $post_types, $meta['level'] ) ){
+			    $this->transition_meta($this->get_name($meta), $idA, $idB);
+            } else {
+                return;
+            }
 		}
 		if ( $term_transition ){
 			pf_log('Transitioning Terms.');
