@@ -165,8 +165,8 @@ class Forward_Tools {
 		$nomination_and_post_check = $this->is_a_pf_type( $item_id );
 		pf_log('Is this a PF Type?');
 		pf_log($nomination_and_post_check);
-		//$post_check = $this->is_a_pf_type( $item_id, pressforward('admin.nominated')->post_type );
-		//$this->metas->update_pf_meta($post_ID, 'nom_id', $post_ID);
+		$post_check = $this->is_a_pf_type( $item_id, pressforward('admin.nominated')->post_type );
+		$this->metas->update_pf_meta($post_ID, 'nom_id', $post_ID);
 		if ($nomination_and_post_check == false){
 			pf_log('Start Transition.');
 			$this->transition_to_readable_text($item_post_id, false);
@@ -255,7 +255,7 @@ class Forward_Tools {
 			$post['item_id'] = $item_id;
 		}
 
-		//$nom_and_post_check = $this->is_a_pf_type( $item_id );
+		$nom_and_post_check = $this->is_a_pf_type( $item_id );
 
 		# PF NOTE: Switching post type to nomination.
 		$post['post_type'] = pressforward('schema.nominations')->post_type;
