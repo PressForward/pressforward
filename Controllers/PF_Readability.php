@@ -19,7 +19,7 @@ class PF_Readability {
 	 *			'authorship'	=> $_POST['authorship']
 	 *		);
 	*/
-	public static function get_readable_text($args){
+	public function get_readable_text($args){
 			#ob_start();
 			extract( $args, EXTR_SKIP );
 			set_time_limit(0);
@@ -71,10 +71,10 @@ class PF_Readability {
 							$readability_stat .= ' Retrieved text is less than original text.';
 							$read_status = 'already_readable';
 						}
-						$itemReadReady = self::process_in_oembeds($url, $itemReadReady);
+						$itemReadReady = $this->process_in_oembeds($url, $itemReadReady);
 					} else {
 						$read_status = 'made_readable';
-						$itemReadReady = self::process_in_oembeds($url, $itemReadReady);
+						$itemReadReady = $this->process_in_oembeds($url, $itemReadReady);
 					}
 				} else {
 					$read_status = 'secured';
@@ -94,7 +94,7 @@ class PF_Readability {
 	/**
 	 * Handles a readability request via POST
 	 */
-	public static function make_it_readable($quickresponse = false){
+	public function make_it_readable($quickresponse = false){
 
 		// Verify nonce
 		if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )
@@ -117,13 +117,13 @@ class PF_Readability {
 				'post_id'		=> $_POST['post_id']
 			);
 
-			$readable_ready = self::get_readable_text($args);
+			$readable_ready = $this->get_readable_text($args);
 
 			$read_status = $readable_ready['status'];
 			$itemReadReady = $readable_ready['readable'];
 			$url = $readable_ready['url'];
 			if ( !strpos($itemReadReady, $url) ){
-				$itemReadReady = self::process_in_oembeds($url, $itemReadReady);
+				$itemReadReady = $this->process_in_oembeds($url, $itemReadReady);
 			}
 
 			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
@@ -151,7 +151,7 @@ class PF_Readability {
 					pressforward('controller.metas')->update_pf_meta($post_id, 'readable_status', 0);
 					$error = $update_check->get_error_message();
 				}
-				$responseItemReadReady = self::get_embed($_POST['url']).$itemReadReady;
+				$responseItemReadReady = $this->get_embed($_POST['url']).$itemReadReady;
 			} else {
 				$error = 'Not Updated, retrieved content is longer than stored content.';
 			}
