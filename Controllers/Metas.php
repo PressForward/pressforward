@@ -930,7 +930,7 @@ class Metas {
 		}
 		switch ($switch_value) {
 			case 'nominator_array':
-				$nominators = $this->get_post_pf_meta($id, $field);
+				$nominators = $this->get_post_pf_meta($id, $key);
 				if ( !is_array( $value ) ){
 					$value = array( $value );
 				}

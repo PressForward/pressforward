@@ -85,7 +85,7 @@ function the_item_repeats(){
 }
 
 function get_the_nomination_count(){
-	$m = pressforward('controller.metas')->retrieve_meta(get_the_ID(), 'nomination_count');
+	$m = pressforward('controller.metas')->get_post_pf_meta(get_the_ID(), 'nomination_count');
 	return $m;
 }
 
@@ -94,7 +94,7 @@ function the_nomination_count(){
 }
 
 function get_the_nominator_ids(){
-	$m = pressforward('controller.metas')->retrieve_meta(get_the_ID(), 'nominator_array', false, false);
+	$m = pressforward('controller.metas')->get_post_pf_meta(get_the_ID(), 'nominator_array');
 	return $m;
 }
 
