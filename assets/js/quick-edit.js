@@ -9,8 +9,10 @@ window.wp = window.wp || {};
 	$(document).ready( function() {
 		$( '.wp-list-table' ).on( 'click', function() {
 		} );
+		console.log('PF Quick Edit modifications loaded.');
 		$( '#the-list' ).on( 'click', 'a.editinline', function() {
 			ev = this;
+			//console.log(ev);
 			// Gag. We set a timeout to ensure that core JS has moved the quick
 			// edit box before accessing pf-quick-edit-feed-url.
 			setTimeout( function( ) {

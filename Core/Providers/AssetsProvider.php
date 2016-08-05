@@ -266,7 +266,8 @@ class AssetsProvider extends ServiceProvider {
 			'type'	=>	'admin',
 			'condition'	=> function($hook) use ($provider){
 								$exclusions = array('toplevel_page_pf-menu');
-								return $provider->check_hook_for_pressforward_string($hook, $exclusions);
+								$inclusions = array('edit.php');
+								return $provider->check_hook_for_pressforward_string($hook, $exclusions, $inclusions);
 							},
 			'handle'	=>	$slug.'-quick-edit',
 			'src'		=>	'assets/js/quick-edit',
@@ -344,7 +345,8 @@ class AssetsProvider extends ServiceProvider {
 
          $position_test_one = strpos($hook, 'pressforward');
          $position_test_two = strpos($hook, 'pf');
-		 if ( ( false === $position_test_one ) && ( false === $position_test_two ) ){ return false; }
+		// $position_test_two = strpos($hook, 'edit.php');
+		 if ( empty($inclusions) && ( false === $position_test_one ) && ( false === $position_test_two ) ){ return false; }
 
 		 if (!empty($exclusions)){
 		 		 foreach ($exclusions as $exclusion){
