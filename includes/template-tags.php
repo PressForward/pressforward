@@ -192,7 +192,21 @@ function get_pf_feed_list( $status = 'publish', $page = 1, $order = 'ASC' ){
 
 	if ($query->have_posts()) :
 		while ($query->have_posts())  : $query->the_post();
-		  $return_string .= '<li class="feeditem"><a href="'.pressforward('controller.metas')->get_post_pf_meta(get_the_ID(), 'feedUrl', true).'"target="_blank">'.get_the_title().'</a></li>';
+		  $return_string .= '<li class="feeditem"><a href="'.pressforward('controller.metas')->get_post_pf_meta(get_the_ID(), 'feedUrl', true).'"target="_blank">'.get_the_title().'</a>';
+		  	$child_args = array(
+				'post_parent'	=>	get_the_ID(),
+				'post_type'		=>	pressforward('schema.feeds')->post_type
+			);
+			$child_query = get_children($child_args, OBJECT);
+			//var_dump($child_query); die();
+		  	if ( !empty($child_query) ){
+				$return_string .= '<ul class="sub-feedlist">';
+				foreach ( $child_query as $post ) {
+					$return_string .= '<li class="feeditem"><a href="'.pressforward('controller.metas')->get_post_pf_meta($post->ID, 'feedUrl', true).'"target="_blank">'.$post->post_title.'</a>';
+				}
+				$return_string .= '</ul>';
+			}
+		  $return_string .= '</li>';
 		endwhile;
 	endif;
 	$return_string .= '</ul>';
