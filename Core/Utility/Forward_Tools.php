@@ -165,8 +165,8 @@ class Forward_Tools {
 		$nomination_and_post_check = $this->is_a_pf_type( $item_id );
 		pf_log('Is this a PF Type?');
 		pf_log($nomination_and_post_check);
-		$post_check = $this->is_a_pf_type( $item_id, pressforward('admin.nominated')->post_type );
-		$this->metas->update_pf_meta($post_ID, 'nom_id', $post_ID);
+		$post_check = $this->is_a_pf_type( $item_id, pressforward('schema.nominations')->post_type );
+		$this->metas->update_pf_meta($item_post_id, 'nom_id', $item_id);
 		if ($nomination_and_post_check == false){
 			pf_log('Start Transition.');
 			$this->transition_to_readable_text($item_post_id, true);
