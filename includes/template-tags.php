@@ -108,17 +108,15 @@ function get_the_nominators(){
 		$nomers = $nominators;
 	}
 
-	# Look, there are a lot of weird things that can happen
-	# depending on how far back your version history has gone
-	# So this is a stupid way to do it, but it is really the
-	# best way.
-
-	$nominating_user_ids = array_filter( $nomers, 'strlen' );
+	$nominating_user_ids = $nomers;
 	$nominating_users = array();
 	if ( empty($nominating_user_ids) ){
 		return array();
 	}
 	foreach ($nominating_user_ids as $user_id){
+		if ( empty($user_id) ){
+			continue;
+		}
 		$user_obj = get_user_by('id', $user_id);
 		if ( !empty($user_obj) ){
 			$nominating_users[] = $user_obj->display_name;
