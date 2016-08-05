@@ -75,7 +75,7 @@ class Forward_Tools {
 			$source_position = get_option('pf_source_statement_position', 'bottom');
 			if ( ( 'bottom' == $source_position ) && $source ){
 				$item_content = $item_content . pressforward('admin.nominated')->get_the_source_statement( $post_id );
-			} else {
+			} else if ( $source ) {
 				$item_content = pressforward('admin.nominated')->get_the_source_statement( $post_id ) . $item_content;
 			}
 			$post_id = $this->item_interface->update_post( array(
@@ -169,7 +169,7 @@ class Forward_Tools {
 		$this->metas->update_pf_meta($post_ID, 'nom_id', $post_ID);
 		if ($nomination_and_post_check == false){
 			pf_log('Start Transition.');
-			$this->transition_to_readable_text($item_post_id, false);
+			$this->transition_to_readable_text($item_post_id, true);
 
 			$current_user = wp_get_current_user();
 			pf_log('User: ');
