@@ -623,22 +623,31 @@ class Feed_Items implements HasActions, HasFilters {
 									$sourceRepeat = pressforward('controller.metas')->get_post_pf_meta($postID, 'source_repeat', true);
 									if (($itemDate > $postDate)) {
 										# If it is more recent, than this is the new dominant post.
+										# @TODO: Allow the feed process to check for updated content.
+										# The idea is that if the retrieved item's date is newer than
+										# the internal date it will update. But the retrieved item date
+										# is not always available, and is not currently being processed
+										# correctly when it is, so we're not doing this for now.
 										$sourceRepeat++;
+										$thepostscheck = 1;
 									} elseif (($itemDate <= $postDate)) {
 										# if it is less recent, then we need to increment the source count.
 										$sourceRepeat++;
 										if ($thePostsDoubleCheck > $sourceRepeat) {
 											pressforward('controller.metas')->update_pf_meta($postID, 'source_repeat', $sourceRepeat);
 										}
-										# @TODO: Allow the feed process to check for updated content.
 										# The idea is that if the retrieved item's date is newer than
 										# the internal date it will update. But the retrieved item date
 										# is not always available, and is not currently being processed
 										# correctly when it is, so we're not doing this for now.
 										//$thepostscheck++;
-										$thepostscheck = 0;
+										$thepostscheck = 1;
 									} else {
-										$thepostscheck = 0;
+										# The idea is that if the retrieved item's date is newer than
+										# the internal date it will update. But the retrieved item date
+										# is not always available, and is not currently being processed
+										# correctly when it is, so we're not doing this for now.
+										$thepostscheck = 1;
 									}
 								} else {
 									# If it isn't duplicated at all, then we need to give it a source repeat count of 0
@@ -788,7 +797,7 @@ class Feed_Items implements HasActions, HasFilters {
 				$parent_id = $feed_obj_id;
 				do_action('pf_post_established', $newNomID, $item_id, $parent_id);
 			} else {
-
+				pf_log( 'The post was a repeat, so we are not adding it.' );
 			}
 
 		}
