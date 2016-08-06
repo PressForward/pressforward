@@ -233,8 +233,8 @@ class Feed_Items implements HasActions, HasFilters {
 		// Fetch some handy pf-specific data
 		if ( ! empty( $posts ) ) {
 			foreach ( $posts as &$post ) {
-				$post->word_count = $this->metas->get_meta( $post->ID, 'pf_feed_item_word_count', true );
-				$post->source     = $this->metas->get_meta( $post->ID, 'source_title', true );
+				$post->word_count = $this->metas->get_post_pf_meta( $post->ID, 'pf_feed_item_word_count', true );
+				$post->source     = $this->metas->get_post_pf_meta( $post->ID, 'source_title', true );
 				$post->tags       = wp_get_post_terms( $post->ID, pf_feed_item_tag_taxonomy() );
 			}
 		}
@@ -612,6 +612,7 @@ class Feed_Items implements HasActions, HasFilters {
 								$postItemLink = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'item_link', true);
 								# Item comparative values.
 								$itemDate = strtotime($item['item_date']);
+								//pf_log( 'Item time '. $itemDate . ' post date is '. $postDate );
 								$itemTitle = $item['item_title'];
 								$itemLink = $item['item_link'];
 
@@ -629,7 +630,13 @@ class Feed_Items implements HasActions, HasFilters {
 										if ($thePostsDoubleCheck > $sourceRepeat) {
 											pressforward('controller.metas')->update_pf_meta($postID, 'source_repeat', $sourceRepeat);
 										}
-										$thepostscheck++;
+										# @TODO: Allow the feed process to check for updated content.
+										# The idea is that if the retrieved item's date is newer than
+										# the internal date it will update. But the retrieved item date
+										# is not always available, and is not currently being processed
+										# correctly when it is, so we're not doing this for now.
+										//$thepostscheck++;
+										$thepostscheck = 0;
 									} else {
 										$thepostscheck = 0;
 									}

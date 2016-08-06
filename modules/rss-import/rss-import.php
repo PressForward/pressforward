@@ -78,7 +78,7 @@ class PF_RSS_Import extends PF_Module {
 			return;
 		}
 		$error_to_alert = get_option(PF_SLUG.'_errors_until_alert', 3);
-		$error_count = pressforward('controller.metas')->retrieve_meta($id, PF_SLUG.'_feed_error_count');
+		$error_count = pressforward('controller.metas')->get_post_pf_meta($id, PF_SLUG.'_feed_error_count');
 		if ((!is_numeric($error_count)) || ('' == $error_count)){ $error_count = 0; }
 		if ($error_count >= $error_to_alert){
 			pressforward('library.alertbox')->switch_post_type($id);
