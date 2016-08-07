@@ -615,7 +615,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 				<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr($title);?>" />
 				<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo date('c'); ?>" />
 				<?php #Metadata goes here. ?>
-				<input type="hidden" id="item_link" name="item_link" value="<?php echo esc_url($url ); ?>" />
+				<input type="hidden" id="item_link" name="item_link" value="<?php echo esc_url( $og->url ); ?>" />
 			<?php } ?>
 
 			<!-- This div holds the photo metadata -->
