@@ -350,9 +350,12 @@ class Retrieval {
 	# results.
 	public function pf_feedlist( $startcount = 0 ) {
 		pf_log( 'Invoked: PF_Feed_Retrieve::pf_feedlist()' );
+		# @TODO Not this way.
 		$args = array(
-				'posts_per_page'=>-1
+				'posts_per_page'=>-1,
+				'post_status'	=>	array('publish')
 			);
+		$args = apply_filters( 'pf_feedlist_args', $args );
 		$theFeeds = pressforward('schema.feeds')->get( $args );
 		$feedlist = array();
 
