@@ -82,6 +82,20 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 
 == Changelog ==
 
+= 4.0.0 =
+
+* Added support for YouTube RSS Feeds
+* Nominate This now pulls in existing tags and allows users to create new tags.
+* Enhanced the identification of featured images in posts
+* Added support for YouTube oEmbeds
+* Increased database efficiency.
+* Moved all meta value management to internal library.
+* Fixed bug that caused item_author to default to first user in site if no author was identified in the post. If no author is found, the author will now default to the title of the source feed.
+* Resolved issue that caused nominate this button to disappear
+* Resolved issue where posts with URLs whose length exceeded the GUID field maximum in the WordPress post table could not be processed.
+* Fixed issue where canonical URLs were not respected by Nominate This.
+* Removed potential excess extra post entries created by Nominate This.
+
 = 3.9.1 =
 
 * Added check for potential conflict of shared library file.
