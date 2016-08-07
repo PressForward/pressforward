@@ -79,6 +79,7 @@ class PF_Feeds_Schema {
 			'labels'      => $labels,
 			'description' => __( 'Feeds imported by PressForward&#8217;s Feed Importer', 'pf' ),
 			'public'      => false,
+			'show_ui'      => true,
 			'hierarchical' => true,
 			'supports' 	=> array('title','editor','author','thumbnail','excerpt','custom-fields','page-attributes'),
 			'taxonomies' => array('post_tag'),
