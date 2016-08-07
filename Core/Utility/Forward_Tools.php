@@ -253,7 +253,7 @@ class Forward_Tools {
 	public function bookmarklet_to_nomination($item_id = false, $post){
 		if (!$item_id){
 			$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
-			$post['item_id'] = $item_id;
+			//$post['item_id'] = $item_id;
 		}
 
 		$nom_and_post_check = $this->is_a_pf_type( $item_id );
@@ -261,15 +261,23 @@ class Forward_Tools {
 		# PF NOTE: Switching post type to nomination.
 		$post['post_type'] = pressforward('schema.nominations')->post_type;
 		$post['post_date_gmt'] = date('Y-m-d H:i:s');
-		$post['guid'] = $_POST['item_link'];
+		if (strlen(esc_url( $_POST['item_link'] )) <= 243 ) {
+			$post['guid'] = esc_url( $_POST['item_link'] );
+		} else {
+			$post['guid'] = substr( esc_url( $_POST['item_link'] ), 0, 243);
+		}
+		$post_array = $post;
+		//var_dump('<pre>'); var_dump($post); die();
+		//$post['post_type'] = 'post';
 		# PF NOTE: This is where the inital post is created.
 		# PF NOTE: Put get_post_nomination_status here.
-		$post = $this->item_interface->insert_post($post, false);
+		$post = $this->item_interface->insert_post($post, true);
+		//var_dump('<pre>'); var_dump($post); var_dump($post_array); die();
 		$this->advance_interface->prep_bookmarklet( $post );
 		if (!isset($_POST['item_date'])){
 			$newDate = date('Y-m-d H:i:s');
 			$item_date = $newDate;
-			$_POST['item_date'] = $newDate;
+			//$_POST['item_date'] = $newDate;
 		} else {
 			$item_date = $_POST['item_date'];
 		}
