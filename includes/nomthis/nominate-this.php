@@ -1,4 +1,4 @@
-<?php
+<head><?php
 /**
  * Nominate This Display and Handler.
  *
@@ -66,20 +66,6 @@ function nominate_it() {
 	$post['post_title'] = isset($_POST['title']) ? $_POST['title'] : '';
 	$content = isset($_POST['content']) ? $_POST['content'] : '';
 
-	$upload = false;
-	if ( !empty($_POST['photo_src']) && current_user_can('upload_files') ) {
-		foreach( (array) $_POST['photo_src'] as $key => $image) {
-			// see if files exist in content - we don't want to upload non-used selected files.
-			if ( strpos($_POST['content'], htmlspecialchars($image)) !== false ) {
-				$desc = isset($_POST['photo_description'][$key]) ? $_POST['photo_description'][$key] : '';
-				$upload = media_sideload_image($image, $post_ID, $desc);
-
-				// Replace the POSTED content <img> with correct uploaded ones. Regex contains fix for Magic Quotes
-				if ( !is_wp_error($upload) )
-					$content = preg_replace('/<img ([^>]*)src=\\\?(\"|\')'.preg_quote(htmlspecialchars($image), '/').'\\\?(\2)([^>\/]*)\/*>/is', $upload, $content);
-			}
-		}
-	}
 	#var_dump('<pre>'); var_dump($_POST);
 	// set the post_content and status
 	$post['post_content'] = $content;
@@ -92,7 +78,7 @@ function nominate_it() {
 
 	$nom_check = false;
     $feed_nom = array( 'error' => false, 'simple' => '' );
-    $post['guid'] = $_POST['item_link'];
+    $post['guid'] = esc_url($_POST['item_link']);
     //var_dump('<pre>'); var_dump($_POST['pf-feed-subscribe']); die();
     if ( !empty( $_POST['pf-feed-subscribe'] ) && ( 'subscribe' == $_POST['pf-feed-subscribe'] ) ){
         $url_array = parse_url(esc_url($_POST['item_link']));
@@ -142,15 +128,6 @@ function nominate_it() {
     	);
     	update_option( 'pf_last_nominated_feed', $feed_nom );
     }
-	// error handling for media_sideload
-	if ( is_wp_error($upload) ) {
-		wp_delete_post($post_ID);
-		wp_die($upload);
-		// Why is this here?
-		// Oh, because it is trying to upload the images in the item into our
-		// system. But if that doesn't work, something has gone pretty wrong.
-		//$nom_check = true;
-	}
 	// Why does this hinge on $upload?
 	// Post formats
 	if (0 != $feed_nom['id']){
@@ -166,21 +143,48 @@ function nominate_it() {
 	} else {
 		$post_ID = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
 	}
+
+    $upload = false;
+	if ( !empty($_POST['photo_src']) && current_user_can('upload_files') ) {
+		foreach( (array) $_POST['photo_src'] as $key => $image) {
+			// see if files exist in content - we don't want to upload non-used selected files.
+			if ( strpos($_POST['content'], htmlspecialchars($image)) !== false ) {
+				$desc = isset($_POST['photo_description'][$key]) ? $_POST['photo_description'][$key] : '';
+				$upload = media_sideload_image($image, $post_ID, $desc);
+
+				// Replace the POSTED content <img> with correct uploaded ones. Regex contains fix for Magic Quotes
+				if ( !is_wp_error($upload) )
+					$content = preg_replace('/<img ([^>]*)src=\\\?(\"|\')'.preg_quote(htmlspecialchars($image), '/').'\\\?(\2)([^>\/]*)\/*>/is', $upload, $content);
+			}
+		}
+	}
+    // error handling for media_sideload
+    if ( is_wp_error($upload) ) {
+        wp_delete_post($post_ID);
+        wp_die($upload);
+        // Why is this here?
+        // Oh, because it is trying to upload the images in the item into our
+        // system. But if that doesn't work, something has gone pretty wrong.
+        //$nom_check = true;
+    }
 	#var_dump($post); die();
 	return $post_ID;
 }
 
 // For submitted posts.
 if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
-	check_admin_referer('nominate-this');
-	$posted = $post_ID = nominate_it();
+	$check = check_admin_referer('nominate-this');
+    //var_dump($check);
+	$post_ID = nominate_it();
+    $posted = $post_ID;
+    //var_dump($posted);
+    //wp_die($posted);
 } else {
 	$title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( stripslashes( $_GET['t'] ) , ENT_QUOTES) ) ) : '';
 	//$post_ID = wp_insert_post(array('post_title' => $title, 'post_type' => 'nomination', 'guid' => $_GET['u']));
 	//$post_ID = $post->ID;
 	//pf_log('Establish post '.$post_ID);
 	//var_dump($_GET['u']); die();
-}
 
 				global $pf_nt;
 				if (isset($_POST['item_link']) && !empty($_POST['item_link']) && ($_POST['item_link']) != ''){
@@ -401,7 +405,7 @@ if ( !empty($_REQUEST['ajax']) ) {
 }
 die;
 }
-
+}
 	wp_enqueue_style( 'colors' );
 	wp_enqueue_script( 'post' );
 	_wp_admin_html_begin();
@@ -450,6 +454,76 @@ var photostorage = false;
     	}
     }
     </style>
+    <?php
+    //var_dump('test'); die();
+    //var_dump($posted); //die();
+    if ( isset($posted) && intval($posted) ) {
+        ?>
+    </head>
+
+    <body class="press-this wp-admin wp-core-ui nominate-this <?php echo $admin_body_class; ?>">
+    <div id="poststuff" class="metabox-holder">
+        <div id="submitdiv" class="postbox">
+            <div class="handlediv" title="<?php esc_attr_e( 'Click to toggle','pf' ); ?>"><br /></div>
+            <h3 class="hndle"><?php _e('Nominate This','pf') ?></h3>
+        </div>
+        <?php
+        $post_ID = intval($posted);
+        $pt = get_post_type($post_ID);
+        if ($pt == 'nomination'){
+            ?>
+            <div id="message" class="updated">
+            <p><strong><?php _e('Your nomination has been saved.'); ?></strong>
+                <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a>
+                </p>
+            </div>
+          <?php
+        } else {
+            ?>
+            <div id="message" class="updated">
+            <p><strong><?php _e('Your post has been saved.'); ?></strong>
+            <a onclick="window.opener.location.assign(this.href); window.close();" href="<?php echo get_permalink($post_ID); ?>"><?php _e('View post'); ?></a>
+            | <a href="<?php echo get_edit_post_link( $post_ID ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php _e('Edit Post'); ?></a>
+            | <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a></p>
+            </div>
+          <?php
+        }
+        $feed_nom = get_option( 'pf_last_nominated_feed', array() );
+        if ( !empty($feed_nom) ){
+            if ( !empty( $feed_nom['error'] ) ){
+                $feed_nom_class = 'error';
+            } else {
+                $feed_nom_class = 'updated';
+            }
+          #var_dump($feed_nom); die();
+          ?>
+            <div id="nom-message" class="<?php echo $feed_nom_class; ?>">
+              <p><strong><?php
+                if ( !current_user_can('publish_posts') || ( false == WP_DEBUG ) ){
+                    print_r( $feed_nom['simple'] );
+                } else {
+                    print_r( $feed_nom['msg'] );
+                }
+
+              ?></strong>
+              <?php
+                if(0 !== $feed_nom['id']){
+                  ?>
+                  <a href="<?php echo get_edit_post_link( $feed_nom['id'] ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php _e('Edit Feed'); ?></a>
+                <?php
+                } else {
+
+                }
+                ?>
+              | <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a></p>
+            </div>
+          <?php
+          update_option( 'pf_last_nominated_feed', array() );
+        }
+        ?></div></body><?php
+        die();
+    }
+    ?>
 
 	<script type="text/javascript">
 	var wpActiveEditor = 'content';
@@ -615,7 +689,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 				<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr($title);?>" />
 				<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo date('c'); ?>" />
 				<?php #Metadata goes here. ?>
-				<input type="hidden" id="item_link" name="item_link" value="<?php echo esc_url($url ); ?>" />
+				<input type="hidden" id="item_link" name="item_link" value="<?php echo esc_url( $og->url ); ?>" />
 			<?php } ?>
 
 			<!-- This div holds the photo metadata -->
@@ -753,63 +827,6 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 				</a>
 			</h1>
 		</div>
-
-		<?php
-		if ( isset($posted) && intval($posted) ) {
-			$post_ID = intval($posted);
-            $pt = get_post_type($post_ID);
-            if ($pt == 'nomination'){
-                ?>
-                <div id="message" class="updated">
-                <p><strong><?php _e('Your nomination has been saved.'); ?></strong>
-                    <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a>
-                    </p>
-                </div>
-		      <?php
-            } else {
-                ?>
-                <div id="message" class="updated">
-                <p><strong><?php _e('Your post has been saved.'); ?></strong>
-                <a onclick="window.opener.location.assign(this.href); window.close();" href="<?php echo get_permalink($post_ID); ?>"><?php _e('View post'); ?></a>
-                | <a href="<?php echo get_edit_post_link( $post_ID ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php _e('Edit Post'); ?></a>
-                | <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a></p>
-                </div>
-		      <?php
-            }
-            $feed_nom = get_option( 'pf_last_nominated_feed', array() );
-            if ( !empty($feed_nom) ){
-            	if ( !empty( $feed_nom['error'] ) ){
-            		$feed_nom_class = 'error';
-            	} else {
-            		$feed_nom_class = 'updated';
-            	}
-              #var_dump($feed_nom); die();
-              ?>
-                <div id="nom-message" class="<?php echo $feed_nom_class; ?>">
-                  <p><strong><?php
-                  	if ( !current_user_can('publish_posts') || ( false == WP_DEBUG ) ){
-                  		print_r( $feed_nom['simple'] );
-                  	} else {
-                  		print_r( $feed_nom['msg'] );
-                  	}
-
-                  ?></strong>
-                  <?php
-                    if(0 !== $feed_nom['id']){
-                      ?>
-                      <a href="<?php echo get_edit_post_link( $feed_nom['id'] ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php _e('Edit Feed'); ?></a>
-                    <?php
-                	} else {
-
-                	}
-                    ?>
-                  | <a href="#" onclick="window.close();"><?php _e('Close Window'); ?></a></p>
-                </div>
-              <?php
-              update_option( 'pf_last_nominated_feed', array() );
-            }
-            die();
-        } ?>
 
 		<div id="titlediv">
 			<div class="titlewrap">
