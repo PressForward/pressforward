@@ -315,7 +315,7 @@ class Metas {
 				'definition' => __('Unique PressForward ID', 'pf'),
 				'function'	=> __('Stores hashed ID based on title and URL of retrieved item', 'pf'),
 				'type'	=> array('struc'),
-				'use'	=> array('req'),
+				'use'	=> array('req', 'api'),
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> false
 			),
@@ -380,7 +380,7 @@ class Metas {
 				'definition' => __('Title of the item\'s source', 'pf'),
 				'function'	=> __('Stores the title retrieved from the feed.', 'pf'),
 				'type'	=> array('adm'),
-				'use'	=> array(),
+				'use'	=> array('api'),
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> true
 			),
@@ -389,7 +389,7 @@ class Metas {
 				'definition' => __('URL of the item\'s source', 'pf'),
 				'function'	=> __('Stores the url of feed source.', 'pf'),
 				'type'	=> array('adm'),
-				'use'	=> array(),
+				'use'	=> array('api'),
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> true
 			),
@@ -408,7 +408,7 @@ class Metas {
 				'definition' => __('Date posted on the original site', 'pf'),
 				'function'	=> __('Stores the date the item was posted on the original site', 'pf'),
 				'type'	=> array('desc'),
-				'use'	=> array('req'),
+				'use'	=> array('req', 'api'),
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> false
 			),
@@ -427,7 +427,7 @@ class Metas {
 				'definition' => __('Author(s) listed on the original site', 'pf'),
 				'function'	=> __('Stores array value containing authors listed in the source feed.', 'pf'),
 				'type'	=> array('struc'),
-				'use'	=> array(),
+				'use'	=> array('api'),
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> false
 			),
@@ -446,7 +446,7 @@ class Metas {
 				'definition' => __('Source link', 'pf'),
 				'function'	=> __('Stores link to the origonal post.', 'pf'),
 				'type'	=> array('struc'),
-				'use'	=> array('req'),
+				'use'	=> array('req', 'api'),
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> false
 			),
@@ -474,7 +474,7 @@ class Metas {
 				'definition' => __('Time item was retrieved', 'pf'),
 				'function'	=> __('The datetime an item was added to WordPress via PressForward', 'pf'),
 				'type'	=> array('desc'),
-				'use'	=> array('req'),
+				'use'	=> array('req', 'api'),
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> false
 			),
@@ -483,7 +483,7 @@ class Metas {
 				'definition' => __('Time nominated', 'pf'),
 				'function'	=> __('The datetime the item was made a nomination', 'pf'),
 				'type'	=> array('desc'),
-				'use'	=> array('req'),
+				'use'	=> array('req', 'api'),
 				'level'	=> array('nomination', 'post'),
 				'serialize'	=> true
 			),
@@ -501,7 +501,7 @@ class Metas {
 				'definition' => __('Times retrieved', 'pf'),
 				'function'	=> __('Counts number of times the item has been collected from the multiple feeds (Ex: from origin feed and Twitter)', 'pf'),
 				'type'	=> array('adm'),
-				'use'	=> array(),
+				'use'	=> array('api'),
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> true
 			),
@@ -510,7 +510,7 @@ class Metas {
 				'definition' => __('Nominations', 'pf'),
 				'function'	=> __('Counts number of times users have nominated an item', 'pf'),
 				'type'	=> array('adm'),
-				'use'	=> array('req'),
+				'use'	=> array('req', 'api'),
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> false
 			),
@@ -519,7 +519,7 @@ class Metas {
 				'definition' => __('The user who submitted the nomination', 'pf'),
 				'function'	=> __('The first user who submitted the nomination (if it has been nominated). User ID number', 'pf'),
 				'type'	=> array('adm'),
-				'use'	=> array('req'),
+				'use'	=> array('req', 'api'),
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> true
 			),
@@ -528,7 +528,7 @@ class Metas {
 				'definition' => __('Users who nominated this item', 'pf'),
 				'function'	=> __('Stores and array of all userIDs that nominated the item in an array', 'pf'),
 				'type'	=> array('adm'),
-				'use'	=> array('req'),
+				'use'	=> array('req', 'api'),
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> true
 			),
@@ -547,7 +547,7 @@ class Metas {
 				'definition' => __('If the content is readable', 'pf'),
 				'function'	=> __('A check to determine if the content of the item has been made readable', 'pf'),
 				'type'	=> array('desc'),
-				'use'	=> array('req'),
+				'use'	=> array('req', 'api'),
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> true
 			),
@@ -610,7 +610,7 @@ class Metas {
 				'definition' => __('User override for forwarding to origin of link', 'pf'),
 				'function'	=> __('Stores forwarding override for posts', 'pf'),
 				'type'	=> array('adm'),
-				'use'	=> array(),
+				'use'	=> array('api'),
 				'level'	=> array('post'),
 				'serialize'	=> false
 			),
@@ -704,8 +704,8 @@ class Metas {
 				'level'	=> array('feed'),
 				'serialize'	=> false
 			),
-			'meta_data' => array(
-				'name' => 'meta_data',
+			'pf_meta_data_check' => array(
+				'name' => 'pf_meta_data_check',
 				'definition' => __('Has metadata been compleatly added to a feed?', 'pf'),
 				'function'	=> __('Store a value to indicate the meta-processing of a feed has completed.', 'pf'),
 				'type'	=> array('adm'),

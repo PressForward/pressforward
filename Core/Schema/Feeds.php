@@ -1302,7 +1302,7 @@ class Feeds implements HasActions, HasFilters {
 		}
 
 		if ($c+1 == count($args)){
-			pressforward('controller.metas')->update_pf_meta($post_id, 'meta_data', 'complete');
+			pressforward('controller.metas')->update_pf_meta($post_id, 'pf_meta_data_check', 'complete');
 
 		}
 	}

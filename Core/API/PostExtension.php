@@ -30,13 +30,24 @@ class PostExtension implements HasActions {
 		$metas = $this->metas->structure();
 		$post_metas = array();
 		foreach ( $metas as $meta ){
-			if ( $meta['name'] != 'pf_meta' ){
+			// Don't use the serialized array.
+			if ( $meta['name'] === 'pf_meta' ){
 				continue;
 			}
+			// Only use Post level data
 			if ( !in_array( 'post', $meta['level'] ) ){
 				continue;
 			}
+			// Don't use metas that belong elsewhere
 			if ( !empty($meta['move']) ){
+				continue;
+			}
+			// Only use metas marked for use in the top level API.
+			if ( !in_array( 'api', $meta['use'] ) ){
+				continue;
+			}
+			// Don't use metas marked as depreciated.
+			if ( in_array( 'dep', $meta['type'] ) ){
 				continue;
 			}
 			$post_metas[] = $meta['name'];
@@ -62,8 +73,8 @@ class PostExtension implements HasActions {
 
 	public function register_rest_post_read_field($key, $action = false){
 		//http://v2.wp-api.org/extending/modifying/
-		if (!$action) { $action = $key.'_response'; }
-		if ( true === $action ){ $action = 'meta_response'; }
+		if (!$action) { $action = array( $this, $key.'_response' ); }
+		if ( true === $action ){ $action = array( $this, 'meta_response' ); }
 		register_rest_field( 'post',
 	        $key,
 	        array(
