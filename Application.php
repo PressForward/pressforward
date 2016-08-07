@@ -27,7 +27,8 @@ class Application extends JaxionCore {
 		'PressForward\Core\Providers\AdminAreaServiceProvider',
 		'PressForward\Core\Providers\PreferencesServiceProvider',
 		'PressForward\Core\Providers\ModulesProvider',
-		'PressForward\Core\Providers\AJAXServiceProvider'
+		'PressForward\Core\Providers\AJAXServiceProvider',
+		'PressForward\Core\Providers\APIProvider'
 //		'PressForward\Core\Providers\CoreServiceProvider',
 //		'PressForward\Core\Providers\EmbedServiceProvider',
 //		'PressForward\Core\Providers\RouterServiceProvider',
