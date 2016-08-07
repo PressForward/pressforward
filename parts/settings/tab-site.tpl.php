@@ -53,7 +53,7 @@
 	<?php
 		$pf_source_statement_position = get_option('pf_source_statement_position', 'bottom');
 	?>
-	<select id="pf_present_author_as_primary" name="pf_source_statement_position">
+	<select id="pf_source_statement_position" name="pf_source_statement_position">
 		<option value="top" <?php if ($pf_source_statement_position == 'top'){ echo 'selected="selected"'; }?>>Top</option>
 		<option value="bottom" <?php if ($pf_source_statement_position == 'bottom'){ echo 'selected="selected"'; }?>>Bottom</option>
 	</select>

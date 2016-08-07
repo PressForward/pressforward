@@ -701,7 +701,7 @@ function pf_canonical_url(){
 	if(is_single()){
 		$obj = get_queried_object();
 		$post_ID = $obj->ID;
-		$link = get_post_meta($post_ID, 'item_link', TRUE);
+		$link = pressforward('controller.metas')->get_post_pf_meta($post_ID, 'item_link', TRUE);
 		return $link;
 	} else {
 		return false;
@@ -801,7 +801,7 @@ function pf_get_drafted_items( $post_type = 'pf_feed_item' ) {
 
 	$item_hashes = array();
 	foreach ( $drafts->posts as $p ) {
-		$item_hashes[] = get_post_meta( $p->ID, 'item_id', true );
+		$item_hashes[] = pressforward('controller.metas')->get_post_pf_meta( $p->ID, 'item_id', true );
 	}
 
 	$drafted_query = new WP_Query( array(

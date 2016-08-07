@@ -688,7 +688,7 @@
         - https://github.com/jquery/jquery-ui/blob/master/ui/jquery.ui.widget.js
 
         jCarousel
-        - https://github.com/jsor/jcarousel/blob/master/lib/jquery.jcarousel.js
+        - https://github.com/jsor/jcarousel/blob/master/Libraries/jquery.jcarousel.js
 
         Masonry
         - https://github.com/desandro/masonry/blob/master/jquery.masonry.js		

@@ -66,10 +66,12 @@ class PF_Advancement implements Advance_System {
 
 	// Step Tools
 	public function to_last_step( $post = array() ){
+		$old_id = $post['ID'];
 		unset($post['ID']);
 		$post['post_type'] = $this->last_step_post_type();
 		$post['post_status'] = $this->last_step_state();
 		pf_log($post);
+		$post['post_content'] = pressforward('controller.readability')->process_in_oembeds( pressforward('controller.metas')->get_post_pf_meta($old_id, 'item_link'), $post['post_content'] );
 		$id = wp_insert_post( $post, true );
 		do_action( 'pf_transition_to_last_step', $id );
 		return $id;

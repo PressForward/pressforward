@@ -19,7 +19,7 @@ class PF_Readability {
 	 *			'authorship'	=> $_POST['authorship']
 	 *		);
 	*/
-	public static function get_readable_text($args){
+	public function get_readable_text($args){
 			#ob_start();
 			extract( $args, EXTR_SKIP );
 			set_time_limit(0);
@@ -37,7 +37,7 @@ class PF_Readability {
 			}
 			$stripped_descrip = strip_tags($descrip);
 			if ((str_word_count($stripped_descrip) <= 150) || $aggregated || $force == 'force') {
-				$itemReadReady = self::readability_object($url);
+				$itemReadReady = $this->readability_object($url);
 				#print_r(  wp_richedit_pre($itemReadReady));
 				if ($itemReadReady != 'error-secured') {
 					if (!$itemReadReady) {
@@ -48,7 +48,7 @@ class PF_Readability {
 						#Try and get the OpenGraph description.
 						if (pressforward('library.opengraph')->fetch($url)){
 							$node = pressforward('library.opengraph')->fetch($url);
-							$itemReadReady .= $node->description;
+							$itemReadReady = $node->description;
 						} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
 						elseif ('' != ($contentHtml = @get_meta_tags($url))) {
 							# Try and get the HEAD > META DESCRIPTION tag.
@@ -71,9 +71,10 @@ class PF_Readability {
 							$readability_stat .= ' Retrieved text is less than original text.';
 							$read_status = 'already_readable';
 						}
-
+						$itemReadReady = $this->process_in_oembeds($url, $itemReadReady);
 					} else {
 						$read_status = 'made_readable';
+						$itemReadReady = $this->process_in_oembeds($url, $itemReadReady);
 					}
 				} else {
 					$read_status = 'secured';
@@ -93,7 +94,7 @@ class PF_Readability {
 	/**
 	 * Handles a readability request via POST
 	 */
-	public static function make_it_readable($quickresponse = false){
+	public function make_it_readable($quickresponse = false){
 
 		// Verify nonce
 		if ( !wp_verify_nonce($_POST[PF_SLUG . '_nomination_nonce'], 'nomination') )
@@ -116,11 +117,14 @@ class PF_Readability {
 				'post_id'		=> $_POST['post_id']
 			);
 
-			$readable_ready = self::get_readable_text($args);
+			$readable_ready = $this->get_readable_text($args);
 
 			$read_status = $readable_ready['status'];
 			$itemReadReady = $readable_ready['readable'];
 			$url = $readable_ready['url'];
+			if ( !strpos($itemReadReady, $url) ){
+				$itemReadReady = $this->process_in_oembeds($url, $itemReadReady);
+			}
 
 			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60*60*24 );
 		}
@@ -140,13 +144,14 @@ class PF_Readability {
 			if ( strlen($_POST['content']) < strlen($content)){
 				$update_check = wp_update_post($update_ready, true);
 				if (!is_wp_error($update_check)){
-					update_post_meta($post_id, 'readable_status', 1);
+					pressforward('controller.metas')->update_pf_meta($post_id, 'readable_status', 1);
 					$error = 'no error';
 				} else {
 					$read_status = 'post_not_updated_readable';
-					update_post_meta($post_id, 'readable_status', 0);
+					pressforward('controller.metas')->update_pf_meta($post_id, 'readable_status', 0);
 					$error = $update_check->get_error_message();
 				}
+				$responseItemReadReady = $this->get_embed($_POST['url']).$itemReadReady;
 			} else {
 				$error = 'Not Updated, retrieved content is longer than stored content.';
 			}
@@ -161,7 +166,7 @@ class PF_Readability {
 				'what' => 'full_item_content',
 				'action' => 'make_readable',
 				'id' => $item_id,
-				'data' => htmlspecialchars($itemReadReady),
+				'data' => htmlspecialchars($responseItemReadReady),
 				'supplemental' => array(
 					'readable_status' => $read_status,
 					'error' => $error,
@@ -184,7 +189,7 @@ class PF_Readability {
 	 * @see http://www.keyvan.net/2010/08/php-readability/
 	 * @param $url
 	 */
-	public static function readability_object($url) {
+	public function readability_object($url) {
 
 		set_time_limit(0);
 		$url =  pressforward('controller.http_tools')->resolve_full_url($url);
@@ -308,8 +313,40 @@ class PF_Readability {
 		if ($content != false){
 				$contentObj = pressforward('library.htmlchecker');
 				$content = $contentObj->closetags($content);
+				$content = $this->process_in_oembeds($url, $content);
 		}
 
 		return $content;
+	}
+
+	public function process_in_oembeds( $item_link, $item_content ){
+		$providers = pressforward('schema.feed_item')->oembed_capables();
+		foreach ($providers as $provider){
+			if ( ( false == strpos($item_content, $item_link) ) && ( 0 != strpos($item_link, $provider) ) ){
+				$added_content = '
+
+				'.$item_link.'
+
+				';
+				$item_content = $added_content.$item_content;
+			}
+		}
+		return $item_content;
+
+	}
+
+	public function get_embed( $item_link ){
+		$oembed = wp_oembed_get( $item_link );
+		if ( false != $oembed ){
+			$providers = pressforward('schema.feed_item')->oembed_capables();
+			foreach ($providers as $provider){
+				if ( 0 != strpos($item_link, $provider) ) {
+					return $oembed;
+				}
+			}
+		} else {
+			return false;
+		}
+		return false;
 	}
 }

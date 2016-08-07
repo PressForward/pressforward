@@ -10,6 +10,7 @@ use PressForward\Controllers\PFtoWPTemplates as Template_Factory;
 use PressForward\Controllers\PFtoWPUsers as Users;
 use PressForward\Controllers\PF_to_WP_Meta as PF_to_WP_Meta;
 use PressForward\Controllers\PF_to_WP_Posts as PF_to_WP_Posts;
+use PressForward\Controllers\PF_to_WP_System as PF_to_WP_System;
 use PressForward\Controllers\PF_Advancement as PF_Advancement;
 use PressForward\Controllers\Metas;
 use PressForward\Controllers\PF_Loops;
@@ -28,10 +29,19 @@ class ControllerServiceProvider extends ServiceProvider {
 		);
 
 		$container->share(
+			'controller.system',
+			function( ){
+				return new PF_to_WP_System;
+			}
+		);
+
+
+		$container->share(
 			'controller.metas',
 			function( $container ){
 				return new Metas(
-									$container->fetch('controller.meta_interface')
+									$container->fetch('controller.meta_interface'),
+									$container->fetch('controller.system')
 								);
 			}
 		);
@@ -39,7 +49,10 @@ class ControllerServiceProvider extends ServiceProvider {
 		$container->share(
 			'controller.http_tools',
 			function( $container ){
-				return new HTTPTools( $container->fetch('library.url_resolver') );
+				return new HTTPTools( 	$container->fetch('library.url_resolver'),
+										$container->fetch('controller.system'),
+										$container->fetch('controller.metas')
+									);
 			}
 		);
 

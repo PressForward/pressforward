@@ -1,5 +1,7 @@
 <?php
 namespace PressForward\Core\Schema;
+
+use Intraxia\Jaxion\Contract\Core\HasActions;
 /**
  * Classes and functions for dealing with feed items
  */
@@ -7,16 +9,25 @@ namespace PressForward\Core\Schema;
 /**
  * Database class for manipulating feed items
  */
-class Relationships {
+class Relationships implements HasActions {
 
 
 	public function __construct() {
 		global $wpdb;
 
 		$this->table_name = $wpdb->prefix . 'pf_relationships';
-        // Maybe install custom table for relationships
-        add_action( 'admin_init', array( $this, 'maybe_install_relationship_table' ) );
     }
+
+    public function action_hooks() {
+		$hooks = array(
+            array(
+                'hook' => 'admin_init',
+                'method' => 'maybe_install_relationship_table'
+            ),
+		);
+
+		return $hooks;
+	}
 
 
 	/**

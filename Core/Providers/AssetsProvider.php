@@ -60,7 +60,7 @@ class AssetsProvider extends ServiceProvider {
 								return $provider->check_hook_for_pressforward_string($hook, $exclusions);
 							},
 			'handle'	=> $slug.'-bootstrap-style',
-			'src'		=> 'lib/twitter-bootstrap/css/bootstrap'
+			'src'		=> 'Libraries/twitter-bootstrap/css/bootstrap'
 		));
 
 		$assets->register_style(array(
@@ -70,7 +70,7 @@ class AssetsProvider extends ServiceProvider {
 								return $provider->check_hook_for_pressforward_string($hook, $exclusions);
 							},
 			'handle'	=> $slug.'-bootstrap-responsive-style',
-			'src'		=> 'lib/twitter-bootstrap/css/bootstrap-responsive'
+			'src'		=> 'Libraries/twitter-bootstrap/css/bootstrap-responsive'
 		));
 
 		$assets->register_style( array(
@@ -134,7 +134,7 @@ class AssetsProvider extends ServiceProvider {
 								return $provider->check_hook_for_pressforward_string($hook);
 							},
 			'handle'	=>	$slug.'-tinysort',
-			'src'		=>	'lib/jquery-tinysort/jquery.tinysort',
+			'src'		=>	'Libraries/jquery-tinysort/jquery.tinysort',
 			'deps'		=>	array( 'jquery' )
 		) );
 
@@ -146,7 +146,7 @@ class AssetsProvider extends ServiceProvider {
 									return $provider->check_hook_for_pressforward_string($hook);
 								},
 				'handle'	=>	$slug.'-twitter-bootstrap',
-				'src'		=>	'lib/twitter-bootstrap/js/bootstrap',
+				'src'		=>	'Libraries/twitter-bootstrap/js/bootstrap',
 				'deps'		=>	array( 'jquery' )
 			)
 		);
@@ -171,7 +171,7 @@ class AssetsProvider extends ServiceProvider {
 									return $provider->check_hook_for_pressforward_string($hook);
 								},
 				'handle'	=>	$slug.'-jq-fullscreen',
-				'src'		=>	'lib/jquery-fullscreen/jquery.fullscreen',
+				'src'		=>	'Libraries/jquery-fullscreen/jquery.fullscreen',
 				'deps'		=>	array( 'jquery' )
 			)
 		);
@@ -222,7 +222,7 @@ class AssetsProvider extends ServiceProvider {
 								return $provider->check_hook_for_pressforward_string($hook);
 							},
 			'handle'	=>	$slug.'-infiniscroll',
-			'src'		=>	'lib/jquery.infinitescroll',
+			'src'		=>	'Libraries/jquery.infinitescroll',
 			'deps'		=>	array( 'jquery', $slug . '-views', $slug . '-readability-imp', 'jquery' )
 		) );
 
@@ -266,7 +266,8 @@ class AssetsProvider extends ServiceProvider {
 			'type'	=>	'admin',
 			'condition'	=> function($hook) use ($provider){
 								$exclusions = array('toplevel_page_pf-menu');
-								return $provider->check_hook_for_pressforward_string($hook, $exclusions);
+								$inclusions = array('edit.php');
+								return $provider->check_hook_for_pressforward_string($hook, $exclusions, $inclusions);
 							},
 			'handle'	=>	$slug.'-quick-edit',
 			'src'		=>	'assets/js/quick-edit',
@@ -344,7 +345,8 @@ class AssetsProvider extends ServiceProvider {
 
          $position_test_one = strpos($hook, 'pressforward');
          $position_test_two = strpos($hook, 'pf');
-		 if ( ( false === $position_test_one ) && ( false === $position_test_two ) ){ return false; }
+		// $position_test_two = strpos($hook, 'edit.php');
+		 if ( empty($inclusions) && ( false === $position_test_one ) && ( false === $position_test_two ) ){ return false; }
 
 		 if (!empty($exclusions)){
 		 		 foreach ($exclusions as $exclusion){

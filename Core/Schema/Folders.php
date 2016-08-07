@@ -1,27 +1,51 @@
 <?php
 namespace PressForward\Core\Schema;
+
+use Intraxia\Jaxion\Contract\Core\HasActions;
+use Intraxia\Jaxion\Contract\Core\HasFilters;
+
 /**
  * Folders data schema
  *
  * Folders are used to track and organize feeds. Here is where they are declared.
  */
 
-class Folders {
+class Folders implements HasActions, HasFilters {
 	#var $post_type;
 	#var $tag_taxonomy;
 
 	public function __construct() {
 		$this->tag_taxonomy = 'pf_feed_category';
 		$this->post_type = 'pf_feed';
+	}
 
-		add_action( 'pf_feed_post_type_registered', array( $this, 'register_feed_tag_taxonomy' ) );
+	public function action_hooks() {
+		return array(
+				array(
+					'hook' 		=> 'pf_feed_post_type_registered',
+					'method'	=> 'register_feed_tag_taxonomy'
+				),
+				array(
+					'hook' 		=> 'feed_folders_registered',
+					'method'	=> 'register_folders_for_feeds'
+				)
+		);
+	}
 
-		if (is_admin()){
-			// Move the 'Feed Tags' item underneath 'pf-menu'
-			add_filter( 'parent_file', array( $this, 'move_feed_tags_submenu' ) );
+	public function filter_hooks(){
+		$filters = array();
+		if ( is_admin() ){
+			$admin_filters = array(
+				array(
+					'hook' 		=> 'parent_file',
+					'method'	=> 'move_feed_tags_submenu',
+					'priority'  => 10,
+					'args' => 1
+				)
+			);
+			$filters = array_merge( $filters, $admin_filters );
 		}
-
-		add_action( 'feed_folders_registered', array( $this, 'register_folders_for_feeds' ) );
+		return $filters;
 	}
 
 	public function register_feed_tag_taxonomy() {

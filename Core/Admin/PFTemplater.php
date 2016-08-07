@@ -394,12 +394,12 @@ class PFTemplater {
 					$id_for_comments = $item['post_id']; //orig item post ID
 				}
 				#$archive_status = pf_get_relationship_value( 'archive', $id_for_comments, wp_get_current_user()->ID );
-				$archive_status = get_post_meta($id_for_comments, 'pf_archive', true);
+				$archive_status = pressforward('controller.metas')->get_post_pf_meta($id_for_comments, 'pf_archive', true);
 				if (isset($_GET['pf-see'])){ } else { $_GET['pf-see'] = false; }
 				if ($archive_status == 1 && ('archive-only' != $_GET['pf-see'])){
 					$archived_status_string = 'archived';
 					$dependent_style = 'display:none;';
-				} elseif ( ($format === 'nomination') && (1 == get_post_meta($metadata['nom_id'], 'pf_archive', true))  && ('archive-only' != $_GET['pf-see'])) {
+				} elseif ( ($format === 'nomination') && (1 == pressforward('controller.metas')->get_post_pf_meta($metadata['nom_id'], 'pf_archive', true))  && ('archive-only' != $_GET['pf-see'])) {
 					$archived_status_string = 'archived';
 					$dependent_style = 'display:none;';
 				} else {
@@ -409,7 +409,7 @@ class PFTemplater {
 		if ($format === 'nomination'){
 			#$item = array_merge($metadata, $item);
 			#var_dump($item);
-			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['nom_tags'], $metadata['item_tags'], $metadata['item_id'] )) . ' '.$readClass.'" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '" pf-schema="read" pf-schema-class="article-read">';
+			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' '. get_pf_nom_class_tags(array($metadata['submitters'], $metadata['nom_id'], $metadata['authors'], $metadata['item_tags'], $metadata['item_id'] )) . ' '.$readClass.'" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '" pf-schema="read" pf-schema-class="article-read">';
 			?> <a style="display:none;" name="modal-<?php echo $metadata['item_id']; ?>"></a> <?php
 		} else {
 			$id_for_comments = $item['post_id'];
@@ -472,7 +472,7 @@ class PFTemplater {
 									$sourceLink = pressforward('schema.feed_item')->get_source_link($id_for_comments);
 									$url_array = parse_url($sourceLink);
 									if ( !$url_array || empty($url_array['host']) ){
-										pf_log('Could not find the source link for '.$id_for_comments);
+										pf_log('Could not find the source link for '.$id_for_comments.' Got: '.$sourceLink);
 										$sourceLink = "Source URL not found.";
 									} else {
 										$sourceLink = 'http://' . $url_array['host'];
@@ -612,7 +612,14 @@ class PFTemplater {
 					<?php
 					$contentObj = pressforward('library.htmlchecker');
 					$text = $contentObj->closetags($item['item_content']);
-					echo $text;
+					$text = apply_filters( 'the_content', $text );
+					//global $wp_embed;
+					//$wp_embed->autoembed($text);
+					$embed = $this->show_embed( $id_for_comments );
+					if ( false != $embed ){
+						echo $embed;
+					}
+					print_r($text);
 
 					?>
 				  </div>
@@ -770,7 +777,7 @@ class PFTemplater {
 
 						echo '<a class="'.$nom_count_classes.'" data-toggle="tooltip" title="' . __('Nomination Count', 'pf') .  '" form="' . $metadata['nom_id'] . '">'.$metadata['nom_count'].'<i class="icon-play"></i></button></a>';
 						$archive_status = '';
-						if ( 1 == get_post_meta( $metadata['nom_id'], 'pf_archive', true ) ){
+						if ( 1 == pressforward('controller.metas')->get_post_pf_meta( $metadata['nom_id'], 'pf_archive', true ) ){
 							$archive_status = 'btn-warning';
 						}
 						echo '<a class="btn btn-small nom-to-archive schema-switchable schema-actor '.$archive_status.'" pf-schema="archive" pf-schema-class="archived" pf-schema-class="btn-warning" data-toggle="tooltip" title="' . __('Archive', 'pf') .  '" form="' . $metadata['nom_id'] . '"><img src="' . PF_URL . 'assets/images/archive.png" /></button></a>';
@@ -845,6 +852,11 @@ class PFTemplater {
 
 					}
 
+	}
+
+	public function show_embed( $id_for_comments ){
+		$item_link = pressforward('controller.metas')->get_post_pf_meta($id_for_comments, 'item_link');
+		return pressforward('controller.readability')->get_embed($item_link);
 	}
 
 }

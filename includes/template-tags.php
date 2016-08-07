@@ -85,7 +85,7 @@ function the_item_repeats(){
 }
 
 function get_the_nomination_count(){
-	$m = pressforward('controller.metas')->retrieve_meta(get_the_ID(), 'nomination_count');
+	$m = pressforward('controller.metas')->get_post_pf_meta(get_the_ID(), 'nomination_count');
 	return $m;
 }
 
@@ -94,42 +94,33 @@ function the_nomination_count(){
 }
 
 function get_the_nominator_ids(){
-	$m = pressforward('controller.metas')->retrieve_meta(get_the_ID(), 'nominator_array', false, false);
+	$m = pressforward('controller.metas')->get_post_pf_meta(get_the_ID(), 'nominator_array');
 	return $m;
 }
 
 function get_the_nominators(){
 	#var_dump(get_the_nominators());
 	$nominators = get_the_nominator_ids();
-	if (is_array($nominators)){
-		$nomers = '';
-		$lastElement = end($nominators);
-		$lastKey = key($nominators);
-		foreach ($nominators as $k => $nomer){
-			if (is_array($nomer)){
-				$nomers .= implode("," , $nomer);
-			} else {
-				$nomers .= $nomer;
-			}
-			if ($lastKey != $k){
-				$nomers .= ',';
-			}
-		}
+	if ( !empty($nominators) && !is_array($nominators) && is_string( $nominators ) ){
+		$nomers = explode( ",", $nominators );
 		#$nomers = implode(", " , get_the_nominators());
 	} else {
-		$nomers = get_the_nominator_ids();
+		$nomers = $nominators;
 	}
 
-	# Look, there are a lot of weird things that can happen
-	# depending on how far back your version history has gone
-	# So this is a stupid way to do it, but it is really the
-	# best way.
-
-	$nominating_user_ids = array_filter( explode( ",", $nomers ) );
+	$nominating_user_ids = $nomers;
 	$nominating_users = array();
+	if ( empty($nominating_user_ids) ){
+		return array();
+	}
 	foreach ($nominating_user_ids as $user_id){
+		if ( empty($user_id) ){
+			continue;
+		}
 		$user_obj = get_user_by('id', $user_id);
-		$nominating_users[] = $user_obj->display_name;
+		if ( !empty($user_obj) ){
+			$nominating_users[] = $user_obj->display_name;
+		}
 	}
 
 	return $nominating_users;
@@ -161,7 +152,7 @@ function the_pf_comments( $id_for_comments = 0 ){
 		if ( 0 == $id_for_comments ){
 			$id_for_comments = get_the_ID();
 		}
-		$item_post_id = get_post_meta($id_for_comments, 'pf_item_post_id', true);
+		$item_post_id = pressforward('controller.metas')->get_post_pf_meta($id_for_comments, 'pf_item_post_id', true);
 		if ( $item_post_id ){
 			$id_for_comments = $item_post_id;
 		}
@@ -191,4 +182,36 @@ function the_pf_comments( $id_for_comments = 0 ){
 		?>
 	</ul>
 	<?php
+}
+
+function get_pf_feed_list( $status = 'publish', $page = 1, $order = 'ASC' ){
+
+	$return_string = '<ul class="feedlist">';
+	$query = new WP_Query(array('post_type' => pressforward('schema.feeds')->post_type, 'post_status' =>
+	$status, 'paged' => $page, 'orderby' => 'title', 'order' => $order));
+
+	if ($query->have_posts()) :
+		while ($query->have_posts())  : $query->the_post();
+		  $return_string .= '<li class="feeditem"><a href="'.pressforward('controller.metas')->get_post_pf_meta(get_the_ID(), 'feedUrl', true).'"target="_blank">'.get_the_title().'</a>';
+		  	$child_args = array(
+				'post_parent'	=>	get_the_ID(),
+				'post_type'		=>	pressforward('schema.feeds')->post_type
+			);
+			$child_query = get_children($child_args, OBJECT);
+			//var_dump($child_query); die();
+		  	if ( !empty($child_query) ){
+				$return_string .= '<ul class="sub-feedlist">';
+				foreach ( $child_query as $post ) {
+					$return_string .= '<li class="feeditem"><a href="'.pressforward('controller.metas')->get_post_pf_meta($post->ID, 'feedUrl', true).'"target="_blank">'.$post->post_title.'</a>';
+				}
+				$return_string .= '</ul>';
+			}
+		  $return_string .= '</li>';
+		endwhile;
+	endif;
+	$return_string .= '</ul>';
+	wp_reset_postdata();
+	wp_reset_query();
+	return $return_string;
+
 }

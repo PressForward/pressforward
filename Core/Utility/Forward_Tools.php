@@ -75,7 +75,7 @@ class Forward_Tools {
 			$source_position = get_option('pf_source_statement_position', 'bottom');
 			if ( ( 'bottom' == $source_position ) && $source ){
 				$item_content = $item_content . pressforward('admin.nominated')->get_the_source_statement( $post_id );
-			} else {
+			} else if ( $source ) {
 				$item_content = pressforward('admin.nominated')->get_the_source_statement( $post_id ) . $item_content;
 			}
 			$post_id = $this->item_interface->update_post( array(
@@ -165,11 +165,11 @@ class Forward_Tools {
 		$nomination_and_post_check = $this->is_a_pf_type( $item_id );
 		pf_log('Is this a PF Type?');
 		pf_log($nomination_and_post_check);
-		//$post_check = $this->is_a_pf_type( $item_id, pressforward('admin.nominated')->post_type );
-		//$this->metas->update_pf_meta($post_ID, 'nom_id', $post_ID);
+		$post_check = $this->is_a_pf_type( $item_id, pressforward('schema.nominations')->post_type );
+		$this->metas->update_pf_meta($item_post_id, 'nom_id', $item_id);
 		if ($nomination_and_post_check == false){
 			pf_log('Start Transition.');
-			$this->transition_to_readable_text($item_post_id, false);
+			$this->transition_to_readable_text($item_post_id, true);
 
 			$current_user = wp_get_current_user();
 			pf_log('User: ');
@@ -179,9 +179,10 @@ class Forward_Tools {
 				$userSlug = "external";
 				$userName = __('External User', 'pf');
 				$userID = 0;
+				pf_log('Can not find a user to add to the nominated count of.');
 			} else {
 				// Logged in.
-				//self::user_nomination_meta();
+				pressforward('admin.nominated')->user_nomination_meta();
 				$userID = $current_user->ID;
 				$userString = $userID;
 			}
@@ -198,13 +199,14 @@ class Forward_Tools {
 			}
 
 			if (empty($_POST['item_date'])){
-				$newDate = gmdate('Y-m-d H:i:s');
+				$newDate = date('Y-m-d H:i:s');
+				//$_POST['item_date'] = $newDate;
 				$item_date = $newDate;
 			} else {
 				$item_date = $_POST['item_date'];
 			}
 			$this->metas->update_pf_meta($item_post_id, 'item_date', $item_date);
-
+			$this->metas->update_pf_meta($item_post_id, 'item_wp_date', $item_date);
 			$nomination_id = $this->transition_to_nomination($item_post_id);
 			//$this->nomination_user_transition_check( $nomination_id );
 			// Assign user status as well here.
@@ -251,27 +253,39 @@ class Forward_Tools {
 	public function bookmarklet_to_nomination($item_id = false, $post){
 		if (!$item_id){
 			$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+			//$post['item_id'] = $item_id;
 		}
+
 		$nom_and_post_check = $this->is_a_pf_type( $item_id );
 
-		$this->advance_interface->prep_bookmarklet( $post['ID'] );
 		# PF NOTE: Switching post type to nomination.
 		$post['post_type'] = pressforward('schema.nominations')->post_type;
-		$post['post_date_gmt'] = gmdate('Y-m-d H:i:s');
+		$post['post_date_gmt'] = date('Y-m-d H:i:s');
+		if (strlen(esc_url( $_POST['item_link'] )) <= 243 ) {
+			$post['guid'] = esc_url( $_POST['item_link'] );
+		} else {
+			$post['guid'] = substr( esc_url( $_POST['item_link'] ), 0, 243);
+		}
+		$post_array = $post;
+		//var_dump('<pre>'); var_dump($post); die();
+		//$post['post_type'] = 'post';
 		# PF NOTE: This is where the inital post is created.
 		# PF NOTE: Put get_post_nomination_status here.
-		//$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+		$post = $this->item_interface->insert_post($post, true);
+		//var_dump('<pre>'); var_dump($post); var_dump($post_array); die();
+		$this->advance_interface->prep_bookmarklet( $post );
 		if (!isset($_POST['item_date'])){
-			$newDate = gmdate('Y-m-d H:i:s');
+			$newDate = date('Y-m-d H:i:s');
 			$item_date = $newDate;
+			//$_POST['item_date'] = $newDate;
 		} else {
 			$item_date = $_POST['item_date'];
 		}
 		// Does not exist in the system.
-		if (!$nom_and_post_check){
+		if ( false != $post ){
 			// Update post here because we're working with the blank post
 			// inited by the Nominate This page, at the beginning.
-			$post_ID = $this->item_interface->update_post($post, true);
+			$post_ID = $this->item_interface->update_post(get_post($post), true);
 			// Check if thumbnail already exists, if not, set it up.
 			$already_has_thumb = has_post_thumbnail($post_ID);
 			if ($already_has_thumb)  {
@@ -287,18 +301,20 @@ class Forward_Tools {
 			} else {
 			  $source = '';
 			}
+			$tags = $_POST['post_tags'];
+			//$tags[] = 'via bookmarklet';
 
-
+			//pf_log($_POST);
 			$pf_meta_args = array(
 				$this->metas->meta_for_entry('item_id', $item_id ),
 				$this->metas->meta_for_entry('item_link', $_POST['item_link']),
 				$this->metas->meta_for_entry('nomination_count', 1),
 				$this->metas->meta_for_entry('source_title', 'Bookmarklet'),
 				$this->metas->meta_for_entry('item_date', $item_date),
-				$this->metas->meta_for_entry('item_date', $item_date),
+				//$this->metas->meta_for_entry('item_date', $item_date),
 				$this->metas->meta_for_entry('date_nominated', $_POST['date_nominated']),
 				$this->metas->meta_for_entry('item_author', $_POST['authors']),
-				$this->metas->meta_for_entry('authors', $_POST['authors']),
+				//$this->metas->meta_for_entry('authors', $_POST['authors']),
 				$this->metas->meta_for_entry('pf_source_link', $source),
 				$this->metas->meta_for_entry('item_feat_img', $post_thumbnail_url),
 				$this->metas->meta_for_entry('nominator_array', array(get_current_user_id())),
@@ -307,13 +323,14 @@ class Forward_Tools {
 				//We can't just sort by the time the item came into the system (for when mult items come into the system at once)
 				//So we need to create a machine sortable date for use in the later query.
 				$this->metas->meta_for_entry('sortable_item_date', strtotime($item_date)),
-				$this->metas->meta_for_entry('item_tags', 'via bookmarklet'),
+				$this->metas->meta_for_entry('item_tags', $tags),
 				$this->metas->meta_for_entry('source_repeat', 1),
 				$this->metas->meta_for_entry('revertible_feed_text', $post['post_content'])
 
 			);
 			$this->metas->establish_post($post_ID, $pf_meta_args);
 			$this->metas->update_pf_meta($post_ID, 'nom_id', $post_ID);
+			$this->metas->handle_item_tags($post_ID, $tags);
 			return $post_ID;
 		} else {
 			// Do something with the returned ID.

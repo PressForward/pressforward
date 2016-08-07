@@ -1,9 +1,10 @@
 <?php
 namespace PressForward\Core\Admin;
 use Intraxia\Jaxion\Contract\Core\HasActions;
+use Intraxia\Jaxion\Contract\Core\HasFilters;
 use PressForward\Core\Admin\PFTemplater;
 
-class Tools implements HasActions {
+class Tools implements HasActions, HasFilters {
 
 	protected $basename;
 
@@ -22,6 +23,17 @@ class Tools implements HasActions {
 			array('pf_menu_tools_access', 'contributor'),
 			PF_SLUG . '-tools',
 			array($this, 'display_tools_builder')
+		);
+	}
+
+	public function filter_hooks(){
+		return array(
+				array(
+					'hook' => 'pf_tabs_pf-tools',
+					'method' => 'set_permitted_tools_tabs',
+					'priority'  => 10,
+					'args' => 1
+				),
 		);
 	}
 

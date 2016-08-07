@@ -22,6 +22,10 @@ class PF_to_WP_Posts implements Items {
 		return get_post( $post, $output, $filter );
 	}
 
+	public function get_posts( $query ){
+		return get_posts( $query );
+	}
+
 	public function is_error( $post ){
 		return is_wp_error( $post );
 	}

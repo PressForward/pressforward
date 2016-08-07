@@ -195,7 +195,7 @@ class Nominated implements HasActions {
             				//1773 in rssforward.php for various post meta.
 
             				//Get the submitter's user slug
-            				$metadata['submitters'] = $submitter_slug = get_the_author_meta('user_nicename');
+            				$metadata['submitters'] = $submitter_slug = get_the_author_meta('nicename');
             				// Nomination (post) ID
             				$metadata['nom_id'] = $nom_id = get_the_ID();
             				//Get the WP database ID of the original item in the database.
@@ -220,7 +220,7 @@ class Nominated implements HasActions {
             				//RSS-passed tags, comma seperated.
             				$item_nom_tags = $nom_tags = pressforward('controller.metas')->get_post_pf_meta($nom_id, 'item_tags', true);
             				$wp_nom_tags = '';
-            				$getTheTags = get_the_tags();
+            				$getTheTags = array();// get_the_tags();
             				if (empty($getTheTags)){
             					$getTheTags[] = '';
             					$wp_nom_tags = '';
@@ -365,7 +365,7 @@ class Nominated implements HasActions {
                     }
                     break;
                 case 'original_author':
-                    $orig_auth = $this->metas->get_post_pf_meta($post->ID, 'authors', true);
+                    $orig_auth = $this->metas->get_post_pf_meta($post->ID, 'item_author', true);
                     echo $orig_auth;
                     break;
                 case 'date_nominated':
@@ -384,9 +384,10 @@ class Nominated implements HasActions {
             $submitted_by = $this->metas->get_post_pf_meta($post->ID, 'submitted_by', true);
             $source_title = $this->metas->get_post_pf_meta($post->ID, 'source_title', true);
             $posted_date = $this->metas->get_post_pf_meta($post->ID, 'item_date', true);
-            $nom_authors = $this->metas->get_post_pf_meta($post->ID, 'authors', true);
+            $nom_authors = $this->metas->get_post_pf_meta($post->ID, 'item_author', true);
             $item_link = $this->metas->get_post_pf_meta($post->ID, 'item_link', true);
             $date_nominated = $this->metas->get_post_pf_meta($post->ID, 'date_nominated', true);
+			//var_dump($date_nominated); die();
             $user = get_user_by('id', $submitted_by);
             $item_tags = $this->metas->get_post_pf_meta($post->ID, 'item_tags', true);
             $source_repeat = $this->metas->get_post_pf_meta($post->ID, 'source_repeat', true);
@@ -663,7 +664,7 @@ class Nominated implements HasActions {
             } else {
                 $current_user = wp_get_current_user();
                 $current_user_id = $current_user->ID;
-                add_post_meta($_POST['nom_id'], 'archived_by_user_status', 'archived_' . $current_user_id);
+                pressforward('controller.metas')->add_pf_meta($_POST['nom_id'], 'archived_by_user_status', 'archived_' . $current_user_id);
                 print_r(__('Archived.', 'pf'));
                 # @TODO This should have a real AJAX response.
                 die();
@@ -767,20 +768,24 @@ class Nominated implements HasActions {
         function user_nomination_meta($increase = true){
             $current_user = wp_get_current_user();
             $userID = $current_user->ID;
-            if (get_user_meta( $userID, 'nom_count', true )){
-
+            if (!empty(get_user_meta( $userID, 'nom_count', true ))){
+                    pf_log('Update nom_count in user meta for user '.$userID);
                             $nom_counter = get_user_meta( $userID, 'nom_count', true );
+                            $old_nom_counter = $nom_counter;
                             if ($increase) {
-                                $nom_counter++;
+                                $nom_counter = $nom_counter+1;
                             }	else {
-                                $nom_counter--;
+                                $nom_counter = $nom_counter-1;
                             }
-                            update_user_meta( $userID, 'nom_count', $nom_counter, true );
+                            pf_log('Update nom_count in user meta for user '.$userID.' with value of '.$nom_counter);
+                            update_user_meta( $userID, 'nom_count', $nom_counter, $old_nom_counter );
 
             } elseif ($increase) {
+                pf_log('Create nom_count in user meta for user '.$userID);
                             add_user_meta( $userID, 'nom_count', 1, true );
 
             } else {
+                pf_log('Nothing to do with nom_count in user meta for user '.$userID);
                 return false;
             }
         }

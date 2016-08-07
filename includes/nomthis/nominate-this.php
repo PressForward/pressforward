@@ -31,8 +31,9 @@ if (is_dir($wp_bootstrap.'/wp-admin')){
 
 /** WordPress Administration Bootstrap */
 require_once( $wp_bootstrap . '/admin.php');
+//require_once( $wp_bootstrap . '/includes/meta-boxes.php' );
 	//PF Correction - this will need to be changed to a constant later.
-//require_once( dirname(dirname(dirname(__FILE__))) . "/lib/OpenGraph.php");
+//require_once( dirname(dirname(dirname(__FILE__))) . "/Libraries/OpenGraph.php");
 //	global $pf_nt;
 //	$pf_nt = new PressForward();
 
@@ -54,11 +55,10 @@ if ( ! current_user_can( 'edit_posts' ) || ! current_user_can( get_post_type_obj
  */
 function nominate_it() {
 
-	$post = get_default_post_to_edit();
-	$post = get_object_vars($post);
-	$post_ID = $post['ID'] = (int) $_POST['post_id'];
+	$post = array();
+	//$post_ID = $post['ID'] = (int) $_POST['post_id'];
 
-	if ( !current_user_can('edit_post', $post_ID) )
+	if ( !current_user_can(get_option( 'pf_menu_all_content_access', pressforward('controller.users')->pf_get_defining_capability_by_role('contributor') )) )
 		wp_die(__('You are not allowed to edit this post.'));
 
 	$post['post_category'] = isset($_POST['post_category']) ? $_POST['post_category'] : '';
@@ -92,19 +92,19 @@ function nominate_it() {
 
 	$nom_check = false;
     $feed_nom = array( 'error' => false, 'simple' => '' );
+    $post['guid'] = $_POST['item_link'];
     //var_dump('<pre>'); var_dump($_POST['pf-feed-subscribe']); die();
     if ( !empty( $_POST['pf-feed-subscribe'] ) && ( 'subscribe' == $_POST['pf-feed-subscribe'] ) ){
         $url_array = parse_url(esc_url($_POST['item_link']));
         $sourceLink = 'http://' . $url_array['host'];
         $create_started = 'Attempting to nominate a feed with the result of: <br />';
-        //var_dump($sourceLink); die();
         if (current_user_can('edit_posts')){
           $create = pressforward('schema.feeds')->create($sourceLink, array('post_status' => 'under_review') );
           if ( is_numeric($create) ){
             $feed_nom['id'] = $create;
             $create = 'Feed created with ID of '.$create;
             $feed_nom['simple'] = "The feed has been nominated successfully.";
-            $error_check = get_post_meta($feed_nom['id'], 'ab_alert_msg', true);
+            $error_check = pressforward('controller.metas')->get_post_pf_meta($feed_nom['id'], 'ab_alert_msg', true);
             if ( !empty( $error_check ) ){
             	$create .= ' But the following error occured: '.$error_check;
             	$feed_nom['simple'] = "There is a problem with the feed associated with this post. The feed could not be verified.";
@@ -155,9 +155,11 @@ function nominate_it() {
 	if (0 != $feed_nom['id']){
 		$post['post_parent'] = $feed_nom['id'];
 	}
-
+	$post['post_author'] = get_current_user_id();
+	$post['post_type'] = 'nomination';
+/////var_dump($_POST); die();
 	if (isset($_POST['publish']) && ($_POST['publish'] == "Send to ".ucwords(get_option(PF_SLUG.'_draft_post_status', 'draft')) ) ) {
-		//var_dump($_POST); die();
+
 		$post_ID = pressforward('utility.forward_tools')->bookmarklet_to_last_step(false, $post);
 
 	} else {
@@ -172,22 +174,29 @@ if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 	check_admin_referer('nominate-this');
 	$posted = $post_ID = nominate_it();
 } else {
-	$post = get_default_post_to_edit('post', true);
-	$post_ID = $post->ID;
+	$title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( stripslashes( $_GET['t'] ) , ENT_QUOTES) ) ) : '';
+	//$post_ID = wp_insert_post(array('post_title' => $title, 'post_type' => 'nomination', 'guid' => $_GET['u']));
+	//$post_ID = $post->ID;
+	//pf_log('Establish post '.$post_ID);
+	//var_dump($_GET['u']); die();
 }
 
 				global $pf_nt;
 				if (isset($_POST['item_link']) && !empty($_POST['item_link']) && ($_POST['item_link']) != ''){
+					pf_log('Getting OpenGraph image on ');
+					pf_log($_POST['item_link']);
+					//var_dump($_POST['item_link']); die();
 					//Gets OG image
 					$itemFeatImg = pressforward('schema.feed_item')->get_ext_og_img($_POST['item_link']);
+					//var_dump($itemFeatImg); die();
 				}
 
-	if (!empty($_POST['item_link']) && ($_POST['item_link']) != ''){
+	if ( ( !empty($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) && !empty($_POST['item_link']) && ($_POST['item_link']) != ''){
 		pressforward('schema.feed_item')->set_ext_as_featured($post_ID, $itemFeatImg);
 	}
 
 // Set Variables
-$title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( stripslashes( $_GET['t'] ) , ENT_QUOTES) ) ) : '';
+
 
 $selection = '';
 if ( !empty($_GET['s']) ) {
@@ -579,19 +588,36 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 			<input type="hidden" name="autosave" id="autosave" />
 			<input type="hidden" id="original_post_status" name="original_post_status" value="draft" />
 			<input type="hidden" id="prev_status" name="prev_status" value="draft" />
-			<input type="hidden" id="post_id" name="post_id" value="<?php echo (int) $post_ID; ?>" />
+			<input type="hidden" id="post_id" name="post_id" value="0" />
 			<?php if ($url != '') {
 
 				$author_retrieved = pressforward('controller.metas')->get_author_from_url( $url );
+				$tags_retrieved = array();
+				$og = pressforward('library.opengraph')->fetch($url);
+				if ( !empty($og) && !empty($og->article_tag) ){
+					$tags_retrieved[] = $og->article_tag;
+				}
+				if ( !empty($og) && !empty($og->article_tag_additional) ){
+					$tags_retrieved = array_merge($tags_retrieved, $og->article_tag_additional);
+				}
+				if ( !empty($tags_retrieved) ){
+					$tags_retrieved[] = 'via bookmarklet';
+					$tags_retrieved = implode(', ', $tags_retrieved);
+				} else {
+					$tags_retrieved = 'via bookmarklet';
+				}
 				//$response_body = wp_remote_retrieve_body( $response );
 				//$response_dom = pf_str_get_html( $response_body );
+				if ( isset($og->url) ){
+					$url = $og->url;
+				}
 
 			?>
 				<?php  ?>
 				<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr($title);?>" />
 				<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo date('c'); ?>" />
 				<?php #Metadata goes here. ?>
-				<input type="hidden" id="item_link" name="item_link" value="<?php echo esc_url($url ); ?>" />
+				<input type="hidden" id="item_link" name="item_link" value="<?php echo esc_url( $url ); ?>" />
 			<?php } ?>
 
 			<!-- This div holds the photo metadata -->
@@ -666,7 +692,7 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 
 					<div id="category-all" class="tabs-panel">
 						<ul id="categorychecklist" data-wp-lists="list:category" class="categorychecklist form-no-clear">
-							<?php wp_terms_checklist($post_ID, array( 'taxonomy' => 'category', 'popular_cats' => $popular_ids ) ) ?>
+							<?php wp_terms_checklist(0, array( 'taxonomy' => 'category', 'popular_cats' => $popular_ids ) ) ?>
 						</ul>
 					</div>
 
@@ -696,6 +722,25 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 				</div>
 				</div>
 			</div>
+			<div id="tagdiv" class="postbox">
+				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
+				<h3 class="hndle"><?php _e('Tags') ?></h3>
+				<div class="inside">
+				<div id="taxonomy-category" class="tagdiv">
+					<p>
+						<?php
+							if ( !$tags_retrieved ){
+								$post_tags = '';
+							} else {
+								$post_tags = $tags_retrieved;
+							}
+						?>
+						<label for="post_tags"><input type="text" id="post_tags" name="post_tags" value="<?php echo $post_tags; ?>" /><br />&nbsp;<?php echo apply_filters('pf_tags_prompt', __('Enter Tags', 'pf')); ?></label>
+					</p>
+				</div>
+				</div>
+			</div>
+
 			<?php do_action('nominate_this_sidebar_bottom'); ?>
 		</div>
 	</div>

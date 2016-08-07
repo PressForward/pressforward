@@ -210,16 +210,16 @@ class PF_Loops {
     	foreach ( $feed_items->posts as $post ) {
     		$post_id = $post->ID;
 
-    		$item_id            = get_post_meta( $post_id, 'item_id', true );
-    		$source_title       = get_post_meta( $post_id, 'source_title', true );
-    		$item_date          = get_post_meta( $post_id, 'item_date', true );
-    		$item_author        = get_post_meta( $post_id, 'item_author', true );
-    		$item_link          = get_post_meta( $post_id, 'item_link', true );
-    		$item_feat_img      = get_post_meta( $post_id, 'item_feat_img', true );
-    		$item_wp_date       = get_post_meta( $post_id, 'item_wp_date', true );
-    		$item_tags          = get_post_meta( $post_id, 'item_tags', true );
-    		$source_repeat      = get_post_meta( $post_id, 'source_repeat', true );
-    		$readable_status    = get_post_meta( $post_id, 'readable_status', true );
+    		$item_id            = pressforward('controller.metas')->get_post_pf_meta( $post_id, 'item_id', true );
+    		$source_title       = pressforward('controller.metas')->get_post_pf_meta( $post_id, 'source_title', true );
+    		$item_date          = pressforward('controller.metas')->get_post_pf_meta( $post_id, 'item_date', true );
+    		$item_author        = pressforward('controller.metas')->get_post_pf_meta( $post_id, 'item_author', true );
+    		$item_link          = pressforward('controller.metas')->get_post_pf_meta( $post_id, 'item_link', true );
+    		$item_feat_img      = pressforward('controller.metas')->get_post_pf_meta( $post_id, 'item_feat_img', true );
+    		$item_wp_date       = pressforward('controller.metas')->get_post_pf_meta( $post_id, 'item_wp_date', true );
+    		$item_tags          = pressforward('controller.metas')->get_post_pf_meta( $post_id, 'item_tags', true );
+    		$source_repeat      = pressforward('controller.metas')->get_post_pf_meta( $post_id, 'source_repeat', true );
+    		$readable_status    = pressforward('controller.metas')->get_post_pf_meta( $post_id, 'readable_status', true );
 
     		$contentObj   = pressforward('library.htmlchecker');
     		$item_content = $contentObj->closetags( $post->post_content );

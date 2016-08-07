@@ -2,6 +2,7 @@
 namespace PressForward\Controllers;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
+use PressForward\Interfaces\System;
 use URLResolver;
 /**
  * Readability stuff
@@ -9,8 +10,10 @@ use URLResolver;
 
 class HTTPTools implements HasActions {
 
-	function __construct( URLResolver $resolver ) {
+	function __construct( URLResolver $resolver, System $system, Metas $meta ) {
         $this->url_resolver = $resolver;
+		$this->system = $system;
+		$this->meta = $meta;
 	}
 
 	public function action_hooks() {
@@ -99,14 +102,14 @@ class HTTPTools implements HasActions {
 	}
 
 	function pf_aggregation_forwarder(){
-		if(1 == get_option('pf_link_to_source',0)){
+		if(1 == $this->system->get_option('pf_link_to_source',0)){
 			//http://webmaster.iu.edu/tools-and-guides/maintenance/redirect-meta-refresh.phtml ?
-			$linked = get_post_meta('item_link', true);
+			$linked = $this->meta->get_post_pf_meta(get_the_ID(), 'item_link', true);
 			//Need syndicate tag here.
 			if (is_single() && ('' != $linked)){
 				?>
 				 <script type="text/javascript">alert('You are being redirected to the source item.');</script>
-				<META HTTP-EQUIV="refresh" CONTENT="10;URL=<?php echo get_post_meta('item_link', true); ?>">
+				<META HTTP-EQUIV="refresh" CONTENT="10;URL=<?php echo $this->meta->get_post_pf_meta(get_the_ID(), 'item_link', true); ?>">
 				<?php
 
 			}

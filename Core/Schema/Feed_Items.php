@@ -1,5 +1,11 @@
 <?php
 namespace PressForward\Core\Schema;
+
+use PressForward\Interfaces\Items as Items;
+use PressForward\Controllers\Metas;
+
+use Intraxia\Jaxion\Contract\Core\HasActions;
+use Intraxia\Jaxion\Contract\Core\HasFilters;
 /**
  * Classes and functions for dealing with feed items
  */
@@ -7,22 +13,54 @@ namespace PressForward\Core\Schema;
 /**
  * Database class for manipulating feed items
  */
-class Feed_Items {
+class Feed_Items implements HasActions, HasFilters {
 	protected $filter_data = array();
 	var $post_type;
 	var $tag_taxonomy;
 
-	public function __construct() {
+	public function __construct( Items $items, Metas $metas ) {
 		$this->post_type = 'pf_feed_item';
 		$this->tag_taxonomy = 'pf_feed_item_tag';
+		$this->items = $items;
+		$this->metas = $metas;
 		// Post types and taxonomies must be registered after 'init'
-		add_action( 'init', array( $this, 'register_feed_item_post_type' ) );
-		add_action( 'pf_feed_item_post_type_registered', array( $this, 'register_feed_item_tag_taxonomy' ) );
+	}
 
-		add_filter('user_has_cap', array( $this, 'alter_cap_on_fly' ) );
-		add_filter( 'map_meta_cap', array( $this, 'feeds_item_map_meta_cap'), 10, 4 );
-		add_action( 'init', array( $this, 'dead_post_status') );
-		add_action( 'init', array( $this, 'register_feed_item_removed_status') );
+	public function action_hooks() {
+		$hooks = array(
+            array(
+                'hook' => 'init',
+                'method' => 'register_feed_item_post_type'
+            ),
+			array(
+				'hook' 		=> 'pf_feed_item_post_type_registered',
+				'method'	=> 'register_feed_item_tag_taxonomy'
+			),
+			array(
+				'hook' 		=> 'init',
+				'method'	=> 'dead_post_status'
+			),
+			array(
+				'hook' 		=> 'init',
+				'method'	=> 'register_feed_item_removed_status'
+			)
+        );
+		return $hooks;
+	}
+
+    public function filter_hooks(){
+		return array(
+				array(
+					'hook' => 'user_has_cap',
+	                'method' => 'alter_cap_on_fly'
+				),
+				array(
+					'hook' => 'map_meta_cap',
+					'method' => 'feeds_item_map_meta_cap',
+					'priority'  => 10,
+					'args' => 4
+				),
+		);
 	}
 
 	public function register_feed_item_post_type() {
@@ -184,7 +222,7 @@ class Feed_Items {
 		// Other WP_Query args pass through
 		$wp_args = wp_parse_args( $args, $wp_args );
 
-		$posts = get_posts( $wp_args );
+		$posts = $this->items->get_posts( $wp_args );
 
 		foreach ( $query_filters as $hook => $filters ) {
 			foreach ( $filters as $f ) {
@@ -195,8 +233,8 @@ class Feed_Items {
 		// Fetch some handy pf-specific data
 		if ( ! empty( $posts ) ) {
 			foreach ( $posts as &$post ) {
-				$post->word_count = get_post_meta( $post->ID, 'pf_feed_item_word_count', true );
-				$post->source     = get_post_meta( $post->ID, 'pf_feed_item_source', true );
+				$post->word_count = $this->metas->get_post_pf_meta( $post->ID, 'pf_feed_item_word_count', true );
+				$post->source     = $this->metas->get_post_pf_meta( $post->ID, 'source_title', true );
 				$post->tags       = wp_get_post_terms( $post->ID, pf_feed_item_tag_taxonomy() );
 			}
 		}
@@ -300,7 +338,7 @@ class Feed_Items {
 	*
 	*/
 	public function set_source( $post_id, $source ) {
-		return pressforward('controller.metas')->update_pf_meta( $post_id, 'pf_feed_item_source', $source );
+		return pressforward('controller.metas')->update_pf_meta( $post_id, 'source_title', $source );
 	}
 
 	/**
@@ -335,9 +373,10 @@ class Feed_Items {
 	*
 	*/
 	public function get_source_link( $post_id ) {
-		$url = pressforward('controller.metas')->retrieve_meta($post_id, 'pf_source_link');
+		$url = pressforward('controller.metas')->get_post_pf_meta($post_id, 'pf_source_link');
 		if (empty($url)){
-			$url = pressforward('controller.metas')->retrieve_meta($post_id, 'item_link');
+			$url = pressforward('controller.metas')->get_post_pf_meta($post_id, 'item_link');
+			//pf_log($url);
 		}
 		$source_url = pressforward('controller.http_tools')->resolve_a_url($url);
 		pressforward('controller.metas')->update_pf_meta( $post_id, 'pf_source_link', $source_url );
@@ -365,7 +404,7 @@ class Feed_Items {
 			return false;
 		}
 
-		return update_post_meta( $feed_id, 'pf_feed_last_retrieved', date( 'Y-m-d H:i:s' ) );
+		return pressforward('controller.metas')->update_pf_meta( $feed_id, 'pf_feed_last_retrieved', date( 'Y-m-d H:i:s' ) );
 	}
 
 	#via http://wordpress.stackexchange.com/questions/109793/delete-associated-media-upon-page-deletion
@@ -538,7 +577,7 @@ class Feed_Items {
 						setup_postdata($post);
 						//print_r(get_the_ID());
 						//print_r('< the ID');
-						if ((get_post_meta($post->ID, 'item_id', $item_id, true)) === $item_id){
+						if ((pressforward('controller.metas')->get_post_pf_meta($post->ID, 'item_id', $item_id, true)) === $item_id){
 							$thepostscheck++;
 							$post_id_to_pass = $post->ID;
 							pf_log('We already have post ' . $post_id_to_pass . ' for ');
@@ -570,9 +609,10 @@ class Feed_Items {
 								$postID = $post->ID;
 
 								$postDate = strtotime($post->post_date);
-								$postItemLink = get_post_meta($post->ID, 'item_link', true);
+								$postItemLink = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'item_link', true);
 								# Item comparative values.
 								$itemDate = strtotime($item['item_date']);
+								//pf_log( 'Item time '. $itemDate . ' post date is '. $postDate );
 								$itemTitle = $item['item_title'];
 								$itemLink = $item['item_link'];
 
@@ -580,19 +620,34 @@ class Feed_Items {
 								if((($theTitle == $itemTitle) || ($postItemLink == $itemLink))){
 									$thePostsDoubleCheck++;
 									pf_log('We already have the post ' . $theTitle . ' with the link ' . $itemLink);
-									$sourceRepeat = get_post_meta($postID, 'source_repeat', true);
+									$sourceRepeat = pressforward('controller.metas')->get_post_pf_meta($postID, 'source_repeat', true);
 									if (($itemDate > $postDate)) {
 										# If it is more recent, than this is the new dominant post.
+										# @TODO: Allow the feed process to check for updated content.
+										# The idea is that if the retrieved item's date is newer than
+										# the internal date it will update. But the retrieved item date
+										# is not always available, and is not currently being processed
+										# correctly when it is, so we're not doing this for now.
 										$sourceRepeat++;
+										$thepostscheck = 1;
 									} elseif (($itemDate <= $postDate)) {
 										# if it is less recent, then we need to increment the source count.
 										$sourceRepeat++;
 										if ($thePostsDoubleCheck > $sourceRepeat) {
-											update_post_meta($postID, 'source_repeat', $sourceRepeat);
+											pressforward('controller.metas')->update_pf_meta($postID, 'source_repeat', $sourceRepeat);
 										}
-										$thepostscheck++;
+										# The idea is that if the retrieved item's date is newer than
+										# the internal date it will update. But the retrieved item date
+										# is not always available, and is not currently being processed
+										# correctly when it is, so we're not doing this for now.
+										//$thepostscheck++;
+										$thepostscheck = 1;
 									} else {
-										$thepostscheck = 0;
+										# The idea is that if the retrieved item's date is newer than
+										# the internal date it will update. But the retrieved item date
+										# is not always available, and is not currently being processed
+										# correctly when it is, so we're not doing this for now.
+										$thepostscheck = 1;
 									}
 								} else {
 									# If it isn't duplicated at all, then we need to give it a source repeat count of 0
@@ -742,7 +797,7 @@ class Feed_Items {
 				$parent_id = $feed_obj_id;
 				do_action('pf_post_established', $newNomID, $item_id, $parent_id);
 			} else {
-
+				pf_log( 'The post was a repeat, so we are not adding it.' );
 			}
 
 		}
@@ -912,7 +967,11 @@ class Feed_Items {
 
 	public static function get_ext_og_img($link){
 		$node = pressforward('library.opengraph')->fetch($link);
-		$itemFeatImg = $node->image;
+		if ( !empty($node) ){
+			$itemFeatImg = $node->image;
+		} else {
+			return false;
+		}
 
 		return $itemFeatImg;
 	}
@@ -1014,7 +1073,7 @@ class Feed_Items {
 			wp_update_attachment_metadata( $thumbid, $metadata );
 
 			//Now that we have a correctly meta-ed and attached image we can finally turn it into a post thumbnail.
-			update_post_meta($postID, '_thumbnail_id', $thumbid);
+			pressforward('controller.metas')->update_pf_meta($postID, '_thumbnail_id', $thumbid);
 
 		}
 	}
@@ -1098,6 +1157,12 @@ class Feed_Items {
 
 		register_post_status('removed_feed_item', $args);
 
+	}
+
+	public function oembed_capables(){
+		return array(
+			'youtube.com'
+		);
 	}
 
 }

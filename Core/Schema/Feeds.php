@@ -1,5 +1,8 @@
 <?php
 namespace PressForward\Core\Schema;
+
+use Intraxia\Jaxion\Contract\Core\HasActions;
+use Intraxia\Jaxion\Contract\Core\HasFilters;
 /**
  * Classes and functions for dealing with feed items
  */
@@ -7,7 +10,7 @@ namespace PressForward\Core\Schema;
 /**
  * Database class for manipulating feed items
  */
-class Feeds {
+class Feeds implements HasActions, HasFilters {
 	protected $filter_data = array();
 
     public function __construct() {
@@ -15,33 +18,118 @@ class Feeds {
 		$this->tag_taxonomy = 'pf_feed_category';
 
 		// Post types and taxonomies must be registered after 'init'
-		add_action( 'init', array( $this, 'register_feed_post_type' ) );
-		#add_action('admin_init', array($this, 'deal_with_old_feedlists') );
-        add_action('admin_init', array($this, 'disallow_add_new'));
-        add_filter('ab_alert_specimens_update_post_type', array($this, 'make_alert_return_to_publish'));
-		add_filter( 'views_edit-'.$this->post_type, array($this, 'modify_post_views') );
-		add_filter( 'status_edit_pre', array($this, 'modify_post_edit_status') );
 
-		add_action( 'save_post', array( $this, 'save_submitbox_pf_actions' ) );
-		add_action( 'pf_feed_post_type_registered', array($this, 'under_review_post_status') );
-
-		if (is_admin()){
-			add_action('wp_ajax_deal_with_old_feedlists', array($this, 'deal_with_old_feedlists'));
-			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_edit_feed_scripts' ) );
-			add_filter( 'page_row_actions', array($this, 'url_feed_row_action'), 10, 2 );
-			add_filter( 'page_row_actions', array($this, 'refresh_feed_row_action'), 10, 2 );
-			add_action( 'post_submitbox_misc_actions', array( $this, 'feed_submitbox_pf_actions' ) );
-			add_filter( 'post_updated_messages', array( $this, 'feed_save_message' ) );
-		}
-
-		add_filter( 'map_meta_cap', array( $this, 'feeds_map_meta_cap'), 10, 4 );
-		add_filter('user_has_cap', array( $this, 'alter_cap_on_fly' ) );
-		add_filter( "option_page_capability_pf_feedlist_group", array( $this, 'feed_option_page_cap' ) );
-
-		add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
-		add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
 	}
+
+
+    public function action_hooks() {
+        $hooks = array(
+            array(
+                'hook' => 'init',
+                'method' => 'register_feed_post_type',
+				'priority'	=>	10
+            ),
+			//add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
+			array(
+				'hook' 		=> 'admin_init',
+				'method'	=> 'disallow_add_new'
+			),
+			array(
+				'hook' 		=> 'save_post',
+				'method'	=> 'save_submitbox_pf_actions'
+			),
+			array(
+				'hook' 		=> 'pf_feed_post_type_registered',
+				'method'	=> 'under_review_post_status'
+			),
+			array(
+				'hook' => 'manage_pf_feed_posts_custom_column',
+				'method' => 'last_retrieved_date_column_content',
+				'priority'  => 10,
+				'args' => 2
+			),
+        );
+		if ( is_admin() ){
+			$admin_hooks = array(
+				array(
+					'hook' 		=> 'wp_ajax_deal_with_old_feedlists',
+					'method'	=> 'deal_with_old_feedlists'
+				),
+				array(
+					'hook' 		=> 'admin_enqueue_scripts',
+					'method'	=> 'admin_enqueue_scripts'
+				),
+				array(
+					'hook' 		=> 'admin_enqueue_scripts',
+					'method'	=> 'admin_enqueue_edit_feed_scripts'
+				),
+				array(
+					'hook' 		=> 'post_submitbox_misc_actions',
+					'method'	=> 'feed_submitbox_pf_actions'
+				),
+			);
+			$hooks = array_merge( $hooks, $admin_hooks );
+		}
+		return $hooks;
+    }
+
+    public function filter_hooks(){
+        $filters = array(
+            array(
+                'hook' => 'ab_alert_specimens_update_post_type-add-feeds',
+                'method' => 'make_alert_return_to_publish',
+                'priority'  => 10,
+                'args' => 1
+            ),
+			array(
+				'hook'	=>	'views_edit-'.$this->post_type,
+				'method'	=>	'modify_post_views',
+				'priority'	=>	10,
+				'args'	=> 1
+			),
+			//add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
+			array(
+				'hook'	=>	'map_meta_cap',
+				'method'	=>	'feeds_map_meta_cap',
+				'priority'	=>	10,
+				'args'	=> 4
+			),
+			array(
+				'hook'	=>	'user_has_cap',
+				'method'	=>	'alter_cap_on_fly'
+			),
+			array(
+				'hook'	=>	'option_page_capability_pf_feedlist_group',
+				'method'	=>	'feed_option_page_cap'
+			),
+			array(
+				'hook'	=>	'manage_edit-'.$this->post_type.'_columns',
+				'method'	=>	'custom_feed_column_name'
+			),
+        );
+		if ( is_admin() ){
+			$admin_filters = array(
+				array(
+					'hook'	=>	'page_row_actions',
+					'method'	=>	'url_feed_row_action',
+					'priority'	=>	10,
+					'args'	=> 2
+				),
+				array(
+					'hook'	=>	'page_row_actions',
+					'method'	=>	'refresh_feed_row_action',
+					'priority'	=>	10,
+					'args'	=> 2
+				),
+				array(
+					'hook'	=>	'post_updated_messages',
+					'method'	=>	'feed_save_message',
+				),
+			);
+			$filters = array_merge( $filters, $admin_filters );
+		}
+		return $filters;
+    }
 
 	/**
 	 * Feed items are stored in a CPT, which is registered here
@@ -181,7 +269,7 @@ class Feeds {
 		if ( $post->post_type != $this->post_type ) {
 				return;
 		}
-	    $value = get_post_meta($post->ID, 'pf_no_feed_alert', true);
+	    $value = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'pf_no_feed_alert', true);
 	    if ('' === $value){
 	    	//If the user does not want to forward all things this setting is 0,
 	    	//which evaluates to empty.
@@ -323,9 +411,9 @@ class Feeds {
 			$edit_actions = '';
 		}
 		$actions['edit'] = '<span class="inline pf-url" style="visibility:visible;color:grey;">'.$url.'</span><br/>';
-		$ab_msg =  get_post_meta($post->ID, 'ab_alert_msg', true);
+		$ab_msg =  pressforward('controller.metas')->get_post_pf_meta($post->ID, 'ab_alert_msg', true);
 		if ( !empty( $ab_msg ) ){
-			$actions['edit'] .= '<span class="inline pf-alert-msg" style="">'.get_post_meta($post->ID, 'ab_alert_msg', true).'</span><br/>';
+			$actions['edit'] .= '<span class="inline pf-alert-msg" style="">'.pressforward('controller.metas')->get_post_pf_meta($post->ID, 'ab_alert_msg', true).'</span><br/>';
 		}
 		$actions['edit'] .= $edit_actions;
 	  return $actions;
@@ -635,7 +723,7 @@ class Feeds {
 			return false;
 		}
 
-		return update_post_meta( $feed_id, 'pf_feed_last_checked', date( 'Y-m-d H:i:s' ) );
+		return pressforward('controller.metas')->update_pf_meta( $feed_id, 'pf_feed_last_checked', date( 'Y-m-d H:i:s' ) );
 	}
 
 	# Not only is this moving feeds over into feed CPT posts, but this methodology will insure a time-out won't force the process to restart.
@@ -669,8 +757,7 @@ class Feeds {
         ) );
     }
 
-	# A function to take an argument array and turn it into a Feed CPT entry.
-	public function feed_post_setup($r, $insert_type = 'insert'){
+	public function feed_post_setup_inital( $r, $insert_type = 'insert' ){
 		pf_log('Invoked: feed_post_setup');
 		foreach ($r as $k=>$e){
 			if (!$e)
@@ -726,6 +813,21 @@ class Feeds {
 			unset($wp_args['post_status']);
 			$wp_args['ID'] = $r['ID'];
 			wp_update_post( $wp_args );
+			//$post_id = $r['ID'];
+		}
+
+		$r['wp_args'] = $wp_args;
+
+		return $r;
+	}
+
+	# A function to take an argument array and turn it into a Feed CPT entry.
+	public function feed_post_setup($r, $insert_type = 'insert'){
+		pf_log('Invoked: feed_post_setup');
+		$r = $this->feed_post_setup_inital( $r, $insert_type );
+		$wp_args = $r['wp_args'];
+		unset($r['wp_args']);
+		if ($insert_type == 'update') {
 			$post_id = $r['ID'];
 		}
 
@@ -768,7 +870,7 @@ class Feeds {
 					}
 				}
 			}
-			$unsetables = array('title', 'description', 'tags', 'type', 'url');
+			$unsetables = array('title', 'description', 'tags', 'type', 'url', 'post_status', 'ID', 'post_type', 'post_title', 'post_content', 'guid', 'post_parent', 'tax_input');
 
 			foreach ($unsetables as $k=>$a){
 				unset($r[$a]);
@@ -1037,7 +1139,7 @@ class Feeds {
 				if (($c == 0)){
 					$this->update($post_id, array('url' => $url));
 				} else {
-					if ($url == get_post_meta($post_id, 'feedUrl', true)){
+					if ($url == pressforward('controller.metas')->get_post_pf_meta($post_id, 'feedUrl', true)){
 						wp_delete_post( $post_id, true );
 					}
 				}
@@ -1105,11 +1207,55 @@ class Feeds {
 
 	}
 
+	public function update_title($post_id, $args){
+		pf_log('Invoked: PF_FEEDS_SCHEMA::update');
+		$r = wp_parse_args( $args, array(
+			'ID'			=> $post_id,
+			'title'   		=> false,
+			'url'     		=> false,
+			'htmlUrl' 		=> false,
+			'type'	  		=> 'rss',
+			'description' 	=> false,
+			'feed_author' 	=> false,
+			'feed_icon'  	=> false,
+			'copyright'		=> false,
+			'thumbnail'  	=> false,
+			'module_added' 	=> 'rss-import',
+			'tags'    		=> array(),
+		) );
+		if (!$r['url']){
+			$feedURL = get_the_guid($post_id);
+			if (empty($feedURL)){
+				return false;
+			}
+		} else {
+			$feedURL = $r['url'];
+		}
+		if ('rss-quick' == $r['type']){
+			pf_log('Updating a rss-quick');
+			$theFeed = fetch_feed($feedURL);
+			if (is_wp_error($theFeed)){
+				return new \WP_Error('badfeed', __('The feed fails verification.'));
+			} else {
+				$r = $this->setup_rss_meta($r, $theFeed);
+			}
+
+			$type_updated = $this->set_pf_feed_type($r['ID'], 'rss');
+			if ($type_updated){
+				$r['type'] = 'rss';
+			}
+		}
+
+		$check = $this->feed_post_setup_inital($r, 'update');
+
+		return $check['ID'];
+	}
+
 	# This function makes it easy to set the type of 'feed', which is important when we move to using something other than RSS.
 
 	public function set_pf_feed_type($id, $type = "rss") {
 		pf_log( 'Invoked: PF_Feed_Schema::set_pf_feed_type for ' . $id  );
-		$updateResult = update_post_meta($id, 'feed_type', $type);
+		$updateResult = pressforward('controller.metas')->update_pf_meta($id, 'feed_type', $type);
 		pf_log( 'Attempted to update to type ' . $type . ' with results of: ');
 		pf_log( $updateResult );
 		if (is_wp_error($updateResult)){
@@ -1122,7 +1268,7 @@ class Feeds {
 
 	public function get_pf_feed_type($id) {
 		pf_log( 'Invoked: PF_Feed_Schema::get_pf_feed_type('.$id.')' );
-		$updateResult = get_post_meta($id, 'feed_type', true);
+		$updateResult = pressforward('controller.metas')->get_post_pf_meta($id, 'feed_type', true);
 		if (is_wp_error($updateResult)){
 			return $updateResult->get_error_message();
 		} elseif ( !$updateResult ) {
@@ -1149,14 +1295,14 @@ class Feeds {
 			if(!$a){
 
 			} else {
-				update_post_meta($post_id, $k, $a);
+				pressforward('controller.metas')->update_pf_meta($post_id, $k, $a);
 			}
 			$c++;
 
 		}
 
 		if ($c+1 == count($args)){
-			update_post_meta($post_id, 'meta_data', 'complete');
+			pressforward('controller.metas')->update_pf_meta($post_id, 'meta_data', 'complete');
 
 		}
 	}

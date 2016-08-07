@@ -200,7 +200,7 @@ class Retrieval {
 
 			$aFeed = $feedlist[$feeds_iteration];
 			pf_log( 'Retrieved feed' );
-#			$feed_url = get_post_meta( $aFeed->ID, 'feedUrl', true );
+#			$feed_url = pressforward('controller.metas')->get_post_pf_meta( $aFeed->ID, 'feedUrl', true );
 #			if ( empty( $feed_url ) ) {
 #				update_post_meta( $aFeed->ID, 'feedUrl', $aFeed->post_title );
 #				$feed_url = $aFeed->post_title;
@@ -350,9 +350,12 @@ class Retrieval {
 	# results.
 	public function pf_feedlist( $startcount = 0 ) {
 		pf_log( 'Invoked: PF_Feed_Retrieve::pf_feedlist()' );
+		# @TODO Not this way.
 		$args = array(
-				'posts_per_page'=>-1
+				'posts_per_page'=>-1,
+				'post_status'	=>	array('publish')
 			);
+		$args = apply_filters( 'pf_feedlist_args', $args );
 		$theFeeds = pressforward('schema.feeds')->get( $args );
 		$feedlist = array();
 
@@ -458,7 +461,7 @@ class Retrieval {
 				'ID'		=>		$id,
 				'url'		=>		$obj->guid
 			);
-			$Feeds->update( $id, $rq_update );
+			$Feeds->update_title( $id, $rq_update );
 		}
 
 		# module function to return a set of standard pf feed_item object
