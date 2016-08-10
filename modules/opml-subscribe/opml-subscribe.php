@@ -336,7 +336,7 @@ class PF_OPML_Subscribe extends PF_Module {
 
 	private function make_a_feed_object_from_post( $post_id = false ){
 		//var_dump(pressforward('controller.metas')->get_post_pf_meta(get_the_ID()));
-		$meta = pressforward('controller.metas')->get_all_meta_keys($post_id);
+		$meta = pressforward('controller.metas')->get_all_metas($post_id);
 		//var_dump($meta);
 		if ( !empty( $meta['feedUrl'][0] ) ){
 			if ( 'http' != substr( $meta['feedUrl'][0], 0, 4 ) ){
@@ -386,6 +386,7 @@ class PF_OPML_Subscribe extends PF_Module {
 			$feed_query = new WP_Query( $feed_query_args );
 
 		} else {
+			# @TODO this doesn't work yet.
 			$folder_obj = $this->make_a_folder_object_from_term_slug($_GET['opml_folder']);
 			$this->master_opml_obj = new OPML_Object(get_site_url().'?pf=opml&opml_folder='.$_GET['opml_folder'] );
 			$this->master_opml_obj->set_title('PressForward Subscription List for the '.$_GET['opml_folder'].' folder on '.$site_name);

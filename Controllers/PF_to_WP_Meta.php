@@ -22,4 +22,8 @@ class PF_to_WP_Meta implements SystemMeta {
 		return get_post_meta( $post_id, $key, $single );
 	}
 
+	public function get_metas( $post_id ) {
+		return get_post_meta( $post_id );
+	}
+
 }
