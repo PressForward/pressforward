@@ -108,7 +108,7 @@ class HTTPTools implements HasActions {
 			//Need syndicate tag here.
 			if (is_single() && ('' != $linked)){
 				?>
-				 <script type="text/javascript">alert('You are being redirected to the source item.');</script>
+				 <script type="text/javascript">console.log('You are being redirected to the source item.');</script>
 				<META HTTP-EQUIV="refresh" CONTENT="10;URL=<?php echo $this->meta->get_post_pf_meta(get_the_ID(), 'item_link', true); ?>">
 				<?php
 

@@ -849,6 +849,18 @@ class Metas {
 		return $meta_keys;
 	}
 
+	public function get_all_metas( $post_id ){
+		$all_metas = $this->meta_interface->get_metas( $post_id );
+		$structure = $this->structure();
+		foreach ( $all_metas as $key=>$meta ){
+			if ( $structure[$key]['serialize'] ){
+				$all_metas[$key] = $this->get_post_pf_meta( $post_id, $key );
+			}
+		}
+		return $all_metas;
+
+	}
+
 	/**
 	 * Update post_meta on a post using PressForward post_meta standardization.
 	 *

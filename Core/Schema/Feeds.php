@@ -1025,9 +1025,7 @@ class Feeds implements HasActions, HasFilters {
 		if ( ! post_type_exists( 'pf_feed' ) ) { $this->register_feed_post_type(); }
 
         $post_status = array('publish','under_review','draft');
-        if (class_exists('The_Alert_Box')){
-            $post_status[] = pressforward('library.alertbox')->status();
-        }
+        $post_status[] = pressforward('library.alertbox')->status();
 
         $defaults = array(
 			'post_type'        => $this->post_type,
