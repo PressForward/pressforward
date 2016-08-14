@@ -579,7 +579,7 @@ class Metas implements HasFilters {
 				'definition' => __('Word count of original item text', 'pf'),
 				'function'	=> __('Stores the count of the original words retrieved with the feed item', 'pf'),
 				'type'	=> array('desc'),
-				'use'	=> array(),
+				'use'	=> array('api'),
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> true
 			),
