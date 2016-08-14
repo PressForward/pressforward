@@ -3,10 +3,11 @@ namespace PressForward\Controllers;
 
 use PressForward\Interfaces\SystemMeta;
 use PressForward\Interfaces\System;
+use Intraxia\Jaxion\Contract\Core\HasFilters;
 /**
  * Functionality related to nominations
  */
-class Metas {
+class Metas implements HasFilters {
 
     //var $meta_interface;
 
@@ -15,6 +16,19 @@ class Metas {
 		$this->system = $system;
 		$this->master_field = 'pf_meta';
 
+	}
+
+	public function filter_hooks(){
+		$filters = array(
+			array(
+				'hook' => 'get_post_metadata',
+				'method' => 'usable_forward_to_origin_status',
+				'priority'  => 10,
+				'args' => 4
+			)
+		);
+
+		return $filters;
 	}
 
 	/**
@@ -1006,6 +1020,35 @@ class Metas {
 		//pf_log($value);
 		//pf_log($check);
 		return $check;
+	}
+
+	public function forward_to_origin_status( $ID, $check = true, $the_value = false ) {
+		if ( $check ){
+			$value = pressforward('controller.metas')->get_post_pf_meta($ID, 'pf_forward_to_origin', true);
+		} else {
+			$value = $the_value;
+		}
+		if ( empty($value) ){
+
+			$option_value = get_option('pf_link_to_source');
+				if ( empty($option_value) ){
+					$value = 'no-forward';
+				} else {
+					$value = 'forward';
+				}
+		}
+
+		return $value;
+	}
+
+	public function usable_forward_to_origin_status( $null, $object_id, $meta_key, $single ){
+		if ($meta_key !== 'pf_forward_to_origin'){
+			return null;
+		}
+		remove_filter('get_post_metadata', array($this, 'usable_forward_to_origin_status'), 10);
+		$value = $this->forward_to_origin_status($object_id);
+		add_filter('get_post_metadata', array($this, 'usable_forward_to_origin_status'), 10, 4);
+		return $value;
 	}
 
 }
