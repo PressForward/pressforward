@@ -82,6 +82,10 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 
 == Changelog ==
 
+= 4.0.4 =
+
+* Remove cURL code that was causing some servers to crash unexpectedly.
+
 = 4.0.2 =
 
 * Removed forwarding alert.
