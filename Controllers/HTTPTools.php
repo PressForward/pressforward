@@ -116,4 +116,83 @@ class HTTPTools implements HasActions {
 		}
 	}
 
+	function get_url_content( $url, $function = false ){
+		$args = func_get_args();
+		$url = str_replace('&amp;','&', $url);
+		$url_first = $url;
+		if (!$function){
+			$r = set_url_scheme($url, 'http');
+		} else {
+			$args[0] = $url;
+			unset($args[1]);
+			#var_dump($args);
+			$r = call_user_func_array( $function, $args );
+			//var_dump($r); die();
+			# "A variable is considered empty if it does not exist or if its value equals FALSE"
+			if ( is_wp_error( $r ) || empty($r) ) {
+				$non_ssl_url = pf_de_https( $url );
+				if ( $non_ssl_url != $url ) {
+							$args[0] = $non_ssl_url;
+					$r = call_user_func_array( $function, $args );
+							//var_dump($url); die();
+				}
+					//$r = false;
+				if ( !$r || is_wp_error( $r ) ) {
+					# Last Chance!
+							if ('file_get_contents' != $function){
+								$response = file_get_contents($url_first);
+								#var_dump($r); die();
+							} else {
+								// bail
+								$response = false;
+							}
+				}
+			}
+		}
+		$response = $r;
+		if ( empty($response) || is_wp_error($response) || ( !empty($response) && !empty($response['headers']) && isset($response['headers']['content-length']) && ( 50 > strlen($response['headers']['content-length']) ) ) ){
+          $cookie_path = 'cookie.txt';
+          if ( defined('COOKIE_PATH_FOR_CURL') && !empty( constant(COOKIE_PATH_FOR_CURL) ) ){
+            $cookie_path = constant(COOKIE_PATH_FOR_CURL);
+          } else {
+            $reset = true;
+            $upload_dir = wp_upload_dir();
+            $cookie_path = $upload_dir['basedir'] . 'cookie.txt';
+            if ( ! is_file( $cookie_path ) ) {
+                touch( $cookie_path );
+            }
+            if ( ! is_writable( $cookie_path ) ) {
+              pf_log( "Can't write to the cookie at $cookie_path." );
+              return false;
+            } else {
+              $debug = 1;
+            }
+            if ($reset) {
+              $fo = fopen($cookie_path, 'w') or pf_log('Can\'t open cookie file.');
+              fwrite($fo, "");
+              fclose($fo);
+
+            }
+          }
+          $curl = curl_init($URI);
+
+          curl_setopt($curl, constant(CURLOPT_FAILONERROR), true);
+          curl_setopt($curl, constant(CURLOPT_FOLLOWLOCATION), true);
+          curl_setopt($curl, constant(CURLOPT_RETURNTRANSFER), true);
+          curl_setopt($curl, constant(CURLOPT_TIMEOUT), 15);
+          curl_setopt($curl, constant(CURLOPT_SSL_VERIFYHOST), false);
+          curl_setopt($curl, constant(CURLOPT_SSL_VERIFYPEER), false);
+          curl_setopt($curl, constant(CURLOPT_USERAGENT), "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)");
+          //The following 2 set up lines work with sites like www.nytimes.com
+          curl_setopt($curl, constant(CURLOPT_COOKIEFILE), $cookie_path); //you can change this path to whetever you want.
+          curl_setopt($curl, constant(CURLOPT_COOKIEJAR), $cookie_path); //you can change this path to whetever you want.
+
+          $response = mb_convert_encoding(curl_exec($curl), 'HTML-ENTITIES', 'UTF-8');
+		  // Will return false or the content.
+          curl_close($curl);
+	  } else {
+		  return $response;
+	  }
+	}
+
 }
