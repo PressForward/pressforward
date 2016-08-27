@@ -1,7 +1,7 @@
 <?php
-namespace PressForward\Core\Modals;
+namespace PressForward\Core\Models;
 
-class BasicModal {
+class BasicModel {
 	protected $data = array();
 
 	public function __construct( $item = array(), $handlers = array(), $post_type = false ) {
