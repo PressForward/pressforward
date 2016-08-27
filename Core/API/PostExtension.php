@@ -2,17 +2,21 @@
 namespace PressForward\Core\API;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
+use Intraxia\Jaxion\Contract\Core\HasFilters;
 
 use PressForward\Controllers\Metas;
+use PressForward\Core\API\APIWithMetaEndpoints;
 
 use WP_Ajax_Response;
 
-class PostExtension implements HasActions {
+class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilters {
 
 	protected $basename;
 
 	function __construct( Metas $metas ){
 		$this->metas = $metas;
+		$this->post_type = 'post';
+		$this->level = 'post';
 	}
 
 
@@ -26,33 +30,16 @@ class PostExtension implements HasActions {
 		return $actions;
 	}
 
-	public function valid_post_metas(){
-		$metas = $this->metas->structure();
-		$post_metas = array();
-		foreach ( $metas as $meta ){
-			// Don't use the serialized array.
-			if ( $meta['name'] === 'pf_meta' ){
-				continue;
-			}
-			// Only use Post level data
-			if ( !in_array( 'post', $meta['level'] ) ){
-				continue;
-			}
-			// Don't use metas that belong elsewhere
-			if ( !empty($meta['move']) ){
-				continue;
-			}
-			// Only use metas marked for use in the top level API.
-			if ( !in_array( 'api', $meta['use'] ) ){
-				continue;
-			}
-			// Don't use metas marked as depreciated.
-			if ( in_array( 'dep', $meta['type'] ) ){
-				continue;
-			}
-			$post_metas[] = $meta['name'];
-		}
-		return $post_metas;
+	public function filter_hooks() {
+		$filter = array(
+			array(
+				'hook' => 'rest_prepare_'.$this->post_type,
+				'method' => 'add_rest_post_links',
+				'priority'  => 10,
+				'args' => 3
+			)
+		);
+		return $filter;
 	}
 
 	public function rest_api_init_extension_hook( $action ){
@@ -85,8 +72,20 @@ class PostExtension implements HasActions {
 	    );
 	}
 
+	public function add_rest_post_links( $data, $post, $request ){
+		//http://v2.wp-api.org/extending/linking/
+		//https://1fix.io/blog/2015/06/26/adding-fields-wp-rest-api/
+		$data->add_links( array(
+			'test_author' => array(
+					'href' => rest_url( '/wp/v2/users/42' ),
+				)
+			)
+		);
+		return $data;
+	}
+
 	public function register_rest_post_read_meta_fields(){
-		foreach ( $this->valid_post_metas() as $key ){
+		foreach ( $this->valid_metas() as $key ){
 			$this->register_rest_post_read_field( $key, true );
 		}
 	}
