@@ -55,7 +55,7 @@ class HTTPTools implements HasActions {
 			return;
 		} else {
 			$check = $this->url_is_aggregation_service($url);
-			if ($check){
+			if ($check && in_array('curl', get_loaded_extensions())){
 				$url = $this->url_resolver->resolveURL($url)->getURL();
 			}
 		}
@@ -150,7 +150,7 @@ class HTTPTools implements HasActions {
 			}
 		}
 		$response = $r;
-		if ( empty($response) || is_wp_error($response) || ( !empty($response) && !empty($response['headers']) && isset($response['headers']['content-length']) && ( 50 > strlen($response['headers']['content-length']) ) ) ){
+		if ( empty($response) || is_wp_error($response) || ( !empty($response) && !empty($response['headers']) && isset($response['headers']['content-length']) && ( 50 > strlen($response['headers']['content-length']) ) ) && in_array('curl', get_loaded_extensions()) ){
           $cookie_path = 'cookie.txt';
           if ( defined('COOKIE_PATH_FOR_CURL') && !empty( constant(COOKIE_PATH_FOR_CURL) ) ){
             $cookie_path = constant(COOKIE_PATH_FOR_CURL);
