@@ -344,7 +344,16 @@ function pf_get_user_level($option, $default_level) {
  * otherwise returns the result of the function after being checked for accessability.
  */
 function pf_de_https($url, $function = false) {
-	return pressforward('controller.http_tools')->get_url_content($url, $function);
+	$args = func_get_args();
+	$url_orig = $url;
+	$url = str_replace('&amp;','&', $url);
+	$url_first = $url;
+	if (!$function){
+		$r = set_url_scheme($url, 'http');
+		return $r;
+	} else {
+		return pressforward('controller.http_tools')->get_url_content($url_orig, $function);
+	}
 }
 
 /**

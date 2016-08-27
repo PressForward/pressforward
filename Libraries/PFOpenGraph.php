@@ -51,8 +51,8 @@ class PFOpenGraph implements Iterator
      */
   	static public function fetch($URI) {
       $response = pf_de_https($URI, 'wp_remote_get', array('timeout' => '30'));
-    	$response = $response['body'];
       if ( !empty($response) && !is_wp_error($response) ) {
+		  $response = $response['body'];
           return self::_parse($response);
       } else {
           return false;
