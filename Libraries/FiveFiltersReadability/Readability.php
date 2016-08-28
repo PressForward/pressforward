@@ -85,10 +85,10 @@ class Readability
 	* Defined up here so we don't instantiate them repeatedly in loops.
 	**/
 	public $regexps = array(
-		'unlikelyCandidates' => '/combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad-break|agegate|pagination|pager|popup/i',
+		'unlikelyCandidates' => '/combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad-break|agegate|pagination|pager|skip\-to\-text\-link|popup/i',
 		'okMaybeItsACandidate' => '/and|article|body|column|main|postContent|post|related|shadow/i',
 		'positive' => '/article|body|content|entry|hentry|main|page|attachment|pagination|post|text|blog|postContent|story/i',
-		'negative' => '/combx|comment|com-|contact|foot|footer|_nav|footnote|masthead|media|meta|outbrain|taboola|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget/i',
+		'negative' => '/combx|comment|skip\-to\-text\-link|com-|contact|foot|footer|_nav|footnote|masthead|media|meta|outbrain|taboola|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget/i',
 		'divToPElements' => '/<(a|blockquote|dl|div|img|ol|p|pre|table|ul)/i',
 		'replaceBrs' => '/(<br[^>]*>[ \n\r\t]*){2,}/i',
 		'replaceFonts' => '/<(\/?)font[^>]*>/i',
@@ -920,6 +920,7 @@ class Readability
 		if ($e->hasAttribute('class') && $e->getAttribute('class') != '')
 		{
 			if (preg_match($this->regexps['negative'], $e->getAttribute('class'))) {
+				//pf_log($e->getAttribute('class'));
 				$weight -= 25;
 			}
 			if (preg_match($this->regexps['positive'], $e->getAttribute('class'))) {
