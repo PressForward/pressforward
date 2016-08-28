@@ -125,6 +125,12 @@ class Feeds implements HasActions, HasFilters {
 					'hook'	=>	'post_updated_messages',
 					'method'	=>	'feed_save_message',
 				),
+				array(
+					'hook'	=>	'parent_file',
+					'method'	=>	'move_feed_tags_submenu',
+					'priority'	=>	10,
+					'args'	=> 1
+				)
 			);
 			$filters = array_merge( $filters, $admin_filters );
 		}
@@ -203,6 +209,22 @@ class Feeds implements HasActions, HasFilters {
 			}
 		}
 		return $caps;
+	}
+
+	/**
+	 * Ensure that 'Feed Tags' stays underneath the PressForward top-level item.
+	 *
+	 * @param string $pf The $parent_file value passed to the
+	 *        'parent_file' filter
+	 * @return string
+	 */
+	public function move_feed_tags_submenu( $pf ) {
+		global $typenow, $pagenow;
+		//var_dump($pf, $pagenow, $typenow); die();
+		if ( ( 'term.php' === $pagenow || 'edit-tags.php' === $pagenow ) && ! empty( $_GET['taxonomy'] ) && $this->tag_taxonomy === stripslashes( $_GET['taxonomy'] ) ) {
+			$pf = 'pf-menu';
+		}
+		return $pf;
 	}
 
 	function feeds_map_meta_cap( $caps, $cap, $user_id, $args ) {
