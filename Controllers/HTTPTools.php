@@ -152,8 +152,8 @@ class HTTPTools implements HasActions {
 		$response = $r;
 		if ( empty($response) || is_wp_error($response) || ( !empty($response) && !empty($response['headers']) && isset($response['headers']['content-length']) && ( 50 > strlen($response['headers']['content-length']) ) ) && in_array('curl', get_loaded_extensions()) ){
           $cookie_path = 'cookie.txt';
-          if ( defined('COOKIE_PATH_FOR_CURL') && !empty( constant(COOKIE_PATH_FOR_CURL) ) ){
-            $cookie_path = constant(COOKIE_PATH_FOR_CURL);
+          if ( defined('COOKIE_PATH_FOR_CURL') && !empty( constant('COOKIE_PATH_FOR_CURL') ) ){
+            $cookie_path = constant('COOKIE_PATH_FOR_CURL');
           } else {
             $reset = true;
             $upload_dir = wp_upload_dir();
@@ -174,18 +174,18 @@ class HTTPTools implements HasActions {
 
             }
           }
-          $curl = curl_init($URI);
+          $curl = curl_init($args[0]);
 
-          curl_setopt($curl, constant(CURLOPT_FAILONERROR), true);
-          curl_setopt($curl, constant(CURLOPT_FOLLOWLOCATION), true);
-          curl_setopt($curl, constant(CURLOPT_RETURNTRANSFER), true);
-          curl_setopt($curl, constant(CURLOPT_TIMEOUT), 15);
-          curl_setopt($curl, constant(CURLOPT_SSL_VERIFYHOST), false);
-          curl_setopt($curl, constant(CURLOPT_SSL_VERIFYPEER), false);
-          curl_setopt($curl, constant(CURLOPT_USERAGENT), "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)");
+          curl_setopt($curl, constant('CURLOPT_FAILONERROR'), true);
+          curl_setopt($curl, constant('CURLOPT_FOLLOWLOCATION'), true);
+          curl_setopt($curl, constant('CURLOPT_RETURNTRANSFER'), true);
+          curl_setopt($curl, constant('CURLOPT_TIMEOUT'), 15);
+          curl_setopt($curl, constant('CURLOPT_SSL_VERIFYHOST'), false);
+          curl_setopt($curl, constant('CURLOPT_SSL_VERIFYPEER'), false);
+          curl_setopt($curl, constant('CURLOPT_USERAGENT'), "facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)");
           //The following 2 set up lines work with sites like www.nytimes.com
-          curl_setopt($curl, constant(CURLOPT_COOKIEFILE), $cookie_path); //you can change this path to whetever you want.
-          curl_setopt($curl, constant(CURLOPT_COOKIEJAR), $cookie_path); //you can change this path to whetever you want.
+          curl_setopt($curl, constant('CURLOPT_COOKIEFILE'), $cookie_path); //you can change this path to whetever you want.
+          curl_setopt($curl, constant('CURLOPT_COOKIEJAR'), $cookie_path); //you can change this path to whetever you want.
 
           $response = mb_convert_encoding(curl_exec($curl), 'HTML-ENTITIES', 'UTF-8');
 		  // Will return false or the content.
