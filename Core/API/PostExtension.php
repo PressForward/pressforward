@@ -61,9 +61,14 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 	public function add_rest_post_links( $data, $post, $request ){
 		//http://v2.wp-api.org/extending/linking/
 		//https://1fix.io/blog/2015/06/26/adding-fields-wp-rest-api/
+		$feed_id = 'false';
+		if ( !empty( $post->post_parent ) ){
+			$feed_id = $post->post_parent;
+		}
 		$data->add_links( array(
-			'test_author' => array(
-					'href' => rest_url( '/wp/v2/users/42' ),
+			'feed' => array(
+					'href' => rest_url( '/wp/v2/pf/v1/feeds/'.$feed_id ),
+					'embeddable' => true,
 				)
 			)
 		);
