@@ -85,10 +85,10 @@ class Readability
 	* Defined up here so we don't instantiate them repeatedly in loops.
 	**/
 	public $regexps = array(
-		'unlikelyCandidates' => '/combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad-break|agegate|pagination|pager|skip\-to\-text\-link|popup/i',
-		'okMaybeItsACandidate' => '/and|article|body|column|main|postContent|post|related|shadow/i',
-		'positive' => '/article|body|content|entry|hentry|main|page|attachment|pagination|post|text|blog|postContent|story/i',
-		'negative' => '/combx|comment|skip\-to\-text\-link|com-|contact|foot|footer|_nav|footnote|masthead|media|meta|outbrain|taboola|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget/i',
+		'unlikelyCandidates' => '/combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad\-break|agegate|pagination|pager|skip\-to\-text\-link|popup/i',
+		'okMaybeItsACandidate' => '/and|article|body|column|main|continues|postContent|content|post|story|related|shadow|story\-content|story\-body\-supplemental|story\-body|story\-body\-text|story\-continues/i',
+		'positive' => '/article|body|story\-content|content|entry|hentry|main|page|attachment|pagination|post|text|blog|postContent|story|story\-body|story\-body\-supplemental|story\-body\-text|story\-continues/i',
+		'negative' => '/combx|comment|skip\-to\-text\-link|com\-|contact|foot|footer|_nav|footnote|masthead|media|meta|outbrain|taboola|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget/i',
 		'divToPElements' => '/<(a|blockquote|dl|div|img|ol|p|pre|table|ul)/i',
 		'replaceBrs' => '/(<br[^>]*>[ \n\r\t]*){2,}/i',
 		'replaceFonts' => '/<(\/?)font[^>]*>/i',
@@ -602,6 +602,7 @@ class Readability
 			$parentNode      = $nodesToScore[$pt]->parentNode;
 			// $grandParentNode = $parentNode ? $parentNode->parentNode : null;
 			$grandParentNode = !$parentNode ? null : (($parentNode->parentNode instanceof DOMElement) ? $parentNode->parentNode : null);
+			$grandGrandParentNode = !$grandParentNode ? null : (($grandParentNode->parentNode instanceof DOMElement) ? $grandParentNode->parentNode : null);
 			$innerText       = $this->getInnerText($nodesToScore[$pt]);
 
 			if (!$parentNode || !isset($parentNode->tagName)) {
@@ -625,6 +626,13 @@ class Readability
 			{
 				$this->initializeNode($grandParentNode);
 				$candidates[] = $grandParentNode;
+			}
+
+			/* Initialize readability data for the grandgrandparent. */
+			if ($grandGrandParentNode && !$grandGrandParentNode->hasAttribute('readability') && isset($grandGrandParentNode->tagName))
+			{
+				$this->initializeNode($grandGrandParentNode);
+				$candidates[] = $grandGrandParentNode;
 			}
 
 			$contentScore = 0;
@@ -651,6 +659,8 @@ class Readability
 		* and find the one with the highest score.
 		**/
 		$topCandidate = null;
+		//pf_log('Candidates: ');
+		//pf_log($candidates);
 		for ($c=0, $cl=count($candidates); $c < $cl; $c++)
 		{
 			/**
@@ -659,6 +669,10 @@ class Readability
 			**/
 			$readability = $candidates[$c]->getAttributeNode('readability');
 			$readability->value = $readability->value * (1-$this->getLinkDensity($candidates[$c]));
+			if ( 'article' == $candidates[$c]->tagName ){
+				$readability->value = $readability->value + 300;
+				//var_dump($candidates[$c]); die();
+			}
 
 			$this->dbg('Candidate: ' . $candidates[$c]->tagName . ' (' . $candidates[$c]->getAttribute('class') . ':' . $candidates[$c]->getAttribute('id') . ') with score ' . $readability->value);
 
