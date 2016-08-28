@@ -86,9 +86,9 @@ class Readability
 	**/
 	public $regexps = array(
 		'unlikelyCandidates' => '/combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad-break|agegate|pagination|pager|popup/i',
-		'okMaybeItsACandidate' => '/and|article|body|column|main|postContent|shadow/i',
+		'okMaybeItsACandidate' => '/and|article|body|column|main|postContent|post|related|shadow/i',
 		'positive' => '/article|body|content|entry|hentry|main|page|attachment|pagination|post|text|blog|postContent|story/i',
-		'negative' => '/combx|comment|com-|contact|foot|footer|_nav|footnote|masthead|media|meta|outbrain|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget/i',
+		'negative' => '/combx|comment|com-|contact|foot|footer|_nav|footnote|masthead|media|meta|outbrain|taboola|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget/i',
 		'divToPElements' => '/<(a|blockquote|dl|div|img|ol|p|pre|table|ul)/i',
 		'replaceBrs' => '/(<br[^>]*>[ \n\r\t]*){2,}/i',
 		'replaceFonts' => '/<(\/?)font[^>]*>/i',
@@ -222,6 +222,7 @@ class Readability
 	*/
 	protected function dbg($msg) {
 		if ($this->debug) echo '* ',$msg, "\n";
+		pf_log($msg);
 	}
 
 	/**
@@ -1096,6 +1097,14 @@ class Readability
 						$this->dbg(' 1 embed and content length smaller than 75 chars, or more than one embed');
 						$toRemove = true;
 					}
+				}
+				///var_dump($tagsList->item($i-2)); die();
+				if ( ( false !== stripos($tagsList->item($i)->textContent, 'et al') ) || ( 1 === preg_match('/\([1-9]\d{3,}\)/', $tagsList->item($i)->textContent) ) ){
+					$this->dbg(' content of element indicates reference.');
+					$toRemove = false;
+				} else if ( ( ( 'li' === $tagsList->item($i)->parentNode->tagName || 'li' === $tagsList->item($i)->parentNode->parentNode->tagName ) && ( false !== stripos($tagsList->item($i-1)->textContent, 'et al') ) ) || ( 1 === preg_match('/\([1-9]\d{3,}\)/', $tagsList->item($i-1)->textContent) ) ){
+					$this->dbg(' content of element indicates reference.');
+					$toRemove = false;
 				}
 
 				if ($toRemove) {
