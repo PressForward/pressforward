@@ -633,7 +633,7 @@ class Metas implements HasFilters {
 				'definition' => __('Last time feed was retrieved', 'pf'),
 				'function'	=> __('Stores last timestamp feed was retrieved.', 'pf'),
 				'type'	=> array('adm'),
-				'use'	=> array(),
+				'use'	=> array('api'),
 				'level'	=> array('feed'),
 				'serialize'	=> false
 			),
@@ -642,7 +642,7 @@ class Metas implements HasFilters {
 				'definition' => __('Last time feed was retrieved', 'pf'),
 				'function'	=> __('Stores last timestamp feed was retrieved.', 'pf'),
 				'type'	=> array('adm'),
-				'use'	=> array(),
+				'use'	=> array('api'),
 				'level'	=> array('feed'),
 				'serialize'	=> false
 			),
@@ -651,7 +651,7 @@ class Metas implements HasFilters {
 				'definition' => __('URL for a feed', 'pf'),
 				'function'	=> __('Stores location online for feed.', 'pf'),
 				'type'	=> array('adm'),
-				'use'	=> array(),
+				'use'	=> array('api'),
 				'level'	=> array('feed'),
 				'serialize'	=> false
 			),
@@ -678,7 +678,7 @@ class Metas implements HasFilters {
 				'definition' => __('Type of feed', 'pf'),
 				'function'	=> __('Field stores the type of feed (like RSS or OPML) the object holds.', 'pf'),
 				'type'	=> array('adm'),
-				'use'	=> array(),
+				'use'	=> array('api'),
 				'level'	=> array('feed'),
 				'serialize'	=> false
 			),
@@ -687,7 +687,7 @@ class Metas implements HasFilters {
 				'definition' => __('Site URL of a feed.', 'pf'),
 				'function'	=> __('The home URL of a feed.', 'pf'),
 				'type'	=> array('adm'),
-				'use'	=> array(),
+				'use'	=> array('api'),
 				'level'	=> array('feed'),
 				'serialize'	=> false
 			),
@@ -696,7 +696,7 @@ class Metas implements HasFilters {
 				'definition' => __('User who added a feed..', 'pf'),
 				'function'	=> __('Track who added a subscribed or under review feed.', 'pf'),
 				'type'	=> array('adm','struc'),
-				'use'	=> array(),
+				'use'	=> array('api'),
 				'level'	=> array('feed'),
 				'serialize'	=> false
 			),
@@ -705,7 +705,7 @@ class Metas implements HasFilters {
 				'definition' => __('Module to process a feed.', 'pf'),
 				'function'	=> __('The feed should be processed with this module.', 'pf'),
 				'type'	=> array('adm','struc'),
-				'use'	=> array(),
+				'use'	=> array('api'),
 				'level'	=> array('feed'),
 				'serialize'	=> false
 			),
@@ -714,7 +714,7 @@ class Metas implements HasFilters {
 				'definition' => __('Alert Message processing and storage.', 'pf'),
 				'function'	=> __('Stores a feed alert to be processed.', 'pf'),
 				'type'	=> array('adm'),
-				'use'	=> array(),
+				'use'	=> array('api'),
 				'level'	=> array('feed'),
 				'serialize'	=> false
 			),

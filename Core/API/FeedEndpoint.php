@@ -9,7 +9,7 @@ use PressForward\Core\API\APIWithMetaEndpoints;
 
 use WP_Ajax_Response;
 
-class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilters {
+class FeedEndpoint extends APIWithMetaEndpoints implements HasActions {
 
 	protected $basename;
 
@@ -30,16 +30,5 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 		return $actions;
 	}
 
-	public function filter_hooks() {
-		$filter = array(
-			array(
-				'hook' => 'rest_prepare_'.$this->post_type,
-				'method' => 'add_rest_post_links',
-				'priority'  => 10,
-				'args' => 3
-			)
-		);
-		return $filter;
-	}
 
 }

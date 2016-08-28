@@ -58,20 +58,6 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 			);
 	}
 
-	public function register_rest_post_read_field($key, $action = false){
-		//http://v2.wp-api.org/extending/modifying/
-		if (!$action) { $action = array( $this, $key.'_response' ); }
-		if ( true === $action ){ $action = array( $this, 'meta_response' ); }
-		register_rest_field( 'post',
-	        $key,
-	        array(
-	            'get_callback'    => $action,
-	            'update_callback' => null,
-	            'schema'          => null,
-	        )
-	    );
-	}
-
 	public function add_rest_post_links( $data, $post, $request ){
 		//http://v2.wp-api.org/extending/linking/
 		//https://1fix.io/blog/2015/06/26/adding-fields-wp-rest-api/
@@ -82,21 +68,6 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 			)
 		);
 		return $data;
-	}
-
-	public function register_rest_post_read_meta_fields(){
-		foreach ( $this->valid_metas() as $key ){
-			$this->register_rest_post_read_field( $key, true );
-		}
-	}
-
-	public function meta_response($object, $field_name, $request ){
-		$response = $this->metas->get_post_pf_meta( $object[ 'id' ], $field_name, true );
-		if ( empty($response) || is_wp_error( $response ) ){
-			return 'false';
-		} else {
-			return $response;
-		}
 	}
 
 	public function item_id(){

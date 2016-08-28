@@ -38,4 +38,39 @@ class APIWithMetaEndpoints {
 		}
 		return $post_metas;
 	}
+
+	/**
+	 * Get valid metas for this post object type and register them as api fields
+	 * @return [type] [description]
+	 */
+	public function register_rest_post_read_meta_fields(){
+		foreach ( $this->valid_metas() as $key ){
+			$this->register_rest_post_read_field( $key, true );
+		}
+	}
+
+
+	public function register_rest_post_read_field($key, $action = false){
+		//http://v2.wp-api.org/extending/modifying/
+		if (!$action) { $action = array( $this, $key.'_response' ); }
+		if ( true === $action ){ $action = array( $this, 'meta_response' ); }
+		register_rest_field( $this->post_type,
+	        $key,
+	        array(
+	            'get_callback'    => $action,
+	            'update_callback' => null,
+	            'schema'          => null,
+	        )
+	    );
+	}
+
+
+	public function meta_response($object, $field_name, $request ){
+		$response = $this->metas->get_post_pf_meta( $object[ 'id' ], $field_name, true );
+		if ( empty($response) || is_wp_error( $response ) ){
+			return 'false';
+		} else {
+			return $response;
+		}
+	}
 }
