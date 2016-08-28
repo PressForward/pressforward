@@ -139,13 +139,19 @@ class PF_RSS_Import extends PF_Module {
 			pf_log('Feed looping through for the ' . $c . ' time.');
 			$check_date = $item->get_date('U');
 			$dead_date = time() - (60*60*24*60); //Get the unixdate for two months ago.
-			if ($check_date <= $dead_date) {
+			if ( ($check_date <= $dead_date) && !empty($check_date) ) {
 				pf_log('Feed item too old. Skip it.');
 			} else {
 				$id = create_feed_item_id($item->get_link(), $item->get_title()); //die();
 				pf_log('Now on feed ID ' . $id . '.');
 				//print_r($item_categories_string); die();
-
+				if (empty($check_date)){
+					$r_item_date = date('r');
+					$ymd_item_date = date('Y-m-d');
+				} else {
+					$r_item_date = $item->get_date('r');
+					$ymd_item_date = $item->get_date('Y-m-d');
+				}
 					if ($item->get_source()){
 						$sourceObj = $item->get_source();
 						# Get the link of what created the RSS entry.
@@ -204,13 +210,13 @@ class PF_RSS_Import extends PF_Module {
 					$rssObject['rss_' . $c] = pf_feed_object(
 												$item->get_title(),
 												$iFeed->get_title(),
-												$item->get_date('r'),
+												$r_item_date,
 												$authors,
 												$item_content,
 												$item->get_link(),
 												'',
 												$id,
-												$item->get_date('Y-m-d'),
+												$ymd_item_date,
 												$item_categories_string
 												);
 					pf_log('Setting new object for ' . $item->get_title() . ' of ' . $iFeed->get_title() . '.');
