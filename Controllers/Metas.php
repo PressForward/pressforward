@@ -867,7 +867,7 @@ class Metas implements HasFilters {
 		$all_metas = $this->meta_interface->get_metas( $post_id );
 		$structure = $this->structure();
 		foreach ( $all_metas as $key=>$meta ){
-			if ( $structure[$key]['serialize'] ){
+			if ( isset($structure[$key]) && $structure[$key]['serialize'] ){
 				$all_metas[$key] = $this->get_post_pf_meta( $post_id, $key );
 			}
 		}
