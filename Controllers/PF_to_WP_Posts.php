@@ -7,6 +7,9 @@ use PressForward\Interfaces\Items as Items;
 class PF_to_WP_Posts implements Items {
 
 	public function insert_post( $post, $error ){
+		if ( isset($post['post_date']) && !isset($post['post_date_gmt']) ){
+			$post['post_date_gmt'] = get_gmt_from_date( $post['post_date'] );
+		}
 		return wp_insert_post( $post, $error );
 	}
 

@@ -52,7 +52,7 @@ class HTTPTools implements HasActions {
 	public function resolve_a_url($url){
 		$url_array = parse_url($url);
 		if (empty($url_array['host'])){
-			return;
+			return $url;
 		} else {
 			$check = $this->url_is_aggregation_service($url);
 			if ($check && in_array('curl', get_loaded_extensions())){

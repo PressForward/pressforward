@@ -857,7 +857,7 @@ class Feeds implements HasActions, HasFilters {
 		}
 
 		if ($insert_type == 'insert'){
-			$post_id = wp_insert_post($wp_args);
+			$post_id = pressforward('controller.items')->insert_post($wp_args);
 		}
 		pf_log('Posting process resulted in:');
 		pf_log($post_id);

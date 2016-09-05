@@ -41,7 +41,7 @@ class ConfigurationAJAX implements HasActions {
 			'data'=>$msg,
 			'supplemental' => array(
 					'buffered' => ob_get_contents(),
-					'timestamp' => gmdate( 'd-M-Y H:i:s' )
+					'timestamp' => current_time('Y-m-d H:i:s')
 			)
 		);
 		$xmlResponse = new WP_Ajax_Response($response);
