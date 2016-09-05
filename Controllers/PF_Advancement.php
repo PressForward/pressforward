@@ -44,8 +44,18 @@ class PF_Advancement implements Advance_System {
 				foreach($old_tax_terms as $term){
 					$old_term_ids[] = $term->term_id;
 				}
-				wp_set_object_terms($new_post, $old_term_ids, $taxonomy, false);
+				wp_set_object_terms($new_post, $old_term_ids, $taxonomy, true);
 			}
+		}
+		$item_tags = $this->metas->get_post_pf_meta($old_post, 'item_tags');
+		if ( !is_array($item_tags) ){
+			$item_tags = explode(',', $item_tags);
+		}
+		foreach ($item_tags as $key => $tag) {
+			$tag = trim($tag);
+			$tag_info = wp_create_term($tag);
+			$tag_id = $tag_info['term_id'];
+			wp_set_object_terms($new_post, $tag_id, 'post_tag', true);
 		}
 		//$old_category_terms = get_the_terms($old_post, 'category');
 		//var_dump($old_terms); die();
