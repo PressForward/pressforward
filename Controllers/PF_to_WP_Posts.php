@@ -14,6 +14,7 @@ class PF_to_WP_Posts implements Items {
 		}
 		if ( (false !== $item_id ) && in_array($post['post_type'], array('post', 'pf_feed_item', 'nomination') ) ){
 			$check = $this->check_not_existing( $item_id, $post['post_type'] );
+			//var_dump($post, $item_id, $check); die();
 			if (true !== $check){
 				return $check;
 			}
@@ -22,8 +23,10 @@ class PF_to_WP_Posts implements Items {
 	}
 
 	public function update_post( $post, $error = false ){
-		if ( isset($post['post_date']) && !isset($post['post_date_gmt']) ){
+		if ( !is_object($post) && ( isset($post['post_date']) && !isset($post['post_date_gmt']) ) ){
 			$post['post_date_gmt'] = get_gmt_from_date( $post['post_date'] );
+		} else if ( is_object($post) && isset($post->post_date) && !isset($post->post_date_gmt) ){
+			$post->post_date_gmt = get_gmt_from_date( $post->post_date );
 		}
 		return wp_update_post( $post, $error );
 	}
@@ -67,10 +70,10 @@ class PF_to_WP_Posts implements Items {
 			   return $checkposts[0]->ID;
 		   }
    		}
-
+		pf_log('Checking with post 3.2 method.');
 		// WP_Query arguments
 		$args = array (
-			'post_type'              => array( $post_type ),
+			'post_type'              => $post_type,
 			'meta_query'             => array(
 				array(
 					'key'       => 'item_id',
@@ -80,16 +83,22 @@ class PF_to_WP_Posts implements Items {
 			),
 		);
 
+		//var_dump($args);
+
 		// The Query
 		$query = new \WP_Query( $args );
 
-		if ( $query->have_posts() ) {
-			pf_log('Checked with post 3.2 method. Post already exists.');
+		if ( !$query->have_posts() ) {
+
+			//var_dump($query); die();
 			return true;
 		} else {
 			while ( $query->have_posts() ) {
 				$query->the_post();
-				return get_the_ID();
+				$id = get_the_ID();
+				//var_dump($id); die();
+				wp_reset_postdata();
+				return $id;
 			}
 		}
 	}

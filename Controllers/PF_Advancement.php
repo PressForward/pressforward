@@ -54,8 +54,12 @@ class PF_Advancement implements Advance_System {
 		foreach ($item_tags as $key => $tag) {
 			$tag = trim($tag);
 			$tag_info = wp_create_term($tag);
-			$tag_id = $tag_info['term_id'];
-			wp_set_object_terms($new_post, $tag_id, 'post_tag', true);
+			if (!is_wp_error($tag_info)){
+				$tag_id = $tag_info['term_id'];
+				wp_set_object_terms($new_post, $tag_id, 'post_tag', true);
+			} else {
+				pf_log($tag_info);
+			}
 		}
 		//$old_category_terms = get_the_terms($old_post, 'category');
 		//var_dump($old_terms); die();

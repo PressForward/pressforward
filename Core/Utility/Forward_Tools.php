@@ -272,7 +272,7 @@ class Forward_Tools {
 		//$post['post_type'] = 'post';
 		# PF NOTE: This is where the inital post is created.
 		# PF NOTE: Put get_post_nomination_status here.
-		$post = $this->item_interface->insert_post($post, true, pressforward('controller.metas')->get_post_pf_meta($old_id, 'item_id') );
+		$post = $this->item_interface->insert_post($post, true, $item_id );
 		//var_dump('<pre>'); var_dump($post); var_dump($post_array); die();
 		$this->advance_interface->prep_bookmarklet( $post );
 		if (!isset($_POST['item_date'])){

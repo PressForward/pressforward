@@ -1118,10 +1118,19 @@ class Readability
 					$this->dbg(' content of element indicates reference.');
 					$toRemove = false;
 				} else if (
-							( !empty($tagsList->item($i)->parentNode) ) &&
+							( !empty($tagsList) && !empty($tagsList->item($i)) && !empty($tagsList->item($i)->parentNode) ) &&
 							(
-								( ( 'li' === $tagsList->item($i)->parentNode->tagName || 'li' === $tagsList->item($i)->parentNode->parentNode->tagName ) && ( false !== stripos($tagsList->item($i-1)->textContent, 'et al') ) ) ||
-								( !empty($tagsList->item($i-1)) && 
+								(
+									(
+										'li' === $tagsList->item($i)->parentNode->tagName ||
+										(
+											(!empty($tagsList->item($i)->parentNode->parentNode)) &&
+											( 'li' === $tagsList->item($i)->parentNode->parentNode->tagName )
+										)
+									) &&
+										( false !== stripos($tagsList->item($i-1)->textContent, 'et al') )
+								) ||
+								( !empty($tagsList->item($i-1)) &&
 									( 1 === preg_match('/\([1-9]\d{3,}\)/', $tagsList->item($i-1)->textContent) )
 								)
 							)

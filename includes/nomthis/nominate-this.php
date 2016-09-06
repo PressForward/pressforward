@@ -172,7 +172,8 @@ function nominate_it() {
 // For submitted posts.
 if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 	check_admin_referer('nominate-this');
-	$posted = $post_ID = nominate_it();
+	$posted = nominate_it();
+    $post_ID = $posted;
 } else {
 	$title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( stripslashes( $_GET['t'] ) , ENT_QUOTES) ) ) : '';
 	//$post_ID = wp_insert_post(array('post_title' => $title, 'post_type' => 'nomination', 'guid' => $_GET['u']));
