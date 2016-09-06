@@ -84,7 +84,7 @@ class PF_Advancement implements Advance_System {
 		$post['post_date_gmt'] = get_gmt_from_date( current_time('Y-m-d H:i:s') );
 		pf_log($post);
 		$post['post_content'] = pressforward('controller.readability')->process_in_oembeds( pressforward('controller.metas')->get_post_pf_meta($old_id, 'item_link'), $post['post_content'] );
-		$id = wp_insert_post( $post, true );
+		$id = pressforward('controller.items')->insert_post( $post, true, pressforward('controller.metas')->get_post_pf_meta($old_id, 'item_id') );
 		do_action( 'pf_transition_to_last_step', $id );
 		return $id;
 	}
@@ -96,7 +96,7 @@ class PF_Advancement implements Advance_System {
 		$post['post_date_gmt'] = get_gmt_from_date( current_time('Y-m-d H:i:s') );
 		$orig_post_id = $post['ID'];
 		unset($post['ID']);
-		$id = wp_insert_post( $post );
+		$id = pressforward('controller.items')->insert_post( $post, false, pressforward('controller.metas')->get_post_pf_meta($orig_post_id, 'item_id') );
 		do_action( 'pf_transition_to_nomination', $id );
 		return $id;
 	}
