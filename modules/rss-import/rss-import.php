@@ -75,7 +75,7 @@ class PF_RSS_Import extends PF_Module {
 	function set_to_alert($id, $theFeed){
 		$immune_to_alert_check = pressforward('controller.metas')->get_post_pf_meta($id, 'pf_no_feed_alert', true);
 		if (1 == $immune_to_alert_check){
-			return;
+			return false;
 		}
 		$error_to_alert = get_option(PF_SLUG.'_errors_until_alert', 3);
 		$error_count = pressforward('controller.metas')->get_post_pf_meta($id, PF_SLUG.'_feed_error_count');
@@ -127,7 +127,15 @@ class PF_RSS_Import extends PF_Module {
 			$alert = $this->set_to_alert($aFeed->ID, $theFeed);
 			pf_log('Set to alert resulted in:');
 			pf_log($alert);
-			return false;
+			if (false === $alert){
+				return false;
+			} else {
+				return false;
+			}
+
+		} else {
+			$error_to_alert = get_option(PF_SLUG.'_errors_until_alert', 3);
+			$error_count = pressforward('controller.metas')->update_pf_meta($aFeed->ID, PF_SLUG.'_feed_error_count', 0);
 		}
 		$theFeed->set_timeout(60);
 		$rssObject = array();
