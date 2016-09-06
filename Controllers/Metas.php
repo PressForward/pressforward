@@ -838,6 +838,11 @@ class Metas implements HasFilters {
 				}
 				break;
 
+            case 'source_title':
+                if ( empty( $meta_value ) || is_wp_error( $meta_value ) ){
+                    $meta_value = get_the_source_title( $id );
+                }
+
 			default:
 				# code...
 				break;
