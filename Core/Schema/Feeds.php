@@ -1160,7 +1160,9 @@ class Feeds implements HasActions, HasFilters {
 			$post_id = $post->ID;
 			if (is_numeric($post_id)){
 				if (($c == 0)){
-					$this->update($post_id, array('url' => $url));
+					$feed_post = get_post($post_id, ARRAY_A);
+					$feed_post['url'] = $url;
+					$this->update($post_id, $feed_post);
 				} else {
 					if ($url == pressforward('controller.metas')->get_post_pf_meta($post_id, 'feedUrl', true)){
 						wp_delete_post( $post_id, true );
