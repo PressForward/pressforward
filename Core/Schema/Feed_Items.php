@@ -83,9 +83,11 @@ class Feed_Items implements HasActions, HasFilters {
 			'labels'      => $labels,
 			'description' => __( 'Feed items imported by PressForward&#8217;s RSS Importer', 'pf' ),
 			'public'      => false,
-			'show_ui'     => true, // for testing only
+			'show_ui'     => true,
 			'show_in_admin_bar' => false,
-			'show_ui'     => true, // for testing only
+			'show_in_rest'       => true,
+			'rest_base'          => 'pf/v1/feed_items',
+			'rest_controller_class' => 'WP_REST_Posts_Controller',
 			'capability_type' => $this->post_type,
 			'capabilities' => $this->map_feed_item_caps()
 		) ) );
