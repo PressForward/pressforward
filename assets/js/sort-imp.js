@@ -18,48 +18,46 @@ jQuery(window).load(function() {
 	jQuery(".feed-item").tsort("span.sortable_nom_timestamp", {order:'desc'});
 
 	pf_show_unsort();
-	jQuery('#sortbyitemdate').toggle(function (evt){
-		evt.preventDefault();
-		jQuery(".feed-item").tsort("span.sortableitemdate", {order:'desc'});
-		pf_set_sort_statement('Sorted by item date, descending', 'by-item-date');
-	}, function (evt){
-		evt.preventDefault();
-		jQuery(".feed-item").tsort("span.sortableitemdate", {order:'asc'});
-		pf_set_sort_statement('Sorted by item date, ascending', 'by-item-date');
-	}
-	);
-	jQuery('#sortbyfeedindate').toggle(function (evt){
-		evt.preventDefault();
-		jQuery(".feed-item").tsort("span.sortablerssdate", {order:'desc'});
-		pf_set_sort_statement('Sorted by time retrieved, descending', 'by-feed-in-date');
-	}, function (evt) {
-		evt.preventDefault();
-		jQuery(".feed-item").tsort("span.sortablerssdate", {order:'asc'});
-		pf_set_sort_statement('Sorted by time retrieved, ascending', 'by-feed-in-date');
-	}
-	);
+	jQuery('#sortbyitemdate').click(function (evt){
+		pf.toggler(evt, this, function(evt){
+				jQuery(".feed-item").tsort("span.sortableitemdate", {order:'asc'});
+				pf_set_sort_statement('Sorted by item date, ascending', 'by-item-date');
+			}, function(evt){
+				jQuery(".feed-item").tsort("span.sortableitemdate", {order:'desc'});
+				pf_set_sort_statement('Sorted by item date, descending', 'by-item-date');
+			}
+		);
 
-	jQuery('#sortbynomdate').toggle(function (evt){
-		evt.preventDefault();
-		jQuery(".feed-item").tsort("span.sortable_nom_timestamp", {order:'desc'});
-		pf_set_sort_statement('Sorted by time nominated, descending', 'by-nominated-date');
-	}, function (evt) {
-		evt.preventDefault();
-		jQuery(".feed-item").tsort("span.sortable_nom_timestamp", {order:'asc'});
-		pf_set_sort_statement('Sorted by time nominated, ascending', 'by-nominated-date');
-	}
-	);
+	});
+	jQuery('#sortbyfeedindate').click(function (evt){
+		pf.toggler(evt, this, function(evt){
+			jQuery(".feed-item").tsort("span.sortablerssdate", {order:'desc'});
+			pf_set_sort_statement('Sorted by time retrieved, descending', 'by-feed-in-date');
+		}, function (evt) {
+			jQuery(".feed-item").tsort("span.sortablerssdate", {order:'asc'});
+			pf_set_sort_statement('Sorted by time retrieved, ascending', 'by-feed-in-date');
+		});
+	});
 
-	jQuery('#sortbynomcount').toggle(function (evt){
-		evt.preventDefault();
-		jQuery(".feed-item").tsort("span.sortable_nom_count", {order:'desc'});
-		pf_set_sort_statement('Sorted by nominations, descending', 'by-nominations-date');
-	}, function (evt) {
-		evt.preventDefault();
-		jQuery(".feed-item").tsort("span.sortable_nom_count", {order:'asc'});
-		pf_set_sort_statement('Sorted by time nominations, ascending', 'by-nominations-date');
-	}
-	);
+	jQuery('#sortbynomdate').click(function (evt){
+		pf.toggler(evt, this, function(evt){
+			jQuery(".feed-item").tsort("span.sortable_nom_timestamp", {order:'desc'});
+			pf_set_sort_statement('Sorted by time nominated, descending', 'by-nominated-date');
+		}, function (evt) {
+			jQuery(".feed-item").tsort("span.sortable_nom_timestamp", {order:'asc'});
+			pf_set_sort_statement('Sorted by time nominated, ascending', 'by-nominated-date');
+		});
+	});
+
+	jQuery('#sortbynomcount').click(function (evt){
+		pf.toggler(evt, this, function(evt){
+			jQuery(".feed-item").tsort("span.sortable_nom_count", {order:'desc'});
+			pf_set_sort_statement('Sorted by nominations, descending', 'by-nominations-date');
+		}, function (evt) {
+			jQuery(".feed-item").tsort("span.sortable_nom_count", {order:'asc'});
+			pf_set_sort_statement('Sorted by time nominations, ascending', 'by-nominations-date');
+		});
+	});
 
 	jQuery('.pf_container').on('click', "#fullscreenfeed", function(e){
 		e.preventDefault();
