@@ -78,6 +78,13 @@ class Feed_Items implements HasActions, HasFilters {
 			'not_found_in_trash' => __( 'No feed items found in trash', 'pf' ),
 		);
 
+		$modules = pressforward('modules')->modules;
+		if (isset($modules['rss-out']) && ( 'yes' == get_option(PF_SLUG . '_' . 'rss-out_enable') )  ){
+			$rest_enabled = true;
+		} else {
+			$rest_enabled = false;
+		}
+
 		register_post_type( $this->post_type, apply_filters( 'pf_register_feed_item_post_type_args', array(
 			'label'       => $labels['name'],
 			'labels'      => $labels,
@@ -85,7 +92,7 @@ class Feed_Items implements HasActions, HasFilters {
 			'public'      => false,
 			'show_ui'     => true,
 			'show_in_admin_bar' => false,
-			'show_in_rest'       => true,
+			'show_in_rest'       => $rest_enabled,
 			'rest_base'          => 'pf/v1/feed_items',
 			'rest_controller_class' => 'WP_REST_Posts_Controller',
 			'capability_type' => $this->post_type,
