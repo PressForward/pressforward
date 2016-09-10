@@ -20,11 +20,11 @@ jQuery(window).load(function() {
 	pf_show_unsort();
 	jQuery('#sortbyitemdate').click(function (evt){
 		pf.toggler(evt, this, function(evt){
-				jQuery(".feed-item").tsort("span.sortableitemdate", {order:'asc'});
-				pf_set_sort_statement('Sorted by item date, ascending', 'by-item-date');
-			}, function(evt){
 				jQuery(".feed-item").tsort("span.sortableitemdate", {order:'desc'});
 				pf_set_sort_statement('Sorted by item date, descending', 'by-item-date');
+			}, function(evt){
+				jQuery(".feed-item").tsort("span.sortableitemdate", {order:'asc'});
+				pf_set_sort_statement('Sorted by item date, ascending', 'by-item-date');
 			}
 		);
 
