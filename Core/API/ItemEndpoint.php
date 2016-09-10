@@ -9,7 +9,7 @@ use PressForward\Core\API\APIWithMetaEndpoints;
 
 use WP_Ajax_Response;
 
-class ItemEndpoint extends APIWithMetaEndpoints implements HasActions {
+class ItemEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilters {
 
 	protected $basename;
 
@@ -28,6 +28,35 @@ class ItemEndpoint extends APIWithMetaEndpoints implements HasActions {
 			)
 		);
 		return $actions;
+	}
+
+	public function filter_hooks() {
+		$filter = array(
+			array(
+				'hook' => 'rest_prepare_'.$this->post_type,
+				'method' => 'add_rest_post_links',
+				'priority'  => 10,
+				'args' => 3
+			)
+		);
+		return $filter;
+	}
+
+	public function add_rest_post_links( $data, $post, $request ){
+		//http://v2.wp-api.org/extending/linking/
+		//https://1fix.io/blog/2015/06/26/adding-fields-wp-rest-api/
+		$feed_id = 'false';
+		if ( !empty( $post->post_parent ) ){
+			$feed_id = $post->post_parent;
+		}
+		$data->add_links( array(
+			'feed' => array(
+					'href' => rest_url( '/wp/v2/pf/v1/feeds/'.$feed_id ),
+					'embeddable' => true,
+				)
+			)
+		);
+		return $data;
 	}
 
 
