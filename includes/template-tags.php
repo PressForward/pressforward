@@ -139,7 +139,7 @@ function the_nominators(){
 }
 
 function get_the_word_count(){
-	$m = pressforward('controller.metas')->retrieve_meta(get_the_ID(), 'pf_feed_item_word_count');
+	$m = pressforward('controller.metas')->get_post_pf_meta(get_the_ID(), 'pf_word_count');
 	return $m;
 }
 

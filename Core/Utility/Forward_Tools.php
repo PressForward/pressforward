@@ -72,6 +72,7 @@ class Forward_Tools {
 			);
 			$item_content_obj = pressforward('controller.readability')->get_readable_text($readArgs);
 			$item_content = htmlspecialchars_decode($item_content_obj['readable']);
+			$word_count = str_word_count($item_content);
 			$source_position = get_option('pf_source_statement_position', 'bottom');
 			if ( ( 'bottom' == $source_position ) && $source ){
 				$item_content = $item_content . pressforward('admin.nominated')->get_the_source_statement( $post_id );
@@ -85,6 +86,7 @@ class Forward_Tools {
 			if ( is_numeric($post_id) ){
 				if ((!empty($item_content_obj['status'])) && ('secured' != $item_content_obj['status'])){
 					$this->metas->update_pf_meta($post_id, 'readable_status', 1);
+					$this->metas->update_pf_meta( $post_id, 'pf_word_count', $word_count );
 				} elseif ((1 != $readable_status)) {
 					$this->metas->update_pf_meta($post_id, 'readable_status', 0);
 				}

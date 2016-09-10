@@ -583,6 +583,15 @@ class Metas implements HasFilters {
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> true
 			),
+			'pf_word_count' => array(
+				'name' => 'pf_word_count',
+				'definition' => __('Word count of text', 'pf'),
+				'function'	=> __('Stores the count of the words on the last save managed by PF.', 'pf'),
+				'type'	=> array('desc'),
+				'use'	=> array('api'),
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> false
+			),
 			'pf_archive' => array(
 				'name' => 'pf_archive',
 				'definition' => __('Archive state of the item', 'pf'),
@@ -979,6 +988,14 @@ class Metas implements HasFilters {
 				$nominators = array_merge( $nominators, $value );
 				$nominators = array_unique( $nominators );
 				$value = $nominators;
+				break;
+			case: 'pf_feed_item_word_count'
+				$latest_count = $this->get_post_pf_meta($id, 'pf_word_count');
+				if ( ($latest_count < $value ) ){
+					$this->update_pf_meta( $id, 'pf_word_count', $value, $state );
+				} else if ( empty($latest_count) ) {
+					$this->add_pf_meta( $id, 'pf_word_count', $value, $state );
+				}
 				break;
 			case 'item_author':
 				if ( empty($value) ){
