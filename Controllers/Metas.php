@@ -989,7 +989,7 @@ class Metas implements HasFilters {
 				$nominators = array_unique( $nominators );
 				$value = $nominators;
 				break;
-			case: 'pf_feed_item_word_count'
+			case: 'pf_feed_item_word_count':
 				$latest_count = $this->get_post_pf_meta($id, 'pf_word_count');
 				if ( ($latest_count < $value ) ){
 					$this->update_pf_meta( $id, 'pf_word_count', $value, $state );
