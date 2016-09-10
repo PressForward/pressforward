@@ -11,7 +11,7 @@
  *
  * This function allows developers to register modules into the array
  * of PressForward modules. Developers can do this to take advantage
- * of a variaty of PressForward function and to makeit appear in
+ * of a variaty of PressForward function and to make it appear in
  * the PressForward dashboard.
  *
  * @since 2.x.x
