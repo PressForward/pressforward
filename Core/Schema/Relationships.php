@@ -37,7 +37,7 @@ class Relationships implements HasActions {
 	 * this file is loaded. Might change this in the future
 	 */
 	public function maybe_install_relationship_table() {
-		if ( ! is_super_admin() ) {
+		if ( ! current_user_can( 'activate_plugins' ) ) {
 			return;
 		}
 
