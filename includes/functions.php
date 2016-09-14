@@ -11,7 +11,7 @@
  *
  * This function allows developers to register modules into the array
  * of PressForward modules. Developers can do this to take advantage
- * of a variaty of PressForward function and to makeit appear in
+ * of a variaty of PressForward function and to make it appear in
  * the PressForward dashboard.
  *
  * @since 2.x.x
@@ -345,38 +345,15 @@ function pf_get_user_level($option, $default_level) {
  */
 function pf_de_https($url, $function = false) {
 	$args = func_get_args();
+	$url_orig = $url;
 	$url = str_replace('&amp;','&', $url);
 	$url_first = $url;
 	if (!$function){
 		$r = set_url_scheme($url, 'http');
+		return $r;
 	} else {
-		$args[0] = $url;
-		unset($args[1]);
-		#var_dump($args);
-		$r = call_user_func_array( $function, $args );
-		//var_dump($r); die();
-		# "A variable is considered empty if it does not exist or if its value equals FALSE"
-		if ( is_wp_error( $r ) || empty($r) ) {
-		    $non_ssl_url = pf_de_https( $url );
-		    if ( $non_ssl_url != $url ) {
-						$args[0] = $non_ssl_url;
-		        $r = call_user_func_array( $function, $args );
-						//var_dump($url); die();
-		    }
-				//$r = false;
-		    if ( !$r || is_wp_error( $r ) ) {
-		        # Last Chance!
-						if ('file_get_contents' != $function){
-							$r = file_get_contents($url_first);
-							#var_dump($r); die();
-						} else {
-								// bail
-								return false;
-						}
-		    }
-		}
+		return pressforward('controller.http_tools')->get_url_content($url_orig, $function);
 	}
-	return $r;
 }
 
 /**

@@ -72,6 +72,7 @@ class Forward_Tools {
 			);
 			$item_content_obj = pressforward('controller.readability')->get_readable_text($readArgs);
 			$item_content = htmlspecialchars_decode($item_content_obj['readable']);
+			$word_count = str_word_count($item_content);
 			$source_position = get_option('pf_source_statement_position', 'bottom');
 			if ( ( 'bottom' == $source_position ) && $source ){
 				$item_content = $item_content . pressforward('admin.nominated')->get_the_source_statement( $post_id );
@@ -85,6 +86,7 @@ class Forward_Tools {
 			if ( is_numeric($post_id) ){
 				if ((!empty($item_content_obj['status'])) && ('secured' != $item_content_obj['status'])){
 					$this->metas->update_pf_meta($post_id, 'readable_status', 1);
+					$this->metas->update_pf_meta( $post_id, 'pf_word_count', $word_count );
 				} elseif ((1 != $readable_status)) {
 					$this->metas->update_pf_meta($post_id, 'readable_status', 0);
 				}
@@ -191,7 +193,7 @@ class Forward_Tools {
 			$this->metas->update_pf_meta($item_post_id, 'nomination_count', 1);
 			$this->metas->update_pf_meta($item_post_id, 'submitted_by', $userString);
 			$this->metas->update_pf_meta($item_post_id, 'nominator_array', array($userID));
-			$this->metas->update_pf_meta($item_post_id, 'date_nominated', date('c'));
+			$this->metas->update_pf_meta($item_post_id, 'date_nominated', current_time('Y-m-d H:i:s'));
 			$this->metas->update_pf_meta($item_post_id, 'item_id', $item_id);
 			$this->metas->update_pf_meta($item_post_id, 'pf_item_post_id', $item_post_id);
 			if ( !empty($_POST['item_link']) ){
@@ -199,7 +201,7 @@ class Forward_Tools {
 			}
 
 			if (empty($_POST['item_date'])){
-				$newDate = date('Y-m-d H:i:s');
+				$newDate = current_time('Y-m-d H:i:s');
 				//$_POST['item_date'] = $newDate;
 				$item_date = $newDate;
 			} else {
@@ -260,7 +262,8 @@ class Forward_Tools {
 
 		# PF NOTE: Switching post type to nomination.
 		$post['post_type'] = pressforward('schema.nominations')->post_type;
-		$post['post_date_gmt'] = date('Y-m-d H:i:s');
+		$post['post_date'] = current_time('Y-m-d H:i:s');
+		$post['post_date_gmt'] = get_gmt_from_date( current_time('Y-m-d H:i:s') );
 		if (strlen(esc_url( $_POST['item_link'] )) <= 243 ) {
 			$post['guid'] = esc_url( $_POST['item_link'] );
 		} else {
@@ -271,7 +274,7 @@ class Forward_Tools {
 		//$post['post_type'] = 'post';
 		# PF NOTE: This is where the inital post is created.
 		# PF NOTE: Put get_post_nomination_status here.
-		$post = $this->item_interface->insert_post($post, true);
+		$post = $this->item_interface->insert_post($post, true, $item_id );
 		//var_dump('<pre>'); var_dump($post); var_dump($post_array); die();
 		$this->advance_interface->prep_bookmarklet( $post );
 		if (!isset($_POST['item_date'])){

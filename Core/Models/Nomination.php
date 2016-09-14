@@ -1,7 +1,7 @@
 <?php
-namespace PressForward\Core\Modals;
+namespace PressForward\Core\Models;
 
-class Nomination extends BasicModal {
+class Nomination extends BasicModel {
 	function init( $item = array(), $handlers = array(), $post_type = false ){
 		$this->type = 'nomination';
 		$this->type_key = 'nomination';

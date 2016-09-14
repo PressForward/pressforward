@@ -67,10 +67,14 @@ class Folders implements HasActions, HasFilters {
 			'show_in_nav_menus' => TRUE,
 			'show_ui'           => TRUE,
 			'show_admin_column' => TRUE,
+			'show_in_menu' => PF_MENU_SLUG,
 			'hierarchical'			=> TRUE,
 			'update_count_callback' => '_update_post_term_count',
 			#'show_in_menu' => PF_MENU_SLUG,
-			'rewrite' => false
+			'rewrite' => false,
+			'show_in_rest'       => true,
+			'rest_base'          => 'pf/v1/folders',
+			'rest_controller_class' => 'WP_REST_Terms_Controller',
 		) ) );
 
 		do_action( 'feed_folders_registered' );

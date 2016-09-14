@@ -1,11 +1,17 @@
 {
-	"name": "fivefilters/php-readability",
+	"name": "pressforward/php-readability",
 	"type": "library",
 	"description": "Automatic article extraction from HTML",
 	"keywords": ["article extraction","content extraction","extraction","article","content","html"],
-	"homepage": "http://code.fivefilters.org/php-readability/",
-	"license": "Apache-2.0",
+	"homepage": "https://github.com/PressForward/PressForward-Readability",
+	"license": "GNU3.0",
 	"authors": [
+	{
+		"name": "Aram Zucker-Scharff",
+		"email": "aramzs@hacktext.com",
+		"homepage": "http://pressforward.org",
+		"role": "Developer (updated and modernized code)"
+	},
 	{
 		"name": "Keyvan Minoukadeh",
 		"email": "keyvan@keyvan.net",

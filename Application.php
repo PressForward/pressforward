@@ -11,7 +11,7 @@ use Intraxia\Jaxion\Core\Application as JaxionCore;
 //use Intraxia\Jaxion\Contract\Core\Application as ApplicationContract;
 
 class Application extends JaxionCore {
-	var $ver = 4.0;
+	var $ver = 4.1;
 		/**
 	 * ServiceProviders to register with the Application
 	 *
@@ -27,7 +27,8 @@ class Application extends JaxionCore {
 		'PressForward\Core\Providers\AdminAreaServiceProvider',
 		'PressForward\Core\Providers\PreferencesServiceProvider',
 		'PressForward\Core\Providers\ModulesProvider',
-		'PressForward\Core\Providers\AJAXServiceProvider'
+		'PressForward\Core\Providers\AJAXServiceProvider',
+		'PressForward\Core\Providers\APIProvider'
 //		'PressForward\Core\Providers\CoreServiceProvider',
 //		'PressForward\Core\Providers\EmbedServiceProvider',
 //		'PressForward\Core\Providers\RouterServiceProvider',
@@ -37,7 +38,7 @@ class Application extends JaxionCore {
 	 */
 	public function activate() {
 		global $wp_rewrite;
-		define( 'VERSION', '3.9.0' );
+		define( 'VERSION', '4.1.0' );
 		$current_version = VERSION; // define this constant in the loader file
 		$saved_version = get_option( 'pf_version' );
 

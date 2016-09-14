@@ -1,11 +1,11 @@
 <?php
-namespace PressForward\Core\Modals;
+namespace PressForward\Core\Models;
 
-use PressForward\Modals\BasicModal;
+use PressForward\Models\BasicModel;
 use PressForward\Interfaces\Items as Items;
 use PressForward\Interfaces\SystemMeta as SystemMeta;
 
-class Feed_Item extends BasicModal {
+class Feed_Item extends BasicModel {
 	protected $data = array();
 
 	function init( $item = array(), $handlers = array(), $post_type = false ){

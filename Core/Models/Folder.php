@@ -1,7 +1,7 @@
 <?php
-namespace PressForward\Core\Modals;
+namespace PressForward\Core\Models;
 
-class Folder extends BasicModal {
+class Folder extends BasicModel {
 	protected $data = array();
 
 	function init( $item = array(), $handlers = array(), $post_type = false ){

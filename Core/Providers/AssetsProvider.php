@@ -106,6 +106,16 @@ class AssetsProvider extends ServiceProvider {
 
 		# Scripts
 
+		$assets->register_script( array(
+			'type'	=>	'admin',
+			'condition'	=> function($hook) use ($provider){
+								return $provider->check_hook_for_pressforward_string($hook);
+							},
+			'handle'	=>	'pf',
+			'src'		=>	'assets/js/pf',
+			'deps'		=>	array( 'jquery' )
+		) );
+
 
 		$assets->register_script( array(
 			'type'	=>	'admin',
@@ -114,7 +124,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-heartbeat',
 			'src'		=>	'assets/js/pf-heartbeat',
-			'deps'		=>	array( 'heartbeat', 'jquery-ui-progressbar', 'jquery' )
+			'deps'		=>	array( 'heartbeat', 'jquery-ui-progressbar', 'pf' )
 		) );
 
 		$assets->register_script( array(
@@ -125,7 +135,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-settings-tools',
 			'src'		=>	'assets/js/settings-tools',
-			'deps'		=>	array( 'jquery' )
+			'deps'		=>	array( 'pf' )
 		) );
 
 		$assets->register_script( array(
@@ -135,7 +145,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-tinysort',
 			'src'		=>	'Libraries/jquery-tinysort/jquery.tinysort',
-			'deps'		=>	array( 'jquery' )
+			'deps'		=>	array( 'pf' )
 		) );
 
 
@@ -147,7 +157,7 @@ class AssetsProvider extends ServiceProvider {
 								},
 				'handle'	=>	$slug.'-twitter-bootstrap',
 				'src'		=>	'Libraries/twitter-bootstrap/js/bootstrap',
-				'deps'		=>	array( 'jquery' )
+				'deps'		=>	array( 'pf' )
 			)
 		);
 
@@ -160,7 +170,7 @@ class AssetsProvider extends ServiceProvider {
 								},
 				'handle'	=>	$slug.'-tools',
 				'src'		=>	'assets/js/tools-imp',
-				'deps'		=>	array( 'jquery', $slug.'-twitter-bootstrap' )
+				'deps'		=>	array( 'pf', $slug.'-twitter-bootstrap' )
 			)
 		);
 
@@ -172,7 +182,7 @@ class AssetsProvider extends ServiceProvider {
 								},
 				'handle'	=>	$slug.'-jq-fullscreen',
 				'src'		=>	'Libraries/jquery-fullscreen/jquery.fullscreen',
-				'deps'		=>	array( 'jquery' )
+				'deps'		=>	array( 'pf' )
 			)
 		);
 
@@ -183,7 +193,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-sort-imp',
 			'src'		=>	'assets/js/sort-imp',
-			'deps'		=>	array( $slug . '-tinysort', $slug . '-twitter-bootstrap', $slug . '-jq-fullscreen' )
+			'deps'		=>	array( 'pf', $slug . '-tinysort', $slug . '-twitter-bootstrap', $slug . '-jq-fullscreen' )
 		) );
 
 		$assets->register_script( array(
@@ -193,7 +203,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-views',
 			'src'		=>	'assets/js/views',
-			'deps'		=>	array( $slug . '-twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide'  )
+			'deps'		=>	array( 'pf', $slug . '-twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide'  )
 		) );
 
 		$assets->register_script( array(
@@ -203,7 +213,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-readability-imp',
 			'src'		=>	'assets/js/readability-imp',
-			'deps'		=>	array( $slug . '-twitter-bootstrap', 'jquery', $slug . '-views' )
+			'deps'		=>	array( $slug . '-twitter-bootstrap', 'pf', $slug . '-views' )
 		) );
 
 		$assets->register_script( array(
@@ -213,7 +223,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-nomination-imp',
 			'src'		=>	'assets/js/nomination-imp',
-			'deps'		=>	array( 'jquery' )
+			'deps'		=>	array( 'pf' )
 		) );
 
 		$assets->register_script( array(
@@ -223,7 +233,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-infiniscroll',
 			'src'		=>	'Libraries/jquery.infinitescroll',
-			'deps'		=>	array( 'jquery', $slug . '-views', $slug . '-readability-imp', 'jquery' )
+			'deps'		=>	array( 'pf', $slug . '-views', $slug . '-readability-imp', 'jquery' )
 		) );
 
 
@@ -234,7 +244,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-relationships',
 			'src'		=>	'assets/js/relationships',
-			'deps'		=>	array( 'jquery' )
+			'deps'		=>	array( 'pf' )
 		) );
 
 		$assets->register_script( array(
@@ -259,7 +269,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-media-query-imp',
 			'src'		=>	'assets/js/media-query-imp',
-			'deps'		=>	 array( 'jquery', 'thickbox', 'media-upload' )
+			'deps'		=>	 array( 'pf', 'thickbox', 'media-upload' )
 		) );
 
 		$assets->register_script( array(
@@ -271,7 +281,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-quick-edit',
 			'src'		=>	'assets/js/quick-edit',
-			'deps'		=>	array( 'jquery' )
+			'deps'		=>	array( 'pf' )
 		) );
 
 		$assets->register_script( array(
@@ -282,7 +292,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-settings-tools',
 			'src'		=>	'assets/js/settings-tools',
-			'deps'		=>	array( 'jquery' )
+			'deps'		=>	array( 'pf' )
 		) );
 
 		$assets->register_script( array(
@@ -293,7 +303,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	'feed_control_script',
 			'src'		=>	'assets/js/feeds_control',
-			'deps'		=>	array( 'jquery', $slug.'-settings-tools', $slug . '-twitter-bootstrap' )
+			'deps'		=>	array( 'pf', $slug.'-settings-tools', $slug . '-twitter-bootstrap' )
 		) );
 
 		$assets->register_script( array(
@@ -304,7 +314,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-tools',
 			'src'		=>	'assets/js/tools-imp',
-			'deps'		=>	array( 'jquery' )
+			'deps'		=>	array( 'pf' )
 		) );
 
 		$assets->register_script( array(
@@ -315,7 +325,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-send-to-draft-imp',
 			'src'		=>	'assets/js/send-to-draft-imp',
-			'deps'		=>	array( 'jquery' )
+			'deps'		=>	array( 'pf' )
 		) );
 
 		$assets->register_script( array(
@@ -326,7 +336,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-archive-nom-imp',
 			'src'		=>	'assets/js/nom-archive-imp',
-			'deps'		=>	array( 'jquery' )
+			'deps'		=>	array( 'pf' )
 		) );
 
 		$assets->register_script( array(
@@ -336,7 +346,7 @@ class AssetsProvider extends ServiceProvider {
 							},
 			'handle'	=>	$slug.'-add-nom-imp',
 			'src'		=>	'assets/js/add-nom-imp',
-			'deps'		=>	array( 'jquery' )
+			'deps'		=>	array( 'pf' )
 		) );
 		//var_dump($assets); die();
 	}

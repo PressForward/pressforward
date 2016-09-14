@@ -125,6 +125,12 @@ class Feeds implements HasActions, HasFilters {
 					'hook'	=>	'post_updated_messages',
 					'method'	=>	'feed_save_message',
 				),
+				array(
+					'hook'	=>	'parent_file',
+					'method'	=>	'move_feed_tags_submenu',
+					'priority'	=>	10,
+					'args'	=> 1
+				)
 			);
 			$filters = array_merge( $filters, $admin_filters );
 		}
@@ -159,6 +165,9 @@ class Feeds implements HasActions, HasFilters {
 			'taxonomies' => array('post_tag'),
 			'show_in_menu' => PF_MENU_SLUG,
 			'show_in_admin_bar' => true,
+			'show_in_rest'       => true,
+			'rest_base'          => 'pf/v1/feeds',
+			'rest_controller_class' => 'WP_REST_Posts_Controller',
 			#'menu_position' => 100
 			'show_ui'     => true, // for testing only
 			'capability_type' => $this->post_type,
@@ -200,6 +209,22 @@ class Feeds implements HasActions, HasFilters {
 			}
 		}
 		return $caps;
+	}
+
+	/**
+	 * Ensure that 'Feed Tags' stays underneath the PressForward top-level item.
+	 *
+	 * @param string $pf The $parent_file value passed to the
+	 *        'parent_file' filter
+	 * @return string
+	 */
+	public function move_feed_tags_submenu( $pf ) {
+		global $typenow, $pagenow;
+		//var_dump($pf, $pagenow, $typenow); die();
+		if ( ( 'term.php' === $pagenow || 'edit-tags.php' === $pagenow ) && ! empty( $_GET['taxonomy'] ) && $this->tag_taxonomy === stripslashes( $_GET['taxonomy'] ) ) {
+			$pf = 'pf-menu';
+		}
+		return $pf;
 	}
 
 	function feeds_map_meta_cap( $caps, $cap, $user_id, $args ) {
@@ -832,7 +857,7 @@ class Feeds implements HasActions, HasFilters {
 		}
 
 		if ($insert_type == 'insert'){
-			$post_id = wp_insert_post($wp_args);
+			$post_id = pressforward('controller.items')->insert_post($wp_args);
 		}
 		pf_log('Posting process resulted in:');
 		pf_log($post_id);
@@ -1135,7 +1160,9 @@ class Feeds implements HasActions, HasFilters {
 			$post_id = $post->ID;
 			if (is_numeric($post_id)){
 				if (($c == 0)){
-					$this->update($post_id, array('url' => $url));
+					$feed_post = get_post($post_id, ARRAY_A);
+					$feed_post['url'] = $url;
+					$this->update($post_id, $feed_post);
 				} else {
 					if ($url == pressforward('controller.metas')->get_post_pf_meta($post_id, 'feedUrl', true)){
 						wp_delete_post( $post_id, true );
@@ -1300,7 +1327,7 @@ class Feeds implements HasActions, HasFilters {
 		}
 
 		if ($c+1 == count($args)){
-			pressforward('controller.metas')->update_pf_meta($post_id, 'meta_data', 'complete');
+			pressforward('controller.metas')->update_pf_meta($post_id, 'pf_meta_data_check', 'complete');
 
 		}
 	}

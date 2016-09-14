@@ -1,5 +1,14 @@
 <?php
 /**
+ * Updated for the PressForward project
+ * Based on the last public release of FiveFilters' Readability Library
+ * This library has been updated by the Roy Rosenzweig Center for History and
+ * New Media at George Mason University through the Generous Support of the
+ * Alfred P. Sloan Foundation. It was updated and continues to be maintained
+ * with the goal of allowing maximum use on a changing modern web.
+ * More information about PressForward: http://pressforward.org/
+ * This project lives on: https://github.com/PressForward/PressForward-Readability
+* ------------------------------------------------------
 * Arc90's Readability ported to PHP for FiveFilters.org
 * Based on readability.js version 1.7.1 (without multi-page support)
 * Updated to allow HTML5 parsing with html5lib
@@ -85,10 +94,10 @@ class Readability
 	* Defined up here so we don't instantiate them repeatedly in loops.
 	**/
 	public $regexps = array(
-		'unlikelyCandidates' => '/combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad-break|agegate|pagination|pager|popup/i',
-		'okMaybeItsACandidate' => '/and|article|body|column|main|postContent|shadow/i',
-		'positive' => '/article|body|content|entry|hentry|main|page|attachment|pagination|post|text|blog|postContent|story/i',
-		'negative' => '/combx|comment|com-|contact|foot|footer|_nav|footnote|masthead|media|meta|outbrain|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget/i',
+		'unlikelyCandidates' => '/combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad\-break|agegate|pagination|pager|skip\-to\-text\-link|popup/i',
+		'okMaybeItsACandidate' => '/and|article|body|column|main|continues|postContent|content|post|story|related|shadow|story\-content|story\-body\-supplemental|story\-body|story\-body\-text|story\-continues/i',
+		'positive' => '/article|body|story\-content|content|entry|hentry|main|page|attachment|pagination|post|text|blog|postContent|story|story\-body|story\-body\-supplemental|story\-body\-text|story\-continues/i',
+		'negative' => '/combx|comment|skip\-to\-text\-link|com\-|contact|foot|footer|_nav|footnote|masthead|media|meta|outbrain|taboola|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget/i',
 		'divToPElements' => '/<(a|blockquote|dl|div|img|ol|p|pre|table|ul)/i',
 		'replaceBrs' => '/(<br[^>]*>[ \n\r\t]*){2,}/i',
 		'replaceFonts' => '/<(\/?)font[^>]*>/i',
@@ -110,9 +119,10 @@ class Readability
 	* @param string (optional) URL associated with HTML (used for footnotes)
 	* @param string which parser to use for turning raw HTML into a DOMDocument (either 'libxml' or 'html5lib')
 	*/
-	function __construct($html, $url=null, $parser='libxml')
+	function __construct($html, $url=null, $parser='libxml', $logging_function = false)
 	{
 		$this->url = $url;
+		$this->logger = $logging_function;
 		/* Turn all double br's into p's */
 		$html = preg_replace($this->regexps['replaceBrs'], '</p><p>', $html);
 		$html = preg_replace($this->regexps['replaceFonts'], '<$1span>', $html);
@@ -217,11 +227,18 @@ class Readability
 		return $this->success;
 	}
 
+	protected function external_logger($msg){
+		if ( false !== $this->logger && is_callable( $this->logger ) ){
+			call_user_func_array($this->logger, array($msg));
+		}
+	}
+
 	/**
 	* Debug
 	*/
 	protected function dbg($msg) {
 		if ($this->debug) echo '* ',$msg, "\n";
+		$this->external_logger($msg);
 	}
 
 	/**
@@ -601,6 +618,7 @@ class Readability
 			$parentNode      = $nodesToScore[$pt]->parentNode;
 			// $grandParentNode = $parentNode ? $parentNode->parentNode : null;
 			$grandParentNode = !$parentNode ? null : (($parentNode->parentNode instanceof DOMElement) ? $parentNode->parentNode : null);
+			$grandGrandParentNode = !$grandParentNode ? null : (($grandParentNode->parentNode instanceof DOMElement) ? $grandParentNode->parentNode : null);
 			$innerText       = $this->getInnerText($nodesToScore[$pt]);
 
 			if (!$parentNode || !isset($parentNode->tagName)) {
@@ -624,6 +642,13 @@ class Readability
 			{
 				$this->initializeNode($grandParentNode);
 				$candidates[] = $grandParentNode;
+			}
+
+			/* Initialize readability data for the grandgrandparent. */
+			if ($grandGrandParentNode && !$grandGrandParentNode->hasAttribute('readability') && isset($grandGrandParentNode->tagName))
+			{
+				$this->initializeNode($grandGrandParentNode);
+				$candidates[] = $grandGrandParentNode;
 			}
 
 			$contentScore = 0;
@@ -658,6 +683,10 @@ class Readability
 			**/
 			$readability = $candidates[$c]->getAttributeNode('readability');
 			$readability->value = $readability->value * (1-$this->getLinkDensity($candidates[$c]));
+			if ( 'article' == $candidates[$c]->tagName ){
+				$readability->value = $readability->value + 300;
+				//var_dump($candidates[$c]); die();
+			}
 
 			$this->dbg('Candidate: ' . $candidates[$c]->tagName . ' (' . $candidates[$c]->getAttribute('class') . ':' . $candidates[$c]->getAttribute('id') . ') with score ' . $readability->value);
 
@@ -1096,6 +1125,31 @@ class Readability
 						$this->dbg(' 1 embed and content length smaller than 75 chars, or more than one embed');
 						$toRemove = true;
 					}
+				}
+				///var_dump($tagsList->item($i-2)); die();
+				if ( ( false !== stripos($tagsList->item($i)->textContent, 'et al') ) || ( 1 === preg_match('/\([1-9]\d{3,}\)/', $tagsList->item($i)->textContent) ) ){
+					$this->dbg(' content of element indicates reference.');
+					$toRemove = false;
+				} else if (
+							( !empty($tagsList) && !empty($tagsList->item($i)) && !empty($tagsList->item($i)->parentNode) ) &&
+							(
+								(
+									(
+										'li' === $tagsList->item($i)->parentNode->tagName ||
+										(
+											(!empty($tagsList->item($i)->parentNode->parentNode)) &&
+											( 'li' === $tagsList->item($i)->parentNode->parentNode->tagName )
+										)
+									) &&
+										( false !== stripos($tagsList->item($i-1)->textContent, 'et al') )
+								) ||
+								( !empty($tagsList->item($i-1)) &&
+									( 1 === preg_match('/\([1-9]\d{3,}\)/', $tagsList->item($i-1)->textContent) )
+								)
+							)
+					){
+					$this->dbg(' content of element indicates reference.');
+					$toRemove = false;
 				}
 
 				if ($toRemove) {
