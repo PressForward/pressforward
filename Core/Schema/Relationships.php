@@ -41,12 +41,29 @@ class Relationships implements HasActions {
 			return;
 		}
 
-		global $wpdb;
-		$table_exists = $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE %s", $wpdb->prefix . 'pf_relationships' ) );
-
-		if ( ! $table_exists ) {
-			$this->install_relationship_table();
+		if ( $this->schema_is_current() ) {
+			return;
 		}
+
+		$this->install_relationship_table();
+	}
+
+	/**
+	 * Determines whether the installed version of the DB schema is current.
+	 *
+	 * @since 4.2
+	 *
+	 * @return bool
+	 */
+	protected function schema_is_current() {
+		$db_version = get_option( 'pf_relationships_db_version' );
+
+		if ( $db_version && version_compare( $db_version, PF_VERSION, '>=' ) ) {
+			return true;
+		}
+
+		update_option( 'pf_relationships_db_version', PF_VERSION );
+		return false;
 	}
 
 	/**
