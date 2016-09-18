@@ -93,8 +93,8 @@ class Feed_Items implements HasActions, HasFilters {
 			'show_ui'     => true,
 			'show_in_admin_bar' => false,
 			'show_in_rest'       => $rest_enabled,
-			'rest_base'          => 'pf/v1/feed_items',
-			'rest_controller_class' => 'WP_REST_Posts_Controller',
+			'rest_base'          => 'feed_items',
+			'rest_controller_class' => 'PF_REST_Posts_Controller',
 			'capability_type' => $this->post_type,
 			'capabilities' => $this->map_feed_item_caps()
 		) ) );

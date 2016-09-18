@@ -9,11 +9,19 @@ use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 use PressForward\Core\API\PostExtension;
 use PressForward\Core\API\FeedEndpoint;
 use PressForward\Core\API\ItemEndpoint;
+use PressForward\Core\API\PFEndpoint;
 
 
 class APIProvider extends ServiceProvider {
 
 	public function register( Container $container ){
+		$container->share(
+			'api.pf_endpoint',
+			function( $container ){
+				return new PFEndpoint( $container->fetch('controller.metas') );
+			}
+		);
+
 		$container->share(
 			'api.post_extension',
 			function( $container ){
