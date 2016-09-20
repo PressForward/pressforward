@@ -22,6 +22,10 @@ if (is_dir($wp_bootstrap.'/wp-admin')){
 	$wp_bootstrap = $wp_bootstrap_d.'/wordpress/wp-admin';
 } elseif (is_dir($wp_bootstrap.'/data/current/wp-admin')) {
 	$wp_bootstrap = $wp_bootstrap.'/data/current/wp-admin';
+} elseif (is_dir($wp_bootstrap.'/blog/wp-admin')) {
+	$wp_bootstrap = $wp_bootstrap.'/blog/wp-admin';
+} elseif (is_dir($wp_bootstrap_d.'/blog/wp-admin')) {
+	$wp_bootstrap = $wp_bootstrap_d.'/blog/wp-admin';
 } elseif (is_dir($wp_bootstrap.'/wp/wp-admin')) {
 	$wp_bootstrap = $wp_bootstrap.'/wp/wp-admin';
 } else {
