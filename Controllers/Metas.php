@@ -166,11 +166,11 @@ class Metas implements HasFilters {
 				pf_log('No post_tag match.');
 				return false;
 			} else {
-				return wp_set_object_terms( $idB, $term_object->term_id, 'post_tag', true );
+				return wp_set_object_terms( $idB, intval($term_object->term_id), 'post_tag', true );
 
 			}
 		} else {
-			return wp_set_object_terms( $idB, $term_object->term_id, 'category', true );
+			return wp_set_object_terms( $idB, intval($term_object->term_id), 'category', true );
 		}
 		return true;
 	}
@@ -192,7 +192,7 @@ class Metas implements HasFilters {
 		$r = wp_insert_term($full_tag_name, 'post_tag', $term_args);
 		if ( !is_wp_error( $r ) && !empty($r['term_id']) ){
 			pf_log('Making a new post_tag, ID:'.$r['term_id']);
-			wp_set_object_terms( $idB, $r['term_id'], 'post_tag', true );
+			wp_set_object_terms( $idB, intval($r['term_id']), 'post_tag', true );
 		} else {
 			pf_log('Failed making a new post_tag');
 			pf_log($r);
