@@ -73,8 +73,8 @@ class Folders implements HasActions, HasFilters {
 			#'show_in_menu' => PF_MENU_SLUG,
 			'rewrite' => false,
 			'show_in_rest'       => true,
-			'rest_base'          => 'pf/v1/folders',
-			'rest_controller_class' => 'WP_REST_Terms_Controller',
+			'rest_base'          => 'folders',
+			'rest_controller_class' => 'PF_REST_Terms_Controller',
 		) ) );
 
 		do_action( 'feed_folders_registered' );

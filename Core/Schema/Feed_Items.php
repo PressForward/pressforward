@@ -92,7 +92,7 @@ class Feed_Items implements HasActions, HasFilters {
 			'public'      => false,
 			'show_ui'     => true,
 			'show_in_admin_bar' => false,
-			'show_in_rest'       => $rest_enabled,
+			'show_in_rest'       => true,//$rest_enabled,
 			'rest_base'          => 'feed_items',
 			'rest_controller_class' => 'PF_REST_Posts_Controller',
 			'capability_type' => $this->post_type,

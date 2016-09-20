@@ -32,6 +32,7 @@ class PFEndpoint extends APIWithMetaEndpoints implements HasActions {
 	public function callback_init(){
 		require_once('PF_REST_Controller.php');
 		require_once('PF_REST_Posts_Controller.php');
+		require_once('PF_REST_Terms_Controller.php');
 	}
 
 }

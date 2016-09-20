@@ -25,7 +25,13 @@ class PF_REST_Controller extends WP_REST_Controller {
 		$pf = pressforward('modules');
 		$active_modules = array();
 		foreach ( $pf->modules as $module_id => $module ) {
-			$active_modules[] = $module_id;
+			$enabled = get_option( PF_SLUG . '_' . $module_id . '_enable' );
+			if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
+				$enabled = 'yes';
+			}
+			if ( 'yes' == $enabled ){
+				$active_modules[] = $module_id;
+			}
 		}
 		$data = array(
 			'status'	=>	'PressForward running.',

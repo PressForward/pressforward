@@ -67,7 +67,7 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 		}
 		$data->add_links( array(
 			'feed' => array(
-					'href' => rest_url( '/wp/v2/pf/v1/feeds/'.$feed_id ),
+					'href' => rest_url( '/pf/v1/feeds/'.$feed_id ),
 					'embeddable' => true,
 				)
 			)
