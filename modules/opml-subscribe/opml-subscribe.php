@@ -22,7 +22,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		add_action( 'already_a_feed_item', array($this, 'add_folders_to_items') );
 		//add_action( 'pf_tools', array($this, 'opml_tools') );
 		if ( isset( $_GET['pf']) && ('opml' == $_GET['pf']) ){
-			add_action('init', array($this, 'make_OPML') );
+			add_action('feed_folders_registered', array($this, 'make_OPML') );
 		}
 
 		add_filter( 'pf_tabs_pf-tools', array($this, 'set_permitted_tools_tabs'), 20, 1 );
@@ -387,7 +387,7 @@ class PF_OPML_Subscribe extends PF_Module {
 
 		} else {
 			# @TODO this doesn't work yet.
-			$folder_obj = $this->make_a_folder_object_from_term_slug($_GET['opml_folder']);
+			//$folder_obj = $this->make_a_folder_object_from_term_slug($_GET['opml_folder']);
 			$this->master_opml_obj = new OPML_Object(get_site_url().'?pf=opml&opml_folder='.$_GET['opml_folder'] );
 			$this->master_opml_obj->set_title('PressForward Subscription List for the '.$_GET['opml_folder'].' folder on '.$site_name);
 		}

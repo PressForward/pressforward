@@ -288,8 +288,9 @@ class Feed_Items implements HasActions, HasFilters {
 			'tax_input'    => array( pf_feed_item_tag_taxonomy() => $r['item_tags'] ),
 			'post_parent'	=> $r['post_parent']
 		);
-
-		$post_id = wp_insert_post( $wp_args );
+		//pf_log($r);
+		$item_id = create_feed_item_id( $r['item_link'], $r['item_title'] );
+		$post_id = pressforward('controller.items')->insert_post( $wp_args, false, $item_id );
 		pf_log('Post created with ID of '.$post_id);
 
 		if ( is_numeric($post_id) ) {

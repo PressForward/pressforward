@@ -191,7 +191,7 @@ class Forward_Tools {
 			$this->metas->update_pf_meta($item_post_id, 'nomination_count', 1);
 			$this->metas->update_pf_meta($item_post_id, 'submitted_by', $userString);
 			$this->metas->update_pf_meta($item_post_id, 'nominator_array', array($userID));
-			$this->metas->update_pf_meta($item_post_id, 'date_nominated', date('c'));
+			$this->metas->update_pf_meta($item_post_id, 'date_nominated', current_time('Y-m-d H:i:s'));
 			$this->metas->update_pf_meta($item_post_id, 'item_id', $item_id);
 			$this->metas->update_pf_meta($item_post_id, 'pf_item_post_id', $item_post_id);
 			if ( !empty($_POST['item_link']) ){
@@ -199,7 +199,7 @@ class Forward_Tools {
 			}
 
 			if (empty($_POST['item_date'])){
-				$newDate = date('Y-m-d H:i:s');
+				$newDate = current_time('Y-m-d H:i:s');
 				//$_POST['item_date'] = $newDate;
 				$item_date = $newDate;
 			} else {
@@ -260,7 +260,8 @@ class Forward_Tools {
 
 		# PF NOTE: Switching post type to nomination.
 		$post['post_type'] = pressforward('schema.nominations')->post_type;
-		$post['post_date_gmt'] = date('Y-m-d H:i:s');
+		$post['post_date'] = current_time('Y-m-d H:i:s');
+		$post['post_date_gmt'] = get_gmt_from_date( current_time('Y-m-d H:i:s') );
 		if (strlen(esc_url( $_POST['item_link'] )) <= 243 ) {
 			$post['guid'] = esc_url( $_POST['item_link'] );
 		} else {
@@ -271,7 +272,7 @@ class Forward_Tools {
 		//$post['post_type'] = 'post';
 		# PF NOTE: This is where the inital post is created.
 		# PF NOTE: Put get_post_nomination_status here.
-		$post = $this->item_interface->insert_post($post, true);
+		$post = $this->item_interface->insert_post($post, true, $item_id );
 		//var_dump('<pre>'); var_dump($post); var_dump($post_array); die();
 		$this->advance_interface->prep_bookmarklet( $post );
 		if (!isset($_POST['item_date'])){

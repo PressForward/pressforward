@@ -75,7 +75,7 @@ class PF_RSS_Import extends PF_Module {
 	function set_to_alert($id, $theFeed){
 		$immune_to_alert_check = pressforward('controller.metas')->get_post_pf_meta($id, 'pf_no_feed_alert', true);
 		if (1 == $immune_to_alert_check){
-			return;
+			return false;
 		}
 		$error_to_alert = get_option(PF_SLUG.'_errors_until_alert', 3);
 		$error_count = pressforward('controller.metas')->get_post_pf_meta($id, PF_SLUG.'_feed_error_count');
@@ -127,7 +127,15 @@ class PF_RSS_Import extends PF_Module {
 			$alert = $this->set_to_alert($aFeed->ID, $theFeed);
 			pf_log('Set to alert resulted in:');
 			pf_log($alert);
-			return false;
+			if (false === $alert){
+				return false;
+			} else {
+				return false;
+			}
+
+		} else {
+			$error_to_alert = get_option(PF_SLUG.'_errors_until_alert', 3);
+			$error_count = pressforward('controller.metas')->update_pf_meta($aFeed->ID, PF_SLUG.'_feed_error_count', 0);
 		}
 		$theFeed->set_timeout(60);
 		$rssObject = array();
@@ -139,13 +147,19 @@ class PF_RSS_Import extends PF_Module {
 			pf_log('Feed looping through for the ' . $c . ' time.');
 			$check_date = $item->get_date('U');
 			$dead_date = time() - (60*60*24*60); //Get the unixdate for two months ago.
-			if ($check_date <= $dead_date) {
+			if ( ($check_date <= $dead_date) && !empty($check_date) ) {
 				pf_log('Feed item too old. Skip it.');
 			} else {
 				$id = create_feed_item_id($item->get_link(), $item->get_title()); //die();
 				pf_log('Now on feed ID ' . $id . '.');
 				//print_r($item_categories_string); die();
-
+				if (empty($check_date)){
+					$r_item_date = date('r');
+					$ymd_item_date = date('Y-m-d');
+				} else {
+					$r_item_date = $item->get_date('r');
+					$ymd_item_date = $item->get_date('Y-m-d');
+				}
 					if ($item->get_source()){
 						$sourceObj = $item->get_source();
 						# Get the link of what created the RSS entry.
@@ -204,13 +218,13 @@ class PF_RSS_Import extends PF_Module {
 					$rssObject['rss_' . $c] = pf_feed_object(
 												$item->get_title(),
 												$iFeed->get_title(),
-												$item->get_date('r'),
+												$r_item_date,
 												$authors,
 												$item_content,
 												$item->get_link(),
 												'',
 												$id,
-												$item->get_date('Y-m-d'),
+												$ymd_item_date,
 												$item_categories_string
 												);
 					pf_log('Setting new object for ' . $item->get_title() . ' of ' . $iFeed->get_title() . '.');

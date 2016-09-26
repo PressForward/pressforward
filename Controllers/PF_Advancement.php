@@ -42,9 +42,23 @@ class PF_Advancement implements Advance_System {
 			if ( ( false !== $old_tax_terms ) && ( !is_wp_error($old_tax_terms) ) && ( is_array($old_tax_terms) ) ){
 				$old_term_ids = array();
 				foreach($old_tax_terms as $term){
-					$old_term_ids[] = $term->term_id;
+					$old_term_ids[] = intval($term->term_id);
 				}
-				wp_set_object_terms($new_post, $old_term_ids, $taxonomy, false);
+				wp_set_object_terms($new_post, $old_term_ids, $taxonomy, true);
+			}
+		}
+		$item_tags = $this->metas->get_post_pf_meta($old_post, 'item_tags');
+		if ( !is_array($item_tags) ){
+			$item_tags = explode(',', $item_tags);
+		}
+		foreach ($item_tags as $key => $tag) {
+			$tag = trim($tag);
+			$tag_info = wp_create_term($tag);
+			if (!is_wp_error($tag_info)){
+				$tag_id = intval($tag_info['term_id']);
+				wp_set_object_terms($new_post, $tag_id, 'post_tag', true);
+			} else {
+				pf_log($tag_info);
 			}
 		}
 		//$old_category_terms = get_the_terms($old_post, 'category');
@@ -70,9 +84,11 @@ class PF_Advancement implements Advance_System {
 		unset($post['ID']);
 		$post['post_type'] = $this->last_step_post_type();
 		$post['post_status'] = $this->last_step_state();
+		$post['post_date'] = current_time('Y-m-d H:i:s');
+		$post['post_date_gmt'] = get_gmt_from_date( current_time('Y-m-d H:i:s') );
 		pf_log($post);
 		$post['post_content'] = pressforward('controller.readability')->process_in_oembeds( pressforward('controller.metas')->get_post_pf_meta($old_id, 'item_link'), $post['post_content'] );
-		$id = wp_insert_post( $post, true );
+		$id = pressforward('controller.items')->insert_post( $post, true, pressforward('controller.metas')->get_post_pf_meta($old_id, 'item_id') );
 		do_action( 'pf_transition_to_last_step', $id );
 		return $id;
 	}
@@ -80,11 +96,11 @@ class PF_Advancement implements Advance_System {
 	public function to_nomination( $post = array() ){
 		$post['post_status'] = 'draft';
 		$post['post_type'] = pressforward('schema.nominations')->post_type;
-		unset($post['post_date']);
-		unset($post['post_date_gmt']);
+		$post['post_date'] = current_time('Y-m-d H:i:s');
+		$post['post_date_gmt'] = get_gmt_from_date( current_time('Y-m-d H:i:s') );
 		$orig_post_id = $post['ID'];
 		unset($post['ID']);
-		$id = wp_insert_post( $post );
+		$id = pressforward('controller.items')->insert_post( $post, false, pressforward('controller.metas')->get_post_pf_meta($orig_post_id, 'item_id') );
 		do_action( 'pf_transition_to_nomination', $id );
 		return $id;
 	}
