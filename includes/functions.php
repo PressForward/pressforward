@@ -1174,7 +1174,7 @@ function pf_exclude_queued_items_from_query_results( $posts, $query ) {
 	$queued = get_option( 'pf_delete_queue' );
 	//var_dump($queued); die();
 	if ( ! $queued || ! is_array( $queued ) ) {
-		return $query;
+		return $posts;
 	}
 
 	$type = $query->get( 'post_type' );
