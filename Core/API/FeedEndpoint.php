@@ -9,7 +9,7 @@ use PressForward\Core\API\APIWithMetaEndpoints;
 
 use WP_Ajax_Response;
 
-class FeedEndpoint extends APIWithMetaEndpoints implements HasActions {
+class FeedEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilters {
 
 	protected $basename;
 
@@ -28,6 +28,18 @@ class FeedEndpoint extends APIWithMetaEndpoints implements HasActions {
 			)
 		);
 		return $actions;
+	}
+
+	public function filter_hooks() {
+		$filter = array(
+			array(
+				'hook' => 'rest_prepare_'.$this->post_type,
+				'method' => 'filter_wp_to_pf_in_terms',
+				'priority'  => 10,
+				'args' => 3
+			)
+		);
+		return $filter;
 	}
 
 

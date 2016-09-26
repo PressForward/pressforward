@@ -73,4 +73,23 @@ class APIWithMetaEndpoints {
 			return $response;
 		}
 	}
+
+	// Hook to filter 'rest_prepare_{post_type}' to actifate
+	public function filter_wp_to_pf_in_terms( $data, $post, $request  ){
+		//var_dump($data->add_link('https://api.w.org/term', array())); die();
+		$links = $data->get_links();
+		$data->remove_link("https://api.w.org/term");
+		foreach ( $links["https://api.w.org/term"] as $key=>$term_link ){
+			if ( 0 <= strpos($term_link["href"], 'wp/v2/folders') ){
+				$term_link["href"] = str_replace('wp/v2/folders', 'pf/v1/folders', $term_link["href"] );
+				$links["https://api.w.org/term"][$key] = $term_link;
+			}
+		}
+		$data->add_links( array(
+				"https://api.w.org/term" => $links["https://api.w.org/term"]
+			)
+		);
+		//var_dump($data->get_links());
+		return $data;
+	}
 }

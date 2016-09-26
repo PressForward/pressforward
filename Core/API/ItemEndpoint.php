@@ -37,6 +37,12 @@ class ItemEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 				'method' => 'add_rest_post_links',
 				'priority'  => 10,
 				'args' => 3
+			),
+			array(
+				'hook' => 'rest_prepare_'.$this->post_type,
+				'method' => 'filter_wp_to_pf_in_terms',
+				'priority'  => 10,
+				'args' => 3
 			)
 		);
 		return $filter;
@@ -51,7 +57,7 @@ class ItemEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 		}
 		$data->add_links( array(
 			'feed' => array(
-					'href' => rest_url( '/wp/v2/pf/v1/feeds/'.$feed_id ),
+					'href' => rest_url( '/pf/v1/feeds/'.$feed_id ),
 					'embeddable' => true,
 				)
 			)

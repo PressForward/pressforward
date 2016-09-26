@@ -37,6 +37,12 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 				'method' => 'add_rest_post_links',
 				'priority'  => 10,
 				'args' => 3
+			),
+			array(
+				'hook' => 'rest_prepare_'.$this->post_type,
+				'method' => 'filter_wp_to_pf_in_terms',
+				'priority'  => 10,
+				'args' => 3
 			)
 		);
 		return $filter;
