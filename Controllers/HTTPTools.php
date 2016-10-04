@@ -116,6 +116,28 @@ class HTTPTools implements HasActions {
 		}
 	}
 
+	function attempt_to_get_cookiepath(){
+		$reset = true;
+		$upload_dir = wp_upload_dir();
+		$cookie_path = $upload_dir['basedir'] . 'cookie.txt';
+		if ( ! is_file( $cookie_path ) ) {
+			touch( $cookie_path );
+		}
+		if ( ! is_writable( $cookie_path ) ) {
+		  pf_log( "Can't write to the cookie at $cookie_path." );
+		  return false;
+		} else {
+		  $debug = 1;
+		}
+		if ($reset) {
+		  $fo = fopen($cookie_path, 'w') or pf_log('Can\'t open cookie file.');
+		  fwrite($fo, "");
+		  fclose($fo);
+
+		}
+		return $cookie_path;
+	}
+
 	function get_url_content( $url, $function = false ){
 		$args = func_get_args();
 		$url = str_replace('&amp;','&', $url);
@@ -150,29 +172,22 @@ class HTTPTools implements HasActions {
 			}
 		}
 		$response = $r;
-		if ( empty($response) || is_wp_error($response) || ( !empty($response) && !empty($response['headers']) && isset($response['headers']['content-length']) && ( 50 > strlen($response['headers']['content-length']) ) ) && in_array('curl', get_loaded_extensions()) ){
+		$loaded_extensions = get_loaded_extensions();
+		if ( empty($response) || is_wp_error($response) || ( !empty($response) && !empty($response['headers']) && isset($response['headers']['content-length']) && ( 50 > strlen($response['headers']['content-length']) ) ) && in_array('curl', $loaded_extensions) ){
           $cookie_path = 'cookie.txt';
-          if ( defined('COOKIE_PATH_FOR_CURL') && !empty( constant('COOKIE_PATH_FOR_CURL') ) ){
+          if ( defined('COOKIE_PATH_FOR_CURL') ){
             $cookie_path = constant('COOKIE_PATH_FOR_CURL');
+			if ( !isset($cookie_path) || false == $cookie_path ){
+				$cookie_path = attempt_to_get_cookiepath();
+				if (false === $cookie_path){
+					return false;
+				}
+			}
           } else {
-            $reset = true;
-            $upload_dir = wp_upload_dir();
-            $cookie_path = $upload_dir['basedir'] . 'cookie.txt';
-            if ( ! is_file( $cookie_path ) ) {
-                touch( $cookie_path );
-            }
-            if ( ! is_writable( $cookie_path ) ) {
-              pf_log( "Can't write to the cookie at $cookie_path." );
-              return false;
-            } else {
-              $debug = 1;
-            }
-            if ($reset) {
-              $fo = fopen($cookie_path, 'w') or pf_log('Can\'t open cookie file.');
-              fwrite($fo, "");
-              fclose($fo);
-
-            }
+			  $cookie_path = attempt_to_get_cookiepath();
+			  if (!$cookie_path){
+				  return false;
+			  }
           }
           $curl = curl_init($args[0]);
 
@@ -195,5 +210,4 @@ class HTTPTools implements HasActions {
 		  return $response;
 	  }
 	}
-
 }
