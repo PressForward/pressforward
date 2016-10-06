@@ -178,13 +178,13 @@ class HTTPTools implements HasActions {
           if ( defined('COOKIE_PATH_FOR_CURL') ){
             $cookie_path = constant('COOKIE_PATH_FOR_CURL');
 			if ( !isset($cookie_path) || false == $cookie_path ){
-				$cookie_path = attempt_to_get_cookiepath();
+				$cookie_path = $this->attempt_to_get_cookiepath();
 				if (false === $cookie_path){
 					return false;
 				}
 			}
           } else {
-			  $cookie_path = attempt_to_get_cookiepath();
+			  $cookie_path = $this->attempt_to_get_cookiepath();
 			  if (!$cookie_path){
 				  return false;
 			  }
