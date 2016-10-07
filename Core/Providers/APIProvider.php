@@ -10,7 +10,7 @@ use PressForward\Core\API\PostExtension;
 use PressForward\Core\API\FeedEndpoint;
 use PressForward\Core\API\ItemEndpoint;
 use PressForward\Core\API\PFEndpoint;
-
+use PressForward\Core\API\FolderExtension;
 
 class APIProvider extends ServiceProvider {
 
@@ -38,6 +38,12 @@ class APIProvider extends ServiceProvider {
 			'api.item_endpoint',
 			function( $container ){
 				return new ItemEndpoint( $container->fetch('controller.metas') );
+			}
+		);
+		$container->share(
+			'api.folder_extension',
+			function( $container ){
+				return new FolderExtension( $container->fetch('controller.metas') );
 			}
 		);
 	}

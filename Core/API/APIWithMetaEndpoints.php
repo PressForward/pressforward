@@ -91,6 +91,20 @@ class APIWithMetaEndpoints {
 				)
 			);
 		}
+		//var_dump($links); die();
+		if (isset($links["https://api.w.org/post_type"])){
+			$data->remove_link("https://api.w.org/post_type");
+			foreach ( $links["https://api.w.org/post_type"] as $key=>$term_link ){
+				if ( 0 <= strpos($term_link["href"], 'wp/v2/feeds') ){
+					$term_link["href"] = str_replace('wp/v2/feeds', 'pf/v1/feeds', $term_link["href"] );
+					$links["https://api.w.org/post_type"][$key] = $term_link;
+				}
+			}
+			$data->add_links( array(
+					"https://api.w.org/post_type" => $links["https://api.w.org/post_type"]
+				)
+			);
+		}
 		//var_dump($data->get_links());
 		return $data;
 	}
