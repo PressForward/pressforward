@@ -70,14 +70,16 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 		$feed_id = 'false';
 		if ( !empty( $post->post_parent ) ){
 			$feed_id = $post->post_parent;
+			if ( 'pf_feed' == get_post_type($feed_id) ){
+				$data->add_links( array(
+					'feed' => array(
+							'href' => rest_url( '/pf/v1/feeds/'.$feed_id ),
+							'embeddable' => true,
+						)
+					)
+				);
+			}
 		}
-		$data->add_links( array(
-			'feed' => array(
-					'href' => rest_url( '/pf/v1/feeds/'.$feed_id ),
-					'embeddable' => true,
-				)
-			)
-		);
 		return $data;
 	}
 
