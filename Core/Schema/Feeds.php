@@ -166,8 +166,8 @@ class Feeds implements HasActions, HasFilters {
 			'show_in_menu' => PF_MENU_SLUG,
 			'show_in_admin_bar' => true,
 			'show_in_rest'       => true,
-			'rest_base'          => 'pf/v1/feeds',
-			'rest_controller_class' => 'WP_REST_Posts_Controller',
+			'rest_base'          => 'feeds',
+			'rest_controller_class' => 'PF_REST_Posts_Controller',
 			#'menu_position' => 100
 			'show_ui'     => true, // for testing only
 			'capability_type' => $this->post_type,
