@@ -76,17 +76,25 @@ class APIWithMetaEndpoints {
 
 	public function filter_an_api_data_link( $data, $links, $link, $term ){
 		if (isset($links[$link])){
-			$data->remove_link($link);
 			foreach ( $links[$link] as $key=>$term_link ){
-				if ( 0 <= strpos($term_link["href"], 'wp/v2/'.$term) ){
+				$pos = strpos($term_link["href"], 'wp/v2/'.$term);
+				if ( false !== $pos && 0 <= $pos ){
+					$term_found = true;
+					$data->remove_link($link);
+					//var_dump('term found', $term);
 					$term_link["href"] = str_replace('wp/v2/'.$term, 'pf/v1/'.$term, $term_link["href"] );
 					$links[$link][$key] = $term_link;
+					//var_dump($links);
+				} else {
+					$term_found = false;
 				}
 			}
-			$data->add_links( array(
-					$link => $links[$link]
-				)
-			);
+			if ( $term_found ){
+				$data->add_links( array(
+						$link => $links[$link]
+					)
+				);
+			}
 		}
 		return $data;
 	}
@@ -138,6 +146,8 @@ class APIWithMetaEndpoints {
 		}
 
 		$data = $this->filter_an_api_data_link($data, $links, 'about', 'taxonomies/pf_feed_category');
+		$data = $this->filter_an_api_data_link($data, $links, 'about', 'types/pf_feed');
+		$data = $this->filter_an_api_data_link($data, $links, 'about', 'types/pf_feed_item');
 		//var_dump($data->get_links());
 		return $data;
 	}
