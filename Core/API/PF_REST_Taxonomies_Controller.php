@@ -8,6 +8,7 @@ class PF_REST_Taxonomies_Controller extends WP_REST_Taxonomies_Controller {
 	public function __construct(  ) {
 		parent::__construct();
 		$this->namespace = 'pf/v1';
+		add_filter('rest_prepare_taxonomy', array( $this, 'filter_taxonomies_links' ), 11, 3 );
 	}
 
 	public function register_routes(){
@@ -28,7 +29,6 @@ class PF_REST_Taxonomies_Controller extends WP_REST_Taxonomies_Controller {
 		}
 		$data = array();
 		foreach ( $taxonomies as $tax_type => $value ) {
-			//var_dump($value);
 			if ( 'pf_feed_category' !== $value->name ){
 				continue;
 			}
@@ -57,10 +57,29 @@ class PF_REST_Taxonomies_Controller extends WP_REST_Taxonomies_Controller {
 		return rest_ensure_response( $data );
 	}
 
+	public function filter_taxonomies_links( $data, $post, $request ){
+		$links = $data->get_links();
+		if (isset($links['https://api.w.org/items'])){
+			$data->remove_link('https://api.w.org/items');
+			foreach ( $links['https://api.w.org/items'] as $key=>$term_link ){
+				if ( 0 <= strpos($term_link["href"], 'wp/v2/folders') ){
+					$term_link["href"] = str_replace('wp/v2/folders', 'pf/v1/folders', $term_link["href"] );
+					$links['https://api.w.org/items'][$key] = $term_link;
+				}
+			}
+			$data->add_links( array(
+					'https://api.w.org/items' => $links['https://api.w.org/items']
+				)
+			);
+		}
+		//var_dump($data->get_links());
+		return $data;
+	}
+
 }
 
 function activate_pf_taxonomies_controller(){
-	$controller = new WP_REST_Taxonomies_Controller;
+	$controller = new PF_REST_Taxonomies_Controller;
 	return $controller->register_routes();
 }
 
