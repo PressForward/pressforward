@@ -28,7 +28,7 @@ class PF_REST_Taxonomies_Controller extends WP_REST_Taxonomies_Controller {
 		}
 		$data = array();
 		foreach ( $taxonomies as $tax_type => $value ) {
-			var_dump($value);
+			//var_dump($value);
 			if ( 'pf_feed_category' !== $value->name ){
 				continue;
 			}
