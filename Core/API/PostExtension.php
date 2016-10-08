@@ -37,6 +37,12 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 				'method' => 'add_rest_post_links',
 				'priority'  => 10,
 				'args' => 3
+			),
+			array(
+				'hook' => 'rest_prepare_'.$this->post_type,
+				'method' => 'filter_wp_to_pf_in_terms',
+				'priority'  => 10,
+				'args' => 3
 			)
 		);
 		return $filter;
@@ -64,14 +70,16 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 		$feed_id = 'false';
 		if ( !empty( $post->post_parent ) ){
 			$feed_id = $post->post_parent;
+			if ( 'pf_feed' == get_post_type($feed_id) ){
+				$data->add_links( array(
+					'feed' => array(
+							'href' => rest_url( '/pf/v1/feeds/'.$feed_id ),
+							'embeddable' => true,
+						)
+					)
+				);
+			}
 		}
-		$data->add_links( array(
-			'feed' => array(
-					'href' => rest_url( '/wp/v2/pf/v1/feeds/'.$feed_id ),
-					'embeddable' => true,
-				)
-			)
-		);
 		return $data;
 	}
 

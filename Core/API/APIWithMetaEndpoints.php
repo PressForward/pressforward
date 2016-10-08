@@ -73,4 +73,39 @@ class APIWithMetaEndpoints {
 			return $response;
 		}
 	}
+
+	// Hook to filter 'rest_prepare_{post_type}' to actifate
+	public function filter_wp_to_pf_in_terms( $data, $post, $request  ){
+		//var_dump($data->add_link('https://api.w.org/term', array())); die();
+		$links = $data->get_links();
+		if (isset($links["https://api.w.org/term"])){
+			$data->remove_link("https://api.w.org/term");
+			foreach ( $links["https://api.w.org/term"] as $key=>$term_link ){
+				if ( 0 <= strpos($term_link["href"], 'wp/v2/folders') ){
+					$term_link["href"] = str_replace('wp/v2/folders', 'pf/v1/folders', $term_link["href"] );
+					$links["https://api.w.org/term"][$key] = $term_link;
+				}
+			}
+			$data->add_links( array(
+					"https://api.w.org/term" => $links["https://api.w.org/term"]
+				)
+			);
+		}
+		//var_dump($links); die();
+		if (isset($links["https://api.w.org/post_type"])){
+			$data->remove_link("https://api.w.org/post_type");
+			foreach ( $links["https://api.w.org/post_type"] as $key=>$term_link ){
+				if ( 0 <= strpos($term_link["href"], 'wp/v2/feeds') ){
+					$term_link["href"] = str_replace('wp/v2/feeds', 'pf/v1/feeds', $term_link["href"] );
+					$links["https://api.w.org/post_type"][$key] = $term_link;
+				}
+			}
+			$data->add_links( array(
+					"https://api.w.org/post_type" => $links["https://api.w.org/post_type"]
+				)
+			);
+		}
+		//var_dump($data->get_links());
+		return $data;
+	}
 }
