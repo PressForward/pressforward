@@ -52,8 +52,7 @@ class PF_UnitTest_Factory_For_Feed extends WP_UnitTest_Factory_For_Thing {
 	}
 
 	function create_object( $args ) {
-		$pf_feed_schema = new PF_Feeds_Schema();
-		return $pf_feed_schema->feed_post_setup( $args );
+		return pressforward('schema.feeds')->feed_post_setup( $args );
 	}
 
 	function update_object( $activity_id, $fields ) {}
@@ -77,8 +76,7 @@ class PF_UnitTest_Factory_For_Feed_Item extends WP_UnitTest_Factory_For_Thing {
 	}
 
 	function create_object( $args ) {
-		$feed_item = new PF_Feed_Item();
-		$feed_item_id = $feed_item->create( $args );
+		$feed_item_id = pressforward('schema.feed_item')->create( $args );
 
 		$meta_keys = array(
 			'item_id',
@@ -96,7 +94,7 @@ class PF_UnitTest_Factory_For_Feed_Item extends WP_UnitTest_Factory_For_Thing {
 
 		foreach ( $meta_keys as $mk ) {
 			if ( isset( $args[ $mk ] ) ) {
-				update_post_meta( $feed_item_id, $mk, $args[ $mk ] );
+				pressforward('controller.metas')->update_pf_meta( $feed_item_id, $mk, $args[ $mk ] );
 			}
 		}
 

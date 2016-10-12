@@ -14,8 +14,8 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			) );
 		}
 
-		$found1 = PF_Feed_Item::archive_feed_to_display( 5, 7, 5050, true, false );
-		$found2 = PF_Feed_Item::archive_feed_to_display( array(
+		$found1 = pressforward('controller.loops')->archive_feed_to_display( 5, 7, 5050, true, false );
+		$found2 = pressforward('controller.loops')->archive_feed_to_display( array(
 			'start' => 5,
 			'posts_per_page' => 7,
 			'from_unix_time' => 5050,
@@ -36,7 +36,7 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			) );
 		}
 
-		$found = PF_Feed_Item::archive_feed_to_display( 0, 20, 0, true );
+		$found = pressforward('controller.loops')->archive_feed_to_display( 0, 20, 0, true );
 
 		// Expect newest first.
 		$expected = array_reverse( $feed_items );
@@ -68,7 +68,7 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			) );
 		}
 
-		$found = PF_Feed_Item::archive_feed_to_display( 1, 20, 0, false, 'starred' );
+		$found = pressforward('controller.loops')->archive_feed_to_display( 1, 20, 0, false, 'starred' );
 
 		$expected = array(
 			$feed_items[3],
@@ -104,7 +104,7 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			) );
 		}
 
-		$found = PF_Feed_Item::archive_feed_to_display( 1, 20, 0, false, 'nominated' );
+		$found = pressforward('controller.loops')->archive_feed_to_display( 1, 20, 0, false, 'nominated' );
 
 		$expected = array(
 			$feed_items[3],
@@ -131,7 +131,7 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			) );
 		}
 
-		$found = PF_Feed_Item::archive_feed_to_display( array(
+		$found = pressforward('controller.loops')->archive_feed_to_display( array(
 			'start' => 1,
 			'search_terms' => 'content 3',
 		) );
@@ -170,7 +170,7 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			) );
 		}
 
-		$found = PF_Feed_Item::archive_feed_to_display( array(
+		$found = pressforward('controller.loops')->archive_feed_to_display( array(
 			'start' => 1,
 			'search_terms' => 'content 3',
 			'exclude_archived' => true,
@@ -195,7 +195,7 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			) );
 		}
 
-		$found = PF_Feed_Item::archive_feed_to_display( 1 );
+		$found = pressforward('controller.loops')->archive_feed_to_display( 1 );
 		$expected = array_reverse( $feed_items );
 
 		$this->assertEquals( $expected, array_values( wp_list_pluck( $found, 'post_id' ) ) );
@@ -213,7 +213,7 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			) );
 		}
 
-		$found = PF_Feed_Item::archive_feed_to_display( 1 );
+		$found = pressforward('controller.loops')->archive_feed_to_display( 1 );
 		$expected = array_reverse( $feed_items );
 
 		$this->assertEquals( $expected, array_values( wp_list_pluck( $found, 'post_id' ) ) );
@@ -229,7 +229,7 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			) );
 		}
 
-		$found = PF_Feed_Item::archive_feed_to_display( 3 );
+		$found = pressforward('controller.loops')->archive_feed_to_display( 3 );
 
 		$expected = array(
 			$feed_items[3],
@@ -251,7 +251,7 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			) );
 		}
 
-		$found = PF_Feed_Item::archive_feed_to_display( 1, 3 );
+		$found = pressforward('controller.loops')->archive_feed_to_display( 1, 3 );
 
 		$expected = array(
 			$feed_items[5],
@@ -272,7 +272,7 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			) );
 		}
 
-		$found = PF_Feed_Item::archive_feed_to_display( 1, 20, 25000 );
+		$found = pressforward('controller.loops')->archive_feed_to_display( 1, 20, 25000 );
 
 		$expected = array(
 			$feed_items[5],
@@ -300,7 +300,7 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			'item_wp_date' => $time,
 		) );
 
-		$found = PF_Feed_Item::archive_feed_to_display( 1 );
+		$found = pressforward('controller.loops')->archive_feed_to_display( 1 );
 
 		$expected = array(
 			'item_title' => 'Test item',

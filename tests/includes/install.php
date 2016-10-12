@@ -5,4 +5,4 @@
  */
 
 // Install the Relationships table
-PF_Feed_Item_Schema::install_relationship_table();
+pressforward('schema.relationships')->install_relationship_table();
