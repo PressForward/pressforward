@@ -133,7 +133,11 @@ class PF_Tests_PfDeleteItemTree extends PF_UnitTestCase {
 		// Save the data
 		$id = wp_insert_attachment( $attachment, $upload[ 'file' ], $parent_post_id );
 		wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $upload['file'] ) );
-		$ids = $this->ids;
+		if (isset($this->ids) && is_array($this->ids)){
+			$ids = $this->ids;
+		} else {
+			$ids = array();
+		}
 		$ids[] = $id;
 		$this->ids = $ids;
 		return $id;
