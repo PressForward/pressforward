@@ -193,7 +193,7 @@ class Forward_Tools {
 			$this->metas->update_pf_meta($item_post_id, 'nomination_count', 1);
 			$this->metas->update_pf_meta($item_post_id, 'submitted_by', $userString);
 			$this->metas->update_pf_meta($item_post_id, 'nominator_array', array($userID));
-			$this->metas->update_pf_meta($item_post_id, 'date_nominated', current_time('Y-m-d H:i:s'));
+			$this->metas->update_pf_meta($item_post_id, 'date_nominated', current_time('mysql'));
 			$this->metas->update_pf_meta($item_post_id, 'item_id', $item_id);
 			$this->metas->update_pf_meta($item_post_id, 'pf_item_post_id', $item_post_id);
 			if ( !empty($_POST['item_link']) ){

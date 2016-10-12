@@ -409,7 +409,7 @@ class Nominated implements HasActions {
             $this->meta_box_printer(__('Source Authors', 'pf'), $nom_authors);
             $this->meta_box_printer(__('Source Link', 'pf'), $item_link, true, __('Original Post', 'pf'));
             $this->meta_box_printer(__('Item Tags', 'pf'), $item_tags);
-            if (empty($date_nominated)){ $date_nominated = date(DATE_ATOM); }
+            if (empty($date_nominated)){ $date_nominated = current_time('mysql'); }
             $this->meta_box_printer(__('Date Nominated', 'pf'), $date_nominated);
             if (!empty($source_repeat)){
                 $this->meta_box_printer(__('Repeated in Feed', 'pf'), $source_repeat);
