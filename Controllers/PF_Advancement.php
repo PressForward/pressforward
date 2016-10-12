@@ -42,7 +42,7 @@ class PF_Advancement implements Advance_System {
 			if ( ( false !== $old_tax_terms ) && ( !is_wp_error($old_tax_terms) ) && ( is_array($old_tax_terms) ) ){
 				$old_term_ids = array();
 				foreach($old_tax_terms as $term){
-					$old_term_ids[] = $term->term_id;
+					$old_term_ids[] = intval($term->term_id);
 				}
 				wp_set_object_terms($new_post, $old_term_ids, $taxonomy, true);
 			}
@@ -55,7 +55,7 @@ class PF_Advancement implements Advance_System {
 			$tag = trim($tag);
 			$tag_info = wp_create_term($tag);
 			if (!is_wp_error($tag_info)){
-				$tag_id = $tag_info['term_id'];
+				$tag_id = intval($tag_info['term_id']);
 				wp_set_object_terms($new_post, $tag_id, 'post_tag', true);
 			} else {
 				pf_log($tag_info);

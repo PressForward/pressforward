@@ -3,8 +3,8 @@ Contributors: PressForward, AramZS, boonebgorges, lmrhody, asmmap, regan008, joa
 Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 3.0.1
-Tested up to: 4.6.0
-Stable tag: 4.1.0
+Tested up to: 4.6.1
+Stable tag: 4.1.2
 License: GPL2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -81,6 +81,21 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+
+= 4.1.1 =
+
+* Patch for issues stemming from PHP version 5.4 compatibility.
+
+= 4.1.0 =
+* Added PressForward data to the WP-API post endpoint.
+* Drastically decreased PressForward’s potential impact on overall site queries.
+* Fixes a bug where servers without cURL would fail to load pages or Nominate This.
+* Fixed bug that prevented Project MUSE RSS feeds from loading.
+* Assured that readability catches all content on sites where the “div” structure is unclear.
+* Fixed a bug that broke the outbound OPML link
+* Assured that editing a folder does not redirect users to Post Categories in the WordPress menu
+* Fixed a bug that caused large OPML subscriptions to trigger an error
+* Assure that readability is catching content in the references block
 
 = 4.0.4 =
 

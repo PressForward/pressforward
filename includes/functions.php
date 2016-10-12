@@ -1150,14 +1150,45 @@ function pf_exclude_queued_items_from_queries( $query ) {
 	$queued = get_option( 'pf_delete_queue' );
 	//var_dump($queued); die();
 	if ( ! $queued || ! is_array( $queued ) ) {
-		return;
+		return $query;
 	}
 
-	$post__not_in = $query->get( 'post__not_in' );
-	$post__not_in = array_merge( $post__not_in, $queued );
-	$query->set( 'post__not_in', $post__not_in );
+	$type = $query->get( 'post_type' );
+	if ( ( empty($type) ) || ( 'post' != $type ) ){
+		if ( 300 <= count( $queued ) ){
+			$queued_chunk = array_chunk($queued, 100);
+			$queued = $queued_chunk[0];
+		}
+		$post__not_in = $query->get( 'post__not_in' );
+		$post__not_in = array_merge( $post__not_in, $queued );
+		$query->set( 'post__not_in', $post__not_in );
+	}
+
+	//pf_log($query);// die();
 }
-add_action( 'pre_get_posts', 'pf_exclude_queued_items_from_queries', 999 );
+//add_action( 'pre_get_posts', 'pf_exclude_queued_items_from_queries', 999 );
+
+// Filter post results instead of manipulating the query.
+function pf_exclude_queued_items_from_query_results( $posts, $query ) {
+	//var_dump($posts[0]); die();
+	$queued = get_option( 'pf_delete_queue' );
+	//var_dump($queued); die();
+	if ( ! $queued || ! is_array( $queued ) ) {
+		return $posts;
+	}
+
+	$type = $query->get( 'post_type' );
+	if ( ( empty($type) ) || ( 'post' != $type ) ){
+		foreach( $posts as $key=>$post ){
+			if ( in_array($post->ID, $queued) ){
+				unset($posts[$key]);
+			}
+		}
+	}
+	return $posts;
+}
+
+add_filter( 'the_posts', 'pf_exclude_queued_items_from_query_results', 999, 2 );
 
 /**
  * Detect and process a delete queue request.
