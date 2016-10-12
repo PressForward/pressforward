@@ -69,10 +69,15 @@ class PF_Tests_PfDeleteItemTree extends PF_UnitTestCase {
 			'post_type' => pressforward('schema.feeds')->post_type,
 			'post_status' => 'any',
 			'numberposts' => -1,
-			'fields' => 'ids',
+			// The post-query filter doesn't run when 'fields'=>'ids'
+			//'fields' => 'ids',
 		) );
+		$post_ids = array();
+		foreach ($q->posts as $post){
+			$post_ids[] = $post->ID;
+		}
 
-		$this->assertNotContains( $posts[1], $q->posts );
+		$this->assertNotContains( $posts[1], $post_ids );
 	}
 
 	public function test_batch_delete_should_delete_empty_terms() {
@@ -128,8 +133,10 @@ class PF_Tests_PfDeleteItemTree extends PF_UnitTestCase {
 		// Save the data
 		$id = wp_insert_attachment( $attachment, $upload[ 'file' ], $parent_post_id );
 		wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $upload['file'] ) );
-
-		return $this->ids[] = $id;
+		$ids = $this->ids;
+		$ids[] = $id;
+		$this->ids = $ids;
+		return $id;
 
 	}
 }

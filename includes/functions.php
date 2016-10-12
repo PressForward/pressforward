@@ -1035,23 +1035,38 @@ function pf_iterate_cycle_state($option_name, $option_limit = false, $echo = fal
  * @param int|WP_Post ID or WP_Post object.
  * @return bool|array False on failure, otherwise post ID deletion queue.
  */
-function pf_delete_item_tree( $item, $fake_delete = false ) {
+function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 	$item = get_post( $item );
 
 	if ( ! $item || ! ( $item instanceof WP_Post ) ) {
-		return 'Post Not Found.';
+		if ($msg) {
+			return 'Post Not Found.';
+		}
+		else {
+			return false;
+		}
 	}
 
 	$feed_item_post_type = pf_feed_item_post_type();
 	$feed_post_type      = pressforward('schema.feeds')->post_type;
 
 	if ( ! in_array( $item->post_type, array( $feed_item_post_type, $feed_post_type, 'nomination' ) ) ) {
-		return 'Post Type Not Matched';
+		if ($msg) {
+			return 'Post Type Not Matched';
+		}
+		else {
+			return false;
+		}
 	}
 
 	$queued = get_option( 'pf_delete_queue', array() );
 	if ( in_array( $item->ID, $queued ) ) {
-		return 'Post Type Already Queued';
+		if ($msg) {
+			return 'Post Type Already Queued';
+		}
+		else {
+			return false;
+		}
 	}
 
 	$queued[] = $item->ID;
@@ -1188,7 +1203,7 @@ function pf_exclude_queued_items_from_query_results( $posts, $query ) {
 	return $posts;
 }
 
-add_filter( 'the_posts', 'pf_exclude_queued_items_from_query_results', 999, 2 );
+add_filter( 'posts_results', 'pf_exclude_queued_items_from_query_results', 999, 2 );
 
 /**
  * Detect and process a delete queue request.
