@@ -1224,12 +1224,12 @@ function pf_process_delete_queue() {
 	$nonce = $_GET['pf_process_delete_queue'];
 	$saved_nonce = get_option( 'pf_delete_queue_nonce' );
 	if ( $saved_nonce !== $nonce ) {
-		pf_log('nonce indicates ready.');
+		pf_log('nonce indicates not ready.');
 		return;
 	}
 
 	$queued = get_option( 'pf_delete_queue', array() );
-	pf_log('Queue ready');
+	pf_log(' Delete queue ready');
 	for ( $i = 0; $i <= 1; $i++ ) {
 		$post_id = array_shift( $queued );
 		if ( null !== $post_id ) {
