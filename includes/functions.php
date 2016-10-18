@@ -1191,7 +1191,7 @@ function pf_exclude_queued_items_from_query_results( $posts, $query ) {
 	if ( ! $queued || ! is_array( $queued ) ) {
 		return $posts;
 	}
-
+	$queued = array_slice($queued, 0, 100);
 	$type = $query->get( 'post_type' );
 	if ( ( empty($type) ) || ( 'post' != $type ) ){
 		foreach( $posts as $key=>$post ){
