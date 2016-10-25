@@ -430,11 +430,11 @@ class Feed_Items implements HasActions, HasFilters {
 			'update_post_term_cache' => false
 		) );
 
-		if (empty($attachments)){
+		if (empty($attachments) || empty($attachments->posts) ){
 			return '';
 		}
 
-		foreach ($attachments as $key => $ID) {
+		foreach ($attachments->posts as $key => $ID) {
 			if ( false === wp_delete_attachment( $ID ) ) {
 				pf_log('Failed to delete attachment for '.$post_id);
 			}
@@ -445,23 +445,28 @@ class Feed_Items implements HasActions, HasFilters {
 	# The function we add to the action to clean our database.
 	public function disassemble_feed_items() {
 		pf_log('Disassemble Feed Items Activated');
+		$retain = get_option('pf_retain_time', 2);
 		//delete rss feed items with a date past a certain point.
-		add_filter( 'posts_where', array( $this, 'filter_where_older') );
+		//add_filter( 'posts_where', array( $this, 'filter_where_older') );
 		$queryForDel = new \WP_Query(
 								array(
-										'post_type' => pf_feed_item_post_type(),
+										'post_type' => $this->post_type,
 										'posts_per_page' => '150',
 										'fields'		 => 'ids',
-										'update_post_term_cache' => false
+										'update_post_term_cache' => false,
+										'date_query'	=> array(
+											'before'	=>	$retain.' months ago'
+										)
 									)
 							);
-		remove_filter( 'posts_where', array( $this, 'filter_where_older') );
+
+		//remove_filter( 'posts_where', array( $this, 'filter_where_older') );
 		#pf_log( $queryForDel );
 		// The Loop
-		if (empty($queryForDel)){
+		if ( empty($queryForDel) || empty($queryForDel->posts) ){
 			return '';
 		}
-		foreach ($queryForDel as $key => $post_id) {
+		foreach ($queryForDel->posts as $key => $post_id) {
 			# All the posts in this loop are older than 60 days from 'now'.
 			# Delete them all.
 			pf_log('Cleaning up '.$post_id);
@@ -484,7 +489,7 @@ class Feed_Items implements HasActions, HasFilters {
         }
         while ($pages > 0){
             $args = array(
-                    'post_type' =>  pf_feed_item_post_type(),
+                    'post_type' =>  $this->post_type,
                     'post_status' =>  'publish',
                     'posts_per_page'=>100,
                     'paged'  => $pages,
@@ -494,7 +499,7 @@ class Feed_Items implements HasActions, HasFilters {
             $archiveQuery = new \WP_Query( $args );
             #var_dump($archiveQuery);
             if (!empty($archiveQuery)){
-                foreach ($archiveQuery as $key => $post_id) {
+                foreach ($archiveQuery->posts as $key => $post_id) {
                 	// Switch the delete on to wipe rss archive posts from the database for testing.
     				pf_delete_item_tree( $post_id );
                 }

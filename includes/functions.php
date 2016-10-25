@@ -1037,9 +1037,12 @@ function pf_iterate_cycle_state($option_name, $option_limit = false, $echo = fal
  */
 function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 	$item = get_post( $item );
+	pf_log('Starting item deletion');
+	pf_log($item);
 
 	if ( ! $item || ! ( $item instanceof WP_Post ) ) {
 		if ($msg) {
+			pf_log('Post Not Found.');
 			return 'Post Not Found.';
 		}
 		else {
@@ -1052,6 +1055,7 @@ function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 
 	if ( ! in_array( $item->post_type, array( $feed_item_post_type, $feed_post_type, 'nomination' ) ) ) {
 		if ($msg) {
+			pf_log('Post Type Not Matched');
 			return 'Post Type Not Matched';
 		}
 		else {
@@ -1062,6 +1066,7 @@ function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 	$queued = get_option( 'pf_delete_queue', array() );
 	if ( in_array( $item->ID, $queued ) ) {
 		if ($msg) {
+			pf_log('Post Type Already Queued');
 			return 'Post Type Already Queued';
 		}
 		else {
@@ -1216,7 +1221,7 @@ add_filter( 'posts_results', 'pf_exclude_queued_items_from_query_results', 999, 
 function pf_process_delete_queue() {
 	//pf_log('pf_process_delete_queue');
 	if ( ! isset( $_GET['pf_process_delete_queue'] ) ) {
-		//pf_log("Not set to go on ");
+		pf_log("Not set to go on ");
 		//pf_log($_GET);
 		return;
 	}
