@@ -166,7 +166,7 @@ class Nominated implements HasActions {
             			} elseif (isset($_GET['folder'])){
             				$parents_in_folder = new WP_Query( array(
             					'post_type' => pressforward('schema.feeds')->post_type,
-            					'fields'=> 'ids',
+            					//'fields'=> 'ids',
             					'update_post_term_cache' => false,
             					'update_post_meta_cache' => false,
             					'tax_query' => array(
