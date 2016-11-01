@@ -44,6 +44,16 @@ class APIWithMetaEndpoints {
 	 * @return [type] [description]
 	 */
 	public function register_rest_post_read_meta_fields(){
+		global $wp_rest_server;
+		// https://github.com/PressForward/pressforward/issues/859#issuecomment-257587107
+		if (isset($wp_rest_server)){
+			$routes = $wp_rest_server->get_routes();
+			if ( ( 'post' === $this->level ) && ( !isset( $routes['/wp/v2/posts'] ) ) ){
+				return false;
+			}
+		} else {
+			return false;
+		}
 		foreach ( $this->valid_metas() as $key ){
 			$this->register_rest_post_read_field( $key, true );
 		}
