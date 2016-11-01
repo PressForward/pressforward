@@ -8,10 +8,10 @@ if (!class_exists('The_Alert_Box')){
   class The_Alert_Box {
 
     public static $status = 'alert_specimen';
-		public static $option_name = 'alert_box_options';
+	public static $option_name = 'alert_box_options';
     public static $alert_meta_key = 'ab_alert_msg';
-		var $settings;
-		var $alert_name;
+	var $settings;
+	//	var $alert_name;
 
     public static function init() {
       static $instance;
@@ -40,7 +40,7 @@ if (!class_exists('The_Alert_Box')){
 					add_action( 'wp_ajax_dismiss_alerts_ajax', array( $this, 'dismiss_alerts_ajax') );
           add_action( 'save_post', array($this, 'remove_alert_on_edit') );
 			}
-			$this->alert_name = $this->alert_name_maker();
+			//$this->alert_name = $this->alert_name_maker();
 			#add_action( 'admin_init', array($this, 'settings_field_settings_page') );
     }
 
@@ -118,8 +118,8 @@ if (!class_exists('The_Alert_Box')){
         'activate_q'          => __( 'Active Alert Boxes?', 'pf' ),
         'turned_off'		      => __( 'Alert boxes not active.', 'pf')
 			);
-      $alert_names =  self::depreciated_alert_name_filters($alert_names);
-			$alert_names = apply_filters('ab_alert_specimens_labels', $alert_names);
+      $alert_names =  self::depreciated_alert_name_filters(bs);
+	  $alert_names = apply_filters('ab_alert_specimens_labels', $alert_names);
       if (!$label || !array_key_exists($label, $alert_names)) {
         return $alert_names;
       } else {
