@@ -742,6 +742,36 @@ class Metas implements HasFilters {
 		return $metas;
 	}
 
+    /**
+     * Register metas to prevent core from breaking when adding them to API
+     *
+     * https://developer.wordpress.org/reference/functions/register_meta/
+     * and WP_REST_Term_Meta_Fields.
+     * 
+     * @return [type] [description]
+     */
+    function register_pf_metas(){
+        foreach ($this->structure() as $meta){
+            $meta['show_in_rest'] = false;
+            if ( in_array('api', $meta['use'] ) ){
+                $meta['show_in_rest'] = true;
+            }
+            foreach ($meta['level'] as $level){
+                switch ($level) {
+                    case 'item':
+                        # code...
+                        break;
+                    case 'nomination':
+                    case 'post':
+                    case 'feed':
+                    default:
+                        # code...
+                        break;
+                }
+            }
+        }
+    }
+
 	/*
 	 * A function to check and retrieve the right meta field for a post.
 	 */
