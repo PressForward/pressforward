@@ -118,7 +118,7 @@ if (!class_exists('The_Alert_Box')){
         'activate_q'          => __( 'Active Alert Boxes?', 'pf' ),
         'turned_off'		      => __( 'Alert boxes not active.', 'pf')
 			);
-      $alert_names =  self::depreciated_alert_name_filters(bs);
+      $alert_names =  self::depreciated_alert_name_filters($alert_names);
 	  $alert_names = apply_filters('ab_alert_specimens_labels', $alert_names);
       if (!$label || !array_key_exists($label, $alert_names)) {
         return $alert_names;
