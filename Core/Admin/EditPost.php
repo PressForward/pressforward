@@ -26,20 +26,30 @@ class EditPost implements HasActions {
 	}
 
 	function posted_submitbox_pf_actions(){
-		global $post;
-		$check = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'item_link', true);
-		if ( empty($check) ){
-			return;
-		}
-		$value = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'pf_forward_to_origin', true);
-		if ( empty($value) ){
-
+		global $post, $pagenow;
+		//new post check
+		if ( in_array( $pagenow, array( 'post-new.php' ) ) ){
 			$option_value = get_option('pf_link_to_source');
-				if ( empty($option_value) ){
-					$value = 'no-forward';
-				} else {
-					$value = 'forward';
-				}
+			if ( empty($option_value) ){
+				$value = 'no-forward';
+			} else {
+				$value = 'forward';
+			}
+		} else {
+			$check = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'item_link', true);
+			if ( empty($check) ){
+				return;
+			}
+			$value = pressforward('controller.metas')->get_post_pf_meta($post->ID, 'pf_forward_to_origin', true);
+			if ( empty($value) ){
+
+				$option_value = get_option('pf_link_to_source');
+					if ( empty($option_value) ){
+						$value = 'no-forward';
+					} else {
+						$value = 'forward';
+					}
+			}
 		}
 
 		echo '<div class="misc-pub-section misc-pub-section-last">
