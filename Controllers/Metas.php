@@ -4,10 +4,11 @@ namespace PressForward\Controllers;
 use PressForward\Interfaces\SystemMeta;
 use PressForward\Interfaces\System;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
+use Intraxia\Jaxion\Contract\Core\HasActions;
 /**
  * Functionality related to nominations
  */
-class Metas implements HasFilters {
+class Metas implements HasFilters, HasActions {
 
     //var $meta_interface;
 
@@ -30,6 +31,18 @@ class Metas implements HasFilters {
 
 		return $filters;
 	}
+
+    public function action_hooks(){
+        $filters = array(
+            array(
+                'hook' => 'init',
+                'method' => 'register_pf_metas',
+                'priority'  => 10,
+            )
+        );
+
+        return $filters;
+    }
 
 	/**
 	 * Take an array of objects describing post_metas and set them to the id of a post.
@@ -747,29 +760,45 @@ class Metas implements HasFilters {
      *
      * https://developer.wordpress.org/reference/functions/register_meta/
      * and WP_REST_Term_Meta_Fields.
-     * 
+     *
      * @return [type] [description]
      */
     function register_pf_metas(){
-        foreach ($this->structure() as $meta){
-            $meta['show_in_rest'] = false;
-            if ( in_array('api', $meta['use'] ) ){
-                $meta['show_in_rest'] = true;
+        $metas = array();
+        foreach ($this->structure() as $key=>$meta){
+            if ($meta['serialize']){
+                continue;
             }
+            if ( !in_array('api', $meta['use'] ) ){
+                continue;
+            }
+            $metas[$key] = array();
+            $metas[$key]['show_in_rest'] = true;
+            $metas[$key]['single'] = true;
+            $metas[$key]['type'] = 'string';
+            $metas[$key]['show_in_rest'] = false;
+            $metas[$key]['description'] = $meta['function'];
             foreach ($meta['level'] as $level){
                 switch ($level) {
                     case 'item':
-                        # code...
+                        register_meta( pressforward('schema.feed_item')->post_type, $key, $metas[$key] );
                         break;
                     case 'nomination':
+                        register_meta( pressforward('schema.nominations')->post_type, $key, $metas[$key] );
+                        break;
                     case 'post':
+                        register_meta( 'post', $key, $metas[$key] );
+                        break;
                     case 'feed':
+                        register_meta( pressforward('schema.feeds')->post_type, $key, $metas[$key] );
+                        break;
                     default:
                         # code...
                         break;
                 }
             }
         }
+        return true;
     }
 
 	/*
