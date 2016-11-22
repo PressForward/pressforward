@@ -14,7 +14,7 @@ class FolderExtension extends APIWithMetaEndpoints implements HasFilters {
 	protected $basename;
 
 	function __construct( Metas $metas ){
-		$this->metas = $metas;
+		$this->pf_metas = $metas;
 		$this->tax = pressforward('schema.folders')->tag_taxonomy;
 		$this->level = 'feed';
 	}
