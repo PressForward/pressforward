@@ -305,6 +305,12 @@ class Forward_Tools {
 			  $source = '';
 			}
 			$tags = $_POST['post_tags'];
+			if ( empty($tags) || is_wp_error($tags) ){
+				$tags[] = 'via bookmarklet';
+				if (is_wp_error($tags)){
+					pf_log($tags);
+				}
+			}
 			//$tags[] = 'via bookmarklet';
 
 			//pf_log($_POST);
