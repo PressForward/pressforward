@@ -169,6 +169,10 @@ function nominate_it() {
 	} else {
 		$post_ID = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
 	}
+
+	if ( !empty($_POST['item_feat_img']) && ( $_POST['item_feat_img'] != '' ) ){
+		pressforward('schema.feed_item')->set_ext_as_featured($post_ID,  $_POST['item_feat_img']);
+	}
 	#var_dump($post); die();
 	return $post_ID;
 }
@@ -187,18 +191,6 @@ if ( isset($_REQUEST['action']) && 'post' == $_REQUEST['action'] ) {
 
 
 	global $pf_nt;
-	if (isset($_POST['item_link']) && !empty($_POST['item_link']) && ($_POST['item_link']) != ''){
-		pf_log('Getting OpenGraph image on ');
-		pf_log($_POST['item_link']);
-		//var_dump($_POST['item_link']); die();
-		//Gets OG image
-		$itemFeatImg = pressforward('schema.feed_item')->get_ext_og_img($_POST['item_link']);
-		//var_dump($itemFeatImg); die();
-	}
-
-	if ( !empty($_POST['item_link']) && ( $_POST['item_link'] != '' ) ){
-		pressforward('schema.feed_item')->set_ext_as_featured($post_ID, $itemFeatImg);
-	}
 
     // Set Variables
 
@@ -622,8 +614,23 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 				<?php  ?>
 				<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr($title);?>" />
 				<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo current_time('mysql'); ?>" />
-				<?php #Metadata goes here. ?>
+				<?php # Metadata goes here.
+                    if (isset($url) && !empty($url) && ($url) != ''){
+                        pf_log('Getting OpenGraph image on ');
+                        pf_log($url);
+                        //var_dump($_POST['item_link']); die();
+                        //Gets OG image
+                        $itemFeatImg = pressforward('schema.feed_item')->get_ext_og_img($url);
+                        //var_dump($itemFeatImg); die();
+                    } else {
+                        $itemFeatImg = false;
+                    }
+                    if ( !$itemFeatImg || is_wp_error($itemFeatImg) ){
+                        $itemFeatImg = '';
+                    }
+                ?>
 				<input type="hidden" id="item_link" name="item_link" value="<?php echo esc_url( $url ); ?>" />
+                <input type="hidden" id="item_feat_img" name="item_feat_img" value="<?php echo esc_url( $itemFeatImg ); ?>" />
 			<?php } ?>
 
 			<!-- This div holds the photo metadata -->
