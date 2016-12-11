@@ -285,6 +285,9 @@ class Forward_Tools {
 			# PF NOTE: This is where the inital post is created.
 			# PF NOTE: Put get_post_nomination_status here.
 			$post = $this->item_interface->insert_post($post, true, $item_id );
+			if (is_wp_error($post)){
+				wp_die($post->get_error_message());
+			}
 			$post_ID = $post;
 			//var_dump('<pre>'); var_dump($post); var_dump($post_array); die();
 			$this->advance_interface->prep_bookmarklet( $post );
