@@ -26,6 +26,8 @@ env:
     - WP_VERSION=4.5.4 WP_MULTISITE=1
     - WP_VERSION=4.6.1 WP_MULTISITE=0
     - WP_VERSION=4.6.1 WP_MULTISITE=1
+    - WP_VERSION=4.7 WP_MULTISITE=0
+    - WP_VERSION=4.7 WP_MULTISITE=1
 
 before_install:
     - git submodule update --init --recursive
