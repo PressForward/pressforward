@@ -4,7 +4,7 @@ Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 3.0.1
 Tested up to: 4.6.1
-Stable tag: 4.1.2
+Stable tag: 4.2.1
 License: GPL2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -81,6 +81,27 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+
+= 4.2.1 =
+
+* Added feeds, feed items, and folders to the PressForward endpoint.
+* Optimized the the retrieval code.
+* Updated jQuery library and switched from jQuery Toggle to Click.
+* Enhancements to the post delete function.
+* Optimized overall Javascript features.
+* Optimized old item deletion.
+* Readability library optimized and cleaned for general release.
+* Improved relationship table install and check process.
+* PressForward post meta keys are now registered with WordPress Core functions.
+* Assured compatibility with 4.7
+* Optimized item link tracking for published posts.
+* Added additional checks for keywords to add to the tags in the Nominate This bookmarklet.
+* Fixed a bug that prevented the bookmarklet from retrieving tags
+* Fixed an issue that caused the interface to stop functioning on Windows 8 touch screens.
+* Word counts recorded in post metadata are now accurate.
+* Fixed a conflict between PressForward and Jetpack.
+* Repaired broken unit test methodology.
+* A more useful error when Nominate This can’t add a post to the database.
 
 = 4.1.1 =
 

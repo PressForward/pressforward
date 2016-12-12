@@ -4,10 +4,11 @@ namespace PressForward\Controllers;
 use PressForward\Interfaces\SystemMeta;
 use PressForward\Interfaces\System;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
+use Intraxia\Jaxion\Contract\Core\HasActions;
 /**
  * Functionality related to nominations
  */
-class Metas implements HasFilters {
+class Metas implements HasFilters, HasActions {
 
     //var $meta_interface;
 
@@ -30,6 +31,18 @@ class Metas implements HasFilters {
 
 		return $filters;
 	}
+
+    public function action_hooks(){
+        $filters = array(
+            array(
+                'hook' => 'init',
+                'method' => 'register_pf_metas',
+                'priority'  => 10,
+            )
+        );
+
+        return $filters;
+    }
 
 	/**
 	 * Take an array of objects describing post_metas and set them to the id of a post.
@@ -583,6 +596,15 @@ class Metas implements HasFilters {
 				'level'	=> array('item', 'nomination', 'post'),
 				'serialize'	=> true
 			),
+			'pf_word_count' => array(
+				'name' => 'pf_word_count',
+				'definition' => __('Word count of text', 'pf'),
+				'function'	=> __('Stores the count of the words on the last save managed by PF.', 'pf'),
+				'type'	=> array('desc'),
+				'use'	=> array('api'),
+				'level'	=> array('item', 'nomination', 'post'),
+				'serialize'	=> false
+			),
 			'pf_archive' => array(
 				'name' => 'pf_archive',
 				'definition' => __('Archive state of the item', 'pf'),
@@ -732,6 +754,52 @@ class Metas implements HasFilters {
 		$metas = apply_filters('pf_meta_terms',$metas);
 		return $metas;
 	}
+
+    /**
+     * Register metas to prevent core from breaking when adding them to API
+     *
+     * https://developer.wordpress.org/reference/functions/register_meta/
+     * and WP_REST_Term_Meta_Fields.
+     *
+     * @return [type] [description]
+     */
+    function register_pf_metas(){
+        $metas = array();
+        foreach ($this->structure() as $key=>$meta){
+            if ($meta['serialize']){
+                continue;
+            }
+            if ( !in_array('api', $meta['use'] ) ){
+                continue;
+            }
+            $metas[$key] = array();
+            $metas[$key]['show_in_rest'] = true;
+            $metas[$key]['single'] = true;
+            $metas[$key]['type'] = 'string';
+            $metas[$key]['show_in_rest'] = false;
+            $metas[$key]['description'] = $meta['function'];
+            foreach ($meta['level'] as $level){
+                switch ($level) {
+                    case 'item':
+                        register_meta( pressforward('schema.feed_item')->post_type, $key, $metas[$key] );
+                        break;
+                    case 'nomination':
+                        register_meta( pressforward('schema.nominations')->post_type, $key, $metas[$key] );
+                        break;
+                    case 'post':
+                        register_meta( 'post', $key, $metas[$key] );
+                        break;
+                    case 'feed':
+                        register_meta( pressforward('schema.feeds')->post_type, $key, $metas[$key] );
+                        break;
+                    default:
+                        # code...
+                        break;
+                }
+            }
+        }
+        return true;
+    }
 
 	/*
 	 * A function to check and retrieve the right meta field for a post.
@@ -979,6 +1047,14 @@ class Metas implements HasFilters {
 				$nominators = array_merge( $nominators, $value );
 				$nominators = array_unique( $nominators );
 				$value = $nominators;
+				break;
+			case 'pf_feed_item_word_count':
+				$latest_count = $this->get_post_pf_meta($id, 'pf_word_count');
+				if ( ($latest_count < $value ) ){
+					$this->update_pf_meta( $id, 'pf_word_count', $value, $state );
+				} else if ( empty($latest_count) ) {
+					$this->add_pf_meta( $id, 'pf_word_count', $value, $state );
+				}
 				break;
 			case 'item_author':
 				if ( empty($value) ){

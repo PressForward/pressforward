@@ -377,7 +377,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
     public function pf_delete_children_of_feeds( $post_id ){
     	if ( pressforward('schema.feeds')->post_type == get_post_type( $post_id ) ){
     		pf_log('Delete a feed and all its children.');
-		pf_delete_item_tree( $post_id );
+		    pf_delete_item_tree( $post_id );
     	}
     }
 

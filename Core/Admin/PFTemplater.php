@@ -179,7 +179,7 @@ class PFTemplater {
 		$user_ID = get_current_user_id();
 		$pf_user_menu_set = get_user_option('pf_user_menu_set', $user_ID);
 		if ('true' == $pf_user_menu_set){
-			$screen = $this->the_screen;
+			$screen = $this->factory->the_screen;
 			$vars = array(
 					'slug'		=> $screen['id'],
 					'version'	=> 0,

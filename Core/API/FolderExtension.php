@@ -9,31 +9,20 @@ use PressForward\Core\API\APIWithMetaEndpoints;
 
 use WP_Ajax_Response;
 
-class FeedEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilters {
+class FolderExtension extends APIWithMetaEndpoints implements HasFilters {
 
 	protected $basename;
 
 	function __construct( Metas $metas ){
-		$this->metas = $metas;
-		$this->post_type = pressforward('schema.feeds')->post_type;
+		$this->pf_metas = $metas;
+		$this->tax = pressforward('schema.folders')->tag_taxonomy;
 		$this->level = 'feed';
-	}
-
-
-	public function action_hooks() {
-		$actions = array(
-			array(
-				'hook' => 'rest_api_init',
-				'method' => 'register_rest_post_read_meta_fields',
-			)
-		);
-		return $actions;
 	}
 
 	public function filter_hooks() {
 		$filter = array(
 			array(
-				'hook' => 'rest_prepare_'.$this->post_type,
+				'hook' => 'rest_prepare_'.$this->tax,
 				'method' => 'filter_wp_to_pf_in_terms',
 				'priority'  => 10,
 				'args' => 3
@@ -41,6 +30,4 @@ class FeedEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 		);
 		return $filter;
 	}
-
-
 }

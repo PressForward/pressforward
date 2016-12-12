@@ -1,5 +1,14 @@
 <?php
 /**
+ * Updated for the PressForward project
+ * Based on the last public release of FiveFilters' Readability Library
+ * This library has been updated by the Roy Rosenzweig Center for History and
+ * New Media at George Mason University through the Generous Support of the
+ * Alfred P. Sloan Foundation. It was updated and continues to be maintained
+ * with the goal of allowing maximum use on a changing modern web.
+ * More information about PressForward: http://pressforward.org/
+ * This project lives on: https://github.com/PressForward/PressForward-Readability
+* ------------------------------------------------------
 * Arc90's Readability ported to PHP for FiveFilters.org
 * Based on readability.js version 1.7.1 (without multi-page support)
 * Updated to allow HTML5 parsing with html5lib
@@ -110,9 +119,10 @@ class Readability
 	* @param string (optional) URL associated with HTML (used for footnotes)
 	* @param string which parser to use for turning raw HTML into a DOMDocument (either 'libxml' or 'html5lib')
 	*/
-	function __construct($html, $url=null, $parser='libxml')
+	function __construct($html, $url=null, $parser='libxml', $logging_function = false)
 	{
 		$this->url = $url;
+		$this->logger = $logging_function;
 		/* Turn all double br's into p's */
 		$html = preg_replace($this->regexps['replaceBrs'], '</p><p>', $html);
 		$html = preg_replace($this->regexps['replaceFonts'], '<$1span>', $html);
@@ -217,12 +227,18 @@ class Readability
 		return $this->success;
 	}
 
+	protected function external_logger($msg){
+		if ( false !== $this->logger && is_callable( $this->logger ) ){
+			call_user_func_array($this->logger, array($msg));
+		}
+	}
+
 	/**
 	* Debug
 	*/
 	protected function dbg($msg) {
 		if ($this->debug) echo '* ',$msg, "\n";
-		pf_log($msg);
+		$this->external_logger($msg);
 	}
 
 	/**
@@ -659,8 +675,6 @@ class Readability
 		* and find the one with the highest score.
 		**/
 		$topCandidate = null;
-		//pf_log('Candidates: ');
-		//pf_log($candidates);
 		for ($c=0, $cl=count($candidates); $c < $cl; $c++)
 		{
 			/**
@@ -934,7 +948,6 @@ class Readability
 		if ($e->hasAttribute('class') && $e->getAttribute('class') != '')
 		{
 			if (preg_match($this->regexps['negative'], $e->getAttribute('class'))) {
-				//pf_log($e->getAttribute('class'));
 				$weight -= 25;
 			}
 			if (preg_match($this->regexps['positive'], $e->getAttribute('class'))) {

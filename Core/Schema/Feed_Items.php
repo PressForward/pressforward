@@ -78,14 +78,23 @@ class Feed_Items implements HasActions, HasFilters {
 			'not_found_in_trash' => __( 'No feed items found in trash', 'pf' ),
 		);
 
+		$modules = pressforward('modules')->modules;
+		if (isset($modules['rss-out']) && ( 'yes' == get_option(PF_SLUG . '_' . 'rss-out_enable') )  ){
+			$rest_enabled = true;
+		} else {
+			$rest_enabled = false;
+		}
+
 		register_post_type( $this->post_type, apply_filters( 'pf_register_feed_item_post_type_args', array(
 			'label'       => $labels['name'],
 			'labels'      => $labels,
 			'description' => __( 'Feed items imported by PressForward&#8217;s RSS Importer', 'pf' ),
 			'public'      => false,
-			'show_ui'     => true, // for testing only
+			'show_ui'     => true,
 			'show_in_admin_bar' => false,
-			'show_ui'     => true, // for testing only
+			'show_in_rest'       => true,//$rest_enabled,
+			'rest_base'          => 'feed_items',
+			'rest_controller_class' => 'PF_REST_Posts_Controller',
 			'capability_type' => $this->post_type,
 			'capabilities' => $this->map_feed_item_caps()
 		) ) );
@@ -411,15 +420,22 @@ class Feed_Items implements HasActions, HasFilters {
 	#via http://wordpress.stackexchange.com/questions/109793/delete-associated-media-upon-page-deletion
 	public function disassemble_feed_item_media( $post_id ) {
 
-		$attachments = get_posts( array(
+		$attachments = new WP_Query( array(
 			'post_type'      => 'attachment',
 			'posts_per_page' => -1,
 			'post_status'    => 'any',
-			'post_parent'    => $post_id
+			'post_parent'    => $post_id,
+			'fields'		 => 'ids',
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false
 		) );
 
-		foreach ( $attachments as $attachment ) {
-			if ( false === wp_delete_attachment( $attachment->ID ) ) {
+		if (empty($attachments) || empty($attachments->posts) ){
+			return '';
+		}
+
+		foreach ($attachments->posts as $key => $ID) {
+			if ( false === wp_delete_attachment( $ID ) ) {
 				pf_log('Failed to delete attachment for '.$post_id);
 			}
 		}
@@ -429,28 +445,33 @@ class Feed_Items implements HasActions, HasFilters {
 	# The function we add to the action to clean our database.
 	public function disassemble_feed_items() {
 		pf_log('Disassemble Feed Items Activated');
+		$retain = get_option('pf_retain_time', 2);
 		//delete rss feed items with a date past a certain point.
-		add_filter( 'posts_where', array( $this, 'filter_where_older') );
+		//add_filter( 'posts_where', array( $this, 'filter_where_older') );
 		$queryForDel = new \WP_Query(
 								array(
-										'post_type' => pf_feed_item_post_type(),
-										'posts_per_page' => '150'
+										'post_type' => $this->post_type,
+										'posts_per_page' => '150',
+										'fields'		 => 'ids',
+										'update_post_term_cache' => false,
+										'date_query'	=> array(
+											'before'	=>	$retain.' months ago'
+										)
 									)
 							);
-		remove_filter( 'posts_where', array( $this, 'filter_where_older') );
+
+		//remove_filter( 'posts_where', array( $this, 'filter_where_older') );
 		#pf_log( $queryForDel );
 		// The Loop
-		while ( $queryForDel->have_posts() ) : $queryForDel->the_post();
+		if ( empty($queryForDel) || empty($queryForDel->posts) ){
+			return '';
+		}
+		foreach ($queryForDel->posts as $key => $post_id) {
 			# All the posts in this loop are older than 60 days from 'now'.
 			# Delete them all.
-			$post_id = get_the_ID();
 			pf_log('Cleaning up '.$post_id);
 			pf_delete_item_tree( $post_id );
-
-		endwhile;
-
-		// Reset Post Data
-		wp_reset_postdata();
+		}
 
 	}
 	# Method to manually delete rssarchival entries on user action.
@@ -468,27 +489,21 @@ class Feed_Items implements HasActions, HasFilters {
         }
         while ($pages > 0){
             $args = array(
-                    'post_type' =>  pf_feed_item_post_type(),
+                    'post_type' =>  $this->post_type,
                     'post_status' =>  'publish',
                     'posts_per_page'=>100,
-                    'paged'  => $pages
+                    'paged'  => $pages,
+					'update_post_term_cache' => false,
+					'fields'		 => 'ids'
                 );
             $archiveQuery = new \WP_Query( $args );
             #var_dump($archiveQuery);
-            if ( $archiveQuery->have_posts() ) :
-
-                while ( $archiveQuery->have_posts() ) : $archiveQuery->the_post();
-			$post_id = get_the_ID();
-			// Switch the delete on to wipe rss archive posts from the database for testing.
-			pf_delete_item_tree( $post_id );
-
-                endwhile;
-                #print_r(__('All archives deleted.', 'pf'));
-
-            wp_reset_postdata();
-            else:
-              #print_r( 'Sorry, no posts matched your criteria.' );
-            endif;
+            if (!empty($archiveQuery)){
+                foreach ($archiveQuery->posts as $key => $post_id) {
+                	// Switch the delete on to wipe rss archive posts from the database for testing.
+    				pf_delete_item_tree( $post_id );
+                }
+            }
 
             $pages--;
         }

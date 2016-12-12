@@ -11,7 +11,7 @@
  *
  * This function allows developers to register modules into the array
  * of PressForward modules. Developers can do this to take advantage
- * of a variaty of PressForward function and to makeit appear in
+ * of a variaty of PressForward function and to make it appear in
  * the PressForward dashboard.
  *
  * @since 2.x.x
@@ -1035,23 +1035,43 @@ function pf_iterate_cycle_state($option_name, $option_limit = false, $echo = fal
  * @param int|WP_Post ID or WP_Post object.
  * @return bool|array False on failure, otherwise post ID deletion queue.
  */
-function pf_delete_item_tree( $item, $fake_delete = false ) {
+function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 	$item = get_post( $item );
+	pf_log('Starting item deletion');
+	pf_log($item);
 
 	if ( ! $item || ! ( $item instanceof WP_Post ) ) {
-		return 'Post Not Found.';
+		if ($msg) {
+			pf_log('Post Not Found.');
+			return 'Post Not Found.';
+		}
+		else {
+			return false;
+		}
 	}
 
 	$feed_item_post_type = pf_feed_item_post_type();
 	$feed_post_type      = pressforward('schema.feeds')->post_type;
 
 	if ( ! in_array( $item->post_type, array( $feed_item_post_type, $feed_post_type, 'nomination' ) ) ) {
-		return 'Post Type Not Matched';
+		if ($msg) {
+			pf_log('Post Type Not Matched');
+			return 'Post Type Not Matched';
+		}
+		else {
+			return false;
+		}
 	}
 
 	$queued = get_option( 'pf_delete_queue', array() );
 	if ( in_array( $item->ID, $queued ) ) {
-		return 'Post Type Already Queued';
+		if ($msg) {
+			pf_log('Post Type Already Queued');
+			return 'Post Type Already Queued';
+		}
+		else {
+			return false;
+		}
 	}
 
 	$queued[] = $item->ID;
@@ -1176,7 +1196,7 @@ function pf_exclude_queued_items_from_query_results( $posts, $query ) {
 	if ( ! $queued || ! is_array( $queued ) ) {
 		return $posts;
 	}
-
+	$queued = array_slice($queued, 0, 100);
 	$type = $query->get( 'post_type' );
 	if ( ( empty($type) ) || ( 'post' != $type ) ){
 		foreach( $posts as $key=>$post ){
@@ -1188,7 +1208,7 @@ function pf_exclude_queued_items_from_query_results( $posts, $query ) {
 	return $posts;
 }
 
-add_filter( 'the_posts', 'pf_exclude_queued_items_from_query_results', 999, 2 );
+add_filter( 'posts_results', 'pf_exclude_queued_items_from_query_results', 999, 2 );
 
 /**
  * Detect and process a delete queue request.
@@ -1201,7 +1221,7 @@ add_filter( 'the_posts', 'pf_exclude_queued_items_from_query_results', 999, 2 );
 function pf_process_delete_queue() {
 	//pf_log('pf_process_delete_queue');
 	if ( ! isset( $_GET['pf_process_delete_queue'] ) ) {
-		//pf_log("Not set to go on ");
+		pf_log("Not set to go on ");
 		//pf_log($_GET);
 		return;
 	}
@@ -1209,12 +1229,12 @@ function pf_process_delete_queue() {
 	$nonce = $_GET['pf_process_delete_queue'];
 	$saved_nonce = get_option( 'pf_delete_queue_nonce' );
 	if ( $saved_nonce !== $nonce ) {
-		pf_log('nonce indicates ready.');
+		pf_log('nonce indicates not ready.');
 		return;
 	}
 
 	$queued = get_option( 'pf_delete_queue', array() );
-	pf_log('Queue ready');
+	pf_log(' Delete queue ready');
 	for ( $i = 0; $i <= 1; $i++ ) {
 		$post_id = array_shift( $queued );
 		if ( null !== $post_id ) {

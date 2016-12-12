@@ -48,8 +48,8 @@ class LibrariesProvider extends ServiceProvider {
 		$container->define(
 			'library.readability',
 			function( $container ){
-				return (function( $html, $url=null, $parser='libxml' ){
-					return new Readability($html, $url, $parser);
+				return (function( $html, $url=null, $parser='libxml', $logger = 'pf_log' ){
+					return new Readability($html, $url, $parser, $logger);
 				});
 			}
 		);

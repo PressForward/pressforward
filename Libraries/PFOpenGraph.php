@@ -83,7 +83,7 @@ class PFOpenGraph implements Iterator
 
   		$nonOgDescription = null;
 
-  		foreach ($tags AS $tag) {
+  		foreach ($tags as $tag) {
   			if ($tag->hasAttribute('property') && strpos($tag->getAttribute('property'), 'og:') === 0) {
   				$key = strtr(substr($tag->getAttribute('property'), 3), '-', '_');
 
@@ -106,7 +106,19 @@ class PFOpenGraph implements Iterator
   			//Based on modifications at https://github.com/bashofmann/opengraph/blob/master/src/OpenGraph/OpenGraph.php
   			if ($tag->hasAttribute('name') && $tag->getAttribute('name') === 'description') {
                   $nonOgDescription = $tag->getAttribute('content');
-              }
+            }
+
+			if ($tag->hasAttribute('name') && $tag->getAttribute('name') === 'keywords') {
+				  $keyword_tags = $tag->getAttribute('content');
+				  $keyword_tag_array = explode(',',$keyword_tags );
+				  if (!isset($tag->_values['article_tag_additional'])){
+					  $tag->_values['article_tag_additional'] = array();
+				  }
+				  foreach( $keyword_tag_array as $keyword ){
+				  	$page->_values['article_tag_additional'][] = trim($keyword);
+			      }
+				  $page->_values['keywords'] = $keyword_tags;
+			}
 
   			if ($tag->hasAttribute('property') &&
   			    strpos($tag->getAttribute('property'), 'twitter:') === 0) {
@@ -146,6 +158,9 @@ class PFOpenGraph implements Iterator
   				}
   			}
   		}
+
+		//$tags = $doc->getElementsByTagName('keywords');
+		//var_dump($page->_values); die();
 
   		//Based on modifications at https://github.com/bashofmann/opengraph/blob/master/src/OpenGraph/OpenGraph.php
   		if (!isset($page->_values['title'])) {

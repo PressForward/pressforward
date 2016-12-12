@@ -72,6 +72,7 @@ class Forward_Tools {
 			);
 			$item_content_obj = pressforward('controller.readability')->get_readable_text($readArgs);
 			$item_content = htmlspecialchars_decode($item_content_obj['readable']);
+			$word_count = str_word_count($item_content);
 			$source_position = get_option('pf_source_statement_position', 'bottom');
 			if ( ( 'bottom' == $source_position ) && $source ){
 				$item_content = $item_content . pressforward('admin.nominated')->get_the_source_statement( $post_id );
@@ -85,6 +86,7 @@ class Forward_Tools {
 			if ( is_numeric($post_id) ){
 				if ((!empty($item_content_obj['status'])) && ('secured' != $item_content_obj['status'])){
 					$this->metas->update_pf_meta($post_id, 'readable_status', 1);
+					$this->metas->update_pf_meta( $post_id, 'pf_word_count', $word_count );
 				} elseif ((1 != $readable_status)) {
 					$this->metas->update_pf_meta($post_id, 'readable_status', 0);
 				}
@@ -155,7 +157,30 @@ class Forward_Tools {
 						}
 					}
 				}
+		} else {
+			pf_log('User nominated already but cannot delete a post.');
+			$this->user_meta_nomination_counter_change($current_user->ID, false);
 		}
+	}
+
+	public function find_nominating_user(){
+		$current_user = wp_get_current_user();
+		pf_log('User: ');
+		pf_log($current_user);
+		if ( 0 == $current_user->ID ) {
+			//Not logged in.
+			$userSlug = "external";
+			$userName = __('External User', 'pf');
+			$userID = 0;
+			pf_log('Can not find a user to add to the nominated count of.');
+		} else {
+			// Logged in.
+			pressforward('admin.nominated')->user_nomination_meta();
+			$userID = $current_user->ID;
+			$userString = $userID;
+		}
+
+		return array('user_string' => $userString, 'user_id' => $userID );
 	}
 
 	// Previous step to new step Tools
@@ -171,27 +196,14 @@ class Forward_Tools {
 			pf_log('Start Transition.');
 			$this->transition_to_readable_text($item_post_id, true);
 
-			$current_user = wp_get_current_user();
-			pf_log('User: ');
-			pf_log($current_user);
-			if ( 0 == $current_user->ID ) {
-				//Not logged in.
-				$userSlug = "external";
-				$userName = __('External User', 'pf');
-				$userID = 0;
-				pf_log('Can not find a user to add to the nominated count of.');
-			} else {
-				// Logged in.
-				pressforward('admin.nominated')->user_nomination_meta();
-				$userID = $current_user->ID;
-				$userString = $userID;
-			}
-
+			$user_data = $this->find_nominating_user();
+			$userID = $user_data['user_id'];
+			$userString = $user_data['user_string'];
 
 			$this->metas->update_pf_meta($item_post_id, 'nomination_count', 1);
 			$this->metas->update_pf_meta($item_post_id, 'submitted_by', $userString);
 			$this->metas->update_pf_meta($item_post_id, 'nominator_array', array($userID));
-			$this->metas->update_pf_meta($item_post_id, 'date_nominated', current_time('Y-m-d H:i:s'));
+			$this->metas->update_pf_meta($item_post_id, 'date_nominated', current_time('mysql'));
 			$this->metas->update_pf_meta($item_post_id, 'item_id', $item_id);
 			$this->metas->update_pf_meta($item_post_id, 'pf_item_post_id', $item_post_id);
 			if ( !empty($_POST['item_link']) ){
@@ -257,36 +269,35 @@ class Forward_Tools {
 		}
 
 		$nom_and_post_check = $this->is_a_pf_type( $item_id );
-
-		# PF NOTE: Switching post type to nomination.
-		$post['post_type'] = pressforward('schema.nominations')->post_type;
-		$post['post_date'] = current_time('Y-m-d H:i:s');
-		$post['post_date_gmt'] = get_gmt_from_date( current_time('Y-m-d H:i:s') );
-		if (strlen(esc_url( $_POST['item_link'] )) <= 243 ) {
-			$post['guid'] = esc_url( $_POST['item_link'] );
-		} else {
-			$post['guid'] = substr( esc_url( $_POST['item_link'] ), 0, 243);
-		}
-		$post_array = $post;
-		//var_dump('<pre>'); var_dump($post); die();
-		//$post['post_type'] = 'post';
-		# PF NOTE: This is where the inital post is created.
-		# PF NOTE: Put get_post_nomination_status here.
-		$post = $this->item_interface->insert_post($post, true, $item_id );
-		//var_dump('<pre>'); var_dump($post); var_dump($post_array); die();
-		$this->advance_interface->prep_bookmarklet( $post );
-		if (!isset($_POST['item_date'])){
-			$newDate = date('Y-m-d H:i:s');
-			$item_date = $newDate;
-			//$_POST['item_date'] = $newDate;
-		} else {
-			$item_date = $_POST['item_date'];
-		}
-		// Does not exist in the system.
-		if ( false != $post ){
-			// Update post here because we're working with the blank post
-			// inited by the Nominate This page, at the beginning.
-			$post_ID = $this->item_interface->update_post(get_post($post), true);
+		if ($nom_and_post_check == false){
+			# PF NOTE: Switching post type to nomination.
+			$post['post_type'] = pressforward('schema.nominations')->post_type;
+			$post['post_date'] = current_time('Y-m-d H:i:s');
+			$post['post_date_gmt'] = get_gmt_from_date( current_time('Y-m-d H:i:s') );
+			if (strlen(esc_url( $_POST['item_link'] )) <= 243 ) {
+				$post['guid'] = esc_url( $_POST['item_link'] );
+			} else {
+				$post['guid'] = substr( esc_url( $_POST['item_link'] ), 0, 243);
+			}
+			$post_array = $post;
+			//var_dump('<pre>'); var_dump($post); die();
+			//$post['post_type'] = 'post';
+			# PF NOTE: This is where the inital post is created.
+			# PF NOTE: Put get_post_nomination_status here.
+			$post = $this->item_interface->insert_post($post, true, $item_id );
+			if (is_wp_error($post)){
+				wp_die($post->get_error_message());
+			}
+			$post_ID = $post;
+			//var_dump('<pre>'); var_dump($post); var_dump($post_array); die();
+			$this->advance_interface->prep_bookmarklet( $post );
+			if (!isset($_POST['item_date'])){
+				$newDate = date('Y-m-d H:i:s');
+				$item_date = $newDate;
+				//$_POST['item_date'] = $newDate;
+			} else {
+				$item_date = $_POST['item_date'];
+			}
 			// Check if thumbnail already exists, if not, set it up.
 			$already_has_thumb = has_post_thumbnail($post_ID);
 			if ($already_has_thumb)  {
@@ -303,6 +314,15 @@ class Forward_Tools {
 			  $source = '';
 			}
 			$tags = $_POST['post_tags'];
+			if ( empty($tags) || is_wp_error($tags) ){
+				$tags[] = 'via bookmarklet';
+				if (is_wp_error($tags)){
+					pf_log($tags);
+				}
+			}
+			$user_data = $this->find_nominating_user();
+			$userID = $user_data['user_id'];
+			$userString = $user_data['user_string'];
 			//$tags[] = 'via bookmarklet';
 
 			//pf_log($_POST);
@@ -318,7 +338,8 @@ class Forward_Tools {
 				//$this->metas->meta_for_entry('authors', $_POST['authors']),
 				$this->metas->meta_for_entry('pf_source_link', $source),
 				$this->metas->meta_for_entry('item_feat_img', $post_thumbnail_url),
-				$this->metas->meta_for_entry('nominator_array', array(get_current_user_id())),
+				$this->metas->meta_for_entry('submitted_by', $userString),
+				$this->metas->meta_for_entry('nominator_array', array($userID)),
 				// The item_wp_date allows us to sort the items with a query.
 				$this->metas->meta_for_entry('item_wp_date', $item_date),
 				//We can't just sort by the time the item came into the system (for when mult items come into the system at once)

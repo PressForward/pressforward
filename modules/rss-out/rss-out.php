@@ -17,10 +17,10 @@ class PF_RSS_Out extends PF_Module {
 		parent::start();
 		add_action('init', array($this, 'request_feed'));
 		//self::check_nonce = wp_create_nonce('retrieve-pressforward');
-		
-		
+
+
 	}
-	
+
 	function module_setup(){
 		$mod_settings = array(
 			'name' => 'RSS Output Module',
@@ -29,18 +29,18 @@ class PF_RSS_Out extends PF_Module {
 			'thumbnail' => '',
 			'options' => ''
 		);
-		
-		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );	
+
+		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 
 		//return $test;
 	}
 
 	function request_feed(){
 		global $wp_rewrite;
-		add_feed('feedforward', array($this, 'all_feed_assembler'));		
+		add_feed('feedforward', array($this, 'all_feed_assembler'));
 		# Called because stated requirement at http://codex.wordpress.org/Rewrite_API/add_feed
 		# Called as per http://codex.wordpress.org/Rewrite_API/flush_rules
-		#$wp_rewrite->flush_rules(false);		
+		#$wp_rewrite->flush_rules(false);
 
 	}
 
@@ -59,8 +59,8 @@ class PF_RSS_Out extends PF_Module {
 				<link><?php echo home_url('/?feed=feedforward'); ?></link>
 				<description>The aggregation of all feeds collected with PressForward at <?php bloginfo('name'); ?></description>
 				<language><?php bloginfo('language'); ?></language>
-				<?php 
-				#<blogChannel:blogRoll></blogChannel:blogRoll> 
+				<?php
+				#<blogChannel:blogRoll></blogChannel:blogRoll>
 				#<blogChannel:mySubscriptions></blogChannel:mySubscriptions>
 				?>
 				<blogChannel:blink>http://pressforward.org/news/</blogChannel:blink>
@@ -91,13 +91,13 @@ class PF_RSS_Out extends PF_Module {
 				<ttl>30</ttl>
 				<?php
 					$c = 0;
-					foreach(pressforward('schema.feed_item')->archive_feed_to_display(0, 50, $fromUT, $limitless) as $item) {
+					foreach(pressforward('controller.loops')->archive_feed_to_display(0, 50, $fromUT, $limitless) as $item) {
 						echo '<item>';
 							?>
 							<title><![CDATA[<?php echo strip_tags($item['item_title']); ?>]]></title>
 							<?php
 							# <link> should send users to published nominations when available.
-							?>						
+							?>
 							<link><?php echo $item['item_link']; ?></link>
 							<guid isPermaLink="true"><?php echo $item['item_link']; ?></guid>
 							<?php
@@ -117,7 +117,7 @@ class PF_RSS_Out extends PF_Module {
 							<description><![CDATA[<?php echo strip_tags($excerpt); ?>]]></description>
 							<content:encoded><![CDATA[<?php echo strip_tags($content); ?>]]></content:encoded>
 							<pubDate><?php echo date( 'D, d M Y H:i:s O' , strtotime($item['item_date'])); ?></pubDate>
-							
+
 							<?php
 							# Should use <source>, but not passing along RSS link, something to change.
 							# <guid></guid>
