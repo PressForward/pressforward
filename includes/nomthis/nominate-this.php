@@ -70,20 +70,6 @@ function nominate_it() {
 	$post['post_title'] = isset($_POST['title']) ? $_POST['title'] : '';
 	$content = isset($_POST['content']) ? $_POST['content'] : '';
 
-	$upload = false;
-	if ( !empty($_POST['photo_src']) && current_user_can('upload_files') ) {
-		foreach( (array) $_POST['photo_src'] as $key => $image) {
-			// see if files exist in content - we don't want to upload non-used selected files.
-			if ( strpos($_POST['content'], htmlspecialchars($image)) !== false ) {
-				$desc = isset($_POST['photo_description'][$key]) ? $_POST['photo_description'][$key] : '';
-				$upload = media_sideload_image($image, $post_ID, $desc);
-
-				// Replace the POSTED content <img> with correct uploaded ones. Regex contains fix for Magic Quotes
-				if ( !is_wp_error($upload) )
-					$content = preg_replace('/<img ([^>]*)src=\\\?(\"|\')'.preg_quote(htmlspecialchars($image), '/').'\\\?(\2)([^>\/]*)\/*>/is', $upload, $content);
-			}
-		}
-	}
 	#var_dump('<pre>'); var_dump($_POST);
 	// set the post_content and status
 	$post['post_content'] = $content;
@@ -145,15 +131,7 @@ function nominate_it() {
     	);
     	update_option( 'pf_last_nominated_feed', $feed_nom );
     }
-	// error handling for media_sideload
-	if ( is_wp_error($upload) ) {
-		wp_delete_post($post_ID);
-		wp_die($upload);
-		// Why is this here?
-		// Oh, because it is trying to upload the images in the item into our
-		// system. But if that doesn't work, something has gone pretty wrong.
-		//$nom_check = true;
-	}
+
 	// Why does this hinge on $upload?
 	// Post formats
 	if (0 != $feed_nom['id']){
@@ -173,6 +151,29 @@ function nominate_it() {
 	if ( !empty($_POST['item_feat_img']) && ( $_POST['item_feat_img'] != '' ) ){
 		pressforward('schema.feed_item')->set_ext_as_featured($post_ID,  $_POST['item_feat_img']);
 	}
+    $upload = false;
+    if ( !empty($_POST['photo_src']) && current_user_can('upload_files') ) {
+        foreach( (array) $_POST['photo_src'] as $key => $image) {
+            // see if files exist in content - we don't want to upload non-used selected files.
+            if ( strpos($_POST['content'], htmlspecialchars($image)) !== false ) {
+                $desc = isset($_POST['photo_description'][$key]) ? $_POST['photo_description'][$key] : '';
+                $upload = media_sideload_image($image, $post_ID, $desc);
+
+                // Replace the POSTED content <img> with correct uploaded ones. Regex contains fix for Magic Quotes
+                if ( !is_wp_error($upload) )
+                    $content = preg_replace('/<img ([^>]*)src=\\\?(\"|\')'.preg_quote(htmlspecialchars($image), '/').'\\\?(\2)([^>\/]*)\/*>/is', $upload, $content);
+            }
+        }
+    }
+    // error handling for media_sideload
+    if ( is_wp_error($upload) ) {
+        wp_delete_post($post_ID);
+        wp_die($upload);
+        // Why is this here?
+        // Oh, because it is trying to upload the images in the item into our
+        // system. But if that doesn't work, something has gone pretty wrong.
+        //$nom_check = true;
+    }
 	#var_dump($post); die();
 	return $post_ID;
 }
