@@ -9,7 +9,6 @@ class APIWithMetaEndpoints {
 		return 'pf/v1'.$endpoint;
 	}
 
-
 	public function valid_metas(){
 		$metas = $this->metas->structure();
 		$post_metas = array();

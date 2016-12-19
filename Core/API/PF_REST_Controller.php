@@ -43,5 +43,10 @@ class PF_REST_Controller extends WP_REST_Controller {
 
 }
 
-$controller = new PF_REST_Controller;
-$controller->register_routes();
+function activate_pf_rest_controller(){
+	$controller = new PF_REST_Controller;
+	$controller->register_routes();
+}
+
+
+add_action( 'rest_api_init', 'activate_pf_rest_controller', 11 );

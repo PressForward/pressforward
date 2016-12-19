@@ -15,11 +15,6 @@ use PressForward\Core\API\FolderExtension;
 class APIProvider extends ServiceProvider {
 
 	public function register( Container $container ){
-		global $wp_rest_server;
-		// https://github.com/PressForward/pressforward/issues/859#issuecomment-257587107
-		if (!isset($wp_rest_server)){
-			return $container;
-		}
 
 		$container->share(
 			'api.pf_endpoint',
