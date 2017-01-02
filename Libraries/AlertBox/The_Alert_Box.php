@@ -74,8 +74,15 @@ if (!class_exists('The_Alert_Box')){
         }
 
 	public static function alert_count() {
+        $post_types_exclusions = array(
+            'attachment', 'revision', 'nav_menu_item', 'custom_css', 'customize_changeset', 'feedback'
+        );
+        $post_types = get_post_types( '', 'names' );
+        $post_types_exclusions = apply_filters( 'ab_excluded_post_types', $post_types_exclusions );
+        $post_types = apply_filters( 'ab_include_post_types', $post_types );
+        $final_post_types = array_diff($post_types, $post_types_exclusions);
 		$q = new WP_Query( array(
-			'post_type' => get_post_types( '', 'names' ),
+			'post_type' => $final_post_types,
 			'post_status' => self::$status,
 			'fields' => 'ids',
 			'posts_per_page' => '-1',
