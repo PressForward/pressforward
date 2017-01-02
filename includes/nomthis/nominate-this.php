@@ -48,6 +48,8 @@ if ( ! current_user_can( 'edit_posts' ) || ! current_user_can( get_post_type_obj
 
 #var_dump($_POST);	die();
 
+set_transient( 'is_multi_author', true );
+
 /**
  * Press It form handler.
  *
