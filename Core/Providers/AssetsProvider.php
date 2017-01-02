@@ -109,7 +109,8 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_script( array(
 			'type'	=>	'admin',
 			'condition'	=> function($hook) use ($provider){
-								return $provider->check_hook_for_pressforward_string($hook);
+								$inclusions = array('edit.php');
+								return $provider->check_hook_for_pressforward_string($hook, array(), $inclusions);
 							},
 			'handle'	=>	'pf',
 			'src'		=>	'assets/js/pf',
