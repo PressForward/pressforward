@@ -1,14 +1,14 @@
 <?php
 namespace PressForward\Controllers;
 
-use Intraxia\Jaxion\Contract\Core\HasActions;
+//use Intraxia\Jaxion\Contract\Core\HasActions;
 use PressForward\Interfaces\System;
 use URLResolver;
 /**
  * Readability stuff
  */
 
-class HTTPTools implements HasActions {
+class HTTPTools {
 
 	function __construct( URLResolver $resolver, System $system, Metas $meta ) {
         $this->url_resolver = $resolver;
