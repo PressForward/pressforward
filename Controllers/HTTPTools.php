@@ -16,15 +16,6 @@ class HTTPTools implements HasActions {
 		$this->meta = $meta;
 	}
 
-	public function action_hooks() {
-		return array(
-			array(
-				'hook' => 'wp_head',
-				'method' => 'pf_aggregation_forwarder',
-			),
-		);
-	}
-
 	public function resolve_source_url($url){
 		$url = $this->resolve_a_url($url);
 		$url_array = parse_url($url);
@@ -99,21 +90,6 @@ class HTTPTools implements HasActions {
 			}
 		}
 		return $check;
-	}
-
-	function pf_aggregation_forwarder(){
-		if(1 == $this->system->get_option('pf_link_to_source',0)){
-			//http://webmaster.iu.edu/tools-and-guides/maintenance/redirect-meta-refresh.phtml ?
-			$linked = $this->meta->get_post_pf_meta(get_the_ID(), 'item_link', true);
-			//Need syndicate tag here.
-			if (is_single() && ('' != $linked)){
-				?>
-				 <script type="text/javascript">console.log('You are being redirected to the source item.');</script>
-				<META HTTP-EQUIV="refresh" CONTENT="10;URL=<?php echo $this->meta->get_post_pf_meta(get_the_ID(), 'item_link', true); ?>">
-				<?php
-
-			}
-		}
 	}
 
 	function attempt_to_get_cookiepath(){

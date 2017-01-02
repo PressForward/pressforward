@@ -704,6 +704,9 @@ add_filter('wpseo_opengraph_url', 'pf_filter_canonical');
  * @since 3.x
  */
 function pf_forward_unto_source(){
+	if (!is_singular()){
+		return false;
+	}
 	$link = pf_canonical_url();
 	if(!empty($link)){
 
@@ -720,6 +723,9 @@ function pf_forward_unto_source(){
 		$post_check = pressforward('controller.metas')->get_post_pf_meta($post_id, 'pf_forward_to_origin', true);
 		//var_dump($post_check); die();
 		if ( ( $wait > 0 ) && ( "no-forward" !== $post_check ) ){
+			?>
+				 <script type="text/javascript">console.log('You are being redirected to the source item.');</script>
+			<?php
 			echo '<META HTTP-EQUIV="refresh" CONTENT="'.$wait.';URL='.$link.'">';
 		}
 	}
