@@ -9,6 +9,6 @@ namespace Intraxia\Jaxion\Model;
  * @package Intraxia\Jaxion
  * @subpackage Model
  */
-class PropertyDoesNotExistException extends \RuntimeException
-{
+class PropertyDoesNotExistException extends \RuntimeException {
+
 }

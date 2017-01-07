@@ -1,7 +1,6 @@
 <?php
 // via https://github.com/WPupdatePHP/wp-update-php
-
-//var_dump('method: '.__METHOD__);
+// var_dump('method: '.__METHOD__);
 class WPUpdatePHP {
 	/** @var String */
 	private $minimum_version;
@@ -48,7 +47,7 @@ class WPUpdatePHP {
 
 	public function admin_notice() {
 		echo '<div class="error">';
-		echo '<p>Unfortunately, '.$this->plugin_name.' should be run on PHP versions newer than '. $this->minimum_version .'. Read more information about <a href="http://www.wpupdatephp.com/update/">how you can update</a>.</p>';
+		echo '<p>Unfortunately, ' . $this->plugin_name . ' should be run on PHP versions newer than ' . $this->minimum_version . '. Read more information about <a href="http://www.wpupdatephp.com/update/">how you can update</a>.</p>';
 		echo '</div>';
 	}
 }

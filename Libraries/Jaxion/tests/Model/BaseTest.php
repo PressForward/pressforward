@@ -16,7 +16,7 @@ class BaseTest extends \PHPUnit_Framework_TestCase {
 
 	public function test_should_construct_to_meta_with_no_table() {
 		$base = new MetaBase( array(
-			'test' => 'value'
+			'test' => 'value',
 		) );
 
 		$attributes = $base->get_attributes();
@@ -35,7 +35,7 @@ class BaseTest extends \PHPUnit_Framework_TestCase {
 
 	public function test_should_construct_to_table() {
 		$base = new TableBase( array(
-			'test' => 'value'
+			'test' => 'value',
 		) );
 
 		$attributes = $base->get_attributes();

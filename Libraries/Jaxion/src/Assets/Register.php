@@ -169,7 +169,7 @@ class Register implements RegisterContract {
 	 * Enqueues an individual script if the style's condition is met.
 	 *
 	 * @param array  $script  The script attachment callback.
-	 * @param string  $hook  The location hook.
+	 * @param string $hook  The location hook.
 	 */
 	protected function enqueue_script( $script, $hook = false ) {
 		if ( $script['condition']( $hook ) ) {
@@ -198,8 +198,8 @@ class Register implements RegisterContract {
 	/**
 	 * Enqueues an individual stylesheet if the style's condition is met.
 	 *
-* @param array  $script  The script attachment callback.
-* @param string  $hook  The location hook.
+	 * @param array  $script  The script attachment callback.
+	 * @param string $hook  The location hook.
 	 */
 	protected function enqueue_style( $style, $hook = false ) {
 		if ( $style['condition']( $hook ) ) {

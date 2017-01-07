@@ -13,40 +13,39 @@ use PressForward\Core\Schema\Relationships;
 
 class SchemaProvider extends ServiceProvider {
 
-	public function register( Container $container ){
+	public function register( Container $container ) {
 
 		$container->share(
 			'schema.relationships',
-			function( ){
+			function() {
 				return new Relationships;
 			}
 		);
 
 		$container->share(
 			'schema.feeds',
-			function( ){
+			function() {
 				return new Feeds;
 			}
 		);
 
 		$container->share(
 			'schema.feed_item',
-			function( ){
-				return new Feed_Items( pressforward('controller.items'), pressforward('controller.metas') );
+			function() {
+				return new Feed_Items( pressforward( 'controller.items' ), pressforward( 'controller.metas' ) );
 			}
 		);
 
 		$container->share(
 			'schema.folders',
-			function( ){
+			function() {
 				return new Folders;
 			}
 		);
 
-
 		$container->share(
 			'schema.nominations',
-			function( ){
+			function() {
 				return new Nominations;
 			}
 		);

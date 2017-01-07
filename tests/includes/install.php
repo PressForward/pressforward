@@ -5,4 +5,4 @@
  */
 
 // Install the Relationships table
-pressforward('schema.relationships')->install_relationship_table();
+pressforward( 'schema.relationships' )->install_relationship_table();

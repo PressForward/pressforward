@@ -9,86 +9,79 @@ namespace PressForward\Libraries;
  * @author Milian <mail@mili.de>
 
  * from http://www.kirupa.com/forum/showthread.php?343478-Close-all-open-HTML-tags
-
  */
 
 class HTMLChecker {
 
- public function __construct(){
-	//$html = $this->closetags($html);
- }
-
- public function check($html = ''){
-     $this->closetags($html);
- }
-
- public function closetags($html) {
-
-	$html = str_replace(array('<article', '</article>'), array('<div', '</div>'), $html);
-
-	$html = str_replace(array('<!--', '-->'), array('<span class="commented-out-html" style="display:none;">', '</span>'), $html);
-
-    $tags_and_content_to_strip = Array("title","script","link","meta");
-
-    foreach ($tags_and_content_to_strip as $tag) {
-           $html = preg_replace("/<" . $tag . ">(.|\s)*?<\/" . $tag . ">/","",$html);
-		   $html = preg_replace("/<" . $tag . " (.|\s)*?>/","",$html);
-    }
-
-	#$html = preg_match_all('#<(article)*>#', $html, $resultc);
-
-  #put all opened tags into an array
-
-  preg_match_all('#<([a-z]+)(?: .*)?(?<![/|/ ])>#iU', $html, $result);
-
-  $openedtags = $result[1];   #put all closed tags into an array
-
-  preg_match_all('#</([a-z]+)>#iU', $html, $result);
-
-  $closedtags = $result[1];
-
-  $len_opened = count($openedtags);
-
-  preg_match_all('#<(em|strong)*/>#', $html, $resultc);
-  $malformedtags = $resultc[1];
-  //print_r('Count <br />');
-  foreach ($malformedtags as $tag){
-	if ($tag == 'em'){
-		$html .= '</em>';
+	public function __construct() {
+		// $html = $this->closetags($html);
 	}
-	if ($tag == 'strong'){
-		$html .= '</strong>';
+
+	public function check( $html = '' ) {
+		$this->closetags( $html );
 	}
-  }
 
-  # all tags are closed
+	public function closetags( $html ) {
 
-  if (count($closedtags) == $len_opened) {
+		$html = str_replace( array( '<article', '</article>' ), array( '<div', '</div>' ), $html );
 
-    return $html;
+		$html = str_replace( array( '<!--', '-->' ), array( '<span class="commented-out-html" style="display:none;">', '</span>' ), $html );
 
-  }
+		$tags_and_content_to_strip = array( 'title','script','link','meta' );
 
-  $openedtags = array_reverse($openedtags);
+		foreach ( $tags_and_content_to_strip as $tag ) {
+			  $html = preg_replace( '/<' . $tag . '>(.|\s)*?<\/' . $tag . '>/','',$html );
+			  $html = preg_replace( '/<' . $tag . ' (.|\s)*?>/','',$html );
+		}
 
-  # close tags
+		// $html = preg_match_all('#<(article)*>#', $html, $resultc);
+		// put all opened tags into an array
+		preg_match_all( '#<([a-z]+)(?: .*)?(?<![/|/ ])>#iU', $html, $result );
 
-  for ($i=0; $i < $len_opened; $i++) {
+		$openedtags = $result[1];   // put all closed tags into an array
 
-    if (!in_array($openedtags[$i], $closedtags)){
+		preg_match_all( '#</([a-z]+)>#iU', $html, $result );
 
-      $html .= '</'.$openedtags[$i].'>';
+		$closedtags = $result[1];
 
-    } else {
+		$len_opened = count( $openedtags );
 
-      unset($closedtags[array_search($openedtags[$i], $closedtags)]);    }
+		preg_match_all( '#<(em|strong)*/>#', $html, $resultc );
+		$malformedtags = $resultc[1];
+		// print_r('Count <br />');
+		foreach ( $malformedtags as $tag ) {
+			if ( $tag == 'em' ) {
+				$html .= '</em>';
+			}
+			if ( $tag == 'strong' ) {
+				$html .= '</strong>';
+			}
+		}
 
-  }
+		// all tags are closed
+		if ( count( $closedtags ) == $len_opened ) {
 
+			return $html;
 
-  //print_r($html);
-  return $html;
+		}
 
-  }
+		$openedtags = array_reverse( $openedtags );
+
+		// close tags
+		for ( $i = 0; $i < $len_opened; $i++ ) {
+
+			if ( ! in_array( $openedtags[ $i ], $closedtags ) ) {
+
+				$html .= '</' . $openedtags[ $i ] . '>';
+
+			} else {
+
+				unset( $closedtags[ array_search( $openedtags[ $i ], $closedtags ) ] );    }
+		}
+
+		// print_r($html);
+		return $html;
+
+	}
 }
-?>
+

@@ -8,12 +8,11 @@ use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 
 class PreferencesServiceProvider extends ServiceProvider {
 
-	public function register( Container $container ){
+	public function register( Container $container ) {
 		$container->share(
 			'admin.settings',
 			new Preferences( $container->fetch( 'basename' ), $container->fetch( 'admin.templates' ) )
 		);
-
 
 	}
 
