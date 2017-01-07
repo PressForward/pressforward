@@ -525,19 +525,6 @@ class PFTemplater {
 			</header>
 			<?php
 						// echo '<a name="' . $c . '" style="display:none;"></a>';
-			/**
-			echo '<script type="text/javascript">
-					jQuery(window).load(function() {
-						jQuery("#' . $item['item_id'] . '").on("show", function () {
-							jQuery("#excerpt' . $c . '").hide("slow");
-						});
-
-						jQuery("#' . $item['item_id'] . '").on("hide", function () {
-							jQuery("#excerpt' . $c . '").show("slow");
-						});
-					});
-				</script>';
-			 **/
 			?>
 			<div class="content">
 				<?php
@@ -557,25 +544,6 @@ if ( $format === 'nomination' ) {
 	echo'<p>' . self::display_a( pf_feed_excerpt( $item['item_content'] ), 'graf' ) . '</p>';
 }
 					echo '</div>';
-/**
-						echo '<div id="collapse' . $c . '" class="accordion-body collapse">';
-						echo '<div class="accordion-inner">';
-						echo '<div class="row-fluid">';
-							echo '<div class="span12 item_content">';
-								echo '<div>' . $item['item_content'] . '</div>';
-								echo '<br />';
-								echo '<a target="_blank" href="' . $item['item_link'] . '">' . __('Read More', 'pf') . '</a>';
-								echo '<br />';
-								echo '<strong class="item-tags">' . __('Item Tags', 'pf') . '</strong>: ' . $item['item_tags'] . '.';
-								echo '<br />';
-							echo '</div><!-- end item_content span12 -->';
-						echo '</div><!-- End row-fluid -->';
-						echo '</div>';
-						echo '</div>';
-						//print_r($item);
-						//print_r($ent = htmlentities($item['item_content']));
-						//print_r(html_entity_decode($ent));
-*/
 
 				?>
 			</div><!-- End content -->
