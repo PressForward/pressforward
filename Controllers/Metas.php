@@ -10,7 +10,6 @@ use Intraxia\Jaxion\Contract\Core\HasActions;
  */
 class Metas implements HasFilters, HasActions {
 
-	// var $meta_interface;
 	function __construct( SystemMeta $metas, System $system ) {
 		$this->meta_interface = $metas;
 		$this->system = $system;
@@ -121,11 +120,7 @@ class Metas implements HasFilters, HasActions {
 		if ( ! empty( $item_id ) && ! is_wp_error( $item_id ) ) {
 			$ids[] = $item_id;
 		}
-		/**
- $parent_parent = wp_get_post_parent_id( $parent );
-		if ( !empty($parent_parent) && !is_wp_error( $parent_parent ) ){
-			$ids[] = $parent_parent;
-		}*/
+
 		$term_objects = wp_get_object_terms( $ids, array( pressforward( 'schema.feeds' )->tag_taxonomy, 'post_tag', 'category' ) );
 		$item_tags = $this->get_post_pf_meta( $idA, 'item_tags' );
 		if ( ! empty( $term_objects ) ) {
@@ -258,9 +253,7 @@ class Metas implements HasFilters, HasActions {
 						pf_log( 'No value was passed. Get meta data from new meta key.' );
 						$value = $this->meta_interface->get_meta( $idA, $meta['move'], true );
 					}
-					// update_post_meta($idA, $name, $value);
 					$this->meta_interface->update_meta( $idB, $meta['move'], $value );
-					// update_post_meta($idB, $name, $value);
 					return true;
 				}
 			}
