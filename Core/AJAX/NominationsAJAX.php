@@ -10,7 +10,7 @@ class NominationsAJAX implements HasActions {
 
 	protected $basename;
 
-	function __construct( Metas $metas, PF_to_WP_Posts $posts, Feed_Items $items ){
+	function __construct( Metas $metas, PF_to_WP_Posts $posts, Feed_Items $items ) {
 		$this->metas = $metas;
 		$this->posts = $posts;
 		$this->items = $items;
@@ -40,22 +40,22 @@ class NominationsAJAX implements HasActions {
 	}
 
 	public function build_a_nomination() {
-		pressforward('admin.nominated')->build_nomination();
+		pressforward( 'admin.nominated' )->build_nomination();
 		die();
 	}
 
 	public function build_a_nom_draft() {
-		pressforward('admin.nominated')->build_nom_draft();
+		pressforward( 'admin.nominated' )->build_nom_draft();
 		die();
 	}
 
 	public function archive_a_nom() {
-		pressforward('admin.nominated')->archive_a_nom();
+		pressforward( 'admin.nominated' )->archive_a_nom();
 		die();
 	}
 
-	public function simple_nom_to_draft(){
-		pressforward('admin.nominated')->simple_nom_to_draft();
+	public function simple_nom_to_draft() {
+		pressforward( 'admin.nominated' )->simple_nom_to_draft();
 		die();
 	}
 

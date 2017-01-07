@@ -28,23 +28,23 @@ class PF_Foo extends PF_Module {
 		parent::setup_admin_menus( $admin_menus );
 	}
 
-	function module_setup(){
+	function module_setup() {
 		$mod_settings = array(
 			'name' => 'Foo Test Module',
 			'slug' => 'foo',
 			'description' => 'This module provides a set of test functions for developers to check.',
 			'thumbnail' => '',
-			'options' => ''
+			'options' => '',
 		);
-		
+
 		$enabled = get_option( 'pf_foo_enable' );
 		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
 			$enabled = 'no';
-			update_option( PF_SLUG .'_' . $this->id . '_enable', $enabled );
+			update_option( PF_SLUG . '_' . $this->id . '_enable', $enabled );
 		}
 		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 
-		//return $test;
+		// return $test;
 	}
 
 	function admin_menu_callback() {
@@ -69,8 +69,8 @@ class PF_Foo extends PF_Module {
 									'second_widget' => array(
 														'title' => 'Foo Title',
 														'slug' => 'foo_widget',
-														'callback' => array( $this, 'foobody')
-													)
+														'callback' => array( $this, 'foobody' ),
+													),
 								);
 
 		return $foo_widgets_array;

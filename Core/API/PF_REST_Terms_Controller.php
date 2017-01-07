@@ -6,14 +6,14 @@
 class PF_REST_Terms_Controller extends WP_REST_Terms_Controller {
 
 	public function __construct( $taxonomy ) {
-		parent::__construct($taxonomy);
+		parent::__construct( $taxonomy );
 		$this->taxonomy = $taxonomy;
 		$this->namespace = 'pf/v1';
 		$tax_obj = get_taxonomy( $taxonomy );
 		$this->rest_base = ! empty( $tax_obj->rest_base ) ? $tax_obj->rest_base : $tax_obj->name;
 	}
 
-	public function register_routes(){
+	public function register_routes() {
 		parent::register_routes();
 	}
 
@@ -30,7 +30,7 @@ function create_initial_pf_rest_term_routes() {
 	foreach ( get_taxonomies( array( 'show_in_rest' => true ), 'object' ) as $taxonomy ) {
 		$class = ! empty( $taxonomy->rest_controller_class ) ? $taxonomy->rest_controller_class : false;
 
-		if ( !$class ){
+		if ( ! $class ) {
 			continue;
 		}
 
@@ -48,10 +48,10 @@ function create_initial_pf_rest_term_routes() {
 
 		$controller->register_routes();
 	}
-	//die();
+	// die();
 }
 
 add_action( 'rest_api_init', 'create_initial_pf_rest_term_routes', 11 );
 
-//$controller = new PF_REST_Posts_Controller;
-//$controller->register_routes();
+// $controller = new PF_REST_Posts_Controller;
+// $controller->register_routes();

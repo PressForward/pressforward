@@ -13,25 +13,25 @@ use URLResolver;
 
 class LibrariesProvider extends ServiceProvider {
 
-	public function register( Container $container ){
+	public function register( Container $container ) {
 
 		$container->define(
 			'library.url_resolver',
-			function( $container ){
+			function( $container ) {
 				return new URLResolver();
 			}
 		);
 
 		$container->share(
 			'library.htmlchecker',
-			function( $container ){
+			function( $container ) {
 				return new HTMLChecker;
 			}
 		);
 
 		$container->share(
 			'library.opengraph',
-			function( $container ){
+			function( $container ) {
 				return new PFOpenGraph;
 			}
 		);
@@ -47,21 +47,20 @@ class LibrariesProvider extends ServiceProvider {
 		 */
 		$container->define(
 			'library.readability',
-			function( $container ){
-				return (function( $html, $url=null, $parser='libxml', $logger = 'pf_log' ){
-					return new Readability($html, $url, $parser, $logger);
+			function( $container ) {
+				return (function( $html, $url = null, $parser = 'libxml', $logger = 'pf_log' ) {
+					return new Readability( $html, $url, $parser, $logger );
 				});
 			}
 		);
 
 		$container->share(
 			'library.alertbox',
-			function( $container ){
+			function( $container ) {
 				return The_Alert_Box::init();
 			}
 		);
 
-		//parent::register( $container );
-
+		// parent::register( $container );
 	}
 }

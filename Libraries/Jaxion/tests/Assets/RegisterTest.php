@@ -34,7 +34,7 @@ class RegisterTest extends \PHPUnit_Framework_TestCase {
 		$this->assets->register_script( array(
 			'type'      => 'web',
 			'condition' => function () {
-				return true;
+            return true;
 			},
 			'handle'    => 'web_script',
 			'src'       => 'test',
@@ -52,7 +52,7 @@ class RegisterTest extends \PHPUnit_Framework_TestCase {
 		$this->assets->register_script( array(
 			'type'      => 'web',
 			'condition' => function () {
-				return false;
+            return false;
 			},
 			'handle'    => 'web_script',
 			'src'       => 'test',
@@ -69,7 +69,7 @@ class RegisterTest extends \PHPUnit_Framework_TestCase {
 		$this->assets->register_style( array(
 			'type'      => 'web',
 			'condition' => function () {
-				return true;
+            return true;
 			},
 			'handle'    => 'web_style',
 			'src'       => 'test',
@@ -87,7 +87,7 @@ class RegisterTest extends \PHPUnit_Framework_TestCase {
 		$this->assets->register_style( array(
 			'type'      => 'web',
 			'condition' => function () {
-				return false;
+            return false;
 			},
 			'handle'    => 'web_style',
 			'src'       => 'test',
@@ -104,7 +104,7 @@ class RegisterTest extends \PHPUnit_Framework_TestCase {
 		$this->assets->register_script( array(
 			'type'      => 'admin',
 			'condition' => function () {
-				return true;
+            return true;
 			},
 			'handle'    => 'adminScript',
 			'src'       => 'test',
@@ -122,7 +122,7 @@ class RegisterTest extends \PHPUnit_Framework_TestCase {
 		$this->assets->register_script( array(
 			'type'      => 'admin',
 			'condition' => function () {
-				return false;
+            return false;
 			},
 			'handle'    => 'adminScript',
 			'src'       => 'test',
@@ -139,7 +139,7 @@ class RegisterTest extends \PHPUnit_Framework_TestCase {
 		$this->assets->register_style( array(
 			'type'      => 'admin',
 			'condition' => function () {
-				return true;
+            return true;
 			},
 			'handle'    => 'adminStyle',
 			'src'       => 'test',
@@ -157,7 +157,7 @@ class RegisterTest extends \PHPUnit_Framework_TestCase {
 		$this->assets->register_style( array(
 			'type'      => 'admin',
 			'condition' => function () {
-				return false;
+            return false;
 			},
 			'handle'    => 'adminStyle',
 			'src'       => 'test',
@@ -174,7 +174,7 @@ class RegisterTest extends \PHPUnit_Framework_TestCase {
 		$this->assets->register_script( array(
 			'type'      => 'shared',
 			'condition' => function () {
-				return true;
+            return true;
 			},
 			'handle'    => 'shared_script',
 			'src'       => 'test',
@@ -193,7 +193,7 @@ class RegisterTest extends \PHPUnit_Framework_TestCase {
 		$this->assets->register_script( array(
 			'type'      => 'shared',
 			'condition' => function () {
-				return false;
+            return false;
 			},
 			'handle'    => 'shared_script',
 			'src'       => 'test',
@@ -211,7 +211,7 @@ class RegisterTest extends \PHPUnit_Framework_TestCase {
 		$this->assets->register_style( array(
 			'type'      => 'shared',
 			'condition' => function () {
-				return true;
+            return true;
 			},
 			'handle'    => 'shared_style',
 			'src'       => 'test',
@@ -230,7 +230,7 @@ class RegisterTest extends \PHPUnit_Framework_TestCase {
 		$this->assets->register_style( array(
 			'type'      => 'shared',
 			'condition' => function () {
-				return false;
+            return false;
 			},
 			'handle'    => 'shared_style',
 			'src'       => 'test',
@@ -248,14 +248,14 @@ class RegisterTest extends \PHPUnit_Framework_TestCase {
 		$this->assets->register_script( array(
 			'type'      => 'web',
 			'condition' => function () {
-				return true;
+            return true;
 			},
 			'handle'    => 'web_script',
 			'src'       => 'test',
 			'localize'  => array(
-				'name' => 'test_local',
-				'data' => 'local_test',
-			)
+			'name' => 'test_local',
+			'data' => 'local_test',
+			),
 		) );
 
 		WP_Mock::wpFunction( 'wp_enqueue_script', array(

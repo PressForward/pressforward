@@ -2,8 +2,8 @@
 
 class OPML_Maker {
 
-	function __construct($OPML_obj){
-		if ( 'OPML_Object' != get_class( $OPML_obj ) ){
+	function __construct( $OPML_obj ) {
+		if ( 'OPML_Object' != get_class( $OPML_obj ) ) {
 			return false;
 		} else {
 			$this->obj = $OPML_obj;
@@ -11,29 +11,29 @@ class OPML_Maker {
 		$this->force_safe = true;
 	}
 
-	function force_safe($force = true){
-		if ($force){
+	function force_safe( $force = true ) {
+		if ( $force ) {
 			$this->force_safe = true;
 			return true;
 		}
 	}
 
-	function assemble_tag($tag, $obj, $self_closing = false, $filter = false){
-		if (empty($obj)){
+	function assemble_tag( $tag, $obj, $self_closing = false, $filter = false ) {
+		if ( empty( $obj ) ) {
 			return '';
 		}
 		$s = "<$tag";
-		foreach ($obj as $property=>$value){
-			if ( !empty($filter) && in_array( $property, $filter ) ){
+		foreach ( $obj as $property => $value ) {
+			if ( ! empty( $filter ) && in_array( $property, $filter ) ) {
 				continue;
 			}
-			if ($this->force_safe){
-				$s .= ' '.esc_attr($property).'="'.esc_attr($value).'"';
+			if ( $this->force_safe ) {
+				$s .= ' ' . esc_attr( $property ) . '="' . esc_attr( $value ) . '"';
 			} else {
-				$s .= ' '.$property.'="'.$value.'"';
+				$s .= ' ' . $property . '="' . $value . '"';
 			}
 		}
-		if ($self_closing){
+		if ( $self_closing ) {
 			$s .= '/>';
 		} else {
 			$s .= '>';
@@ -42,7 +42,7 @@ class OPML_Maker {
 		return $s;
 	}
 
-	public function template( $title = 'Blogroll' ){
+	public function template( $title = 'Blogroll' ) {
 		ob_start();
 		echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 		?>
@@ -50,41 +50,41 @@ class OPML_Maker {
 		    <head>
 		        <title><?php echo $title; ?></title>
 		        	<expansionState></expansionState>
-					<linkPublicUrl><?php //@todo ?></linkPublicUrl>
+					<linkPublicUrl><?php // @todo ?></linkPublicUrl>
 					<lastCursor>1</lastCursor>
 		    </head>
 
 		    <body>
 		    	<?php
 		    		$c = 0;
-		    		foreach ($this->obj->folders as $folder){
-		    			if ($c > 0){
-		    				echo "\n\t\t\t";
-		    			} else {
+				foreach ( $this->obj->folders as $folder ) {
+					if ( $c > 0 ) {
+						echo "\n\t\t\t";
+					} else {
 
-		    			}
-		    			echo $this->assemble_tag('outline', $folder);
-		    				//var_dump($folder);
-		    				$feeds = $this->obj->get_feeds_by_folder($folder->slug);
-		    				//var_dump($feeds);
-		    				if (!empty($feeds)){
-			    				foreach ($feeds as $feed){
-			    					//var_dump($feed);
-			    					echo "\t\t\t\t".$this->assemble_tag('outline',$feed,true,array('folder','feedUrl'));
-			    				}
-			    			}
-		    			echo "\t\t\t".'</outline>';
+					}
+					echo $this->assemble_tag( 'outline', $folder );
+						// var_dump($folder);
+						$feeds = $this->obj->get_feeds_by_folder( $folder->slug );
+						// var_dump($feeds);
+					if ( ! empty( $feeds ) ) {
+						foreach ( $feeds as $feed ) {
+							// var_dump($feed);
+							echo "\t\t\t\t" . $this->assemble_tag( 'outline',$feed,true,array( 'folder', 'feedUrl' ) );
+						}
+					}
+		    			echo "\t\t\t" . '</outline>';
 		    			$c++;
-		    		}
+				}
 		    		echo "\n";
 		    		$folderless_count = 0;
-		    		foreach ($this->obj->get_feeds_without_folder() as $feed){
-		    			if ($c > 0){
-		    				echo "\t\t\t";
-		    			}
-		    			echo $this->assemble_tag('outline',$feed,true,array('folder','feedUrl'));
-		    			$c++;
-		    		}
+				foreach ( $this->obj->get_feeds_without_folder() as $feed ) {
+					if ( $c > 0 ) {
+						echo "\t\t\t";
+					}
+					echo $this->assemble_tag( 'outline',$feed,true,array( 'folder', 'feedUrl' ) );
+					$c++;
+				}
 		    		echo "\n";
 		    	?>
 		    </body>
@@ -96,11 +96,11 @@ class OPML_Maker {
 		return $opml;
 	}
 
-	public function make_as_file($filepath = false){
-		if ( !$filepath ){
-			file_put_contents(plugin_dir_path( __FILE__ ).'blogroll.opml', $this->file_contents);
+	public function make_as_file( $filepath = false ) {
+		if ( ! $filepath ) {
+			file_put_contents( plugin_dir_path( __FILE__ ) . 'blogroll.opml', $this->file_contents );
 		} else {
-			file_put_contents($filepath, $this->file_contents);
+			file_put_contents( $filepath, $this->file_contents );
 		}
 	}
 
