@@ -997,6 +997,9 @@ class Metas implements HasFilters, HasActions {
 	function add_pf_meta( $id, $field, $value = '', $unique = true ) {
 	    $field = $this->pass_meta( $field, $id, $value, $unique );
 	    $check = $this->apply_pf_meta( $id, $field, $value, $unique, 'add' );
+		if (!$check){
+			$this->apply_pf_meta( $id, $field, $value, $unique, 'update' );
+		}
 	    return $check;
 
 	}
@@ -1043,16 +1046,6 @@ class Metas implements HasFilters, HasActions {
 					$this->update_pf_meta( $id, 'pf_word_count', $value, $state );
 				} elseif ( empty( $latest_count ) ) {
 					$this->add_pf_meta( $id, 'pf_word_count', $value, $state );
-				}
-				break;
-			case 'item_author':
-				if ( empty( $value ) ) {
-					$site = $this->get_post_pf_meta( $id, 'source_title' );
-					if ( empty( $site ) ) {
-						$value = 'Author on source';
-					} else {
-						$value = $site;
-					}
 				}
 				break;
 			default:
