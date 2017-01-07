@@ -290,14 +290,6 @@ class Forward_Tools {
 			} else {
 				$item_date = $_POST['item_date'];
 			}
-			// Check if thumbnail already exists, if not, set it up.
-			$already_has_thumb = has_post_thumbnail( $post_ID );
-			if ( $already_has_thumb ) {
-				$post_thumbnail_id = get_post_thumbnail_id( $post_ID );
-				$post_thumbnail_url = wp_get_attachment_image_src( $attachment_id );
-			} else {
-				$post_thumbnail_url = false;
-			}
 
 			$url_parts = parse_url( $_POST['item_link'] );
 			if ( ! empty( $url_parts['host'] ) ) {
