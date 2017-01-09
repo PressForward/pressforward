@@ -107,8 +107,8 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_script( array(
 			'type'	=> 'admin',
 			'condition'	=> function( $hook ) use ( $provider ) {
-            $inclusions = array( 'edit.php' );
-            return $provider->check_hook_for_pressforward_string( $hook, array(), $inclusions );
+            	$inclusions = array( 'edit.php' );
+            	return $provider->check_hook_for_pressforward_string( $hook, array(), $inclusions, true );
 			},
 			'handle'	=> 'pf',
 			'src'		=> 'assets/js/pf',
@@ -347,19 +347,25 @@ class AssetsProvider extends ServiceProvider {
 		// var_dump($assets); die();
 	}
 
-	public function check_hook_for_pressforward_string( $hook, $exclusions = array(), $inclusions = array() ) {
+	public function check_hook_for_pressforward_string( $hook, $exclusions = array(), $inclusions = array(), $all = false ) {
 
 		 $position_test_one = strpos( $hook, 'pressforward' );
 		 $position_test_two = strpos( $hook, 'pf' );
 		// $position_test_two = strpos($hook, 'edit.php');
-		if ( empty( $inclusions ) && ( false === $position_test_one ) && ( false === $position_test_two ) ) {  return false; }
+		if ( empty( $inclusions ) && ( false === $position_test_one ) && ( false === $position_test_two ) ) {
+			return false;
+		}
 
 		if ( ! empty( $exclusions ) ) {
 			foreach ( $exclusions as $exclusion ) {
-				if ( false !== strpos( $hook, $exclusion ) ) {
+				if ( !empty($exclusion) && (false !== strpos( $hook, $exclusion )) ) {
 					return false;
 				}
 			}
+		}
+
+		if ( $all && ( false !== $position_test_one ) || ( false !== $position_test_two ) ) {
+			return true;
 		}
 
 		if ( ! empty( $inclusions ) ) {
