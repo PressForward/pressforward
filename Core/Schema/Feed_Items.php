@@ -450,6 +450,8 @@ class Feed_Items implements HasActions, HasFilters {
 			pf_delete_item_tree( $post_id );
 		}
 
+		return true;
+
 	}
 	// Method to manually delete rssarchival entries on user action.
 	public function reset_feed() {

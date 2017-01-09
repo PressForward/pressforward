@@ -729,7 +729,7 @@ class Retrieval {
 				return $message;
 			}
 		}
-
+		return '';
 	}
 
 
