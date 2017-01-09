@@ -38,10 +38,6 @@ class Feed_Items implements HasActions, HasFilters {
 			),
 			array(
 				'hook' 		=> 'init',
-				'method'	=> 'dead_post_status',
-			),
-			array(
-				'hook' 		=> 'init',
 				'method'	=> 'register_feed_item_removed_status',
 			),
 		);
