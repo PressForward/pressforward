@@ -227,14 +227,16 @@ class Forward_Tools {
 		}
 	}
 
-	public function nomination_to_last_step( $item_id = false, $nomination_id ) {
+	public function nomination_to_last_step( $item_id = false, $nomination_id, $make_readable = true ) {
 		$post_check = $this->is_a_pf_type( $item_id, 'post' );
 
 		// Assign user status as well here.
 		if ( $post_check == false ) {
 
 			if ( false != $nomination_id ) {
-				$this->transition_to_readable_text( $nomination_id, true );
+				if ($make_readable){
+					$this->transition_to_readable_text( $nomination_id, true );
+				}
 				$id = $this->transition_to_last_step( $nomination_id );
 				pf_log( $id );
 			}
@@ -352,7 +354,7 @@ class Forward_Tools {
 		}
 		$nomination_id = $this->bookmarklet_to_nomination( $item_id, $post );
 		pf_log( $nomination_id );
-		return $this->nomination_to_last_step( $item_id, $nomination_id );
+		return $this->nomination_to_last_step( $item_id, $nomination_id, false );
 	}
 
 	public function is_a_pf_type( $item_id, $post_type = false, $update = false ) {
