@@ -68,7 +68,7 @@ class Nominations implements HasActions, HasFilters {
 			'register_meta_box_cb' => array( $this, 'nominations_meta_boxes' ),
 			'capability_type' => 'post',
 			// The type of input (besides the metaboxes) that it supports.
-			'supports' => array( 'title', 'editor', 'thumbnail', 'revisions' ),
+			'supports' => array( 'title', 'editor', 'thumbnail' ),
 			// I think this is set to false by the public argument, but better safe.
 			'has_archive' => false,
 			'taxonomies'	=> array( 'category', 'post_tag' ),
