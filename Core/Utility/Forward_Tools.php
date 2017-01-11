@@ -319,7 +319,7 @@ class Forward_Tools {
 				$this->metas->meta_for_entry( 'item_date', $item_date ),
 				// $this->metas->meta_for_entry('item_date', $item_date),
 				$this->metas->meta_for_entry( 'date_nominated', $_POST['date_nominated'] ),
-				$this->metas->meta_for_entry( 'item_author', $_POST['authors'] ),
+				$this->metas->meta_for_entry( 'item_author', $_POST['item_author'] ),
 				// $this->metas->meta_for_entry('authors', $_POST['authors']),
 				$this->metas->meta_for_entry( 'pf_source_link', $source ),
 				$this->metas->meta_for_entry( 'item_feat_img', $post_thumbnail_url ),

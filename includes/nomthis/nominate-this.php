@@ -653,7 +653,7 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 							$author_value = $author_retrieved;
 						}
 						?>
-					<label for="authors"><input type="text" id="authors" name="authors" value="<?php echo $author_value; ?>" /><br />&nbsp;<?php echo apply_filters( 'pf_author_nominate_this_prompt', __( 'Enter Authors', 'pf' ) ); ?></label>
+					<label for="item_author"><input type="text" id="item_author" name="item_author" value="<?php echo $author_value; ?>" /><br />&nbsp;<?php echo apply_filters( 'pf_author_nominate_this_prompt', __( 'Enter Authors', 'pf' ) ); ?></label>
 					</p>
                     <p>
 					<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php _e( 'Nominate feed associated with item.', 'pf' ); ?></label>

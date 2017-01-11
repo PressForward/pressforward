@@ -206,7 +206,7 @@ class Nominated implements HasActions {
 						// Source site slug
 						$metadata['source_slug'] = $sourceSlug = isset( $urlArray['host'] ) ? pf_slugger( $urlArray['host'], true, false, true ) : '';
 						// RSS Author designation
-						$metadata['authors'] = $item_authorship = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_author', true );
+						$metadata['item_author'] = $item_authorship = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_author', true );
 						// Datetime item was nominated
 						$metadata['date_nominated'] = $date_nomed = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'date_nominated', true );
 						// Datetime item was posted to its home RSS
