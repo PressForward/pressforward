@@ -32,7 +32,8 @@ if ( ! class_exists( 'WPUpdatePHP' ) ) {
 	require 'Libraries/WPUpdatePHP.php';
 }
 
-$PHPCheck = new WPUpdatePHP( '5.3.0', 'PressForward' );
+$PHPCheck = new WPUpdatePHP( '5.3.0' );
+$PHPCheck->set_plugin_name( 'PressForward' );
 
 
 if ( (PHP_VERSION < 5.3) || ( ! $PHPCheck->does_it_meet_required_php_version( PHP_VERSION ) ) ) {
