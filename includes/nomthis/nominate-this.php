@@ -42,9 +42,9 @@ require_once( $wp_bootstrap . '/admin.php' );
 // global $pf_nt;
 // $pf_nt = new PressForward();
 header( 'Content-Type: ' . get_option( 'html_type' ) . '; charset=' . get_option( 'blog_charset' ) );
-
-if ( ! current_user_can( 'edit_posts' ) || ! current_user_can( get_post_type_object( 'post' )->cap->edit_posts ) ) {
-	wp_die( __( 'Cheatin&#8217; uh?', 'pf' ) ); }
+$nominate_access = get_option('pf_menu_all_content_access'); //pressforward('admin.templates')->users->pf_get_defining_capability_by_role( 'contributor' );//get_option('pf_menu_all_content_access');
+if ( ! current_user_can( get_post_type_object( pressforward( 'schema.feed_item' )->post_type )->cap->$nominate_access ) ) {
+	wp_die( __( 'You do not have the capacity to access PressForward All Content so you cannot access the Nominate This bookmarklet.', 'pf' ) ); }
 
 // var_dump($_POST);  die();
 set_transient( 'is_multi_author', true );
@@ -637,11 +637,17 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 				<div class="inside">
 				<p id="publishing-actions">
 				<?php
+					$publish_type = get_option( PF_SLUG . '_draft_post_status', 'draft' );
+					if ('draft' == $publish_type){
+						$cap = current_user_can( 'edit_posts' );
+					} else {
+						$cap = current_user_can( 'publish_posts' );
+					}
 					submit_button( __( 'Nominate' ), 'button', 'draft', false, array( 'id' => 'save' ) );
-				if ( current_user_can( 'publish_posts' ) ) {
-					submit_button( __( 'Send to ' . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ) ), 'primary', 'publish', false );
+				if ( $cap ) {
+					submit_button( __( 'Send to ' . ucwords( $publish_type ) ), 'primary', 'publish', false );
 				} else {
-
+					echo '<!-- User cannot '.$publish_type.' posts -->';
 				} ?>
 						<span class="spinner" style="display: none;"></span>
 					</p>
