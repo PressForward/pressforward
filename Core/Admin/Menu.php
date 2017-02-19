@@ -376,6 +376,10 @@ if ( $c > 19 ) {
 												'default' => 'contributor',
 												'title' => __( 'Nominated Menu', 'pf' ),
 											),
+				'pf_menu_nominate_this_access'=> array(
+												'default' => pf_get_role_by_capability(get_option( 'pf_menu_all_content_access', 'edit_posts' )),
+												'title' => __( 'Nominate This', 'pf' ),
+											),
 				'pf_menu_preferences_access' => array(
 												'default' => 'administrator',
 												'title' => __( 'Preferences Menu', 'pf' ),

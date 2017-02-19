@@ -43,8 +43,8 @@ require_once( $wp_bootstrap . '/admin.php' );
 // $pf_nt = new PressForward();
 header( 'Content-Type: ' . get_option( 'html_type' ) . '; charset=' . get_option( 'blog_charset' ) );
 $nominate_access = get_option('pf_menu_all_content_access'); //pressforward('admin.templates')->users->pf_get_defining_capability_by_role( 'contributor' );//get_option('pf_menu_all_content_access');
-if ( ! current_user_can( get_post_type_object( pressforward( 'schema.feed_item' )->post_type )->cap->$nominate_access ) ) {
-	wp_die( __( 'You do not have the capacity to access PressForward All Content so you cannot access the Nominate This bookmarklet.', 'pf' ) ); }
+if ( ! current_user_can( get_option( 'pf_menu_nominate_this_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) ) ) ){
+	wp_die( __( 'You do not have the capacity to access the Nominate This bookmarklet.', 'pf' ) ); }
 
 // var_dump($_POST);  die();
 set_transient( 'is_multi_author', true );
@@ -62,8 +62,8 @@ function nominate_it() {
 
 	$post = array();
 	// $post_ID = $post['ID'] = (int) $_POST['post_id'];
-	if ( ! current_user_can( get_option( 'pf_menu_all_content_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) ) ) ) {
-		wp_die( __( 'You are not allowed to edit this post.' ) ); }
+	if ( ! current_user_can( get_option( 'pf_menu_nominate_this_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) ) ) ) {
+		wp_die( __( 'You do not have access to the Nominate This bookmarklet.' ) ); }
 
 	$post['post_category'] = isset( $_POST['post_category'] ) ? $_POST['post_category'] : '';
 	$post['tax_input'] = isset( $_POST['tax_input'] ) ? $_POST['tax_input'] : '';

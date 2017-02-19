@@ -23,6 +23,12 @@
 										'title' => __( 'Nominated Menu', 'pf' ),
 										'details' => __( 'Nominated Menu sets the user role required to see items in Nominated.', 'pf' ),
 									),
+		'pf_menu_nominate_this_access' => array(
+										// Default to the All Content access permissions.
+										'default' => pf_get_role_by_capability(get_option( 'pf_menu_all_content_access', 'edit_posts' )),
+										'title' => __( 'Nominate This', 'pf' ),
+										'details' => __( 'Access to the Nominate This bookmarklet. Note, ability to use different features of the Nominate This bookmarklet will be set by user permissions on feed item and post post types.', 'pf' ),
+									),
 		'pf_menu_preferences_access' => array(
 										'default' => 'administrator',
 										'title' => __( 'Non-User Preferences Tabs', 'pf' ),
