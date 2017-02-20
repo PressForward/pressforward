@@ -216,11 +216,11 @@ class Metas implements HasFilters, HasActions {
 	 * @return int The result of the update_post_meta function.
 	 */
 	function transition_meta( $name, $idA, $idB ) {
-		pf_log( 'Transition ' . $idA . ' meta field ' . $name );
+		//pf_log( 'Transition ' . $idA . ' meta field ' . $name );
 		$meta_value = $this->meta_interface->get_meta( $idA, $name, true );
 		$result = $this->check_for_and_transfer_depreciated_meta( $name, $meta_value, $idA, $idB );
 		if ( ! $result ) {
-			pf_log( $name . ' not depreciated, updating on post ' . $idB );
+			//pf_log( $name . ' not depreciated, updating on post ' . $idB );
 			$result = $this->meta_interface->update_meta( $idB, $name, $meta_value );
 		}
 
