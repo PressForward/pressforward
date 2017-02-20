@@ -436,6 +436,8 @@ class Feed_Items implements HasActions, HasFilters {
 										),
 									)
 		);
+		pf_log('Cleaning up feed items.');
+		pf_log($queryForDel);
 
 		// remove_filter( 'posts_where', array( $this, 'filter_where_older') );
 		// pf_log( $queryForDel );
