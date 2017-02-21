@@ -135,6 +135,7 @@ class PF_Readability {
 		if ( $post_id != 0 ) {
 
 			$content = html_entity_decode( $itemReadReady );
+			//$content = pressforward('utility.forward_tools')->append_source_statement($post_id, $content, true);
 			$update_ready = array(
 				'ID' => $post_id,
 				'post_content' => $content,
@@ -150,8 +151,10 @@ class PF_Readability {
 					$error = $update_check->get_error_message();
 				}
 				$responseItemReadReady = $this->get_embed( $_POST['url'] ) . $itemReadReady;
+				$source_statement = pressforward('utility.forward_tools')->append_source_statement($post_id, '', true);
 			} else {
 				$error = 'Not Updated, retrieved content is longer than stored content.';
+				$source_statement = pressforward('utility.forward_tools')->append_source_statement($post_id, '', true);
 			}
 		}
 		$domDocErrors = '';
@@ -171,6 +174,7 @@ class PF_Readability {
 					'buffered' => ob_get_contents(),
 					'domDoc_errors' => $domDocErrors,
 					'readable_applied_to_url' => $_POST['url'],
+					'source_statement'	=> $source_statement
 				),
 			);
 			$xmlResponse = new WP_Ajax_Response( $response );

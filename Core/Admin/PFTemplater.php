@@ -577,7 +577,7 @@ if ( $format === 'nomination' ) {
 		  </div>
 		  <div class="row-fluid modal-body-row">
 			  <div class="modal-body span9" id="modal-body-<?php echo $item['item_id']; ?>">
-				<?php
+				<div class="readability-wait"></div><div class="main-text"><?php
 				$contentObj = pressforward( 'library.htmlchecker' );
 				$text = $contentObj->closetags( $item['item_content'] );
 				$text = apply_filters( 'the_content', $text );
@@ -590,6 +590,7 @@ if ( $format === 'nomination' ) {
 				print_r( $text );
 
 				?>
+				</div>
 			  </div>
 			  <div class="modal-sidebar span3 hidden-tablet">
 				<div class="goPrev modal-side-item row-fluid">

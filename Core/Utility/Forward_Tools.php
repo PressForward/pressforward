@@ -60,6 +60,16 @@ class Forward_Tools {
 		}
 	}
 
+	public function append_source_statement($post_id, $item_content, $source){
+		$source_position = get_option( 'pf_source_statement_position', 'bottom' );
+		if ( ( 'bottom' == $source_position ) && $source ) {
+			$item_content = $item_content . pressforward( 'admin.nominated' )->get_the_source_statement( $post_id );
+		} elseif ( $source ) {
+			$item_content = pressforward( 'admin.nominated' )->get_the_source_statement( $post_id ) . $item_content;
+		}
+		return $item_content;
+	}
+
 	// Call me before transitioning the post.
 	public function transition_to_readable_text( $post_id, $source = false ) {
 		$post = $this->item_interface->get_post( $post_id, ARRAY_A );
@@ -76,12 +86,7 @@ class Forward_Tools {
 			$item_content_obj = pressforward( 'controller.readability' )->get_readable_text( $readArgs );
 			$item_content = htmlspecialchars_decode( $item_content_obj['readable'] );
 			$word_count = str_word_count( $item_content );
-			$source_position = get_option( 'pf_source_statement_position', 'bottom' );
-			if ( ( 'bottom' == $source_position ) && $source ) {
-				$item_content = $item_content . pressforward( 'admin.nominated' )->get_the_source_statement( $post_id );
-			} elseif ( $source ) {
-				$item_content = pressforward( 'admin.nominated' )->get_the_source_statement( $post_id ) . $item_content;
-			}
+			//$item_content = $this->append_source_statement($post_id, $item_content, $source);
 			$post_id = $this->item_interface->update_post( array(
 				'ID'	=> $post_id,
 				'post_content'	=> $item_content,

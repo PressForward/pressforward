@@ -869,23 +869,23 @@ endif;
 			}
 		}
 
-		$source_position = get_option( 'pf_source_statement_position', 'bottom' );
+		//$source_position = get_option( 'pf_source_statement_position', 'bottom' );
 
-		if ( $url ) {
+		//if ( $url ) {
 
-			$source_statement = '<p>';
+		//	$source_statement = '<p>';
 
-			if ( $selection ) {
-				$source_statement .= __( 'via ' ); }
+		//	if ( $selection ) {
+		//		$source_statement .= __( 'via ' ); }
 
-			$source_statement .= sprintf( "<a href='%s'>%s</a>.</p>", esc_url( $url ), esc_html( $title ) );
+		//	$source_statement .= sprintf( "<a href='%s'>%s</a>.</p>", esc_url( $url ), esc_html( $title ) );
 
-			if ( 'bottom' == $source_position ) {
-				  $content .= $source_statement;
-			} else {
-				$content = $source_statement . $content;
-			}
-		}
+		//	if ( 'bottom' == $source_position ) {
+		//		  $content .= $source_statement;
+		//	} else {
+		//		$content = $source_statement . $content;
+		//	}
+		//}
 
 		remove_action( 'media_buttons', 'media_buttons' );
 		add_action( 'media_buttons', 'nominate_this_media_buttons' );

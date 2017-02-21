@@ -42,6 +42,10 @@ class Metas implements HasFilters, HasActions {
 		return $filters;
 	}
 
+	public function setup_source_statement_on_content($content){
+		$content = pressforward('utility.forward_tools')->append_source_statement($post_id, $content, true);
+	}
+
 	/**
 	 * Take an array of objects describing post_metas and set them to the id of a post.
 	 *
