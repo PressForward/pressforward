@@ -27,6 +27,12 @@ class Forward_Tools {
 	public function transition_to_last_step( $nomination_id ) {
 		$post = $this->item_interface->get_post( $nomination_id, ARRAY_A );
 		$d_post = $post;
+		$current_user = wp_get_current_user();
+		pf_log( 'User: ' );
+		pf_log( $current_user );
+		if ( $current_user->ID > 0 ) {
+			$d_post['post_author'] = $current_user->ID;
+		}
 		$newPostID = $this->advance_interface->to_last_step( $d_post );
 		pf_log( $newPostID );
 		// $this->metas->transition_post_meta($post_ID, $newPostID);

@@ -137,6 +137,7 @@ function nominate_it() {
 		}
 		$post['post_author'] = get_current_user_id();
 		$post['post_type'] = 'nomination';
+		pf_log($post);
 		// var_dump($_POST); die();
 		if ( isset( $_POST['publish'] ) && ($_POST['publish'] == 'Send to ' . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ) ) ) {
 
@@ -638,13 +639,23 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 				<p id="publishing-actions">
 				<?php
 					$publish_type = get_option( PF_SLUG . '_draft_post_status', 'draft' );
+
+					$create_nom_post_cap_test = current_user_can( get_post_type_object( pressforward( 'schema.nominations' )->post_type )->cap->create_posts );
+
+					$pf_draft_post_type_value = get_option( PF_SLUG . '_draft_post_type', 'post' );
+
 					if ('draft' == $publish_type){
-						$cap = current_user_can( 'edit_posts' );
+						$cap =  'edit_posts';
 					} else {
-						$cap = current_user_can( 'publish_posts' );
+						$cap = 'publish_posts';
 					}
+					$create_post_cap_test = current_user_can( get_post_type_object( $pf_draft_post_type_value )->cap->$cap );
+				if ($create_nom_post_cap_test){
 					submit_button( __( 'Nominate' ), 'button', 'draft', false, array( 'id' => 'save' ) );
-				if ( $cap ) {
+				} else {
+					echo 'You do not have the ability to create nominations.';
+				}
+				if ( $create_post_cap_test ) {
 					submit_button( __( 'Send to ' . ucwords( $publish_type ) ), 'primary', 'publish', false );
 				} else {
 					echo '<!-- User cannot '.$publish_type.' posts -->';
