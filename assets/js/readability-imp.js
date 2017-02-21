@@ -230,7 +230,7 @@ function allContentModal(){
 		modalNavigator( tabindex );
 		// At this point it should have grabbed the direct feeditem hashed ID. That allows us to do things specifically to that item past this point.
 		// BUG: Escaping everything incorrectly. <-one time issue?
-		var content = jQuery( "#" + itemID + " #modal-body-" + itemID ).html();
+		var content = jQuery( "#" + itemID + " #modal-body-" + itemID + ' .main-text' ).html();
 		var url = jQuery( "#" + itemID + " #item_link_" + itemID ).val();
 		var authorship = jQuery( "#" + itemID + " #item_author_" + itemID ).val();
 		var read_status = element.attr( 'pf-readability-status' );
@@ -249,7 +249,8 @@ function allContentModal(){
 
 		if ( ( read_status != 1 ) && ( 'opml-feed' != opml_check_item_tags ) ) {
 			// At some point a waiting graphic should go here.
-			jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID ).html( 'Attempting to retrieve full article.' );
+			jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .readability-wait'  ).html( '<h2>Attempting to retrieve full article.</h2>' );
+			jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .main-text'  ).hide();
 			jQuery.post(ajaxurl, {
 				action: 'make_it_readable',
 				// We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
@@ -271,24 +272,26 @@ function allContentModal(){
 					if (status != 'readable') {
 						if (status == 'secured') {
 							alert( 'The content cannot be retrieved. The post may be on a secure page or it may have been removed.' );
-							jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID ).html( read_content );
+							jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .main-text' ).html( read_content );
 							var safeResponse = escapeHtml( read_content );
 							jQuery( "#item_content_" + itemID ).attr( 'value', safeResponse );
 							element.attr( 'pf-readability-status', 1 );
 						} else if (status == 'already_readable') {
-							jQuery( "#" + itemID + " #modal-body-" + itemID ).html( unescape( content ) );
+							jQuery( "#" + itemID + " #modal-body-" + itemID + ' .main-text' ).html( unescape( content ) );
 							element.attr( 'pf-readability-status', 1 );
 						} else {
-							jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID ).html( read_content );
+							jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .main-text' ).html( read_content );
 							var safeResponse = escapeHtml( read_content );
 							jQuery( "#item_content_" + itemID ).attr( 'value', safeResponse );
 						}
 					} else {
-						jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID ).html( read_content );
-						var safeResponse = escapeHtml( read_content );
-						jQuery( "#item_content_" + itemID ).attr( 'value', safeResponse );
+						//jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID+ ' .main-text' ).html( read_content );
+						//var safeResponse = escapeHtml( read_content );
+						//jQuery( "#item_content_" + itemID ).attr( 'value', safeResponse );
 						element.attr( 'pf-readability-status', 1 );
 					}
+					jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .readability-wait'  ).hide();
+					jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .main-text'  ).show();
 				});
 		}
 	});
