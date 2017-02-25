@@ -11,7 +11,7 @@ class Modules {
 	var $modules = array();
 
 	public function __construct() {
-		add_action( 'plugins_loaded', array( $this, 'pressforward_init' ) );
+		add_action( 'plugins_loaded', array( $this, 'pressforward_init' ), 20 );
 		add_action( 'pressforward_init', array( $this, 'setup_modules' ), 1000 );
 
 	}
