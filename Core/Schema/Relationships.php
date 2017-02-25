@@ -16,14 +16,14 @@ class Relationships implements HasActions {
 		global $wpdb;
 
 		$this->table_name = $wpdb->prefix . 'pf_relationships';
-    }
+	}
 
-    public function action_hooks() {
+	public function action_hooks() {
 		$hooks = array(
-            array(
-                'hook' => 'admin_init',
-                'method' => 'maybe_install_relationship_table'
-            ),
+			array(
+				'hook' => 'admin_init',
+				'method' => 'maybe_install_relationship_table',
+			),
 		);
 
 		return $hooks;
@@ -193,7 +193,7 @@ class Relationships implements HasActions {
 		// If an ID is passed, use it. Otherwise build WHERE from params
 		$where = array();
 		if ( $r['id'] ) {
-			$where[] = $wpdb->prepare( "id = %d", $r['id'] );
+			$where[] = $wpdb->prepare( 'id = %d', $r['id'] );
 		} else {
 			foreach ( $r as $rk => $rv ) {
 				if ( ! in_array( $rk, array( 'id', 'unique', 'value' ) ) && false !== $rv ) {
@@ -203,12 +203,12 @@ class Relationships implements HasActions {
 		}
 
 		if ( ! empty( $where ) ) {
-			$sql[] = "WHERE " . implode( " AND ", $where );
+			$sql[] = 'WHERE ' . implode( ' AND ', $where );
 		}
 
 		$sql = implode( ' ', $sql );
-		if ( $r['user_id'] ){
-			$sql .= " AND user_id = ".$r['user_id'];
+		if ( $r['user_id'] ) {
+			$sql .= ' AND user_id = ' . $r['user_id'];
 		}
 
 		return $wpdb->get_results( $sql );

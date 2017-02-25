@@ -10,7 +10,7 @@ class SourceAJAX implements HasActions {
 
 	protected $basename;
 
-	function __construct( PF_Readability $readability, Retrieval $retrieval, Feed_Items $items ){
+	function __construct( PF_Readability $readability, Retrieval $retrieval, Feed_Items $items ) {
 		$this->readability = $readability;
 		$this->retrieval = $retrieval;
 		$this->items = $items;
@@ -37,11 +37,11 @@ class SourceAJAX implements HasActions {
 		die();
 	}
 
-    public function trigger_source_data() {
-    	$message = $this->retrieval->trigger_source_data(true);
-    	wp_send_json($message);
-    	die();
-    }
+	public function trigger_source_data() {
+		$message = $this->retrieval->trigger_source_data( true );
+		wp_send_json( $message );
+		die();
+	}
 
 
 }

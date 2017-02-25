@@ -16,7 +16,7 @@ class PF_Module {
 	function setup_hooks() {
 		// Once modules are registered, set up some basic module info
 		add_action( 'pf_setup_modules', array( $this, 'setup_module_info' ) );
-		add_action( 'admin_init', array($this, 'module_setup') );
+		add_action( 'admin_init', array( $this, 'module_setup' ) );
 		// Set up the admin panels and save methods
 		add_action( 'pf_admin_op_page', array( $this, 'admin_op_page' ) );
 		add_action( 'pf_admin_op_page_save', array( $this, 'admin_op_page_save' ) );
@@ -32,7 +32,7 @@ class PF_Module {
 	 * Also sets up the module_dir and module_url for use throughout
 	 */
 	function setup_module_info() {
-		$pf = pressforward('modules');
+		$pf = pressforward( 'modules' );
 
 		// Determine the ID by checking which module this class belongs to
 		$module_class = get_class( $this );
@@ -54,7 +54,7 @@ class PF_Module {
 		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
 			$enabled = 'yes';
 		}
-		//$enabled = 'yes';
+		// $enabled = 'yes';
 		if ( 'yes' == $enabled ) {
 			// Run at 15 to make sure the core menu is loaded first
 			add_action( 'admin_menu', array( $this, 'setup_admin_menus' ), 20 );
@@ -63,17 +63,17 @@ class PF_Module {
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_styles' ) );	// There's no admin_enqueue_styles action
 			add_action( 'wp_enqueue_scripts', array( $this, 'wp_enqueue_scripts' ) );
 			add_action( 'wp_enqueue_styles',  array( $this, 'wp_enqueue_styles' ) );
-			if ( !empty( $this->feed_type ) ){
-				if ( 'rss' == $this->feed_type ){
+			if ( ! empty( $this->feed_type ) ) {
+				if ( 'rss' == $this->feed_type ) {
 					$feed_type = 'primary_feed_type';
 				} else {
 					$feed_type = $this->feed_type;
 				}
-				add_action( 'pf_do_pf-add-feeds_tab_'.$feed_type, array( $this, 'add_to_feeder' ) );
-				//var_dump('mb: pf_do_pf-add-feeds_tab_'.$feed_type);
-				add_filter( 'pf_tabs_pf-add-feeds', array($this, 'set_permitted_feeds_tabs') );
+				add_action( 'pf_do_pf-add-feeds_tab_' . $feed_type, array( $this, 'add_to_feeder' ) );
+				// var_dump('mb: pf_do_pf-add-feeds_tab_'.$feed_type);
+				add_filter( 'pf_tabs_pf-add-feeds', array( $this, 'set_permitted_feeds_tabs' ) );
 			}
-			add_filter('dash_widget_bar', array($this, 'add_dash_widgets_filter') );
+			add_filter( 'dash_widget_bar', array( $this, 'add_dash_widgets_filter' ) );
 		}
 
 		if ( method_exists( $this, 'post_setup_module_info' ) ) {
@@ -81,36 +81,36 @@ class PF_Module {
 		}
 	}
 
-	function module_setup(){
+	function module_setup() {
 		$mod_settings = array(
 			'name' => $this->id . ' Module',
 			'slug' => $this->id,
 			'description' => 'This module needs to overwrite the setup_module function and give a description.',
 			'thumbnail' => '',
-			'options' => ''
+			'options' => '',
 		);
 
 		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 
-		//return $test;
+		// return $test;
 	}
 
 	public function admin_op_page() {
-		//Module enable option code originated in https://github.com/boonebgorges/participad
-		$modsetup = get_option(PF_SLUG . '_' . $this->id . '_settings');
+		// Module enable option code originated in https://github.com/boonebgorges/participad
+		$modsetup = get_option( PF_SLUG . '_' . $this->id . '_settings' );
 		$modId = $this->id;
-		//print_r(PF_SLUG . '_' . $modId . '_enable');
-		$enabled = get_option(PF_SLUG . '_' . $modId . '_enable');
+		// print_r(PF_SLUG . '_' . $modId . '_enable');
+		$enabled = get_option( PF_SLUG . '_' . $modId . '_enable' );
 		if ( ! in_array( $enabled, array( 'yes', 'no' ) ) ) {
 			$enabled = 'yes';
 		}
-			//print_r( $this->is_enabled() );
+			// print_r( $this->is_enabled() );
 		?>
 
 			<table class="form-table">
 				<tr>
 					<th scope="row">
-						<label for="pressforward-dashboard-enable"><?php _e( 'Enable '. $modsetup['name'], PF_SLUG ) ?></label>
+						<label for="pressforward-dashboard-enable"><?php _e( 'Enable ' . $modsetup['name'], PF_SLUG ) ?></label>
 					</th>
 
 					<td>
@@ -128,7 +128,7 @@ class PF_Module {
 
 	public function admin_op_page_save() {
 		$modId = $this->id;
-		$enabled = isset( $_POST[PF_SLUG . '_' . $modId . '_enable'] ) && 'no' == $_POST[PF_SLUG . '_' . $modId . '_enable'] ? 'no' : 'yes';
+		$enabled = isset( $_POST[ PF_SLUG . '_' . $modId . '_enable' ] ) && 'no' == $_POST[ PF_SLUG . '_' . $modId . '_enable' ] ? 'no' : 'yes';
 		update_option( PF_SLUG . '_' . $modId . '_enable', $enabled );
 
 	}
@@ -161,7 +161,7 @@ class PF_Module {
 			}
 		}
 	}
-/**
+	/**
 	function setup_dash_widgets( $dash_widgets ) {
 		foreach ( (array) $dash_widgets as $dash_widget ) {
 			$defaults = array(
@@ -179,18 +179,19 @@ class PF_Module {
 			//add_action( PF_MENU_SLUG, $r['page_title'], $r['menu_title'], $r['cap'], $r['slug'], $r['callback'] );
 		}
 	}
-**/
+	 **/
 	// Fetch and return a formatted data object - optional
-	function get_data_object($theFeed) { return array(); }
+	function get_data_object( $theFeed ) {
+		return array(); }
 
 	function pf_add_dash_widgets() {
 		$array = array();
 		return $array;
 	}
 
-	function add_dash_widgets_filter($filter_inc_array) {
+	function add_dash_widgets_filter( $filter_inc_array ) {
 		$client_widgets = $this->pf_add_dash_widgets();
-		$all_widgets = array_merge($filter_inc_array, $client_widgets);
+		$all_widgets = array_merge( $filter_inc_array, $client_widgets );
 		return $all_widgets;
 	}
 

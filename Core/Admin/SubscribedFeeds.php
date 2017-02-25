@@ -13,19 +13,19 @@ use AlertBox\The_Alert_Box as The_Alert_Box;
 
 class SubscribedFeeds implements HasActions, HasFilters {
 
-    function __construct( SystemUsers $user_interface, The_Alert_Box $alertbox, Metas $metas ) {
-        $this->user_interface = $user_interface;
-        $this->alertbox = $alertbox;
+	function __construct( SystemUsers $user_interface, The_Alert_Box $alertbox, Metas $metas ) {
+		$this->user_interface = $user_interface;
+		$this->alertbox = $alertbox;
 		$this->metas = $metas;
-    }
+	}
 
-    public function action_hooks() {
-        return array(
-            array(
-                'hook' => 'admin_menu',
-                'method' => 'add_plugin_admin_menu',
-				'priority'	=>	14
-            ),
+	public function action_hooks() {
+		return array(
+			array(
+				'hook' => 'admin_menu',
+				'method' => 'add_plugin_admin_menu',
+				'priority'	=> 14,
+			),
 			array(
 				'hook' => 'manage_edit-pf_feed_sortable_columns',
 				'method' => 'make_last_retrieved_column_sortable',
@@ -38,7 +38,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 				'hook' => 'manage_pf_feed_posts_custom_column',
 				'method' => 'last_checked_date_column_content',
 				'priority' => 10,
-				'args'	=> 2
+				'args'	=> 2,
 			),
 			array(
 				'hook' => 'manage_edit-pf_feed_sortable_columns',
@@ -60,24 +60,24 @@ class SubscribedFeeds implements HasActions, HasFilters {
 				'hook' => 'quick_edit_custom_box',
 				'method' => 'quick_edit_field',
 				'priority' => 10,
-				'args'	=> 2
+				'args'	=> 2,
 			),
 			array(
 				'hook' => 'save_post',
 				'method' => 'quick_edit_save',
 				'priority' => 10,
-				'args'	=> 2
+				'args'	=> 2,
 			),
 			array(
 				'hook' => 'manage_pf_feed_posts_custom_column',
 				'method' => 'last_retrieved_date_column_content',
 				'priority' => 10,
-				'args'	=> 2
+				'args'	=> 2,
 			),
-        );
-    }
+		);
+	}
 
-	public function filter_hooks(){
+	public function filter_hooks() {
 		return array(
 			array(
 				'hook' => 'manage_pf_feed_posts_columns',
@@ -87,18 +87,18 @@ class SubscribedFeeds implements HasActions, HasFilters {
 				'hook' => 'manage_pf_feed_posts_columns',
 				'method' => 'add_last_retrieved_date_column',
 			),
-            // add_filter( 'heartbeat_received', array( $this, 'hb_check_feed_retrieve_status' ), 10, 2 );
-            array(
-                'hook' => 'heartbeat_received',
-                'method' => 'hb_check_feed_retrieve_status',
-                'priority' => 10,
-                'args'	=> 2
-            ),
+			// add_filter( 'heartbeat_received', array( $this, 'hb_check_feed_retrieve_status' ), 10, 2 );
+			array(
+				'hook' => 'heartbeat_received',
+				'method' => 'hb_check_feed_retrieve_status',
+				'priority' => 10,
+				'args'	=> 2,
+			),
 		);
 	}
 
 
-    public function add_plugin_admin_menu() {
+	public function add_plugin_admin_menu() {
 
 		if ( $alert_count = $this->alertbox->alert_count() ) {
 			$alert_count_notice = '<span class="feed-alerts count-' . intval( $alert_count ) . '"><span class="alert-count">' . number_format_i18n( $alert_count ) . '</span></span>';
@@ -109,13 +109,13 @@ class SubscribedFeeds implements HasActions, HasFilters {
 
 		add_submenu_page(
 			PF_MENU_SLUG,
-			__('Subscribed Feeds', 'pf'),
+			__( 'Subscribed Feeds', 'pf' ),
 			$subscribed_feeds_menu_text,
-			get_option('pf_menu_feeder_access', $this->user_interface->pf_get_defining_capability_by_role('editor')),
-			'edit.php?post_type=' . pressforward('schema.feeds')->post_type
+			get_option( 'pf_menu_feeder_access', $this->user_interface->pf_get_defining_capability_by_role( 'editor' ) ),
+			'edit.php?post_type=' . pressforward( 'schema.feeds' )->post_type
 		);
 
-    }
+	}
 
 	/**
 	 * Add a Last Retrieved column to the pf_feed table.
@@ -126,8 +126,8 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	 * @return array
 	 */
 	public function add_last_retrieved_date_column( $posts_columns ) {
-		#unset( $posts_columns['date'] );
-		$posts_columns['last_retrieved'] = __('Last Time Feed Item Retrieved', 'pf');
+		// unset( $posts_columns['date'] );
+		$posts_columns['last_retrieved'] = __( 'Last Time Feed Item Retrieved', 'pf' );
 		return $posts_columns;
 	}
 
@@ -140,8 +140,8 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	 * @return array
 	 */
 	public function add_last_checked_date_column( $posts_columns ) {
-		#unset( $posts_columns['date'] );
-		$posts_columns['last_checked'] = __('Last Time Feed Checked', 'pf');
+		// unset( $posts_columns['date'] );
+		$posts_columns['last_checked'] = __( 'Last Time Feed Checked', 'pf' );
 		return $posts_columns;
 	}
 
@@ -153,7 +153,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	 * @since 3.4.0
 	 *
 	 * @param string $column_name Column ID.
-	 * @param int $post_id ID of the post for the current row in the table.
+	 * @param int    $post_id ID of the post for the current row in the table.
 	 */
 	public function last_retrieved_date_column_content( $column_name, $post_id ) {
 		if ( 'last_retrieved' !== $column_name ) {
@@ -193,7 +193,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	 * @since 3.5.0
 	 *
 	 * @param string $column_name Column ID.
-	 * @param int $post_id ID of the post for the current row in the table.
+	 * @param int    $post_id ID of the post for the current row in the table.
 	 */
 	public function last_checked_date_column_content( $column_name, $post_id ) {
 		if ( 'last_checked' !== $column_name ) {
@@ -273,8 +273,8 @@ class SubscribedFeeds implements HasActions, HasFilters {
 
 		// Sanity check: only modify pf_feed queries
 		$feed_post_type = '';
-		if ( ! empty( pressforward('schema.feeds')->post_type ) ) {
-			$feed_post_type = pressforward('schema.feeds')->post_type;
+		if ( ! empty( pressforward( 'schema.feeds' )->post_type ) ) {
+			$feed_post_type = pressforward( 'schema.feeds' )->post_type;
 		}
 
 		if ( empty( $query->query_vars['post_type'] ) || $feed_post_type !== $query->query_vars['post_type'] ) {
@@ -309,9 +309,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 			)
 		) );
 
-		#var_dump($query); die();
-
-
+		// var_dump($query); die();
 	}
 
 	/**
@@ -336,8 +334,8 @@ class SubscribedFeeds implements HasActions, HasFilters {
 
 		// Sanity check: only modify pf_feed queries
 		$feed_post_type = '';
-		if ( ! empty( pressforward('schema.feeds')->post_type ) ) {
-			$feed_post_type = pressforward('schema.feeds')->post_type;
+		if ( ! empty( pressforward( 'schema.feeds' )->post_type ) ) {
+			$feed_post_type = pressforward( 'schema.feeds' )->post_type;
 		}
 
 		if ( empty( $query->query_vars['post_type'] ) || $feed_post_type !== $query->query_vars['post_type'] ) {
@@ -374,20 +372,20 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	}
 
 
-    public function pf_delete_children_of_feeds( $post_id ){
-    	if ( pressforward('schema.feeds')->post_type == get_post_type( $post_id ) ){
-    		pf_log('Delete a feed and all its children.');
+	public function pf_delete_children_of_feeds( $post_id ) {
+		if ( pressforward( 'schema.feeds' )->post_type == get_post_type( $post_id ) ) {
+			pf_log( 'Delete a feed and all its children.' );
 		    pf_delete_item_tree( $post_id );
-    	}
-    }
+		}
+	}
 
 
-    public function pf_trash_children_of_feeds( $post_id ){
-    	if ( pressforward('schema.feeds')->post_type == get_post_type( $post_id ) ){
-    		pf_log('Trash a feed and all its children.');
-    		$this->pf_thing_trasher( $post_id, true, pressforward('schema.feeds')->post_type );
-    	}
-    }
+	public function pf_trash_children_of_feeds( $post_id ) {
+		if ( pressforward( 'schema.feeds' )->post_type == get_post_type( $post_id ) ) {
+			pf_log( 'Trash a feed and all its children.' );
+			$this->pf_thing_trasher( $post_id, true, pressforward( 'schema.feeds' )->post_type );
+		}
+	}
 
 	/**
 	 * Echo the output for the Feed URL field on Quick Edit.
@@ -453,7 +451,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 		$this->metas->update_pf_meta( $post_id, 'feedUrl', $feed_url );
 	}
 
-	public function hb_check_feed_retrieve_status( $response, $data, $screen_id = '' ){
+	public function hb_check_feed_retrieve_status( $response, $data, $screen_id = '' ) {
 		/**
 		 * $feed_hb_state = array(
 		 * 'feed_id'	=>	$aFeed->ID,
@@ -462,11 +460,11 @@ class SubscribedFeeds implements HasActions, HasFilters {
 		 * 'feeds_iteration'	=>	$feeds_iteration,
 		 * 'total_feeds'	=>	count($feedlist)
 		 * );
-		**/
-		if ( (array_key_exists('pf_heartbeat_request', $data)) && ('feed_state' == $data['pf_heartbeat_request']) ){
-			$feed_hb_state = get_option( PF_SLUG.'_feeds_hb_state' );
-			foreach ( $feed_hb_state as $key=>$state ){
-				$response['pf_'.$key] = $state;
+		*/
+		if ( (array_key_exists( 'pf_heartbeat_request', $data )) && ('feed_state' == $data['pf_heartbeat_request']) ) {
+			$feed_hb_state = get_option( PF_SLUG . '_feeds_hb_state' );
+			foreach ( $feed_hb_state as $key => $state ) {
+				$response[ 'pf_' . $key ] = $state;
 			}
 		}
 
@@ -474,27 +472,27 @@ class SubscribedFeeds implements HasActions, HasFilters {
 
 	}
 
-	function pf_thing_trasher($id = 0, $readability_status = false, $item_type = 'feed_item'){
-		if ($id == 0)
-			return new WP_Error('noID', __("No ID supplied for deletion", 'pf'));
+	function pf_thing_trasher( $id = 0, $readability_status = false, $item_type = 'feed_item' ) {
+		if ( $id == 0 ) {
+			return new WP_Error( 'noID', __( 'No ID supplied for deletion', 'pf' ) ); }
 
-		pf_log('On trash hook:');
-		# Note: this will also remove feed items if a feed is deleted, is that something we want?
-		if ($readability_status || $readability_status > 0){
-			if ( 'feed_item' == $item_type ){
+		pf_log( 'On trash hook:' );
+		// Note: this will also remove feed items if a feed is deleted, is that something we want?
+		if ( $readability_status || $readability_status > 0 ) {
+			if ( 'feed_item' == $item_type ) {
 				$post_type = pf_feed_item_post_type();
 			} else {
 				$post_type = $item_type;
 			}
 			$args = array(
 				'post_parent' => $id,
-				'post_type'   => $post_type
+				'post_type'   => $post_type,
 			);
-			$attachments = get_children($args);
-			pf_log('Get Children of '.$id);
-			pf_log($attachments);
-			foreach ($attachments as $attachment) {
-				wp_trash_post($attachment->ID, true);
+			$attachments = get_children( $args );
+			pf_log( 'Get Children of ' . $id );
+			pf_log( $attachments );
+			foreach ( $attachments as $attachment ) {
+				wp_trash_post( $attachment->ID, true );
 			}
 		}
 

@@ -21,7 +21,7 @@ class Modules {
 	 * libraries are available
 	 */
 	function pressforward_init() {
-		//var_dump('PFI');
+		// var_dump('PFI');
 		do_action( 'pressforward_init' );
 	}
 
@@ -53,7 +53,7 @@ class Modules {
 
 				$module_args[] = array(
 					'slug' => $module_dir,
-					'class' => $class_name
+					'class' => $class_name,
 				);
 			}
 		}

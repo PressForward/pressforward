@@ -26,8 +26,8 @@ class PF_UnitTest_Factory_For_Relationship extends WP_UnitTest_Factory_For_Thing
 	}
 
 	function create_object( $args ) {
-		if ( ! isset( $args['user_id'] ) )
-			$args['user_id'] = get_current_user_id();
+		if ( ! isset( $args['user_id'] ) ) {
+			$args['user_id'] = get_current_user_id(); }
 
 		return pf_set_relationship( $args['type'], $args['item_id'], $args['user_id'], $args['value'] );
 	}
@@ -52,7 +52,7 @@ class PF_UnitTest_Factory_For_Feed extends WP_UnitTest_Factory_For_Thing {
 	}
 
 	function create_object( $args ) {
-		return pressforward('schema.feeds')->feed_post_setup( $args );
+		return pressforward( 'schema.feeds' )->feed_post_setup( $args );
 	}
 
 	function update_object( $activity_id, $fields ) {}
@@ -76,7 +76,7 @@ class PF_UnitTest_Factory_For_Feed_Item extends WP_UnitTest_Factory_For_Thing {
 	}
 
 	function create_object( $args ) {
-		$feed_item_id = pressforward('schema.feed_item')->create( $args );
+		$feed_item_id = pressforward( 'schema.feed_item' )->create( $args );
 
 		$meta_keys = array(
 			'item_id',
@@ -94,7 +94,7 @@ class PF_UnitTest_Factory_For_Feed_Item extends WP_UnitTest_Factory_For_Thing {
 
 		foreach ( $meta_keys as $mk ) {
 			if ( isset( $args[ $mk ] ) ) {
-				pressforward('controller.metas')->update_pf_meta( $feed_item_id, $mk, $args[ $mk ] );
+				pressforward( 'controller.metas' )->update_pf_meta( $feed_item_id, $mk, $args[ $mk ] );
 			}
 		}
 

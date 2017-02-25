@@ -12,39 +12,38 @@ use PressForward\Core\Utility\Retrieval;
 
 class UtilityProvider extends ServiceProvider {
 
-	public function register( Container $container ){
+	public function register( Container $container ) {
 
 		$container->share(
 			'utility.forward_tools',
-			function( $container ){
+			function( $container ) {
 				return new Forward_Tools(
-									$container->fetch('controller.items'),
-									$container->fetch('controller.advancement'),
-									$container->fetch('controller.metas')
-								);
+					$container->fetch( 'controller.items' ),
+					$container->fetch( 'controller.advancement' ),
+					$container->fetch( 'controller.metas' )
+				);
 			}
 		);
 
 		$container->share(
 			'utility.relate',
-			function( $container ){
+			function( $container ) {
 				return new Relate(
-									$container->fetch('controller.items'),
-									$container->fetch('controller.advancement'),
-									$container->fetch('controller.metas'),
-									$container->fetch('schema.relationships')
-								);
+					$container->fetch( 'controller.items' ),
+					$container->fetch( 'controller.advancement' ),
+					$container->fetch( 'controller.metas' ),
+					$container->fetch( 'schema.relationships' )
+				);
 			}
 		);
 
 		$container->share(
 			'utility.retrieval',
-			function( $container ){
+			function( $container ) {
 				return new Retrieval();
 			}
 		);
 
-		//parent::register( $container );
-
+		// parent::register( $container );
 	}
 }

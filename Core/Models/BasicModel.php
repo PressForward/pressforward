@@ -5,10 +5,10 @@ class BasicModel {
 	protected $data = array();
 
 	public function __construct( $item = array(), $handlers = array(), $post_type = false ) {
-		if (empty($handlers)){
+		if ( empty( $handlers ) ) {
 			$handlers = array(
-				'processor'	=>	pressforward('controller.items'),
-				'metas'		=>	pressforward('controller.metas')
+				'processor'	=> pressforward( 'controller.items' ),
+				'metas'		=> pressforward( 'controller.metas' ),
 			);
 		}
 		$this->metas = $handlers['metas'];
@@ -22,36 +22,34 @@ class BasicModel {
 	 * prefer the custom getters and setters that follow.
 	 */
 	public function __isset( $key ) {
-		return isset( $this->data[$key] );
+		return isset( $this->data[ $key ] );
 	}
 	public function __get( $key ) {
 		return $this->get( $key );
 	}
 	public function __set( $key, $value ) {
-		$this->set($key, $value);
+		$this->set( $key, $value );
 	}
 
-	//Setters and getters
-
+	// Setters and getters
 	/**
 	 * Set a property for the object.
 	 *
 	 * @param string $key   Key to access the property
-	 * @param any $value    Value to store in the property.
-	 *
+	 * @param any    $value    Value to store in the property.
 	 */
 	public function set( $key, $value ) {
-		$value = apply_filters('pf_'.$this->type.'_property_'.$key, $value, $this);
-		if ( 0 === strpos($key, $this->type_key.'_') ) {
-			$key = str_replace($this->type_key.'_', '', $key);
+		$value = apply_filters( 'pf_' . $this->type . '_property_' . $key, $value, $this );
+		if ( 0 === strpos( $key, $this->type_key . '_' ) ) {
+			$key = str_replace( $this->type_key . '_', '', $key );
 		}
-		if ( 0 === strpos($key, 'post_') ) {
-			$key = str_replace('post_', '', $key);
+		if ( 0 === strpos( $key, 'post_' ) ) {
+			$key = str_replace( 'post_', '', $key );
 		}
-		if ( method_exists($this,$f='set_'.$key) ){
-			$value = call_user_func(array( $this, $f ), $value);
+		if ( method_exists( $this,$f = 'set_' . $key ) ) {
+			$value = call_user_func( array( $this, $f ), $value );
 		}
-		$this->data[$key] = $value;
+		$this->data[ $key ] = $value;
 	}
 	/**
 	 * Get an untreated property of the object.
@@ -65,35 +63,35 @@ class BasicModel {
 	 * @return any          Property value.
 	 */
 	public function get( $key, $sub_key = false ) {
-		if ( 0 === strpos($key, $this->type_key.'_') ) {
-			$key = str_replace($this->type_key.'_', '', $key);
+		if ( 0 === strpos( $key, $this->type_key . '_' ) ) {
+			$key = str_replace( $this->type_key . '_', '', $key );
 		}
-		if ( 0 === strpos($key, 'post_') ) {
-			$key = str_replace('post_', '', $key);
+		if ( 0 === strpos( $key, 'post_' ) ) {
+			$key = str_replace( 'post_', '', $key );
 		}
-		if ( method_exists($this,$f='get_'.$key) ){
-			$value = call_user_func(array( $this, $f ));
+		if ( method_exists( $this,$f = 'get_' . $key ) ) {
+			$value = call_user_func( array( $this, $f ) );
 			return $value;
 		}
-		if ( false !== $sub_key ){
-			$array_property = $this->data[$key];
-			return $array_property[$sub_key];
+		if ( false !== $sub_key ) {
+			$array_property = $this->data[ $key ];
+			return $array_property[ $sub_key ];
 		}
-		return isset( $this->data[$key] ) ? $this->data[$key] : null;
+		return isset( $this->data[ $key ] ) ? $this->data[ $key ] : null;
 	}
 
-	public function set_up_metas( $set_metas = array(), $meta_system ){
-		foreach ( $meta_system->structure as $meta_key=>$meta_data ){
-			if ( in_array( $this->type, $meta_data['level']) ){
-				if ( ( array_key_exists( $meta_key, $set_metas ) || empty( $set_metas[$meta_key] ) ) && !empty( $meta_data['defaults'] ) ){
-					$metas[$meta_key] = $meta_data['default'];
+	public function set_up_metas( $set_metas = array(), $meta_system ) {
+		foreach ( $meta_system->structure as $meta_key => $meta_data ) {
+			if ( in_array( $this->type, $meta_data['level'] ) ) {
+				if ( ( array_key_exists( $meta_key, $set_metas ) || empty( $set_metas[ $meta_key ] ) ) && ! empty( $meta_data['defaults'] ) ) {
+					$metas[ $meta_key ] = $meta_data['default'];
 				} else {
-					$metas[$meta_key] = '';
+					$metas[ $meta_key ] = '';
 				}
 			}
 		}
-		foreach ( $defaults as $key=>$default ) {
-			$this->set($key, $default);
+		foreach ( $defaults as $key => $default ) {
+			$this->set( $key, $default );
 		}
 	}
 

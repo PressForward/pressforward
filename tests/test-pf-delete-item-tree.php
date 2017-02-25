@@ -66,14 +66,14 @@ class PF_Tests_PfDeleteItemTree extends PF_UnitTestCase {
 		update_option( 'pf_delete_queue', array( $posts[1] ) );
 
 		$q = new WP_Query( array(
-			'post_type' => pressforward('schema.feeds')->post_type,
+			'post_type' => pressforward( 'schema.feeds' )->post_type,
 			'post_status' => 'any',
 			'numberposts' => -1,
 			// The post-query filter doesn't run when 'fields'=>'ids'
-			//'fields' => 'ids',
+			// 'fields' => 'ids',
 		) );
 		$post_ids = array();
-		foreach ($q->posts as $post){
+		foreach ( $q->posts as $post ) {
 			$post_ids[] = $post->ID;
 		}
 
@@ -84,7 +84,7 @@ class PF_Tests_PfDeleteItemTree extends PF_UnitTestCase {
 		$f1 = $this->factory->feed->create();
 		$f2 = $this->factory->feed->create();
 
-		$tax = pressforward('schema.feeds')->tag_taxonomy;
+		$tax = pressforward( 'schema.feeds' )->tag_taxonomy;
 
 		$t1 = $this->factory->term->create( array( 'taxonomy' => $tax ) );
 		$t2 = $this->factory->term->create( array( 'taxonomy' => $tax ) );
@@ -107,18 +107,18 @@ class PF_Tests_PfDeleteItemTree extends PF_UnitTestCase {
 
 	protected function make_attachment( $parent_post_id = 0, $upload = false ) {
 		if ( false !== $upload ) {
-			$filename = DIR_TESTDATA.'/images/test-image.jpg';
-			$contents = file_get_contents($filename);
-			$upload = wp_upload_bits(basename($filename), null, $contents);
+			$filename = DIR_TESTDATA . '/images/test-image.jpg';
+			$contents = file_get_contents( $filename );
+			$upload = wp_upload_bits( basename( $filename ), null, $contents );
 		}
 
 		$type = '';
-		if ( !empty($upload['type']) ) {
+		if ( ! empty( $upload['type'] ) ) {
 			$type = $upload['type'];
 		} else {
 			$mime = wp_check_filetype( $upload['file'] );
-			if ($mime)
-				$type = $mime['type'];
+			if ( $mime ) {
+				$type = $mime['type']; }
 		}
 
 		$attachment = array(
@@ -127,13 +127,13 @@ class PF_Tests_PfDeleteItemTree extends PF_UnitTestCase {
 			'post_type' => 'attachment',
 			'post_parent' => $parent_post_id,
 			'post_mime_type' => $type,
-			'guid' => $upload[ 'url' ],
+			'guid' => $upload['url'],
 		);
 
 		// Save the data
-		$id = wp_insert_attachment( $attachment, $upload[ 'file' ], $parent_post_id );
+		$id = wp_insert_attachment( $attachment, $upload['file'], $parent_post_id );
 		wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $upload['file'] ) );
-		if (isset($this->ids) && is_array($this->ids)){
+		if ( isset( $this->ids ) && is_array( $this->ids ) ) {
 			$ids = $this->ids;
 		} else {
 			$ids = array();

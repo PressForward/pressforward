@@ -13,20 +13,20 @@ class FolderExtension extends APIWithMetaEndpoints implements HasFilters {
 
 	protected $basename;
 
-	function __construct( Metas $metas ){
+	function __construct( Metas $metas ) {
 		$this->pf_metas = $metas;
-		$this->tax = pressforward('schema.folders')->tag_taxonomy;
+		$this->tax = pressforward( 'schema.folders' )->tag_taxonomy;
 		$this->level = 'feed';
 	}
 
 	public function filter_hooks() {
 		$filter = array(
 			array(
-				'hook' => 'rest_prepare_'.$this->tax,
+				'hook' => 'rest_prepare_' . $this->tax,
 				'method' => 'filter_wp_to_pf_in_terms',
 				'priority'  => 10,
-				'args' => 3
-			)
+				'args' => 3,
+			),
 		);
 		return $filter;
 	}
