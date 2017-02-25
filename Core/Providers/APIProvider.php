@@ -16,6 +16,11 @@ class APIProvider extends ServiceProvider {
 
 	public function register( Container $container ) {
 
+		$api_base = array(
+			'version'	=>	1,
+			'base_namespace'	=>	'pf/v'
+		);
+
 		$container->share(
 			'api.pf_endpoint',
 			function( $container ) {
