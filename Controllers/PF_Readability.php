@@ -222,7 +222,7 @@ class PF_Readability {
 			return $content;
 		}
 
-		$this->process_readability($html, $url);
+		$content = $this->process_readability($html, $url);
 
 		return $content;
 	}
