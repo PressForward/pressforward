@@ -79,6 +79,29 @@ class ReadabilityEndpoint implements HasActions {
 			),
 		));
 
+		register_rest_route($namespace, '/' . $base.'/url', array(
+			array(
+				'methods'         => \WP_REST_Server::CREATABLE,
+				'callback'        => array( $this, 'get_readable_from_url' ),
+				'args' => array(
+				  'source_url' => array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'The source_url parameter takes a URL for keeping note of in readability.', 'pf' ),
+					// type specifies the type of data that the argument should be.
+					'type'        => 'string',
+					// Set the argument to be required for the endpoint.
+					'required'    => true,
+					'validate_callback' => array( $this, 'is_valid_url' ),
+					'sanitize_callback' => array( $this, 'is_sane_url' ),
+				  ),
+			    ),
+				'permission_callback' => function () {
+			      return true; //current_user_can( 'edit_others_posts' );
+			  	},
+				'priority'  => 10,
+			),
+		));
+
 	}
 	/**
 	 * Validate a request argument based on details registered to the route.
@@ -153,6 +176,10 @@ class ReadabilityEndpoint implements HasActions {
 			// unencode via js with the html_entity_decode function we use elsewhere.
 		}
 		return new \WP_Error( 'rest_invalid', esc_html__( 'The html_doc and source_url parameters are required.', 'pf' ), array( 'status' => 400 ) );
+	}
+
+	public function get_readable_from_url(){
+		
 	}
 
 
