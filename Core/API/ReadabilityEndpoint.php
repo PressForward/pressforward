@@ -178,8 +178,10 @@ class ReadabilityEndpoint implements HasActions {
 		return new \WP_Error( 'rest_invalid', esc_html__( 'The html_doc and source_url parameters are required.', 'pf' ), array( 'status' => 400 ) );
 	}
 
-	public function get_readable_from_url(){
-		
+	public function get_readable_from_url($request){
+		return rest_ensure_response(
+				htmlspecialchars($this->readability->readability_object($request['source_url']))
+			);
 	}
 
 
