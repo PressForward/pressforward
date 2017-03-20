@@ -112,7 +112,7 @@ class AssetsProvider extends ServiceProvider {
 			},
 			'handle'	=> 'pf',
 			'src'		=> 'assets/js/pf',
-			'deps'		=> array( 'jquery' ),
+			'deps'		=> array( 'jquery', 'wp-api' ),
 		) );
 
 		$assets->register_script( array(
