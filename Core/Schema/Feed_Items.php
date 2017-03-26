@@ -75,7 +75,7 @@ class Feed_Items implements HasActions, HasFilters {
 		);
 
 		$modules = pressforward( 'modules' )->modules;
-		if ( isset( $modules['rss-out'] ) && ( 'yes' == get_option( PF_SLUG . '_' . 'rss-out_enable' ) )  ) {
+		if ( isset( $modules['rss-out'] ) && ( 'yes' == get_option( PF_SLUG . '_' . 'rss-out_enable' ) ) ) {
 			$rest_enabled = true;
 		} else {
 			$rest_enabled = false;
@@ -133,7 +133,7 @@ class Feed_Items implements HasActions, HasFilters {
 	}
 
 	function feeds_item_map_meta_cap( $caps, $cap, $user_id, $args ) {
-		if (  empty( $args ) ) {
+		if ( empty( $args ) ) {
 			return $caps;
 		}
 		/* If editing, deleting, or reading a feed, get the post and post type object. */
@@ -150,7 +150,8 @@ class Feed_Items implements HasActions, HasFilters {
 			if ( $user_id == $post->post_author ) {
 				$caps[] = $post_type->cap->edit_posts;
 			} else { 				$caps[] = $post_type->cap->edit_others_posts; }
-		} /* If deleting a feed, assign the required capability. */
+		} // End if().
+
 		elseif ( 'delete_' . $this->post_type == $cap ) {
 			if ( $user_id == $post->post_author ) {
 				$caps[] = $post_type->cap->delete_posts;
@@ -280,7 +281,9 @@ class Feed_Items implements HasActions, HasFilters {
 			'post_content' => wp_specialchars_decode( $r['item_content'], ENT_COMPAT ), // todo
 			'guid'         => $r['item_link'],
 			'post_date'    => date( 'Y-m-d H:i:s', $r['item_wp_date'] ),
-			'tax_input'    => array( pf_feed_item_tag_taxonomy() => $r['item_tags'] ),
+			'tax_input'    => array(
+				pf_feed_item_tag_taxonomy() => $r['item_tags'],
+			),
 			'post_parent'	=> $r['post_parent'],
 		);
 		// pf_log($r);
@@ -436,8 +439,8 @@ class Feed_Items implements HasActions, HasFilters {
 										),
 									)
 		);
-		pf_log('Cleaning up feed items.');
-		pf_log($queryForDel);
+		pf_log( 'Cleaning up feed items.' );
+		pf_log( $queryForDel );
 
 		// remove_filter( 'posts_where', array( $this, 'filter_where_older') );
 		// pf_log( $queryForDel );
@@ -577,7 +580,10 @@ class Feed_Items implements HasActions, HasFilters {
 						$post_id_to_pass = $post->ID;
 						pf_log( 'We already have post ' . $post_id_to_pass . ' for ' );
 						pf_log( $item );
-						do_action( 'already_a_feed_item', array( 'item' => $item, 'post_id' => $post_id_to_pass ) );
+						do_action( 'already_a_feed_item', array(
+							'item' => $item,
+							'post_id' => $post_id_to_pass,
+						) );
 					}
 
 					endforeach;
@@ -647,11 +653,11 @@ class Feed_Items implements HasActions, HasFilters {
 						} else {
 							// If it isn't duplicated at all, then we need to give it a source repeat count of 0
 							$sourceRepeat = 0;
-						}
+						}// End if().
 
 						endforeach;
 					endif;
-			}
+			}// End if().
 				wp_reset_query();
 			// Why an increment here instead of a bool?
 			// If I start getting errors, I can use this to check how many times an item is in the database.
@@ -786,8 +792,8 @@ class Feed_Items implements HasActions, HasFilters {
 				do_action( 'pf_post_established', $newNomID, $item_id, $parent_id );
 			} else {
 				pf_log( 'The post was a repeat, so we are not adding it.' );
-			}
-		}
+			}// End if().
+		}// End foreach().
 		update_option( PF_SLUG . '_ready_to_chunk', 1 );
 		// $Feed_Retrieve = new PF_Feed_Retrieve();
 		pressforward( 'utility.retrieval' )->advance_feeds();
@@ -887,7 +893,7 @@ class Feed_Items implements HasActions, HasFilters {
 			$string = utf8_encode( $string );
 			// From: http://stackoverflow.com/questions/657643/how-to-remove-html-special-chars
 			// $string = preg_replace("/&#?[a-z0-9]+;/i","", $string);
-		}
+		}// End if().
 
 		return $string;
 	}
@@ -913,7 +919,7 @@ class Feed_Items implements HasActions, HasFilters {
 			if ( pressforward( 'library.opengraph' )->fetch( $url ) ) {
 				$node = pressforward( 'library.opengraph' )->fetch( $url );
 				$descrip = $node->description;
-			} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
+			} // End if().
 			elseif ( '' != ($contentHtml = @get_meta_tags( $url )) ) {
 				// Try and get the HEAD > META DESCRIPTION tag.
 				$descrip = $contentHtml['description'];
@@ -1051,7 +1057,7 @@ class Feed_Items implements HasActions, HasFilters {
 			// Now that we have a correctly meta-ed and attached image we can finally turn it into a post thumbnail.
 			pressforward( 'controller.metas' )->update_pf_meta( $postID, '_thumbnail_id', $thumbid );
 
-		}
+		}// End if().
 	}
 
 
@@ -1102,7 +1108,9 @@ class Feed_Items implements HasActions, HasFilters {
 	 * Will create the necessary tags if they're not found
 	 */
 	public static function convert_raw_tags( $tags ) {
-		$retval = array( $this->tag_taxonomy => $tags );
+		$retval = array(
+			$this->tag_taxonomy => $tags,
+		);
 		return $retval;
 	}
 
