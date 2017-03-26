@@ -1228,14 +1228,19 @@ function pf_exclude_queued_items_from_queries( $query ) {
 // Filter post results instead of manipulating the query.
 function pf_exclude_queued_items_from_query_results( $posts, $query ) {
 	// var_dump($posts[0]); die();
-	$queued = get_option( 'pf_delete_queue' );
-	// var_dump($queued); die();
-	if ( ! $queued || ! is_array( $queued ) ) {
-		return $posts;
-	}
-	$queued = array_slice( $queued, 0, 100 );
 	$type = $query->get( 'post_type' );
-	if ( ( empty( $type ) ) || ( 'post' != $type ) ) {
+	$post_types = array(
+		pressforward('schema.feeds')->post_type,
+		pressforward('schema.feed_item')->post_type,
+		pressforward('schema.nominations')->post_type,
+	);
+	if ( ( empty( $type ) ) || ( in_array( $type, $post_types ) ) ) {
+		$queued = get_option( 'pf_delete_queue' );
+		// var_dump($queued); die();
+		if ( ! $queued || ! is_array( $queued ) ) {
+			return $posts;
+		}
+		$queued = array_slice( $queued, 0, 100 );
 		foreach ( $posts as $key => $post ) {
 			if ( in_array( $post->ID, $queued ) ) {
 				unset( $posts[ $key ] );
