@@ -739,7 +739,7 @@ function pf_forward_unto_source() {
 		return false;
 	}
 	$link = pf_canonical_url();
-	if ( ! empty( $link ) ) {
+	if ( ! empty( $link ) && false !== $link ) {
 
 		$obj = get_queried_object();
 		$post_id = $obj->ID;
@@ -753,16 +753,23 @@ function pf_forward_unto_source() {
 		$wait = get_option( 'pf_link_to_source', 0 );
 		$post_check = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'pf_forward_to_origin', true );
 		// var_dump($post_check); die();
-		if ( ( $wait > 0 ) && ( 'no-forward' !== $post_check ) ) {
-			?>
-				 <script type="text/javascript">console.log('You are being redirected to the source item.');</script>
-			<?php
-			echo '<META HTTP-EQUIV="refresh" CONTENT="' . $wait . ';URL=' . $link . '">';
+		if ( isset( $_GET['noforward'] ) && true == $_GET['noforward'] ) {
+
+		} else {
+			if ( ( $wait > 0 ) && ( 'no-forward' !== $post_check ) ) {
+				echo '<META HTTP-EQUIV="refresh" CONTENT="' . $wait . ';URL=' . $link . '">';
+				?>
+					<script type="text/javascript">console.log('You are being redirected to the source item.');</script>
+				<?php
+
+				echo '</head><body></body></html>';
+				die();
+			}
 		}
 	}
 }
 
-add_action( 'wp_head', 'pf_forward_unto_source' );
+add_action( 'wp_head', 'pf_forward_unto_source', 1000 );
 
 /**
  * Echos the script link to use phonegap's debugging tools.
@@ -994,7 +1001,7 @@ function prep_archives_query( $q ) {
 				LIMIT {$pagefull} OFFSET {$offset}
 			 ", 'nomination', 'nomination');
 		 // var_dump($q);
-	}
+	}// End if().
 	// $archivalposts = $wpdb->get_results($dquerystr, OBJECT);
 	// return $archivalposts;
 	// var_dump('<pre>'); var_dump($q); die();
@@ -1179,7 +1186,7 @@ function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 			}
 
 		break; // $feed_post_type
-	}
+	}// End switch().
 
 	// Fetch an updated copy of the queue, which may have been updated recursively.
 	$queued = get_option( 'pf_delete_queue', array() );
@@ -1251,7 +1258,7 @@ add_filter( 'posts_results', 'pf_exclude_queued_items_from_query_results', 999, 
 function pf_process_delete_queue() {
 	// pf_log('pf_process_delete_queue');
 	if ( ! isset( $_GET['pf_process_delete_queue'] ) ) {
-		//pf_log( 'Not set to go on ' );
+		// pf_log( 'Not set to go on ' );
 		// pf_log($_GET);
 		return;
 	}
