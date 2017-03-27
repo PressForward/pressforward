@@ -16,6 +16,9 @@ class NominateThisEndpoint implements HasActions {
 		$this->api_base = $api_base;
 		$this->api_base['endpoint'] = 'nominatethis';
 		$this->templates = $templates;
+		$namespace = $this->api_base['base_namespace'] . $this->api_base['version'];
+		$base = $this->api_base['endpoint'];
+		$this->endpoint_for_nominate_this_endpoint = $namespace. '/' . $base;
 	}
 
 	public function action_hooks() {
@@ -57,7 +60,14 @@ class NominateThisEndpoint implements HasActions {
 			      ),
 			    ),
 				'permission_callback' => function () {
-			      return true; //$this->templates->users->pf_get_defining_capability_by_role( 'contributor' );
+					$nominate_access = get_option('pf_menu_all_content_access');
+  				  //pressforward('admin.templates')->users->pf_get_defining_capability_by_role( 'contributor' );//get_option('pf_menu_all_content_access');
+	  				if ( ! current_user_can( get_option( 'pf_menu_nominate_this_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) ) ) ){
+	  				  	//wp_die( __( 'You do not have the capacity to access the Nominate This bookmarklet.', 'pf' ) );
+	  				  	return false;
+					} else {
+						return true;
+					} //$this->templates->users->pf_get_defining_capability_by_role( 'contributor' );
 			  	},
 				'priority'  => 10,
 			),
@@ -70,7 +80,7 @@ class NominateThisEndpoint implements HasActions {
 		define( 'WP_ADMIN', false );
 		global $pagenow;
 		return rest_ensure_response(
-				include(PF_ROOT.'/includes/nominate-this-core.php')
+				include( PF_ROOT.'/includes/nomthis/nominate-this-core.php' )
 			);
 	}
 

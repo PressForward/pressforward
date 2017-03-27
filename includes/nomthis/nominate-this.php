@@ -41,4 +41,9 @@ require_once( $wp_bootstrap . '/admin.php' );
 // require_once( dirname(dirname(dirname(__FILE__))) . "/Libraries/OpenGraph.php");
 // global $pf_nt;
 // $pf_nt = new PressForward();
-require_once( 'nominte-this-core.php' );
+$nominate_access = get_option('pf_menu_all_content_access');
+//pressforward('admin.templates')->users->pf_get_defining_capability_by_role( 'contributor' );//get_option('pf_menu_all_content_access');
+if ( ! current_user_can( get_option( 'pf_menu_nominate_this_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) ) ) ){
+	wp_die( __( 'You do not have the capacity to access the Nominate This bookmarklet.', 'pf' ) ); }
+	
+require_once( PF_ROOT.'/includes/nomthis/nominate-this-core.php' );

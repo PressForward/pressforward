@@ -112,6 +112,39 @@ function pf_get_shortcut_link() {
 }
 
 /**
+ * Retrieve the Nominate This bookmarklet link.
+ *
+ * Use this in 'a' element 'href' attribute.
+ *
+ * @since 1.7
+ * @see get_shortcut_link()
+ *
+ * @return string
+ */
+function pf_nomthis_bookmarklet() {
+	//get_site_url(null, 'wp-json/'
+	$link = "javascript:
+				var d=document,
+				w=window,
+				e=w.getSelection,
+				k=d.getSelection,
+				x=d.selection,
+				s=(e?e():(k)?k():(x?x.createRange().text:0)),
+				f='" . rest_url().pressforward('api.nominatethis')->endpoint_for_nominate_this_endpoint . "',
+				l=d.location,
+				e=encodeURIComponent,
+				u=f+'?u='+e(l.href)+'&t='+e(d.title)+'&s='+e(s)+'&v=4';
+				a=function(){if(!w.open(u,'t','toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=620'))l.href=u;};
+				if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0); else a();
+				void(0)";
+
+	$link = str_replace( array( "\r", "\n", "\t" ),  '', $link );
+
+	return apply_filters( 'pf_nomthis_bookmarklet', $link );
+
+}
+
+/**
  * Get the feed item post type name
  *
  * @since 1.7
