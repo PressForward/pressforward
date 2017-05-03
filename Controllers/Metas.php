@@ -1110,7 +1110,7 @@ class Metas implements HasFilters, HasActions {
 
 	public function usable_forward_to_origin_status( $null, $object_id, $meta_key, $single ) {
 		if ( $meta_key !== 'pf_forward_to_origin' ) {
-			return null;
+			return $null;
 		}
 		remove_filter( 'get_post_metadata', array( $this, 'usable_forward_to_origin_status' ), 10 );
 		$value = $this->forward_to_origin_status( $object_id );
