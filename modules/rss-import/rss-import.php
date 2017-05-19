@@ -143,6 +143,7 @@ class PF_RSS_Import extends PF_Module {
 			pf_log( 'Feed looping through for the ' . $c . ' time.' );
 			$check_date = $item->get_date( 'U' );
 			$dead_date = time() - (60 * 60 * 24 * 60); // Get the unixdate for two months ago.
+			$dead_date = apply_filters( 'pf_rss_ingestion_retrieve_after_date', $dead_date, $theFeed, $item );
 			if ( ($check_date <= $dead_date) && ! empty( $check_date ) ) {
 				pf_log( 'Feed item too old. Skip it.' );
 			} else {
