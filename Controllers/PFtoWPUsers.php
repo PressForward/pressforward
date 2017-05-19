@@ -192,7 +192,7 @@ class PFtoWPUsers implements SystemUsers {
 	}
 
 	public function get_user_meta($user_id, $meta_key, $single = true){
-		return get_user_meta($user_id, $key, $single);
+		return get_user_meta($user_id, $meta_key, $single);
 	}
 	public function update_user_meta( $user_id, $meta_key, $meta_value, $prev_value ){
 		return update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );

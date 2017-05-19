@@ -11,9 +11,10 @@ use Firebase\JWT\JWT as JWT;
 
 class PF_JWT {
 
-	function __construct( SystemUsers $users, System $system, Metas $meta ) {
+	function __construct( SystemUsers $users, System $system ) {
 		$this->system_users = $users;
 		$this->system = $system;
+		$this->JWT = new JWT;
 	}
 
 	public function random_bytes( $num ){
@@ -30,7 +31,7 @@ class PF_JWT {
 			    // If you get this message, the CSPRNG failed hard.
 			    die("Could not generate a random string. Is our OS secure?");
 			}
-			return bin2hex($string);
+			return bin2hex($value);
 		} else {
 			throw new Exception("PressForward cannot provide a cryptographically secure API key.", 1);
 		}
@@ -45,12 +46,13 @@ class PF_JWT {
 		return $system_key;
 	}
 
-	public function encode_with_jwt($token, $key){
-		return JWT::encode($token, $key);
+	public function encode_with_jwt($token, $key,  $alg = 'HS256' ){
+		return $this->JWT->encode($token, $key, $alg);
 	}
 
-	public function decode_with_jwt($token, $key){
-		return JWT::decode($token, $key, array('HS256'));
+	public function decode_with_jwt($token, $key, $alg = array('HS256')){
+		//var_dump($token, $key); die();
+		return $this->JWT->decode($token, $key, $alg);
 	}
 
 	public function make_a_public_key( $new = false ){
@@ -84,7 +86,11 @@ class PF_JWT {
 		return $key;
 	}
 
-	public function get_a_user_public_key( $new = false ){
+	public function get_a_user_public_key( $user_id = false, $new = false ){
+		if (!$user_id){
+			$user = $this->system_users->get_current_user();
+			$user_id = $user->ID;
+		}
 		$existing_key = $this->system_users->get_user_meta($user_id, 'pf_public_key', true);
 		if ( $new || !$existing_key ){
 			$key = $this->make_a_public_key( $new );
@@ -117,21 +123,22 @@ class PF_JWT {
 		//$key_parts = explode('|', $decoded_key);
 		//$user_key = array_pop($key_parts);
 		//$site_url = array_pop($key_parts);
-		$key_obj = $this->decode_with_jwt($key_set, $this->system_key());
+		$key_obj = $this->decode_with_jwt($public_pf_key, $this->system_key());
 		$key_array = (array) $key_obj;
 		if (!array_key_exists('key_seed', $key_array) || !array_key_exists('user_seed', $key_array)){
 			return false;
 		}
-		if ( sanitize_key($this->system->get_site_info('url')) != $key_obj['key_seed'] ){
+		if ( sanitize_key($this->system->get_site_info('url')) != $key_array['key_seed'] ){
 			return false;
 		}
 		$unique_strings_to_users = $this->system->get_option('pf_jwt_users', array());
-		if (!array_key_exists($key_obj['user_seed'], $unique_strings_to_users['by_key'])){
+		if (!array_key_exists($key_array['user_seed'], $unique_strings_to_users['by_key'])){
 			return false;
 		}
-		$user_id = $unique_strings_to_users['by_key'][$key_obj['user_seed']];
+		$user_id = $unique_strings_to_users['by_key'][$key_array['user_seed']];
 		//$user = get_user_by( 'id', $user_id );
-		return $this->system_users->get_user_meta($user_id, 'pf_jwt_private_key', true);
+		$key = $this->system_users->get_user_meta($user_id, 'pf_jwt_private_key', true);
+		return $key;
 	}
 
 }
