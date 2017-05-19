@@ -108,6 +108,10 @@ class PF_RSS_Out extends PF_Module {
 									}
 								}
 							}
+							if (!empty($source = get_the_source_title($item['post_id']))){
+								$publisher = "<![CDATA[" . $source . ']]>';
+								echo "<dc:publisher>".$publisher."</dc:publisher>";
+							}
 							?>
 							<dc:creator><?php echo $item['item_author']; ?></dc:creator>
 							<?php $content = $item['item_content'];
