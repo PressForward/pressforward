@@ -38,8 +38,12 @@ class SourceAJAX implements HasActions {
 	}
 
 	public function trigger_source_data() {
+		ob_start();
 		$message = $this->retrieval->trigger_source_data( true );
+		$buffer = ob_get_contents();
+		$message['buffer'] = (string) $buffer;
 		wp_send_json( $message );
+		ob_end_clean();
 		die();
 	}
 
