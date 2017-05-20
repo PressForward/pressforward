@@ -324,6 +324,10 @@ if ( $c > 19 ) {
 			return;
 		}
 
+		if ( empty( $_POST['_wp_http_referer'] ) || false === strpos($_POST['_wp_http_referer'], "page=pf-options")  ){
+			return;
+		}
+
 		check_admin_referer( 'pf_settings' );
 
 		if ( current_user_can( get_option( 'pf_menu_all_content_access', pf_get_defining_capability_by_role( 'contributor' ) ) ) ) {
