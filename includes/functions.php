@@ -756,6 +756,9 @@ function pf_canonical_url() {
 		$obj = get_queried_object();
 		$post_ID = $obj->ID;
 		$link = pressforward( 'controller.metas' )->get_post_pf_meta( $post_ID, 'item_link', true );
+		if (empty($link)){
+			return false;
+		}
 		return $link;
 	} else {
 		return false;
