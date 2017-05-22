@@ -524,7 +524,15 @@ $admin_body_class = ( is_rtl() ) ? 'rtl' : '';
 $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( '_', '-', get_locale() ) ) );
 ?>
 <body class="press-this wp-admin wp-core-ui nominate-this <?php echo $admin_body_class; ?>">
-<form action="nominate-this.php?action=post" method="post">
+<?php
+//var_dump('<pre>',$_GET);
+	if( 2 == $_GET['pf-nominate-this']) {
+		$post_url = trailingslashit(get_bloginfo('wpurl')).'wp-admin/edit.php?pf-nominate-this=2';
+		echo '<form action="'.$post_url.'&action=post" method="post">';
+	} else {
+		echo '<form action="nominate-this.php?action=post" method="post">';
+	}
+?>
 <div id="poststuff" class="metabox-holder">
 <?php
 if ( isset( $posted ) && intval( $posted ) ) { } else {
