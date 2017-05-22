@@ -81,7 +81,7 @@ function pf_shortcut_link() {
 function start_pf_nom_this(){
 	global $pagenow;
 	//var_dump('2test2<pre>',$pagenow); die();
-	if( 'edit.php' == $pagenow && 2 == $_GET['pf-nominate-this']) {
+	if( 'edit.php' == $pagenow && array_key_exists( 'pf-nominate-this', $_GET ) && 2 == $_GET['pf-nominate-this']) {
 		//var_dump(dirname(__FILE__),$wp_query->get('pf-nominate-this'),file_exists(dirname(__FILE__).'/nomthis/nominate-this.php'),(dirname(__FILE__).'/nomthis/nominate-this.php')); die();
 		//$someVar = $wp_query->get('some-var');
 		include(dirname(__FILE__).'/nomthis/nominate-this.php');
