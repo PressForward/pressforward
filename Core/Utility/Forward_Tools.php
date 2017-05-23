@@ -333,7 +333,7 @@ class Forward_Tools {
 				$this->metas->meta_for_entry( 'item_author', $_POST['item_author'] ),
 				// $this->metas->meta_for_entry('authors', $_POST['authors']),
 				$this->metas->meta_for_entry( 'pf_source_link', $source ),
-				$this->metas->meta_for_entry( 'item_feat_img', $post_thumbnail_url ),
+				$this->metas->meta_for_entry( 'item_feat_img', $_POST['item_feat_img'] ),
 				$this->metas->meta_for_entry( 'submitted_by', $userString ),
 				$this->metas->meta_for_entry( 'nominator_array', array( $userID ) ),
 				// The item_wp_date allows us to sort the items with a query.
