@@ -93,10 +93,10 @@ class Readability {
 	 * Defined up here so we don't instantiate them repeatedly in loops.
 	 **/
 	public $regexps = array(
-		'unlikelyCandidates' => '/combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad\-break|agegate|pagination|pager|skip\-to\-text\-link|popup/i',
-		'okMaybeItsACandidate' => '/and|article|body|column|main|continues|postContent|content|post|story|related|shadow|story\-content|story\-body\-supplemental|story\-body|story\-body\-text|story\-continues/i',
-		'positive' => '/article|body|story\-content|content|entry|hentry|main|page|attachment|pagination|post|text|blog|postContent|story|story\-body|story\-body\-supplemental|story\-body\-text|story\-continues|story\-content|story\-body\-text|story\-continues\-2/i',
-		'negative' => '/combx|comment|skip\-to\-text\-link|com\-|contact|foot|footer|_nav|footnote|masthead|media|meta|outbrain|taboola|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget/i',
+		'unlikelyCandidates' => '/combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad\-break|agegate|pagination|pager|skip\-to\-text\-link|popup|flash|js|el__featured\-video/i',
+		'okMaybeItsACandidate' => '/and|article|body|column|main|continues|postContent|content|post|story|related|shadow|story\-content|story\-body\-supplemental|story\-body|story\-body\-text|story\-continues|story\-content|story\-body\-text|story\-continues\-2|el__leafmedia\-\-speakable\-paragraph|no\-js/i',
+		'positive' => '/article|body|story\-content|content|entry|hentry|main|page|attachment|pagination|post|text|blog|postContent|story|story\-body|story\-body\-supplemental|story\-body\-text|story\-continues|story\-content|story\-body\-text|story\-continues\-2|speakable|el__leafmedia\-\-speakable\-paragraph|articleBody/i',
+		'negative' => '/combx|comment|skip\-to\-text\-link|com\-|contact|foot|footer|_nav|footnote|masthead|media|meta|outbrain|taboola|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget|el__featured\-video|flash\-state|video__end\-slate\-\-inactive|js|zn\-large\-media|script|fav|unmute|el__video__collection__close\-\-expandable|js__video__collection__close\-\-expandable/i',
 		'divToPElements' => '/<(a|blockquote|dl|div|img|ol|p|pre|table|ul)/i',
 		'replaceBrs' => '/(<br[^>]*>[ \n\r\t]*){2,}/i',
 		'replaceFonts' => '/<(\/?)font[^>]*>/i',
@@ -431,6 +431,7 @@ class Readability {
 		/* Clean out junk from the article content */
 		$this->cleanConditionally( $articleContent, 'form' );
 		$this->clean( $articleContent, 'object' );
+		$this->clean( $articleContent, 'script' );
 		// $this->clean($articleContent, 'h1');
 		/**
 		* If there is only one h2, they are probably using it
@@ -512,6 +513,9 @@ class Readability {
 			case 'TH':
 				$readability->value -= 5;
 				break;
+			case 'SCRIPT':
+				$readability->value -= 100;
+				break;
 		}
 		$readability->value += $this->getClassWeight( $node );
 	}
@@ -536,10 +540,13 @@ class Readability {
 		*/
 		$node = null;
 		$nodesToScore = array();
+
+					//var_dump('<pre>',$allElements->item( $nodeIndex )); //die();
 		for ( $nodeIndex = 0; ($node = $allElements->item( $nodeIndex )); $nodeIndex++ ) {
 			// for ($nodeIndex=$targetList->length-1; $nodeIndex >= 0; $nodeIndex--) {
 			// $node = $targetList->item($nodeIndex);
 			$tagName = strtoupper( $node->tagName );
+			//var_dump($node);
 			/* Remove unlikely candidates */
 			if ( $stripUnlikelyCandidates ) {
 				$unlikelyMatchString = $node->getAttribute( 'class' ) . $node->getAttribute( 'id' );
@@ -592,7 +599,6 @@ class Readability {
 				}
 			}
 		}
-
 		/**
 		* Loop through all paragraphs, and assign a score to them based on how content-y they look.
 		* Then add their score to their parent node.
@@ -671,7 +677,6 @@ class Readability {
 			}
 
 			$this->dbg( 'Candidate: ' . $candidates[ $c ]->tagName . ' (' . $candidates[ $c ]->getAttribute( 'class' ) . ':' . $candidates[ $c ]->getAttribute( 'id' ) . ') with score ' . $readability->value );
-
 			if ( ! $topCandidate || $readability->value > (int) $topCandidate->getAttribute( 'readability' ) ) {
 				$topCandidate = $candidates[ $c ];
 			}
@@ -925,6 +930,18 @@ class Readability {
 			}
 			if ( preg_match( $this->regexps['positive'], $e->getAttribute( 'id' ) ) ) {
 				$weight += 25;
+			}
+		}
+
+		if ( $e->hasAttribute( 'itemprop' ) && $e->getAttribute( 'itemprop' ) != '' ) {
+			if ( preg_match( $this->regexps['negative'], $e->getAttribute( 'itemprop' ) ) ) {
+				$weight -= 25;
+			}
+			if ( preg_match( $this->regexps['positive'], $e->getAttribute( 'itemprop' ) ) ) {
+				$weight += 25;
+			}
+			if ( 'articleBody' == $e->getAttribute( 'itemprop' ) ) {
+				$weight += 400;
 			}
 		}
 		return $weight;
