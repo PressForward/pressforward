@@ -82,6 +82,22 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 
 == Changelog ==
 
+= 4.3.0 =
+
+* Restructured Nominate This. It should now work with servers with non-standard WP_ADMIN folder configurations and those hosts who turn off direct access to the plugin folder, including HostGator and Reclaim.
+* Prepared Readability Endpoint
+* Redirects on published and forwarding posts will now redirect faster. 
+* Fix for post save interception leaking to other non-standard post types.
+* Fixed Post Meta intercept breaking downstream filtering functions that also intercepted post meta.
+* Add support for Dublin Core publisher information in PressForward's outbound RSS feed.
+* Allow developers to filter the date limiting of RSS ingestion through filter `pf_rss_ingestion_retrieve_after_date`
+* Nominate This errors no longer show if the site is not in WP_DEBUG mode.
+* Significant improvements to Readability's parsing and selection of article content.
+* Increase compatibility with Schema.org on-page meta.
+* No longer throws error if MBString library is not active in PHP
+* The Refresh All Feeds debugging tool shows its results properly again.
+* Nominations without authors have default authors.
+
 = 4.2.1 =
 
 * Added feeds, feed items, and folders to the PressForward endpoint.
