@@ -84,7 +84,8 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 
 = 4.3.0 =
 
-* Restructured Nominate This. It should now work with servers with non-standard WP_ADMIN folder configurations and those hosts who turn off direct access to the plugin folder, including HostGator and Reclaim.
+* Restructured Nominate This. It should now work with servers with non-standard WP_ADMIN folder configurations and those hosts who turn off direct access to the plugin folder, including HostGator and Reclaim. Users who could not get the bookmarklet to function should remove the bookmarklet from their Bookmark Bar and replace it.
+* A number of conflicts with other plugins' options and settings pages were resolved. 
 * Prepared Readability Endpoint
 * Redirects on published and forwarding posts will now redirect faster.
 * Fix for post save interception leaking to other non-standard post types.
