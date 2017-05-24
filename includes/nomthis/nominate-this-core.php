@@ -1,6 +1,8 @@
 <?php
 header( 'Content-Type: ' . get_option( 'html_type' ) . '; charset=' . get_option( 'blog_charset' ) );
-
+if (!WP_DEBUG){
+	error_reporting(0);
+}
 // var_dump($_POST);  die();
 set_transient( 'is_multi_author', true );
 
