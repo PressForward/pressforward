@@ -52,7 +52,12 @@ class PF_JWT {
 
 	public function decode_with_jwt($token, $key, $alg = array('HS256')){
 		//var_dump($token, $key); die();
-		return $this->JWT->decode($token, $key, $alg);
+		try {
+			$decode = $this->JWT->decode($token, $key, $alg);
+		} catch (Exception $e) {
+    		echo 'Caught exception: ',  $e->getMessage(), "\n";
+		}
+		return $decode;
 	}
 
 	public function make_a_public_key( $new = false ){
