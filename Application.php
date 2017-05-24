@@ -58,6 +58,7 @@ class Application extends JaxionCore {
 		} elseif ( version_compare( $saved_version, $current_version, '<' ) ) {
 			// Do whatever you need to do on an upgrade
 			delete_option( 'pf_delete_queue_nonce' );
+			$wp_rewrite->flush_rules( false );
 			// Version is up to date - do nothing
 		} else {
 			return;

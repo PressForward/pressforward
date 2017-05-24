@@ -10,7 +10,8 @@ jQuery(window).load(function() {
 		function(response) {
 			//jQuery('.loading-top').hide();
 			//jQuery('#responses').css('display', 'block');
-			response = JSON.parse(response);
+			//console.log(response);
+			//response = JSON.parse(response);
 			console.log(response);
 			jQuery('#responses').html('<span class="basic-response">'+response.action_taken+'</span>');
 			jQuery('#errors').html(response);

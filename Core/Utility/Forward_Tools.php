@@ -322,6 +322,11 @@ class Forward_Tools {
 			$userString = $user_data['user_string'];
 			// $tags[] = 'via bookmarklet';
 			// pf_log($_POST);
+			if ( empty($_POST['item_author']) ){
+				$item_author = 'Author on Source';
+			} else {
+				$item_author = $_POST['item_author'];
+			}
 			$pf_meta_args = array(
 				$this->metas->meta_for_entry( 'item_id', $item_id ),
 				$this->metas->meta_for_entry( 'item_link', $_POST['item_link'] ),
@@ -330,10 +335,10 @@ class Forward_Tools {
 				$this->metas->meta_for_entry( 'item_date', $item_date ),
 				// $this->metas->meta_for_entry('item_date', $item_date),
 				$this->metas->meta_for_entry( 'date_nominated', $_POST['date_nominated'] ),
-				$this->metas->meta_for_entry( 'item_author', $_POST['item_author'] ),
+				$this->metas->meta_for_entry( 'item_author', $item_author ),
 				// $this->metas->meta_for_entry('authors', $_POST['authors']),
 				$this->metas->meta_for_entry( 'pf_source_link', $source ),
-				$this->metas->meta_for_entry( 'item_feat_img', $post_thumbnail_url ),
+				$this->metas->meta_for_entry( 'item_feat_img', $_POST['item_feat_img'] ),
 				$this->metas->meta_for_entry( 'submitted_by', $userString ),
 				$this->metas->meta_for_entry( 'nominator_array', array( $userID ) ),
 				// The item_wp_date allows us to sort the items with a query.

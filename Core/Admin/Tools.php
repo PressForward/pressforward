@@ -44,6 +44,11 @@ class Tools implements HasActions, HasFilters {
 				'method' => 'add_plugin_admin_menu',
 				'priority'	=> 16,
 			),
+			array(
+				'hook' => 'admin_init',
+				'method' => 'nom_this_endpoint',
+				'priority'	=> 1,
+			),
 		);
 	}
 
@@ -86,6 +91,10 @@ class Tools implements HasActions, HasFilters {
 
 	public function tabs() {
 		return $this->templates->permitted_tabs( 'pf-tools' );
+	}
+
+	public function nom_this_endpoint(){
+		\start_pf_nom_this();
 	}
 
 }

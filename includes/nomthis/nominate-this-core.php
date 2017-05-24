@@ -1,6 +1,8 @@
 <?php
 header( 'Content-Type: ' . get_option( 'html_type' ) . '; charset=' . get_option( 'blog_charset' ) );
-
+if (!WP_DEBUG){
+	error_reporting(0);
+}
 // var_dump($_POST);  die();
 set_transient( 'is_multi_author', true );
 
@@ -524,7 +526,15 @@ $admin_body_class = ( is_rtl() ) ? 'rtl' : '';
 $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( '_', '-', get_locale() ) ) );
 ?>
 <body class="press-this wp-admin wp-core-ui nominate-this <?php echo $admin_body_class; ?>">
-<form action="nominate-this.php?action=post" method="post">
+<?php
+//var_dump('<pre>',$_GET);
+	if( 2 == $_GET['pf-nominate-this']) {
+		$post_url = trailingslashit(get_bloginfo('wpurl')).'wp-admin/edit.php?pf-nominate-this=2';
+		echo '<form action="'.$post_url.'&action=post" method="post">';
+	} else {
+		echo '<form action="nominate-this.php?action=post" method="post">';
+	}
+?>
 <div id="poststuff" class="metabox-holder">
 <?php
 if ( isset( $posted ) && intval( $posted ) ) { } else {
@@ -817,12 +827,19 @@ endif;
 		$content = '';
 		if ( $selection ) {
 			$content .= $selection; }
-
+		ob_start();
 		if ( ! $selection ) {
 			if ( $url != '' ) {
 				$content .= pressforward( 'schema.feed_item' )->get_content_through_aggregator( $url );
 			}
 		}
+
+		if (WP_DEBUG){
+			$cache_errors = ob_get_contents();
+		} else {
+			$cache_errors = '';
+		}
+		ob_end_clean();
 
 		//$source_position = get_option( 'pf_source_statement_position', 'bottom' );
 
@@ -879,6 +896,7 @@ endif;
 <?php
 do_action( 'admin_footer' );
 do_action( 'admin_print_footer_scripts' );
+echo '<pre>'.$cache_errors.'</pre>';
 ?>
 <script type="text/javascript">if(typeof wpOnload=='function')wpOnload();</script>
 </body>

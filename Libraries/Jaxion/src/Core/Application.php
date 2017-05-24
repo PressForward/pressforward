@@ -149,11 +149,12 @@ class Application extends Container implements ApplicationContract {
 	 * Load's the plugin's translation files.
 	 */
 	private function load_i18n() {
-		add_action( 'init', function(){
+		$passed_this = $this;
+		add_action( 'init', function() use ($passed_this){
 			load_plugin_textdomain(
-				$this->fetch( 'basename' ),
+				$passed_this->fetch( 'basename' ),
 				false,
-				basename( $this->fetch( 'path' ) ) . '/languages/'
+				basename( $passed_this->fetch( 'path' ) ) . '/languages/'
 			);
 		});
 	}

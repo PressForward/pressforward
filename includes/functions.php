@@ -77,6 +77,19 @@ function pf_get_admin_url() {
 function pf_shortcut_link() {
 	echo pf_get_shortcut_link();
 }
+
+function start_pf_nom_this(){
+	global $pagenow;
+	//var_dump('2test2<pre>',$pagenow); die();
+	if( 'edit.php' == $pagenow && array_key_exists( 'pf-nominate-this', $_GET ) && 2 == $_GET['pf-nominate-this']) {
+		//var_dump(dirname(__FILE__),$wp_query->get('pf-nominate-this'),file_exists(dirname(__FILE__).'/nomthis/nominate-this.php'),(dirname(__FILE__).'/nomthis/nominate-this.php')); die();
+		//$someVar = $wp_query->get('some-var');
+		include(dirname(__FILE__).'/nomthis/nominate-this.php');
+		die();
+	}
+
+	return '';
+}
 	/**
 	 * Retrieve the Nominate This bookmarklet link.
 	 *
@@ -88,7 +101,7 @@ function pf_shortcut_link() {
 	 * @return string
 	 */
 function pf_get_shortcut_link() {
-
+	$url = trailingslashit(get_bloginfo('wpurl')).'wp-admin/edit.php?pf-nominate-this=2';
 	// In case of breaking changes, version this. #WP20071
 	$link = "javascript:
 				var d=document,
@@ -97,11 +110,11 @@ function pf_get_shortcut_link() {
 				k=d.getSelection,
 				x=d.selection,
 				s=(e?e():(k)?k():(x?x.createRange().text:0)),
-				f='" . PF_URL . 'includes/nomthis/nominate-this.php' . "',
+				f='" . $url . "',
 				l=d.location,
 				e=encodeURIComponent,
-				u=f+'?u='+e(l.href)+'&t='+e(d.title)+'&s='+e(s)+'&v=4';
-				a=function(){if(!w.open(u,'t','toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=620'))l.href=u;};
+				u=f+'&u='+e(l.href)+'&t='+e(d.title)+'&s='+e(s)+'&v=4';
+				a=function(){if(!w.open(u,'t','toolbar=0,resizable=1,scrollbars=1,status=1,width=720px,height=620px'))l.href=u;};
 				if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0); else a();
 				void(0)";
 
@@ -758,6 +771,9 @@ function pf_canonical_url() {
 		$obj = get_queried_object();
 		$post_ID = $obj->ID;
 		$link = pressforward( 'controller.metas' )->get_post_pf_meta( $post_ID, 'item_link', true );
+		if (empty($link)){
+			return false;
+		}
 		return $link;
 	} else {
 		return false;
