@@ -1389,14 +1389,14 @@ class Feeds implements HasActions, HasFilters {
 			$permalink = get_permalink( $post->ID );
 
 			$view_link = ' ';
-			$messages[ $post_type ][1] .= $view_link;
-			$messages[ $post_type ][6] .= $view_link;
-			$messages[ $post_type ][9] .= $view_link;
+			$messages[ $this->post_type ][1] .= $view_link;
+			$messages[ $this->post_type ][6] .= $view_link;
+			$messages[ $this->post_type ][9] .= $view_link;
 
 			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
 			$preview_link = ' ';
-			$messages[ $post_type ][8]  .= $preview_link;
-			$messages[ $post_type ][10] .= $preview_link;
+			$messages[ $this->post_type ][8]  .= $preview_link;
+			$messages[ $this->post_type ][10] .= $preview_link;
 		}
 
 		return $messages;

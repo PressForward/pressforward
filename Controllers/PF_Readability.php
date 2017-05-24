@@ -222,6 +222,12 @@ class PF_Readability {
 			return $content;
 		}
 
+		$content = $this->process_readability($html, $url);
+
+		return $content;
+	}
+
+	public function process_readability($html, $url){
 		// check if tidy exists to clean up the input.
 		if ( function_exists( 'tidy_parse_string' ) ) {
 			$tidy = tidy_parse_string( $html, array( 'wrap' => 0 ), 'UTF8' );

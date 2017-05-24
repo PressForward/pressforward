@@ -77,6 +77,19 @@ function pf_get_admin_url() {
 function pf_shortcut_link() {
 	echo pf_get_shortcut_link();
 }
+
+function start_pf_nom_this(){
+	global $pagenow;
+	//var_dump('2test2<pre>',$pagenow); die();
+	if( 'edit.php' == $pagenow && array_key_exists( 'pf-nominate-this', $_GET ) && 2 == $_GET['pf-nominate-this']) {
+		//var_dump(dirname(__FILE__),$wp_query->get('pf-nominate-this'),file_exists(dirname(__FILE__).'/nomthis/nominate-this.php'),(dirname(__FILE__).'/nomthis/nominate-this.php')); die();
+		//$someVar = $wp_query->get('some-var');
+		include(dirname(__FILE__).'/nomthis/nominate-this.php');
+		die();
+	}
+
+	return '';
+}
 	/**
 	 * Retrieve the Nominate This bookmarklet link.
 	 *
@@ -88,7 +101,7 @@ function pf_shortcut_link() {
 	 * @return string
 	 */
 function pf_get_shortcut_link() {
-
+	$url = trailingslashit(get_bloginfo('wpurl')).'wp-admin/edit.php?pf-nominate-this=2';
 	// In case of breaking changes, version this. #WP20071
 	$link = "javascript:
 				var d=document,
@@ -97,7 +110,40 @@ function pf_get_shortcut_link() {
 				k=d.getSelection,
 				x=d.selection,
 				s=(e?e():(k)?k():(x?x.createRange().text:0)),
-				f='" . PF_URL . 'includes/nomthis/nominate-this.php' . "',
+				f='" . $url . "',
+				l=d.location,
+				e=encodeURIComponent,
+				u=f+'&u='+e(l.href)+'&t='+e(d.title)+'&s='+e(s)+'&v=4';
+				a=function(){if(!w.open(u,'t','toolbar=0,resizable=1,scrollbars=1,status=1,width=720px,height=620px'))l.href=u;};
+				if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0); else a();
+				void(0)";
+
+	$link = str_replace( array( "\r", "\n", "\t" ),  '', $link );
+
+	return apply_filters( 'shortcut_link', $link );
+
+}
+
+/**
+ * Retrieve the Nominate This bookmarklet link.
+ *
+ * Use this in 'a' element 'href' attribute.
+ *
+ * @since 1.7
+ * @see get_shortcut_link()
+ *
+ * @return string
+ */
+function pf_nomthis_bookmarklet() {
+	//get_site_url(null, 'wp-json/'
+	$link = "javascript:
+				var d=document,
+				w=window,
+				e=w.getSelection,
+				k=d.getSelection,
+				x=d.selection,
+				s=(e?e():(k)?k():(x?x.createRange().text:0)),
+				f='" . rest_url().pressforward('api.nominatethis')->endpoint_for_nominate_this_endpoint . "',
 				l=d.location,
 				e=encodeURIComponent,
 				u=f+'?u='+e(l.href)+'&t='+e(d.title)+'&s='+e(s)+'&v=4';
@@ -107,7 +153,7 @@ function pf_get_shortcut_link() {
 
 	$link = str_replace( array( "\r", "\n", "\t" ),  '', $link );
 
-	return apply_filters( 'shortcut_link', $link );
+	return apply_filters( 'pf_nomthis_bookmarklet', $link );
 
 }
 
@@ -710,6 +756,9 @@ function pf_canonical_url() {
 		$obj = get_queried_object();
 		$post_ID = $obj->ID;
 		$link = pressforward( 'controller.metas' )->get_post_pf_meta( $post_ID, 'item_link', true );
+		if (empty($link)){
+			return false;
+		}
 		return $link;
 	} else {
 		return false;
@@ -739,7 +788,7 @@ function pf_forward_unto_source() {
 		return false;
 	}
 	$link = pf_canonical_url();
-	if ( ! empty( $link ) ) {
+	if ( ! empty( $link ) && false !== $link ) {
 
 		$obj = get_queried_object();
 		$post_id = $obj->ID;
@@ -753,16 +802,23 @@ function pf_forward_unto_source() {
 		$wait = get_option( 'pf_link_to_source', 0 );
 		$post_check = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'pf_forward_to_origin', true );
 		// var_dump($post_check); die();
-		if ( ( $wait > 0 ) && ( 'no-forward' !== $post_check ) ) {
-			?>
-				 <script type="text/javascript">console.log('You are being redirected to the source item.');</script>
-			<?php
-			echo '<META HTTP-EQUIV="refresh" CONTENT="' . $wait . ';URL=' . $link . '">';
+		if ( isset( $_GET['noforward'] ) && true == $_GET['noforward'] ) {
+
+		} else {
+			if ( ( $wait > 0 ) && ( 'no-forward' !== $post_check ) ) {
+				echo '<META HTTP-EQUIV="refresh" CONTENT="' . $wait . ';URL=' . $link . '">';
+				?>
+					<script type="text/javascript">console.log('You are being redirected to the source item.');</script>
+				<?php
+
+				echo '</head><body></body></html>';
+				die();
+			}
 		}
 	}
 }
 
-add_action( 'wp_head', 'pf_forward_unto_source' );
+add_action( 'wp_head', 'pf_forward_unto_source', 1000 );
 
 /**
  * Echos the script link to use phonegap's debugging tools.
@@ -994,7 +1050,7 @@ function prep_archives_query( $q ) {
 				LIMIT {$pagefull} OFFSET {$offset}
 			 ", 'nomination', 'nomination');
 		 // var_dump($q);
-	}
+	}// End if().
 	// $archivalposts = $wpdb->get_results($dquerystr, OBJECT);
 	// return $archivalposts;
 	// var_dump('<pre>'); var_dump($q); die();
@@ -1179,7 +1235,7 @@ function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 			}
 
 		break; // $feed_post_type
-	}
+	}// End switch().
 
 	// Fetch an updated copy of the queue, which may have been updated recursively.
 	$queued = get_option( 'pf_delete_queue', array() );
@@ -1221,14 +1277,19 @@ function pf_exclude_queued_items_from_queries( $query ) {
 // Filter post results instead of manipulating the query.
 function pf_exclude_queued_items_from_query_results( $posts, $query ) {
 	// var_dump($posts[0]); die();
-	$queued = get_option( 'pf_delete_queue' );
-	// var_dump($queued); die();
-	if ( ! $queued || ! is_array( $queued ) ) {
-		return $posts;
-	}
-	$queued = array_slice( $queued, 0, 100 );
 	$type = $query->get( 'post_type' );
-	if ( ( empty( $type ) ) || ( 'post' != $type ) ) {
+	$post_types = array(
+		pressforward('schema.feeds')->post_type,
+		pressforward('schema.feed_item')->post_type,
+		pressforward('schema.nominations')->post_type,
+	);
+	if ( ( empty( $type ) ) || ( in_array( $type, $post_types ) ) ) {
+		$queued = get_option( 'pf_delete_queue' );
+		// var_dump($queued); die();
+		if ( ! $queued || ! is_array( $queued ) ) {
+			return $posts;
+		}
+		$queued = array_slice( $queued, 0, 100 );
 		foreach ( $posts as $key => $post ) {
 			if ( in_array( $post->ID, $queued ) ) {
 				unset( $posts[ $key ] );
@@ -1251,7 +1312,7 @@ add_filter( 'posts_results', 'pf_exclude_queued_items_from_query_results', 999, 
 function pf_process_delete_queue() {
 	// pf_log('pf_process_delete_queue');
 	if ( ! isset( $_GET['pf_process_delete_queue'] ) ) {
-		//pf_log( 'Not set to go on ' );
+		// pf_log( 'Not set to go on ' );
 		// pf_log($_GET);
 		return;
 	}
