@@ -827,21 +827,19 @@ endif;
 		$content = '';
 		if ( $selection ) {
 			$content .= $selection; }
-
+		ob_start();
 		if ( ! $selection ) {
 			if ( $url != '' ) {
-				ob_start();
-
 				$content .= pressforward( 'schema.feed_item' )->get_content_through_aggregator( $url );
-
-				if (WP_DEBUG){
-					$cache_errors = ob_get_contents();
-				} else {
-					$cache_errors = '';
-				}
-				ob_end_clean();
 			}
 		}
+
+		if (WP_DEBUG){
+			$cache_errors = ob_get_contents();
+		} else {
+			$cache_errors = '';
+		}
+		ob_end_clean();
 
 		//$source_position = get_option( 'pf_source_statement_position', 'bottom' );
 
