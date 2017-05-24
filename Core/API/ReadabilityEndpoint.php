@@ -73,7 +73,7 @@ class ReadabilityEndpoint implements HasActions {
 				  ),
 			    ),
 				'permission_callback' => function () {
-			      return true; //current_user_can( 'edit_others_posts' );
+			      return false; //current_user_can( 'edit_others_posts' );
 			  	},
 				'priority'  => 10,
 			),
@@ -96,7 +96,7 @@ class ReadabilityEndpoint implements HasActions {
 				  ),
 			    ),
 				'permission_callback' => function () {
-			      return true; //current_user_can( 'edit_others_posts' );
+			      return false; //current_user_can( 'edit_others_posts' );
 			  	},
 				'priority'  => 10,
 			),
