@@ -828,7 +828,16 @@ endif;
 
 		if ( ! $selection ) {
 			if ( $url != '' ) {
+				ob_start();
+
 				$content .= pressforward( 'schema.feed_item' )->get_content_through_aggregator( $url );
+
+				if (WP_DEBUG){
+					$cache_errors = ob_get_contents();
+				} else {
+					$cache_errors = '';
+				}
+				ob_end_clean();
 			}
 		}
 
@@ -887,6 +896,7 @@ endif;
 <?php
 do_action( 'admin_footer' );
 do_action( 'admin_print_footer_scripts' );
+echo '<pre>'.$cache_errors.'</pre>';
 ?>
 <script type="text/javascript">if(typeof wpOnload=='function')wpOnload();</script>
 </body>

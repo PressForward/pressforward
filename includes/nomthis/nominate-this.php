@@ -46,7 +46,6 @@ if (!$admin_avail){
 	/** WordPress Administration Bootstrap */
 	require_once( $wp_bootstrap . '/admin.php' );
 }
-
 // require_once( $wp_bootstrap . '/includes/meta-boxes.php' );
 	// PF Correction - this will need to be changed to a constant later.
 // require_once( dirname(dirname(dirname(__FILE__))) . "/Libraries/OpenGraph.php");
