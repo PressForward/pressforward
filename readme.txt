@@ -3,8 +3,8 @@ Contributors: PressForward, AramZS, boonebgorges, lmrhody, asmmap, regan008, joa
 Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 3.0.1
-Tested up to: 4.7
-Stable tag: 4.2.2
+Tested up to: 4.7.5
+Stable tag: 4.3.0
 License: GPL2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -86,7 +86,7 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 
 * Restructured Nominate This. It should now work with servers with non-standard WP_ADMIN folder configurations and those hosts who turn off direct access to the plugin folder, including HostGator and Reclaim.
 * Prepared Readability Endpoint
-* Redirects on published and forwarding posts will now redirect faster. 
+* Redirects on published and forwarding posts will now redirect faster.
 * Fix for post save interception leaking to other non-standard post types.
 * Fixed Post Meta intercept breaking downstream filtering functions that also intercepted post meta.
 * Add support for Dublin Core publisher information in PressForward's outbound RSS feed.
