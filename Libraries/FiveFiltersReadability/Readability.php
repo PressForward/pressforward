@@ -94,8 +94,8 @@ class Readability {
 	 **/
 	public $regexps = array(
 		'unlikelyCandidates' => '/combx|comment|community|disqus|extra|foot|header|menu|remark|rss|shoutbox|sidebar|sponsor|ad\-break|agegate|pagination|pager|skip\-to\-text\-link|popup|flash|js|el__featured\-video|kicker|meta|kicker\-label|headline/i',
-		'okMaybeItsACandidate' => '/and|article|body|column|main|continues|postContent|content|post|story|related|shadow|story\-content|story\-body\-supplemental|story\-body|story\-body\-text|story\-continues|story\-content|story\-body\-text|story\-continues\-2|el__leafmedia\-\-speakable\-paragraph|no\-js/i',
-		'positive' => '/article|body|story\-content|content|entry|hentry|main|page|attachment|pagination|post|text|blog|postContent|story|story\-body|story\-body\-supplemental|story\-body\-text|story\-continues|story\-content|story\-body\-text|story\-continues\-2|speakable|el__leafmedia\-\-speakable\-paragraph|articleBody/i',
+		'okMaybeItsACandidate' => '/and|article|body|column|main|continues|postContent|content|post|story|related|shadow|story\-content|story\-body\-supplemental|story\-body|story\-body\-text|story\-continues|story\-content|story\-body\-text|story\-continues\-2|el__leafmedia\-\-speakable\-paragraph|no\-js|story\-content|morning\-briefing\-weather\-module/i',
+		'positive' => '/article|body|story\-content|content|entry|hentry|main|page|attachment|pagination|post|text|blog|postContent|story|story\-body|story\-body\-supplemental|story\-body\-text|story\-continues|story\-content|story\-body\-text|story\-continues\-2|speakable|el__leafmedia\-\-speakable\-paragraph|articleBody|story\-content|story\-body|story\-body\-supplemental/i',
 		'negative' => '/combx|comment|skip\-to\-text\-link|com\-|contact|foot|footer|_nav|footnote|masthead|media|meta|outbrain|taboola|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget|el__featured\-video|flash\-state|video__end\-slate\-\-inactive|js|zn\-large\-media|script|fav|unmute|el__video__collection__close\-\-expandable|js__video__collection__close\-\-expandable|kicker|meta|kicker\-label|headline/i',
 		'divToPElements' => '/<(a|blockquote|dl|div|img|ol|p|pre|table|ul)/i',
 		'replaceBrs' => '/(<br[^>]*>[ \n\r\t]*){2,}/i',
@@ -922,14 +922,20 @@ class Readability {
 				$weight += 25;
 			}
 		}
-
+		//var_dump('<pre>', $e); //die();
 		/* Look for a special ID */
 		if ( $e->hasAttribute( 'id' ) && $e->getAttribute( 'id' ) != '' ) {
 			if ( preg_match( $this->regexps['negative'], $e->getAttribute( 'id' ) ) ) {
-				$weight -= 25;
+				$weight -= 55;
 			}
 			if ( preg_match( $this->regexps['positive'], $e->getAttribute( 'id' ) ) ) {
-				$weight += 25;
+				$weight += 55;
+			}
+			if ( 'story' == $e->getAttribute( 'id' ) && 'article' == $e->tagName ){
+				$weight += 300;
+			}
+			if ( 'main' == $e->getAttribute( 'id' ) && 'main' == $e->tagName ){
+				$weight += 300;
 			}
 		}
 
@@ -942,6 +948,24 @@ class Readability {
 			}
 			if ( 'articleBody' == $e->getAttribute( 'itemprop' ) ) {
 				$weight += 400;
+			}
+		}
+
+		if ( $e->hasAttribute( 'role' ) && $e->getAttribute( 'role' ) != '' ) {
+			if ( preg_match( $this->regexps['negative'], $e->getAttribute( 'role' ) ) ) {
+				$weight -= 25;
+			}
+			if ( preg_match( $this->regexps['positive'], $e->getAttribute( 'role' ) ) ) {
+				$weight += 25;
+			}
+			if ( 'main' == $e->getAttribute( 'role' ) ) {
+				$weight += 400;
+			}
+		}
+
+		if ( $e->hasAttribute( 'data-para-count' ) && $e->getAttribute( 'data-para-count' ) != '' ) {
+			if ( intval($e->getAttribute( 'data-para-count')) > 0 ) {
+				$weight += 200;
 			}
 		}
 		return $weight;
