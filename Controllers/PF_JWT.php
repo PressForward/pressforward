@@ -20,7 +20,7 @@ class PF_JWT {
 	public function random_bytes( $num ){
 		if ( function_exists('random_bytes') ){
 			try {
-			    $value = random_bytes(32);
+			    $value = random_bytes($num);
 			} catch (TypeError $e) {
 			    // Well, it's an integer, so this IS unexpected.
 			    die("An unexpected error has occurred when generating a cryptographic API key.");
@@ -107,9 +107,10 @@ class PF_JWT {
 	}
 
 	public function make_a_jwt_private_key(){
-		$key_seed = sanitize_key($this->system->get_site_info('url'));
+		$extra = ord($this->system->get_site_info('url'));
+		$key_seed = sanitize_key($extra);
 		$key_private = sanitize_key($this->random_bytes(64));
-		$key = $key_seed.$key_private.'pf';
+		$key = $key_seed.$key_private;
 		return base64_encode($key);
 	}
 
