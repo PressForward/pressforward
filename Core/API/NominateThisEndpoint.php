@@ -142,33 +142,6 @@ class NominateThisEndpoint implements HasActions {
 					'required'    => false,
 					'default'	  => 'view'
 				  ),
-				  'u' => array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
-					// type specifies the type of data that the argument should be.
-					'type'        => 'string',
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'default'	  => 'view'
-				  ),
-				  's' => array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
-					// type specifies the type of data that the argument should be.
-					'type'        => 'string',
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'default'	  => 'view'
-				  ),
-				  'v' => array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
-					// type specifies the type of data that the argument should be.
-					'type'        => 'string',
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'default'	  => ''
-				  ),
 				),
 				'permission_callback' => function () {
 					return true;
@@ -204,6 +177,12 @@ class NominateThisEndpoint implements HasActions {
 		echo $login;
 		die();
 
+	}
+
+	public function get_nominate_this_script(){
+		header( 'Content-Type: application/javascript; charset=' . get_option( 'blog_charset' ) );
+		include_once(PF_ROOT.'/assets/js/nominate-tool.js');
+		die();
 	}
 
 
