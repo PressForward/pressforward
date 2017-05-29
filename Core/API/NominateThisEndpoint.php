@@ -19,7 +19,9 @@ class NominateThisEndpoint implements HasActions {
 		$namespace = $this->api_base['base_namespace'] . $this->api_base['version'];
 		$base = $this->api_base['endpoint'];
 		$this->api_base['authpoint'] = 'nominate';
+		$this->api_base['scriptpoint'] = 'nomscript';
 		$this->endpoint_for_nominate_this_endpoint = $namespace. '/' . $base;
+		$this->endpoint_for_nominate_this_script = $namespace. '/' . $this->api_base['scriptpoint'];
 		$this->endpoint_for_nominate_endpoint = $namespace. '/' . 	$this->api_base['authpoint'];
 	}
 
@@ -86,6 +88,54 @@ class NominateThisEndpoint implements HasActions {
 				  'context' => array(
 					  // description should be a human readable description of the argument.
 					'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
+					// type specifies the type of data that the argument should be.
+					'type'        => 'string',
+					// Set the argument to be required for the endpoint.
+					'required'    => false,
+					'default'	  => 'view'
+				  ),
+				  'u' => array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
+					// type specifies the type of data that the argument should be.
+					'type'        => 'string',
+					// Set the argument to be required for the endpoint.
+					'required'    => false,
+					'default'	  => 'view'
+				  ),
+				  's' => array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
+					// type specifies the type of data that the argument should be.
+					'type'        => 'string',
+					// Set the argument to be required for the endpoint.
+					'required'    => false,
+					'default'	  => 'view'
+				  ),
+				  'v' => array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
+					// type specifies the type of data that the argument should be.
+					'type'        => 'string',
+					// Set the argument to be required for the endpoint.
+					'required'    => false,
+					'default'	  => ''
+				  ),
+				),
+				'permission_callback' => function () {
+					return true;
+				},
+				'priority'  => 10,
+			),
+		));
+		register_rest_route($namespace, '/'.$this->api_base['scriptpoint'], array(
+			array(
+				'methods'         => \WP_REST_Server::READABLE,
+				'callback'        => array( $this, 'get_nominate_this_script' ),
+				'args' => array(
+				  'context' => array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Supplies the Nominate This js script for building the bookmarklet.', 'pf' ),
 					// type specifies the type of data that the argument should be.
 					'type'        => 'string',
 					// Set the argument to be required for the endpoint.

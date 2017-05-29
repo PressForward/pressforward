@@ -161,8 +161,10 @@ function pf_nomthis_bookmarklet() {
 				f='" . rest_url().pressforward('api.nominatethis')->endpoint_for_nominate_this_endpoint . "',
 				l=d.location,
 				e=encodeURIComponent,
+				p='" . rest_url().pressforward('api.nominatethis')->endpoint_for_nominate_this_script . "',
 				u=f+'?u='+e(l.href)+'&t='+e(d.title)+'&s='+e(s)+'&v=4';
 				a=function(){if(!w.open(u,'t','toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=620'))l.href=u;};
+				a=function(){};
 				if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0); else a();
 				void(0)";
 
