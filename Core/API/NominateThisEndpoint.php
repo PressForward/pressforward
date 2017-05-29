@@ -181,6 +181,8 @@ class NominateThisEndpoint implements HasActions {
 
 	public function get_nominate_this_script(){
 		header( 'Content-Type: application/javascript; charset=' . get_option( 'blog_charset' ) );
+		include_once(PF_ROOT.'/assets/js/jws.js');
+		include_once(PF_ROOT.'/assets/js/jwt.js');
 		include_once(PF_ROOT.'/assets/js/nominate-tool.js');
 		die();
 	}
