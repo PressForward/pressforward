@@ -1,10 +1,10 @@
 <?php
-
 namespace Firebase\JWT;
-use \DomainException;
-use \InvalidArgumentException;
-use \UnexpectedValueException;
-use \DateTime;
+
+use \DomainException as DomainException;
+use \InvalidArgumentException as InvalidArgumentException;
+use \UnexpectedValueException as UnexpectedValueException;
+use \DateTime as DateTime;
 
 require_once('BeforeValidException.php');
 require_once('ExpiredException.php');
