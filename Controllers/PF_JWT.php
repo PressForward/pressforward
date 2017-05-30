@@ -61,12 +61,12 @@ class PF_JWT {
 	}
 
 	public function make_a_public_key( $new = false ){
-		$key_seed = sanitize_key($this->system->get_site_info('url'));
-		$key_public = sanitize_key($this->random_bytes(32));
+		$key_seed = 'pf';
+		//$key_public = sanitize_key($this->random_bytes(4));
 		$user = $this->system_users->get_current_user();
 		$unique_strings_to_users = $this->system->get_option('pf_jwt_users', array());
 		if ( $new || !array_key_exists($user->ID, $unique_strings_to_users['by_id']) ){
-			$user_key = sanitize_key($this->random_bytes(rand(10,32)));
+			$user_key = sanitize_key($this->random_bytes(rand(6,12)));
 			if ( array_key_exists($user->ID, $unique_strings_to_users['by_id']) ){
 				// We need to unset the old version because we are in make-new mode.
 				$old_user_key = $unique_strings_to_users['by_id'][$user->ID];
@@ -82,8 +82,6 @@ class PF_JWT {
 		$user_seed = $user_key;
 		//$key = 'pf'.'|'.$key_public.'|'.$key_seed.'|'.$user_seed;
 		$key_set = array(
-			'us'	=>	'pf',
-			'key_public'	=>	$key_public,
 			'key_seed'		=>	$key_seed,
 			'user_seed'		=>	$user_seed,
 		);
@@ -134,9 +132,6 @@ class PF_JWT {
 		if (!array_key_exists('key_seed', $key_array) || !array_key_exists('user_seed', $key_array)){
 			return false;
 		}
-		if ( sanitize_key($this->system->get_site_info('url')) != $key_array['key_seed'] ){
-			return false;
-		}
 		$unique_strings_to_users = $this->system->get_option('pf_jwt_users', array());
 		if (!array_key_exists($key_array['user_seed'], $unique_strings_to_users['by_key'])){
 			return false;
@@ -145,6 +140,26 @@ class PF_JWT {
 		//$user = get_user_by( 'id', $user_id );
 		$key = $this->system_users->get_user_meta($user_id, 'pf_jwt_private_key', true);
 		return $key;
+	}
+
+	public function get_a_user_from_public_key( $public_pf_key ){
+		$key_parts = array();
+		//$decoded_key = base64_decode($public_pf_key);
+		//$key_parts = explode('|', $decoded_key);
+		//$user_key = array_pop($key_parts);
+		//$site_url = array_pop($key_parts);
+		$key_obj = $this->decode_with_jwt($public_pf_key, $this->system_key());
+		$key_array = (array) $key_obj;
+		if (!array_key_exists('key_seed', $key_array) || !array_key_exists('user_seed', $key_array)){
+			return false;
+		}
+		$unique_strings_to_users = $this->system->get_option('pf_jwt_users', array());
+		if (!array_key_exists($key_array['user_seed'], $unique_strings_to_users['by_key'])){
+			return false;
+		}
+		$user_id = $unique_strings_to_users['by_key'][$key_array['user_seed']];
+		$user = get_user_by( 'id', $user_id );
+		return $user;
 	}
 
 }
