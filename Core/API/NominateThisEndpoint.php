@@ -143,8 +143,40 @@ class NominateThisEndpoint implements HasActions {
 					'default'	  => 'view'
 				  ),
 				),
+				'k' => array(
+					// description should be a human readable description of the argument.
+				  'description' => esc_html__( 'Public Key.', 'pf' ),
+				  // type specifies the type of data that the argument should be.
+				  'type'        => 'string',
+				  // Set the argument to be required for the endpoint.
+				  'required'    => true,
+				  'default'	  => '0'
+				),
 				'permission_callback' => function () {
-					return true;
+					//var_dump($_GET);
+					$return_var = false;
+					try {
+						$key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin($_GET['k']));
+						if (!$key){
+							$return_var = new WP_Error( 'auth_fail_id', __( "Request was signed with incorrect key.", "pf" ) );
+						}
+						$return_var = true;
+						return $return_var;
+					} catch ( \UnexpectedValueException $e ){
+						$return_var = new WP_Error( 'auth_fail_format', __( "Authentication key was not properly formated.", "pf" ) );
+					} catch ( \InvalidArgumentException $e ){
+						$return_var = new WP_Error( 'auth_fail_key', __( "Authentication key was not properly supplied.", "pf" ) );
+					} catch ( \DomainException $e ){
+						$return_var = new WP_Error( 'auth_fail_ssl', __( "SSL cannot be applied to the key.", "pf" ) );
+					} finally {
+						if ( false === $return_var){
+							return new WP_Error( 'auth_fail_whoknows', __( "Authentication failed for reasons unclear.", "pf" ) );
+						} else {
+							return $return_var;
+						}
+
+					}
+
 				},
 				'priority'  => 10,
 			),
