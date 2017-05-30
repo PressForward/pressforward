@@ -151,6 +151,8 @@ function pf_get_shortcut_link() {
  */
 function pf_nomthis_bookmarklet() {
 	//get_site_url(null, 'wp-json/'
+	$user = wp_get_current_user();
+	$user_id = $user->ID;
 	$link = "javascript:
 				var d=document,
 				w=window,
@@ -160,7 +162,9 @@ function pf_nomthis_bookmarklet() {
 				s=(e?e():(k)?k():(x?x.createRange().text:0)),
 				l=d.location,
 				e=encodeURIComponent,
-				p='" . rest_url().pressforward('api.nominatethis')->endpoint_for_nominate_this_script . "',
+				ku='".bin2hex(pressforward('controller.jwt')->get_a_user_public_key())."',
+				ki='".get_user_meta($user_id, 'pf_jwt_private_key', true)."',
+				p='" . rest_url().pressforward('api.nominatethis')->endpoint_for_nominate_this_script . "?k='+ku,
 				pe=document.createElement('script'),
 				a=function(){pe.src=p;document.getElementsByTagName('head')[0].appendChild(pe);};
 				if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0); else a();
