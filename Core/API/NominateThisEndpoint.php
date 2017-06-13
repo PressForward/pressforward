@@ -128,7 +128,7 @@ class NominateThisEndpoint implements HasActions {
 				'priority'  => 10,
 			),
 		));
-		register_rest_route($namespace, '/'.$this->api_base['scriptpoint'], array(
+		register_rest_route($namespace, '/'.$this->api_base['scriptpoint'],
 			array(
 				'methods'         => \WP_REST_Server::READABLE,
 				'callback'        => array( $this, 'get_nominate_this_script' ),
@@ -142,15 +142,15 @@ class NominateThisEndpoint implements HasActions {
 					'required'    => false,
 					'default'	  => 'view'
 				  ),
-				),
-				'k' => array(
-					// description should be a human readable description of the argument.
-				  'description' => esc_html__( 'Public Key.', 'pf' ),
-				  // type specifies the type of data that the argument should be.
-				  'type'        => 'string',
-				  // Set the argument to be required for the endpoint.
-				  'required'    => true,
-				  'default'	  => '0'
+                  'k' => array(
+                      // description should be a human readable description of the argument.
+                    'description' => esc_html__( 'Public Key.', 'pf' ),
+                    // type specifies the type of data that the argument should be.
+                    'type'        => 'string',
+                    // Set the argument to be required for the endpoint.
+                    'required'    => true,
+                    'default'	  => '0'
+                  ),
 				),
 				'permission_callback' => function () {
 					//var_dump($_GET);
@@ -180,7 +180,7 @@ class NominateThisEndpoint implements HasActions {
 				},
 				'priority'  => 10,
 			),
-		));
+		);
 
 	}
 
