@@ -113,6 +113,19 @@ class MetaCheckEndpoint implements HasActions {
 
 	}
 
+    private function check_keys_for_value($key, $obj){
+        if ( !empty( $obj->metas->$key ) ){
+            $obj->$key = $obj->metas->$key;
+        }
+        if ( !empty( $obj->twitter->$key ) ){
+            $obj->$key = $obj->twitter->$key;
+        }
+        if ( !empty( $obj->open_graph->$key ) ){
+            $obj->$key = $obj->open_graph->$key;
+        }
+        return $obj;
+    }
+
 	public function get_nominate_this_script(){
         $url = $_GET['url'];
         $obj = new stdClass();
@@ -167,9 +180,9 @@ class MetaCheckEndpoint implements HasActions {
                 // $response_dom = pf_str_get_html( $response_body );
             if ( isset( $og->url ) ) {
                 $url = $og->url;
-                $og_data->og_url = $url;
+                $og_data->url = $url;
             } else {
-                $og_data->og_url = $url;
+                $og_data->url = $url;
             }
             $og_data->title = $og->title;
             $og_data->image = $og->image;
@@ -191,8 +204,8 @@ class MetaCheckEndpoint implements HasActions {
             }
             $twitter_keys = array(
                 "twitter_card" => 'twitter_card',
-                "twitter_site" => 'site',
-                "twitter_creator" => 'creator',
+                "twitter_site" => 'twitter_site',
+                "twitter_creator" => 'twitter_creator',
                 "twitter_title" =>  'title',
                 "twitter_description"   =>  'description',
                 "twitter_image" =>  'image'
@@ -203,7 +216,19 @@ class MetaCheckEndpoint implements HasActions {
             $obj->open_graph = $og_data;
             $obj->twitter = $twitter_data;
             $obj->metas = $metas;
-            $obj->keywords = array_merge( $metas->keywords, $og_data->tags );
+            $obj->keywords = array_merge( (array) $metas->keywords, (array) $og_data->tags );
+            $primary_keys = array(
+                'title',
+                'description',
+                'image',
+                'site_name',
+                'type',
+                'url',
+            );
+            foreach ( $primary_keys as $key ) {
+                $obj = $this->check_keys_for_value( $key, $obj );
+            }
+
         }
 		header( 'Content-Type: application/javascript; charset=' . get_option( 'blog_charset' ) );
 		echo json_encode($obj);
