@@ -58,6 +58,21 @@ class PFOpenGraph implements Iterator {
 	}
 
 	/**
+	 * Takes an HTML document and parses it for Open Graph data, returns
+	 * false on error.
+	 *
+	 * @param $HTML  HTML document.
+	 * @return OpenGraph
+	 */
+	static public function process( $HTML ) {
+		if ( ! empty( $HTML ) && ! is_wp_error( $HTML ) ) {
+			return self::_parse( $HTML );
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * Parses HTML and extracts Open Graph data, this assumes
 	 * the document is at least well formed.
 	 *
