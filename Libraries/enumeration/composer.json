@@ -1,0 +1,25 @@
+{
+    "name": "eloquent/enumeration",
+    "description": "An enumeration implementation for PHP.",
+    "keywords": ["enum", "enumeration", "set", "class", "multiton", "type"],
+    "homepage": "https://github.com/eloquent/enumeration",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Erin Millard",
+            "email": "ezzatron@gmail.com",
+            "homepage": "http://ezzatron.com/"
+        }
+    ],
+    "require": {
+        "php": ">=5.3"
+    },
+    "require-dev": {
+        "icecave/archer": "1.0.0-alpha.2"
+    },
+    "autoload": {
+        "psr-0": {
+            "Eloquent\\Enumeration": "src"
+        }
+    }
+}

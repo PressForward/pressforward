@@ -1,0 +1,123 @@
+<?php
+namespace PressForward\Controllers;
+
+use WP_Ajax_Response;
+use WP_Error;
+//use \WP_REST_Controller;
+
+class Stats {
+
+	var $slug;
+	var $title;
+	var $root;
+	var $file_path;
+	var $url;
+	var $ver;
+	var $feed_post_type;
+	var $meta_key;
+
+	var $base;
+	var $access;
+	var $shortcodes;
+	var $gender_checker;
+
+	private function __construct( $shortcodes ) {
+
+		$this->define_constants();
+		$this->base();
+		$this->includes();
+		$this->access();
+		$this->shortcodes( $shortcodes );
+		$this->gender_checker();
+
+	}
+	private function define_constants(){
+		$this->slug = 'pf_stats';
+		$this->title = 'PressForward Stats';
+		$this->root = PF_ROOT;
+		$this->file_path = $this->root . '/' . basename(__FILE__);
+		$this->url = plugins_url( '/', __FILE__ );
+		$this->ver = 1.0;
+		$this->feed_post_type = 'pf_feed_item';
+		$this->meta_key = 'item_id';
+		$this->meta_author_key = 'item_author';
+	}
+	private function includes(){
+		require_once( $this->root . '/Libraries/enumeration/src/Eloquent/Enumeration/Multiton.php' );
+		require_once( $this->root . '/Libraries/enumeration/src/Eloquent/Enumeration/Enumeration.php' );
+
+		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Gender.php' );
+		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/Traits/NameList.php' );
+		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/Interfaces/Matcher.php' );
+		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/BabyNamesWSMatch.php' );
+		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/RestNamesWSMatch.php' );
+		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/RegExpV1Match.php' );
+		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/RegExpV2Match.php' );
+		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/MetaphoneWeightedMatch.php' );
+		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/MetaphoneMatch.php' );
+		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/ListWeightedMatch.php' );
+		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/ListMatch.php' );
+		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/GenderEngine.php' );
+		require_once( $this->root . '/Libraries/text-stats/src/DaveChild/TextStatistics/TextStatistics.php' );
+	}
+
+	public function base(){
+
+	}
+	public function access(){
+
+	}
+
+	public function shortcodes( $shortcodes ){
+		if ( empty( $this->shortcodes ) ) {
+			$this->shortcodes = $shortcodes;
+		}
+	}
+	public function gender_checker(){
+		if (empty( $this->gender_checker ) ) {
+			$this->gender_checker = new GenderEngine\GenderEngine();
+		}
+	}
+
+	public function stats_query_for_pf_published_posts($wp_query_args){
+
+		$default_meta_query = array(
+			'pf_item_check' => array(
+				'key'     => 'item_id',
+				'compare' => 'EXISTS',
+			),
+		);
+		if (isset($wp_query_args['meta_query'])) {
+			$meta_query = wp_parse_args($wp_query_args['meta_query'], $default_meta_query);
+			unset($wp_query_args['meta_query']);
+		} else {
+			$meta_query = $default_meta_query;
+		}
+		$status = get_option( PF_SLUG . '_draft_post_status', 'draft' );
+		if ( 'draft' !== $status ){
+			$status_check = $status;
+		} else {
+			$status_check = 'publish';
+		}
+		$default_args = array(
+			'posts_per_page' => 40,
+			'post_type'      => get_option( PF_SLUG . '_draft_post_type', 'post' ),
+			'post_status'    => $status_check,
+			'meta_query'     => $meta_query,
+			'paged'			 =>	1
+		);
+		$args = wp_parse_args($wp_query_args, $default_args);
+		if ((isset($args['posts_per_page']) && ($args['posts_per_page'] < 0)) || (isset($args['offset']) && $args['offset'] < 0)) {
+			$args['posts_per_page'] = -1;
+			unset($args['offset']);
+		}
+		do_action('pf_stats_query_before', $args);
+		//var_dump($args); die();
+		$args = apply_filters('pf_qualified_stats_post_query', $args);
+		//var_dump($args); die();
+		//salon_sane()->slnm_log($args);
+		$q = new WP_Query($args);
+		do_action('pf_stats_query_after', $q);
+		return $q;
+	}
+}
