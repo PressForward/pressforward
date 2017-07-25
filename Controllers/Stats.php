@@ -3,6 +3,9 @@ namespace PressForward\Controllers;
 
 use WP_Ajax_Response;
 use WP_Error;
+use WP_Query;
+use PressForward\Controllers\Metas;
+use PressForward\Controllers\Stats_Shortcodes as Stats_Shortcodes;
 //use \WP_REST_Controller;
 
 class Stats {
@@ -21,8 +24,9 @@ class Stats {
 	var $shortcodes;
 	var $gender_checker;
 
-	private function __construct( $shortcodes ) {
-
+	public function __construct( Metas $metas ) {
+		$shortcodes = new Stats_Shortcodes();
+		$this->metas = $metas;
 		$this->define_constants();
 		$this->base();
 		$this->includes();
@@ -75,7 +79,7 @@ class Stats {
 	}
 	public function gender_checker(){
 		if (empty( $this->gender_checker ) ) {
-			$this->gender_checker = new GenderEngine\GenderEngine();
+			$this->gender_checker = new \GenderEngine\GenderEngine();
 		}
 	}
 
@@ -116,8 +120,103 @@ class Stats {
 		$args = apply_filters('pf_qualified_stats_post_query', $args);
 		//var_dump($args); die();
 		//salon_sane()->slnm_log($args);
-		$q = new WP_Query($args);
+		$q = new \WP_Query($args);
 		do_action('pf_stats_query_after', $q);
 		return $q;
 	}
+
+	public function set_author_into_leaderboard( $id, $authors ){
+		$author = $this->metas->get_post_pf_meta( $id, $this->meta_author_key );
+		$author_and_test = explode(' and ', $author);
+		$author_comma_test = explode(',', $author);
+		$author_ampersand_test = explode('&', $author);
+		if ( 1 < count( $author_and_test ) || 1 < count( $author_comma_test ) || 1 < count( $author_ampersand_test ) ){
+			if (1 < count( $author_and_test )){
+				$author_set = $author_and_test;
+			} elseif (1 < count( $author_comma_test )) {
+				$author_set = $author_comma_test;
+			} elseif (1 < count( $author_ampersand_test )) {
+				$author_set = $author_ampersand_test;
+			} else {
+				$author_set = array( $author );
+			}
+			foreach ( $author_set as $auther_from_set ){
+				$author_slug = str_replace(' ', '_', trim( strtolower($auther_from_set) ) );
+				if ( !empty( $authors[$author_slug] ) ) {
+					$authors = $this->set_author_count( $author_slug, $authors );
+				} else {
+					$authors = $this->set_new_author_object($author_slug, $auther_from_set, $authors );
+				}
+			}
+			return $authors;
+		}
+		$author_slug = str_replace(' ', '_', strtolower($author) );
+		if ( !empty( $authors[$author_slug] ) ) {
+			$authors = $this->set_author_count( $author_slug, $authors );
+		} else {
+			$authors = $this->set_new_author_object($author_slug, $author, $authors );
+		}
+
+		return $authors;
+	}
+
+	private function set_author_count( $author_slug, $authors ){
+		$authors[$author_slug]['count'] = $authors[$author_slug]['count']+1;
+		return $authors;
+	}
+
+	private function set_author_gender( $name ) {
+		$author_name = (string) $name;
+		$author_first_name_array = explode( ' ', $author_name );
+		$author_first_name = (string) $author_first_name_array[0];
+		if ( empty($author_first_name) ) {
+			if ( empty( $author_name ) ){
+				$author_first_name = "No author found.";
+			} else {
+				$author_first_name = $name;
+			}
+		}
+		//var_dump($author_first_name . ': ');
+		$gender = $this->gender_checker->test($author_first_name);
+		return $gender;
+	}
+
+	private function set_author_gender_confidence(){
+		//var_dump($gender . "\n");
+		$confidence = $this->gender_checker->getPreviousMatchConfidence();
+		$confidence = (string) $confidence;
+		return $confidence;
+
+	}
+
+	private function set_new_author_object( $author_slug, $author, $authors ){
+		$authors[$author_slug] = array(
+										'count' 			=> 1,
+										'name'				=> $author,
+										'gender'			=> $this->set_author_gender($author),
+										'gender_confidence'	=> $this->set_author_gender_confidence()
+									);
+
+
+
+		return $authors;
+	}
+
+	private function add_author_leaderboard_entry($author){
+		if ( empty($author) ) {
+			$author = array();
+			$author['count'] = 0;
+		}
+		if ( ( empty($author['name']) ) ) {
+			$author['name'] = 'No author found.';
+		}
+		$s = "\n<li>";
+		$s .= $author['name'] . ' (' . $author['count'] . ')';
+		#var_dump(pressforward_stats()->gender_checker->test($author['name']) ); var_dump( pressforward_stats()->gender_checker->getPreviousMatchConfidence() ); die();
+
+		$s .= ' This author is likely '. $author['gender'] . '. Confidence: ' . $author['gender_confidence'];
+		$s .= '</li>';
+		return $s;
+	}
+
 }

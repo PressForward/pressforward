@@ -16,12 +16,11 @@ class StatsEndpoint implements HasActions {
 
 	protected $api_base;
 
-	function __construct( $api_base, Metas $metas, Stats $stats, HTMLChecker $html_checker ) {
+	function __construct( $api_base, Metas $metas, Stats $stats ) {
 		$this->api_base = $api_base;
 		$this->api_base['endpoint'] = 'stats';
 		$this->metas = $metas;
 		$this->stats = $stats;
-		$this->html_checker = $html_checker;
 	}
 
 	public function action_hooks() {
@@ -54,40 +53,21 @@ class StatsEndpoint implements HasActions {
 				'args' => array(
 			      'page' => array(
 					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Pages worth of authors.', 'pf' ),
-					// type specifies the type of data that the argument should be.
-					'type'        => 'string',
+					'description' => esc_html__( 'Page of authors.', 'pf' ),
 					// Set the argument to be required for the endpoint.
 					'required'    => true,
 					'default'      => 1,
-			        'validate_callback' => 'is_numeric',
+			        'validate_callback' => function($page, $request_object){
+							if ( is_numeric($page) ){
+								return true;
+							} else {
+								return false;
+							}
+						},
 			      ),
 			    ),
 				'permission_callback' => function () {
 			      return true; //current_user_can( 'edit_others_posts' );
-			  	},
-				'priority'  => 10,
-			),
-		));
-
-		register_rest_route($namespace, '/' . $base.'/url', array(
-			array(
-				'methods'         => \WP_REST_Server::CREATABLE,
-				'callback'        => array( $this, 'get_readable_from_url' ),
-				'args' => array(
-				  'source_url' => array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'The source_url parameter takes a URL for keeping note of in readability.', 'pf' ),
-					// type specifies the type of data that the argument should be.
-					'type'        => 'string',
-					// Set the argument to be required for the endpoint.
-					'required'    => true,
-					'validate_callback' => array( $this, 'is_valid_url' ),
-					'sanitize_callback' => array( $this, 'is_sane_url' ),
-				  ),
-			    ),
-				'permission_callback' => function () {
-			      return false; //current_user_can( 'edit_others_posts' );
 			  	},
 				'priority'  => 10,
 			),
@@ -106,20 +86,23 @@ class StatsEndpoint implements HasActions {
 			//\rest_ensure_response(
 			$args = array(
 				'paged'			 =>	$request['page'],
-				'no_found_rows' => true,
+				//'no_found_rows' => true,
 				'fields'	=>	'ids'
 			);
 			$q = $this->stats->stats_query_for_pf_published_posts( $args );
+			//var_dump($q);
 			$ids = $q->posts;
+			$authors = array();
 			foreach ($ids as $id) {
-				$author = pf_get_post_meta( $id, 'item_author' );
+				$authors = $this->stats->set_author_into_leaderboard( $id, $authors );
 			}
+
 			return rest_ensure_response(
-				htmlspecialchars($this->readability->process_readability($request['html_doc'], $request['source_url']))
+				$authors
 			);
 			// unencode via js with the html_entity_decode function we use elsewhere.
 		}
-		return new \WP_Error( 'rest_invalid', esc_html__( 'The html_doc and source_url parameters are required.', 'pf' ), array( 'status' => 400 ) );
+		return new \WP_Error( 'rest_invalid', esc_html__( 'The page parameter is required.', 'pf' ), array( 'status' => 400 ) );
 	}
 
 

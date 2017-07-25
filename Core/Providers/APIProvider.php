@@ -13,6 +13,7 @@ use PressForward\Core\API\PFEndpoint;
 use PressForward\Core\API\FolderExtension;
 use PressForward\Core\API\ReadabilityEndpoint;
 use PressForward\Core\API\NominateThisEndpoint;
+use PressForward\Core\API\StatsEndpoint;
 
 class APIProvider extends ServiceProvider {
 
@@ -66,6 +67,13 @@ class APIProvider extends ServiceProvider {
 			'api.nominatethis',
 			function( $container ) use ($api_base) {
 				return new NominateThisEndpoint( $api_base,  $container->fetch( 'admin.templates' ) );
+			}
+		);
+
+		$container->share(
+			'api.stats',
+			function( $container ) use ($api_base) {
+				return new StatsEndpoint( $api_base, $container->fetch( 'controller.metas' ), $container->fetch( 'controller.stats' ) );
 			}
 		);
 

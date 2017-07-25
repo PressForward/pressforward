@@ -1,6 +1,8 @@
 <?php
 namespace PressForward\Controllers;
 
+use WP_Query;
+
 class Stats_Shortcodes {
 
 	public function __construct() {
@@ -184,76 +186,6 @@ class Stats_Shortcodes {
 		return $leaderboard;
 	}
 
-	private function set_author_into_leaderboard( $id, $authors ){
-		$author = pf_get_post_meta( $id, pressforward_stats()->meta_author_key );
-		$author_slug = str_replace(' ', '_', strtolower($author) );
-		if ( !empty( $authors[$author_slug] ) ) {
-			$authors = $this->set_author_count( $author_slug, $authors );
-		} else {
-			$authors = $this->set_new_author_object($author_slug, $author, $authors );
-		}
-
-		return $authors;
-	}
-
-	private function set_author_count( $author_slug, $authors ){
-		$authors[$author_slug]['count'] = $authors[$author_slug]['count']+1;
-		return $authors;
-	}
-
-	private function set_author_gender( $name ) {
-		$author_name = (string) $name;
-		$author_first_name_array = explode( ' ', $author_name );
-		$author_first_name = (string) $author_first_name_array[0];
-		if ( empty($author_first_name) ) {
-			if ( empty( $author_name ) ){
-				$author_first_name = "No author found.";
-			} else {
-				$author_first_name = $name;
-			}
-		}
-		//var_dump($author_first_name . ': ');
-		$gender = pressforward_stats()->gender_checker->test($author_first_name);
-		return $gender;
-	}
-
-	private function set_author_gender_confidence(){
-		//var_dump($gender . "\n");
-		$confidence = pressforward_stats()->gender_checker->getPreviousMatchConfidence();
-		$confidence = (string) $confidence;
-		return $confidence;
-
-	}
-
-	private function set_new_author_object( $author_slug, $author, $authors ){
-		$authors[$author_slug] = array(
-										'count' 			=> 1,
-										'name'				=> $author,
-										'gender'			=> $this->set_author_gender($author),
-										'gender_confidence'	=> $this->set_author_gender_confidence()
-									);
-
-
-
-		return $authors;
-	}
-
-	private function add_author_leaderboard_entry($author){
-		if ( empty($author) ) {
-			$author = array();
-			$author['count'] = 0;
-		}
-		if ( ( empty($author['name']) ) ) {
-			$author['name'] = 'No author found.';
-		}
-		$s = "\n<li>";
-		$s .= $author['name'] . ' (' . $author['count'] . ')';
-		#var_dump(pressforward_stats()->gender_checker->test($author['name']) ); var_dump( pressforward_stats()->gender_checker->getPreviousMatchConfidence() ); die();
-
-		$s .= ' This author is likely '. $author['gender'] . '. Confidence: ' . $author['gender_confidence'];
-		$s .= '</li>';
-		return $s;
-	}
 
 	public function the_shortcode($code, $args){
 		$s = '';

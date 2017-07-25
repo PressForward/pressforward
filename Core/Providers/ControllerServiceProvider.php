@@ -16,6 +16,7 @@ use PressForward\Controllers\Metas;
 use PressForward\Controllers\PF_Loops;
 use PressForward\Controllers\PF_Readability;
 use PressForward\Controllers\HTTPTools;
+use PressForward\Controllers\Stats;
 
 class ControllerServiceProvider extends ServiceProvider {
 
@@ -94,6 +95,13 @@ class ControllerServiceProvider extends ServiceProvider {
 			'controller.loops',
 			function( $container ) {
 				return new PF_Loops();
+			}
+		);
+
+		$container->share(
+			'controller.stats',
+			function( $container ) {
+				return new Stats( $container->fetch( 'controller.metas' ) );
 			}
 		);
 
