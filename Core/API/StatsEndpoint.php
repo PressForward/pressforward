@@ -65,6 +65,34 @@ class StatsEndpoint implements HasActions {
 							}
 						},
 			      ),
+				  'year' 	=>	array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
+					// Set the argument to be required for the endpoint.
+					'required'    => true,
+					'default'      => 1,
+					'validate_callback' => function($page, $request_object){
+							if ( is_numeric($page) ){
+								return true;
+							} else {
+								return false;
+							}
+						},
+				  ),
+				  'month'	=>	array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+					// Set the argument to be required for the endpoint.
+					'required'    => true,
+					'default'      => 1,
+					'validate_callback' => function($page, $request_object){
+							if ( is_numeric($page) ){
+								return true;
+							} else {
+								return false;
+							}
+						},
+				  ),
 			    ),
 				'permission_callback' => function () {
 			      return true; //current_user_can( 'edit_others_posts' );
@@ -72,7 +100,32 @@ class StatsEndpoint implements HasActions {
 				'priority'  => 10,
 			),
 		));
-
+		register_rest_route( $namespace, '/' . $base . '/pf_posted', array(
+			array(
+				'methods'         => \WP_REST_Server::READABLE,
+				'callback'        => array( $this, 'pf_posted' ),
+				'args' => array(
+			      'page' => array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Page of posts created by PressForward.', 'pf' ),
+					// Set the argument to be required for the endpoint.
+					'required'    => true,
+					'default'      => 1,
+			        'validate_callback' => function($page, $request_object){
+							if ( is_numeric($page) ){
+								return true;
+							} else {
+								return false;
+							}
+						},
+			      ),
+			    ),
+				'permission_callback' => function () {
+			      return true; //current_user_can( 'edit_others_posts' );
+			  	},
+				'priority'  => 10,
+			),
+		));
 	}
 
 
@@ -99,6 +152,33 @@ class StatsEndpoint implements HasActions {
 
 			return rest_ensure_response(
 				$authors
+			);
+			// unencode via js with the html_entity_decode function we use elsewhere.
+		}
+		return new \WP_Error( 'rest_invalid', esc_html__( 'The page parameter is required.', 'pf' ), array( 'status' => 400 ) );
+	}
+
+	public function pf_posted( $request ){
+		if ( isset($request['page']) ){
+			//\rest_ensure_response(
+			$args = array(
+				'paged'			 =>	$request['page']
+			);
+			$q = $this->stats->stats_query_for_pf_published_posts( $args );
+
+			$posts = $q->posts;
+			foreach ( $posts as $post ){
+				$post_content = $post->post_content;
+				$post_content_cleaner = strip_tags( stripslashes( html_entity_decode( htmlspecialchars_decode( htmlspecialchars( $post_content ) ) ) ) );
+				$post_content_cleaner = preg_replace('/[^A-Za-z0-9\-]/', ' ', $post_content_cleaner);
+				$post_content_cleaner = str_replace(array("\n","\r", "\r\n"), ' ', $post_content_cleaner);
+				$post->stripped_post_content = strip_tags($post_content);
+				$post->wordcount = str_word_count( $post->stripped_post_content );
+				$post->source = $this->metas->get_post_pf_meta( $post->ID, 'pf_source_link' );
+			}
+
+			return rest_ensure_response(
+				$posts
 			);
 			// unencode via js with the html_entity_decode function we use elsewhere.
 		}

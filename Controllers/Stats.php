@@ -87,7 +87,7 @@ class Stats {
 
 		$default_meta_query = array(
 			'pf_item_check' => array(
-				'key'     => 'item_id',
+				'key'     => $this->metas->get_key('item_id'),
 				'compare' => 'EXISTS',
 			),
 		);

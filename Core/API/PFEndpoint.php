@@ -39,4 +39,10 @@ class PFEndpoint extends APIWithMetaEndpoints implements HasActions {
 
 	}
 
+	function allow_meta_query( $valid_vars ) {
+
+		$valid_vars = array_merge( $valid_vars, array( 'meta_key', 'meta_value' ) );
+		return $valid_vars;
+	}
+
 }
