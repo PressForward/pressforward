@@ -65,12 +65,11 @@ class StatsEndpoint implements HasActions {
 							}
 						},
 			      ),
-				  'year' 	=>	array(
+				  'after_year' 	=>	array(
 					  // description should be a human readable description of the argument.
 					'description' => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
 					// Set the argument to be required for the endpoint.
-					'required'    => true,
-					'default'      => 1,
+					'required'    => false,
 					'validate_callback' => function($page, $request_object){
 							if ( is_numeric($page) ){
 								return true;
@@ -79,12 +78,63 @@ class StatsEndpoint implements HasActions {
 							}
 						},
 				  ),
-				  'month'	=>	array(
+				  'after_month'	=>	array(
 					  // description should be a human readable description of the argument.
 					'description' => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
 					// Set the argument to be required for the endpoint.
-					'required'    => true,
-					'default'      => 1,
+					'required'    => false,
+					'validate_callback' => function($page, $request_object){
+							if ( is_numeric($page) ){
+								return true;
+							} else {
+								return false;
+							}
+						},
+				  ),
+				  'after_day'	=>	array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Limit query by day, use number of day.', 'pf' ),
+					// Set the argument to be required for the endpoint.
+					'required'    => false,
+					'validate_callback' => function($page, $request_object){
+							if ( is_numeric($page) ){
+								return true;
+							} else {
+								return false;
+							}
+						},
+				  ),
+				  'before_year' 	=>	array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
+					// Set the argument to be required for the endpoint.
+					'required'    => false,
+					'validate_callback' => function($page, $request_object){
+							if ( is_numeric($page) ){
+								return true;
+							} else {
+								return false;
+							}
+						},
+				  ),
+				  'before_month'	=>	array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+					// Set the argument to be required for the endpoint.
+					'required'    => false,
+					'validate_callback' => function($page, $request_object){
+							if ( is_numeric($page) ){
+								return true;
+							} else {
+								return false;
+							}
+						},
+				  ),
+				  'before_day'	=>	array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+					// Set the argument to be required for the endpoint.
+					'required'    => false,
 					'validate_callback' => function($page, $request_object){
 							if ( is_numeric($page) ){
 								return true;
@@ -142,6 +192,26 @@ class StatsEndpoint implements HasActions {
 				//'no_found_rows' => true,
 				'fields'	=>	'ids'
 			);
+			$date_limits = array(
+				'year',
+				'month',
+				'day'
+			);
+			$date_query = array();
+			foreach ( $date_limits as $limit ){
+				if (!empty( $request['after_'.$limit] ) ){
+					if ( !isset($date_query['after']) ){
+						$date_query['after'] = array();
+					}
+					$date_query['after'][$limit] = $request['after_'.$limit];
+				}
+				if (!empty( $request['before_'.$limit] ) ){
+					if ( !isset($date_query['before']) ){
+						$date_query['before'] = array();
+					}
+					$date_query['before'][$limit] = $request['after_'.$limit];
+				}
+			}
 			$q = $this->stats->stats_query_for_pf_published_posts( $args );
 			//var_dump($q);
 			$ids = $q->posts;
