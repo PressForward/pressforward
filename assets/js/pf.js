@@ -178,7 +178,8 @@ wp.api.loadPromise.done( function() {
 					this.limits.push( { 'key': key, 'value': value } );
 				},
 				assemble: function (resultTag){
-					window.pf.stats.wordcount.count = 0;
+					window.pf.stats.sources.count = 0;
+					window.pf.stats.sources.resultObj = {};
 					jQuery.each(
 						window.pf.stats.valid_posts.leaderboard,
 						function( index ){
@@ -193,7 +194,8 @@ wp.api.loadPromise.done( function() {
 					if ( undefined === resultTag ){
 						resultTag = new Date().getTime();
 					}
-					this.results[resultTag] = JSON.parse(JSON.stringify(window.pf.stats.wordcount.count));
+
+					this.results[resultTag] = JSON.parse(JSON.stringify(window.pf.stats.sources.resultObj));
 				},
 				pullPostsTogether: function( resultTag ) {
 					if ( !window.pf.stats.valid_posts.pagesFull ){
