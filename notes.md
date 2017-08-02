@@ -681,7 +681,7 @@ Ref:
 - Nominations
 - Shared "Amplification Effect"?
 - Could also make connection with google analytics
-- Facebook, Share to Email, Post to Tumblr, Pintrest
+- Facebook, Share to Email, Post to Tumblr, Pinterest
 - Create a variable that will save all shares.
 - Post from email -- using API and If This then that workflow.
 - Item Read (opened in All Content)
@@ -717,14 +717,14 @@ Ref:
   - Pulling in a link from a Tweet from a user and adding to the metadata a hat-tip name, hat-tip url
   - Pulling in a link from a User's list
   - Pulling in a link from a Twitter Search
-- API Endpoints for Nominations Occuring to send to Slack
+- API Endpoints for Nominations Occurring to send to Slack
 - API Endpoints to push a link to nomination from Slack
 - Unit Testing
   - Make Models happen
 - <https://mercury.postlight.com/web-parser/>
 - Make it Version 5
 - 5.0
-  - Registery
+  - Registry
   - Stats
   - Number of Nominations a post has Received
   - Number of Nominations a feed has received.
