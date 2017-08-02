@@ -179,7 +179,7 @@ class NominateThisEndpoint implements HasActions {
 
 				},
 				'priority'  => 10,
-			),
+			)
 		);
 
 	}
