@@ -115,6 +115,18 @@ class AssetsProvider extends ServiceProvider {
 			'deps'		=> array( 'jquery', 'wp-api' ),
 		) );
 
+		// Scripts
+		$assets->register_script( array(
+			'type'	=> 'admin',
+			'condition'	=> function( $hook ) use ( $provider ) {
+				$inclusions = array( 'edit.php' );
+				return $provider->check_hook_for_pressforward_string( $hook, array(), $inclusions, true );
+			},
+			'handle'	=> 'stats-app',
+			'src'		=> 'assets/stats-app/dist/app',
+			'deps'		=> array( 'pf', 'jquery', 'wp-api' ),
+		) );
+
 		$assets->register_script( array(
 			'type'	=> 'admin',
 			'condition'	=> function( $hook ) use ( $provider ) {

@@ -5,6 +5,7 @@
 		<a href="#" id="build-authors" class="button" onclick="window.pf.stats.authors.getLeaderboard();">Assemble Author Stats</a>
 		<a href="#" id="build-valid-posts" class="button" onclick="window.pf.stats.valid_posts.getLeaderboard();">Assemble Valid Posts for Stats</a>
 	</div>
+	<div id="stats-app"></div>
 	<div id="author-leaderboard" style="width: 49%; float: left;">
 		<ul>
 		</ul>
