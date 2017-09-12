@@ -15,6 +15,7 @@ use PressForward\Core\Admin\EditPost;
 use PressForward\Core\Admin\FoldersMenu;
 use PressForward\Core\Admin\AllContent;
 use PressForward\Core\Admin\SubscribedFeeds;
+use PressForward\Core\Admin\AdminBar;
 
 class AdminAreaServiceProvider extends ServiceProvider {
 
@@ -60,6 +61,12 @@ class AdminAreaServiceProvider extends ServiceProvider {
 			'admin.add_feeds',
 			function( $container ) {
 				return new AddFeeds( $container->fetch( 'controller.users' ) );
+			}
+		);
+		$container->share(
+			'admin.admin_bar',
+			function( $container ) {
+				return new AdminBar( $container->fetch( 'controller.users' ) );
 			}
 		);
 		$container->share(

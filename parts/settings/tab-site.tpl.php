@@ -8,6 +8,32 @@
 <hr />
 <p>
 	<?php
+		$alert = '<span style="display: inline-block; background-color: #d54e21; color: #fff; box-sizing: border-box; font-size: 18px; line-height: 30px; font-weight: 600;  margin: 1px 0 0 6px; vertical-align: top; z-index: 26;"><span style="display: block; padding: 0 11px;">!</span></span>';
+		$metrics_config = get_option('pf_metrics_config', array());
+		if ( !isset($metrics_config['checked']) ){
+			$metrics_config['checked'] = 'no';
+		}
+		if ( !isset($metrics_config['detailed']) ){
+			$metrics_config['detailed'] = 'no';
+		}
+		if ('no' === $metrics_config['checked']){
+			echo $alert;
+		}
+	?>
+	<select id="pf_metrics_config[checked]" name="pf_metrics_config[checked]">
+		<option value="yes" <?php if ( $metrics_config['checked'] == 'yes' ) { echo 'selected="selected"'; }?>>Yes</option>
+		<option value="no" <?php if ( $metrics_config['checked'] == 'no' ) { echo 'selected="selected"'; }?>>No</option>
+	</select>
+	<label class="description" for="pf_metrics_config[checked]"><?php echo __( 'Allow basic tracking', 'pf' ); ?></label>
+	<select id="pf_metrics_config[detailed]" name="pf_metrics_config[detailed]">
+		<option value="yes" <?php if ( $metrics_config['detailed'] == 'yes' ) { echo 'selected="selected"'; }?>>Yes</option>
+		<option value="no" <?php if ( $metrics_config['detailed'] == 'no' ) { echo 'selected="selected"'; }?>>No</option>
+	</select>
+	<label class="description" for="pf_metrics_config[detailed]"><?php echo __( 'Allow detailed tracking', 'pf' ); ?></label>
+</p>
+<hr />
+<p>
+	<?php
 		$default_pf_link_value = get_option( 'pf_link_to_source', 0 );
 		echo '<input id="pf_link_to_source" name="pf_link_to_source" type="number" class="pf_link_to_source_class" value="' . $default_pf_link_value . '" />';
 
