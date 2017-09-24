@@ -500,6 +500,14 @@ if ( $c > 19 ) {
 			} else {
 				update_option( 'pf_use_advanced_user_roles', 'no' );
 			}
+
+			if ( isset( $_POST['pf_metrics_config'] ) ) {
+				$pf_author_opt_check = $_POST['pf_metrics_config'];
+				// print_r($pf_links_opt_check); die();
+				update_option( 'pf_metrics_config', $pf_author_opt_check );
+			} else {
+				update_option( 'pf_metrics_config', 'no' );
+			}
 		}
 
 		do_action( 'pf_admin_op_page_save' );

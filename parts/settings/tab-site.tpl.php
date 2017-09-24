@@ -7,24 +7,29 @@
 </p>
 <hr />
 <p>
+	<div class="close-x">x</div>
 	<?php
 		$alert = '<span style="display: inline-block; background-color: #d54e21; color: #fff; box-sizing: border-box; font-size: 18px; line-height: 30px; font-weight: 600;  margin: 1px 0 0 6px; vertical-align: top; z-index: 26;"><span style="display: block; padding: 0 11px;">!</span></span>';
 		$metrics_config = get_option('pf_metrics_config', array());
 		if ( !isset($metrics_config['checked']) ){
 			$metrics_config['checked'] = 'no';
 		}
+		if ( !isset($metrics_config['basic']) ){
+			$metrics_config['basic'] = 'no';
+		}
 		if ( !isset($metrics_config['detailed']) ){
 			$metrics_config['detailed'] = 'no';
 		}
-		if ('no' === $metrics_config['checked']){
+		if ('no' === $metrics_config['checked'] && 'no' === $metrics_config['detailed'] && 'no' === $metrics_config['basic'] ){
 			echo $alert;
 		}
 	?>
-	<select id="pf_metrics_config[checked]" name="pf_metrics_config[checked]">
-		<option value="yes" <?php if ( $metrics_config['checked'] == 'yes' ) { echo 'selected="selected"'; }?>>Yes</option>
-		<option value="no" <?php if ( $metrics_config['checked'] == 'no' ) { echo 'selected="selected"'; }?>>No</option>
+	<input type="hidden" id="pf_metrics_config[checked]" name="pf_metrics_config[checked]" value="<?php echo $metrics_config['checked']; ?>">
+	<select id="pf_metrics_config[basic]" name="pf_metrics_config[basic]">
+		<option value="yes" <?php if ( $metrics_config['basic'] == 'yes' ) { echo 'selected="selected"'; }?>>Yes</option>
+		<option value="no" <?php if ( $metrics_config['basic'] == 'no' ) { echo 'selected="selected"'; }?>>No</option>
 	</select>
-	<label class="description" for="pf_metrics_config[checked]"><?php echo __( 'Allow basic tracking', 'pf' ); ?></label>
+	<label class="description" for="pf_metrics_config[basic]"><?php echo __( 'Allow basic tracking', 'pf' ); ?></label>
 	<select id="pf_metrics_config[detailed]" name="pf_metrics_config[detailed]">
 		<option value="yes" <?php if ( $metrics_config['detailed'] == 'yes' ) { echo 'selected="selected"'; }?>>Yes</option>
 		<option value="no" <?php if ( $metrics_config['detailed'] == 'no' ) { echo 'selected="selected"'; }?>>No</option>
