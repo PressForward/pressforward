@@ -139,6 +139,17 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_script( array(
 			'type'	=> 'admin',
 			'condition'	=> function( $hook ) use ( $provider ) {
+			$exclusions = array( 'toplevel_page_pf-menu' );
+			return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
+			},
+			'handle'	=> $slug . '-checkin',
+			'src'		=> 'assets/js/checkin',
+			'deps'		=> array( 'jquery' ),
+		) );
+
+		$assets->register_script( array(
+			'type'	=> 'admin',
+			'condition'	=> function( $hook ) use ( $provider ) {
             return $provider->check_hook_for_pressforward_string( $hook );
 			},
 			'handle'	=> $slug . '-tinysort',
