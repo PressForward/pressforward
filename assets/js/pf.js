@@ -1,4 +1,6 @@
-window.pf = {
+window.pf = window.pf || {};
+
+var pf_setup = {
 	location: 'pf',
 	toggler: function( evt, elem, functionOne, functionTwo ){
 		evt.preventDefault();
@@ -32,6 +34,7 @@ window.pf = {
 		}
 	}
 };
+window.pf = Object.assign( window.pf, pf_setup );
 wp.api.loadPromise.done( function() {
 	//https://github.com/WP-API/client-js/blob/master/js/load.js
 	wp.api.init({'versionString' : 'pf/v1',  'apiRoot': wp.api.utils.getRootUrl()+'wp-json/' });
