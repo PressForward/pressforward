@@ -30,7 +30,17 @@ class ConfigurationAJAX implements HasActions {
 				'hook' => 'wp_ajax_pf_ajax_user_setting',
 				'method' => 'pf_ajax_user_setting',
 			),
+			array(
+				'hook' => 'wp_ajax_pf_checked_in',
+				'method' => 'pf_checked_in',
+			),
 		);
+	}
+
+	public function pf_checked_in(){
+		$metrics_config = get_option('pf_metrics_config', array());
+		$metrics_config['checkin_complete'] = true;
+		update_option( 'pf_metrics_config', $metrics_config );
 	}
 
 	function pf_bad_call( $action, $msg = 'You made a bad call and it did not work. Try again.' ) {
