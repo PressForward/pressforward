@@ -500,6 +500,17 @@ if ( $c > 19 ) {
 			} else {
 				update_option( 'pf_use_advanced_user_roles', 'no' );
 			}
+
+			if ( isset( $_POST['pf_metrics_config'] ) ) {
+				$pf_metrics_opt_check = $_POST['pf_metrics_config'];
+				if ( 'yes' === $pf_metrics_opt_check["basic"] || 'yes' === $pf_metrics_opt_check["detailed"] ){
+					$pf_metrics_opt_check["checked"] = 'yes';
+				}
+				// print_r($pf_links_opt_check); die();
+				update_option( 'pf_metrics_config', $pf_metrics_opt_check );
+			} else {
+				update_option( 'pf_metrics_config', array() );
+			}
 		}
 
 		do_action( 'pf_admin_op_page_save' );

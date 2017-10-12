@@ -1,4 +1,6 @@
-window.pf = {
+window.pf = window.pf || {};
+
+var pf_setup = {
 	location: 'pf',
 	toggler: function( evt, elem, functionOne, functionTwo ){
 		evt.preventDefault();
@@ -32,6 +34,7 @@ window.pf = {
 		}
 	}
 };
+window.pf = Object.assign( window.pf, pf_setup );
 wp.api.loadPromise.done( function() {
 	//https://github.com/WP-API/client-js/blob/master/js/load.js
 	wp.api.init({'versionString' : 'pf/v1',  'apiRoot': wp.api.utils.getRootUrl()+'wp-json/' });
@@ -81,6 +84,20 @@ wp.api.loadPromise.done( function() {
 						if ( window.pf.stats.authors.pagesFull === false ){
 							window.pf.stats.authors.pages = window.pf.stats.authors.pages+1;
 							window.pf.stats.authors.getLeaderboard();
+						} else {
+							var sorted = Object.keys(window.pf.stats.authors.leaderboard).sort(function(a,b){return window.pf.stats.authors.leaderboard[b].count-window.pf.stats.authors.leaderboard[a].count});
+							console.log(sorted);
+							var i = 0;
+							for (var prop in sorted) {
+							   // skip loop if the property is from prototype
+							   if(!sorted.hasOwnProperty(prop)){ continue; }
+							   var author = window.pf.stats.authors.leaderboard[sorted[prop]];
+							   //console.log(author);
+							   var authorBlock = '<br/><li id="author-'+i+'"><strong>Name:</strong> '+author.name+'<li><strong>Count:</strong> '+author.count+'</li><li><strong>Author Gender:</strong> '+author.gender+'</li><li><strong>Gender Confidence:</strong> '+author.gender_confidence+'</li></li>';
+							   jQuery('#author-leaderboard ul').append(authorBlock);
+							   i++;
+						   }
+						   return '';
 						}
 					});
 					return '';
@@ -106,6 +123,7 @@ wp.api.loadPromise.done( function() {
 				},
 				pages: 1,
 				pagesFull: false,
+				postCount: 0,
 				leaderboard: {},
 				pageFillerFunction: function( pages ){
 					return jQuery.getJSON(window.pf.stats.valid_posts.arguments(pages),
@@ -121,6 +139,7 @@ wp.api.loadPromise.done( function() {
 								jQuery.each( data, function( key, val ) {
 									console.log('PF Valid Posts Leaderboard advancing to page ', pages);
 									window.pf.stats.valid_posts.leaderboard[key] = val;
+									window.pf.stats.valid_posts.postCount += 1;
 								});
 								return false;
 							}
@@ -137,6 +156,25 @@ wp.api.loadPromise.done( function() {
 						if ( window.pf.stats.valid_posts.pagesFull === false ){
 							window.pf.stats.valid_posts.pages = window.pf.stats.valid_posts.pages+1;
 							return window.pf.stats.valid_posts.getLeaderboard();
+						} else {
+							var totalPosts = '<strong>Total PressForward Items Published:</strong> '+window.pf.stats.valid_posts.postCount+'. ';
+							jQuery('#top-level').append(totalPosts);
+							var totalWordsString = '<strong>Total WordCount:</strong> '+window.pf.stats.wordcount.total()+'. ';
+							jQuery('#top-level').append(totalWordsString);
+							var sources = window.pf.stats.sources.total();
+							var sourcesSorted = Object.keys(sources).sort(function(a,b){return sources[b]-sources[a]});
+							console.log(sourcesSorted);
+							var i = 0;
+							for (var prop in sourcesSorted) {
+							   // skip loop if the property is from prototype
+							   if(!sourcesSorted.hasOwnProperty(prop)){ continue; }
+							   var source = sources[sourcesSorted[prop]];
+							   //console.log(author);
+							   var sourceBlock = '<br/><li id="source-'+i+'"><strong>Items from</strong> <a href="'+sourcesSorted[prop]+'" target="_blank">'+sourcesSorted[prop]+'</a>: '+source+'</li>';
+							   jQuery('#sources-leaderboard ul').append(sourceBlock);
+							   i++;
+						   }
+							return '';
 						}
 					});
 				}
@@ -178,7 +216,8 @@ wp.api.loadPromise.done( function() {
 					this.limits.push( { 'key': key, 'value': value } );
 				},
 				assemble: function (resultTag){
-					window.pf.stats.wordcount.count = 0;
+					window.pf.stats.sources.count = 0;
+					window.pf.stats.sources.resultObj = {};
 					jQuery.each(
 						window.pf.stats.valid_posts.leaderboard,
 						function( index ){
@@ -193,7 +232,8 @@ wp.api.loadPromise.done( function() {
 					if ( undefined === resultTag ){
 						resultTag = new Date().getTime();
 					}
-					this.results[resultTag] = JSON.parse(JSON.stringify(window.pf.stats.wordcount.count));
+
+					this.results[resultTag] = JSON.parse(JSON.stringify(window.pf.stats.sources.resultObj));
 				},
 				pullPostsTogether: function( resultTag ) {
 					if ( !window.pf.stats.valid_posts.pagesFull ){

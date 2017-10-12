@@ -14,4 +14,23 @@ jQuery( window ).load(function() {
 		jQuery( '.nav-tab' ).removeClass( 'nav-tab-active' );
 		jQuery( tab ).addClass( 'nav-tab-active' );
 	});
+
+
+	if (window.location.hash.indexOf("#") < 0){
+		//window.location.hash = '#ready';
+	} else {
+		var theHash = window.location.hash;
+		theHash = theHash.replace(/#top/, '');
+		theHash = theHash.replace(/#/g, '');
+		theHash = '#'+theHash;
+		var tab = theHash+'-tab';
+		jQuery( '.pftab' ).removeClass( 'active' );
+		jQuery( theHash ).addClass( 'active' );
+		jQuery( '.nav-tab' ).removeClass( 'nav-tab-active' );
+		jQuery( tab ).addClass( 'nav-tab-active' );
+	}
+
+	jQuery(window).on('hashchange', function() {
+
+	});
 });

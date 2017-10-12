@@ -82,6 +82,10 @@ class Tools implements HasActions, HasFilters {
 										'title' => __( 'Retrieval Status', 'pf' ),
 										'cap'  => $this->templates->users->pf_get_defining_capability_by_role( 'contributor' ),
 									);
+		$permitted_tabs['stats'] = array(
+										'title' => __( 'Statistics', 'pf' ),
+										'cap'  => $this->templates->users->pf_get_defining_capability_by_role( 'contributor' ),
+									);
 		return $permitted_tabs;
 	}
 
