@@ -964,7 +964,7 @@ function prep_archives_query( $q ) {
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
 				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->posts}.post_status = 'draft'
+				AND {$wpdb->posts}.post_status = 'removed_feed_item'
 				AND {$wpdb->postmeta}.meta_key = 'pf_archive'
 				AND {$wpdb->postmeta}.meta_value > 0
 				AND {$wpdb->posts}.ID
