@@ -34,6 +34,10 @@ class ConfigurationAJAX implements HasActions {
 				'hook' => 'wp_ajax_pf_checked_in',
 				'method' => 'pf_checked_in',
 			),
+			array(
+				'hook' => 'wp_ajax_pf_metrics_prompt',
+				'method' => 'pf_metrics_prompt',
+			),
 		);
 	}
 
@@ -41,6 +45,92 @@ class ConfigurationAJAX implements HasActions {
 		$metrics_config = get_option('pf_metrics_config', array());
 		$metrics_config['checkin_complete'] = true;
 		update_option( 'pf_metrics_config', $metrics_config );
+	}
+
+	public function pf_metrics_prompt(){
+		$debug_button = '';
+		if (WP_DEBUG){
+			$debug_button = '<a class="debug button button-secondary">Debug Reset</a>';
+		}
+		$script = <<<EOT
+					var prompt = jQuery('<div id="pf_metrics_mouseover" class="ab-sub-wrapper"><h4 style="font-size:20px;">Please help us improve PressForward</h4><p>If you agree to allow us to collect anonymous data about how you use this plugin we can use that information to improve our next release. <input id="pf_metrics_drawer_detailed" type="checkbox" checked /></p><p>If you let us collect one time basic data about this site we will use it to support the grant program that helps fund PressForward development. <input id="pf_metrics_drawer_basic" type="checkbox" checked /></p><a class="submit button button-primary">Opt-In</a><a class="cancel button button-secondary">Dismiss Alert</a>{$debug_button}</div>');
+					prompt.hide();
+					prompt.css({
+						"width": "350px",
+						"height": "300px",
+						"background": "rgb(35, 40, 45)",
+						"margin-top": "-1px",
+						"border-top": "0px",
+						"padding": "20px",
+						"box-sizing": "border-box",
+						"position": "fixed",
+						"line-height": "20px",
+						"color": "white",
+						"font-style": "none"
+					});
+					jQuery(prompt).find('p').css({
+						"line-height": "20px",
+						"padding":"12px 0"
+					});
+					jQuery(prompt).find('input[type=checkbox]').css({
+						"height":"15px"
+					});
+					jQuery(prompt).find('a.button').css({
+						"font-size": "13px",
+						"line-height": "26px",
+						"height": "28px",
+						"margin": "0 12px 0 0",
+						"padding": "0 10px 1px",
+						"cursor": "pointer",
+						"border-width": "1px",
+						"border-style": "solid",
+						"display": "inline-block",
+						"-webkit-appearance": "none",
+						"-webkit-border-radius": "3px",
+						"border-radius": "3px",
+						"white-space": "nowrap",
+						"-webkit-box-sizing": "border-box",
+						"-moz-box-sizing": "border-box",
+						"box-sizing": "border-box"
+					});
+					jQuery(prompt).find('a.button-primary').css({
+						"background": "#0085ba",
+						"border-color": "#0073aa #006799 #006799",
+						"-webkit-box-shadow": "0 1px 0 #006799",
+						"box-shadow": "0 1px 0 #006799",
+						"color": "#fff",
+						"text-decoration": "none",
+						"text-shadow": "0 -1px 1px #006799, 1px 0 1px #006799, 0 1px 1px #006799, -1px 0 1px #006799",
+					});
+					jQuery(prompt).find('a.button-secondary').css({
+						"color": "#555",
+						"border-color": "#ccc",
+						"background": "#f7f7f7",
+						"-webkit-box-shadow": "0 1px 0 #ccc",
+						"box-shadow": "0 1px 0 #ccc",
+						"vertical-align": "top"
+					});
+					jQuery(prompt).find('a.debug').css({
+						"background": "rgb(255, 208, 208)"
+					});
+					jQuery('#pf_metrics_alert').append(prompt);
+					jQuery('#wp-admin-bar-pf_alerter').mouseover(function(){ prompt.show(); });
+					jQuery('#wp-admin-bar-pf_alerter').mouseout(function(){ prompt.hide(); });
+EOT;
+		$response = array(
+			'what' => 'pressforward',
+			'action' => 'pf_metrics_prompt',
+			'id' => pressforward( 'controller.template_factory' )->user_id(),
+			'data' => '<script>'.$script.'</script>',
+			'supplemental' => array(
+					//'buffered' => ob_get_contents(),
+					'timestamp' => current_time( 'Y-m-d H:i:s' ),
+			),
+		);
+		$xmlResponse = new WP_Ajax_Response( $response );
+		$xmlResponse->send();
+		//ob_end_clean();
+		die();
 	}
 
 	function pf_bad_call( $action, $msg = 'You made a bad call and it did not work. Try again.' ) {
