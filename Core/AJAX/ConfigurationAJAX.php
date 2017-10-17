@@ -5,6 +5,7 @@ use Intraxia\Jaxion\Contract\Core\HasActions;
 use PressForward\Controllers\Metas;
 use PressForward\Controllers\PF_to_WP_Posts;
 use PressForward\Core\Schema\Feed_Items;
+use PressForward\Interfaces\SystemUsers as SystemUsers;
 
 use WP_Ajax_Response;
 
@@ -12,10 +13,11 @@ class ConfigurationAJAX implements HasActions {
 
 	protected $basename;
 
-	function __construct( Metas $metas, PF_to_WP_Posts $posts, Feed_Items $items ) {
+	function __construct( Metas $metas, PF_to_WP_Posts $posts, Feed_Items $items, SystemUsers $user_interface ) {
 		$this->metas = $metas;
 		$this->posts = $posts;
 		$this->items = $items;
+		$this->user_interface = $user_interface;
 				add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed' ) );
 	}
 
@@ -38,6 +40,10 @@ class ConfigurationAJAX implements HasActions {
 				'hook' => 'wp_ajax_pf_metrics_prompt',
 				'method' => 'pf_metrics_prompt',
 			),
+			array(
+				'hook'	=> 'wp_ajax_pf_metrics_quick_submit',
+				'method' => 'pf_metrics_quick_submit'
+			)
 		);
 	}
 
@@ -50,10 +56,27 @@ class ConfigurationAJAX implements HasActions {
 	public function pf_metrics_prompt(){
 		$debug_button = '';
 		if (WP_DEBUG){
-			$debug_button = '<a class="debug button button-secondary">Debug Reset</a>';
+			$debug_button = '<a class="debug button button-secondary" id="pf_metrics_debug">Debug Reset</a>';
 		}
+		$pf_metrics_opt_check = get_option('pf_metrics_config', array());
+		if ( empty($pf_metrics_opt_check) || ( 'no' === $pf_metrics_opt_check["checked"] ) || ( 'yes' === $pf_metrics_opt_check["basic"] && 'yes' === $pf_metrics_opt_check["detailed"] ) ){
+			$active = true;
+		} else {
+			$active = false;
+		}
+		foreach ($pf_metrics_opt_check as $key=>$val){
+			if ('yes' === $val){
+				$pf_metrics_opt_check[$key] = 'checked';
+			} elseif ( $active ) {
+				$pf_metrics_opt_check[$key] = 'checked';
+			} else {
+				$pf_metrics_opt_check[$key] = '';
+			}
+		}
+		$basic = (isset($pf_metrics_opt_check["basic"]) ? $pf_metrics_opt_check["basic"] : 'checked' );
+		$detailed = (isset($pf_metrics_opt_check["detailed"]) ? $pf_metrics_opt_check["detailed"] : 'checked' );
 		$script = <<<EOT
-					var prompt = jQuery('<div id="pf_metrics_mouseover" class="ab-sub-wrapper"><h4 style="font-size:20px;">Please help us improve PressForward</h4><p>If you agree to allow us to collect anonymous data about how you use this plugin we can use that information to improve our next release. <input id="pf_metrics_drawer_detailed" type="checkbox" checked /></p><p>If you let us collect one time basic data about this site we will use it to support the grant program that helps fund PressForward development. <input id="pf_metrics_drawer_basic" type="checkbox" checked /></p><a class="submit button button-primary">Opt-In</a><a class="cancel button button-secondary">Dismiss Alert</a>{$debug_button}</div>');
+					var prompt = jQuery('<div id="pf_metrics_mouseover" class="ab-sub-wrapper"><h4 style="font-size:20px;">Please help us improve PressForward</h4><p>If you agree to allow us to collect anonymous data about how you use this plugin we can use that information to improve our next release. <input id="pf_metrics_drawer_detailed" type="checkbox" {$detailed} /></p><p>If you let us collect basic data about this site we will use it to support the grant program that helps fund PressForward development. <input id="pf_metrics_drawer_basic" type="checkbox" {$basic} /></p><a class="submit button button-primary" id="pf_metrics_opt-in">Opt-In</a><a class="cancel button button-secondary" id="pf_metrics_dismiss">Dismiss Alert</a>{$debug_button}</div>');
 					prompt.hide();
 					prompt.css({
 						"width": "350px",
@@ -116,6 +139,41 @@ class ConfigurationAJAX implements HasActions {
 					jQuery('#pf_metrics_alert').append(prompt);
 					jQuery('#wp-admin-bar-pf_alerter').mouseover(function(){ prompt.show(); });
 					jQuery('#wp-admin-bar-pf_alerter').mouseout(function(){ prompt.hide(); });
+					jQuery('#pf_metrics_opt-in').click(function(){
+						var detailed = jQuery('#pf_metrics_drawer_detailed').attr('checked');
+						var basic = jQuery('#pf_metrics_drawer_basic').attr('checked');
+						jQuery.post(ajaxurl, {
+							action: 'pf_metrics_quick_submit',
+							pf_basic: ( typeof basic === 'undefined' ) ? 'no' : 'yes',
+							pf_detailed: ( typeof detailed === 'undefined' ) ? 'no' : 'yes',
+							pf_checked: 'yes'
+						}, function(response) {
+							//a
+						});
+						return false;
+					});
+					jQuery('#pf_metrics_dismiss').click(function(){
+						jQuery.post(ajaxurl, {
+							action: 'pf_metrics_quick_submit',
+							pf_basic: 'no',
+							pf_detailed: 'no',
+							pf_checked: 'yes'
+						}, function(response) {
+							//a
+						});
+						return false;
+					});
+					jQuery('#pf_metrics_debug').click(function(){
+						jQuery.post(ajaxurl, {
+							action: 'pf_metrics_quick_submit',
+							pf_basic: 'no',
+							pf_detailed: 'no',
+							pf_checked: 'no'
+						}, function(response) {
+							//a
+						});
+						return false;
+					});
 EOT;
 		$response = array(
 			'what' => 'pressforward',
@@ -130,6 +188,36 @@ EOT;
 		$xmlResponse = new WP_Ajax_Response( $response );
 		$xmlResponse->send();
 		//ob_end_clean();
+		die();
+	}
+
+	public function pf_metrics_quick_submit(){
+		ob_start();
+		$metrics_settings = array(
+			'basic'	=> 'no',
+			'detailed'	=>	'no',
+			'checked'	=> 'no'
+		);
+		foreach ($_POST as $key=>$val){
+			$key = str_replace('pf_', '', $key);
+			$metrics_settings[$key] = $val;
+		}
+		$valid_capability = get_option( 'pf_menu_preferences_access', $this->user_interface->pf_get_defining_capability_by_role( 'administrator' ) );
+		if ( !current_user_can( $valid_capability ) ){
+			$result = 'user cannot update';
+		} else {
+			$result = update_option( 'pf_metrics_config', $metrics_settings );
+		}
+		// var_dump($user_id);
+		$response = array(
+			'what' => 'pressforward',
+			'action' => 'pf_metrics_quick_submit',
+			'id' => pressforward( 'controller.template_factory' )->user_id(),
+			'data' => (string) $result,
+		);
+		$xmlResponse = new WP_Ajax_Response( $response );
+		$xmlResponse->send();
+		ob_end_clean();
 		die();
 	}
 
