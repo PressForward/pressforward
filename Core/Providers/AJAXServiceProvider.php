@@ -43,6 +43,13 @@ class AJAXServiceProvider extends ServiceProvider {
 			}
 		);
 
+		$container->share(
+			'ajax.metas',
+			function( $container ) {
+				return new MetadataAJAX( $container->fetch( 'controller.metas' ), $container->fetch( 'controller.items' ), $container->fetch( 'schema.feed_item' ) );
+			}
+		);
+
 	}
 
 }
