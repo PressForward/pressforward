@@ -163,8 +163,9 @@ class AssetsProvider extends ServiceProvider {
 				$assets->register_script( array(
 					'type'	=> 'admin',
 					'condition'	=> function( $hook ) use ( $provider ) {
-						$exclusions = array( 'toplevel_page_pf-menu' );
-						return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
+						//$exclusions = array( 'toplevel_page_pf-menu' );
+						//return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
+						return true;
 					},
 					'handle'	=> $slug . '-checkin',
 					'src'		=> 'assets/js/checkin',
