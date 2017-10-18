@@ -53,7 +53,7 @@ class ConfigurationAJAX implements HasActions {
 		update_option( 'pf_metrics_config', $metrics_config );
 	}
 
-	public function pf_metrics_prompt(){
+	public function pf_metrics_prompt_text(){
 		$debug_button = '';
 		if (WP_DEBUG){
 			$debug_button = '<a class="debug button button-secondary" id="pf_metrics_debug">Debug Reset</a>';
@@ -74,9 +74,17 @@ class ConfigurationAJAX implements HasActions {
 			}
 		}
 		$basic = (isset($pf_metrics_opt_check["basic"]) ? $pf_metrics_opt_check["basic"] : 'checked' );
-		$detailed = (isset($pf_metrics_opt_check["detailed"]) ? $pf_metrics_opt_check["detailed"] : 'checked' );
+		//$detailed = (isset($pf_metrics_opt_check["detailed"]) ? $pf_metrics_opt_check["detailed"] : 'checked' );
+		$detailed = '';
+		return <<<EOT
+		<div id="pf_metrics_mouseover" class="ab-sub-wrapper"><h4 style="font-size:20px;">Please help us improve PressForward</h4><p style="display:none;">If you agree to allow us to collect anonymous data about how you use this plugin we can use that information to improve our next release. <input id="pf_metrics_drawer_detailed" type="checkbox" style="display:none;" {$detailed} /></p><p>If you let us collect basic data about this site we will use it to support the grant program that helps fund PressForward development. <input id="pf_metrics_drawer_basic" type="checkbox" style="display:none;" {$basic} /></p><a class="submit button button-primary" id="pf_metrics_opt-in">Opt-In</a><a class="cancel button button-secondary" id="pf_metrics_dismiss">Dismiss Alert</a>{$debug_button}</div>
+EOT;
+	}
+
+	public function pf_metrics_prompt(){
+		$msg = $this->pf_metrics_prompt_text();
 		$script = <<<EOT
-					var prompt = jQuery('<div id="pf_metrics_mouseover" class="ab-sub-wrapper"><h4 style="font-size:20px;">Please help us improve PressForward</h4><p>If you agree to allow us to collect anonymous data about how you use this plugin we can use that information to improve our next release. <input id="pf_metrics_drawer_detailed" type="checkbox" {$detailed} /></p><p>If you let us collect basic data about this site we will use it to support the grant program that helps fund PressForward development. <input id="pf_metrics_drawer_basic" type="checkbox" {$basic} /></p><a class="submit button button-primary" id="pf_metrics_opt-in">Opt-In</a><a class="cancel button button-secondary" id="pf_metrics_dismiss">Dismiss Alert</a>{$debug_button}</div>');
+					var prompt = jQuery('{$msg}');
 					prompt.hide();
 					prompt.css({
 						"width": "350px",
@@ -102,7 +110,7 @@ class ConfigurationAJAX implements HasActions {
 						"font-size": "13px",
 						"line-height": "26px",
 						"height": "28px",
-						"margin": "0 12px 0 0",
+						"margin": "29% 12px 0 0",
 						"padding": "0 10px 1px",
 						"cursor": "pointer",
 						"border-width": "1px",
@@ -114,7 +122,7 @@ class ConfigurationAJAX implements HasActions {
 						"white-space": "nowrap",
 						"-webkit-box-sizing": "border-box",
 						"-moz-box-sizing": "border-box",
-						"box-sizing": "border-box"
+						"box-sizing": "border-box",
 					});
 					jQuery(prompt).find('a.button-primary').css({
 						"background": "#0085ba",
@@ -124,6 +132,7 @@ class ConfigurationAJAX implements HasActions {
 						"color": "#fff",
 						"text-decoration": "none",
 						"text-shadow": "0 -1px 1px #006799, 1px 0 1px #006799, 0 1px 1px #006799, -1px 0 1px #006799",
+
 					});
 					jQuery(prompt).find('a.button-secondary').css({
 						"color": "#555",
@@ -139,6 +148,13 @@ class ConfigurationAJAX implements HasActions {
 					jQuery('#pf_metrics_alert').append(prompt);
 					jQuery('#wp-admin-bar-pf_alerter').mouseover(function(){ prompt.show(); });
 					jQuery('#wp-admin-bar-pf_alerter').mouseout(function(){ prompt.hide(); });
+					function hidePFPrompt(){
+						window.setTimeout(
+							function(){ jQuery('#wp-admin-bar-pf_alerter').hide(); return false; },
+							1500
+						);
+						return false;
+					}
 					jQuery('#pf_metrics_opt-in').click(function(){
 						var detailed = jQuery('#pf_metrics_drawer_detailed').attr('checked');
 						var basic = jQuery('#pf_metrics_drawer_basic').attr('checked');
@@ -148,7 +164,8 @@ class ConfigurationAJAX implements HasActions {
 							pf_detailed: ( typeof detailed === 'undefined' ) ? 'no' : 'yes',
 							pf_checked: 'yes'
 						}, function(response) {
-							//a
+							alert('Thank you for helping the PressForward project.');
+							hidePFPrompt();
 						});
 						return false;
 					});
@@ -159,7 +176,7 @@ class ConfigurationAJAX implements HasActions {
 							pf_detailed: 'no',
 							pf_checked: 'yes'
 						}, function(response) {
-							//a
+							hidePFPrompt();
 						});
 						return false;
 					});
@@ -172,6 +189,10 @@ class ConfigurationAJAX implements HasActions {
 						}, function(response) {
 							//a
 						});
+						window.setTimeout(
+							function(){ location.reload(); return false; },
+							3000
+						);
 						return false;
 					});
 EOT;
@@ -196,7 +217,7 @@ EOT;
 		$metrics_settings = array(
 			'basic'	=> 'no',
 			'detailed'	=>	'no',
-			'checked'	=> 'no'
+			'checked'	=> 'yes'
 		);
 		foreach ($_POST as $key=>$val){
 			$key = str_replace('pf_', '', $key);
