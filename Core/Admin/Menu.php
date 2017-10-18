@@ -503,10 +503,8 @@ if ( $c > 19 ) {
 
 			if ( isset( $_POST['pf_metrics_config'] ) ) {
 				$pf_metrics_opt_check = $_POST['pf_metrics_config'];
-				if ( 'yes' === $pf_metrics_opt_check["basic"] || 'yes' === $pf_metrics_opt_check["detailed"] ){
-					$pf_metrics_opt_check["checked"] = 'yes';
-				}
-				// print_r($pf_links_opt_check); die();
+				$pf_metrics_opt_check["detailed"] = "no";
+				$pf_metrics_opt_check["checked"] = 'yes';
 				update_option( 'pf_metrics_config', $pf_metrics_opt_check );
 			} else {
 				update_option( 'pf_metrics_config', array() );

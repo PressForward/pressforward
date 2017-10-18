@@ -4,7 +4,7 @@ Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 3.0.1
 Tested up to: 4.8
-Stable tag: 4.2.2
+Stable tag: 4.4.0
 License: GPL2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -81,6 +81,23 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+
+= 4.3.0 =
+
+* Restructured Nominate This. It should now work with servers with non-standard WP_ADMIN folder configurations and those hosts who turn off direct access to the plugin folder, including HostGator and Reclaim. Users who could not get the bookmarklet to function should remove the bookmarklet from their Bookmark Bar and replace it.
+* Conflicts with other plugins' options and settings pages are resolved.
+* Prepared Readability Endpoint
+* Redirects on published and forwarding posts will now redirect faster.
+* Fix for post save interception leaking to other non-standard post types.
+* Fixed Post Meta intercept breaking downstream filtering functions that also intercepted post meta.
+* Add support for Dublin Core publisher information in PressForward's outbound RSS feed.
+* Allow developers to filter the date limiting of RSS ingestion through filter `pf_rss_ingestion_retrieve_after_date`
+* Nominate This errors no longer show if the site is not in WP_DEBUG mode.
+* Significant improvements to Readability's parsing and selection of article content.
+* Increase compatibility with Schema.org on-page meta.
+* No longer throws error if MBString library is not active in PHP
+* The Refresh All Feeds debugging tool shows its results properly again.
+* Nominations without authors have default authors.
 
 = 4.2.1 =
 
