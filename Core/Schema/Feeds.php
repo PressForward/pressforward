@@ -3,6 +3,7 @@ namespace PressForward\Core\Schema;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
+use PressForward\Controllers\Metas;
 /**
  * Classes and functions for dealing with feed items
  */
@@ -13,10 +14,10 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
 class Feeds implements HasActions, HasFilters {
 	protected $filter_data = array();
 
-	public function __construct() {
+	public function __construct( Metas $metas ) {
 		$this->post_type = 'pf_feed';
 		$this->tag_taxonomy = 'pf_feed_category';
-
+		$this->metas = $metas;
 		// Post types and taxonomies must be registered after 'init'
 	}
 
@@ -417,7 +418,7 @@ class Feeds implements HasActions, HasFilters {
 			// var_dump($actions); die();
 	    }
 
-		$url = $post->guid;
+		$url = $this->metas->get_post_pf_meta( $post->ID, 'feedUrl' );
 		// var_dump($actions); die();
 		if ( isset( $actions['edit'] ) ) {
 			$edit_actions = $actions['edit'];

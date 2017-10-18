@@ -24,8 +24,8 @@ class SchemaProvider extends ServiceProvider {
 
 		$container->share(
 			'schema.feeds',
-			function() {
-				return new Feeds;
+			function( $container ) {
+				return new Feeds( $container->fetch( 'controller.metas' ) );
 			}
 		);
 
