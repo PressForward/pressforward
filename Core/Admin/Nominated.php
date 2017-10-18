@@ -185,6 +185,7 @@ class Nominated implements HasActions {
 					$count = 0;
 					$countQ = $nom_query->post_count;
 					$countQT = $nom_query->found_posts;
+					$maxNbPages = $nom_query->max_num_pages;
 					// print_r($countQ);
 					while ( $nom_query->have_posts() ) : $nom_query->the_post();
 
@@ -286,16 +287,17 @@ class Nominated implements HasActions {
 
 			echo '</div><!-- End main -->';
 if ( $countQT > $countQ ) {
+    $page += 1; //Why above (start of the file) we have a "$page = $page -1;"? I don't know why, so I add 1 back here for the pagination to work.
 	if ( $page == 0 ) { $page = 1; }
-	$pagePrev = $page -1;
-	$pageNext = $page + 1;
+	$pagePrevNb = $page -1;
+	$pageNextNb = $page + 1;
 	if ( ! empty( $_GET['by'] ) ) {
 		$limit_q = '&by=' . $limit;
 	} else {
 		$limit_q = '';
 	}
-	$pagePrev = '?page=pf-review' . $limit_q . '&pc=' . $pagePrev;
-	$pageNext = '?page=pf-review' . $limit_q . '&pc=' . $pageNext;
+	$pagePrev = '?page=pf-review' . $limit_q . '&pc=' . $pagePrevNb;
+	$pageNext = '?page=pf-review' . $limit_q . '&pc=' . $pageNextNb;
 	if ( isset( $_GET['folder'] ) ) {
 		$pageQ = $_GET['folder'];
 		$pageQed = '&folder=' . $pageQ;
@@ -310,12 +312,24 @@ if ( $countQT > $countQ ) {
 		$pagePrev .= $pageQed;
 
 	}
+    if ( isset( $_GET['pf-see'] ) &&  $_GET['pf-see'] != '') {
+        $pageQ = $_GET['pf-see'];
+        $pageQed = '&pf-see=' . $pageQ;
+        $pageNext .= $pageQed;
+        $pagePrev .= $pageQed;
+    }
 	// Nasty hack because infinite scroll only works starting with page 2 for some reason.
 	echo '<div class="pf-navigation">';
-	if ( $pagePrev > -1 ) {
-		echo '<span class="feedprev"><a class="prevnav" href="admin.php?page=pf-review&pc=' . $pagePrev . '">Previous Page</a></span> | ';
-	}
-	echo '<span class="feednext"><a class="nextnav" href="admin.php?page=pf-review&pc=' . $pageNext . '">Next Page</a></span>';
+	if ( $pagePrevNb > 0 ) {
+		echo '<span class="feedprev"><a class="prevnav" href="admin.php' . $pagePrev . '">Previous Page</a></span> | ';
+	} else {
+        echo '<span class="feedprev">Previous Page</span> | ';
+    }
+    if( $pageNextNb > $maxNbPages ) {
+        echo '<span class="feednext">Next Page</span>';
+    } else {
+        echo '<span class="feednext"><a class="nextnav" href="admin.php' . $pageNext . '">Next Page</a></span>';
+    }
 	?><div class="clear"></div><?php
 	echo '</div>';
 }

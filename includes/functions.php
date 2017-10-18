@@ -947,7 +947,7 @@ function prep_archives_query( $q ) {
 
 	if ( isset( $_GET['pc'] ) ) {
 		$offset = $_GET['pc'] -1;
-		$offset = $offset * 10;
+		$offset = $offset * 20;
 	} else {
 		$offset = 0;
 	}
@@ -959,8 +959,9 @@ function prep_archives_query( $q ) {
 		$pagefull = 20;
 		$user_id = get_current_user_id();
 		$read_id = pf_get_relationship_type_id( 'archive' );
+		//It is bad to use SQL_CALC_FOUND_ROWS, but we need it to replicate the same behaviour as non-archived items (including pagination).
 		$q = $wpdb->prepare("
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
+				SELECT SQL_CALC_FOUND_ROWS {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
 				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 				AND {$wpdb->posts}.post_type = %s
