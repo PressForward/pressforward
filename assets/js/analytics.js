@@ -1,7 +1,7 @@
 window.pf = window.pf || {};
 
 window.pf.ga = {
-	ua: 'UA-107079913-1',
+	ua: 'UA-107850982-1',
 	site_name: 'WordPress',
     site_url: location.host,
     init: function(){
