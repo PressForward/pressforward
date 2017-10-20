@@ -132,7 +132,6 @@ class PFtoWPUsers implements SystemUsers {
                 }
             }
         }
-        echo $role_slug;
         // Even if we use $pf_use_advanced_user_roles, if it doesn't find any actual lowest option (like it is the case with contributor currently), it should still go to the default ones below
         $role_slug = strtolower( $role_slug );
         switch ( $role_slug ) {
