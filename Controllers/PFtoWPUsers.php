@@ -122,34 +122,36 @@ class PFtoWPUsers implements SystemUsers {
 		$pf_use_advanced_user_roles = get_option( 'pf_use_advanced_user_roles', 'no' );
 	    // For those who wish to ignore the super-cool auto-detection for fringe-y sites that
 	    // let their user capabilities go wild.
-	    if ( 'no' == $pf_use_advanced_user_roles ) {
-	        $role_slug = strtolower( $role_slug );
-	        switch ( $role_slug ) {
-	            case 'administrator':
-	                return 'manage_options';
-	                break;
-	            case 'editor':
-	                return 'edit_others_posts';
-	                break;
-	            case 'author':
-	                return 'publish_posts';
-	                break;
-	            case 'contributor':
-	                return 'edit_posts';
-	                break;
-	            case 'subscriber':
-	                return 'read';
-	                break;
-	        }
-	    } else {
-	        $caps = $this->pf_get_capabilities();
-	        foreach ( $caps as $slug => $cap ) {
-	            $low_role = $this->pf_get_role_by_capability( $slug );
-	            // Return the first capability only applicable to that role.
-	            if ( $role_slug == ($low_role) ) {
-	                return $slug; }
-	        }
-	    }
+	    if ( 'no' != $pf_use_advanced_user_roles ) {
+            $caps = $this->pf_get_capabilities();
+            foreach ( $caps as $slug => $cap ) {
+                $low_role = $this->pf_get_role_by_capability( $slug );
+                // Return the first capability only applicable to that role.
+                if ( $role_slug == ($low_role) ) {
+                    return $slug;
+                }
+            }
+        }
+        echo $role_slug;
+        // Even if we use $pf_use_advanced_user_roles, if it doesn't find any actual lowest option (like it is the case with contributor currently), it should still go to the default ones below
+        $role_slug = strtolower( $role_slug );
+        switch ( $role_slug ) {
+            case 'administrator':
+                return 'manage_options';
+                break;
+            case 'editor':
+                return 'edit_others_posts';
+                break;
+            case 'author':
+                return 'publish_posts';
+                break;
+            case 'contributor':
+                return 'edit_posts';
+                break;
+            case 'subscriber':
+                return 'read';
+                break;
+        }
 	}
 
 	function pf_capability_mapper( $cap, $role_slug ) {
