@@ -254,7 +254,7 @@ class PFTemplater {
 							$this->dropdown_option( __( 'Reset filter', 'pf' ), 'showNormalNominations' );
 						}
 						$this->dropdown_option( __( 'My starred', 'pf' ), 'sortstarredonly', 'starredonly', null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=starred-only' ) );
-						$this->dropdown_option( __( 'Toggle visibility of archived', 'pf' ), 'showarchived' );
+						//$this->dropdown_option( __( 'Toggle visibility of archived', 'pf' ), 'showarchived' );
 						$this->dropdown_option( __( 'Only archived', 'pf' ), 'showarchiveonly', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=archive-only' ) );
 						$this->dropdown_option( __( 'Unread', 'pf' ), 'showUnreadOnly', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=unread-only' ) );
 						$this->dropdown_option( __( 'Drafted', 'pf' ), 'showDrafted', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=drafted-only' ) );
