@@ -112,7 +112,18 @@ class AssetsProvider extends ServiceProvider {
 			},
 			'handle'	=> 'pf',
 			'src'		=> 'assets/js/pf',
-			'deps'		=> array( 'jquery', 'wp-api' ),
+			'deps'		=> array( 'jquery' ),
+		) );
+
+		$assets->register_script( array(
+			'type'	=> 'admin',
+			'condition'	=> function( $hook ) use ( $provider ) {
+				$inclusions = array( 'edit.php' );
+				return $provider->check_hook_for_pressforward_string( $hook, array(), $inclusions, true );
+			},
+			'handle'	=> 'pf-api',
+			'src'		=> 'assets/js/pf-api',
+			'deps'		=> array( 'jquery', 'wp-api', 'pf' ),
 		) );
 
 		$assets->register_script( array(
