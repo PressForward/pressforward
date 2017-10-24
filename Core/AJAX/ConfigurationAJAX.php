@@ -77,7 +77,7 @@ class ConfigurationAJAX implements HasActions {
 		//$detailed = (isset($pf_metrics_opt_check["detailed"]) ? $pf_metrics_opt_check["detailed"] : 'checked' );
 		$detailed = '';
 		return <<<EOT
-		<div id="pf_metrics_mouseover" class="ab-sub-wrapper"><h4 style="font-size:20px;">Please help us improve PressForward</h4><p style="display:none;">If you agree to allow us to collect anonymous data about how you use this plugin we can use that information to improve our next release. <input id="pf_metrics_drawer_detailed" type="checkbox" style="display:none;" {$detailed} /></p><p>If you let us collect basic data about this site we will use it to support the grant program that helps fund PressForward development. <input id="pf_metrics_drawer_basic" type="checkbox" style="display:none;" {$basic} /></p><a class="submit button button-primary" id="pf_metrics_opt-in">Opt-In</a><a class="cancel button button-secondary" id="pf_metrics_dismiss">Dismiss Alert</a>{$debug_button}</div>
+		<div id="pf_metrics_mouseover" class="ab-sub-wrapper"><h4 style="font-size:20px;">Please help us improve PressForward</h4><p style="display:none;">If you agree to allow us to collect anonymous data about how you use this plugin we can use that information to improve our next release. <input id="pf_metrics_drawer_detailed" type="checkbox" style="display:none;" {$detailed} /></p><p>"Opt-in to allow us to collect non-sensitive diagnostic information for plugin improvement. <input id="pf_metrics_drawer_basic" type="checkbox" style="display:none;" {$basic} /></p><a class="submit button button-primary" id="pf_metrics_opt-in">Opt-In</a><a class="cancel button button-secondary" id="pf_metrics_dismiss">Dismiss Alert</a>{$debug_button}</div>
 EOT;
 	}
 
