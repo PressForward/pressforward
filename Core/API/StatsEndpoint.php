@@ -8,6 +8,9 @@ use PressForward\Controllers\Stats;
 use PressForward\Core\Utility\Forward_Tools;
 use PressForward\Libraries\HTMLChecker;
 
+use DaveChild\TextStatistics as TS;
+use DaveChild\TextStatistics\Text as Text;
+
 use WP_Ajax_Response;
 use WP_Error;
 //use \WP_REST_Controller;
@@ -334,10 +337,19 @@ class StatsEndpoint implements HasActions {
 				$post_content_cleaner = str_replace(array("\n","\r", "\r\n"), ' ', $post_content_cleaner);
 				$post->stripped_post_content = strip_tags($post_content);
 				$post->wordcount = str_word_count( $post->stripped_post_content );
-				$item_link = get_post_meta(get_the_ID(), 'item_link', true);
+				$post->sentences = Text::sentenceCount( $post->stripped_post_content );
+				$textStatistics = new TS\TextStatistics;
+				$reading_score = $textStatistics->fleschKincaidReadingEase($post->stripped_post_content);
+				$post->flesch_kincaid_score = $reading_score;
+				$item_link = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_link' );
 				$url_parts = parse_url($item_link);
+				if ( !empty($url_parts) && isset($url_parts['host']) ){
+					$post->source_link = $url_parts['host'];
+				} else {
+					$post->source_link = 'No Source Found';
+				}
 				//$post->source_link = $this->metas->get_post_pf_meta( $post->ID, 'pf_source_link' );
-				$post->source_link = $url_parts['host'];
+
 			}
 
 			return rest_ensure_response(
