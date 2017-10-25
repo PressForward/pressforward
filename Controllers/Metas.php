@@ -1027,21 +1027,25 @@ class Metas implements HasFilters, HasActions {
 			case 'nominator_array':
 				$nominators = $this->get_post_pf_meta( $id, $key );
 				if ( ! is_array( $value ) ) {
-					$value = array( $value );
+					$value_array = array(
+						'user_id'				=> $value,
+						'nomination_datetime'	=> date('Y-m-d H:i:s'),
+						'nomination_unixtime'	=> time(),
+					);
+					//$value = array( $value );
+				} else {
+					$value_array = $value;
+					$value = $value_array['user_id'];
 				}
 				if ( ! is_array( $nominators ) ) {
 					$nominators = array( $nominators );
 				}
 				// We are doing a removal.
-				if ( 1 == count( array_diff( $value, $nominators ) ) ) {
-					$nominators = array_unique( $value );
-					continue;
+				if ( array_key_exists( $value, $nominators ) ) {
+					unset( $nominators[$value] );
+				} else {
+					$nominators[$value] = $value_array;
 				}
-				if ( ! is_array( $value ) ) {
-					$value = array( $value );
-				}
-				$nominators = array_merge( $nominators, $value );
-				$nominators = array_unique( $nominators );
 				$value = $nominators;
 				break;
 			case 'pf_feed_item_word_count':

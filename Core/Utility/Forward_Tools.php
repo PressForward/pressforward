@@ -130,8 +130,12 @@ class Forward_Tools {
 		if ( is_array( $nominators_orig ) && ! in_array( $current_user->ID, $nominators_orig ) ) {
 			$nominators = $nominators_orig;
 			$nominator = $current_user->ID;
-											$nominators[] = $current_user->ID;
-			$this->metas->update_pf_meta( $id, 'nominator_array', $nominator );
+			$nominators[$user_id] = array(
+				'user_id'			=>	$nominator,
+				'nomination_datetime'	=> date('Y-m-d H:i:s'),
+				'nomination_unixtime'	=> time(),
+			);
+			$this->metas->update_pf_meta( $id, 'nominator_array', $nominators );
 			$nomCount = $this->metas->get_post_pf_meta( $id, 'nomination_count', true );
 			if ( empty( $nomCount ) ) {
 				$nomCount = 0;
@@ -155,12 +159,13 @@ class Forward_Tools {
 				if ( ! is_array( $nominators_orig ) ) {
 					$nominators_orig = array();
 				}
-				if ( true == in_array( $current_user->ID, $nominators_orig ) ) {
-					$nominators_new = array_diff( $nominators_orig, array( $current_user->ID ) );
-					if ( empty( $nominators_new ) ) {
+				if ( true == array_key_exists( $current_user->ID, $nominators_orig ) ) {
+					unset($nominators_orig[$current_user->ID]);
+					// array_diff( $nominators_orig, array( $current_user->ID ) );
+					if ( empty( $nominators_orig ) ) {
 						$this->item_interface->delete_post( $id );
 					} else {
-						$this->metas->update_pf_meta( $id, 'nominator_array', $nominators_new );
+						$this->metas->update_pf_meta( $id, 'nominator_array', $nominators_orig );
 					}
 				}
 			}
@@ -170,7 +175,7 @@ class Forward_Tools {
 		}
 	}
 
-	public function find_nominating_user() {
+	public function find_nominating_user( $nomination_id ) {
 		$current_user = wp_get_current_user();
 		pf_log( 'User: ' );
 		pf_log( $current_user );
@@ -182,7 +187,7 @@ class Forward_Tools {
 			pf_log( 'Can not find a user to add to the nominated count of.' );
 		} else {
 			// Logged in.
-			pressforward( 'admin.nominated' )->user_nomination_meta();
+			pressforward( 'admin.nominated' )->user_nomination_meta( $nomination_id );
 			$userID = $current_user->ID;
 			$userString = $userID;
 		}
@@ -201,13 +206,18 @@ class Forward_Tools {
 			pf_log( 'Start Transition.' );
 			$this->transition_to_readable_text( $item_post_id, true );
 
-			$user_data = $this->find_nominating_user();
+			$user_data = $this->find_nominating_user( $item_post_id );
 			$userID = $user_data['user_id'];
 			$userString = $user_data['user_string'];
-
+			$nominators = array();
+			$nominators[$userID] = array(
+				'user_id'			=>	$nominator,
+				'nomination_datetime'	=> date('Y-m-d H:i:s'),
+				'nomination_unixtime'	=> time(),
+			);
 			$this->metas->update_pf_meta( $item_post_id, 'nomination_count', 1 );
 			$this->metas->update_pf_meta( $item_post_id, 'submitted_by', $userString );
-			$this->metas->update_pf_meta( $item_post_id, 'nominator_array', array( $userID ) );
+			$this->metas->update_pf_meta( $item_post_id, 'nominator_array', $nominators );
 			$this->metas->update_pf_meta( $item_post_id, 'date_nominated', current_time( 'mysql' ) );
 			$this->metas->update_pf_meta( $item_post_id, 'item_id', $item_id );
 			$this->metas->update_pf_meta( $item_post_id, 'pf_item_post_id', $item_post_id );

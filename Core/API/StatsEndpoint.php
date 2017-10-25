@@ -348,6 +348,7 @@ class StatsEndpoint implements HasActions {
 				} else {
 					$post->source_link = 'No Source Found';
 				}
+				$post->nominators = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'nominator_array' );
 				//$post->source_link = $this->metas->get_post_pf_meta( $post->ID, 'pf_source_link' );
 
 			}
