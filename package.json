@@ -18,7 +18,6 @@
 	"scripts": {
 		"test": "test",
 		"commitmsg": "node ./scripts/commit-msg",
-		"clean": "rm -fr build",
 		"precommit": "lint-staged",
 		"fmt:prettier":
 			"prettier --write --single-quote --use-tabs --tab-width 4",
@@ -33,7 +32,7 @@
 	"keywords": ["pressforward"],
 	"lint-staged": {
 		"**/!(*.min).js": ["fmt:prettier", "lint:eslint", "git add"],
-		"**/!(*.min).css": ["fmt:prettier", "git add"]
+		"**/!(*.min).sass": ["fmt:prettier", "git add"]
 	},
 	"author": "Aram Zucker-Scharff, PressForward team",
 	"license": "ISC",
