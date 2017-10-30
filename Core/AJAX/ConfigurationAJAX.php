@@ -42,7 +42,13 @@ class ConfigurationAJAX implements HasActions {
 			),
 			array(
 				'hook'	=> 'wp_ajax_pf_metrics_quick_submit',
-				'method' => 'pf_metrics_quick_submit'
+				'method' => 'pf_metrics_quick_submit',
+				'priority'  => 11
+			),
+			array(
+				'hook' => 'admin_head',
+				'method' => 'pf_metrics_settings_box',
+				'priority'  => 10
 			)
 		);
 	}
@@ -77,13 +83,108 @@ class ConfigurationAJAX implements HasActions {
 		//$detailed = (isset($pf_metrics_opt_check["detailed"]) ? $pf_metrics_opt_check["detailed"] : 'checked' );
 		$detailed = '';
 		return <<<EOT
-		<div id="pf_metrics_mouseover" class="ab-sub-wrapper"><h4 style="font-size:20px;">Please help us improve PressForward</h4><p style="display:none;">If you agree to allow us to collect anonymous data about how you use this plugin we can use that information to improve our next release. <input id="pf_metrics_drawer_detailed" type="checkbox" style="display:none;" {$detailed} /></p><p>If you let us collect basic data about this site we will use it to support the grant program that helps fund PressForward development. <input id="pf_metrics_drawer_basic" type="checkbox" style="display:none;" {$basic} /></p><a class="submit button button-primary" id="pf_metrics_opt-in">Opt-In</a><a class="cancel button button-secondary" id="pf_metrics_dismiss">Dismiss Alert</a>{$debug_button}</div>
+		<div id="pf_metrics_mouseover" class="ab-sub-wrapper"><h4 style="font-size:20px;">Please help us improve PressForward</h4><p style="display:none;">If you agree to allow us to collect anonymous data about how you use this plugin we can use that information to improve our next release. <input id="pf_metrics_drawer_detailed" type="checkbox" style="display:none;" {$detailed} /></p><p>Opt-in to allow us to collect non-sensitive diagnostic information for plugin improvement. <input id="pf_metrics_drawer_basic" type="checkbox" style="display:none;" {$basic} /></p><a class="submit button button-primary" id="pf_metrics_opt-in">Opt-In</a><a class="cancel button button-secondary" id="pf_metrics_dismiss">Dismiss Alert</a>{$debug_button}</div>
 EOT;
+	}
+
+	public function pf_metrics_settings_box(){
+		$metrics_config = get_option('pf_metrics_config', array());
+		if ( !isset($metrics_config['checked']) ){
+			$metrics_config['checked'] = false;
+			$metrics_config['basic'] = false;
+			$metrics_config['detailed'] = false;
+		} else {
+			if ( !isset($metrics_config['basic']) ){
+				$metrics_config['basic'] = false;
+			}
+			if ( !isset($metrics_config['detailed']) ){
+				$metrics_config['detailed'] = false;
+			}
+			if ( !isset($metrics_config['checked']) ){
+				$metrics_config['checked'] = false;
+			}
+			foreach ($metrics_config as $key=>$value){
+				if ( 'yes' === $value || true === $value || 1 === $value || "1" === $value ){
+					$metrics_config[$key] = true;
+				} else {
+					$metrics_config[$key] = false;
+				}
+			}
+		}
+		if (true !== $metrics_config['checked']){
+			$msg = $this->pf_metrics_prompt_text();
+			$script = <<<EOT
+				jQuery( window ).load(function() {
+					window.pf = window.pf || {};
+					window.pf.loadAdminPrompt = true;
+					if ( jQuery('.plugins-php').length > 0 ){
+						window.pf.loadAdminPrompt = false;
+						jQuery('#wp-admin-bar-pf_alerter').hide();
+						var prompt = jQuery('<div id="pf_metrics_settings_alerter" class="update-message notice inline notice-warning notice-alt" style="padding-bottom:30px">{$msg}</div>');
+						prompt.find('a.button').css({
+							"margin":" 14px 20px 0 0"
+						});
+						jQuery('.wp-header-end').after(prompt);
+						window.hidePFPrompt = function(){
+							window.setTimeout(
+								function(){ jQuery('#pf_metrics_settings_alerter').hide(); return false; },
+								1000
+							);
+							return false;
+						}
+					}
+					console.log('PF Metrics Request');
+					jQuery('#pf_metrics_opt-in').click(function(){
+						var detailed = jQuery('#pf_metrics_drawer_detailed').attr('checked');
+						var basic = jQuery('#pf_metrics_drawer_basic').attr('checked');
+						jQuery.post(ajaxurl, {
+							action: 'pf_metrics_quick_submit',
+							pf_basic: ( typeof basic === 'undefined' ) ? 'no' : 'yes',
+							pf_detailed: ( typeof detailed === 'undefined' ) ? 'no' : 'yes',
+							pf_checked: 'yes'
+						}, function(response) {
+							alert('Thank you for helping the PressForward project.');
+							hidePFPrompt();
+						});
+						return false;
+					});
+					jQuery('#pf_metrics_dismiss').click(function(){
+						jQuery.post(ajaxurl, {
+							action: 'pf_metrics_quick_submit',
+							pf_basic: 'no',
+							pf_detailed: 'no',
+							pf_checked: 'yes'
+						}, function(response) {
+							hidePFPrompt();
+						});
+						return false;
+					});
+					jQuery('#pf_metrics_debug').click(function(){
+						jQuery.post(ajaxurl, {
+							action: 'pf_metrics_quick_submit',
+							pf_basic: 'no',
+							pf_detailed: 'no',
+							pf_checked: 'no'
+						}, function(response) {
+							//a
+						});
+						window.setTimeout(
+							function(){ location.reload(); return false; },
+							3000
+						);
+						return false;
+					});
+		});
+EOT;
+		echo '<script type="text/javascript">'.$script.'</script>';
+	}
 	}
 
 	public function pf_metrics_prompt(){
 		$msg = $this->pf_metrics_prompt_text();
 		$script = <<<EOT
+				window.pf = window.pf || {};
+				if ( ( typeof window.pf.loadAdminPrompt == 'undefined' ) || true === window.pf.loadAdminPrompt || jQuery('.plugins-php').length < 1 ){
 					var prompt = jQuery('{$msg}');
 					prompt.hide();
 					prompt.css({
@@ -148,13 +249,15 @@ EOT;
 					jQuery('#pf_metrics_alert').append(prompt);
 					jQuery('#wp-admin-bar-pf_alerter').mouseover(function(){ prompt.show(); });
 					jQuery('#wp-admin-bar-pf_alerter').mouseout(function(){ prompt.hide(); });
-					function hidePFPrompt(){
+					window.hidePFPrompt = function(){
 						window.setTimeout(
 							function(){ jQuery('#wp-admin-bar-pf_alerter').hide(); return false; },
 							1500
 						);
 						return false;
 					}
+
+					console.log('PF Metrics Request');
 					jQuery('#pf_metrics_opt-in').click(function(){
 						var detailed = jQuery('#pf_metrics_drawer_detailed').attr('checked');
 						var basic = jQuery('#pf_metrics_drawer_basic').attr('checked');
@@ -195,6 +298,7 @@ EOT;
 						);
 						return false;
 					});
+				}
 EOT;
 		$response = array(
 			'what' => 'pressforward',

@@ -1,0 +1,40 @@
+{
+    "env": {
+        "browser": true
+    },
+    "extends": [
+		"eslint:recommended",
+		"prettier"
+	],
+    "rules": {
+        "indent": [
+            "error",
+            "tab",
+			{
+				"FunctionExpression": {"body": 1, "parameters": 2},
+		 		"CallExpression": {"arguments": "first"},
+				"ArrayExpression": "first",
+				"ObjectExpression": "first"
+			}
+        ],
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ]
+    },
+	"globals": {
+		"require": true,
+	},
+
+    "plugins": [
+      "prettier"
+    ]
+}

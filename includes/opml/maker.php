@@ -78,8 +78,9 @@ class OPML_Maker {
 				}
 		    		echo "\n";
 		    		$folderless_count = 0;
-				if ( !empty( $this->obj->get_feeds_without_folder() ) ){
-					foreach ( $this->obj->get_feeds_without_folder() as $feed ) {
+				$folderless_feeds = $this->obj->get_feeds_without_folder();
+				if ( !empty( $folderless_feeds ) ){
+					foreach ( $folderless_feeds as $feed ) {
 						if ( $c > 0 ) {
 							echo "\t\t\t";
 						}

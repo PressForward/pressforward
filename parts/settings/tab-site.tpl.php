@@ -42,6 +42,9 @@
 	<label class="description" for="pf_metrics_config[detailed]"><?php echo __( 'Allow detailed tracking', 'pf' ); ?></label>
 	-->
 </p>
+<p>
+	 Opt-in to allow us to collect non-sensitive diagnostic information for plugin improvement.
+</p>
 <hr />
 <p>
 	<?php
