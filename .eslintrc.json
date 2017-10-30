@@ -32,12 +32,6 @@
     },
 	"globals": {
 		"require": true,
-		"Promise": true,
-		"$": true,
-		"jQuery": true,
-		"s": true,
-		"TWP": true,
-		"wp_pb": true
 	},
 
     "plugins": [
