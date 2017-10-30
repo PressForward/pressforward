@@ -88,6 +88,7 @@ wp.api.loadPromise.done( function() {
 				pagesFull: false,
 				postCount: 0,
 				leaderboard: {},
+				flesch_kincaid_score_total: 0,
 				pageFillerFunction: function( pages ){
 					return jQuery.getJSON(window.pf.stats.valid_posts.arguments(pages),
 						function( data ){
@@ -101,7 +102,8 @@ wp.api.loadPromise.done( function() {
 								console.log('PF Valid Posts Leaderboard Fills in', data);
 								jQuery.each( data, function( key, val ) {
 									console.log('PF Valid Posts Leaderboard advancing to page ', pages);
-									window.pf.stats.valid_posts.leaderboard[key] = val;
+									window.pf.stats.valid_posts.leaderboard[val.ID] = val;
+									window.pf.stats.valid_posts.flesch_kincaid_score_total += val.flesch_kincaid_score;
 									window.pf.stats.valid_posts.postCount += 1;
 								});
 								return false;
@@ -123,6 +125,7 @@ wp.api.loadPromise.done( function() {
 							var totalPosts = '<strong>Total PressForward Items Published:</strong> '+window.pf.stats.valid_posts.postCount+'. ';
 							jQuery('#top-level').append(totalPosts);
 							var totalWordsString = '<strong>Total WordCount:</strong> '+window.pf.stats.wordcount.total()+'. ';
+							window.pf.stats.valid_posts.flesch_kincaid_score_avg = window.pf.stats.valid_posts.flesch_kincaid_score_total / window.pf.stats.valid_posts.postCount;
 							jQuery('#top-level').append(totalWordsString);
 							var sources = window.pf.stats.sources.total();
 							var sourcesSorted = Object.keys(sources).sort(function(a,b){return sources[b]-sources[a]});
@@ -184,7 +187,7 @@ wp.api.loadPromise.done( function() {
 					jQuery.each(
 						window.pf.stats.valid_posts.leaderboard,
 						function( index ){
-							var source = window.pf.stats.valid_posts.leaderboard[index].source;
+							var source = this.source_link;
 							if (undefined === window.pf.stats.sources.resultObj[source]){
 								window.pf.stats.sources.resultObj[source] = 1;
 							} else {
