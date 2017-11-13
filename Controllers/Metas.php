@@ -1024,30 +1024,6 @@ class Metas implements HasFilters, HasActions {
 			$switch_value = $field;
 		}
 		switch ( $switch_value ) {
-			case 'nominator_array':
-				$nominators = $this->get_post_pf_meta( $id, $key );
-				if ( ! is_array( $value ) ) {
-					$value_array = array(
-						'user_id'				=> $value,
-						'nomination_datetime'	=> date('Y-m-d H:i:s'),
-						'nomination_unixtime'	=> time(),
-					);
-					//$value = array( $value );
-				} else {
-					$value_array = $value;
-					$value = $value_array['user_id'];
-				}
-				if ( ! is_array( $nominators ) ) {
-					$nominators = array( $nominators );
-				}
-				// We are doing a removal.
-				if ( array_key_exists( $value, $nominators ) ) {
-					unset( $nominators[$value] );
-				} else {
-					$nominators[$value] = $value_array;
-				}
-				$value = $nominators;
-				break;
 			case 'pf_feed_item_word_count':
 				$latest_count = $this->get_post_pf_meta( $id, 'pf_word_count' );
 				if ( ($latest_count < $value ) ) {

@@ -23,6 +23,82 @@ class Forward_Tools {
 		$this->metas = $meta_interface;
 	}
 
+	public function assure_user_id( $user_id = false ){
+		if ( !$user_id ){
+			$current_user = wp_get_current_user();
+			$user_id = $current_user->ID;
+		}
+		pf_log('by '.$user_id);
+		return $user_id;
+	}
+
+	public function apply_nomination_array( $id, $user_id = false ){
+		pf_log('Processing Nominator Array on post ');
+		pf_log($id);
+		$user_id = $this->assure_user_id($user_id);
+		$nominators = $this->metas->get_post_pf_meta( $id, 'nominator_array' );
+
+		$value_array = array(
+			'user_id'				=> $user_id,
+			'nomination_datetime'	=> date('Y-m-d H:i:s'),
+			'nomination_unixtime'	=> time(),
+		);
+		if ( empty($nominators) ){
+			$nominators = array();
+		} else if ( ! is_array( $nominators ) ) {
+			$nominators = array( $nominators );
+		}
+		// We are doing a removal.
+		if ( array_key_exists( $user_id, $nominators ) ) {
+			unset( $nominators[$user_id] );
+		} else {
+			$nominators[$user_id] = $value_array;
+
+		}
+		return $nominators;
+	}
+
+	public function apply_nomination_count( $id, $user_id = false ){
+		$user_id = $this->assure_user_id($user_id);
+		$nomCount = $this->metas->get_post_pf_meta( $id, 'nomination_count', true );
+		if ( empty( $nomCount ) ) {
+			$nomCount = 0;
+		}
+
+		$check_meta = $this->metas->update_pf_meta( $id, 'nomination_count', ++$nomCount );
+		pf_log( 'Attempt to update the meta for nomination_count resulted in: ' );
+		pf_log( $check_meta );
+	}
+
+	public function apply_nomination_user_data( $id, $userID = false ){
+		$userID = $this->assure_user_id($userID);
+		$nom_stats = get_user_meta( $userID, 'nom_stats', true );
+		$noms_counted = get_user_meta(  $userID, 'nom_count', true  );
+		if ( !is_array($nom_stats) ){
+			$nom_stats = array();
+		}
+		if ( empty($noms_counted) || $noms_counted < 0  ){
+			$noms_counted = 0;
+		}
+		if ( !array_key_exists($id, $nom_stats) ){
+			$nom_stats[$id] = array(
+				'nomination_id' 		=> $id,
+				'nomination_datetime'	=> date('Y-m-d H:i:s'),
+				'nomination_unixtime'	=> time(),
+			);
+		}
+		pf_log( 'Create nom_count in user meta for user ' . $userID );
+		add_user_meta( $userID, 'nom_count', ++$noms_counted, true );
+		add_user_meta( $userID, 'nom_stats', $nom_stats, true );
+	}
+
+	public function apply_nomination_data( $id, $user_id = false ){
+		$nominators = $this->apply_nomination_array( $id, $user_id );
+		$this->apply_nomination_user_data( $id, $user_id );
+		$this->apply_nomination_count( $id, $user_id );
+		return $nominators;
+	}
+
 	// Transition to next step Tools
 	public function transition_to_last_step( $nomination_id ) {
 		$post = $this->item_interface->get_post( $nomination_id, ARRAY_A );
@@ -55,7 +131,7 @@ class Forward_Tools {
 			return false;
 		} else {
 			$this->advance_interface->transition( $item_post_id, $nomination_id );
-			$this->nomination_user_transition_check( $nomination_id );
+			$this->apply_nomination_data( $nomination_id );
 			return $nomination_id;
 		}
 	}
@@ -125,53 +201,51 @@ class Forward_Tools {
 	}
 
 	function nomination_user_transition_check( $id, $can_delete = false ) {
+
+	}
+
+	public function user_nomination_meta( $nomination_id, $increase = true ) {
 		$current_user = wp_get_current_user();
-		$nominators_orig = $this->metas->retrieve_meta( $id, 'nominator_array' );
-		if ( is_array( $nominators_orig ) && ! in_array( $current_user->ID, $nominators_orig ) ) {
-			$nominators = $nominators_orig;
-			$nominator = $current_user->ID;
-			$nominators[$user_id] = array(
-				'user_id'			=>	$nominator,
+		$userID = $current_user->ID;
+		$user_nom_count = get_user_meta( $userID, 'nom_count', true );
+		if ( ! empty( $user_nom_count ) ) {
+				pf_log( 'Update nom_count in user meta for user ' . $userID );
+						$nom_counter = get_user_meta( $userID, 'nom_count', true );
+						$nom_stats = get_user_meta( $userID, 'nom_stats', true );
+						if ( empty( $nom_stats ) ){
+							$nom_stats = array();
+						}
+						$old_nom_stats = $nom_stats;
+						$old_nom_counter = $nom_counter;
+			if ( $increase ) {
+				$nom_counter = $nom_counter + 1;
+				$nom_stats[$nomination_id] = array(
+					'nomination_id' 		=> $nomination_id,
+					'nomination_datetime'	=> date('Y-m-d H:i:s'),
+					'nomination_unixtime'	=> time(),
+				);
+			} else {
+				$nom_counter = $nom_counter -1;
+				unset($nom_stats[$nomination_id]);
+			}
+						pf_log( 'Update nom_count in user meta for user ' . $userID . ' with value of ' . $nom_counter );
+						update_user_meta( $userID, 'nom_count', $nom_counter, $old_nom_counter );
+						update_user_meta( $userID, 'nom_stats', $nom_stats, $old_nom_stats );
+
+		} elseif ( $increase ) {
+			$nom_stats = array();
+			$nom_stats[$nomination_id] = array(
+				'nomination_id' 		=> $nomination_id,
 				'nomination_datetime'	=> date('Y-m-d H:i:s'),
 				'nomination_unixtime'	=> time(),
 			);
-			$this->metas->update_pf_meta( $id, 'nominator_array', $nominators );
-			$nomCount = $this->metas->get_post_pf_meta( $id, 'nomination_count', true );
-			if ( empty( $nomCount ) ) {
-				$nomCount = 0;
-			}
-			$this->user_meta_nomination_counter_change( $current_user->ID );
-			pf_log( 'So far we have a nominating count of ' . $nomCount );
-											$nomCount++;
-											pf_log( 'Now we have a nominating count of ' . $nomCount );
-			$check_meta = $this->metas->update_pf_meta( $id, 'nomination_count', $nomCount );
-											pf_log( 'Attempt to update the meta for nomination_count resulted in: ' );
-											pf_log( $check_meta );
-											$check = true;
-		} elseif ( $can_delete ) {
-			pf_log( 'user_nominated_already' );
-				$check = true;
-				$this->user_meta_nomination_counter_change( $current_user->ID, false );
-				$nomCount = $this->metas->retrieve_meta( $id, 'nomination_count' );
-				$nomCount--;
-				$this->metas->update_pf_meta( $id, 'nomination_count', $nomCount );
-			if ( 0 != $current_user->ID ) {
-				if ( ! is_array( $nominators_orig ) ) {
-					$nominators_orig = array();
-				}
-				if ( true == array_key_exists( $current_user->ID, $nominators_orig ) ) {
-					unset($nominators_orig[$current_user->ID]);
-					// array_diff( $nominators_orig, array( $current_user->ID ) );
-					if ( empty( $nominators_orig ) ) {
-						$this->item_interface->delete_post( $id );
-					} else {
-						$this->metas->update_pf_meta( $id, 'nominator_array', $nominators_orig );
-					}
-				}
-			}
+			pf_log( 'Create nom_count in user meta for user ' . $userID );
+			add_user_meta( $userID, 'nom_count', 1, true );
+			add_user_meta( $userID, 'nom_stats', $nom_stats, true );
+
 		} else {
-			pf_log( 'User nominated already but cannot delete a post.' );
-			$this->user_meta_nomination_counter_change( $current_user->ID, false );
+			pf_log( 'Nothing to do with nom_count in user meta for user ' . $userID );
+			return false;
 		}
 	}
 
@@ -187,7 +261,7 @@ class Forward_Tools {
 			pf_log( 'Can not find a user to add to the nominated count of.' );
 		} else {
 			// Logged in.
-			pressforward( 'admin.nominated' )->user_nomination_meta( $nomination_id );
+			$this->user_nomination_meta( $nomination_id );
 			$userID = $current_user->ID;
 			$userString = $userID;
 		}
@@ -209,15 +283,10 @@ class Forward_Tools {
 			$user_data = $this->find_nominating_user( $item_post_id );
 			$userID = $user_data['user_id'];
 			$userString = $user_data['user_string'];
-			$nominators = array();
-			$nominators[$userID] = array(
-				'user_id'			=>	$nominator,
-				'nomination_datetime'	=> date('Y-m-d H:i:s'),
-				'nomination_unixtime'	=> time(),
-			);
-			$this->metas->update_pf_meta( $item_post_id, 'nomination_count', 1 );
+			//$this->metas->update_pf_meta( $item_post_id, 'nomination_count', 1 );
 			$this->metas->update_pf_meta( $item_post_id, 'submitted_by', $userString );
-			$this->metas->update_pf_meta( $item_post_id, 'nominator_array', $nominators );
+			$nominators = $this->apply_nomination_data($item_post_id);
+			//$this->metas->update_pf_meta( $item_post_id, 'nominator_array', $nominators );
 			$this->metas->update_pf_meta( $item_post_id, 'date_nominated', current_time( 'mysql' ) );
 			$this->metas->update_pf_meta( $item_post_id, 'item_id', $item_id );
 			$this->metas->update_pf_meta( $item_post_id, 'pf_item_post_id', $item_post_id );
@@ -235,7 +304,6 @@ class Forward_Tools {
 			$this->metas->update_pf_meta( $item_post_id, 'item_date', $item_date );
 			$this->metas->update_pf_meta( $item_post_id, 'item_wp_date', $item_date );
 			$nomination_id = $this->transition_to_nomination( $item_post_id );
-			// $this->nomination_user_transition_check( $nomination_id );
 			// Assign user status as well here.
 			return $nomination_id;
 		} else {
@@ -340,7 +408,7 @@ class Forward_Tools {
 			$pf_meta_args = array(
 				$this->metas->meta_for_entry( 'item_id', $item_id ),
 				$this->metas->meta_for_entry( 'item_link', $_POST['item_link'] ),
-				$this->metas->meta_for_entry( 'nomination_count', 1 ),
+				//$this->metas->meta_for_entry( 'nomination_count', 1 ),
 				$this->metas->meta_for_entry( 'source_title', 'Bookmarklet' ),
 				$this->metas->meta_for_entry( 'item_date', $item_date ),
 				// $this->metas->meta_for_entry('item_date', $item_date),
@@ -350,7 +418,7 @@ class Forward_Tools {
 				$this->metas->meta_for_entry( 'pf_source_link', $source ),
 				$this->metas->meta_for_entry( 'item_feat_img', $_POST['item_feat_img'] ),
 				$this->metas->meta_for_entry( 'submitted_by', $userString ),
-				$this->metas->meta_for_entry( 'nominator_array', array( $userID ) ),
+				//$this->metas->meta_for_entry( 'nominator_array', array( $userID ) ),
 				// The item_wp_date allows us to sort the items with a query.
 				$this->metas->meta_for_entry( 'item_wp_date', $item_date ),
 				// We can't just sort by the time the item came into the system (for when mult items come into the system at once)
@@ -362,8 +430,10 @@ class Forward_Tools {
 
 			);
 			$this->metas->establish_post( $post_ID, $pf_meta_args );
+			pf_log($pf_meta_args);
 			$this->metas->update_pf_meta( $post_ID, 'nom_id', $post_ID );
 			$this->metas->handle_item_tags( $post_ID, $tags );
+			$this->apply_nomination_data( $post_ID );
 			return $post_ID;
 		} else {
 			// Do something with the returned ID.

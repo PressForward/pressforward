@@ -98,6 +98,7 @@ class PF_Advancement implements Advance_System {
 		$orig_post_id = $post['ID'];
 		unset( $post['ID'] );
 		$id = pressforward( 'controller.items' )->insert_post( $post, false, pressforward( 'controller.metas' )->get_post_pf_meta( $orig_post_id, 'item_id' ) );
+		pf_log($id);
 		do_action( 'pf_transition_to_nomination', $id );
 		return $id;
 	}

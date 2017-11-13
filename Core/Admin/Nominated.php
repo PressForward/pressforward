@@ -502,20 +502,7 @@ if ( $countQT > $countQ ) {
 	}
 
 	public function toggle_nominator_array( $id, $update = true ) {
-		$nominators = $this->metas->retrieve_meta( $id, 'nominator_array' );
-		$current_user = wp_get_current_user();
-		$user_id = $current_user->ID;
-		if ( $update ) {
-			$nominators[$user_id] = array(
-				'user_id'			=>	$user_id,
-				'nomination_datetime'	=> date('Y-m-d H:i:s'),
-				'nomination_unixtime'	=> time(),
-			);
-		} else {
-			if ( ($key = array_search( $user_id, $nominators )) !== false ) {
-				unset( $nominators[ $key ] );
-			}
-		}
+		$nominators = $this->forward_tools->update_nomination_array( $id );
 		$check = $this->metas->update_pf_meta( $id, 'nominator_array', $nominators );
 		return $check;
 	}
@@ -571,21 +558,7 @@ if ( $countQT > $countQ ) {
 					$nomCount--;
 					$this->metas->update_pf_meta( $id, 'nomination_count', $nomCount );
 					if ( 0 != $current_user->ID ) {
-						$nominators_orig = $this->metas->retrieve_meta( $id, 'nominator_array' );
-
-						if ( true == array_key_exists( $current_user->ID, $nominators_orig ) ) {
-							unset( $nominators_orig[$current_user->ID] );
-							if ( empty( $nominators_orig ) ) {
-								wp_delete_post( $id );
-							} else {
-								$nominators_orig[$current_user->ID] = array(
-									'user_id'				=>	$current_user->ID,
-									'nomination_datetime'	=> date('Y-m-d H:i:s'),
-									'nomination_unixtime'	=> time(),
-								);
-								$this->metas->update_pf_meta( $id, 'nominator_array', $nominators_orig );
-							}
-						}
+						$this->toggle_nominator_array($id);
 					}
 				}
 			endwhile;	else :
@@ -623,22 +596,7 @@ if ( $countQT > $countQ ) {
 						} else {
 							$nominators_orig = $this->metas->retrieve_meta( $id, 'nominator_array' );
 							if ( ! array_key_exists( $current_user->ID, $nominators_orig ) ) {
-								$nominators = $nominators_orig;
-								$nominator = $current_user->ID;
-								$nominators[$nominator] = array(
-									'user_id'				=> $nominator,
-									'nomination_datetime'	=> date('Y-m-d H:i:s'),
-									'nomination_unixtime'	=> time(),
-								);
-								$this->metas->update_pf_meta( $id, 'nominator_array', $nominators );
-								$nomCount = $this->metas->get_post_pf_meta( $id, 'nomination_count', true );
-								pf_log( 'So far we have a nominating count of ' . $nomCount );
-																$nomCount++;
-																pf_log( 'Now we have a nominating count of ' . $nomCount );
-								$check_meta = $this->metas->update_pf_meta( $id, 'nomination_count', $nomCount );
-																pf_log( 'Attempt to update the meta for nomination_count resulted in: ' );
-																pf_log( $check_meta );
-																$check = true;
+								$check = $this->toggle_nominator_array( $id, false );
 							} else {
 								$check = 'user_nominated_already';
 							}
@@ -768,51 +726,6 @@ if ( $countQT > $countQ ) {
 				$xmlResponse->send();
 			ob_end_flush();
 			die();
-	}
-
-	public function user_nomination_meta( $nomination_id, $increase = true ) {
-		$current_user = wp_get_current_user();
-		$userID = $current_user->ID;
-		$user_nom_count = get_user_meta( $userID, 'nom_count', true );
-		if ( ! empty( $user_nom_count ) ) {
-				pf_log( 'Update nom_count in user meta for user ' . $userID );
-						$nom_counter = get_user_meta( $userID, 'nom_count', true );
-						$nom_stats = get_user_meta( $userID, 'nom_stats', true );
-						if ( empty( $nom_stats ) ){
-							$nom_stats = array();
-						}
-						$old_nom_stats = $nom_stats;
-						$old_nom_counter = $nom_counter;
-			if ( $increase ) {
-				$nom_counter = $nom_counter + 1;
-				$nom_stats[$nomination_id] = array(
-					'nomination_id' 		=> $nomination_id,
-					'nomination_datetime'	=> date('Y-m-d H:i:s'),
-					'nomination_unixtime'	=> time(),
-				);
-			} else {
-				$nom_counter = $nom_counter -1;
-				unset($nom_stats[$nomination_id]);
-			}
-						pf_log( 'Update nom_count in user meta for user ' . $userID . ' with value of ' . $nom_counter );
-						update_user_meta( $userID, 'nom_count', $nom_counter, $old_nom_counter );
-						update_user_meta( $userID, 'nom_stats', $nom_stats, $old_nom_stats );
-
-		} elseif ( $increase ) {
-			$nom_stats = array();
-			$nom_stats[$nomination_id] = array(
-				'nomination_id' 		=> $nomination_id,
-				'nomination_datetime'	=> date('Y-m-d H:i:s'),
-				'nomination_unixtime'	=> time(),
-			);
-			pf_log( 'Create nom_count in user meta for user ' . $userID );
-			add_user_meta( $userID, 'nom_count', 1, true );
-			add_user_meta( $userID, 'nom_stats', $nom_stats, true );
-
-		} else {
-			pf_log( 'Nothing to do with nom_count in user meta for user ' . $userID );
-			return false;
-		}
 	}
 
 	public function simple_nom_to_draft( $id = false ) {
