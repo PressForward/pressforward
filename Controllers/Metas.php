@@ -292,7 +292,7 @@ class Metas implements HasFilters, HasActions {
 	 * @param  [type] $name [description]
 	 * @return [type]       [description]
 	 */
-	function assure_key( $name ) {
+	public function assure_key( $name ) {
 		$meta = $this->by_name( $name );
 		// pf_log('Assuring '.$name.' is PF meta.');
 		if ( ( false !== $meta ) && ! empty( $meta['move'] ) ) {
@@ -309,7 +309,7 @@ class Metas implements HasFilters, HasActions {
 	 * @param  [type] $name [description]
 	 * @return [type]       [description]
 	 */
-	function get_key( $name ) {
+	public function get_key( $name ) {
 		$meta = $this->assure_key( $name );
 		return $this->get_name( $meta );
 	}

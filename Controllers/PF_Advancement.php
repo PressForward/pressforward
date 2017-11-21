@@ -151,7 +151,7 @@ class PF_Advancement implements Advance_System {
 		// $theDate = getdate();
 		// $w = date('W');
 		$r = array(
-								'meta_key' => 'item_id',
+								'meta_key' => $this->metas->get_key('item_id'),
 								'meta_value' => $item_id,
 								'post_type'	=> array( 'post', pf_feed_item_post_type() ),
 							);
@@ -162,6 +162,8 @@ class PF_Advancement implements Advance_System {
 			$r['cache_results'] = false;
 
 		}
+
+		$r['post_status'] = array('publish', 'alert_specimen', 'under_review', 'future', 'draft', 'pending', 'private' );
 
 		if ( false != $post_type ) {
 			$r['post_type'] = $post_type;
