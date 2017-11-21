@@ -53,7 +53,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$item = get_post( $feed_item_id, ARRAY_A );
 		$nominate = pressforward('controller.advancement')->to_nomination($item);
 		$this->assertFalse( ($feed_item_id === $nominate) );
-		$this->assertInternalType('int', $nominate);
+		$this->assertGreaterThan(0, $nominate);
 		$nom = get_post( $nominate );
 		$this->assertEquals( $nom->post_title, 'Test item1' );
 		$nominators = pressforward('utility.forward_tools')->apply_nomination_data($nominate);
@@ -90,7 +90,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		) );
 		$nominate = pressforward('utility.forward_tools')->transition_to_nomination($feed_item_id);
 		$this->assertFalse( ($feed_item_id === $nominate) );
-		$this->assertInternalType('int', $nominate);
+		$this->assertGreaterThan(0, $nominate);
 		$nom = get_post( $nominate );
 		$this->assertEquals( $nom->post_title, 'Test item1' );
 		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nominate, 'nomination_count' );
@@ -129,7 +129,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$nom = get_post( $nomination );
 		$this->assertEquals( $nom->post_title, 'Test item2' );
 		$this->assertFalse( ($feed_item_id === $nomination) );
-		$this->assertInternalType('int', $nomination);
+		$this->assertGreaterThan(0, $nomination);
 
 		// Did it apply the current user's nomination?
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'nominator_array' );
@@ -190,7 +190,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$nom = get_post( $nomination );
 		$this->assertEquals( $nom->post_title, $title );
 		$this->assertFalse( ($feed_item_id === $nomination) );
-		$this->assertInternalType('int', $nomination);
+		$this->assertGreaterThan(0, $nomination);
 
 		// Does the feed_item count increment?
 		$fi_count = pressforward('controller.metas')->get_post_pf_meta( $feed_item_id, 'nomination_count' );
@@ -266,7 +266,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$nom = get_post( $nomination );
 		$this->assertEquals( $nom->post_title, $title );
 		$this->assertFalse( ($feed_item_id === $nomination) );
-		$this->assertInternalType('int', $nomination);
+		$this->assertGreaterThan( 0,  $nomination);
 
 		// Does the feed_item count increment?
 		$fi_count = pressforward('controller.metas')->get_post_pf_meta( $feed_item_id, 'nomination_count' );
@@ -287,7 +287,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$this->assertEquals( $nom_two->ID, $nomination );
 		$this->assertEquals( $nom_two->post_title, $title );
 		$this->assertFalse( ($feed_item_id === $nomination_two) );
-		$this->assertInternalType('int', $nomination_two);
+		$this->assertGreaterThan( 0,  $nomination_two);
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_two, 'nominator_array' );
 
 		$exists = array_key_exists($user_id_2, $nominators);
@@ -301,7 +301,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$this->assertEquals( $nom_three->ID, $nomination );
 		$this->assertEquals( $nom_three->post_title, $title );
 		$this->assertFalse( ($feed_item_id === $nomination_three) );
-		$this->assertInternalType('int', $nomination_three);
+		$this->assertGreaterThan( 0,  $nomination_three);
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_two, 'nominator_array' );
 
 		$exists = array_key_exists($user_id_2, $nominators);
@@ -335,10 +335,10 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		) );
 		// Does the item create proprly
 		$nomination = pressforward('utility.forward_tools')->item_to_nomination($item_id, $feed_item_id);
-		$this->assertInternalType('int', $nomination);
+		$this->assertGreaterThan( 0,  $nomination);
 
 		$nom = get_post( $nomination );
-		$this->assertInternalType('int', $nom->ID);
+		$this->assertGreaterThan( 0,  $nom->ID);
 		$post_type = pressforward( 'schema.nominations' )->post_type;
 		$this->assertEquals( $nom->post_type, $post_type );
 		$test_of_item_id = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'item_id' );
@@ -379,7 +379,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 
 		$post_exists = pressforward('utility.forward_tools')->is_a_pf_type($item_id);
 		$this->assertTrue( ($post_exists !== false) );
-		$this->assertInternalType('int', $post_exists);
+		$this->assertGreaterThan( 0,  $post_exists);
 		$this->assertEquals( $post_exists, $nomination );
 	}
 
@@ -403,7 +403,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		);
 		$_POST = array_merge($_POST, $post);
 		$nomination_id = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
-		$this->assertInternalType('int', $nomination_id);
+		$this->assertGreaterThan( 0,  $nomination_id);
 
 		$nom = get_post( $nomination_id );
 		$this->assertEquals( $nom->post_title, $title );
@@ -438,7 +438,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$_POST = array_merge($_POST, $post);
 		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 		$nomination_id = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
-		$this->assertInternalType('int', $nomination_id);
+		$this->assertGreaterThan( 0,  $nomination_id);
 
 		$nom = get_post( $nomination_id );
 		$this->assertEquals( $nom->post_title, $title );
@@ -466,7 +466,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 
 		// Attempt to nominate twice
 		$nomination_attempt_two_id = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
-		$this->assertInternalType('int', $nomination_attempt_two_id);
+		$this->assertGreaterThan( 0,  $nomination_attempt_two_id);
 		$this->assertEquals( $nomination_attempt_two_id, $nomination_id );
 
 		$nom_attempt_two = get_post($nomination_attempt_two_id);
