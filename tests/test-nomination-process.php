@@ -484,4 +484,107 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$this->assertTrue( $exists );
 
 	}
+
+	/**
+	 * Test item to final step
+	 *  - Does the `to_nomination` function successfully move a post to nomination
+	 *  - Does `apply_nomination_data` function successfully add user data.
+	 * @return {[type]} [description]
+	 */
+	public function test_feed_item_to_last_step_middle() {
+		$feed_id = $this->factory->feed->create();
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'test_feed_item_nom_create_middle' ) );
+		wp_set_current_user( $user_id );
+		$time = time();
+		$link = 'http://aramzs.github.io/tools/humans/ux/2017/02/08/audience-behavior-jcarn.html?cb=20';
+		$title = 'Test item20';
+		$item_id = md5($link.$title);
+		$feed_item_id = $this->factory->feed_item->create( array(
+			'post_parent' => $feed_id,
+			'item_title' => $title,
+			'item_link' => $link,
+			'item_content' => 'Test content',
+			'source_title' => 'Test source title',
+			'sortable_item_date' => 10000,
+			'item_date' => 20000,
+			'item_author' => 'foo',
+			'item_feat_img' => 'Test feat img',
+			'item_wp_date' => $time,
+			'item_id'	=>	$item_id
+		) );
+		$item = get_post( $feed_item_id, ARRAY_A );
+		$nomination_id = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $feed_item_id );
+		$final_id = pressforward('utility.forward_tools')->nomination_to_last_step( $item_id, $nomination_id );
+
+		$this->assertFalse( ($feed_item_id === $final_id) );
+		$this->assertGreaterThan(0, $final_id);
+		$final = get_post( $final_id );
+		$this->assertEquals( $final->post_title, $title );
+
+		$nominate = pressforward('controller.metas')->get_post_pf_meta($final_id, 'nom_id');
+		$this->assertEquals($nominate, $nomination_id);
+
+		pressforward('controller.metas')->transition_post_meta( $feed_item_id, $nominate, true );
+		$this->assertFalse( ($feed_item_id === $nominate) );
+		$this->assertGreaterThan(0, $nominate);
+		$nominators = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nominator_array' );
+		$exists = array_key_exists($user_id, $nominators);
+		$this->assertTrue( $exists );
+		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nominate, 'nominator_array' );
+		$exists = array_key_exists($user_id, $nominators);
+		$this->assertTrue( $exists );
+		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nomination_count' );
+		$this->assertEquals($nomination_count, 1);
+	}
+
+	/**
+	 * Test item to final step
+	 *  - Does the `to_nomination` function successfully move a post to nomination
+	 *  - Does `apply_nomination_data` function successfully add user data.
+	 * @return {[type]} [description]
+	 */
+	public function test_feed_item_to_last_step() {
+		$feed_id = $this->factory->feed->create();
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'test_feed_item_nom_create_middle' ) );
+		wp_set_current_user( $user_id );
+		$time = time();
+		$link = 'http://aramzs.github.io/tools/humans/ux/2017/02/08/audience-behavior-jcarn.html?cb=29';
+		$title = 'Test item29';
+		$item_id = md5($link.$title);
+		$feed_item_id = $this->factory->feed_item->create( array(
+			'post_parent' => $feed_id,
+			'item_title' => $title,
+			'item_link' => $link,
+			'item_content' => 'Test content',
+			'source_title' => 'Test source title',
+			'sortable_item_date' => 10000,
+			'item_date' => 20000,
+			'item_author' => 'foo',
+			'item_feat_img' => 'Test feat img',
+			'item_wp_date' => $time,
+			'item_id'	=>	$item_id
+		) );
+		$item = get_post( $feed_item_id, ARRAY_A );
+		$final_id = pressforward('utility.forward_tools')->item_to_last_step( $item_id, $feed_item_id );
+
+		$this->assertFalse( ($feed_item_id === $final_id) );
+		$this->assertGreaterThan(0, $final_id);
+		$final = get_post( $final_id );
+		$this->assertEquals( $final->post_title, $title );
+
+		$nominate = pressforward('controller.metas')->get_post_pf_meta($final_id, 'nom_id');
+
+		$this->assertFalse( ($feed_item_id === $nominate) );
+		$this->assertGreaterThan(0, $nominate);
+		$nominators = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nominator_array' );
+		$exists = array_key_exists($user_id, $nominators);
+		$this->assertTrue( $exists );
+		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nominate, 'nominator_array' );
+		$exists = array_key_exists($user_id, $nominators);
+		$this->assertTrue( $exists );
+		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nomination_count' );
+		$this->assertEquals($nomination_count, 1);
+		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nominate, 'nomination_count' );
+		$this->assertEquals($nomination_count, 1);
+	}
 }

@@ -94,6 +94,7 @@ class Forward_Tools {
 		if ( empty($noms_counted) || $noms_counted < 0  ){
 			$noms_counted = 0;
 		}
+		//var_dump($id);
 		if ( !array_key_exists($id, $nom_stats) ){
 			$nom_stats[$id] = array(
 				'nomination_id' 		=> $id,
@@ -129,6 +130,7 @@ class Forward_Tools {
 	public function apply_nomination_data( $id, $user_id = false ){
 		$user_id = $this->assure_user_id($user_id);
 		$nominators = $this->apply_nomination_array( $id, $user_id );
+		//var_dump($id, $nominators);
 		if ( $nominators['applied'] ){
 			$this->apply_nomination_user_data( $id, $user_id );
 			$this->apply_nomination_count( $id, $user_id );
@@ -320,16 +322,10 @@ class Forward_Tools {
 		pf_log( 'Is this a PF Type?' );
 		pf_log( $nomination_and_post_check );
 		$post_check = $this->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
-		$this->metas->update_pf_meta( $item_post_id, 'nom_id', $item_id );
-		if ( $nomination_and_post_check == false ) {
-			pf_log( 'Start Transition.' );
-			$this->transition_to_readable_text( $item_post_id, true );
 
-			$user_data = $this->find_nominating_user( $item_post_id );
-			$userID = $user_data['user_id'];
-			$userString = $user_data['user_string'];
+		if ( $nomination_and_post_check == false ) {
+
 			//$this->metas->update_pf_meta( $item_post_id, 'nomination_count', 1 );
-			$this->metas->update_pf_meta( $item_post_id, 'submitted_by', $userString );
 			$nominators = $this->apply_nomination_data($item_post_id);
 			$this->metas->update_pf_meta( $item_post_id, 'nominator_array', $nominators );
 			$this->metas->update_pf_meta( $item_post_id, 'date_nominated', current_time( 'mysql' ) );
@@ -348,7 +344,17 @@ class Forward_Tools {
 			}
 			$this->metas->update_pf_meta( $item_post_id, 'item_date', $item_date );
 			$this->metas->update_pf_meta( $item_post_id, 'item_wp_date', $item_date );
+			pf_log( 'Start Transition.' );
+
+			$user_data = $this->find_nominating_user( $item_post_id );
+			$userID = $user_data['user_id'];
+			$userString = $user_data['user_string'];
+			$this->metas->update_pf_meta( $item_post_id, 'submitted_by', $userString );
+
+			$this->transition_to_readable_text( $item_post_id, true );
 			$nomination_id = $this->transition_to_nomination( $item_post_id, true );
+			$this->metas->update_pf_meta( $item_post_id, 'nom_id', $nomination_id );
+			$this->metas->update_pf_meta( $nomination_id, 'nom_id', $nomination_id );
 			// Assign user status as well here.
 			return $nomination_id;
 		} else {

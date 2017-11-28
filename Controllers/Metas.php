@@ -375,7 +375,7 @@ class Metas implements HasFilters, HasActions {
 				'function'	=> __( 'Stores nomination id', 'pf' ),
 				'type'	=> array( 'struc' ),
 				'use'	=> array( 'req' ),
-				'level'	=> array( 'nomination', 'post' ),
+				'level'	=> array( 'item', 'nomination', 'post' ),
 				'serialize'	=> false,
 			),
 			'pf_nomination_post_id' => array(
