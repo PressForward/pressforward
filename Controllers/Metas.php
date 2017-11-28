@@ -654,6 +654,15 @@ class Metas implements HasFilters, HasActions {
 				'level'	=> array( 'feed' ),
 				'serialize'	=> false,
 			),
+			'pf_nominations_in_feed' => array(
+				'name' => 'pf_nominations_in_feed',
+				'definition' => __( 'Nominations received by items supplied by this feed', 'pf' ),
+				'function'	=> __( 'Number of nominations for this feed', 'pf' ),
+				'type'	=> array( 'adm' ),
+				'use'	=> array( 'api' ),
+				'level'	=> array( 'feed' ),
+				'serialize'	=> false,
+			),
 			'pf_feed_last_retrieved' => array(
 				'name' => 'pf_feed_last_retrieved',
 				'definition' => __( 'Last time feed was retrieved', 'pf' ),

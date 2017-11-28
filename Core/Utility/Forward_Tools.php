@@ -64,6 +64,14 @@ class Forward_Tools {
 		if ( empty( $nomCount ) ) {
 			$nomCount = 0;
 		}
+		$parent_id = wp_get_post_parent_id( $id );
+		if ( false != $parent_id ){
+			$feedNomCount = $this->metas->get_post_pf_meta( $parent_id, 'pf_nominations_in_feed', true );
+			if (empty($feedNomCount)){
+				$feedNomCount = 0;
+			}
+			$check_meta = $this->metas->update_pf_meta( $parent_id, 'pf_nominations_in_feed', ++$feedNomCount );
+		}
 
 		$check_meta = $this->metas->update_pf_meta( $id, 'nomination_count', ++$nomCount );
 		pf_log( 'Attempt to update the meta for nomination_count resulted in: ' );
@@ -75,6 +83,15 @@ class Forward_Tools {
 		$nomCount = $this->metas->get_post_pf_meta( $id, 'nomination_count', true );
 		if ( empty( $nomCount ) ) {
 			$nomCount = 0;
+		}
+
+		$parent_id = wp_get_post_parent_id( $id );
+		if ( false != $parent_id ){
+			$feedNomCount = $this->metas->get_post_pf_meta( $parent_id, 'pf_nominations_in_feed', true );
+			if (empty($feedNomCount)){
+				$feedNomCount = 0;
+			}
+			$check_meta = $this->metas->update_pf_meta( $parent_id, 'pf_nominations_in_feed', max(0, --$feedNomCount) );
 		}
 
 		$check_meta = $this->metas->update_pf_meta( $id, 'nomination_count', max(0, --$nomCount) );

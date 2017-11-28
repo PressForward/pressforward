@@ -25,6 +25,25 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 
 		$this->assertEquals( $expected, array_values( wp_list_pluck( $found, 'post_id' ) ) );
 	}
+
+	function check_feed_nominations_incremented($post_id, $count = 1){
+		$parent_id = wp_get_post_parent_id( $post_id );
+		$this->assertGreaterThan(0, $parent_id);
+		if ( false != $parent_id ){
+			$feedNomCount = pressforward('controller.metas')->get_post_pf_meta( $parent_id, 'pf_nominations_in_feed', true );
+			$this->assertGreaterThan(0, $feedNomCount);
+			$this->assertEquals($count, $feedNomCount);
+		}
+	}
+
+	function check_feed_nominations_deincremented($post_id, $count = 0){
+		$parent_id = wp_get_post_parent_id( $post_id );
+		$this->assertGreaterThan(0, $parent_id);
+		if ( false != $parent_id ){
+			$feedNomCount = pressforward('controller.metas')->get_post_pf_meta( $parent_id, 'pf_nominations_in_feed', true );
+			$this->assertEquals($count, $feedNomCount);
+		}
+	}
 	/**
 	 * Test one:
 	 *  - Does the `to_nomination` function successfully move a post to nomination
@@ -63,6 +82,8 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$this->assertTrue( $exists );
 		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nominate, 'nomination_count' );
 		$this->assertEquals($nomination_count, 1);
+
+		$this->check_feed_nominations_incremented($nominate);
 	}
 
 	/**
@@ -158,6 +179,9 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$this->assertEquals($noms_counted, 1);
 		$check_nom_count = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'nomination_count', true );
 		$this->assertEquals($check_nom_count, 2);
+
+		$this->check_feed_nominations_incremented($nomination, 2);
+
 		pressforward('controller.metas')->update_pf_meta( $nomination, 'nominator_array', $nominators['nominators'] );
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'nominator_array' );
 		$exists = array_key_exists($user_id_2, $nominators);
@@ -198,6 +222,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		// Does the nomination cound increment?
 		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'nomination_count' );
 		$this->assertEquals($nomination_count, 1);
+		$this->check_feed_nominations_incremented($nomination, 1);
 		// Does the user enter the array?
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'nominator_array' );
 		$exists = array_key_exists($user_id, $nominators);
@@ -213,7 +238,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$this->assertTrue( $exists );
 		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'nomination_count' );
 		$this->assertEquals($nomination_count, 2);
-
+		$this->check_feed_nominations_incremented($nomination, 2);
 		// Can we remove a nomination
 		$user_id_2 = pressforward('utility.forward_tools')->assure_user_id($user_id_2);
 		$nominators = pressforward('utility.forward_tools')->apply_nomination_array( $nomination, $user_id_2 );
@@ -233,7 +258,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$this->assertEquals($noms_counted, 0);
 		$check_nom_count = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'nomination_count', true );
 		$this->assertEquals($check_nom_count, 1);
-
+		$this->check_feed_nominations_deincremented($nomination, 1);
 		pressforward('controller.metas')->update_pf_meta( $nomination, 'nominator_array', $nominators['nominators'] );
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'nominator_array' );
 		$exists = array_key_exists($user_id_2, $nominators);
