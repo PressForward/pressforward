@@ -510,6 +510,93 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 
 	}
 
+	public function test_sequential_bookmarklet_to_nomination_followed_by_feed_item(){
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'bookmarklet_to_nomination' ) );
+		wp_set_current_user( $user_id );
+		$_POST = array();
+		$title = "bookmarklet test";
+		$time = time();
+		$post = array(
+			'post_title' => $title,
+			'item_link' => 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=9',
+			'item_content' => 'Test content',
+			'source_title' => 'Test source title',
+			'sortable_item_date' => 10000,
+			'item_date' => 20000,
+			'item_author' => 'foo',
+			'item_feat_img' => 'Test feat img',
+			'item_wp_date' => $time,
+			'post_tags'	=> 'test'
+		);
+		$_POST = array_merge($_POST, $post);
+		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+		$nomination_id = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
+		$this->assertGreaterThan( 0,  $nomination_id);
+
+		$nom = get_post( $nomination_id );
+		$this->assertEquals( $nom->post_title, $title );
+
+		$item_id_via_meta = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'item_id' );
+		$this->assertEquals( $item_id_via_meta, $item_id );
+
+		// Does the nomination count increment?
+		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nomination_count' );
+		$this->assertEquals($nomination_count, 1);
+		// Does the user enter the array?
+		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nominator_array' );
+		$exists = array_key_exists($user_id, $nominators);
+		$this->assertTrue( $exists );
+
+		// Switch users
+		$user_id_2 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'bookmarklet_to_nomination2' ) );
+		wp_set_current_user( $user_id_2 );
+
+		$post_type = array( 'post', pressforward( 'schema.nominations' )->post_type );
+
+		// Check by item_id.
+		$nom_and_post_check = pressforward('utility.forward_tools')->is_a_pf_type( $item_id );
+		$this->assertTrue( ($nom_and_post_check !== false) );
+
+		// Attempt to nominate twice
+		$nomination_attempt_two_id = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
+		$this->assertGreaterThan( 0,  $nomination_attempt_two_id);
+		$this->assertEquals( $nomination_attempt_two_id, $nomination_id );
+
+		$nom_attempt_two = get_post($nomination_attempt_two_id);
+		$this->assertEquals( $nom_attempt_two->post_title, $title );
+
+		$item_id_two_via_meta = pressforward('controller.metas')->get_post_pf_meta( $nomination_attempt_two_id, 'item_id' );
+		$this->assertEquals( $item_id_two_via_meta, $item_id_via_meta );
+
+		// Does the nomination count increment?
+		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nomination_count' );
+		$this->assertEquals($nomination_count, 2);
+		// Does the user enter the array?
+		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nominator_array' );
+		$exists = array_key_exists($user_id_2, $nominators);
+		$this->assertTrue( $exists );
+
+
+		$feed_id = $this->factory->feed->create();
+		$time = time();
+		$user_id_3 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type' ) );
+		wp_set_current_user( $user_id_3 );
+		$post['post_parent'] = $feed_id;
+		$feed_item_id = $this->factory->feed_item->create( $post );
+
+		$by_feed_nomination_id = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $feed_item_id );
+		$this->assertEquals( $nomination_id, $by_feed_nomination_id );
+
+		// Does the nomination count increment?
+		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nomination_count' );
+		$this->assertEquals($nomination_count, 3);
+		// Does the user enter the array?
+		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nominator_array' );
+		$exists = array_key_exists($user_id_3, $nominators);
+		$this->assertTrue( $exists );
+
+	}
+
 	/**
 	 * Test item to final step
 	 *  - Does the `to_nomination` function successfully move a post to nomination
