@@ -265,6 +265,12 @@ class Forward_Tools {
 	function nomination_user_transition_check( $id, $can_delete = false ) {
 		$nominators = $this->apply_nomination_data($id);
 		$this->metas->update_pf_meta( $id, 'nominator_array', $nominators );
+		$final_step_parent = wp_get_post_parent_id( $id );
+		if ( 0 !== $final_step_parent && false !== $final_step_parent){
+			// The nomination has already been pushed to final step.
+			// Increment it as well
+			$this->metas->update_pf_meta( $final_step_parent, 'nominator_array', $nominators );
+		}
 		return $nominators;
 	}
 

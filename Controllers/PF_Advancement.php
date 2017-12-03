@@ -75,6 +75,7 @@ class PF_Advancement implements Advance_System {
 	}
 
 	// Step Tools
+	// NOTE: The old ID should always be a nomination.
 	public function to_last_step( $post = array() ) {
 		$old_id = $post['ID'];
 		unset( $post['ID'] );
