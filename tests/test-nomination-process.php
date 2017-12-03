@@ -52,18 +52,26 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$this->assertEquals( $nomination_post->post_title, $title );
 	}
 
-	public function check_standard_nomination_metrics($nominate_id, $user_id, $count = 1){
+	public function check_standard_nomination_metrics($nominate_id, $user_id, $count = 1, $denominate = false){
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nominate_id, 'nominator_array' );
 		$exists = array_key_exists($user_id, $nominators);
-		$this->assertTrue( $exists );
+		if ($denominate){
+			$this->assertFalse( $exists );
+		} else {
+			$this->assertTrue( $exists );
+		}
 		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nominate_id, 'nomination_count' );
 		$this->assertEquals($nomination_count, $count);
 	}
 
-	public function check_standard_user_metrics($nominate_id, $user_id, $count = 1){
+	public function check_standard_user_metrics($nominate_id, $user_id, $count = 1, $denominate = false){
 		$nom_stats = get_user_meta( $user_id, 'nom_stats', true );
 		$exists = array_key_exists($nominate_id, $nom_stats);
-		$this->assertTrue( $exists );
+		if ($denominate){
+			$this->assertFalse( $exists );
+		} else {
+			$this->assertTrue( $exists );
+		}
 		$noms_counted = get_user_meta(  $user_id, 'nom_count', true  );
 		$this->assertEquals($noms_counted, $count);
 	}
@@ -211,34 +219,24 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		) );
 		// Does the item create proprly
 		$nomination = pressforward('utility.forward_tools')->item_to_nomination($item_id, $feed_item_id);
-		$nom = get_post( $nomination );
-		$this->assertEquals( $nom->post_title, $title );
-		$this->assertFalse( ($feed_item_id === $nomination) );
-		$this->assertGreaterThan(0, $nomination);
+		$this->check_standard_metrics($feed_item_id, $nomination, $title);
 
 		// Does the feed_item count increment?
 		$fi_count = pressforward('controller.metas')->get_post_pf_meta( $feed_item_id, 'nomination_count' );
 		$this->assertEquals($fi_count, 1);
+
 		// Does the nomination cound increment?
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'nomination_count' );
-		$this->assertEquals($nomination_count, 1);
-		$this->check_feed_nominations_incremented($nomination, 1);
-		// Does the user enter the array?
-		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'nominator_array' );
-		$exists = array_key_exists($user_id, $nominators);
-		$this->assertTrue( $exists );
+		$this->check_standard_nomination_metrics($nomination, $user_id, 1);
 
 		// Can we add another user properly?
 		$user_id_2 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'feed_item_meta_increment4' ) );
 		wp_set_current_user( $user_id_2 );
 		$nominators = pressforward('utility.forward_tools')->apply_nomination_data($nomination, $user_id_2);
 		pressforward('controller.metas')->update_pf_meta( $nomination, 'nominator_array', $nominators );
-		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'nominator_array' );
-		$exists = array_key_exists($user_id_2, $nominators);
-		$this->assertTrue( $exists );
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'nomination_count' );
-		$this->assertEquals($nomination_count, 2);
+		$this->check_standard_nomination_metrics($nomination, $user_id_2, 2);
+
 		$this->check_feed_nominations_incremented($nomination, 2);
+
 		// Can we remove a nomination
 		$user_id_2 = pressforward('utility.forward_tools')->assure_user_id($user_id_2);
 		$nominators = pressforward('utility.forward_tools')->apply_nomination_array( $nomination, $user_id_2 );
@@ -251,18 +249,13 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 			$check_nom_count = pressforward('utility.forward_tools')->revoke_nomination_count( $nomination, $user_id_2 );
 		}
 		//$nominators = pressforward('utility.forward_tools')->apply_nomination_data($nomination, $user_id_2);
-		$nom_stats = get_user_meta( $user_id_2, 'nom_stats', true );
-		$exists = array_key_exists($nomination, $nom_stats);
-		$this->assertFalse( $exists );
-		$noms_counted = get_user_meta(  $user_id_2, 'nom_count', true  );
-		$this->assertEquals($noms_counted, 0);
-		$check_nom_count = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'nomination_count', true );
-		$this->assertEquals($check_nom_count, 1);
-		$this->check_feed_nominations_deincremented($nomination, 1);
+		$this->check_standard_user_metrics($nomination, $user_id_2, 0, true);
+
 		pressforward('controller.metas')->update_pf_meta( $nomination, 'nominator_array', $nominators['nominators'] );
-		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'nominator_array' );
-		$exists = array_key_exists($user_id_2, $nominators);
-		$this->assertFalse( $exists );
+		$this->check_standard_nomination_metrics($nomination, $user_id_2, 1, true);
+		$this->check_standard_nomination_metrics($nomination, $user_id, 1);
+
+		$this->check_feed_nominations_deincremented($nomination, 1);
 	}
 
 	public function test_feed_item_nomination() {
@@ -288,21 +281,14 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		) );
 		// Does the item create proprly
 		$nomination = pressforward('utility.forward_tools')->item_to_nomination($item_id, $feed_item_id);
-		$nom = get_post( $nomination );
-		$this->assertEquals( $nom->post_title, $title );
-		$this->assertFalse( ($feed_item_id === $nomination) );
-		$this->assertGreaterThan( 0,  $nomination);
+		$this->check_standard_metrics($feed_item_id, $nomination, $title);
+
+		// Does the nomination cound increment?
+		$this->check_standard_nomination_metrics($nomination, $user_id, 1);
 
 		// Does the feed_item count increment?
 		$fi_count = pressforward('controller.metas')->get_post_pf_meta( $feed_item_id, 'nomination_count' );
 		$this->assertEquals($fi_count, 1);
-		// Does the nomination cound increment?
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'nomination_count' );
-		$this->assertEquals($nomination_count, 1);
-		// Does the user enter the array?
-		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination, 'nominator_array' );
-		$exists = array_key_exists($user_id, $nominators);
-		$this->assertTrue( $exists );
 
 		// Can we add another user properly?
 		$user_id_2 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'feed_item_meta_increment4' ) );
@@ -310,15 +296,12 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$nomination_two = pressforward('utility.forward_tools')->item_to_nomination($item_id, $feed_item_id);
 		$nom_two = get_post( $nomination_two );
 		$this->assertEquals( $nom_two->ID, $nomination );
-		$this->assertEquals( $nom_two->post_title, $title );
-		$this->assertFalse( ($feed_item_id === $nomination_two) );
-		$this->assertGreaterThan( 0,  $nomination_two);
-		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_two, 'nominator_array' );
 
-		$exists = array_key_exists($user_id_2, $nominators);
-		$this->assertTrue( $exists );
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination_two, 'nomination_count' );
-		$this->assertEquals($nomination_count, 2);
+		$this->check_standard_metrics($feed_item_id, $nomination_two, $title);
+
+		$this->check_standard_nomination_metrics($nomination_two, $user_id_2, 2);
+
+		$this->check_feed_nominations_incremented($nomination, 2);
 
 		// Can we remove a nomination
 		$nomination_three = pressforward('utility.forward_tools')->item_to_nomination($item_id, $feed_item_id);
@@ -329,10 +312,12 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$this->assertGreaterThan( 0,  $nomination_three);
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_two, 'nominator_array' );
 
-		$exists = array_key_exists($user_id_2, $nominators);
-		$this->assertFalse( $exists );
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination_three, 'nomination_count' );
-		$this->assertEquals($nomination_count, 1);
+		$this->check_standard_user_metrics($nomination_three, $user_id_2, 0, true);
+
+		$this->check_standard_nomination_metrics($nomination, $user_id_2, 1, true);
+
+		$this->check_feed_nominations_deincremented($nomination, 1);
+
 	}
 
 	public function test_is_a_pf_type(){
@@ -797,5 +782,60 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$this->assertEquals($nomination_count, 1);
 		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nominate, 'nomination_count' );
 		$this->assertEquals($nomination_count, 1);
+	}
+
+	public function test_feed_item_to_last_step_followed_by_nomination() {
+		$feed_id = $this->factory->feed->create();
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'test_feed_item_nom_create_middle' ) );
+		wp_set_current_user( $user_id );
+		$time = time();
+		$link = 'http://aramzs.github.io/tools/humans/ux/2017/02/08/audience-behavior-jcarn.html?cb=29';
+		$title = 'Test item29';
+		$item_id = md5($link.$title);
+		$feed_item_id = $this->factory->feed_item->create( array(
+			'post_parent' => $feed_id,
+			'item_title' => $title,
+			'item_link' => $link,
+			'item_content' => 'Test content',
+			'source_title' => 'Test source title',
+			'sortable_item_date' => 10000,
+			'item_date' => 20000,
+			'item_author' => 'foo',
+			'item_feat_img' => 'Test feat img',
+			'item_wp_date' => $time,
+			'item_id'	=>	$item_id
+		) );
+		$item = get_post( $feed_item_id, ARRAY_A );
+		$final_id = pressforward('utility.forward_tools')->item_to_last_step( $item_id, $feed_item_id );
+
+		$this->check_standard_metrics($feed_item_id, $final_id, $title);
+
+		$nominate = pressforward('controller.metas')->get_post_pf_meta($final_id, 'nom_id');
+
+		$this->check_standard_metrics($feed_item_id, $nominate, $title);
+
+		$this->check_standard_nomination_metrics($nominate, $user_id, 1);
+
+		$this->check_feed_nominations_incremented($nominate);
+
+		// Now nominate
+		$user_id_2 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type' ) );
+		wp_set_current_user( $user_id_2 );
+
+		$nomination_two_id = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $feed_item_id );
+
+		$this->check_standard_metrics($feed_item_id, $nomination_two_id, $title);
+
+		$this->check_standard_nomination_metrics($nomination_two_id, $user_id, 2);
+
+		$this->check_feed_nominations_incremented($nomination_two_id, 2);
+
+
+		$this->check_standard_metrics($feed_item_id, $final_id, $title);
+
+		$this->check_standard_nomination_metrics($final_id, $user_id, 2);
+
+		$this->check_feed_nominations_incremented($final_id, 2);
+
 	}
 }
