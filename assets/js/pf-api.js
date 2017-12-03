@@ -56,7 +56,7 @@ wp.api.loadPromise.done( function() {
 							   if(!sorted.hasOwnProperty(prop)){ continue; }
 							   var author = window.pf.stats.authors.leaderboard[sorted[prop]];
 							   //console.log(author);
-							   var authorBlock = '<br/><li id="author-'+i+'"><strong>Name:</strong> '+author.name+'<li><strong>Count:</strong> '+author.count+'</li><li><strong>Author Gender:</strong> '+author.gender+'</li><li><strong>Gender Confidence:</strong> '+author.gender_confidence+'</li></li>';
+							   var authorBlock = '<br/><li id="author-'+i+'"><strong>Name:</strong> '+author.name+'<li><strong>Count:</strong> '+author.count+'</li></li>';
 							   jQuery('#author-leaderboard ul').append(authorBlock);
 							   i++;
 						   }
