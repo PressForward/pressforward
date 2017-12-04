@@ -845,6 +845,29 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		//var_dump(get_post_meta($final_id)); die();
 		$this->check_standard_metrics($feed_item_id, $final_id, $title);
 
+		$nomination_and_post_check = pressforward('utility.forward_tools')->is_a_pf_type( $item_id );
+		$this->assertEquals($nomination_and_post_check, $nomination_two_id);
+		$this->assertEquals( get_option( PF_SLUG . '_draft_post_type', 'post' ), 'post' );
+		$final_post = get_post($final_id);
+		$this->assertEquals( get_option( PF_SLUG . '_draft_post_type', 'post' ), $final_post->post_type );
+		$this->assertEquals( get_post_meta( $final_id, 'item_id', true ), $item_id );
+
+		$nominators = pressforward('utility.forward_tools')->apply_nomination_data($final_id);
+		pressforward('controller.metas')->update_pf_meta( $final_id, 'nominator_array', $nominators );
+
+		//$final_step_parent = pf_is_drafted( $item_id );
+		//$this->assertEquals($final_step_parent, $final_id);
+		var_dump($nominators = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nominator_array' )); var_dump($user_id_2, array_key_exists($user_id_2, $nominators)); //die();
+		$this->assertTrue(array_key_exists($user_id_2, $nominators));
+		$nominators = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nominator_array' );
+
+		$exists = array_key_exists($user_id_2, $nominators);
+		$this->assertTrue( $exists );
+		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nomination_count' );
+		$this->assertEquals($nomination_count, 2);
+		//$this->check_standard_nomination_metrics($final_id, $user_id_2, 2);
+
+		$this->check_feed_nominations_incremented($final_id, 1);
 
 	}
 }
