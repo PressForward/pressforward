@@ -282,7 +282,7 @@ class PFTemplater {
 				  </ul>
 				</div>
 				<div class="btn-group" role="group">
-					<a href="https://github.com/PressForward/pressforward/wiki" target="_blank" id="pf-help" class="btn btn-small"><?php _e( 'Need help?', 'pf' ); ?></a>
+					<a href="https://pressforwardadmin.gitbooks.io/pressforward-documentation/content/" target="_blank" id="pf-help" class="btn btn-small"><?php _e( 'Need help?', 'pf' ); ?></a>
 				</div>
 			</div>
 
