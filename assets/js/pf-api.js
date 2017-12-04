@@ -3,6 +3,10 @@ wp.api.loadPromise.done( function() {
 	wp.api.init({'versionString' : 'pf/v1',  'apiRoot': wp.api.utils.getRootUrl()+'wp-json/' });
 
 	jQuery(document.body).ready( function(){
+		window.leaderboardInits = {
+			authors: false,
+			validPosts: false
+		};
 		if ( 'authors' === window.pf.location || ( jQuery('body').hasClass("pressforward_page_pf-tools") ) ){
 			//window.pf.location = 'authors';
 			window.pf.stats.authors = {
@@ -40,13 +44,19 @@ wp.api.loadPromise.done( function() {
 						}
 					);
 				},
-				getLeaderboard: function(){
+				getLeaderboard: function(isInit){
+					if (isInit){
+						if (window.leaderboardInits.authors){
+							return '';
+						}
+						window.leaderboardInits.authors = true;
+					}
 					console.log('PF Author Page set', window.pf.stats.authors.pages);
 					var pageFilled = this.pageFillerFunction(window.pf.stats.authors.pages);
 					pageFilled.done(function(e){
 						if ( window.pf.stats.authors.pagesFull === false ){
 							window.pf.stats.authors.pages = window.pf.stats.authors.pages+1;
-							window.pf.stats.authors.getLeaderboard();
+							window.pf.stats.authors.getLeaderboard(false);
 						} else {
 							var sorted = Object.keys(window.pf.stats.authors.leaderboard).sort(function(a,b){return window.pf.stats.authors.leaderboard[b].count-window.pf.stats.authors.leaderboard[a].count});
 							console.log(sorted);
@@ -111,7 +121,13 @@ wp.api.loadPromise.done( function() {
 						}
 					);
 				},
-				getLeaderboard: function(){
+				getLeaderboard: function(isInit){
+					if (isInit){
+						if (window.leaderboardInits.validPosts){
+							return '';
+						}
+						window.leaderboardInits.validPosts = true;
+					}
 					//var postsCollection = new wp.api.collections.Posts();
 					//postsCollection.fetch({ data: { per_page: 40,  } });
 					console.log('PF Valid Posts Page set', window.pf.stats.valid_posts.pages);
@@ -120,7 +136,7 @@ wp.api.loadPromise.done( function() {
 						console.log('Checking for next step of pages ', window.pf.stats.valid_posts.pages);
 						if ( window.pf.stats.valid_posts.pagesFull === false ){
 							window.pf.stats.valid_posts.pages = window.pf.stats.valid_posts.pages+1;
-							return window.pf.stats.valid_posts.getLeaderboard();
+							return window.pf.stats.valid_posts.getLeaderboard(false);
 						} else {
 							var totalPosts = '<strong>Total PressForward Items Published:</strong> '+window.pf.stats.valid_posts.postCount+'. ';
 							jQuery('#top-level').append(totalPosts);
@@ -154,7 +170,7 @@ wp.api.loadPromise.done( function() {
 				},
 				pullPostsTogether: function( resultTag ) {
 					if ( !window.pf.stats.valid_posts.pagesFull ){
-						window.pf.stats.valid_posts.getLeaderboard();
+						window.pf.stats.valid_posts.getLeaderboard(false);
 					}
 					window.pf.stats.wordcount.count = 0;
 					jQuery.each(
@@ -203,7 +219,7 @@ wp.api.loadPromise.done( function() {
 				},
 				pullPostsTogether: function( resultTag ) {
 					if ( !window.pf.stats.valid_posts.pagesFull ){
-						window.pf.stats.valid_posts.getLeaderboard();
+						window.pf.stats.valid_posts.getLeaderboard(false);
 						window.pf.stats.sources.assemble(resultTag);
 					} else {
 						window.pf.stats.sources.assemble(resultTag);
