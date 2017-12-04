@@ -88,10 +88,6 @@ class PF_Advancement implements Advance_System {
 		$post['post_content'] = pressforward('utility.forward_tools')->append_source_statement($old_id, $post['post_content'], true);
 		$id = pressforward( 'controller.items' )->insert_post( $post, true, pressforward( 'controller.metas' )->get_post_pf_meta( $old_id, 'item_id' ) );
 
-		pressforward( 'controller.items' )->update_post(array(
-			'ID'			=>	$old_id,
-			'post_parent'	=>	$id
-		));
 		do_action( 'pf_transition_to_last_step', $id );
 		return $id;
 	}
@@ -176,6 +172,7 @@ class PF_Advancement implements Advance_System {
 		}
 
 		$postsAfter = new \WP_Query( $r );
+		//var_dump($postsAfter, $r); die();
 		pf_log( ' Checking for posts with item ID ' . $item_id . ' returned query with ' . $postsAfter->post_count . ' items.' );
 		// pf_log($postsAfter);
 		return $postsAfter;

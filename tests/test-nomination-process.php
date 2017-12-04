@@ -54,6 +54,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 
 	public function check_standard_nomination_metrics($nominate_id, $user_id, $count = 1, $denominate = false){
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nominate_id, 'nominator_array' );
+
 		$exists = array_key_exists($user_id, $nominators);
 		if ($denominate){
 			$this->assertFalse( $exists );
@@ -810,6 +811,9 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 
 		$this->check_standard_metrics($feed_item_id, $final_id, $title);
 
+		$final_post = get_post($final_id);
+		$this->assertEquals($final_post->post_type, 'post');
+
 		$nominate = pressforward('controller.metas')->get_post_pf_meta($final_id, 'nom_id');
 
 		$this->check_standard_metrics($feed_item_id, $nominate, $title);
@@ -819,23 +823,28 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$this->check_feed_nominations_incremented($nominate);
 
 		// Now nominate
-		$user_id_2 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type' ) );
+		$user_id_2 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'nomination_after_draft' ) );
 		wp_set_current_user( $user_id_2 );
+		//sleep(2);
 
 		$nomination_two_id = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $feed_item_id );
+		//var_dump( $nomination_two_id ); die();
+
+		$nomination_post = get_post($nomination_two_id);
+
+		$this->assertEquals($nomination_post->post_type, 'nomination');
+
+		$this->assertEquals($nomination_two_id, $nominate);
 
 		$this->check_standard_metrics($feed_item_id, $nomination_two_id, $title);
 
-		$this->check_standard_nomination_metrics($nomination_two_id, $user_id, 2);
+		$this->check_standard_nomination_metrics($nomination_two_id, $user_id_2, 2);
 
 		$this->check_feed_nominations_incremented($nomination_two_id, 2);
 
-
+		//var_dump(get_post_meta($final_id)); die();
 		$this->check_standard_metrics($feed_item_id, $final_id, $title);
 
-		$this->check_standard_nomination_metrics($final_id, $user_id, 2);
-
-		$this->check_feed_nominations_incremented($final_id, 2);
 
 	}
 }

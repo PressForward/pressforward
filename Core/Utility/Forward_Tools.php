@@ -262,13 +262,14 @@ class Forward_Tools {
 		}
 	}
 
-	function nomination_user_transition_check( $id, $can_delete = false ) {
+	function nomination_user_transition_check( $id, $item_id, $can_delete = false ) {
 		$nominators = $this->apply_nomination_data($id);
 		$this->metas->update_pf_meta( $id, 'nominator_array', $nominators );
-		$final_step_parent = wp_get_post_parent_id( $id );
+		$final_step_parent = pf_is_drafted( $item_id );
 		if ( 0 !== $final_step_parent && false !== $final_step_parent){
 			// The nomination has already been pushed to final step.
 			// Increment it as well
+			$nominators = $this->apply_nomination_data($final_step_parent);
 			$this->metas->update_pf_meta( $final_step_parent, 'nominator_array', $nominators );
 		}
 		return $nominators;
@@ -344,7 +345,8 @@ class Forward_Tools {
 		$nomination_and_post_check = $this->is_a_pf_type( $item_id );
 		pf_log( 'Is this a PF Type?' );
 		pf_log( $nomination_and_post_check );
-		$post_check = $this->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
+		//var_dump($nomination_and_post_check); die();
+		//$post_check = $this->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
 
 		if ( $nomination_and_post_check == false ) {
 
@@ -385,7 +387,7 @@ class Forward_Tools {
 			// If they are in the nominator array and no one else is, un-nominate.
 			// If they are in the nominator array and someone else is, un-relate
 			// them to that nomination.
-			$this->nomination_user_transition_check( $nomination_and_post_check, true );
+			$this->nomination_user_transition_check( $nomination_and_post_check, $item_id, true );
 			return $nomination_and_post_check;
 		}
 	}
@@ -513,7 +515,7 @@ class Forward_Tools {
 		} else {
 			// Do something with the returned ID.
 			// Increment the nomination count if the nomination exists.
-			$this->nomination_user_transition_check( $nom_and_post_check );
+			$this->nomination_user_transition_check( $nom_and_post_check, $item_id );
 			return $nom_and_post_check;
 		}
 
@@ -533,6 +535,7 @@ class Forward_Tools {
 			$post_type = array( 'post', pressforward( 'schema.nominations' )->post_type );
 		}
 		$attempt = $this->advance_interface->get_pf_type_by_id( $item_id, $post_type );
+		//var_dump($post_type); die();
 		if ( ! empty( $attempt ) ) {
 			$r = $attempt;
 			pf_log( 'Existing post at ' . $r );
