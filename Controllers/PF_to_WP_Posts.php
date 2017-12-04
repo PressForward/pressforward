@@ -39,6 +39,7 @@ class PF_to_WP_Posts implements Items {
 	}
 
 	public function get_posts( $query ) {
+
 		return get_posts( $query );
 	}
 

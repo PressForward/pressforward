@@ -570,10 +570,16 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 			if ( isset( $og->url ) ) {
 				$url = $og->url;
 			}
+			if ( isset($og->title) && '' != $og->title ){
+				$item_title = $og->title;
+			} else {
+				$item_title = $title;
+			}
 
 			?>
 				<?php  ?>
 				<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr( $title );?>" />
+				<input type="hidden" id="item_title" name="item_title" value="<?php echo esc_attr( $item_title );?>" />
 				<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo current_time( 'mysql' ); ?>" />
 				<?php // Metadata goes here.
 				if ( isset( $url ) && ! empty( $url ) && ($url) != '' ) {

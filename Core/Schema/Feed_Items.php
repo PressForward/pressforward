@@ -195,7 +195,7 @@ class Feed_Items implements HasActions, HasFilters {
 		// register_taxonomy_for_object_type( pressforward('admin.nominated')->post_type, 'post_type_name');
 	}
 
-	public static function get( $args = array() ) {
+	public function get( $args = array() ) {
 		$wp_args = array(
 			'post_type'        => pf_feed_item_post_type(),
 			'post_status'      => 'publish',
@@ -240,7 +240,7 @@ class Feed_Items implements HasActions, HasFilters {
 		return $posts;
 	}
 
-	public static function get_by_item_id( $item_id ) {
+	public function get_by_item_id( $item_id ) {
 		$args = array(
 				'meta_key'	=> pressforward( 'controller.metas' )->get_key( 'item_id' ),
 				'meta_value' => $item_id,

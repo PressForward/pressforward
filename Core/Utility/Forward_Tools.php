@@ -190,17 +190,7 @@ class Forward_Tools {
 		return array( 'user_string' => $userString, 'user_id' => $userID );
 	}
 
-	// Previous step to new step Tools
-	public function item_to_nomination( $item_id, $item_post_id ) {
-		$nomination_and_post_check = $this->is_a_pf_type( $item_id );
-		pf_log( 'Is this a PF Type?' );
-		pf_log( $nomination_and_post_check );
-		$post_check = $this->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
-		$this->metas->update_pf_meta( $item_post_id, 'nom_id', $item_id );
-		if ( $nomination_and_post_check == false ) {
-			pf_log( 'Start Transition.' );
-			$this->transition_to_readable_text( $item_post_id, true );
-
+	public function meta_for_item_pre_nomination( $item_post_id, $item_id ){
 			$user_data = $this->find_nominating_user();
 			$userID = $user_data['user_id'];
 			$userString = $user_data['user_string'];
@@ -224,6 +214,21 @@ class Forward_Tools {
 			}
 			$this->metas->update_pf_meta( $item_post_id, 'item_date', $item_date );
 			$this->metas->update_pf_meta( $item_post_id, 'item_wp_date', $item_date );
+	}
+
+	// Previous step to new step Tools
+	public function item_to_nomination( $item_id, $item_post_id ) {
+		$nomination_and_post_check = $this->is_a_pf_type( $item_id );
+		pf_log( 'Is this a PF Type?' );
+		pf_log( $nomination_and_post_check );
+		$post_check = $this->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
+		$this->metas->update_pf_meta( $item_post_id, 'nom_id', $item_id );
+		if ( $nomination_and_post_check == false ) {
+			pf_log( 'Start Transition.' );
+			$this->transition_to_readable_text( $item_post_id, true );
+
+			$this->meta_for_item_pre_nomination( $item_post_id, $item_id );
+
 			$nomination_id = $this->transition_to_nomination( $item_post_id );
 			// $this->nomination_user_transition_check( $nomination_id );
 			// Assign user status as well here.
@@ -269,12 +274,19 @@ class Forward_Tools {
 
 	public function bookmarklet_to_nomination( $item_id = false, $post ) {
 		if ( ! $item_id ) {
-			$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
-			// $post['item_id'] = $item_id;
+			$item_id = create_feed_item_id( $_POST['item_link'], $_POST['item_title'] );
 		}
 
 		$nom_and_post_check = $this->is_a_pf_type( $item_id );
 		if ( $nom_and_post_check == false ) {
+			$item_check = pressforward('schema.feed_item')->get_by_item_id($item_id);
+			var_dump($item_check, $item_id, $_POST['item_title']); die();
+			if ( !empty( $item_check ) && ( $item_check->ID > 0 ) ){
+				$this->meta_for_item_pre_nomination( $item_check->ID, $item_id );
+				$item_post = $post;
+				$item_post['ID'] = $item_check->ID;
+				$item_post = $this->item_interface->update_post( $item_post );
+			}
 			// PF NOTE: Switching post type to nomination.
 			$post['post_type'] = pressforward( 'schema.nominations' )->post_type;
 			$post['post_date'] = current_time( 'Y-m-d H:i:s' );
