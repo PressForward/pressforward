@@ -95,6 +95,7 @@ function nominate_it() {
 		$post['post_author'] = get_current_user_id();
 		$post['post_type'] = 'nomination';
 		pf_log($post);
+		$_POST = array_merge($_POST, $post);
 		// var_dump($_POST); die();
 		if ( isset( $_POST['publish'] ) && ($_POST['publish'] == 'Send to ' . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ) ) ) {
 
