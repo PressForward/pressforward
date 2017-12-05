@@ -292,7 +292,7 @@ class Metas implements HasFilters, HasActions {
 	 * @param  [type] $name [description]
 	 * @return [type]       [description]
 	 */
-	function assure_key( $name ) {
+	public function assure_key( $name ) {
 		$meta = $this->by_name( $name );
 		// pf_log('Assuring '.$name.' is PF meta.');
 		if ( ( false !== $meta ) && ! empty( $meta['move'] ) ) {
@@ -309,7 +309,7 @@ class Metas implements HasFilters, HasActions {
 	 * @param  [type] $name [description]
 	 * @return [type]       [description]
 	 */
-	function get_key( $name ) {
+	public function get_key( $name ) {
 		$meta = $this->assure_key( $name );
 		return $this->get_name( $meta );
 	}
@@ -375,13 +375,13 @@ class Metas implements HasFilters, HasActions {
 				'function'	=> __( 'Stores nomination id', 'pf' ),
 				'type'	=> array( 'struc' ),
 				'use'	=> array( 'req' ),
-				'level'	=> array( 'nomination', 'post' ),
+				'level'	=> array( 'item', 'nomination', 'post' ),
 				'serialize'	=> false,
 			),
-			'pf_nomination_post_id' => array(
-				'name' => 'pf_nomination_post_id',
-				'definition' => __( 'The WordPress postID associated with the nomination', 'pf' ),
-				'function'	=> __( 'Stores postID associated with the nominated item', 'pf' ),
+			'pf_final_step_id' => array(
+				'name' => 'pf_final_step_id',
+				'definition' => __( 'The WordPress postID associated with the post on the final step', 'pf' ),
+				'function'	=> __( 'Stores postID associated with the last step item', 'pf' ),
 				'type'	=> array( 'struc' ),
 				'use'	=> array(),
 				'level'	=> array( 'item', 'nomination', 'post' ),
@@ -649,6 +649,15 @@ class Metas implements HasFilters, HasActions {
 				'name' => 'pf_feed_last_retrieved',
 				'definition' => __( 'Last time feed was retrieved', 'pf' ),
 				'function'	=> __( 'Stores last timestamp feed was retrieved.', 'pf' ),
+				'type'	=> array( 'adm' ),
+				'use'	=> array( 'api' ),
+				'level'	=> array( 'feed' ),
+				'serialize'	=> false,
+			),
+			'pf_nominations_in_feed' => array(
+				'name' => 'pf_nominations_in_feed',
+				'definition' => __( 'Nominations received by items supplied by this feed', 'pf' ),
+				'function'	=> __( 'Number of nominations for this feed', 'pf' ),
 				'type'	=> array( 'adm' ),
 				'use'	=> array( 'api' ),
 				'level'	=> array( 'feed' ),
@@ -1024,26 +1033,6 @@ class Metas implements HasFilters, HasActions {
 			$switch_value = $field;
 		}
 		switch ( $switch_value ) {
-			case 'nominator_array':
-				$nominators = $this->get_post_pf_meta( $id, $key );
-				if ( ! is_array( $value ) ) {
-					$value = array( $value );
-				}
-				if ( ! is_array( $nominators ) ) {
-					$nominators = array( $nominators );
-				}
-				// We are doing a removal.
-				if ( 1 == count( array_diff( $value, $nominators ) ) ) {
-					$nominators = array_unique( $value );
-					continue;
-				}
-				if ( ! is_array( $value ) ) {
-					$value = array( $value );
-				}
-				$nominators = array_merge( $nominators, $value );
-				$nominators = array_unique( $nominators );
-				$value = $nominators;
-				break;
 			case 'pf_feed_item_word_count':
 				$latest_count = $this->get_post_pf_meta( $id, 'pf_word_count' );
 				if ( ($latest_count < $value ) ) {

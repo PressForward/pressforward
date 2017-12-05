@@ -8,6 +8,9 @@ use PressForward\Controllers\Stats;
 use PressForward\Core\Utility\Forward_Tools;
 use PressForward\Libraries\HTMLChecker;
 
+use DaveChild\TextStatistics as TS;
+use DaveChild\TextStatistics\Text as Text;
+
 use WP_Ajax_Response;
 use WP_Error;
 //use \WP_REST_Controller;
@@ -46,6 +49,96 @@ class StatsEndpoint implements HasActions {
 	public function register_routes() {
 		$namespace = $this->api_base['base_namespace'] . $this->api_base['version'];
 		$base = $this->api_base['endpoint'];
+		register_rest_route( $namespace, '/' . $base . '/overview', array(
+			array(
+				'methods'         => \WP_REST_Server::READABLE,
+				'callback'        => array( $this, 'overview' ),
+				'args' => array(
+				  'after_year' 	=>	array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
+					// Set the argument to be required for the endpoint.
+					'required'    => false,
+					'validate_callback' => function($page, $request_object){
+							if ( is_numeric($page) ){
+								return true;
+							} else {
+								return false;
+							}
+						},
+				  ),
+				  'after_month'	=>	array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+					// Set the argument to be required for the endpoint.
+					'required'    => false,
+					'validate_callback' => function($page, $request_object){
+							if ( is_numeric($page) ){
+								return true;
+							} else {
+								return false;
+							}
+						},
+				  ),
+				  'after_day'	=>	array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Limit query by day, use number of day.', 'pf' ),
+					// Set the argument to be required for the endpoint.
+					'required'    => false,
+					'validate_callback' => function($page, $request_object){
+							if ( is_numeric($page) ){
+								return true;
+							} else {
+								return false;
+							}
+						},
+				  ),
+				  'before_year' 	=>	array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
+					// Set the argument to be required for the endpoint.
+					'required'    => false,
+					'validate_callback' => function($page, $request_object){
+							if ( is_numeric($page) ){
+								return true;
+							} else {
+								return false;
+							}
+						},
+				  ),
+				  'before_month'	=>	array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+					// Set the argument to be required for the endpoint.
+					'required'    => false,
+					'validate_callback' => function($page, $request_object){
+							if ( is_numeric($page) ){
+								return true;
+							} else {
+								return false;
+							}
+						},
+				  ),
+				  'before_day'	=>	array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+					// Set the argument to be required for the endpoint.
+					'required'    => false,
+					'validate_callback' => function($page, $request_object){
+							if ( is_numeric($page) ){
+								return true;
+							} else {
+								return false;
+							}
+						},
+				  ),
+				),
+				'permission_callback' => function () {
+				  return true; //current_user_can( 'edit_others_posts' );
+				},
+				'priority'  => 10,
+			),
+		));
 		register_rest_route( $namespace, '/' . $base . '/authors', array(
 			array(
 				'methods'         => \WP_REST_Server::READABLE,
@@ -244,7 +337,20 @@ class StatsEndpoint implements HasActions {
 				$post_content_cleaner = str_replace(array("\n","\r", "\r\n"), ' ', $post_content_cleaner);
 				$post->stripped_post_content = strip_tags($post_content);
 				$post->wordcount = str_word_count( $post->stripped_post_content );
-				$post->source = $this->metas->get_post_pf_meta( $post->ID, 'pf_source_link' );
+				$post->sentences = Text::sentenceCount( $post->stripped_post_content );
+				$textStatistics = new TS\TextStatistics;
+				$reading_score = $textStatistics->fleschKincaidReadingEase($post->stripped_post_content);
+				$post->flesch_kincaid_score = $reading_score;
+				$item_link = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_link' );
+				$url_parts = parse_url($item_link);
+				if ( !empty($url_parts) && isset($url_parts['host']) ){
+					$post->source_link = $url_parts['host'];
+				} else {
+					$post->source_link = 'No Source Found';
+				}
+				$post->nominators = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'nominator_array' );
+				//$post->source_link = $this->metas->get_post_pf_meta( $post->ID, 'pf_source_link' );
+
 			}
 
 			return rest_ensure_response(
@@ -253,6 +359,47 @@ class StatsEndpoint implements HasActions {
 			// unencode via js with the html_entity_decode function we use elsewhere.
 		}
 		return new \WP_Error( 'rest_invalid', esc_html__( 'The page parameter is required.', 'pf' ), array( 'status' => 400 ) );
+	}
+
+	/**
+	 * This is our callback function that embeds our resource in a WP_REST_Response.
+	 *
+	 * The parameter is already sanitized by this point so we can use it without any worries.
+	 */
+	public function overview($request){
+		//\rest_ensure_response(
+		$args = array(
+			//'no_found_rows' => true,
+			'fields'	=>	'ids'
+		);
+		$date_limits = array(
+			'year',
+			'month',
+			'day'
+		);
+		$date_query = array();
+		foreach ( $date_limits as $limit ){
+			if (!empty( $request['after_'.$limit] ) ){
+				if ( !isset($date_query['after']) ){
+					$date_query['after'] = array();
+				}
+				$date_query['after'][$limit] = $request['after_'.$limit];
+			}
+			if (!empty( $request['before_'.$limit] ) ){
+				if ( !isset($date_query['before']) ){
+					$date_query['before'] = array();
+				}
+				$date_query['before'][$limit] = $request['after_'.$limit];
+			}
+		}
+		$counts = $this->stats->counts( $args, $date_query );
+
+
+		return rest_ensure_response(
+			$counts
+		);
+		// unencode via js with the html_entity_decode function we use elsewhere.
+		//return new \WP_Error( 'rest_invalid', esc_html__( 'The page parameter is required.', 'pf' ), array( 'status' => 400 ) );
 	}
 
 

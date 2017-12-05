@@ -335,7 +335,10 @@ if ( $countQT > $countQ ) {
 			// print_r($_POST); die();
 			$item_id = $this->metas->get_post_pf_meta( $_POST['ID'], 'item_id', true );
 			pf_log( 'Sending to last step ' . $item_id . ' from Nomination post ' . $_POST['ID'] );
+			ob_end_clean();
 			return $this->forward_tools->nomination_to_last_step( $item_id, $_POST['ID'] );
+		} else {
+			ob_end_clean();
 		}
 
 	}
@@ -502,16 +505,7 @@ if ( $countQT > $countQ ) {
 	}
 
 	public function toggle_nominator_array( $id, $update = true ) {
-		$nominators = $this->metas->retrieve_meta( $id, 'nominator_array' );
-		$current_user = wp_get_current_user();
-		$user_id = $current_user->ID;
-		if ( $update ) {
-			$nominators[] = $user_id;
-		} else {
-			if ( ($key = array_search( $user_id, $nominators )) !== false ) {
-				unset( $nominators[ $key ] );
-			}
-		}
+		$nominators = $this->forward_tools->update_nomination_array( $id );
 		$check = $this->metas->update_pf_meta( $id, 'nominator_array', $nominators );
 		return $check;
 	}
@@ -567,15 +561,7 @@ if ( $countQT > $countQ ) {
 					$nomCount--;
 					$this->metas->update_pf_meta( $id, 'nomination_count', $nomCount );
 					if ( 0 != $current_user->ID ) {
-						$nominators_orig = $this->metas->retrieve_meta( $id, 'nominator_array' );
-						if ( true == in_array( $current_user->ID, $nominators_orig ) ) {
-							$nominators_new = array_diff( $nominators_orig, array( $current_user->ID ) );
-							if ( empty( $nominators_new ) ) {
-								wp_delete_post( $id );
-							} else {
-								$this->metas->update_pf_meta( $id, 'nominator_array', $nominators_new );
-							}
-						}
+						$this->toggle_nominator_array($id);
 					}
 				}
 			endwhile;	else :
@@ -612,19 +598,8 @@ if ( $countQT > $countQ ) {
 														$check = 'no_user';
 						} else {
 							$nominators_orig = $this->metas->retrieve_meta( $id, 'nominator_array' );
-							if ( ! in_array( $current_user->ID, $nominators_orig ) ) {
-								$nominators = $nominators_orig;
-								$nominator = $current_user->ID;
-																$nominators[] = $current_user->ID;
-								$this->metas->update_pf_meta( $id, 'nominator_array', $nominator );
-								$nomCount = $this->metas->get_post_pf_meta( $id, 'nomination_count', true );
-								pf_log( 'So far we have a nominating count of ' . $nomCount );
-																$nomCount++;
-																pf_log( 'Now we have a nominating count of ' . $nomCount );
-								$check_meta = $this->metas->update_pf_meta( $id, 'nomination_count', $nomCount );
-																pf_log( 'Attempt to update the meta for nomination_count resulted in: ' );
-																pf_log( $check_meta );
-																$check = true;
+							if ( ! array_key_exists( $current_user->ID, $nominators_orig ) ) {
+								$check = $this->toggle_nominator_array( $id, false );
 							} else {
 								$check = 'user_nominated_already';
 							}
@@ -756,39 +731,14 @@ if ( $countQT > $countQ ) {
 			die();
 	}
 
-	function user_nomination_meta( $increase = true ) {
-		$current_user = wp_get_current_user();
-		$userID = $current_user->ID;
-		$user_nom_count = get_user_meta( $userID, 'nom_count', true );
-		if ( ! empty( $user_nom_count ) ) {
-				pf_log( 'Update nom_count in user meta for user ' . $userID );
-						$nom_counter = get_user_meta( $userID, 'nom_count', true );
-						$old_nom_counter = $nom_counter;
-			if ( $increase ) {
-				$nom_counter = $nom_counter + 1;
-			} else {
-				$nom_counter = $nom_counter -1;
-			}
-						pf_log( 'Update nom_count in user meta for user ' . $userID . ' with value of ' . $nom_counter );
-						update_user_meta( $userID, 'nom_count', $nom_counter, $old_nom_counter );
-
-		} elseif ( $increase ) {
-			pf_log( 'Create nom_count in user meta for user ' . $userID );
-						add_user_meta( $userID, 'nom_count', 1, true );
-
-		} else {
-			pf_log( 'Nothing to do with nom_count in user meta for user ' . $userID );
-			return false;
-		}
-	}
-
 	public function simple_nom_to_draft( $id = false ) {
 		global $post;
-		ob_start();
+		//ob_start();
 		$pf_drafted_nonce = $_POST['pf_nomination_nonce'];
 		if ( ! wp_verify_nonce( $pf_drafted_nonce, 'nomination' ) ) {
 			die( __( 'Nonce not recieved. Are you sure you should be drafting?', 'pf' ) );
 		} else {
+			ob_start();
 			if ( ! $id ) {
 				$id = $_POST['nom_id'];
 				// $nom = get_post($id);

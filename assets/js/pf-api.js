@@ -3,6 +3,10 @@ wp.api.loadPromise.done( function() {
 	wp.api.init({'versionString' : 'pf/v1',  'apiRoot': wp.api.utils.getRootUrl()+'wp-json/' });
 
 	jQuery(document.body).ready( function(){
+		window.leaderboardInits = {
+			authors: false,
+			validPosts: false
+		};
 		if ( 'authors' === window.pf.location || ( jQuery('body').hasClass("pressforward_page_pf-tools") ) ){
 			//window.pf.location = 'authors';
 			window.pf.stats.authors = {
@@ -40,13 +44,19 @@ wp.api.loadPromise.done( function() {
 						}
 					);
 				},
-				getLeaderboard: function(){
+				getLeaderboard: function(isInit){
+					if (isInit){
+						if (window.leaderboardInits.authors){
+							return '';
+						}
+						window.leaderboardInits.authors = true;
+					}
 					console.log('PF Author Page set', window.pf.stats.authors.pages);
 					var pageFilled = this.pageFillerFunction(window.pf.stats.authors.pages);
 					pageFilled.done(function(e){
 						if ( window.pf.stats.authors.pagesFull === false ){
 							window.pf.stats.authors.pages = window.pf.stats.authors.pages+1;
-							window.pf.stats.authors.getLeaderboard();
+							window.pf.stats.authors.getLeaderboard(false);
 						} else {
 							var sorted = Object.keys(window.pf.stats.authors.leaderboard).sort(function(a,b){return window.pf.stats.authors.leaderboard[b].count-window.pf.stats.authors.leaderboard[a].count});
 							console.log(sorted);
@@ -56,7 +66,7 @@ wp.api.loadPromise.done( function() {
 							   if(!sorted.hasOwnProperty(prop)){ continue; }
 							   var author = window.pf.stats.authors.leaderboard[sorted[prop]];
 							   //console.log(author);
-							   var authorBlock = '<br/><li id="author-'+i+'"><strong>Name:</strong> '+author.name+'<li><strong>Count:</strong> '+author.count+'</li><li><strong>Author Gender:</strong> '+author.gender+'</li><li><strong>Gender Confidence:</strong> '+author.gender_confidence+'</li></li>';
+							   var authorBlock = '<br/><li id="author-'+i+'"><strong>Name:</strong> '+author.name+'<li><strong>Count:</strong> '+author.count+'</li></li>';
 							   jQuery('#author-leaderboard ul').append(authorBlock);
 							   i++;
 						   }
@@ -88,6 +98,7 @@ wp.api.loadPromise.done( function() {
 				pagesFull: false,
 				postCount: 0,
 				leaderboard: {},
+				flesch_kincaid_score_total: 0,
 				pageFillerFunction: function( pages ){
 					return jQuery.getJSON(window.pf.stats.valid_posts.arguments(pages),
 						function( data ){
@@ -101,7 +112,8 @@ wp.api.loadPromise.done( function() {
 								console.log('PF Valid Posts Leaderboard Fills in', data);
 								jQuery.each( data, function( key, val ) {
 									console.log('PF Valid Posts Leaderboard advancing to page ', pages);
-									window.pf.stats.valid_posts.leaderboard[key] = val;
+									window.pf.stats.valid_posts.leaderboard[val.ID] = val;
+									window.pf.stats.valid_posts.flesch_kincaid_score_total += val.flesch_kincaid_score;
 									window.pf.stats.valid_posts.postCount += 1;
 								});
 								return false;
@@ -109,7 +121,13 @@ wp.api.loadPromise.done( function() {
 						}
 					);
 				},
-				getLeaderboard: function(){
+				getLeaderboard: function(isInit){
+					if (isInit){
+						if (window.leaderboardInits.validPosts){
+							return '';
+						}
+						window.leaderboardInits.validPosts = true;
+					}
 					//var postsCollection = new wp.api.collections.Posts();
 					//postsCollection.fetch({ data: { per_page: 40,  } });
 					console.log('PF Valid Posts Page set', window.pf.stats.valid_posts.pages);
@@ -118,11 +136,12 @@ wp.api.loadPromise.done( function() {
 						console.log('Checking for next step of pages ', window.pf.stats.valid_posts.pages);
 						if ( window.pf.stats.valid_posts.pagesFull === false ){
 							window.pf.stats.valid_posts.pages = window.pf.stats.valid_posts.pages+1;
-							return window.pf.stats.valid_posts.getLeaderboard();
+							return window.pf.stats.valid_posts.getLeaderboard(false);
 						} else {
 							var totalPosts = '<strong>Total PressForward Items Published:</strong> '+window.pf.stats.valid_posts.postCount+'. ';
 							jQuery('#top-level').append(totalPosts);
 							var totalWordsString = '<strong>Total WordCount:</strong> '+window.pf.stats.wordcount.total()+'. ';
+							window.pf.stats.valid_posts.flesch_kincaid_score_avg = window.pf.stats.valid_posts.flesch_kincaid_score_total / window.pf.stats.valid_posts.postCount;
 							jQuery('#top-level').append(totalWordsString);
 							var sources = window.pf.stats.sources.total();
 							var sourcesSorted = Object.keys(sources).sort(function(a,b){return sources[b]-sources[a]});
@@ -151,7 +170,7 @@ wp.api.loadPromise.done( function() {
 				},
 				pullPostsTogether: function( resultTag ) {
 					if ( !window.pf.stats.valid_posts.pagesFull ){
-						window.pf.stats.valid_posts.getLeaderboard();
+						window.pf.stats.valid_posts.getLeaderboard(false);
 					}
 					window.pf.stats.wordcount.count = 0;
 					jQuery.each(
@@ -184,7 +203,7 @@ wp.api.loadPromise.done( function() {
 					jQuery.each(
 						window.pf.stats.valid_posts.leaderboard,
 						function( index ){
-							var source = window.pf.stats.valid_posts.leaderboard[index].source;
+							var source = this.source_link;
 							if (undefined === window.pf.stats.sources.resultObj[source]){
 								window.pf.stats.sources.resultObj[source] = 1;
 							} else {
@@ -200,7 +219,7 @@ wp.api.loadPromise.done( function() {
 				},
 				pullPostsTogether: function( resultTag ) {
 					if ( !window.pf.stats.valid_posts.pagesFull ){
-						window.pf.stats.valid_posts.getLeaderboard();
+						window.pf.stats.valid_posts.getLeaderboard(false);
 						window.pf.stats.sources.assemble(resultTag);
 					} else {
 						window.pf.stats.sources.assemble(resultTag);

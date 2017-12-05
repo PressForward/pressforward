@@ -93,7 +93,7 @@ class ItemsAJAX implements HasActions {
 			$read_status = $_POST['made_readable'];
 		} else { $read_status = false; }
 		$returned = pf_delete_item_tree( $id, true, true );
-		var_dump( $returned );
+		//var_dump( $returned );
 		$vd = ob_get_clean();
 
 		$response = array(

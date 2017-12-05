@@ -33,7 +33,7 @@
 		<option value="yes" <?php if ( $metrics_config['basic'] == 'yes' ) { echo 'selected="selected"'; }?>>Yes</option>
 		<option value="no" <?php if ( $metrics_config['basic'] == 'no' ) { echo 'selected="selected"'; }?>>No</option>
 	</select>
-	<label class="description" for="pf_metrics_config[basic]"><?php echo __( 'Allow basic tracking', 'pf' ); ?></label>
+	<label class="description" for="pf_metrics_config[basic]"><?php echo __( 'Opt-in to allow us to collect non-sensitive diagnostic information for plugin improvement.', 'pf' ); ?></label>
 	<!--
 	<select id="pf_metrics_config[detailed]" name="pf_metrics_config[detailed]">
 		<option value="yes" <?php if ( $metrics_config['detailed'] == 'yes' ) { echo 'selected="selected"'; }?>>Yes</option>
@@ -41,9 +41,6 @@
 	</select>
 	<label class="description" for="pf_metrics_config[detailed]"><?php echo __( 'Allow detailed tracking', 'pf' ); ?></label>
 	-->
-</p>
-<p>
-	 Opt-in to allow us to collect non-sensitive diagnostic information for plugin improvement.
 </p>
 <hr />
 <p>

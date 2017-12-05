@@ -83,29 +83,41 @@ class Stats {
 		}
 	}
 
-	public function stats_query_for_pf_published_posts($wp_query_args){
-
-		$default_meta_query = array(
+	private function meta_query_args(){
+		return array(
 			'pf_item_check' => array(
 				'key'     => $this->metas->get_key('item_id'),
 				'compare' => 'EXISTS',
 			),
 		);
-		if (isset($wp_query_args['meta_query'])) {
-			$meta_query = wp_parse_args($wp_query_args['meta_query'], $default_meta_query);
-			unset($wp_query_args['meta_query']);
-		} else {
-			$meta_query = $default_meta_query;
-		}
+	}
+
+	private function post_status_query_args(){
 		$status = get_option( PF_SLUG . '_draft_post_status', 'draft' );
 		if ( 'draft' !== $status ){
 			$status_check = $status;
 		} else {
 			$status_check = 'publish';
 		}
+		return $status_check;
+	}
+
+	private function post_type_for_query(){
+		return get_option( PF_SLUG . '_draft_post_type', 'post' );
+	}
+
+	private function establish_query($wp_query_args){
+		$default_meta_query = $this->meta_query_args();
+		if (isset($wp_query_args['meta_query'])) {
+			$meta_query = wp_parse_args($wp_query_args['meta_query'], $default_meta_query);
+			unset($wp_query_args['meta_query']);
+		} else {
+			$meta_query = $default_meta_query;
+		}
+		$status_check = $this->post_status_query_args();
 		$default_args = array(
 			'posts_per_page' => 40,
-			'post_type'      => get_option( PF_SLUG . '_draft_post_type', 'post' ),
+			'post_type'      => $this->post_type_for_query(),
 			'post_status'    => $status_check,
 			'meta_query'     => $meta_query,
 			'paged'			 =>	1
@@ -115,6 +127,13 @@ class Stats {
 			$args['posts_per_page'] = -1;
 			unset($args['offset']);
 		}
+		return $args;
+	}
+
+	public function stats_query_for_pf_published_posts($wp_query_args){
+
+		$args = $this->establish_query($wp_query_args);
+
 		do_action('pf_stats_query_before', $args);
 		//var_dump($args); die();
 		$args = apply_filters('pf_qualified_stats_post_query', $args);
@@ -193,8 +212,8 @@ class Stats {
 		$authors[$author_slug] = array(
 										'count' 			=> 1,
 										'name'				=> $author,
-										'gender'			=> $this->set_author_gender($author),
-										'gender_confidence'	=> $this->set_author_gender_confidence()
+										//'gender'			=> $this->set_author_gender($author),
+										//'gender_confidence'	=> $this->set_author_gender_confidence()
 									);
 
 
@@ -217,6 +236,37 @@ class Stats {
 		$s .= ' This author is likely '. $author['gender'] . '. Confidence: ' . $author['gender_confidence'];
 		$s .= '</li>';
 		return $s;
+	}
+
+	public function counts($args, $date_query = array()){
+		$query = $args;
+		$query['date_query'] = $date_query;
+		$query['posts_per_page'] = 20;
+
+		$r = array();
+
+		$posts_q_args = $query;
+		$posts_q = $this->stats_query_for_pf_published_posts($posts_q_args);
+		$r['published'] = array(
+			'count' => $posts_q->found_posts
+		);
+
+		$nominations_q_args = $this->establish_query($query);
+		$nominations_q_args['post_status'] = 'any';
+		$nominations_q_args['post_type'] = pressforward('schema.nominations')->post_type;
+		$nominations_q = new WP_Query($nominations_q_args);
+		$r['nominations'] = array(
+			'count' => $nominations_q->found_posts
+		);
+
+		$items_q_args = $this->establish_query($query);
+		$items_q_args['post_type'] = pressforward('schema.feed_item')->post_type;
+		$items_q = new WP_Query($items_q_args);
+		$r['items'] = array(
+			'count' =>  $items_q->found_posts
+		);
+
+		return $r;
 	}
 
 }

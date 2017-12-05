@@ -75,6 +75,7 @@ class PF_Advancement implements Advance_System {
 	}
 
 	// Step Tools
+	// NOTE: The old ID should always be a nomination.
 	public function to_last_step( $post = array() ) {
 		$old_id = $post['ID'];
 		unset( $post['ID'] );
@@ -86,6 +87,7 @@ class PF_Advancement implements Advance_System {
 		$post['post_content'] = pressforward( 'controller.readability' )->process_in_oembeds( pressforward( 'controller.metas' )->get_post_pf_meta( $old_id, 'item_link' ), $post['post_content'] );
 		$post['post_content'] = pressforward('utility.forward_tools')->append_source_statement($old_id, $post['post_content'], true);
 		$id = pressforward( 'controller.items' )->insert_post( $post, true, pressforward( 'controller.metas' )->get_post_pf_meta( $old_id, 'item_id' ) );
+
 		do_action( 'pf_transition_to_last_step', $id );
 		return $id;
 	}
@@ -98,6 +100,7 @@ class PF_Advancement implements Advance_System {
 		$orig_post_id = $post['ID'];
 		unset( $post['ID'] );
 		$id = pressforward( 'controller.items' )->insert_post( $post, false, pressforward( 'controller.metas' )->get_post_pf_meta( $orig_post_id, 'item_id' ) );
+		pf_log($id);
 		do_action( 'pf_transition_to_nomination', $id );
 		return $id;
 	}
@@ -150,7 +153,7 @@ class PF_Advancement implements Advance_System {
 		// $theDate = getdate();
 		// $w = date('W');
 		$r = array(
-								'meta_key' => 'item_id',
+								'meta_key' => $this->metas->get_key('item_id'),
 								'meta_value' => $item_id,
 								'post_type'	=> array( 'post', pf_feed_item_post_type() ),
 							);
@@ -162,11 +165,14 @@ class PF_Advancement implements Advance_System {
 
 		}
 
+		$r['post_status'] = array('publish', 'alert_specimen', 'under_review', 'future', 'draft', 'pending', 'private' );
+
 		if ( false != $post_type ) {
 			$r['post_type'] = $post_type;
 		}
 
 		$postsAfter = new \WP_Query( $r );
+		//var_dump($postsAfter, $r); die();
 		pf_log( ' Checking for posts with item ID ' . $item_id . ' returned query with ' . $postsAfter->post_count . ' items.' );
 		// pf_log($postsAfter);
 		return $postsAfter;
