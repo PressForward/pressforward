@@ -66,7 +66,7 @@ class Feed_Item extends BasicModel {
 	}
 
 	private function create_hash_id( $url, $title ) {
-		$hash = md5( $url . $title );
+		$hash = md5( $url );
 		return $hash;
 	}
 

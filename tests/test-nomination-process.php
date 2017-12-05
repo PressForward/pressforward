@@ -92,7 +92,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'test_feed_item_nom_create_middle' ) );
 		wp_set_current_user( $user_id );
 		$time = time();
-		$item_id = md5('Test linkTest item1');
+		$item_id = create_feed_item_id('Test link','Test item1');
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => 'Test item1',
@@ -127,7 +127,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'test_feed_item_nom_create_middle' ) );
 		wp_set_current_user( $user_id );
 		$time = time();
-		$item_id = md5('Test linkTest item1');
+		$item_id = create_feed_item_id('Test link','Test item1');
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => 'Test item1',
@@ -156,7 +156,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$time = time();
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'feed_item_meta_increment' ) );
 		wp_set_current_user( $user_id );
-		$item_id = md5('Test linkTest item2');
+		$item_id = create_feed_item_id('Test link', 'Test item2');
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => 'Test item2',
@@ -208,7 +208,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		wp_set_current_user( $user_id );
 		$title = 'Test item4';
 		$url = 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=3';
-		$item_id = md5($url.$title);
+		$item_id = create_feed_item_id($url,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -270,7 +270,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		wp_set_current_user( $user_id );
 		$title = 'Test item5';
 		$url = 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=23';
-		$item_id = md5($url.$title);
+		$item_id = create_feed_item_id($url,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -334,7 +334,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		wp_set_current_user( $user_id );
 		$title = 'Test item4';
 		$url = 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=3';
-		$item_id = md5($url.$title);
+		$item_id = create_feed_item_id($url,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -699,7 +699,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$time = time();
 		$link = 'http://aramzs.github.io/tools/humans/ux/2017/02/08/audience-behavior-jcarn.html?cb=20';
 		$title = 'Test item20';
-		$item_id = md5($link.$title);
+		$item_id = create_feed_item_id($link,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -751,7 +751,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$time = time();
 		$link = 'http://aramzs.github.io/tools/humans/ux/2017/02/08/audience-behavior-jcarn.html?cb=29';
 		$title = 'Test item29';
-		$item_id = md5($link.$title);
+		$item_id = create_feed_item_id($link,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -796,7 +796,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$time = time();
 		$link = 'http://aramzs.github.io/tools/humans/ux/2017/02/08/audience-behavior-jcarn.html?cb=29';
 		$title = 'Test item29';
-		$item_id = md5($link.$title);
+		$item_id = create_feed_item_id($link,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
