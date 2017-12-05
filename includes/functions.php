@@ -341,7 +341,7 @@ function pf_feed_object( $itemTitle = '', $sourceTitle = '', $itemDate = '', $it
 }
 
 function create_feed_item_id( $url, $title ) {
-	$hash = md5( $url . $title );
+	$hash = md5( untrailingslashit($url) );
 	return $hash;
 }
 
