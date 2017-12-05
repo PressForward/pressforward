@@ -428,6 +428,7 @@ class Forward_Tools {
 	}
 
 	public function bookmarklet_to_nomination( $item_id = false, $post ) {
+		$_POST = array_merge($_POST, $post);
 		if ( ! $item_id ) {
 			$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 			// $post['item_id'] = $item_id;
