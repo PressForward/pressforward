@@ -962,11 +962,10 @@ function prep_archives_query( $q ) {
 		$read_id = pf_get_relationship_type_id( 'archive' );
 		//It is bad to use SQL_CALC_FOUND_ROWS, but we need it to replicate the same behaviour as non-archived items (including pagination).
 		$q = $wpdb->prepare("
-				SELECT SQL_CALC_FOUND_ROWS {$wpdb->posts}.*, {$wpdb->postmeta}.*
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
 				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->posts}.post_status = 'removed_feed_item'
 				AND {$wpdb->postmeta}.meta_key = 'pf_archive'
 				AND {$wpdb->postmeta}.meta_value > 0
 				AND {$wpdb->posts}.ID

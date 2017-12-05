@@ -287,7 +287,7 @@ class Nominated implements HasActions {
 
 			echo '</div><!-- End main -->';
 if ( $countQT > $countQ ) {
-    $page += 1; //Why above (start of the file) we have a "$page = $page -1;"? I don't know why, so I add 1 back here for the pagination to work.
+
 	if ( $page == 0 ) { $page = 1; }
 	$pagePrevNb = $page -1;
 	$pageNextNb = $page + 1;
