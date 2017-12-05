@@ -392,7 +392,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$attempt = pressforward('controller.advancement')->get_pf_type_by_id( $item_id, $post_type );
 		$this->assertTrue( ($attempt !== false) );
 
-		$post_exists = pressforward('utility.forward_tools')->is_a_pf_type($item_id);
+		$post_exists = pressforward('utility.forward_tools')->is_a_pf_type($item_id, $post_type);
 		$this->assertTrue( ($post_exists !== false) );
 		$this->assertGreaterThan( 0,  $post_exists);
 		$this->assertEquals( $post_exists, $nomination );
@@ -476,7 +476,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$post_type = array( 'post', pressforward( 'schema.nominations' )->post_type );
 
 		// Check by item_id.
-		$nom_and_post_check = pressforward('utility.forward_tools')->is_a_pf_type( $item_id );
+		$nom_and_post_check = pressforward('utility.forward_tools')->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
 		$this->assertTrue( ($nom_and_post_check !== false) );
 
 		// Attempt to nominate twice
@@ -544,7 +544,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$post_type = array( 'post', pressforward( 'schema.nominations' )->post_type );
 
 		// Check by item_id.
-		$nom_and_post_check = pressforward('utility.forward_tools')->is_a_pf_type( $item_id );
+		$nom_and_post_check = pressforward('utility.forward_tools')->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
 		$this->assertTrue( ($nom_and_post_check !== false) );
 
 		// Attempt to nominate twice
@@ -641,7 +641,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$post_type = array( 'post', pressforward( 'schema.nominations' )->post_type );
 
 		// Check by item_id.
-		$nom_and_post_check = pressforward('utility.forward_tools')->is_a_pf_type( $item_id );
+		$nom_and_post_check = pressforward('utility.forward_tools')->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
 		$this->assertTrue( ($nom_and_post_check !== false) );
 
 		// Attempt to nominate via bookmarklet
@@ -849,7 +849,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		//var_dump(get_post_meta($final_id)); die();
 		$this->check_standard_metrics($feed_item_id, $final_id, $title);
 
-		$nomination_and_post_check = pressforward('utility.forward_tools')->is_a_pf_type( $item_id );
+		$nomination_and_post_check = pressforward('utility.forward_tools')->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
 		$this->assertEquals($nomination_and_post_check, $nomination_two_id);
 		$this->assertEquals( get_option( PF_SLUG . '_draft_post_type', 'post' ), 'post' );
 		$final_post = get_post($final_id);
