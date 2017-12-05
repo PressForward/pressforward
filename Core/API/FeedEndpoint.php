@@ -37,9 +37,14 @@ class FeedEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 				'method' => 'filter_wp_to_pf_in_terms',
 				'priority'  => 10,
 				'args' => 3,
-			),
+			)
 		);
 		return $filter;
+	}
+
+	public function filter_in_nomination_count( $data, $post, $request ){
+		var_dump($data);
+		return $data;
 	}
 
 

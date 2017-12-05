@@ -418,7 +418,7 @@ class Relate implements HasActions {
 			// var_dump('IDs: ');
 			// var_dump($id_list); die();
 			ob_start();
-			var_dump( $q );
+			//var_dump( $q );
 			$response = array(
 					'what' => 'relationships',
 					'action' => 'pf_archive_all_nominations',

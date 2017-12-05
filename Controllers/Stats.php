@@ -212,8 +212,8 @@ class Stats {
 		$authors[$author_slug] = array(
 										'count' 			=> 1,
 										'name'				=> $author,
-										'gender'			=> $this->set_author_gender($author),
-										'gender_confidence'	=> $this->set_author_gender_confidence()
+										//'gender'			=> $this->set_author_gender($author),
+										//'gender_confidence'	=> $this->set_author_gender_confidence()
 									);
 
 
