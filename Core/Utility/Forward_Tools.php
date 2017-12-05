@@ -348,7 +348,7 @@ class Forward_Tools {
 
 	// Previous step to new step Tools
 	public function item_to_nomination( $item_id, $item_post_id ) {
-		$nomination_and_post_check = $this->is_a_pf_type( $item_id );
+		$nomination_and_post_check = $this->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
 		pf_log( 'Is this a PF Type?' );
 		pf_log( $nomination_and_post_check );
 		//var_dump($nomination_and_post_check); die();
@@ -433,7 +433,7 @@ class Forward_Tools {
 			// $post['item_id'] = $item_id;
 		}
 
-		$nom_and_post_check = $this->is_a_pf_type( $item_id );
+		$nom_and_post_check = $this->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
 		if ( $nom_and_post_check == false ) {
 			// PF NOTE: Switching post type to nomination.
 			$post['post_type'] = pressforward( 'schema.nominations' )->post_type;
