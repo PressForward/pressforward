@@ -378,10 +378,10 @@ class Metas implements HasFilters, HasActions {
 				'level'	=> array( 'item', 'nomination', 'post' ),
 				'serialize'	=> false,
 			),
-			'pf_nomination_post_id' => array(
-				'name' => 'pf_nomination_post_id',
-				'definition' => __( 'The WordPress postID associated with the nomination', 'pf' ),
-				'function'	=> __( 'Stores postID associated with the nominated item', 'pf' ),
+			'pf_final_step_id' => array(
+				'name' => 'pf_final_step_id',
+				'definition' => __( 'The WordPress postID associated with the post on the final step', 'pf' ),
+				'function'	=> __( 'Stores postID associated with the last step item', 'pf' ),
 				'type'	=> array( 'struc' ),
 				'use'	=> array(),
 				'level'	=> array( 'item', 'nomination', 'post' ),

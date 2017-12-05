@@ -30,6 +30,10 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$parent_id = wp_get_post_parent_id( $post_id );
 		$this->assertGreaterThan(0, $parent_id);
 		if ( false != $parent_id ){
+			$post = get_post($parent_id);
+			if ( 'pf_feed' !== $post->post_type){
+				return true;
+			}
 			$feedNomCount = pressforward('controller.metas')->get_post_pf_meta( $parent_id, 'pf_nominations_in_feed', true );
 			$this->assertGreaterThan(0, $feedNomCount);
 			$this->assertEquals($count, $feedNomCount);
@@ -786,7 +790,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 	}
 
 	public function test_feed_item_to_last_step_followed_by_nomination() {
-		$feed_id = $this->factory->feed->create();
+		$feed_id = $this->factory->feed->create(array( 'post_title' => 'feed_for_test_feed_item_to_last_step_followed_by_nomination' ));
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'test_feed_item_nom_create_middle' ) );
 		wp_set_current_user( $user_id );
 		$time = time();
@@ -832,7 +836,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 
 		$nomination_post = get_post($nomination_two_id);
 
-		$this->assertEquals($nomination_post->post_type, 'nomination');
+		$this->assertEquals('nomination', $nomination_post->post_type);
 
 		$this->assertEquals($nomination_two_id, $nominate);
 
@@ -852,22 +856,242 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$this->assertEquals( get_option( PF_SLUG . '_draft_post_type', 'post' ), $final_post->post_type );
 		$this->assertEquals( get_post_meta( $final_id, 'item_id', true ), $item_id );
 
-		$nominators = pressforward('utility.forward_tools')->apply_nomination_data($final_id);
-		pressforward('controller.metas')->update_pf_meta( $final_id, 'nominator_array', $nominators );
+//		$nominators = pressforward('utility.forward_tools')->apply_nomination_data($final_id. false, true);
+//		pressforward('controller.metas')->update_pf_meta( $final_id, 'nominator_array', $nominators );
 
 		//$final_step_parent = pf_is_drafted( $item_id );
 		//$this->assertEquals($final_step_parent, $final_id);
-		var_dump($nominators = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nominator_array' )); var_dump($user_id_2, array_key_exists($user_id_2, $nominators)); //die();
-		$this->assertTrue(array_key_exists($user_id_2, $nominators));
+		$nom_nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_two_id, 'nominator_array' );
+		//var_dump($nom_nominators);
+		//var_dump($nominators = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nominator_array' )); var_dump($user_id_2, array_key_exists($user_id_2, $nominators)); die();
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nominator_array' );
-
-		$exists = array_key_exists($user_id_2, $nominators);
+		$this->assertTrue(array_key_exists($user_id_2, $nominators));
+		$exists = array_key_exists($user_id, $nominators);
 		$this->assertTrue( $exists );
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nomination_count' );
-		$this->assertEquals($nomination_count, 2);
-		//$this->check_standard_nomination_metrics($final_id, $user_id_2, 2);
 
-		$this->check_feed_nominations_incremented($final_id, 1);
+		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nomination_count' );
+		$this->assertEquals(2, $nomination_count);
+		$this->check_standard_nomination_metrics($final_id, $user_id_2, 2);
+
+		$this->check_feed_nominations_incremented($final_id, 2);
+
+	}
+
+	/**
+	 * [test_nominate_then_bookmarklet description]
+	 *
+	 * Issue #961
+	 * @return {[type]} [description]
+	 */
+	public function test_nominate_then_bookmarklet_sequentials() {
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'bookmarklet_to_nomination8' ) );
+		wp_set_current_user( $user_id );
+		$_POST = array();
+		$title = "bookmarklet test";
+		$time = time();
+		$post = array(
+			'post_title' => $title,
+			'item_link' => 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=2389',
+			'item_content' => 'Test content',
+			'source_title' => 'Test source title',
+			'sortable_item_date' => 10000,
+			'item_date' => 20000,
+			'item_author' => 'foo',
+			'item_feat_img' => 'Test feat img',
+			'item_wp_date' => $time,
+			'post_tags'	=> 'test'
+		);
+		$_POST = array_merge($_POST, $post);
+		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+		$feed_id = $this->factory->feed->create();
+		$post['post_parent'] = $feed_id;
+
+		$post['item_title'] = $title;
+		$feed_item_id = $this->factory->feed_item->create( $post );
+
+		$nomination_id = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $feed_item_id );
+
+		$user_id_2 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type' ) );
+		wp_set_current_user( $user_id_2 );
+
+		$nomination_id_two = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
+		$this->assertEquals($nomination_id, $nomination_id_two);
+
+		$this->check_standard_metrics($feed_item_id, $nomination_id_two, $title);
+
+		$this->check_standard_nomination_metrics($nomination_id_two, $user_id_2, 2);
+
+		$this->check_feed_nominations_incremented($nomination_id_two, 2);
+
+		$user_id_3 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type3' ) );
+		wp_set_current_user( $user_id_3 );
+
+		$nomination_id_three = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
+		$this->assertEquals($nomination_id, $nomination_id_three);
+
+		$this->check_standard_metrics($feed_item_id, $nomination_id_three, $title);
+
+		$this->check_standard_nomination_metrics($nomination_id_three, $user_id_3, 3);
+
+		$this->check_feed_nominations_incremented($nomination_id_three, 3);
+
+
+		$user_id_4 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type4' ) );
+		wp_set_current_user( $user_id_4 );
+		$nomination_id_four = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $feed_item_id );
+		$this->assertEquals($nomination_id, $nomination_id_four);
+
+		$this->check_standard_metrics($feed_item_id, $nomination_id_four, $title);
+
+		$this->check_standard_nomination_metrics($nomination_id_four, $user_id_3, 4);
+
+		$this->check_feed_nominations_incremented($nomination_id_four, 4);
+
+	}
+
+	/**
+	 * [test_nominate_then_bookmarklet description]
+	 *
+	 * Issue #961
+	 * @return {[type]} [description]
+	 */
+	public function test_bookmarklet_then_nominate_sequentials() {
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'bookmarklet_to_nomination8' ) );
+		wp_set_current_user( $user_id );
+		$_POST = array();
+		$title = "bookmarklet test";
+		$time = time();
+		$post = array(
+			'post_title' => $title,
+			'item_link' => 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=2389',
+			'item_content' => 'Test content',
+			'source_title' => 'Test source title',
+			'sortable_item_date' => 10000,
+			'item_date' => 20000,
+			'item_author' => 'foo',
+			'item_feat_img' => 'Test feat img',
+			'item_wp_date' => $time,
+			'post_tags'	=> 'test'
+		);
+		$_POST = array_merge($_POST, $post);
+		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+		$feed_id = $this->factory->feed->create();
+		$post['post_parent'] = $feed_id;
+
+		$post['item_title'] = $title;
+		$feed_item_id = $this->factory->feed_item->create( $post );
+
+		$nomination_id = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
+
+		$user_id_2 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type' ) );
+		wp_set_current_user( $user_id_2 );
+
+		$nomination_id_two = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $feed_item_id );
+		$this->assertEquals($nomination_id, $nomination_id_two);
+
+		$this->check_standard_metrics($feed_item_id, $nomination_id_two, $title);
+
+		$this->check_standard_nomination_metrics($nomination_id_two, $user_id_2, 2);
+
+		$this->check_feed_nominations_incremented($nomination_id_two, 2);
+
+		$user_id_3 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type3' ) );
+		wp_set_current_user( $user_id_3 );
+
+		$nomination_id_three = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
+		$this->assertEquals($nomination_id, $nomination_id_three);
+
+		$this->check_standard_metrics($feed_item_id, $nomination_id_three, $title);
+
+		$this->check_standard_nomination_metrics($nomination_id_three, $user_id_3, 3);
+
+		$this->check_feed_nominations_incremented($nomination_id_three, 3);
+
+
+		$user_id_4 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type4' ) );
+		wp_set_current_user( $user_id_4 );
+		$nomination_id_four = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $feed_item_id );
+		$this->assertEquals($nomination_id, $nomination_id_four);
+
+		$this->check_standard_metrics($feed_item_id, $nomination_id_four, $title);
+
+		$this->check_standard_nomination_metrics($nomination_id_four, $user_id_3, 4);
+
+		$this->check_feed_nominations_incremented($nomination_id_four, 4);
+
+	}
+
+	/**
+	 * [test_nominate_then_bookmarklet description]
+	 *
+	 * Issue #961
+	 * @return {[type]} [description]
+	 */
+	public function test_bookmarklet_to_publish_then_nominate_sequentials() {
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'bookmarklet_to_nomination8' ) );
+		wp_set_current_user( $user_id );
+		$_POST = array();
+		$title = "bookmarklet test";
+		$time = time();
+		$post = array(
+			'post_title' => $title,
+			'item_link' => 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=2389',
+			'item_content' => 'Test content',
+			'source_title' => 'Test source title',
+			'sortable_item_date' => 10000,
+			'item_date' => 20000,
+			'item_author' => 'foo',
+			'item_feat_img' => 'Test feat img',
+			'item_wp_date' => $time,
+			'post_tags'	=> 'test'
+		);
+		$_POST = array_merge($_POST, $post);
+		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+		$feed_id = $this->factory->feed->create();
+		$post['post_parent'] = $feed_id;
+
+		$post['item_title'] = $title;
+		$feed_item_id = $this->factory->feed_item->create( $post );
+
+		$last_step_id = pressforward('utility.forward_tools')->bookmarklet_to_last_step(false, $post);
+
+		$nomination_id = $feedNomCount = pressforward('controller.metas')->get_post_pf_meta( $last_step_id, 'nom_id', true );
+
+		$user_id_2 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type' ) );
+		wp_set_current_user( $user_id_2 );
+
+		$nomination_id_two = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $feed_item_id );
+		$this->assertEquals($nomination_id, $nomination_id_two);
+
+		$this->check_standard_metrics($feed_item_id, $nomination_id_two, $title);
+
+		$this->check_standard_nomination_metrics($nomination_id_two, $user_id_2, 2);
+
+		$this->check_feed_nominations_incremented($nomination_id_two, 2);
+
+		$user_id_3 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type3' ) );
+		wp_set_current_user( $user_id_3 );
+
+		$nomination_id_three = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
+		$this->assertEquals($nomination_id, $nomination_id_three);
+
+		$this->check_standard_metrics($feed_item_id, $nomination_id_three, $title);
+
+		$this->check_standard_nomination_metrics($nomination_id_three, $user_id_3, 3);
+
+		$this->check_feed_nominations_incremented($nomination_id_three, 3);
+
+
+		$user_id_4 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type4' ) );
+		wp_set_current_user( $user_id_4 );
+		$nomination_id_four = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $feed_item_id );
+		$this->assertEquals($nomination_id, $nomination_id_four);
+
+		$this->check_standard_metrics($feed_item_id, $nomination_id_four, $title);
+
+		$this->check_standard_nomination_metrics($nomination_id_four, $user_id_3, 4);
+
+		$this->check_feed_nominations_incremented($nomination_id_four, 4);
 
 	}
 }

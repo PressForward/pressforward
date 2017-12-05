@@ -335,7 +335,10 @@ if ( $countQT > $countQ ) {
 			// print_r($_POST); die();
 			$item_id = $this->metas->get_post_pf_meta( $_POST['ID'], 'item_id', true );
 			pf_log( 'Sending to last step ' . $item_id . ' from Nomination post ' . $_POST['ID'] );
+			ob_end_clean();
 			return $this->forward_tools->nomination_to_last_step( $item_id, $_POST['ID'] );
+		} else {
+			ob_end_clean();
 		}
 
 	}
@@ -730,11 +733,12 @@ if ( $countQT > $countQ ) {
 
 	public function simple_nom_to_draft( $id = false ) {
 		global $post;
-		ob_start();
+		//ob_start();
 		$pf_drafted_nonce = $_POST['pf_nomination_nonce'];
 		if ( ! wp_verify_nonce( $pf_drafted_nonce, 'nomination' ) ) {
 			die( __( 'Nonce not recieved. Are you sure you should be drafting?', 'pf' ) );
 		} else {
+			ob_start();
 			if ( ! $id ) {
 				$id = $_POST['nom_id'];
 				// $nom = get_post($id);

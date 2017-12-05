@@ -59,13 +59,13 @@ class Forward_Tools {
 		return array( 'nominators' => $nominators, 'applied' => $applied );
 	}
 
-	public function apply_nomination_count( $id, $user_id = false ){
+	public function apply_nomination_count( $id, $user_id = false, $is_post = false ){
 		$nomCount = $this->metas->get_post_pf_meta( $id, 'nomination_count', true );
 		if ( empty( $nomCount ) ) {
 			$nomCount = 0;
 		}
 		$parent_id = wp_get_post_parent_id( $id );
-		if ( false != $parent_id ){
+		if ( false != $parent_id && !$is_post ){
 			$feedNomCount = $this->metas->get_post_pf_meta( $parent_id, 'pf_nominations_in_feed', true );
 			if (empty($feedNomCount)){
 				$feedNomCount = 0;
@@ -79,14 +79,14 @@ class Forward_Tools {
 		return $nomCount;
 	}
 
-	public function revoke_nomination_count( $id, $user_id = false ){
+	public function revoke_nomination_count( $id, $user_id = false, $is_post = false ){
 		$nomCount = $this->metas->get_post_pf_meta( $id, 'nomination_count', true );
 		if ( empty( $nomCount ) ) {
 			$nomCount = 0;
 		}
 
 		$parent_id = wp_get_post_parent_id( $id );
-		if ( false != $parent_id ){
+		if ( false != $parent_id && !$is_post ){
 			$feedNomCount = $this->metas->get_post_pf_meta( $parent_id, 'pf_nominations_in_feed', true );
 			if (empty($feedNomCount)){
 				$feedNomCount = 0;
@@ -144,16 +144,20 @@ class Forward_Tools {
 		return $noms_counted;
 	}
 
-	public function apply_nomination_data( $id, $user_id = false ){
+	public function apply_nomination_data( $id, $user_id = false, $is_post = false ){
 		$user_id = $this->assure_user_id($user_id);
 		$nominators = $this->apply_nomination_array( $id, $user_id );
 		//var_dump($id, $nominators);
-		if ( $nominators['applied'] ){
+		if ( $nominators['applied'] && !$is_post ){
 			$this->apply_nomination_user_data( $id, $user_id );
 			$this->apply_nomination_count( $id, $user_id );
-		} else {
+		} else if ( !$is_post ) {
 			$this->revoke_nomination_user_data( $id, $user_id );
 			$this->revoke_nomination_count( $id, $user_id );
+		} else if ( $nominators['applied'] && $is_post ){
+			$this->apply_nomination_count( $id, $user_id, true );
+		} else if ( $is_post ) {
+			$this->revoke_nomination_count( $id, $user_id, true );
 		}
 		return $nominators['nominators'];
 	}
@@ -170,6 +174,7 @@ class Forward_Tools {
 		}
 		$newPostID = $this->advance_interface->to_last_step( $d_post );
 		pf_log( $newPostID );
+		$this->metas->update_pf_meta($nomination_id, 'pf_final_step_id', $newPostID);
 		// $this->metas->transition_post_meta($post_ID, $newPostID);
 		if ( $this->item_interface->is_error( $newPostID ) ) {
 			pf_log( $newPostID );
@@ -265,11 +270,12 @@ class Forward_Tools {
 	function nomination_user_transition_check( $id, $item_id, $can_delete = false ) {
 		$nominators = $this->apply_nomination_data($id);
 		$this->metas->update_pf_meta( $id, 'nominator_array', $nominators );
-		$final_step_parent = pf_is_drafted( $item_id );
+		$final_step_parent = $this->metas->get_post_pf_meta( $id, 'pf_final_step_id' );
 		if ( 0 !== $final_step_parent && false !== $final_step_parent){
 			// The nomination has already been pushed to final step.
 			// Increment it as well
-			$nominators = $this->apply_nomination_data($final_step_parent);
+			//var_dump($final_step_parent); die();
+			$nominators = $this->apply_nomination_data($final_step_parent, false, true);
 			$this->metas->update_pf_meta( $final_step_parent, 'nominator_array', $nominators );
 		}
 		return $nominators;
