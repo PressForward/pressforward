@@ -287,7 +287,7 @@ class Nominated implements HasActions {
 
 			echo '</div><!-- End main -->';
 if ( $countQT > $countQ ) {
-
+	$page += 1;
 	if ( $page == 0 ) { $page = 1; }
 	$pagePrevNb = $page -1;
 	$pageNextNb = $page + 1;
