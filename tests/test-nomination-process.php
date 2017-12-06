@@ -794,7 +794,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'test_feed_item_nom_create_middle' ) );
 		wp_set_current_user( $user_id );
 		$time = time();
-		$link = 'http://aramzs.github.io/tools/humans/ux/2017/02/08/audience-behavior-jcarn.html?cb=29';
+		$link = 'http://appleinsider.com/articles/17/12/05/honors-new-view-10-phone-brings-iphone-x-animoji-to-android?cb=29';
 		$title = 'Test item29';
 		$item_id = create_feed_item_id($link,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
@@ -891,7 +891,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$time = time();
 		$post = array(
 			'post_title' => $title,
-			'item_link' => 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=2389',
+			'item_link' => 'http://appleinsider.com/articles/17/12/05/honors-new-view-10-phone-brings-iphone-x-animoji-to-android?foo=bar',
 			'item_content' => 'Test content',
 			'source_title' => 'Test source title',
 			'sortable_item_date' => 10000,
@@ -963,7 +963,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$time = time();
 		$post = array(
 			'post_title' => $title,
-			'item_link' => 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=2389',
+			'item_link' => 'http://appleinsider.com/articles/17/12/05/honors-new-view-10-phone-brings-iphone-x-animoji-to-android',
 			'item_content' => 'Test content',
 			'source_title' => 'Test source title',
 			'sortable_item_date' => 10000,
@@ -1035,7 +1035,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$time = time();
 		$post = array(
 			'post_title' => $title,
-			'item_link' => 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=2389',
+			'item_link' => 'https://www.washingtonpost.com/news/powerpost/wp/2017/12/05/dozens-of-republicans-now-clamoring-for-a-dreamers-fix-by-years-end/',
 			'item_content' => 'Test content',
 			'source_title' => 'Test source title',
 			'sortable_item_date' => 10000,
