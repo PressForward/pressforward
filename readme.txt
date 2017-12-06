@@ -42,9 +42,9 @@ PressForward is a free plugin that provides an editorial workflow for content ag
 * Optional auto-redirect back to original source
 * Export an RSS feed that combines all content from site's feed list
 
-Instructions for use are found in our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki).
+Instructions for use are found in our [User Manual](https://pressforwardadmin.gitbooks.io/pressforward-documentation/content/).
 
-[See how we compare to other WordPress plugins](https://github.com/PressForward/pressforward/wiki/FAQ#how-does-pressforward-compare-to-other-plugins).
+[See how we compare to other WordPress plugins](https://www.gitbook.com/book/pressforwardadmin/pressforward-documentation/edit#/edit/changes/1/faq.md?_k=jn4jbu).
 
 The PressForward Plugin is developed and maintained by the [Roy Rosenzweig Center for History and New Media](http://chnm.gmu.edu) at [George Mason University](http://gmu.edu) as part of the [PressForward Project](http://pressforward.org), generously funded by the Alfred P. Sloan Foundation. Our developers include [Aram Zucker-Scharff](http://aramzs.me), [Boone B. Gorges](http://boone.gorg.es), and [Jeremy Boggs](http://clioweb.org). PressForward is free to use and modify under a [GNU GPL2 license](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
 
@@ -52,7 +52,7 @@ The PressForward Plugin is developed and maintained by the [Roy Rosenzweig Cente
 
 == Installation ==
 
-Our [Five-Step Quick Start Guide](https://github.com/PressForward/pressforward/wiki/Quick-Start-Guide) can be found on our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki/).
+Our [Five-Step Quick Start Guide](https://pressforwardadmin.gitbooks.io/pressforward-documentation/content/quick-start-guide.html) can be found in our [User Manual](https://pressforwardadmin.gitbooks.io/pressforward-documentation/content/).
 
 * Search the [WordPress Plugin Directory](http://wordpress.org/plugins/) and download the PressForward plugin; or
 * Go to the [latest version on GitHub](https://github.com/PressForward/pressforward/tags).
@@ -62,11 +62,11 @@ Our [Five-Step Quick Start Guide](https://github.com/PressForward/pressforward/w
 * Activate plugin via the "Installed Plugins" menu in the Wordpress Dashboard
 * The PressForward menu should now appear in your Wordpress Dashboard. Clicking on the PressForward icon will display tabs.
 
-A complete [User Manual](https://github.com/PressForward/pressforward/wiki/User-Manual) also is available on our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki/).
+A complete [User Manual](https://pressforwardadmin.gitbooks.io/pressforward-documentation/content/) also is available.
 
 == Frequently Asked Questions ==
 
-A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be found on our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki/).
+A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbooks.io/pressforward-documentation/content/faq.html)
 
 == Screenshots ==
 
