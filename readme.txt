@@ -82,6 +82,23 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 
 == Changelog ==
 
+= 5.0.0 =
+
+* Fixed a bug that caused archived posts to be hidden due to pagination.
+* Fix a bug that prevented the bookmarklet from increasing the nomination count on nominated posts.
+* Fixed multiple bugs with the nomination counting process.
+* Functionality of the tabs in Tools restored.
+* OPML files no longer include empty outline elements.
+* When a feed’s url is updated the preview of the url in Subscribed Feeds now reflects the updated url rather than the GUID.
+* New endpoints with statistics about PressForward posts.
+* The ```wp-json/pf/v1/stats/general``` endpoint includes general data about the PressForward installation including a count of all published PF posts, a count of all nominations, and a count of all the items.
+* The ```wp-json/pf/v1/stats/pf_posted``` endpoint includes data on every PressForward post that has been published. Included are metrics for each post such as a word and sentence count, a flesch-kincaid score, and a list of users who nominated the item
+* The ```wp-json/pf/v1/stats/authors``` endpoint includes statistics about the authors of PressForward published posts.
+* Stats tab in the Tools panel now displays a count of each author published and the number of published posts per feed.
+* New feature prompts users to opt-in or out to allow PressForward to collect non-sensitive diagnostic data about usage.
+* Changes to how an item ID is generated to prevent duplication when a post is nominated via All Content and the Bookmarklet.
+
+
 = 4.3.0 =
 
 * Restructured Nominate This. It should now work with servers with non-standard WP_ADMIN folder configurations and those hosts who turn off direct access to the plugin folder, including HostGator and Reclaim. Users who could not get the bookmarklet to function should remove the bookmarklet from their Bookmark Bar and replace it.
