@@ -11,7 +11,7 @@ class PF_Tests_Template_Tags extends PF_UnitTestCase {
 		wp_set_current_user( $user_id );
 		$title = 'Test item';
 		$url = 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=25';
-		$item_id = md5($url.$title);
+		$item_id = md5($url);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,

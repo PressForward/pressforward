@@ -345,7 +345,7 @@ if ( $countQT > $countQ ) {
 		// verify if this is an auto save routine.
 		// If it is our form has not been submitted, so we dont want to do anything
 		// if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
-		if ( isset( $_POST['post_status'] ) && isset( $_POST['post_type'] ) && ( ($_POST['post_status'] == 'publish') || ($_POST['post_status'] == 'draft') ) && ($_POST['post_type'] == $this->nomination_slug ) ) {
+		if ( isset( $_POST['post_status'] ) && isset( $_POST['post_type'] ) && ( ($_POST['post_status'] == 'publish') || ($_POST['post_status'] == 'draft') ) && ($_POST['post_type'] == $this->nomination_slug ) && !empty($_POST['ID']) ) {
 			// print_r($_POST); die();
 			$item_id = $this->metas->get_post_pf_meta( $_POST['ID'], 'item_id', true );
 			pf_log( 'Sending to last step ' . $item_id . ' from Nomination post ' . $_POST['ID'] );

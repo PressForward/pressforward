@@ -310,7 +310,7 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			'item_content' => 'Test content',
 			'item_link' => 'Test link',
 			'item_feat_img' => 'Test feat img',
-			'item_id' => '',
+			'item_id' => create_feed_item_id( 'Test link', 'Test item' ),
 			'item_wp_date' => (string) $time,
 			'item_tags' => '',
 			'item_added_date' => date( 'o-m-d\TH:i:sO', $time ),

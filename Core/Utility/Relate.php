@@ -277,6 +277,26 @@ class Relate implements HasActions {
 		return $rs;
 	}
 
+	public function basic_relate($relationship_type, $item_post_id, $switch, $user_id = false){
+		if ( !$user_id ){
+			$userObj = wp_get_current_user();
+			$user_id = $userObj->ID;
+		}
+		if ( 1 != pf_get_relationship_value( $relationship_type, $item_post_id, $user_id ) ) {
+			$result = pf_set_relationship( $relationship_type, $item_post_id, $user_id, '1' );
+			pf_log( 'pf_ajax_relate - set: relationship on' );
+		} else {
+			if ( $switch == 'on' ) {
+				$result = pf_delete_relationship( $relationship_type, $item_post_id, $user_id );
+				pf_log( 'pf_ajax_relate - set: relationship off' );
+			} else {
+				$result = 'unswitchable';
+				pf_log( 'pf_ajax_relate - set: relationship unswitchable' );
+			}
+		}
+		return $result;
+	}
+
 	/**
 	 * A generalized function for setting/unsetting a relationship via ajax
 	 */
@@ -289,18 +309,7 @@ class Relate implements HasActions {
 		$user_id = $userObj->ID;
 		$result = 'nada';
 		pf_log( 'pf_ajax_relate - received: ID = ' . $item_id . ', Schema = ' . $relationship_type . ', isSwitch = ' . $switch . ', userID = ' . $user_id . '.' );
-		if ( 1 != pf_get_relationship_value( $relationship_type, $item_id, $user_id ) ) {
-			$result = pf_set_relationship( $relationship_type, $item_id, $user_id, '1' );
-			pf_log( 'pf_ajax_relate - set: relationship on' );
-		} else {
-			if ( $switch == 'on' ) {
-				$result = pf_delete_relationship( $relationship_type, $item_id, $user_id );
-				pf_log( 'pf_ajax_relate - set: relationship off' );
-			} else {
-				$result = 'unswitchable';
-				pf_log( 'pf_ajax_relate - set: relationship unswitchable' );
-			}
-		}
+		$result = relate($relationship_type, $item_id, $switch, $user_id);
 
 		ob_start();
 		$response = array(

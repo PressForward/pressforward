@@ -81,6 +81,45 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$this->assertEquals($noms_counted, $count);
 	}
 
+	public function a_feed_item( $title, $time ){
+		return array(
+			'post_title' => $title,
+			'item_link' => 'https://www.washingtonpost.com/news/politics/wp/2017/12/05/naacp-says-that-trump-should-not-attend-opening-of-civil-rights-museum-in-mississippi/',
+			'item_content' => 'Ellie Dahmer, wife of Vernon Dahmer, who was killed in 1966 by the Ku Klux Klan, views some of the artifacts in the Mississippi Civil Rights Museum during a private preview in Jackson. The galleries at the museum focus on the period between 1945 and 1976 when the civil rights movement gained footing in the state. (Rogelio V. Solis/AP)
+
+The NAACP is urging President Trump to skip the opening celebration for a civil rights museum in Mississippi that he had planned to attend, with the organization’s leader sharply criticizing the president’s record on civil rights.
+
+The Mississippi Civil Rights Museum, a project of the state’s Department of Archives and History, is set to open with a ribbon-cutting ceremony on Saturday in Jackson, the state capital. The event will feature speeches from civil rights leaders and elected officials, including Mississippi Gov. Phil Bryant (R), who extended the invitation to the president.
+
+But NAACP President Derrick Johnson said Trump’s attendance would be an “affront” to the movement commemorated by the museum.
+
+“President Trump’s statements and policies regarding the protection and enforcement of civil rights have been abysmal, and his attendance is an affront to the veterans of the civil rights movement,” Johnson said. “He has created a commission to reinforce voter suppression, refused to denounce white supremacists, and overall, has created a racially hostile climate in this nation.”
+
+White House press secretary Sarah Huckabee Sanders called Johnson’s stance “honestly very sad,” during her afternoon briefing on Tuesday.
+
+“I think this is something that should bring the country together,” she said. “And I would hope that those individuals would join in that celebration instead of protesting it.”
+
+The NAACP, founded in 1909, is one of the country’s oldest and most prestigious civil rights organizations. The organization’s rebuke is likely to touch off a new round of debate about the president’s views on racial minorities and civil rights.
+
+Some of the president’s actions, including his refusal at times to disavow white supremacists and his vocal support for Confederate monuments, have been the subject of fierce debate.
+
+The opening, which will celebrate the Civil Rights Museum as well as a new Museum of Mississippi History, is expected to feature speeches from the governor, Bryant; former NAACP chairman Myrlie Evers; and Rep. John Lewis (D-Ga.), a civil rights leader whom Trump disparaged as “All talk, talk, talk — no action or results” after Lewis said he would not attend the president’s inauguration.
+
+NAACP board member Amos Brown, the president of the organization’s San Francisco branch and a native of Jackson, called Trump’s potential visit “an insult.”
+
+“He has never been a supporter of civil rights or equal opportunity or justice,” Brown said in a statement. “He’s been silent on civil rights issues, and his silence speaks volumes.',
+			'source_title' => 'The Washington Post',
+			'sortable_item_date' => 10000,
+			'item_date' => 20000,
+			'item_author' => 'foo',
+			'item_feat_img' => 'Test feat img',
+			'post_date'	=>	'2017-12-06 00:28:51',
+			'post_date_gmt'	=>	'2017-12-06 00:28:51',
+			'item_wp_date' => $time,
+			'post_tags'	=> 'test'
+		);
+	}
+
 	/**
 	 * Test one:
 	 *  - Does the `to_nomination` function successfully move a post to nomination
@@ -92,7 +131,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'test_feed_item_nom_create_middle' ) );
 		wp_set_current_user( $user_id );
 		$time = time();
-		$item_id = md5('Test linkTest item1');
+		$item_id = create_feed_item_id('Test link','Test item1');
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => 'Test item1',
@@ -127,7 +166,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'test_feed_item_nom_create_middle' ) );
 		wp_set_current_user( $user_id );
 		$time = time();
-		$item_id = md5('Test linkTest item1');
+		$item_id = create_feed_item_id('Test link','Test item1');
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => 'Test item1',
@@ -156,7 +195,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$time = time();
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'feed_item_meta_increment' ) );
 		wp_set_current_user( $user_id );
-		$item_id = md5('Test linkTest item2');
+		$item_id = create_feed_item_id('Test link', 'Test item2');
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => 'Test item2',
@@ -208,7 +247,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		wp_set_current_user( $user_id );
 		$title = 'Test item4';
 		$url = 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=3';
-		$item_id = md5($url.$title);
+		$item_id = create_feed_item_id($url,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -270,7 +309,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		wp_set_current_user( $user_id );
 		$title = 'Test item5';
 		$url = 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=23';
-		$item_id = md5($url.$title);
+		$item_id = create_feed_item_id($url,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -334,7 +373,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		wp_set_current_user( $user_id );
 		$title = 'Test item4';
 		$url = 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=3';
-		$item_id = md5($url.$title);
+		$item_id = create_feed_item_id($url,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -373,10 +412,11 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 
 		$postsAfter = new \WP_Query( $r );
 		pf_log( ' Checking for posts with item ID ' . $item_id . ' returned query with ' . $postsAfter->post_count . ' items.' );
-		$this->assertEquals($postsAfter->query['meta_key'], 'item_id');
+		$item_id_key = pressforward('controller.metas')->get_key('item_id');
+		$this->assertEquals($postsAfter->query['meta_key'], $item_id_key);
 		$this->assertEquals($postsAfter->query_vars['meta_value'], $item_id);
 		$request = "SELECT   wptests_posts.ID FROM wptests_posts  INNER JOIN wptests_postmeta ON ( wptests_posts.ID = wptests_postmeta.post_id ) WHERE 1=1  AND (
-  ( wptests_postmeta.meta_key = 'item_id' AND wptests_postmeta.meta_value = '".$item_id."' )
+  ( wptests_postmeta.meta_key = '".$item_id_key."' AND wptests_postmeta.meta_value = '".$item_id."' )
 ) AND wptests_posts.post_type = 'nomination' AND (wptests_posts.post_status = 'publish' OR wptests_posts.post_status = 'alert_specimen' OR wptests_posts.post_status = 'under_review' OR wptests_posts.post_status = 'future' OR wptests_posts.post_status = 'draft' OR wptests_posts.post_status = 'pending' OR wptests_posts.post_status = 'private') GROUP BY wptests_posts.ID ORDER BY wptests_posts.post_date DESC LIMIT 0, 10";
 		//$this->assertEquals($postsAfter->request, $request);
 		$this->assertTrue( isset($postsAfter->posts[0]) );
@@ -504,20 +544,9 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'bookmarklet_to_nomination' ) );
 		wp_set_current_user( $user_id );
 		$_POST = array();
-		$title = "bookmarklet test";
+		$title = "Trump should skip civil-rights museum opening, NAACP says, calling his plans to attend ‘an insult’ - The Washington Post";
 		$time = time();
-		$post = array(
-			'post_title' => $title,
-			'item_link' => 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=9',
-			'item_content' => 'Test content',
-			'source_title' => 'Test source title',
-			'sortable_item_date' => 10000,
-			'item_date' => 20000,
-			'item_author' => 'foo',
-			'item_feat_img' => 'Test feat img',
-			'item_wp_date' => $time,
-			'post_tags'	=> 'test'
-		);
+		$post = $this->a_feed_item($title, $time);
 		$_POST = array_merge($_POST, $post);
 		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 		$nomination_id = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
@@ -591,17 +620,41 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'bookmarklet_to_nomination' ) );
 		wp_set_current_user( $user_id );
 		$_POST = array();
-		$title = "bookmarklet test";
+		$title = "Trump should skip civil-rights museum opening, NAACP says, calling his plans to attend ‘an insult’ - The Washington Post";
 		$time = time();
 		$post = array(
 			'post_title' => $title,
-			'item_link' => 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=239',
-			'item_content' => 'Test content',
-			'source_title' => 'Test source title',
+			'item_link' => 'https://www.washingtonpost.com/news/politics/wp/2017/12/05/naacp-says-that-trump-should-not-attend-opening-of-civil-rights-museum-in-mississippi/',
+			'item_content' => 'Ellie Dahmer, wife of Vernon Dahmer, who was killed in 1966 by the Ku Klux Klan, views some of the artifacts in the Mississippi Civil Rights Museum during a private preview in Jackson. The galleries at the museum focus on the period between 1945 and 1976 when the civil rights movement gained footing in the state. (Rogelio V. Solis/AP)
+
+The NAACP is urging President Trump to skip the opening celebration for a civil rights museum in Mississippi that he had planned to attend, with the organization’s leader sharply criticizing the president’s record on civil rights.
+
+The Mississippi Civil Rights Museum, a project of the state’s Department of Archives and History, is set to open with a ribbon-cutting ceremony on Saturday in Jackson, the state capital. The event will feature speeches from civil rights leaders and elected officials, including Mississippi Gov. Phil Bryant (R), who extended the invitation to the president.
+
+But NAACP President Derrick Johnson said Trump’s attendance would be an “affront” to the movement commemorated by the museum.
+
+“President Trump’s statements and policies regarding the protection and enforcement of civil rights have been abysmal, and his attendance is an affront to the veterans of the civil rights movement,” Johnson said. “He has created a commission to reinforce voter suppression, refused to denounce white supremacists, and overall, has created a racially hostile climate in this nation.”
+
+White House press secretary Sarah Huckabee Sanders called Johnson’s stance “honestly very sad,” during her afternoon briefing on Tuesday.
+
+“I think this is something that should bring the country together,” she said. “And I would hope that those individuals would join in that celebration instead of protesting it.”
+
+The NAACP, founded in 1909, is one of the country’s oldest and most prestigious civil rights organizations. The organization’s rebuke is likely to touch off a new round of debate about the president’s views on racial minorities and civil rights.
+
+Some of the president’s actions, including his refusal at times to disavow white supremacists and his vocal support for Confederate monuments, have been the subject of fierce debate.
+
+The opening, which will celebrate the Civil Rights Museum as well as a new Museum of Mississippi History, is expected to feature speeches from the governor, Bryant; former NAACP chairman Myrlie Evers; and Rep. John Lewis (D-Ga.), a civil rights leader whom Trump disparaged as “All talk, talk, talk — no action or results” after Lewis said he would not attend the president’s inauguration.
+
+NAACP board member Amos Brown, the president of the organization’s San Francisco branch and a native of Jackson, called Trump’s potential visit “an insult.”
+
+“He has never been a supporter of civil rights or equal opportunity or justice,” Brown said in a statement. “He’s been silent on civil rights issues, and his silence speaks volumes.',
+			'source_title' => 'The Washington Post',
 			'sortable_item_date' => 10000,
 			'item_date' => 20000,
 			'item_author' => 'foo',
 			'item_feat_img' => 'Test feat img',
+			'post_date'	=>	'2017-12-06 00:28:51',
+			'post_date_gmt'	=>	'2017-12-06 00:28:51',
 			'item_wp_date' => $time,
 			'post_tags'	=> 'test'
 		);
@@ -699,7 +752,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$time = time();
 		$link = 'http://aramzs.github.io/tools/humans/ux/2017/02/08/audience-behavior-jcarn.html?cb=20';
 		$title = 'Test item20';
-		$item_id = md5($link.$title);
+		$item_id = create_feed_item_id($link,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -751,7 +804,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$time = time();
 		$link = 'http://aramzs.github.io/tools/humans/ux/2017/02/08/audience-behavior-jcarn.html?cb=29';
 		$title = 'Test item29';
-		$item_id = md5($link.$title);
+		$item_id = create_feed_item_id($link,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -794,9 +847,9 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'test_feed_item_nom_create_middle' ) );
 		wp_set_current_user( $user_id );
 		$time = time();
-		$link = 'http://aramzs.github.io/tools/humans/ux/2017/02/08/audience-behavior-jcarn.html?cb=29';
+		$link = 'http://appleinsider.com/articles/17/12/05/honors-new-view-10-phone-brings-iphone-x-animoji-to-android?cb=29';
 		$title = 'Test item29';
-		$item_id = md5($link.$title);
+		$item_id = create_feed_item_id($link,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -854,7 +907,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$this->assertEquals( get_option( PF_SLUG . '_draft_post_type', 'post' ), 'post' );
 		$final_post = get_post($final_id);
 		$this->assertEquals( get_option( PF_SLUG . '_draft_post_type', 'post' ), $final_post->post_type );
-		$this->assertEquals( get_post_meta( $final_id, 'item_id', true ), $item_id );
+		$this->assertEquals( pressforward('controller.metas')->get_post_pf_meta( $final_id, 'item_id', true ), $item_id );
 
 //		$nominators = pressforward('utility.forward_tools')->apply_nomination_data($final_id. false, true);
 //		pressforward('controller.metas')->update_pf_meta( $final_id, 'nominator_array', $nominators );
@@ -891,7 +944,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$time = time();
 		$post = array(
 			'post_title' => $title,
-			'item_link' => 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=2389',
+			'item_link' => 'http://appleinsider.com/articles/17/12/05/honors-new-view-10-phone-brings-iphone-x-animoji-to-android?foo=bar',
 			'item_content' => 'Test content',
 			'source_title' => 'Test source title',
 			'sortable_item_date' => 10000,
@@ -963,7 +1016,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$time = time();
 		$post = array(
 			'post_title' => $title,
-			'item_link' => 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=2389',
+			'item_link' => 'http://appleinsider.com/articles/17/12/05/honors-new-view-10-phone-brings-iphone-x-animoji-to-android',
 			'item_content' => 'Test content',
 			'source_title' => 'Test source title',
 			'sortable_item_date' => 10000,
@@ -1035,7 +1088,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$time = time();
 		$post = array(
 			'post_title' => $title,
-			'item_link' => 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=2389',
+			'item_link' => 'https://www.washingtonpost.com/news/powerpost/wp/2017/12/05/dozens-of-republicans-now-clamoring-for-a-dreamers-fix-by-years-end/',
 			'item_content' => 'Test content',
 			'source_title' => 'Test source title',
 			'sortable_item_date' => 10000,
@@ -1072,6 +1125,70 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		$user_id_3 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type3' ) );
 		wp_set_current_user( $user_id_3 );
 
+		$nomination_id_three = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
+		$this->assertEquals($nomination_id, $nomination_id_three);
+
+		$this->check_standard_metrics($feed_item_id, $nomination_id_three, $title);
+
+		$this->check_standard_nomination_metrics($nomination_id_three, $user_id_3, 3);
+
+		$this->check_feed_nominations_incremented($nomination_id_three, 3);
+
+
+		$user_id_4 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type4' ) );
+		wp_set_current_user( $user_id_4 );
+		$nomination_id_four = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $feed_item_id );
+		$this->assertEquals($nomination_id, $nomination_id_four);
+
+		$this->check_standard_metrics($feed_item_id, $nomination_id_four, $title);
+
+		$this->check_standard_nomination_metrics($nomination_id_four, $user_id_3, 4);
+
+		$this->check_feed_nominations_incremented($nomination_id_four, 4);
+
+	}
+
+	/**
+	 * [test_nominate_then_bookmarklet description]
+	 *
+	 * Issue #961
+	 * @return {[type]} [description]
+	 */
+	public function test_bookmarklet_to_publish_then_nominate_different_title_sequentials() {
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'bookmarklet_to_nomination8' ) );
+		wp_set_current_user( $user_id );
+		$_POST = array();
+		$title = "bookmarklet test";
+		$time = time();
+		$post = $this->a_feed_item($title, $time);
+		$_POST = array_merge($_POST, $post);
+		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+		$feed_id = $this->factory->feed->create();
+		$post['post_parent'] = $feed_id;
+
+		$post['item_title'] = $title;
+		$feed_item_id = $this->factory->feed_item->create( $post );
+
+		$last_step_id = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
+
+		$nomination_id = $feedNomCount = pressforward('controller.metas')->get_post_pf_meta( $last_step_id, 'nom_id', true );
+
+		$user_id_2 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type' ) );
+		wp_set_current_user( $user_id_2 );
+
+		$nomination_id_two = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $feed_item_id );
+		$this->assertEquals($nomination_id, $nomination_id_two);
+
+		$this->check_standard_metrics($feed_item_id, $nomination_id_two, $title);
+
+		$this->check_standard_nomination_metrics($nomination_id_two, $user_id_2, 2);
+
+		$this->check_feed_nominations_incremented($nomination_id_two, 2);
+
+		$user_id_3 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type3' ) );
+		wp_set_current_user( $user_id_3 );
+
+		$post['post_title'] = $post['post_title'].' | Test Case';
 		$nomination_id_three = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
 		$this->assertEquals($nomination_id, $nomination_id_three);
 

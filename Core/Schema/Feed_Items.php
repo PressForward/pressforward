@@ -296,6 +296,7 @@ class Feed_Items implements HasActions, HasFilters {
 			$this->set_source( $post_id, $r['source_title'] );
 			$this->set_source_link( $post_id, $r['item_link'] );
 			$this->set_parent_last_retrieved( $post_id );
+			pressforward('controller.metas')->update_pf_meta( $post_id, 'item_id', $item_id );
 		}
 
 		return $post_id;
@@ -555,11 +556,12 @@ class Feed_Items implements HasActions, HasFilters {
 			 // But it occured to me that, since I'm doing a custom query anyway, I could just query for items with the ID I want.
 			 // Less query results, less time.
 			 // Perhaps I should do this outside of the foreach? One query and search it for each item_id and then return those not in?
+			 $item_id_key = pressforward('controller.metas')->get_key('item_id');
 			 $querystr = $wpdb->prepare("
 				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
 				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-				AND {$wpdb->postmeta}.meta_key = 'item_id'
+				AND {$wpdb->postmeta}.meta_key = '{$item_id_key}'
 				AND {$wpdb->postmeta}.meta_value = %s
 				AND {$wpdb->posts}.post_type = %s
 				ORDER BY {$wpdb->posts}.post_date DESC

@@ -341,7 +341,9 @@ function pf_feed_object( $itemTitle = '', $sourceTitle = '', $itemDate = '', $it
 }
 
 function create_feed_item_id( $url, $title ) {
-	$hash = md5( untrailingslashit($url) );
+	$url = str_replace('http://', '', $url);
+	$url = str_replace('https://', '', $url);
+	$hash = md5( untrailingslashit(trim($url)) );
 	return $hash;
 }
 
@@ -362,7 +364,7 @@ function pf_get_posts_by_id_for_check( $post_type = false, $item_id, $ids_only =
 	// $theDate = getdate();
 	// $w = date('W');
 	$r = array(
-							'meta_key' => 'item_id',
+							'meta_key' => pressforward('controller.metas')->get_key('item_id'),
 							'meta_value' => $item_id,
 							'post_type'	=> array( 'post', pf_feed_item_post_type() ),
 						);
@@ -835,7 +837,7 @@ function pf_is_drafted( $item_id ) {
 	$a = array(
 			'no_found_rows' => true,
 			'fields' => 'ids',
-			'meta_key' => 'item_id',
+			'meta_key' => pressforward('controller.metas')->get_key('item_id'),
 			'meta_value' => $item_id,
 			'post_type'	=> get_option( PF_SLUG . '_draft_post_type', 'post' ),
 		);

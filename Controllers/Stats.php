@@ -43,7 +43,7 @@ class Stats {
 		$this->url = plugins_url( '/', __FILE__ );
 		$this->ver = 1.0;
 		$this->feed_post_type = 'pf_feed_item';
-		$this->meta_key = 'item_id';
+		$this->meta_key = pressforward('controller.metas')->get_key('item_id');
 		$this->meta_author_key = 'item_author';
 	}
 	private function includes(){
