@@ -230,10 +230,13 @@ class Forward_Tools {
 			$item_content = htmlspecialchars_decode( $item_content_obj['readable'] );
 			$word_count = str_word_count( $item_content );
 			//$item_content = $this->append_source_statement($post_id, $item_content, $source);
+			$saved__POST = $_POST;
+			$_POST = array();
 			$post_id = $this->item_interface->update_post( array(
 				'ID'	=> $post_id,
 				'post_content'	=> $item_content,
 			), true );
+			$_POST = $saved__POST;
 			if ( is_numeric( $post_id ) ) {
 				if ( ( ! empty( $item_content_obj['status'] )) && ('secured' != $item_content_obj['status']) ) {
 					$this->metas->update_pf_meta( $post_id, 'readable_status', 1 );
@@ -436,6 +439,14 @@ class Forward_Tools {
 
 		$nom_and_post_check = $this->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
 		if ( $nom_and_post_check == false ) {
+			$item_check = $this->is_a_pf_type( $item_id, pressforward( 'schema.feed_item' )->post_type );
+			if ( $item_check != false ){
+				$nomination_id = false;
+				$nomination_id = $this->item_to_nomination( $item_id, $item_check );
+				//var_dump($nomination_id); die();
+			} else {
+				$nomination_id = false;
+			}
 			// PF NOTE: Switching post type to nomination.
 			$post['post_type'] = pressforward( 'schema.nominations' )->post_type;
 			$post['post_date'] = current_time( 'Y-m-d H:i:s' );
@@ -446,16 +457,31 @@ class Forward_Tools {
 				$post['guid'] = substr( esc_url( $_POST['item_link'] ), 0, 243 );
 			}
 			$post_array = $post;
-			// var_dump('<pre>'); var_dump($post); die();
+			//var_dump('<pre>'); var_dump($post); die();
 			// $post['post_type'] = 'post';
 			// PF NOTE: This is where the inital post is created.
 			// PF NOTE: Put get_post_nomination_status here.
-			$post = $this->item_interface->insert_post( $post, true, $item_id );
+			if ($nomination_id != false){
+				$save_post_to_avoid_hooks = array();
+				foreach ($_POST as $key=>$value){
+					$save_post_to_avoid_hooks[$key] = $value;
+					$_POST[$key] = false;
+				}
+				$post['ID'] = $nomination_id;
+				$this->item_interface->update_post($post);
+				foreach ($save_post_to_avoid_hooks as $key=>$value){
+					$_POST[$key] = $value;
+				}
+				//$_POST = $save_post_to_avoid_hooks;
+				$post = $nomination_id;
+			} else {
+				$post = $this->item_interface->insert_post( $post, true, $item_id );
+			}
 			if ( is_wp_error( $post ) ) {
 				wp_die( $post->get_error_message() );
 			}
 			$post_ID = $post;
-			// var_dump('<pre>'); var_dump($post); var_dump($post_array); die();
+			//var_dump('<pre>'); var_dump($post); var_dump($post_array); die();
 			$this->advance_interface->prep_bookmarklet( $post );
 			if ( ! isset( $_POST['item_date'] ) ) {
 				$newDate = date( 'Y-m-d H:i:s' );
@@ -478,6 +504,18 @@ class Forward_Tools {
 					pf_log( $tags );
 				}
 			}
+
+			$this->metas->handle_item_tags( $post_ID, $tags );
+
+			if ($nomination_id != false){
+				$old_tags = $this->metas->get_post_pf_meta($post_ID, 'item_tags');
+				if (!empty($old_tags)){
+					$tags = array_merge($old_tags, $tags);
+				}
+				$this->metas->update_pf_meta( $post_ID, 'item_tags', $tags);
+				return $nomination_id;
+			}
+
 			$user_data = $this->find_nominating_user($post_ID);
 			$userID = $user_data['user_id'];
 			$userString = $user_data['user_string'];
@@ -515,7 +553,7 @@ class Forward_Tools {
 			$this->metas->establish_post( $post_ID, $pf_meta_args );
 			pf_log($pf_meta_args);
 			$this->metas->update_pf_meta( $post_ID, 'nom_id', $post_ID );
-			$this->metas->handle_item_tags( $post_ID, $tags );
+			//$this->metas->handle_item_tags( $post_ID, $tags );
 			$nominators = $this->apply_nomination_data( $post_ID );
 			$this->metas->update_pf_meta( $post_ID, 'nominator_array', $nominators );
 			return $post_ID;

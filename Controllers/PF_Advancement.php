@@ -126,7 +126,7 @@ class PF_Advancement implements Advance_System {
 				set_post_format( $post_id, false ); }
 		}
 
-		if ( isset( $_POST['post_category'] ) ) {
+		if ( isset( $_POST['post_category'] ) && is_array( $_POST['post_category'] ) ) {
 			// var_dump($_POST['post_category']); die();
 			$categories = array();
 			foreach ( $_POST['post_category'] as $category_id ) {
@@ -147,7 +147,7 @@ class PF_Advancement implements Advance_System {
 	 *
 	 * @return object A standard WP_Query object.
 	 */
-	function pf_get_posts_by_id_for_check( $post_type = false, $item_id, $ids_only = false ) {
+	public function pf_get_posts_by_id_for_check( $post_type = false, $item_id, $ids_only = false ) {
 		global $wpdb;
 		// If the item is less than 24 hours old on nomination, check the whole database.
 		// $theDate = getdate();
