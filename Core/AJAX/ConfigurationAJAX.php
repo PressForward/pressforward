@@ -124,7 +124,7 @@ EOT;
 						prompt.find('a.button').css({
 							"margin":" 14px 20px 0 0"
 						});
-						jQuery('.wp-header-end').after(prompt);
+						jQuery('.subsubsub').first().before(prompt);
 						window.hidePFPrompt = function(){
 							window.setTimeout(
 								function(){ jQuery('#pf_metrics_settings_alerter').hide(); return false; },
