@@ -185,6 +185,7 @@ class Nominated implements HasActions {
 					$count = 0;
 					$countQ = $nom_query->post_count;
 					$countQT = $nom_query->found_posts;
+					$maxNbPages = $nom_query->max_num_pages;
 					// print_r($countQ);
 					while ( $nom_query->have_posts() ) : $nom_query->the_post();
 
@@ -286,16 +287,17 @@ class Nominated implements HasActions {
 
 			echo '</div><!-- End main -->';
 if ( $countQT > $countQ ) {
+	$page += 1;
 	if ( $page == 0 ) { $page = 1; }
-	$pagePrev = $page -1;
-	$pageNext = $page + 1;
+	$pagePrevNb = $page -1;
+	$pageNextNb = $page + 1;
 	if ( ! empty( $_GET['by'] ) ) {
 		$limit_q = '&by=' . $limit;
 	} else {
 		$limit_q = '';
 	}
-	$pagePrev = '?page=pf-review' . $limit_q . '&pc=' . $pagePrev;
-	$pageNext = '?page=pf-review' . $limit_q . '&pc=' . $pageNext;
+	$pagePrev = '?page=pf-review' . $limit_q . '&pc=' . $pagePrevNb;
+	$pageNext = '?page=pf-review' . $limit_q . '&pc=' . $pageNextNb;
 	if ( isset( $_GET['folder'] ) ) {
 		$pageQ = $_GET['folder'];
 		$pageQed = '&folder=' . $pageQ;
@@ -310,12 +312,24 @@ if ( $countQT > $countQ ) {
 		$pagePrev .= $pageQed;
 
 	}
+    if ( isset( $_GET['pf-see'] ) &&  $_GET['pf-see'] != '') {
+        $pageQ = $_GET['pf-see'];
+        $pageQed = '&pf-see=' . $pageQ;
+        $pageNext .= $pageQed;
+        $pagePrev .= $pageQed;
+    }
 	// Nasty hack because infinite scroll only works starting with page 2 for some reason.
 	echo '<div class="pf-navigation">';
-	if ( $pagePrev > -1 ) {
-		echo '<span class="feedprev"><a class="prevnav" href="admin.php?page=pf-review&pc=' . $pagePrev . '">Previous Page</a></span> | ';
-	}
-	echo '<span class="feednext"><a class="nextnav" href="admin.php?page=pf-review&pc=' . $pageNext . '">Next Page</a></span>';
+	if ( $pagePrevNb > 0 ) {
+		echo '<span class="feedprev"><a class="prevnav" href="admin.php' . $pagePrev . '">Previous Page</a></span> | ';
+	} else {
+        echo '<span class="feedprev">Previous Page</span> | ';
+    }
+    if( $pageNextNb > $maxNbPages ) {
+        echo '<span class="feednext">Next Page</span>';
+    } else {
+        echo '<span class="feednext"><a class="nextnav" href="admin.php' . $pageNext . '">Next Page</a></span>';
+    }
 	?><div class="clear"></div><?php
 	echo '</div>';
 }
@@ -331,11 +345,14 @@ if ( $countQT > $countQ ) {
 		// verify if this is an auto save routine.
 		// If it is our form has not been submitted, so we dont want to do anything
 		// if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
-		if ( isset( $_POST['post_status'] ) && isset( $_POST['post_type'] ) && ( ($_POST['post_status'] == 'publish') || ($_POST['post_status'] == 'draft') ) && ($_POST['post_type'] == $this->nomination_slug ) ) {
+		if ( isset( $_POST['post_status'] ) && isset( $_POST['post_type'] ) && ( ($_POST['post_status'] == 'publish') || ($_POST['post_status'] == 'draft') ) && ($_POST['post_type'] == $this->nomination_slug ) && !empty($_POST['ID']) ) {
 			// print_r($_POST); die();
 			$item_id = $this->metas->get_post_pf_meta( $_POST['ID'], 'item_id', true );
 			pf_log( 'Sending to last step ' . $item_id . ' from Nomination post ' . $_POST['ID'] );
+			ob_end_clean();
 			return $this->forward_tools->nomination_to_last_step( $item_id, $_POST['ID'] );
+		} else {
+			ob_end_clean();
 		}
 
 	}
@@ -502,16 +519,7 @@ if ( $countQT > $countQ ) {
 	}
 
 	public function toggle_nominator_array( $id, $update = true ) {
-		$nominators = $this->metas->retrieve_meta( $id, 'nominator_array' );
-		$current_user = wp_get_current_user();
-		$user_id = $current_user->ID;
-		if ( $update ) {
-			$nominators[] = $user_id;
-		} else {
-			if ( ($key = array_search( $user_id, $nominators )) !== false ) {
-				unset( $nominators[ $key ] );
-			}
-		}
+		$nominators = $this->forward_tools->update_nomination_array( $id );
 		$check = $this->metas->update_pf_meta( $id, 'nominator_array', $nominators );
 		return $check;
 	}
@@ -567,15 +575,7 @@ if ( $countQT > $countQ ) {
 					$nomCount--;
 					$this->metas->update_pf_meta( $id, 'nomination_count', $nomCount );
 					if ( 0 != $current_user->ID ) {
-						$nominators_orig = $this->metas->retrieve_meta( $id, 'nominator_array' );
-						if ( true == in_array( $current_user->ID, $nominators_orig ) ) {
-							$nominators_new = array_diff( $nominators_orig, array( $current_user->ID ) );
-							if ( empty( $nominators_new ) ) {
-								wp_delete_post( $id );
-							} else {
-								$this->metas->update_pf_meta( $id, 'nominator_array', $nominators_new );
-							}
-						}
+						$this->toggle_nominator_array($id);
 					}
 				}
 			endwhile;	else :
@@ -612,19 +612,8 @@ if ( $countQT > $countQ ) {
 														$check = 'no_user';
 						} else {
 							$nominators_orig = $this->metas->retrieve_meta( $id, 'nominator_array' );
-							if ( ! in_array( $current_user->ID, $nominators_orig ) ) {
-								$nominators = $nominators_orig;
-								$nominator = $current_user->ID;
-																$nominators[] = $current_user->ID;
-								$this->metas->update_pf_meta( $id, 'nominator_array', $nominator );
-								$nomCount = $this->metas->get_post_pf_meta( $id, 'nomination_count', true );
-								pf_log( 'So far we have a nominating count of ' . $nomCount );
-																$nomCount++;
-																pf_log( 'Now we have a nominating count of ' . $nomCount );
-								$check_meta = $this->metas->update_pf_meta( $id, 'nomination_count', $nomCount );
-																pf_log( 'Attempt to update the meta for nomination_count resulted in: ' );
-																pf_log( $check_meta );
-																$check = true;
+							if ( ! array_key_exists( $current_user->ID, $nominators_orig ) ) {
+								$check = $this->toggle_nominator_array( $id, false );
 							} else {
 								$check = 'user_nominated_already';
 							}
@@ -756,39 +745,14 @@ if ( $countQT > $countQ ) {
 			die();
 	}
 
-	function user_nomination_meta( $increase = true ) {
-		$current_user = wp_get_current_user();
-		$userID = $current_user->ID;
-		$user_nom_count = get_user_meta( $userID, 'nom_count', true );
-		if ( ! empty( $user_nom_count ) ) {
-				pf_log( 'Update nom_count in user meta for user ' . $userID );
-						$nom_counter = get_user_meta( $userID, 'nom_count', true );
-						$old_nom_counter = $nom_counter;
-			if ( $increase ) {
-				$nom_counter = $nom_counter + 1;
-			} else {
-				$nom_counter = $nom_counter -1;
-			}
-						pf_log( 'Update nom_count in user meta for user ' . $userID . ' with value of ' . $nom_counter );
-						update_user_meta( $userID, 'nom_count', $nom_counter, $old_nom_counter );
-
-		} elseif ( $increase ) {
-			pf_log( 'Create nom_count in user meta for user ' . $userID );
-						add_user_meta( $userID, 'nom_count', 1, true );
-
-		} else {
-			pf_log( 'Nothing to do with nom_count in user meta for user ' . $userID );
-			return false;
-		}
-	}
-
 	public function simple_nom_to_draft( $id = false ) {
 		global $post;
-		ob_start();
+		//ob_start();
 		$pf_drafted_nonce = $_POST['pf_nomination_nonce'];
 		if ( ! wp_verify_nonce( $pf_drafted_nonce, 'nomination' ) ) {
 			die( __( 'Nonce not recieved. Are you sure you should be drafting?', 'pf' ) );
 		} else {
+			ob_start();
 			if ( ! $id ) {
 				$id = $_POST['nom_id'];
 				// $nom = get_post($id);

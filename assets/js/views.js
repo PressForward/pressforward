@@ -496,7 +496,7 @@ function detect_view_change(){
 				    }
 				});
 
-			});;
+			});
 
 	});
 

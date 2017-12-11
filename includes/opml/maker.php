@@ -78,12 +78,15 @@ class OPML_Maker {
 				}
 		    		echo "\n";
 		    		$folderless_count = 0;
-				foreach ( $this->obj->get_feeds_without_folder() as $feed ) {
-					if ( $c > 0 ) {
-						echo "\t\t\t";
+				$folderless_feeds = $this->obj->get_feeds_without_folder();
+				if ( !empty( $folderless_feeds ) ){
+					foreach ( $folderless_feeds as $feed ) {
+						if ( $c > 0 ) {
+							echo "\t\t\t";
+						}
+						echo $this->assemble_tag( 'outline',$feed,true,array( 'folder', 'feedUrl' ) );
+						$c++;
 					}
-					echo $this->assemble_tag( 'outline',$feed,true,array( 'folder', 'feedUrl' ) );
-					$c++;
 				}
 		    		echo "\n";
 		    	?>
