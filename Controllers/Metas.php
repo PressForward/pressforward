@@ -148,13 +148,17 @@ class Metas implements HasFilters, HasActions {
 				pf_log( $item_tags );
 				$item_tags = explode( ',',$item_tags );
 			}
-			foreach ( $item_tags as $tag ) {
+			foreach ( $item_tags as $key=>$tag ) {
 				$tag = trim( $tag );
+				$item_tags[$key] = $tag;
 				$check = $this->cascade_taxonomy_tagging( $idB, $tag, 'name' );
 				if ( ! $check ) {
 					$this->build_and_assign_new_taxonomy_tag( $idB, $tag );
 				}
 			}
+			return $item_tags;
+		} else {
+			return array();
 		}
 	}
 

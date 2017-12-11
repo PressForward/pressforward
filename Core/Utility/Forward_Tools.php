@@ -443,6 +443,7 @@ class Forward_Tools {
 			if ( $item_check != false ){
 				$nomination_id = false;
 				$nomination_id = $this->item_to_nomination( $item_id, $item_check );
+				pressforward('utility.relate')->basic_relate('nominate', $item_check, 'on');
 				//var_dump($nomination_id); die();
 			} else {
 				$nomination_id = false;
@@ -504,13 +505,24 @@ class Forward_Tools {
 					pf_log( $tags );
 				}
 			}
-
-			$this->metas->handle_item_tags( $post_ID, $tags );
+			$tags_array = $this->metas->handle_item_tags( $post_ID, $tags );
 
 			if ($nomination_id != false){
 				$old_tags = $this->metas->get_post_pf_meta($post_ID, 'item_tags');
 				if (!empty($old_tags)){
-					$tags = array_merge($old_tags, $tags);
+					if (!is_array($old_tags)){
+						$old_tags_array = explode(',', $old_tags);
+						$old_tags_array_two = explode(';', $old_tags);
+						$old_tags = array_merge($old_tags_array, $old_tags_array_two);
+					}
+					if (!empty($tags_array)){
+						$tags = array_merge($old_tags, $tags_array);
+					} else {
+						$tags = $old_tags;
+					}
+				}
+				if (is_array($tags)){
+					$tags = implode(',', $tags);
 				}
 				$this->metas->update_pf_meta( $post_ID, 'item_tags', $tags);
 				return $nomination_id;
