@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PressForward\n"
 "POT-Creation-Date: 2017-12-12 21:02+0100\n"
-"PO-Revision-Date: 2017-12-12 21:08+0100\n"
+"PO-Revision-Date: 2017-12-12 22:17+0100\n"
 "Last-Translator: Thierry Pasquier <thierry.pasquier@emf.ccsti.eu>\n"
 "Language-Team: Thierry Pasquier <thierry.pasquier@emf.ccsti.eu>\n"
 "Language: fr\n"
@@ -636,7 +636,7 @@ msgstr "Alertes"
 
 #: Core/Admin/AllContent.php:33 Core/Admin/AllContent.php:34
 msgid "All Content"
-msgstr "Tout les contenus"
+msgstr "Tous les contenus"
 
 #: Core/Admin/FoldersMenu.php:33 Core/Admin/FoldersMenu.php:34
 #: Core/Admin/PFTemplater.php:313 Core/Schema/Folders.php:52
@@ -843,7 +843,7 @@ msgstr "Date de sélection"
 
 #: Core/Admin/PFTemplater.php:278
 msgid "Nominations received"
-msgstr ""
+msgstr "Sélections reçues"
 
 #: Core/Admin/PFTemplater.php:285
 msgid "Need help?"
@@ -923,7 +923,7 @@ msgstr "Sélectionné par"
 
 #: Core/Admin/PFTemplater.php:509
 msgid "Edit the draft based on this post."
-msgstr ""
+msgstr "Editer le brouillon basé sur ce contenu."
 
 #: Core/Admin/PFTemplater.php:574
 msgid "Source"
@@ -1180,8 +1180,8 @@ msgstr "En cours de relecture"
 #, php-format
 msgid "Under Review <span class=\"count\">(%s)</span>"
 msgid_plural "Under Review <span class=\"count\">(%s)</span>"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "En cours d’évaluation <span class=\"count\">(%s)</span>"
+msgstr[1] "En cours d’évaluation <span class=\"count\">(%s)</span>"
 
 #: Core/Schema/Feeds.php:767
 msgctxt "pf"
@@ -1220,12 +1220,12 @@ msgstr "Le flux a été enregistré avec succès."
 
 #: Core/Schema/Feeds.php:1380
 msgid "Feed submitted."
-msgstr ""
+msgstr "Flux déposés"
 
 #: Core/Schema/Feeds.php:1382
 #, php-format
 msgid "Feed scheduled for: <strong>%1$s</strong>."
-msgstr ""
+msgstr "Flux programmé pour : <strong>%1$s</strong>."
 
 #: Core/Schema/Feeds.php:1384
 msgid "M j, Y @ G:i"
@@ -1339,7 +1339,7 @@ msgstr "Utilisateur externe"
 
 #: Core/Utility/Retrieval.php:42
 msgid "PressForward Retrieval Interval"
-msgstr ""
+msgstr "Intervalle de récupération"
 
 #: Core/Utility/Retrieval.php:656
 msgid "Beginning the retrieval process"
