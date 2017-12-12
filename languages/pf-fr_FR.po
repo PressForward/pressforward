@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PressForward\n"
-"POT-Creation-Date: 2017-12-11 08:51+0100\n"
-"PO-Revision-Date: 2017-12-11 10:05+0100\n"
+"POT-Creation-Date: 2017-12-12 21:02+0100\n"
+"PO-Revision-Date: 2017-12-12 21:08+0100\n"
 "Last-Translator: Thierry Pasquier <thierry.pasquier@emf.ccsti.eu>\n"
 "Language-Team: Thierry Pasquier <thierry.pasquier@emf.ccsti.eu>\n"
 "Language: fr\n"
@@ -21,165 +21,164 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: Controllers/Metas.php:337
+#: Controllers/Metas.php:341
 msgid "Unique PressForward ID"
 msgstr "Identifiant unique PressForward"
 
-#: Controllers/Metas.php:338 Controllers/Metas.php:356
-#: Controllers/Metas.php:393
+#: Controllers/Metas.php:342 Controllers/Metas.php:360
+#: Controllers/Metas.php:397
 msgid "Stores hashed ID based on title and URL of retrieved item"
 msgstr ""
 "Mémorise l’ID de hachage basé sur le titre et l’URL de l’élément récupéré"
 
-#: Controllers/Metas.php:346
+#: Controllers/Metas.php:350
 msgid "Serialized PF data"
 msgstr "Données PF sérialisées"
 
-#: Controllers/Metas.php:347
+#: Controllers/Metas.php:351
 msgid "Array of PF data that can be serialized"
 msgstr "Table des données PF pouvant être sérialisées"
 
-#: Controllers/Metas.php:355
+#: Controllers/Metas.php:359
 msgid "DUPE Soon to be depreciated version of item_id"
 msgstr "Duplicata d’item_id, prochainement déprécié"
 
-#: Controllers/Metas.php:365
+#: Controllers/Metas.php:369
 msgid "The WordPress postID associated with the original item"
 msgstr "Le postID WordPress associé à l’élément source"
 
-#: Controllers/Metas.php:366
+#: Controllers/Metas.php:370
 msgid "Stores hashed WP post_ID associated with the original item"
 msgstr "Mémorise le hash du post_ID Wordpress associé à l’élément source"
 
-#: Controllers/Metas.php:374
+#: Controllers/Metas.php:378
 msgid "The WordPress postID associated with the nomination item"
 msgstr "Le post_ID Wordpress associé à l’élément sélectionné"
 
-#: Controllers/Metas.php:375
+#: Controllers/Metas.php:379
 msgid "Stores nomination id"
 msgstr "Mémorise l’id sélectionné"
 
-#: Controllers/Metas.php:383
-msgid "The WordPress postID associated with the nomination"
-msgstr "Le postID WordPress associé à la sélection"
+#: Controllers/Metas.php:387
+msgid "The WordPress postID associated with the post on the final step"
+msgstr ""
 
-#: Controllers/Metas.php:384
-msgid "Stores postID associated with the nominated item"
-msgstr "Mémorise le post_ID associé à l’élément sélectionné"
+#: Controllers/Metas.php:388
+msgid "Stores postID associated with the last step item"
+msgstr ""
 
-#: Controllers/Metas.php:392
+#: Controllers/Metas.php:396
 msgid "DUPE Soon to be depreciated version of pf_item_post_id"
 msgstr "Duplicata de pf_item_post_id, prochainement déprécié"
 
-#: Controllers/Metas.php:402
+#: Controllers/Metas.php:406
 msgid "Title of the item's source"
 msgstr "Titre de l’élément source"
 
-#: Controllers/Metas.php:403 Controllers/Metas.php:421
+#: Controllers/Metas.php:407 Controllers/Metas.php:425
 msgid "Stores the title retrieved from the feed."
 msgstr "Stocke le titre extrait du flux."
 
-#: Controllers/Metas.php:411
+#: Controllers/Metas.php:415
 msgid "URL of the item's source"
 msgstr "URL de l’élement source"
 
-#: Controllers/Metas.php:412
+#: Controllers/Metas.php:416
 msgid "Stores the url of feed source."
 msgstr "Stocke l’url du flux de la source."
 
-#: Controllers/Metas.php:420
+#: Controllers/Metas.php:424
 msgid "DUPE Soon to be depreciate version of source_title."
 msgstr "Duplicata de source_title, prochainement déprécié."
 
-#: Controllers/Metas.php:430
+#: Controllers/Metas.php:434
 msgid "Date posted on the original site"
 msgstr "Date de publication sur le site original"
 
-#: Controllers/Metas.php:431
+#: Controllers/Metas.php:435
 msgid "Stores the date the item was posted on the original site"
 msgstr "Mémorise la date à laquelle l’article a été posté sur le site original"
 
-#: Controllers/Metas.php:439
+#: Controllers/Metas.php:443
 msgid "DUPE The soon to be depreciated version of item_date"
 msgstr "Duplicata de item_date, prochainement déprécié"
 
-#: Controllers/Metas.php:440
+#: Controllers/Metas.php:444
 msgid "Stores the date given by the source."
 msgstr "Mémorise la date indiquée par la source."
 
-#: Controllers/Metas.php:449
+#: Controllers/Metas.php:453
 msgid "Author(s) listed on the original site"
 msgstr "Auteur(s) indiqué(s) sur le site original"
 
-#: Controllers/Metas.php:450
+#: Controllers/Metas.php:454
 msgid "Stores array value containing authors listed in the source feed."
 msgstr ""
 "Enregistre la valeur du tableau contenant les auteurs listés dans le flux "
 "source."
 
-#: Controllers/Metas.php:458
+#: Controllers/Metas.php:462
 msgid "DUPE The soon to be depreciated version of item_author"
 msgstr "Duplicata de  item_author, prochainement déprécié"
 
-#: Controllers/Metas.php:459
+#: Controllers/Metas.php:463
 msgid "Stores a comma-separated set of authors as listed in the source feed"
 msgstr ""
 "Mémorise un ensemble d’auteurs indiqués dans le flux sources en les séparant "
 "avec des virgules"
 
-#: Controllers/Metas.php:468 Controllers/Metas.php:477
+#: Controllers/Metas.php:472 Controllers/Metas.php:481
 msgid "Source link"
 msgstr "Lien de la source"
 
-#: Controllers/Metas.php:469
+#: Controllers/Metas.php:473
 msgid "Stores link to the origonal post."
 msgstr "Lien vers le billet d’origine."
 
-#: Controllers/Metas.php:478
+#: Controllers/Metas.php:482
 msgid "DUPE Soon to be depreciated version of item_link"
 msgstr "Duplicata de item_link, prochainement déprécié"
 
-#: Controllers/Metas.php:487
+#: Controllers/Metas.php:491
 msgid "Featured image from source"
 msgstr "Image mise en avant de la source"
 
-#: Controllers/Metas.php:488
+#: Controllers/Metas.php:492
 msgid "A featured image associated with the item, when it is available"
 msgstr ""
 "Une image mise en avant associée à l’élément, lorsqu’elle est disponible"
 
-#: Controllers/Metas.php:496
-#, fuzzy
+#: Controllers/Metas.php:500
 msgid "Time item was retrieved"
-msgstr "Time item was retrieved"
+msgstr ""
 
-#: Controllers/Metas.php:497
+#: Controllers/Metas.php:501
 msgid "The datetime an item was added to WordPress via PressForward"
 msgstr ""
 "La date et l’heure à laquelle un élément a été ajouté à WordPress via "
 "PressForward"
 
-#: Controllers/Metas.php:505
+#: Controllers/Metas.php:509
 msgid "Time nominated"
 msgstr "Fois sélectionnés"
 
-#: Controllers/Metas.php:506
+#: Controllers/Metas.php:510
 msgid "The datetime the item was made a nomination"
 msgstr "La date à laquelle l’élément a été sélectionné"
 
-#: Controllers/Metas.php:514
+#: Controllers/Metas.php:518
 msgid "Tags associated with the item by source"
 msgstr "Mots-clefs associés avec l'élément par source"
 
-#: Controllers/Metas.php:515
+#: Controllers/Metas.php:519
 msgid "An array of tags associated with the item, as created in the feed"
 msgstr "Un tableau de mot-clés associés à l’élément dans le flux"
 
-#: Controllers/Metas.php:523
+#: Controllers/Metas.php:527
 msgid "Times retrieved"
 msgstr "Fois récupérés"
 
-#: Controllers/Metas.php:524
+#: Controllers/Metas.php:528
 msgid ""
 "Counts number of times the item has been collected from the multiple feeds "
 "(Ex: from origin feed and Twitter)"
@@ -187,20 +186,20 @@ msgstr ""
 "Compter le nombre de fois que l’article a été collecté à partir des "
 "multiples flux (Ex: depuis le flux d’origine et Twitter)"
 
-#: Controllers/Metas.php:532 Core/Schema/Nominations.php:49
+#: Controllers/Metas.php:536 Core/Schema/Nominations.php:49
 #: Core/Schema/Nominations.php:105
 msgid "Nominations"
 msgstr "Sélections"
 
-#: Controllers/Metas.php:533
+#: Controllers/Metas.php:537
 msgid "Counts number of times users have nominated an item"
 msgstr "Nombre de fois où les utilisateurs ont sélectionné un élément"
 
-#: Controllers/Metas.php:541
+#: Controllers/Metas.php:545
 msgid "The user who submitted the nomination"
 msgstr "L'utilisateur qui a proposé la sélection"
 
-#: Controllers/Metas.php:542
+#: Controllers/Metas.php:546
 msgid ""
 "The first user who submitted the nomination (if it has been nominated). User "
 "ID number"
@@ -208,189 +207,197 @@ msgstr ""
 "Le premier utilisateur qui a proposé la sélection (si l’élément a été "
 "sélectionné). Numéro d’identification de l’utilisateur"
 
-#: Controllers/Metas.php:550
+#: Controllers/Metas.php:554
 msgid "Users who nominated this item"
 msgstr "Utilisateurs ayant sélectionné cet élément"
 
-#: Controllers/Metas.php:551
+#: Controllers/Metas.php:555
 msgid "Stores and array of all userIDs that nominated the item in an array"
 msgstr ""
 "Stockage dans un tableau de tous les ID utilisateur qui ont sélectionné "
 "l’élément"
 
-#: Controllers/Metas.php:559
+#: Controllers/Metas.php:563
 msgid "Timestamp for the item"
 msgstr "Horodatage de l'élément"
 
-#: Controllers/Metas.php:560
+#: Controllers/Metas.php:564
 msgid ""
 "A version of the item_date meta that's ready for sorting. Should be a Unix "
 "timestamp"
 msgstr ""
 "Une version de item_date prête à être triée. Devrait être un horodatage Unix"
 
-#: Controllers/Metas.php:569
+#: Controllers/Metas.php:573
 msgid "If the content is readable"
 msgstr "Si le contenu est lisible"
 
-#: Controllers/Metas.php:570
+#: Controllers/Metas.php:574
 msgid "A check to determine if the content of the item has been made readable"
 msgstr ""
 "Une vérification pour déterminer si le contenu de l'élémet a été rendu "
 "lisible"
 
-#: Controllers/Metas.php:578
+#: Controllers/Metas.php:582
 msgid "The originally retrieved description"
 msgstr "La description initialement récupérée"
 
-#: Controllers/Metas.php:579
+#: Controllers/Metas.php:583
 msgid "The original description, excerpt or content text given by the feed"
 msgstr "La description originale, extrait ou contenu donné par le flux"
 
-#: Controllers/Metas.php:587
+#: Controllers/Metas.php:591
 msgid "Word count of original item text"
 msgstr "Nombre de mots du texte de l’élément d’origine"
 
-#: Controllers/Metas.php:588
+#: Controllers/Metas.php:592
 msgid "Stores the count of the original words retrieved with the feed item"
 msgstr "Mémorise le nombre de mots originaux récupérés avec l’élément du flux"
 
-#: Controllers/Metas.php:596
+#: Controllers/Metas.php:600
 msgid "Word count of text"
 msgstr "Nombre de mots du texte"
 
-#: Controllers/Metas.php:597
+#: Controllers/Metas.php:601
 msgid "Stores the count of the words on the last save managed by PF."
 msgstr "Mémorise le comptage des mots de la dernière sauvegarde gérée par PF."
 
-#: Controllers/Metas.php:605
+#: Controllers/Metas.php:609
 msgid "Archive state of the item"
 msgstr "Etat d’archivage de l’élément"
 
-#: Controllers/Metas.php:606
+#: Controllers/Metas.php:610
 msgid "Stores if the item has been archived"
 msgstr "Enregistre si l’élément a été archivé"
 
-#: Controllers/Metas.php:614
+#: Controllers/Metas.php:618
 msgid "Thumbnail id"
 msgstr "Id de la vignette"
 
-#: Controllers/Metas.php:615
+#: Controllers/Metas.php:619
 msgid "The ID of the featured item"
 msgstr "ID de l’article mis en avant"
 
-#: Controllers/Metas.php:623
+#: Controllers/Metas.php:627
 msgid "Users who have archived"
 msgstr "Utilisateurs qui ont archivé"
 
-#: Controllers/Metas.php:624
+#: Controllers/Metas.php:628
 msgid "Stores users who have archived."
 msgstr "Enregistre les utilisateurs qui ont archivé."
 
-#: Controllers/Metas.php:632
+#: Controllers/Metas.php:636
 msgid "Count of feed errors"
 msgstr "Nombre d’erreurs de flux"
 
-#: Controllers/Metas.php:633
+#: Controllers/Metas.php:637
 msgid "Stores a count of the number of errors a feed has experianced"
 msgstr "Mémorise un décompte du nombre d’erreurs qu’un flux a généré"
 
-#: Controllers/Metas.php:641
+#: Controllers/Metas.php:645
 msgid "User override for forwarding to origin of link"
 msgstr ""
 
-#: Controllers/Metas.php:642
+#: Controllers/Metas.php:646
 msgid "Stores forwarding override for posts"
 msgstr "Mémorise la priorité de transfert pour les messages"
 
-#: Controllers/Metas.php:650 Controllers/Metas.php:659
+#: Controllers/Metas.php:654 Controllers/Metas.php:672
 msgid "Last time feed was retrieved"
 msgstr "La dernière fois que le flux a été récupéré"
 
-#: Controllers/Metas.php:651 Controllers/Metas.php:660
+#: Controllers/Metas.php:655 Controllers/Metas.php:673
 msgid "Stores last timestamp feed was retrieved."
 msgstr "Mémorise la dernière fois où le flux a été récupéré."
 
-#: Controllers/Metas.php:668
+#: Controllers/Metas.php:663
+msgid "Nominations received by items supplied by this feed"
+msgstr ""
+
+#: Controllers/Metas.php:664
+msgid "Number of nominations for this feed"
+msgstr "Nombre de sélections pour ce flux"
+
+#: Controllers/Metas.php:681
 msgid "URL for a feed"
 msgstr "URL du flux"
 
-#: Controllers/Metas.php:669
+#: Controllers/Metas.php:682
 msgid "Stores location online for feed."
 msgstr ""
 
-#: Controllers/Metas.php:677
+#: Controllers/Metas.php:690
 msgid "Last time feed was checked"
 msgstr "La dernière fois que le flux a été vérifié"
 
-#: Controllers/Metas.php:678
+#: Controllers/Metas.php:691
 msgid "Stores last timestamp feed was checked."
 msgstr "Mémorise la dernière fois où le flux a été vérifié"
 
-#: Controllers/Metas.php:686
+#: Controllers/Metas.php:699
 msgid "Feed Alert Status"
 msgstr "Statut de l’alerte du flux"
 
-#: Controllers/Metas.php:687
+#: Controllers/Metas.php:700
 msgid "A check to see if an alert is on the feed."
 msgstr "Une vérification pour voir si il y a une alerte sur le flux."
 
-#: Controllers/Metas.php:695
+#: Controllers/Metas.php:708
 msgid "Type of feed"
 msgstr "Type de flux"
 
-#: Controllers/Metas.php:696
+#: Controllers/Metas.php:709
 msgid "Field stores the type of feed (like RSS or OPML) the object holds."
 msgstr ""
 "Le champ stocke le type de flux (comme RSS ou OPML) que l’objet contient."
 
-#: Controllers/Metas.php:704
+#: Controllers/Metas.php:717
 msgid "Site URL of a feed."
 msgstr "URL du site d’un flux."
 
-#: Controllers/Metas.php:705
+#: Controllers/Metas.php:718
 msgid "The home URL of a feed."
 msgstr "L’URL principale d’un flux."
 
-#: Controllers/Metas.php:713
+#: Controllers/Metas.php:726
 msgid "User who added a feed.."
 msgstr "Utilisateur qui a ajouté un flux."
 
-#: Controllers/Metas.php:714
+#: Controllers/Metas.php:727
 msgid "Track who added a subscribed or under review feed."
 msgstr ""
 
-#: Controllers/Metas.php:722
+#: Controllers/Metas.php:735
 msgid "Module to process a feed."
 msgstr "Module pour traiter un flux."
 
-#: Controllers/Metas.php:723
+#: Controllers/Metas.php:736
 msgid "The feed should be processed with this module."
 msgstr "Le flux doit être traité avec ce module."
 
-#: Controllers/Metas.php:731
+#: Controllers/Metas.php:744
 msgid "Alert Message processing and storage."
 msgstr "Traitement et stockage des messages d’alerte."
 
-#: Controllers/Metas.php:732
+#: Controllers/Metas.php:745
 msgid "Stores a feed alert to be processed."
 msgstr "Mémorise une alerte de flux à traiter."
 
-#: Controllers/Metas.php:740
+#: Controllers/Metas.php:753
 msgid "Has metadata been compleatly added to a feed?"
 msgstr "Toutes es métadonnées ont-elles été ajoutées à un flux ?"
 
-#: Controllers/Metas.php:741
+#: Controllers/Metas.php:754
 msgid "Store a value to indicate the meta-processing of a feed has completed."
 msgstr ""
 "Mémoriser une valeur pour indiquer que le méta-traitement d’un flux est "
 "terminé."
 
-#: Controllers/PF_Readability.php:45
+#: Controllers/PF_Readability.php:46
 msgid " This content failed Readability."
 msgstr " Ce contenu n’était pas lisible."
 
-#: Controllers/PF_Readability.php:99 Core/Admin/Nominated.php:694
+#: Controllers/PF_Readability.php:100 Core/Admin/Nominated.php:683
 msgid ""
 "Nonce check failed. Please ensure you're supposed to be nominating stories."
 msgstr ""
@@ -413,7 +420,7 @@ msgstr "Alertes des flux"
 #: Controllers/PFtoWPTemplates.php:76
 msgctxt "add new on admin bar"
 msgid "Feed Alert"
-msgstr ""
+msgstr "Alerte de flux"
 
 #: Controllers/PFtoWPTemplates.php:77
 msgctxt "alert"
@@ -475,11 +482,11 @@ msgstr ""
 msgid "Dismiss all alerts"
 msgstr "Retirer toutes les alertes"
 
-#: Controllers/PFtoWPTemplates.php:90 Core/Admin/Menu.php:525
+#: Controllers/PFtoWPTemplates.php:90 Core/Admin/Menu.php:534
 msgid "Are you sure you want to delete all feeds with alerts?"
 msgstr "Êtes vous sûr de vouloir supprimer tous les flux avec alertes?"
 
-#: Controllers/PFtoWPTemplates.php:91 Core/Admin/Menu.php:529
+#: Controllers/PFtoWPTemplates.php:91 Core/Admin/Menu.php:538
 msgid "Delete all feeds with alerts"
 msgstr "Supprimer tous les flux avec alertes"
 
@@ -532,6 +539,21 @@ msgstr "non lu"
 msgid "drafted"
 msgstr "en brouillon"
 
+#: Controllers/StatsShortcodes.php:271 Controllers/Stats_Shortcodes.php:194
+#, php-format
+msgid "I've read %s words across %s posts in the past %s days."
+msgstr "J’ai lu %s mots dans %s messages durant les %s derniers jours."
+
+#: Controllers/StatsShortcodes.php:274 Controllers/Stats_Shortcodes.php:197
+#, php-format
+msgid "I've read %s words across %s posts in %s time."
+msgstr "J’ai lu %s mots dans %s messages en %s fois."
+
+#: Controllers/StatsShortcodes.php:281 Controllers/Stats_Shortcodes.php:204
+#, php-format
+msgid "I've read nothing in the past %s days."
+msgstr "Je n’ai rien lu ces %s derniers jours."
+
 #: Core/API/NominateThisEndpoint.php:54
 msgid "Supplies the Nominate This template for building the bookmarklet."
 msgstr "Fournit le modèle de « À sélectionner ! » pour définir le marque-page."
@@ -566,6 +588,33 @@ msgstr "L'argument source_url doit être une URL bien formée."
 #: Core/API/ReadabilityEndpoint.php:178
 msgid "The html_doc and source_url parameters are required."
 msgstr "Les paramètres html_doc et source_url sont obligatoires."
+
+#: Core/API/StatsEndpoint.php:59 Core/API/StatsEndpoint.php:98
+#: Core/API/StatsEndpoint.php:163 Core/API/StatsEndpoint.php:202
+msgid "Limit query by year, use XXXX year notation."
+msgstr "Limitez la requête par année, utilisez la notation XXXX pour l’année."
+
+#: Core/API/StatsEndpoint.php:72 Core/API/StatsEndpoint.php:111
+#: Core/API/StatsEndpoint.php:124 Core/API/StatsEndpoint.php:176
+#: Core/API/StatsEndpoint.php:215 Core/API/StatsEndpoint.php:228
+msgid "Limit query by month, use number of month."
+msgstr "Limiter les requêtes par mois, utilisez le nombre de mois."
+
+#: Core/API/StatsEndpoint.php:85 Core/API/StatsEndpoint.php:189
+msgid "Limit query by day, use number of day."
+msgstr "Limiter les requêtes par jours, utilisez le nombre de jours."
+
+#: Core/API/StatsEndpoint.php:149
+msgid "Page of authors."
+msgstr "Page des auteurs."
+
+#: Core/API/StatsEndpoint.php:253
+msgid "Page of posts created by PressForward."
+msgstr "Page des contenus créés par PressForward."
+
+#: Core/API/StatsEndpoint.php:321 Core/API/StatsEndpoint.php:361
+msgid "The page parameter is required."
+msgstr ""
 
 #: Core/Admin/AddFeeds.php:51 Core/Admin/AddFeeds.php:52
 #: Core/Admin/Menu.php:393
@@ -610,8 +659,8 @@ msgstr "Menu de « Tous les contenus »"
 msgid "Nominated Menu"
 msgstr "Menu des « Sélections »"
 
-#: Core/Admin/Menu.php:385 includes/nomthis/nominate-this-core.php:358
-#: includes/nomthis/nominate-this-core.php:602 parts/nominate-this.tpl.php:5
+#: Core/Admin/Menu.php:385 includes/nomthis/nominate-this-core.php:243
+#: includes/nomthis/nominate-this-core.php:487 parts/nominate-this.tpl.php:5
 #: parts/nominate-this.tpl.php:10 parts/nominate-this.tpl.php:22
 #: parts/nominate-this.tpl.php:28 parts/nominate-this.tpl.php:68
 #: parts/settings/tab-user-control.tpl.php:29
@@ -626,7 +675,7 @@ msgstr "Menu des préférences"
 msgid "Add Nomination Menu"
 msgstr "Menu pour ajouter des noms"
 
-#: Core/Admin/Menu.php:533
+#: Core/Admin/Menu.php:542
 msgid "All feeds are ok!"
 msgstr "Tous les flux fonctionnent!"
 
@@ -635,67 +684,67 @@ msgstr "Tous les flux fonctionnent!"
 msgid "Nominated"
 msgstr "Sélections"
 
-#: Core/Admin/Nominated.php:389
+#: Core/Admin/Nominated.php:406
 msgid "Item ID"
 msgstr "ID de l'élément"
 
-#: Core/Admin/Nominated.php:392 Core/Admin/PFTemplater.php:748
+#: Core/Admin/Nominated.php:409 Core/Admin/PFTemplater.php:748
 msgid "Nomination Count"
 msgstr "Compteur de propositions"
 
-#: Core/Admin/Nominated.php:394
+#: Core/Admin/Nominated.php:411
 msgid "Submitted By"
 msgstr "Déposé par"
 
-#: Core/Admin/Nominated.php:396
+#: Core/Admin/Nominated.php:413
 msgid "Feed Title"
 msgstr "Titre du flux"
 
-#: Core/Admin/Nominated.php:399
+#: Core/Admin/Nominated.php:416
 msgid "Posted by source on"
 msgstr "Publié par une source depuis"
 
-#: Core/Admin/Nominated.php:401
+#: Core/Admin/Nominated.php:418
 msgid "Source Posted"
 msgstr "Source publiée"
 
-#: Core/Admin/Nominated.php:403
+#: Core/Admin/Nominated.php:420
 msgid "Source Authors"
 msgstr "Auteurs de la source"
 
-#: Core/Admin/Nominated.php:404
+#: Core/Admin/Nominated.php:421
 msgid "Source Link"
 msgstr "Lien de la source"
 
-#: Core/Admin/Nominated.php:404
+#: Core/Admin/Nominated.php:421
 msgid "Original Post"
 msgstr "Publication originale"
 
-#: Core/Admin/Nominated.php:405 Core/Admin/PFTemplater.php:626
+#: Core/Admin/Nominated.php:422 Core/Admin/PFTemplater.php:626
 msgid "Item Tags"
 msgstr "Mots-clefs de l'élément"
 
-#: Core/Admin/Nominated.php:407 Core/Schema/Nominations.php:108
+#: Core/Admin/Nominated.php:424 Core/Schema/Nominations.php:108
 msgid "Date Nominated"
 msgstr "Date sélectionnée"
 
-#: Core/Admin/Nominated.php:409
+#: Core/Admin/Nominated.php:426
 msgid "Repeated in Feed"
 msgstr "Répété dans le flux"
 
-#: Core/Admin/Nominated.php:656
+#: Core/Admin/Nominated.php:645
 msgid "Nonce not recieved. Are you sure you should be archiving?"
 msgstr "Nonce non reçue. Êtes vous certain que vous devriez archiver?"
 
-#: Core/Admin/Nominated.php:661
+#: Core/Admin/Nominated.php:650
 msgid "Archived."
 msgstr "Archivé."
 
-#: Core/Admin/Nominated.php:675
+#: Core/Admin/Nominated.php:664
 msgid "Link"
 msgstr "Lien"
 
-#: Core/Admin/Nominated.php:790 Core/Admin/Nominated.php:833
+#: Core/Admin/Nominated.php:753 Core/Admin/Nominated.php:797
 msgid "Nonce not recieved. Are you sure you should be drafting?"
 msgstr ""
 "Nonce non reçue. Êtes vous certain d'être en mesure de pouvoir rédiger?"
@@ -768,10 +817,6 @@ msgstr "Non lu"
 msgid "Drafted"
 msgstr "En brouillon"
 
-#: Core/Admin/PFTemplater.php:257
-msgid "Toggle visibility of archived"
-msgstr "Activer la visibilité des archivés"
-
 #: Core/Admin/PFTemplater.php:258
 msgid "Only archived"
 msgstr "Seulement les archivés"
@@ -828,7 +873,7 @@ msgstr "Horodatage UNIX de la sélection"
 msgid "Slug for origin site"
 msgstr "Slug pour le site d'origine"
 
-#: Core/Admin/PFTemplater.php:484 Core/Schema/Feeds.php:145
+#: Core/Admin/PFTemplater.php:484 Core/Schema/Feeds.php:146
 msgid "Feed"
 msgstr "Flux&nbsp;"
 
@@ -852,7 +897,7 @@ msgstr "Origine&nbsp;"
 msgid "Original Item"
 msgstr "Titre original&nbsp;"
 
-#: Core/Admin/PFTemplater.php:490 includes/nomthis/nominate-this-core.php:718
+#: Core/Admin/PFTemplater.php:490 includes/nomthis/nominate-this-core.php:603
 msgid "Tags"
 msgstr "Mots-clefs&nbsp;"
 
@@ -917,11 +962,11 @@ msgid "Draft"
 msgstr "Rédiger"
 
 #: Core/Admin/PFTemplater.php:766 Core/Schema/Nominations.php:51
-#: includes/nomthis/nominate-this-core.php:619
+#: includes/nomthis/nominate-this-core.php:504
 msgid "Nominate"
 msgstr "Nommer"
 
-#: Core/Admin/PFTemplater.php:790 includes/nomthis/nominate-this-core.php:624
+#: Core/Admin/PFTemplater.php:790 includes/nomthis/nominate-this-core.php:509
 msgid "Send to "
 msgstr "Envoyer à"
 
@@ -939,7 +984,7 @@ msgid "Subscribed Feeds %s"
 msgstr "Flux abonnés %s"
 
 #: Core/Admin/SubscribedFeeds.php:107 Core/Admin/SubscribedFeeds.php:112
-#: Core/Schema/Feeds.php:144
+#: Core/Schema/Feeds.php:145
 msgid "Subscribed Feeds"
 msgstr "Abonnements aux flux"
 
@@ -988,6 +1033,14 @@ msgstr "Débogage et actualisation"
 msgid "Retrieval Status"
 msgstr "Status de récupération"
 
+#: Core/Admin/Tools.php:86
+msgid "Statistics"
+msgstr "Statistiques"
+
+#: Core/Bookmarklet/NominateThisCore.php:34
+msgid "You do not have access to the Nominate This bookmarklet."
+msgstr "Vous n'avez pas accès à l’outil marque-page « À  sélectionner ! »."
+
 #: Core/Schema/Feed_Items.php:64
 msgid "Feed Items"
 msgstr "Eléments du flux"
@@ -996,7 +1049,7 @@ msgstr "Eléments du flux"
 msgid "Feed Item"
 msgstr "Elément du flux"
 
-#: Core/Schema/Feed_Items.php:66 Core/Schema/Feeds.php:146
+#: Core/Schema/Feed_Items.php:66 Core/Schema/Feeds.php:147
 msgctxt "pf"
 msgid "Add New"
 msgstr "Ajouter un nouveau"
@@ -1070,115 +1123,115 @@ msgstr "Nouveau flux du mot-clef de l'élément"
 msgid "Search Feed Item Tags"
 msgstr "Rechercher des flux de mots-clefs de l'élément"
 
-#: Core/Schema/Feed_Items.php:1123 Core/Schema/Feed_Items.php:1134
+#: Core/Schema/Feed_Items.php:1125 Core/Schema/Feed_Items.php:1136
 msgctxt "pf"
 msgid "Removed Feed Item"
 msgstr "Suppression de l’élément du flux"
 
-#: Core/Schema/Feed_Items.php:1139
+#: Core/Schema/Feed_Items.php:1141
 #, php-format
 msgid "Removed <span class=\"count\">(%s)</span>"
 msgid_plural "Removed <span class=\"count\">(%s)</span>"
 msgstr[0] "Suppression de <span class=\"count\">(%s)</span>"
 msgstr[1] "Suppression de <span class=\"count\">(%s)</span>"
 
-#: Core/Schema/Feeds.php:147
+#: Core/Schema/Feeds.php:148
 msgid "All Feeds"
 msgstr "Tous les flux"
 
-#: Core/Schema/Feeds.php:148
+#: Core/Schema/Feeds.php:149
 msgid "Add New Feed"
 msgstr "Ajouter un nouveau flux"
 
-#: Core/Schema/Feeds.php:149 includes/nomthis/nominate-this-core.php:795
+#: Core/Schema/Feeds.php:150 includes/nomthis/nominate-this-core.php:680
 msgid "Edit Feed"
 msgstr "Modifier le flux"
 
-#: Core/Schema/Feeds.php:150
+#: Core/Schema/Feeds.php:151
 msgid "New Feed"
 msgstr "Nouveau flux"
 
-#: Core/Schema/Feeds.php:151
+#: Core/Schema/Feeds.php:152
 msgid "View Feed"
 msgstr "Voir flux"
 
-#: Core/Schema/Feeds.php:152
+#: Core/Schema/Feeds.php:153
 msgid "Search Feeds"
 msgstr "Rechercher parmi les flux"
 
-#: Core/Schema/Feeds.php:153
+#: Core/Schema/Feeds.php:154
 msgid "No feeds found"
 msgstr "Aucun flux trouvé"
 
-#: Core/Schema/Feeds.php:154
+#: Core/Schema/Feeds.php:155
 msgid "No feeds found in trash"
 msgstr "Aucun flux trouvé dans la corbeille"
 
-#: Core/Schema/Feeds.php:160
+#: Core/Schema/Feeds.php:161
 msgid "Feeds imported by PressForward&#8217;s Feed Importer"
 msgstr "Flux importés depuis PressForward&8217;s importateur de flux"
 
-#: Core/Schema/Feeds.php:273
+#: Core/Schema/Feeds.php:274
 msgctxt "pf"
 msgid "Under Review"
 msgstr "En cours de relecture"
 
-#: Core/Schema/Feeds.php:278
+#: Core/Schema/Feeds.php:279
 #, php-format
 msgid "Under Review <span class=\"count\">(%s)</span>"
 msgid_plural "Under Review <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: Core/Schema/Feeds.php:766
+#: Core/Schema/Feeds.php:767
 msgctxt "pf"
 msgid "Removed Feed"
 msgstr "Flux supprimés"
 
-#: Core/Schema/Feeds.php:993 Core/Schema/Feeds.php:1193
-#: Core/Schema/Feeds.php:1202 Core/Schema/Feeds.php:1246
+#: Core/Schema/Feeds.php:994 Core/Schema/Feeds.php:1194
+#: Core/Schema/Feeds.php:1203 Core/Schema/Feeds.php:1247
 msgid "The feed fails verification."
 msgstr "Le flux n’est pas vérifié."
 
-#: Core/Schema/Feeds.php:1371 Core/Schema/Feeds.php:1374
+#: Core/Schema/Feeds.php:1372 Core/Schema/Feeds.php:1375
 msgid "Feed updated."
 msgstr "Mise à jour du flux."
 
-#: Core/Schema/Feeds.php:1372
+#: Core/Schema/Feeds.php:1373
 msgid "Custom field updated."
 msgstr "Champ personnalisé mis à jour."
 
-#: Core/Schema/Feeds.php:1373
+#: Core/Schema/Feeds.php:1374
 msgid "Custom field deleted."
 msgstr "Champ personnalisé effacé."
 
-#: Core/Schema/Feeds.php:1376
+#: Core/Schema/Feeds.php:1377
 #, php-format
 msgid "Feed restored to revision from %s"
 msgstr "Rétablissement du flux à partir de la révision  %s"
 
-#: Core/Schema/Feeds.php:1377
+#: Core/Schema/Feeds.php:1378
 msgid "The feed was made successfully active."
 msgstr "Le flux a été activée avec succès."
 
-#: Core/Schema/Feeds.php:1378
+#: Core/Schema/Feeds.php:1379
 msgid "The feed was saved successfully."
 msgstr "Le flux a été enregistré avec succès."
 
-#: Core/Schema/Feeds.php:1379
+#: Core/Schema/Feeds.php:1380
 msgid "Feed submitted."
 msgstr ""
 
-#: Core/Schema/Feeds.php:1381
+#: Core/Schema/Feeds.php:1382
 #, php-format
 msgid "Feed scheduled for: <strong>%1$s</strong>."
 msgstr ""
 
-#: Core/Schema/Feeds.php:1383
+#: Core/Schema/Feeds.php:1384
 msgid "M j, Y @ G:i"
 msgstr "j M Y à G:i"
 
-#: Core/Schema/Feeds.php:1385
+#: Core/Schema/Feeds.php:1386
 msgid "Feed draft updated."
 msgstr "Brouillon du flux mis à jour."
 
@@ -1280,7 +1333,7 @@ msgstr "Nominé par"
 msgid "Original Author"
 msgstr "Auteur original"
 
-#: Core/Utility/Forward_Tools.php:180
+#: Core/Utility/Forward_Tools.php:339
 msgid "External User"
 msgstr "Utilisateur externe"
 
@@ -1514,146 +1567,142 @@ msgstr ""
 "ouvrez votre manager de marque-pages, créez un nouveau marque-page, tapez "
 "Press This dans la zone de nom et collez le code dans le champ URL."
 
-#: includes/nomthis/nominate-this-core.php:23
-msgid "You do not have access to the Nominate This bookmarklet."
-msgstr "Vous n'avez pas accès à l’outil marque-page « À  sélectionner ! »."
-
-#: includes/nomthis/nominate-this-core.php:183
+#: includes/nomthis/nominate-this-core.php:68
 msgid "Embed Code"
 msgstr "Code d'intégration"
 
-#: includes/nomthis/nominate-this-core.php:186
+#: includes/nomthis/nominate-this-core.php:71
 msgid "Insert Video"
 msgstr "Insérer vidéo"
 
-#: includes/nomthis/nominate-this-core.php:186
-#: includes/nomthis/nominate-this-core.php:216
-#: includes/nomthis/nominate-this-core.php:347
+#: includes/nomthis/nominate-this-core.php:71
+#: includes/nomthis/nominate-this-core.php:101
+#: includes/nomthis/nominate-this-core.php:232
 #: modules/comments/comments.php:197
 msgid "Cancel"
 msgstr "Annuler"
 
-#: includes/nomthis/nominate-this-core.php:202
-#: includes/nomthis/nominate-this-core.php:890
+#: includes/nomthis/nominate-this-core.php:87
+#: includes/nomthis/nominate-this-core.php:775
 msgid "Description"
 msgstr "Description"
 
-#: includes/nomthis/nominate-this-core.php:212
+#: includes/nomthis/nominate-this-core.php:97
 msgid "Click to insert."
 msgstr "Cliquez pour insérer."
 
-#: includes/nomthis/nominate-this-core.php:216
-#: includes/nomthis/nominate-this-core.php:893
+#: includes/nomthis/nominate-this-core.php:101
+#: includes/nomthis/nominate-this-core.php:778
 msgid "Insert Image"
 msgstr "Insérer une image"
 
-#: includes/nomthis/nominate-this-core.php:286
+#: includes/nomthis/nominate-this-core.php:171
 msgid "Unable to retrieve images or no images on page."
 msgstr ""
 "Impossible de récupérer les images ou bien aucune image n'est présente dans "
 "la page."
 
-#: includes/nomthis/nominate-this-core.php:347
+#: includes/nomthis/nominate-this-core.php:232
 msgid "Add Photos"
 msgstr "Ajouter des photos"
 
-#: includes/nomthis/nominate-this-core.php:347
+#: includes/nomthis/nominate-this-core.php:232
 msgid "click images to select"
 msgstr "cliquer sur les images pour les sélectionner"
 
-#: includes/nomthis/nominate-this-core.php:347
+#: includes/nomthis/nominate-this-core.php:232
 msgid "Add from URL"
 msgstr "Ajouter depuis l'URL"
 
-#: includes/nomthis/nominate-this-core.php:347
+#: includes/nomthis/nominate-this-core.php:232
 #: parts/pf-tools/tab-reset-refresh.tpl.php:8
 msgid "Refresh"
 msgstr "Rafraîchir"
 
-#: includes/nomthis/nominate-this-core.php:601
-#: includes/nomthis/nominate-this-core.php:668
-#: includes/nomthis/nominate-this-core.php:717
+#: includes/nomthis/nominate-this-core.php:486
+#: includes/nomthis/nominate-this-core.php:553
+#: includes/nomthis/nominate-this-core.php:602
 msgid "Click to toggle"
 msgstr "Cliquer pour basculer"
 
-#: includes/nomthis/nominate-this-core.php:638
+#: includes/nomthis/nominate-this-core.php:523
 msgid "Enter Authors"
 msgstr "Entrer les auteurs"
 
-#: includes/nomthis/nominate-this-core.php:641
+#: includes/nomthis/nominate-this-core.php:526
 msgid "Nominate feed associated with item."
 msgstr ""
 
-#: includes/nomthis/nominate-this-core.php:649
+#: includes/nomthis/nominate-this-core.php:534
 msgid "Post Format:"
 msgstr "Format de la publication:"
 
-#: includes/nomthis/nominate-this-core.php:651
+#: includes/nomthis/nominate-this-core.php:536
 msgctxt "Post format"
 msgid "Standard"
 msgstr "Standard"
 
-#: includes/nomthis/nominate-this-core.php:669
+#: includes/nomthis/nominate-this-core.php:554
 msgid "Categories"
 msgstr "Catégories"
 
-#: includes/nomthis/nominate-this-core.php:675
+#: includes/nomthis/nominate-this-core.php:560
 msgid "Most Used"
 msgstr "Les plus utilisés"
 
-#: includes/nomthis/nominate-this-core.php:691
+#: includes/nomthis/nominate-this-core.php:576
 msgid "You cannot modify this Taxonomy."
 msgstr "Vous ne pouvez pas modifier cette taxonomie."
 
-#: includes/nomthis/nominate-this-core.php:697
+#: includes/nomthis/nominate-this-core.php:582
 #, php-format
 msgid "+ %s"
 msgstr "+ %s"
 
-#: includes/nomthis/nominate-this-core.php:729
+#: includes/nomthis/nominate-this-core.php:614
 msgid "Enter Tags"
 msgstr "Ajouter des mots clés"
 
-#: includes/nomthis/nominate-this-core.php:759
+#: includes/nomthis/nominate-this-core.php:644
 msgid "Your nomination has been saved."
 msgstr "Votre évaluation a été sauvegardée."
 
-#: includes/nomthis/nominate-this-core.php:760
-#: includes/nomthis/nominate-this-core.php:770
-#: includes/nomthis/nominate-this-core.php:801
+#: includes/nomthis/nominate-this-core.php:645
+#: includes/nomthis/nominate-this-core.php:655
+#: includes/nomthis/nominate-this-core.php:686
 msgid "Close Window"
 msgstr "Fermer la fenêtre"
 
-#: includes/nomthis/nominate-this-core.php:767
+#: includes/nomthis/nominate-this-core.php:652
 msgid "Your post has been saved."
 msgstr "Votre publication a été sauvegardée."
 
-#: includes/nomthis/nominate-this-core.php:768
+#: includes/nomthis/nominate-this-core.php:653
 msgid "View post"
 msgstr "Voir publication"
 
-#: includes/nomthis/nominate-this-core.php:769
+#: includes/nomthis/nominate-this-core.php:654
 msgid "Edit Post"
 msgstr "Modifier publication"
 
-#: includes/nomthis/nominate-this-core.php:815
+#: includes/nomthis/nominate-this-core.php:700
 msgid "Loading..."
 msgstr "Chargement…"
 
-#: includes/nomthis/nominate-this-core.php:865
+#: includes/nomthis/nominate-this-core.php:750
 msgid "Add:"
 msgstr "Ajouter:"
 
-#: includes/nomthis/nominate-this-core.php:869
-#: includes/nomthis/nominate-this-core.php:870
+#: includes/nomthis/nominate-this-core.php:754
+#: includes/nomthis/nominate-this-core.php:755
 msgid "Insert an Image"
 msgstr "Insérer une image"
 
-#: includes/nomthis/nominate-this-core.php:874
+#: includes/nomthis/nominate-this-core.php:759
 msgid "Embed a Video"
 msgstr "Embarquer une vidéo"
 
-#: includes/nomthis/nominate-this-core.php:887
+#: includes/nomthis/nominate-this-core.php:772
 msgid "URL"
 msgstr "URL"
 
@@ -1938,11 +1987,11 @@ msgid ""
 msgstr ""
 "Processus de récupération des flux. Ce bouton tentera de redémarrer un "
 "processus de rafraîchissement interrompu. Si un précédent cycle de "
-"récupération des flux  a été interrompu, idémarre le cycle suivant plus tôt. "
-"Cependant, si le processus est actuellement en cours, il avisera le système "
-"que vous croyez qu’il y a une erreur dans le processus de récupération, et "
-"la prochaine fois que votre site passera outre, le système tentera de "
-"trouver et de corriger l’erreur."
+"récupération des flux  a été interrompu, il démarre le cycle suivant plus "
+"tôt. Cependant, si le processus est actuellement en cours, il avisera le "
+"système que vous croyez qu’il y a une erreur dans le processus de "
+"récupération, et la prochaine fois que votre site passera outre, le système "
+"tentera de trouver et de corriger l’erreur."
 
 #: parts/pf-tools/tab-reset-refresh.tpl.php:14
 msgid "Clean Up"
@@ -1984,13 +2033,23 @@ msgstr ""
 "d’administrateur dans PressForward. Les options définies sur cette page "
 "déterminent le comportement du site dans son ensemble."
 
-#: parts/settings/tab-site.tpl.php:14
+#: parts/settings/tab-site.tpl.php:36
+msgid ""
+"Opt-in to allow us to collect non-sensitive diagnostic information for "
+"plugin improvement."
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:42
+msgid "Allow detailed tracking"
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:51
 msgid "Seconds to redirect user to source. (0 means no redirect)"
 msgstr ""
 "Nombre de secondes avant de rediriger l'utilisateur vers la source (0 "
 "signifiant aucune redirection)"
 
-#: parts/settings/tab-site.tpl.php:18
+#: parts/settings/tab-site.tpl.php:55
 msgid ""
 "PressForward makes use of canonical URLs. If you would like to redirect your "
 "readers automatically to the items aggregated by the feed reader and "
@@ -2002,7 +2061,7 @@ msgstr ""
 "flux et publiés sur votre site, ce paramètre déterminera le délais avant la "
 "redirection."
 
-#: parts/settings/tab-site.tpl.php:28
+#: parts/settings/tab-site.tpl.php:65
 msgid ""
 "Use advanced user role management? (May be needed if you customize user "
 "roles or capabilities)."
@@ -2010,7 +2069,7 @@ msgstr ""
 "Utilisez l'utilisateur avancé en role management? (Peut être utile si vous "
 "personnalisez les rôles et capacités des utilisateurs)."
 
-#: parts/settings/tab-site.tpl.php:31
+#: parts/settings/tab-site.tpl.php:68
 msgid ""
 "For sites that manage multiple users using special plugins, administrators "
 "can use this option to insure PressForward respects customized user roles "
@@ -2020,11 +2079,11 @@ msgstr ""
 "spéciaux, les administrateurs peuvent utiliser cette option pour s’assurer "
 "que PressForward respecte les rôles et capacités propres aux  utilisateurs."
 
-#: parts/settings/tab-site.tpl.php:44
+#: parts/settings/tab-site.tpl.php:81
 msgid "Show item_author as source."
 msgstr "Montrez item_author comme source."
 
-#: parts/settings/tab-site.tpl.php:48
+#: parts/settings/tab-site.tpl.php:85
 msgid ""
 "When this preference is on, the name of the author in a PressFoward item "
 "will appear in the item_author custom field when the item is sent to Draft. "
@@ -2035,17 +2094,17 @@ msgstr ""
 "l’élément est mis en brouillon. Cet auteur prendra la place du créateur du "
 "message."
 
-#: parts/settings/tab-site.tpl.php:61
+#: parts/settings/tab-site.tpl.php:98
 msgid "Source statement position."
 msgstr "Position de la référence à la source."
 
-#: parts/settings/tab-site.tpl.php:65
+#: parts/settings/tab-site.tpl.php:102
 msgid "Choose the position for source title and link on published content."
 msgstr ""
 "Choisissez le positionnement du titre de la source et de son url dans le "
 "contenu publié."
 
-#: parts/settings/tab-site.tpl.php:88
+#: parts/settings/tab-site.tpl.php:125
 msgid ""
 "When alerts are on, feeds that continually return errors display as alerted. "
 "You can dismiss alerts in the Subscribed Feeds page."
@@ -2054,11 +2113,11 @@ msgstr ""
 "des erreurs s’affichent sous forme d’alertes. Vous pouvez rejeter les "
 "alertes dans la page « Abonnements au flux »."
 
-#: parts/settings/tab-site.tpl.php:99
+#: parts/settings/tab-site.tpl.php:136
 msgid "Months to retrieve and retain feed items."
 msgstr "Nombre de mois pour récupérer et conserver les éléments du flux."
 
-#: parts/settings/tab-site.tpl.php:103
+#: parts/settings/tab-site.tpl.php:140
 msgid ""
 "This number determines the number of previous months that PressForward will "
 "retrieve items for All Content from subscribed feeds and the number of "
@@ -2069,11 +2128,11 @@ msgstr ""
 "les contenus » et le nombre de mois pendant lesquels les éléments seront "
 "concervés dans PressForward."
 
-#: parts/settings/tab-site.tpl.php:111
+#: parts/settings/tab-site.tpl.php:148
 msgid "Number of errors before a feed is marked as malfunctioning."
 msgstr "Nombre d’erreurs avant qu’un flux soit marqué comme défectueux."
 
-#: parts/settings/tab-site.tpl.php:115
+#: parts/settings/tab-site.tpl.php:152
 msgid ""
 "Feeds sometimes respond slowly or have errors that cause them to be "
 "unreadable. This setting determines the number of consecutive errors "
@@ -2085,11 +2144,11 @@ msgstr ""
 "que PressForward autorise à partir d'un flux avant de créer une alerte et de "
 "la désactiver."
 
-#: parts/settings/tab-site.tpl.php:123
+#: parts/settings/tab-site.tpl.php:160
 msgid "Minutes between feed retrieval cycles."
 msgstr "Minutes entre les cycles de récupération des flux."
 
-#: parts/settings/tab-site.tpl.php:127
+#: parts/settings/tab-site.tpl.php:164
 msgid ""
 "This setting is the frequency at which PressForward will attempt to start "
 "the process of retrieving all the feeds in your list. Warning: if you have a "
@@ -2100,11 +2159,11 @@ msgstr ""
 "vous avez un grand nombre de flux, ce paramètre ne doit pas descendre en "
 "dessous de 30 minutes."
 
-#: parts/settings/tab-site.tpl.php:138
+#: parts/settings/tab-site.tpl.php:175
 msgid "Post status for new content."
 msgstr "Afficher l'état du nouveau contenu"
 
-#: parts/settings/tab-site.tpl.php:141
+#: parts/settings/tab-site.tpl.php:178
 msgid ""
 "This setting allows you to set a default post status that gets set when you "
 "send nominations to become posts."
@@ -2113,11 +2172,11 @@ msgstr ""
 "défini lorsque vous sélectionnez des contenus destinés à devenir des "
 "publications."
 
-#: parts/settings/tab-site.tpl.php:152
+#: parts/settings/tab-site.tpl.php:189
 msgid "Post type for new content."
 msgstr "Type de contenu des nouveaux contenus"
 
-#: parts/settings/tab-site.tpl.php:155
+#: parts/settings/tab-site.tpl.php:192
 msgid ""
 "Your WordPress site may have more than one Post Type installed, this setting "
 "will allow you to send nominations to the post type of your choice."
@@ -2288,6 +2347,15 @@ msgstr "Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs"
 #. Author URI of the plugin/theme
 msgid "http://pressforward.org/about/team/"
 msgstr "http://pressforward.org/about/team/"
+
+#~ msgid "The WordPress postID associated with the nomination"
+#~ msgstr "Le postID WordPress associé à la sélection"
+
+#~ msgid "Stores postID associated with the nominated item"
+#~ msgstr "Mémorise le post_ID associé à l’élément sélectionné"
+
+#~ msgid "Toggle visibility of archived"
+#~ msgstr "Activer la visibilité des archivés"
 
 #~ msgid ""
 #~ "The default WordPress settings for drafting, editing, and publishing a "
