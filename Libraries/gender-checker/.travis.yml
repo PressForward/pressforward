@@ -1,0 +1,14 @@
+language: php
+php:
+    - 5.4
+before_script:
+    # install composer dependencies
+    - composer install
+    # install PHP_CodeSniffer using Pyrus, fixes issue with phpcs not working
+    - pyrus install pear/PHP_CodeSniffer
+    # setting PEAR to auto-discover repos and install Phing
+    - pear config-set auto_discover 1
+    - pear install pear.phing.info/phing
+    # refresh the path
+    - phpenv rehash
+script: phing

@@ -13,5 +13,34 @@ jQuery( window ).load(function() {
 
 		jQuery( '.nav-tab' ).removeClass( 'nav-tab-active' );
 		jQuery( tab ).addClass( 'nav-tab-active' );
+		window.location.hash = '#top'+target;
+		return false;
+	});
+
+
+	if (window.location.hash.indexOf("#") < 0){
+		window.location.hash = '#ready#top';
+		var theHash = jQuery(jQuery('.nav-tab')[0]).attr('data-tab-target');
+		console.log(theHash);
+		window.location.hash = '#ready#top'+theHash;
+		var tab = theHash+'-tab';
+		jQuery( '.pftab' ).removeClass( 'active' );
+		jQuery( theHash ).addClass( 'active' );
+		jQuery( '.nav-tab' ).removeClass( 'nav-tab-active' );
+		jQuery( tab ).addClass( 'nav-tab-active' );
+	} else {
+		var theHash = window.location.hash;
+		theHash = theHash.replace(/#top/, '');
+		theHash = theHash.replace(/#/g, '');
+		theHash = '#'+theHash;
+		var tab = theHash+'-tab';
+		jQuery( '.pftab' ).removeClass( 'active' );
+		jQuery( theHash ).addClass( 'active' );
+		jQuery( '.nav-tab' ).removeClass( 'nav-tab-active' );
+		jQuery( tab ).addClass( 'nav-tab-active' );
+	}
+
+	jQuery(window).on('hashchange', function() {
+
 	});
 });

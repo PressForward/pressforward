@@ -1,0 +1,11 @@
+{
+    "name": "eddmann/gender-engine",
+    "require": {
+        "eloquent/enumeration": "*"
+    },
+    "autoload": {
+        "psr-0": {
+            "GenderEngine": "src"
+        }
+    }
+}

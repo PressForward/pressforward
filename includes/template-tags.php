@@ -93,9 +93,12 @@ function the_nomination_count() {
 	echo get_the_item_tags();
 }
 
-function get_the_nominator_ids() {
-	$m = pressforward( 'controller.metas' )->get_post_pf_meta( get_the_ID(), 'nominator_array' );
-	return $m;
+function get_the_nominator_ids($id = false) {
+	if (!$id){
+		$id = get_the_ID();
+	}
+	$m = pressforward( 'controller.metas' )->get_post_pf_meta( $id, 'nominator_array' );
+	return array_keys($m);
 }
 
 function get_the_nominators() {

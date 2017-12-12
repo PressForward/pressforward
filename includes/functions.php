@@ -341,7 +341,9 @@ function pf_feed_object( $itemTitle = '', $sourceTitle = '', $itemDate = '', $it
 }
 
 function create_feed_item_id( $url, $title ) {
-	$hash = md5( $url . $title );
+	$url = str_replace('http://', '', $url);
+	$url = str_replace('https://', '', $url);
+	$hash = md5( untrailingslashit(trim($url)) );
 	return $hash;
 }
 
@@ -362,7 +364,7 @@ function pf_get_posts_by_id_for_check( $post_type = false, $item_id, $ids_only =
 	// $theDate = getdate();
 	// $w = date('W');
 	$r = array(
-							'meta_key' => 'item_id',
+							'meta_key' => pressforward('controller.metas')->get_key('item_id'),
 							'meta_value' => $item_id,
 							'post_type'	=> array( 'post', pf_feed_item_post_type() ),
 						);
@@ -634,34 +636,35 @@ function pf_get_defining_capability_by_role( $role_slug ) {
 	$pf_use_advanced_user_roles = get_option( 'pf_use_advanced_user_roles', 'no' );
 	// For those who wish to ignore the super-cool auto-detection for fringe-y sites that
 	// let their user capabilities go wild.
-	if ( 'no' == $pf_use_advanced_user_roles ) {
-		$role_slug = strtolower( $role_slug );
-		switch ( $role_slug ) {
-			case 'administrator':
-				return 'manage_options';
-				break;
-			case 'editor':
-				return 'edit_others_posts';
-				break;
-			case 'author':
-				return 'publish_posts';
-				break;
-			case 'contributor':
-				return 'edit_posts';
-				break;
-			case 'subscriber':
-				return 'read';
-				break;
-		}
-	} else {
+	if ( 'no' != $pf_use_advanced_user_roles ) {
 		$caps = pf_get_capabilities();
 		foreach ( $caps as $slug => $cap ) {
 			$low_role = pf_get_role_by_capability( $slug );
 			// Return the first capability only applicable to that role.
 			if ( $role_slug == ($low_role) ) {
-				return $slug; }
+				return $slug;
+			}
 		}
 	}
+    // Even if we use $pf_use_advanced_user_roles, if it doesn't find any actual lowest option (like it is the case with contributor currently), it should still go to the default ones below
+    $role_slug = strtolower( $role_slug );
+    switch ( $role_slug ) {
+        case 'administrator':
+            return 'manage_options';
+            break;
+        case 'editor':
+            return 'edit_others_posts';
+            break;
+        case 'author':
+            return 'publish_posts';
+            break;
+        case 'contributor':
+            return 'edit_posts';
+            break;
+        case 'subscriber':
+            return 'read';
+            break;
+    }
 }
 
 function pf_capability_mapper( $cap, $role_slug ) {
@@ -834,7 +837,7 @@ function pf_is_drafted( $item_id ) {
 	$a = array(
 			'no_found_rows' => true,
 			'fields' => 'ids',
-			'meta_key' => 'item_id',
+			'meta_key' => pressforward('controller.metas')->get_key('item_id'),
 			'meta_value' => $item_id,
 			'post_type'	=> get_option( PF_SLUG . '_draft_post_type', 'post' ),
 		);
@@ -947,7 +950,7 @@ function prep_archives_query( $q ) {
 
 	if ( isset( $_GET['pc'] ) ) {
 		$offset = $_GET['pc'] -1;
-		$offset = $offset * 10;
+		$offset = $offset * 20;
 	} else {
 		$offset = 0;
 	}
@@ -959,17 +962,17 @@ function prep_archives_query( $q ) {
 		$pagefull = 20;
 		$user_id = get_current_user_id();
 		$read_id = pf_get_relationship_type_id( 'archive' );
+		//It is bad to use SQL_CALC_FOUND_ROWS, but we need it to replicate the same behaviour as non-archived items (including pagination).
 		$q = $wpdb->prepare("
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
+				SELECT SQL_CALC_FOUND_ROWS {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
 				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->posts}.post_status = 'draft'
 				AND {$wpdb->postmeta}.meta_key = 'pf_archive'
 				AND {$wpdb->postmeta}.meta_value > 0
 				AND {$wpdb->posts}.ID
 				GROUP BY {$wpdb->posts}.ID
-				ORDER BY {$wpdb->postmeta}.meta_value DESC
+				ORDER BY {$wpdb->postmeta}.meta_value DESC, {$wpdb->posts}.post_date DESC
 				LIMIT {$pagefull} OFFSET {$offset}
 			 ", 'nomination');
 	} elseif ( isset( $_GET['pf-see'] ) && ('unread-only' == $_GET['pf-see']) ) {

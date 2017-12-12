@@ -3,8 +3,8 @@ Contributors: PressForward, AramZS, boonebgorges, lmrhody, asmmap, regan008, joa
 Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 3.0.1
-Tested up to: 4.7.5
-Stable tag: 4.3.0
+Tested up to: 4.9.1
+Stable tag: 5.0.0
 License: GPL2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -42,9 +42,9 @@ PressForward is a free plugin that provides an editorial workflow for content ag
 * Optional auto-redirect back to original source
 * Export an RSS feed that combines all content from site's feed list
 
-Instructions for use are found in our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki).
+Instructions for use are found in our [User Manual](https://pressforwardadmin.gitbooks.io/pressforward-documentation/content/).
 
-[See how we compare to other WordPress plugins](https://github.com/PressForward/pressforward/wiki/FAQ#how-does-pressforward-compare-to-other-plugins).
+[See how we compare to other WordPress plugins](https://www.gitbook.com/book/pressforwardadmin/pressforward-documentation/edit#/edit/changes/1/faq.md?_k=jn4jbu).
 
 The PressForward Plugin is developed and maintained by the [Roy Rosenzweig Center for History and New Media](http://chnm.gmu.edu) at [George Mason University](http://gmu.edu) as part of the [PressForward Project](http://pressforward.org), generously funded by the Alfred P. Sloan Foundation. Our developers include [Aram Zucker-Scharff](http://aramzs.me), [Boone B. Gorges](http://boone.gorg.es), and [Jeremy Boggs](http://clioweb.org). PressForward is free to use and modify under a [GNU GPL2 license](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
 
@@ -52,7 +52,7 @@ The PressForward Plugin is developed and maintained by the [Roy Rosenzweig Cente
 
 == Installation ==
 
-Our [Five-Step Quick Start Guide](https://github.com/PressForward/pressforward/wiki/Quick-Start-Guide) can be found on our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki/).
+Our [Five-Step Quick Start Guide](https://pressforwardadmin.gitbooks.io/pressforward-documentation/content/quick-start-guide.html) can be found in our [User Manual](https://pressforwardadmin.gitbooks.io/pressforward-documentation/content/).
 
 * Search the [WordPress Plugin Directory](http://wordpress.org/plugins/) and download the PressForward plugin; or
 * Go to the [latest version on GitHub](https://github.com/PressForward/pressforward/tags).
@@ -62,11 +62,11 @@ Our [Five-Step Quick Start Guide](https://github.com/PressForward/pressforward/w
 * Activate plugin via the "Installed Plugins" menu in the Wordpress Dashboard
 * The PressForward menu should now appear in your Wordpress Dashboard. Clicking on the PressForward icon will display tabs.
 
-A complete [User Manual](https://github.com/PressForward/pressforward/wiki/User-Manual) also is available on our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki/).
+A complete [User Manual](https://pressforwardadmin.gitbooks.io/pressforward-documentation/content/) also is available.
 
 == Frequently Asked Questions ==
 
-A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be found on our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki/).
+A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbooks.io/pressforward-documentation/content/faq.html)
 
 == Screenshots ==
 
@@ -81,6 +81,23 @@ A list of [FAQs](https://github.com/PressForward/pressforward/wiki/FAQ) can be f
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+
+= 5.0.0 =
+
+* Fixed a bug that caused archived posts to be hidden due to pagination.
+* Fix a bug that prevented the bookmarklet from increasing the nomination count on nominated posts.
+* Fixed multiple bugs with the nomination counting process.
+* Functionality of the tabs in Tools restored.
+* OPML files no longer include empty outline elements.
+* When a feed’s url is updated the preview of the url in Subscribed Feeds now reflects the updated url rather than the GUID.
+* New endpoints with statistics about PressForward posts.
+* The ```wp-json/pf/v1/stats/general``` endpoint includes general data about the PressForward installation including a count of all published PF posts, a count of all nominations, and a count of all the items.
+* The ```wp-json/pf/v1/stats/pf_posted``` endpoint includes data on every PressForward post that has been published. Included are metrics for each post such as a word and sentence count, a flesch-kincaid score, and a list of users who nominated the item
+* The ```wp-json/pf/v1/stats/authors``` endpoint includes statistics about the authors of PressForward published posts.
+* Stats tab in the Tools panel now displays a count of each author published and the number of published posts per feed.
+* New feature prompts users to opt-in or out to allow PressForward to collect non-sensitive diagnostic data about usage.
+* Changes to how an item ID is generated to prevent duplication when a post is nominated via All Content and the Bookmarklet.
+
 
 = 4.3.0 =
 

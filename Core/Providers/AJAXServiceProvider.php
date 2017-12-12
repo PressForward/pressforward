@@ -18,7 +18,7 @@ class AJAXServiceProvider extends ServiceProvider {
 		$container->share(
 			'ajax.configuration',
 			function( $container ) {
-				return new ConfigurationAJAX( $container->fetch( 'controller.metas' ), $container->fetch( 'controller.items' ), $container->fetch( 'schema.feed_item' ) );
+				return new ConfigurationAJAX( $container->fetch( 'controller.metas' ), $container->fetch( 'controller.items' ), $container->fetch( 'schema.feed_item' ), $container->fetch( 'controller.users' ) );
 			}
 		);
 

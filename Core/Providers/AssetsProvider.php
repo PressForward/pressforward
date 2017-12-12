@@ -112,8 +112,33 @@ class AssetsProvider extends ServiceProvider {
 			},
 			'handle'	=> 'pf',
 			'src'		=> 'assets/js/pf',
-			'deps'		=> array( 'jquery', 'wp-api' ),
+			'deps'		=> array( 'jquery' ),
 		) );
+
+		$assets->register_script( array(
+			'type'	=> 'admin',
+			'condition'	=> function( $hook ) use ( $provider ) {
+				$inclusions = array( 'edit.php' );
+				return $provider->check_hook_for_pressforward_string( $hook, array(), $inclusions, true );
+			},
+			'handle'	=> 'pf-api',
+			'src'		=> 'assets/js/pf-api',
+			'deps'		=> array( 'jquery', 'wp-api', 'pf' ),
+		) );
+
+		// Scripts
+		/**
+		* $assets->register_script( array(
+		* 	'type'	=> 'admin',
+		* 	'condition'	=> function( $hook ) use ( $provider ) {
+		* 		$inclusions = array( 'edit.php' );
+		* 		return $provider->check_hook_for_pressforward_string( $hook, array(), $inclusions, true );
+		* 	},
+		* 	'handle'	=> 'stats-app',
+		* 	'src'		=> 'assets/stats-app/dist/app',
+		*	'deps'		=> array( 'pf', 'jquery', 'wp-api' ),
+		* ) );
+		**/
 
 		$assets->register_script( array(
 			'type'	=> 'admin',
@@ -135,6 +160,67 @@ class AssetsProvider extends ServiceProvider {
 			'src'		=> 'assets/js/settings-tools',
 			'deps'		=> array( 'pf' ),
 		) );
+
+		$metrics_config = get_option('pf_metrics_config', array());
+		if ( !isset($metrics_config['checked']) ){
+			$metrics_config['checked'] = false;
+			$metrics_config['basic'] = false;
+			$metrics_config['detailed'] = false;
+			$metrics_config['checkin_complete'] = false;
+		} else {
+			if ( !isset($metrics_config['basic']) ){
+				$metrics_config['basic'] = false;
+			}
+			if ( !isset($metrics_config['detailed']) ){
+				$metrics_config['detailed'] = false;
+			}
+			if ( !isset($metrics_config['checkin_complete']) ){
+				$metrics_config['checkin_complete'] = false;
+			}
+			foreach ($metrics_config as $key=>$value){
+				if ( 'yes' === $value || true === $value || 1 === $value || "1" === $value ){
+					$metrics_config[$key] = true;
+				} else {
+					$metrics_config[$key] = false;
+				}
+			}
+			if (true !== $metrics_config['checkin_complete']){
+				$assets->register_script( array(
+					'type'	=> 'admin',
+					'condition'	=> function( $hook ) use ( $provider ) {
+						//$exclusions = array( 'toplevel_page_pf-menu' );
+						//return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
+						return true;
+					},
+					'handle'	=> $slug . '-checkin',
+					'src'		=> 'assets/js/checkin',
+					'deps'		=> array( 'jquery' ),
+					'localize'	=>	array(
+						'name'	=> 'pf_checkin',
+						'data'	=>	array(
+							'active'	=>	$metrics_config['basic'],
+						)
+					)
+				) );
+			}
+
+			$assets->register_script( array(
+				'type'	=> 'admin',
+				'condition'	=> function( $hook ) use ( $provider ) {
+					return pressforward( 'controller.template_factory' )->is_a_pf_page();
+				},
+				'handle'	=> $slug . '-analytics',
+				'src'		=> 'assets/js/analytics',
+				'deps'		=> array( 'jquery' ),
+				'localize'	=>	array(
+					'name'	=> 'pf_analytics',
+					'data'	=>	array(
+						'active'	=>	$metrics_config['detailed'],
+					)
+				)
+			) );
+
+		}
 
 		$assets->register_script( array(
 			'type'	=> 'admin',
@@ -254,7 +340,7 @@ class AssetsProvider extends ServiceProvider {
 			},
 			'handle'	=> $slug . '-scrollimp',
 			'src'		=> 'assets/js/scroll-imp',
-			'deps'		=> array( $slug . '-infiniscroll', 'pf-relationships', $slug . '-views' ),
+			'deps'		=> array( $slug . '-infiniscroll', 'pf-relationships', $slug . '-views', 'jquery' ),
 		) );
 
 		$assets->register_script( array(
