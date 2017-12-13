@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PressForward\n"
 "POT-Creation-Date: 2017-12-12 21:02+0100\n"
-"PO-Revision-Date: 2017-12-12 22:17+0100\n"
+"PO-Revision-Date: 2017-12-13 21:02+0100\n"
 "Last-Translator: Thierry Pasquier <thierry.pasquier@emf.ccsti.eu>\n"
 "Language-Team: Thierry Pasquier <thierry.pasquier@emf.ccsti.eu>\n"
 "Language: fr\n"
@@ -964,7 +964,7 @@ msgstr "Rédiger"
 #: Core/Admin/PFTemplater.php:766 Core/Schema/Nominations.php:51
 #: includes/nomthis/nominate-this-core.php:504
 msgid "Nominate"
-msgstr "Nommer"
+msgstr "Sélectionner"
 
 #: Core/Admin/PFTemplater.php:790 includes/nomthis/nominate-this-core.php:509
 msgid "Send to "
