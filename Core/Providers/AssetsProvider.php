@@ -23,13 +23,8 @@ class AssetsProvider extends ServiceProvider {
 	}
 
 	protected function add_assets( Assets $assets ) {
-		// $this->container =
 		$slug = 'pf';
-		$url  = $this->container->fetch( 'url' );
-		$debug = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG;
-		if ( $debug ) {
-			$assets->set_debug( true );
-		}
+		$assets->set_debug( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG );
 
 		$provider = $this;
 
