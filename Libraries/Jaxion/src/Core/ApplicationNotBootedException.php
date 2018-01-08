@@ -9,6 +9,6 @@ namespace Intraxia\Jaxion\Core;
  * @package Intraxia\Jaxion
  * @subpackage Core
  */
-class ApplicationNotBootedException extends \RuntimeException {
-
+class ApplicationNotBootedException extends \RuntimeException
+{
 }
