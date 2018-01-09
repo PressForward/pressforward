@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PressForward\n"
 "POT-Creation-Date: 2017-12-12 21:02+0100\n"
-"PO-Revision-Date: 2017-12-13 21:02+0100\n"
+"PO-Revision-Date: 2018-01-09 08:57+0100\n"
 "Last-Translator: Thierry Pasquier <thierry.pasquier@emf.ccsti.eu>\n"
 "Language-Team: Thierry Pasquier <thierry.pasquier@emf.ccsti.eu>\n"
 "Language: fr\n"
@@ -61,11 +61,11 @@ msgstr "Mémorise l’id sélectionné"
 
 #: Controllers/Metas.php:387
 msgid "The WordPress postID associated with the post on the final step"
-msgstr ""
+msgstr "Le post_ID Wordpress associé à une publication pour l’étape finale"
 
 #: Controllers/Metas.php:388
 msgid "Stores postID associated with the last step item"
-msgstr ""
+msgstr "Mémorise le post_ID lors de l’étape finale"
 
 #: Controllers/Metas.php:396
 msgid "DUPE Soon to be depreciated version of pf_item_post_id"
@@ -133,7 +133,7 @@ msgstr "Lien de la source"
 
 #: Controllers/Metas.php:473
 msgid "Stores link to the origonal post."
-msgstr "Lien vers le billet d’origine."
+msgstr "Lien vers l’annonce d’origine."
 
 #: Controllers/Metas.php:482
 msgid "DUPE Soon to be depreciated version of item_link"
@@ -968,7 +968,7 @@ msgstr "Sélectionner"
 
 #: Core/Admin/PFTemplater.php:790 includes/nomthis/nominate-this-core.php:509
 msgid "Send to "
-msgstr "Envoyer à"
+msgstr "Envoyer à "
 
 #: Core/Admin/PFTemplater.php:797
 msgid "Tweet"
@@ -1459,7 +1459,7 @@ msgstr "Supprimer toutes les publications avec alertes"
 
 #: Libraries/AlertBox/The_Alert_Box.php:129
 msgid "Alert boxes not active."
-msgstr ""
+msgstr "Les messages d’alerte ne sont pas actifs."
 
 #: Libraries/AlertBox/The_Alert_Box.php:282
 msgid "You do not have permission to dismiss alerts."
@@ -1467,12 +1467,12 @@ msgstr "Vous n’êtes pas autorisé à rejeter des alertes."
 
 #: Libraries/AlertBox/The_Alert_Box.php:305
 msgid "No alerted posts to dismiss."
-msgstr ""
+msgstr "Aucune publication signalée à supprimer."
 
 #: Libraries/AlertBox/The_Alert_Box.php:312
 #, php-format
 msgid "Alert on post ID %s dismissed."
-msgstr ""
+msgstr "Alerte sur la publication ID %s rejetée"
 
 #: Libraries/AlertBox/The_Alert_Box.php:322
 msgid "Alerts dismissed."
@@ -1488,7 +1488,7 @@ msgstr "Aucune publication signalée à supprimer."
 
 #: Libraries/AlertBox/The_Alert_Box.php:391
 msgid "posts deleted."
-msgstr "Billets supprimés"
+msgstr "Publications supprimées"
 
 #: Libraries/AlertBox/The_Alert_Box.php:411
 msgid "Edit"
@@ -1504,7 +1504,7 @@ msgstr "Supprimer"
 
 #: Libraries/Jaxion/src/Http/Guard.php:68
 msgid "Guard failure"
-msgstr ""
+msgstr "Défaillance de la veille"
 
 #: Libraries/Jaxion/src/Http/Guard.php:77
 #: Libraries/Jaxion/src/Http/Guard.php:86
@@ -1730,9 +1730,9 @@ msgid ""
 "editorial process. Comments are not publicly visible when the post is "
 "published."
 msgstr ""
-"Ce module permet aux utilisateurs de commenter les billet dans le cadre du "
-"processus éditorial. Les commentaires ne sont pas visibles publiquement "
-"lorsque les billets sont publiés."
+"Ce module permet aux utilisateurs de commenter les publications dans le "
+"cadre du processus éditorial. Les commentaires ne sont pas visibles "
+"publiquement lorsque les publications sont publiées."
 
 #: modules/comments/comments.php:128
 msgid "You do not have permission to access this area."
@@ -1950,7 +1950,7 @@ msgstr ""
 "vidéos à partir de n'importe quelle page Web. \n"
 "\t\t\t\t\t\t\t\t\tVous pouvez ensuite modifier, ajouter un auteur et une "
 "catégorie\n"
-"\t\t\t\t\t\t\t\t\t avant de le proposer ou de le rédiger dans un billet sur "
+"\t\t\t\t\t\t\t\t\t avant de le proposer ou de l’en faire une publication sur "
 "votre site."
 
 #: parts/nominate-this.tpl.php:62
@@ -2038,10 +2038,12 @@ msgid ""
 "Opt-in to allow us to collect non-sensitive diagnostic information for "
 "plugin improvement."
 msgstr ""
+"Opt-in pour nous autoriser à collecter des informations diagnostiques non "
+"sensibles pour améliorer les plugins."
 
 #: parts/settings/tab-site.tpl.php:42
 msgid "Allow detailed tracking"
-msgstr ""
+msgstr "Autoriser un suivi détaillé"
 
 #: parts/settings/tab-site.tpl.php:51
 msgid "Seconds to redirect user to source. (0 means no redirect)"
