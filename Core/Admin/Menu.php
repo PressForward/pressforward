@@ -457,6 +457,13 @@ if ( $c > 19 ) {
 			} else {
 				update_option( PF_SLUG . '_retrieval_frequency', 30 );
 			}
+			if ( isset( $_POST['pf_nomination_send_email'] ) ) {
+				$pf_nomination_send_email_opt_check = $_POST['pf_nomination_send_email'];
+				// print_r($pf_nomination_send_email_opt_check); die();
+				update_option( 'pf_nomination_send_email', $pf_nomination_send_email_opt_check );
+			} else {
+				update_option( 'pf_nomination_send_email', '' );
+			}
 			if ( isset( $_POST['pf_present_author_as_primary'] ) ) {
 				$pf_author_opt_check = $_POST['pf_present_author_as_primary'];
 				// print_r($pf_links_opt_check); die();
