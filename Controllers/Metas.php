@@ -306,24 +306,24 @@ class Metas implements HasFilters, HasActions
         }
     }
 
-    /**
-     * Return a PF Meta Object that is assuredly not depreciated.
-     *
-     * @param  [type] $name [description]
-     * @return [type]       [description]
-     */
-    public function assure_key($name)
-    {
-        $meta = $this->by_name($name);
-        // pf_log('Assuring '.$name.' is PF meta.');
-        if ((false !== $meta) && !empty($meta['move'])) {
-            return $this->by_name($meta['move']);
-        } else {
-            pf_log($name . ' is not PF meta.');
-            return array('name' => $name, 'error' => 'not_pf_meta');
-        }
-    }
-
+	/**
+	 * Return a PF Meta Object that is assuredly not depreciated.
+	 *
+	 * @param  [type] $name [description]
+	 * @return [type]       [description]
+	 */
+	public function assure_key( $name ) {
+		$meta = $this->by_name( $name );
+		// pf_log('Assuring '.$name.' is PF meta.');
+		if ( ( false !== $meta ) && ! empty( $meta['move'] ) ) {
+			return $this->by_name( $meta['move'] );
+		} elseif ( false !== $meta ) {
+			return $meta;
+		} else {
+			pf_log( $name . ' is not PF meta.' );
+			return array( 'name' => $name, 'error' => 'not_pf_meta' );
+		}
+	}
     /**
      * Return the meta database key.
      *
