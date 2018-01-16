@@ -124,7 +124,7 @@ EOT;
 							$d = DateTime::createFromFormat('U', $d);
 						}
 						if (!$d){
-							pf_log('cannot find date');
+							pf_log(__('Cannot find date', 'pf'));
 						} else {
 							$this->metas->update_pf_meta($id, 'sortable_item_date', $d->getTimestamp());
 						}
