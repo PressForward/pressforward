@@ -629,9 +629,14 @@ if ( $format === 'nomination' ) {
 		  </div>
 			</div>
 			<!-- End Modal -->
-		</article><!-- End article -->
+			<!-- pf_output_additional_modals -->
 		<?php
 			}
+			do_action( 'pf_output_additional_modals', $item, $c, $format );
+		?>
+		<!-- End pf_output_additional_modals -->
+		</article>
+		<!-- End article --><?php
 	}
 
 	/**
@@ -756,7 +761,8 @@ if ( $format === 'nomination' ) {
 							$draft_status = 'btn-success';
 						}
 						echo '<a href="#nominate" class="btn btn-small nom-to-draft schema-actor ' . $draft_status . '" pf-schema="draft" pf-schema-class="btn-success" form="' . $metadata['item_id'] . '" data-original-title="' . __( 'Draft', 'pf' ) . '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></a>';
-
+						
+						echo '<a role="button" class="btn btn-small meta_form_modal-button" data-toggle="modal" href="#meta_form_modal_'.$item['post_id'].'" data-post-id="'.$item['post_id'].'" id="meta_form_modal_expander-'.$item['post_id'].'" data-original-title="Edit Metadata"><i class="icon-meta-form"></i></a>';
 					} else {
 						// var_dump(pf_get_relationship('nominate', $id_for_comments, $user_id));
 						if ( ( 1 == pf_get_relationship_value( 'nominate', $id_for_comments, $user_id ) ) || ( 1 == pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ) {

@@ -10,6 +10,7 @@ use PressForward\Core\AJAX\ConfigurationAJAX;
 use PressForward\Core\AJAX\ItemsAJAX;
 use PressForward\Core\AJAX\SourceAJAX;
 use PressForward\Core\AJAX\NominationsAJAX;
+use PressForward\Core\AJAX\MetaAJAX;
 
 class AJAXServiceProvider extends ServiceProvider {
 
@@ -40,6 +41,13 @@ class AJAXServiceProvider extends ServiceProvider {
 			'ajax.nominations',
 			function( $container ) {
 				return new NominationsAJAX( $container->fetch( 'controller.metas' ), $container->fetch( 'controller.items' ), $container->fetch( 'schema.feed_item' ) );
+			}
+		);
+
+		$container->share(
+			'ajax.meta',
+			function( $container ) {
+				return new MetaAJAX( $container->fetch( 'controller.metas' ), $container->fetch( 'controller.items' ), $container->fetch( 'schema.feed_item' ) );
 			}
 		);
 

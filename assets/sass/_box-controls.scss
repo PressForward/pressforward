@@ -2,7 +2,6 @@
 	display: inline-block;
 }
 
-
 .list .box-controls {
 	margin-right: 26px;
 	margin-top: -10px;
@@ -15,13 +14,13 @@
 }
 
 .box-controls {
-	position:relative;
+	position: relative;
 	float: right;
 	display: inline;
 }
 
 .box-controls i {
-	background-color:#0085B0;
+	background-color: #0085B0;
 }
 
 .schema-read {
@@ -31,8 +30,8 @@
 	display: block;
 	cursor: pointer;
 	background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings-white.png");
-	border-radius:6px;
-	position:absolute;
+	border-radius: 6px;
+	position: absolute;
 }
 
 .list .schema-read {
@@ -41,7 +40,7 @@
 }
 
 .marked-read {
-	background-color:none;
+	background-color: none;
 	background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings.png");
 }
 
@@ -56,9 +55,9 @@
 	display: block;
 	cursor: pointer;
 	background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings-white.png");
-	background-color:lavender;
-	border-radius:6px;
-	position:absolute;
+	background-color: lavender;
+	border-radius: 6px;
+	position: absolute;
 }
 
 .pressforward_page_pf-review .pf-item-remove {
@@ -81,9 +80,9 @@
 	display: block;
 	cursor: pointer;
 	background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings-white.png");
-	background-color:lavender;
-	border-radius:6px;
-	position:absolute;
+	background-color: lavender;
+	border-radius: 6px;
+	position: absolute;
 }
 
 .hide-item:hover {
@@ -96,19 +95,17 @@
 }
 
 .relationship-button-active {
-	background-color:none;
+	background-color: none;
 	background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings.png");
 }
 
 #infscr-loading {
-	width:100%;
+	width: 100%;
 	float: left;
 	padding-left: 40px;
 }
 
-.list .actions {
-
-}
+.list .actions {}
 
 .list .modal .actions {
 	display: block;
@@ -120,4 +117,16 @@
 
 .actions .btn {
 	height: 26px;
+}
+
+.btn.meta_form_modal-button {
+	padding: 3px 5px;
+	.icon-meta-form {
+		background-clip: border-box;
+		background-image: url("../../assets/images/data-search-icon.png");
+		background-position: -5px -1px;
+		background-size: 25px;
+		width: 16px;
+		height: 100%;
+	}
 }

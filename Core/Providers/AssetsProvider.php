@@ -143,18 +143,18 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_script( array(
 			'type'	=> 'admin',
 			'condition'	=> function( $hook ) use ( $provider ) {
-            return $provider->check_hook_for_pressforward_string( $hook );
+				return $provider->check_hook_for_pressforward_string( $hook );
 			},
 			'handle'	=> $slug . '-heartbeat',
 			'src'		=> 'assets/js/pf-heartbeat',
-			'deps'		=> array( 'heartbeat', 'jquery-ui-progressbar', 'pf' ),
+			'deps'		=> array( 'jquery', 'heartbeat', 'jquery-ui-progressbar', 'pf' ),
 		) );
 
 		$assets->register_script( array(
 			'type'	=> 'admin',
 			'condition'	=> function( $hook ) use ( $provider ) {
-            $exclusions = array( 'toplevel_page_pf-menu' );
-            return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
+				$exclusions = array( 'toplevel_page_pf-menu' );
+				return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 			},
 			'handle'	=> $slug . '-settings-tools',
 			'src'		=> 'assets/js/settings-tools',
@@ -194,7 +194,7 @@ class AssetsProvider extends ServiceProvider {
 					},
 					'handle'	=> $slug . '-checkin',
 					'src'		=> 'assets/js/checkin',
-					'deps'		=> array( 'jquery' ),
+					'deps'		=> array( 'jquery', 'pf' ),
 					'localize'	=>	array(
 						'name'	=> 'pf_checkin',
 						'data'	=>	array(
@@ -211,7 +211,7 @@ class AssetsProvider extends ServiceProvider {
 				},
 				'handle'	=> $slug . '-analytics',
 				'src'		=> 'assets/js/analytics',
-				'deps'		=> array( 'jquery' ),
+				'deps'		=> array( 'jquery', 'pf' ),
 				'localize'	=>	array(
 					'name'	=> 'pf_analytics',
 					'data'	=>	array(
@@ -225,7 +225,7 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_script( array(
 			'type'	=> 'admin',
 			'condition'	=> function( $hook ) use ( $provider ) {
-            return $provider->check_hook_for_pressforward_string( $hook );
+            	return $provider->check_hook_for_pressforward_string( $hook );
 			},
 			'handle'	=> $slug . '-tinysort',
 			'src'		=> 'Libraries/jquery-tinysort/jquery.tinysort',
