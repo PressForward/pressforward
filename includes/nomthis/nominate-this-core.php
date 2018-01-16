@@ -642,7 +642,8 @@ endif;
 				$admin_email = get_option( 'pf_nomination_send_email' );
 				if($admin_email) {
 					$siteurl = get_option( 'siteurl', '' );
-					wp_mail($admin_email, "New nomination on OpenMethods", "A new nomination has been created! Please check it online on " . $siteurl . "/wp-admin/admin.php?page=pf-review");
+					$blogname = get_option( 'blogname', '' );
+					wp_mail($admin_email, "New nomination on '".$blogname."'", "A new nomination has been created! Please check it online on " . $siteurl . "/wp-admin/admin.php?page=pf-review");
 				}
 				?>
                 <div id="message" class="updated">
