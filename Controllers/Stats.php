@@ -49,19 +49,20 @@ class Stats {
 	private function includes(){
 		require_once( $this->root . '/Libraries/enumeration/src/Eloquent/Enumeration/Multiton.php' );
 		require_once( $this->root . '/Libraries/enumeration/src/Eloquent/Enumeration/Enumeration.php' );
-
-		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Gender.php' );
-		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/Traits/NameList.php' );
-		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/Interfaces/Matcher.php' );
-		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/BabyNamesWSMatch.php' );
-		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/RestNamesWSMatch.php' );
-		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/RegExpV1Match.php' );
-		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/RegExpV2Match.php' );
-		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/MetaphoneWeightedMatch.php' );
-		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/MetaphoneMatch.php' );
-		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/ListWeightedMatch.php' );
-		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/ListMatch.php' );
-		require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/GenderEngine.php' );
+		if (PHP_VERSION >= 5.4){
+			require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Gender.php' );
+			require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/Traits/NameList.php' );
+			require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/Interfaces/Matcher.php' );
+			require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/BabyNamesWSMatch.php' );
+			require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/RestNamesWSMatch.php' );
+			require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/RegExpV1Match.php' );
+			require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/RegExpV2Match.php' );
+			require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/MetaphoneWeightedMatch.php' );
+			require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/MetaphoneMatch.php' );
+			require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/ListWeightedMatch.php' );
+			require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/ListMatch.php' );
+			require_once( $this->root . '/Libraries/gender-checker/src/GenderEngine/GenderEngine.php' );
+		}
 		require_once( $this->root . '/Libraries/text-stats/src/DaveChild/TextStatistics/TextStatistics.php' );
 	}
 
@@ -79,7 +80,11 @@ class Stats {
 	}
 	public function gender_checker(){
 		if (empty( $this->gender_checker ) ) {
-			$this->gender_checker = new \GenderEngine\GenderEngine();
+			if (PHP_VERSION >= 5.4){
+				$this->gender_checker = new \GenderEngine\GenderEngine();
+			} else {
+				$this->gender_checker = new stdClass();
+			}
 		}
 	}
 
@@ -185,27 +190,34 @@ class Stats {
 	}
 
 	private function set_author_gender( $name ) {
-		$author_name = (string) $name;
-		$author_first_name_array = explode( ' ', $author_name );
-		$author_first_name = (string) $author_first_name_array[0];
-		if ( empty($author_first_name) ) {
-			if ( empty( $author_name ) ){
-				$author_first_name = "No author found.";
-			} else {
-				$author_first_name = $name;
+		if (PHP_VERSION >= 5.4){
+			$author_name = (string) $name;
+			$author_first_name_array = explode( ' ', $author_name );
+			$author_first_name = (string) $author_first_name_array[0];
+			if ( empty($author_first_name) ) {
+				if ( empty( $author_name ) ){
+					$author_first_name = "No author found.";
+				} else {
+					$author_first_name = $name;
+				}
 			}
+			//var_dump($author_first_name . ': ');
+			$gender = $this->gender_checker->test($author_first_name);
+			return $gender;
+		} else {
+			return '';
 		}
-		//var_dump($author_first_name . ': ');
-		$gender = $this->gender_checker->test($author_first_name);
-		return $gender;
 	}
 
 	private function set_author_gender_confidence(){
-		//var_dump($gender . "\n");
-		$confidence = $this->gender_checker->getPreviousMatchConfidence();
-		$confidence = (string) $confidence;
-		return $confidence;
-
+		if (PHP_VERSION >= 5.4){
+			//var_dump($gender . "\n");
+			$confidence = $this->gender_checker->getPreviousMatchConfidence();
+			$confidence = (string) $confidence;
+			return $confidence;
+		} else {
+			return '';
+		}
 	}
 
 	private function set_new_author_object( $author_slug, $author, $authors ){
