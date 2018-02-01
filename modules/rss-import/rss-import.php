@@ -210,7 +210,12 @@ class PF_RSS_Import extends PF_Module {
 					$contentObj = pressforward( 'library.htmlchecker' );
 					$item_content = $contentObj->closetags( $item_content );
 					$item_content = pressforward( 'controller.readability' )->process_in_oembeds( $item->get_link(), $item_content );
-					// print_r($c);
+					pf_log('get_links');
+					pf_log($item->get_links());
+					pf_log($item->get_permalink());
+					// GUID
+					pf_log($item->get_id());
+					
 					$rssObject[ 'rss_' . $c ] = pf_feed_object(
 						$item->get_title(),
 						$iFeed->get_title(),

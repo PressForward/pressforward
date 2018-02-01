@@ -31,8 +31,13 @@ class MetaAJAX implements HasActions {
 		);
 	}
 
-	private function validate_meta_for_edit($a_meta, $post_level = 'nomination') {
+	private function validate_meta_for_edit( $a_meta, $post_level = 'nomination', $post_id = false ) {
 		$meta_type = $a_meta['type'];
+		if ( in_array('aggr', $meta_type) && false !== $post_id  ) {
+			if (false !== wp_get_post_parent_id( $post_id )){
+				return false;
+			}
+		}
 		if (in_array('dep', $meta_type) || !in_array($post_level, $a_meta['level'])) {
 			return false;
 		} elseif (in_array('adm', $meta_type) || in_array('desc', $meta_type)) {
@@ -55,7 +60,7 @@ class MetaAJAX implements HasActions {
 					</input><br />
 					<span class="meta-details"><sup>{$a_meta['definition']}</sup></span><br />
 				</label>
-				
+
 			</li>
 EOT;
 		return $field;
@@ -74,7 +79,7 @@ EOT;
 		}
 		$innerbox = '<div class="meta-inputs"><ul>';
 		foreach ($this->metas->structure() as $a_meta) {
-			if ($this->validate_meta_for_edit($a_meta)) {
+			if ($this->validate_meta_for_edit($a_meta, 'nomination', $item['post_id'])) {
 				$innerbox .= $this->create_meta_field($item['post_id'], $a_meta);
 			}
 		}
@@ -86,9 +91,9 @@ EOT;
 				<h3 id="meta_form_modal_<?php  echo $item['post_id']; ?>_label">Metadata</h3>
 			  </div>
 			  <div class="modal-body">
-				<?php 		
+				<?php
 					echo $innerbox;
-					$nonce = wp_create_nonce( 'meta_form_nonce_'.$item['post_id'] );		
+					$nonce = wp_create_nonce( 'meta_form_nonce_'.$item['post_id'] );
 					echo '<input type="hidden" id="meta_form_'.$item['post_id'].'_nonce_wpnonce" name="_wpnonce" value="'.$nonce.'">';
 				?>
 			  </div>
@@ -101,7 +106,7 @@ EOT;
 	}
 
 	public function pf_ajax_update_meta_fields() {
-		
+
 		if (isset($_POST['post_id'])) {
 			$id = $_POST['post_id'];
 		} else {
