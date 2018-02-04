@@ -8,6 +8,8 @@ GitHub Plugin URI: https://github.com/PressForward/pressforward
 Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
 Author URI: http://pressforward.org/about/team/
 License: GPL2
+Text Domain: pf
+Domain Path: /languages
 */
 
 
@@ -43,6 +45,9 @@ if ( (PHP_VERSION < 5.3) || ( ! $PHPCheck->does_it_meet_required_php_version( PH
 	require( 'init.php' );
 }
 
-
+function pressforward_load_plugin_textdomain() {
+	    load_plugin_textdomain( 'pf', FALSE, basename( dirname( __FILE__ ) ) . '/languages/' );
+}
+add_action( 'plugins_loaded', 'pressforward_load_plugin_textdomain' );
 
 // call_user_func(array(new Application(__FILE__), 'boot'));

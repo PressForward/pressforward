@@ -2,7 +2,7 @@
 
 ?>
 <p>
-	<?php _e( 'The default WordPress settings for drafting, editing, and publishing a post remain the same regardless of other PressForward Settings. For more details visit <a href="https://codex.wordpress.org/Roles_and_Capabilities">Roles and Capabilities</a>. To change the default roles for new users visit <a href="/wp-admin/options-general.php">Admin &#187; Settings &#187; General Settings</a>. To change user roles and capabilities, edit them at <a href="/wp-admin/users.php">Admin &#187; Users</a>.<br /><br />The additional preferences below determine the type of access granted to each user role within the PressForward plugin. The user roles allowed by PressForward in order of most restrictive to least restrictive include: Administrator, Editor, Contributor, and Subscriber.' ); ?>
+	<?php _e( 'The default WordPress settings for drafting, editing, and publishing a post remain the same regardless of other PressForward Settings. For more details visit <a href="https://codex.wordpress.org/Roles_and_Capabilities">Roles and Capabilities</a>. To change the default roles for new users visit <a href="/wp-admin/options-general.php">Admin &#187; Settings &#187; General Settings</a>. To change user roles and capabilities, edit them at <a href="/wp-admin/users.php">Admin &#187; Users</a>.<br /><br />The additional preferences below determine the type of access granted to each user role within the PressForward plugin. The user roles allowed by PressForward in order of most restrictive to least restrictive include: Administrator, Editor, Contributor, and Subscriber.', 'pf' ); ?>
 </p>
 <hr />
 <?php
