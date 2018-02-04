@@ -10,7 +10,7 @@ class APIWithMetaEndpoints {
 	}
 
 	public function valid_metas() {
-		$metas = $this->metas->structure();
+		$metas      = $this->metas->structure();
 		$post_metas = array();
 		foreach ( $metas as $meta ) {
 			// Don't use the serialized array.
@@ -62,16 +62,19 @@ class APIWithMetaEndpoints {
 
 	public function register_rest_post_read_field( $key, $action = false ) {
 		// http://v2.wp-api.org/extending/modifying/
-		if ( ! $action ) { $action = array( $this, $key . '_response' ); }
-		if ( true === $action ) {  $action = array( $this, 'meta_response' ); }
-		register_rest_field( $this->post_type,
-	        $key,
-	        array(
-	            'get_callback'    => $action,
-	            'update_callback' => null,
-	            'schema'          => null,
-	        )
-	    );
+		if ( ! $action ) {
+			$action = array( $this, $key . '_response' ); }
+		if ( true === $action ) {
+			$action = array( $this, 'meta_response' ); }
+		register_rest_field(
+			$this->post_type,
+			$key,
+			array(
+				'get_callback'    => $action,
+				'update_callback' => null,
+				'schema'          => null,
+			)
+		);
 	}
 
 
@@ -92,7 +95,7 @@ class APIWithMetaEndpoints {
 					$term_found = true;
 					$data->remove_link( $link );
 					// var_dump('term found', $term);
-					$term_link['href'] = str_replace( 'wp/v2/' . $term, 'pf/v1/' . $term, $term_link['href'] );
+					$term_link['href']      = str_replace( 'wp/v2/' . $term, 'pf/v1/' . $term, $term_link['href'] );
 					$links[ $link ][ $key ] = $term_link;
 					// var_dump($links);
 				} else {
@@ -100,8 +103,9 @@ class APIWithMetaEndpoints {
 				}
 			}
 			if ( $term_found ) {
-				$data->add_links( array(
-					$link => $links[ $link ],
+				$data->add_links(
+					array(
+						$link => $links[ $link ],
 					)
 				);
 			}
@@ -110,19 +114,20 @@ class APIWithMetaEndpoints {
 	}
 
 	// Hook to filter 'rest_prepare_{post_type}' to actifate
-	public function filter_wp_to_pf_in_terms( $data, $post, $request  ) {
+	public function filter_wp_to_pf_in_terms( $data, $post, $request ) {
 		// var_dump($data->add_link('https://api.w.org/term', array())); die();
 		$links = $data->get_links();
 		if ( isset( $links['https://api.w.org/term'] ) ) {
 			$data->remove_link( 'https://api.w.org/term' );
 			foreach ( $links['https://api.w.org/term'] as $key => $term_link ) {
 				if ( 0 <= strpos( $term_link['href'], 'wp/v2/folders' ) ) {
-					$term_link['href'] = str_replace( 'wp/v2/folders', 'pf/v1/folders', $term_link['href'] );
+					$term_link['href']                       = str_replace( 'wp/v2/folders', 'pf/v1/folders', $term_link['href'] );
 					$links['https://api.w.org/term'][ $key ] = $term_link;
 				}
 			}
-			$data->add_links( array(
-				'https://api.w.org/term' => $links['https://api.w.org/term'],
+			$data->add_links(
+				array(
+					'https://api.w.org/term' => $links['https://api.w.org/term'],
 				)
 			);
 		}
@@ -131,12 +136,13 @@ class APIWithMetaEndpoints {
 			$data->remove_link( 'https://api.w.org/post_type' );
 			foreach ( $links['https://api.w.org/post_type'] as $key => $term_link ) {
 				if ( 0 <= strpos( $term_link['href'], 'wp/v2/feeds' ) ) {
-					$term_link['href'] = str_replace( 'wp/v2/feeds', 'pf/v1/feeds', $term_link['href'] );
+					$term_link['href']                            = str_replace( 'wp/v2/feeds', 'pf/v1/feeds', $term_link['href'] );
 					$links['https://api.w.org/post_type'][ $key ] = $term_link;
 				}
 			}
-			$data->add_links( array(
-				'https://api.w.org/post_type' => $links['https://api.w.org/post_type'],
+			$data->add_links(
+				array(
+					'https://api.w.org/post_type' => $links['https://api.w.org/post_type'],
 				)
 			);
 		}
@@ -145,12 +151,13 @@ class APIWithMetaEndpoints {
 			$data->remove_link( 'https://api.w.org/items' );
 			foreach ( $links['https://api.w.org/items'] as $key => $term_link ) {
 				if ( 0 <= strpos( $term_link['href'], 'wp/v2/folders' ) ) {
-					$term_link['href'] = str_replace( 'wp/v2/folders', 'pf/v1/folders', $term_link['href'] );
+					$term_link['href']                        = str_replace( 'wp/v2/folders', 'pf/v1/folders', $term_link['href'] );
 					$links['https://api.w.org/items'][ $key ] = $term_link;
 				}
 			}
-			$data->add_links( array(
-				'https://api.w.org/items' => $links['https://api.w.org/items'],
+			$data->add_links(
+				array(
+					'https://api.w.org/items' => $links['https://api.w.org/items'],
 				)
 			);
 		}

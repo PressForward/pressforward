@@ -9,7 +9,7 @@ class Feed_Item extends BasicModel {
 	protected $data = array();
 
 	function init( $item = array(), $handlers = array(), $post_type = false ) {
-		$this->type = 'feed_item';
+		$this->type     = 'feed_item';
 		$this->type_key = 'item';
 		if ( ! $post_type ) {
 			$this->post_type = pf_feed_item_post_type();
@@ -66,7 +66,7 @@ class Feed_Item extends BasicModel {
 	}
 
 	private function create_hash_id( $url, $title ) {
-		$hash = create_feed_item_id($url, $title);
+		$hash = create_feed_item_id( $url, $title );
 		return $hash;
 	}
 
@@ -106,7 +106,7 @@ class Feed_Item extends BasicModel {
 	}
 
 	public function set_content( $content ) {
-		$content_obj = pressforward( 'library.htmlchecker' );
+		$content_obj   = pressforward( 'library.htmlchecker' );
 		$this->content = $content_obj->closetags( $content );
 		return $this->content;
 	}

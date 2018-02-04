@@ -55,15 +55,17 @@ class PF_Loops {
 		}
 
 		// Make sure default values are set.
-		$r = array_merge( array(
-			'start'            => 0,
-			'posts_per_page'   => 20,
-			'from_unix_time'   => 0,
-			'no_limit'         => false,
-			'relationship'     => false,
-			'search_terms'     => '',
-			'exclude_archived' => false,
-		), $args );
+		$r = array_merge(
+			array(
+				'start'            => 0,
+				'posts_per_page'   => 20,
+				'from_unix_time'   => 0,
+				'no_limit'         => false,
+				'relationship'     => false,
+				'search_terms'     => '',
+				'exclude_archived' => false,
+			), $args
+		);
 
 		if ( empty( $r['from_unix_time'] ) || ( $r['from_unix_time'] < 100 ) ) {
 			$r['from_unix_time'] = 0;
@@ -72,8 +74,8 @@ class PF_Loops {
 		$r['start'] = $r['start'] - 1;
 
 		if ( ! $r['posts_per_page'] ) {
-			$user_obj = wp_get_current_user();
-			$user_id = $user_obj->ID;
+			$user_obj            = wp_get_current_user();
+			$user_id             = $user_obj->ID;
 			$r['posts_per_page'] = get_user_option( 'pf_pagefull', $user_id );
 			if ( empty( $r['posts_per_page'] ) ) {
 				$r['posts_per_page'] = 20;
@@ -81,15 +83,15 @@ class PF_Loops {
 		}
 
 		$post_args = array(
-			'post_type' => pf_feed_item_post_type(),
+			'post_type'      => pf_feed_item_post_type(),
 
 			// Ordering by 'sortable_item_date' > 0.
-			'meta_key'     => 'sortable_item_date',
-			'meta_value'   => $r['from_unix_time'],
-			'meta_type'    => 'SIGNED',
-			'meta_compare' => '>',
-			'orderby'      => 'meta_value',
-			'order'        => 'DESC',
+			'meta_key'       => 'sortable_item_date',
+			'meta_value'     => $r['from_unix_time'],
+			'meta_type'      => 'SIGNED',
+			'meta_compare'   => '>',
+			'orderby'        => 'meta_value',
+			'order'          => 'DESC',
 
 			// Pagination
 			'posts_per_page' => $r['posts_per_page'],
@@ -102,11 +104,11 @@ class PF_Loops {
 
 		if ( ! empty( $r['relationship'] ) ) {
 			switch ( $r['relationship'] ) {
-				case 'starred' :
+				case 'starred':
 					$rel_items = pf_get_relationships_for_user( 'star', get_current_user_id() );
 					break;
 
-				case 'nominated' :
+				case 'nominated':
 					$rel_items = pf_get_relationships_for_user( 'nominate', get_current_user_id() );
 					break;
 			}
@@ -118,15 +120,15 @@ class PF_Loops {
 
 		if ( ! empty( $r['reveal'] ) ) {
 			switch ( $r['reveal'] ) {
-				case 'no_hidden' :
+				case 'no_hidden':
 					$rel_items = pf_get_relationships_for_user( 'archive', get_current_user_id() );
 					break;
 
-				case 'unread' :
+				case 'unread':
 					$rel_not_items = pf_get_relationships_for_user( 'read', get_current_user_id() );
 					break;
 
-				case 'drafted' :
+				case 'drafted':
 					$drafted_items = pf_get_drafted_items();
 					if ( empty( $drafted_items ) ) {
 						$drafted_items = array( 0 );
@@ -163,16 +165,16 @@ class PF_Loops {
 		}
 
 		if ( ! empty( $r['exclude_archived'] ) ) {
-			$archived = pf_get_relationships_for_user( 'archive', get_current_user_id() );
+			$archived                  = pf_get_relationships_for_user( 'archive', get_current_user_id() );
 			$post_args['post__not_in'] = wp_list_pluck( $archived, 'item_id' );
 		}
 
 		if ( ! empty( $r['search_terms'] ) ) {
 			/*
-    		 * Quote so as to get only exact matches. This is for
-    		 * backward compatibility - might want to remove it for
-    		 * a more flexible search.
-    		 */
+			 * Quote so as to get only exact matches. This is for
+			 * backward compatibility - might want to remove it for
+			 * a more flexible search.
+			 */
 			$post_args['s'] = '"' . $r['search_terms'] . '"';
 		}
 
@@ -181,19 +183,21 @@ class PF_Loops {
 		if ( isset( $_GET['feed'] ) ) {
 			$post_args['post_parent'] = $_GET['feed'];
 		} elseif ( isset( $_GET['folder'] ) ) {
-			$parents_in_folder = new \WP_Query( array(
-				'post_type' => pressforward( 'schema.feeds' )->post_type,
-				'fields' => 'ids',
-				'update_post_term_cache' => false,
-				'update_post_meta_cache' => false,
-				'tax_query' => array(
+			$parents_in_folder = new \WP_Query(
 				array(
-						'taxonomy' => pressforward( 'schema.feeds' )->tag_taxonomy,
-						'field'	=> 'term_id',
-						'terms'	=> $_GET['folder'],
+					'post_type'              => pressforward( 'schema.feeds' )->post_type,
+					'fields'                 => 'ids',
+					'update_post_term_cache' => false,
+					'update_post_meta_cache' => false,
+					'tax_query'              => array(
+						array(
+							'taxonomy' => pressforward( 'schema.feeds' )->tag_taxonomy,
+							'field'    => 'term_id',
+							'terms'    => $_GET['folder'],
+						),
 					),
-				),
-			) );
+				)
+			);
 			// var_dump('<pre>'); var_dump($parents_in_folder); die();
 			$post_args['post_parent__in'] = $parents_in_folder->posts;
 			if ( empty( $post_args['post_parent__in'] ) ) {
@@ -204,21 +208,21 @@ class PF_Loops {
 		$feed_items = new \WP_Query( $post_args );
 
 		$feedObject = array();
-		$c = 0;
+		$c          = 0;
 
 		foreach ( $feed_items->posts as $post ) {
 			$post_id = $post->ID;
 
-			$item_id            = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'item_id', true );
-			$source_title       = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'source_title', true );
-			$item_date          = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'item_date', true );
-			$item_author        = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'item_author', true );
-			$item_link          = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'item_link', true );
-			$item_feat_img      = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'item_feat_img', true );
-			$item_wp_date       = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'item_wp_date', true );
-			$item_tags          = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'item_tags', true );
-			$source_repeat      = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'source_repeat', true );
-			$readable_status    = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'readable_status', true );
+			$item_id         = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'item_id', true );
+			$source_title    = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'source_title', true );
+			$item_date       = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'item_date', true );
+			$item_author     = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'item_author', true );
+			$item_link       = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'item_link', true );
+			$item_feat_img   = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'item_feat_img', true );
+			$item_wp_date    = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'item_wp_date', true );
+			$item_tags       = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'item_tags', true );
+			$source_repeat   = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'source_repeat', true );
+			$readable_status = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'readable_status', true );
 
 			$contentObj   = pressforward( 'library.htmlchecker' );
 			$item_content = $contentObj->closetags( $post->post_content );

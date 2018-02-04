@@ -14,9 +14,9 @@ class ConfigurationAJAX implements HasActions {
 	protected $basename;
 
 	function __construct( Metas $metas, PF_to_WP_Posts $posts, Feed_Items $items, SystemUsers $user_interface ) {
-		$this->metas = $metas;
-		$this->posts = $posts;
-		$this->items = $items;
+		$this->metas          = $metas;
+		$this->posts          = $posts;
+		$this->items          = $items;
 		$this->user_interface = $user_interface;
 				add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed' ) );
 	}
@@ -25,94 +25,94 @@ class ConfigurationAJAX implements HasActions {
 	public function action_hooks() {
 		return array(
 			array(
-				'hook' => 'wp_ajax_pf_ajax_retain_display_setting',
+				'hook'   => 'wp_ajax_pf_ajax_retain_display_setting',
 				'method' => 'pf_ajax_retain_display_setting',
 			),
 			array(
-				'hook' => 'wp_ajax_pf_ajax_user_setting',
+				'hook'   => 'wp_ajax_pf_ajax_user_setting',
 				'method' => 'pf_ajax_user_setting',
 			),
 			array(
-				'hook' => 'wp_ajax_pf_checked_in',
+				'hook'   => 'wp_ajax_pf_checked_in',
 				'method' => 'pf_checked_in',
 			),
 			array(
-				'hook' => 'wp_ajax_pf_metrics_prompt',
+				'hook'   => 'wp_ajax_pf_metrics_prompt',
 				'method' => 'pf_metrics_prompt',
 			),
 			array(
-				'hook'	=> 'wp_ajax_pf_metrics_quick_submit',
-				'method' => 'pf_metrics_quick_submit',
-				'priority'  => 11
+				'hook'     => 'wp_ajax_pf_metrics_quick_submit',
+				'method'   => 'pf_metrics_quick_submit',
+				'priority' => 11,
 			),
 			array(
-				'hook' => 'admin_head',
-				'method' => 'pf_metrics_settings_box',
-				'priority'  => 10
-			)
+				'hook'     => 'admin_head',
+				'method'   => 'pf_metrics_settings_box',
+				'priority' => 10,
+			),
 		);
 	}
 
-	public function pf_checked_in(){
-		$metrics_config = get_option('pf_metrics_config', array());
+	public function pf_checked_in() {
+		$metrics_config                     = get_option( 'pf_metrics_config', array() );
 		$metrics_config['checkin_complete'] = true;
 		update_option( 'pf_metrics_config', $metrics_config );
 	}
 
-	public function pf_metrics_prompt_text(){
+	public function pf_metrics_prompt_text() {
 		$debug_button = '';
-		if (WP_DEBUG){
+		if ( WP_DEBUG ) {
 			$debug_button = '<a class="debug button button-secondary" id="pf_metrics_debug">Debug Reset</a>';
 		}
-		$pf_metrics_opt_check = get_option('pf_metrics_config', array());
-		if ( empty($pf_metrics_opt_check) || ( 'no' === $pf_metrics_opt_check["checked"] ) || ( 'yes' === $pf_metrics_opt_check["basic"] && 'yes' === $pf_metrics_opt_check["detailed"] ) ){
+		$pf_metrics_opt_check = get_option( 'pf_metrics_config', array() );
+		if ( empty( $pf_metrics_opt_check ) || ( 'no' === $pf_metrics_opt_check['checked'] ) || ( 'yes' === $pf_metrics_opt_check['basic'] && 'yes' === $pf_metrics_opt_check['detailed'] ) ) {
 			$active = true;
 		} else {
 			$active = false;
 		}
-		foreach ($pf_metrics_opt_check as $key=>$val){
-			if ('yes' === $val){
-				$pf_metrics_opt_check[$key] = 'checked';
+		foreach ( $pf_metrics_opt_check as $key => $val ) {
+			if ( 'yes' === $val ) {
+				$pf_metrics_opt_check[ $key ] = 'checked';
 			} elseif ( $active ) {
-				$pf_metrics_opt_check[$key] = 'checked';
+				$pf_metrics_opt_check[ $key ] = 'checked';
 			} else {
-				$pf_metrics_opt_check[$key] = '';
+				$pf_metrics_opt_check[ $key ] = '';
 			}
 		}
-		$basic = (isset($pf_metrics_opt_check["basic"]) ? $pf_metrics_opt_check["basic"] : 'checked' );
-		//$detailed = (isset($pf_metrics_opt_check["detailed"]) ? $pf_metrics_opt_check["detailed"] : 'checked' );
+		$basic = ( isset( $pf_metrics_opt_check['basic'] ) ? $pf_metrics_opt_check['basic'] : 'checked' );
+		// $detailed = (isset($pf_metrics_opt_check["detailed"]) ? $pf_metrics_opt_check["detailed"] : 'checked' );
 		$detailed = '';
 		return <<<EOT
 		<div id="pf_metrics_mouseover" class="ab-sub-wrapper"><h4 style="font-size:20px;">Please help us improve PressForward</h4><p style="display:none;">If you agree to allow us to collect anonymous data about how you use this plugin we can use that information to improve our next release. <input id="pf_metrics_drawer_detailed" type="checkbox" style="display:none;" {$detailed} /></p><p>Opt-in to allow us to collect non-sensitive diagnostic information for plugin improvement. <input id="pf_metrics_drawer_basic" type="checkbox" style="display:none;" {$basic} /></p><a class="submit button button-primary" id="pf_metrics_opt-in">Opt-In</a><a class="cancel button button-secondary" id="pf_metrics_dismiss">Dismiss Alert</a>{$debug_button}</div>
 EOT;
 	}
 
-	public function pf_metrics_settings_box(){
-		$metrics_config = get_option('pf_metrics_config', array());
-		if ( !isset($metrics_config['checked']) ){
-			$metrics_config['checked'] = false;
-			$metrics_config['basic'] = false;
+	public function pf_metrics_settings_box() {
+		$metrics_config = get_option( 'pf_metrics_config', array() );
+		if ( ! isset( $metrics_config['checked'] ) ) {
+			$metrics_config['checked']  = false;
+			$metrics_config['basic']    = false;
 			$metrics_config['detailed'] = false;
 		} else {
-			if ( !isset($metrics_config['basic']) ){
+			if ( ! isset( $metrics_config['basic'] ) ) {
 				$metrics_config['basic'] = false;
 			}
-			if ( !isset($metrics_config['detailed']) ){
+			if ( ! isset( $metrics_config['detailed'] ) ) {
 				$metrics_config['detailed'] = false;
 			}
-			if ( !isset($metrics_config['checked']) ){
+			if ( ! isset( $metrics_config['checked'] ) ) {
 				$metrics_config['checked'] = false;
 			}
-			foreach ($metrics_config as $key=>$value){
-				if ( 'yes' === $value || true === $value || 1 === $value || "1" === $value ){
-					$metrics_config[$key] = true;
+			foreach ( $metrics_config as $key => $value ) {
+				if ( 'yes' === $value || true === $value || 1 === $value || '1' === $value ) {
+					$metrics_config[ $key ] = true;
 				} else {
-					$metrics_config[$key] = false;
+					$metrics_config[ $key ] = false;
 				}
 			}
 		}
-		if (true !== $metrics_config['checked']){
-			$msg = $this->pf_metrics_prompt_text();
+		if ( true !== $metrics_config['checked'] ) {
+			$msg    = $this->pf_metrics_prompt_text();
 			$script = <<<EOT
 				jQuery( window ).load(function() {
 					window.pf = window.pf || {};
@@ -176,13 +176,13 @@ EOT;
 					});
 		});
 EOT;
-		echo '<script type="text/javascript">'.$script.'</script>';
-	}
+			echo '<script type="text/javascript">' . $script . '</script>';
+		}
 	}
 
-	public function pf_metrics_prompt(){
-		$msg = $this->pf_metrics_prompt_text();
-		$script = <<<EOT
+	public function pf_metrics_prompt() {
+		$msg      = $this->pf_metrics_prompt_text();
+		$script   = <<<EOT
 				window.pf = window.pf || {};
 				if ( ( typeof window.pf.loadAdminPrompt == 'undefined' ) || true === window.pf.loadAdminPrompt || jQuery('.plugins-php').length < 1 ){
 					var prompt = jQuery('{$msg}');
@@ -301,44 +301,44 @@ EOT;
 				}
 EOT;
 		$response = array(
-			'what' => 'pressforward',
-			'action' => 'pf_metrics_prompt',
-			'id' => pressforward( 'controller.template_factory' )->user_id(),
-			'data' => '<script>'.$script.'</script>',
+			'what'         => 'pressforward',
+			'action'       => 'pf_metrics_prompt',
+			'id'           => pressforward( 'controller.template_factory' )->user_id(),
+			'data'         => '<script>' . $script . '</script>',
 			'supplemental' => array(
-					//'buffered' => ob_get_contents(),
-					'timestamp' => current_time( 'Y-m-d H:i:s' ),
+				// 'buffered' => ob_get_contents(),
+				'timestamp' => current_time( 'Y-m-d H:i:s' ),
 			),
 		);
 		$xmlResponse = new WP_Ajax_Response( $response );
 		$xmlResponse->send();
-		//ob_end_clean();
+		// ob_end_clean();
 		die();
 	}
 
-	public function pf_metrics_quick_submit(){
+	public function pf_metrics_quick_submit() {
 		ob_start();
 		$metrics_settings = array(
-			'basic'	=> 'no',
-			'detailed'	=>	'no',
-			'checked'	=> 'yes'
+			'basic'    => 'no',
+			'detailed' => 'no',
+			'checked'  => 'yes',
 		);
-		foreach ($_POST as $key=>$val){
-			$key = str_replace('pf_', '', $key);
-			$metrics_settings[$key] = $val;
+		foreach ( $_POST as $key => $val ) {
+			$key                      = str_replace( 'pf_', '', $key );
+			$metrics_settings[ $key ] = $val;
 		}
 		$valid_capability = get_option( 'pf_menu_preferences_access', $this->user_interface->pf_get_defining_capability_by_role( 'administrator' ) );
-		if ( !current_user_can( $valid_capability ) ){
+		if ( ! current_user_can( $valid_capability ) ) {
 			$result = 'user cannot update';
 		} else {
 			$result = update_option( 'pf_metrics_config', $metrics_settings );
 		}
 		// var_dump($user_id);
-		$response = array(
-			'what' => 'pressforward',
+		$response    = array(
+			'what'   => 'pressforward',
 			'action' => 'pf_metrics_quick_submit',
-			'id' => pressforward( 'controller.template_factory' )->user_id(),
-			'data' => (string) $result,
+			'id'     => pressforward( 'controller.template_factory' )->user_id(),
+			'data'   => (string) $result,
 		);
 		$xmlResponse = new WP_Ajax_Response( $response );
 		$xmlResponse->send();
@@ -347,14 +347,14 @@ EOT;
 	}
 
 	function pf_bad_call( $action, $msg = 'You made a bad call and it did not work. Try again.' ) {
-		$response = array(
-			'what' => 'pressforward',
-			'action' => $action,
-			'id' => pressforward( 'controller.template_factory' )->user_id(),
-			'data' => $msg,
+		$response    = array(
+			'what'         => 'pressforward',
+			'action'       => $action,
+			'id'           => pressforward( 'controller.template_factory' )->user_id(),
+			'data'         => $msg,
 			'supplemental' => array(
-					'buffered' => ob_get_contents(),
-					'timestamp' => current_time( 'Y-m-d H:i:s' ),
+				'buffered'  => ob_get_contents(),
+				'timestamp' => current_time( 'Y-m-d H:i:s' ),
 			),
 		);
 		$xmlResponse = new WP_Ajax_Response( $response );
@@ -370,15 +370,15 @@ EOT;
 		} else {
 			$read_status = false;
 		}
-		$userObj = wp_get_current_user();
-		$user_id = $userObj->ID;
+		$userObj  = wp_get_current_user();
+		$user_id  = $userObj->ID;
 		$returned = $this->pf_switch_display_setting( $user_id, $read_state );
 		// var_dump($user_id);
-		$response = array(
-			'what' => 'pressforward',
+		$response    = array(
+			'what'   => 'pressforward',
 			'action' => 'pf_ajax_retain_display_setting',
-			'id' => $user_id,
-			'data' => (string) $returned,
+			'id'     => $user_id,
+			'data'   => (string) $returned,
 		);
 		$xmlResponse = new WP_Ajax_Response( $response );
 		$xmlResponse->send();
@@ -401,18 +401,18 @@ EOT;
 			$setting = false;
 		}
 
-		$user_id = pressforward( 'controller.template_factory' )->user_id();
+		$user_id  = pressforward( 'controller.template_factory' )->user_id();
 		$returned = $this->pf_switch_user_option( $user_id, $setting_name, $setting );
 		// var_dump($user_id);
-		$response = array(
-			'what' => 'pressforward',
-			'action' => 'pf_ajax_user_setting',
-			'id' => $user_id,
-			'data' => (string) $returned,
+		$response    = array(
+			'what'         => 'pressforward',
+			'action'       => 'pf_ajax_user_setting',
+			'id'           => $user_id,
+			'data'         => (string) $returned,
 			'supplemental' => array(
-					'buffered' => ob_get_contents(),
-					'setting' => $setting_name,
-					'set'		=> $setting,
+				'buffered' => ob_get_contents(),
+				'setting'  => $setting_name,
+				'set'      => $setting,
 			),
 		);
 		$xmlResponse = new WP_Ajax_Response( $response );

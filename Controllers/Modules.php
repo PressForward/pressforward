@@ -1,5 +1,6 @@
 <?php
 namespace PressForward\Controllers;
+
 /**
  * Classes and functions for dealing with feed items
  */
@@ -44,15 +45,15 @@ class Modules {
 			}
 
 			if ( file_exists( PF_ROOT . "/modules/{$module_dir}/{$module_dir}.php" ) ) {
-				include_once( PF_ROOT . "/modules/{$module_dir}/{$module_dir}.php" );
+				include_once PF_ROOT . "/modules/{$module_dir}/{$module_dir}.php";
 
 				// Prepare the class name
-				$tmp = explode( '-', $module_dir );
-				$tmp = array_map( 'ucwords', $tmp );
+				$tmp        = explode( '-', $module_dir );
+				$tmp        = array_map( 'ucwords', $tmp );
 				$class_name = 'PF_' . implode( '_', $tmp );
 
 				$module_args[] = array(
-					'slug' => $module_dir,
+					'slug'  => $module_dir,
 					'class' => $class_name,
 				);
 			}
@@ -64,7 +65,7 @@ class Modules {
 
 		$module_args = array_merge( $module_args, $plugin_module_args );
 		foreach ( $module_args as $module ) {
-			$this->modules[ $module['slug'] ] = new $module['class'];
+			$this->modules[ $module['slug'] ] = new $module['class']();
 		}
 
 		do_action( 'pf_setup_modules', $this );
