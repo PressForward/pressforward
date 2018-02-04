@@ -1142,6 +1142,9 @@ class Metas implements HasFilters, HasActions
                     $this->add_pf_meta($id, 'pf_word_count', $value, $state);
                 }
                 break;
+            case 'item_author':
+                $value = \trim($value);
+                break;
             default:
                 // code...
                 break;
