@@ -32,6 +32,10 @@ if ( ! class_exists( 'WPUpdatePHP' ) ) {
 	require 'Libraries/WPUpdatePHP.php';
 }
 
+if ( ! class_exists( 'MyCLabs\Enum\Enum' ) ) {
+	require 'Libraries/Enum.php';
+}
+
 $PHPCheck = new WPUpdatePHP( '5.3.0' );
 $PHPCheck->set_plugin_name( 'PressForward' );
 

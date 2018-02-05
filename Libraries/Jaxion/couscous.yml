@@ -1,0 +1,31 @@
+template:
+  url: https://github.com/CouscousPHP/Template-Light.git
+
+exclude:
+  - vendor
+  - src
+  - tests
+
+baseUrl: http://intraxia.github.io/jaxion/
+branch: gh-pages
+
+# Used to link to the GitHub project
+github:
+    user: intraxia
+    repo: jaxion
+
+title: Jaxion from Intraxia
+subTitle: An object-oriented framework for building complex WordPress plugin applications
+
+menu:
+  items:
+    home:
+      text: Home
+      relativeUrl: ./
+    docs:
+      text: Introduction
+      relativeUrl: docs/
+    axolotl:
+      text: Axolotl
+      relativeUrl: docs/axolotl/
+

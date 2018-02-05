@@ -9,6 +9,6 @@ namespace Intraxia\Jaxion\Core;
  * @package Intraxia\Jaxion
  * @subpackage Core
  */
-class ApplicationAlreadyBootedException extends \RuntimeException {
-
+class ApplicationAlreadyBootedException extends \RuntimeException
+{
 }

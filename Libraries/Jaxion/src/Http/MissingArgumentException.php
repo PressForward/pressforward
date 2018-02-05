@@ -11,6 +11,6 @@ use RuntimeException;
  * @package Intraxia\Jaxion
  * @subpackage Http
  */
-class MissingArgumentException extends RuntimeException {
-
+class MissingArgumentException extends RuntimeException
+{
 }

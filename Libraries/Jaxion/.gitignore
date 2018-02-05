@@ -43,5 +43,7 @@ dwsync.xml
 intermediate
 cache
 build
-docs
 vendor
+
+# Generated documentation
+.couscous/
