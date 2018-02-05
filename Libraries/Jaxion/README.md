@@ -1,3 +1,6 @@
+---
+currentMenu: home
+---
 # Jaxion
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
@@ -19,12 +22,7 @@ $ composer require intraxia/jaxion
 
 ## Usage
 
-Extend `Intraxia\Jaxion\Application`, define your Services as closures in the constructor, then:
-
-``` php
-$app = new Application();
-$app->boot();
-```
+See the [documentation](/docs) for more information.
 
 ## Change log
 

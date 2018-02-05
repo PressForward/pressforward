@@ -1,17 +1,20 @@
 filter:
   excluded_paths: [tests/*]
 
-checks:
-  php:
-    custom_coding_standard:
-      git_repository: 'https://github.com/intraxia/codestyle'
-      git_version: 'd9a49131197553d60d532f9db3a68d1e7d75a419'
-      ruleset_path: 'ruleset.xml'
+#checks:
+#  php:
+#    custom_coding_standard:
+#      git_repository: 'https://github.com/intraxia/codestyle'
+#      git_version: 'd9a49131197553d60d532f9db3a68d1e7d75a419'
+#      ruleset_path: 'ruleset.xml'
 
 tools:
   php_sim: true
   php_pdepend: true
   php_analyzer: true
+  php_code_sniffer:
+      config:
+          standard: WordPress
   external_code_coverage:
     timeout: 600
     runs: 3

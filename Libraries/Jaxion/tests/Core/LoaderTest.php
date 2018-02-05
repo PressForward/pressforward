@@ -26,7 +26,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase {
 					'method'   => 'test',
 					'priority' => 15,
 					'args'     => 2,
-				),
+				)
 			) );
 
 		WP_Mock::expectActionAdded( 'test_action', array( $service, 'test' ), 15, 2 );
@@ -45,7 +45,7 @@ class LoaderTest extends \PHPUnit_Framework_TestCase {
 					'method'   => 'test',
 					'priority' => 15,
 					'args'     => 2,
-				),
+				)
 			) );
 
 		WP_Mock::expectFilterAdded( 'test_filter', array( $service, 'test' ), 15, 2 );

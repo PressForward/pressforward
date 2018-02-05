@@ -12,7 +12,9 @@
 	},
 	"devDependencies": {
 		"gulp": "~3.9.0",
-		"gulp-sass": "~2.0.4"
+		"gulp-ext-replace": "^0.3.0",
+		"gulp-sass": "~2.0.4",
+		"gulp-uglify": "^3.0.0"
 	},
 	"scripts": {
 		"test": "test",

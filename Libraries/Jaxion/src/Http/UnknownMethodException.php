@@ -7,7 +7,7 @@ namespace Intraxia\Jaxion\Http;
  * @package Intraxia\Jaxion
  * @subpackage Http
  */
-class UnknownMethodException extends \Exception {
-
+class UnknownMethodException extends \Exception
+{
 
 }
