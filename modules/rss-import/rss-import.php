@@ -147,7 +147,32 @@ class PF_RSS_Import extends PF_Module {
 			if ( ($check_date <= $dead_date) && ! empty( $check_date ) ) {
 				pf_log( 'Feed item too old. Skip it.' );
 			} else {
-				$id = create_feed_item_id( $item->get_link(), $item->get_title() ); // die();
+				$guid = $item->get_item_tags('','guid');
+				$isPermalink = false;
+				$arrIt = new RecursiveIteratorIterator(new RecursiveArrayIterator($guid[0]));
+				foreach ($arrIt as $sub) {
+					$subArray = $arrIt->getSubIterator();
+					if (isset($subArray['isPermaLink']) && $subArray['isPermaLink'] == "false") {
+						$isPermalink = false;
+						break;
+					} else if ($subArray['isPermaLink'] && ($subArray['isPermaLink'] == "true")){
+						$isPermalink = true;
+						break;
+					}
+				}
+				if ($isPermalink){
+					// This will check GUID first, then link, then title. 
+					$guidHopefully = $item->get_id(false);
+					$urlParts = parse_url($guidHopefully);
+					if (false == $urlParts || (($urlParts['scheme'] !== 'http') && ($urlParts['scheme'] !== 'https')) ){
+						$item_link = $item->get_link();
+					} else {
+						$item_link = $guidHopefully;
+					}
+				} else {
+					$item_link = $item->get_link();
+				}
+				$id = create_feed_item_id( $item_link, $item->get_title() ); // die();
 				pf_log( 'Now on feed ID ' . $id . '.' );
 				// print_r($item_categories_string); die();
 				if ( empty( $check_date ) ) {
@@ -215,14 +240,14 @@ class PF_RSS_Import extends PF_Module {
 					pf_log($item->get_permalink());
 					// GUID
 					pf_log($item->get_id());
-					
+
 					$rssObject[ 'rss_' . $c ] = pf_feed_object(
 						$item->get_title(),
 						$iFeed->get_title(),
 						$r_item_date,
 						$authors,
 						$item_content,
-						$item->get_link(),
+						$item_link,
 						'',
 						$id,
 						$ymd_item_date,
