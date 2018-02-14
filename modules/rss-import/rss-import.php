@@ -247,7 +247,7 @@ class PF_RSS_Import extends PF_Module {
 						$r_item_date,
 						$authors,
 						$item_content,
-						$item_link,
+						$item_link, // New proper link (hopefully)
 						'',
 						$id,
 						$ymd_item_date,
