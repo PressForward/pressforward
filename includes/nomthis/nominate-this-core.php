@@ -639,6 +639,12 @@ endif;
 			$post_ID = intval( $posted );
 			$pt = get_post_type( $post_ID );
 			if ( $pt == 'nomination' ) {
+				$admin_email = get_option( 'pf_nomination_send_email' );
+				if($admin_email) {
+					$siteurl = get_option( 'siteurl', '' );
+					$blogname = get_option( 'blogname', '' );
+					wp_mail($admin_email, "New nomination on '".$blogname."'", "A new nomination has been created! Please check it online on " . $siteurl . "/wp-admin/admin.php?page=pf-review");
+				}
 				?>
                 <div id="message" class="updated">
                 <p><strong><?php _e( 'Your nomination has been saved.' ); ?></strong>
