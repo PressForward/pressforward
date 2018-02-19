@@ -31,9 +31,8 @@
         ]
     },
 	"globals": {
-		"require": true,
+		"require": true
 	},
-
     "plugins": [
       "prettier"
     ]
