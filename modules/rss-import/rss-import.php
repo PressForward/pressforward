@@ -161,7 +161,7 @@ class PF_RSS_Import extends PF_Module {
 					}
 				}
 				if ($isPermalink){
-					// This will check GUID first, then link, then title. 
+					// This will check GUID first, then link, then title.
 					$guidHopefully = $item->get_id(false);
 					$urlParts = parse_url($guidHopefully);
 					if (false == $urlParts || (($urlParts['scheme'] !== 'http') && ($urlParts['scheme'] !== 'https')) ){
@@ -348,7 +348,7 @@ class PF_RSS_Import extends PF_Module {
 
 
                             </div>
-                        <input type="submit" class="button-primary" value="<?php _e( 'Save Options', 'pf' ); ?>" />
+                        <input type="submit" class="button-primary" value="<?php _e( 'Submit', 'pf' ); ?>" />
                     </div>
             </div>
 		</div>
