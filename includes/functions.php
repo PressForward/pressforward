@@ -778,7 +778,7 @@ function pf_filter_canonical( $url ) {
 
 add_filter( 'wpseo_canonical', 'pf_filter_canonical' );
 add_filter( 'wpseo_opengraph_url', 'pf_filter_canonical' );
-add_filter( 'wds_process_canonical', '__return_false');
+add_filter("wds_filter_canonical", 'pf_filter_canonical');
 
 /**
  * A function to set up the HEAD data to forward users to origonal articles.
@@ -802,6 +802,7 @@ function pf_forward_unto_source() {
 		} else {
 			echo '<link rel="canonical" href="' . $link . '" />';
 			echo '<meta property="og:url" content="' . $link . '" />';
+			add_filter( 'wds_process_canonical', '__return_false');
 		}
 		$wait = get_option( 'pf_link_to_source', 0 );
 		$post_check = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'pf_forward_to_origin', true );
