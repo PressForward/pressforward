@@ -778,6 +778,7 @@ function pf_filter_canonical( $url ) {
 
 add_filter( 'wpseo_canonical', 'pf_filter_canonical' );
 add_filter( 'wpseo_opengraph_url', 'pf_filter_canonical' );
+add_filter( 'wds_process_canonical', '__return_false');
 
 /**
  * A function to set up the HEAD data to forward users to origonal articles.
