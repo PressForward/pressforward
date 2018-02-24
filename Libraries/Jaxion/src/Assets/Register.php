@@ -70,7 +70,7 @@ class Register implements RegisterContract {
 	 * @param bool $debug
 	 */
 	public function set_debug( $debug ) {
-		if ( $debug ) {
+		if ( $debug || WP_DEBUG ) {
 			$this->min = '';
 		} else {
 			$this->min = '.min';

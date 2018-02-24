@@ -62,6 +62,7 @@ class AssetsProvider extends ServiceProvider {
 				},
 				'handle'    => $slug . '-bootstrap-style',
 				'src'       => 'Libraries/twitter-bootstrap/css/bootstrap',
+				'deps'      => array( $slug . '-reset-style' )
 			)
 		);
 
@@ -74,6 +75,7 @@ class AssetsProvider extends ServiceProvider {
 				},
 				'handle'    => $slug . '-bootstrap-responsive-style',
 				'src'       => 'Libraries/twitter-bootstrap/css/bootstrap-responsive',
+				'deps'      => array( $slug . '-bootstrap-style' )
 			)
 		);
 
@@ -86,7 +88,7 @@ class AssetsProvider extends ServiceProvider {
 				},
 				'handle'    => $slug . '-style',
 				'src'       => 'assets/css/pressforward',
-				'deps'      => array( $slug . '-bootstrap-style', $slug . '-bootstrap-responsive-style', 'thickbox' ),
+				'deps'      => array( $slug . '-bootstrap-style', $slug . '-bootstrap-responsive-style', 'thickbox', $slug . '-reset-style' ),
 			)
 		);
 
@@ -99,6 +101,7 @@ class AssetsProvider extends ServiceProvider {
 				},
 				'handle'    => $slug . '-settings-style',
 				'src'       => 'assets/css/pf-settings',
+				'deps'      => array( $slug . '-style' )
 			)
 		);
 
@@ -110,6 +113,7 @@ class AssetsProvider extends ServiceProvider {
 				},
 				'handle'    => $slug . '-subscribed-styles',
 				'src'       => 'assets/css/pf-subscribed',
+				'deps'      => array( $slug . '-style' )
 			)
 		);
 

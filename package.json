@@ -12,8 +12,10 @@
 	},
 	"devDependencies": {
 		"gulp": "~3.9.0",
+		"gulp-clean-css": "^3.9.2",
 		"gulp-ext-replace": "^0.3.0",
 		"gulp-sass": "~2.0.4",
+		"gulp-sourcemaps": "^2.6.4",
 		"gulp-uglify": "^3.0.0"
 	},
 	"scripts": {

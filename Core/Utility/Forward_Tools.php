@@ -111,7 +111,7 @@ class Forward_Tools {
 			$nom_stats       = array();
 			$function_to_use = 'add_user_meta';
 		}
-		if ( empty( $noms_counted ) || $noms_counted < 0 ) {
+		if ( empty( $noms_counted ) || $noms_counted <= 0 ) {
 			$noms_counted = 0;
 		}
 		// var_dump($id);
@@ -160,7 +160,7 @@ class Forward_Tools {
 		} elseif ( $nominators['applied'] && $is_post ) {
 			$this->apply_nomination_count( $id, $user_id, true );
 		} elseif ( $is_post ) {
-			$this->revoke_nomination_count( $id, $user_id, true );
+			//$this->revoke_nomination_count( $id, $user_id, true );
 		}
 		return $nominators['nominators'];
 	}
