@@ -773,7 +773,13 @@ class Nominated implements HasActions {
 		} else {
 			ob_start();
 			if ( ! $id ) {
-				$id = $_POST['nom_id'];
+				if (array_key_exists('nom_id', $_POST) && !empty($_POST['nom_id'])){
+					$id = $_POST['nom_id'];
+				} else {
+					$post_id = $_POST['post_id'];
+					$item_id = $this->metas->retrieve_meta( $id, 'item_id' );
+					$id = $this->forward_tools->is_a_pf_type($item_id, $this->nomination_slug);
+				}
 				// $nom = get_post($id);
 				$item_id = $this->metas->retrieve_meta( $id, 'item_id' );
 			}
