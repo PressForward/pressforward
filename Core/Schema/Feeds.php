@@ -1013,8 +1013,25 @@ class Feeds implements HasActions, HasFilters {
 			pf_log( 'We are creating an RSS feed' );
 			$theFeed = fetch_feed( $feedUrl );
 			if ( is_wp_error( $theFeed ) ) {
+				$origFeedURL = trailingslashit($feedUrl);
 				pf_log( 'The RSS feed failed verification' );
-				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
+				$feedUrl = $origFeedURL.'rss/';
+				$theFeed = fetch_feed( $feedUrl );
+				if ( is_wp_error( $theFeed ) ) {
+					pf_log( 'The RSS feed failed 2nd verification' );
+					$feedUrl = $origFeedURL.'rss/index.xml';
+					$theFeed = fetch_feed( $feedUrl );
+					if ( is_wp_error( $theFeed ) ) {
+						pf_log( 'The RSS feed failed 3rd verification' );
+						return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
+					} else {
+						$r['url'] = $feedUrl;
+						$r['feedUrl'] = $feedUrl;
+					}
+				} else {
+					$r['url'] = $feedUrl;
+					$r['feedUrl'] = $feedUrl;
+				}
 			} else {
 				pf_log( 'The RSS feed was verified, setting up meta' );
 				$r = $this->setup_rss_meta( $r, $theFeed );
