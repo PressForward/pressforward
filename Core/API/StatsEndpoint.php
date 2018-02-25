@@ -310,6 +310,7 @@ class StatsEndpoint implements HasActions {
 					$date_query['before'][ $limit ] = $request[ 'after_' . $limit ];
 				}
 			}
+			$args['date_query'] = $date_query;
 			$q = $this->stats->stats_query_for_pf_published_posts( $args );
 			// var_dump($q);
 			$ids     = $q->posts;
