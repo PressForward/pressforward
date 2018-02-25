@@ -961,6 +961,7 @@ class Feed_Items implements HasActions, HasFilters {
 	}
 
 	public function resolve_image_type( $img_url ) {
+		$img_url = strtok( $img_url , '?' );
 		$type = wp_check_filetype( $img_url );
 		return $type['ext'];
 	}
