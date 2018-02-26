@@ -307,7 +307,7 @@ class StatsEndpoint implements HasActions {
 					if ( ! isset( $date_query['before'] ) ) {
 						$date_query['before'] = array();
 					}
-					$date_query['before'][ $limit ] = $request[ 'after_' . $limit ];
+					$date_query['before'][ $limit ] = $request[ 'before_' . $limit ];
 				}
 			}
 			$args['date_query'] = $date_query;
@@ -394,7 +394,7 @@ class StatsEndpoint implements HasActions {
 				if ( ! isset( $date_query['before'] ) ) {
 					$date_query['before'] = array();
 				}
-				$date_query['before'][ $limit ] = $request[ 'after_' . $limit ];
+				$date_query['before'][ $limit ] = $request[ 'before_' . $limit ];
 			}
 		}
 		$counts = $this->stats->counts( $args, $date_query );

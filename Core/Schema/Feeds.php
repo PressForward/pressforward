@@ -1016,10 +1016,12 @@ class Feeds implements HasActions, HasFilters {
 				$origFeedURL = trailingslashit($feedUrl);
 				pf_log( 'The RSS feed failed verification' );
 				$feedUrl = $origFeedURL.'rss/';
+				pf_log( 'Trying '.$feedUrl );
 				$theFeed = fetch_feed( $feedUrl );
 				if ( is_wp_error( $theFeed ) ) {
 					pf_log( 'The RSS feed failed 2nd verification' );
 					$feedUrl = $origFeedURL.'rss/index.xml';
+					pf_log( 'Trying '.$feedUrl );
 					$theFeed = fetch_feed( $feedUrl );
 					if ( is_wp_error( $theFeed ) ) {
 						pf_log( 'The RSS feed failed 3rd verification' );

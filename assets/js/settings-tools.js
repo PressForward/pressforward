@@ -1,12 +1,11 @@
 console.log('settings-tools.js loaded.');
 jQuery(window).load(function () {
 	console.log('settings-tools loaded.');
-	jQuery('.pressforward #pf-settings-tabs').on('click', '.nav-tab', function (evt) {
-		console.log('nav-tab click.');
-		evt.preventDefault();
-		// console.log(this);
-		var tab = this;
-		var target = jQuery(tab).attr('data-tab-target');
+
+	var firstTab = jQuery('.pressforward #pf-settings-tabs .nav-tab').first();
+	var firstTarget = firstTab.attr('data-tab-target');
+
+	function tabToTarget(target, tab) {
 		console.log(target);
 		jQuery('.pftab').removeClass('active');
 		jQuery(target).addClass('active');
@@ -14,6 +13,17 @@ jQuery(window).load(function () {
 		jQuery('.nav-tab').removeClass('nav-tab-active');
 		jQuery(tab).addClass('nav-tab-active');
 		window.location.hash = '#top' + target;
+	}
+
+	tabToTarget(firstTarget, firstTab);
+
+	jQuery('.pressforward #pf-settings-tabs').on('click', '.nav-tab', function (evt) {
+		console.log('nav-tab click.');
+		evt.preventDefault();
+		// console.log(this);
+		var tab = this;
+		var target = jQuery(tab).attr('data-tab-target');
+		tabToTarget(target, tab)
 		return false;
 	});
 
