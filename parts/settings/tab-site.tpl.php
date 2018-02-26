@@ -203,3 +203,18 @@ if ( class_exists( 'The_Alert_Box' ) ) { ?>
 <p>
 	<?php _e( 'Your WordPress site may have more than one Post Type installed, this setting will allow you to send nominations to the post type of your choice.', 'pf' ); ?>
 </p>
+<hr />
+<p>
+	<?php
+		$meta_handling = get_option( PF_SLUG . '_advanced_meta_handling', 'no' );
+
+	?>
+	<select id="<?php echo PF_SLUG; ?>_advanced_meta_handling" name="<?php echo PF_SLUG; ?>_advanced_meta_handling">
+		<option value="yes" <?php if ( $meta_handling == 'yes' ) { echo 'selected="selected"'; }?>>Yes</option>
+		<option value="no" <?php if ( $meta_handling == 'no' ) { echo 'selected="selected"'; }?>>No</option>
+	</select>
+	<label class="description" for="<?php echo PF_SLUG; ?>_advanced_meta_handling"><?php echo __( 'Allow site administrators to fix errors in metadata on the Nomination level.', 'pf' ); ?></label>
+</p>
+<p>
+	<?php _e( 'Metadata can have errors or omissions. Activating this setting will allow site administrators to adjust the data at the Nomination stage. This is for advanced users only.', 'pf' ); ?>
+</p>

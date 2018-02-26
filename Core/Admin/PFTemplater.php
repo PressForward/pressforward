@@ -427,7 +427,7 @@ class PFTemplater {
 			// var_dump($item);
 			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' ' . get_pf_nom_class_tags( array( $metadata['submitters'], $metadata['nom_id'], $metadata['item_author'], $metadata['item_tags'], $metadata['item_id'] ) ) . ' ' . $readClass . '" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '" pf-schema="read" pf-schema-class="article-read">';
 			?>
-			 <a style="display:none;" name="modal-<?php echo $metadata['item_id']; ?>"></a> 
+			 <a style="display:none;" name="modal-<?php echo $metadata['item_id']; ?>"></a>
 			<?php
 		} else {
 			$id_for_comments = $item['post_id'];
@@ -438,7 +438,7 @@ class PFTemplater {
 				$readClass = 'article-read'; }
 			echo '<article class="feed-item entry ' . pf_slugger( get_the_source_title( $id_for_comments ), true, false, true ) . ' ' . $itemTagClassesString . ' ' . $readClass . '" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '" pf-item-post-id="' . $id_for_comments . '" style="' . $dependent_style . '" >';
 			?>
-			 <a style="display:none;" name="modal-<?php echo $item['item_id']; ?>"></a> 
+			 <a style="display:none;" name="modal-<?php echo $item['item_id']; ?>"></a>
 			<?php
 		}
 
@@ -469,7 +469,7 @@ class PFTemplater {
 
 			echo '</div>';
 			?>
-			<header> 
+			<header>
 			<?php
 				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander schema-actor" role="button" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . self::display_a( $item['item_title'], 'title' ) . '</a></h1>';
 				echo '<p class="source_title">' . self::display_a( get_the_source_title( $id_for_comments ), 'source' ) . '</p>';
@@ -558,12 +558,12 @@ class PFTemplater {
 				}
 
 				?>
-				 <div style="display:none;"> 
+				 <div style="display:none;">
 				<?php
 					echo '<div class="item_meta item_meta_date">Published on ' . $item['item_date'] . ' by <span class="item-authorship">' . $item['item_author'] . '</span>.</div>';
 					echo 'Unix timestamp for item date:<span class="sortableitemdate">' . strtotime( $item['item_date'] ) . '</span> and for added to feed date <span class="sortablerssdate">' . strtotime( $item['item_added_date'] ) . '</span>.';
 				?>
-				 </div> 
+				 </div>
 				<?php
 
 				echo '<div class="item_excerpt" id="excerpt' . $c . '">';
@@ -733,7 +733,7 @@ class PFTemplater {
 		}
 			?>
 
-				<div class="actions pf-btns 
+				<div class="actions pf-btns
 				<?php
 				if ( $modal ) {
 					echo 'modal-btns ';
@@ -803,8 +803,11 @@ class PFTemplater {
 							$draft_status = 'btn-success';
 						}
 						echo '<a href="#nominate" class="btn btn-small nom-to-draft schema-actor ' . $draft_status . '" pf-schema="draft" pf-schema-class="btn-success" form="' . $metadata['item_id'] . '" data-original-title="' . __( 'Draft', 'pf' ) . '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></a>';
-
-						echo '<a role="button" class="btn btn-small meta_form_modal-button" data-toggle="modal" href="#meta_form_modal_' . $item['post_id'] . '" data-post-id="' . $item['post_id'] . '" id="meta_form_modal_expander-' . $item['post_id'] . '" data-original-title="Edit Metadata"><i class="icon-meta-form"></i></a>';
+						$meta_handling = get_option( PF_SLUG . '_advanced_meta_handling', 'no' );
+						$user_level_check = current_user_can( pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'administrator' ) );
+						if ('yes' === $meta_handling && $user_level_check){
+							echo '<a role="button" class="btn btn-small meta_form_modal-button" data-toggle="modal" href="#meta_form_modal_' . $item['post_id'] . '" data-post-id="' . $item['post_id'] . '" id="meta_form_modal_expander-' . $item['post_id'] . '" data-original-title="Edit Metadata"><i class="icon-meta-form"></i></a>';
+						}
 					} else {
 						// var_dump(pf_get_relationship('nominate', $id_for_comments, $user_id));
 						if ( ( 1 == pf_get_relationship_value( 'nominate', $id_for_comments, $user_id ) ) || ( 1 == pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ) {
