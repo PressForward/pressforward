@@ -426,7 +426,7 @@ Ref:
               SCHEDULE assemble_feed_for_pull IN -00:01:00
           }
       }
-      FETCH_FEED(feed)
+      pf_fetch_feed(feed)
       ASSEMBLE into array
       IF feedlist_iteration_option != 0{
           WP_GET_FILE wp_cron

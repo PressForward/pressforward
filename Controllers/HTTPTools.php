@@ -116,7 +116,8 @@ class HTTPTools {
 		$url       = str_replace( '&amp;', '&', $url );
 		$url_first = $url;
 		if ( ! $function ) {
-			$r = set_url_scheme( $url, 'http' );
+			$url = set_url_scheme( $url, 'http' );
+			$r = false;
 		} else {
 			$args[0] = $url;
 			unset( $args[1] );
@@ -146,7 +147,7 @@ class HTTPTools {
 		}
 		$response          = $r;
 		$loaded_extensions = get_loaded_extensions();
-		if ( empty( $response ) || is_wp_error( $response ) || ( ! empty( $response ) && ! empty( $response['headers'] ) && isset( $response['headers']['content-length'] ) && ( 50 > strlen( $response['headers']['content-length'] ) ) ) && in_array( 'curl', $loaded_extensions ) ) {
+		if ( (false === $response) || empty( $response ) || is_wp_error( $response ) || ( ! empty( $response ) && ! empty( $response['headers'] ) && isset( $response['headers']['content-length'] ) && ( 50 > strlen( $response['headers']['content-length'] ) ) ) && in_array( 'curl', $loaded_extensions ) ) {
 			$cookie_path = 'cookie.txt';
 			if ( defined( 'COOKIE_PATH_FOR_CURL' ) ) {
 				$cookie_path = constant( 'COOKIE_PATH_FOR_CURL' );
@@ -170,12 +171,17 @@ class HTTPTools {
 			curl_setopt( $curl, constant( 'CURLOPT_TIMEOUT' ), 15 );
 			curl_setopt( $curl, constant( 'CURLOPT_SSL_VERIFYHOST' ), false );
 			curl_setopt( $curl, constant( 'CURLOPT_SSL_VERIFYPEER' ), false );
-			curl_setopt( $curl, constant( 'CURLOPT_USERAGENT' ), 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)' );
+			$fetch_ua = apply_filters( 'pf_useragent_retrieval_control', 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)' );
+			curl_setopt( $curl, constant( 'CURLOPT_USERAGENT' ), $fetch_ua );
 			// The following 2 set up lines work with sites like www.nytimes.com
 			curl_setopt( $curl, constant( 'CURLOPT_COOKIEFILE' ), $cookie_path ); // you can change this path to whetever you want.
 			curl_setopt( $curl, constant( 'CURLOPT_COOKIEJAR' ), $cookie_path ); // you can change this path to whetever you want.
-
-			$response = mb_convert_encoding( curl_exec( $curl ), 'HTML-ENTITIES', 'UTF-8' );
+			$encode = apply_filters( 'pf_encoding_retrieval_control', true );
+			if ($encode){
+				$response = mb_convert_encoding( curl_exec( $curl ), 'HTML-ENTITIES', 'UTF-8' );
+			} else {
+				$response = curl_exec( $curl );
+			}
 			// Will return false or the content.
 			curl_close( $curl );
 			return array( 'body' => $response );

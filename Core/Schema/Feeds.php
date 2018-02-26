@@ -1011,18 +1011,18 @@ class Feeds implements HasActions, HasFilters {
 		// var_dump('yo'); die();
 		if ( $r['type'] == 'rss' ) {
 			pf_log( 'We are creating an RSS feed' );
-			$theFeed = fetch_feed( $feedUrl );
+			$theFeed = pf_fetch_feed( $feedUrl );
 			if ( is_wp_error( $theFeed ) ) {
 				$origFeedURL = trailingslashit($feedUrl);
 				pf_log( 'The RSS feed failed verification' );
 				$feedUrl = $origFeedURL.'rss/';
 				pf_log( 'Trying '.$feedUrl );
-				$theFeed = fetch_feed( $feedUrl );
+				$theFeed = pf_fetch_feed( $feedUrl );
 				if ( is_wp_error( $theFeed ) ) {
 					pf_log( 'The RSS feed failed 2nd verification' );
 					$feedUrl = $origFeedURL.'rss/index.xml';
 					pf_log( 'Trying '.$feedUrl );
-					$theFeed = fetch_feed( $feedUrl );
+					$theFeed = pf_fetch_feed( $feedUrl );
 					if ( is_wp_error( $theFeed ) ) {
 						pf_log( 'The RSS feed failed 3rd verification' );
 						return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
@@ -1236,7 +1236,7 @@ class Feeds implements HasActions, HasFilters {
 			$feedURL = $r['url'];
 		}
 		if ( $r['type'] == 'rss' ) {
-			$theFeed = fetch_feed( $feedURL );
+			$theFeed = pf_fetch_feed( $feedURL );
 			if ( is_wp_error( $theFeed ) ) {
 				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
 			} else {
@@ -1245,7 +1245,7 @@ class Feeds implements HasActions, HasFilters {
 		}
 		if ( 'rss-quick' == $r['type'] ) {
 			pf_log( 'Updating a rss-quick' );
-			$theFeed = fetch_feed( $feedURL );
+			$theFeed = pf_fetch_feed( $feedURL );
 			if ( is_wp_error( $theFeed ) ) {
 				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
 			} else {
@@ -1291,7 +1291,7 @@ class Feeds implements HasActions, HasFilters {
 		}
 		if ( 'rss-quick' == $r['type'] ) {
 			pf_log( 'Updating a rss-quick' );
-			$theFeed = fetch_feed( $feedURL );
+			$theFeed = pf_fetch_feed( $feedURL );
 			if ( is_wp_error( $theFeed ) ) {
 				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
 			} else {

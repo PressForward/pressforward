@@ -45,7 +45,7 @@ class AssetsProvider extends ServiceProvider {
 				'type'      => 'admin',
 				'condition' => ( function( $hook ) use ( $provider ) {
 					$exclusions = array( 'pf-options' );
-					// return true;
+					//return true;
 									return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				} ),
 				'handle'    => $slug . '-reset-style',
@@ -88,7 +88,7 @@ class AssetsProvider extends ServiceProvider {
 				},
 				'handle'    => $slug . '-style',
 				'src'       => 'assets/css/pressforward',
-				'deps'      => array( $slug . '-bootstrap-style', $slug . '-bootstrap-responsive-style', 'thickbox', $slug . '-reset-style' ),
+				'deps'      => array( 'thickbox', $slug . '-reset-style' ),
 			)
 		);
 
@@ -100,8 +100,7 @@ class AssetsProvider extends ServiceProvider {
 					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				},
 				'handle'    => $slug . '-settings-style',
-				'src'       => 'assets/css/pf-settings',
-				'deps'      => array( $slug . '-style' )
+				'src'       => 'assets/css/pf-settings'
 			)
 		);
 

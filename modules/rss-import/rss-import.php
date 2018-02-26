@@ -115,7 +115,7 @@ class PF_RSS_Import extends PF_Module {
 		// }
 		pf_log( 'Getting RSS Feed at ' . $aFeed_url );
 		add_filter( 'wp_feed_cache_transient_lifetime', array( $this, 'return_cachetime' ) );
-		$theFeed = fetch_feed( $aFeed_url );
+		$theFeed = pf_fetch_feed( $aFeed_url );
 		remove_filter( 'wp_feed_cache_transient_lifetime', array( $this, 'return_cachetime' ) );
 		// pf_log( 'Getting RSS Feed at '.$aFeed_url );
 		if ( ! $theFeed || empty( $theFeed ) || is_wp_error( $theFeed ) ) {
@@ -270,22 +270,6 @@ class PF_RSS_Import extends PF_Module {
 	// UTILITY METHODS         //
 	//
 	// Retrieve the set of items.
-	public function pf_feed_fetcher( $aFeed ) {
-
-		// Control retrieval with a filtered array
-		// Allow people to register types and handling functions
-		// rss and rss-quick will both call fetch_feed
-		$theFeed = fetch_feed( $aFeed );
-
-		if ( (is_wp_error( $theFeed )) ) {
-			print_r( '<br />The Feed ' . $aFeed . ' could not be retrieved.' );
-				// $aFeed = call_user_func(array($this, 'step_through_feedlist'));
-				// $theFeed = $this->pf_feed_fetcher($aFeed);
-				return false;
-		}
-
-		return $theFeed;
-	}
 
 	// Tries to get the RSS item author for the meta.
 	function get_rss_authors( $item ) {
@@ -594,7 +578,7 @@ function pf_test_import() {
 	if ( is_super_admin() && ! empty( $_GET['pf_test_import'] ) ) {
 		var_dump( pf_get_starred_items_for_user( get_current_user_id(), 'simple' ) );
 		return;
-		$feed = fetch_feed( 'http://teleogistic.net/feed' );
+		$feed = pf_fetch_feed( 'http://teleogistic.net/feed' );
 
 		$source = $feed->subscribe_url();
 
