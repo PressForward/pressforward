@@ -1,11 +1,13 @@
 <?php
 namespace PressForward\Controllers;
 
+use PressForward\Interfaces\Advance_System as Advance_System;
+
+use Intraxia\Jaxion\Contract\Core\HasActions as HasActions;
+
 /**
  * PressForward to WP post object lifecycle tools
  */
-
-use PressForward\Interfaces\Advance_System as Advance_System;
 class PF_Advancement implements Advance_System, HasActions {
 	// var $last_step_state;
 	// var $last_step_post_type;
