@@ -6,7 +6,7 @@ namespace PressForward\Controllers;
  */
 
 use PressForward\Interfaces\Advance_System as Advance_System;
-class PF_Advancement implements Advance_System {
+class PF_Advancement implements Advance_System, HasActions {
 	// var $last_step_state;
 	// var $last_step_post_type;
 	public function __construct( Metas $metas ) {
@@ -15,12 +15,34 @@ class PF_Advancement implements Advance_System {
 		// $this->last_step_post_type = $this->last_step_post_type();
 	}
 
+	public function action_hooks() {
+		$actions = array(
+			array(
+				'hook'   => 'pf_transition_to_nomination',
+				'method' => 'inform_of_nomination',
+			),
+		);
+		return $actions;
+	}
+
 	public function last_step_state() {
 		return get_option( PF_SLUG . '_draft_post_status', 'draft' );
 	}
 
 	public function last_step_post_type() {
 		return get_option( PF_SLUG . '_draft_post_type', 'post' );
+	}
+
+	public function inform_of_nomination(){
+		$admin_email = get_option( 'pf_nomination_send_email', array() );
+		if($admin_email) {
+			$siteurl = get_option( 'siteurl', '' );
+			$blogname = get_option( 'blogname', '' );
+			$admin_emails = explode(",", $admin_email);
+			foreach ($admin_emails as $email){
+				wp_mail(trim($email), "New nomination on '".$blogname."'", "A new nomination has been created! Please check it online on " . $siteurl . "/wp-admin/admin.php?page=pf-review");
+			}
+		}
 	}
 
 	// Transition Tools
@@ -102,15 +124,7 @@ class PF_Advancement implements Advance_System {
 		$id = pressforward( 'controller.items' )->insert_post( $post, false, pressforward( 'controller.metas' )->get_post_pf_meta( $orig_post_id, 'item_id' ) );
 		pf_log( $id );
 		do_action( 'pf_transition_to_nomination', $id );
-		$admin_email = get_option( 'pf_nomination_send_email', array() );
-		if($admin_email) {
-			$siteurl = get_option( 'siteurl', '' );
-			$blogname = get_option( 'blogname', '' );
-			$admin_emails = explode(",", $admin_email);
-			foreach ($admin_emails as $email){
-				wp_mail(trim($email), "New nomination on '".$blogname."'", "A new nomination has been created! Please check it online on " . $siteurl . "/wp-admin/admin.php?page=pf-review");
-			}
-		}
+
 		return $id;
 	}
 
