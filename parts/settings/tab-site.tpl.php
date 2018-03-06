@@ -73,11 +73,11 @@
 	$pf_nomination_send_email = get_option( 'pf_nomination_send_email', '' );
 	echo '<input id="pf_nomination_send_email" name="pf_nomination_send_email" type="text" class="pf_nomination_send_email" value="' . $pf_nomination_send_email . '" />';
 
-	echo '<label class="description" for="pf_nomination_send_email"> ' . __( 'After a nomination, an email can be sent to an email address, enter it here or leave it blank for no email.', 'pf' ) . ' </label>';
+	echo '<label class="description" for="pf_nomination_send_email"> ' . __( 'Email notifications for nominations.', 'pf' ) . ' </label>';
 	?>
 </p>
 <p>
-	<?php _e( 'You can send an email after each nomination as a notification to an email address. Leave the field blank for no email sent.', 'pf' ); ?>
+	<?php _e( 'To receive an email notification when there is a new nomination, enter a comma separated list of email notification recipients. If left blank, no notifications will be sent.', 'pf' ); ?>
 </p>
 <hr />
 <p>
