@@ -1,8 +1,10 @@
 wp.api.loadPromise.done(function () {
 	//https://github.com/WP-API/client-js/blob/master/js/load.js
+	var wpApiSettings = window.wpApiSettings || {};
+
 	wp.api.init({
 		'versionString': 'pf/v1',
-		'apiRoot': wp.api.utils.getRootUrl() + 'wp-json/'
+		'apiRoot': wpApiSettings.root || wp.api.utils.getRootUrl() + 'wp-json/'
 	});
 
 	jQuery(document.body).ready(function () {
