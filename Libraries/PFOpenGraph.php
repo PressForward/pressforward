@@ -72,6 +72,9 @@ class PFOpenGraph implements Iterator {
 		$old_libxml_error = libxml_use_internal_errors( true );
 
 		$doc = new DOMDocument();
+		if (empty($HTML)){
+			return false;
+		}
 		$doc->loadHTML( $HTML );
 
 		libxml_use_internal_errors( $old_libxml_error );
