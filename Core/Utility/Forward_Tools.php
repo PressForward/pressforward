@@ -485,7 +485,7 @@ class Forward_Tools {
 			} else {
 				$post = $this->item_interface->insert_post( $post, true, $item_id );
 				if ( !is_wp_error( $post ) ) {
-					do_action( 'pf_transition_to_nomination', $id );
+					do_action( 'pf_transition_to_nomination', $post );
 				}
 			}
 			if ( is_wp_error( $post ) ) {
