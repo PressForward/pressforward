@@ -8,12 +8,12 @@ class PF_REST_Post_Types_Controller extends WP_REST_Post_Types_Controller {
 	public function __construct() {
 		parent::__construct();
 		$this->namespace = 'pf/v1';
-		$this->terms = array(
-					'feeds',
-					'feed_items',
-					'nominations',
-				);
-		$this->types = array(
+		$this->terms     = array(
+			'feeds',
+			'feed_items',
+			'nominations',
+		);
+		$this->types     = array(
 			'pf_feed',
 			'pf_feed_item',
 			'nomination',
@@ -28,7 +28,7 @@ class PF_REST_Post_Types_Controller extends WP_REST_Post_Types_Controller {
 	}
 
 	public function filter_post_types( $data, $post, $request ) {
-		$links = $data->get_links();
+		$links    = $data->get_links();
 		$pf_terms = $this->terms;
 		foreach ( $pf_terms as $term ) {
 			$data = pressforward( 'api.pf_endpoint' )->filter_an_api_data_link( $data, $links, 'https://api.w.org/items', $term );
@@ -49,7 +49,7 @@ class PF_REST_Post_Types_Controller extends WP_REST_Post_Types_Controller {
 			if ( empty( $obj->show_in_rest ) || ( 'edit' === $request['context'] && ! current_user_can( $obj->cap->edit_posts ) ) || ! in_array( $obj->name, $this->types ) ) {
 				continue;
 			}
-			$post_type = $this->prepare_item_for_response( $obj, $request );
+			$post_type          = $this->prepare_item_for_response( $obj, $request );
 			$data[ $obj->name ] = $this->prepare_response_for_collection( $post_type );
 		}
 		return rest_ensure_response( $data );
@@ -67,7 +67,7 @@ class PF_REST_Post_Types_Controller extends WP_REST_Post_Types_Controller {
 }
 
 function activate_pf_post_types_controller() {
-	$controller = new PF_REST_Post_Types_Controller;
+	$controller = new PF_REST_Post_Types_Controller();
 	return $controller->register_routes();
 }
 

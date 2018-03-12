@@ -14,7 +14,7 @@ class PFtoWPUsers implements SystemUsers {
 		$nominators = $this->metas->get_post_pf_meta( $id, 'nominator_array' );
 		if ( ! $user_id ) {
 			$current_user = wp_get_current_user();
-			$user_id = $current_user->ID;
+			$user_id      = $current_user->ID;
 		}
 		if ( ! empty( $nominators ) && in_array( $user_id, $nominators ) ) {
 			return true;
@@ -92,11 +92,11 @@ class PFtoWPUsers implements SystemUsers {
 			$roles = array_reverse( $roles );
 		}
 		$arrayvalues = array_values( $roles );
-		$the_role = array_shift( $arrayvalues );
+		$the_role    = array_shift( $arrayvalues );
 		if ( ! $obj ) {
 			return $the_role;
 		} else {
-	    	return get_role( $the_role );
+			return get_role( $the_role );
 		}
 
 	}
@@ -106,7 +106,7 @@ class PFtoWPUsers implements SystemUsers {
 	 * Get the capability that uniquely matches a specific role.
 	 *
 	 * If we want to allow users to set access by role, we need to give users the names
-	 * of all roles. But Wordpress takes capabilities. This function matches the role with
+	 * of all roles. But WordPress takes capabilities. This function matches the role with
 	 * its first capability, so users can set by Role but WordPress takes capability.
 	 *
 	 * However, it will check against the system options and either attempt to return
@@ -120,41 +120,41 @@ class PFtoWPUsers implements SystemUsers {
 	 */
 	function pf_get_defining_capability_by_role( $role_slug ) {
 		$pf_use_advanced_user_roles = get_option( 'pf_use_advanced_user_roles', 'no' );
-	    // For those who wish to ignore the super-cool auto-detection for fringe-y sites that
-	    // let their user capabilities go wild.
-	    if ( 'no' != $pf_use_advanced_user_roles ) {
-            $caps = $this->pf_get_capabilities();
-            foreach ( $caps as $slug => $cap ) {
-                $low_role = $this->pf_get_role_by_capability( $slug );
-                // Return the first capability only applicable to that role.
-                if ( $role_slug == ($low_role) ) {
-                    return $slug;
-                }
-            }
-        }
-        // Even if we use $pf_use_advanced_user_roles, if it doesn't find any actual lowest option (like it is the case with contributor currently), it should still go to the default ones below
-        $role_slug = strtolower( $role_slug );
-        switch ( $role_slug ) {
-            case 'administrator':
-                return 'manage_options';
-                break;
-            case 'editor':
-                return 'edit_others_posts';
-                break;
-            case 'author':
-                return 'publish_posts';
-                break;
-            case 'contributor':
-                return 'edit_posts';
-                break;
-            case 'subscriber':
-                return 'read';
-                break;
-        }
+		// For those who wish to ignore the super-cool auto-detection for fringe-y sites that
+		// let their user capabilities go wild.
+		if ( 'no' != $pf_use_advanced_user_roles ) {
+			$caps = $this->pf_get_capabilities();
+			foreach ( $caps as $slug => $cap ) {
+				$low_role = $this->pf_get_role_by_capability( $slug );
+				// Return the first capability only applicable to that role.
+				if ( $role_slug == ( $low_role ) ) {
+					return $slug;
+				}
+			}
+		}
+		// Even if we use $pf_use_advanced_user_roles, if it doesn't find any actual lowest option (like it is the case with contributor currently), it should still go to the default ones below
+		$role_slug = strtolower( $role_slug );
+		switch ( $role_slug ) {
+			case 'administrator':
+				return 'manage_options';
+				break;
+			case 'editor':
+				return 'edit_others_posts';
+				break;
+			case 'author':
+				return 'publish_posts';
+				break;
+			case 'contributor':
+				return 'edit_posts';
+				break;
+			case 'subscriber':
+				return 'read';
+				break;
+		}
 	}
 
 	function pf_capability_mapper( $cap, $role_slug ) {
-		$feed_caps = pressforward( 'schema.feeds' )->map_feed_caps();
+		$feed_caps      = pressforward( 'schema.feeds' )->map_feed_caps();
 		$feed_item_caps = pressforward( 'schema.feed_item' )->map_feed_item_caps();
 		if ( array_key_exists( $cap, $feed_caps ) ) {
 			$role = get_role( $role_slug );
@@ -174,7 +174,7 @@ class PFtoWPUsers implements SystemUsers {
 			'contributor',
 			'subscriber',
 		);
-		$caps = $this->pf_get_capabilities();
+		$caps  = $this->pf_get_capabilities();
 		// $feed_caps = pressforward('schema.feeds')->map_feed_caps();
 		// $feed_item_caps = pressforward()->schema->map_feed_item_caps();
 		foreach ( $caps as $cap => $role ) {

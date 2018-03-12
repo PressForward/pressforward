@@ -14,16 +14,16 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 	protected $basename;
 
 	function __construct( Metas $metas ) {
-		$this->metas = $metas;
+		$this->metas     = $metas;
 		$this->post_type = 'post';
-		$this->level = 'post';
+		$this->level     = 'post';
 	}
 
 
 	public function action_hooks() {
 		$actions = array(
 			array(
-				'hook' => 'rest_api_init',
+				'hook'   => 'rest_api_init',
 				'method' => 'register_rest_post_read_meta_fields',
 			),
 		);
@@ -33,16 +33,16 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 	public function filter_hooks() {
 		$filter = array(
 			array(
-				'hook' => 'rest_prepare_' . $this->post_type,
-				'method' => 'add_rest_post_links',
-				'priority'  => 10,
-				'args' => 3,
+				'hook'     => 'rest_prepare_' . $this->post_type,
+				'method'   => 'add_rest_post_links',
+				'priority' => 10,
+				'args'     => 3,
 			),
 			array(
-				'hook' => 'rest_prepare_' . $this->post_type,
-				'method' => 'filter_wp_to_pf_in_terms',
-				'priority'  => 10,
-				'args' => 3,
+				'hook'     => 'rest_prepare_' . $this->post_type,
+				'method'   => 'filter_wp_to_pf_in_terms',
+				'priority' => 10,
+				'args'     => 3,
 			),
 		);
 		return $filter;
@@ -50,18 +50,18 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 
 	public function rest_api_init_extension_hook( $action ) {
 		return array(
-				'hook' => 'rest_api_init',
-				'method' => $action,
-			);
+			'hook'   => 'rest_api_init',
+			'method' => $action,
+		);
 	}
 
 	public function rest_api_init_extension_hook_read_only( $action ) {
 		return array(
-				'hook' => 'rest_api_init',
-				'method' => function(){
-						$this->register_rest_post_read_field( $action, true );
-				},
-			);
+			'hook'   => 'rest_api_init',
+			'method' => function() {
+					$this->register_rest_post_read_field( $action, true );
+			},
+		);
 	}
 
 	public function add_rest_post_links( $data, $post, $request ) {
@@ -71,11 +71,12 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 		if ( ! empty( $post->post_parent ) ) {
 			$feed_id = $post->post_parent;
 			if ( 'pf_feed' == get_post_type( $feed_id ) ) {
-				$data->add_links( array(
-					'feed' => array(
-					'href' => rest_url( '/pf/v1/feeds/' . $feed_id ),
-					'embeddable' => true,
-					),
+				$data->add_links(
+					array(
+						'feed' => array(
+							'href'       => rest_url( '/pf/v1/feeds/' . $feed_id ),
+							'embeddable' => true,
+						),
 					)
 				);
 			}

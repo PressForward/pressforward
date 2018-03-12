@@ -17,6 +17,8 @@ require 'includes/relationships.php';
 require 'includes/template-tags.php';
 
 
+use Intraxia\Jaxion\Core\Config;
+use Intraxia\Jaxion\Core\ConfigType;
 use SplClassLoader as ClassLoader;
 $tsClassLoader = new ClassLoader( 'DaveChild', 'Libraries/text-stats/src', false );
 $tsClassLoader->filterFinalPath( 'DaveChild' . 'Libraries/text-stats/src', '' );
@@ -30,7 +32,7 @@ $classLoader->register();
 function pressforward( $prop = false ) {
 	$instance = new stdClass();
 	try {
-		$instance = new PressForward\Application( __FILE__ );
+		$instance = new PressForward\Application( new Config( ConfigType::PLUGIN, __FILE__ ) );
 		$instance->boot();
 		// var_dump('New Boot');
 	} catch (Intraxia\Jaxion\Core\ApplicationAlreadyBootedException $e) {

@@ -1,15 +1,15 @@
 // via http://stackoverflow.com/questions/1787322/htmlspecialchars-equivalent-in-javascript
 function escapeHtml(unsafe) {
 	return unsafe
-	  .replace( /&/g, "&amp;" )
-	  .replace( /</g, "&lt;" )
-	  .replace( />/g, "&gt;" )
-	  .replace( /"/g, "&quot;" )
-	  .replace( /'/g, "&#039;" );
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#039;");
 }
 
-	// via https://github.com/kvz/phpjs/blob/master/functions/strings/get_html_translation_table.js
-function get_html_translation_table (table, quote_style) {
+// via https://github.com/kvz/phpjs/blob/master/functions/strings/get_html_translation_table.js
+function get_html_translation_table(table, quote_style) {
 	// http://kevin.vanzonneveld.net
 	// + original by: Philip Peterson
 	// + revised by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
@@ -30,12 +30,12 @@ function get_html_translation_table (table, quote_style) {
 	// * example 1: get_html_translation_table('HTML_SPECIALCHARS');
 	// * returns 1: {'"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;'}
 	var entities = {},
-	hash_map = {},
-	decimal;
+		hash_map = {},
+		decimal;
 	var constMappingTable = {},
-	constMappingQuoteStyle = {};
+		constMappingQuoteStyle = {};
 	var useTable = {},
-	useQuoteStyle = {};
+		useQuoteStyle = {};
 
 	// Translate arguments
 	constMappingTable[0] = 'HTML_SPECIALCHARS';
@@ -44,11 +44,11 @@ function get_html_translation_table (table, quote_style) {
 	constMappingQuoteStyle[2] = 'ENT_COMPAT';
 	constMappingQuoteStyle[3] = 'ENT_QUOTES';
 
-	useTable = ! isNaN( table ) ? constMappingTable[table] : table ? table.toUpperCase() : 'HTML_SPECIALCHARS';
-	useQuoteStyle = ! isNaN( quote_style ) ? constMappingQuoteStyle[quote_style] : quote_style ? quote_style.toUpperCase() : 'ENT_COMPAT';
+	useTable = !isNaN(table) ? constMappingTable[table] : table ? table.toUpperCase() : 'HTML_SPECIALCHARS';
+	useQuoteStyle = !isNaN(quote_style) ? constMappingQuoteStyle[quote_style] : quote_style ? quote_style.toUpperCase() : 'ENT_COMPAT';
 
 	if (useTable !== 'HTML_SPECIALCHARS' && useTable !== 'HTML_ENTITIES') {
-		throw new Error( "Table: " + useTable + ' not supported' );
+		throw new Error("Table: " + useTable + ' not supported');
 		// return false;
 	}
 
@@ -163,16 +163,16 @@ function get_html_translation_table (table, quote_style) {
 
 	// ascii decimals to real symbols
 	for (decimal in entities) {
-		if (entities.hasOwnProperty( decimal )) {
-			hash_map[String.fromCharCode( decimal )] = entities[decimal];
+		if (entities.hasOwnProperty(decimal)) {
+			hash_map[String.fromCharCode(decimal)] = entities[decimal];
 		}
 	}
 
 	return hash_map;
 }
 
-	// via https://github.com/kvz/phpjs/blob/master/functions/strings/html_entity_decode.js
-function html_entity_decode (string, quote_style) {
+// via https://github.com/kvz/phpjs/blob/master/functions/strings/html_entity_decode.js
+function html_entity_decode(string, quote_style) {
 	// http://kevin.vanzonneveld.net
 	// +   original by: john (http://www.jd-tech.net)
 	// +      input by: ger
@@ -191,242 +191,249 @@ function html_entity_decode (string, quote_style) {
 	// *     example 2: html_entity_decode('&amp;lt;');
 	// *     returns 2: '&lt;'
 	var hash_map = {},
-	symbol = '',
-	tmp_str = '',
-	entity = '';
+		symbol = '',
+		tmp_str = '',
+		entity = '';
 	tmp_str = string.toString();
 
-	if (false === (hash_map = get_html_translation_table( 'HTML_ENTITIES', quote_style ))) {
+	if (false === (hash_map = get_html_translation_table('HTML_ENTITIES', quote_style))) {
 		return false;
 	}
 
 	// fix &amp; problem
 	// http://phpjs.org/functions/get_html_translation_table:416#comment_97660
-	delete( hash_map['&'] );
+	delete(hash_map['&']);
 	hash_map['&'] = '&amp;';
 
 	for (symbol in hash_map) {
 		entity = hash_map[symbol];
-		tmp_str = tmp_str.split( entity ).join( symbol );
+		tmp_str = tmp_str.split(entity).join(symbol);
 	}
-	tmp_str = tmp_str.split( '&#039;' ).join( "'" );
+	tmp_str = tmp_str.split('&#039;').join("'");
 
 	return tmp_str;
 }
-	// no longer via http://stackoverflow.com/questions/2440359/attaching-div-to-a-specific-element-for-showing-with-javascript
-function allContentModal(){
+// no longer via http://stackoverflow.com/questions/2440359/attaching-div-to-a-specific-element-for-showing-with-javascript
+function allContentModal() {
 	// http://stackoverflow.com/questions/14242227/bootstrap-modal-body-max-height-100
 	// Need to fix this to only trigger on the specific model, but not sure how yet.
-	jQuery( ".toplevel_page_pf-menu" ).on('shown', '.pfmodal.modal', function(evt){
+	jQuery(".toplevel_page_pf-menu").on('shown', '.pfmodal.modal', function (evt) {
 		// alert('Modal Triggered.');
 		document.body.style.overflow = 'hidden';
-		var element = jQuery( this );
-		var modalID = element.attr( 'id' );
+		var element = jQuery(this);
+		var modalID = element.attr('id');
 		// alert(modalID);
 		// showDiv(jQuery('#entries'), jQuery('#'+modalID));
-		var itemID = element.attr( 'pf-item-id' );
-		var postID = element.attr( 'pf-post-id' );
-		var tabindex = element.parent().attr( 'tabindex' );
-		modalNavigator( tabindex );
+		var itemID = element.attr('pf-item-id');
+		var postID = element.attr('pf-post-id');
+		var tabindex = element.parent().attr('tabindex');
+		modalNavigator(tabindex);
 		// At this point it should have grabbed the direct feeditem hashed ID. That allows us to do things specifically to that item past this point.
 		// BUG: Escaping everything incorrectly. <-one time issue?
-		var content = jQuery( "#" + itemID + " #modal-body-" + itemID + ' .main-text' ).html();
-		var url = jQuery( "#" + itemID + " #item_link_" + itemID ).val();
-		var authorship = jQuery( "#" + itemID + " #item_author_" + itemID ).val();
-		var read_status = element.attr( 'pf-readability-status' );
-		var opml_check_item_tags = jQuery( "#" + itemID + " #item_tags_" + itemID ).val();
+		var content = jQuery("#" + itemID + " #modal-body-" + itemID + ' .main-text').html();
+		var url = jQuery("#" + itemID + " #item_link_" + itemID).val();
+		var authorship = jQuery("#" + itemID + " #item_author_" + itemID).val();
+		var read_status = element.attr('pf-readability-status');
+		var opml_check_item_tags = jQuery("#" + itemID + " #item_tags_" + itemID).val();
 		// I suppose I should nonce here right?
-		var theNonce		= jQuery.trim( jQuery( '#pf_nomination_nonce' ).val() );
+		var theNonce = jQuery.trim(jQuery('#pf_nomination_nonce').val());
+		var readCheckButton = jQuery('#' + itemID + ' ' + 'i.schema-read:first');
+		if (readCheckButton.hasClass('marked-read')) {
+			console.log('Already marked read', readCheckButton, itemID);
+		} else {
+			console.log('Attempting to mark read', readCheckButton, itemID);
+			readCheckButton.click();
+		}
 
 		jQuery.post(ajaxurl, {
-			action: 'pf_ajax_get_comments',
+				action: 'pf_ajax_get_comments',
 				// We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
-			id_for_comments: postID,
+				id_for_comments: postID,
 			},
-			function(comment_response) {
-				jQuery( "#" + itemID + " #modal-" + itemID + " .modal-comments" ).html( comment_response );
+			function (comment_response) {
+				jQuery("#" + itemID + " #modal-" + itemID + " .modal-comments").html(comment_response);
 			});
 
-		if ( ( read_status != 1 ) && ( 'opml-feed' != opml_check_item_tags ) ) {
+		if ((read_status != 1) && ('opml-feed' != opml_check_item_tags)) {
 			// At some point a waiting graphic should go here.
-			jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .readability-wait'  ).html( '<h2>Attempting to retrieve full article.</h2>' );
-			jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .main-text'  ).hide();
+			jQuery("#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .readability-wait').html('<h2>Attempting to retrieve full article.</h2>');
+			jQuery("#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .main-text').hide();
 			jQuery.post(ajaxurl, {
-				action: 'make_it_readable',
-				// We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
-				read_item_id: itemID,
-				url: url,
-				content: escape( content ),
-				post_id: postID,
-				// We need to pull the source data to determine if it is aggregation as well.
-				authorship: authorship,
-				pf_nomination_nonce: theNonce,
-				force: 'noforce'
+					action: 'make_it_readable',
+					// We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
+					read_item_id: itemID,
+					url: url,
+					content: escape(content),
+					post_id: postID,
+					// We need to pull the source data to determine if it is aggregation as well.
+					authorship: authorship,
+					pf_nomination_nonce: theNonce,
+					force: 'noforce'
 				},
-				function(response) {
-					var read_content = html_entity_decode( jQuery( response ).find( "response_data" ).text() );
-					var status = jQuery( response ).find( "readable_status" ).text();
+				function (response) {
+					var read_content = html_entity_decode(jQuery(response).find("response_data").text());
+					var status = jQuery(response).find("readable_status").text();
 
 					// alert(read_content);
 					// Don't bother doing anything if we don't need it.
 					if (status != 'readable') {
 						if (status == 'secured') {
-							alert( 'The content cannot be retrieved. The post may be on a secure page or it may have been removed.' );
-							jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .main-text' ).html( read_content );
-							var safeResponse = escapeHtml( read_content );
-							jQuery( "#item_content_" + itemID ).attr( 'value', safeResponse );
-							element.attr( 'pf-readability-status', 1 );
+							alert('The content cannot be retrieved. The post may be on a secure page or it may have been removed.');
+							jQuery("#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .main-text').html(read_content);
+							var safeResponse = escapeHtml(read_content);
+							jQuery("#item_content_" + itemID).attr('value', safeResponse);
+							element.attr('pf-readability-status', 1);
 						} else if (status == 'already_readable') {
-							jQuery( "#" + itemID + " #modal-body-" + itemID + ' .main-text' ).html( unescape( content ) );
-							element.attr( 'pf-readability-status', 1 );
+							jQuery("#" + itemID + " #modal-body-" + itemID + ' .main-text').html(unescape(content));
+							element.attr('pf-readability-status', 1);
 						} else {
-							jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .main-text' ).html( read_content );
-							var safeResponse = escapeHtml( read_content );
-							jQuery( "#item_content_" + itemID ).attr( 'value', safeResponse );
+							jQuery("#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .main-text').html(read_content);
+							var safeResponse = escapeHtml(read_content);
+							jQuery("#item_content_" + itemID).attr('value', safeResponse);
 						}
 					} else {
 						//jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID+ ' .main-text' ).html( read_content );
 						//var safeResponse = escapeHtml( read_content );
 						//jQuery( "#item_content_" + itemID ).attr( 'value', safeResponse );
-						element.attr( 'pf-readability-status', 1 );
+						element.attr('pf-readability-status', 1);
 					}
-					jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .readability-wait'  ).hide();
-					jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .main-text'  ).show();
+					jQuery("#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .readability-wait').hide();
+					jQuery("#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID + ' .main-text').show();
 				});
 		}
 	});
 }
 
-function modalReadReset(){
-	jQuery( '.toplevel_page_pf-menu .pf_container' ).on('click', ".modal-readability-reset", function(evt){
+function modalReadReset() {
+	jQuery('.toplevel_page_pf-menu .pf_container').on('click', ".modal-readability-reset", function (evt) {
 		evt.preventDefault();
-		var element = jQuery( this );
-		var modalID = element.attr( 'pf-modal-id' );
-		var itemID = element.attr( 'pf-item-id' );
-		var postID = element.attr( 'pf-post-id' );
+		var element = jQuery(this);
+		var modalID = element.attr('pf-modal-id');
+		var itemID = element.attr('pf-item-id');
+		var postID = element.attr('pf-post-id');
 		// At this point it should have grabbed the direct feeditem hashed ID. That allows us to do things specifically to that item past this point.
 		// BUG: Escaping everything incorrectly. <-one time issue?
-		var content = jQuery( "#" + itemID + " #modal-body-" + itemID ).html();
-		var url = jQuery( "#" + itemID + " #item_link_" + itemID ).val();
-		var authorship = jQuery( "#" + itemID + " #item_author_" + itemID ).val();
+		var content = jQuery("#" + itemID + " #modal-body-" + itemID).html();
+		var url = jQuery("#" + itemID + " #item_link_" + itemID).val();
+		var authorship = jQuery("#" + itemID + " #item_author_" + itemID).val();
 		// I suppose I should nonce here right?
-		var theNonce		= jQuery.trim( jQuery( '#pf_nomination_nonce' ).val() );
+		var theNonce = jQuery.trim(jQuery('#pf_nomination_nonce').val());
 		// At some point a waiting graphic should go here.
 		// alert(content);
-		jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID ).html( 'Attempting to retrieve full article.' );
-			jQuery.post(ajaxurl, {
+		jQuery("#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID).html('Attempting to retrieve full article.');
+		jQuery.post(ajaxurl, {
 				action: 'make_it_readable',
 				// We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
 				read_item_id: itemID,
 				url: url,
-				content: escape( content ),
+				content: escape(content),
 				post_id: postID,
 				// We need to pull the source data to determine if it is aggregation as well.
 				authorship: authorship,
 				pf_nomination_nonce: theNonce,
 				force: 'force'
 
-				},
-				function(response) {
-					var check = jQuery( response ).find( "response_data" ).text();
-					var read_content = html_entity_decode( jQuery( response ).find( "response_data" ).text() );
-					var status = jQuery( response ).find( "readable_status" ).text();
+			},
+			function (response) {
+				var check = jQuery(response).find("response_data").text();
+				var read_content = html_entity_decode(jQuery(response).find("response_data").text());
+				var status = jQuery(response).find("readable_status").text();
 
-					// alert(read_content);
-					// Don't bother doing anything if we don't need it.
-					if (status != 'readable') {
-						if (status == 'secured') {
-							alert( 'The content cannot be retrieved. The post may be on a secure page or it may have been removed.' );
-							jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID ).html( read_content );
-							var safeResponse = escapeHtml( read_content );
-							jQuery( "#item_content_" + itemID ).attr( 'value', safeResponse );
-							jQuery( modalID ).attr( 'pf-readability-status', 1 );
-						} else if (status == 'already_readable') {
-							jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID ).html( unescape( content ) );
-							jQuery( modalID ).attr( 'pf-readability-status', 1 );
-						} else {
-							jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID ).html( read_content );
-							var safeResponse = escapeHtml( read_content );
-							jQuery( "#item_content_" + itemID ).attr( 'value', safeResponse );
-						}
+				// alert(read_content);
+				// Don't bother doing anything if we don't need it.
+				if (status != 'readable') {
+					if (status == 'secured') {
+						alert('The content cannot be retrieved. The post may be on a secure page or it may have been removed.');
+						jQuery("#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID).html(read_content);
+						var safeResponse = escapeHtml(read_content);
+						jQuery("#item_content_" + itemID).attr('value', safeResponse);
+						jQuery(modalID).attr('pf-readability-status', 1);
+					} else if (status == 'already_readable') {
+						jQuery("#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID).html(unescape(content));
+						jQuery(modalID).attr('pf-readability-status', 1);
 					} else {
-						// alert('readable')
-						jQuery( "#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID ).html( read_content );
-						var safeResponse = escapeHtml( read_content );
-						jQuery( "#item_content_" + itemID ).attr( 'value', safeResponse );
-						jQuery( modalID ).attr( 'pf-readability-status', 1 );
+						jQuery("#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID).html(read_content);
+						var safeResponse = escapeHtml(read_content);
+						jQuery("#item_content_" + itemID).attr('value', safeResponse);
 					}
-				});
+				} else {
+					// alert('readable')
+					jQuery("#" + itemID + " #modal-" + itemID + " #modal-body-" + itemID).html(read_content);
+					var safeResponse = escapeHtml(read_content);
+					jQuery("#item_content_" + itemID).attr('value', safeResponse);
+					jQuery(modalID).attr('pf-readability-status', 1);
+				}
+			});
 
 	});
 }
 
-function modalNomReadReset(){
-	jQuery( '.pressforward_page_pf-review .pf_container' ).on('click', ".modal-readability-reset", function(evt){
+function modalNomReadReset() {
+	jQuery('.pressforward_page_pf-review .pf_container').on('click', ".modal-readability-reset", function (evt) {
 		evt.preventDefault();
 		// alert('NOMS');
-		var element = jQuery( this );
-		var modalID = element.attr( 'pf-modal-id' );
-		var itemID = element.attr( 'pf-item-id' );
-		var postID = element.attr( 'pf-post-id' );
+		var element = jQuery(this);
+		var modalID = element.attr('pf-modal-id');
+		var itemID = element.attr('pf-item-id');
+		var postID = element.attr('pf-post-id');
 		// At this point it should have grabbed the direct feeditem hashed ID. That allows us to do things specifically to that item past this point.
 		// BUG: Escaping everything incorrectly. <-one time issue?
-		var content = jQuery( "#" + postID + " #modal-body-" + itemID ).html();
-		var url = jQuery( "#" + postID + " #permalink_" + itemID ).val();
-		var authorship = jQuery( "#" + postID + " #authors_" + itemID ).val();
+		var content = jQuery("#" + postID + " #modal-body-" + itemID).html();
+		var url = jQuery("#" + postID + " #permalink_" + itemID).val();
+		var authorship = jQuery("#" + postID + " #authors_" + itemID).val();
 		// I suppose I should nonce here right?
-		var theNonce		= jQuery.trim( jQuery( '#pf_nomination_nonce' ).val() );
+		var theNonce = jQuery.trim(jQuery('#pf_nomination_nonce').val());
 		// At some point a waiting graphic should go here.
 		// alert(content);
-		jQuery( "#" + postID + " #modal-" + itemID + " #modal-body-" + itemID ).html( 'Attempting to retrieve full article.' );
-			jQuery.post(ajaxurl, {
+		jQuery("#" + postID + " #modal-" + itemID + " #modal-body-" + itemID).html('Attempting to retrieve full article.');
+		jQuery.post(ajaxurl, {
 				action: 'make_it_readable',
 				// We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
 				read_item_id: itemID,
 				url: url,
-				content: escape( content ),
+				content: escape(content),
 				post_id: postID,
 				// We need to pull the source data to determine if it is aggregation as well.
 				authorship: authorship,
 				pf_nomination_nonce: theNonce,
 				force: 'force'
 
-				},
-				function(response) {
-					var check = jQuery( response ).find( "response_data" ).text();
-					var read_content = html_entity_decode( jQuery( response ).find( "response_data" ).text() );
-					var status = jQuery( response ).find( "readable_status" ).text();
+			},
+			function (response) {
+				var check = jQuery(response).find("response_data").text();
+				var read_content = html_entity_decode(jQuery(response).find("response_data").text());
+				var status = jQuery(response).find("readable_status").text();
 
-					// alert(read_content);
-					// Don't bother doing anything if we don't need it.
-					if (status != 'readable') {
-						if (status == 'secured') {
-							alert( 'The content cannot be retrieved. The post may be on a secure page or it may have been removed.' );
-							jQuery( "#modal-" + itemID + " #modal-body-" + itemID ).html( read_content );
-							var safeResponse = escapeHtml( read_content );
-							jQuery( "#item_content_" + itemID ).attr( 'value', safeResponse );
-							jQuery( modalID ).attr( 'pf-readability-status', 1 );
-						} else if (status == 'already_readable') {
-							jQuery( "#modal-" + itemID + " #modal-body-" + itemID ).html( unescape( content ) );
-							jQuery( modalID ).attr( 'pf-readability-status', 1 );
-						} else {
-							jQuery( "#modal-" + itemID + " #modal-body-" + itemID ).html( read_content );
-							var safeResponse = escapeHtml( read_content );
-							jQuery( "#item_content_" + itemID ).attr( 'value', safeResponse );
-						}
+				// alert(read_content);
+				// Don't bother doing anything if we don't need it.
+				if (status != 'readable') {
+					if (status == 'secured') {
+						alert('The content cannot be retrieved. The post may be on a secure page or it may have been removed.');
+						jQuery("#modal-" + itemID + " #modal-body-" + itemID).html(read_content);
+						var safeResponse = escapeHtml(read_content);
+						jQuery("#item_content_" + itemID).attr('value', safeResponse);
+						jQuery(modalID).attr('pf-readability-status', 1);
+					} else if (status == 'already_readable') {
+						jQuery("#modal-" + itemID + " #modal-body-" + itemID).html(unescape(content));
+						jQuery(modalID).attr('pf-readability-status', 1);
 					} else {
-						// alert('readable')
-						jQuery( "#modal-" + itemID + " #modal-body-" + itemID ).html( read_content );
-						var safeResponse = escapeHtml( read_content );
-						jQuery( "#item_content_" + itemID ).attr( 'value', safeResponse );
-						jQuery( modalID ).attr( 'pf-readability-status', 1 );
+						jQuery("#modal-" + itemID + " #modal-body-" + itemID).html(read_content);
+						var safeResponse = escapeHtml(read_content);
+						jQuery("#item_content_" + itemID).attr('value', safeResponse);
 					}
-				});
+				} else {
+					// alert('readable')
+					jQuery("#modal-" + itemID + " #modal-body-" + itemID).html(read_content);
+					var safeResponse = escapeHtml(read_content);
+					jQuery("#item_content_" + itemID).attr('value', safeResponse);
+					jQuery(modalID).attr('pf-readability-status', 1);
+				}
+			});
 
 	});
 }
 
-jQuery( window ).load(function() {
+jQuery(window).load(function () {
 	allContentModal();
 	modalReadReset();
 	modalNomReadReset();

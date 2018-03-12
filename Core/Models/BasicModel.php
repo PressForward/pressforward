@@ -7,11 +7,11 @@ class BasicModel {
 	public function __construct( $item = array(), $handlers = array(), $post_type = false ) {
 		if ( empty( $handlers ) ) {
 			$handlers = array(
-				'processor'	=> pressforward( 'controller.items' ),
-				'metas'		=> pressforward( 'controller.metas' ),
+				'processor' => pressforward( 'controller.items' ),
+				'metas'     => pressforward( 'controller.metas' ),
 			);
 		}
-		$this->metas = $handlers['metas'];
+		$this->metas     = $handlers['metas'];
 		$this->processor = $handlers['processor'];
 		$this->set_up_metas( $item, $handlers['metas'] );
 		$this->init( $item, $handlers, $post_type );
@@ -46,7 +46,7 @@ class BasicModel {
 		if ( 0 === strpos( $key, 'post_' ) ) {
 			$key = str_replace( 'post_', '', $key );
 		}
-		if ( method_exists( $this,$f = 'set_' . $key ) ) {
+		if ( method_exists( $this, $f = 'set_' . $key ) ) {
 			$value = call_user_func( array( $this, $f ), $value );
 		}
 		$this->data[ $key ] = $value;
@@ -69,7 +69,7 @@ class BasicModel {
 		if ( 0 === strpos( $key, 'post_' ) ) {
 			$key = str_replace( 'post_', '', $key );
 		}
-		if ( method_exists( $this,$f = 'get_' . $key ) ) {
+		if ( method_exists( $this, $f = 'get_' . $key ) ) {
 			$value = call_user_func( array( $this, $f ) );
 			return $value;
 		}

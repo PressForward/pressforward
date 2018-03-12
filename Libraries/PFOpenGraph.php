@@ -6,7 +6,7 @@
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+	   http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,21 +22,21 @@ class PFOpenGraph implements Iterator {
 
 	/**
 	 * There are base schema's based on type, this is just
-	 * a map so that the schema can be obtained
+	 * a map so that the schema can be obtained.
 	 */
 	public static $TYPES = array(
-			'activity' => array( 'activity', 'sport' ),
-			'business' => array( 'bar', 'company', 'cafe', 'hotel', 'restaurant' ),
-			'group' => array( 'cause', 'sports_league', 'sports_team' ),
-			'organization' => array( 'band', 'government', 'non_profit', 'school', 'university' ),
-			'person' => array( 'actor', 'athlete', 'author', 'director', 'musician', 'politician', 'public_figure' ),
-			'place' => array( 'city', 'country', 'landmark', 'state_province' ),
-			'product' => array( 'album', 'book', 'drink', 'food', 'game', 'movie', 'product', 'song', 'tv_show' ),
-			'website' => array( 'blog', 'website' ),
-		);
+		'activity'     => array( 'activity', 'sport' ),
+		'business'     => array( 'bar', 'company', 'cafe', 'hotel', 'restaurant' ),
+		'group'        => array( 'cause', 'sports_league', 'sports_team' ),
+		'organization' => array( 'band', 'government', 'non_profit', 'school', 'university' ),
+		'person'       => array( 'actor', 'athlete', 'author', 'director', 'musician', 'politician', 'public_figure' ),
+		'place'        => array( 'city', 'country', 'landmark', 'state_province' ),
+		'product'      => array( 'album', 'book', 'drink', 'food', 'game', 'movie', 'product', 'song', 'tv_show' ),
+		'website'      => array( 'blog', 'website' ),
+	);
 
 	/**
-	 * Holds all the Open Graph values we've parsed from a page
+	 * Holds all the Open Graph values we've parsed from a page.
 	 */
 	private $_values = array();
 
@@ -45,12 +45,15 @@ class PFOpenGraph implements Iterator {
 	 * false on error.
 	 *
 	 * @param $URI    URI to page to parse for Open Graph data
+	 *
 	 * @return OpenGraph
 	 */
-	static public function fetch( $URI ) {
+	public static function fetch( $URI ) {
 		$response = pf_de_https( $URI, 'wp_remote_get', array( 'timeout' => '30' ) );
 		if ( ! empty( $response ) && ! is_wp_error( $response ) ) {
 			$response = $response['body'];
+			$response = mb_convert_encoding( $response, 'HTML-ENTITIES', 'UTF-8' );
+
 			return self::_parse( $response );
 		} else {
 			return false;
@@ -62,12 +65,16 @@ class PFOpenGraph implements Iterator {
 	 * the document is at least well formed.
 	 *
 	 * @param $HTML    HTML to parse
+	 *
 	 * @return OpenGraph
 	 */
-	static private function _parse( $HTML ) {
+	private static function _parse( $HTML ) {
 		$old_libxml_error = libxml_use_internal_errors( true );
 
 		$doc = new DOMDocument();
+		if (empty($HTML)){
+			return false;
+		}
 		$doc->loadHTML( $HTML );
 
 		libxml_use_internal_errors( $old_libxml_error );
@@ -98,7 +105,7 @@ class PFOpenGraph implements Iterator {
 			// Added this if loop to retrieve description values from sites like the New York Times who have malformed it.
 			if ( $tag->hasAttribute( 'value' ) && $tag->hasAttribute( 'property' ) &&
 				strpos( $tag->getAttribute( 'property' ), 'og:' ) === 0 ) {
-				$key = strtr( substr( $tag->getAttribute( 'property' ), 3 ), '-', '_' );
+				$key                   = strtr( substr( $tag->getAttribute( 'property' ), 3 ), '-', '_' );
 				$page->_values[ $key ] = $tag->getAttribute( 'value' );
 			}
 			// Based on modifications at https://github.com/bashofmann/opengraph/blob/master/src/OpenGraph/OpenGraph.php
@@ -107,20 +114,20 @@ class PFOpenGraph implements Iterator {
 			}
 
 			if ( $tag->hasAttribute( 'name' ) && $tag->getAttribute( 'name' ) === 'keywords' ) {
-				  $keyword_tags = $tag->getAttribute( 'content' );
-				  $keyword_tag_array = explode( ',',$keyword_tags );
+				$keyword_tags      = $tag->getAttribute( 'content' );
+				$keyword_tag_array = explode( ',', $keyword_tags );
 				if ( ! isset( $tag->_values['article_tag_additional'] ) ) {
 					$tag->_values['article_tag_additional'] = array();
 				}
 				foreach ( $keyword_tag_array as $keyword ) {
-				  	$page->_values['article_tag_additional'][] = trim( $keyword );
+					$page->_values['article_tag_additional'][] = trim( $keyword );
 				}
-				  $page->_values['keywords'] = $keyword_tags;
+				$page->_values['keywords'] = $keyword_tags;
 			}
 
 			if ( $tag->hasAttribute( 'property' ) &&
 				strpos( $tag->getAttribute( 'property' ), 'twitter:' ) === 0 ) {
-				$key = strtr( $tag->getAttribute( 'property' ), '-:', '__' );
+				$key                   = strtr( $tag->getAttribute( 'property' ), '-:', '__' );
 				$page->_values[ $key ] = $tag->getAttribute( 'content' );
 			}
 
@@ -142,8 +149,8 @@ class PFOpenGraph implements Iterator {
 				$meta_key = $page->_values['type'] . ':';
 				if ( $tag->hasAttribute( 'property' ) && strpos( $tag->getAttribute( 'property' ), $meta_key ) === 0 ) {
 					$meta_key_len = strlen( $meta_key );
-					$key = strtr( substr( $tag->getAttribute( 'property' ), $meta_key_len ), '-', '_' );
-					$key = $page->_values['type'] . '_' . $key;
+					$key          = strtr( substr( $tag->getAttribute( 'property' ), $meta_key_len ), '-', '_' );
+					$key          = $page->_values['type'] . '_' . $key;
 
 					if ( array_key_exists( $key, $page->_values ) ) {
 						if ( ! array_key_exists( $key . '_additional', $page->_values ) ) {
@@ -178,15 +185,15 @@ class PFOpenGraph implements Iterator {
 			if ( $elements->length > 0 ) {
 				$domattr = $elements->item( 0 )->attributes->getNamedItem( 'href' );
 				if ( $domattr ) {
-					$page->_values['image'] = $domattr->value;
+					$page->_values['image']     = $domattr->value;
 					$page->_values['image_src'] = $domattr->value;
 				}
 			} elseif ( ! empty( $page->_values['twitter_image'] ) ) {
-					$page->_values['image'] = $page->_values['twitter_image'];
+				$page->_values['image'] = $page->_values['twitter_image'];
 			} else {
 				$elements = $doc->getElementsByTagName( 'img' );
 				foreach ( $elements as $tag ) {
-					if ( $tag->hasAttribute( 'width' ) && (($tag->getAttribute( 'width' ) > 300) || ($tag->getAttribute( 'width' ) == '100%') ) ) {
+					if ( $tag->hasAttribute( 'width' ) && ( ( $tag->getAttribute( 'width' ) > 300 ) || ( $tag->getAttribute( 'width' ) == '100%' ) ) ) {
 						$page->_values['image'] = $tag->getAttribute( 'src' );
 						break;
 					}
@@ -194,7 +201,9 @@ class PFOpenGraph implements Iterator {
 			}
 		}
 
-		if ( empty( $page->_values ) ) { return false; }
+		if ( empty( $page->_values ) ) {
+			return false;
+		}
 
 		return $page;
 	}
@@ -202,7 +211,7 @@ class PFOpenGraph implements Iterator {
 	/**
 	 * Helper method to access attributes directly
 	 * Example:
-	 * $graph->title
+	 * $graph->title.
 	 *
 	 * @param $key    Key to fetch from the lookup
 	 */
@@ -221,7 +230,7 @@ class PFOpenGraph implements Iterator {
 	}
 
 	/**
-	 * Return all the keys found on the page
+	 * Return all the keys found on the page.
 	 *
 	 * @return array
 	 */
@@ -230,7 +239,7 @@ class PFOpenGraph implements Iterator {
 	}
 
 	/**
-	 * Helper method to check an attribute exists
+	 * Helper method to check an attribute exists.
 	 *
 	 * @param $key
 	 */
@@ -239,37 +248,48 @@ class PFOpenGraph implements Iterator {
 	}
 
 	/**
-	 * Will return true if the page has location data embedded
+	 * Will return true if the page has location data embedded.
 	 *
-	 * @return boolean Check if the page has location data
+	 * @return bool Check if the page has location data
 	 */
 	public function hasLocation() {
 		if ( array_key_exists( 'latitude', $this->_values ) && array_key_exists( 'longitude', $this->_values ) ) {
 			return true;
 		}
 
-		$address_keys = array( 'street_address', 'locality', 'region', 'postal_code', 'country_name' );
+		$address_keys  = array( 'street_address', 'locality', 'region', 'postal_code', 'country_name' );
 		$valid_address = true;
 		foreach ( $address_keys as $key ) {
-			$valid_address = ($valid_address && array_key_exists( $key, $this->_values ));
+			$valid_address = ( $valid_address && array_key_exists( $key, $this->_values ) );
 		}
+
 		return $valid_address;
 	}
 
 	/**
-	 * Iterator code
+	 * Iterator code.
 	 */
 	private $_position = 0;
+
 	public function rewind() {
 		reset( $this->_values );
-		$this->_position = 0; }
+		$this->_position = 0;
+	}
+
 	public function current() {
-		return current( $this->_values ); }
+		return current( $this->_values );
+	}
+
 	public function key() {
-		return key( $this->_values ); }
+		return key( $this->_values );
+	}
+
 	public function next() {
 		next( $this->_values );
-		++$this->_position; }
+		++$this->_position;
+	}
+
 	public function valid() {
-		return $this->_position < sizeof( $this->_values ); }
+		return $this->_position < sizeof( $this->_values );
+	}
 }

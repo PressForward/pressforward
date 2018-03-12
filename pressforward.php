@@ -23,7 +23,7 @@ define( 'PF_NOM_POSTER', 'post-new.php?post_type=nomination' );
 define( 'PF_ROOT', dirname( __FILE__ ) );
 define( 'PF_FILE_PATH', PF_ROOT . '/' . basename( __FILE__ ) );
 define( 'PF_URL', plugins_url( '/', __FILE__ ) );
-define( 'PF_VERSION', '5.0' );
+define( 'PF_VERSION', '5.1' );
 
 // Protect File.
 if ( ! defined( 'WPINC' ) ) {
@@ -32,6 +32,10 @@ if ( ! defined( 'WPINC' ) ) {
 
 if ( ! class_exists( 'WPUpdatePHP' ) ) {
 	require 'Libraries/WPUpdatePHP.php';
+}
+
+if ( ! class_exists( 'MyCLabs\Enum\Enum' ) ) {
+	require 'Libraries/Enum.php';
 }
 
 $PHPCheck = new WPUpdatePHP( '5.3.0' );

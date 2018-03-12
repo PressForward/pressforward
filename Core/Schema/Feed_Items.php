@@ -19,26 +19,26 @@ class Feed_Items implements HasActions, HasFilters {
 	var $tag_taxonomy;
 
 	public function __construct( Items $items, Metas $metas ) {
-		$this->post_type = 'pf_feed_item';
+		$this->post_type    = 'pf_feed_item';
 		$this->tag_taxonomy = 'pf_feed_item_tag';
-		$this->items = $items;
-		$this->metas = $metas;
+		$this->items        = $items;
+		$this->metas        = $metas;
 		// Post types and taxonomies must be registered after 'init'
 	}
 
 	public function action_hooks() {
 		$hooks = array(
 			array(
-				'hook' => 'init',
+				'hook'   => 'init',
 				'method' => 'register_feed_item_post_type',
 			),
 			array(
-				'hook' 		=> 'pf_feed_item_post_type_registered',
-				'method'	=> 'register_feed_item_tag_taxonomy',
+				'hook'   => 'pf_feed_item_post_type_registered',
+				'method' => 'register_feed_item_tag_taxonomy',
 			),
 			array(
-				'hook' 		=> 'init',
-				'method'	=> 'register_feed_item_removed_status',
+				'hook'   => 'init',
+				'method' => 'register_feed_item_removed_status',
 			),
 		);
 		return $hooks;
@@ -46,16 +46,16 @@ class Feed_Items implements HasActions, HasFilters {
 
 	public function filter_hooks() {
 		return array(
-				array(
-					'hook' => 'user_has_cap',
-	                'method' => 'alter_cap_on_fly',
-				),
-				array(
-					'hook' => 'map_meta_cap',
-					'method' => 'feeds_item_map_meta_cap',
-					'priority'  => 10,
-					'args' => 4,
-				),
+			array(
+				'hook'   => 'user_has_cap',
+				'method' => 'alter_cap_on_fly',
+			),
+			array(
+				'hook'     => 'map_meta_cap',
+				'method'   => 'feeds_item_map_meta_cap',
+				'priority' => 10,
+				'args'     => 4,
+			),
 		);
 	}
 
@@ -81,43 +81,47 @@ class Feed_Items implements HasActions, HasFilters {
 			$rest_enabled = false;
 		}
 
-		register_post_type( $this->post_type, apply_filters( 'pf_register_feed_item_post_type_args', array(
-			'label'       => $labels['name'],
-			'labels'      => $labels,
-			'description' => __( 'Feed items imported by PressForward&#8217;s RSS Importer', 'pf' ),
-			'public'      => false,
-			'show_ui'     => true,
-			'show_in_admin_bar' => false,
-			'show_in_rest'       => true,// $rest_enabled,
-			'rest_base'          => 'feed_items',
-			'rest_controller_class' => 'PF_REST_Posts_Controller',
-			'capability_type' => $this->post_type,
-			'capabilities' => $this->map_feed_item_caps(),
-		) ) );
+		register_post_type(
+			$this->post_type, apply_filters(
+				'pf_register_feed_item_post_type_args', array(
+					'label'                 => $labels['name'],
+					'labels'                => $labels,
+					'description'           => __( 'Feed items imported by PressForward&#8217;s RSS Importer', 'pf' ),
+					'public'                => false,
+					'show_ui'               => true,
+					'show_in_admin_bar'     => false,
+					'show_in_rest'          => true, // $rest_enabled,
+					'rest_base'             => 'feed_items',
+					'rest_controller_class' => 'PF_REST_Posts_Controller',
+					'capability_type'       => $this->post_type,
+					'capabilities'          => $this->map_feed_item_caps(),
+				)
+			)
+		);
 
 		do_action( 'pf_feed_item_post_type_registered' );
 	}
 
 	public function map_feed_item_caps() {
 		return array(
-			'publish_posts' => 'publish_' . $this->post_type . 's',
-			'edit_posts' => 'edit_' . $this->post_type . 's',
-			'edit_others_posts' => 'edit_others_' . $this->post_type . 's',
-			'delete_posts' => 'delete_' . $this->post_type . 's',
+			'publish_posts'       => 'publish_' . $this->post_type . 's',
+			'edit_posts'          => 'edit_' . $this->post_type . 's',
+			'edit_others_posts'   => 'edit_others_' . $this->post_type . 's',
+			'delete_posts'        => 'delete_' . $this->post_type . 's',
 			'delete_others_posts' => 'delete_others_' . $this->post_type . 's',
-			'read_private_posts' => 'read_private_' . $this->post_type . 's',
-			'publish_pages' => 'publish_' . $this->post_type . 's',
-			'edit_pages' => 'edit_' . $this->post_type . 's',
-			'edit_others_pages' => 'edit_others_' . $this->post_type . 's',
-			'delete_pages' => 'delete_' . $this->post_type . 's',
+			'read_private_posts'  => 'read_private_' . $this->post_type . 's',
+			'publish_pages'       => 'publish_' . $this->post_type . 's',
+			'edit_pages'          => 'edit_' . $this->post_type . 's',
+			'edit_others_pages'   => 'edit_others_' . $this->post_type . 's',
+			'delete_pages'        => 'delete_' . $this->post_type . 's',
 			'delete_others_pages' => 'delete_others_' . $this->post_type . 's',
-			'read_private_pages' => 'read_private_' . $this->post_type . 's',
-			'edit_post' => 'edit_' . $this->post_type,
-			'delete_post' => 'delete_' . $this->post_type,
-			'read_post' => 'read_' . $this->post_type,
-			'edit_page' => 'edit_' . $this->post_type,
-			'delete_page' => 'delete_' . $this->post_type,
-			'read_page' => 'read_' . $this->post_type,
+			'read_private_pages'  => 'read_private_' . $this->post_type . 's',
+			'edit_post'           => 'edit_' . $this->post_type,
+			'delete_post'         => 'delete_' . $this->post_type,
+			'read_post'           => 'read_' . $this->post_type,
+			'edit_page'           => 'edit_' . $this->post_type,
+			'delete_page'         => 'delete_' . $this->post_type,
+			'read_page'           => 'read_' . $this->post_type,
 		);
 	}
 
@@ -138,7 +142,7 @@ class Feed_Items implements HasActions, HasFilters {
 		}
 		/* If editing, deleting, or reading a feed, get the post and post type object. */
 		if ( 'edit_' . $this->post_type == $cap || 'delete_' . $this->post_type == $cap || 'read_' . $this->post_type == $cap ) {
-			$post = get_post( $args[0] );
+			$post      = get_post( $args[0] );
 			$post_type = get_post_type_object( $this->post_type );
 
 			/* Set an empty array for the caps. */
@@ -149,20 +153,23 @@ class Feed_Items implements HasActions, HasFilters {
 		if ( 'edit_' . $this->post_type == $cap ) {
 			if ( $user_id == $post->post_author ) {
 				$caps[] = $post_type->cap->edit_posts;
-			} else { 				$caps[] = $post_type->cap->edit_others_posts; }
+			} else {
+				$caps[] = $post_type->cap->edit_others_posts; }
 		} // End if().
 
 		elseif ( 'delete_' . $this->post_type == $cap ) {
 			if ( $user_id == $post->post_author ) {
 				$caps[] = $post_type->cap->delete_posts;
-			} else { 				$caps[] = $post_type->cap->delete_others_posts; }
+			} else {
+				$caps[] = $post_type->cap->delete_others_posts; }
 		} /* If reading a private feed, assign the required capability. */
 		elseif ( 'read_' . $this->post_type == $cap ) {
 
 			if ( 'private' != $post->post_status ) {
 				$caps[] = 'read'; } elseif ( $user_id == $post->post_author ) {
 				$caps[] = 'read';
-				} else { 				$caps[] = $post_type->cap->read_private_posts; }
+				} else {
+					$caps[] = $post_type->cap->read_private_posts; }
 		}
 
 		/* Return the capabilities required by the user. */
@@ -182,12 +189,16 @@ class Feed_Items implements HasActions, HasFilters {
 			'search_items'  => __( 'Search Feed Item Tags', 'pf' ),
 		);
 
-		register_taxonomy( $this->tag_taxonomy, $this->post_type, apply_filters( 'pf_register_feed_item_tag_taxonomy_args', array(
-			'labels' => $labels,
-			'public' => true,
-			'show_admin_columns' => true,
-			'rewrite' => false,
-		) ) );
+		register_taxonomy(
+			$this->tag_taxonomy, $this->post_type, apply_filters(
+				'pf_register_feed_item_tag_taxonomy_args', array(
+					'labels'             => $labels,
+					'public'             => true,
+					'show_admin_columns' => true,
+					'rewrite'            => false,
+				)
+			)
+		);
 	}
 
 	public function register_folders_for_items() {
@@ -242,9 +253,9 @@ class Feed_Items implements HasActions, HasFilters {
 
 	public static function get_by_item_id( $item_id ) {
 		$args = array(
-				'meta_key'	=> pressforward( 'controller.metas' )->get_key( 'item_id' ),
-				'meta_value' => $item_id,
-			);
+			'meta_key'   => pressforward( 'controller.metas' )->get_key( 'item_id' ),
+			'meta_value' => $item_id,
+		);
 		$post = $this->get( $args );
 		if ( empty( $post ) ) {
 			return false;
@@ -254,16 +265,18 @@ class Feed_Items implements HasActions, HasFilters {
 	}
 
 	public function create( $args = array() ) {
-		$r = wp_parse_args( $args, array(
-			'item_title'   => '',
-			'item_link'     => '',
-			'item_content' => '',
-			'source_title'  => '',
-			'item_wp_date'    => '',
-			'post_parent'    => '',
-			'item_tags'    => array(),
-			'post_status'	=> 'publish',
-		) );
+		$r = wp_parse_args(
+			$args, array(
+				'item_title'   => '',
+				'item_link'    => '',
+				'item_content' => '',
+				'source_title' => '',
+				'item_wp_date' => '',
+				'post_parent'  => '',
+				'item_tags'    => array(),
+				'post_status'  => 'publish',
+			)
+		);
 
 		// Sanitization
 		// Conversion should be done upstream
@@ -284,7 +297,7 @@ class Feed_Items implements HasActions, HasFilters {
 			'tax_input'    => array(
 				pf_feed_item_tag_taxonomy() => $r['item_tags'],
 			),
-			'post_parent'	=> $r['post_parent'],
+			'post_parent'  => $r['post_parent'],
 		);
 		// pf_log($r);
 		$item_id = create_feed_item_id( $r['item_link'], $r['item_title'] );
@@ -296,7 +309,7 @@ class Feed_Items implements HasActions, HasFilters {
 			$this->set_source( $post_id, $r['source_title'] );
 			$this->set_source_link( $post_id, $r['item_link'] );
 			$this->set_parent_last_retrieved( $post_id );
-			pressforward('controller.metas')->update_pf_meta( $post_id, 'item_id', $item_id );
+			pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'item_id', $item_id );
 		}
 
 		return $post_id;
@@ -316,12 +329,12 @@ class Feed_Items implements HasActions, HasFilters {
 	 */
 	public function set_word_count( $post_id, $content = false ) {
 		if ( false === $content ) {
-			$post = get_post( $post_id );
+			$post    = get_post( $post_id );
 			$content = $post->post_content;
 		}
 
 		$content_array = explode( ' ', strip_tags( $content ) );
-		$word_count = count( $content_array );
+		$word_count    = count( $content_array );
 
 		return pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_feed_item_word_count', $word_count );
 	}
@@ -345,7 +358,7 @@ class Feed_Items implements HasActions, HasFilters {
 	 * @since 3.4.5
 	 */
 	public function set_source_link( $post_id, $item_url ) {
-		$url = pressforward( 'controller.http_tools' )->resolve_a_url( $item_url );
+		$url       = pressforward( 'controller.http_tools' )->resolve_a_url( $item_url );
 		$url_array = parse_url( $url );
 		if ( empty( $url_array['host'] ) ) {
 			return;
@@ -401,15 +414,17 @@ class Feed_Items implements HasActions, HasFilters {
 	// via http://wordpress.stackexchange.com/questions/109793/delete-associated-media-upon-page-deletion
 	public function disassemble_feed_item_media( $post_id ) {
 
-		$attachments = new WP_Query( array(
-			'post_type'      => 'attachment',
-			'posts_per_page' => -1,
-			'post_status'    => 'any',
-			'post_parent'    => $post_id,
-			'fields'		 => 'ids',
-			'update_post_meta_cache' => false,
-			'update_post_term_cache' => false,
-		) );
+		$attachments = new WP_Query(
+			array(
+				'post_type'              => 'attachment',
+				'posts_per_page'         => -1,
+				'post_status'            => 'any',
+				'post_parent'            => $post_id,
+				'fields'                 => 'ids',
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+			)
+		);
 
 		if ( empty( $attachments ) || empty( $attachments->posts ) ) {
 			return '';
@@ -431,14 +446,14 @@ class Feed_Items implements HasActions, HasFilters {
 		// add_filter( 'posts_where', array( $this, 'filter_where_older') );
 		$queryForDel = new \WP_Query(
 			array(
-										'post_type' => $this->post_type,
-										'posts_per_page' => '150',
-										'fields'		 => 'ids',
-										'update_post_term_cache' => false,
-										'date_query'	=> array(
-											'before'	=> $retain . ' months ago',
-										),
-									)
+				'post_type'              => $this->post_type,
+				'posts_per_page'         => '150',
+				'fields'                 => 'ids',
+				'update_post_term_cache' => false,
+				'date_query'             => array(
+					'before' => $retain . ' months ago',
+				),
+			)
 		);
 		pf_log( 'Cleaning up feed items.' );
 		pf_log( $queryForDel );
@@ -463,24 +478,24 @@ class Feed_Items implements HasActions, HasFilters {
 	public function reset_feed() {
 		global $wpdb, $post;
 
-		$count = wp_count_posts( pf_feed_item_post_type() );
+		$count     = wp_count_posts( pf_feed_item_post_type() );
 		$pub_count = $count->publish;
-		$pages = $pub_count / 100;
+		$pages     = $pub_count / 100;
 		// var_dump($pages);
-		if ( ($pages < 1) && ($pages > 0) ) {
+		if ( ( $pages < 1 ) && ( $pages > 0 ) ) {
 			$pages = 1;
 		} else {
 			$pages = ceil( $pages );
 		}
 		while ( $pages > 0 ) {
-			$args = array(
-					'post_type' => $this->post_type,
-					'post_status' => 'publish',
-					'posts_per_page' => 100,
-					'paged'  => $pages,
-					'update_post_term_cache' => false,
-					'fields'		 => 'ids',
-				);
+			$args         = array(
+				'post_type'              => $this->post_type,
+				'post_status'            => 'publish',
+				'posts_per_page'         => 100,
+				'paged'                  => $pages,
+				'update_post_term_cache' => false,
+				'fields'                 => 'ids',
+			);
 			$archiveQuery = new \WP_Query( $args );
 			// var_dump($archiveQuery);
 			if ( ! empty( $archiveQuery ) ) {
@@ -501,7 +516,7 @@ class Feed_Items implements HasActions, HasFilters {
 		// This pulls the RSS feed into a set of predetermined objects.
 		// The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
 		$theFeed = pressforward( 'utility.retrieval' )->step_through_feedlist();
-		if ( ( ! $theFeed) || is_wp_error( $theFeed ) ) {
+		if ( ( ! $theFeed ) || is_wp_error( $theFeed ) ) {
 			pf_log( 'The feed is false, exit process. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]' );
 			pf_iterate_cycle_state( 'retrieval_cycles_ended', true );
 			// Wipe the checking option for use next time.
@@ -547,17 +562,18 @@ class Feed_Items implements HasActions, HasFilters {
 		$parent = $feedObj['parent_feed_id'];
 		unset( $feedObj['parent_feed_id'] );
 		foreach ( $feedObj as $item ) {
-			$thepostscheck = 0;
+			$thepostscheck       = 0;
 			$thePostsDoubleCheck = 0;
-			$item_id 		= $item['item_id'];
-			$sourceRepeat = 0;
+			$item_id             = $item['item_id'];
+			$sourceRepeat        = 0;
 			// $queryForCheck = new WP_Query( array( 'post_type' => 'rssarchival', 'meta_key' => 'item_id', 'meta_value' => $item_id ) );
 			 // Originally this query tried to get every archive post earlier than 'now' to check.
 			 // But it occured to me that, since I'm doing a custom query anyway, I could just query for items with the ID I want.
 			 // Less query results, less time.
 			 // Perhaps I should do this outside of the foreach? One query and search it for each item_id and then return those not in?
-			 $item_id_key = pressforward('controller.metas')->get_key('item_id');
-			 $querystr = $wpdb->prepare("
+			 $item_id_key = pressforward( 'controller.metas' )->get_key( 'item_id' );
+			$querystr     = $wpdb->prepare(
+				"
 				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
 				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
@@ -565,7 +581,8 @@ class Feed_Items implements HasActions, HasFilters {
 				AND {$wpdb->postmeta}.meta_value = %s
 				AND {$wpdb->posts}.post_type = %s
 				ORDER BY {$wpdb->posts}.post_date DESC
-			 ", $item_id, pf_feed_item_post_type() );
+			 ", $item_id, pf_feed_item_post_type()
+			);
 			 // AND $wpdb->posts.post_date < NOW() <- perhaps by removing we can better prevent simultaneous duplications?
 			 // Since I've altered the query, I could change this to just see if there are any items in the query results
 			 // and check based on that. But I haven't yet.
@@ -577,22 +594,25 @@ class Feed_Items implements HasActions, HasFilters {
 					setup_postdata( $post );
 					// print_r(get_the_ID());
 					// print_r('< the ID');
-					if ( (pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_id', $item_id, true )) === $item_id ) {
+					if ( ( pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_id', $item_id, true ) ) === $item_id ) {
 						$thepostscheck++;
 						$post_id_to_pass = $post->ID;
 						pf_log( 'We already have post ' . $post_id_to_pass . ' for ' );
 						pf_log( $item );
-						do_action( 'already_a_feed_item', array(
-							'item' => $item,
-							'post_id' => $post_id_to_pass,
-						) );
+						do_action(
+							'already_a_feed_item', array(
+								'item'    => $item,
+								'post_id' => $post_id_to_pass,
+							)
+						);
 					}
 
 					endforeach;
 				endif;
 				wp_reset_query();
 			if ( $thepostscheck === 0 ) {
-				$queryMoreStr = $wpdb->prepare("
+				$queryMoreStr  = $wpdb->prepare(
+					"
 						SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 						FROM {$wpdb->posts}, {$wpdb->postmeta}
 						WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
@@ -600,7 +620,8 @@ class Feed_Items implements HasActions, HasFilters {
 						AND {$wpdb->postmeta}.meta_value = %s
 						AND {$wpdb->posts}.post_type = %s
 						ORDER BY {$wpdb->posts}.post_date DESC
-					 ", $item['item_link'], pf_feed_item_post_type());
+					 ", $item['item_link'], pf_feed_item_post_type()
+				);
 				$checkpoststwo = $wpdb->get_results( $queryMoreStr, OBJECT );
 				if ( $checkpoststwo ) :
 					pf_log( 'Check for posts with the same link.' );
@@ -609,22 +630,22 @@ class Feed_Items implements HasActions, HasFilters {
 
 							// Post comparative values.
 							$theTitle = $post->post_title;
-							$postID = $post->ID;
+							$postID   = $post->ID;
 
-							$postDate = strtotime( $post->post_date );
+							$postDate     = strtotime( $post->post_date );
 							$postItemLink = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_link', true );
 							// Item comparative values.
 							$itemDate = strtotime( $item['item_date'] );
 							// pf_log( 'Item time '. $itemDate . ' post date is '. $postDate );
 							$itemTitle = $item['item_title'];
-							$itemLink = $item['item_link'];
+							$itemLink  = $item['item_link'];
 
 							// First check if it more recent than the currently stored item.
-						if ( (($theTitle == $itemTitle) || ($postItemLink == $itemLink)) ) {
+						if ( ( ( $theTitle == $itemTitle ) || ( $postItemLink == $itemLink ) ) ) {
 							$thePostsDoubleCheck++;
 							pf_log( 'We already have the post ' . $theTitle . ' with the link ' . $itemLink );
 							$sourceRepeat = pressforward( 'controller.metas' )->get_post_pf_meta( $postID, 'source_repeat', true );
-							if ( ($itemDate > $postDate) ) {
+							if ( ( $itemDate > $postDate ) ) {
 								// If it is more recent, than this is the new dominant post.
 								// @TODO: Allow the feed process to check for updated content.
 								// The idea is that if the retrieved item's date is newer than
@@ -633,7 +654,7 @@ class Feed_Items implements HasActions, HasFilters {
 								// correctly when it is, so we're not doing this for now.
 								$sourceRepeat++;
 								$thepostscheck = 1;
-							} elseif ( ($itemDate <= $postDate) ) {
+							} elseif ( ( $itemDate <= $postDate ) ) {
 								// if it is less recent, then we need to increment the source count.
 								$sourceRepeat++;
 								if ( $thePostsDoubleCheck > $sourceRepeat ) {
@@ -671,23 +692,23 @@ class Feed_Items implements HasActions, HasFilters {
 			// fclose($fo);
 			// }
 			if ( $thepostscheck === 0 ) {
-				$item_title 	= $item['item_title'];
-				$item_content 	= $item['item_content'];
-				$item_feat_img 	= $item['item_feat_img'];
-				$source_title 	= $item['source_title'];
-				$item_date 		= $item['item_date'];
-				$item_author 	= $item['item_author'];
-				$item_link 		= $item['item_link'];
-				$item_wp_date	= $item['item_wp_date'];
-				$item_tags		= $item['item_tags'];
+				$item_title    = $item['item_title'];
+				$item_content  = $item['item_content'];
+				$item_feat_img = $item['item_feat_img'];
+				$source_title  = $item['source_title'];
+				$item_date     = $item['item_date'];
+				$item_author   = $item['item_author'];
+				$item_link     = $item['item_link'];
+				$item_wp_date  = $item['item_wp_date'];
+				$item_tags     = $item['item_tags'];
 				if ( ! isset( $item['parent_feed_id'] ) || ! $item['parent_feed_id'] ) {
 					$item['parent_feed_id'] = $parent;
 				}
-				$feed_obj_id	= $item['parent_feed_id'];
-				$source_repeat  = $sourceRepeat;
+				$feed_obj_id   = $item['parent_feed_id'];
+				$source_repeat = $sourceRepeat;
 
 				// Trying to prevent bad or malformed HTML from entering the database.
-				$item_title = strip_tags( $item_title );
+				$item_title   = strip_tags( $item_title );
 				$item_content = strip_tags( $item_content, '<p> <strong> <bold> <i> <em> <emphasis> <del> <h1> <h2> <h3> <h4> <h5> <a> <img>' );
 				// Need to get rid of some weird characters that prevent inserting posts into the database.
 				// From: http://www.alexpoole.name/web-development/282/remove-smart-quotes-bullets-dashes-and-other-junky-characters-from-a-string-with-php
@@ -700,16 +721,16 @@ class Feed_Items implements HasActions, HasFilters {
 				// Perhaps sanitize_post isn't the cause? What is then?
 				// Do we want or need the post_status to be published?
 				$data = array(
-					'post_status' => 'publish',
-					'post_type' => pf_feed_item_post_type(),
-				// 'post_date' => $_SESSION['cal_startdate'],
-					'item_title' => $item_title,
+					'post_status'    => 'publish',
+					'post_type'      => pf_feed_item_post_type(),
+					// 'post_date' => $_SESSION['cal_startdate'],
+						'item_title' => $item_title,
 					'post_parent'    => $feed_obj_id,
-					'item_content' => $item_content,
-					'item_link'	=> $item_link,
-					'source_title' => $source_title,
-					'item_wp_date' => $item_wp_date,
-					'item_tags'	=> $item_tags,
+					'item_content'   => $item_content,
+					'item_link'      => $item_link,
+					'source_title'   => $source_title,
+					'item_wp_date'   => $item_wp_date,
+					'item_tags'      => $item_tags,
 
 				);
 
@@ -719,20 +740,20 @@ class Feed_Items implements HasActions, HasFilters {
 				$worked = 1;
 				do_action( 'about_to_insert_pf_feed_items', $item );
 				// The post gets created here, the $newNomID variable contains the new post's ID.
-				$newNomID = $this->create( $data );
+				$newNomID           = $this->create( $data );
 				$post_inserted_bool = $this->post_inserted( $newNomID, $data );
 
 				if ( ! $post_inserted_bool ) {
 					// It's the end of the world! Let's throw everything at this.
 					pf_log( 'Post will not go into the database. We will try again.' );
-					$item_content = htmlentities( strip_tags( $item_content ), ENT_QUOTES, 'UTF-8' );
-					$item_content = wp_kses( stripslashes( $item_content ), array( 'p', 'a', 'b', 'em', 'strong' ) );
-					$item_content = $this->extra_special_sanatize( $item_content, true );
-					$item_content = wpautop( $item_content );
-					$item_title = $this->extra_special_sanatize( $item_title, true );
+					$item_content         = htmlentities( strip_tags( $item_content ), ENT_QUOTES, 'UTF-8' );
+					$item_content         = wp_kses( stripslashes( $item_content ), array( 'p', 'a', 'b', 'em', 'strong' ) );
+					$item_content         = $this->extra_special_sanatize( $item_content, true );
+					$item_content         = wpautop( $item_content );
+					$item_title           = $this->extra_special_sanatize( $item_title, true );
 					$data['item_content'] = $item_content;
-					$newNomID = $this->create( $data );
-					$post_inserted_bool = $this->post_inserted( $newNomID, $data );
+					$newNomID             = $this->create( $data );
+					$post_inserted_bool   = $this->post_inserted( $newNomID, $data );
 				}
 				pf_log( 'End of wp_insert_post process.' );
 				// $posttest = get_post($newNomID);
@@ -740,7 +761,7 @@ class Feed_Items implements HasActions, HasFilters {
 				// Somewhere in the process links with complex queries at the end (joined by ampersands) are getting encoded.
 				// I don't want that, so I turn it back here.
 				// For some reason this is only happening to the ampersands, so that's the only thing I'm changing.
-				$item_link = str_replace( '&amp;','&', $item_link );
+				$item_link = str_replace( '&amp;', '&', $item_link );
 
 				// If it doesn't have a featured image assigned already, I use the set_ext_as_featured function to try and find one.
 				// It also, if it finds one, sets it as the featured image for that post.
@@ -750,10 +771,10 @@ class Feed_Items implements HasActions, HasFilters {
 					if ( false === ( $itemFeatImg = get_transient( 'feed_img_' . $itemUID ) ) ) {
 						set_time_limit( 0 );
 						// if it forces the issue when we try and get the image, there's nothing we can do.
-						$itemLink = str_replace( '&amp;','&', $itemLink );
+						$itemLink = str_replace( '&amp;', '&', $itemLink );
 						if ( pressforward( 'library.opengraph' )->fetch( $itemLink ) ) {
 							// If there is no featured image passed, let's try and grab the opengraph image.
-							$node = pressforward( 'library.opengraph' )->fetch( $itemLink );
+							$node        = pressforward( 'library.opengraph' )->fetch( $itemLink );
 							$itemFeatImg = $node->image;
 
 						}
@@ -803,7 +824,7 @@ class Feed_Items implements HasActions, HasFilters {
 	}
 
 	public static function post_inserted( $postAttempt, $data ) {
-			$worked = 1;
+			$worked     = 1;
 			$workedBool = true;
 		if ( $postAttempt === 0 ) {
 			pf_log( 'The following post did not go into the database correctly.' );
@@ -819,36 +840,37 @@ class Feed_Items implements HasActions, HasFilters {
 			pf_log( 'Create post in the database with the title ' . $data['item_title'] . ' and id of ' );
 			pf_log( $postAttempt );
 		}
-		if ( $worked === 0 ) { $workedBool = false; }
+		if ( $worked === 0 ) {
+			$workedBool = false; }
 		return $workedBool;
 	}
 
 	// Alternate function title - 'stop_pasting_junk_from_word'
 	public static function extra_special_sanatize( $string, $severe = false ) {
 
-		$search = array(
-		chr( 145 ),
-						chr( 146 ),
-						chr( 147 ),
-						chr( 148 ),
-						chr( 151 ),
-						chr( 150 ),
-						chr( 133 ),
-						chr( 149 ),
-						chr( 189 ),
-						);
+		$search  = array(
+			chr( 145 ),
+			chr( 146 ),
+			chr( 147 ),
+			chr( 148 ),
+			chr( 151 ),
+			chr( 150 ),
+			chr( 133 ),
+			chr( 149 ),
+			chr( 189 ),
+		);
 		$replace = array(
-		"'",
-						"'",
-						'"',
-						'"',
-						'--',
-						'-',
-						'...',
-						'&bull;',
-						'1/2',
-						);
-		$string = str_replace( $search, $replace, $string );
+			"'",
+			"'",
+			'"',
+			'"',
+			'--',
+			'-',
+			'...',
+			'&bull;',
+			'1/2',
+		);
+		$string  = str_replace( $search, $replace, $string );
 		pf_log( 'String run through specified str_replace.' );
 		$string = utf8_encode( $string );
 		pf_log( 'String run through utf8_encode' );
@@ -858,13 +880,13 @@ class Feed_Items implements HasActions, HasFilters {
 			// Remove MS Word Special Characters
 			// From: https://gist.github.com/gcoop/701814
 			// ============
-				$search  = array( '&acirc;��','&acirc;��','&acirc;��','&acirc;��','&Acirc;&pound;','&Acirc;&not;','&acirc;�&cent;', '&Acirc;&nbsp;', '&Acirc;', '&amp;nbsp;', '&#8230;' );
-				$replace = array( '-','&ldquo;','&lsquo;','&rsquo;','&pound;','&not;','&#8482;', '', '', '', '...' );
+				$search  = array( '&acirc;��', '&acirc;��', '&acirc;��', '&acirc;��', '&Acirc;&pound;', '&Acirc;&not;', '&acirc;�&cent;', '&Acirc;&nbsp;', '&Acirc;', '&amp;nbsp;', '&#8230;' );
+				$replace = array( '-', '&ldquo;', '&lsquo;', '&rsquo;', '&pound;', '&not;', '&#8482;', '', '', '', '...' );
 
 				$string = str_replace( $search, $replace, $string );
 				$string = str_replace( '&acirc;�', '&rdquo;', $string );
 
-				$search = array( '&#39;', "\xc3\xa2\xc2\x80\xc2\x99", "\xc3\xa2\xc2\x80\xc2\x93", "\xc3\xa2\xc2\x80\xc2\x9d", "\xc3\xa2\x3f\x3f", '&#8220;', '&#8221;', '#8217;', '&not;', '&#8482;' );
+				$search  = array( '&#39;', "\xc3\xa2\xc2\x80\xc2\x99", "\xc3\xa2\xc2\x80\xc2\x93", "\xc3\xa2\xc2\x80\xc2\x9d", "\xc3\xa2\x3f\x3f", '&#8220;', '&#8221;', '#8217;', '&not;', '&#8482;' );
 				$replace = array( "'", "'", ' - ', '"', "'", '"', '"', "'", '-', '(TM)' );
 
 				$string = str_replace( $search, $replace, $string );
@@ -883,12 +905,12 @@ class Feed_Items implements HasActions, HasFilters {
 				"\xE2\x80\xB9" => "'",
 				"\xE2\x80\xBA" => "'",
 				"\xe2\x80\x93" => '-',
-				"\xc2\xb0"	   => '�',
+				"\xc2\xb0"     => '�',
 				"\xc2\xba"     => '�',
-				"\xc3\xb1"	   => '&#241;',
-				"\x96"		   => '&#241;',
+				"\xc3\xb1"     => '&#241;',
+				"\x96"         => '&#241;',
 				"\xe2\x81\x83" => '&bull;',
-				"\xd5" => "'",
+				"\xd5"         => "'",
 			);
 
 			$string = strtr( $string, $quotes );
@@ -916,13 +938,13 @@ class Feed_Items implements HasActions, HasFilters {
 		// print_r($url);
 		// If that doesn't work...
 		if ( ! $descrip ) {
-			$url = str_replace( '&amp;','&', $url );
+			$url = str_replace( '&amp;', '&', $url );
 			// Try and get the OpenGraph description.
 			if ( pressforward( 'library.opengraph' )->fetch( $url ) ) {
-				$node = pressforward( 'library.opengraph' )->fetch( $url );
+				$node    = pressforward( 'library.opengraph' )->fetch( $url );
 				$descrip = $node->description;
 			} // End if().
-			elseif ( '' != ($contentHtml = @get_meta_tags( $url )) ) {
+			elseif ( '' != ( $contentHtml = @get_meta_tags( $url ) ) ) {
 				// Try and get the HEAD > META DESCRIPTION tag.
 				$descrip = $contentHtml['description'];
 				print_r( $url . ' has no meta OpenGraph description we can find.' );
@@ -939,13 +961,14 @@ class Feed_Items implements HasActions, HasFilters {
 	}
 
 	public function resolve_image_type( $img_url ) {
+		$img_url = strtok( $img_url , '?' );
 		$type = wp_check_filetype( $img_url );
 		return $type['ext'];
 	}
 
 	public function assert_url_scheme( $url ) {
-		$url_parts = parse_url( $url );
-		$slash_check = substr( $url , 0 , 2 );
+		$url_parts   = parse_url( $url );
+		$slash_check = substr( $url, 0, 2 );
 		if ( empty( $url_parts['scheme'] ) && ( '//' == $slash_check ) ) {
 			$url = 'http:' . $url;
 		} elseif ( empty( $url_parts['scheme'] ) && ( '//' != $slash_check ) ) {
@@ -981,7 +1004,7 @@ class Feed_Items implements HasActions, HasFilters {
 
 	public static function set_ext_as_featured( $postID, $ogImage ) {
 
-		if ( 5 < (strlen( $ogImage )) ) {
+		if ( 5 < ( strlen( $ogImage ) ) ) {
 
 				// Remove Queries from the URL
 				// $ogImage = preg_replace('/\?.*/', '', $ogImage);
@@ -990,11 +1013,11 @@ class Feed_Items implements HasActions, HasFilters {
 				pf_log( 'It looked like we received a file, but PHP could not understand it as a URL: ' . $ogImage );
 				return '';
 			}
-				$imgParts = pathinfo( $ogImage );
-				$imgExt = $imgParts['extension'];
-				$imgTitle = $imgParts['filename'];
+				$imgParts         = pathinfo( $ogImage );
+				$imgExt           = $imgParts['extension'];
+				$imgTitle         = $imgParts['filename'];
 				$resolved_img_ext = pressforward( 'schema.feed_item' )->resolve_image_type( $ogImage );
-			if ( ($resolved_img_ext != ('jpg'||'png'||'jrpg'||'bmp'||'gif'||'jpeg')) || ($imgExt != ('jpg'||'png'||'jrpg'||'bmp'||'gif'||'jpeg')) ) {
+			if ( ( $resolved_img_ext != ( 'jpg' || 'png' || 'jrpg' || 'bmp' || 'gif' || 'jpeg' ) ) || ( $imgExt != ( 'jpg' || 'png' || 'jrpg' || 'bmp' || 'gif' || 'jpeg' ) ) ) {
 				// var_dump($resolved_img_ext); die();
 				return;
 			}
@@ -1009,12 +1032,12 @@ class Feed_Items implements HasActions, HasFilters {
 			}
 
 				// '/' . get_option(upload_path, 'wp-content/uploads') . '/' . date("o")
-				$uploadDir = wp_upload_dir();
+				$uploadDir  = wp_upload_dir();
 				$ogCacheImg = $uploadDir['path'] . '/' . $postID . '-' . $imgTitle . '.' . $resolved_img_ext;
 				// var_dump($ogCacheImg); die();
 			if ( ! file_exists( $ogCacheImg ) ) {
 
-				$result  = copy( $ogImage, $ogCacheImg );
+				$result = copy( $ogImage, $ogCacheImg );
 
 				if ( ! $result ) {
 					return;
@@ -1032,17 +1055,17 @@ class Feed_Items implements HasActions, HasFilters {
 
 			// Set the identifying variables for the about to be featured image.
 			$imgData = array(
-							'guid'           => $ogCacheImg,
-							// tell WordPress what the filetype is.
-							'post_mime_type' => $filetype['type'],
-							// set the image title to the title of the site you are pulling from
-							'post_title' => get_the_title( $postID ),
-							// WordPress tells us we must set this and set it to empty. Why? Dunno.
-							'post_content' => $imgTitle,
-							// Now we set the status of the image. It will inheret that of the post.
-							// If the post is published, then the image will be to.
-							'post_status' => 'inherit',
-						);
+				'guid'           => $ogCacheImg,
+				// tell WordPress what the filetype is.
+				'post_mime_type' => $filetype['type'],
+				// set the image title to the title of the site you are pulling from
+				'post_title'     => get_the_title( $postID ),
+				// WordPress tells us we must set this and set it to empty. Why? Dunno.
+				'post_content'   => $imgTitle,
+				// Now we set the status of the image. It will inheret that of the post.
+				// If the post is published, then the image will be to.
+				'post_status'    => 'inherit',
+			);
 			// WordPress needs an absolute path to the image, as opposed to the relative path we used before.
 			// I'm hoping that by using the upload_dir function (above) I can make this function work with multisite.
 			// $pathedImg = $uploadDir['url'] . $img;
@@ -1051,7 +1074,7 @@ class Feed_Items implements HasActions, HasFilters {
 
 			// To set a thumbnail, you need metadata associated with an image.
 			// To get that we need to call the image.php file
-			require_once( ABSPATH . 'wp-admin/includes/image.php' );
+			require_once ABSPATH . 'wp-admin/includes/image.php';
 			$metadata = wp_generate_attachment_metadata( $thumbid, $ogCacheImg );
 			// Now we attach the meta data to the image.
 			wp_update_attachment_metadata( $thumbid, $metadata );
@@ -1069,9 +1092,9 @@ class Feed_Items implements HasActions, HasFilters {
 	 * Can be modified with user setting for retention.
 	 */
 	public static function filter_where_older( $where = '' ) {
-		$retain = get_option( 'pf_retain_time', 2 );
+		$retain       = get_option( 'pf_retain_time', 2 );
 		$retainMonths = $retain * 30;
-		$str = '-' . $retainMonths . ' days';
+		$str          = '-' . $retainMonths . ' days';
 		// posts before the last 60 days
 		$where .= " AND post_date < '" . date( 'Y-m-d', strtotime( $str ) ) . "'";
 		return $where;
@@ -1121,24 +1144,26 @@ class Feed_Items implements HasActions, HasFilters {
 	}
 
 	public function dead_post_status() {
-		register_post_status('removed_feed_item', array(
-			'label'                 => _x( 'Removed Feed Item', 'pf' ),
-			'public'                => false,
-			'exclude_from_search'   => true,
-			'show_in_admin_all_list' => false,
-		) );
+		register_post_status(
+			'removed_feed_item', array(
+				'label'                  => _x( 'Removed Feed Item', 'pf' ),
+				'public'                 => false,
+				'exclude_from_search'    => true,
+				'show_in_admin_all_list' => false,
+			)
+		);
 	}
 
 
 	public function register_feed_item_removed_status() {
 
 		$args = array(
-			'label'						=> _x( 'Removed Feed Item', 'pf' ),
-			'public'					=> false,
-			'exclude_from_search'		=> true,
-			'show_in_admin_all_list'	=> false,
-			'show_in_admin_status_list'	=> false,
-			'label_count'				=> _n_noop( 'Removed <span class="count">(%s)</span>', 'Removed <span class="count">(%s)</span>' ),
+			'label'                     => _x( 'Removed Feed Item', 'pf' ),
+			'public'                    => false,
+			'exclude_from_search'       => true,
+			'show_in_admin_all_list'    => false,
+			'show_in_admin_status_list' => false,
+			'label_count'               => _n_noop( 'Removed <span class="count">(%s)</span>', 'Removed <span class="count">(%s)</span>' ),
 		);
 
 		register_post_status( 'removed_feed_item', $args );
@@ -1147,7 +1172,7 @@ class Feed_Items implements HasActions, HasFilters {
 
 	public function oembed_capables() {
 		return array(
-			'youtube.com'
+			'youtube.com',
 		);
 	}
 

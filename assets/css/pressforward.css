@@ -868,3 +868,16 @@ h3 {
 
 .actions .btn {
   height: 26px; }
+
+.btn.meta_form_modal-button {
+  padding: 3px 5px; }
+  .btn.meta_form_modal-button .icon-meta-form {
+    background-clip: border-box;
+    background-image: url("../../assets/images/data-search-icon.png");
+    background-position: -5px -1px;
+    background-size: 25px;
+    width: 16px;
+    height: 100%; }
+
+.meta-form-modal {
+  z-index: 10000; }

@@ -1,8 +1,7 @@
 {
 	"name": "pressforward",
 	"version": "5.0.0",
-	"description":
-		"PressForward is a free plugin that provides an editorial workflow for content aggregation and curation within the WordPress dashboard. It is designed for bloggers and editorial teams who wish to collect, discuss, and share content from a variety of sources on the open web. ",
+	"description": "PressForward is a free plugin that provides an editorial workflow for content aggregation and curation within the WordPress dashboard. It is designed for bloggers and editorial teams who wish to collect, discuss, and share content from a variety of sources on the open web. ",
 	"main": "assets/js/pf.js",
 	"directories": {
 		"test": "tests"
@@ -13,16 +12,17 @@
 	},
 	"devDependencies": {
 		"gulp": "~3.9.0",
+		"gulp-clean-css": "^3.9.2",
 		"gulp-ext-replace": "^0.3.0",
 		"gulp-sass": "~2.0.4",
+		"gulp-sourcemaps": "^2.6.4",
 		"gulp-uglify": "^3.0.0"
 	},
 	"scripts": {
 		"test": "test",
 		"commitmsg": "node ./scripts/commit-msg",
 		"precommit": "lint-staged",
-		"fmt:prettier":
-			"prettier --write --single-quote --use-tabs --tab-width 4",
+		"fmt:prettier": "prettier --write --single-quote --use-tabs --tab-width 4",
 		"lint": "run-p lint:js",
 		"lint:eslint": "eslint --ignore-path .gitignore",
 		"lint:js": "npm run lint:eslint -- ."
@@ -31,10 +31,19 @@
 		"type": "git",
 		"url": "https://github.com/PressForward/pressforward.git"
 	},
-	"keywords": ["pressforward"],
+	"keywords": [
+		"pressforward"
+	],
 	"lint-staged": {
-		"**/!(*.min).js": ["fmt:prettier", "lint:eslint", "git add"],
-		"**/!(*.min).sass": ["fmt:prettier", "git add"]
+		"**/!(*.min).js": [
+			"fmt:prettier",
+			"lint:eslint",
+			"git add"
+		],
+		"**/!(*.min).sass": [
+			"fmt:prettier",
+			"git add"
+		]
 	},
 	"author": "Aram Zucker-Scharff, PressForward team",
 	"license": "ISC",

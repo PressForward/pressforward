@@ -1,8 +1,9 @@
 <?php
 namespace PressForward;
+
 // var_dump('2<pre>');
 // var_dump(__NAMESPACE__); //die();
-$obj = new Loader;
+$obj = new Loader();
 // $obj->test();
 use Intraxia\Jaxion\Core\Application as JaxionCore;
 // use Intraxia\Jaxion\Contract\Core\Application as ApplicationContract;
@@ -35,9 +36,9 @@ class Application extends JaxionCore {
 	 */
 	public function activate() {
 		global $wp_rewrite;
-		define( 'VERSION', '4.3.0' );
+		define( 'VERSION', '5.1.0' );
 		$current_version = VERSION; // define this constant in the loader file
-		$saved_version = get_option( 'pf_version' );
+		$saved_version   = get_option( 'pf_version' );
 
 		// This is a new installation
 		if ( ! $saved_version ) {
@@ -45,11 +46,11 @@ class Application extends JaxionCore {
 			$check = pressforward( 'schema.feeds' )->create(
 				'http://pressforward.org/feed/',
 				array(
-					'title'         => 'PressForward',
-					'htmlUrl'       => 'http://pressforward.org/',
-					'description'   => 'The news feed for the PressForward project.',
-					'type'          => 'rss',
-					'module_added'  => 'rss-import',
+					'title'        => 'PressForward',
+					'htmlUrl'      => 'http://pressforward.org/',
+					'description'  => 'The news feed for the PressForward project.',
+					'type'         => 'rss',
+					'module_added' => 'rss-import',
 				)
 			);
 

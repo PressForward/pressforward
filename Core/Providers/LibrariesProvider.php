@@ -25,32 +25,32 @@ class LibrariesProvider extends ServiceProvider {
 		$container->share(
 			'library.htmlchecker',
 			function( $container ) {
-				return new HTMLChecker;
+				return new HTMLChecker();
 			}
 		);
 
 		$container->share(
 			'library.opengraph',
 			function( $container ) {
-				return new PFOpenGraph;
+				return new PFOpenGraph();
 			}
 		);
 
 		/**
 		 *
 		 * <pre><code><?php
-		 *	$url = 'http://hacktext.com/2015/03/the-myopic-web-shrinking-the-filter-bubble-with-dropcat-2212/';
-		 *	$bob = pressforward('library.readability');
-		 *	var_dump($bob(wp_remote_get( $url )['body'], $url));
+		 *  $url = 'http://hacktext.com/2015/03/the-myopic-web-shrinking-the-filter-bubble-with-dropcat-2212/';
+		 *  $bob = pressforward('library.readability');
+		 *  var_dump($bob(wp_remote_get( $url )['body'], $url));
 		 *
 		 * @var [type]
 		 */
 		$container->define(
 			'library.readability',
 			function( $container ) {
-				return (function( $html, $url = null, $parser = 'libxml', $logger = 'pf_log' ) {
+				return ( function( $html, $url = null, $parser = 'libxml', $logger = 'pf_log' ) {
 					return new Readability( $html, $url, $parser, $logger );
-				});
+				} );
 			}
 		);
 

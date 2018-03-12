@@ -15,9 +15,9 @@ class ModelsProvider extends ServiceProvider {
 		$container->define(
 			'model.feed_item',
 			function( $container ) {
-				return (function( $item_url, $item_title, $post_type = false ) {
+				return ( function( $item_url, $item_title, $post_type = false ) {
 					return new Feed_Item( $item_url, $item_title, $post_type );
-				});
+				} );
 			}
 		);
 

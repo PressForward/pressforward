@@ -1,12 +1,14 @@
 <?php
 namespace PressForward\Controllers;
 
+use PressForward\Interfaces\Advance_System as Advance_System;
+
+use Intraxia\Jaxion\Contract\Core\HasActions as HasActions;
+
 /**
  * PressForward to WP post object lifecycle tools
  */
-
-use PressForward\Interfaces\Advance_System as Advance_System;
-class PF_Advancement implements Advance_System {
+class PF_Advancement implements Advance_System, HasActions {
 	// var $last_step_state;
 	// var $last_step_post_type;
 	public function __construct( Metas $metas ) {
@@ -15,12 +17,34 @@ class PF_Advancement implements Advance_System {
 		// $this->last_step_post_type = $this->last_step_post_type();
 	}
 
+	public function action_hooks() {
+		$actions = array(
+			array(
+				'hook'   => 'pf_transition_to_nomination',
+				'method' => 'inform_of_nomination',
+			),
+		);
+		return $actions;
+	}
+
 	public function last_step_state() {
 		return get_option( PF_SLUG . '_draft_post_status', 'draft' );
 	}
 
 	public function last_step_post_type() {
 		return get_option( PF_SLUG . '_draft_post_type', 'post' );
+	}
+
+	public function inform_of_nomination(){
+		$admin_email = get_option( 'pf_nomination_send_email', array() );
+		if($admin_email) {
+			$siteurl = get_option( 'siteurl', '' );
+			$blogname = get_option( 'blogname', '' );
+			$admin_emails = explode(",", $admin_email);
+			foreach ($admin_emails as $email){
+				wp_mail(trim($email), "New nomination on '".$blogname."'", "A new nomination has been created! Please check it online on " . $siteurl . "/wp-admin/admin.php?page=pf-review");
+			}
+		}
 	}
 
 	// Transition Tools
@@ -50,7 +74,7 @@ class PF_Advancement implements Advance_System {
 			$item_tags = explode( ',', $item_tags );
 		}
 		foreach ( $item_tags as $key => $tag ) {
-			$tag = trim( $tag );
+			$tag      = trim( $tag );
 			$tag_info = wp_create_term( $tag );
 			if ( ! is_wp_error( $tag_info ) ) {
 				$tag_id = intval( $tag_info['term_id'] );
@@ -79,29 +103,30 @@ class PF_Advancement implements Advance_System {
 	public function to_last_step( $post = array() ) {
 		$old_id = $post['ID'];
 		unset( $post['ID'] );
-		$post['post_type'] = $this->last_step_post_type();
-		$post['post_status'] = $this->last_step_state();
-		$post['post_date'] = current_time( 'Y-m-d H:i:s' );
+		$post['post_type']     = $this->last_step_post_type();
+		$post['post_status']   = $this->last_step_state();
+		$post['post_date']     = current_time( 'Y-m-d H:i:s' );
 		$post['post_date_gmt'] = get_gmt_from_date( current_time( 'Y-m-d H:i:s' ) );
 		pf_log( $post );
 		$post['post_content'] = pressforward( 'controller.readability' )->process_in_oembeds( pressforward( 'controller.metas' )->get_post_pf_meta( $old_id, 'item_link' ), $post['post_content'] );
-		$post['post_content'] = pressforward('utility.forward_tools')->append_source_statement($old_id, $post['post_content'], true);
-		$id = pressforward( 'controller.items' )->insert_post( $post, true, pressforward( 'controller.metas' )->get_post_pf_meta( $old_id, 'item_id' ) );
+		$post['post_content'] = pressforward( 'utility.forward_tools' )->append_source_statement( $old_id, $post['post_content'], true );
+		$id                   = pressforward( 'controller.items' )->insert_post( $post, true, pressforward( 'controller.metas' )->get_post_pf_meta( $old_id, 'item_id' ) );
 
 		do_action( 'pf_transition_to_last_step', $id );
 		return $id;
 	}
 
 	public function to_nomination( $post = array() ) {
-		$post['post_status'] = 'draft';
-		$post['post_type'] = pressforward( 'schema.nominations' )->post_type;
-		$post['post_date'] = current_time( 'Y-m-d H:i:s' );
+		$post['post_status']   = 'draft';
+		$post['post_type']     = pressforward( 'schema.nominations' )->post_type;
+		$post['post_date']     = current_time( 'Y-m-d H:i:s' );
 		$post['post_date_gmt'] = get_gmt_from_date( current_time( 'Y-m-d H:i:s' ) );
-		$orig_post_id = $post['ID'];
+		$orig_post_id          = $post['ID'];
 		unset( $post['ID'] );
 		$id = pressforward( 'controller.items' )->insert_post( $post, false, pressforward( 'controller.metas' )->get_post_pf_meta( $orig_post_id, 'item_id' ) );
-		pf_log($id);
+		pf_log( $id );
 		do_action( 'pf_transition_to_nomination', $id );
+
 		return $id;
 	}
 
@@ -110,7 +135,7 @@ class PF_Advancement implements Advance_System {
 		$q = $this->pf_get_posts_by_id_for_check( $post_type, $item_id, true );
 		if ( 0 < $q->post_count ) {
 			$nom = $q->posts;
-			$r = $nom[0];
+			$r   = $nom[0];
 		} else {
 			$r = false;
 		}
@@ -153,26 +178,26 @@ class PF_Advancement implements Advance_System {
 		// $theDate = getdate();
 		// $w = date('W');
 		$r = array(
-								'meta_key' => $this->metas->get_key('item_id'),
-								'meta_value' => $item_id,
-								'post_type'	=> array( 'post', pf_feed_item_post_type() ),
-							);
+			'meta_key'   => $this->metas->get_key( 'item_id' ),
+			'meta_value' => $item_id,
+			'post_type'  => array( 'post', pf_feed_item_post_type() ),
+		);
 
 		if ( $ids_only ) {
-			$r['fields'] = 'ids';
+			$r['fields']        = 'ids';
 			$r['no_found_rows'] = true;
 			$r['cache_results'] = false;
 
 		}
 
-		$r['post_status'] = array('publish', 'alert_specimen', 'under_review', 'future', 'draft', 'pending', 'private' );
+		$r['post_status'] = array( 'publish', 'alert_specimen', 'under_review', 'future', 'draft', 'pending', 'private' );
 
 		if ( false != $post_type ) {
 			$r['post_type'] = $post_type;
 		}
 
 		$postsAfter = new \WP_Query( $r );
-		//var_dump($postsAfter, $r); die();
+		// var_dump($postsAfter, $r); die();
 		pf_log( ' Checking for posts with item ID ' . $item_id . ' returned query with ' . $postsAfter->post_count . ' items.' );
 		// pf_log($postsAfter);
 		return $postsAfter;
@@ -187,7 +212,7 @@ class PF_Advancement implements Advance_System {
 			foreach ( (array) $photo_src as $key => $image ) {
 				// see if files exist in content - we don't want to upload non-used selected files.
 				if ( strpos( $content, htmlspecialchars( $image ) ) !== false ) {
-					$desc = isset( $photo_description[ $key ] ) ? $photo_description[ $key ] : '';
+					$desc   = isset( $photo_description[ $key ] ) ? $photo_description[ $key ] : '';
 					$upload = media_sideload_image( $image, $post_ID, $desc );
 
 					// Replace the POSTED content <img> with correct uploaded ones. Regex contains fix for Magic Quotes

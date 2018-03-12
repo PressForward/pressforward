@@ -13,26 +13,25 @@ use DaveChild\TextStatistics\Text as Text;
 
 use WP_Ajax_Response;
 use WP_Error;
-//use \WP_REST_Controller;
-
+// use \WP_REST_Controller;
 class StatsEndpoint implements HasActions {
 
 	protected $api_base;
 
 	function __construct( $api_base, Metas $metas, Stats $stats ) {
-		$this->api_base = $api_base;
+		$this->api_base             = $api_base;
 		$this->api_base['endpoint'] = 'stats';
-		$this->metas = $metas;
-		$this->stats = $stats;
+		$this->metas                = $metas;
+		$this->stats                = $stats;
 	}
 
 	public function action_hooks() {
-		//add_action( 'rest_api_init', 'activate_pf_rest_controller', 11 );
+		// add_action( 'rest_api_init', 'activate_pf_rest_controller', 11 );
 		$actions = array(
 			array(
-				'hook' => 'rest_api_init',
-				'method' => 'activate',
-				'priority'	=> 11
+				'hook'     => 'rest_api_init',
+				'method'   => 'activate',
+				'priority' => 11,
 			),
 		);
 		return $actions;
@@ -48,227 +47,233 @@ class StatsEndpoint implements HasActions {
 	 */
 	public function register_routes() {
 		$namespace = $this->api_base['base_namespace'] . $this->api_base['version'];
-		$base = $this->api_base['endpoint'];
-		register_rest_route( $namespace, '/' . $base . '/overview', array(
-			array(
-				'methods'         => \WP_REST_Server::READABLE,
-				'callback'        => array( $this, 'overview' ),
-				'args' => array(
-				  'after_year' 	=>	array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'validate_callback' => function($page, $request_object){
-							if ( is_numeric($page) ){
-								return true;
-							} else {
-								return false;
-							}
-						},
-				  ),
-				  'after_month'	=>	array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'validate_callback' => function($page, $request_object){
-							if ( is_numeric($page) ){
-								return true;
-							} else {
-								return false;
-							}
-						},
-				  ),
-				  'after_day'	=>	array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Limit query by day, use number of day.', 'pf' ),
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'validate_callback' => function($page, $request_object){
-							if ( is_numeric($page) ){
-								return true;
-							} else {
-								return false;
-							}
-						},
-				  ),
-				  'before_year' 	=>	array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'validate_callback' => function($page, $request_object){
-							if ( is_numeric($page) ){
-								return true;
-							} else {
-								return false;
-							}
-						},
-				  ),
-				  'before_month'	=>	array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'validate_callback' => function($page, $request_object){
-							if ( is_numeric($page) ){
-								return true;
-							} else {
-								return false;
-							}
-						},
-				  ),
-				  'before_day'	=>	array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'validate_callback' => function($page, $request_object){
-							if ( is_numeric($page) ){
-								return true;
-							} else {
-								return false;
-							}
-						},
-				  ),
+		$base      = $this->api_base['endpoint'];
+		register_rest_route(
+			$namespace, '/' . $base . '/overview', array(
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'overview' ),
+					'args'                => array(
+						'after_year'   => array(
+							// description should be a human readable description of the argument.
+							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
+							// Set the argument to be required for the endpoint.
+							'required'          => false,
+							'validate_callback' => function( $page, $request_object ) {
+								if ( is_numeric( $page ) ) {
+									return true;
+								} else {
+									return false;
+								}
+							},
+						),
+						'after_month'  => array(
+							// description should be a human readable description of the argument.
+							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+							// Set the argument to be required for the endpoint.
+							'required'          => false,
+							'validate_callback' => function( $page, $request_object ) {
+								if ( is_numeric( $page ) ) {
+									return true;
+								} else {
+									return false;
+								}
+							},
+						),
+						'after_day'    => array(
+							// description should be a human readable description of the argument.
+							'description'       => esc_html__( 'Limit query by day, use number of day.', 'pf' ),
+							// Set the argument to be required for the endpoint.
+							'required'          => false,
+							'validate_callback' => function( $page, $request_object ) {
+								if ( is_numeric( $page ) ) {
+									return true;
+								} else {
+									return false;
+								}
+							},
+						),
+						'before_year'  => array(
+							// description should be a human readable description of the argument.
+							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
+							// Set the argument to be required for the endpoint.
+							'required'          => false,
+							'validate_callback' => function( $page, $request_object ) {
+								if ( is_numeric( $page ) ) {
+									return true;
+								} else {
+									return false;
+								}
+							},
+						),
+						'before_month' => array(
+							// description should be a human readable description of the argument.
+							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+							// Set the argument to be required for the endpoint.
+							'required'          => false,
+							'validate_callback' => function( $page, $request_object ) {
+								if ( is_numeric( $page ) ) {
+									return true;
+								} else {
+									return false;
+								}
+							},
+						),
+						'before_day'   => array(
+							// description should be a human readable description of the argument.
+							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+							// Set the argument to be required for the endpoint.
+							'required'          => false,
+							'validate_callback' => function( $page, $request_object ) {
+								if ( is_numeric( $page ) ) {
+									return true;
+								} else {
+									return false;
+								}
+							},
+						),
+					),
+					'permission_callback' => function () {
+						return true; // current_user_can( 'edit_others_posts' );
+					},
+					'priority'            => 10,
 				),
-				'permission_callback' => function () {
-				  return true; //current_user_can( 'edit_others_posts' );
-				},
-				'priority'  => 10,
-			),
-		));
-		register_rest_route( $namespace, '/' . $base . '/authors', array(
-			array(
-				'methods'         => \WP_REST_Server::READABLE,
-				'callback'        => array( $this, 'author_stats' ),
-				'args' => array(
-			      'page' => array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Page of authors.', 'pf' ),
-					// Set the argument to be required for the endpoint.
-					'required'    => true,
-					'default'      => 1,
-			        'validate_callback' => function($page, $request_object){
-							if ( is_numeric($page) ){
-								return true;
-							} else {
-								return false;
-							}
-						},
-			      ),
-				  'after_year' 	=>	array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'validate_callback' => function($page, $request_object){
-							if ( is_numeric($page) ){
-								return true;
-							} else {
-								return false;
-							}
-						},
-				  ),
-				  'after_month'	=>	array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'validate_callback' => function($page, $request_object){
-							if ( is_numeric($page) ){
-								return true;
-							} else {
-								return false;
-							}
-						},
-				  ),
-				  'after_day'	=>	array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Limit query by day, use number of day.', 'pf' ),
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'validate_callback' => function($page, $request_object){
-							if ( is_numeric($page) ){
-								return true;
-							} else {
-								return false;
-							}
-						},
-				  ),
-				  'before_year' 	=>	array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'validate_callback' => function($page, $request_object){
-							if ( is_numeric($page) ){
-								return true;
-							} else {
-								return false;
-							}
-						},
-				  ),
-				  'before_month'	=>	array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'validate_callback' => function($page, $request_object){
-							if ( is_numeric($page) ){
-								return true;
-							} else {
-								return false;
-							}
-						},
-				  ),
-				  'before_day'	=>	array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'validate_callback' => function($page, $request_object){
-							if ( is_numeric($page) ){
-								return true;
-							} else {
-								return false;
-							}
-						},
-				  ),
-			    ),
-				'permission_callback' => function () {
-			      return true; //current_user_can( 'edit_others_posts' );
-			  	},
-				'priority'  => 10,
-			),
-		));
-		register_rest_route( $namespace, '/' . $base . '/pf_posted', array(
-			array(
-				'methods'         => \WP_REST_Server::READABLE,
-				'callback'        => array( $this, 'pf_posted' ),
-				'args' => array(
-			      'page' => array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Page of posts created by PressForward.', 'pf' ),
-					// Set the argument to be required for the endpoint.
-					'required'    => true,
-					'default'      => 1,
-			        'validate_callback' => function($page, $request_object){
-							if ( is_numeric($page) ){
-								return true;
-							} else {
-								return false;
-							}
-						},
-			      ),
-			    ),
-				'permission_callback' => function () {
-			      return true; //current_user_can( 'edit_others_posts' );
-			  	},
-				'priority'  => 10,
-			),
-		));
+			)
+		);
+		register_rest_route(
+			$namespace, '/' . $base . '/authors', array(
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'author_stats' ),
+					'args'                => array(
+						'page'         => array(
+							// description should be a human readable description of the argument.
+							'description'       => esc_html__( 'Page of authors.', 'pf' ),
+							// Set the argument to be required for the endpoint.
+							'required'          => true,
+							'default'           => 1,
+							'validate_callback' => function( $page, $request_object ) {
+								if ( is_numeric( $page ) ) {
+									return true;
+								} else {
+									return false;
+								}
+							},
+						),
+						'after_year'   => array(
+							// description should be a human readable description of the argument.
+							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
+							// Set the argument to be required for the endpoint.
+							'required'          => false,
+							'validate_callback' => function( $page, $request_object ) {
+								if ( is_numeric( $page ) ) {
+									return true;
+								} else {
+									return false;
+								}
+							},
+						),
+						'after_month'  => array(
+							// description should be a human readable description of the argument.
+							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+							// Set the argument to be required for the endpoint.
+							'required'          => false,
+							'validate_callback' => function( $page, $request_object ) {
+								if ( is_numeric( $page ) ) {
+									return true;
+								} else {
+									return false;
+								}
+							},
+						),
+						'after_day'    => array(
+							// description should be a human readable description of the argument.
+							'description'       => esc_html__( 'Limit query by day, use number of day.', 'pf' ),
+							// Set the argument to be required for the endpoint.
+							'required'          => false,
+							'validate_callback' => function( $page, $request_object ) {
+								if ( is_numeric( $page ) ) {
+									return true;
+								} else {
+									return false;
+								}
+							},
+						),
+						'before_year'  => array(
+							// description should be a human readable description of the argument.
+							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
+							// Set the argument to be required for the endpoint.
+							'required'          => false,
+							'validate_callback' => function( $page, $request_object ) {
+								if ( is_numeric( $page ) ) {
+									return true;
+								} else {
+									return false;
+								}
+							},
+						),
+						'before_month' => array(
+							// description should be a human readable description of the argument.
+							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+							// Set the argument to be required for the endpoint.
+							'required'          => false,
+							'validate_callback' => function( $page, $request_object ) {
+								if ( is_numeric( $page ) ) {
+									return true;
+								} else {
+									return false;
+								}
+							},
+						),
+						'before_day'   => array(
+							// description should be a human readable description of the argument.
+							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+							// Set the argument to be required for the endpoint.
+							'required'          => false,
+							'validate_callback' => function( $page, $request_object ) {
+								if ( is_numeric( $page ) ) {
+									return true;
+								} else {
+									return false;
+								}
+							},
+						),
+					),
+					'permission_callback' => function () {
+						return true; // current_user_can( 'edit_others_posts' );
+					},
+					'priority'            => 10,
+				),
+			)
+		);
+		register_rest_route(
+			$namespace, '/' . $base . '/pf_posted', array(
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'pf_posted' ),
+					'args'                => array(
+						'page' => array(
+							// description should be a human readable description of the argument.
+							'description'       => esc_html__( 'Page of posts created by PressForward.', 'pf' ),
+							// Set the argument to be required for the endpoint.
+							'required'          => true,
+							'default'           => 1,
+							'validate_callback' => function( $page, $request_object ) {
+								if ( is_numeric( $page ) ) {
+									return true;
+								} else {
+									return false;
+								}
+							},
+						),
+					),
+					'permission_callback' => function () {
+						return true; // current_user_can( 'edit_others_posts' );
+					},
+					'priority'            => 10,
+				),
+			)
+		);
 	}
 
 
@@ -277,39 +282,40 @@ class StatsEndpoint implements HasActions {
 	 *
 	 * The parameter is already sanitized by this point so we can use it without any worries.
 	 */
-	public function author_stats($request){
-		if ( isset($request['page']) ){
-			//\rest_ensure_response(
+	public function author_stats( $request ) {
+		if ( isset( $request['page'] ) ) {
+			// \rest_ensure_response(
 			$args = array(
-				'paged'			 =>	$request['page'],
-				//'no_found_rows' => true,
-				'fields'	=>	'ids'
+				'paged'  => $request['page'],
+				// 'no_found_rows' => true,
+				'fields' => 'ids',
 			);
 			$date_limits = array(
 				'year',
 				'month',
-				'day'
+				'day',
 			);
-			$date_query = array();
-			foreach ( $date_limits as $limit ){
-				if (!empty( $request['after_'.$limit] ) ){
-					if ( !isset($date_query['after']) ){
+			$date_query  = array();
+			foreach ( $date_limits as $limit ) {
+				if ( ! empty( $request[ 'after_' . $limit ] ) ) {
+					if ( ! isset( $date_query['after'] ) ) {
 						$date_query['after'] = array();
 					}
-					$date_query['after'][$limit] = $request['after_'.$limit];
+					$date_query['after'][ $limit ] = $request[ 'after_' . $limit ];
 				}
-				if (!empty( $request['before_'.$limit] ) ){
-					if ( !isset($date_query['before']) ){
+				if ( ! empty( $request[ 'before_' . $limit ] ) ) {
+					if ( ! isset( $date_query['before'] ) ) {
 						$date_query['before'] = array();
 					}
-					$date_query['before'][$limit] = $request['after_'.$limit];
+					$date_query['before'][ $limit ] = $request[ 'before_' . $limit ];
 				}
 			}
+			$args['date_query'] = $date_query;
 			$q = $this->stats->stats_query_for_pf_published_posts( $args );
-			//var_dump($q);
-			$ids = $q->posts;
+			// var_dump($q);
+			$ids     = $q->posts;
 			$authors = array();
-			foreach ($ids as $id) {
+			foreach ( $ids as $id ) {
 				$authors = $this->stats->set_author_into_leaderboard( $id, $authors );
 			}
 
@@ -321,36 +327,35 @@ class StatsEndpoint implements HasActions {
 		return new \WP_Error( 'rest_invalid', esc_html__( 'The page parameter is required.', 'pf' ), array( 'status' => 400 ) );
 	}
 
-	public function pf_posted( $request ){
-		if ( isset($request['page']) ){
-			//\rest_ensure_response(
+	public function pf_posted( $request ) {
+		if ( isset( $request['page'] ) ) {
+			// \rest_ensure_response(
 			$args = array(
-				'paged'			 =>	$request['page']
+				'paged' => $request['page'],
 			);
-			$q = $this->stats->stats_query_for_pf_published_posts( $args );
+			$q    = $this->stats->stats_query_for_pf_published_posts( $args );
 
 			$posts = $q->posts;
-			foreach ( $posts as $post ){
-				$post_content = $post->post_content;
-				$post_content_cleaner = strip_tags( stripslashes( html_entity_decode( htmlspecialchars_decode( htmlspecialchars( $post_content ) ) ) ) );
-				$post_content_cleaner = preg_replace('/[^A-Za-z0-9\-]/', ' ', $post_content_cleaner);
-				$post_content_cleaner = str_replace(array("\n","\r", "\r\n"), ' ', $post_content_cleaner);
-				$post->stripped_post_content = strip_tags($post_content);
-				$post->wordcount = str_word_count( $post->stripped_post_content );
-				$post->sentences = Text::sentenceCount( $post->stripped_post_content );
-				$textStatistics = new TS\TextStatistics;
-				$reading_score = $textStatistics->fleschKincaidReadingEase($post->stripped_post_content);
-				$post->flesch_kincaid_score = $reading_score;
-				$item_link = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_link' );
-				$url_parts = parse_url($item_link);
-				if ( !empty($url_parts) && isset($url_parts['host']) ){
+			foreach ( $posts as $post ) {
+				$post_content                = $post->post_content;
+				$post_content_cleaner        = strip_tags( stripslashes( html_entity_decode( htmlspecialchars_decode( htmlspecialchars( $post_content ) ) ) ) );
+				$post_content_cleaner        = preg_replace( '/[^A-Za-z0-9\-]/', ' ', $post_content_cleaner );
+				$post_content_cleaner        = str_replace( array( "\n", "\r", "\r\n" ), ' ', $post_content_cleaner );
+				$post->stripped_post_content = strip_tags( $post_content );
+				$post->wordcount             = str_word_count( $post->stripped_post_content );
+				$post->sentences             = Text::sentenceCount( $post->stripped_post_content );
+				$textStatistics              = new TS\TextStatistics();
+				$reading_score               = $textStatistics->fleschKincaidReadingEase( $post->stripped_post_content );
+				$post->flesch_kincaid_score  = $reading_score;
+				$item_link                   = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_link' );
+				$url_parts                   = parse_url( $item_link );
+				if ( ! empty( $url_parts ) && isset( $url_parts['host'] ) ) {
 					$post->source_link = $url_parts['host'];
 				} else {
 					$post->source_link = 'No Source Found';
 				}
 				$post->nominators = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'nominator_array' );
-				//$post->source_link = $this->metas->get_post_pf_meta( $post->ID, 'pf_source_link' );
-
+				// $post->source_link = $this->metas->get_post_pf_meta( $post->ID, 'pf_source_link' );
 			}
 
 			return rest_ensure_response(
@@ -366,40 +371,39 @@ class StatsEndpoint implements HasActions {
 	 *
 	 * The parameter is already sanitized by this point so we can use it without any worries.
 	 */
-	public function overview($request){
-		//\rest_ensure_response(
+	public function overview( $request ) {
+		// \rest_ensure_response(
 		$args = array(
-			//'no_found_rows' => true,
-			'fields'	=>	'ids'
+			// 'no_found_rows' => true,
+			'fields' => 'ids',
 		);
 		$date_limits = array(
 			'year',
 			'month',
-			'day'
+			'day',
 		);
-		$date_query = array();
-		foreach ( $date_limits as $limit ){
-			if (!empty( $request['after_'.$limit] ) ){
-				if ( !isset($date_query['after']) ){
+		$date_query  = array();
+		foreach ( $date_limits as $limit ) {
+			if ( ! empty( $request[ 'after_' . $limit ] ) ) {
+				if ( ! isset( $date_query['after'] ) ) {
 					$date_query['after'] = array();
 				}
-				$date_query['after'][$limit] = $request['after_'.$limit];
+				$date_query['after'][ $limit ] = $request[ 'after_' . $limit ];
 			}
-			if (!empty( $request['before_'.$limit] ) ){
-				if ( !isset($date_query['before']) ){
+			if ( ! empty( $request[ 'before_' . $limit ] ) ) {
+				if ( ! isset( $date_query['before'] ) ) {
 					$date_query['before'] = array();
 				}
-				$date_query['before'][$limit] = $request['after_'.$limit];
+				$date_query['before'][ $limit ] = $request[ 'before_' . $limit ];
 			}
 		}
 		$counts = $this->stats->counts( $args, $date_query );
-
 
 		return rest_ensure_response(
 			$counts
 		);
 		// unencode via js with the html_entity_decode function we use elsewhere.
-		//return new \WP_Error( 'rest_invalid', esc_html__( 'The page parameter is required.', 'pf' ), array( 'status' => 400 ) );
+		// return new \WP_Error( 'rest_invalid', esc_html__( 'The page parameter is required.', 'pf' ), array( 'status' => 400 ) );
 	}
 
 

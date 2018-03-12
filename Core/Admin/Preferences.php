@@ -1,5 +1,6 @@
 <?php
 namespace PressForward\Core\Admin;
+
 use PressForward\Core\Admin\PFTemplater;
 
 use Intraxia\Jaxion\Contract\Core\HasActions as HasActions;
@@ -9,7 +10,7 @@ class Preferences implements HasActions {
 	protected $basename;
 
 	function __construct( $basename, PFTemplater $templates ) {
-		$this->basename = $basename;
+		$this->basename  = $basename;
 		$this->templates = $templates;
 		// return true;
 	}
@@ -29,24 +30,26 @@ class Preferences implements HasActions {
 	public function action_hooks() {
 		return array(
 			array(
-				'hook' => 'admin_menu',
-				'method' => 'add_plugin_admin_menu',
-				'priority'	=> 15,
+				'hook'     => 'admin_menu',
+				'method'   => 'add_plugin_admin_menu',
+				'priority' => 15,
 			),
 		);
 	}
 
 	public function display_options_builder() {
-		if ( isset( $_GET['tab'] ) ) { $tab = $_GET['tab'];
-		} else { $tab = 'user'; }
+		if ( isset( $_GET['tab'] ) ) {
+			$tab = $_GET['tab'];
+		} else {
+			$tab = 'user'; }
 		$vars = array(
-				'current'		=> $tab,
-				'user_ID'		=> true,
-				'page_title'	=> __( 'PressForward Preferences', 'pf' ),
-				'page_slug'		=> 'settings',
-				'settings_tab_group'	=> '', // $this->prefrences_tab($tab)
-				'tabs'			=> $this->tabs(),
-			);
+			'current'            => $tab,
+			'user_ID'            => true,
+			'page_title'         => __( 'PressForward Preferences', 'pf' ),
+			'page_slug'          => 'settings',
+			'settings_tab_group' => '', // $this->prefrences_tab($tab)
+			'tabs'               => $this->tabs(),
+		);
 		echo $this->templates->get_view( array( 'settings', 'settings-page' ), $vars );
 
 		return;
@@ -72,13 +75,14 @@ class Preferences implements HasActions {
 
 	function pf_get_user_role_select( $option, $default ) {
 		global $wp_roles;
-		$roles = $wp_roles->get_names();
+		$roles   = $wp_roles->get_names();
 		$enabled = get_option( $option, $default );
 		// $roleObj = pf_get_role_by_capability($enabled, true, true);
 		// $enabled_role = $roleObj->name;
 		foreach ( $roles as $slug => $role ) {
 			$defining_capability = pressforward( 'controller.users' )->pf_get_defining_capability_by_role( $slug );
-			?><option value="<?php echo $defining_capability ?>" <?php selected( $enabled, $defining_capability ) ?>><?php _e( $role, PF_SLUG ) ?></option><?php
+			?><option value="<?php echo $defining_capability; ?>" <?php selected( $enabled, $defining_capability ); ?>><?php _e( $role, PF_SLUG ); ?></option>
+			<?php
 		}
 	}
 

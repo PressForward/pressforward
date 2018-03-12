@@ -426,7 +426,7 @@ Ref:
               SCHEDULE assemble_feed_for_pull IN -00:01:00
           }
       }
-      FETCH_FEED(feed)
+      pf_fetch_feed(feed)
       ASSEMBLE into array
       IF feedlist_iteration_option != 0{
           WP_GET_FILE wp_cron
@@ -743,3 +743,31 @@ Ref:
 - 5.3 - 5/15
 - Summer for Twitter
 - Set Up API to take PF site names/urls and put them into a CSV.
+
+
+# Nominate This Mark 2
+- Panels like Press This
+- Deprioritization of main content field. 
+- Site options on what pannels appear
+- Add feed with post as part of the pannels
+- Show categories selected including active matches to tags. 
+- Allow site-level additional pannels or pannel settings. 
+- Add a feed without adding a post. - A switch to move to 'Add Feed' mode instead of 'Add Post' mode. 
+	- Add a checkbox to say - I'm on the feed, don't attempt discovery. 
+- Browser Width to determine bookmarklet width.
+- Comment pannel in the bookmarklet. 
+- Featured Image pannel
+	- Featured image chooser
+	- Featured image removal
+- Smaller title area 
+- Options to set site instructions and put that in the bookmarklet? As a pannel for site instructions. 
+
+- Notifications icons in the topbar with 
+	- Feed Nominations.
+	- Unread Nominations
+	- ?Comments 
+
+- Move comments to their own table?
+
+- Metadata icon - https://thenounproject.com/term/metadata/38248/
+- 

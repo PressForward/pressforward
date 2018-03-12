@@ -12,12 +12,12 @@ class HTTPTools {
 
 	function __construct( URLResolver $resolver, System $system, Metas $meta ) {
 		$this->url_resolver = $resolver;
-		$this->system = $system;
-		$this->meta = $meta;
+		$this->system       = $system;
+		$this->meta         = $meta;
 	}
 
 	public function resolve_source_url( $url ) {
-		$url = $this->resolve_a_url( $url );
+		$url       = $this->resolve_a_url( $url );
 		$url_array = parse_url( $url );
 		if ( empty( $url_array['host'] ) ) {
 			return;
@@ -64,9 +64,9 @@ class HTTPTools {
 	 */
 	public function aggregation_services() {
 		return array(
-						'Google'  			=> 'google.com',
-						'Tweeted Times'		=> 'tweetedtimes.com',
-					);
+			'Google'        => 'google.com',
+			'Tweeted Times' => 'tweetedtimes.com',
+		);
 	}
 
 	/**
@@ -78,7 +78,7 @@ class HTTPTools {
 	 * @return bool True value for a submitted URL that matches an aggregation service.
 	 */
 	public function url_is_aggregation_service( $url ) {
-		$check = false;
+		$check    = false;
 		$services = $this->aggregation_services();
 		foreach ( $services as $service ) {
 			$pos = strpos( $url, $service );
@@ -90,8 +90,8 @@ class HTTPTools {
 	}
 
 	function attempt_to_get_cookiepath() {
-		$reset = true;
-		$upload_dir = wp_upload_dir();
+		$reset       = true;
+		$upload_dir  = wp_upload_dir();
 		$cookie_path = $upload_dir['basedir'] . 'cookie.txt';
 		if ( ! is_file( $cookie_path ) ) {
 			touch( $cookie_path );
@@ -112,11 +112,12 @@ class HTTPTools {
 	}
 
 	function get_url_content( $url, $function = false ) {
-		$args = func_get_args();
-		$url = str_replace( '&amp;','&', $url );
+		$args      = func_get_args();
+		$url       = str_replace( '&amp;', '&', $url );
 		$url_first = $url;
 		if ( ! $function ) {
-			$r = set_url_scheme( $url, 'http' );
+			$url = set_url_scheme( $url, 'http' );
+			$r = false;
 		} else {
 			$args[0] = $url;
 			unset( $args[1] );
@@ -128,7 +129,7 @@ class HTTPTools {
 				$non_ssl_url = set_url_scheme( $url, 'http' );
 				if ( $non_ssl_url != $url ) {
 							$args[0] = $non_ssl_url;
-					$r = call_user_func_array( $function, $args );
+					$r               = call_user_func_array( $function, $args );
 							// var_dump($url); die();
 				}
 					// $r = false;
@@ -144,9 +145,9 @@ class HTTPTools {
 				}
 			}
 		}
-		$response = $r;
+		$response          = $r;
 		$loaded_extensions = get_loaded_extensions();
-		if ( empty( $response ) || is_wp_error( $response ) || ( ! empty( $response ) && ! empty( $response['headers'] ) && isset( $response['headers']['content-length'] ) && ( 50 > strlen( $response['headers']['content-length'] ) ) ) && in_array( 'curl', $loaded_extensions ) ) {
+		if ( (false === $response) || empty( $response ) || is_wp_error( $response ) || ( ! empty( $response ) && ! empty( $response['headers'] ) && isset( $response['headers']['content-length'] ) && ( 50 > strlen( $response['headers']['content-length'] ) ) ) && in_array( 'curl', $loaded_extensions ) ) {
 			$cookie_path = 'cookie.txt';
 			if ( defined( 'COOKIE_PATH_FOR_CURL' ) ) {
 				$cookie_path = constant( 'COOKIE_PATH_FOR_CURL' );
@@ -170,12 +171,17 @@ class HTTPTools {
 			curl_setopt( $curl, constant( 'CURLOPT_TIMEOUT' ), 15 );
 			curl_setopt( $curl, constant( 'CURLOPT_SSL_VERIFYHOST' ), false );
 			curl_setopt( $curl, constant( 'CURLOPT_SSL_VERIFYPEER' ), false );
-			curl_setopt( $curl, constant( 'CURLOPT_USERAGENT' ), 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)' );
+			$fetch_ua = apply_filters( 'pf_useragent_retrieval_control', 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)' );
+			curl_setopt( $curl, constant( 'CURLOPT_USERAGENT' ), $fetch_ua );
 			// The following 2 set up lines work with sites like www.nytimes.com
 			curl_setopt( $curl, constant( 'CURLOPT_COOKIEFILE' ), $cookie_path ); // you can change this path to whetever you want.
 			curl_setopt( $curl, constant( 'CURLOPT_COOKIEJAR' ), $cookie_path ); // you can change this path to whetever you want.
-
-			$response = mb_convert_encoding( curl_exec( $curl ), 'HTML-ENTITIES', 'UTF-8' );
+			$encode = apply_filters( 'pf_encoding_retrieval_control', true );
+			if ($encode){
+				$response = mb_convert_encoding( curl_exec( $curl ), 'HTML-ENTITIES', 'UTF-8' );
+			} else {
+				$response = curl_exec( $curl );
+			}
 			// Will return false or the content.
 			curl_close( $curl );
 			return array( 'body' => $response );

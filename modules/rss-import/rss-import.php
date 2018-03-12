@@ -115,7 +115,7 @@ class PF_RSS_Import extends PF_Module {
 		// }
 		pf_log( 'Getting RSS Feed at ' . $aFeed_url );
 		add_filter( 'wp_feed_cache_transient_lifetime', array( $this, 'return_cachetime' ) );
-		$theFeed = fetch_feed( $aFeed_url );
+		$theFeed = pf_fetch_feed( $aFeed_url );
 		remove_filter( 'wp_feed_cache_transient_lifetime', array( $this, 'return_cachetime' ) );
 		// pf_log( 'Getting RSS Feed at '.$aFeed_url );
 		if ( ! $theFeed || empty( $theFeed ) || is_wp_error( $theFeed ) ) {
@@ -147,7 +147,32 @@ class PF_RSS_Import extends PF_Module {
 			if ( ($check_date <= $dead_date) && ! empty( $check_date ) ) {
 				pf_log( 'Feed item too old. Skip it.' );
 			} else {
-				$id = create_feed_item_id( $item->get_link(), $item->get_title() ); // die();
+				$guid = $item->get_item_tags('','guid');
+				$isPermalink = false;
+				$arrIt = new RecursiveIteratorIterator(new RecursiveArrayIterator($guid[0]));
+				foreach ($arrIt as $sub) {
+					$subArray = $arrIt->getSubIterator();
+					if (isset($subArray['isPermaLink']) && $subArray['isPermaLink'] == "false") {
+						$isPermalink = false;
+						break;
+					} else if ($subArray['isPermaLink'] && ($subArray['isPermaLink'] == "true")){
+						$isPermalink = true;
+						break;
+					}
+				}
+				if ($isPermalink){
+					// This will check GUID first, then link, then title.
+					$guidHopefully = $item->get_id(false);
+					$urlParts = parse_url($guidHopefully);
+					if (false == $urlParts || (($urlParts['scheme'] !== 'http') && ($urlParts['scheme'] !== 'https')) ){
+						$item_link = $item->get_link();
+					} else {
+						$item_link = $guidHopefully;
+					}
+				} else {
+					$item_link = $item->get_link();
+				}
+				$id = create_feed_item_id( $item_link, $item->get_title() ); // die();
 				pf_log( 'Now on feed ID ' . $id . '.' );
 				// print_r($item_categories_string); die();
 				if ( empty( $check_date ) ) {
@@ -210,14 +235,19 @@ class PF_RSS_Import extends PF_Module {
 					$contentObj = pressforward( 'library.htmlchecker' );
 					$item_content = $contentObj->closetags( $item_content );
 					$item_content = pressforward( 'controller.readability' )->process_in_oembeds( $item->get_link(), $item_content );
-					// print_r($c);
+					pf_log('get_links');
+					pf_log($item->get_links());
+					pf_log($item->get_permalink());
+					// GUID
+					pf_log($item->get_id());
+
 					$rssObject[ 'rss_' . $c ] = pf_feed_object(
 						$item->get_title(),
 						$iFeed->get_title(),
 						$r_item_date,
 						$authors,
 						$item_content,
-						$item->get_link(),
+						$item_link, // New proper link (hopefully)
 						'',
 						$id,
 						$ymd_item_date,
@@ -240,22 +270,6 @@ class PF_RSS_Import extends PF_Module {
 	// UTILITY METHODS         //
 	//
 	// Retrieve the set of items.
-	public function pf_feed_fetcher( $aFeed ) {
-
-		// Control retrieval with a filtered array
-		// Allow people to register types and handling functions
-		// rss and rss-quick will both call fetch_feed
-		$theFeed = fetch_feed( $aFeed );
-
-		if ( (is_wp_error( $theFeed )) ) {
-			print_r( '<br />The Feed ' . $aFeed . ' could not be retrieved.' );
-				// $aFeed = call_user_func(array($this, 'step_through_feedlist'));
-				// $theFeed = $this->pf_feed_fetcher($aFeed);
-				return false;
-		}
-
-		return $theFeed;
-	}
 
 	// Tries to get the RSS item author for the meta.
 	function get_rss_authors( $item ) {
@@ -318,7 +332,7 @@ class PF_RSS_Import extends PF_Module {
 
 
                             </div>
-                        <input type="submit" class="button-primary" value="<?php _e( 'Save Options', 'pf' ); ?>" />
+                        <input type="submit" class="button-primary" value="<?php _e( 'Submit', 'pf' ); ?>" />
                     </div>
             </div>
 		</div>
@@ -564,7 +578,7 @@ function pf_test_import() {
 	if ( is_super_admin() && ! empty( $_GET['pf_test_import'] ) ) {
 		var_dump( pf_get_starred_items_for_user( get_current_user_id(), 'simple' ) );
 		return;
-		$feed = fetch_feed( 'http://teleogistic.net/feed' );
+		$feed = pf_fetch_feed( 'http://teleogistic.net/feed' );
 
 		$source = $feed->subscribe_url();
 

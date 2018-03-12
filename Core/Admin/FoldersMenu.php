@@ -1,5 +1,6 @@
 <?php
 namespace PressForward\Core\Admin;
+
 use Intraxia\Jaxion\Contract\Core\HasActions;
 
 use PressForward\Interfaces\SystemUsers;
@@ -19,9 +20,9 @@ class FoldersMenu implements HasActions {
 	public function action_hooks() {
 		return array(
 			array(
-				'hook' => 'admin_menu',
-				'method' => 'add_plugin_admin_menu',
-				'priority'	=> 17,
+				'hook'     => 'admin_menu',
+				'method'   => 'add_plugin_admin_menu',
+				'priority' => 17,
 			),
 		);
 	}

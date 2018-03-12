@@ -12,19 +12,19 @@ class PF_Readability {
 	 * Abstract function to make everything readable.
 	 *
 	 * Potential arguments to base via array
-	 * 			$args = array(
-	 *			'force' 		=> $force,
-	 *			'descrip' 		=> $_POST['content'],
-	 *			'url' 			=> $url,
-	 *			'authorship'	=> $_POST['authorship']
-	 *		);
+	 *          $args = array(
+	 *          'force'         => $force,
+	 *          'descrip'       => $_POST['content'],
+	 *          'url'           => $url,
+	 *          'authorship'    => $_POST['authorship']
+	 *      );
 	 */
 	public function get_readable_text( $args ) {
 			// ob_start();
 			extract( $args, EXTR_SKIP );
 			set_time_limit( 0 );
 			$readability_stat = $url;
-			//var_dump($args);
+			// var_dump($args);
 			$url = pressforward( 'controller.http_tools' )->resolve_full_url( $url );
 			// var_dump($url); die();
 			$descrip = rawurldecode( $descrip );
@@ -37,21 +37,21 @@ class PF_Readability {
 			$aggregated = false;
 		}
 			$stripped_descrip = strip_tags( $descrip );
-		if ( (str_word_count( $stripped_descrip ) <= 150) || $aggregated || $force == 'force' ) {
+		if ( ( str_word_count( $stripped_descrip ) <= 150 ) || $aggregated || $force == 'force' ) {
 			$itemReadReady = $this->readability_object( $url );
 			// print_r(  wp_richedit_pre($itemReadReady));
 			if ( $itemReadReady != 'error-secured' ) {
 				if ( ! $itemReadReady ) {
-					$read_status = 'failed_readability';
+					$read_status       = 'failed_readability';
 					$readability_stat .= __( ' This content failed Readability.', 'pf' );
 					// $itemReadReady .= '<br />';
-					$url = str_replace( '&amp;','&', $url );
+					$url = str_replace( '&amp;', '&', $url );
 					// Try and get the OpenGraph description.
 					if ( pressforward( 'library.opengraph' )->fetch( $url ) ) {
-						$node = pressforward( 'library.opengraph' )->fetch( $url );
+						$node          = pressforward( 'library.opengraph' )->fetch( $url );
 						$itemReadReady = $node->description;
 					} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
-					elseif ( '' != ($contentHtml = @get_meta_tags( $url )) ) {
+					elseif ( '' != ( $contentHtml = @get_meta_tags( $url ) ) ) {
 						// Try and get the HEAD > META DESCRIPTION tag.
 						$read_status = 'failed_readability_og';
 						// $itemReadReady .= '<br />';
@@ -66,25 +66,29 @@ class PF_Readability {
 
 					}
 					if ( strlen( $itemReadReady ) < strlen( $descrip ) ) {
-						$itemReadReady = $descrip;
+						$itemReadReady     = $descrip;
 						$readability_stat .= ' Retrieved text is less than original text.';
-						$read_status = 'already_readable';
+						$read_status       = 'already_readable';
 					}
 					$itemReadReady = $this->process_in_oembeds( $url, $itemReadReady );
 				} else {
-					$read_status = 'made_readable';
+					$read_status   = 'made_readable';
 					$itemReadReady = $this->process_in_oembeds( $url, $itemReadReady );
 				}
 			} else {
-				$read_status = 'secured';
+				$read_status   = 'secured';
 				$itemReadReady = $descrip;
 			}
 		} else {
-			$read_status = 'already_readable';
+			$read_status   = 'already_readable';
 			$itemReadReady = $descrip;
 		}
 
-			$return_args = array( 'status' => $read_status, 'readable' => $itemReadReady, 'url' => $url );
+			$return_args = array(
+				'status'   => $read_status,
+				'readable' => $itemReadReady,
+				'url'      => $url,
+			);
 			// ob_end_flush();
 			return $return_args;
 
@@ -101,26 +105,26 @@ class PF_Readability {
 		ob_start();
 		libxml_use_internal_errors( true );
 		$read_status = 'readable';
-		$item_id = $_POST['read_item_id'];
-		$post_id = $_POST['post_id'];
-		$force = $_POST['force'];
-		$url = $_POST['url'];
+		$item_id     = $_POST['read_item_id'];
+		$post_id     = $_POST['post_id'];
+		$force       = $_POST['force'];
+		$url         = $_POST['url'];
 		// error_reporting(0);
-		if ( (false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) )) || $force == 'force' ) {
+		if ( ( false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) ) ) || $force == 'force' ) {
 
 			$args = array(
-				'force' 		=> $force,
-				'descrip' 		=> $_POST['content'],
-				'url' 			=> $_POST['url'],
-				'authorship'	=> $_POST['authorship'],
-				'post_id'		=> $_POST['post_id'],
+				'force'      => $force,
+				'descrip'    => $_POST['content'],
+				'url'        => $_POST['url'],
+				'authorship' => $_POST['authorship'],
+				'post_id'    => $_POST['post_id'],
 			);
 
 			$readable_ready = $this->get_readable_text( $args );
 
-			$read_status = $readable_ready['status'];
+			$read_status   = $readable_ready['status'];
 			$itemReadReady = $readable_ready['readable'];
-			$url = $readable_ready['url'];
+			$url           = $readable_ready['url'];
 			if ( ! strpos( $itemReadReady, $url ) ) {
 				$itemReadReady = $this->process_in_oembeds( $url, $itemReadReady );
 			}
@@ -128,7 +132,7 @@ class PF_Readability {
 			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60 * 60 * 24 );
 		}
 
-		$contentObj = pressforward( 'library.htmlchecker' );
+		$contentObj    = pressforward( 'library.htmlchecker' );
 		$itemReadReady = $contentObj->closetags( $itemReadReady );
 		pf_log( 'Making readable' );
 
@@ -136,9 +140,9 @@ class PF_Readability {
 		if ( $post_id != 0 ) {
 
 			$content = html_entity_decode( $itemReadReady );
-			//$content = pressforward('utility.forward_tools')->append_source_statement($post_id, $content, true);
+			// $content = pressforward('utility.forward_tools')->append_source_statement($post_id, $content, true);
 			$update_ready = array(
-				'ID' => $post_id,
+				'ID'           => $post_id,
 				'post_content' => $content,
 			);
 			if ( strlen( $_POST['content'] ) < strlen( $content ) ) {
@@ -152,30 +156,30 @@ class PF_Readability {
 					$error = $update_check->get_error_message();
 				}
 				$responseItemReadReady = $this->get_embed( $_POST['url'] ) . $itemReadReady;
-				$source_statement = pressforward('utility.forward_tools')->append_source_statement($post_id, '', true);
+				$source_statement      = pressforward( 'utility.forward_tools' )->append_source_statement( $post_id, '', true );
 			} else {
-				$error = 'Not Updated, retrieved content is longer than stored content.';
-				$source_statement = pressforward('utility.forward_tools')->append_source_statement($post_id, '', true);
+				$error            = 'Not Updated, retrieved content is longer than stored content.';
+				$source_statement = pressforward( 'utility.forward_tools' )->append_source_statement( $post_id, '', true );
 			}
 		}
 		$domDocErrors = '';
-		$dderrors = libxml_get_errors();
+		$dderrors     = libxml_get_errors();
 		foreach ( $dderrors as $dderror ) {
 			$domDocErrors .= ' Error: ' . $dderror->code . ' Line:' . $dderror->line . ' ' . $dderror->message;
 		}
 
-			$response = array(
-				'what' => 'full_item_content',
-				'action' => 'make_readable',
-				'id' => $item_id,
-				'data' => htmlspecialchars( $responseItemReadReady ),
+			$response    = array(
+				'what'         => 'full_item_content',
+				'action'       => 'make_readable',
+				'id'           => $item_id,
+				'data'         => htmlspecialchars( $responseItemReadReady ),
 				'supplemental' => array(
-					'readable_status' => $read_status,
-					'error' => $error,
-					'buffered' => ob_get_contents(),
-					'domDoc_errors' => $domDocErrors,
+					'readable_status'         => $read_status,
+					'error'                   => $error,
+					'buffered'                => ob_get_contents(),
+					'domDoc_errors'           => $domDocErrors,
 					'readable_applied_to_url' => $_POST['url'],
-					'source_statement'	=> $source_statement
+					'source_statement'        => $source_statement,
 				),
 			);
 			$xmlResponse = new WP_Ajax_Response( $response );
@@ -197,13 +201,14 @@ class PF_Readability {
 		set_time_limit( 0 );
 		$url = pressforward( 'controller.http_tools' )->resolve_full_url( $url );
 
-		$request = pf_de_https($url, 'wp_remote_get', array(
-																'timeout' => '30',
-																'user-agent' => 'AdsBot-Google (+http://www.google.com/adsbot.html)',
-																'headers'		=> array(
-																	'X-PressForward'	=> get_site_url(),
-																),
-															)
+		$request = pf_de_https(
+			$url, 'wp_remote_get', array(
+				'timeout'    => '30',
+				'user-agent' => 'AdsBot-Google (+http://www.google.com/adsbot.html)',
+				'headers'    => array(
+					'X-PressForward' => get_site_url(),
+				),
+			)
 		);
 		// var_dump($request); die();
 		// print_r($url); print_r(' - Readability<br />');
@@ -223,12 +228,12 @@ class PF_Readability {
 			return $content;
 		}
 
-		$content = $this->process_readability($html, $url);
+		$content = $this->process_readability( $html, $url );
 
 		return $content;
 	}
 
-	public function process_readability($html, $url){
+	public function process_readability( $html, $url ) {
 		// check if tidy exists to clean up the input.
 		if ( function_exists( 'tidy_parse_string' ) ) {
 			$tidy = tidy_parse_string( $html, array( 'wrap' => 0 ), 'UTF8' );
@@ -237,7 +242,7 @@ class PF_Readability {
 		}
 		// give it to Readability
 		$readabilitizer = pressforward( 'library.readability' );
-		$readability = $readabilitizer($html, $url);
+		$readability    = $readabilitizer( $html, $url );
 
 		// print debug output?
 		// useful to compare against Arc90's original JS version -
@@ -256,29 +261,35 @@ class PF_Readability {
 			// $content = $contentOut->innerHTML;
 				// if we've got tidy, let's use it.
 			if ( function_exists( 'tidy_parse_string' ) ) {
-				$tidy = tidy_parse_string($content,
-					array( 'indent' => true, 'show-body-only' => true, 'wrap' => 0 ),
-				'UTF8');
+				$tidy = tidy_parse_string(
+					$content,
+					array(
+						'indent'         => true,
+						'show-body-only' => true,
+						'wrap'           => 0,
+					),
+					'UTF8'
+				);
 				$tidy->cleanRepair();
 				$content = $tidy->value;
 			}
 
-			$content = balanceTags( $content, true );
-			$content = ent2ncr( $content );
-			$content = convert_chars( $content );
+			$content    = balanceTags( $content, true );
+			$content    = ent2ncr( $content );
+			$content    = convert_chars( $content );
 			$domRotated = 0;
-			$dom = new \domDocument( '1.0', 'utf-8' );
+			$dom        = new \domDocument( '1.0', 'utf-8' );
 
 			$dom->preserveWhiteSpace = true;
 			$dom->substituteEntities = true;
-			$dom->resolveExternals = true;
+			$dom->resolveExternals   = true;
 			$dom->loadXML( '<fullContent>' . $content . '</fullContent>' );
 			$images = $dom->getElementsByTagName( 'img' );
 			foreach ( $images as $image ) {
 				$img = $image->getAttribute( 'src' );
-				if ( ((strpos( $img, '/' )) === 0) || (strpos( $img, 'http' ) != 0) ) {
+				if ( ( ( strpos( $img, '/' ) ) === 0 ) || ( strpos( $img, 'http' ) != 0 ) ) {
 					$urlArray = parse_url( $url );
-					if ( (strpos( $img, 'http' ) != 0) ) {
+					if ( ( strpos( $img, 'http' ) != 0 ) ) {
 						$urlBase = 'http://' . $urlArray['host'] . '/';
 					} else {
 						$urlBase = 'http://' . $urlArray['host'];
@@ -297,12 +308,13 @@ class PF_Readability {
 			}
 			if ( $domRotated > 0 ) {
 				$content = $dom->saveXML();
-				$rel = '(<\\?xml version="1\\.0" encoding="utf-8"\\?>)';
+				$rel     = '(<\\?xml version="1\\.0" encoding="utf-8"\\?>)';
 				$content = preg_replace( '/' . $rel . '/is', ' ', $content );
-				$rel = '(<\\?xml version="1\\.0"\\?>)';
+				$rel     = '(<\\?xml version="1\\.0"\\?>)';
 				$content = preg_replace( '/' . $rel . '/is', ' ', $content );
 			}
-			if ( 120 > strlen( $content ) ) {$content = false;}
+			if ( 120 > strlen( $content ) ) {
+				$content = false;}
 			// $content = stripslashes($content);
 			// print_r($content);
 			// var_dump($content); die();
@@ -319,8 +331,8 @@ class PF_Readability {
 		}
 		if ( $content != false ) {
 				$contentObj = pressforward( 'library.htmlchecker' );
-				$content = $contentObj->closetags( $content );
-				$content = $this->process_in_oembeds( $url, $content );
+				$content    = $contentObj->closetags( $content );
+				$content    = $this->process_in_oembeds( $url, $content );
 		}
 
 		return $content;
@@ -335,7 +347,7 @@ class PF_Readability {
 				' . $item_link . '
 
 				';
-				$item_content = $added_content . $item_content;
+				$item_content  = $added_content . $item_content;
 			}
 		}
 		return $item_content;

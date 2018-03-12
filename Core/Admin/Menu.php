@@ -10,33 +10,33 @@ class Menu implements HasActions, HasFilters {
 	protected $basename;
 
 	function __construct( $basename, SystemUsers $user_interface ) {
-		$this->basename = $basename;
+		$this->basename       = $basename;
 		$this->user_interface = $user_interface;
 	}
 
 	public function action_hooks() {
 		return array(
 			array(
-				'hook' => 'admin_menu',
-				'method' => 'add_plugin_admin_menu',
-				'priority'	=> 10,
+				'hook'     => 'admin_menu',
+				'method'   => 'add_plugin_admin_menu',
+				'priority' => 10,
 			),
 			array(
-				'hook'		=> 'admin_notices',
-				'method'	=> 'admin_notices_action',
+				'hook'   => 'admin_notices',
+				'method' => 'admin_notices_action',
 			),
 			array(
-				'hook'	=> 'admin_enqueue_scripts',
+				'hook'   => 'admin_enqueue_scripts',
 				'method' => 'hook_default_scripts',
 			),
 			// Catch form submits
 			array(
-				'hook'	=> 'admin_init',
+				'hook'   => 'admin_init',
 				'method' => 'pf_options_admin_page_save',
 			),
 			// Launch a batch delete process, if necessary.
 			array(
-				'hook'	=> 'admin_init',
+				'hook'   => 'admin_init',
 				'method' => 'launch_batch_delete',
 			),
 
@@ -46,18 +46,18 @@ class Menu implements HasActions, HasFilters {
 	public function filter_hooks() {
 		return array(
 			array(
-				'hook' => 'admin_body_class',
+				'hook'   => 'admin_body_class',
 				'method' => 'add_pf_body_class',
 			),
 			array(
-				'hook'		=> 'pf_admin_pages',
-				'method' 	=> 'state_pf_admin_pages',
-				'priority'	=> 10,
-				'args'		=> 3,
+				'hook'     => 'pf_admin_pages',
+				'method'   => 'state_pf_admin_pages',
+				'priority' => 10,
+				'args'     => 3,
 			),
 			array(
-				'hook'		=> 'ab_bug_status_args',
-				'method' 	=> 'pf_ab_bug_status_args',
+				'hook'   => 'ab_bug_status_args',
+				'method' => 'pf_ab_bug_status_args',
 			),
 		);
 	}
@@ -104,8 +104,8 @@ class Menu implements HasActions, HasFilters {
 
 	function state_pf_admin_pages( $thepages ) {
 
-		$basePages = array( PF_SLUG . '-feeder',PF_SLUG . '-options',PF_SLUG . '-review',PF_MENU_SLUG );
-		$thepages = array_merge( $basePages, (array) $thepages );
+		$basePages = array( PF_SLUG . '-feeder', PF_SLUG . '-options', PF_SLUG . '-review', PF_MENU_SLUG );
+		$thepages  = array_merge( $basePages, (array) $thepages );
 		return $thepages;
 
 	}
@@ -133,15 +133,15 @@ class Menu implements HasActions, HasFilters {
 		$user_id = $userObj->ID;
 		// Calling the feedlist within the pf class.
 		if ( isset( $_GET['pc'] ) ) {
-			$page = $_GET['pc'];
-			$page_c = $page -1;
+			$page   = $_GET['pc'];
+			$page_c = $page - 1;
 		} else {
-			$page = 0;
+			$page   = 0;
 			$page_c = 0;
 		}
-		$count = $page_c * 20;
+		$count       = $page_c * 20;
 		$extra_class = '';
-		if ( isset( $_GET['reveal'] ) && ('no_hidden' == $_GET['reveal']) ) {
+		if ( isset( $_GET['reveal'] ) && ( 'no_hidden' == $_GET['reveal'] ) ) {
 			$extra_class .= ' archived_visible';
 		}
 		$view_state = ' grid';
@@ -161,7 +161,7 @@ class Menu implements HasActions, HasFilters {
 						pressforward( 'controller.template_factory' )->the_page_headline();
 
 					?>
-					<button class="btn btn-small" id="fullscreenfeed"> <?php  _e( 'Full Screen', 'pf' );  ?> </button>
+					<button class="btn btn-small" id="fullscreenfeed"> <?php _e( 'Full Screen', 'pf' ); ?> </button>
 				</div><!-- End title -->
 				<?php pressforward( 'admin.templates' )->search_template(); ?>
 
@@ -173,7 +173,7 @@ class Menu implements HasActions, HasFilters {
 				<?php pressforward( 'admin.templates' )->the_side_menu(); ?>
 				<?php pressforward( 'schema.folders' )->folderbox(); ?>
 				<div id="entries">
-					<?php echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />';  ?>
+					<?php echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />'; ?>
 					<div id="errors">
 					<?php
 					if ( 0 >= self::count_the_posts( 'pf_feed' ) ) {
@@ -189,9 +189,9 @@ class Menu implements HasActions, HasFilters {
 
 					// Use this foreach loop to go through the overall feedlist, select each individual feed item (post) and do stuff with it.
 					// Based off SimplePie's tutorial at http://simplepie.org/wiki/tutorial/how_to_display_previous_feed_items_like_google_reader.
-					$c = 1;
+					$c  = 1;
 					$ic = 0;
-					$c = $c + $count;
+					$c  = $c + $count;
 						// print_r($count);
 				if ( isset( $_GET['by'] ) ) {
 					$limit = $_GET['by'];
@@ -200,13 +200,13 @@ class Menu implements HasActions, HasFilters {
 				}
 				// var_dump($limit);
 				$archive_feed_args = array(
-					'start'            => $count + 1,
-					'posts_per_page'   => false,
-					'relationship'     => $limit,
+					'start'          => $count + 1,
+					'posts_per_page' => false,
+					'relationship'   => $limit,
 				);
 
 				if ( isset( $_POST['search-terms'] ) ) {
-					$archive_feed_args['search_terms'] = stripslashes( $_POST['search-terms'] );
+					$archive_feed_args['search_terms']     = stripslashes( $_POST['search-terms'] );
 					$archive_feed_args['exclude_archived'] = true;
 				}
 
@@ -234,58 +234,65 @@ class Menu implements HasActions, HasFilters {
 					// Something to experement with...
 				} // End foreach
 
-			?><div class="clear"></div><?php
+			?>
+			<div class="clear"></div>
+			<?php
 			echo '</div><!-- End entries -->';
-			?><div class="clear"></div><?php
+			?>
+			<div class="clear"></div>
+			<?php
 			echo '</div><!-- End main -->';
 
 			// Nasty hack because infinite scroll only works starting with page 2 for some reason.
-if ( $page == 0 ) { $page = 1; }
-			$pagePrev = $page -1;
+			if ( $page == 0 ) {
+				$page = 1; }
+			$pagePrev = $page - 1;
 			$pageNext = $page + 1;
-if ( ! empty( $_GET['by'] ) ) {
-	$limit_q = '&by=' . $limit;
-} else {
-	$limit_q = '';
-}
+			if ( ! empty( $_GET['by'] ) ) {
+				$limit_q = '&by=' . $limit;
+			} else {
+				$limit_q = '';
+			}
 			$pagePrev = '?page=pf-menu' . $limit_q . '&pc=' . $pagePrev;
 			$pageNext = '?page=pf-menu' . $limit_q . '&pc=' . $pageNext;
-if ( isset( $_GET['folder'] ) ) {
-	$pageQ = $_GET['folder'];
-	$pageQed = '&folder=' . $pageQ;
-	$pageNext .= $pageQed;
-	$pagePrev .= $pageQed;
+			if ( isset( $_GET['folder'] ) ) {
+				$pageQ     = $_GET['folder'];
+				$pageQed   = '&folder=' . $pageQ;
+				$pageNext .= $pageQed;
+				$pagePrev .= $pageQed;
 
-}
-if ( isset( $_GET['feed'] ) ) {
-	$pageQ = $_GET['feed'];
-	$pageQed = '&feed=' . $pageQ;
-	$pageNext .= $pageQed;
-	$pagePrev .= $pageQed;
+			}
+			if ( isset( $_GET['feed'] ) ) {
+				$pageQ     = $_GET['feed'];
+				$pageQed   = '&feed=' . $pageQ;
+				$pageNext .= $pageQed;
+				$pagePrev .= $pageQed;
 
-}
-if ( $c > 19 ) {
+			}
+			if ( $c > 19 ) {
 
-	echo '<div class="pf-navigation">';
-	if ( -1 > $pagePrev ) {
-		echo '<!-- something has gone wrong -->';
-	} elseif ( 1 > $pagePrev ) {
-		echo '<span class="feedprev"><a class="prevnav" href="admin.php?page=pf-menu">Previous Page</a></span> | ';
-	} elseif ( $pagePrev > -1 ) {
-		echo '<span class="feedprev"><a class="prevnav" href="admin.php' . $pagePrev . '">Previous Page</a></span> | ';
-	}
-	echo '<span class="feednext"><a class="nextnav" href="admin.php' . $pageNext . '">Next Page</a></span>';
-	echo '</div>';
-}
-		?><div class="clear"></div><?php
+				echo '<div class="pf-navigation">';
+				if ( -1 > $pagePrev ) {
+					echo '<!-- something has gone wrong -->';
+				} elseif ( 1 > $pagePrev ) {
+					echo '<span class="feedprev"><a class="prevnav" href="admin.php?page=pf-menu">Previous Page</a></span> | ';
+				} elseif ( $pagePrev > -1 ) {
+					echo '<span class="feedprev"><a class="prevnav" href="admin.php' . $pagePrev . '">Previous Page</a></span> | ';
+				}
+				echo '<span class="feednext"><a class="nextnav" href="admin.php' . $pageNext . '">Next Page</a></span>';
+				echo '</div>';
+			}
+		?>
+		<div class="clear"></div>
+		<?php
 		echo '</div><!-- End container-fluid -->';
 	}
 	public function count_the_posts( $post_type, $date_less = false ) {
 
 		if ( ! $date_less ) {
 			$query_arg = array(
-				'post_type' 		=> $post_type,
-				'posts_per_page' 	=> -1,
+				'post_type'      => $post_type,
+				'posts_per_page' => -1,
 			);
 		} else {
 			if ( ! empty( $date_less ) && $date_less < 12 ) {
@@ -296,17 +303,17 @@ if ( $c > 19 ) {
 				$y = date( 'Y' );
 				$y = $y - floor( $date_less / 12 );
 				$m = date( 'm' );
-				$m = $m - (abs( $date_less ) -(12 * floor( $date_less / 12 )));
+				$m = $m - ( abs( $date_less ) - ( 12 * floor( $date_less / 12 ) ) );
 			}
 			$query_arg = array(
-				'post_type' 		=> $post_type,
-				'year'				=> $y,
-				'monthnum'			=> $m,
-				'posts_per_page' 	=> -1,
+				'post_type'      => $post_type,
+				'year'           => $y,
+				'monthnum'       => $m,
+				'posts_per_page' => -1,
 			);
 		}
 
-				$query = new \WP_Query( $query_arg );
+				$query      = new \WP_Query( $query_arg );
 				$post_count = $query->post_count;
 				wp_reset_postdata();
 
@@ -324,7 +331,7 @@ if ( $c > 19 ) {
 			return;
 		}
 
-		if ( empty( $_POST['_wp_http_referer'] ) || false === strpos($_POST['_wp_http_referer'], "page=pf-options")  ){
+		if ( empty( $_POST['_wp_http_referer'] ) || false === strpos( $_POST['_wp_http_referer'], 'page=pf-options' ) ) {
 			return;
 		}
 
@@ -359,7 +366,7 @@ if ( $c > 19 ) {
 
 		$verifyPages = array();
 
-		$pf_admin_pages = apply_filters( 'pf_admin_pages',$verifyPages );
+		$pf_admin_pages = apply_filters( 'pf_admin_pages', $verifyPages );
 
 		if ( ! in_array( $_GET['page'], $pf_admin_pages ) ) {
 			return;
@@ -368,43 +375,43 @@ if ( $c > 19 ) {
 		if ( current_user_can( get_option( 'pf_menu_preferences_access', pf_get_defining_capability_by_role( 'administrator' ) ) ) ) {
 
 			$arrayedAdminRights = array(
-				'pf_menu_group_access'	=> array(
-												'default' => 'contributor',
-												'title' => __( 'PressForward Menu Group', 'pf' ),
-											),
-				'pf_menu_all_content_access' => array(
-												'default' => 'contributor',
-												'title' => __( 'All Content Menu', 'pf' ),
-											),
-				'pf_menu_under_review_access' => array(
-												'default' => 'contributor',
-												'title' => __( 'Nominated Menu', 'pf' ),
-											),
-				'pf_menu_nominate_this_access'=> array(
-												'default' => pf_get_role_by_capability(get_option( 'pf_menu_all_content_access', 'edit_posts' )),
-												'title' => __( 'Nominate This', 'pf' ),
-											),
-				'pf_menu_preferences_access' => array(
-												'default' => 'administrator',
-												'title' => __( 'Preferences Menu', 'pf' ),
-											),
-				'pf_menu_feeder_access' => array(
-												'default' => 'editor',
-												'title' => __( 'Add Feeds', 'pf' ),
-											),
+				'pf_menu_group_access'          => array(
+					'default' => 'contributor',
+					'title'   => __( 'PressForward Menu Group', 'pf' ),
+				),
+				'pf_menu_all_content_access'    => array(
+					'default' => 'contributor',
+					'title'   => __( 'All Content Menu', 'pf' ),
+				),
+				'pf_menu_under_review_access'   => array(
+					'default' => 'contributor',
+					'title'   => __( 'Nominated Menu', 'pf' ),
+				),
+				'pf_menu_nominate_this_access'  => array(
+					'default' => pf_get_role_by_capability( get_option( 'pf_menu_all_content_access', 'edit_posts' ) ),
+					'title'   => __( 'Nominate This', 'pf' ),
+				),
+				'pf_menu_preferences_access'    => array(
+					'default' => 'administrator',
+					'title'   => __( 'Preferences Menu', 'pf' ),
+				),
+				'pf_menu_feeder_access'         => array(
+					'default' => 'editor',
+					'title'   => __( 'Add Feeds', 'pf' ),
+				),
 				'pf_menu_add_nomination_access' => array(
-												'default' => 'contributor',
-												'title' => __( 'Add Nomination Menu', 'pf' ),
-											),
+					'default' => 'contributor',
+					'title'   => __( 'Add Nomination Menu', 'pf' ),
+				),
 			);
 
-			$arrayedAdminRights = apply_filters( 'pf_setup_admin_rights',$arrayedAdminRights );
+			$arrayedAdminRights = apply_filters( 'pf_setup_admin_rights', $arrayedAdminRights );
 
 			foreach ( $arrayedAdminRights as $right => $parts ) {
 				if ( isset( $_POST[ $right ] ) ) {
 					$enabled = $_POST[ $right ];
 					update_option( $right, $enabled );
-					$feed_caps = pressforward( 'schema.feeds' )->map_feed_caps();
+					$feed_caps      = pressforward( 'schema.feeds' )->map_feed_caps();
 					$feed_item_caps = pressforward( 'schema.feed_item' )->map_feed_item_caps();
 					if ( 'pf_menu_feeder_access' == $right ) {
 						$all_roles = get_editable_roles();
@@ -457,6 +464,13 @@ if ( $c > 19 ) {
 			} else {
 				update_option( PF_SLUG . '_retrieval_frequency', 30 );
 			}
+			if ( isset( $_POST['pf_nomination_send_email'] ) ) {
+				$pf_nomination_send_email_opt_check = $_POST['pf_nomination_send_email'];
+				// print_r($pf_nomination_send_email_opt_check); die();
+				update_option( 'pf_nomination_send_email', $pf_nomination_send_email_opt_check );
+			} else {
+				update_option( 'pf_nomination_send_email', '' );
+			}
 			if ( isset( $_POST['pf_present_author_as_primary'] ) ) {
 				$pf_author_opt_check = $_POST['pf_present_author_as_primary'];
 				// print_r($pf_links_opt_check); die();
@@ -483,6 +497,14 @@ if ( $c > 19 ) {
 				: 'draft';
 			update_option( PF_SLUG . '_draft_post_status', $pf_draft_post_status );
 
+			if ( isset( $_POST[PF_SLUG.'_advanced_meta_handling'] ) ) {
+				$meta_handling_check = $_POST[PF_SLUG.'_advanced_meta_handling'];
+				// print_r($pf_links_opt_check); die();
+				update_option( PF_SLUG.'_advanced_meta_handling', $meta_handling_check );
+			} else {
+				update_option( PF_SLUG.'_advanced_meta_handling', 'no' );
+			}
+
 			if ( class_exists( 'The_Alert_Box' ) ) {
 				// var_dump($_POST);
 				if ( empty( $_POST[ pressforward( 'library.alertbox' )->option_name() ] ) ) {
@@ -502,9 +524,9 @@ if ( $c > 19 ) {
 			}
 
 			if ( isset( $_POST['pf_metrics_config'] ) ) {
-				$pf_metrics_opt_check = $_POST['pf_metrics_config'];
-				$pf_metrics_opt_check["detailed"] = "no";
-				$pf_metrics_opt_check["checked"] = 'yes';
+				$pf_metrics_opt_check             = $_POST['pf_metrics_config'];
+				$pf_metrics_opt_check['detailed'] = 'no';
+				$pf_metrics_opt_check['checked']  = 'yes';
 				update_option( 'pf_metrics_config', $pf_metrics_opt_check );
 			} else {
 				update_option( 'pf_metrics_config', array() );

@@ -13,8 +13,8 @@ class BookmarkletProvider extends ServiceProvider {
 	public function register( Container $container ) {
 
 		$api_base = array(
-			'version'	=>	1,
-			'base_namespace'	=>	'pf/v'
+			'version'        => 1,
+			'base_namespace' => 'pf/v',
 		);
 
 		$container->share(

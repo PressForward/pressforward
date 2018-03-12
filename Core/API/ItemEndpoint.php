@@ -14,16 +14,16 @@ class ItemEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 	protected $basename;
 
 	function __construct( Metas $metas ) {
-		$this->metas = $metas;
+		$this->metas     = $metas;
 		$this->post_type = pressforward( 'schema.feed_item' )->post_type;
-		$this->level = 'item';
+		$this->level     = 'item';
 	}
 
 
 	public function action_hooks() {
 		$actions = array(
 			array(
-				'hook' => 'rest_api_init',
+				'hook'   => 'rest_api_init',
 				'method' => 'register_rest_post_read_meta_fields',
 			),
 		);
@@ -33,16 +33,16 @@ class ItemEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 	public function filter_hooks() {
 		$filter = array(
 			array(
-				'hook' => 'rest_prepare_' . $this->post_type,
-				'method' => 'add_rest_post_links',
-				'priority'  => 10,
-				'args' => 3,
+				'hook'     => 'rest_prepare_' . $this->post_type,
+				'method'   => 'add_rest_post_links',
+				'priority' => 10,
+				'args'     => 3,
 			),
 			array(
-				'hook' => 'rest_prepare_' . $this->post_type,
-				'method' => 'filter_wp_to_pf_in_terms',
-				'priority'  => 10,
-				'args' => 3,
+				'hook'     => 'rest_prepare_' . $this->post_type,
+				'method'   => 'filter_wp_to_pf_in_terms',
+				'priority' => 10,
+				'args'     => 3,
 			),
 		);
 		return $filter;
@@ -55,11 +55,12 @@ class ItemEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 		if ( ! empty( $post->post_parent ) ) {
 			$feed_id = $post->post_parent;
 		}
-		$data->add_links( array(
-			'feed' => array(
-			'href' => rest_url( '/pf/v1/feeds/' . $feed_id ),
-			'embeddable' => true,
-			),
+		$data->add_links(
+			array(
+				'feed' => array(
+					'href'       => rest_url( '/pf/v1/feeds/' . $feed_id ),
+					'embeddable' => true,
+				),
 			)
 		);
 		return $data;

@@ -70,6 +70,18 @@
 <hr />
 <p>
 	<?php
+	$pf_nomination_send_email = get_option( 'pf_nomination_send_email', '' );
+	echo '<input id="pf_nomination_send_email" name="pf_nomination_send_email" type="text" class="pf_nomination_send_email" value="' . $pf_nomination_send_email . '" />';
+
+	echo '<label class="description" for="pf_nomination_send_email"> ' . __( 'Email notifications for nominations.', 'pf' ) . ' </label>';
+	?>
+</p>
+<p>
+	<?php _e( 'To receive an email notification when there is a new nomination, enter a comma separated list of email notification recipients. If left blank, no notifications will be sent.', 'pf' ); ?>
+</p>
+<hr />
+<p>
+	<?php
 		$default_pf_present_author_value = get_option( 'pf_present_author_as_primary', 'yes' );
 	?>
 	<select id="pf_present_author_as_primary" name="pf_present_author_as_primary">

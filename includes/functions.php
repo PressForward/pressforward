@@ -440,6 +440,55 @@ function pf_de_https( $url, $function = false ) {
 		return pressforward( 'controller.http_tools' )->get_url_content( $url_orig, $function );
 	}
 }
+/**
+ * Derived from WordPress's fetch feed function at: https://developer.wordpress.org/reference/functions/fetch_feed/
+ */
+function pf_fetch_feed( $url ){
+	$theFeed = fetch_feed( $url );
+	if ( is_wp_error( $theFeed ) ) {
+
+		if ( ! class_exists( 'SimplePie', false ) ) {
+			require_once( ABSPATH . WPINC . '/class-simplepie.php' );
+		}
+
+		require_once( ABSPATH . WPINC . '/class-wp-feed-cache.php' );
+		require_once( ABSPATH . WPINC . '/class-wp-feed-cache-transient.php' );
+		require_once( ABSPATH . WPINC . '/class-wp-simplepie-file.php' );
+		require_once( ABSPATH . WPINC . '/class-wp-simplepie-sanitize-kses.php' );
+
+		$feed = new SimplePie();
+
+		$feed->set_sanitize_class( 'WP_SimplePie_Sanitize_KSES' );
+		// We must manually overwrite $feed->sanitize because SimplePie's
+		// constructor sets it before we have a chance to set the sanitization class
+		$feed->sanitize = new WP_SimplePie_Sanitize_KSES();
+
+		$feed->set_cache_class( 'WP_Feed_Cache' );
+		$feed->set_file_class( 'WP_SimplePie_File' );
+		add_filter( 'pf_encoding_retrieval_control', '__return_false' );
+		$feedXml = pf_de_https( $url, 'wp_remote_get' );
+		//$feedXml = mb_convert_encoding($feedXml['body'], 'UTF-8');
+		$feed->set_raw_data($feedXml['body']);
+		$feed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', 12 * HOUR_IN_SECONDS, $url ) );
+		/**
+		 * Fires just before processing the SimplePie feed object.
+		 *
+		 * @param object $feed SimplePie feed object (passed by reference).
+		 * @param mixed  $url  URL of feed to retrieve. If an array of URLs, the feeds are merged.
+		 */
+		do_action_ref_array( 'wp_feed_options', array( &$feed, $url ) );
+		$feed->init();
+		$feed->handle_content_type();
+		$feed->set_output_encoding( get_option( 'blog_charset' ) );
+
+		if ( $feed->error() ){
+			return new WP_Error( 'simplepie-error', $feed->error() );
+		}
+		return $feed;
+	} else {
+		return $theFeed;
+	}
+}
 
 /**
  * Converts and echos a list of terms to a set of slugs to be listed in the nomination CSS selector
@@ -778,6 +827,7 @@ function pf_filter_canonical( $url ) {
 
 add_filter( 'wpseo_canonical', 'pf_filter_canonical' );
 add_filter( 'wpseo_opengraph_url', 'pf_filter_canonical' );
+add_filter("wds_filter_canonical", 'pf_filter_canonical');
 
 /**
  * A function to set up the HEAD data to forward users to origonal articles.
@@ -801,6 +851,7 @@ function pf_forward_unto_source() {
 		} else {
 			echo '<link rel="canonical" href="' . $link . '" />';
 			echo '<meta property="og:url" content="' . $link . '" />';
+			add_filter( 'wds_process_canonical', '__return_false');
 		}
 		$wait = get_option( 'pf_link_to_source', 0 );
 		$post_check = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'pf_forward_to_origin', true );

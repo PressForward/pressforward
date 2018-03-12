@@ -9,6 +9,6 @@ namespace Intraxia\Jaxion\Http;
  * @package Intraxia\Jaxion
  * @subpackage Http
  */
-class VersionNotSetException extends \RuntimeException {
-
+class VersionNotSetException extends \RuntimeException
+{
 }

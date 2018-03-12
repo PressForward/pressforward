@@ -15,9 +15,9 @@ class Feeds implements HasActions, HasFilters {
 	protected $filter_data = array();
 
 	public function __construct( Metas $metas ) {
-		$this->post_type = 'pf_feed';
+		$this->post_type    = 'pf_feed';
 		$this->tag_taxonomy = 'pf_feed_category';
-		$this->metas = $metas;
+		$this->metas        = $metas;
 		// Post types and taxonomies must be registered after 'init'
 	}
 
@@ -25,50 +25,50 @@ class Feeds implements HasActions, HasFilters {
 	public function action_hooks() {
 		$hooks = array(
 			array(
-				'hook' => 'init',
-				'method' => 'register_feed_post_type',
-				'priority'	=> 10,
+				'hook'     => 'init',
+				'method'   => 'register_feed_post_type',
+				'priority' => 10,
 			),
 			// add_action( 'manage_pf_feed_posts_custom_column', array( $this, 'last_retrieved_date_column_content' ), 10, 2 );
 			array(
-				'hook' 		=> 'admin_init',
-				'method'	=> 'disallow_add_new',
+				'hook'   => 'admin_init',
+				'method' => 'disallow_add_new',
 			),
 			array(
-				'hook' 		=> 'save_post',
-				'method'	=> 'save_submitbox_pf_actions',
+				'hook'   => 'save_post',
+				'method' => 'save_submitbox_pf_actions',
 			),
 			array(
-				'hook' 		=> 'pf_feed_post_type_registered',
-				'method'	=> 'under_review_post_status',
+				'hook'   => 'pf_feed_post_type_registered',
+				'method' => 'under_review_post_status',
 			),
 			array(
-				'hook' => 'manage_pf_feed_posts_custom_column',
-				'method' => 'last_retrieved_date_column_content',
-				'priority'  => 10,
-				'args' => 2,
+				'hook'     => 'manage_pf_feed_posts_custom_column',
+				'method'   => 'last_retrieved_date_column_content',
+				'priority' => 10,
+				'args'     => 2,
 			),
 		);
 		if ( is_admin() ) {
 			$admin_hooks = array(
 				array(
-					'hook' 		=> 'wp_ajax_deal_with_old_feedlists',
-					'method'	=> 'deal_with_old_feedlists',
+					'hook'   => 'wp_ajax_deal_with_old_feedlists',
+					'method' => 'deal_with_old_feedlists',
 				),
 				array(
-					'hook' 		=> 'admin_enqueue_scripts',
-					'method'	=> 'admin_enqueue_scripts',
+					'hook'   => 'admin_enqueue_scripts',
+					'method' => 'admin_enqueue_scripts',
 				),
 				array(
-					'hook' 		=> 'admin_enqueue_scripts',
-					'method'	=> 'admin_enqueue_edit_feed_scripts',
+					'hook'   => 'admin_enqueue_scripts',
+					'method' => 'admin_enqueue_edit_feed_scripts',
 				),
 				array(
-					'hook' 		=> 'post_submitbox_misc_actions',
-					'method'	=> 'feed_submitbox_pf_actions',
+					'hook'   => 'post_submitbox_misc_actions',
+					'method' => 'feed_submitbox_pf_actions',
 				),
 			);
-			$hooks = array_merge( $hooks, $admin_hooks );
+			$hooks       = array_merge( $hooks, $admin_hooks );
 		}
 		return $hooks;
 	}
@@ -76,63 +76,63 @@ class Feeds implements HasActions, HasFilters {
 	public function filter_hooks() {
 		$filters = array(
 			array(
-				'hook' => 'ab_alert_specimens_update_post_type-add-feeds',
-				'method' => 'make_alert_return_to_publish',
-				'priority'  => 10,
-				'args' => 1,
+				'hook'     => 'ab_alert_specimens_update_post_type-add-feeds',
+				'method'   => 'make_alert_return_to_publish',
+				'priority' => 10,
+				'args'     => 1,
 			),
 			array(
-				'hook'	=> 'views_edit-' . $this->post_type,
-				'method'	=> 'modify_post_views',
-				'priority'	=> 10,
-				'args'	=> 1,
+				'hook'     => 'views_edit-' . $this->post_type,
+				'method'   => 'modify_post_views',
+				'priority' => 10,
+				'args'     => 1,
 			),
 			// add_filter('manage_edit-'.$this->post_type.'_columns', array( $this, 'custom_feed_column_name'));
 			array(
-				'hook'	=> 'map_meta_cap',
-				'method'	=> 'feeds_map_meta_cap',
-				'priority'	=> 10,
-				'args'	=> 4,
+				'hook'     => 'map_meta_cap',
+				'method'   => 'feeds_map_meta_cap',
+				'priority' => 10,
+				'args'     => 4,
 			),
 			array(
-				'hook'	=> 'user_has_cap',
-				'method'	=> 'alter_cap_on_fly',
+				'hook'   => 'user_has_cap',
+				'method' => 'alter_cap_on_fly',
 			),
 			array(
-				'hook'	=> 'option_page_capability_pf_feedlist_group',
-				'method'	=> 'feed_option_page_cap',
+				'hook'   => 'option_page_capability_pf_feedlist_group',
+				'method' => 'feed_option_page_cap',
 			),
 			array(
-				'hook'	=> 'manage_edit-' . $this->post_type . '_columns',
-				'method'	=> 'custom_feed_column_name',
+				'hook'   => 'manage_edit-' . $this->post_type . '_columns',
+				'method' => 'custom_feed_column_name',
 			),
 		);
 		if ( is_admin() ) {
 			$admin_filters = array(
 				array(
-					'hook'	=> 'page_row_actions',
-					'method'	=> 'url_feed_row_action',
-					'priority'	=> 10,
-					'args'	=> 2,
+					'hook'     => 'page_row_actions',
+					'method'   => 'url_feed_row_action',
+					'priority' => 10,
+					'args'     => 2,
 				),
 				array(
-					'hook'	=> 'page_row_actions',
-					'method'	=> 'refresh_feed_row_action',
-					'priority'	=> 10,
-					'args'	=> 2,
+					'hook'     => 'page_row_actions',
+					'method'   => 'refresh_feed_row_action',
+					'priority' => 10,
+					'args'     => 2,
 				),
 				array(
-					'hook'	=> 'post_updated_messages',
-					'method'	=> 'feed_save_message',
+					'hook'   => 'post_updated_messages',
+					'method' => 'feed_save_message',
 				),
 				array(
-					'hook'	=> 'parent_file',
-					'method'	=> 'move_feed_tags_submenu',
-					'priority'	=> 10,
-					'args'	=> 1,
+					'hook'     => 'parent_file',
+					'method'   => 'move_feed_tags_submenu',
+					'priority' => 10,
+					'args'     => 1,
 				),
 			);
-			$filters = array_merge( $filters, $admin_filters );
+			$filters       = array_merge( $filters, $admin_filters );
 		}
 		return $filters;
 	}
@@ -155,24 +155,28 @@ class Feeds implements HasActions, HasFilters {
 			'not_found_in_trash' => __( 'No feeds found in trash', 'pf' ),
 		);
 
-		register_post_type( $this->post_type, apply_filters( 'pf_register_feed_post_type_args', array(
-			'label'       => $labels['name'],
-			'labels'      => $labels,
-			'description' => __( 'Feeds imported by PressForward&#8217;s Feed Importer', 'pf' ),
-			'public'      => false,
-			'hierarchical' => true,
-			'supports' 	=> array( 'title','editor','author','thumbnail','excerpt','custom-fields','page-attributes' ),
-			'taxonomies' => array( 'post_tag' ),
-			'show_in_menu' => PF_MENU_SLUG,
-			'show_in_admin_bar' => true,
-			'show_in_rest'       => true,
-			'rest_base'          => 'feeds',
-			'rest_controller_class' => 'PF_REST_Posts_Controller',
-			// 'menu_position' => 100
-			'show_ui'     => true, // for testing only
-			'capability_type' => $this->post_type,
-			'capabilities' => $this->map_feed_caps(),
-		) ) );
+		register_post_type(
+			$this->post_type, apply_filters(
+				'pf_register_feed_post_type_args', array(
+					'label'                 => $labels['name'],
+					'labels'                => $labels,
+					'description'           => __( 'Feeds imported by PressForward&#8217;s Feed Importer', 'pf' ),
+					'public'                => false,
+					'hierarchical'          => true,
+					'supports'              => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields', 'page-attributes' ),
+					'taxonomies'            => array( 'post_tag' ),
+					'show_in_menu'          => PF_MENU_SLUG,
+					'show_in_admin_bar'     => true,
+					'show_in_rest'          => true,
+					'rest_base'             => 'feeds',
+					'rest_controller_class' => 'PF_REST_Posts_Controller',
+					// 'menu_position' => 100
+					'show_ui'               => true, // for testing only
+					'capability_type'       => $this->post_type,
+					'capabilities'          => $this->map_feed_caps(),
+				)
+			)
+		);
 
 		do_action( 'pf_feed_post_type_registered' );
 
@@ -180,24 +184,24 @@ class Feeds implements HasActions, HasFilters {
 
 	public function map_feed_caps() {
 		return array(
-			'publish_posts' => 'publish_' . $this->post_type . 's',
-			'edit_posts' => 'edit_' . $this->post_type . 's',
-			'edit_others_posts' => 'edit_others_' . $this->post_type . 's',
-			'delete_posts' => 'delete_' . $this->post_type . 's',
+			'publish_posts'       => 'publish_' . $this->post_type . 's',
+			'edit_posts'          => 'edit_' . $this->post_type . 's',
+			'edit_others_posts'   => 'edit_others_' . $this->post_type . 's',
+			'delete_posts'        => 'delete_' . $this->post_type . 's',
 			'delete_others_posts' => 'delete_others_' . $this->post_type . 's',
-			'read_private_posts' => 'read_private_' . $this->post_type . 's',
-			'publish_pages' => 'publish_' . $this->post_type . 's',
-			'edit_pages' => 'edit_' . $this->post_type . 's',
-			'edit_others_pages' => 'edit_others_' . $this->post_type . 's',
-			'delete_pages' => 'delete_' . $this->post_type . 's',
+			'read_private_posts'  => 'read_private_' . $this->post_type . 's',
+			'publish_pages'       => 'publish_' . $this->post_type . 's',
+			'edit_pages'          => 'edit_' . $this->post_type . 's',
+			'edit_others_pages'   => 'edit_others_' . $this->post_type . 's',
+			'delete_pages'        => 'delete_' . $this->post_type . 's',
 			'delete_others_pages' => 'delete_others_' . $this->post_type . 's',
-			'read_private_pages' => 'read_private_' . $this->post_type . 's',
-			'edit_post' => 'edit_' . $this->post_type,
-			'delete_post' => 'delete_' . $this->post_type,
-			'read_post' => 'read_' . $this->post_type,
-			'edit_page' => 'edit_' . $this->post_type,
-			'delete_page' => 'delete_' . $this->post_type,
-			'read_page' => 'read_' . $this->post_type,
+			'read_private_pages'  => 'read_private_' . $this->post_type . 's',
+			'edit_post'           => 'edit_' . $this->post_type,
+			'delete_post'         => 'delete_' . $this->post_type,
+			'read_post'           => 'read_' . $this->post_type,
+			'edit_page'           => 'edit_' . $this->post_type,
+			'delete_page'         => 'delete_' . $this->post_type,
+			'read_page'           => 'read_' . $this->post_type,
 		);
 	}
 
@@ -228,12 +232,12 @@ class Feeds implements HasActions, HasFilters {
 	}
 
 	function feeds_map_meta_cap( $caps, $cap, $user_id, $args ) {
-		if (  empty( $args ) ) {
+		if ( empty( $args ) ) {
 			return $caps;
 		}
 		/* If editing, deleting, or reading a feed, get the post and post type object. */
 		if ( 'edit_' . $this->post_type == $cap || 'delete_' . $this->post_type == $cap || 'read_' . $this->post_type == $cap ) {
-			$post = get_post( $args[0] );
+			$post      = get_post( $args[0] );
 			$post_type = get_post_type_object( $post->post_type );
 
 			/* Set an empty array for the caps. */
@@ -244,19 +248,22 @@ class Feeds implements HasActions, HasFilters {
 		if ( 'edit_' . $this->post_type == $cap ) {
 			if ( $user_id == $post->post_author ) {
 				$caps[] = $post_type->cap->edit_posts;
-			} else { 				$caps[] = $post_type->cap->edit_others_posts; }
+			} else {
+				$caps[] = $post_type->cap->edit_others_posts; }
 		} /* If deleting a feed, assign the required capability. */
 		elseif ( 'delete_' . $this->post_type == $cap ) {
 			if ( $user_id == $post->post_author ) {
 				$caps[] = $post_type->cap->delete_posts;
-			} else { 				$caps[] = $post_type->cap->delete_others_posts; }
+			} else {
+				$caps[] = $post_type->cap->delete_others_posts; }
 		} /* If reading a private feed, assign the required capability. */
 		elseif ( 'read_' . $this->post_type == $cap ) {
 
 			if ( 'private' != $post->post_status ) {
 				$caps[] = 'read'; } elseif ( $user_id == $post->post_author ) {
 				$caps[] = 'read';
-				} else { 				$caps[] = $post_type->cap->read_private_posts; }
+				} else {
+					$caps[] = $post_type->cap->read_private_posts; }
 		}
 
 		/* Return the capabilities required by the user. */
@@ -270,14 +277,16 @@ class Feeds implements HasActions, HasFilters {
 	}
 
 	function under_review_post_status() {
-		register_post_status( 'under_review', array(
-			'label'                     => _x( 'Under Review', 'pf' ),
-			'public'                    => true,
-			'exclude_from_search'       => false,
-			'show_in_admin_all_list'    => true,
-			'show_in_admin_status_list' => true,
-			'label_count'               => _n_noop( 'Under Review <span class="count">(%s)</span>', 'Under Review <span class="count">(%s)</span>' ),
-		) );
+		register_post_status(
+			'under_review', array(
+				'label'                     => _x( 'Under Review', 'pf' ),
+				'public'                    => true,
+				'exclude_from_search'       => false,
+				'show_in_admin_all_list'    => true,
+				'show_in_admin_status_list' => true,
+				'label_count'               => _n_noop( 'Under Review <span class="count">(%s)</span>', 'Under Review <span class="count">(%s)</span>' ),
+			)
+		);
 	}
 
 	function feed_submitbox_pf_actions() {
@@ -285,24 +294,26 @@ class Feeds implements HasActions, HasFilters {
 		if ( $post->post_type != $this->post_type ) {
 				return;
 		}
-	    $value = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'pf_no_feed_alert', true );
-	    if ( '' === $value ) {
-	    	// If the user does not want to forward all things this setting is 0,
-	    	// which evaluates to empty.
-	    	$value = 0;
-	    }
-	    echo '<div class="misc-pub-section misc-pub-section-last">
+		$value = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'pf_no_feed_alert', true );
+		if ( '' === $value ) {
+			// If the user does not want to forward all things this setting is 0,
+			// which evaluates to empty.
+			$value = 0;
+		}
+		echo '<div class="misc-pub-section misc-pub-section-last">
 	         <span id="pf_no_feed_alert_single">'
-	         . '<label><input type="checkbox"' . ( ! empty( $value ) ? ' checked="checked" ' : null) . 'value="1" name="pf_no_feed_alert" /> No alerts, never let feed go inactive.</label>'
-	    . '</span></div>';
+			 . '<label><input type="checkbox"' . ( ! empty( $value ) ? ' checked="checked" ' : null ) . 'value="1" name="pf_no_feed_alert" /> No alerts, never let feed go inactive.</label>'
+		. '</span></div>';
 	}
 
 	function save_submitbox_pf_actions( $post_id ) {
-	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {  return false; }
-	    if ( ! current_user_can( 'edit_page', $post_id ) ) {  return false; }
-	    if ( empty( $_POST['pf_no_feed_alert'] ) ) {
-	        pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_no_feed_alert', 0 );
-	    } else {
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return false; }
+		if ( ! current_user_can( 'edit_page', $post_id ) ) {
+			return false; }
+		if ( empty( $_POST['pf_no_feed_alert'] ) ) {
+			pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_no_feed_alert', 0 );
+		} else {
 				pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_no_feed_alert', $_POST['pf_no_feed_alert'] );
 		}
 
@@ -310,9 +321,9 @@ class Feeds implements HasActions, HasFilters {
 	}
 
 	public function custom_feed_column_name( $posts_columns ) {
-			$posts_columns['author'] = 'Added by';
+			$posts_columns['author']          = 'Added by';
 			$posts_columns['items_retrieved'] = 'Items';
-			$posts_columns['date'] = 'Date Added';
+			$posts_columns['date']            = 'Date Added';
 			return $posts_columns;
 	}
 
@@ -359,7 +370,7 @@ class Feeds implements HasActions, HasFilters {
 		global $wpdb;
 		$type = pressforward( 'schema.feed_item' )->post_type;
 		if ( ! post_type_exists( $type ) ) {
-			return new stdClass; }
+			return new stdClass(); }
 
 		$counts = wp_cache_get( $type . '_' . $parent_id, 'pf_counts' );
 		if ( false !== $counts ) {
@@ -371,7 +382,8 @@ class Feeds implements HasActions, HasFilters {
 		if ( 'readable' == $perm && is_user_logged_in() ) {
 			$post_type_object = get_post_type_object( $type );
 			if ( ! current_user_can( $post_type_object->cap->read_private_posts ) ) {
-				$query .= $wpdb->prepare( " AND (post_status != 'private' OR ( post_author = %d AND post_status = 'private' ))",
+				$query .= $wpdb->prepare(
+					" AND (post_status != 'private' OR ( post_author = %d AND post_status = 'private' ))",
 					get_current_user_id()
 				);
 			}
@@ -379,7 +391,7 @@ class Feeds implements HasActions, HasFilters {
 		$query .= ' GROUP BY post_status';
 
 		$results = (array) $wpdb->get_results( $wpdb->prepare( $query, $type, $parent_id ), ARRAY_A );
-		$counts = array_fill_keys( get_post_stati(), 0 );
+		$counts  = array_fill_keys( get_post_stati(), 0 );
 
 		foreach ( $results as $row ) {
 			$counts[ $row['post_status'] ] = $row['num_posts'];
@@ -413,10 +425,10 @@ class Feeds implements HasActions, HasFilters {
 	}
 
 	public function url_feed_row_action( $actions, $post ) {
-	    if ( $post->post_type != $this->post_type ) {
-	        return $actions;
+		if ( $post->post_type != $this->post_type ) {
+			return $actions;
 			// var_dump($actions); die();
-	    }
+		}
 
 		$url = $this->metas->get_post_pf_meta( $post->ID, 'feedUrl' );
 		// var_dump($actions); die();
@@ -426,7 +438,7 @@ class Feeds implements HasActions, HasFilters {
 			$edit_actions = '';
 		}
 		$actions['edit'] = '<span class="inline pf-url" style="visibility:visible;color:grey;">' . $url . '</span><br/>';
-		$ab_msg = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'ab_alert_msg', true );
+		$ab_msg          = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'ab_alert_msg', true );
 		if ( ! empty( $ab_msg ) ) {
 			$actions['edit'] .= '<span class="inline pf-alert-msg" style="">' . pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'ab_alert_msg', true ) . '</span><br/>';
 		}
@@ -446,11 +458,12 @@ class Feeds implements HasActions, HasFilters {
 
 	public function get_top_feed_folders() {
 		$terms = array( $this->tag_taxonomy );
-		$cats = get_terms($terms,
+		$cats  = get_terms(
+			$terms,
 			array(
-				'parent' 				=> 0,
-				'hide_empty'		=> 1,
-				'hierarchical' 	=> 1,
+				'parent'       => 0,
+				'hide_empty'   => 1,
+				'hierarchical' => 1,
 			)
 		);
 		return $cats;
@@ -491,7 +504,7 @@ class Feeds implements HasActions, HasFilters {
 
 	public function get_child_folders( $folder ) {
 			$children = get_term_children( $folder->term_id, $this->tag_taxonomy );
-			$folders = array();
+			$folders  = array();
 		foreach ( $children as $child ) {
 			$folders[ $child ] = $this->get_feed_folders( $child );
 		}
@@ -505,23 +518,23 @@ class Feeds implements HasActions, HasFilters {
 			foreach ( $top_folders as $folder ) {
 
 				$folder_set[ $folder->term_id ] = array(
-					'term'			=> $folder,
-					'term_id'		=> $folder->term_id,
-					'children'	=> array(
-													'feeds'		=> get_objects_in_term( $folder->term_id, $this->tag_taxonomy ),
-													'folders'	=> $this->get_child_folders( $folder ),
-												),
+					'term'     => $folder,
+					'term_id'  => $folder->term_id,
+					'children' => array(
+						'feeds'   => get_objects_in_term( $folder->term_id, $this->tag_taxonomy ),
+						'folders' => $this->get_child_folders( $folder ),
+					),
 				);
 			}
 		} elseif ( is_numeric( $ids ) ) {
-			$folder = get_term( $ids, $this->tag_taxonomy );
+			$folder     = get_term( $ids, $this->tag_taxonomy );
 			$folder_set = array(
-				'term'			=> $folder,
-				'term_id'		=> $folder->term_id,
-				'children'	=> array(
-												'feeds'		=> get_objects_in_term( $folder->term_id, $this->tag_taxonomy ),
-												'folders'	=> $this->get_child_folders( $folder ),
-											),
+				'term'     => $folder,
+				'term_id'  => $folder->term_id,
+				'children' => array(
+					'feeds'   => get_objects_in_term( $folder->term_id, $this->tag_taxonomy ),
+					'folders' => $this->get_child_folders( $folder ),
+				),
 			);
 		} elseif ( is_array( $ids ) ) {
 			// var_dump($ids); die();
@@ -538,22 +551,22 @@ class Feeds implements HasActions, HasFilters {
 
 	public function get_feeds_without_folders( $ids = true ) {
 			// var_dump(pressforward('library.alertbox')->status()); die();
-		   $q = new \WP_Query(
-			   array(
-		 		            'post_type' => $this->post_type,
-		 		            'fields'	=> 'ids',
-		 		            'orderby'	=> 'title',
-		 		            'order'		=> 'ASC',
-		 		            'post_status' => array( 'pending', 'draft', 'future', 'publish', pressforward( 'library.alertbox' )->status() ),
-		 		            'nopaging' => true,
-		 		            'tax_query' => array(
-		 		                array(
-		 		                    'taxonomy' => $this->tag_taxonomy,
-		 		                    'operator' => 'NOT EXISTS',
-		 		                ),
-		 		            ),
-			       			)
-		   );
+		$q      = new \WP_Query(
+			array(
+				'post_type'   => $this->post_type,
+				'fields'      => 'ids',
+				'orderby'     => 'title',
+				'order'       => 'ASC',
+				'post_status' => array( 'pending', 'draft', 'future', 'publish', pressforward( 'library.alertbox' )->status() ),
+				'nopaging'    => true,
+				'tax_query'   => array(
+					array(
+						'taxonomy' => $this->tag_taxonomy,
+						'operator' => 'NOT EXISTS',
+					),
+				),
+			)
+		);
 		   $ids = $q->posts;
 		   return $ids;
 
@@ -586,7 +599,8 @@ class Feeds implements HasActions, HasFilters {
 		if ( ! $obj ) {
 			$obj = $this->get_feed_folders();
 		}
-		?><ul class="feed_folders">
+		?>
+		<ul class="feed_folders">
 				<?php
 				// var_dump($obj);
 				foreach ( $obj as $folder ) {
@@ -700,7 +714,7 @@ class Feeds implements HasActions, HasFilters {
 		if ( false == get_option( PF_SLUG . '_feedlist_backup' ) ) {
 			$feedlist = add_option( PF_SLUG . '_feedlist_backup', $feedlist );
 		}
-		if ( (false == $feedlist) || (empty( $feedlist )) ) {
+		if ( ( false == $feedlist ) || ( empty( $feedlist ) ) ) {
 			return true;
 		} else {
 			$feedlist = $feedlist;
@@ -708,7 +722,7 @@ class Feeds implements HasActions, HasFilters {
 		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
 		pf_log( 'Preparing to transform feedlist into a list of feed posts.' );
 		$ordered_all_feeds_array = array_values( $all_feeds_array );
-		$tidy_all_feeds_array = array_filter( $ordered_all_feeds_array, 'strlen' );
+		$tidy_all_feeds_array    = array_filter( $ordered_all_feeds_array, 'strlen' );
 		// print_r('<pre>'); var_dump($tidy_all_feeds_array); print_r('</pre>'); die();
 		foreach ( $tidy_all_feeds_array as $key => $feed ) {
 			$feedlist = $this->progressive_feedlist_transformer( $tidy_all_feeds_array, $feed, $key );
@@ -744,8 +758,8 @@ class Feeds implements HasActions, HasFilters {
 	// There should probably be a AJAX interface for this, same as the AB subscribe method.
 	public function progressive_feedlist_transformer( $feedlist = array(), $xmlUrl, $key, $args = array() ) {
 		$post_args = array_merge( array( 'type' => 'rss-quick' ), $args );
-		$check = $this->create( $xmlUrl, $post_args );
-		if ( is_numeric( $check ) && (0 < $check) ) {
+		$check     = $this->create( $xmlUrl, $post_args );
+		if ( is_numeric( $check ) && ( 0 < $check ) ) {
 			unset( $feedlist[ $key ] );
 		}
 		return $feedlist;
@@ -753,7 +767,12 @@ class Feeds implements HasActions, HasFilters {
 
 	public function kill_all_feeds() {
 
-		$mycustomposts = get_posts( array( 'post_type' => $this->post_type, 'posts_per_page' => -1 ) );
+		$mycustomposts = get_posts(
+			array(
+				'post_type'      => $this->post_type,
+				'posts_per_page' => -1,
+			)
+		);
 		foreach ( $mycustomposts as $mypost ) {
 			// Delete each post.
 			wp_delete_post( $mypost->ID, true );
@@ -763,12 +782,14 @@ class Feeds implements HasActions, HasFilters {
 
 
 	public function dead_feed_status() {
-		register_post_status('removed_' . $this->post_type, array(
-			'label'                 => _x( 'Removed Feed', 'pf' ),
-			'public'                => false,
-			'exclude_from_search'   => true,
-			'show_in_admin_all_list' => false,
-		) );
+		register_post_status(
+			'removed_' . $this->post_type, array(
+				'label'                  => _x( 'Removed Feed', 'pf' ),
+				'public'                 => false,
+				'exclude_from_search'    => true,
+				'show_in_admin_all_list' => false,
+			)
+		);
 	}
 
 	public function feed_post_setup_inital( $r, $insert_type = 'insert' ) {
@@ -789,13 +810,13 @@ class Feeds implements HasActions, HasFilters {
 		}
 
 		$wp_args = array(
-			'post_type' 	=> $this->post_type,
-			'post_status' 	=> $r['post_status'],
-			'post_title'	=> $r['title'],
-			'post_content'	=> $r['description'],
-			'guid'			=> $r['url'],
-			'post_parent'	=> $r['post_parent'],
-			'tax_input' 	=> array( $this->tag_taxonomy => $r['tags'] ),
+			'post_type'    => $this->post_type,
+			'post_status'  => $r['post_status'],
+			'post_title'   => $r['title'],
+			'post_content' => $r['description'],
+			'guid'         => $r['url'],
+			'post_parent'  => $r['post_parent'],
+			'tax_input'    => array( $this->tag_taxonomy => $r['tags'] ),
 		);
 		// Duplicate the function of WordPress where creating a pre-existing
 		// post results in an update to that post.
@@ -821,7 +842,7 @@ class Feeds implements HasActions, HasFilters {
 
 			if ( ! isset( $r['ID'] ) ) {
 				$post_obj = $this->get_feed( $r['url'] );
-				$r['ID'] = $post_obj->ID;
+				$r['ID']  = $post_obj->ID;
 			}
 			unset( $wp_args['post_status'] );
 			$wp_args['ID'] = $r['ID'];
@@ -837,7 +858,7 @@ class Feeds implements HasActions, HasFilters {
 	// A function to take an argument array and turn it into a Feed CPT entry.
 	public function feed_post_setup( $r, $insert_type = 'insert' ) {
 		pf_log( 'Invoked: feed_post_setup' );
-		$r = $this->feed_post_setup_inital( $r, $insert_type );
+		$r       = $this->feed_post_setup_inital( $r, $insert_type );
 		$wp_args = $r['wp_args'];
 		unset( $r['wp_args'] );
 		if ( $insert_type == 'update' ) {
@@ -854,7 +875,7 @@ class Feeds implements HasActions, HasFilters {
 		// echo '<pre>';
 		// var_dump($post_id);
 		// echo '</pre>';
-		if ( is_numeric( $post_id ) && (0 < $post_id) ) {
+		if ( is_numeric( $post_id ) && ( 0 < $post_id ) ) {
 			pf_log( 'The post_id is numeric and greater than 0, complete the ' . $insert_type . ' process' );
 			$this->set_pf_feed_type( $post_id, $r['type'] );
 			pf_log( 'Tags found:' );
@@ -966,39 +987,60 @@ class Feeds implements HasActions, HasFilters {
 
 	public function create( $feedUrl, $args = array() ) {
 		// print_r('<pre>'); var_dump($feedUrl); print_r('</pre>'); die();
-		$r = wp_parse_args( $args, array(
-			'title'   		=> false,
-			'url'     		=> $feedUrl,
-			'htmlUrl' 		=> false,
-			'type'	  		=> 'rss',
-			'feedUrl'		=> $feedUrl,
-			'description' 	=> false,
-			'feed_author' 	=> false,
-			'feed_icon'  	=> false,
-			'copyright'		=> false,
-			'thumbnail'  	=> false,
-			'user_added'    => false,
-			'post_parent'	=> 0,
-			'post_status'   => 'publish',
-			'module_added' 	=> 'rss-import',
-			'tags'    => array(),
-		) );
+		$r = wp_parse_args(
+			$args, array(
+				'title'        => false,
+				'url'          => $feedUrl,
+				'htmlUrl'      => false,
+				'type'         => 'rss',
+				'feedUrl'      => $feedUrl,
+				'description'  => false,
+				'feed_author'  => false,
+				'feed_icon'    => false,
+				'copyright'    => false,
+				'thumbnail'    => false,
+				'user_added'   => false,
+				'post_parent'  => 0,
+				'post_status'  => 'publish',
+				'module_added' => 'rss-import',
+				'tags'         => array(),
+			)
+		);
 		pf_log( 'Received a create command with the following arguments:' );
 		pf_log( $r );
 		// var_dump('yo'); die();
 		if ( $r['type'] == 'rss' ) {
 			pf_log( 'We are creating an RSS feed' );
-			$theFeed = fetch_feed( $feedUrl );
+			$theFeed = pf_fetch_feed( $feedUrl );
 			if ( is_wp_error( $theFeed ) ) {
+				$origFeedURL = trailingslashit($feedUrl);
 				pf_log( 'The RSS feed failed verification' );
-				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
+				$feedUrl = $origFeedURL.'rss/';
+				pf_log( 'Trying '.$feedUrl );
+				$theFeed = pf_fetch_feed( $feedUrl );
+				if ( is_wp_error( $theFeed ) ) {
+					pf_log( 'The RSS feed failed 2nd verification' );
+					$feedUrl = $origFeedURL.'rss/index.xml';
+					pf_log( 'Trying '.$feedUrl );
+					$theFeed = pf_fetch_feed( $feedUrl );
+					if ( is_wp_error( $theFeed ) ) {
+						pf_log( 'The RSS feed failed 3rd verification' );
+						return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
+					} else {
+						$r['url'] = $feedUrl;
+						$r['feedUrl'] = $feedUrl;
+					}
+				} else {
+					$r['url'] = $feedUrl;
+					$r['feedUrl'] = $feedUrl;
+				}
 			} else {
 				pf_log( 'The RSS feed was verified, setting up meta' );
 				$r = $this->setup_rss_meta( $r, $theFeed );
 			}
 		}
 		if ( ! $r['user_added'] ) {
-			$current_user = wp_get_current_user();
+			$current_user    = wp_get_current_user();
 			$r['user_added'] = $current_user->user_login;
 		}
 		if ( $r['type'] == 'rss-quick' && ! isset( $r['title'] ) ) {
@@ -1034,9 +1076,10 @@ class Feeds implements HasActions, HasFilters {
 
 	// A function to pull feeds from the database.
 	public function get( $args = array() ) {
-		if ( ! post_type_exists( 'pf_feed' ) ) { $this->register_feed_post_type(); }
+		if ( ! post_type_exists( 'pf_feed' ) ) {
+			$this->register_feed_post_type(); }
 
-		$post_status = array( 'publish','under_review','draft' );
+		$post_status   = array( 'publish', 'under_review', 'draft' );
 		$post_status[] = pressforward( 'library.alertbox' )->status();
 
 		$defaults = array(
@@ -1054,7 +1097,7 @@ class Feeds implements HasActions, HasFilters {
 
 			if ( $parts > 0 ) {
 				// Apparently WP query can't deal with more than one part in a URL query. So we need another way.
-				$args['meta_key'] = 'feedUrl';
+				$args['meta_key']   = 'feedUrl';
 				$args['meta_value'] = $args['url'];
 			} else {
 				$this->filter_data['guid'] = $args['url'];
@@ -1109,22 +1152,24 @@ class Feeds implements HasActions, HasFilters {
 		// Eventually we'll want to use the 'retrieve_by'
 		// to allow devs to pass different types of queries
 		// using the data passed in the argument.
-		$r = wp_parse_args( $args, array(
-			'title'   		=> false,
-			'url'     		=> false,
-			'htmlUrl' 		=> false,
-			'type'	  		=> $type,
-			'description' 	=> false,
-			'feed_author' 	=> false,
-			'feed_icon'  	=> false,
-			'copyright'		=> false,
-			'thumbnail'  	=> false,
-			'user_added'    => false,
-			'module_added' 	=> false,
-			'tags'    		=> array(),
-			'page'			=> false,
-			'retrieve_by'	=> false,
-		) );
+		$r = wp_parse_args(
+			$args, array(
+				'title'        => false,
+				'url'          => false,
+				'htmlUrl'      => false,
+				'type'         => $type,
+				'description'  => false,
+				'feed_author'  => false,
+				'feed_icon'    => false,
+				'copyright'    => false,
+				'thumbnail'    => false,
+				'user_added'   => false,
+				'module_added' => false,
+				'tags'         => array(),
+				'page'         => false,
+				'retrieve_by'  => false,
+			)
+		);
 
 	}
 
@@ -1143,8 +1188,8 @@ class Feeds implements HasActions, HasFilters {
 			setup_postdata( $post );
 			$post_id = $post->ID;
 			if ( is_numeric( $post_id ) ) {
-				if ( ($c == 0) ) {
-					$feed_post = get_post( $post_id, ARRAY_A );
+				if ( ( $c == 0 ) ) {
+					$feed_post        = get_post( $post_id, ARRAY_A );
 					$feed_post['url'] = $url;
 					$this->update( $post_id, $feed_post );
 				} else {
@@ -1166,20 +1211,22 @@ class Feeds implements HasActions, HasFilters {
 	// A function to update an existing feed CPT entry.
 	public function update( $post_id, $args ) {
 		pf_log( 'Invoked: PF_FEEDS_SCHEMA::update' );
-		$r = wp_parse_args( $args, array(
-			'ID'			=> $post_id,
-			'title'   		=> false,
-			'url'     		=> false,
-			'htmlUrl' 		=> false,
-			'type'	  		=> 'rss',
-			'description' 	=> false,
-			'feed_author' 	=> false,
-			'feed_icon'  	=> false,
-			'copyright'		=> false,
-			'thumbnail'  	=> false,
-			'module_added' 	=> 'rss-import',
-			'tags'    		=> array(),
-		) );
+		$r = wp_parse_args(
+			$args, array(
+				'ID'           => $post_id,
+				'title'        => false,
+				'url'          => false,
+				'htmlUrl'      => false,
+				'type'         => 'rss',
+				'description'  => false,
+				'feed_author'  => false,
+				'feed_icon'    => false,
+				'copyright'    => false,
+				'thumbnail'    => false,
+				'module_added' => 'rss-import',
+				'tags'         => array(),
+			)
+		);
 		if ( ! $r['url'] ) {
 			$feedURL = get_the_guid( $post_id );
 			if ( empty( $feedURL ) ) {
@@ -1189,7 +1236,7 @@ class Feeds implements HasActions, HasFilters {
 			$feedURL = $r['url'];
 		}
 		if ( $r['type'] == 'rss' ) {
-			$theFeed = fetch_feed( $feedURL );
+			$theFeed = pf_fetch_feed( $feedURL );
 			if ( is_wp_error( $theFeed ) ) {
 				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
 			} else {
@@ -1198,7 +1245,7 @@ class Feeds implements HasActions, HasFilters {
 		}
 		if ( 'rss-quick' == $r['type'] ) {
 			pf_log( 'Updating a rss-quick' );
-			$theFeed = fetch_feed( $feedURL );
+			$theFeed = pf_fetch_feed( $feedURL );
 			if ( is_wp_error( $theFeed ) ) {
 				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
 			} else {
@@ -1218,20 +1265,22 @@ class Feeds implements HasActions, HasFilters {
 
 	public function update_title( $post_id, $args ) {
 		pf_log( 'Invoked: PF_FEEDS_SCHEMA::update' );
-		$r = wp_parse_args( $args, array(
-			'ID'			=> $post_id,
-			'title'   		=> false,
-			'url'     		=> false,
-			'htmlUrl' 		=> false,
-			'type'	  		=> 'rss',
-			'description' 	=> false,
-			'feed_author' 	=> false,
-			'feed_icon'  	=> false,
-			'copyright'		=> false,
-			'thumbnail'  	=> false,
-			'module_added' 	=> 'rss-import',
-			'tags'    		=> array(),
-		) );
+		$r = wp_parse_args(
+			$args, array(
+				'ID'           => $post_id,
+				'title'        => false,
+				'url'          => false,
+				'htmlUrl'      => false,
+				'type'         => 'rss',
+				'description'  => false,
+				'feed_author'  => false,
+				'feed_icon'    => false,
+				'copyright'    => false,
+				'thumbnail'    => false,
+				'module_added' => 'rss-import',
+				'tags'         => array(),
+			)
+		);
 		if ( ! $r['url'] ) {
 			$feedURL = get_the_guid( $post_id );
 			if ( empty( $feedURL ) ) {
@@ -1242,7 +1291,7 @@ class Feeds implements HasActions, HasFilters {
 		}
 		if ( 'rss-quick' == $r['type'] ) {
 			pf_log( 'Updating a rss-quick' );
-			$theFeed = fetch_feed( $feedURL );
+			$theFeed = pf_fetch_feed( $feedURL );
 			if ( is_wp_error( $theFeed ) ) {
 				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
 			} else {
@@ -1322,7 +1371,7 @@ class Feeds implements HasActions, HasFilters {
 	}
 
 	public function make_alert_return_to_publish( $status_data ) {
-		if ( ( ! empty( $status_data['type'] )) && ($this->post_type == $status_data['type']) ) {
+		if ( ( ! empty( $status_data['type'] ) ) && ( $this->post_type == $status_data['type'] ) ) {
 			$status_data['status'] = 'publish';
 			return $status_data;
 		}
@@ -1389,13 +1438,13 @@ class Feeds implements HasActions, HasFilters {
 		if ( $post_type_object->publicly_queryable ) {
 			$permalink = get_permalink( $post->ID );
 
-			$view_link = ' ';
+			$view_link                        = ' ';
 			$messages[ $this->post_type ][1] .= $view_link;
 			$messages[ $this->post_type ][6] .= $view_link;
 			$messages[ $this->post_type ][9] .= $view_link;
 
-			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
-			$preview_link = ' ';
+			$preview_permalink                 = add_query_arg( 'preview', 'true', $permalink );
+			$preview_link                      = ' ';
 			$messages[ $this->post_type ][8]  .= $preview_link;
 			$messages[ $this->post_type ][10] .= $preview_link;
 		}

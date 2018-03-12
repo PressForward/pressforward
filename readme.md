@@ -1,7 +1,7 @@
 ## Plugin Name: PressForward
 - Plugin URI: http://pressforward.org/
 - Description: PressForward is a WordPress plugin built to process feeds as a feed reader, allow groups to share and discuss the items that come in and then blog about them as an integrated editorial process.
-- Version: 5.0.0
+- Version: 5.1.0
 - Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
 - Author URI: http://pressforward.org/
 - License: GPL2

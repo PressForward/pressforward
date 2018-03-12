@@ -4,7 +4,7 @@ Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 3.0.1
 Tested up to: 4.9.1
-Stable tag: 5.0.0
+Stable tag: 5.1.0
 License: GPL2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -81,6 +81,21 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+
+= 5.1.0 =
+* Users can now receive email notifications when an item is nominated.
+* The PressForward API can now be filtered using query arguments.
+* PressForward is now compatible with the WPMU SmartCrawl SEO plugin.
+* Fixed a bug that prevented items that were nominated and also sent to draft by the same user from appearing in posts.
+* Fixed a bug created by emojis.
+* Fixed a bug that prevented featured images from being added.
+* Fixed a bug that allowed for images to be duplicated in the media library when nominated from both the Nominate This Bookmarklet and All Content.
+* Fixed a bug that prevented PressForward from collecting content from certain feeds.
+* Fixed a bug that created compatibility issues with older versions of PHP.
+* Changed the language on the ‘Add Feeds’ page button to read “Submit” instead of “Save Changes.”
+* Fixed a bug to ensure that nominated items in all content remain marked as nominated.
+* Items read in Reader View are now marked as “Read” in All Content.
+* Fixed a bug that caused items nominated from both the Nominate This Bookmarklet and All Content to be duplicated.
 
 = 5.0.0 =
 

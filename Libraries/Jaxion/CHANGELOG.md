@@ -2,6 +2,18 @@
 
 All Notable changes to `jaxion` will be documented in this file. This change log follows the [Keep a Changelog standards]. Versions follows [Semantic Versioning].
 
+## [NEXT] ##
+
+### Added ###
+* Unit tests for all Model-related functionality.
+* Exposed and memoized methods for key-related info for Models.
+    * These will be used by the EntityManager to fill in all of the Model's attributes.
+
+### Changed ###
+* Moved all Database-related code to Axolotl namespace,
+* Renamed `Model\Base` class to `Axolotl\Model` class.
+* Removed `Model\Post` class.
+
 ## [0.0.1] ##
 
 ### Added ###
@@ -16,8 +28,6 @@ All Notable changes to `jaxion` will be documented in this file. This change log
   * Guards and Filters, for protecting your registered endpoints
 * Model classes:
   * Base and Post, for providing a simple, unified interface over WP_Post and post_meta
-
-### Added ###
 
   [Keep a Changelog standards]: http://keepachangelog.com/
   [Semantic Versioning]: http://semver.org/

@@ -8,7 +8,7 @@ use Intraxia\Jaxion\Contract\Assets\Register as RegisterContract;
  *
  * Provides a consistent interface for registering static assets with WordPress.
  *
- * @package Intraxia\Jaxion
+ * @package    Intraxia\Jaxion
  * @subpackage Register
  */
 class Register implements RegisterContract {
@@ -17,7 +17,7 @@ class Register implements RegisterContract {
 	 *
 	 * @var string
 	 */
-	private $min = '';
+	private $min = '.min';
 
 	/**
 	 * Url to the plugin directory.
@@ -60,8 +60,8 @@ class Register implements RegisterContract {
 	 * @param string $version
 	 */
 	public function __construct( $url, $version = null ) {
-		$this->url = $url;
-		$this->version = $version ? : null; // Empty string should remain null.
+		$this->url     = $url;
+		$this->version = $version ?: null; // Empty string should remain null.
 	}
 
 	/**
@@ -70,10 +70,10 @@ class Register implements RegisterContract {
 	 * @param bool $debug
 	 */
 	public function set_debug( $debug ) {
-		if ( $debug ) {
-			$this->min = '.min';
-		} else {
+		if ( $debug || WP_DEBUG ) {
 			$this->min = '';
+		} else {
+			$this->min = '.min';
 		}
 	}
 
@@ -119,6 +119,8 @@ class Register implements RegisterContract {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param string $hook Passes a string representing the current page.
 	 */
 	public function enqueue_admin_scripts( $hook ) {
 		foreach ( $this->scripts as $script ) {
@@ -130,6 +132,8 @@ class Register implements RegisterContract {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @param string $hook Passes a string representing the current page.
 	 */
 	public function enqueue_admin_styles( $hook ) {
 		foreach ( $this->styles as $style ) {
@@ -168,14 +172,14 @@ class Register implements RegisterContract {
 	/**
 	 * Enqueues an individual script if the style's condition is met.
 	 *
-	 * @param array  $script  The script attachment callback.
-	 * @param string $hook  The location hook.
+	 * @param array  $script The script attachment callback.
+	 * @param string $hook   The location hook. Only passed on admin side.
 	 */
-	protected function enqueue_script( $script, $hook = false ) {
+	protected function enqueue_script( $script, $hook = null ) {
 		if ( $script['condition']( $hook ) ) {
 			wp_enqueue_script(
 				$script['handle'],
-				$this->url . $script['src'] . '.js',
+				$this->url . $script['src'] . $this->min . '.js',
 				isset( $script['deps'] ) ? $script['deps'] : array(),
 				$this->version,
 				isset( $script['footer'] ) ? $script['footer'] : false
@@ -198,14 +202,14 @@ class Register implements RegisterContract {
 	/**
 	 * Enqueues an individual stylesheet if the style's condition is met.
 	 *
-	 * @param array  $script  The script attachment callback.
+	 * @param array  $style The style attachment callback.
 	 * @param string $hook  The location hook.
 	 */
-	protected function enqueue_style( $style, $hook = false ) {
+	protected function enqueue_style( $style, $hook = null ) {
 		if ( $style['condition']( $hook ) ) {
 			wp_enqueue_style(
 				$style['handle'],
-				$this->url . $style['src'] . '.css',
+				$this->url . $style['src'] . $this->min . '.css',
 				isset( $style['deps'] ) ? $style['deps'] : array(),
 				$this->version,
 				isset( $style['media'] ) ? $style['media'] : 'all'

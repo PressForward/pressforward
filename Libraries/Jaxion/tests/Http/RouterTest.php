@@ -90,7 +90,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 					'methods'  => 'GET',
 					'callback' => $callback,
 				),
-			),
+			)
 		) );
 
 		$this->router->register();
@@ -112,7 +112,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 					'methods'  => 'POST',
 					'callback' => $callback,
 				),
-			),
+			)
 		) );
 
 		$this->router->register();
@@ -134,7 +134,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 					'methods'  => 'PUT',
 					'callback' => $callback,
 				),
-			),
+			)
 		) );
 
 		$this->router->register();
@@ -156,7 +156,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 					'methods'  => 'PATCH',
 					'callback' => $callback,
 				),
-			),
+			)
 		) );
 
 		$this->router->register();
@@ -178,7 +178,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 					'methods'  => 'DELETE',
 					'callback' => $callback,
 				),
-			),
+			)
 		) );
 
 		$this->router->register();
@@ -200,7 +200,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 					'methods'  => 'POST, PUT, PATCH',
 					'callback' => $callback,
 				),
-			),
+			)
 		) );
 
 		$this->router->register();
@@ -222,7 +222,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 					'methods'  => 'GET, POST, PUT, PATCH, DELETE',
 					'callback' => $callback,
 				),
-			),
+			)
 		) );
 
 		$this->router->register();
@@ -248,7 +248,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 					'callback'            => $callback,
 					'permission_callback' => array( $guard, 'authorized' ),
 				),
-			),
+			)
 		) );
 
 		$this->router->register();
@@ -260,8 +260,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 		};
 		$args     = array(
 			'ID' => array(
-				'validate_callback' => 'is_int',
-			),
+				'validate_callback' => 'is_int'
+			)
 		);
 		$filter   = Mockery::mock( 'Intraxia\Jaxion\Contract\Http\Filter' );
 		$filter
@@ -283,7 +283,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 					'callback' => $callback,
 					'args'     => $args,
 				),
-			),
+			)
 		) );
 
 		$this->router->register();
@@ -307,7 +307,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 					'methods'  => 'GET',
 					'callback' => $callback,
 				),
-			),
+			)
 		) );
 
 		$this->router->register();
@@ -352,7 +352,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 					'methods'  => 'GET',
 					'callback' => $callback,
 				),
-			),
+			)
 		) );
 
 		WP_Mock::wpFunction( 'register_rest_route', array(
@@ -364,7 +364,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 					'methods'  => 'POST',
 					'callback' => $callback,
 				),
-			),
+			)
 		) );
 
 		$this->router->register();
@@ -391,7 +391,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 					'callback'            => $callback,
 					'permission_callback' => array( $guard, 'authorized' ),
 				),
-			),
+			)
 		) );
 
 		WP_Mock::wpFunction( 'register_rest_route', array(
@@ -404,7 +404,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 					'callback'            => $callback,
 					'permission_callback' => array( $guard, 'authorized' ),
 				),
-			),
+			)
 		) );
 
 		$this->router->register();
@@ -416,8 +416,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 		};
 		$args     = array(
 			'ID' => array(
-				'validate_callback' => 'is_int',
-			),
+				'validate_callback' => 'is_int'
+			)
 		);
 		$filter   = Mockery::mock( 'Intraxia\Jaxion\Contract\Http\Filter' );
 		$filter
@@ -440,7 +440,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 					'callback' => $callback,
 					'args'     => $args,
 				),
-			),
+			)
 		) );
 
 		WP_Mock::wpFunction( 'register_rest_route', array(
@@ -453,7 +453,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 					'callback' => $callback,
 					'args'     => $args,
 				),
-			),
+			)
 		) );
 
 		$this->router->register();
