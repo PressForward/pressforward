@@ -36,7 +36,7 @@ class Application extends JaxionCore {
 	 */
 	public function activate() {
 		global $wp_rewrite;
-		define( 'VERSION', '4.3.0' );
+		define( 'VERSION', '5.1.0' );
 		$current_version = VERSION; // define this constant in the loader file
 		$saved_version   = get_option( 'pf_version' );
 
