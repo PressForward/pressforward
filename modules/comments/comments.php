@@ -64,6 +64,7 @@ class PF_Comments extends PF_Module {
 				'count' => true,
 				'post_id' => $id,
 				'type' => self::comment_type,
+				'status' => 'any',
 			)
 		);
 		if ( ! $comment_count ) {
