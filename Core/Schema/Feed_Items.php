@@ -380,10 +380,10 @@ class Feed_Items implements HasActions, HasFilters {
 		$url = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'pf_source_link' );
 		if ( empty( $url ) ) {
 			$url = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'item_link' );
+			$source_url = pressforward( 'controller.http_tools' )->resolve_a_url( $url );
+			pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_source_link', $source_url );
 			// pf_log($url);
 		}
-		$source_url = pressforward( 'controller.http_tools' )->resolve_a_url( $url );
-		pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_source_link', $source_url );
 		return $source_url;
 	}
 
