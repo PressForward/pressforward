@@ -126,6 +126,8 @@ class Relationships implements HasActions {
 			)
 		);
 
+		$this->clean_relationship_cache_incrementor();
+
 		return $wpdb->insert_id;
 	}
 
@@ -179,6 +181,8 @@ class Relationships implements HasActions {
 			);
 		}
 
+		$this->clean_relationship_cache_incrementor();
+
 		return (bool) $updated;
 	}
 
@@ -194,31 +198,57 @@ class Relationships implements HasActions {
 			)
 		);
 
-		$sql[] = "SELECT * FROM {$this->table_name}";
+		// Attempt to fetch items from cache. Single items not currently cached.
+		$cached = $cache_key = false;
+		if ( empty( $r['id'] ) ) {
+			// For simplicity, each combination of arguments is cached separately.
+			$last_changed = wp_cache_get( 'last_changed', 'pf_relationships' );
+			if ( ! $last_changed ) {
+				$last_changed = microtime();
+				wp_cache_set( 'last_changed', $last_changed, 'pf_relationships' );
+			}
 
-		// If an ID is passed, use it. Otherwise build WHERE from params
-		$where = array();
-		if ( $r['id'] ) {
-			$where[] = $wpdb->prepare( 'id = %d', $r['id'] );
-		} else {
-			foreach ( $r as $rk => $rv ) {
-				if ( ! in_array( $rk, array( 'id', 'unique', 'value' ) ) && false !== $rv ) {
-					$where[] = $wpdb->prepare( "{$rk} = %d", $rv );
+			$cache_key = md5( json_encode( $r ) ) . '_' .  $last_changed;;
+		}
+
+		if ( $cache_key ) {
+			$cached = wp_cache_get( $cache_key, 'pf_relationships' );
+		}
+
+		if ( false === $cached ) {
+			$sql[] = "SELECT * FROM {$this->table_name}";
+
+			// If an ID is passed, use it. Otherwise build WHERE from params
+			$where = array();
+			if ( $r['id'] ) {
+				$where[] = $wpdb->prepare( 'id = %d', $r['id'] );
+			} else {
+				foreach ( $r as $rk => $rv ) {
+					if ( ! in_array( $rk, array( 'id', 'unique', 'value' ) ) && false !== $rv ) {
+						$where[] = $wpdb->prepare( "{$rk} = %d", $rv );
+					}
 				}
 			}
+
+			if ( ! empty( $where ) ) {
+				$sql[] = 'WHERE ' . implode( ' AND ', $where );
+			}
+
+			$sql = implode( ' ', $sql );
+			if ( $r['user_id'] ) {
+				$sql .= ' AND user_id = ' . $r['user_id'];
+			}
+
+			$results = $wpdb->get_results( $sql );
+
+			if ( $cache_key ) {
+				wp_cache_set( $cache_key, $results, 'pf_relationships' );
+			}
+		} else {
+			$results = $cached;
 		}
 
-		if ( ! empty( $where ) ) {
-			$sql[] = 'WHERE ' . implode( ' AND ', $where );
-		}
-
-		$sql = implode( ' ', $sql );
-		if ( $r['user_id'] ) {
-			$sql .= ' AND user_id = ' . $r['user_id'];
-		}
-
-		return $wpdb->get_results( $sql );
-
+		return $results;
 	}
 
 	function delete( $args = array() ) {
@@ -240,7 +270,15 @@ class Relationships implements HasActions {
 			$deleted = false !== $d;
 		}
 
+		$this->clean_relationship_cache_incrementor();
+
 		return $deleted;
 	}
 
+	/**
+	 * Invalidates the cache incrementor.
+	 */
+	protected function clean_relationship_cache_incrementor() {
+		wp_cache_delete( 'last_changed', 'pf_relationships' );
+	}
 }

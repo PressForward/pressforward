@@ -59,5 +59,47 @@ class PF_Tests extends PF_UnitTestCase {
 
 		$this->assertSame( false, $value );
 	}
-}
 
+	public function test_pf_get_relationship_value_should_be_cached() {
+		global $wpdb;
+
+		$user_id = $this->factory->user->create();
+		$item_id = $this->factory->post->create();
+		$type = 'star';
+		$relationship_id = $this->factory->relationship->create( array(
+			'user_id' => $user_id,
+			'item_id' => $item_id,
+			'type'    => $type,
+			'value'   => 'foo',
+		) );
+
+		$value = pf_get_relationship_value( $type, $item_id, $user_id );
+		$this->assertSame( 'foo', $value );
+
+		$num_queries = $wpdb->num_queries;
+
+		$value = pf_get_relationship_value( $type, $item_id, $user_id );
+		$this->assertSame( 'foo', $value );
+		$this->assertSame( $num_queries, $wpdb->num_queries );
+	}
+
+	public function test_pf_get_relationship_value_cache_invalidation() {
+		$user_id = $this->factory->user->create();
+		$item_id = $this->factory->post->create();
+		$type = 'star';
+		$relationship_id = $this->factory->relationship->create( array(
+			'user_id' => $user_id,
+			'item_id' => $item_id,
+			'type'    => $type,
+			'value'   => 'foo',
+		) );
+
+		$value = pf_get_relationship_value( $type, $item_id, $user_id );
+		$this->assertSame( 'foo', $value );
+
+		$t = pf_set_relationship( $type, $item_id, $user_id, 'bar' );
+
+		$value = pf_get_relationship_value( $type, $item_id, $user_id );
+		$this->assertSame( 'bar', $value );
+	}
+}
