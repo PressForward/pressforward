@@ -58,7 +58,15 @@ class PF_Comments extends PF_Module {
 
 	function get_editorial_comment_count( $id ) {
 		global $wpdb;
-		$comment_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->comments WHERE comment_post_ID = %d AND comment_type = %s", $id, self::comment_type ) );
+		$query = new \WP_Comment_Query();
+		$comment_count = $query->query(
+			array(
+				'count' => true,
+				'post_id' => $id,
+				'type' => self::comment_type,
+				'status' => 'any',
+			)
+		);
 		if ( ! $comment_count ) {
 			$comment_count = 0; }
 		return $comment_count;
