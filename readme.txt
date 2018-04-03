@@ -3,7 +3,7 @@ Contributors: PressForward, AramZS, boonebgorges, lmrhody, asmmap, regan008, joa
 Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 3.0.1
-Tested up to: 4.9.1
+Tested up to: 4.9.4
 Stable tag: 5.1.1
 License: GPL2
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -81,6 +81,12 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+
+= 5.1.1 =
+* Changed when source_url is fetched.
+* Optimized the comment query.
+* Optimized relationship queries.
+* Pre-fetch folders.
 
 = 5.1.0 =
 * Users can now receive email notifications when an item is nominated.
