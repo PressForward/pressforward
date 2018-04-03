@@ -219,10 +219,10 @@ class Folders implements HasActions, HasFilters {
 		$q      = new \WP_Query(
 			array(
 				'post_type' => $this->post_type,
-				'fields'    => 'ids',
 				'orderby'   => 'title',
 				'order'     => 'ASC',
 				'nopaging'  => true,
+				'update_post_meta_cache' => false,
 				'tax_query' => array(
 					array(
 						'taxonomy' => $this->tag_taxonomy,
@@ -231,9 +231,9 @@ class Folders implements HasActions, HasFilters {
 				),
 			)
 		);
-		   $ids = $q->posts;
-		   return $ids;
 
+		$ids = wp_list_pluck( $q->posts, 'ID' );
+		return $ids;
 	}
 
 	public function link_to_see_all_feeds_and_folders() {
