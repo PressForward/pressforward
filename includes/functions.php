@@ -360,7 +360,9 @@ function pf_feed_object( $itemTitle = '', $sourceTitle = '', $itemDate = '', $it
 }
 
 function create_feed_item_id( $url, $title ) {
-	$hash = md5( $url . $title );
+	$url = str_replace('http://', '', $url);
+	$url = str_replace('https://', '', $url);
+	$hash = md5( untrailingslashit(trim($url)) );
 	return $hash;
 }
 
@@ -381,7 +383,7 @@ function pf_get_posts_by_id_for_check( $post_type = false, $item_id, $ids_only =
 	// $theDate = getdate();
 	// $w = date('W');
 	$r = array(
-							'meta_key' => 'item_id',
+							'meta_key' => pressforward('controller.metas')->get_key('item_id'),
 							'meta_value' => $item_id,
 							'post_type'	=> array( 'post', pf_feed_item_post_type() ),
 						);
@@ -455,6 +457,55 @@ function pf_de_https( $url, $function = false ) {
 		return $r;
 	} else {
 		return pressforward( 'controller.http_tools' )->get_url_content( $url_orig, $function );
+	}
+}
+/**
+ * Derived from WordPress's fetch feed function at: https://developer.wordpress.org/reference/functions/fetch_feed/
+ */
+function pf_fetch_feed( $url ){
+	$theFeed = fetch_feed( $url );
+	if ( is_wp_error( $theFeed ) ) {
+
+		if ( ! class_exists( 'SimplePie', false ) ) {
+			require_once( ABSPATH . WPINC . '/class-simplepie.php' );
+		}
+
+		require_once( ABSPATH . WPINC . '/class-wp-feed-cache.php' );
+		require_once( ABSPATH . WPINC . '/class-wp-feed-cache-transient.php' );
+		require_once( ABSPATH . WPINC . '/class-wp-simplepie-file.php' );
+		require_once( ABSPATH . WPINC . '/class-wp-simplepie-sanitize-kses.php' );
+
+		$feed = new SimplePie();
+
+		$feed->set_sanitize_class( 'WP_SimplePie_Sanitize_KSES' );
+		// We must manually overwrite $feed->sanitize because SimplePie's
+		// constructor sets it before we have a chance to set the sanitization class
+		$feed->sanitize = new WP_SimplePie_Sanitize_KSES();
+
+		$feed->set_cache_class( 'WP_Feed_Cache' );
+		$feed->set_file_class( 'WP_SimplePie_File' );
+		add_filter( 'pf_encoding_retrieval_control', '__return_false' );
+		$feedXml = pf_de_https( $url, 'wp_remote_get' );
+		//$feedXml = mb_convert_encoding($feedXml['body'], 'UTF-8');
+		$feed->set_raw_data($feedXml['body']);
+		$feed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', 12 * HOUR_IN_SECONDS, $url ) );
+		/**
+		 * Fires just before processing the SimplePie feed object.
+		 *
+		 * @param object $feed SimplePie feed object (passed by reference).
+		 * @param mixed  $url  URL of feed to retrieve. If an array of URLs, the feeds are merged.
+		 */
+		do_action_ref_array( 'wp_feed_options', array( &$feed, $url ) );
+		$feed->init();
+		$feed->handle_content_type();
+		$feed->set_output_encoding( get_option( 'blog_charset' ) );
+
+		if ( $feed->error() ){
+			return new WP_Error( 'simplepie-error', $feed->error() );
+		}
+		return $feed;
+	} else {
+		return $theFeed;
 	}
 }
 
@@ -653,34 +704,35 @@ function pf_get_defining_capability_by_role( $role_slug ) {
 	$pf_use_advanced_user_roles = get_option( 'pf_use_advanced_user_roles', 'no' );
 	// For those who wish to ignore the super-cool auto-detection for fringe-y sites that
 	// let their user capabilities go wild.
-	if ( 'no' == $pf_use_advanced_user_roles ) {
-		$role_slug = strtolower( $role_slug );
-		switch ( $role_slug ) {
-			case 'administrator':
-				return 'manage_options';
-				break;
-			case 'editor':
-				return 'edit_others_posts';
-				break;
-			case 'author':
-				return 'publish_posts';
-				break;
-			case 'contributor':
-				return 'edit_posts';
-				break;
-			case 'subscriber':
-				return 'read';
-				break;
-		}
-	} else {
+	if ( 'no' != $pf_use_advanced_user_roles ) {
 		$caps = pf_get_capabilities();
 		foreach ( $caps as $slug => $cap ) {
 			$low_role = pf_get_role_by_capability( $slug );
 			// Return the first capability only applicable to that role.
 			if ( $role_slug == ($low_role) ) {
-				return $slug; }
+				return $slug;
+			}
 		}
 	}
+    // Even if we use $pf_use_advanced_user_roles, if it doesn't find any actual lowest option (like it is the case with contributor currently), it should still go to the default ones below
+    $role_slug = strtolower( $role_slug );
+    switch ( $role_slug ) {
+        case 'administrator':
+            return 'manage_options';
+            break;
+        case 'editor':
+            return 'edit_others_posts';
+            break;
+        case 'author':
+            return 'publish_posts';
+            break;
+        case 'contributor':
+            return 'edit_posts';
+            break;
+        case 'subscriber':
+            return 'read';
+            break;
+    }
 }
 
 function pf_capability_mapper( $cap, $role_slug ) {
@@ -794,6 +846,7 @@ function pf_filter_canonical( $url ) {
 
 add_filter( 'wpseo_canonical', 'pf_filter_canonical' );
 add_filter( 'wpseo_opengraph_url', 'pf_filter_canonical' );
+add_filter("wds_filter_canonical", 'pf_filter_canonical');
 
 /**
  * A function to set up the HEAD data to forward users to origonal articles.
@@ -817,6 +870,7 @@ function pf_forward_unto_source() {
 		} else {
 			echo '<link rel="canonical" href="' . $link . '" />';
 			echo '<meta property="og:url" content="' . $link . '" />';
+			add_filter( 'wds_process_canonical', '__return_false');
 		}
 		$wait = get_option( 'pf_link_to_source', 0 );
 		$post_check = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'pf_forward_to_origin', true );
@@ -853,7 +907,7 @@ function pf_is_drafted( $item_id ) {
 	$a = array(
 			'no_found_rows' => true,
 			'fields' => 'ids',
-			'meta_key' => 'item_id',
+			'meta_key' => pressforward('controller.metas')->get_key('item_id'),
 			'meta_value' => $item_id,
 			'post_type'	=> get_option( PF_SLUG . '_draft_post_type', 'post' ),
 		);
@@ -966,7 +1020,7 @@ function prep_archives_query( $q ) {
 
 	if ( isset( $_GET['pc'] ) ) {
 		$offset = $_GET['pc'] -1;
-		$offset = $offset * 10;
+		$offset = $offset * 20;
 	} else {
 		$offset = 0;
 	}
@@ -978,17 +1032,17 @@ function prep_archives_query( $q ) {
 		$pagefull = 20;
 		$user_id = get_current_user_id();
 		$read_id = pf_get_relationship_type_id( 'archive' );
+		//It is bad to use SQL_CALC_FOUND_ROWS, but we need it to replicate the same behaviour as non-archived items (including pagination).
 		$q = $wpdb->prepare("
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
+				SELECT SQL_CALC_FOUND_ROWS {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
 				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
 				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->posts}.post_status = 'draft'
 				AND {$wpdb->postmeta}.meta_key = 'pf_archive'
 				AND {$wpdb->postmeta}.meta_value > 0
 				AND {$wpdb->posts}.ID
 				GROUP BY {$wpdb->posts}.ID
-				ORDER BY {$wpdb->postmeta}.meta_value DESC
+				ORDER BY {$wpdb->postmeta}.meta_value DESC, {$wpdb->posts}.post_date DESC
 				LIMIT {$pagefull} OFFSET {$offset}
 			 ", 'nomination');
 	} elseif ( isset( $_GET['pf-see'] ) && ('unread-only' == $_GET['pf-see']) ) {

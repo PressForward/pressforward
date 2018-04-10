@@ -270,7 +270,7 @@ class PF_OPML_Subscribe extends PF_Module {
                                 <input id="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>" value="" />
                                 <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>"><?php _e( '*Complete URL path', 'pf' ); ?></label>
 
-                        		<input type="submit" class="button-primary" value="<?php _e( 'Save Options', 'pf' ); ?>" />
+                        		<input type="submit" class="button-primary" value="<?php _e( 'Submit', 'pf' ); ?>" />
                     		</div>
             		</div>
 			</div>

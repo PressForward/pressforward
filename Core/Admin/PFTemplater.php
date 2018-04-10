@@ -7,8 +7,8 @@ class PFTemplater {
 
 	public function __construct( Templates $template_factory, SystemUsers $users ) {
 		$this->factory = $template_factory;
-		$this->parts = $this->factory->build_path( array( PF_ROOT, 'parts' ), false );
-		$this->users = $users;
+		$this->parts   = $this->factory->build_path( array( PF_ROOT, 'parts' ), false );
+		$this->users   = $users;
 	}
 
 	/**
@@ -28,7 +28,8 @@ class PFTemplater {
 		}
 		// if (WP_DEBUG){ var_dump( $view_file ); }
 		if ( ! file_exists( $view_file ) ) {
-			if ( PF_DEBUG ) { pf_log( $view_file, true, false, true ); }
+			if ( PF_DEBUG ) {
+				pf_log( $view_file, true, false, true ); }
 			return ' ';
 		}
 		extract( $vars, EXTR_SKIP );
@@ -45,9 +46,9 @@ class PFTemplater {
 		if ( $this->users->current_user_can( 'edit_posts' ) ) :
 
 			$have_you_seen = $this->users->get_user_option( 'have_you_seen_nominate_this' );
-			if ( ('as_paragraph' == $context) || ('as_feed' == $context) || (empty( $have_you_seen )) ) {
+			if ( ( 'as_paragraph' == $context ) || ( 'as_feed' == $context ) || ( empty( $have_you_seen ) ) ) {
 					$vars = array(
-						'context'	=> $context,
+						'context' => $context,
 					);
 					echo $this->get_view( 'nominate-this', $vars );
 			} else {
@@ -62,23 +63,23 @@ class PFTemplater {
 	public function permitted_tabs( $slug = 'settings' ) {
 		if ( 'settings' == $slug ) {
 			$permitted_tabs = array(
-						'user' => array(
-											'title' => __( 'User Options', 'pf' ),
-											'cap'  => get_option( 'pf_menu_all_content_access', $this->users->pf_get_defining_capability_by_role( 'contributor' ) ),
-										),
-						'site' => array(
-											'title' => __( 'Site Options', 'pf' ),
-											'cap'  => get_option( 'pf_menu_preferences_access', $this->users->pf_get_defining_capability_by_role( 'administrator' ) ),
-										),
-						'user-control' => array(
-											'title' => __( 'User Control', 'pf' ),
-											'cap'  => get_option( 'pf_menu_preferences_access', $this->users->pf_get_defining_capability_by_role( 'administrator' ) ),
-										),
-						'modules' => array(
-											'title' => __( 'Module Control', 'pf' ),
-											'cap'  => get_option( 'pf_menu_preferences_access', $this->users->pf_get_defining_capability_by_role( 'administrator' ) ),
-										),
-					);
+				'user'         => array(
+					'title' => __( 'User Options', 'pf' ),
+					'cap'   => get_option( 'pf_menu_all_content_access', $this->users->pf_get_defining_capability_by_role( 'contributor' ) ),
+				),
+				'site'         => array(
+					'title' => __( 'Site Options', 'pf' ),
+					'cap'   => get_option( 'pf_menu_preferences_access', $this->users->pf_get_defining_capability_by_role( 'administrator' ) ),
+				),
+				'user-control' => array(
+					'title' => __( 'User Control', 'pf' ),
+					'cap'   => get_option( 'pf_menu_preferences_access', $this->users->pf_get_defining_capability_by_role( 'administrator' ) ),
+				),
+				'modules'      => array(
+					'title' => __( 'Module Control', 'pf' ),
+					'cap'   => get_option( 'pf_menu_preferences_access', $this->users->pf_get_defining_capability_by_role( 'administrator' ) ),
+				),
+			);
 			$permitted_tabs = apply_filters( 'pf_settings_tabs', $permitted_tabs );
 		} else {
 			$permitted_tabs = array();
@@ -88,15 +89,17 @@ class PFTemplater {
 	}
 
 	public function the_settings_page() {
-		if ( isset( $_GET['tab'] ) ) { $tab = $_GET['tab'];
-		} else { $tab = 'user'; }
+		if ( isset( $_GET['tab'] ) ) {
+			$tab = $_GET['tab'];
+		} else {
+			$tab = 'user'; }
 		$user_ID = get_current_user_id();
-		$vars = array(
-				'current'		=> $tab,
-				'user_ID'		=> $user_ID,
-				'page_title'	=> __( 'PressForward Preferences', 'pf' ),
-				'page_slug'		=> 'settings',
-			);
+		$vars    = array(
+			'current'    => $tab,
+			'user_ID'    => $user_ID,
+			'page_title' => __( 'PressForward Preferences', 'pf' ),
+			'page_slug'  => 'settings',
+		);
 		return $this->get_view( $this->factory->build_path( array( 'settings', 'settings-page' ), false ), $vars );
 	}
 
@@ -108,12 +111,14 @@ class PFTemplater {
 		foreach ( $tabs as $tab => $tab_meta ) {
 			// var_dump( 'pf_do_'.$page_slug.'_tab_'.$tab ); //die();
 			if ( current_user_can( $tab_meta['cap'] ) ) {
-				if ( $current == $tab ) { $class = 'pftab tab active';
-				} else { $class = 'pftab tab'; }
+				if ( $current == $tab ) {
+					$class = 'pftab tab active';
+				} else {
+					$class = 'pftab tab'; }
 				?>
 				<div id="<?php echo $tab; ?>" class="<?php echo $class; ?>">
-	            <h2><?php echo $tab_meta['title']; ?></h2>
-		            <?php
+				<h2><?php echo $tab_meta['title']; ?></h2>
+					<?php
 						// like: pf_do_pf-add-feeds_tab_primary_feed_type
 					if ( has_action( 'pf_do_' . $page_slug . '_tab_' . $tab ) || ! array_key_exists( $tab, $tabs ) ) {
 						// var_dump('pf_do_'.$page_slug.'_tab_'.$tab); die();
@@ -136,11 +141,13 @@ class PFTemplater {
 
 	public function the_settings_tab( $tab, $page_slug = 'settings' ) {
 		$permitted_tabs = $this->permitted_tabs( $page_slug );
-		if ( array_key_exists( $tab, $permitted_tabs ) ) { $tab = $tab;
-		} else { return ''; }
+		if ( array_key_exists( $tab, $permitted_tabs ) ) {
+			$tab = $tab;
+		} else {
+			return ''; }
 		$vars = array(
-				'current'		=> $tab,
-			);
+			'current' => $tab,
+		);
 		// var_dump('<pre>');
 		// var_dump(debug_backtrace());
 		// var_dump($page_slug.' - '.$tab); die();
@@ -177,15 +184,15 @@ class PFTemplater {
 	}
 
 	public function the_side_menu() {
-		$user_ID = get_current_user_id();
+		$user_ID          = get_current_user_id();
 		$pf_user_menu_set = get_user_option( 'pf_user_menu_set', $user_ID );
 		if ( 'true' == $pf_user_menu_set ) {
 			$screen = $this->factory->the_screen;
-			$vars = array(
-					'slug'		=> $screen['id'],
-					'version'	=> 0,
-					'deck'		=> false,
-				);
+			$vars   = array(
+				'slug'    => $screen['id'],
+				'version' => 0,
+				'deck'    => false,
+			);
 			return $this->get_view( 'side-menu', $vars );
 		}
 
@@ -254,7 +261,7 @@ class PFTemplater {
 							$this->dropdown_option( __( 'Reset filter', 'pf' ), 'showNormalNominations' );
 						}
 						$this->dropdown_option( __( 'My starred', 'pf' ), 'sortstarredonly', 'starredonly', null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=starred-only' ) );
-						$this->dropdown_option( __( 'Toggle visibility of archived', 'pf' ), 'showarchived' );
+						// $this->dropdown_option( __( 'Toggle visibility of archived', 'pf' ), 'showarchived' );
 						$this->dropdown_option( __( 'Only archived', 'pf' ), 'showarchiveonly', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=archive-only' ) );
 						$this->dropdown_option( __( 'Unread', 'pf' ), 'showUnreadOnly', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=unread-only' ) );
 						$this->dropdown_option( __( 'Drafted', 'pf' ), 'showDrafted', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=drafted-only' ) );
@@ -282,7 +289,7 @@ class PFTemplater {
 				  </ul>
 				</div>
 				<div class="btn-group" role="group">
-					<a href="https://github.com/PressForward/pressforward/wiki" target="_blank" id="pf-help" class="btn btn-small"><?php _e( 'Need help?', 'pf' ); ?></a>
+					<a href="https://pressforwardadmin.gitbooks.io/pressforward-documentation/content/" target="_blank" id="pf-help" class="btn btn-small"><?php _e( 'Need help?', 'pf' ); ?></a>
 				</div>
 			</div>
 
@@ -301,10 +308,10 @@ class PFTemplater {
 					echo '<button type="submit" class="delete btn btn-danger btn-small pull-left" id="archivenoms" value="' . __( 'Archive all', 'pf' ) . '" >' . __( 'Archive all', 'pf' ) . '</button>';
 				}
 
-					$user_ID = get_current_user_id();
+					$user_ID          = get_current_user_id();
 					$pf_user_menu_set = get_user_option( 'pf_user_menu_set', $user_ID );
 				if ( 'true' == $pf_user_menu_set ) {
-					if ( ! empty( $alerts ) && (0 != $alerts->post_count) ) {
+					if ( ! empty( $alerts ) && ( 0 != $alerts->post_count ) ) {
 						echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . __( 'Menu', 'pf' ) . ' <i class="icon-tasks"></i> (!)</a>';
 					} else {
 						echo '<a class="btn btn-small" id="gomenu" href="#">' . __( 'Menu', 'pf' ) . ' <i class="icon-tasks"></i></a>';
@@ -320,7 +327,7 @@ class PFTemplater {
 
 	public function dropdown_option( $string, $id, $class = 'pf-top-menu-selection', $form_id = '', $schema_action = '', $schema_class = '', $href = '', $target = '' ) {
 
-		$option = '<li role="presentation"><a role="menuitem" id="';
+		$option  = '<li role="presentation"><a role="menuitem" id="';
 		$option .= $id;
 		$option .= '" tabindex="-1" class="';
 		$option .= $class;
@@ -374,51 +381,65 @@ class PFTemplater {
 			do_action( 'pf_output_items', $item, $c, $format );
 			return;
 		}
-		$itemTagsArray = explode( ',', $item['item_tags'] );
+		$itemTagsArray        = explode( ',', $item['item_tags'] );
 		$itemTagClassesString = '';
-				$user_id = $current_user->ID;
-		foreach ( $itemTagsArray as $itemTag ) { $itemTagClassesString .= pf_slugger( $itemTag, true, false, true );
+				$user_id      = $current_user->ID;
+		foreach ( $itemTagsArray as $itemTag ) {
+			$itemTagClassesString .= pf_slugger( $itemTag, true, false, true );
 			$itemTagClassesString .= ' '; }
 
 		if ( $format === 'nomination' ) {
-			$feed_item_id = $metadata['item_id'];
+			$feed_item_id    = $metadata['item_id'];
 			$id_for_comments = $metadata['pf_item_post_id']; // orig item post ID
 
 			$readStat = pf_get_relationship_value( 'read', $metadata['nom_id'], wp_get_current_user()->ID );
-			if ( ! $readStat ) { $readClass = '';
-			} else { $readClass = 'article-read'; }
-			if ( ! isset( $metadata['nom_id'] ) || empty( $metadata['nom_id'] ) ) { $metadata['nom_id'] = md5( $item['item_title'] ); }
-			if ( empty( $id_for_comments ) ) { $id_for_comments = $metadata['nom_id']; }
-			if ( empty( $metadata['item_id'] ) ) { $metadata['item_id'] = md5( $item['item_title'] ); }
+			if ( ! $readStat ) {
+				$readClass = '';
+			} else {
+				$readClass = 'article-read'; }
+			if ( ! isset( $metadata['nom_id'] ) || empty( $metadata['nom_id'] ) ) {
+				$metadata['nom_id'] = md5( $item['item_title'] ); }
+			if ( empty( $id_for_comments ) ) {
+				$id_for_comments = $metadata['nom_id']; }
+			if ( empty( $metadata['item_id'] ) ) {
+				$metadata['item_id'] = md5( $item['item_title'] ); }
 		} else {
-			$feed_item_id = $item['item_id'];
+			$feed_item_id    = $item['item_id'];
 			$id_for_comments = $item['post_id']; // orig item post ID
 		}
 				// $archive_status = pf_get_relationship_value( 'archive', $id_for_comments, wp_get_current_user()->ID );
 				$archive_status = pressforward( 'controller.metas' )->get_post_pf_meta( $id_for_comments, 'pf_archive', true );
-		if ( isset( $_GET['pf-see'] ) ) { } else { $_GET['pf-see'] = false; }
-		if ( $archive_status == 1 && ('archive-only' != $_GET['pf-see']) ) {
-			$archived_status_string = 'archived';
-			$dependent_style = 'display:none;';
-		} elseif ( ($format === 'nomination') && (1 == pressforward( 'controller.metas' )->get_post_pf_meta( $metadata['nom_id'], 'pf_archive', true ))  && ('archive-only' != $_GET['pf-see']) ) {
-			$archived_status_string = 'archived';
-			$dependent_style = 'display:none;';
+		if ( isset( $_GET['pf-see'] ) ) {
 		} else {
-			$dependent_style = '';
+			$_GET['pf-see'] = false; }
+		if ( $archive_status == 1 && ( 'archive-only' != $_GET['pf-see'] ) ) {
+			$archived_status_string = 'archived';
+			$dependent_style        = 'display:none;';
+		} elseif ( ( $format === 'nomination' ) && ( 1 == pressforward( 'controller.metas' )->get_post_pf_meta( $metadata['nom_id'], 'pf_archive', true ) ) && ( 'archive-only' != $_GET['pf-see'] ) ) {
+			$archived_status_string = 'archived';
+			$dependent_style        = 'display:none;';
+		} else {
+			$dependent_style        = '';
 			$archived_status_string = 'not-archived';
 		}
 		if ( $format === 'nomination' ) {
 			// $item = array_merge($metadata, $item);
 			// var_dump($item);
 			echo '<article class="feed-item entry nom-container ' . $archived_status_string . ' ' . get_pf_nom_class_tags( array( $metadata['submitters'], $metadata['nom_id'], $metadata['item_author'], $metadata['item_tags'], $metadata['item_id'] ) ) . ' ' . $readClass . '" id="' . $metadata['nom_id'] . '" style="' . $dependent_style . '" tabindex="' . $c . '" pf-post-id="' . $metadata['nom_id'] . '" pf-item-post-id="' . $id_for_comments . '" pf-feed-item-id="' . $metadata['item_id'] . '" pf-schema="read" pf-schema-class="article-read">';
-			?> <a style="display:none;" name="modal-<?php echo $metadata['item_id']; ?>"></a> <?php
+			?>
+			 <a style="display:none;" name="modal-<?php echo $metadata['item_id']; ?>"></a>
+			<?php
 		} else {
 			$id_for_comments = $item['post_id'];
-			$readStat = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
-			if ( ! $readStat ) { $readClass = '';
-			} else { $readClass = 'article-read'; }
+			$readStat        = pf_get_relationship_value( 'read', $id_for_comments, $user_id );
+			if ( ! $readStat ) {
+				$readClass = '';
+			} else {
+				$readClass = 'article-read'; }
 			echo '<article class="feed-item entry ' . pf_slugger( get_the_source_title( $id_for_comments ), true, false, true ) . ' ' . $itemTagClassesString . ' ' . $readClass . '" id="' . $item['item_id'] . '" tabindex="' . $c . '" pf-post-id="' . $item['post_id'] . '" pf-feed-item-id="' . $item['item_id'] . '" pf-item-post-id="' . $id_for_comments . '" style="' . $dependent_style . '" >';
-			?> <a style="display:none;" name="modal-<?php echo $item['item_id']; ?>"></a> <?php
+			?>
+			 <a style="display:none;" name="modal-<?php echo $item['item_id']; ?>"></a>
+			<?php
 		}
 
 		if ( empty( $readStat ) ) {
@@ -433,19 +454,23 @@ class PFTemplater {
 			}
 		}
 		if ( $format != 'nomination' ) {
-				$archiveStat = pf_get_relationship_value( 'archive', $id_for_comments, $user_id );
+				$archiveStat   = pf_get_relationship_value( 'archive', $id_for_comments, $user_id );
 				$extra_classes = '';
-			if ( $archiveStat ) { $extra_classes .= ' schema-active relationship-button-active'; }
+			if ( $archiveStat ) {
+				$extra_classes .= ' schema-active relationship-button-active'; }
 				echo '<i class="icon-eye-close hide-item pf-item-archive schema-archive schema-switchable schema-actor' . $extra_classes . '" pf-schema-class="relationship-button-active" pf-item-post-id="' . $id_for_comments . '" title="Hide" pf-schema="archive"></i>';
 		}
-		if ( ! $readStat ) { $readClass = '';
-		} else { $readClass = 'marked-read'; }
+		if ( ! $readStat ) {
+			$readClass = '';
+		} else {
+			$readClass = 'marked-read'; }
 
 			echo '<i class="icon-ok-sign schema-read schema-actor schema-switchable ' . $readClass . '" pf-item-post-id="' . $id_for_comments . '" pf-schema="read" pf-schema-class="marked-read" title="Mark as Read"></i>';
 
 			echo '</div>';
 			?>
-			<header> <?php
+			<header>
+			<?php
 				echo '<h1 class="item_title"><a href="#modal-' . $item['item_id'] . '" class="item-expander schema-actor" role="button" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . self::display_a( $item['item_title'], 'title' ) . '</a></h1>';
 				echo '<p class="source_title">' . self::display_a( get_the_source_title( $id_for_comments ), 'source' ) . '</p>';
 			if ( $format === 'nomination' ) {
@@ -471,7 +496,7 @@ class PFTemplater {
 									// http://nicolasgallagher.com/pure-css-speech-bubbles/
 									// $urlArray = parse_url($item['item_link']);
 									$sourceLink = pressforward( 'schema.feed_item' )->get_source_link( $id_for_comments );
-									$url_array = parse_url( $sourceLink );
+									$url_array  = parse_url( $sourceLink );
 			if ( ! $url_array || empty( $url_array['host'] ) ) {
 				pf_log( 'Could not find the source link for ' . $id_for_comments . ' Got: ' . $sourceLink );
 				$sourceLink = 'Source URL not found.';
@@ -479,11 +504,11 @@ class PFTemplater {
 				$sourceLink = 'http://' . $url_array['host'];
 			}
 									// http://nicolasgallagher.com/pure-css-speech-bubbles/demo/
-									$ibox = '<div class="feed-item-info-box" id="info-box-' . $item['item_id'] . '">';
+									$ibox      = '<div class="feed-item-info-box" id="info-box-' . $item['item_id'] . '">';
 										$ibox .= '
 										' . __( 'Feed', 'pf' ) . ': <span class="feed_title">' . get_the_source_title( $id_for_comments ) . '</span><br />
-										' . __( 'Posted', 'pf' ) . ': <span class="feed_posted">' . date( 'M j, Y; g:ia' , strtotime( $item['item_date'] ) ) . '</span><br />
-										' . __( 'Retrieved', 'pf' ) . ': <span class="item_meta item_meta_added_date">' . date( 'M j, Y; g:ia' , strtotime( $item['item_added_date'] ) ) . '</span><br />
+										' . __( 'Posted', 'pf' ) . ': <span class="feed_posted">' . date( 'M j, Y; g:ia', strtotime( $item['item_date'] ) ) . '</span><br />
+										' . __( 'Retrieved', 'pf' ) . ': <span class="item_meta item_meta_added_date">' . date( 'M j, Y; g:ia', strtotime( $item['item_added_date'] ) ) . '</span><br />
 										' . __( 'Authors', 'pf' ) . ': <span class="item_authors">' . $item['item_author'] . '</span><br />
 										' . __( 'Origin', 'pf' ) . ': <span class="source_name"><a target ="_blank" href="' . $sourceLink . '">' . $sourceLink . '</a></span><br />
 										' . __( 'Original Item', 'pf' ) . ': <span class="source_link"><a href="' . $item['item_link'] . '" class="item_url" target ="_blank">' . $item['item_title'] . '</a></span><br />
@@ -497,16 +522,16 @@ class PFTemplater {
 				. __( 'First submitted by', 'pf' )
 				. ': <span class="first_submitter">' . $metadata['submitters'] . '</span><br />'
 				. __( 'Nominated on', 'pf' )
-				. ': <span class="nominated_on">' . date( 'M j, Y; g:ia' , strtotime( $metadata['date_nominated'] ) ) . '</span><br />'
+				. ': <span class="nominated_on">' . date( 'M j, Y; g:ia', strtotime( $metadata['date_nominated'] ) ) . '</span><br />'
 				. __( 'Nominated by', 'pf' )
 				. ': <span class="nominated_by">' . get_the_nominating_users() . '</span><br />';
 			}
 
 										$draft_id = pf_is_drafted( $feed_item_id );
-			if ( false != $draft_id && (current_user_can( 'edit_post', $draft_id )) ) {
+			if ( false != $draft_id && ( current_user_can( 'edit_post', $draft_id ) ) ) {
 				// http://codex.wordpress.org/Function_Reference/edit_post_link
 				$edit_url = get_edit_post_link( $draft_id );
-				$ibox .= '<br /><a class="edit_draft_from_info_box" href="' . $edit_url . '">' . __( 'Edit the draft based on this post.', 'pf' ) . '</a><br/>';
+				$ibox    .= '<br /><a class="edit_draft_from_info_box" href="' . $edit_url . '">' . __( 'Edit the draft based on this post.', 'pf' ) . '</a><br/>';
 			}
 
 									$ibox .= '</div>';
@@ -514,8 +539,8 @@ class PFTemplater {
 													?>
 									<script type="text/javascript">
 
-											var pop_title_<?php echo $item['item_id'] ?> = '';
-											var pop_html_<?php echo $item['item_id'] ?> = jQuery('#<?php echo 'info-box-' . $item['item_id']; ?>');
+											var pop_title_<?php echo $item['item_id']; ?> = '';
+											var pop_html_<?php echo $item['item_id']; ?> = jQuery('#<?php echo 'info-box-' . $item['item_id']; ?>');
 
 
 									</script>
@@ -528,27 +553,31 @@ class PFTemplater {
 			?>
 			<div class="content">
 				<?php
-				if ( ($item['item_feat_img'] != '') && ($format != 'nomination') ) {
+				if ( ( $item['item_feat_img'] != '' ) && ( $format != 'nomination' ) ) {
 					echo '<div style="float:left; margin-right: 10px; margin-bottom: 10px;"><img src="' . $item['item_feat_img'] . '"></div>';
 				}
 
-				?> <div style="display:none;"> <?php
+				?>
+				 <div style="display:none;">
+				<?php
 					echo '<div class="item_meta item_meta_date">Published on ' . $item['item_date'] . ' by <span class="item-authorship">' . $item['item_author'] . '</span>.</div>';
 					echo 'Unix timestamp for item date:<span class="sortableitemdate">' . strtotime( $item['item_date'] ) . '</span> and for added to feed date <span class="sortablerssdate">' . strtotime( $item['item_added_date'] ) . '</span>.';
-				?> </div> <?php
+				?>
+				 </div>
+				<?php
 
 				echo '<div class="item_excerpt" id="excerpt' . $c . '">';
-if ( $format === 'nomination' ) {
-	echo'<p>' . pf_noms_excerpt( $item['item_content'] ) . '</p>';
-} else {
-	echo'<p>' . self::display_a( pf_feed_excerpt( $item['item_content'] ), 'graf' ) . '</p>';
-}
+				if ( $format === 'nomination' ) {
+					echo '<p>' . pf_noms_excerpt( $item['item_content'] ) . '</p>';
+				} else {
+					echo '<p>' . self::display_a( pf_feed_excerpt( $item['item_content'] ), 'graf' ) . '</p>';
+				}
 					echo '</div>';
 
 				?>
 			</div><!-- End content -->
 			<footer>
-				<p class="pubdate"><?php echo date( 'F j, Y; g:i a' , strtotime( $item['item_date'] ) ); ?></p>
+				<p class="pubdate"><?php echo date( 'F j, Y; g:i a', strtotime( $item['item_date'] ) ); ?></p>
 			</footer>
 			<?php
 				// Allows plugins to introduce their own item format output.
@@ -577,10 +606,11 @@ if ( $format === 'nomination' ) {
 		  </div>
 		  <div class="row-fluid modal-body-row">
 			  <div class="modal-body span9" id="modal-body-<?php echo $item['item_id']; ?>">
-				<div class="readability-wait"></div><div class="main-text"><?php
+				<div class="readability-wait"></div><div class="main-text">
+				<?php
 				$contentObj = pressforward( 'library.htmlchecker' );
-				$text = $contentObj->closetags( $item['item_content'] );
-				$text = apply_filters( 'the_content', $text );
+				$text       = $contentObj->closetags( $item['item_content'] );
+				$text       = apply_filters( 'the_content', $text );
 				// global $wp_embed;
 				// $wp_embed->autoembed($text);
 				$embed = $this->show_embed( $id_for_comments );
@@ -611,16 +641,16 @@ if ( $format === 'nomination' ) {
 					<?php
 					// if ($format != 'nomination'){
 					?>
-					| <a class="modal-readability-reset" target="#readable" href="<?php echo $item['item_link']; ?>" pf-item-id="<?php echo $item['item_id']; ?>" pf-post-id="<?php echo $item['post_id']; ?>" pf-modal-id="#modal-<?php echo $item['item_id']; ?>"><?php  _e( 'Reset Readability', 'pf' ); ?></a>
+					| <a class="modal-readability-reset" target="#readable" href="<?php echo $item['item_link']; ?>" pf-item-id="<?php echo $item['item_id']; ?>" pf-post-id="<?php echo $item['post_id']; ?>" pf-modal-id="#modal-<?php echo $item['item_id']; ?>"><?php _e( 'Reset Readability', 'pf' ); ?></a>
 						<?php
 						// }
 					?>
 				</div>
-				<div class="pull-right"><?php
+				<div class="pull-right">
+				<?php
 				$this->form_of_actions_btns( $item, $c, true, $format, $metadata, $id_for_comments );
-				?></div><?php
-			?>
-			</div>
+				?>
+				</div>			</div>
 			<div class="item-tags pull-left row-fluid">
 			<?php
 				echo '<strong>' . __( 'Item Tags', 'pf' ) . '</strong>: ' . $item['item_tags'];
@@ -629,9 +659,15 @@ if ( $format === 'nomination' ) {
 		  </div>
 			</div>
 			<!-- End Modal -->
-		</article><!-- End article -->
+			<!-- pf_output_additional_modals -->
 		<?php
 			}
+			do_action( 'pf_output_additional_modals', $item, $c, $format );
+		?>
+		<!-- End pf_output_additional_modals -->
+		</article>
+		<!-- End article -->
+		<?php
 	}
 
 	/**
@@ -642,13 +678,13 @@ if ( $format === 'nomination' ) {
 
 	public function display_a( $string, $position = 'source', $page = 'list' ) {
 		$title_ln_length = 30;
-		$title_lns = 3;
+		$title_lns       = 3;
 
 		$source_ln_length = 48;
-		$source_lns = 2;
+		$source_lns       = 2;
 
 		$graf_ln_length = 44;
-		$graf_lns = 4;
+		$graf_lns       = 4;
 
 		$max = 0;
 
@@ -664,7 +700,7 @@ if ( $format === 'nomination' ) {
 				break;
 		}
 
-		$cut = substr( $string, 0, $max + 1 );
+		$cut       = substr( $string, 0, $max + 1 );
 		$final_cut = substr( $cut, 0, -4 );
 		if ( strlen( $cut ) < $max ) {
 			$cut = substr( $string, 0, $max );
@@ -678,7 +714,7 @@ if ( $format === 'nomination' ) {
 
 	public function tweet_intent( $id ) {
 
-		$url = 'https://twitter.com/intent/tweet?';
+		$url  = 'https://twitter.com/intent/tweet?';
 		$url .= 'text=' . urlencode( get_the_title( $id ) );
 		$url .= '&url=' . urlencode( get_the_item_link( $id ) );
 		$url .= '&via=' . urlencode( 'pressfwd' );
@@ -688,7 +724,7 @@ if ( $format === 'nomination' ) {
 
 	public function form_of_actions_btns( $item, $c, $modal = false, $format = 'standard', $metadata = array(), $id_for_comments ) {
 			$item_id = 0;
-			$user = wp_get_current_user();
+			$user    = wp_get_current_user();
 			$user_id = $user->ID;
 		if ( $format == 'nomination' ) {
 			$item_id = $metadata['item_id'];
@@ -697,16 +733,24 @@ if ( $format === 'nomination' ) {
 		}
 			?>
 
-				<div class="actions pf-btns <?php if ( $modal ) { echo 'modal-btns ';
-} else { echo ' article-btns '; } ?>">
+				<div class="actions pf-btns
+				<?php
+				if ( $modal ) {
+					echo 'modal-btns ';
+				} else {
+					echo ' article-btns '; }
+?>
+">
 					<?php
-					$infoPop = 'top';
+					$infoPop        = 'top';
 					$infoModalClass = ' modal-popover';
 					if ( $modal == false ) {
 						// $infoPop = 'bottom';
 						$infoModalClass = '';
 						if ( $format === 'nomination' ) {
-							?><form name="form-<?php echo $metadata['item_id']; ?>" pf-form="<?php echo $metadata['item_id']; ?>"><?php
+							?>
+							<form name="form-<?php echo $metadata['item_id']; ?>" pf-form="<?php echo $metadata['item_id']; ?>">
+							<?php
 							pf_prep_item_for_submit( $metadata );
 							wp_nonce_field( 'nomination', PF_SLUG . '_nomination_nonce', false );
 						} else {
@@ -732,14 +776,17 @@ if ( $format === 'nomination' ) {
 					// <a href="#" type="submit"  class="PleasePushMe"><i class="icon-plus"></i> Nominate</a>
 					if ( has_action( 'pf_comment_action_button' ) ) {
 						$commentModalCall = '#modal-comments-' . $item['item_id'];
-						$commentSet = array( 'id' => $id_for_comments, 'modal_state' => $modal );
+						$commentSet       = array(
+							'id'          => $id_for_comments,
+							'modal_state' => $modal,
+						);
 						// echo $id_for_comments;
 						do_action( 'pf_comment_action_button', $commentSet );
 
 					}
 					if ( $format === 'nomination' ) {
 
-						$nom_count_classes = 'btn btn-small nom-count';
+						$nom_count_classes     = 'btn btn-small nom-count';
 						$metadata['nom_count'] = get_the_nomination_count();
 						if ( $metadata['nom_count'] > 0 ) {
 							$nom_count_classes .= ' btn-info';
@@ -756,7 +803,11 @@ if ( $format === 'nomination' ) {
 							$draft_status = 'btn-success';
 						}
 						echo '<a href="#nominate" class="btn btn-small nom-to-draft schema-actor ' . $draft_status . '" pf-schema="draft" pf-schema-class="btn-success" form="' . $metadata['item_id'] . '" data-original-title="' . __( 'Draft', 'pf' ) . '"><img src="' . PF_URL . 'assets/images/pressforward-licon.png" /></a>';
-
+						$meta_handling = get_option( PF_SLUG . '_advanced_meta_handling', 'no' );
+						$user_level_check = current_user_can( pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'administrator' ) );
+						if ('yes' === $meta_handling && $user_level_check){
+							echo '<a role="button" class="btn btn-small meta_form_modal-button" data-toggle="modal" href="#meta_form_modal_' . $item['post_id'] . '" data-post-id="' . $item['post_id'] . '" id="meta_form_modal_expander-' . $item['post_id'] . '" data-original-title="Edit Metadata"><i class="icon-meta-form"></i></a>';
+						}
 					} else {
 						// var_dump(pf_get_relationship('nominate', $id_for_comments, $user_id));
 						if ( ( 1 == pf_get_relationship_value( 'nominate', $id_for_comments, $user_id ) ) || ( 1 == pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ) {
@@ -769,11 +820,11 @@ if ( $format === 'nomination' ) {
 					}
 
 					$amplify_group_classes = 'dropdown btn-group amplify-group';
-					$amplify_id = 'amplify-' . $item['item_id'];
+					$amplify_id            = 'amplify-' . $item['item_id'];
 
 					if ( $modal ) {
 						$amplify_group_classes .= ' dropup';
-						$amplify_id .= '-modal';
+						$amplify_id            .= '-modal';
 					}
 					?>
 					<div class="<?php echo $amplify_group_classes; ?>" role="group">
@@ -805,7 +856,9 @@ if ( $format === 'nomination' ) {
 
 					<?php
 					if ( $modal === true ) {
-						?><button class="btn btn-small" data-dismiss="modal" aria-hidden="true">Close</button><?php
+						?>
+						<button class="btn btn-small" data-dismiss="modal" aria-hidden="true">Close</button>
+						<?php
 					}
 					?>
 				</div>
@@ -814,7 +867,10 @@ if ( $format === 'nomination' ) {
 
 		if ( has_action( 'pf_comment_action_modal' ) ) {
 				$commentModalCall = '#modal-comments-' . $item['item_id'];
-				$commentSet = array( 'id' => $id_for_comments, 'modal_state' => $modal );
+				$commentSet       = array(
+					'id'          => $id_for_comments,
+					'modal_state' => $modal,
+				);
 				// echo $id_for_comments;
 				do_action( 'pf_comment_action_modal', $commentSet );
 

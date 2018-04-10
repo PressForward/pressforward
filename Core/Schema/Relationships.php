@@ -21,7 +21,7 @@ class Relationships implements HasActions {
 	public function action_hooks() {
 		$hooks = array(
 			array(
-				'hook' => 'admin_init',
+				'hook'   => 'admin_init',
 				'method' => 'maybe_install_relationship_table',
 			),
 		);
@@ -72,9 +72,9 @@ class Relationships implements HasActions {
 	public static function install_relationship_table() {
 		global $wpdb;
 
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$sql = array();
+		$sql   = array();
 		$sql[] = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}pf_relationships (
 						id bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 					user_id bigint(20) NOT NULL,
@@ -93,13 +93,15 @@ class Relationships implements HasActions {
 	public function create( $args = array() ) {
 		global $wpdb;
 
-		$r = wp_parse_args( $args, array(
-			'user_id' => 0,
-			'item_id' => 0,
-			'relationship_type' => 0,
-			'value' => '',
-			'unique' => true, // Generally you want one entry per user_id+item_id+relationship_type combo
-		) );
+		$r = wp_parse_args(
+			$args, array(
+				'user_id'           => 0,
+				'item_id'           => 0,
+				'relationship_type' => 0,
+				'value'             => '',
+				'unique'            => true, // Generally you want one entry per user_id+item_id+relationship_type combo
+			)
+		);
 
 		if ( $r['unique'] ) {
 			$existing = $this->get( $r );
@@ -111,10 +113,10 @@ class Relationships implements HasActions {
 		$wpdb->insert(
 			$this->table_name,
 			array(
-				'user_id' => $r['user_id'],
-				'item_id' => $r['item_id'],
+				'user_id'           => $r['user_id'],
+				'item_id'           => $r['item_id'],
 				'relationship_type' => $r['relationship_type'],
-				'value' => $r['value'],
+				'value'             => $r['value'],
 			),
 			array(
 				'%d',
@@ -123,6 +125,8 @@ class Relationships implements HasActions {
 				'%s',
 			)
 		);
+
+		$this->clean_relationship_cache_incrementor();
 
 		return $wpdb->insert_id;
 	}
@@ -135,16 +139,18 @@ class Relationships implements HasActions {
 	public function update( $args = array() ) {
 		global $wpdb;
 
-		$r = wp_parse_args( $args, array(
-			'id' => 0,
-			'user_id' => false,
-			'item_id' => false,
-			'relationship_type' => false,
-			'value' => false,
-		) );
+		$r = wp_parse_args(
+			$args, array(
+				'id'                => 0,
+				'user_id'           => false,
+				'item_id'           => false,
+				'relationship_type' => false,
+				'value'             => false,
+			)
+		);
 
 		// If an 'id' is passed, use it. Otherwise build a WHERE
-		$where = array();
+		$where        = array();
 		$where_format = array();
 		if ( $r['id'] ) {
 			$where['id']    = (int) $r['id'];
@@ -175,44 +181,74 @@ class Relationships implements HasActions {
 			);
 		}
 
+		$this->clean_relationship_cache_incrementor();
+
 		return (bool) $updated;
 	}
 
 	public function get( $args = array() ) {
 		global $wpdb;
 
-		$r = wp_parse_args( $args, array(
-			'id' => 0,
-			'user_id' => false,
-			'item_id' => false,
-			'relationship_type' => false,
-		) );
+		$r = wp_parse_args(
+			$args, array(
+				'id'                => 0,
+				'user_id'           => false,
+				'item_id'           => false,
+				'relationship_type' => false,
+			)
+		);
 
-		$sql[] = "SELECT * FROM {$this->table_name}";
+		// Attempt to fetch items from cache. Single items not currently cached.
+		$cached = $cache_key = false;
+		if ( empty( $r['id'] ) ) {
+			// For simplicity, each combination of arguments is cached separately.
+			$last_changed = wp_cache_get( 'last_changed', 'pf_relationships' );
+			if ( ! $last_changed ) {
+				$last_changed = microtime();
+				wp_cache_set( 'last_changed', $last_changed, 'pf_relationships' );
+			}
 
-		// If an ID is passed, use it. Otherwise build WHERE from params
-		$where = array();
-		if ( $r['id'] ) {
-			$where[] = $wpdb->prepare( 'id = %d', $r['id'] );
-		} else {
-			foreach ( $r as $rk => $rv ) {
-				if ( ! in_array( $rk, array( 'id', 'unique', 'value' ) ) && false !== $rv ) {
-					$where[] = $wpdb->prepare( "{$rk} = %d", $rv );
+			$cache_key = md5( json_encode( $r ) ) . '_' .  $last_changed;;
+		}
+
+		if ( $cache_key ) {
+			$cached = wp_cache_get( $cache_key, 'pf_relationships' );
+		}
+
+		if ( false === $cached ) {
+			$sql[] = "SELECT * FROM {$this->table_name}";
+
+			// If an ID is passed, use it. Otherwise build WHERE from params
+			$where = array();
+			if ( $r['id'] ) {
+				$where[] = $wpdb->prepare( 'id = %d', $r['id'] );
+			} else {
+				foreach ( $r as $rk => $rv ) {
+					if ( ! in_array( $rk, array( 'id', 'unique', 'value' ) ) && false !== $rv ) {
+						$where[] = $wpdb->prepare( "{$rk} = %d", $rv );
+					}
 				}
 			}
+
+			if ( ! empty( $where ) ) {
+				$sql[] = 'WHERE ' . implode( ' AND ', $where );
+			}
+
+			$sql = implode( ' ', $sql );
+			if ( $r['user_id'] ) {
+				$sql .= ' AND user_id = ' . $r['user_id'];
+			}
+
+			$results = $wpdb->get_results( $sql );
+
+			if ( $cache_key ) {
+				wp_cache_set( $cache_key, $results, 'pf_relationships' );
+			}
+		} else {
+			$results = $cached;
 		}
 
-		if ( ! empty( $where ) ) {
-			$sql[] = 'WHERE ' . implode( ' AND ', $where );
-		}
-
-		$sql = implode( ' ', $sql );
-		if ( $r['user_id'] ) {
-			$sql .= ' AND user_id = ' . $r['user_id'];
-		}
-
-		return $wpdb->get_results( $sql );
-
+		return $results;
 	}
 
 	function delete( $args = array() ) {
@@ -230,11 +266,19 @@ class Relationships implements HasActions {
 
 		$deleted = false;
 		if ( $id ) {
-			$d = $wpdb->query( $wpdb->prepare( "DELETE FROM {$this->table_name} WHERE id = %d", $id ) );
+			$d       = $wpdb->query( $wpdb->prepare( "DELETE FROM {$this->table_name} WHERE id = %d", $id ) );
 			$deleted = false !== $d;
 		}
+
+		$this->clean_relationship_cache_incrementor();
 
 		return $deleted;
 	}
 
+	/**
+	 * Invalidates the cache incrementor.
+	 */
+	protected function clean_relationship_cache_incrementor() {
+		wp_cache_delete( 'last_changed', 'pf_relationships' );
+	}
 }

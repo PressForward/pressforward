@@ -12,8 +12,8 @@ class SourceAJAX implements HasActions {
 
 	function __construct( PF_Readability $readability, Retrieval $retrieval, Feed_Items $items ) {
 		$this->readability = $readability;
-		$this->retrieval = $retrieval;
-		$this->items = $items;
+		$this->retrieval   = $retrieval;
+		$this->items       = $items;
 
 	}
 
@@ -21,11 +21,11 @@ class SourceAJAX implements HasActions {
 	public function action_hooks() {
 		return array(
 			array(
-				'hook' => 'wp_ajax_make_it_readable',
+				'hook'   => 'wp_ajax_make_it_readable',
 				'method' => 'make_it_readable',
 			),
 			array(
-				'hook' => 'wp_ajax_assemble_feed_for_pull',
+				'hook'   => 'wp_ajax_assemble_feed_for_pull',
 				'method' => 'trigger_source_data',
 			),
 		);
@@ -39,8 +39,8 @@ class SourceAJAX implements HasActions {
 
 	public function trigger_source_data() {
 		ob_start();
-		$message = $this->retrieval->trigger_source_data( true );
-		$buffer = ob_get_contents();
+		$message           = $this->retrieval->trigger_source_data( true );
+		$buffer            = ob_get_contents();
 		$message['buffer'] = (string) $buffer;
 		wp_send_json( $message );
 		ob_end_clean();

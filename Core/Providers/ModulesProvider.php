@@ -11,12 +11,12 @@ class ModulesProvider extends ServiceProvider {
 
 	public function register( Container $container ) {
 
-		require_once( PF_ROOT . '/includes/module-base.php' );
+		require_once PF_ROOT . '/includes/module-base.php';
 
 		$container->share(
 			'modules',
 			function( $container ) {
-				return new Modules;
+				return new Modules();
 			}
 		);
 

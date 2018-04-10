@@ -26,12 +26,12 @@ class NominateThisEndpoint implements HasActions {
 	}
 
 	public function action_hooks() {
-		//add_action( 'rest_api_init', 'activate_pf_rest_controller', 11 );
+		// add_action( 'rest_api_init', 'activate_pf_rest_controller', 11 );
 		$actions = array(
 			array(
-				'hook' => 'rest_api_init',
-				'method' => 'activate',
-				'priority'	=> 11
+				'hook'     => 'rest_api_init',
+				'method'   => 'activate',
+				'priority' => 11,
 			),
 		);
 		return $actions;
@@ -184,14 +184,14 @@ class NominateThisEndpoint implements HasActions {
 
 	}
 
-	public function get_nominate_this_template($request){
-		define( 'IFRAME_REQUEST' , true );
+	public function get_nominate_this_template( $request ) {
+		define( 'IFRAME_REQUEST', true );
 		define( 'WP_ADMIN', false );
 		global $pagenow;
 		//wp_verify_nonce( $nonce, 'wp_rest' );
 		return rest_ensure_response(
-				include( PF_ROOT.'/includes/nomthis/nominate-this-core.php' )
-			);
+			include PF_ROOT . '/includes/nomthis/nominate-this-core.php'
+		);
 	}
 
 	public function get_nominate_this($request){

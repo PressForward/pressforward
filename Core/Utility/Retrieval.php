@@ -1,5 +1,6 @@
 <?php
 namespace PressForward\Core\Utility;
+
 /**
  * Feed 'slurping' class
  *
@@ -36,10 +37,10 @@ class Retrieval {
 
 	function cron_add_short( $schedules ) {
 		// Adds once weekly to the existing schedules.
-		$pf_interval = get_option( PF_SLUG . '_retrieval_frequency', 30 );
+		$pf_interval              = get_option( PF_SLUG . '_retrieval_frequency', 30 );
 		$schedules['pf_interval'] = array(
-		   'interval' => $pf_interval * 60,
-		   'display' => __( 'PressForward Retrieval Interval' ),
+			'interval' => $pf_interval * 60,
+			'display'  => __( 'PressForward Retrieval Interval' ),
 		);
 		return $schedules;
 	}
@@ -148,7 +149,7 @@ class Retrieval {
 		 */
 
 		// This is the fix for the insanity caused by the planet money feed - http://www.npr.org/rss/podcast.php?id=510289.
-		if ( (int) $prev_iteration == (int) $feeds_iteration && (0 != $feeds_iteration) ) {
+		if ( (int) $prev_iteration == (int) $feeds_iteration && ( 0 != $feeds_iteration ) ) {
 
 			// In some cases the option fails to update for reasons that are not
 			// clear. In those cases, we will risk skipping a feed rather
@@ -203,11 +204,11 @@ class Retrieval {
 			pf_log( 'Iterate going switch is set to: ' . $are_we_going );
 
 			$feed_hb_state = array(
-				'feed_id'	=> $aFeed->ID,
-				'feed_title'	=> $aFeed->post_title,
-				'last_key'	=> $last_key,
-				'feeds_iteration'	=> $feeds_iteration,
-				'total_feeds'	=> count( $feedlist ),
+				'feed_id'         => $aFeed->ID,
+				'feed_title'      => $aFeed->post_title,
+				'last_key'        => $last_key,
+				'feeds_iteration' => $feeds_iteration,
+				'total_feeds'     => count( $feedlist ),
 			);
 			$this->update_option_w_check( '_feeds_hb_state', $feed_hb_state );
 
@@ -251,10 +252,10 @@ class Retrieval {
 			pf_log( 'The feed iteration option is now set to ' . $feeds_iteration );
 
 			// If the feed retrieved is empty and we haven't hit the last feed item.
-			if ( ( ( empty( $aFeed ) ) || ( ( 'publish' != $aFeed->post_status ) ) || ($aFeed == '' ) ) && ($feeds_iteration <= $last_key) ) {
+			if ( ( ( empty( $aFeed ) ) || ( ( 'publish' != $aFeed->post_status ) ) || ( $aFeed == '' ) ) && ( $feeds_iteration <= $last_key ) ) {
 				pf_log( 'The feed is either an empty entry or un-retrievable, or not published AND the iteration is less than or equal to the last key.' );
 				$theFeed = call_user_func( array( $this, 'step_through_feedlist' ) );
-			} elseif ( ( ( empty( $aFeed ) ) || ($aFeed == '' ) ) && ($feeds_iteration > $last_key) ) {
+			} elseif ( ( ( empty( $aFeed ) ) || ( $aFeed == '' ) ) && ( $feeds_iteration > $last_key ) ) {
 				pf_log( 'The feed is either an empty entry or un-retrievable AND the iteration is greater than the last key.' );
 				$this->update_option_w_check( '_feeds_iteration', 0 );
 
@@ -278,13 +279,13 @@ class Retrieval {
 			}
 			// If the array entry is empty and this isn't the end of the feedlist,
 			// then get the next item from the feedlist while iterating the count.
-			if ( ( ( empty( $aFeed ) ) || ($aFeed == '' ) || (is_wp_error( $theFeed ))) && ($feeds_iteration <= $last_key) ) {
+			if ( ( ( empty( $aFeed ) ) || ( $aFeed == '' ) || ( is_wp_error( $theFeed ) ) ) && ( $feeds_iteration <= $last_key ) ) {
 				// Feed failure happening here.
 				pf_log( 'The feed is either an empty entry or un-retrievable AND the iteration is less than or equal to the last key.' );
 
 				// The feed is somehow bad, lets get the next one.
 				$theFeed = call_user_func( array( $this, 'step_through_feedlist' ) );
-			} elseif ( ( ( empty( $aFeed ) ) || ($aFeed == '' ) || (is_wp_error( $theFeed ))) && ($feeds_iteration > $last_key) ) {
+			} elseif ( ( ( empty( $aFeed ) ) || ( $aFeed == '' ) || ( is_wp_error( $theFeed ) ) ) && ( $feeds_iteration > $last_key ) ) {
 
 				// The feed is somehow bad and we've come to the end of the array.
 				// Now we switch all the indicators to show that the process is
@@ -324,11 +325,11 @@ class Retrieval {
 	public function pf_feedlist( $startcount = 0 ) {
 		pf_log( 'Invoked: PF_Feed_Retrieve::pf_feedlist()' );
 		// @TODO Not this way.
-		$args = array(
-				'posts_per_page' => -1,
-				'post_status'	=> array( 'publish' ),
-			);
-		$args = apply_filters( 'pf_feedlist_args', $args );
+		$args     = array(
+			'posts_per_page' => -1,
+			'post_status'    => array( 'publish' ),
+		);
+		$args     = apply_filters( 'pf_feedlist_args', $args );
 		$theFeeds = pressforward( 'schema.feeds' )->get( $args );
 		$feedlist = array();
 
@@ -381,7 +382,7 @@ class Retrieval {
 	*/
 	public function get_the_feed_object( $module_to_use, $aFeedObj ) {
 
-		$module = pressforward( 'modules' )->modules[ $module_to_use ];
+		$module  = pressforward( 'modules' )->modules[ $module_to_use ];
 		$feedObj = $module->get_data_object( $aFeedObj );
 		if ( empty( $feedObj ) || ! $feedObj ) {
 			return false;
@@ -399,7 +400,7 @@ class Retrieval {
 		$obj = get_post( $_POST['feed_id'] );
 		pf_log( $obj );
 		$Feeds = pressforward( 'schema.feeds' );
-		$id = $obj->ID;
+		$id    = $obj->ID;
 		pf_log( 'Feed ID ' . $id );
 		$type = $Feeds->get_pf_feed_type( $id );
 		pf_log( 'Checking for feed type ' . $type );
@@ -430,9 +431,9 @@ class Retrieval {
 		if ( 'rss-quick' == $type ) {
 			// Let's update the RSS-Quick so it has real data.
 			$rq_update = array(
-				'type'		=> 'rss-quick',
-				'ID'		=> $id,
-				'url'		=> $obj->guid,
+				'type' => 'rss-quick',
+				'ID'   => $id,
+				'url'  => $obj->guid,
 			);
 			$Feeds->update_title( $id, $rq_update );
 		}
@@ -496,9 +497,9 @@ class Retrieval {
 		if ( ( 'rss-quick' == $type ) && ( 'publish' == $obj->post_status ) ) {
 			// Let's update the RSS-Quick so it has real data.
 			$rq_update = array(
-				'type'		=> 'rss-quick',
-				'ID'		=> $id,
-				'url'		=> $obj->guid,
+				'type' => 'rss-quick',
+				'ID'   => $id,
+				'url'  => $obj->guid,
 			);
 			$Feeds->update( $id, $rq_update );
 		}
@@ -520,7 +521,7 @@ class Retrieval {
 			$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 1 );
 			pf_log( 'The Feeds go switch has been updated to on?' );
 			pf_log( $feed_go );
-			$prev_iteration = get_option( PF_SLUG . '_prev_iteration', 0 );
+			$prev_iteration   = get_option( PF_SLUG . '_prev_iteration', 0 );
 			$iterate_op_check = get_option( PF_SLUG . '_feeds_iteration', 1 );
 			pf_log( 'Did the option properly iterate so that the previous iteration count of ' . $prev_iteration . ' is not equal to the current of ' . $iterate_op_check . '?' );
 			if ( $prev_iteration === $iterate_op_check ) {
@@ -541,11 +542,11 @@ class Retrieval {
 					// The feed has been retrieved, therefor this is a good feed. We can remove the alert.
 					pressforward( 'library.alertbox' )->dismiss_alert( $obj->ID );
 					// Assure the feed is back online.
-					$argup = array(
-		                'ID'			=> $obj->ID,
-		                'post_status'	=> 'publish',
-		            );
-		            $result = wp_update_post( $argup );
+					$argup  = array(
+						'ID'          => $obj->ID,
+						'post_status' => 'publish',
+					);
+					$result = wp_update_post( $argup );
 				}
 			}
 
@@ -586,8 +587,8 @@ class Retrieval {
 			// add_action( 'pull_feed_in', array( $this, 'assemble_feed_for_pull' ) );
 			// wp_schedule_single_event( time()-3600, 'get_more_feeds' );
 			// print_r( '<br /> <br />' . PF_URL . 'modules/rss-import/import-cron.php <br /> <br />' );
-			$theRetrievalLoop = add_query_arg( 'press', 'forward',  site_url() );
-			$pfnonce = $this->get_chunk_nonce();
+			$theRetrievalLoop        = add_query_arg( 'press', 'forward', site_url() );
+			$pfnonce                 = $this->get_chunk_nonce();
 			$theRetrievalLoopNounced = add_query_arg( 'nonce', $pfnonce, $theRetrievalLoop );
 			pf_log( 'Checking remote get at ' . $theRetrievalLoopNounced . ' : ' );
 			$wprgCheck = wp_remote_get( $theRetrievalLoopNounced );
@@ -610,7 +611,7 @@ class Retrieval {
 			return;
 		}
 
-		$nonce = isset( $_REQUEST['nonce'] ) ? $_REQUEST['nonce'] : '';
+		$nonce       = isset( $_REQUEST['nonce'] ) ? $_REQUEST['nonce'] : '';
 		$nonce_check = get_option( 'chunk_nonce' );
 		pf_log( 'Nonce is:' );
 		pf_log( $nonce_check );
@@ -632,24 +633,24 @@ class Retrieval {
 	}
 
 	function feed_retrieval_reset() {
-		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0 );
-		$feed_iteration = update_option( PF_SLUG . '_feeds_iteration', 0 );
+		$feed_go         = update_option( PF_SLUG . '_feeds_go_switch', 0 );
+		$feed_iteration  = update_option( PF_SLUG . '_feeds_iteration', 0 );
 		$retrieval_state = update_option( PF_SLUG . '_iterate_going_switch', 0 );
-		$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 1 );
+		$chunk_state     = update_option( PF_SLUG . '_ready_to_chunk', 1 );
 
 	}
 
 	public function trigger_source_data( $return = false ) {
-		$message = array();
-			$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0 );
-			$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0 );
+		$message             = array();
+			$feed_go         = get_option( PF_SLUG . '_feeds_go_switch', 0 );
+			$feed_iteration  = get_option( PF_SLUG . '_feeds_iteration', 0 );
 			$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0 );
-			$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );
+			$chunk_state     = get_option( PF_SLUG . '_ready_to_chunk', 1 );
 		pf_log( 'Invoked: PF_Feed_Retrieve::trigger_source_data()' );
-		$message['go_switch'] = pf_message( 'Feeds go?: ' . $feed_go );
-		$message['iteration'] = pf_message( 'Feed iteration: ' . $feed_iteration );
+		$message['go_switch']       = pf_message( 'Feeds go?: ' . $feed_go );
+		$message['iteration']       = pf_message( 'Feed iteration: ' . $feed_iteration );
 		$message['iterating_check'] = pf_message( 'Retrieval state: ' . $retrieval_state );
-		$message['chunk_ready'] = pf_message( 'Chunk state: ' . $chunk_state );
+		$message['chunk_ready']     = pf_message( 'Chunk state: ' . $chunk_state );
 		if ( $feed_iteration == 0 && $retrieval_state == 0 && $chunk_state == 1 ) {
 			$status = update_option( PF_SLUG . '_iterate_going_switch', 1 );
 			// Echo to the user.
@@ -670,12 +671,12 @@ class Retrieval {
 			$feeds_meta_state = get_option( PF_SLUG . '_feeds_meta_state', array() );
 			if ( empty( $feeds_meta_state ) ) {
 				$feeds_meta_state = array(
-											'feed_go' => $feed_go,
-											'feed_iteration' => $feed_iteration,
-											'retrieval_state' => $retrieval_state,
-											'chunk_state'	=> $chunk_state,
-											'retrigger'		=> time() + ( 2 * 60 * 60 ),
-										);
+					'feed_go'         => $feed_go,
+					'feed_iteration'  => $feed_iteration,
+					'retrieval_state' => $retrieval_state,
+					'chunk_state'     => $chunk_state,
+					'retrigger'       => time() + ( 2 * 60 * 60 ),
+				);
 				update_option( PF_SLUG . '_feeds_meta_state', $feeds_meta_state );
 				$message['action_taken'] = pf_message( __( 'Created new metastate to check on next retrieval step.', 'pf' ), true );
 			} else {
@@ -686,7 +687,7 @@ class Retrieval {
 			if ( $feeds_meta_state['retrigger'] > time() ) {
 					$message['action_taken'] = pf_message( __( 'The sources are already being retrieved.', 'pf' ), true );
 			} else {
-				if ( ( $feed_go == $feeds_meta_state['feed_go'] ) && ( $feed_iteration == $feeds_meta_state['feed_iteration'] ) && ( $retrieval_state == $feeds_meta_state['retrieval_state'] ) && ($chunk_state == $feeds_meta_state['chunk_state'] ) ) {
+				if ( ( $feed_go == $feeds_meta_state['feed_go'] ) && ( $feed_iteration == $feeds_meta_state['feed_iteration'] ) && ( $retrieval_state == $feeds_meta_state['retrieval_state'] ) && ( $chunk_state == $feeds_meta_state['chunk_state'] ) ) {
 					$message['action_taken'] = pf_message( __( 'The sources are stuck, clearing system to activate on next retrieve.', 'pf' ), true );
 					// Wipe the checking option for use next time.
 					update_option( PF_SLUG . '_feeds_meta_state', array() );
@@ -704,22 +705,22 @@ class Retrieval {
 					update_option( PF_SLUG . '_iterate_going_switch', 0 );
 					update_option( PF_SLUG . '_feeds_iteration', 0 );
 					$double_check = array(
-												'feed_go' => 0,
-												'feed_iteration' => 0,
-												'retrieval_state' => 0,
-												'chunk_state'	=> 1,
-												'retrigger'		=> $feeds_meta_state['retrigger'],
-											);
+						'feed_go'         => 0,
+						'feed_iteration'  => 0,
+						'retrieval_state' => 0,
+						'chunk_state'     => 1,
+						'retrigger'       => $feeds_meta_state['retrigger'],
+					);
 					update_option( PF_SLUG . '_feeds_meta_state', $double_check );
 					$message['action_taken'] = pf_message( __( 'The meta-state is too old. It is now reset. Next time, we will start retrieval over.', 'pf' ), true );
 				} else {
 					$double_check = array(
-												'feed_go' => $feeds_meta_state['feed_go'],
-												'feed_iteration' => $feed_iteration,
-												'retrieval_state' => $feeds_meta_state['retrieval_state'],
-												'chunk_state'	=> $feeds_meta_state['chunk_state'],
-												'retrigger'		=> $feeds_meta_state['retrigger'],
-											);
+						'feed_go'         => $feeds_meta_state['feed_go'],
+						'feed_iteration'  => $feed_iteration,
+						'retrieval_state' => $feeds_meta_state['retrieval_state'],
+						'chunk_state'     => $feeds_meta_state['chunk_state'],
+						'retrigger'       => $feeds_meta_state['retrigger'],
+					);
 					update_option( PF_SLUG . '_feeds_meta_state', $double_check );
 					pf_log( $double_check );
 					$message['action_taken'] = pf_message( __( 'The sources are already being retrieved.', 'pf' ), true );

@@ -21,9 +21,9 @@ class Application extends Container implements ApplicationContract {
 	/**
 	 * Singleton instance of the Application object
 	 *
-	 * @var Application
+	 * @var Application[]
 	 */
-	protected static $instance = null;
+	protected static $instances = array();
 
 	/**
 	 * Instantiates a new Application container.
@@ -31,24 +31,27 @@ class Application extends Container implements ApplicationContract {
 	 * The Application constructor enforces the presence of of a single instance
 	 * of the Application. If an instance already exists, an Exception will be thrown.
 	 *
-	 * @param string $file
+	 * @param Config $config
 	 * @param array  $providers
 	 *
 	 * @throws ApplicationAlreadyBootedException
 	 */
-	public function __construct( $file, array $providers = array() ) {
-		if ( null !== static::$instance ) {
+	public function __construct( $config, array $providers = array() ) {
+		if ( isset( static::$instances[ get_called_class() ] ) ) {
 			throw new ApplicationAlreadyBootedException;
 		}
 
-		static::$instance = $this;
+		static::$instances[ get_called_class() ] = $this;
 
-		$this->register_constants( $file );
-		$this->register_core_services();
-		$this->load_i18n();
+		if ( ! ( $config instanceof Config ) ) {
+			$config = new Config( ConfigType::PLUGIN, $config );
+		}
 
-		register_activation_hook( $file, array( $this, 'activate' ) );
-		register_deactivation_hook( $file, array( $this, 'deactivate' ) );
+		$this->register_constants( $config );
+		$this->register_core_services( $config );
+
+		register_activation_hook( $config->file, array( $this, 'activate' ) );
+		register_deactivation_hook( $config->file, array( $this, 'deactivate' ) );
 
 		parent::__construct( $providers );
 	}
@@ -61,7 +64,7 @@ class Application extends Container implements ApplicationContract {
 	public function boot() {
 		$loader = $this->fetch( 'loader' );
 
-		if ( ! $loader instanceof LoaderContract ) {
+		if ( ! ( $loader instanceof LoaderContract ) ) {
 			throw new UnexpectedValueException;
 		}
 
@@ -107,55 +110,58 @@ class Application extends Container implements ApplicationContract {
 	 * @throws ApplicationNotBootedException
 	 */
 	public static function instance() {
-		if ( null === static::$instance ) {
+		if ( ! isset( static::$instances[ get_called_class() ] ) ) {
 			throw new ApplicationNotBootedException;
 		}
 
-		return static::$instance;
+		return static::$instances[ get_called_class() ];
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public static function shutdown() {
-		if ( null !== static::$instance ) {
-			static::$instance = null;
+		if ( isset( static::$instances[ get_called_class() ] ) ) {
+			unset( static::$instances[ get_called_class() ] );
 		}
 	}
 
 	/**
 	 * Sets the plugin's url, path, and basename.
 	 *
-	 * @param string $file
+	 * @param Config $config
 	 */
-	private function register_constants( $file ) {
-		$this->share( 'url', plugin_dir_url( $file ) );
-		$this->share( 'path', plugin_dir_path( $file ) );
-		$this->share( 'basename', $basename = plugin_basename( $file ) );
-		$this->share( 'slug', dirname( $basename ) );
+	private function register_constants( Config $config ) {
+		$this->share( 'file', function() use ( $config ) {
+			return $config->file;
+		} );
+		$this->share( 'url', function() use ( $config ) {
+			return $config->url;
+		} );
+		$this->share( 'path', function() use ( $config ) {
+			return $config->path;
+		} );
+		$this->share( 'basename', function() use ( $config ) {
+			return $config->basename;
+		} );
+		$this->share( 'slug', function() use ( $config ) {
+			return $config->slug;
+		} );
 		$this->share( 'version', static::VERSION );
 	}
 
 	/**
 	 * Registers the built-in services with the Application container.
+	 *
+	 * @param Config $config
 	 */
-	private function register_core_services() {
-		$this->share( array( 'loader' => 'Intraxia\Jaxion\Contract\Core\Loader' ), function ( $app ) {
-			return new Loader( $app );
+	private function register_core_services( Config $config ) {
+		$this->share( array( 'config' => 'Intraxia\Jaxion\Core\Config' ), $config );
+		$this->share( array( 'loader' => 'Intraxia\Jaxion\Contract\Core\Loader' ), function () {
+			return new Loader;
 		} );
-	}
-
-	/**
-	 * Load's the plugin's translation files.
-	 */
-	private function load_i18n() {
-		$passed_this = $this;
-		add_action( 'init', function() use ($passed_this){
-			load_plugin_textdomain(
-				$passed_this->fetch( 'basename' ),
-				false,
-				basename( $passed_this->fetch( 'path' ) ) . '/languages/'
-			);
-		});
+		$this->share( array( 'i18n' => 'Intaxia\Jaxion\Contract\Core\I18n' ), function ( Container $app ) {
+			return new I18n( $app->fetch( 'basename' ), $app->fetch( 'path' ) );
+		} );
 	}
 }

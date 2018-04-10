@@ -17,6 +17,7 @@ use PressForward\Controllers\PF_Loops;
 use PressForward\Controllers\PF_JWT;
 use PressForward\Controllers\PF_Readability;
 use PressForward\Controllers\HTTPTools;
+use PressForward\Controllers\Stats;
 
 
 class ControllerServiceProvider extends ServiceProvider {
@@ -26,14 +27,14 @@ class ControllerServiceProvider extends ServiceProvider {
 		$container->share(
 			'controller.meta_interface',
 			function() {
-				return new PF_to_WP_Meta;
+				return new PF_to_WP_Meta();
 			}
 		);
 
 		$container->share(
 			'controller.system',
 			function() {
-				return new PF_to_WP_System;
+				return new PF_to_WP_System();
 			}
 		);
 
@@ -50,7 +51,8 @@ class ControllerServiceProvider extends ServiceProvider {
 		$container->share(
 			'controller.http_tools',
 			function( $container ) {
-				return new HTTPTools( 	$container->fetch( 'library.url_resolver' ),
+				return new HTTPTools(
+					$container->fetch( 'library.url_resolver' ),
 					$container->fetch( 'controller.system' ),
 					$container->fetch( 'controller.metas' )
 				);
@@ -67,21 +69,21 @@ class ControllerServiceProvider extends ServiceProvider {
 		$container->share(
 			'controller.template_factory',
 			function() {
-				return new Template_Factory;
+				return new Template_Factory();
 			}
 		);
 
 		$container->share(
 			'controller.readability',
 			function() {
-				return new PF_Readability;
+				return new PF_Readability();
 			}
 		);
 
 		$container->share(
 			'controller.items',
 			function() {
-				return new PF_to_WP_Posts;
+				return new PF_to_WP_Posts();
 			}
 		);
 
@@ -103,6 +105,13 @@ class ControllerServiceProvider extends ServiceProvider {
 			'controller.loops',
 			function( $container ) {
 				return new PF_Loops();
+			}
+		);
+
+		$container->share(
+			'controller.stats',
+			function( $container ) {
+				return new Stats( $container->fetch( 'controller.metas' ) );
 			}
 		);
 

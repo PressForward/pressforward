@@ -1,5 +1,6 @@
 <?php
 namespace PressForward\Core\Admin;
+
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
 
@@ -15,64 +16,64 @@ class SubscribedFeeds implements HasActions, HasFilters {
 
 	function __construct( SystemUsers $user_interface, The_Alert_Box $alertbox, Metas $metas ) {
 		$this->user_interface = $user_interface;
-		$this->alertbox = $alertbox;
-		$this->metas = $metas;
+		$this->alertbox       = $alertbox;
+		$this->metas          = $metas;
 	}
 
 	public function action_hooks() {
 		return array(
 			array(
-				'hook' => 'admin_menu',
-				'method' => 'add_plugin_admin_menu',
-				'priority'	=> 14,
+				'hook'     => 'admin_menu',
+				'method'   => 'add_plugin_admin_menu',
+				'priority' => 14,
 			),
 			array(
-				'hook' => 'manage_edit-pf_feed_sortable_columns',
+				'hook'   => 'manage_edit-pf_feed_sortable_columns',
 				'method' => 'make_last_retrieved_column_sortable',
 			),
 			array(
-				'hook' => 'pre_get_posts',
+				'hook'   => 'pre_get_posts',
 				'method' => 'sort_by_last_retrieved',
 			),
 			array(
-				'hook' => 'manage_pf_feed_posts_custom_column',
-				'method' => 'last_checked_date_column_content',
+				'hook'     => 'manage_pf_feed_posts_custom_column',
+				'method'   => 'last_checked_date_column_content',
 				'priority' => 10,
-				'args'	=> 2,
+				'args'     => 2,
 			),
 			array(
-				'hook' => 'manage_edit-pf_feed_sortable_columns',
+				'hook'   => 'manage_edit-pf_feed_sortable_columns',
 				'method' => 'make_last_checked_column_sortable',
 			),
 			array(
-				'hook' => 'pre_get_posts',
+				'hook'   => 'pre_get_posts',
 				'method' => 'sort_by_last_checked',
 			),
 			array(
-				'hook' => 'before_delete_post',
+				'hook'   => 'before_delete_post',
 				'method' => 'pf_delete_children_of_feeds',
 			),
 			array(
-				'hook' => 'wp_trash_post',
+				'hook'   => 'wp_trash_post',
 				'method' => 'pf_trash_children_of_feeds',
 			),
 			array(
-				'hook' => 'quick_edit_custom_box',
-				'method' => 'quick_edit_field',
+				'hook'     => 'quick_edit_custom_box',
+				'method'   => 'quick_edit_field',
 				'priority' => 10,
-				'args'	=> 2,
+				'args'     => 2,
 			),
 			array(
-				'hook' => 'save_post',
-				'method' => 'quick_edit_save',
+				'hook'     => 'save_post',
+				'method'   => 'quick_edit_save',
 				'priority' => 10,
-				'args'	=> 2,
+				'args'     => 2,
 			),
 			array(
-				'hook' => 'manage_pf_feed_posts_custom_column',
-				'method' => 'last_retrieved_date_column_content',
+				'hook'     => 'manage_pf_feed_posts_custom_column',
+				'method'   => 'last_retrieved_date_column_content',
 				'priority' => 10,
-				'args'	=> 2,
+				'args'     => 2,
 			),
 		);
 	}
@@ -80,19 +81,19 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	public function filter_hooks() {
 		return array(
 			array(
-				'hook' => 'manage_pf_feed_posts_columns',
+				'hook'   => 'manage_pf_feed_posts_columns',
 				'method' => 'add_last_checked_date_column',
 			),
 			array(
-				'hook' => 'manage_pf_feed_posts_columns',
+				'hook'   => 'manage_pf_feed_posts_columns',
 				'method' => 'add_last_retrieved_date_column',
 			),
 			// add_filter( 'heartbeat_received', array( $this, 'hb_check_feed_retrieve_status' ), 10, 2 );
 			array(
-				'hook' => 'heartbeat_received',
-				'method' => 'hb_check_feed_retrieve_status',
+				'hook'     => 'heartbeat_received',
+				'method'   => 'hb_check_feed_retrieve_status',
 				'priority' => 10,
-				'args'	=> 2,
+				'args'     => 2,
 			),
 		);
 	}
@@ -101,7 +102,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	public function add_plugin_admin_menu() {
 
 		if ( $alert_count = $this->alertbox->alert_count() ) {
-			$alert_count_notice = '<span class="feed-alerts count-' . intval( $alert_count ) . '"><span class="alert-count">' . number_format_i18n( $alert_count ) . '</span></span>';
+			$alert_count_notice         = '<span class="feed-alerts count-' . intval( $alert_count ) . '"><span class="alert-count">' . number_format_i18n( $alert_count ) . '</span></span>';
 			$subscribed_feeds_menu_text = sprintf( __( 'Subscribed Feeds %s', 'pf' ), $alert_count_notice );
 		} else {
 			$subscribed_feeds_menu_text = __( 'Subscribed Feeds', 'pf' );
@@ -166,9 +167,9 @@ class SubscribedFeeds implements HasActions, HasFilters {
 			$lr_text = '-';
 		} else {
 			// Modified from WP_Posts_List_Table
-			$lr_unix = mysql2date( 'G', $last_retrieved, false );
+			$lr_unix   = mysql2date( 'G', $last_retrieved, false );
 			$time_diff = time() - $lr_unix;
-			$t_time = date( 'Y/m/d g:i:s A', $lr_unix );
+			$t_time    = date( 'Y/m/d g:i:s A', $lr_unix );
 
 			if ( $time_diff > 0 && $time_diff < DAY_IN_SECONDS ) {
 				$lr_text = sprintf( __( '%s ago' ), human_time_diff( $lr_unix ) );
@@ -206,9 +207,9 @@ class SubscribedFeeds implements HasActions, HasFilters {
 			$lr_text = '-';
 		} else {
 			// Modified from WP_Posts_List_Table
-			$lr_unix = mysql2date( 'G', $last_retrieved, false );
+			$lr_unix   = mysql2date( 'G', $last_retrieved, false );
 			$time_diff = time() - $lr_unix;
-			$t_time = date( 'Y/m/d g:i:s A', $lr_unix );
+			$t_time    = date( 'Y/m/d g:i:s A', $lr_unix );
 
 			if ( $time_diff > 0 && $time_diff < DAY_IN_SECONDS ) {
 				$lr_text = sprintf( __( '%s ago' ), human_time_diff( $lr_unix ) );
@@ -297,17 +298,19 @@ class SubscribedFeeds implements HasActions, HasFilters {
 		// In order to ensure that we get the items without a
 		// Last Retrieved key set, force the meta_query to an OR with
 		// NOT EXISTS
-		$query->set( 'meta_query', array(
-			'relation' => 'OR',
-			array(
-				'key' => 'pf_feed_last_retrieved',
-				'compare' => 'NOT EXISTS',
-			),
-			array(
-				'key' => 'pf_feed_last_retrieved',
-				'compare' => 'EXISTS',
+		$query->set(
+			'meta_query', array(
+				'relation' => 'OR',
+				array(
+					'key'     => 'pf_feed_last_retrieved',
+					'compare' => 'NOT EXISTS',
+				),
+				array(
+					'key'     => 'pf_feed_last_retrieved',
+					'compare' => 'EXISTS',
+				),
 			)
-		) );
+		);
 
 		// var_dump($query); die();
 	}
@@ -358,24 +361,26 @@ class SubscribedFeeds implements HasActions, HasFilters {
 		// In order to ensure that we get the items without a
 		// Last Retrieved key set, force the meta_query to an OR with
 		// NOT EXISTS
-		$query->set( 'meta_query', array(
-			'relation' => 'OR',
-			array(
-				'key' => 'pf_feed_last_checked',
-				'compare' => 'NOT EXISTS',
-			),
-			array(
-				'key' => 'pf_feed_last_checked',
-				'compare' => 'EXISTS',
+		$query->set(
+			'meta_query', array(
+				'relation' => 'OR',
+				array(
+					'key'     => 'pf_feed_last_checked',
+					'compare' => 'NOT EXISTS',
+				),
+				array(
+					'key'     => 'pf_feed_last_checked',
+					'compare' => 'EXISTS',
+				),
 			)
-		) );
+		);
 	}
 
 
 	public function pf_delete_children_of_feeds( $post_id ) {
 		if ( pressforward( 'schema.feeds' )->post_type == get_post_type( $post_id ) ) {
 			pf_log( 'Delete a feed and all its children.' );
-		    pf_delete_item_tree( $post_id );
+			pf_delete_item_tree( $post_id );
 		}
 	}
 
@@ -406,7 +411,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 		<fieldset class="inline-edit-pressforward">
 			<div class="inline-edit-col">
 				<label for="pf-feed-url">
-					<span class="title"><?php _e( 'Feed URL', 'pressforward' ) ?></span>
+					<span class="title"><?php _e( 'Feed URL', 'pressforward' ); ?></span>
 					<span class="input-text-wrap">
 						<input class="inline-edit-pf-feed-input" type="text" value="" name="pf-quick-edit-feed-url" id="pf-quick-edit-feed-url" />
 					</span>
@@ -454,14 +459,14 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	public function hb_check_feed_retrieve_status( $response, $data, $screen_id = '' ) {
 		/**
 		 * $feed_hb_state = array(
-		 * 'feed_id'	=>	$aFeed->ID,
-		 * 'feed_title'	=> $aFeed->post_title,
-		 * 'last_key'	=> $last_key,
-		 * 'feeds_iteration'	=>	$feeds_iteration,
-		 * 'total_feeds'	=>	count($feedlist)
+		 * 'feed_id'    =>  $aFeed->ID,
+		 * 'feed_title' => $aFeed->post_title,
+		 * 'last_key'   => $last_key,
+		 * 'feeds_iteration'    =>  $feeds_iteration,
+		 * 'total_feeds'    =>  count($feedlist)
 		 * );
 		*/
-		if ( (array_key_exists( 'pf_heartbeat_request', $data )) && ('feed_state' == $data['pf_heartbeat_request']) ) {
+		if ( ( array_key_exists( 'pf_heartbeat_request', $data ) ) && ( 'feed_state' == $data['pf_heartbeat_request'] ) ) {
 			$feed_hb_state = get_option( PF_SLUG . '_feeds_hb_state' );
 			foreach ( $feed_hb_state as $key => $state ) {
 				$response[ 'pf_' . $key ] = $state;
@@ -484,7 +489,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 			} else {
 				$post_type = $item_type;
 			}
-			$args = array(
+			$args        = array(
 				'post_parent' => $id,
 				'post_type'   => $post_type,
 			);

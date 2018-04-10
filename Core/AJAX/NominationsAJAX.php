@@ -21,19 +21,19 @@ class NominationsAJAX implements HasActions {
 	public function action_hooks() {
 		return array(
 			array(
-				'hook' => 'wp_ajax_build_a_nomination',
+				'hook'   => 'wp_ajax_build_a_nomination',
 				'method' => 'build_a_nomination',
 			),
 			array(
-				'hook' => 'wp_ajax_build_a_nom_draft',
+				'hook'   => 'wp_ajax_build_a_nom_draft',
 				'method' => 'build_a_nom_draft',
 			),
 			array(
-				'hook' => 'wp_ajax_simple_nom_to_draft',
+				'hook'   => 'wp_ajax_simple_nom_to_draft',
 				'method' => 'simple_nom_to_draft',
 			),
 			array(
-				'hook' => 'wp_ajax_archive_a_nom',
+				'hook'   => 'wp_ajax_archive_a_nom',
 				'method' => 'archive_a_nom',
 			),
 		);

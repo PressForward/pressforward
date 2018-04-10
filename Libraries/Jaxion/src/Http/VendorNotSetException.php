@@ -9,6 +9,6 @@ namespace Intraxia\Jaxion\Http;
  * @package Intraxia\Jaxion
  * @subpackage Http
  */
-class VendorNotSetException extends \RuntimeException {
-
+class VendorNotSetException extends \RuntimeException
+{
 }

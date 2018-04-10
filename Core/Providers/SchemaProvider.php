@@ -18,14 +18,14 @@ class SchemaProvider extends ServiceProvider {
 		$container->share(
 			'schema.relationships',
 			function() {
-				return new Relationships;
+				return new Relationships();
 			}
 		);
 
 		$container->share(
 			'schema.feeds',
-			function() {
-				return new Feeds;
+			function( $container ) {
+				return new Feeds( $container->fetch( 'controller.metas' ) );
 			}
 		);
 
@@ -39,14 +39,14 @@ class SchemaProvider extends ServiceProvider {
 		$container->share(
 			'schema.folders',
 			function() {
-				return new Folders;
+				return new Folders();
 			}
 		);
 
 		$container->share(
 			'schema.nominations',
 			function() {
-				return new Nominations;
+				return new Nominations();
 			}
 		);
 

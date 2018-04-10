@@ -44,9 +44,9 @@ class FilterTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertSame( array(
 			'param' => array(
-			'validate_callback' => array( $filter, 'validate_integer' ),
-			'sanitize_callback' => array( $filter, 'make_integer' ),
-			),
+				'validate_callback' => array( $filter, 'validate_integer' ),
+				'sanitize_callback' => array( $filter, 'make_integer' ),
+			)
 		), $filter->rules() );
 	}
 
@@ -97,15 +97,15 @@ class FilterTest extends PHPUnit_Framework_TestCase {
 
 	public function test_should_take_multiple_rules() {
 		$filter = new Filter( array(
-			'param' => 'default:value|integer',
+			'param' => 'default:value|integer'
 		) );
 
 		$this->assertSame( array(
 			'param' => array(
-			'default'           => 'value',
-			'validate_callback' => array( $filter, 'validate_integer' ),
-			'sanitize_callback' => array( $filter, 'make_integer' ),
-			),
+				'default'           => 'value',
+				'validate_callback' => array( $filter, 'validate_integer' ),
+				'sanitize_callback' => array( $filter, 'make_integer' ),
+			)
 		), $filter->rules() );
 	}
 }

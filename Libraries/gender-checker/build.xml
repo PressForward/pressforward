@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="GenderEngine" description="Guesses the gender of a given american first name." default="test">
+    <fileset id="srcFiles" dir="src">
+        <include name="**/*.php" />
+    </fileset>
+
+    <fileset id="testFiles" dir="tests">
+        <include name="**/*Test.php" />
+    </fileset>
+
+    <!-- ============================================  -->
+    <!-- Target: demo                                  -->
+    <!-- ============================================  -->
+    <target name="demo" description="Load demo with PHP's in-built web server.">
+        <exec command="php -S localhost:8000 -t demo/" />
+    </target>
+
+    <!-- ============================================  -->
+    <!-- Target: clean                                 --> 
+    <!-- ============================================  -->
+    <target name="clean" description="Create clean reports directory.">
+        <echo>Creating reports directory...</echo>
+        <delete dir="reports/" />
+        <mkdir dir="reports/tests" />
+        <echo>[Complete]</echo>
+    </target>
+
+    <!-- ============================================  -->
+    <!-- Target: lint                                  -->
+    <!-- ============================================  -->
+    <target name="lint" description="Check syntax of source code.">
+        <echo>Linting...</echo>
+        <phplint haltonfailure="true">
+            <fileset refid="srcFiles" />
+        </phplint>
+        <echo>[Complete]</echo>
+    </target>
+
+    <!-- ============================================  -->
+    <!-- Target: sniff                                 -->
+    <!-- ============================================  -->
+    <target name="sniff" description="Check source code follows PSR-2 guidelines.">
+        <echo>Sniffing...</echo>
+        <phpcodesniffer format="full" standard="PSR2" showWarnings="true" haltonerror="true">
+            <fileset refid="srcFiles" />
+            <formatter type="default" usefile="false" />
+            <formatter type="checkstyle" outfile="reports/checkstyle.xml" />
+        </phpcodesniffer>
+        <echo>[Complete]</echo>
+    </target>
+
+    <!-- ============================================  -->
+    <!-- [DEFAULT]  Target: test                       -->
+    <!-- ============================================  -->
+    <target name="test" description="Run unit tests on source code." depends="clean,lint,sniff">
+        <echo>Testing...</echo>
+        <phpunit printsummary="true" bootstrap="tests/bootstrap.php">
+            <formatter type="xml" todir="reports/" />
+            <batchtest>
+                <fileset refid="testFiles" />
+            </batchtest>
+        </phpunit>
+        <phpunitreport infile="reports/testsuites.xml" todir="reports/tests" />
+        <echo>[Complete]</echo>
+    </target>
+</project>
