@@ -15,7 +15,7 @@ window.pfnt.windows = {};
 window.pfnt.styles = {};
 window.pfnt.tools = {};
 
-function pfnt_activate(){
+function pfnt_activate() {
 
 	var pf = window.pfnt;
 	var windows = window.pfnt.windows;
@@ -30,30 +30,30 @@ function pfnt_activate(){
 
 	windows.innerWindow.setAttribute('id', 'pressforward-nt__inner');
 
-	pf_styles.mwStyles = 'position: absolute;'+
-						    'width: 50%;'+
-						    'height: 450px;'+
-						    'display: block;'+
-						    'background: #c7c7c7;'+
-						    'top: 0;'+
-						    'left: 25%;'+
-							'padding: 1px;'+
-						    'box-sizing: border-box;'+
-						    'z-index: 10000;';
+	pf_styles.mwStyles = 'position: absolute;' +
+		'width: 76%;' +
+		'height: 450px;' +
+		'display: block;' +
+		'background: #c7c7c7;' +
+		'top: 0;' +
+		'left: 12%;' +
+		'padding: 1px;' +
+		'box-sizing: border-box;' +
+		'z-index: 10000;';
 
-	pf_styles.iwStyles = 'position: relative;'+
-						    'width: 100%;'+
-						    'height: 100%;'+
-						    'background: white;'+
-						    'border: #afceaf 3px solid;'+
-						    'box-sizing: border-box;';
+	pf_styles.iwStyles = 'position: relative;' +
+		'width: 100%;' +
+		'height: 100%;' +
+		'background: white;' +
+		'border: #afceaf 3px solid;' +
+		'box-sizing: border-box;';
 
 	windows.mainWindow.setAttribute('style', pf_styles.mwStyles);
 
 	windows.innerWindow.setAttribute('style', pf_styles.iwStyles);
 
-	var pfMainWindowAppender = function(){ document.getElementsByTagName('body')[0].appendChild(window.pfnt.windows.mainWindow); };
-	var pfInnerWindowAppender = function(){ window.pfnt.windows.mainWindow.appendChild(window.pfnt.windows.innerWindow); };
+	var pfMainWindowAppender = function () { document.getElementsByTagName('body')[0].appendChild(window.pfnt.windows.mainWindow); };
+	var pfInnerWindowAppender = function () { window.pfnt.windows.mainWindow.appendChild(window.pfnt.windows.innerWindow); };
 
 	pfMainWindowAppender();
 	pfInnerWindowAppender();

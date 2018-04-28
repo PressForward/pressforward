@@ -101,6 +101,7 @@ function start_pf_nom_this(){
 	 * @return string
 	 */
 function pf_get_shortcut_link() {
+	return pf_nomthis_bookmarklet();
 	$url = trailingslashit(get_bloginfo('wpurl')).'wp-admin/edit.php?pf-nominate-this=2';
 	// In case of breaking changes, version this. #WP20071
 	$link = "javascript:
