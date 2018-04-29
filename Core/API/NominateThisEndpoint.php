@@ -205,11 +205,107 @@ class NominateThisEndpoint implements HasActions {
 
 	}
 
+	public function get_file( $path ) {
+
+		if ( function_exists( 'realpath' ) ) {
+			$path = realpath( $path );
+		}
+
+		if ( ! $path || ! @is_file( $path ) ) {
+			return '';
+		}
+
+		return @file_get_contents( $path );
+	}
+
+	public function assembleScripts( $load ) {
+		/** Set ABSPATH for execution */
+
+		if ( is_array( $load ) ) {
+			$load = implode( '', $load );
+		}
+
+		$load = preg_replace( '/[^a-z0-9,_-]+/i', '', $load );
+		$load = array_unique( explode( ',', $load ) );
+
+		if ( empty( $load ) ) {
+			exit;
+		}
+
+		// include_once ABSPATH . 'wp-admin/includes/noop.php';
+		// require( ABSPATH . WPINC . '/script-loader.php' );
+		// require( ABSPATH . WPINC . '/version.php' );
+
+		$compress       = ( isset( $_GET['c'] ) && $_GET['c'] );
+		$force_gzip     = ( $compress && 'gzip' == $_GET['c'] );
+		$expires_offset = 31536000; // 1 year
+		$out            = '';
+
+		$wp_scripts = new \WP_Scripts();
+		\wp_default_scripts( $wp_scripts );
+
+		if ( isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) && stripslashes( $_SERVER['HTTP_IF_NONE_MATCH'] ) === $wp_version ) {
+			$protocol = $_SERVER['SERVER_PROTOCOL'];
+			if ( ! in_array( $protocol, array( 'HTTP/1.1', 'HTTP/2', 'HTTP/2.0' ) ) ) {
+				$protocol = 'HTTP/1.0';
+			}
+			header( "$protocol 304 Not Modified" );
+			exit();
+		}
+
+		foreach ( $load as $handle ) {
+			if ( ! array_key_exists( $handle, $wp_scripts->registered ) ) {
+				continue;
+			}
+
+			$path = ABSPATH . $wp_scripts->registered[ $handle ]->src;
+			$out .= $this->get_file( $path ) . "\n";
+		}
+
+		// header( "Etag: $wp_version" );
+		// header( 'Content-Type: application/javascript; charset=UTF-8' );
+		// header( 'Expires: ' . gmdate( 'D, d M Y H:i:s', time() + $expires_offset ) . ' GMT' );
+		// header( "Cache-Control: public, max-age=$expires_offset" );
+
+		if ( $compress && ! ini_get( 'zlib.output_compression' ) && 'ob_gzhandler' != ini_get( 'output_handler' ) && isset( $_SERVER['HTTP_ACCEPT_ENCODING'] ) ) {
+			// header( 'Vary: Accept-Encoding' ); // Handle proxies
+			if ( false !== stripos( $_SERVER['HTTP_ACCEPT_ENCODING'], 'deflate' ) && function_exists( 'gzdeflate' ) && ! $force_gzip ) {
+				// header( 'Content-Encoding: deflate' );
+				// $out = gzdeflate( $out, 3 );
+			} elseif ( false !== stripos( $_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip' ) && function_exists( 'gzencode' ) ) {
+				// header( 'Content-Encoding: gzip' );
+				// $out = gzencode( $out, 3 );
+			}
+		}
+
+		echo $out;
+	}
+
 	public function get_nominate_this_script(){
+		$site_url = ABSPATH;
+		// $basic_scripts = '/wp-admin/load-scripts.php?c=1&load%5B%5D=jquery,jquery-core,jquery-migrate,utils,moxiejs,plupload,jquery-ui-core,jquery-ui-widget';
 		header( 'Content-Type: application/javascript; charset=' . get_option( 'blog_charset' ) );
-		include_once(PF_ROOT.'/assets/js/jws.js');
-		include_once(PF_ROOT.'/assets/js/jwt.js');
-		include_once(PF_ROOT.'/assets/js/nominate-tool.js');
+		echo 'window.pfSiteData = {}; ';
+		echo 'window.pfSiteData.site_url = "'. \get_site_url() . '"; ';
+		echo 'window.pfSiteData.plugin_url = "'. plugin_dir_url( dirname(dirname(__FILE__)) ) . '"; ';
+		include_once PF_ROOT . '/assets/js/jws.js';
+		include_once PF_ROOT . '/assets/js/jwt.js';
+
+		include_once $site_url . 'wp-includes/js/jquery/jquery.js';
+
+		// $this->assembleScripts( 'load%5B%5D=jquery-core,jquery-migrate,utils,moxiejs,plupload,jquery-ui-core,jquery-ui-widget' );
+
+		// // include_once $site_url . 'wp-includes/js/jquery/ui/position.min.js?';
+		// include_once $site_url . 'wp-includes/js/jquery/ui/menu.min.js';
+		// include_once $site_url . 'wp-includes/js/wp-a11y.min.js';
+		// include_once $site_url . 'wp-includes/js/jquery/ui/autocomplete.min.js';
+		// include_once $site_url . 'wp-admin/js/tags-suggest.min.js';
+		// include_once $site_url . 'wp-admin/js/tags-box.min.js';
+		// include_once $site_url . 'wp-includes/js/wp-sanitize.min.js';
+		include_once PF_ROOT . '/Libraries/MozillaReadability/Readability.js';
+		// include_once PF_ROOT . '/Libraries/press-this.js';
+		include_once PF_ROOT . '/Libraries/SummerNote/summernote.js';
+		include_once PF_ROOT . '/assets/js/nominate-tool.js';
 		die();
 	}
 

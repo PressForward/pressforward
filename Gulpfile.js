@@ -55,6 +55,11 @@ gulp.task('minify', function () {
 		.pipe(extrep('.min.js'))
 		.pipe(gulp.dest('Libraries/twitter-bootstrap/js/'));
 
+	gulp.src(['Libraries/MozillaReadability/*.js', '!Libraries/MozillaReadability/*.min.js'])
+		.pipe(uglify())
+		.pipe(extrep('.min.js'))
+		.pipe(gulp.dest('Libraries/BookmarkletReadability/'));
+
 });
 
 gulp.task('minify-css', () => {
