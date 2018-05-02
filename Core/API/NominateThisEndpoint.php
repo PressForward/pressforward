@@ -291,7 +291,7 @@ class NominateThisEndpoint implements HasActions {
 		include_once PF_ROOT . '/assets/js/jws.js';
 		include_once PF_ROOT . '/assets/js/jwt.js';
 
-		include_once $site_url . 'wp-includes/js/jquery/jquery.js';
+		// include_once $site_url . 'wp-includes/js/jquery/jquery.js';
 
 		// $this->assembleScripts( 'load%5B%5D=jquery-core,jquery-migrate,utils,moxiejs,plupload,jquery-ui-core,jquery-ui-widget' );
 
@@ -303,8 +303,8 @@ class NominateThisEndpoint implements HasActions {
 		// include_once $site_url . 'wp-admin/js/tags-box.min.js';
 		// include_once $site_url . 'wp-includes/js/wp-sanitize.min.js';
 		include_once PF_ROOT . '/Libraries/MozillaReadability/Readability.js';
-		// include_once PF_ROOT . '/Libraries/press-this.js';
-		include_once PF_ROOT . '/Libraries/SummerNote/summernote.js';
+		//include_once PF_ROOT . '/Libraries/tinymce/js/tinymce/tinymce.min.js';
+		// include_once PF_ROOT . '/Libraries/SummerNote/summernote.js';
 		include_once PF_ROOT . '/assets/js/nominate-tool.js';
 		die();
 	}
