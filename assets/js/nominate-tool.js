@@ -155,7 +155,7 @@ function pfnt_activate() {
 		'left: 12%;' +
 		'padding: 1px;' +
 		'box-sizing: border-box;' +
-		'z-index: 10000;';
+		'z-index: 9999990000;';
 
 	pf_styles.iwStyles = 'position: relative;' +
 		'width: 100%;' +
