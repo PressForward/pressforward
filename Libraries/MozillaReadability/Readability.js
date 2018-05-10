@@ -104,7 +104,7 @@ Readability.prototype = {
 	DEFAULT_TAGS_TO_SCORE: "section,h2,h3,h4,h5,h6,p,td,pre".toUpperCase().split(","),
 
 	// The default number of chars an article must have in order to return a result
-	DEFAULT_CHAR_THRESHOLD: 500,
+	DEFAULT_CHAR_THRESHOLD: 250,
 
 	// All of the regular expressions in use within readability.
 	// Defined up here so we don't instantiate them repeatedly in loops.
