@@ -20,6 +20,7 @@ class NominateThisEndpoint implements HasActions {
 		$base = $this->api_base['endpoint'];
 		$this->api_base['authpoint'] = 'nominate';
 		$this->api_base['scriptpoint'] = 'nomscript';
+		$this->api_base['submit'] = 'submit-nomination';
 		$this->endpoint_for_nominate_this_endpoint = $namespace. '/' . $base;
 		$this->endpoint_for_nominate_this_script = $namespace. '/' . $this->api_base['scriptpoint'];
 		$this->endpoint_for_nominate_endpoint = $namespace. '/' . 	$this->api_base['authpoint'];
@@ -176,6 +177,60 @@ class NominateThisEndpoint implements HasActions {
 			)
 		);
 
+		register_rest_route($namespace, '/'.$this->api_base['submit'],
+			array(
+				'methods'         => \WP_REST_Server::EDITABLE,
+				'callback'        => array( $this, 'handle_nomination_submission' ),
+				'args' => array(
+				  'context' => array(
+					  // description should be a human readable description of the argument.
+					'description' => esc_html__( 'The endpoint to which the Nominate This bookmarklet submits to.', 'pf' ),
+					// type specifies the type of data that the argument should be.
+					'type'        => 'string',
+					// Set the argument to be required for the endpoint.
+					'required'    => false,
+					'default'	  => 'view'
+				  ),
+                  'k' => array(
+                      // description should be a human readable description of the argument.
+                    'description' => esc_html__( 'Public Key.', 'pf' ),
+                    // type specifies the type of data that the argument should be.
+                    'type'        => 'string',
+                    // Set the argument to be required for the endpoint.
+                    'required'    => true,
+                    'default'	  => '0'
+                  ),
+				),
+				'permission_callback' => function () {
+					//var_dump($_GET);
+					$return_var = false;
+					try {
+						$key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin($_GET['k']));
+						if (!$key){
+							$return_var = new WP_Error( 'auth_fail_id', __( "Request was signed with incorrect key.", "pf" ) );
+						}
+						$return_var = true;
+						return $return_var;
+					} catch ( \UnexpectedValueException $e ){
+						$return_var = new WP_Error( 'auth_fail_format', __( "Authentication key was not properly formated.", "pf" ) );
+					} catch ( \InvalidArgumentException $e ){
+						$return_var = new WP_Error( 'auth_fail_key', __( "Authentication key was not properly supplied.", "pf" ) );
+					} catch ( \DomainException $e ){
+						$return_var = new WP_Error( 'auth_fail_ssl', __( "SSL cannot be applied to the key.", "pf" ) );
+					} finally {
+						if ( false === $return_var){
+							return new WP_Error( 'auth_fail_whoknows', __( "Authentication failed for reasons unclear.", "pf" ) );
+						} else {
+							return $return_var;
+						}
+
+					}
+
+				},
+				'priority'  => 10,
+			)
+		);
+
 	}
 
 	public function get_nominate_this_template( $request ) {
@@ -279,6 +334,10 @@ class NominateThisEndpoint implements HasActions {
 		}
 
 		echo $out;
+	}
+
+	public function handle_nomination_submission() {
+
 	}
 
 	public function get_nominate_this_script(){
