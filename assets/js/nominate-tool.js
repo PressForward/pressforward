@@ -25,6 +25,8 @@
 	window.pfnt.styles = {};
 	window.pfnt.tools = {};
 	window.pfReadability = {};
+	window.pfnt.key = window.ku;
+	window.pfnt.selection = window.getSelection().toString();
 
 	function generateTag(el, id, className, style) {
 		var aTag = document.createElement(el);
@@ -140,14 +142,19 @@
 			'margin-left: 10px;';
 		var tagContainer = generateTag('div', 'pressforward-nt__preview-tags-container', 'meta-box', 'height:18%; overflow:hidden; display: block;');
 		tagContainer.innerHTML = '<h5>Tags</h5><input type="text" value="' + window.pfMetaData.keywords.join(', ') + '" style="' + tagStyles + '">';
-		tagContainer.appendChild(imageArea);
+		// tagContainer.appendChild(imageArea);
 
 		var imageContainer = generateTag('div', 'pressforward-nt__preview-image-container', 'meta-box', 'height:36%; overflow:hidden; display: block;');
 		imageContainer.innerHTML = '<h5>Preview Image</h5>';
 		imageContainer.appendChild(imageArea);
 
+		var buttonContainer = generateTag('div', 'pressforward-nt__button-container', 'meta-box', 'height:12%; overflow:hidden; display: block;');
+		buttonContainer.innerHTML = '<button id="submit-button" role="presentation" type="button" tabindex="-1" style="width: 100px; height: 30px; margin: 22px 10px; float: right; font-size: 14px;" onclick="window.pfntSubmit()">Submit</button>';
+		// buttonContainer.appendChild(imageArea);
+
 		container.appendChild(tagContainer);
 		container.appendChild(imageContainer);
+		container.appendChild(buttonContainer);
 	}
 
 	function pfnt_activate() {
@@ -204,6 +211,13 @@
 		windows.innerLeft = generateTag('div', 'pressforward-nt__left', 'pressforward-nt__inner-container', 'float:left; width:61%');
 		windows.innerRight = generateTag('div', 'pressforward-nt__right', 'pressforward-nt__inner-container', 'float:right; width:37%; padding-left: 1%; padding: 0 10px;');
 
+		var articleContent = '';
+		if (window.pfnt.selection.length > 2) {
+			articleContent = window.pfnt.selection;
+		} else {
+			articleContent = window.pfReadability.article.content;
+		}
+
 		var pfMainWindowAppender = function () { document.getElementsByTagName('body')[0].prepend(window.pfnt.windows.mainWindow); };
 		var pfInnerWindowAppender = function () {
 			window.pfnt.windows.mainWindow.appendChild(window.pfnt.windows.innerWindow);
@@ -211,7 +225,7 @@
 			window.pfnt.windows.innerWindow.appendChild(window.pfnt.windows.innerRight);
 			window.pfnt.windows.innerLeft.appendChild(window.pfnt.windows.titleField);
 			window.pfnt.windows.innerLeft.appendChild(window.pfnt.windows.bylineField);
-			window.pfnt.windows.innerLeft.appendChild(textareaBuilder(window.pfReadability.article.content));
+			window.pfnt.windows.innerLeft.appendChild(textareaBuilder(articleContent));
 			sidebar(window.pfnt.windows.innerRight);
 		};
 
@@ -247,3 +261,7 @@ window.pfnt_deactivate = function () {
 	clearInner(window.pfnt.windows.mainWindow);
 	window.pfnt.windows.mainWindow.remove();
 }
+
+window.pfntSubmit = function () {
+	console.log('Submitting to PressForward');
+};
