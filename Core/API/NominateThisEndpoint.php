@@ -303,6 +303,7 @@ class NominateThisEndpoint implements HasActions {
 		// include_once $site_url . 'wp-admin/js/tags-box.min.js';
 		// include_once $site_url . 'wp-includes/js/wp-sanitize.min.js';
 		include_once PF_ROOT . '/Libraries/MozillaReadability/Readability.js';
+		include_once PF_ROOT . '/Libraries/PFMetaDataParser.js';
 		//include_once PF_ROOT . '/Libraries/tinymce/js/tinymce/tinymce.min.js';
 		// include_once PF_ROOT . '/Libraries/SummerNote/summernote.js';
 		include_once PF_ROOT . '/assets/js/nominate-tool.js';
