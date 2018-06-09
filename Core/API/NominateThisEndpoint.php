@@ -337,7 +337,8 @@ class NominateThisEndpoint implements HasActions {
 	}
 
 	public function handle_nomination_submission() {
-
+		// Already authorized at an upper API level.
+		return pressforward('bookmarklet.core')->nominate_it(false);
 	}
 
 	public function get_nominate_this_script(){

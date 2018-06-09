@@ -27,6 +27,20 @@
 	window.pfReadability = {};
 	window.pfnt.key = window.ku;
 	window.pfnt.selection = window.getSelection().toString();
+	window.pfnt.submitObject = {
+		post_title: false,
+		item_link: window.location.origin,
+		post_type: false,
+		post_status: false,
+		content: false, //post_content
+		tax_input: false,
+		item_feat_img: false,
+		item_author: false,
+		post_tags: false,
+		photo_src: [],
+		photo_description: [],
+		action: 'post',
+	};
 
 	function generateTag(el, id, className, style) {
 		var aTag = document.createElement(el);
@@ -149,7 +163,8 @@
 		imageContainer.appendChild(imageArea);
 
 		var buttonContainer = generateTag('div', 'pressforward-nt__button-container', 'meta-box', 'height:12%; overflow:hidden; display: block;');
-		buttonContainer.innerHTML = '<button id="submit-button" role="presentation" type="button" tabindex="-1" style="width: 100px; height: 30px; margin: 22px 10px; float: right; font-size: 14px;" onclick="window.pfntSubmit()">Submit</button>';
+		buttonContainer.innerHTML = '<button id="submit-button" role="presentation" type="button" tabindex="-1" style="width: 100px; height: 30px; margin: 22px 10px; float: right; font-size: 14px;" onclick="window.pfntSubmit(true)">Submit</button>';
+		buttonContainer.innerHTML += '<button id="nominate-button" role="presentation" type="button" tabindex="-1" style="width: 100px; height: 30px; margin: 22px 10px; float: right; font-size: 14px;" onclick="window.pfntSubmit(false)">Nominate</button>';
 		// buttonContainer.appendChild(imageArea);
 
 		container.appendChild(tagContainer);
@@ -208,7 +223,7 @@
 
 		windows.innerWindow.setAttribute('style', pf_styles.iwStyles);
 
-		windows.innerLeft = generateTag('div', 'pressforward-nt__left', 'pressforward-nt__inner-container', 'float:left; width:61%');
+		windows.innerLeft = generateTag('div', 'pressforward-nt__left', 'pressforward-nt__inner-container', 'float:left; width:60%');
 		windows.innerRight = generateTag('div', 'pressforward-nt__right', 'pressforward-nt__inner-container', 'float:right; width:37%; padding-left: 1%; padding: 0 10px;');
 
 		var articleContent = '';
@@ -262,6 +277,16 @@ window.pfnt_deactivate = function () {
 	window.pfnt.windows.mainWindow.remove();
 }
 
-window.pfntSubmit = function () {
+window.pfntSubmit = function (publish) {
 	console.log('Submitting to PressForward');
+	window.pfnt.submitObject.post_title = window.document.getElementById('pressforward-nt__inputfield__title').value;
+	window.pfnt.submitObject.item_author = window.document.getElementById('pressforward-nt__inputfield__byline').value;
+	window.pfnt.submitObject.content = tinymce.activeEditor.dom.doc.body.innerHTML;
+	window.pfnt.submitObject.item_feat_img = window.pfMetaData.image;
+	window.pfnt.submitObject.post_tags = window.document.querySelector('#pressforward-nt__preview-tags-container input').value;
+	if (publish) {
+		window.pfnt.submitObject.publish = true;
+		window.pfnt.submitObject.post_status = 'publish';
+	}
+
 };

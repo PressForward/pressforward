@@ -24,14 +24,26 @@ class NominateThisCore {
 	 * @subpackage Press_This
 	 * @since 2.6.0
 	 *
+	 * 	$_POST should contain:
+	 *		'post_category'
+	 *		'tax_input'
+	 * 		'title'
+	 * 		'post_title'
+	 * 		'content' / 'post_content'
+	 * 		'item_link'
+	 * 		?'publish'
+	 *
 	 * @return int Post ID
 	 */
-	public function nominate_it() {
+	public function nominate_it( $internal = true ) {
 
 		$post = array();
 		// $post_ID = $post['ID'] = (int) $_POST['post_id'];
-		if ( ! current_user_can( get_option( 'pf_menu_nominate_this_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) ) ) ) {
-			wp_die( __( 'You do not have access to the Nominate This bookmarklet.' ) ); }
+		if ( $internal ){
+			if ( ! current_user_can( get_option( 'pf_menu_nominate_this_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) ) ) ) {
+				wp_die( __( 'You do not have access to the Nominate This bookmarklet.' ) );
+			}
+		}
 
 		$post['post_category'] = isset( $_POST['post_category'] ) ? $_POST['post_category'] : '';
 		$post['tax_input']     = isset( $_POST['tax_input'] ) ? $_POST['tax_input'] : '';
@@ -44,18 +56,19 @@ class NominateThisCore {
 		// var_dump('<pre>'); var_dump($_POST);
 		// set the post_content and status
 		$post['post_content'] = $content;
+		$post['guid'] = $_POST['item_link'];
 		if ( isset( $_POST['publish'] ) && current_user_can( 'publish_posts' ) ) {
-			$post['post_status'] = 'publish'; } elseif ( isset( $_POST['review'] ) ) {
+			$post['post_status'] = 'publish';
+		} elseif ( isset( $_POST['review'] ) ) {
 			$post['post_status'] = 'pending';
-			} else {
-				$post['post_status'] = get_option( PF_SLUG . '_draft_post_status', 'draft' ); }
-
+		} else {
+			$post['post_status'] = get_option( PF_SLUG . '_draft_post_status', 'draft' );
+		}
 			$nom_check    = false;
 			$feed_nom     = array(
 				'error'  => false,
 				'simple' => '',
 			);
-			$post['guid'] = $_POST['item_link'];
 			// var_dump('<pre>'); var_dump($_POST['pf-feed-subscribe']); die();
 		if ( ! empty( $_POST['pf-feed-subscribe'] ) && ( 'subscribe' == $_POST['pf-feed-subscribe'] ) ) {
 			$url_array      = parse_url( esc_url( $_POST['item_link'] ) );
