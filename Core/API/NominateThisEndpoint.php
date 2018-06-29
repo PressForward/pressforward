@@ -169,7 +169,6 @@ class NominateThisEndpoint implements HasActions {
 						} else {
 							return $return_var;
 						}
-
 					}
 
 				},
@@ -338,6 +337,8 @@ class NominateThisEndpoint implements HasActions {
 
 	public function handle_nomination_submission() {
 		// Already authorized at an upper API level.
+		$user_id = pressforward('controller.jwt')->get_user_by_key($_POST['user_key']);
+		wp_set_current_user($user_id);
 		return pressforward('bookmarklet.core')->nominate_it(false);
 	}
 

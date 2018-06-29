@@ -121,14 +121,7 @@ class PF_JWT {
 		return $this->system_users->update_user_meta($user_id, 'pf_jwt_private_key', $key);
 	}
 
-	public function get_a_user_private_key_for_decrypt( $public_pf_key ){
-		$key_parts = array();
-		//$decoded_key = base64_decode($public_pf_key);
-		//$key_parts = explode('|', $decoded_key);
-		//$user_key = array_pop($key_parts);
-		//$site_url = array_pop($key_parts);
-		$key_obj = $this->decode_with_jwt($public_pf_key, $this->system_key());
-		$key_array = (array) $key_obj;
+	public function get_user_by_key($key_array){
 		if (!array_key_exists('key_seed', $key_array) || !array_key_exists('user_seed', $key_array)){
 			return false;
 		}
@@ -137,6 +130,21 @@ class PF_JWT {
 			return false;
 		}
 		$user_id = $unique_strings_to_users['by_key'][$key_array['user_seed']];
+		return $user_id;
+	}
+
+	public function get_a_user_private_key_for_decrypt( $public_pf_key ){
+		$key_parts = array();
+		//$decoded_key = base64_decode($public_pf_key);
+		//$key_parts = explode('|', $decoded_key);
+		//$user_key = array_pop($key_parts);
+		//$site_url = array_pop($key_parts);
+		$key_obj = $this->decode_with_jwt($public_pf_key, $this->system_key());
+		$key_array = (array) $key_obj;
+		$user_id = $this->get_user_by_key($key_array);
+		if ( false === $user_id ){
+			return false;
+		}
 		//$user = get_user_by( 'id', $user_id );
 		$key = $this->system_users->get_user_meta($user_id, 'pf_jwt_private_key', true);
 		return $key;

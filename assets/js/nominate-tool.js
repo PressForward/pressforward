@@ -37,6 +37,7 @@
 		item_feat_img: false,
 		item_author: false,
 		post_tags: false,
+		user_key: window.ku,
 		photo_src: [],
 		photo_description: [],
 		action: 'post',
@@ -66,13 +67,13 @@
 		return editorContainer;
 	}
 
-	function linkElement(linkUrl) {
+	function linkElement(linkUrl, rel, type) {
 		//var linkUrl = 'https://cdn.quilljs.com/1.0.0/quill.snow.css';
 		var linkE = document.createElement('link');
-		linkE.setAttribute('rel', 'stylesheet');
+		linkE.setAttribute('rel', rel);
 		linkE.setAttribute('href', linkUrl);
-		linkE.setAttribute('type', 'text/css');
-		linkE.setAttribute('media', 'all');
+		linkE.setAttribute('type', type);
+		// linkE.setAttribute('media', 'all');
 		var headTag = document.getElementsByTagName('head')[0];
 		window.pfnt.windows.links.push(linkE);
 		headTag.prepend(linkE);
@@ -100,9 +101,12 @@
 			'.pressforward-nt__inner-container { height: 100%; }' + " \n " +
 			'.meta-box { background-color: whitesmoke; }' + " \n " +
 			'.meta-box img { max-height: 100%; }' + " \n " +
-			'.meta-box h5 { font-family: "Arial Black", Gadget, sans-serif; border: 3px #bbbbbb inset; padding: 3px; height: 17%; margin-bottom: 2%; box-sizing: border-box; min-height: 33px; }';
+			'.meta-box h5 { font-family: "Arial Black", Gadget, sans-serif; border: 3px #bbbbbb inset; padding: 3px; height: 17%; margin-bottom: 2%; box-sizing: border-box; min-height: 33px; }' + " \n " +
+			'@font-face { font-family: "tinymce"; src: url(https://github.com/tinymce/tinymce-dist/raw/master/skins/lightgray/fonts/tinymce.woff) format("woff"), url(https://github.com/tinymce/tinymce-dist/raw/master/skins/lightgray/fonts/tinymce.ttf) format("truetype"); }';
 		window.pfnt.windows.styleBlocks.push(styleE);
 		headTag.prepend(styleE);
+		// headTag.prepend(linkElement('https://github.com/tinymce/tinymce-dist/raw/master/skins/lightgray/fonts/tinymce.ttf', ));
+		// <link href=' http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
 		// linkElement('https://cdn.quilljs.com/1.0.0/quill.snow.css')
 	}
 
