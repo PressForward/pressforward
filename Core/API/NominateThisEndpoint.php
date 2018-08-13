@@ -198,20 +198,22 @@ class NominateThisEndpoint implements HasActions {
                     // Set the argument to be required for the endpoint.
                     'required'    => true,
                     'default'	  => '0'
-                  ),
+                  )
 				),
-				'permission_callback' => function () {
-					//var_dump($_GET);
+				'permission_callback' => function ( $request ) {
+					// return true;
 					$return_var = false;
+					$request_params = $request->get_json_params();
+					//var_dump($request->get_json_params()); die();
 					try {
-						$key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin($_GET['k']));
+						$key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin($request_params['user_key']));
 						if (!$key){
 							$return_var = new WP_Error( 'auth_fail_id', __( "Request was signed with incorrect key.", "pf" ) );
 						}
 						$return_var = true;
 						return $return_var;
 					} catch ( \UnexpectedValueException $e ){
-						$return_var = new WP_Error( 'auth_fail_format', __( "Authentication key was not properly formated.", "pf" ) );
+						$return_var = new WP_Error( 'auth_fail_format', __( "Authentication key was not properly formated. ", "pf" ) );
 					} catch ( \InvalidArgumentException $e ){
 						$return_var = new WP_Error( 'auth_fail_key', __( "Authentication key was not properly supplied.", "pf" ) );
 					} catch ( \DomainException $e ){
@@ -222,7 +224,6 @@ class NominateThisEndpoint implements HasActions {
 						} else {
 							return $return_var;
 						}
-
 					}
 
 				},
@@ -335,8 +336,10 @@ class NominateThisEndpoint implements HasActions {
 		echo $out;
 	}
 
-	public function handle_nomination_submission() {
+	public function handle_nomination_submission( $request ) {
 		// Already authorized at an upper API level.
+		var_dump('Test: ', $request->get_body()); die();
+		// return esc_html( implode( $_REQUEST ) );
 		$user_id = pressforward('controller.jwt')->get_user_by_key($_POST['user_key']);
 		wp_set_current_user($user_id);
 		return pressforward('bookmarklet.core')->nominate_it(false);
@@ -349,6 +352,7 @@ class NominateThisEndpoint implements HasActions {
 		echo 'window.pfSiteData = {}; ';
 		echo 'window.pfSiteData.site_url = "'. \get_site_url() . '"; ';
 		echo 'window.pfSiteData.plugin_url = "'. plugin_dir_url( dirname(dirname(__FILE__)) ) . '"; ';
+		echo 'window.pfSiteData.submit_endpoint = "' . \get_site_url() . '/wp-json/pf/v1' . $namespace . '/' . $this->api_base['submit'] . '"; ';
 		include_once PF_ROOT . '/assets/js/jws.js';
 		include_once PF_ROOT . '/assets/js/jwt.js';
 

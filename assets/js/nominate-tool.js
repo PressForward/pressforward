@@ -292,5 +292,17 @@ window.pfntSubmit = function (publish) {
 		window.pfnt.submitObject.publish = true;
 		window.pfnt.submitObject.post_status = 'publish';
 	}
-
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', pfSiteData.submit_endpoint, true);
+	xhr.setRequestHeader("Content-type", "application/json");
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState == 4 && xhr.status == 200) {
+			var json = JSON.parse(xhr.responseText);
+			console.log(json);
+		} else {
+			alert('Nomination failed');
+		}
+	}
+	var data = JSON.stringify(window.pfnt.submitObject);
+	xhr.send(data);
 };
