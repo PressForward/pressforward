@@ -118,18 +118,19 @@ class NominateThisCore {
 			update_option( 'pf_last_nominated_feed', $feed_nom );
 		}
 
-			// Why does this hinge on $upload?
-			// Post formats
+		// Why does this hinge on $upload?
+		// Post formats
+
 		if ( 0 != $feed_nom['id'] ) {
 			$post['post_parent'] = $feed_nom['id'];
 		}
 			$post['post_author'] = get_current_user_id();
-			$post['post_type']   = 'nomination';
+			// $post['post_type']   = 'nomination';
 			pf_log( $post );
 			$_POST = array_merge( $_POST, $post );
 			// var_dump($post); die();
-		if ( isset( $_POST['publish'] ) && ( $_POST['publish'] == 'Send to ' . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ) ) ) {
-
+		if ( isset( $_POST['publish'] ) && ( ( $_POST['publish'] == 'Last Step' ) || ( $_POST['publish'] == 'Send to ' . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ) )) ) {
+			$post['post_type']   = 'nomination';
 			$post_ID = pressforward( 'utility.forward_tools' )->bookmarklet_to_last_step( false, $post );
 
 		} else {
@@ -149,7 +150,8 @@ class NominateThisCore {
 
 					// Replace the POSTED content <img> with correct uploaded ones. Regex contains fix for Magic Quotes
 					if ( ! is_wp_error( $upload ) ) {
-						$content = preg_replace( '/<img ([^>]*)src=\\\?(\"|\')' . preg_quote( htmlspecialchars( $image ), '/' ) . '\\\?(\2)([^>\/]*)\/*>/is', $upload, $content ); }
+						$content = preg_replace( '/<img ([^>]*)src=\\\?(\"|\')' . preg_quote( htmlspecialchars( $image ), '/' ) . '\\\?(\2)([^>\/]*)\/*>/is', $upload, $content );
+					}
 				}
 			}
 		}

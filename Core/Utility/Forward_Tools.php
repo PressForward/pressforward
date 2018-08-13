@@ -1,4 +1,5 @@
 <?php
+
 namespace PressForward\Core\Utility;
 
 use PressForward\Interfaces\Items as Items;

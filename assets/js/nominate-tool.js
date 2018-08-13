@@ -289,7 +289,7 @@ window.pfntSubmit = function (publish) {
 	window.pfnt.submitObject.item_feat_img = window.pfMetaData.image;
 	window.pfnt.submitObject.post_tags = window.document.querySelector('#pressforward-nt__preview-tags-container input').value;
 	if (publish) {
-		window.pfnt.submitObject.publish = true;
+		window.pfnt.submitObject.publish = 'Last Step';
 		window.pfnt.submitObject.post_status = 'publish';
 	}
 	var xhr = new XMLHttpRequest();
