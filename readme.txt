@@ -5,7 +5,7 @@ Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect,
 Requires at least: 3.0.1
 Tested up to: 4.9.4
 Stable tag: 5.1.1
-License: GPL2
+License: AGPLv3
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 PressForward provides an integrated workflow for curating content aggregated from the web.
