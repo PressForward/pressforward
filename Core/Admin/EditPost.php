@@ -25,8 +25,15 @@ class EditPost implements HasActions {
 		return $hooks;
 	}
 
-	function posted_submitbox_pf_actions() {
+	public function default_feed_author() {
+
+	}
+
+	public function posted_submitbox_pf_actions() {
 		global $post, $pagenow;
+		if ($post->post_type === 'pf_feed'){
+			return;
+		}
 		// new post check
 		if ( in_array( $pagenow, array( 'post-new.php' ) ) ) {
 			$option_value = get_option( 'pf_link_to_source' );
@@ -52,6 +59,7 @@ class EditPost implements HasActions {
 			}
 		}
 
+		// var_dump($post);
 		echo '<div class="misc-pub-section misc-pub-section-last">
 				<label>
 				<select id="pf_forward_to_origin_single" name="pf_forward_to_origin">
