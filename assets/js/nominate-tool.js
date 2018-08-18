@@ -30,7 +30,7 @@
 	window.pfnt.submitObject = {
 		post_title: false,
 		item_link: window.location.origin,
-		post_type: false,
+		// post_type: false,
 		post_status: false,
 		content: false, //post_content
 		tax_input: false,
