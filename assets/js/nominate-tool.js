@@ -102,7 +102,7 @@
 			'.meta-box { background-color: whitesmoke; }' + " \n " +
 			'.meta-box img { max-height: 100%; }' + " \n " +
 			'.meta-box h5 { font-family: "Arial Black", Gadget, sans-serif; border: 3px #bbbbbb inset; padding: 3px; height: 17%; margin-bottom: 2%; box-sizing: border-box; min-height: 33px; }' + " \n " +
-			'@font-face { font-family: "tinymce"; src: url(https://github.com/tinymce/tinymce-dist/raw/master/skins/lightgray/fonts/tinymce.woff) format("woff"), url(https://github.com/tinymce/tinymce-dist/raw/master/skins/lightgray/fonts/tinymce.ttf) format("truetype"); }';
+			window.pfSiteData.fontFace;
 		window.pfnt.windows.styleBlocks.push(styleE);
 		headTag.prepend(styleE);
 		// headTag.prepend(linkElement('https://github.com/tinymce/tinymce-dist/raw/master/skins/lightgray/fonts/tinymce.ttf', ));
