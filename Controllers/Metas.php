@@ -730,6 +730,16 @@ class Metas implements HasFilters, HasActions {
 				'level'      => array( 'feed' ),
 				'serialize'  => false,
 			),
+			'pf_feed_default_author'  => array(
+				'name'       => 'pf_feed_default_author',
+				'title'      => __( 'Default Feed Author', 'pf' ),
+				'definition' => __( 'The default author set for items in the feed', 'pf' ),
+				'function'   => __( 'Stores the default author that is used when no author is available in the feed.', 'pf' ),
+				'type'       => array( 'adm' ),
+				'use'        => array( 'api' ),
+				'level'      => array( 'feed' ),
+				'serialize'  => false,
+			),
 			'feedUrl'                 => array(
 				'name'       => 'feedUrl',
 				'title'      => __( 'Feed URL', 'pf' ),
@@ -988,6 +998,16 @@ class Metas implements HasFilters, HasActions {
 				if ( empty( $meta_value ) || is_wp_error( $meta_value ) ) {
 					$meta_value = get_the_source_title( $id );
 				}
+				break;
+
+			case 'item_author':
+				if ( empty( $meta_value ) || 'aggregation' === $meta_value ) {
+					$parent_value = pressforward( 'controller.metas' )->get_post_pf_meta( $id, 'pf_feed_default_author', true );
+					if ( ! empty( $parent_value ) ) {
+						$meta_value = $parent_value;
+					}
+				}
+				break;
 
 				// no break
 			default:
@@ -1158,9 +1178,13 @@ class Metas implements HasFilters, HasActions {
 		return $check;
 	}
 
-	public function forward_to_origin_status( $ID, $check = true, $the_value = false ) {
+	public function forward_to_origin_status( $id, $check = true, $the_value = false ) {
+		$item_id = pressforward( 'controller.metas' )->get_post_pf_meta( $id, 'item_id', true );
+		if ( empty( $item_id ) ) {
+			return 'no-forward';
+		}
 		if ( $check ) {
-			$value = pressforward( 'controller.metas' )->get_post_pf_meta( $ID, 'pf_forward_to_origin', true );
+			$value = pressforward( 'controller.metas' )->get_post_pf_meta( $id, 'pf_forward_to_origin', true );
 		} else {
 			$value = $the_value;
 		}

@@ -160,7 +160,7 @@ class PF_RSS_Import extends PF_Module {
 						break;
 					}
 				}
-				if ($isPermalink){
+				if ( $isPermalink ){
 					// This will check GUID first, then link, then title.
 					$guidHopefully = $item->get_id(false);
 					$urlParts = parse_url($guidHopefully);
@@ -220,7 +220,12 @@ class PF_RSS_Import extends PF_Module {
 				if ( ! $agStatus ) {
 					$authors = $this->get_rss_authors( $item );
 				} else {
-					$authors = 'aggregation';
+					$parent_value = pressforward( 'controller.metas' )->get_post_pf_meta( $aFeed->ID, 'pf_feed_default_author', true );
+					if ( ! empty( $parent_value ) ) {
+						$authors = $parent_value;
+					} else {
+						$authors = 'aggregation';
+					}
 				}
 					$item_categories = array();
 					$item_categories = $item->get_categories();
