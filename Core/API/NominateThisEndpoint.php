@@ -371,7 +371,7 @@ EOF;
 		echo 'window.pfSiteData = {}; ';
 		echo 'window.pfSiteData.site_url = "'. \get_site_url() . '"; ';
 		echo 'window.pfSiteData.plugin_url = "'. plugin_dir_url( dirname(dirname(__FILE__)) ) . '"; ';
-		echo 'window.pfSiteData.submit_endpoint = "' . \get_site_url() . $this->api_base['base_namespace'] . $this->api_base['version'] . '/' . $this->api_base['submit'] . '"; ';
+		echo 'window.pfSiteData.submit_endpoint = "' . trailingslashit(\get_site_url()) . $this->api_base['base_namespace'] . $this->api_base['version'] . '/' . $this->api_base['submit'] . '"; ';
 		echo 'window.pfSiteData.fontFace = "' . $fontFaceJS . '"';
 		include_once PF_ROOT . '/assets/js/jws.js';
 		include_once PF_ROOT . '/assets/js/jwt.js';
