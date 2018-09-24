@@ -155,7 +155,7 @@ class PF_RSS_Import extends PF_Module {
 					if (isset($subArray['isPermaLink']) && $subArray['isPermaLink'] == "false") {
 						$isPermalink = false;
 						break;
-					} else if ($subArray['isPermaLink'] && ($subArray['isPermaLink'] == "true")){
+					} else if (isset($subArray['isPermaLink']) && $subArray['isPermaLink'] && ($subArray['isPermaLink'] == "true")){
 						$isPermalink = true;
 						break;
 					}
