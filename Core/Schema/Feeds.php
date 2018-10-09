@@ -1,6 +1,7 @@
 <?php
 namespace PressForward\Core\Schema;
 
+use stdClass;
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
 use PressForward\Controllers\Metas;
