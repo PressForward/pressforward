@@ -1,6 +1,7 @@
 <?php
 namespace PressForward\Controllers;
 
+use stdClass;
 use WP_Ajax_Response;
 use WP_Error;
 use WP_Query;
