@@ -49,7 +49,15 @@ class PF_Readability {
 					// Try and get the OpenGraph description.
 					if ( pressforward( 'library.opengraph' )->fetch( $url ) ) {
 						$node          = pressforward( 'library.opengraph' )->fetch( $url );
-						$itemReadReady = $node->description;
+						if (false !== $node){
+							$itemReadReady = $node->description;
+						} else {
+							// Ugh... we can't get anything huh?
+							$read_status = 'failed_readability_og_meta';
+							// $itemReadReady .= '<br />';
+							// We'll want to return a false to loop with.
+							$itemReadReady = $descrip;
+						}
 					} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
 					elseif ( '' != ( $contentHtml = @get_meta_tags( $url ) ) ) {
 						// Try and get the HEAD > META DESCRIPTION tag.
