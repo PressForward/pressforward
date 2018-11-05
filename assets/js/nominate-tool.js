@@ -292,17 +292,33 @@ window.pfntSubmit = function (publish) {
 		window.pfnt.submitObject.publish = 'Last Step';
 		window.pfnt.submitObject.post_status = 'publish';
 	}
+	var urlEncodedData = "";
+	var urlEncodedDataPairs = [];
+	Object.keys(window.pfnt.submitObject).forEach((key) => {
+		if (window.pfnt.submitObject[key]) {
+			if ('string' === typeof window.pfnt.submitObject[key]) {
+				var value = window.pfnt.submitObject[key].trim();
+			} else {
+				var value = window.pfnt.submitObject[key];
+			}
+			urlEncodedDataPairs.push(encodeURIComponent(key.trim()) + '=' + encodeURIComponent(value));
+		}
+	});
+	urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', pfSiteData.submit_endpoint, true);
-	xhr.setRequestHeader("Content-type", "application/json");
+	//xhr.setRequestHeader("Content-type", "application/json");
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhr.onreadystatechange = function () {
 		if (xhr.readyState == 4 && xhr.status == 200) {
 			var json = JSON.parse(xhr.responseText);
 			console.log(json);
 		} else {
+			console.log(json);
 			alert('Nomination failed');
 		}
 	}
-	var data = JSON.stringify(window.pfnt.submitObject);
+	// var data = JSON.stringify(window.pfnt.submitObject);
+	var data = urlEncodedData;
 	xhr.send(data);
 };

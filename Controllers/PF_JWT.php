@@ -21,13 +21,13 @@ class PF_JWT {
 		if ( function_exists('random_bytes') ){
 			try {
 			    $value = random_bytes($num);
-			} catch (TypeError $e) {
+			} catch (\TypeError $e) {
 			    // Well, it's an integer, so this IS unexpected.
 			    die("An unexpected error has occurred when generating a cryptographic API key.");
-			} catch (Error $e) {
+			} catch (\Error $e) {
 			    // This is also unexpected because 32 is a reasonable integer.
 			    die("An unexpected error has occurred when generating a cryptographic API key.");
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 			    // If you get this message, the CSPRNG failed hard.
 			    die("Could not generate a random string. Is our OS secure?");
 			}
