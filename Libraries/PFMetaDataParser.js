@@ -91,16 +91,18 @@ window.pfMetaData = {
 		var firstTriple = type.length;
 		firstTriple += 1;
 		var ogTags = document.querySelectorAll('meta[property="' + element + '"]');
-		if (element === 'og:type') {
-			self.openGraph[element.substring(firstTriple)] = ogTags[0].content;
-		} else if (1 === ogTags.length) {
-			self.openGraph[element.substring(firstTriple)] = ogTags[0].content;
-		} else if (ogTags.length > 1) {
-			var elementName = element.substring(firstTriple);
-			self.openGraph[elementName] = [];
-			ogTags.forEach(function (element) {
-				self.openGraph[elementName].push(element.content);
-			});
+		if (ogTags.length > 0) {
+			if (element === 'og:type' && ogTags[0] && ogTags[0].hasOwnPropery('content')) {
+				self.openGraph[element.substring(firstTriple)] = ogTags[0].content;
+			} else if (1 === ogTags.length) {
+				self.openGraph[element.substring(firstTriple)] = ogTags[0].content;
+			} else if (ogTags.length > 1) {
+				var elementName = element.substring(firstTriple);
+				self.openGraph[elementName] = [];
+				ogTags.forEach(function (element) {
+					self.openGraph[elementName].push(element.content);
+				});
+			}
 		}
 	},
 	processMeta: function () {

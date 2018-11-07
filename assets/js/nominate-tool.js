@@ -200,9 +200,9 @@
 
 		windows.bylineField = generateTag('input', 'pressforward-nt__inputfield__byline', 'pressforward-nt__inputfield', '');
 		windows.bylineField.setAttribute('type', 'text');
-		if (window.pfReadability.article.byline.length <= 1) {
+		if (window.pfMetaData && window.pfMetaData.hasOwnProperty('author')) {
 			windows.bylineField.setAttribute('value', window.pfMetaData.author);
-		} else {
+		} else if (window.pfReadability && window.pfReadability.hasOwnProperty('article') && window.pfReadability.article.hasOwnProperty('byline') && window.pfReadability.article.byline.length <= 1) {
 			windows.bylineField.setAttribute('value', window.pfReadability.article.byline);
 		}
 
