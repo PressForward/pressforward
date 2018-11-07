@@ -347,6 +347,9 @@ class NominateThisEndpoint implements HasActions {
 		// $_POST = $request->get_json_params();
 		$user_id = pressforward('controller.jwt')->get_user_by_key($_POST['user_key']);
 		wp_set_current_user($user_id);
+		$_POST['post_title'] = urldecode($_POST['post_title']);
+		$_POST['content'] = urldecode($_POST['content']);
+		$_POST['publish'] = urldecode($_POST['publish']);
 		$id = pressforward('bookmarklet.core')->nominate_it(false);
 		$return_object = new \stdClass();
 		$return_object->id = $id;

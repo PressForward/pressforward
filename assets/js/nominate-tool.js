@@ -29,7 +29,8 @@
 	window.pfnt.selection = window.getSelection().toString();
 	window.pfnt.submitObject = {
 		post_title: false,
-		item_link: window.location.origin,
+		item_link: window.location.href,
+		pf_source_link: window.location.origin,
 		// post_type: false,
 		post_status: false,
 		content: false, //post_content
@@ -309,7 +310,7 @@ window.pfntSubmit = function (publish) {
 	xhr.open('POST', pfSiteData.submit_endpoint, true);
 	//xhr.setRequestHeader("Content-type", "application/json");
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-	xhr.onreadystatechange = function () {
+	xhr.addEventListener('load', function (event) {
 		if (xhr.readyState == 4 && xhr.status == 200) {
 			var json = JSON.parse(xhr.responseText);
 			console.log(json);
@@ -317,7 +318,7 @@ window.pfntSubmit = function (publish) {
 			console.log(json);
 			alert('Nomination failed');
 		}
-	}
+	});
 	// var data = JSON.stringify(window.pfnt.submitObject);
 	var data = urlEncodedData;
 	xhr.send(data);
