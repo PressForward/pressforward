@@ -97,13 +97,12 @@ class MetaCheckEndpoint implements HasActions {
 						$return_var = new WP_Error( 'auth_fail_key', __( "Authentication key was not properly supplied.", "pf" ) );
 					} catch ( \DomainException $e ){
 						$return_var = new WP_Error( 'auth_fail_ssl', __( "SSL cannot be applied to the key.", "pf" ) );
-					} finally {
+					} catch ( \Exception $e ) {
 						if ( false === $return_var){
 							return new WP_Error( 'auth_fail_whoknows', __( "Authentication failed for reasons unclear.", "pf" ) );
 						} else {
 							return $return_var;
 						}
-
 					}
 
 				},
