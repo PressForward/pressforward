@@ -147,17 +147,19 @@ class PF_RSS_Import extends PF_Module {
 			if ( ($check_date <= $dead_date) && ! empty( $check_date ) ) {
 				pf_log( 'Feed item too old. Skip it.' );
 			} else {
-				$guid = $item->get_item_tags('','guid');
 				$isPermalink = false;
-				$arrIt = new RecursiveIteratorIterator(new RecursiveArrayIterator($guid[0]));
-				foreach ($arrIt as $sub) {
-					$subArray = $arrIt->getSubIterator();
-					if (isset($subArray['isPermaLink']) && $subArray['isPermaLink'] == "false") {
-						$isPermalink = false;
-						break;
-					} else if (isset($subArray['isPermaLink']) && $subArray['isPermaLink'] && ($subArray['isPermaLink'] == "true")){
-						$isPermalink = true;
-						break;
+				$guid = $item->get_item_tags('','guid');
+				if (is_array($guid)){
+					$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($guid[0]));
+					foreach ($arrIt as $sub) {
+						$subArray = $arrIt->getSubIterator();
+						if (isset($subArray['isPermaLink']) && $subArray['isPermaLink'] == "false") {
+							$isPermalink = false;
+							break;
+						} else if (isset($subArray['isPermaLink']) && $subArray['isPermaLink'] && ($subArray['isPermaLink'] == "true")){
+							$isPermalink = true;
+							break;
+						}
 					}
 				}
 				if ( $isPermalink ){
