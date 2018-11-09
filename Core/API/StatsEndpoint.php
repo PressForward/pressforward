@@ -349,12 +349,14 @@ class StatsEndpoint implements HasActions {
 				$post->flesch_kincaid_score  = $reading_score;
 				$item_link                   = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_link' );
 				$url_parts                   = parse_url( $item_link );
+				unset($post->post_password);
 				if ( ! empty( $url_parts ) && isset( $url_parts['host'] ) ) {
 					$post->source_link = $url_parts['host'];
 				} else {
 					$post->source_link = 'No Source Found';
 				}
 				$post->nominators = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'nominator_array' );
+				$post = pressforward( 'controller.metas' )->attach_metas_by_use($post);
 				// $post->source_link = $this->metas->get_post_pf_meta( $post->ID, 'pf_source_link' );
 			}
 
