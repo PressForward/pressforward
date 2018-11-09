@@ -587,7 +587,7 @@ class Forward_Tools {
 			$this->nomination_user_transition_check( $nom_and_post_check, $item_id );
 			// Update the existing post with values from the bookmarklet, which is assumed more accurate.
 			$post['ID'] = $nom_and_post_check;
-			$this->item_interface->update_post( $post );
+			// $this->item_interface->update_post( $post );
 			if ( !empty( $_POST['item_author'] ) ) {
 				pressforward( 'controller.metas' )->update_pf_meta( $nom_and_post_check, 'item_author', \sanitize_text_field($_POST['item_author']) );
 			}
