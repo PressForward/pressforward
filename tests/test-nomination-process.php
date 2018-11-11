@@ -59,8 +59,8 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 	public function check_standard_nomination_metrics($nominate_id, $user_id, $count = 1, $denominate = false){
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nominate_id, 'nominator_array' );
 
-		$exists = array_key_exists($user_id, $nominators);
-		if ($denominate){
+		$exists = array_key_exists( $user_id, $nominators );
+		if ( $denominate ) {
 			$this->assertFalse( $exists );
 		} else {
 			$this->assertTrue( $exists );
@@ -84,7 +84,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 	public function a_feed_item( $title, $time ){
 		return array(
 			'post_title' => $title,
-			'item_link' => 'https://www.washingtonpost.com/news/politics/wp/2017/12/05/naacp-says-that-trump-should-not-attend-opening-of-civil-rights-museum-in-mississippi/',
+			'item_link' => 'https://pressforward.org/announcing-pressforward-5-1/', //'https://www.washingtonpost.com/news/politics/wp/2017/12/05/naacp-says-that-trump-should-not-attend-opening-of-civil-rights-museum-in-mississippi/',
 			'item_content' => 'Ellie Dahmer, wife of Vernon Dahmer, who was killed in 1966 by the Ku Klux Klan, views some of the artifacts in the Mississippi Civil Rights Museum during a private preview in Jackson. The galleries at the museum focus on the period between 1945 and 1976 when the civil rights movement gained footing in the state. (Rogelio V. Solis/AP)
 
 The NAACP is urging President Trump to skip the opening celebration for a civil rights museum in Mississippi that he had planned to attend, with the organization’s leader sharply criticizing the president’s record on civil rights.
@@ -624,7 +624,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$time = time();
 		$post = array(
 			'post_title' => $title,
-			'item_link' => 'https://www.washingtonpost.com/news/politics/wp/2017/12/05/naacp-says-that-trump-should-not-attend-opening-of-civil-rights-museum-in-mississippi/',
+			'item_link' => 'https://pressforward.org/announcing-pressforward-5-0/', //'https://www.washingtonpost.com/news/politics/wp/2017/12/05/naacp-says-that-trump-should-not-attend-opening-of-civil-rights-museum-in-mississippi/',
 			'item_content' => 'Ellie Dahmer, wife of Vernon Dahmer, who was killed in 1966 by the Ku Klux Klan, views some of the artifacts in the Mississippi Civil Rights Museum during a private preview in Jackson. The galleries at the museum focus on the period between 1945 and 1976 when the civil rights movement gained footing in the state. (Rogelio V. Solis/AP)
 
 The NAACP is urging President Trump to skip the opening celebration for a civil rights museum in Mississippi that he had planned to attend, with the organization’s leader sharply criticizing the president’s record on civil rights.
@@ -847,7 +847,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'test_feed_item_nom_create_middle' ) );
 		wp_set_current_user( $user_id );
 		$time = time();
-		$link = 'http://appleinsider.com/articles/17/12/05/honors-new-view-10-phone-brings-iphone-x-animoji-to-android?cb=29';
+		$link = 'https://pressforward.org/new-blog-series-profiling-pressforwards-pilot-partners/'; //'http://appleinsider.com/articles/17/12/05/honors-new-view-10-phone-brings-iphone-x-animoji-to-android?cb=29';
 		$title = 'Test item29';
 		$item_id = create_feed_item_id($link,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
@@ -944,7 +944,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$time = time();
 		$post = array(
 			'post_title' => $title,
-			'item_link' => 'http://appleinsider.com/articles/17/12/05/honors-new-view-10-phone-brings-iphone-x-animoji-to-android?foo=bar',
+			'item_link' => 'https://pressforward.org/using-pressforward-as-a-graduate-student/', //'http://appleinsider.com/articles/17/12/05/honors-new-view-10-phone-brings-iphone-x-animoji-to-android?foo=bar',
 			'item_content' => 'Test content',
 			'source_title' => 'Test source title',
 			'sortable_item_date' => 10000,
@@ -1016,7 +1016,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$time = time();
 		$post = array(
 			'post_title' => $title,
-			'item_link' => 'http://appleinsider.com/articles/17/12/05/honors-new-view-10-phone-brings-iphone-x-animoji-to-android',
+			'item_link' => 'https://pressforward.org/using-custom-fields-with-pressforward-and-wordpress/', //'http://appleinsider.com/articles/17/12/05/honors-new-view-10-phone-brings-iphone-x-animoji-to-android',
 			'item_content' => 'Test content',
 			'source_title' => 'Test source title',
 			'sortable_item_date' => 10000,
@@ -1088,7 +1088,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$time = time();
 		$post = array(
 			'post_title' => $title,
-			'item_link' => 'https://www.washingtonpost.com/news/powerpost/wp/2017/12/05/dozens-of-republicans-now-clamoring-for-a-dreamers-fix-by-years-end/',
+			'item_link' => 'https://pressforward.org/announcing-pressforward-4-3/', //'https://www.washingtonpost.com/news/powerpost/wp/2017/12/05/dozens-of-republicans-now-clamoring-for-a-dreamers-fix-by-years-end/',
 			'item_content' => 'Test content',
 			'source_title' => 'Test source title',
 			'sortable_item_date' => 10000,
