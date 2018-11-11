@@ -98,7 +98,11 @@
 		headTag.prepend(jsScript);
 		var styleE = document.createElement('style');
 		styleE.innerHTML = '#wp-nomthis-editor-container { width: 100%; }' + " \n " +
-			'.pressforward-nt__inputfield { width:100%; display:block; }' + " \n " +
+			'#pressforward-nt { color: #111; }' + " \n " +
+			'#pressforward-nt h1, #pressforward-nt h2, #pressforward-nt h3, #pressforward-nt h5 { color: #111; }' + " \n " +
+			'#pressforward-nt input { color: #111; margin-bottom: 1px; }' + " \n " +
+			'.pressforward-nt__inputfield { width:100%; display:block; color: #111; }' + " \n " +
+			'#pressforward-nt input { color: #111; background-color: white; cursor: text; padding: 1px; border-width: 2px; border-style: inset; }' + " \n " +
 			'.pressforward-nt__inner-container { height: 100%; }' + " \n " +
 			'.meta-box { background-color: whitesmoke; }' + " \n " +
 			'.meta-box img { max-height: 100%; }' + " \n " +
