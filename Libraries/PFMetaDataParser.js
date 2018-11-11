@@ -92,7 +92,8 @@ window.pfMetaData = {
 		firstTriple += 1;
 		var ogTags = document.querySelectorAll('meta[property="' + element + '"]');
 		if (ogTags.length > 0) {
-			if (element === 'og:type' && ogTags[0] && ogTags[0].hasOwnPropery('content')) {
+			console.log(ogTags);
+			if (element === 'og:type' && ogTags[0] && ogTags[0].length && ogTags[0].hasOwnPropery('content')) {
 				self.openGraph[element.substring(firstTriple)] = ogTags[0].content;
 			} else if (1 === ogTags.length) {
 				self.openGraph[element.substring(firstTriple)] = ogTags[0].content;

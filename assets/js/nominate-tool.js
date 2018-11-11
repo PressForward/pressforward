@@ -102,7 +102,7 @@
 			'.pressforward-nt__inner-container { height: 100%; }' + " \n " +
 			'.meta-box { background-color: whitesmoke; }' + " \n " +
 			'.meta-box img { max-height: 100%; }' + " \n " +
-			'.meta-box h5 { font-family: "Arial Black", Gadget, sans-serif; border: 3px #bbbbbb inset; padding: 3px; height: 17%; margin-bottom: 2%; box-sizing: border-box; min-height: 33px; }' + " \n " +
+			'.meta-box h5 { font-family: "Arial Black", Gadget, sans-serif; border: 3px #bbbbbb inset; padding: 3px; height: 17%; margin-bottom: 2%; box-sizing: border-box; min-height: 33px; font-size: 14px; }' + " \n " +
 			window.pfSiteData.fontFace;
 		window.pfnt.windows.styleBlocks.push(styleE);
 		headTag.prepend(styleE);
@@ -159,15 +159,15 @@
 			'height: 26px;' +
 			'font-size: small;' +
 			'margin-left: 10px;';
-		var tagContainer = generateTag('div', 'pressforward-nt__preview-tags-container', 'meta-box', 'height:18%; overflow:hidden; display: block;');
+		var tagContainer = generateTag('div', 'pressforward-nt__preview-tags-container', 'meta-box pressforward-nt-box', 'height:18%; overflow:hidden; display: block;');
 		tagContainer.innerHTML = '<h5>Tags</h5><input type="text" value="' + window.pfMetaData.keywords.join(', ') + '" style="' + tagStyles + '">';
 		// tagContainer.appendChild(imageArea);
 
-		var imageContainer = generateTag('div', 'pressforward-nt__preview-image-container', 'meta-box', 'height:36%; overflow:hidden; display: block;');
+		var imageContainer = generateTag('div', 'pressforward-nt__preview-image-container', 'meta-box pressforward-nt-box', 'height:36%; overflow:hidden; display: block;');
 		imageContainer.innerHTML = '<h5>Preview Image</h5>';
 		imageContainer.appendChild(imageArea);
 
-		var buttonContainer = generateTag('div', 'pressforward-nt__button-container', 'meta-box', 'height:12%; overflow:hidden; display: block;');
+		var buttonContainer = generateTag('div', 'pressforward-nt__button-container', 'meta-box pressforward-nt-box', 'height:12%; overflow:hidden; display: block;');
 		buttonContainer.innerHTML = '<button id="submit-button" role="presentation" type="button" tabindex="-1" style="width: 100px; height: 30px; margin: 22px 10px; float: right; font-size: 14px;" onclick="window.pfntSubmit(true)">Submit</button>';
 		buttonContainer.innerHTML += '<button id="nominate-button" role="presentation" type="button" tabindex="-1" style="width: 100px; height: 30px; margin: 22px 10px; float: right; font-size: 14px;" onclick="window.pfntSubmit(false)">Nominate</button>';
 		// buttonContainer.appendChild(imageArea);
