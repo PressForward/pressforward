@@ -1263,6 +1263,10 @@ class Metas implements HasFilters, HasActions {
 		$value = $this->forward_to_origin_status( $object_id );
 		add_filter( 'get_post_metadata', array( $this, 'usable_forward_to_origin_status' ), 10, 4 );
 
+		if ( ! $single ) {
+			$value = array( $value );
+		}
+
 		return $value;
 	}
 }
