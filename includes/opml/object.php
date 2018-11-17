@@ -88,7 +88,7 @@ class OPML_Object {
 	}
 
 	function make_a_folder_obj( $entry ) {
-		$folder = new stdClass();
+		$folder = new \stdClass();
 		$entry = (array) $entry;
 		$entry = $this->check_keys( $entry, array( 'title', 'text' ) );
 		$entry['title'] = ( ! empty( $entry['title'] ) ? $entry['title'] : false);
@@ -101,7 +101,7 @@ class OPML_Object {
 		return $folder;
 	}
 	function make_a_feed_obj( $entry ) {
-		$feed = new stdClass();
+		$feed = new \stdClass();
 		$entry = (array) $entry;
 		if ( empty( $entry['xmlUrl'] ) ) {
 			$entry['xmlUrl'] = $entry['htmlUrl'];

@@ -266,6 +266,14 @@ class StatsEndpoint implements HasActions {
 								}
 							},
 						),
+						'per_page' => array(
+							'default' => 40,
+							'sanitize_callback' => 'absint',
+						),
+						'offset' => array(
+							'required'          => false,
+							'sanitize_callback' => 'intval',
+						),
 					),
 					'permission_callback' => function () {
 						return true; // current_user_can( 'edit_others_posts' );
