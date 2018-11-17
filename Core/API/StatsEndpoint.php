@@ -329,10 +329,36 @@ class StatsEndpoint implements HasActions {
 
 	public function pf_posted( $request ) {
 		if ( isset( $request['page'] ) ) {
-			// \rest_ensure_response(
-			$args = array(
-				'paged' => $request['page'],
-			);
+			$args = array();
+			if ( isset( $request['per_page'] ) && is_numeric($request['per_page']) ){
+				$per_page = intval( $request['per_page'] );
+				if ( $per_page > 100){
+					$per_page = 100;
+				}
+				if ( $per_page < 1 ) {
+					$per_page = 1;
+				}
+				$posts_per_page = $per_page;
+			} else {
+				$posts_per_page = 40;
+			}
+			$args['posts_per_page'] = $posts_per_page;
+			if ( isset( $request['page'] ) && is_numeric($request['page']) ){
+				$page = intval( $request['page'] );
+				if ( $page < 1 ) {
+					$page = 1;
+				}
+			} else {
+				$page = 1;
+			}
+			$args['paged'] = $page;
+			if ( isset( $request['offset'] ) && is_numeric($request['offset']) ){
+				$offset = intval( $request['offset'] );
+			} else {
+				$offset = 1;
+			}
+			$args['offset'] = $offset;
+
 			$q    = $this->stats->stats_query_for_pf_published_posts( $args );
 
 			$posts = $q->posts;
