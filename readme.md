@@ -5,7 +5,7 @@
 - Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
 - Author URI: http://pressforward.org/
 - License: GPL2
-- Authors' Sites: http://aramzs.me, http://boone.gorg.es/, http://clioweb.org
+- Authors' Sites: http://aramzs.me, http://boone.gorg.es/, http://jeremyboggs.net/
 
 
 	Developed for the Roy Rosenzweig Center for History and New Media at George Mason University. Generously funded by the Alfred P. Sloan Foundation.
