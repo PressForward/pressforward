@@ -394,9 +394,14 @@ class StatsEndpoint implements HasActions {
 				// $post->source_link = $this->metas->get_post_pf_meta( $post->ID, 'pf_source_link' );
 			}
 
-			return rest_ensure_response(
+			$response = rest_ensure_response(
 				$posts
 			);
+
+			$response->header( 'X-WP-Total', (int) $q->found_posts );
+			$response->header( 'X-WP-TotalPages', (int) $q->max_num_pages );
+
+			return $response;
 			// unencode via js with the html_entity_decode function we use elsewhere.
 		}
 		return new \WP_Error( 'rest_invalid', esc_html__( 'The page parameter is required.', 'pf' ), array( 'status' => 400 ) );
