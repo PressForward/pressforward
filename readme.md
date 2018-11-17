@@ -4,7 +4,7 @@
 - Version: 5.1.1
 - Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
 - Author URI: http://pressforward.org/
-- License: GPL2
+- License: AGPLv3
 - Authors' Sites: http://aramzs.me, http://boone.gorg.es/, http://jeremyboggs.net/
 
 
