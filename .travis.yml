@@ -36,9 +36,6 @@ env:
 matrix:
   include:
     - php: 5.3
-      env: WP_VERSION=master BP_TRAVISCI=travis:phpunit
-      dist: precise
-    - php: 5.3
       env: WP_VERSION=4.9 BP_TRAVISCI=travis:phpunit
       dist: precise
     - php: 5.3
