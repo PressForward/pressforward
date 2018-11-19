@@ -1,8 +1,7 @@
 language: php
 
 php:
-    - 5.3
-	- 5.4
+    - 5.4
     - 5.5
     - 5.6
 
@@ -29,10 +28,43 @@ env:
     - WP_VERSION=4.6.1 WP_MULTISITE=1
     - WP_VERSION=4.7 WP_MULTISITE=0
     - WP_VERSION=4.7 WP_MULTISITE=1
-	- WP_VERSION=4.8.1 WP_MULTISITE=0
+    - WP_VERSION=4.8.1 WP_MULTISITE=0
     - WP_VERSION=4.8.1 WP_MULTISITE=1
     - WP_VERSION=4.9.1 WP_MULTISITE=0
     - WP_VERSION=4.9.1 WP_MULTISITE=1
+
+matrix:
+  include:
+    - php: 5.3
+      env: WP_VERSION=4.9 BP_TRAVISCI=travis:phpunit
+      dist: precise
+    - php: 5.3
+      env: WP_VERSION=4.8 BP_TRAVISCI=travis:phpunit
+      dist: precise
+    - php: 5.3
+      env: WP_VERSION=4.7 BP_TRAVISCI=travis:phpunit
+      dist: precise
+    - php: 5.3
+      env: WP_VERSION=4.6 BP_TRAVISCI=travis:phpunit
+      dist: precise
+    - php: 5.3
+      env: WP_VERSION=4.5 BP_TRAVISCI=travis:phpunit
+      dist: precise
+    - php: 5.3
+      env: WP_VERSION=4.4 BP_TRAVISCI=travis:phpunit
+      dist: precise
+    - php: 5.3
+      env: WP_VERSION=4.3 BP_TRAVISCI=travis:phpunit
+      dist: precise
+    - php: 5.3
+      env: WP_VERSION=4.2 BP_TRAVISCI=travis:phpunit
+      dist: precise
+    - php: 5.3
+      env: WP_VERSION=4.1 BP_TRAVISCI=travis:phpunit
+      dist: precise
+    - php: 5.3
+      env: WP_VERSION=4.0 BP_TRAVISCI=travis:phpunit
+      dist: precise
 
 before_install:
     - git submodule update --init --recursive

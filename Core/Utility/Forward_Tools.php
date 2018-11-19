@@ -587,9 +587,13 @@ class Forward_Tools {
 			$this->nomination_user_transition_check( $nom_and_post_check, $item_id );
 			// Update the existing post with values from the bookmarklet, which is assumed more accurate.
 			$post['ID'] = $nom_and_post_check;
-			// $this->item_interface->update_post( $post );
-			if ( !empty( $_POST['item_author'] ) ) {
-				pressforward( 'controller.metas' )->update_pf_meta( $nom_and_post_check, 'item_author', \sanitize_text_field($_POST['item_author']) );
+			$post_check = $this->is_a_pf_type( $item_id, 'post' );
+			// If this is a nomination but has not yet been published, assume bookmarklet has best version of content
+			if (false != $post_check){
+				$this->item_interface->update_post( $post );
+				if ( !empty( $_POST['item_author'] ) ) {
+					pressforward( 'controller.metas' )->update_pf_meta( $nom_and_post_check, 'item_author', \sanitize_text_field($_POST['item_author']) );
+				}
 			}
 			return $nom_and_post_check;
 		}
