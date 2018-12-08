@@ -175,68 +175,76 @@
 	}
 
 	function buildCategoryElement(container, value) {
-		var liContainer = window.document.getElementById('#category-' + value.id);
-		if (liContainer === null) {
-			liContainer = generateTag('li', 'category-' + value.id, 'pressforward-nt__li-select-item');
-		} else {
-			return true;
-		}
-		var labelBox = generateTag('label', '', 'selectit', '');
-		var inputCheck = generateTag('input', 'in-category-' + value.id, '', '')
-		inputCheck.setAttribute('value', value.id);
-		inputCheck.setAttribute('type', 'checkbox');
-		inputCheck.setAttribute('name', 'post_category[]');
-
-		var catName = generateTag('span', '', 'select-inner-text', '');
-		catName.innerHTML = value.name;
-
-		labelBox.appendChild(inputCheck);
-		labelBox.appendChild(catName);
-		liContainer.prepend(labelBox);
-		if (0 !== value.parent) {
-			// window.document.querySelector('#pressforward-nt__preview-tags-container input').value;
-			var parentContainer = window.document.querySelector('#category-' + value.parent + ' ul');
-			var parentLI = window.document.querySelector('#category-' + value.parent)
-			if (null === parentContainer && null === parentLI) {
-				var xhr = new XMLHttpRequest();
-				xhr.open('GET', value._links.up[0].href, true);
-				//xhr.setRequestHeader("Content-type", "application/json");
-				//xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-				xhr.addEventListener('load', function (event) {
-					if (xhr.readyState == 4 && xhr.status == 200) {
-						var json = JSON.parse(xhr.responseText);
-
-						// var totalCats = xhr.getResponseHeader('X-WP-Total');
-						// var catPages = xhr.getResponseHeader('X-WP-TotalPages');
-						console.log('cat parent:', json);
-
-						buildCategoryElement(container, json);
-						parentLI = window.document.getElementById('#category-' + value.parent);
-						var ulContainer = generateTag('ul', '', 'select-inner-text', '');
-						parentLI.appendChild(ulContainer)
-						parentContainer = ulContainer;
-						parentContainer.appendChild(liContainer);
-						return true;
-					} else {
-						console.log(json);
-						alert('Cat retrieve failed');
-					}
-				});
-				// var data = JSON.stringify(window.pfnt.submitObject);
-				// var data = urlEncodedData;
-				xhr.send();
-
-			} else if (null === parentContainer) {
-				var ulContainer = generateTag('ul', '', 'select-inner-text', '');
-				parentLI.appendChild(ulContainer)
-				parentContainer = ulContainer;
-				parentContainer.appendChild(liContainer);
+		return new Promise(function (resolve, reject) {
+			var liContainer = window.document.getElementById('category-' + value.id);
+			if (liContainer === null) {
+				liContainer = generateTag('li', 'category-' + value.id, 'pressforward-nt__li-select-item');
 			} else {
-				parentContainer.appendChild(liContainer);
+				resolve(true);
 			}
-		} else {
-			container.appendChild(liContainer);
-		}
+			var labelBox = generateTag('label', '', 'selectit', '');
+			var inputCheck = generateTag('input', 'in-category-' + value.id, '', '')
+			inputCheck.setAttribute('value', value.id);
+			inputCheck.setAttribute('type', 'checkbox');
+			inputCheck.setAttribute('name', 'post_category[]');
+
+			var catName = generateTag('span', '', 'select-inner-text', '');
+			catName.innerHTML = value.name;
+
+			labelBox.appendChild(inputCheck);
+			labelBox.appendChild(catName);
+			liContainer.prepend(labelBox);
+
+			if (0 !== value.parent) {
+				// window.document.querySelector('#pressforward-nt__preview-tags-container input').value;
+				var parentContainer = window.document.querySelector('#category-' + value.parent + ' ul');
+				var parentLI = window.document.getElementById('category-' + value.parent)
+				if (null === parentContainer && null === parentLI) {
+					var xhr = new XMLHttpRequest();
+					xhr.open('GET', value._links.up[0].href, true);
+					//xhr.setRequestHeader("Content-type", "application/json");
+					//xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+					xhr.addEventListener('load', function (event) {
+						if (xhr.readyState == 4 && xhr.status == 200) {
+							var json = JSON.parse(xhr.responseText);
+
+							// var totalCats = xhr.getResponseHeader('X-WP-Total');
+							// var catPages = xhr.getResponseHeader('X-WP-TotalPages');
+							console.log('cat parent:', json);
+
+							buildCategoryElement(container, json).then(function () {
+								parentLI = window.document.getElementById('category-' + value.parent);
+								var ulContainer = generateTag('ul', '', 'select-inner-text', '');
+								parentLI.appendChild(ulContainer)
+								parentContainer = ulContainer;
+								parentContainer.appendChild(liContainer);
+								resolve(true);
+							});
+						} else {
+							console.log(json);
+							alert('Cat retrieve failed');
+							resolve(false);
+						}
+					});
+					// var data = JSON.stringify(window.pfnt.submitObject);
+					// var data = urlEncodedData;
+					xhr.send();
+
+				} else if (null === parentContainer) {
+					var ulContainer = generateTag('ul', '', 'select-inner-text', '');
+					parentLI.appendChild(ulContainer)
+					parentContainer = ulContainer;
+					parentContainer.appendChild(liContainer);
+					resolve(true);
+				} else {
+					parentContainer.appendChild(liContainer);
+					resolve(true);
+				}
+			} else {
+				container.appendChild(liContainer);
+				resolve(true);
+			}
+		});
 	}
 
 	function categoriesElement(container, p) {
@@ -246,33 +254,40 @@
 		} else {
 			p = 1;
 		}
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', window.pfSiteData.categories_endpoint + pageString, true);
-		//xhr.setRequestHeader("Content-type", "application/json");
-		//xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		xhr.addEventListener('load', function (event) {
-			if (xhr.readyState == 4 && xhr.status == 200) {
-				var json = JSON.parse(xhr.responseText);
+		var promise1 = new Promise(function (resolve, reject) {
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', window.pfSiteData.categories_endpoint + pageString, true);
+			//xhr.setRequestHeader("Content-type", "application/json");
+			//xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.addEventListener('load', function (event) {
+				if (xhr.readyState == 4 && xhr.status == 200) {
+					var json = JSON.parse(xhr.responseText);
 
-				var totalCats = xhr.getResponseHeader('X-WP-Total');
-				var catPages = xhr.getResponseHeader('X-WP-TotalPages');
-				console.log('cat list:', json, totalCats, catPages);
-				var c = 0;
-				json.forEach(function (value, index, subjectArray) {
-					buildCategoryElement(container, value);
-					c++;
-				});
-				if (p + 1 <= catPages)
-					categoriesElement(container, p + 1);
-				// container.appendChild();
-			} else {
-				console.log(json);
-				alert('Cat retrieve failed');
+					var totalCats = xhr.getResponseHeader('X-WP-Total');
+					var catPages = xhr.getResponseHeader('X-WP-TotalPages');
+					console.log('cat list:', json, totalCats, catPages);
+					var c = 0;
+					var promiseSet = json.map(function (value, index, subjectArray) {
+						c++;
+						return buildCategoryElement(container, value);
+						// still hitting race condition here. Solve with reduce a la https://decembersoft.com/posts/promises-in-serial-with-array-reduce/ ?
+					});
+					Promise.all(promiseSet).then((data) => { resolve({ totalPages: catPages }); });
+
+					// container.appendChild();
+				} else {
+					console.log(json);
+					alert('Cat retrieve failed');
+				}
+			});
+			// var data = JSON.stringify(window.pfnt.submitObject);
+			// var data = urlEncodedData;
+			xhr.send();
+		}).then(function (data) {
+			if (p + 1 <= data.totalPages) {
+				categoriesElement(container, p + 1);
 			}
 		});
-		// var data = JSON.stringify(window.pfnt.submitObject);
-		// var data = urlEncodedData;
-		xhr.send();
 	}
 
 	function sidebar(container) {
