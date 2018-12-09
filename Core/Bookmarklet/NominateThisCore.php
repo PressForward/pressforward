@@ -54,8 +54,8 @@ class NominateThisCore {
 			$post['post_title'] = isset( $_POST['post_title'] ) ? $_POST['post_title'] : '';
 		}
 		$content = isset( $_POST['content'] ) ? $_POST['content'] : '';
-		pf_log($post['post_category']);
-		pf_log($_POST['post_category']);
+		// pf_log($post['post_category']);
+		// pf_log($_POST['post_category']);
 
 		// var_dump('<pre>'); var_dump($_POST, $post); die();
 		// set the post_content and status

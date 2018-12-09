@@ -603,7 +603,7 @@ class Forward_Tools {
 		$nomination_id = $this->bookmarklet_to_nomination( $item_id, $post );
 		pf_log( $nomination_id );
 		$post_id = $this->nomination_to_last_step( $item_id, $nomination_id, false );
-		if (!empty($_POST['post_category']) && !is_array($_POST['post_category'])){
+		if (isset($_POST['post_category']) && !empty($_POST['post_category']) && !is_array($_POST['post_category'])){
 			$categories = explode(',', $_POST['post_category']);
 			if (count($categories) > 0){
 				wp_set_post_categories( $post_id, $categories, false );
