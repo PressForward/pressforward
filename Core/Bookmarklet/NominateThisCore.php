@@ -44,7 +44,9 @@ class NominateThisCore {
 				wp_die( __( 'You do not have access to the Nominate This bookmarklet.' ) );
 			}
 		}
-
+		pf_log('POST Input');
+		pf_log($_POST);
+		pf_log('Continue with data');
 		$post['post_category'] = isset( $_POST['post_category'] ) ? $_POST['post_category'] : '';
 		$post['tax_input']     = isset( $_POST['tax_input'] ) ? $_POST['tax_input'] : '';
 		$post['post_title']    = isset( $_POST['title'] ) ? $_POST['title'] : '';
@@ -52,8 +54,10 @@ class NominateThisCore {
 			$post['post_title'] = isset( $_POST['post_title'] ) ? $_POST['post_title'] : '';
 		}
 		$content = isset( $_POST['content'] ) ? $_POST['content'] : '';
+		pf_log($post['post_category']);
+		pf_log($_POST['post_category']);
 
-		// var_dump('<pre>'); var_dump($_POST);
+		// var_dump('<pre>'); var_dump($_POST, $post); die();
 		// set the post_content and status
 		$post['post_content'] = $content;
 		$post['guid'] = $_POST['item_link'];

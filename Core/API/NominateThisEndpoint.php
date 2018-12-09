@@ -345,7 +345,6 @@ class NominateThisEndpoint implements HasActions {
 
 	public function handle_nomination_submission( $request ) {
 		// Already authorized at an upper API level.
-		// var_dump('Test: ', $request->get_body()); die();
 		// return esc_html( implode( $_REQUEST ) );
 		// $_POST = $request->get_json_params();
 		$_POST = array_merge($_POST, $request->get_params());
@@ -359,6 +358,7 @@ class NominateThisEndpoint implements HasActions {
 		$return_object->id = $id;
 		$response = new \WP_REST_Response($return_object);
 		$response->header( 'Content-Type', 'application/json' );
+		// var_dump('Test: ', $request->get_body());
 		return rest_ensure_response($response);
 		// return $id;
 		// return new WP_REST_Response($return_object);
