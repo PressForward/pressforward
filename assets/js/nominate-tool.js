@@ -107,6 +107,11 @@
 			'.meta-box { background-color: whitesmoke; }' + " \n " +
 			'.meta-box img { max-height: 100%; }' + " \n " +
 			'.meta-box h5 { font-family: "Arial Black", Gadget, sans-serif; border: 3px #bbbbbb inset; padding: 3px; height: 17%; margin-bottom: 2%; box-sizing: border-box; min-height: 33px; font-size: 14px; }' + " \n " +
+			'.pressforward-nt__li-category-select-item { margin-bottom: 6px; padding: 0; line-height: 22px; word-wrap: break-word; }' + " \n " +
+			'.pressforward-nt__li-category-select-item li { font-size: 16px; max-height: 25px; color: black; border-bottom-color: rgb(180, 185, 190); border-bottom-width: 1px; } ' + " \n " +
+			'#pressforward-nt__right ul, #pressforward-nt__right li { list-style-type: none; }' + " \n " +
+			'#pressforward-nt__right ul .select-inner-text { margin-left: 4px; vertical-align: middle; }' + " \n " +
+			'#pressforward-nt__preview-category-container__inner input[type=checkbox], #pressforward-nt__preview-category-container__inner label { cursor: pointer; }' + " \n " +
 			window.pfSiteData.fontFace;
 		window.pfnt.windows.styleBlocks.push(styleE);
 		headTag.prepend(styleE);
@@ -146,6 +151,154 @@
 		return ctrlContainer;
 	}
 
+	function categoryUp() {
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', window.pfSiteData.categories_endpoint, true);
+		//xhr.setRequestHeader("Content-type", "application/json");
+		//xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.addEventListener('load', function (event) {
+			if (xhr.readyState == 4 && xhr.status == 200) {
+				var json = JSON.parse(xhr.responseText);
+
+				var totalCats = xhr.getResponseHeader('X-WP-Total');
+				var catPages = xhr.getResponseHeader('X-WP-TotalPages');
+				console.log('cat list:', json, totalCats, catPages);
+				var c = 0;
+				json.forEach(function (value, index, subjectArray) {
+
+					c++;
+				});
+				// container.appendChild();
+			} else {
+				console.log(json);
+				alert('Cat retrieve failed');
+			}
+		});
+		// var data = JSON.stringify(window.pfnt.submitObject);
+		// var data = urlEncodedData;
+		xhr.send();
+	}
+
+	function buildCategoryElement(container, value) {
+		return new Promise(function (resolve, reject) {
+			var liContainer = window.document.getElementById('category-' + value.id);
+			if (liContainer === null) {
+				liContainer = generateTag('li', 'category-' + value.id, 'pressforward-nt__li-category-select-item');
+			} else {
+				resolve(true);
+				return true;
+			}
+			var labelBox = generateTag('label', '', 'selectit', '');
+			var inputCheck = generateTag('input', 'in-category-' + value.id, 'pressforward-nt__li-select-item__input', '')
+			inputCheck.setAttribute('value', value.id);
+			inputCheck.setAttribute('type', 'checkbox');
+			inputCheck.setAttribute('name', 'post_category[]');
+
+			var catName = generateTag('span', '', 'select-inner-text', '');
+			catName.innerHTML = value.name;
+
+			labelBox.appendChild(inputCheck);
+			labelBox.appendChild(catName);
+			liContainer.prepend(labelBox);
+
+			if (0 !== value.parent) {
+				// window.document.querySelector('#pressforward-nt__preview-tags-container input').value;
+				var parentContainer = window.document.querySelector('#category-' + value.parent + ' ul');
+				var parentLI = window.document.getElementById('category-' + value.parent)
+				if (null === parentContainer && null === parentLI) {
+					var xhr = new XMLHttpRequest();
+					xhr.open('GET', value._links.up[0].href, true);
+					//xhr.setRequestHeader("Content-type", "application/json");
+					//xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+					xhr.addEventListener('load', function (event) {
+						if (xhr.readyState == 4 && xhr.status == 200) {
+							var json = JSON.parse(xhr.responseText);
+
+							// var totalCats = xhr.getResponseHeader('X-WP-Total');
+							// var catPages = xhr.getResponseHeader('X-WP-TotalPages');
+							console.log('cat parent:', json);
+							resolve(new Promise(function (resolveNext, reject) {
+								buildCategoryElement(container, json).then(function () {
+									parentLI = window.document.getElementById('category-' + value.parent);
+									var ulContainer = generateTag('ul', '', 'select-inner-text', '');
+									parentLI.appendChild(ulContainer)
+									parentContainer = ulContainer;
+									parentContainer.appendChild(liContainer);
+									resolveNext(true);
+								});
+							}));
+						} else {
+							console.log(json);
+							alert('Cat retrieve failed');
+							resolve(false);
+						}
+					});
+					// var data = JSON.stringify(window.pfnt.submitObject);
+					// var data = urlEncodedData;
+					xhr.send();
+
+				} else if (null === parentContainer) {
+					var ulContainer = generateTag('ul', '', 'select-inner-text', '');
+					parentLI.appendChild(ulContainer)
+					parentContainer = ulContainer;
+					parentContainer.appendChild(liContainer);
+					resolve(true);
+				} else {
+					parentContainer.appendChild(liContainer);
+					resolve(true);
+				}
+			} else {
+				container.appendChild(liContainer);
+				resolve(true);
+			}
+		});
+	}
+
+	function categoriesElement(container, p) {
+		var pageString = '';
+		if (p) {
+			pageString = '?page=' + p;
+		} else {
+			p = 1;
+		}
+		var promise1 = new Promise(function (resolve, reject) {
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', window.pfSiteData.categories_endpoint + pageString, true);
+			//xhr.setRequestHeader("Content-type", "application/json");
+			//xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+			xhr.addEventListener('load', function (event) {
+				if (xhr.readyState == 4 && xhr.status == 200) {
+					var json = JSON.parse(xhr.responseText);
+
+					var totalCats = xhr.getResponseHeader('X-WP-Total');
+					var catPages = xhr.getResponseHeader('X-WP-TotalPages');
+					console.log('cat list:', json, totalCats, catPages);
+					var c = 0;
+					var promiseSet = json.reduce(function (promiseChain, value, index, subjectArray) {
+						c++;
+						return promiseChain.then(function () { return buildCategoryElement(container, value) });;
+						// still hitting race condition here. Solve with reduce a la https://decembersoft.com/posts/promises-in-serial-with-array-reduce/ ?
+					}, Promise.resolve([])).then(arrayOfResults => {
+						resolve({ totalPages: catPages });
+					});
+					// Promise.all(promiseSet).then((data) => { resolve({ totalPages: catPages }); });
+
+					// container.appendChild();
+				} else {
+					console.log(json);
+					alert('Cat retrieve failed');
+				}
+			});
+			// var data = JSON.stringify(window.pfnt.submitObject);
+			// var data = urlEncodedData;
+			xhr.send();
+		}).then(function (data) {
+			if (p + 1 <= data.totalPages) {
+				categoriesElement(container, p + 1);
+			}
+		});
+	}
+
 	function sidebar(container) {
 		var imageStyles = 'background-image: url(' + window.pfMetaData.image + ');' +
 			'width: 100%;' +
@@ -176,6 +329,13 @@
 		buttonContainer.innerHTML += '<button id="nominate-button" role="presentation" type="button" tabindex="-1" style="width: 100px; height: 30px; margin: 22px 10px; float: right; font-size: 14px;" onclick="window.pfntSubmit(false)">Nominate</button>';
 		// buttonContainer.appendChild(imageArea);
 
+		var categoryContainer = generateTag('div', 'pressforward-nt__preview-category-container', 'meta-box pressforward-nt-box', 'height:34%; overflow:hidden; display: block;');
+		categoryContainer.innerHTML = '<h5>Categories</h5>';
+		var categoryUl = generateTag('ul', 'pressforward-nt__preview-category-container__inner', 'checkable-list-container', 'margin-left: 5px; height: 83%; width:100%; overflow:scroll; display: block;');
+		categoryContainer.appendChild(categoryUl);
+		categoriesElement(categoryUl);
+
+		container.appendChild(categoryContainer);
 		container.appendChild(tagContainer);
 		container.appendChild(imageContainer);
 		container.appendChild(buttonContainer);
@@ -292,7 +452,16 @@ window.pfntSubmit = function (publish) {
 	window.pfnt.submitObject.item_author = window.document.getElementById('pressforward-nt__inputfield__byline').value;
 	window.pfnt.submitObject.content = tinymce.activeEditor.dom.doc.body.innerHTML;
 	window.pfnt.submitObject.item_feat_img = window.pfMetaData.image;
+
 	window.pfnt.submitObject.post_tags = window.document.querySelector('#pressforward-nt__preview-tags-container input').value;
+	window.pfnt.submitObject.post_category = '';
+	var categories = window.document.getElementsByClassName('pressforward-nt__li-select-item__input');
+	for (let categoryCheckbox of categories) {
+		if (true === categoryCheckbox.checked) {
+			window.pfnt.submitObject.post_category += categoryCheckbox.value + ',';
+		}
+	};
+	window.pfnt.submitObject.post_category += '';
 	if (publish) {
 		window.pfnt.submitObject.publish = 'Last Step';
 		window.pfnt.submitObject.post_status = 'publish';

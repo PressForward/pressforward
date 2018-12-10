@@ -203,11 +203,11 @@ class NominateThisEndpoint implements HasActions {
 				'permission_callback' => function ( $request ) {
 					// return true;
 					$return_var = false;
-					$request_params = $_POST;
+					$request_params = $request->get_params();
 					// var_dump(hex2bin(trim($_POST['user_key']))); die();
 					// var_dump($request->get_json_params()); die();
 					try {
-						$key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin(trim($_POST['user_key'])));
+						$key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin(trim($request_params['user_key'])));
 						// pf_log('Decode attempt 2 on');
 						// pf_log($key);
 						if (!$key){
@@ -217,7 +217,7 @@ class NominateThisEndpoint implements HasActions {
 						return $return_var;
 					} catch ( \UnexpectedValueException $e ){
 						// var_dump($e, $_POST['user_key']);
-						$return_var = new WP_Error( 'auth_fail_format', __( "Authentication key was not properly formated. ".$_POST['user_key'], "pf" ) );
+						$return_var = new WP_Error( 'auth_fail_format', __( "Authentication key was not properly formated. ".$request_params['user_key'], "pf" ) );
 					} catch ( \InvalidArgumentException $e ){
 						$return_var = new WP_Error( 'auth_fail_key', __( "Authentication key was not properly supplied.", "pf" ) );
 					} catch ( \DomainException $e ){
@@ -229,6 +229,9 @@ class NominateThisEndpoint implements HasActions {
 							return $return_var;
 						}
 					}
+					// var_dump($request->get_params());
+					// var_dump($return_var); die();
+					return $return_var;
 
 				},
 				'priority'  => 10,
@@ -342,9 +345,9 @@ class NominateThisEndpoint implements HasActions {
 
 	public function handle_nomination_submission( $request ) {
 		// Already authorized at an upper API level.
-		// var_dump('Test: ', $request->get_body()); die();
 		// return esc_html( implode( $_REQUEST ) );
 		// $_POST = $request->get_json_params();
+		$_POST = array_merge($_POST, $request->get_params());
 		$user_id = pressforward('controller.jwt')->get_user_by_key($_POST['user_key']);
 		wp_set_current_user($user_id);
 		$_POST['post_title'] = urldecode($_POST['post_title']);
@@ -355,6 +358,7 @@ class NominateThisEndpoint implements HasActions {
 		$return_object->id = $id;
 		$response = new \WP_REST_Response($return_object);
 		$response->header( 'Content-Type', 'application/json' );
+		// var_dump('Test: ', $request->get_body());
 		return rest_ensure_response($response);
 		// return $id;
 		// return new WP_REST_Response($return_object);
@@ -385,7 +389,8 @@ EOF;
 		echo 'window.pfSiteData = {}; ';
 		echo 'window.pfSiteData.site_url = "'. \get_site_url() . '"; ';
 		echo 'window.pfSiteData.plugin_url = "'. plugin_dir_url( dirname(dirname(__FILE__)) ) . '"; ';
-		echo 'window.pfSiteData.submit_endpoint = "' . trailingslashit(\get_site_url()) . 'wp-json\/' . $this->api_base['base_namespace'] . $this->api_base['version'] . '/' . $this->api_base['submit'] . '"; ';
+		echo 'window.pfSiteData.submit_endpoint = "' . trailingslashit(\get_site_url()) . 'wp-json/' . $this->api_base['base_namespace'] . $this->api_base['version'] . '/' . $this->api_base['submit'] . '"; ';
+		echo 'window.pfSiteData.categories_endpoint = "'. trailingslashit(\get_site_url()) . 'wp-json/wp/v2/categories"; ';
 		echo 'window.pfSiteData.fontFace = "' . $fontFaceJS . '"';
 		include_once PF_ROOT . '/assets/js/jws.js';
 		include_once PF_ROOT . '/assets/js/jwt.js';
