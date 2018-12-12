@@ -212,8 +212,9 @@ class NominateThisEndpoint implements HasActions {
 						// pf_log($key);
 						if (!$key){
 							$return_var = new WP_Error( 'auth_fail_id', __( "Request was signed with incorrect key.", "pf" ) );
+						} else {
+							$return_var = true;
 						}
-						$return_var = true;
 						return $return_var;
 					} catch ( \UnexpectedValueException $e ){
 						// var_dump($e, $_POST['user_key']);

@@ -96,7 +96,7 @@ class PF_JWT {
 		}
 		$existing_key = $this->system_users->get_user_meta($user_id, 'pf_public_key', true);
 		if ( $new || !$existing_key ){
-			$key = $this->make_a_public_key( $new );
+			$key = $this->make_a_public_key( true );
 			$this->system_users->update_user_meta($user_id, 'pf_public_key', $key);
 			return $key;
 		} else {
@@ -118,7 +118,23 @@ class PF_JWT {
 			$user_id = $user->ID;
 		}
 		$key = $this->make_a_jwt_private_key();
-		return $this->system_users->update_user_meta($user_id, 'pf_jwt_private_key', $key);
+		$this->system_users->update_user_meta($user_id, 'pf_jwt_private_key', $key);
+		return $key;
+	}
+
+	public function get_a_user_private_key( $user_id = false, $new = false ){
+		if (!$user_id){
+			$user = $this->system_users->get_current_user();
+			$user_id = $user->ID;
+		}
+		$existing_key = $this->system_users->get_user_meta($user_id, 'pf_jwt_private_key', true);
+		if ( $new || !$existing_key ){
+			$key = $this->map_private_key_to_user( $user_id );
+			// $this->system_users->update_user_meta($user_id, 'pf_jwt_private_key', $key);
+			return $key;
+		} else {
+			return $existing_key;
+		}
 	}
 
 	public function get_user_by_key($key_array){
