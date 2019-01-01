@@ -334,8 +334,11 @@ class Feed_Items implements HasActions, HasFilters {
 		}
 
 		$content_array = explode( ' ', strip_tags( $content ) );
-		$word_count    = count( $content_array );
-
+		if ( is_array( $content_array ) ) {
+			$word_count    = count( $content_array );
+		} else {
+			$word_count = 0;
+		}
 		return pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_feed_item_word_count', $word_count );
 	}
 

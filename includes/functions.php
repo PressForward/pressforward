@@ -579,7 +579,7 @@ function pf_noms_filter( $text ) {
 
 	$excerpt_length = 310;
 	$words = explode( ' ', $text, $excerpt_length + 1 );
-	if ( count( $words ) > $excerpt_length ) {
+	if ( is_array( $words ) && ( count( $words ) > $excerpt_length ) ) {
 		array_pop( $words );
 		array_push( $words, '...' );
 		$text = implode( ' ', $words );
@@ -609,7 +609,7 @@ function pf_noms_excerpt( $text ) {
 
 	$excerpt_length = 310;
 	$words = explode( ' ', $text, $excerpt_length + 1 );
-	if ( count( $words ) > $excerpt_length ) {
+	if ( is_array( $words ) && ( count( $words ) > $excerpt_length ) ) {
 		array_pop( $words );
 		array_push( $words, '...' );
 		$text = implode( ' ', $words );

@@ -273,13 +273,13 @@ class Readability {
 		if ( preg_match( '/ [\|\-] /', $curTitle ) ) {
 			$curTitle = preg_replace( '/(.*)[\|\-] .*/i', '$1', $origTitle );
 
-			if ( count( explode( ' ', $curTitle ) ) < 3 ) {
+			if ( is_array( $curTitle ) && count( explode( ' ', $curTitle ) ) < 3 ) {
 				$curTitle = preg_replace( '/[^\|\-]*[\|\-](.*)/i', '$1', $origTitle );
 			}
 		} elseif ( strpos( $curTitle, ': ' ) !== false ) {
 			$curTitle = preg_replace( '/.*:(.*)/i', '$1', $origTitle );
 
-			if ( count( explode( ' ', $curTitle ) ) < 3 ) {
+			if ( is_array( $curTitle ) && count( explode( ' ', $curTitle ) ) < 3 ) {
 				$curTitle = preg_replace( '/[^:]*[:](.*)/i', '$1', $origTitle );
 			}
 		} elseif ( strlen( $curTitle ) > 150 || strlen( $curTitle ) < 15 ) {
@@ -291,7 +291,7 @@ class Readability {
 
 		$curTitle = trim( $curTitle );
 
-		if ( count( explode( ' ', $curTitle ) ) <= 4 ) {
+		if ( is_array( $curTitle ) && count( explode( ' ', $curTitle ) ) <= 4 ) {
 			$curTitle = $origTitle;
 		}
 
@@ -610,56 +610,59 @@ class Readability {
 		 * A score is determined by things like number of commas, class names, etc. Maybe eventually link density.
 		 */
 		$candidates = array();
-		for ( $pt = 0; $pt < count( $nodesToScore ); ++$pt ) {
-			$parentNode = $nodesToScore[ $pt ]->parentNode;
-			// $grandParentNode = $parentNode ? $parentNode->parentNode : null;
-			$grandParentNode      = ! $parentNode ? null : ( ( $parentNode->parentNode instanceof DOMElement ) ? $parentNode->parentNode : null );
-			$grandGrandParentNode = ! $grandParentNode ? null : ( ( $grandParentNode->parentNode instanceof DOMElement ) ? $grandParentNode->parentNode : null );
-			$innerText            = $this->getInnerText( $nodesToScore[ $pt ] );
+		if ( is_array($nodesToScore) ){
 
-			if ( ! $parentNode || ! isset( $parentNode->tagName ) ) {
-				continue;
-			}
+			for ( $pt = 0; $pt < count( $nodesToScore ); ++$pt ) {
+				$parentNode = $nodesToScore[ $pt ]->parentNode;
+				// $grandParentNode = $parentNode ? $parentNode->parentNode : null;
+				$grandParentNode      = ! $parentNode ? null : ( ( $parentNode->parentNode instanceof DOMElement ) ? $parentNode->parentNode : null );
+				$grandGrandParentNode = ! $grandParentNode ? null : ( ( $grandParentNode->parentNode instanceof DOMElement ) ? $grandParentNode->parentNode : null );
+				$innerText            = $this->getInnerText( $nodesToScore[ $pt ] );
 
-			/* If this paragraph is less than 25 characters, don't even count it. */
-			if ( strlen( $innerText ) < 25 ) {
-				continue;
-			}
+				if ( ! $parentNode || ! isset( $parentNode->tagName ) ) {
+					continue;
+				}
 
-			/* Initialize readability data for the parent. */
-			if ( ! $parentNode->hasAttribute( 'readability' ) ) {
-				$this->initializeNode( $parentNode );
-				$candidates[] = $parentNode;
-			}
+				/* If this paragraph is less than 25 characters, don't even count it. */
+				if ( strlen( $innerText ) < 25 ) {
+					continue;
+				}
 
-			/* Initialize readability data for the grandparent. */
-			if ( $grandParentNode && ! $grandParentNode->hasAttribute( 'readability' ) && isset( $grandParentNode->tagName ) ) {
-				$this->initializeNode( $grandParentNode );
-				$candidates[] = $grandParentNode;
-			}
+				/* Initialize readability data for the parent. */
+				if ( ! $parentNode->hasAttribute( 'readability' ) ) {
+					$this->initializeNode( $parentNode );
+					$candidates[] = $parentNode;
+				}
 
-			/* Initialize readability data for the grandgrandparent. */
-			if ( $grandGrandParentNode && ! $grandGrandParentNode->hasAttribute( 'readability' ) && isset( $grandGrandParentNode->tagName ) ) {
-				$this->initializeNode( $grandGrandParentNode );
-				$candidates[] = $grandGrandParentNode;
-			}
+				/* Initialize readability data for the grandparent. */
+				if ( $grandParentNode && ! $grandParentNode->hasAttribute( 'readability' ) && isset( $grandParentNode->tagName ) ) {
+					$this->initializeNode( $grandParentNode );
+					$candidates[] = $grandParentNode;
+				}
 
-			$contentScore = 0;
+				/* Initialize readability data for the grandgrandparent. */
+				if ( $grandGrandParentNode && ! $grandGrandParentNode->hasAttribute( 'readability' ) && isset( $grandGrandParentNode->tagName ) ) {
+					$this->initializeNode( $grandGrandParentNode );
+					$candidates[] = $grandGrandParentNode;
+				}
 
-			/* Add a point for the paragraph itself as a base. */
-			++$contentScore;
+				$contentScore = 0;
 
-			/* Add points for any commas within this paragraph */
-			$contentScore += count( explode( ',', $innerText ) );
+				/* Add a point for the paragraph itself as a base. */
+				++$contentScore;
 
-			/* For every 100 characters in this paragraph, add another point. Up to 3 points. */
-			$contentScore += min( floor( strlen( $innerText ) / 100 ), 3 );
+				/* Add points for any commas within this paragraph */
+				$contentScore += count( explode( ',', $innerText ) );
 
-			/* Add the score to the parent. The grandparent gets half. */
-			$parentNode->getAttributeNode( 'readability' )->value += $contentScore;
+				/* For every 100 characters in this paragraph, add another point. Up to 3 points. */
+				$contentScore += min( floor( strlen( $innerText ) / 100 ), 3 );
 
-			if ( $grandParentNode ) {
-				$grandParentNode->getAttributeNode( 'readability' )->value += $contentScore / 2;
+				/* Add the score to the parent. The grandparent gets half. */
+				$parentNode->getAttributeNode( 'readability' )->value += $contentScore;
+
+				if ( $grandParentNode ) {
+					$grandParentNode->getAttributeNode( 'readability' )->value += $contentScore / 2;
+				}
 			}
 		}
 

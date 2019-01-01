@@ -609,7 +609,7 @@ class Forward_Tools {
 		$post_id = $this->nomination_to_last_step( $item_id, $nomination_id, false );
 		if (isset($_POST['post_category']) && !empty($_POST['post_category']) && !is_array($_POST['post_category'])){
 			$categories = explode(',', $_POST['post_category']);
-			if (count($categories) > 0){
+			if ( is_array( $categories ) && count( $categories ) > 0) {
 				wp_set_post_categories( $post_id, $categories, false );
 				wp_set_post_categories( $nomination_id, $categories, false );
 			}
