@@ -7,15 +7,17 @@ $private_key = bin2hex(pressforward('controller.jwt')->get_a_user_private_key())
 ?>
 <div class="wrap">
 	<h2><?php echo $page_title; ?></h2>
+	<input type="hidden" id="pfnt__pfSiteData" name="pfnt__pfSiteData">
 	<script>
 	<?php
 		echo 'window.pfSiteData = {}; ';
 		echo 'window.pfSiteData.site_url = "'. \get_site_url() . '"; ';
 		echo 'window.pfSiteData.plugin_url = "'. plugin_dir_url( dirname(dirname(__FILE__)) ) . '"; ';
-		echo 'window.pfSiteData.submit_endpoint = "' . trailingslashit(trailingslashit(\get_site_url()) . 'wp-json/' . $this->api_base['base_namespace'] . $this->api_base['version'] . '/' . $this->api_base['submit']) . '"; ';
+		echo 'window.pfSiteData.submit_endpoint = "' . trailingslashit(trailingslashit(\get_site_url()) . 'wp-json/pf/v1/submit-nomination') . '"; ';
 		echo 'window.pfSiteData.categories_endpoint = "'. trailingslashit(trailingslashit(\get_site_url()) . 'wp-json/wp/v2/categories') . '"; ';
 		echo 'window.pfSiteData.ku="' . $public_key . '"; ';
 		echo 'window.pfSiteData.ki="' . $private_key . '"; ';
+		echo 'document.getElementById("pfnt__pfSiteData").value = JSON.stringify(window.pfSiteData)';
 	?>
 	</script>
 	<div class="metabox-holder" id="pf-settings-box">
