@@ -3,7 +3,7 @@
 $user = wp_get_current_user();
 $user_id = $user->ID;
 $public_key = bin2hex(pressforward('controller.jwt')->get_a_user_public_key());
-$private_key = bin2hex(pressforward('controller.jwt')->get_a_user_private_key());
+$private_key = (pressforward('controller.jwt')->get_a_user_private_key());
 ?>
 <div class="wrap">
 	<h2><?php echo $page_title; ?></h2>

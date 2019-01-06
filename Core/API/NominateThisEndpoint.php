@@ -349,7 +349,25 @@ class NominateThisEndpoint implements HasActions {
 		// return esc_html( implode( $_REQUEST ) );
 		// $_POST = $request->get_json_params();
 		$_POST = array_merge($_POST, $request->get_params());
-		$user_id = pressforward('controller.jwt')->get_user_by_key($_POST['user_key']);
+		$private_key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin(trim($_POST['user_key'])));
+		//$pk_portions = explode('.', $_POST['verify']);
+		$verify = pressforward('controller.jwt')->decode_with_jwt(trim($_POST['verify']), $private_key);
+		if ( (false !== $verify) && property_exists( $verify, 'date' ) ) {
+			$date_obj = \date_create( '@' . ( $verify->date ) );
+			$current_date_obj = new \DateTime();
+			// 15 minutes
+			$allowable_diff = new \DateInterval( 'PT15M' );
+			$date_obj->add( $allowable_diff );
+			if ( $date_obj < $current_date_obj ) {
+				// Too old of a message
+				//var_dump( 'bad date' );
+				return '{"error": "bad date", "date_sent":"'.$date_obj->format('Y-m-d H:i:s').'", "date_internal":"'.$current_date_obj->format('Y-m-d H:i:s').'"}';
+			}
+		} else {
+			return '{ error: "verification not available"}'.' pk:'.$private_key.' v:'.$verify.' vr:'.$_POST['verify'] . '  uk: '.hex2bin(trim($_POST['user_key'])). ' pk portions:'. $pk_portions[0]. '    '. $pk_portions[1];
+		}
+
+		$user_id = pressforward('controller.jwt')->get_user_by_key( $_POST['user_key'] );
 		wp_set_current_user($user_id);
 		$_POST['post_title'] = urldecode($_POST['post_title']);
 		$_POST['content'] = urldecode($_POST['content']);

@@ -54,8 +54,9 @@ class PF_JWT {
 		//var_dump($token, $key); die();
 		try {
 			$decode = $this->JWT->decode($token, $key, $alg);
-		} catch (Exception $e) {
-    		echo 'Caught exception: ',  $e->getMessage(), "\n";
+		} catch ( \Exception $e ) {
+			// echo 'Caught exception: ',  $e->getMessage(), "\n";
+			return false;
 		}
 		return $decode;
 	}
