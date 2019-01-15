@@ -466,7 +466,7 @@ EOT;
 			'data'         => (string) '{ ku: "' . $user_public_key . '", ki: "' . $user_private_key . '" }',
 			'supplemental' => array(
 				'buffered' => ob_get_contents(),
-				'setting'  => [ 'public_key', 'private_key' ],
+				'setting'  => array( 'public_key', 'private_key' ),
 				'keygen'   => 'jwt',
 			),
 		);
