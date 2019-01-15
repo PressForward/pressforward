@@ -15,6 +15,10 @@ if ( ! class_exists( '\PHPUnit_Framework_Exception' ) && class_exists( '\PHPUnit
 	class_alias( '\PHPUnit\Framework\Exception', '\PHPUnit_Framework_Exception' );
 }
 
+if ( ! class_exists( '\PHPUnit_Util_Getopt' ) && class_exists( '\PHPUnit\Util\Getopt' ) ) {
+	class_alias( '\PHPUnit\Util\Getopt', '\PHPUnit_Util_Getopt' );
+}
+
 function _manually_load_plugin() {
 	require __DIR__ . '/../pressforward.php';
 	require __DIR__ . '/includes/install.php';
