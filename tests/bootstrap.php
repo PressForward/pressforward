@@ -11,6 +11,10 @@ if ( ! class_exists( '\PHPUnit_Framework_TestCase' ) && class_exists( '\PHPUnit\
 	class_alias( '\PHPUnit\Framework\TestCase', '\PHPUnit_Framework_TestCase' );
 }
 
+if ( ! class_exists( '\PHPUnit_Framework_Exception' ) && class_exists( '\PHPUnit\Framework\Exception' ) ) {
+	class_alias( '\PHPUnit\Framework\Exception', '\PHPUnit_Framework_Exception' );
+}
+
 function _manually_load_plugin() {
 	require __DIR__ . '/../pressforward.php';
 	require __DIR__ . '/includes/install.php';
