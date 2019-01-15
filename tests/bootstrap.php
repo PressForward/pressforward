@@ -7,6 +7,10 @@ if ( ! $_tests_dir ) {
 
 require_once $_tests_dir . '/includes/functions.php';
 
+if ( ! class_exists( '\PHPUnit_Framework_TestCase' ) && class_exists( '\PHPUnit\Framework\TestCase' ) ) {
+	class_alias( '\PHPUnit\Framework\TestCase', '\PHPUnit_Framework_TestCase' );
+}
+
 function _manually_load_plugin() {
 	require __DIR__ . '/../pressforward.php';
 	require __DIR__ . '/includes/install.php';
