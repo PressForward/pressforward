@@ -32,7 +32,7 @@ if ( class_exists( 'PHPUnit\Runner\Version' ) && version_compare( PHPUnit\Runner
 		/**
 		 * @throws Exception
 		 */
-		public static function getopt(array $args, string $short_options, array $long_options = null): array
+		public static function getopt(array $args, string $short_options, array $long_options = null)
 		{
 			if (empty($args)) {
 				return [[], []];
@@ -83,7 +83,7 @@ if ( class_exists( 'PHPUnit\Runner\Version' ) && version_compare( PHPUnit\Runner
 		/**
 		 * @throws Exception
 		 */
-		private static function parseShortOption(string $arg, string $short_options, array &$opts, array &$args): void
+		private static function parseShortOption(string $arg, string $short_options, array &$opts, array &$args)
 		{
 			$argLen = \strlen($arg);
 			for ($i = 0; $i < $argLen; $i++) {
@@ -115,7 +115,7 @@ if ( class_exists( 'PHPUnit\Runner\Version' ) && version_compare( PHPUnit\Runner
 		/**
 		 * @throws Exception
 		 */
-		private static function parseLongOption(string $arg, array $long_options, array &$opts, array &$args): void
+		private static function parseLongOption(string $arg, array $long_options, array &$opts, array &$args)
 		{
 			$count   = \count($long_options);
 			$list	= \explode('=', $arg);
