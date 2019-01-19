@@ -348,11 +348,12 @@ class NominateThisEndpoint implements HasActions {
 		// Already authorized at an upper API level.
 		// return esc_html( implode( $_REQUEST ) );
 		// $_POST = $request->get_json_params();
+		pf_log('Nomination Submitted');
 		$_POST = array_merge($_POST, $request->get_params());
 		$private_key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin(trim($_POST['user_key'])));
 		//$pk_portions = explode('.', $_POST['verify']);
 		$verify = pressforward('controller.jwt')->decode_with_jwt(trim($_POST['verify']), $private_key);
-		if ( (false !== $verify) && property_exists( $verify, 'date' ) ) {
+		if ( ( false !== $verify ) && property_exists( $verify, 'date' ) ) {
 			$date_obj = \date_create( '@' . ( $verify->date ) );
 			$current_date_obj = new \DateTime();
 			// 15 minutes
@@ -369,6 +370,13 @@ class NominateThisEndpoint implements HasActions {
 
 		$user_id = pressforward('controller.jwt')->get_user_by_key( $_POST['user_key'] );
 		wp_set_current_user($user_id);
+		$decrypted_data = pressforward('controller.jwt')->decode_with_jwt(trim($_POST['data']), $private_key);
+		if ( false === $decrypted_data ){
+			return '{ "error": "bad data" }';
+		}
+		pf_log('Nomination Data received: ');
+		pf_log($decrypted_data);
+		$_POST = array_merge( $_POST, (array) $decrypted_data );
 		$_POST['post_title'] = urldecode($_POST['post_title']);
 		$_POST['content'] = urldecode($_POST['content']);
 		$_POST['publish'] = urldecode($_POST['publish']);
