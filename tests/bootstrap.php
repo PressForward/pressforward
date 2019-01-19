@@ -28,140 +28,184 @@ if ( class_exists( 'PHPUnit\Runner\Version' ) && version_compare( PHPUnit\Runner
 	class_alias( 'PHPUnit\Framework\TestListener', 'PHPUnit_Framework_TestListener' );
 	class_alias( 'PHPUnit\Util\GlobalState', 'PHPUnit_Util_GlobalState' );
 
-	class Getopt {
-		/**
-		 * @throws Exception
-		 */
-		public function getopt(array $args, string $short_options, array $long_options = null)
+	/**
+	 * PHPUnit
+	 *
+	 * Copyright (c) 2001-2013, Sebastian Bergmann <sebastian@phpunit.de>.
+	 * All rights reserved.
+	 *
+	 * Redistribution and use in source and binary forms, with or without
+	 * modification, are permitted provided that the following conditions
+	 * are met:
+	 *
+	 *   * Redistributions of source code must retain the above copyright
+	 *     notice, this list of conditions and the following disclaimer.
+	 *
+	 *   * Redistributions in binary form must reproduce the above copyright
+	 *     notice, this list of conditions and the following disclaimer in
+	 *     the documentation and/or other materials provided with the
+	 *     distribution.
+	 *
+	 *   * Neither the name of Sebastian Bergmann nor the names of his
+	 *     contributors may be used to endorse or promote products derived
+	 *     from this software without specific prior written permission.
+	 *
+	 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+	 * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+	 * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+	 * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+	 * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+	 * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+	 * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+	 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+	 * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+	 * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+	 * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	 * POSSIBILITY OF SUCH DAMAGE.
+	 *
+	 * @package    PHPUnit
+	 * @subpackage Util
+	 * @author     Sebastian Bergmann <sebastian@phpunit.de>
+	 * @copyright  2001-2013 Sebastian Bergmann <sebastian@phpunit.de>
+	 * @license    http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
+	 * @link       http://www.phpunit.de/
+	 * @since      File available since Release 3.0.0
+	 */
+	/**
+	 * Command-line options parsing class.
+	 *
+	 * @package    PHPUnit
+	 * @subpackage Util
+	 * @author     Andrei Zmievski <andrei@php.net>
+	 * @author     Sebastian Bergmann <sebastian@phpunit.de>
+	 * @copyright  2001-2013 Sebastian Bergmann <sebastian@phpunit.de>
+	 * @license    http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
+	 * @link       http://www.phpunit.de/
+	 * @since      Class available since Release 3.0.0
+	 */
+	class PHPUnit_Util_Getopt
+	{
+		public function getopt(array $args, $short_options, $long_options = NULL)
 		{
 			if (empty($args)) {
-				return [[], []];
+				return array(array(), array());
 			}
-			$opts	 = [];
-			$non_opts = [];
+			$opts     = array();
+			$non_opts = array();
 			if ($long_options) {
-				\sort($long_options);
+				sort($long_options);
 			}
-			if (isset($args[0][0]) && $args[0][0] !== '-') {
-				\array_shift($args);
+			if (isset($args[0][0]) && $args[0][0] != '-') {
+				array_shift($args);
 			}
-			\reset($args);
-			$args = \array_map('trim', $args);
-			/* @noinspection ComparisonOperandsOrderInspection */
-			while (false !== $arg = \current($args)) {
-				$i = \key($args);
-				\next($args);
-				if ($arg === '') {
+			reset($args);
+			array_map('trim', $args);
+			while (list($i, $arg) = each($args)) {
+				if ($arg == '') {
 					continue;
 				}
-				if ($arg === '--') {
-					$non_opts = \array_merge($non_opts, \array_slice($args, $i + 1));
+				if ($arg == '--') {
+					$non_opts = array_merge($non_opts, array_slice($args, $i + 1));
 					break;
 				}
-				if ($arg[0] !== '-' || (\strlen($arg) > 1 && $arg[1] === '-' && !$long_options)) {
-					$non_opts[] = $args[$i];
-					continue;
+				if ($arg[0] != '-' ||
+					(strlen($arg) > 1 && $arg[1] == '-' && !$long_options)) {
+					$non_opts = array_merge($non_opts, array_slice($args, $i));
+					break;
 				}
-				if (\strlen($arg) > 1 && $arg[1] === '-') {
+				elseif (strlen($arg) > 1 && $arg[1] == '-') {
 					self::parseLongOption(
-						\substr($arg, 2),
-						$long_options,
-						$opts,
-						$args
+					substr($arg, 2), $long_options, $opts, $args
 					);
-				} else {
+				}
+				else {
 					self::parseShortOption(
-						\substr($arg, 1),
-						$short_options,
-						$opts,
-						$args
+					substr($arg, 1), $short_options, $opts, $args
 					);
 				}
 			}
-			return [$opts, $non_opts];
+			return array($opts, $non_opts);
 		}
-		/**
-		 * @throws Exception
-		 */
-		private function parseShortOption(string $arg, string $short_options, array &$opts, array &$args)
+		protected function parseShortOption($arg, $short_options, &$opts, &$args)
 		{
-			$argLen = \strlen($arg);
+			$argLen = strlen($arg);
 			for ($i = 0; $i < $argLen; $i++) {
-				$opt	 = $arg[$i];
-				$opt_arg = null;
-				if ($arg[$i] === ':' || ($spec = \strstr($short_options, $opt)) === false) {
-					throw new Exception(
-						"unrecognized option -- $opt"
+				$opt     = $arg[$i];
+				$opt_arg = NULL;
+				if (($spec = strstr($short_options, $opt)) === FALSE ||
+					$arg[$i] == ':') {
+					throw new PHPUnit_Framework_Exception(
+					"unrecognized option -- $opt"
 					);
 				}
-				if (\strlen($spec) > 1 && $spec[1] === ':') {
-					if ($i + 1 < $argLen) {
-						$opts[] = [$opt, \substr($arg, $i + 1)];
-						break;
-					}
-					if (!(\strlen($spec) > 2 && $spec[2] === ':')) {
-						/* @noinspection ComparisonOperandsOrderInspection */
-						if (false === $opt_arg = \current($args)) {
-							throw new Exception(
-								"option requires an argument -- $opt"
+				if (strlen($spec) > 1 && $spec[1] == ':') {
+					if (strlen($spec) > 2 && $spec[2] == ':') {
+						if ($i + 1 < $argLen) {
+							$opts[] = array($opt, substr($arg, $i + 1));
+							break;
+						}
+					} else {
+						if ($i + 1 < $argLen) {
+							$opts[] = array($opt, substr($arg, $i + 1));
+							break;
+						}
+						else if (list(, $opt_arg) = each($args)) {
+						}
+						else {
+							throw new PHPUnit_Framework_Exception(
+							"option requires an argument -- $opt"
 							);
 						}
-						\next($args);
 					}
 				}
-				$opts[] = [$opt, $opt_arg];
+				$opts[] = array($opt, $opt_arg);
 			}
 		}
-		/**
-		 * @throws Exception
-		 */
-		private function parseLongOption(string $arg, array $long_options, array &$opts, array &$args)
+		protected function parseLongOption($arg, $long_options, &$opts, &$args)
 		{
-			$count   = \count($long_options);
-			$list	= \explode('=', $arg);
-			$opt	 = $list[0];
-			$opt_arg = null;
-			if (\count($list) > 1) {
+			$count   = count($long_options);
+			$list    = explode('=', $arg);
+			$opt     = $list[0];
+			$opt_arg = NULL;
+			if (count($list) > 1) {
 				$opt_arg = $list[1];
 			}
-			$opt_len = \strlen($opt);
+			$opt_len = strlen($opt);
 			for ($i = 0; $i < $count; $i++) {
 				$long_opt  = $long_options[$i];
-				$opt_start = \substr($long_opt, 0, $opt_len);
-				if ($opt_start !== $opt) {
+				$opt_start = substr($long_opt, 0, $opt_len);
+				if ($opt_start != $opt) {
 					continue;
 				}
-				$opt_rest = \substr($long_opt, $opt_len);
-				if ($opt_rest !== '' && $i + 1 < $count && $opt[0] !== '=' &&
-					\strpos($long_options[$i + 1], $opt) === 0) {
-					throw new Exception(
-						"option --$opt is ambiguous"
+				$opt_rest = substr($long_opt, $opt_len);
+				if ($opt_rest != '' && $opt[0] != '=' && $i + 1 < $count &&
+					$opt == substr($long_options[$i+1], 0, $opt_len)) {
+					throw new PHPUnit_Framework_Exception(
+					"option --$opt is ambiguous"
 					);
 				}
-				if (\substr($long_opt, -1) === '=') {
-					/* @noinspection StrlenInEmptyStringCheckContextInspection */
-					if (\substr($long_opt, -2) !== '==' && !\strlen((string) $opt_arg)) {
-						/* @noinspection ComparisonOperandsOrderInspection */
-						if (false === $opt_arg = \current($args)) {
-							throw new Exception(
-								"option --$opt requires an argument"
+				if (substr($long_opt, -1) == '=') {
+					if (substr($long_opt, -2) != '==') {
+						if (!strlen($opt_arg) &&
+							!(list(, $opt_arg) = each($args))) {
+							throw new PHPUnit_Framework_Exception(
+							"option --$opt requires an argument"
 							);
 						}
-						\next($args);
 					}
-				} elseif ($opt_arg) {
-					throw new Exception(
-						"option --$opt doesn't allow an argument"
+				}
+				else if ($opt_arg) {
+					throw new PHPUnit_Framework_Exception(
+					"option --$opt doesn't allow an argument"
 					);
 				}
-				$full_option = '--' . \preg_replace('/={1,2}$/', '', $long_opt);
-				$opts[]	  = [$full_option, $opt_arg];
+				$opts[] = array('--' . $opt, $opt_arg);
 				return;
 			}
-			throw new Exception("unrecognized option --$opt");
+			throw new PHPUnit_Framework_Exception("unrecognized option --$opt");
 		}
 	}
-	class_alias( 'Getopt', 'PHPUnit_Util_Getopt' );
+	// class_alias( 'PHPUnit\Util\Getopt', 'PHPUnit_Util_Getopt' );
 
 	class PHPUnit_Util_Test {
 		public static function getTickets( $className, $methodName ) {
