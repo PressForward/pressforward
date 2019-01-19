@@ -60,11 +60,11 @@ matrix:
       env: WP_VERSION=4.0 BP_TRAVISCI=travis:phpunit
       dist: precise
     - php: 7.2
-      env: WP_VERSION=4.8.1 BP_TRAVISCI=travis:phpunit
+      env: WP_VERSION=4.8.1 BP_TRAVISCI=travis:phpcompat
     - php: 7.2
-      env: WP_VERSION=4.9.1 BP_TRAVISCI=travis:phpunit
+      env: WP_VERSION=4.9.1 BP_TRAVISCI=travis:phpcompat
     - php: 7.2
-      env: WP_VERSION=5.0 BP_TRAVISCI=travis:phpunit
+      env: WP_VERSION=5.0 BP_TRAVISCI=travis:phpcompat
 
 before_install:
     - git submodule update --init --recursive
