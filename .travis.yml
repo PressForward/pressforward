@@ -1,9 +1,11 @@
 language: php
 
 php:
-    - 5.4
-    - 5.5
-    - 5.6
+  - 5.4
+  - 5.5
+  - 5.6
+  - 7.2
+  - 7.3
 
 env:
     - WP_VERSION=4.0.5 WP_MULTISITE=0
@@ -26,45 +28,8 @@ env:
     - WP_VERSION=4.8.1 WP_MULTISITE=1
     - WP_VERSION=4.9.1 WP_MULTISITE=0
     - WP_VERSION=4.9.1 WP_MULTISITE=1
-
-matrix:
-  include:
-    - php: 5.3
-      env: WP_VERSION=4.9 BP_TRAVISCI=travis:phpunit
-      dist: precise
-    - php: 5.3
-      env: WP_VERSION=4.8 BP_TRAVISCI=travis:phpunit
-      dist: precise
-    - php: 5.3
-      env: WP_VERSION=4.7 BP_TRAVISCI=travis:phpunit
-      dist: precise
-    - php: 5.3
-      env: WP_VERSION=4.6 BP_TRAVISCI=travis:phpunit
-      dist: precise
-    - php: 5.3
-      env: WP_VERSION=4.5 BP_TRAVISCI=travis:phpunit
-      dist: precise
-    - php: 5.3
-      env: WP_VERSION=4.4 BP_TRAVISCI=travis:phpunit
-      dist: precise
-    - php: 5.3
-      env: WP_VERSION=4.3 BP_TRAVISCI=travis:phpunit
-      dist: precise
-    - php: 5.3
-      env: WP_VERSION=4.2 BP_TRAVISCI=travis:phpunit
-      dist: precise
-    - php: 5.3
-      env: WP_VERSION=4.1 BP_TRAVISCI=travis:phpunit
-      dist: precise
-    - php: 5.3
-      env: WP_VERSION=4.0 BP_TRAVISCI=travis:phpunit
-      dist: precise
-    - php: 7.2
-      env: WP_VERSION=4.8.1 BP_TRAVISCI=travis:phpcompat
-    - php: 7.2
-      env: WP_VERSION=4.9.1 BP_TRAVISCI=travis:phpcompat
-    - php: 7.2
-      env: WP_VERSION=5.0 BP_TRAVISCI=travis:phpcompat
+    - WP_VERSION=5.0.3 WP_MULTISITE=0
+    - WP_VERSION=5.0.3 WP_MULTISITE=1
 
 before_install:
     - git submodule update --init --recursive
@@ -72,8 +37,12 @@ before_install:
 
 before_script:
     - bash tests/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
+    - composer install
+    - if [[ ${TRAVIS_PHP_VERSION:0:3} == "5.3" ]]; then composer require --dev phpunit/phpunit ^4; fi
+    - if [[ ${TRAVIS_PHP_VERSION:0:3} == "5.6" ]]; then composer require --dev phpunit/phpunit ^5; composer install; fi
+    - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" ]]; then composer require --dev phpunit/phpunit ^6; composer install; fi
 
-script: phpunit
+script: vendor/bin/phpunit
 
 notifications:
     email:
