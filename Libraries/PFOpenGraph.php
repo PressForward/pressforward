@@ -49,15 +49,24 @@ class PFOpenGraph implements Iterator {
 	 * @return OpenGraph
 	 */
 	public static function fetch( $URI ) {
-		$response = pf_de_https( $URI, 'wp_remote_get', array( 'timeout' => '30' ) );
-		if ( ! empty( $response ) && ! is_wp_error( $response ) ) {
-			$response = $response['body'];
-			$response = mb_convert_encoding( $response, 'HTML-ENTITIES', 'UTF-8' );
-
-			return self::_parse( $response );
+		$cached = wp_cache_get( $URI, 'pressforward_external_pages' );
+		$response_body = null;
+		if ( false !== $cached ) {
+			$response_body = $cached;
 		} else {
+			$response = pf_de_https( $URI, 'wp_remote_get', array( 'timeout' => '5' ) );
+			if ( $response && ! is_wp_error( $response ) ) {
+				$response_body = wp_remote_retrieve_body( $response );
+				wp_cache_set( $URI, $response_body, 'pressforward_external_pages' );
+			}
+		}
+
+		if ( ! $response_body ) {
 			return false;
 		}
+
+		$response_body = mb_convert_encoding( $response_body, 'HTML-ENTITIES', 'UTF-8' );
+		return self::_parse( $response_body );
 	}
 
 	/**

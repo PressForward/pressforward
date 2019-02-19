@@ -9,12 +9,160 @@ use PressForward\Core\API\APIWithMetaEndpoints;
 
 use WP_Ajax_Response;
 
-class NominateThisCore {
+class NominateThisCore implements HasActions {
 	// implements HasActions, HasFilters
 	protected $basename;
 
 	function __construct() {
 
+	}
+
+	/**
+	 * Sets up action hooks for registering meta boxes for the Nominate This interface.
+	 *
+	 * @return array
+	 */
+	public function action_hooks() {
+		return array(
+			array(
+				'hook'   => 'add_meta_boxes_nomthis',
+				'method' => 'add_meta_boxes',
+			),
+		);
+	}
+
+	/**
+	 * Registers meta boxes for the Nominate This interface.
+	 */
+	public function add_meta_boxes() {
+		add_meta_box(
+			'pf-nomthis-submit',
+			__( 'Nominate This', 'pf' ),
+			array( $this, 'submit_meta_box' ),
+			'nomthis',
+			'side'
+		);
+
+		add_meta_box(
+			'pf-categorydiv',
+			__( 'Categories', 'pf' ),
+			'post_categories_meta_box',
+			'nomthis',
+			'side'
+		);
+
+		add_meta_box(
+			'pf-tagsdiv',
+			__( 'Tags', 'pf' ),
+			array( $this, 'tags_meta_box' ),
+			'nomthis',
+			'side'
+		);
+	}
+
+	/**
+	 * Generates markup for the Submit meta box on the Nominate This interface.
+	 */
+	public function submit_meta_box() {
+		$url = isset( $_GET['u'] ) ? esc_url( $_GET['u'] ) : '';
+		$author_retrieved = pressforward( 'controller.metas' )->get_author_from_url( $url );
+
+		?>
+
+		<p id="publishing-actions">
+		<?php
+			$publish_type = get_option( PF_SLUG . '_draft_post_status', 'draft' );
+
+			$create_nom_post_cap_test = current_user_can( get_post_type_object( pressforward( 'schema.nominations' )->post_type )->cap->create_posts );
+
+			$pf_draft_post_type_value = get_option( PF_SLUG . '_draft_post_type', 'post' );
+
+			if ('draft' == $publish_type){
+				$cap =  'edit_posts';
+			} else {
+				$cap = 'publish_posts';
+			}
+			$create_post_cap_test = current_user_can( get_post_type_object( $pf_draft_post_type_value )->cap->$cap );
+		if ($create_nom_post_cap_test){
+			submit_button( __( 'Nominate' ), 'button', 'draft', false, array( 'id' => 'save' ) );
+		} else {
+			echo 'You do not have the ability to create nominations.';
+		}
+		if ( $create_post_cap_test ) {
+			submit_button( __( 'Send to ' . ucwords( $publish_type ) ), 'primary', 'publish', false );
+		} else {
+			echo '<!-- User cannot '.$publish_type.' posts -->';
+		} ?>
+				<span class="spinner" style="display: none;"></span>
+			</p>
+			<p>
+				<?php
+				if ( ! $author_retrieved ) {
+					$author_value = '';
+				} else {
+					$author_value = $author_retrieved;
+				}
+				?>
+			<label for="item_author"><input type="text" id="item_author" name="item_author" value="<?php echo $author_value; ?>" /><br />&nbsp;<?php echo apply_filters( 'pf_author_nominate_this_prompt', __( 'Enter Authors', 'pf' ) ); ?></label>
+			</p>
+			<p>
+			<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php _e( 'Nominate feed associated with item.', 'pf' ); ?></label>
+			</p>
+			<?php if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) :
+					$post_formats = get_theme_support( 'post-formats' );
+				if ( is_array( $post_formats[0] ) ) :
+					$default_format = get_option( 'default_post_format', '0' );
+				?>
+			<p>
+				<label for="post_format"><?php _e( 'Post Format:','pf' ); ?>
+				<select name="post_format" id="post_format">
+				<option value="0"><?php _ex( 'Standard', 'Post format' ); ?></option>
+				<?php foreach ( $post_formats[0] as $format ) :  ?>
+					<option<?php selected( $default_format, $format ); ?> value="<?php echo esc_attr( $format ); ?>"> <?php echo esc_html( get_post_format_string( $format ) ); ?></option>
+				<?php endforeach; ?>
+				</select></label>
+			</p>
+			<?php endif;
+endif;
+			do_action( 'nominate_this_sidebar_head' );
+		?>
+
+		<?php
+	}
+
+	/**
+	 * Generates markup for the Tags meta box on the Nominate This interface.
+	 */
+	public function tags_meta_box() {
+		$url = isset( $_GET['u'] ) ? esc_url( $_GET['u'] ) : '';
+
+		$og = null;
+		if ( $url ) {
+			$og = pressforward( 'library.opengraph' )->fetch( $url );
+		}
+
+		$post_tags = 'via bookmarklet';
+		if ( $og ) {
+			$tags_retrieved = array( 'via bookmarklet' );
+
+			if ( ! empty( $og->article_tag ) ) {
+				$tags_retrieved[] = $og->article_tag;
+			}
+
+			if ( ! empty( $og->article_tag_additional ) ) {
+				$tags_retrieved = array_merge( $tags_retrieved, $og->article_tag_additional );
+			}
+
+			$post_tags = implode( ', ', $tags_retrieved );
+		}
+
+		?>
+		<div id="taxonomy-tags" class="tagdiv">
+			<p>
+				<label for="post_tags"><input type="text" id="post_tags" name="post_tags" value="<?php echo esc_html( $post_tags ); ?>" /><br />&nbsp;<?php echo apply_filters( 'pf_tags_prompt', __( 'Enter Tags', 'pf' ) ); ?></label>
+			</p>
+		</div>
+		<?php
 	}
 
 	/**
