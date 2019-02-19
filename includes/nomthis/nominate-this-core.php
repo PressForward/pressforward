@@ -441,9 +441,7 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 	<input type="hidden" id="prev_status" name="prev_status" value="draft" />
 	<input type="hidden" id="post_id" name="post_id" value="0" />
 	<?php if ( $url != '' ) {
-		_b( 'about to fetch ' . $url );
 		$og = pressforward( 'library.opengraph' )->fetch( $url );
-		_b( 'fetched ' . $url );
 
 		if ( isset( $og->url ) ) {
 			$url = $og->url;
