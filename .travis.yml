@@ -30,13 +30,13 @@ env:
 matrix:
   include:
     - php: 7.2
-	  env: WP_VERSION=5.0.3
+      env: WP_VERSION=5.0.3
     - php: 7.2
-	  env: WP_VERSION=5.1
+      env: WP_VERSION=5.1
     - php: 7.3
-	  env: WP_VERSION=5.0.3
+      env: WP_VERSION=5.0.3
     - php: 7.3
-	  env: WP_VERSION=5.1
+      env: WP_VERSION=5.1
 
 before_install:
     - git submodule update --init --recursive
