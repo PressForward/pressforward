@@ -4,8 +4,6 @@ php:
   - 5.4
   - 5.5
   - 5.6
-  - 7.2
-  - 7.3
 
 env:
     - WP_VERSION=4.0.5 WP_MULTISITE=0
@@ -28,8 +26,17 @@ env:
     - WP_VERSION=4.8.1 WP_MULTISITE=1
     - WP_VERSION=4.9.1 WP_MULTISITE=0
     - WP_VERSION=4.9.1 WP_MULTISITE=1
-    - WP_VERSION=5.0.3 WP_MULTISITE=0
-    - WP_VERSION=5.0.3 WP_MULTISITE=1
+
+matrix:
+  include:
+    - php: 7.2
+	  env: WP_VERSION=5.0.3
+    - php: 7.2
+	  env: WP_VERSION=5.1
+    - php: 7.3
+	  env: WP_VERSION=5.0.3
+    - php: 7.3
+	  env: WP_VERSION=5.1
 
 before_install:
     - git submodule update --init --recursive
