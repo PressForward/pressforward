@@ -1,6 +1,19 @@
 {
-    "name": "pressforward/pressforward",
-    "type": "project",
-    "license": "AGPLv3",
-    "require": {}
+	"name": "pressforward/pressforward",
+	"type": "wordpress-plugin",
+	"license": "AGPLv3",
+	"keywords": [
+		"activity",
+		"social network",
+		"aggregation",
+		"RSS"
+	],
+	"require": {
+		"composer/installers": "~1.0",
+		"php": ">=5.3.0"
+	},
+	"require-dev": {
+		"phpcompatibility/phpcompatibility-wp": "*",
+		"dealerdirect/phpcodesniffer-composer-installer": "^0.4.3"
+	}
 }
