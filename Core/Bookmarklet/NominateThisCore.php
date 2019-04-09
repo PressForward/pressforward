@@ -141,6 +141,11 @@ class NominateThisCore {
 			$post_ID = pressforward( 'utility.forward_tools' )->bookmarklet_to_nomination( false, $post );
 		}
 
+		// Sending a request to archive.org to be able to submit the URL of the source post
+		if( pressforward( 'utility.internet_archive' )->send_request_to_archive_dot_org( $post['guid'] ) ) {
+			pf_log( "The URL " . $post['guid'] . " was successfully provided to archive.org" );
+		}
+
 		if ( ! empty( $_POST['item_feat_img'] ) && ( $_POST['item_feat_img'] != '' ) ) {
 			pressforward( 'schema.feed_item' )->set_ext_as_featured( $post_ID, $_POST['item_feat_img'] );
 		}
