@@ -7,6 +7,7 @@ use Intraxia\Jaxion\Assets\Register as Assets;
 use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 
 use PressForward\Core\Utility\Forward_Tools;
+use PressForward\Core\Utility\Internet_Archive;
 use PressForward\Core\Utility\Relate;
 use PressForward\Core\Utility\Retrieval;
 
@@ -41,6 +42,13 @@ class UtilityProvider extends ServiceProvider {
 			'utility.retrieval',
 			function( $container ) {
 				return new Retrieval();
+			}
+		);
+
+		$container->share(
+			'utility.internet_archive',
+			function( $container ) {
+				return new Internet_Archive();
 			}
 		);
 
