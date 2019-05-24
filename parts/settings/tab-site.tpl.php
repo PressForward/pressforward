@@ -83,10 +83,11 @@
 	<?php
 	$pf_comment_send_email = get_user_option( 'pf_comment_send_email', false );
 	if ( 'true' == $pf_comment_send_email ) {
-	$checked = 'checked';
+		$checked = 'checked';
 	} else {
-	$checked = '';
-	}echo '<input id="pf_comment_send_email" type="checkbox" name="pf_comment_send_email" value="true" ' . $checked . ' class="user_setting" />';
+		$checked = '';
+	}
+	echo '<input id="pf_comment_send_email" type="checkbox" name="pf_comment_send_email" value="true" ' . $checked . ' class="user_setting" />';
 	echo '<label for="pf_comment_send_email" >' . __( 'Also send notifications for each new comments', 'pf' ) . '</label>';
 	?>
 </p>
