@@ -10,4 +10,5 @@ interface Advance_System {
 	public function to_last_step( $post = array() );
 	public function to_nomination( $post = array() );
 	public function get_pf_type_by_id( $item_id, $post_type );
+	public function inform_of_email_action( $title_post = false );
 }

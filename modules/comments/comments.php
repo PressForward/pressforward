@@ -337,7 +337,13 @@ class PF_Comments extends PF_Module {
 
 			// Register actions -- will be used to set up notifications and other modules can hook into this
 			if ( $comment_id ) {
-				do_action( 'ef_post_insert_editorial_comment', $comment ); }
+				do_action( 'ef_post_insert_editorial_comment', $comment );
+
+				if ( get_option( 'pf_comment_send_email', false ) ) {
+					$title_post = addslashes( get_post( $post_id )->post_title );
+					pressforward( 'utility.forward_tools' )->send_email_for_new_comment( $title_post );
+				}
+			}
 
 			// Prepare response
 			$response = new WP_Ajax_Response();

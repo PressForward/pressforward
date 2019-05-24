@@ -79,6 +79,17 @@
 <p>
 	<?php _e( 'To receive an email notification when there is a new nomination, enter a comma separated list of email notification recipients. If left blank, no notifications will be sent.', 'pf' ); ?>
 </p>
+<p>
+	<?php
+	$pf_comment_send_email = get_user_option( 'pf_comment_send_email', false );
+	if ( 'true' == $pf_comment_send_email ) {
+	$checked = 'checked';
+	} else {
+	$checked = '';
+	}echo '<input id="pf_comment_send_email" type="checkbox" name="pf_comment_send_email" value="true" ' . $checked . ' class="user_setting" />';
+	echo '<label for="pf_comment_send_email" >' . __( 'Also send notifications for each new comments', 'pf' ) . '</label>';
+	?>
+</p>
 <hr />
 <p>
 	<?php
