@@ -118,7 +118,7 @@ class NominateThisEndpoint implements HasActions {
 				  ),
 				),
 				'permission_callback' => function () {
-					return true;
+					return false;
 				},
 				'priority'  => 10,
 			),
@@ -155,7 +155,7 @@ class NominateThisEndpoint implements HasActions {
 						if (!$key){
 							$return_var = new WP_Error( 'auth_fail_id', __( "Request was signed with incorrect key.", "pf" ) );
 						}
-						$return_var = true;
+						// $return_var = true;
 						return $return_var;
 					} catch ( \UnexpectedValueException $e ){
 						$return_var = new WP_Error( 'auth_fail_format', __( "Authentication key was not properly formated.", "pf" ) );
@@ -213,7 +213,7 @@ class NominateThisEndpoint implements HasActions {
 						if (!$key){
 							$return_var = new WP_Error( 'auth_fail_id', __( "Request was signed with incorrect key.", "pf" ) );
 						}
-						$return_var = true;
+						// $return_var = true;
 						return $return_var;
 					} catch ( \UnexpectedValueException $e ){
 						// var_dump($e, $_POST['user_key']);
