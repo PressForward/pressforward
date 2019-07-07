@@ -397,13 +397,12 @@ class StatsEndpoint implements HasActions {
 				$post = pressforward( 'controller.metas' )->attach_metas_by_use($post);
 				// $post->source_link = $this->metas->get_post_pf_meta( $post->ID, 'pf_source_link' );
 			}
-			$response->header( 'X-PF-PageRequested', (int) $page );
-			$response->header( 'X-WP-Total', (int) $q->found_posts );
-			$response->header( 'X-WP-TotalPages', (int) $q->max_num_pages );
 			$response = rest_ensure_response(
 				$posts
 			);
-
+			$response->header( 'X-PF-PageRequested', (int) $page );
+			$response->header( 'X-WP-Total', (int) $q->found_posts );
+			$response->header( 'X-WP-TotalPages', (int) $q->max_num_pages );
 			\ob_end_flush();
 			return $response;
 			// unencode via js with the html_entity_decode function we use elsewhere.
