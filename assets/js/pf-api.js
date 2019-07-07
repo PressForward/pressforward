@@ -143,6 +143,7 @@ wp.api.loadPromise.done(function () {
 									window.pf.stats.valid_posts.leaderboard[val.ID] = val;
 									window.pf.stats.valid_posts.flesch_kincaid_score_total += val.flesch_kincaid_score;
 									window.pf.stats.valid_posts.postCount += 1;
+
 								});
 								return false;
 							}
@@ -241,8 +242,8 @@ wp.api.loadPromise.done(function () {
 					window.pf.stats.sources.resultObj = {};
 					jQuery.each(
 						window.pf.stats.valid_posts.leaderboard,
-						function (index) {
-							var source = window.pf.stats.sources.source_link;
+						function (index, feedObject) {
+							var source = feedObject.source_link;
 							if (undefined === window.pf.stats.sources.resultObj[source]) {
 								window.pf.stats.sources.resultObj[source] = 1;
 							} else {
