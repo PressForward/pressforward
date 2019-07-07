@@ -336,9 +336,10 @@ class StatsEndpoint implements HasActions {
 	}
 
 	public function pf_posted( $request ) {
+		\ob_start();
 		if ( isset( $request['page'] ) ) {
 			$args = array();
-			if ( isset( $request['per_page'] ) && is_numeric($request['per_page']) ){
+			if ( isset( $request['per_page'] ) && is_numeric( $request['per_page'] ) ){
 				$per_page = intval( $request['per_page'] );
 				if ( $per_page > 100){
 					$per_page = 100;
@@ -351,7 +352,7 @@ class StatsEndpoint implements HasActions {
 				$posts_per_page = 40;
 			}
 			$args['posts_per_page'] = $posts_per_page;
-			if ( isset( $request['page'] ) && is_numeric($request['page']) ){
+			if ( isset( $request['page'] ) && is_numeric( $request['page'] ) ){
 				$page = intval( $request['page'] );
 				if ( $page < 1 ) {
 					$page = 1;
@@ -360,12 +361,15 @@ class StatsEndpoint implements HasActions {
 				$page = 1;
 			}
 			$args['paged'] = $page;
-			if ( isset( $request['offset'] ) && is_numeric($request['offset']) ){
+			if ( isset( $request['offset'] ) && is_numeric( $request['offset'] ) ){
 				$offset = intval( $request['offset'] );
 			} else {
-				$offset = 1;
+				$offset = 0;
 			}
-			$args['offset'] = $offset;
+			$offset_total = (($posts_per_page * ($page-1)) + $offset);
+			if ($offset === 0 || $offset_total < 1){
+				$args['offset'] = $offset_total;
+			}
 
 			$q    = $this->stats->stats_query_for_pf_published_posts( $args );
 
@@ -393,14 +397,14 @@ class StatsEndpoint implements HasActions {
 				$post = pressforward( 'controller.metas' )->attach_metas_by_use($post);
 				// $post->source_link = $this->metas->get_post_pf_meta( $post->ID, 'pf_source_link' );
 			}
-
+			$response->header( 'X-PF-PageRequested', (int) $page );
+			$response->header( 'X-WP-Total', (int) $q->found_posts );
+			$response->header( 'X-WP-TotalPages', (int) $q->max_num_pages );
 			$response = rest_ensure_response(
 				$posts
 			);
 
-			$response->header( 'X-WP-Total', (int) $q->found_posts );
-			$response->header( 'X-WP-TotalPages', (int) $q->max_num_pages );
-
+			\ob_end_flush();
 			return $response;
 			// unencode via js with the html_entity_decode function we use elsewhere.
 		}
