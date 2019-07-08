@@ -122,6 +122,19 @@ EOT;
 			$msg    = $this->pf_metrics_prompt_text();
 			$script = <<<EOT
 				jQuery( window ).load(function() {
+					(function(){
+						window.hidePFPrompt = function(){
+							console.log('prepare to close tracking query');
+							window.setTimeout(
+								function(){
+								jQuery('#wp-admin-bar-pf_alerter').hide();
+								jQuery('#pf_metrics_settings_alerter').hide();
+								return false;
+							},
+								1000
+							);
+							return false;
+						}
 					window.pf = window.pf || {};
 					window.pf.loadAdminPrompt = true;
 					if ( jQuery('.plugins-php').length > 0 ){
@@ -132,13 +145,7 @@ EOT;
 							"margin":" 14px 20px 0 0"
 						});
 						jQuery('.subsubsub').first().before(prompt);
-						window.hidePFPrompt = function(){
-							window.setTimeout(
-								function(){ jQuery('#pf_metrics_settings_alerter').hide(); return false; },
-								1000
-							);
-							return false;
-						}
+
 					}
 					console.log('PF Metrics Request');
 					jQuery('#pf_metrics_opt-in').click(function(){
@@ -181,6 +188,7 @@ EOT;
 						);
 						return false;
 					});
+				})();
 		});
 EOT;
 			echo '<script type="text/javascript">' . $script . '</script>';
@@ -191,6 +199,20 @@ EOT;
 		$msg      = $this->pf_metrics_prompt_text();
 		$script   = <<<EOT
 				window.pf = window.pf || {};
+						window.hidePFPrompt = function(){
+							console.log('prepare to close tracking query');
+							window.setTimeout(
+								function(){
+								jQuery('#wp-admin-bar-pf_alerter').hide();
+								jQuery('#pf_metrics_settings_alerter').hide();
+								return false;
+							},
+								1000
+							);
+							return false;
+						}
+		jQuery( window ).load(function() {
+			(function(){
 				if ( ( typeof window.pf.loadAdminPrompt == 'undefined' ) || true === window.pf.loadAdminPrompt || jQuery('.plugins-php').length < 1 ){
 					var prompt = jQuery('{$msg}');
 					prompt.hide();
@@ -256,13 +278,6 @@ EOT;
 					jQuery('#pf_metrics_alert').append(prompt);
 					jQuery('#wp-admin-bar-pf_alerter').mouseover(function(){ prompt.show(); });
 					jQuery('#wp-admin-bar-pf_alerter').mouseout(function(){ prompt.hide(); });
-					window.hidePFPrompt = function(){
-						window.setTimeout(
-							function(){ jQuery('#wp-admin-bar-pf_alerter').hide(); return false; },
-							1500
-						);
-						return false;
-					}
 
 					console.log('PF Metrics Request');
 					jQuery('#pf_metrics_opt-in').click(function(){
@@ -306,6 +321,8 @@ EOT;
 						return false;
 					});
 				}
+				})();
+				});
 EOT;
 		$response = array(
 			'what'         => 'pressforward',
