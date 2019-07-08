@@ -69,13 +69,18 @@ function pf_file_get_html( $url, $use_include_path = false, $context = null, $of
 	$dom = new pf_simple_html_dom( null, $lowercase, $forceTagsClosed, $target_charset, $defaultBRText );
 	// For sourceforge users: uncomment the next line and comment the retreive_url_contents line 2 lines down if it is not already done.
 	// use wp_remote_get() instead of file_get_contents()
-	$contentsObj = wp_remote_get( $url, array( 'timeout' => '30' ) );
+	$url = remove_query_arg( 'utm_term', $url );
+	$contents = wp_cache_get( $url, 'pressforward_external_pages' );
+	if ( false === $contents ) {
+		$contentsObj = wp_remote_get( $url, array( 'timeout' => '5' ) );
+		if ( (is_wp_error( $contentsObj )) ) {
+			return false;
+		}
 
-	if ( (is_wp_error( $contentsObj )) ) {
-		return false;
+		$contents = wp_remote_retrieve_body( $contentsObj );
+		wp_cache_set( $url, $contents, 'pressforward_external_pages' );
 	}
 
-	$contents = $contentsObj['body'];
 	// Paperg - use our own mechanism for getting the contents as we want to control the timeout.
 	// $contents = retrieve_url_contents($url);
 	if ( (empty( $contents )) ) {

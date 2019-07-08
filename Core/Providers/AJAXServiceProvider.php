@@ -6,6 +6,8 @@ use Intraxia\Jaxion\Assets\Register as Assets;
 // use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 
+// use PressForward\Controllers\PF_JWT as PF_JWT;
+
 use PressForward\Core\AJAX\ConfigurationAJAX;
 use PressForward\Core\AJAX\ItemsAJAX;
 use PressForward\Core\AJAX\SourceAJAX;
@@ -19,7 +21,7 @@ class AJAXServiceProvider extends ServiceProvider {
 		$container->share(
 			'ajax.configuration',
 			function( $container ) {
-				return new ConfigurationAJAX( $container->fetch( 'controller.metas' ), $container->fetch( 'controller.items' ), $container->fetch( 'schema.feed_item' ), $container->fetch( 'controller.users' ) );
+				return new ConfigurationAJAX( $container->fetch( 'controller.metas' ), $container->fetch( 'controller.items' ), $container->fetch( 'schema.feed_item' ), $container->fetch( 'controller.users' ), $container->fetch( 'controller.jwt' ) );
 			}
 		);
 
