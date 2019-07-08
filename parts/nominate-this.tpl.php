@@ -12,6 +12,7 @@ if ( 'as_paragraph' == $context ) {
 				<p class="description"><?php _e( 'If your bookmarks toolbar is hidden: copy the code below, open your Bookmarks manager, create new bookmark, type Press This into the name field and paste the code into the URL field.', 'pf' ); ?></p>
 				<p><textarea rows="5" cols="120" readonly="readonly"><?php echo htmlspecialchars( pf_get_shortcut_link() ); ?></textarea></p>
 			</div><br />
+<!--
 			<div>
 			<h3><?php _e( 'Nominate This Extension', 'pf' ); ?></h3>
 			<p><?php _e( 'Nominate This now has an extension for Chrome with additional functionality.', 'pf' );?></p>
@@ -25,6 +26,7 @@ if ( 'as_paragraph' == $context ) {
 			</p>
 			</div>
 		</div>
+-->
 <?php
 } elseif ( 'as_feed' == $context ) {
 	?>

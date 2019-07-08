@@ -215,7 +215,7 @@ class NominateThisEndpoint implements HasActions {
 						} else {
 							$return_var = true;
 						}
-						// $return_var = true;
+						$return_var = false;
 						return $return_var;
 					} catch ( \UnexpectedValueException $e ){
 						// var_dump($e, $_POST['user_key']);
