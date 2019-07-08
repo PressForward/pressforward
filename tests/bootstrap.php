@@ -224,6 +224,7 @@ if (PHP_VERSION < 7){
 		}
 	}
 }
+
 function _manually_load_plugin() {
 	require __DIR__ . '/../pressforward.php';
 	require __DIR__ . '/includes/install.php';
