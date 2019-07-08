@@ -9,7 +9,7 @@
 * See URLResolver.php for full license text
 */
 
-if ( count( $argv ) != 2 || ! preg_match( '/^https?:\/\//i', $argv[1] ) ) {
+if ( is_array( $argv ) && ( count( $argv ) != 2 || ! preg_match( '/^https?:\/\//i', $argv[1] ) ) ) {
 	print "You must supply a URL:\n  ./resolve_url.php http://goo.gl/0GMP1\n";
 	exit;
 }

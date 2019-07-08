@@ -203,21 +203,23 @@ class NominateThisEndpoint implements HasActions {
 				'permission_callback' => function ( $request ) {
 					// return true;
 					$return_var = false;
-					$request_params = $_POST;
+					$request_params = $request->get_params();
 					// var_dump(hex2bin(trim($_POST['user_key']))); die();
 					// var_dump($request->get_json_params()); die();
 					try {
-						$key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin(trim($_POST['user_key'])));
+						$key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin(trim($request_params['user_key'])));
 						// pf_log('Decode attempt 2 on');
 						// pf_log($key);
 						if (!$key){
 							$return_var = new WP_Error( 'auth_fail_id', __( "Request was signed with incorrect key.", "pf" ) );
+						} else {
+							$return_var = true;
 						}
 						// $return_var = true;
 						return $return_var;
 					} catch ( \UnexpectedValueException $e ){
 						// var_dump($e, $_POST['user_key']);
-						$return_var = new WP_Error( 'auth_fail_format', __( "Authentication key was not properly formated. ".$_POST['user_key'], "pf" ) );
+						$return_var = new WP_Error( 'auth_fail_format', __( "Authentication key was not properly formated. ".$request_params['user_key'], "pf" ) );
 					} catch ( \InvalidArgumentException $e ){
 						$return_var = new WP_Error( 'auth_fail_key', __( "Authentication key was not properly supplied.", "pf" ) );
 					} catch ( \DomainException $e ){
@@ -229,6 +231,9 @@ class NominateThisEndpoint implements HasActions {
 							return $return_var;
 						}
 					}
+					// var_dump($request->get_params());
+					// var_dump($return_var); die();
+					return $return_var;
 
 				},
 				'priority'  => 10,
@@ -342,11 +347,37 @@ class NominateThisEndpoint implements HasActions {
 
 	public function handle_nomination_submission( $request ) {
 		// Already authorized at an upper API level.
-		// var_dump('Test: ', $request->get_body()); die();
 		// return esc_html( implode( $_REQUEST ) );
 		// $_POST = $request->get_json_params();
-		$user_id = pressforward('controller.jwt')->get_user_by_key($_POST['user_key']);
+		pf_log('Nomination Submitted');
+		$_POST = array_merge($_POST, $request->get_params());
+		$private_key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin(trim($_POST['user_key'])));
+		//$pk_portions = explode('.', $_POST['verify']);
+		$verify = pressforward('controller.jwt')->decode_with_jwt(trim($_POST['verify']), $private_key);
+		if ( ( false !== $verify ) && property_exists( $verify, 'date' ) ) {
+			$date_obj = \date_create( '@' . ( $verify->date ) );
+			$current_date_obj = new \DateTime();
+			// 15 minutes
+			$allowable_diff = new \DateInterval( 'PT15M' );
+			$date_obj->add( $allowable_diff );
+			if ( $date_obj < $current_date_obj ) {
+				// Too old of a message
+				//var_dump( 'bad date' );
+				return '{"error": "bad date", "date_sent":"'.$date_obj->format('Y-m-d H:i:s').'", "date_internal":"'.$current_date_obj->format('Y-m-d H:i:s').'"}';
+			}
+		} else {
+			return '{ error: "verification not available"}'.' pk:'.$private_key.' v:'.$verify.' vr:'.$_POST['verify'] . '  uk: '.hex2bin(trim($_POST['user_key'])). ' pk portions:'. $pk_portions[0]. '    '. $pk_portions[1];
+		}
+
+		$user_id = pressforward('controller.jwt')->get_user_by_key( $_POST['user_key'] );
 		wp_set_current_user($user_id);
+		$decrypted_data = pressforward('controller.jwt')->decode_with_jwt(trim($_POST['data']), $private_key);
+		if ( false === $decrypted_data ){
+			return '{ "error": "bad data" }';
+		}
+		pf_log('Nomination Data received: ');
+		pf_log($decrypted_data);
+		$_POST = array_merge( $_POST, (array) $decrypted_data );
 		$_POST['post_title'] = urldecode($_POST['post_title']);
 		$_POST['content'] = urldecode($_POST['content']);
 		$_POST['publish'] = urldecode($_POST['publish']);
@@ -355,6 +386,7 @@ class NominateThisEndpoint implements HasActions {
 		$return_object->id = $id;
 		$response = new \WP_REST_Response($return_object);
 		$response->header( 'Content-Type', 'application/json' );
+		// var_dump('Test: ', $request->get_body());
 		return rest_ensure_response($response);
 		// return $id;
 		// return new WP_REST_Response($return_object);
@@ -385,7 +417,8 @@ EOF;
 		echo 'window.pfSiteData = {}; ';
 		echo 'window.pfSiteData.site_url = "'. \get_site_url() . '"; ';
 		echo 'window.pfSiteData.plugin_url = "'. plugin_dir_url( dirname(dirname(__FILE__)) ) . '"; ';
-		echo 'window.pfSiteData.submit_endpoint = "' . trailingslashit(\get_site_url()) . 'wp-json\/' . $this->api_base['base_namespace'] . $this->api_base['version'] . '/' . $this->api_base['submit'] . '"; ';
+		echo 'window.pfSiteData.submit_endpoint = "' . trailingslashit(\get_site_url()) . 'wp-json/' . $this->api_base['base_namespace'] . $this->api_base['version'] . '/' . $this->api_base['submit'] . '"; ';
+		echo 'window.pfSiteData.categories_endpoint = "'. trailingslashit(\get_site_url()) . 'wp-json/wp/v2/categories"; ';
 		echo 'window.pfSiteData.fontFace = "' . $fontFaceJS . '"';
 		include_once PF_ROOT . '/assets/js/jws.js';
 		include_once PF_ROOT . '/assets/js/jwt.js';

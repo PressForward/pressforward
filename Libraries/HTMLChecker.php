@@ -43,9 +43,11 @@ class HTMLChecker {
 		preg_match_all( '#</([a-z]+)>#iU', $html, $result );
 
 		$closedtags = $result[1];
-
-		$len_opened = count( $openedtags );
-
+		if ( is_array( $openedtags ) ){
+			$len_opened = count( $openedtags );
+		} else {
+			$len_opened = 0;
+		}
 		preg_match_all( '#<(em|strong)*/>#', $html, $resultc );
 		$malformedtags = $resultc[1];
 		// print_r('Count <br />');
