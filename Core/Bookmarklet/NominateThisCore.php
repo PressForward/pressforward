@@ -30,7 +30,6 @@ class NominateThisCore implements HasActions {
 			),
 		);
 	}
-
 	/**
 	 * Registers meta boxes for the Nominate This interface.
 	 */
@@ -124,9 +123,12 @@ class NominateThisCore implements HasActions {
 			</p>
 			<?php endif;
 endif;
+			// @deprecated 5.2.2 - Do not use this hook, use the following hook. This hook added to support existing plugins that use it.
+			do_action( 'nominate_this_sidebar_top' );
 			do_action( 'nominate_this_sidebar_head' );
 		?>
-
+		<!-- Addressing things that come in under old action -->
+		<script>jQuery('.postbox .postbox').insertAfter(jQuery('.postbox').first());</script>
 		<?php
 	}
 
