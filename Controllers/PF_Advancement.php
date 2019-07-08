@@ -166,6 +166,8 @@ class PF_Advancement implements Advance_System, HasActions {
 			}
 			wp_set_object_terms( $post_id, $categories, 'category', false );
 		}
+
+		do_action( 'establish_pf_metas', $post_id, $_POST );
 	}
 
 	/**
