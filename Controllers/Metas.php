@@ -1014,6 +1014,9 @@ class Metas implements HasFilters, HasActions {
 		$meta = $this->meta_interface->get_meta( $id, $field, $single );
 		if ( $serialized ) {
 			if ( empty( $meta ) || ! array_key_exists( $key, $meta ) ) {
+				if ( !is_array( $meta ) ) {
+					$meta = [];
+				}
 				$old_meta     = $this->meta_interface->get_meta( $id, $key, $single );
 				$meta[ $key ] = $old_meta;
 				$this->meta_interface->update_meta( $id, $field, $meta );
