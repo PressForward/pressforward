@@ -607,6 +607,11 @@ class Forward_Tools {
 		$nomination_id = $this->bookmarklet_to_nomination( $item_id, $post );
 		pf_log( $nomination_id );
 		$post_id = $this->nomination_to_last_step( $item_id, $nomination_id, false );
+
+		$current_user = wp_get_current_user();
+		$user_id      = $current_user->ID;
+		$result = pressforward('utility.relate')->basic_relate( 'draft', $nomination_id, 'off', $user_id );
+
 		if (isset($_POST['post_category']) && !empty($_POST['post_category']) && !is_array($_POST['post_category'])){
 			$categories = explode(',', $_POST['post_category']);
 			if ( is_array( $categories ) && count( $categories ) > 0) {
