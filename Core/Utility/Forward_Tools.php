@@ -580,6 +580,9 @@ class Forward_Tools {
 			// $this->metas->handle_item_tags( $post_ID, $tags );
 			$nominators = $this->apply_nomination_data( $post_ID );
 			$this->metas->update_pf_meta( $post_ID, 'nominator_array', $nominators );
+			if ( !empty( $_POST['item_author'] ) ) {
+				pressforward( 'controller.metas' )->update_pf_meta( $post_ID, 'item_author', \sanitize_text_field($_POST['item_author']) );
+			}
 			return $post_ID;
 		} else {
 			// Do something with the returned ID.
@@ -591,9 +594,9 @@ class Forward_Tools {
 			// If this is a nomination but has not yet been published, assume bookmarklet has best version of content
 			if (false != $post_check){
 				$this->item_interface->update_post( $post );
-				if ( !empty( $_POST['item_author'] ) ) {
-					pressforward( 'controller.metas' )->update_pf_meta( $nom_and_post_check, 'item_author', \sanitize_text_field($_POST['item_author']) );
-				}
+			}
+			if ( !empty( $_POST['item_author'] ) ) {
+				pressforward( 'controller.metas' )->update_pf_meta( $nom_and_post_check, 'item_author', \sanitize_text_field($_POST['item_author']) );
 			}
 			return $nom_and_post_check;
 		}
