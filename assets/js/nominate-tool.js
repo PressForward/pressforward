@@ -278,7 +278,7 @@
 						c++;
 						return promiseChain.then(function () { return buildCategoryElement(container, value) });;
 						// still hitting race condition here. Solve with reduce a la https://decembersoft.com/posts/promises-in-serial-with-array-reduce/ ?
-					}, Promise.resolve([])).then(arrayOfResults => {
+					}, Promise.resolve([])).then(function (arrayOfResults) {
 						resolve({ totalPages: catPages });
 					});
 					// Promise.all(promiseSet).then((data) => { resolve({ totalPages: catPages }); });
@@ -468,7 +468,7 @@ window.pfntSubmit = function (publish) {
 	}
 	var urlEncodedData = "";
 	var urlEncodedDataPairs = [];
-	Object.keys(window.pfnt.submitObject).forEach((key) => {
+	Object.keys(window.pfnt.submitObject).forEach(function (key) {
 		if (window.pfnt.submitObject[key]) {
 			if ('string' === typeof window.pfnt.submitObject[key]) {
 				var value = window.pfnt.submitObject[key].trim();
