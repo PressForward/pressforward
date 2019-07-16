@@ -82,6 +82,22 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 
 == Changelog ==
 
+= 5.2.2 =
+
+* Incorporated supporting authentication and API libraries for a future PressForward extension.
+* Built out authentication flow to transmit data through the PF API with full data encryption.
+* Fixed support for user meta to match standard WordPress use.
+* Failed OpenGraph fetch now has a fallback.
+* Support feeds without GUIDs.
+* Items nominated with the bookmarklet now have their set author trump the author data set from mirrored feed items.
+* Assure we have backwards compatibility for the API with PHP 5.3
+* Fixing our filtering of Post Meta to respect the $single argument.
+* Add expected WordPress pagination headers to the API response.
+* A wide variety of small fixes to assure unit testing works from PHP 5.3 through PHP 7.2
+* Updated our Text Stats library to match backwards compatibility expectations.
+* Allow current version of Nominate This to support the standard WordPress Metabox API.
+* Bookmarklet use of Send to Draft/Publish now properly shows as drafted in the nomination panel.
+
 = 5.1.1 =
 * Changed when source_url is fetched.
 * Optimized the comment query.
