@@ -97,6 +97,7 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 * Updated our Text Stats library to match backwards compatibility expectations.
 * Allow current version of Nominate This to support the standard WordPress Metabox API.
 * Bookmarklet use of Send to Draft/Publish now properly shows as drafted in the nomination panel.
+* Allow a feed to have a default author set.
 
 = 5.1.1 =
 * Changed when source_url is fetched.
