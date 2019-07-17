@@ -1138,7 +1138,7 @@ class Feeds implements HasActions, HasFilters {
 		$posts = $this->get( array( 'url' => $url ) );
 		pf_log( 'Checked for feed ' . $url );
 		pf_log( $posts );
-		if ( count( $posts ) > 0 ) {
+		if ( is_array( $posts ) && count( $posts ) > 0 ) {
 			return $posts;
 		} else {
 			return false;

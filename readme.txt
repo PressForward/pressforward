@@ -3,8 +3,8 @@ Contributors: PressForward, AramZS, boonebgorges, lmrhody, asmmap, regan008, joa
 Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 3.0.1
-Tested up to: 4.9.4
-Stable tag: 5.1.1
+Tested up to: 5.2.2
+Stable tag: 5.2.2
 License: AGPLv3
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -81,6 +81,22 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+
+= 5.2.2 =
+
+* Incorporated supporting authentication and API libraries for a future PressForward extension.
+* Built out authentication flow to transmit data through the PF API with full data encryption.
+* Fixed support for user meta to match standard WordPress use.
+* Failed OpenGraph fetch now has a fallback.
+* Support feeds without GUIDs.
+* Items nominated with the bookmarklet now have their set author trump the author data set from mirrored feed items.
+* Assure we have backwards compatibility for the API with PHP 5.3
+* Fixing our filtering of Post Meta to respect the $single argument.
+* Add expected WordPress pagination headers to the API response.
+* A wide variety of small fixes to assure unit testing works from PHP 5.3 through PHP 7.2
+* Updated our Text Stats library to match backwards compatibility expectations.
+* Allow current version of Nominate This to support the standard WordPress Metabox API.
+* Bookmarklet use of Send to Draft/Publish now properly shows as drafted in the nomination panel.
 
 = 5.1.1 =
 * Changed when source_url is fetched.

@@ -266,6 +266,14 @@ class StatsEndpoint implements HasActions {
 								}
 							},
 						),
+						'per_page' => array(
+							'default' => 40,
+							'sanitize_callback' => 'absint',
+						),
+						'offset' => array(
+							'required'          => false,
+							'sanitize_callback' => 'intval',
+						),
 					),
 					'permission_callback' => function () {
 						return true; // current_user_can( 'edit_others_posts' );
@@ -328,11 +336,41 @@ class StatsEndpoint implements HasActions {
 	}
 
 	public function pf_posted( $request ) {
+		\ob_start();
 		if ( isset( $request['page'] ) ) {
-			// \rest_ensure_response(
-			$args = array(
-				'paged' => $request['page'],
-			);
+			$args = array();
+			if ( isset( $request['per_page'] ) && is_numeric( $request['per_page'] ) ){
+				$per_page = intval( $request['per_page'] );
+				if ( $per_page > 100){
+					$per_page = 100;
+				}
+				if ( $per_page < 1 ) {
+					$per_page = 1;
+				}
+				$posts_per_page = $per_page;
+			} else {
+				$posts_per_page = 40;
+			}
+			$args['posts_per_page'] = $posts_per_page;
+			if ( isset( $request['page'] ) && is_numeric( $request['page'] ) ){
+				$page = intval( $request['page'] );
+				if ( $page < 1 ) {
+					$page = 1;
+				}
+			} else {
+				$page = 1;
+			}
+			$args['paged'] = $page;
+			if ( isset( $request['offset'] ) && is_numeric( $request['offset'] ) ){
+				$offset = intval( $request['offset'] );
+			} else {
+				$offset = 0;
+			}
+			$offset_total = (($posts_per_page * ($page-1)) + $offset);
+			if ($offset === 0 || $offset_total < 1){
+				$args['offset'] = $offset_total;
+			}
+
 			$q    = $this->stats->stats_query_for_pf_published_posts( $args );
 
 			$posts = $q->posts;
@@ -349,18 +387,24 @@ class StatsEndpoint implements HasActions {
 				$post->flesch_kincaid_score  = $reading_score;
 				$item_link                   = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_link' );
 				$url_parts                   = parse_url( $item_link );
+				unset($post->post_password);
 				if ( ! empty( $url_parts ) && isset( $url_parts['host'] ) ) {
 					$post->source_link = $url_parts['host'];
 				} else {
 					$post->source_link = 'No Source Found';
 				}
 				$post->nominators = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'nominator_array' );
+				$post = pressforward( 'controller.metas' )->attach_metas_by_use($post);
 				// $post->source_link = $this->metas->get_post_pf_meta( $post->ID, 'pf_source_link' );
 			}
-
-			return rest_ensure_response(
+			$response = rest_ensure_response(
 				$posts
 			);
+			$response->header( 'X-PF-PageRequested', (int) $page );
+			$response->header( 'X-WP-Total', (int) $q->found_posts );
+			$response->header( 'X-WP-TotalPages', (int) $q->max_num_pages );
+			\ob_end_flush();
+			return $response;
 			// unencode via js with the html_entity_decode function we use elsewhere.
 		}
 		return new \WP_Error( 'rest_invalid', esc_html__( 'The page parameter is required.', 'pf' ), array( 'status' => 400 ) );

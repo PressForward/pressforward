@@ -9,4 +9,5 @@ interface System {
 	public function apply_filters( $tag, $values );
 	public function add_action( $tag, $value );
 	public function get_the_guid( $id );
+	public function get_site_info( $info_type );
 }

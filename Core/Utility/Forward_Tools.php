@@ -1,4 +1,5 @@
 <?php
+
 namespace PressForward\Core\Utility;
 
 use PressForward\Interfaces\Items as Items;
@@ -579,11 +580,24 @@ class Forward_Tools {
 			// $this->metas->handle_item_tags( $post_ID, $tags );
 			$nominators = $this->apply_nomination_data( $post_ID );
 			$this->metas->update_pf_meta( $post_ID, 'nominator_array', $nominators );
+			if ( !empty( $_POST['item_author'] ) ) {
+				pressforward( 'controller.metas' )->update_pf_meta( $post_ID, 'item_author', \sanitize_text_field($_POST['item_author']) );
+			}
 			return $post_ID;
 		} else {
 			// Do something with the returned ID.
 			// Increment the nomination count if the nomination exists.
 			$this->nomination_user_transition_check( $nom_and_post_check, $item_id );
+			// Update the existing post with values from the bookmarklet, which is assumed more accurate.
+			$post['ID'] = $nom_and_post_check;
+			$post_check = $this->is_a_pf_type( $item_id, 'post' );
+			// If this is a nomination but has not yet been published, assume bookmarklet has best version of content
+			if (false != $post_check){
+				$this->item_interface->update_post( $post );
+			}
+			if ( !empty( $_POST['item_author'] ) ) {
+				pressforward( 'controller.metas' )->update_pf_meta( $nom_and_post_check, 'item_author', \sanitize_text_field($_POST['item_author']) );
+			}
 			return $nom_and_post_check;
 		}
 
@@ -595,7 +609,20 @@ class Forward_Tools {
 		}
 		$nomination_id = $this->bookmarklet_to_nomination( $item_id, $post );
 		pf_log( $nomination_id );
-		return $this->nomination_to_last_step( $item_id, $nomination_id, false );
+		$post_id = $this->nomination_to_last_step( $item_id, $nomination_id, false );
+
+		$current_user = wp_get_current_user();
+		$user_id      = $current_user->ID;
+		$result = pressforward('utility.relate')->basic_relate( 'draft', $nomination_id, 'off', $user_id );
+
+		if (isset($_POST['post_category']) && !empty($_POST['post_category']) && !is_array($_POST['post_category'])){
+			$categories = explode(',', $_POST['post_category']);
+			if ( is_array( $categories ) && count( $categories ) > 0) {
+				wp_set_post_categories( $post_id, $categories, false );
+				wp_set_post_categories( $nomination_id, $categories, false );
+			}
+		}
+		return $post_id;
 	}
 
 	public function is_a_pf_type( $item_id, $post_type = false, $update = false ) {

@@ -30,6 +30,11 @@ class OPML_reader {
 		// $this->get_OPML_obj();
 	}
 
+	public function build_from_string( $string_opml ){
+		$file = simplexml_load_string( $string_opml );
+		$this->opml_file = $file;
+	}
+
 
 	/**
 	 * Opens the OPML file

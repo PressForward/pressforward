@@ -1,19 +1,41 @@
 <?php
 namespace PressForward\Controllers;
 
-// use Intraxia\Jaxion\Contract\Core\HasActions;
+use Intraxia\Jaxion\Contract\Core\HasActions;
 use PressForward\Interfaces\System;
 use URLResolver;
 /**
  * Readability stuff
  */
 
-class HTTPTools {
+class HTTPTools implements HasActions {
 
 	function __construct( URLResolver $resolver, System $system, Metas $meta ) {
 		$this->url_resolver = $resolver;
 		$this->system       = $system;
 		$this->meta         = $meta;
+	}
+
+	public function action_hooks() {
+		$actions = array(
+			array(
+				'hook'     => 'init',
+				'method'   => 'register_non_persistent_cache_groups',
+				'priority' => 10
+			),
+		);
+		return $actions;
+	}
+
+	/**
+	 * Register non-persistent cache group for external pages.
+	 *
+	 * We cache external URI fetches, but only for a single pageload.
+	 */
+	public function register_non_persistent_cache_groups() {
+		wp_cache_add_non_persistent_groups( array(
+			'pressforward_external_pages',
+		) );
 	}
 
 	public function resolve_source_url( $url ) {

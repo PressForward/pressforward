@@ -771,3 +771,7 @@ Ref:
 
 - Metadata icon - https://thenounproject.com/term/metadata/38248/
 - 
+
+- 93 issues to check through 
+
+// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Content_scripts

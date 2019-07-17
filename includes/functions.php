@@ -122,6 +122,7 @@ function pf_get_shortcut_link() {
 
 	return apply_filters( 'shortcut_link', $link );
 
+
 }
 
 /**
@@ -136,6 +137,8 @@ function pf_get_shortcut_link() {
  */
 function pf_nomthis_bookmarklet() {
 	//get_site_url(null, 'wp-json/'
+	$user = wp_get_current_user();
+	$user_id = $user->ID;
 	$link = "javascript:
 				var d=document,
 				w=window,
@@ -143,11 +146,13 @@ function pf_nomthis_bookmarklet() {
 				k=d.getSelection,
 				x=d.selection,
 				s=(e?e():(k)?k():(x?x.createRange().text:0)),
-				f='" . rest_url().pressforward('api.nominatethis')->endpoint_for_nominate_this_endpoint . "',
 				l=d.location,
 				e=encodeURIComponent,
-				u=f+'?u='+e(l.href)+'&t='+e(d.title)+'&s='+e(s)+'&v=4';
-				a=function(){if(!w.open(u,'t','toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=620'))l.href=u;};
+				ku='".bin2hex(pressforward('controller.jwt')->get_a_user_public_key())."',
+				ki='".get_user_meta($user_id, 'pf_jwt_private_key', true)."',
+				p='" . rest_url().pressforward('api.nominatethis')->endpoint_for_nominate_this_script . "?k='+ku,
+				pe=document.createElement('script'),
+				a=function(){pe.src=p;document.getElementsByTagName('head')[0].appendChild(pe);};
 				if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0); else a();
 				void(0)";
 
@@ -559,7 +564,7 @@ function pf_noms_filter( $text ) {
 
 	$excerpt_length = 310;
 	$words = explode( ' ', $text, $excerpt_length + 1 );
-	if ( count( $words ) > $excerpt_length ) {
+	if ( is_array( $words ) && ( count( $words ) > $excerpt_length ) ) {
 		array_pop( $words );
 		array_push( $words, '...' );
 		$text = implode( ' ', $words );
@@ -589,7 +594,7 @@ function pf_noms_excerpt( $text ) {
 
 	$excerpt_length = 310;
 	$words = explode( ' ', $text, $excerpt_length + 1 );
-	if ( count( $words ) > $excerpt_length ) {
+	if ( is_array( $words ) && ( count( $words ) > $excerpt_length ) ) {
 		array_pop( $words );
 		array_push( $words, '...' );
 		$text = implode( ' ', $words );

@@ -14,9 +14,11 @@ use PressForward\Controllers\PF_to_WP_System as PF_to_WP_System;
 use PressForward\Controllers\PF_Advancement as PF_Advancement;
 use PressForward\Controllers\Metas;
 use PressForward\Controllers\PF_Loops;
+use PressForward\Controllers\PF_JWT;
 use PressForward\Controllers\PF_Readability;
 use PressForward\Controllers\HTTPTools;
 use PressForward\Controllers\Stats;
+
 
 class ControllerServiceProvider extends ServiceProvider {
 
@@ -82,6 +84,13 @@ class ControllerServiceProvider extends ServiceProvider {
 			'controller.items',
 			function() {
 				return new PF_to_WP_Posts();
+			}
+		);
+
+		$container->share(
+			'controller.jwt',
+			function( $container ) {
+				return new PF_JWT( $container->fetch( 'controller.users' ), $container->fetch( 'controller.system' ) );
 			}
 		);
 

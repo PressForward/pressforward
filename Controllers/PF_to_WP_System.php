@@ -26,5 +26,8 @@ class PF_to_WP_System implements System {
 	public function get_the_guid( $id ) {
 		return get_the_guid( $id );
 	}
+	public function get_site_info( $info_type ){
+		return get_bloginfo( $info_type );
+	}
 
 }

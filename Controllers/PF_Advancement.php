@@ -35,6 +35,13 @@ class PF_Advancement implements Advance_System, HasActions {
 		return get_option( PF_SLUG . '_draft_post_type', 'post' );
 	}
 
+	public function create_terms($tag_name, $taxonomy = 'post_tag'){
+		if ( $id = term_exists($tag_name, $taxonomy) )
+			return $id;
+
+		return wp_insert_term($tag_name, $taxonomy);
+	}
+
 	public function inform_of_nomination(){
 		$admin_email = get_option( 'pf_nomination_send_email', array() );
 		if($admin_email) {
@@ -75,7 +82,7 @@ class PF_Advancement implements Advance_System, HasActions {
 		}
 		foreach ( $item_tags as $key => $tag ) {
 			$tag      = trim( $tag );
-			$tag_info = wp_create_term( $tag );
+			$tag_info = $this->create_terms( $tag );
 			if ( ! is_wp_error( $tag_info ) ) {
 				$tag_id = intval( $tag_info['term_id'] );
 				wp_set_object_terms( $new_post, $tag_id, 'post_tag', true );
@@ -159,6 +166,8 @@ class PF_Advancement implements Advance_System, HasActions {
 			}
 			wp_set_object_terms( $post_id, $categories, 'category', false );
 		}
+
+		do_action( 'establish_pf_metas', $post_id, $_POST );
 	}
 
 	/**

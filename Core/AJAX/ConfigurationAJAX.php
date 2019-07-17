@@ -6,6 +6,7 @@ use PressForward\Controllers\Metas;
 use PressForward\Controllers\PF_to_WP_Posts;
 use PressForward\Core\Schema\Feed_Items;
 use PressForward\Interfaces\SystemUsers as SystemUsers;
+use PressForward\Controllers\PF_JWT as PF_JWT;
 
 use WP_Ajax_Response;
 
@@ -13,11 +14,12 @@ class ConfigurationAJAX implements HasActions {
 
 	protected $basename;
 
-	function __construct( Metas $metas, PF_to_WP_Posts $posts, Feed_Items $items, SystemUsers $user_interface ) {
+	function __construct( Metas $metas, PF_to_WP_Posts $posts, Feed_Items $items, SystemUsers $user_interface, PF_JWT $pf_jwt ) {
 		$this->metas          = $metas;
 		$this->posts          = $posts;
 		$this->items          = $items;
 		$this->user_interface = $user_interface;
+		$this->pf_jwt         = $pf_jwt;
 				add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed' ) );
 	}
 
@@ -48,6 +50,11 @@ class ConfigurationAJAX implements HasActions {
 			array(
 				'hook'     => 'admin_head',
 				'method'   => 'pf_metrics_settings_box',
+				'priority' => 10,
+			),
+			array(
+				'hook'     => 'wp_ajax_regenerate_user_keys',
+				'method'   => 'regenerate_user_keys',
 				'priority' => 10,
 			),
 		);
@@ -115,6 +122,19 @@ EOT;
 			$msg    = $this->pf_metrics_prompt_text();
 			$script = <<<EOT
 				jQuery( window ).load(function() {
+					(function(){
+						window.hidePFPrompt = function(){
+							console.log('prepare to close tracking query');
+							window.setTimeout(
+								function(){
+								jQuery('#wp-admin-bar-pf_alerter').hide();
+								jQuery('#pf_metrics_settings_alerter').hide();
+								return false;
+							},
+								1000
+							);
+							return false;
+						}
 					window.pf = window.pf || {};
 					window.pf.loadAdminPrompt = true;
 					if ( jQuery('.plugins-php').length > 0 ){
@@ -125,13 +145,7 @@ EOT;
 							"margin":" 14px 20px 0 0"
 						});
 						jQuery('.subsubsub').first().before(prompt);
-						window.hidePFPrompt = function(){
-							window.setTimeout(
-								function(){ jQuery('#pf_metrics_settings_alerter').hide(); return false; },
-								1000
-							);
-							return false;
-						}
+
 					}
 					console.log('PF Metrics Request');
 					jQuery('#pf_metrics_opt-in').click(function(){
@@ -174,6 +188,7 @@ EOT;
 						);
 						return false;
 					});
+				})();
 		});
 EOT;
 			echo '<script type="text/javascript">' . $script . '</script>';
@@ -184,6 +199,20 @@ EOT;
 		$msg      = $this->pf_metrics_prompt_text();
 		$script   = <<<EOT
 				window.pf = window.pf || {};
+						window.hidePFPrompt = function(){
+							console.log('prepare to close tracking query');
+							window.setTimeout(
+								function(){
+								jQuery('#wp-admin-bar-pf_alerter').hide();
+								jQuery('#pf_metrics_settings_alerter').hide();
+								return false;
+							},
+								1000
+							);
+							return false;
+						}
+		jQuery( window ).load(function() {
+			(function(){
 				if ( ( typeof window.pf.loadAdminPrompt == 'undefined' ) || true === window.pf.loadAdminPrompt || jQuery('.plugins-php').length < 1 ){
 					var prompt = jQuery('{$msg}');
 					prompt.hide();
@@ -249,13 +278,6 @@ EOT;
 					jQuery('#pf_metrics_alert').append(prompt);
 					jQuery('#wp-admin-bar-pf_alerter').mouseover(function(){ prompt.show(); });
 					jQuery('#wp-admin-bar-pf_alerter').mouseout(function(){ prompt.hide(); });
-					window.hidePFPrompt = function(){
-						window.setTimeout(
-							function(){ jQuery('#wp-admin-bar-pf_alerter').hide(); return false; },
-							1500
-						);
-						return false;
-					}
 
 					console.log('PF Metrics Request');
 					jQuery('#pf_metrics_opt-in').click(function(){
@@ -299,6 +321,8 @@ EOT;
 						return false;
 					});
 				}
+				})();
+				});
 EOT;
 		$response = array(
 			'what'         => 'pressforward',
@@ -444,6 +468,29 @@ EOT;
 
 	public function reset_feed() {
 		pressforward( 'schema.feed_item' )->reset_feed();
+		die();
+	}
+
+	public function regenerate_user_keys() {
+		ob_start();
+		$user_public_key = \bin2hex($this->pf_jwt->get_a_user_public_key( false, true ));
+		$user_private_key = $this->pf_jwt->get_a_user_private_key( false, true );
+		$the_user = $this->user_interface->get_current_user();
+		$response    = array(
+			'what'         => 'pressforward',
+			'action'       => 'pf_ajax_regenerate_user_keys',
+			'id'           => $the_user->ID,
+			'data'         => (string) '{ ku: "' . $user_public_key . '", ki: "' . $user_private_key . '" }',
+			'supplemental' => array(
+				'buffered' => ob_get_contents(),
+				'setting'  => array( 'public_key', 'private_key' ),
+				'keygen'   => 'jwt',
+			),
+		);
+		wp_send_json( array( 'ku' => $user_public_key, 'ki' => $user_private_key ) );
+		// $xmlResponse = new WP_Ajax_Response( $response );
+		// $xmlResponse->send();
+		ob_end_clean();
 		die();
 	}
 

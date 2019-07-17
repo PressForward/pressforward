@@ -147,20 +147,22 @@ class PF_RSS_Import extends PF_Module {
 			if ( ($check_date <= $dead_date) && ! empty( $check_date ) ) {
 				pf_log( 'Feed item too old. Skip it.' );
 			} else {
-				$guid = $item->get_item_tags('','guid');
 				$isPermalink = false;
-				$arrIt = new RecursiveIteratorIterator(new RecursiveArrayIterator($guid[0]));
-				foreach ($arrIt as $sub) {
-					$subArray = $arrIt->getSubIterator();
-					if (isset($subArray['isPermaLink']) && $subArray['isPermaLink'] == "false") {
-						$isPermalink = false;
-						break;
-					} else if ($subArray['isPermaLink'] && ($subArray['isPermaLink'] == "true")){
-						$isPermalink = true;
-						break;
+				$guid = $item->get_item_tags('','guid');
+				if (is_array($guid)){
+					$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($guid[0]));
+					foreach ($arrIt as $sub) {
+						$subArray = $arrIt->getSubIterator();
+						if (array_key_exists('isPermaLink', $subArray) && isset($subArray['isPermaLink']) && $subArray['isPermaLink'] == "false") {
+							$isPermalink = false;
+							break;
+						} else if (array_key_exists('isPermaLink', $subArray) && isset($subArray['isPermaLink']) && $subArray['isPermaLink'] && ($subArray['isPermaLink'] == "true")){
+							$isPermalink = true;
+							break;
+						}
 					}
 				}
-				if ($isPermalink){
+				if ( $isPermalink ){
 					// This will check GUID first, then link, then title.
 					$guidHopefully = $item->get_id(false);
 					$urlParts = parse_url($guidHopefully);
@@ -220,7 +222,12 @@ class PF_RSS_Import extends PF_Module {
 				if ( ! $agStatus ) {
 					$authors = $this->get_rss_authors( $item );
 				} else {
-					$authors = 'aggregation';
+					$parent_value = pressforward( 'controller.metas' )->get_post_pf_meta( $aFeed->ID, 'pf_feed_default_author', true );
+					if ( ! empty( $parent_value ) ) {
+						$authors = $parent_value;
+					} else {
+						$authors = 'aggregation';
+					}
 				}
 					$item_categories = array();
 					$item_categories = $item->get_categories();

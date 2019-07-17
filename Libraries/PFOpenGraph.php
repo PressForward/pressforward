@@ -49,12 +49,36 @@ class PFOpenGraph implements Iterator {
 	 * @return OpenGraph
 	 */
 	public static function fetch( $URI ) {
-		$response = pf_de_https( $URI, 'wp_remote_get', array( 'timeout' => '30' ) );
-		if ( ! empty( $response ) && ! is_wp_error( $response ) ) {
-			$response = $response['body'];
-			$response = mb_convert_encoding( $response, 'HTML-ENTITIES', 'UTF-8' );
+		$cached = wp_cache_get( $URI, 'pressforward_external_pages' );
+		$response_body = null;
+		if ( false !== $cached ) {
+			$response_body = $cached;
+		} else {
+			$response = pf_de_https( $URI, 'wp_remote_get', array( 'timeout' => '5' ) );
+			if ( $response && ! is_wp_error( $response ) ) {
+				$response_body = wp_remote_retrieve_body( $response );
+				wp_cache_set( $URI, $response_body, 'pressforward_external_pages' );
+			}
+		}
 
-			return self::_parse( $response );
+		if ( ! $response_body ) {
+			return false;
+		}
+
+		$response_body = mb_convert_encoding( $response_body, 'HTML-ENTITIES', 'UTF-8' );
+		return self::_parse( $response_body );
+	}
+
+	/**
+	 * Takes an HTML document and parses it for Open Graph data, returns
+	 * false on error.
+	 *
+	 * @param $HTML  HTML document.
+	 * @return OpenGraph
+	 */
+	static public function process( $HTML ) {
+		if ( ! empty( $HTML ) && ! is_wp_error( $HTML ) ) {
+			return self::_parse( $HTML );
 		} else {
 			return false;
 		}

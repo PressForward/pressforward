@@ -286,8 +286,34 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'type'	=> 'admin',
+				'condition'	=> function( $hook ) use ( $provider ) {
+									$exclusions = array( 'toplevel_page_pf-menu' );
+									return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
+				},
+				'handle'	=> $slug . '-jws',
+				'src'		=> 'assets/js/jws',
+				'deps'		=> array( 'pf', $slug . '-twitter-bootstrap' ),
+			)
+		);
+
+		$assets->register_script(
+			array(
+				'type'	=> 'admin',
+				'condition'	=> function( $hook ) use ( $provider ) {
+									$exclusions = array( 'toplevel_page_pf-menu' );
+									return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
+				},
+				'handle'	=> $slug . '-jwt',
+				'src'		=> 'assets/js/jwt',
+				'deps'		=> array( 'pf', $slug . '-twitter-bootstrap', $slug . '-jws' ),
+			)
+		);
+
+		$assets->register_script(
+			array(
+				'type'	=> 'admin',
+				'condition'	=> function( $hook ) use ( $provider ) {
 									return $provider->check_hook_for_pressforward_string( $hook );
 				},
 				'handle'    => $slug . '-jq-fullscreen',

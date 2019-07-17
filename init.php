@@ -2,6 +2,8 @@
 // Out-of-namespace dependencies
 require 'class-SplClassLoader.php';
 require 'Libraries/PFSimpleHtmlDom.php';
+require_once 'Libraries/random_compat/lib/random.php';
+require_once 'Libraries/php-jwt/src/JWT.php';
 require 'Libraries/URLResolver/URLResolver.php';
 //require 'Libraries/text-stats/src/DaveChild/TextStatistics/Text.php';
 //require 'Libraries/text-stats/src/DaveChild/TextStatistics/TextStatistics.php';

@@ -1,41 +1,33 @@
 .pftab {
-	margin-left: 22px;
-	display: none;
-}
+  margin-left: 22px;
+  display: none; }
 
 .pftab.active {
-	display: block;
-}
+  display: block; }
 
-.pressforward .pftab {
-	margin-top: 14px;
-}
+.pressforward_page_pf-feeder .pftab {
+  margin-top: 10px; }
 
-.pressforward .pftab h2 {
-	display: none;
-}
+.pressforward_page_pf-feeder .pftab h2 {
+  display: none; }
 
 #responses {
-	display: none;
-	padding: 10px;
-	margin: 12px;
-}
+  display: none;
+  padding: 10px;
+  margin: 12px; }
 
 .wp-core-ui .button-primary {
-	border-color: #0073aa;
-}
+  border-color: #0073aa; }
 
 .pf-opt-group .inside a:not(.button-primary) {
-	background-color: white;
-	padding: 8px;
-	border-radius: 10px;
-}
+  background-color: white;
+  padding: 8px;
+  border-radius: 10px; }
 
 .close-x {
-	color: #777;
-	font: 16px/100% arial, sans-serif;
-	display: inline-block;
-	text-decoration: none;
-	text-shadow: 0 2px 0 #fff;
-	padding-top: 7px;
-}
+  color: #777;
+  font: 16px/100% arial, sans-serif;
+  display: inline-block;
+  text-decoration: none;
+  text-shadow: 0 2px 0 #fff;
+  padding-top: 7px; }

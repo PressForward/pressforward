@@ -6,6 +6,8 @@ if (!WP_DEBUG){
 // var_dump($_POST);  die();
 set_transient( 'is_multi_author', true );
 
+require_once( ABSPATH . '/wp-admin/includes/meta-boxes.php' );
+
 /**
  * Press It form handler.
  *
@@ -420,206 +422,53 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 		echo '<form action="nominate-this.php?action=post" method="post">';
 	}
 ?>
+
 <div id="poststuff" class="metabox-holder">
 <?php
 if ( isset( $posted ) && intval( $posted ) ) { } else {
+
+	$empty_nomination = new WP_Post( new stdClass() );
+	$empty_nomination->post_type = 'nomination';
+
+	do_action( 'add_meta_boxes_nomthis', $empty_nomination );
+	do_meta_boxes( 'nomthis', 'side', $empty_nomination );
+	wp_nonce_field( 'nominate-this' );
 	?>
-	<div id="side-sortables" class="press-this-sidebar">
-	<div class="sleeve">
-		<?php wp_nonce_field( 'nominate-this' ) ?>
-		<input type="hidden" name="post_type" id="post_type" value="text"/>
-		<input type="hidden" name="autosave" id="autosave" />
-		<input type="hidden" id="original_post_status" name="original_post_status" value="draft" />
-		<input type="hidden" id="prev_status" name="prev_status" value="draft" />
-		<input type="hidden" id="post_id" name="post_id" value="0" />
-		<?php if ( $url != '' ) {
 
-				$author_retrieved = pressforward( 'controller.metas' )->get_author_from_url( $url );
-				$tags_retrieved = array();
-				$og = pressforward( 'library.opengraph' )->fetch( $url );
-			if ( ! empty( $og ) && ! empty( $og->article_tag ) ) {
-				$tags_retrieved[] = $og->article_tag;
-			}
-			if ( ! empty( $og ) && ! empty( $og->article_tag_additional ) ) {
-				$tags_retrieved = array_merge( $tags_retrieved, $og->article_tag_additional );
-			}
-			if ( ! empty( $tags_retrieved ) ) {
-				$tags_retrieved[] = 'via bookmarklet';
-				$tags_retrieved = implode( ', ', $tags_retrieved );
+	<input type="hidden" name="post_type" id="post_type" value="text"/>
+	<input type="hidden" name="autosave" id="autosave" />
+	<input type="hidden" id="original_post_status" name="original_post_status" value="draft" />
+	<input type="hidden" id="prev_status" name="prev_status" value="draft" />
+	<input type="hidden" id="post_id" name="post_id" value="0" />
+	<?php if ( $url != '' ) {
+		$og = pressforward( 'library.opengraph' )->fetch( $url );
+
+		if ( isset( $og->url ) ) {
+			$url = $og->url;
+		}
+
+		?>
+			<?php  ?>
+			<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr( $title );?>" />
+			<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo current_time( 'mysql' ); ?>" />
+			<?php // Metadata goes here.
+			if ( isset( $url ) && ! empty( $url ) && ($url) != '' ) {
+				pf_log( 'Getting OpenGraph image on ' );
+				pf_log( $url );
+				// var_dump($_POST['item_link']); die();
+				// Gets OG image
+				$itemFeatImg = pressforward( 'schema.feed_item' )->get_ext_og_img( $url );
+				// var_dump($itemFeatImg); die();
 			} else {
-				$tags_retrieved = 'via bookmarklet';
+				$itemFeatImg = false;
 			}
-				// var_dump($og); die();
-				// $response_body = wp_remote_retrieve_body( $response );
-				// $response_dom = pf_str_get_html( $response_body );
-			if ( isset( $og->url ) ) {
-				$url = $og->url;
+			if ( ! $itemFeatImg || is_wp_error( $itemFeatImg ) ) {
+				$itemFeatImg = '';
 			}
-
 			?>
-				<?php  ?>
-				<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr( $title );?>" />
-				<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo current_time( 'mysql' ); ?>" />
-				<?php // Metadata goes here.
-				if ( isset( $url ) && ! empty( $url ) && ($url) != '' ) {
-					pf_log( 'Getting OpenGraph image on ' );
-					pf_log( $url );
-					// var_dump($_POST['item_link']); die();
-					// Gets OG image
-					$itemFeatImg = pressforward( 'schema.feed_item' )->get_ext_og_img( $url );
-					// var_dump($itemFeatImg); die();
-				} else {
-					$itemFeatImg = false;
-				}
-				if ( ! $itemFeatImg || is_wp_error( $itemFeatImg ) ) {
-					$itemFeatImg = '';
-				}
-				?>
-				<input type="hidden" id="item_link" name="item_link" value="<?php echo esc_url( $url ); ?>" />
-                <input type="hidden" id="item_feat_img" name="item_feat_img" value="<?php echo esc_url( $itemFeatImg ); ?>" />
+			<input type="hidden" id="item_link" name="item_link" value="<?php echo esc_url( $url ); ?>" />
+			<input type="hidden" id="item_feat_img" name="item_feat_img" value="<?php echo esc_url( $itemFeatImg ); ?>" />
 			<?php } ?>
-
-			<!-- This div holds the photo metadata -->
-			<div class="photolist"></div>
-
-			<div id="submitdiv" class="postbox">
-				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle','pf' ); ?>"><br /></div>
-				<h3 class="hndle"><?php _e( 'Nominate This','pf' ) ?></h3>
-				<div class="inside">
-				<p id="publishing-actions">
-				<?php
-					$publish_type = get_option( PF_SLUG . '_draft_post_status', 'draft' );
-
-					$create_nom_post_cap_test = current_user_can( get_post_type_object( pressforward( 'schema.nominations' )->post_type )->cap->create_posts );
-
-					$pf_draft_post_type_value = get_option( PF_SLUG . '_draft_post_type', 'post' );
-
-					if ('draft' == $publish_type){
-						$cap =  'edit_posts';
-					} else {
-						$cap = 'publish_posts';
-					}
-					$create_post_cap_test = current_user_can( get_post_type_object( $pf_draft_post_type_value )->cap->$cap );
-				if ($create_nom_post_cap_test){
-					submit_button( __( 'Nominate' ), 'button', 'draft', false, array( 'id' => 'save' ) );
-				} else {
-					echo 'You do not have the ability to create nominations.';
-				}
-				if ( $create_post_cap_test ) {
-					submit_button( __( 'Send to ' . ucwords( $publish_type ) ), 'primary', 'publish', false );
-				} else {
-					echo '<!-- User cannot '.$publish_type.' posts -->';
-				} ?>
-						<span class="spinner" style="display: none;"></span>
-					</p>
-					<p>
-						<?php
-						if ( ! $author_retrieved ) {
-							$author_value = '';
-						} else {
-							$author_value = $author_retrieved;
-						}
-						?>
-					<label for="item_author"><input type="text" id="item_author" name="item_author" value="<?php echo $author_value; ?>" /><br />&nbsp;<?php echo apply_filters( 'pf_author_nominate_this_prompt', __( 'Enter Authors', 'pf' ) ); ?></label>
-					</p>
-                    <p>
-					<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php _e( 'Nominate feed associated with item.', 'pf' ); ?></label>
-					</p>
-					<?php if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) :
-							$post_formats = get_theme_support( 'post-formats' );
-						if ( is_array( $post_formats[0] ) ) :
-							$default_format = get_option( 'default_post_format', '0' );
-						?>
-					<p>
-						<label for="post_format"><?php _e( 'Post Format:','pf' ); ?>
-						<select name="post_format" id="post_format">
-						<option value="0"><?php _ex( 'Standard', 'Post format' ); ?></option>
-						<?php foreach ( $post_formats[0] as $format ) :  ?>
-							<option<?php selected( $default_format, $format ); ?> value="<?php echo esc_attr( $format ); ?>"> <?php echo esc_html( get_post_format_string( $format ) ); ?></option>
-						<?php endforeach; ?>
-						</select></label>
-					</p>
-					<?php endif;
-endif;
-					do_action( 'nominate_this_sidebar_head' );
-				?>
-				</div>
-			</div>
-
-			<?php
-			do_action( 'nominate_this_sidebar_top' );
-			$tax = get_taxonomy( 'category' ); ?>
-			<div id="categorydiv" class="postbox">
-				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
-				<h3 class="hndle"><?php _e( 'Categories' ) ?></h3>
-				<div class="inside">
-				<div id="taxonomy-category" class="categorydiv">
-
-					<ul id="category-tabs" class="category-tabs">
-						<li class="tabs"><a href="#category-all"><?php echo $tax->labels->all_items; ?></a></li>
-						<li class="hide-if-no-js"><a href="#category-pop"><?php _e( 'Most Used','pf' ); ?></a></li>
-					</ul>
-
-					<div id="category-pop" class="tabs-panel" style="display: none;">
-						<ul id="categorychecklist-pop" class="categorychecklist form-no-clear" >
-							<?php $popular_ids = wp_popular_terms_checklist( 'category' ); ?>
-						</ul>
-					</div>
-
-					<div id="category-all" class="tabs-panel">
-						<ul id="categorychecklist" data-wp-lists="list:category" class="categorychecklist form-no-clear">
-							<?php wp_terms_checklist( 0, array( 'taxonomy' => 'category', 'popular_cats' => $popular_ids ) ) ?>
-						</ul>
-					</div>
-
-					<?php if ( ! current_user_can( $tax->cap->assign_terms ) ) : ?>
-					<p><em><?php _e( 'You cannot modify this Taxonomy.','pf' ); ?></em></p>
-					<?php endif; ?>
-					<?php if ( current_user_can( $tax->cap->edit_terms ) ) : ?>
-						<div id="category-adder" class="wp-hidden-children">
-							<h4>
-								<a id="category-add-toggle" href="#category-add" class="hide-if-no-js">
-									<?php printf( __( '+ %s' ), $tax->labels->add_new_item ); ?>
-								</a>
-							</h4>
-							<p id="category-add" class="category-add wp-hidden-child">
-								<label class="screen-reader-text" for="newcategory"><?php echo $tax->labels->add_new_item; ?></label>
-								<input type="text" name="newcategory" id="newcategory" class="form-required form-input-tip" value="<?php echo esc_attr( $tax->labels->new_item_name ); ?>" aria-required="true"/>
-								<label class="screen-reader-text" for="newcategory_parent">
-									<?php echo $tax->labels->parent_item_colon; ?>
-								</label>
-								<?php wp_dropdown_categories( array( 'taxonomy' => 'category', 'hide_empty' => 0, 'name' => 'newcategory_parent', 'orderby' => 'name', 'hierarchical' => 1, 'show_option_none' => '&mdash; ' . $tax->labels->parent_item . ' &mdash;' ) ); ?>
-								<input type="button" id="category-add-submit" data-wp-lists="add:categorychecklist:category-add" class="button category-add-submit" value="<?php echo esc_attr( $tax->labels->add_new_item ); ?>" />
-								<?php wp_nonce_field( 'add-category', '_ajax_nonce-add-category', false ); ?>
-								<span id="category-ajax-response"></span>
-							</p>
-						</div>
-					<?php endif; ?>
-				</div>
-				</div>
-			</div>
-			<div id="tagdiv" class="postbox">
-				<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
-				<h3 class="hndle"><?php _e( 'Tags' ) ?></h3>
-				<div class="inside">
-				<div id="taxonomy-category" class="tagdiv">
-					<p>
-						<?php
-						if ( ! $tags_retrieved ) {
-							$post_tags = '';
-						} else {
-							$post_tags = $tags_retrieved;
-						}
-						?>
-						<label for="post_tags"><input type="text" id="post_tags" name="post_tags" value="<?php echo $post_tags; ?>" /><br />&nbsp;<?php echo apply_filters( 'pf_tags_prompt', __( 'Enter Tags', 'pf' ) ); ?></label>
-					</p>
-				</div>
-				</div>
-			</div>
-
-			<?php do_action( 'nominate_this_sidebar_bottom' ); ?>
-		</div>
-	</div>
     <?php }
 // Post complete template
 ?>

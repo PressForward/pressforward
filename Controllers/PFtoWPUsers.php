@@ -188,4 +188,15 @@ class PFtoWPUsers implements SystemUsers {
 		return get_option( $option_name, $this->pf_get_defining_capability_by_role( $role ) );
 	}
 
+	public function get_current_user(){
+		return wp_get_current_user();
+	}
+
+	public function get_user_meta($user_id, $meta_key, $single = true){
+		return get_user_meta($user_id, $meta_key, $single);
+	}
+	public function update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ){
+		return update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
+	}
+
 }

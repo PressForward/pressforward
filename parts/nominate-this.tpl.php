@@ -11,8 +11,22 @@ if ( 'as_paragraph' == $context ) {
 			<div class="pressthis-code" style="display:none;">
 				<p class="description"><?php _e( 'If your bookmarks toolbar is hidden: copy the code below, open your Bookmarks manager, create new bookmark, type Press This into the name field and paste the code into the URL field.', 'pf' ); ?></p>
 				<p><textarea rows="5" cols="120" readonly="readonly"><?php echo htmlspecialchars( pf_get_shortcut_link() ); ?></textarea></p>
+			</div><br />
+<!--
+			<div>
+			<h3><?php _e( 'Nominate This Extension', 'pf' ); ?></h3>
+			<p><?php _e( 'Nominate This now has an extension for Chrome with additional functionality.', 'pf' );?></p>
+			<p><a href="https://github.com/PressForward/PressForwardChromeExtension/releases" target="_blank"><?php _e( 'You can download this new extension at our GitHub repository.', 'pf' );?></a></p>
+			<p><?php _e( 'Once you have installed the extension, it needs your API keys.', 'pf' );?></p>
+			<p>
+				<?php _e( 'Click here to send the installed extension your API keys:', 'pf' );?><br />
+				<a class="button" id="pressforward-nt__setup-button" onclick=""><?php _e( 'Send API Keys to Extension', 'pf' ); ?></span></a> <br /><br />
+				<?php _e( 'Click here to regenerate API keys:', 'pf' );?><br />
+				<a class="button" id="pressforward-nt__regenerate-button" onclick=""><?php _e( 'Regenerate and send API Keys to Extension', 'pf' ); ?></span></a> <br />
+			</p>
 			</div>
 		</div>
+-->
 <?php
 } elseif ( 'as_feed' == $context ) {
 	?>

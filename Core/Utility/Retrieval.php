@@ -202,13 +202,16 @@ class Retrieval {
 			// if the iteration process is active or ended.
 			$are_we_going = get_option( PF_SLUG . '_iterate_going_switch', 1 );
 			pf_log( 'Iterate going switch is set to: ' . $are_we_going );
-
+			$total_feed_count = 0;
+			if ( is_array( $feedlist ) ){
+				$total_feed_count = count( $feedlist );
+			}
 			$feed_hb_state = array(
 				'feed_id'         => $aFeed->ID,
 				'feed_title'      => $aFeed->post_title,
 				'last_key'        => $last_key,
 				'feeds_iteration' => $feeds_iteration,
-				'total_feeds'     => count( $feedlist ),
+				'total_feeds'     => $total_feed_count,
 			);
 			$this->update_option_w_check( '_feeds_hb_state', $feed_hb_state );
 
@@ -574,7 +577,11 @@ class Retrieval {
 		// Here: If feedlist_iteration is not == to feedlist_count, scheduale a cron and trigger it before returning.
 				$feedlist = self::pf_feedlist();
 		// The array keys start with zero, as does the iteration number. This will account for that.
-		$feedcount = count( $feedlist ) - 1;
+		if ( is_array( $feedlist ) ){
+			$feedcount = count( $feedlist ) - 1;
+		} else {
+			$feedcount = 0;
+		}
 		// Get the iteration state. If this variable doesn't exist the planet will break in half.
 		$feeds_iteration = get_option( PF_SLUG . '_feeds_iteration' );
 
