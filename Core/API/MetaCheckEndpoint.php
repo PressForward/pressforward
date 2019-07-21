@@ -15,7 +15,7 @@ class MetaCheckEndpoint implements HasActions {
 
 	protected $api_base;
 
-	function __construct( $api_base, PF_JWT $jwt, PFOpenGraph $og, URLResolver $url_resolver,  ) {
+	function __construct( $api_base, PF_JWT $jwt, PFOpenGraph $og, URLResolver $url_resolver ) {
 		$this->api_base = $api_base;
 		$this->api_base['endpoint'] = 'metachecks';
 		$this->og = $og;
