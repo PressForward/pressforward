@@ -217,33 +217,33 @@ class Feed_Items implements HasActions, HasFilters {
 
 		// WP_Query does not accept a 'guid' param, so we filter hackishly
 		if ( isset( $args['url'] ) ) {
-			$this->filter_data['guid'] = $args['url'];
+			self::filter_data['guid'] = $args['url'];
 			unset( $args['url'] );
 			$query_filters['posts_where'][] = '_filter_where_guid';
 		}
 
 		foreach ( $query_filters as $hook => $filters ) {
 			foreach ( $filters as $f ) {
-				add_filter( $hook, array( $this, $f ) );
+				add_filter( $hook, array( __CLASS__, $f ) );
 			}
 		}
 
 		// Other WP_Query args pass through
 		$wp_args = wp_parse_args( $args, $wp_args );
 
-		$posts = $this->items->get_posts( $wp_args );
+		$posts = self::items->get_posts( $wp_args );
 
 		foreach ( $query_filters as $hook => $filters ) {
 			foreach ( $filters as $f ) {
-				remove_filter( $hook, array( $this, $f ) );
+				remove_filter( $hook, array( __CLASS__, $f ) );
 			}
 		}
 
 		// Fetch some handy pf-specific data
 		if ( ! empty( $posts ) ) {
 			foreach ( $posts as &$post ) {
-				$post->word_count = $this->metas->get_post_pf_meta( $post->ID, 'pf_feed_item_word_count', true );
-				$post->source     = $this->metas->get_post_pf_meta( $post->ID, 'source_title', true );
+				$post->word_count = self::metas->get_post_pf_meta( $post->ID, 'pf_feed_item_word_count', true );
+				$post->source     = self::metas->get_post_pf_meta( $post->ID, 'source_title', true );
 				$post->tags       = wp_get_post_terms( $post->ID, pf_feed_item_tag_taxonomy() );
 			}
 		}
@@ -256,7 +256,7 @@ class Feed_Items implements HasActions, HasFilters {
 			'meta_key'   => pressforward( 'controller.metas' )->get_key( 'item_id' ),
 			'meta_value' => $item_id,
 		);
-		$post = $this->get( $args );
+		$post = self::get( $args );
 		if ( empty( $post ) ) {
 			return false;
 		} else {
@@ -1112,7 +1112,7 @@ class Feed_Items implements HasActions, HasFilters {
 	 * @param bool  $append True if you want to append rather than replace
 	 */
 	public static function set_tags( $post_id, $tags, $append = false ) {
-		return wp_set_object_terms( $post_id, $tags, $this->tag_taxonomy, $append );
+		return wp_set_object_terms( $post_id, $tags, self::tag_taxonomy, $append );
 	}
 
 	/**
@@ -1138,7 +1138,7 @@ class Feed_Items implements HasActions, HasFilters {
 	 */
 	public static function convert_raw_tags( $tags ) {
 		$retval = array(
-			$this->tag_taxonomy => $tags,
+			self::tag_taxonomy => $tags,
 		);
 		return $retval;
 	}
