@@ -43,12 +43,20 @@ function pressforward_register_module( $args ) {
 		return;
 	}
 
-	add_filter( 'pressforward_register_modules', create_function( '$modules', '
-		return array_merge( $modules, array( array(
-			"slug"  => "' . $r['slug'] . '",
-			"class" => "' . $r['class'] . '",
-		) ) );
-	' ) );
+	add_filter(
+		'pressforward_register_modules',
+		function( $modules ) use ( $r ) {
+			return array_merge(
+				$modules,
+				array(
+					array(
+						"slug"  => $r['slug'],
+						"class" => $r['class'],
+					)
+				)
+			);
+		}
+	);
 }
 
 /**
