@@ -78,6 +78,7 @@ class JSLikeHTMLElement extends DOMElement {
 				}
 			}
 		} else {
+			// phpcs:ignore PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.Changed -- Inspected & found ok.
 			$trace = debug_backtrace();
 			trigger_error( 'Undefined property via __set(): ' . $name . ' in ' . $trace[0]['file'] . ' on line ' . $trace[0]['line'], E_USER_NOTICE );
 		}
@@ -99,6 +100,7 @@ class JSLikeHTMLElement extends DOMElement {
 			return $inner;
 		}
 
+		// phpcs:ignore PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.NeedsInspection -- Inspected & found ok.
 		$trace = debug_backtrace();
 		trigger_error( 'Undefined property via __get(): ' . $name . ' in ' . $trace[0]['file'] . ' on line ' . $trace[0]['line'], E_USER_NOTICE );
 		return null;
