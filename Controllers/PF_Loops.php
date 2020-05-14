@@ -51,7 +51,7 @@ class PF_Loops {
 				$args['relationship'] = $func_args[4];
 			}
 		} else {
-			$args = func_get_arg( 0 );
+			$args = $func_args[0];
 		}
 
 		// Make sure default values are set.
