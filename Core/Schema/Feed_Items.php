@@ -217,7 +217,7 @@ class Feed_Items implements HasActions, HasFilters {
 
 		// WP_Query does not accept a 'guid' param, so we filter hackishly
 		if ( isset( $args['url'] ) ) {
-			self::filter_data['guid'] = $args['url'];
+			self::$filter_data['guid'] = $args['url'];
 			unset( $args['url'] );
 			$query_filters['posts_where'][] = '_filter_where_guid';
 		}
@@ -231,7 +231,7 @@ class Feed_Items implements HasActions, HasFilters {
 		// Other WP_Query args pass through
 		$wp_args = wp_parse_args( $args, $wp_args );
 
-		$posts = self::items->get_posts( $wp_args );
+		$posts = self::$items->get_posts( $wp_args );
 
 		foreach ( $query_filters as $hook => $filters ) {
 			foreach ( $filters as $f ) {
@@ -242,8 +242,8 @@ class Feed_Items implements HasActions, HasFilters {
 		// Fetch some handy pf-specific data
 		if ( ! empty( $posts ) ) {
 			foreach ( $posts as &$post ) {
-				$post->word_count = self::metas->get_post_pf_meta( $post->ID, 'pf_feed_item_word_count', true );
-				$post->source     = self::metas->get_post_pf_meta( $post->ID, 'source_title', true );
+				$post->word_count = self::$metas->get_post_pf_meta( $post->ID, 'pf_feed_item_word_count', true );
+				$post->source     = self::$metas->get_post_pf_meta( $post->ID, 'source_title', true );
 				$post->tags       = wp_get_post_terms( $post->ID, pf_feed_item_tag_taxonomy() );
 			}
 		}
