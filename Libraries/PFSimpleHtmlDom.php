@@ -1073,7 +1073,7 @@ class pf_simple_html_dom {
 			return true;
 		}
 
-		if ( ! preg_match( '/^[\w-:]+$/', $tag ) ) {
+		if ( ! preg_match( '/^[\w\-:]+$/', $tag ) ) {
 			$node->_[ PF_HDOM_INFO_TEXT ] = '<' . $tag . $this->copy_until( '<>' );
 			if ( $this->char === '<' ) {
 				$this->link_nodes( $node, false );
