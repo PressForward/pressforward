@@ -422,6 +422,9 @@ function pf_prep_item_for_submit( $item ) {
 		}
 
 		if ( is_array( $itemPart ) ) {
+			if ( 'nominators' === $itemKey ) {
+				$itemPart = array_keys( $itemPart );
+			}
 			$itemPart = implode( ',',$itemPart );
 		}
 
