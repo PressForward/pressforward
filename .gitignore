@@ -197,3 +197,11 @@ node_modules
 assets/stats-app/node_modules
 
 /vendor/
+
+/Libraries/random_compat/tests
+/Libraries/gender-checker/tests
+/Libraries/text-stats/tests
+/Libraries/php-jwt/tests
+/Libraries/Jaxion/tests
+/Libraries/enumeration/test
+/Libraries/MozillaReadability/test
