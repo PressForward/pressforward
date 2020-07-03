@@ -7,13 +7,10 @@
 		"test": "tests"
 	},
 	"dependencies": {
-		"@babel/core": "^7.5.4",
-		"gulp": "~3.9.0",
-		"gulp-babel": "^8.0.0",
-		"gulp-sass": "^4.0.2"
+		"@babel/core": "^7.5.4"
 	},
 	"devDependencies": {
-		"gulp": "~3.9.0",
+		"gulp": "^4.0.2",
 		"gulp-clean-css": "^3.9.2",
 		"gulp-ext-replace": "^0.3.0",
 		"gulp-sourcemaps": "^2.6.4",
