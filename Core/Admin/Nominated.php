@@ -661,7 +661,7 @@ class Nominated implements HasActions {
 	public static function archive_a_nom() {
 		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
 		if ( ! wp_verify_nonce( $pf_drafted_nonce, 'drafter' ) ) {
-			die( $this->__( 'Nonce not recieved. Are you sure you should be archiving?', 'pf' ) );
+			die( __( 'Nonce not recieved. Are you sure you should be archiving?', 'pf' ) );
 		} else {
 			$current_user    = wp_get_current_user();
 			$current_user_id = $current_user->ID;
