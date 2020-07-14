@@ -1112,7 +1112,7 @@ class Feed_Items implements HasActions, HasFilters {
 	 * @param bool  $append True if you want to append rather than replace
 	 */
 	public static function set_tags( $post_id, $tags, $append = false ) {
-		return wp_set_object_terms( $post_id, $tags, self::tag_taxonomy, $append );
+		return wp_set_object_terms( $post_id, $tags, self::$tag_taxonomy, $append );
 	}
 
 	/**
@@ -1138,7 +1138,7 @@ class Feed_Items implements HasActions, HasFilters {
 	 */
 	public static function convert_raw_tags( $tags ) {
 		$retval = array(
-			self::tag_taxonomy => $tags,
+			self::$tag_taxonomy => $tags,
 		);
 		return $retval;
 	}
