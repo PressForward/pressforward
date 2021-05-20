@@ -50,7 +50,7 @@ if ( (PHP_VERSION < 5.3) || ( ! $PHPCheck->does_it_meet_required_php_version( PH
 }
 
 function pressforward_load_plugin_textdomain() {
-	    load_plugin_textdomain( 'pf', FALSE, basename( dirname( __FILE__ ) ) . '/languages/' );
+	load_plugin_textdomain( 'pf', false, basename( dirname( __FILE__ ) ) . '/languages/' );
 }
 add_action( 'plugins_loaded', 'pressforward_load_plugin_textdomain' );
 
