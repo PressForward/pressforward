@@ -97,7 +97,7 @@ class Folders implements HasActions, HasFilters {
 		global $typenow, $pagenow;
 
 		// Feed Tags edit page
-		if ( 'edit-tags.php' === $pagenow && ! empty( $_GET['taxonomy'] ) && $this->tag_taxonomy === stripslashes( $_GET['taxonomy'] ) ) {
+		if ( 'edit-tags.php' === $pagenow && ! empty( $_GET['taxonomy'] ) && $this->tag_taxonomy === sanitize_text_field( wp_unslash( $_GET['taxonomy'] ) ) ) {
 			$pf = 'pf-menu';
 		}
 
@@ -241,7 +241,7 @@ class Folders implements HasActions, HasFilters {
 		<li class="feed" id="the-whole-feed-list">
 		<?php
 
-			printf( '<a href="%s" title="%s">%s</a>', $feed_obj->ID, $feed_obj->post_title, $feed_obj->post_title );
+			printf( '<a href="%s" title="%s">%s</a>', esc_attr( $feed_obj->ID ), esc_attr( $feed_obj->post_title ), esc_html( $feed_obj->post_title ) );
 
 		?>
 		</li>
@@ -257,7 +257,7 @@ class Folders implements HasActions, HasFilters {
 				$this->the_feed( $a_feed_id );
 			}
 		} else {
-			_e( 'You must run version 4.0 of WordPress or higher to access the folders feature.', 'pf' );
+			esc_html_e( 'You must run version 4.0 of WordPress or higher to access the folders feature.', 'pf' );
 		}
 	}
 
@@ -271,7 +271,7 @@ class Folders implements HasActions, HasFilters {
 				// var_dump($obj);
 				foreach ( $obj as $folder ) {
 					?>
-					<li class="feed_folder" id="folder-<?php echo $folder['term_id']; ?>">
+					<li class="feed_folder" id="folder-<?php echo esc_attr( $folder['term_id'] ); ?>">
 					<?php
 					$this->the_inside_of_folder( $folder );
 					?>
@@ -288,7 +288,7 @@ class Folders implements HasActions, HasFilters {
 	public function the_inside_of_folder( $folder, $wrapped = false ) {
 		if ( $wrapped ) {
 			?>
-			<li class="feed_folder" id="folder-<?php echo $folder['term_id']; ?>">
+			<li class="feed_folder" id="folder-<?php echo esc_attr( $folder['term_id'] ); ?>">
 			<?php
 		}
 		$this->the_folder( $folder );
@@ -339,7 +339,7 @@ class Folders implements HasActions, HasFilters {
 		?>
 
 		<?php
-			printf( '<a href="%s" class="folder" title="%s">%s</a>', $term_obj->term_id, $term_obj->name, $term_obj->name );
+			printf( '<a href="%s" class="folder" title="%s">%s</a>', esc_attr( $term_obj->term_id ), esc_attr( $term_obj->name ), esc_html( $term_obj->name ) );
 
 		?>
 
@@ -349,10 +349,10 @@ class Folders implements HasActions, HasFilters {
 	public function the_feed( $feed ) {
 		$feed_obj = get_post( $feed );
 		?>
-		<li class="feed" id="feed-<?php echo $feed_obj->ID; ?>">
+		<li class="feed" id="feed-<?php echo esc_attr( $feed_obj->ID ); ?>">
 		<?php
 
-			printf( '<a href="%s" title="%s">%s</a>', $feed_obj->ID, $feed_obj->post_title, $feed_obj->post_title );
+			printf( '<a href="%s" title="%s">%s</a>', esc_attr( $feed_obj->ID ), esc_attr( $feed_obj->post_title) , esc_html( $feed_obj->post_title ) );
 
 		?>
 		</li>
@@ -363,8 +363,8 @@ class Folders implements HasActions, HasFilters {
 	public function folderbox() {
 		?>
 			<div id="feed-folders">
+					<h3><?php esc_html_e( 'Folders', 'pf' ); ?></h3>
 					<?php
-					printf( __( '<h3>Folders</h3>' ) );
 					$this->the_feed_folders();
 					?>
 				<div class="clear"></div>
