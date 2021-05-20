@@ -13,7 +13,12 @@
 
 		$feed_hb_state = get_option( PF_SLUG . '_feeds_hb_state' );
 		$iteration = $feed_hb_state['feeds_iteration'] + 1;
-		echo 'Retrieving feeds. Currently at <span id="rf-feed-title">' . $feed_hb_state['feed_title'] . '</span> feed number <span id="rf-iteration">' . $iteration . '</span> of <span id="rf-total-feeds">' . $feed_hb_state['total_feeds'] . '</span>.'
+		print_r(
+			esc_html__( 'Retrieving feeds. Currently at %1$s feed number %2$s of %3$s', 'pf' ),
+			'<span id="rf-feed-title">' . esc_html( $feed_hb_state['feed_title'] ) . '</span>',
+			'<span id="rf-iteration">' . esc_html( $iteration ) . '</span>',
+			'<span id="rf-total-feeds">' . esc_html( $feed_hb_state['total_feeds'] ) . '</span>'
+		);
 	?>
 	</span>
 	<div id="rf-progressbar"></div>
