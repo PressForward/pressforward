@@ -85,7 +85,7 @@ class PF_Module {
 		$mod_settings = array(
 			'name' => $this->id . ' Module',
 			'slug' => $this->id,
-			'description' => 'This module needs to overwrite the setup_module function and give a description.',
+			'description' => __( 'This module needs to overwrite the setup_module function and give a description.', 'pressforward' ),
 			'thumbnail' => '',
 			'options' => '',
 		);
@@ -110,18 +110,18 @@ class PF_Module {
 			<table class="form-table">
 				<tr>
 					<th scope="row">
-						<label for="pressforward-dashboard-enable"><?php _e( 'Enable ' . $modsetup['name'], PF_SLUG ) ?></label>
+						<label for="pressforward-dashboard-enable"><?php echo esc_html( sprintf( _e( 'Enable %s', 'pressforward' ), $modsetup['name'] ) ); ?></label>
 					</th>
 
 					<td>
-						<select id="<?php echo PF_SLUG . '_' . $modId . '_enable'; ?>" name="<?php echo PF_SLUG . '_' . $modId . '_enable'; ?>">
-							<option value="yes" <?php selected( $enabled, 'yes' ) ?>><?php _e( 'Yes', PF_SLUG ) ?></option>
-							<option value="no" <?php selected( $enabled, 'no' ) ?>><?php _e( 'No', PF_SLUG ) ?></option>
+						<select id="<?php esc_attr( PF_SLUG . '_' . $modId . '_enable' ); ?>" name="<?php echo esc_attr( PF_SLUG . '_' . $modId . '_enable' ); ?>">
+							<option value="yes" <?php selected( $enabled, 'yes' ) ?>><?php esc_html_e( 'Yes', 'pressforward' ) ?></option>
+							<option value="no" <?php selected( $enabled, 'no' ) ?>><?php esc_html_e( 'No', 'pressforward' ) ?></option>
 						</select>
 					</td>
 				</tr>
 			</table>
-			<p><?php _e( $modsetup['description'], PF_SLUG ) ?></p>
+			<p><?php echo esc_html( $modsetup['description'] ); ?></p>
 			<hr />
 		<?php
 	}
