@@ -66,7 +66,7 @@ class NominateThisEndpoint implements HasActions {
 			    ),
 				'permission_callback' => function () {
 					if ( ! current_user_can( get_option( 'pf_menu_nominate_this_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) ) ) ){
-	  				  	wp_die( __( 'You do not have the capacity to access the Nominate This bookmarklet.', 'pf' ) );
+	  				  	wp_die( esc_html__( 'You do not have the capacity to access the Nominate This bookmarklet.', 'pf' ) );
 	  				  	return false;
 					} else {
 						return true;
@@ -151,7 +151,8 @@ class NominateThisEndpoint implements HasActions {
 					//var_dump($_GET);
 					$return_var = false;
 					try {
-						$key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin($_GET['k']));
+						$raw_key = isset( $_GET['k'] ) ? sanitize_text_field( wp_unslash( $_GET['k'] ) ) : '';
+						$key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin( $raw_key ));
 						if (!$key){
 							$return_var = new WP_Error( 'auth_fail_id', __( "Request was signed with incorrect key.", "pf" ) );
 						}
@@ -264,6 +265,7 @@ class NominateThisEndpoint implements HasActions {
 			'redirect'	=>	rest_url($this->endpoint_for_nominate_this_endpoint.'?nonce='.$nonce, 'html')
 		));
 		$login = ob_get_clean();
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $login;
 		die();
 
@@ -300,16 +302,19 @@ class NominateThisEndpoint implements HasActions {
 		// require( ABSPATH . WPINC . '/script-loader.php' );
 		// require( ABSPATH . WPINC . '/version.php' );
 
-		$compress       = ( isset( $_GET['c'] ) && $_GET['c'] );
-		$force_gzip     = ( $compress && 'gzip' == $_GET['c'] );
+		$compress_raw = isset( $_GET['c'] ) ? sanitize_text_field( wp_unslash( $_GET['c'] ) ) : '';
+
+		$compress       = ( ! empty( $compress_raw ) );
+		$force_gzip     = ( $compress && 'gzip' == $compress_raw );
 		$expires_offset = 31536000; // 1 year
 		$out            = '';
 
 		$wp_scripts = new \WP_Scripts();
 		\wp_default_scripts( $wp_scripts );
 
-		if ( isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) && stripslashes( $_SERVER['HTTP_IF_NONE_MATCH'] ) === $wp_version ) {
-			$protocol = $_SERVER['SERVER_PROTOCOL'];
+		$http_if_none_match = isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_IF_NONE_MATCH'] ) ) : '';
+		if ( $http_if_none_match === $wp_version ) {
+			$protocol = isset( $_SERVER['SERVER_PROTOCOL'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_PROTOCOL'] ) ) : '';
 			if ( ! in_array( $protocol, array( 'HTTP/1.1', 'HTTP/2', 'HTTP/2.0' ) ) ) {
 				$protocol = 'HTTP/1.0';
 			}
@@ -332,16 +337,18 @@ class NominateThisEndpoint implements HasActions {
 		// header( "Cache-Control: public, max-age=$expires_offset" );
 
 		if ( $compress && ! ini_get( 'zlib.output_compression' ) && 'ob_gzhandler' != ini_get( 'output_handler' ) && isset( $_SERVER['HTTP_ACCEPT_ENCODING'] ) ) {
+			$http_accept_encoding = sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT_ENCODING'] ) );
 			// header( 'Vary: Accept-Encoding' ); // Handle proxies
-			if ( false !== stripos( $_SERVER['HTTP_ACCEPT_ENCODING'], 'deflate' ) && function_exists( 'gzdeflate' ) && ! $force_gzip ) {
+			if ( false !== stripos( $http_accept_encoding, 'deflate' ) && function_exists( 'gzdeflate' ) && ! $force_gzip ) {
 				// header( 'Content-Encoding: deflate' );
 				// $out = gzdeflate( $out, 3 );
-			} elseif ( false !== stripos( $_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip' ) && function_exists( 'gzencode' ) ) {
+			} elseif ( false !== stripos( $http_accept_encoding, 'gzip' ) && function_exists( 'gzencode' ) ) {
 				// header( 'Content-Encoding: gzip' );
 				// $out = gzencode( $out, 3 );
 			}
 		}
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $out;
 	}
 
@@ -351,9 +358,13 @@ class NominateThisEndpoint implements HasActions {
 		// $_POST = $request->get_json_params();
 		pf_log('Nomination Submitted');
 		$_POST = array_merge($_POST, $request->get_params());
-		$private_key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin(trim($_POST['user_key'])));
+
+		$user_key = isset( $_POST['user_key'] ) ? sanitize_text_field( wp_unslash( $_POST['user_key'] ) ) : '';
+		$verify  = isset( $_POST['verify'] ) ? sanitize_text_field( wp_unslash( $_POST['verify'] ) ) : '';
+
+		$private_key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin(trim( $user_key )));
 		//$pk_portions = explode('.', $_POST['verify']);
-		$verify = pressforward('controller.jwt')->decode_with_jwt(trim($_POST['verify']), $private_key);
+		$verify = pressforward('controller.jwt')->decode_with_jwt(trim( $verify ), $private_key);
 		if ( ( false !== $verify ) && property_exists( $verify, 'date' ) ) {
 			$date_obj = \date_create( '@' . ( $verify->date ) );
 			$current_date_obj = new \DateTime();
@@ -366,21 +377,23 @@ class NominateThisEndpoint implements HasActions {
 				return '{"error": "bad date", "date_sent":"'.$date_obj->format('Y-m-d H:i:s').'", "date_internal":"'.$current_date_obj->format('Y-m-d H:i:s').'"}';
 			}
 		} else {
-			return '{ error: "verification not available"}'.' pk:'.$private_key.' v:'.$verify.' vr:'.$_POST['verify'] . '  uk: '.hex2bin(trim($_POST['user_key'])). ' pk portions:'. $pk_portions[0]. '    '. $pk_portions[1];
+			return '{ error: "verification not available"}'.' pk:'.$private_key.' v:'.$verify.' vr:' . $verify . '  uk: '.hex2bin(trim( $user_key )). ' pk portions:'. $pk_portions[0]. '    '. $pk_portions[1];
 		}
 
-		$user_id = pressforward('controller.jwt')->get_user_by_key( $_POST['user_key'] );
+		$user_id = pressforward('controller.jwt')->get_user_by_key( $user_key );
 		wp_set_current_user($user_id);
-		$decrypted_data = pressforward('controller.jwt')->decode_with_jwt(trim($_POST['data']), $private_key);
+
+		$user_data = isset( $_POST['data'] ) ? sanitize_text_field( wp_unslash( $_POST['data'] ) ) : '';
+		$decrypted_data = pressforward('controller.jwt')->decode_with_jwt(trim( $user_data ), $private_key);
 		if ( false === $decrypted_data ){
 			return '{ "error": "bad data" }';
 		}
 		pf_log('Nomination Data received: ');
 		pf_log($decrypted_data);
 		$_POST = array_merge( $_POST, (array) $decrypted_data );
-		$_POST['post_title'] = urldecode($_POST['post_title']);
-		$_POST['content'] = urldecode($_POST['content']);
-		$_POST['publish'] = urldecode($_POST['publish']);
+		$_POST['post_title'] = isset( $_POST['post_title'] ) ? urldecode( sanitize_text_field( wp_unslash( $_POST['post_title'] ) ) ) : '';
+		$_POST['content'] = isset( $_POST['content'] ) ? urldecode( sanitize_text_field( wp_unslash( $_POST['content'] ) ) ) : '';
+		$_POST['publish'] = isset( $_POST['publish'] ) ? urldecode( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) ) : '';
 		$id = pressforward('bookmarklet.core')->nominate_it(false);
 		$return_object = new \stdClass();
 		$return_object->id = $id;
@@ -415,11 +428,11 @@ EOF;
 		// $basic_scripts = '/wp-admin/load-scripts.php?c=1&load%5B%5D=jquery,jquery-core,jquery-migrate,utils,moxiejs,plupload,jquery-ui-core,jquery-ui-widget';
 		header( 'Content-Type: application/javascript; charset=' . get_option( 'blog_charset' ) );
 		echo 'window.pfSiteData = {}; ';
-		echo 'window.pfSiteData.site_url = "'. \get_site_url() . '"; ';
-		echo 'window.pfSiteData.plugin_url = "'. plugin_dir_url( dirname(dirname(__FILE__)) ) . '"; ';
-		echo 'window.pfSiteData.submit_endpoint = "' . trailingslashit(\get_site_url()) . 'wp-json/' . $this->api_base['base_namespace'] . $this->api_base['version'] . '/' . $this->api_base['submit'] . '"; ';
-		echo 'window.pfSiteData.categories_endpoint = "'. trailingslashit(\get_site_url()) . 'wp-json/wp/v2/categories"; ';
-		echo 'window.pfSiteData.fontFace = "' . $fontFaceJS . '"';
+		echo 'window.pfSiteData.site_url = "'. esc_js( \get_site_url() ) . '"; ';
+		echo 'window.pfSiteData.plugin_url = "'. esc_js( plugin_dir_url( dirname(dirname(__FILE__)) ) ) . '"; ';
+		echo 'window.pfSiteData.submit_endpoint = "' . esc_js( trailingslashit(\get_site_url()) . 'wp-json/' . $this->api_base['base_namespace'] . $this->api_base['version'] . '/' . $this->api_base['submit'] ) . '"; ';
+		echo 'window.pfSiteData.categories_endpoint = "'. esc_js( trailingslashit(\get_site_url()) ) . 'wp-json/wp/v2/categories"; ';
+		echo 'window.pfSiteData.fontFace = "' . esc_js( $fontFaceJS ) . '"';
 		include_once PF_ROOT . '/assets/js/jws.js';
 		include_once PF_ROOT . '/assets/js/jwt.js';
 
