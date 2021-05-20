@@ -1,5 +1,6 @@
 <?php
 ?>
+	<?php // phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction ?>
 	<p class="description"><?php _e( '<strong>PressForward Modules</strong> are addons to alter or improve the functionality of the plugin.', 'pf' ) ?></p>
 	<hr />
 		<?php
