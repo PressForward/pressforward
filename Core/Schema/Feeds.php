@@ -226,7 +226,7 @@ class Feeds implements HasActions, HasFilters {
 	public function move_feed_tags_submenu( $pf ) {
 		global $typenow, $pagenow;
 		// var_dump($pf, $pagenow, $typenow); die();
-		if ( ( 'term.php' === $pagenow || 'edit-tags.php' === $pagenow ) && ! empty( $_GET['taxonomy'] ) && $this->tag_taxonomy === stripslashes( $_GET['taxonomy'] ) ) {
+		if ( ( 'term.php' === $pagenow || 'edit-tags.php' === $pagenow ) && ! empty( $_GET['taxonomy'] ) && $this->tag_taxonomy === sanitize_text_field( wp_unslash( $_GET['taxonomy'] ) ) ) {
 			$pf = 'pf-menu';
 		}
 		return $pf;
@@ -303,7 +303,7 @@ class Feeds implements HasActions, HasFilters {
 		}
 		echo '<div class="misc-pub-section misc-pub-section-last">
 	         <span id="pf_no_feed_alert_single">'
-			 . '<label><input type="checkbox"' . ( ! empty( $value ) ? ' checked="checked" ' : null ) . 'value="1" name="pf_no_feed_alert" /> No alerts, never let feed go inactive.</label>'
+			 . '<label><input type="checkbox"' . ( ! empty( $value ) ? ' checked="checked" ' : null ) . 'value="1" name="pf_no_feed_alert" /> ' . esc_html__( 'No alerts, never let feed go inactive.', 'pf' ) . '</label>'
 		. '</span></div>';
 	}
 
@@ -315,7 +315,8 @@ class Feeds implements HasActions, HasFilters {
 		if ( empty( $_POST['pf_no_feed_alert'] ) ) {
 			pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_no_feed_alert', 0 );
 		} else {
-				pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_no_feed_alert', $_POST['pf_no_feed_alert'] );
+			$no_feed_alert = isset( $_POST['pf_no_feed_alert'] ) ? sanitize_text_field( wp_unslash( $_POST['pf_no_feed_alert'] ) ) : '';
+			pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_no_feed_alert', $pf_no_feed_alert );
 		}
 
 		return $post_id;
@@ -344,7 +345,7 @@ class Feeds implements HasActions, HasFilters {
 			return;
 		}
 		$counts = $this->count_feed_items_collected( $post_id );
-		echo $counts->publish;
+		echo (int) $counts->publish;
 	}
 
 	/**
@@ -438,7 +439,7 @@ class Feeds implements HasActions, HasFilters {
 		} else {
 			$edit_actions = '';
 		}
-		$actions['edit'] = '<span class="inline pf-url" style="visibility:visible;color:grey;">' . $url . '</span><br/>';
+		$actions['edit'] = '<span class="inline pf-url" style="visibility:visible;color:grey;">' . esc_attr( $url ) . '</span><br/>';
 		$ab_msg          = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'ab_alert_msg', true );
 		if ( ! empty( $ab_msg ) ) {
 			$actions['edit'] .= '<span class="inline pf-alert-msg" style="">' . pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'ab_alert_msg', true ) . '</span><br/>';
@@ -453,7 +454,7 @@ class Feeds implements HasActions, HasFilters {
 			// var_dump($actions); die();
 		}
 
-		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="' . $post->ID . '" title="Refresh this feed">Refresh&nbsp;Feed&nbsp;Items</a> | ';
+		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="' . esc_attr( $post->ID ) . '" title="' . esc_attr__( 'Refresh this feed', 'pf' ) . '">' . esc_html__( 'Refresh&nbsp;Feed&nbsp;Items', 'pf' ) . '</a> | ';
 		return $actions;
 	}
 
@@ -578,7 +579,7 @@ class Feeds implements HasActions, HasFilters {
 		<li class="feed" id="the-whole-feed-list">
 		<?php
 
-			printf( '<a href="%s" title="%s">%s</a>', $feed_obj->ID, $feed_obj->post_title, $feed_obj->post_title );
+			printf( '<a href="%s" title="%s">%s</a>', esc_attr( $feed_obj->ID ), esc_attr( $feed_obj->post_title ), esc_html( $feed_obj->post_title ) );
 
 		?>
 		</li>
@@ -606,7 +607,7 @@ class Feeds implements HasActions, HasFilters {
 				// var_dump($obj);
 				foreach ( $obj as $folder ) {
 					?>
-					<li class="feed_folder" id="folder-<?php echo $folder['term_id']; ?>">
+					<li class="feed_folder" id="folder-<?php echo esc_attr( $folder['term_id'] ); ?>">
 					<?php
 					$this->the_inside_of_folder( $folder );
 					?>
@@ -623,7 +624,7 @@ class Feeds implements HasActions, HasFilters {
 	public function the_inside_of_folder( $folder, $wrapped = false ) {
 		if ( $wrapped ) {
 			?>
-			<li class="feed_folder" id="folder-<?php echo $folder['term_id']; ?>">
+			<li class="feed_folder" id="folder-<?php echo esc_attr( $folder['term_id'] ); ?>">
 			<?php
 		}
 		$this->the_folder( $folder );
@@ -674,7 +675,7 @@ class Feeds implements HasActions, HasFilters {
 		?>
 
 		<?php
-			printf( '<a href="%s" class="folder" title="%s">%s</a>', $term_obj->term_id, $term_obj->name, $term_obj->name );
+			printf( '<a href="%s" class="folder" title="%s">%s</a>', esc_attr( $term_obj->term_id ), esc_attr( $term_obj->name ), esc_html( $term_obj->name ) );
 
 		?>
 
@@ -690,10 +691,10 @@ class Feeds implements HasActions, HasFilters {
 			return;
 		}
 		?>
-		<li class="feed" id="feed-<?php echo $feed_obj->ID; ?>">
+		<li class="feed" id="feed-<?php echo esc_attr( $feed_obj->ID ); ?>">
 		<?php
 
-			printf( '<a href="%s" title="%s">%s</a>', $feed_obj->ID, $feed_obj->post_title, $feed_obj->post_title );
+			printf( '<a href="%s" title="%s">%s</a>', esc_attr( $feed_obj->ID ), esc_attr( $feed_obj->post_title ), esc_html( $feed_obj->post_title ) );
 
 		?>
 		</li>
@@ -704,7 +705,7 @@ class Feeds implements HasActions, HasFilters {
 		global $pagenow;
 		/* Check current admin page. */
 		if ( $pagenow == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == $this->post_type ) {
-			wp_redirect( admin_url( '/admin.php?page=pf-feeder', 'http' ), 301 );
+			wp_safe_redirect( admin_url( '/admin.php?page=pf-feeder', 'http' ), 301 );
 			exit;
 		}
 	}
