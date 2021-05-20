@@ -85,7 +85,8 @@ class MetaCheckEndpoint implements HasActions {
 					//var_dump($_GET);
 					$return_var = false;
 					try {
-						$key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin($_GET['k']));
+						$the_key = isset( $_GET['k'] ) ? sanitize_text_field( wp_unslash( $_GET['k'] ) ) : '';
+						$key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin( $the_key ));
 						if (!$key){
 							$return_var = new WP_Error( 'auth_fail_id', __( "Request was signed with incorrect key.", "pf" ) );
 						}
@@ -126,7 +127,7 @@ class MetaCheckEndpoint implements HasActions {
     }
 
 	public function get_nominate_this_script(){
-        $url = $_GET['url'];
+        $url = isset( $_GET['url'] ) ? sanitize_text_field( wp_unslash( $_GET['url'] ) ) : '';
         $obj = new stdClass();
         $metas = new stdClass();
         $og_data = new stdClass();
@@ -134,7 +135,8 @@ class MetaCheckEndpoint implements HasActions {
         if (empty($_GET['doc'])){
             $og = pressforward( 'library.opengraph' )->fetch( $url );
         } else {
-            $og = pressforward( 'library.opengraph' )->process( $_GET['doc'] );
+			$doc = sanitize_text_field( wp_unslash( $_GET['doc'] ) );
+            $og = pressforward( 'library.opengraph' )->process( $doc );
         }
         if ( false !== $og ){
             if ( ! empty( $og ) && ! empty( $og->article_tag ) ) {
