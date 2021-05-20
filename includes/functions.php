@@ -57,7 +57,7 @@ function pressforward_register_module( $args ) {
  * @since 1.7
  */
 function pf_admin_url() {
-	echo pf_get_admin_url();
+	echo esc_url( pf_get_admin_url() );
 }
 	/**
 	 * Returns the URL of the admin page
@@ -75,6 +75,7 @@ function pf_get_admin_url() {
  * @since 1.7
  */
 function pf_shortcut_link() {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo pf_get_shortcut_link();
 }
 
@@ -410,7 +411,7 @@ function pf_prep_item_for_submit( $item ) {
 			$itemPart = implode( ',',$itemPart );
 		}
 
-		echo '<input type="hidden" name="' . $itemKey . '" id="' . $itemKey . '_' . $itemid . '" id="' . $itemKey . '" value="' . $itemPart . '" />';
+		echo '<input type="hidden" name="' . esc_attr( $itemKey ) . '" id="' . esc_attr( $itemKey . '_' . $itemid ) . '" id="' . esc_attr( $itemKey ) . '" value="' . esc_attr( $itemPart ) . '" />';
 
 	}
 
@@ -507,11 +508,11 @@ function pf_nom_class_tagger( $array = array() ) {
 
 			foreach ( $class as $subclass ) {
 				echo ' ';
-				echo pf_slugger( $class, true, false, true );
+				echo esc_attr( pf_slugger( $class, true, false, true ) );
 			}
 		} else {
 			echo ' ';
-			echo pf_slugger( $class, true, false, true );
+			echo esc_attr( pf_slugger( $class, true, false, true ) );
 		}
 	}
 
@@ -854,8 +855,8 @@ function pf_forward_unto_source() {
 		if ( has_action( 'wpseo_head' ) ) {
 
 		} else {
-			echo '<link rel="canonical" href="' . $link . '" />';
-			echo '<meta property="og:url" content="' . $link . '" />';
+			echo '<link rel="canonical" href="' . esc_attr( $link ) . '" />';
+			echo '<meta property="og:url" content="' . esc_attr( $link ) . '" />';
 			add_filter( 'wds_process_canonical', '__return_false');
 		}
 		$wait = get_option( 'pf_link_to_source', 0 );
@@ -865,7 +866,7 @@ function pf_forward_unto_source() {
 
 		} else {
 			if ( ( $wait > 0 ) && ( 'no-forward' !== $post_check ) ) {
-				echo '<META HTTP-EQUIV="refresh" CONTENT="' . $wait . ';URL=' . $link . '">';
+				echo '<META HTTP-EQUIV="refresh" CONTENT="' . esc_attr( $wait ) . ';URL=' . esc_attr( $link ) . '">';
 				?>
 					<script type="text/javascript">console.log('You are being redirected to the source item.');</script>
 				<?php
@@ -1005,7 +1006,7 @@ function prep_archives_query( $q ) {
 		global $wpdb;
 
 	if ( isset( $_GET['pc'] ) ) {
-		$offset = $_GET['pc'] -1;
+		$offset = intval( $_GET['pc'] ) - 1;
 		$offset = $offset * 20;
 	} else {
 		$offset = 0;
@@ -1060,7 +1061,10 @@ function prep_archives_query( $q ) {
 		$pagefull = 20;
 		$user_id = get_current_user_id();
 		$read_id = pf_get_relationship_type_id( 'archive' );
-		$search = $_POST['search-terms'];
+
+		$search = sanitize_text_field( wp_unslash( $_POST['search-terms'] ) );
+		$like   = '%' . $wpdb->esc_like( $search ) . '%';
+
 		$q = $wpdb->prepare("
 				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
@@ -1073,7 +1077,7 @@ function prep_archives_query( $q ) {
 				GROUP BY {$wpdb->posts}.ID
 				ORDER BY {$wpdb->postmeta}.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$offset}
-			 ", 'nomination', '%' . $search . '%', '%' . $search . '%');
+			 ", 'nomination', $like, $like );
 	} elseif ( isset( $_GET['pf-see'] ) && ('starred-only' == $_GET['pf-see']) ) {
 		$pagefull = 20;
 		$user_id = get_current_user_id();
@@ -1143,9 +1147,9 @@ function pf_iterate_cycle_state( $option_name, $option_limit = false, $echo = fa
 		update_option( PF_SLUG . '_' . $option_name, $retrieval_cycle );
 	}
 	if ( $echo ) {
-		echo '<br />Day: ' . $retrieval_cycle['day'];
-		echo '<br />Week: ' . $retrieval_cycle['week'];
-		echo '<br />Month: ' . $retrieval_cycle['month'];
+		echo '<br />' . esc_html( sprintf( __( 'Day: %', 'pressforward' ), $retrieval_cycle['day'] ) );
+		echo '<br />' . esc_html( sprintf( __( 'Week: %', 'pressforward' ), $retrieval_cycle['week'] ) );
+		echo '<br />' . esc_html( sprintf( __( 'Month: %', 'pressforward' ), $retrieval_cycle['month'] ) );
 	} elseif ( ! $option_limit ) {
 		return $retrieval_cycle;
 	} elseif ( $option_limit ) {
@@ -1376,7 +1380,8 @@ function pf_process_delete_queue() {
 		return;
 	}
 
-	$nonce = $_GET['pf_process_delete_queue'];
+	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	$nonce       = wp_unslash( $_GET['pf_process_delete_queue'] );
 	$saved_nonce = get_option( 'pf_delete_queue_nonce' );
 	if ( $saved_nonce !== $nonce ) {
 		pf_log( 'nonce indicates not ready.' );
