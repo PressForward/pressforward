@@ -27,7 +27,8 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
 	$posted = nominate_it();
 	$post_ID = $posted;
 } else {
-	$title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( stripslashes( $_GET['t'] ) , ENT_QUOTES ) ) ) : '';
+	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	$title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( wp_unslash( $_GET['t'] ) , ENT_QUOTES ) ) ) : '';
 	// $post_ID = wp_insert_post(array('post_title' => $title, 'post_type' => 'nomination', 'guid' => $_GET['u']));
 	// $post_ID = $post->ID;
 	// pf_log('Establish post '.$post_ID);
@@ -37,7 +38,8 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
 	// Set Variables
 	$selection = '';
 	if ( ! empty( $_GET['s'] ) ) {
-		$selection = str_replace( '&apos;', "'", stripslashes( $_GET['s'] ) );
+		$selection_search_term = sanitize_text_field( wp_unslash( $_GET['s'] ) );
+		$selection = str_replace( '&apos;', "'", $selection_search_term );
 		$selection = trim( htmlspecialchars( html_entity_decode( $selection, ENT_QUOTES ) ) );
 	}
 
@@ -47,8 +49,10 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
 		$selection = '<blockquote>' . $selection . '</blockquote>';
 	}
 
-	$url = isset( $_GET['u'] ) ? esc_url( $_GET['u'] ) : '';
-	$image = isset( $_GET['i'] ) ? $_GET['i'] : '';
+	$url = isset( $_GET['u'] ) ? esc_url( sanitize_text_field( wp_unslash( $_GET['u'] ) ) ) : '';
+	$image = isset( $_GET['i'] ) ? sanitize_text_field( wp_unslash( $_GET['i'] ) ): '';
+
+	$current_url = isset( $_SERVER['PHP_SELF'] ) ? sanitize_text_field( wp_unslash( $_SERVER['PHP_SELF'] ) ) : '';
 
 	if ( ! empty( $_REQUEST['ajax'] ) ) {
 		switch ( $_REQUEST['ajax'] ) {
@@ -67,10 +71,10 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
     			/* ]]> */
     			</script>
     			<div class="postbox">
-    				<h2><label for="embed-code"><?php _e( 'Embed Code', 'pf' ) ?></label></h2>
+    				<h2><label for="embed-code"><?php esc_html_e( 'Embed Code', 'pf' ) ?></label></h2>
     				<div class="inside">
     					<textarea name="embed-code" id="embed-code" rows="8" cols="40"><?php echo esc_textarea( $selection ); ?></textarea>
-    					<p id="options"><a href="#" class="select button"><?php _e( 'Insert Video', 'pf' ); ?></a> <a href="#" class="close button"><?php _e( 'Cancel', 'pf' ); ?></a></p>
+    					<p id="options"><a href="#" class="select button"><?php esc_html_e( 'Insert Video', 'pf' ); ?></a> <a href="#" class="close button"><?php esc_html_e( 'Cancel', 'pf' ); ?></a></p>
     				</div>
     			</div>
     			<?php break;
@@ -86,7 +90,7 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
     				});
     				/* ]]> */
     			</script>
-    			<h3 class="tb"><label for="tb_this_photo_description"><?php _e( 'Description', 'pf' ); ?></label></h3>
+    			<h3 class="tb"><label for="tb_this_photo_description"><?php esc_html_e( 'Description', 'pf' ); ?></label></h3>
     			<div class="titlediv">
     				<div class="titlewrap">
     					<input id="tb_this_photo_description" name="photo_description" class="tb_this_photo_description tbtitle text" onkeypress="if(event.keyCode==13) image_selector(this);" value="<?php echo esc_attr( $title );?>"/>
@@ -100,7 +104,7 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
     				</a>
     			</p>
 
-    			<p id="options"><a href="#" class="select button"><?php _e( 'Insert Image','pf' ); ?></a> <a href="#" class="cancel button"><?php _e( 'Cancel','pf' ); ?></a></p>
+    			<p id="options"><a href="#" class="select button"><?php esc_html_e( 'Insert Image','pf' ); ?></a> <a href="#" class="cancel button"><?php esc_html_e( 'Cancel','pf' ); ?></a></p>
     			<?php break;
 			case 'photo_images':
 				/**
@@ -140,6 +144,7 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
 					return "'" . implode( "','", $sources ) . "'";
 				}
 				$url = wp_kses( urldecode( $url ), null );
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo 'new Array(' . get_images_from_uri( $url ) . ')';
 			break;
 
@@ -151,7 +156,7 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
 				var my_src = eval(
 					jQuery.ajax({
 						type: "GET",
-						url: "<?php echo esc_url( $_SERVER['PHP_SELF'] ); ?>",
+						url: "<?php echo esc_url( $current_url ); ?>",
 						cache : false,
 						async : false,
 						data: "ajax=photo_images&u=<?php echo urlencode( $url ); ?>",
@@ -162,7 +167,7 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
 					var my_src = eval(
 						jQuery.ajax({
 							type: "GET",
-							url: "<?php echo esc_url( $_SERVER['PHP_SELF'] ); ?>",
+							url: "<?php echo esc_url( $current_url ); ?>",
 							cache : false,
 							async : false,
 							data: "ajax=photo_images&u=<?php echo urlencode( $url ); ?>",
@@ -170,7 +175,7 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
 						}).responseText
 					);
 					if(my_src.length == 0) {
-						strtoappend = '<?php _e( 'Unable to retrieve images or no images on page.','pf' ); ?>';
+						strtoappend = '<?php esc_html_e( 'Unable to retrieve images or no images on page.','pf' ); ?>';
 					}
 				}
 				}
@@ -208,7 +213,7 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
 						if(length == 0) length = 1;
 						jQuery('.photolist').append('<input name="photo_src[' + length + ']" value="' + img +'" type="hidden"/>');
 						jQuery('.photolist').append('<input name="photo_description[' + length + ']" value="' + desc +'" type="hidden"/>');
-						insert_editor( "\n\n" + encodeURI('<p style="text-align: center;"><a href="<?php echo $url; ?>"><img src="' + img +'" alt="' + desc + '" /></a></p>'));
+						insert_editor( "\n\n" + encodeURI('<p style="text-align: center;"><a href="<?php echo esc_js( $url) ; ?>"><img src="' + img +'" alt="' + desc + '" /></a></p>'));
 					}
 					return false;
 				}
@@ -231,7 +236,7 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
 					return false;
 				}
 
-				jQuery('#extra-fields').html('<div class="postbox"><h2><?php _e( 'Add Photos','pf' ); ?> <small id="photo_directions">(<?php _e( 'click images to select' ) ?>)</small></h2><ul class="actions"><li><a href="#" id="photo-add-url" class="button button-small"><?php _e( 'Add from URL','pf' ) ?> +</a></li></ul><div class="inside"><div class="titlewrap"><div id="img_container"></div></div><p id="options"><a href="#" class="close button"><?php _e( 'Cancel','pf' ); ?></a><a href="#" class="refresh button"><?php _e( 'Refresh','pf' ); ?></a></p></div>');
+				jQuery('#extra-fields').html('<div class="postbox"><h2><?php esc_html_e( 'Add Photos','pf' ); ?> <small id="photo_directions">(<?php esc_html_e( 'click images to select' ) ?>)</small></h2><ul class="actions"><li><a href="#" id="photo-add-url" class="button button-small"><?php esc_html_e( 'Add from URL','pf' ) ?> +</a></li></ul><div class="inside"><div class="titlewrap"><div id="img_container"></div></div><p id="options"><a href="#" class="close button"><?php esc_html_e( 'Cancel','pf' ); ?></a><a href="#" class="refresh button"><?php esc_html_e( 'Refresh','pf' ); ?></a></p></div>');
 				jQuery('#img_container').html(strtoappend);
 				<?php break;
 		}
@@ -242,13 +247,13 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
 	wp_enqueue_script( 'post' );
 	_wp_admin_html_begin();
 ?>
-<title><?php _e( 'Nominate This','pf' ) ?></title>
+<title><?php esc_html_e( 'Nominate This','pf' ) ?></title>
 <script type="text/javascript">
 //<![CDATA[
 addLoadEvent = function(func){if(typeof jQuery!="undefined")jQuery(document).ready(func);else if(typeof wpOnload!='function'){wpOnload=func;}else{var oldonload=wpOnload;wpOnload=function(){oldonload();func();}}};
-var userSettings = {'url':'<?php echo SITECOOKIEPATH; ?>','uid':'<?php if ( ! isset( $current_user ) ) { $current_user = wp_get_current_user();
-} echo $current_user->ID; ?>','time':'<?php echo time() ?>'};
-var ajaxurl = '<?php echo admin_url( 'admin-ajax.php', 'relative' ); ?>', pagenow = 'nominate-this', isRtl = <?php echo (int) is_rtl(); ?>;
+var userSettings = {'url':'<?php echo esc_js( SITECOOKIEPATH ); ?>','uid':'<?php if ( ! isset( $current_user ) ) { $current_user = wp_get_current_user();
+} echo esc_js( $current_user->ID ); ?>','time':'<?php echo esc_js( time() ); ?>'};
+var ajaxurl = '<?php echo esc_js( admin_url( 'admin-ajax.php', 'relative' ) ); ?>', pagenow = 'nominate-this', isRtl = <?php echo (int) is_rtl(); ?>;
 var photostorage = false;
 //]]>
 </script>
@@ -321,7 +326,7 @@ var photostorage = false;
 		jQuery('#extra-fields').html('');
 		switch(tab_name) {
 			case 'video' :
-				jQuery('#extra-fields').load('<?php echo esc_url( $_SERVER['PHP_SELF'] ); ?>', { ajax: 'video', s: '<?php echo esc_attr( $selection ); ?>'}, function() {
+				jQuery('#extra-fields').load('<?php echo esc_url( $current_url ); ?>', { ajax: 'video', s: '<?php echo esc_attr( $selection ); ?>'}, function() {
 					<?php
 					$content = '';
 					if ( preg_match( '/youtube\.com\/watch/i', $url ) ) {
@@ -340,6 +345,7 @@ var photostorage = false;
 						$content = $selection;
 					}
 					?>
+					<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					jQuery('#embed-code').prepend('<?php echo htmlentities( $content ); ?>');
 				});
 				jQuery('#extra-fields').show();
@@ -368,8 +374,8 @@ var photostorage = false;
 					jQuery.ajax({
 						type: "GET",
 						cache : false,
-						url: "<?php echo esc_url( $_SERVER['PHP_SELF'] ); ?>",
-						data: "ajax=photo_js&u=<?php echo urlencode( $url )?>",
+						url: "<?php echo esc_js( $current_url ); ?>",
+						data: "ajax=photo_js&u=<?php echo esc_js( urlencode( $url ) ); ?>",
 						dataType : "script",
 						success : function(data) {
 							eval(data);
@@ -412,12 +418,12 @@ var photostorage = false;
 $admin_body_class = ( is_rtl() ) ? 'rtl' : '';
 $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( '_', '-', get_locale() ) ) );
 ?>
-<body class="press-this wp-admin wp-core-ui nominate-this <?php echo $admin_body_class; ?>">
+<body class="press-this wp-admin wp-core-ui nominate-this <?php echo esc_attr( $admin_body_class ); ?>">
 <?php
 //var_dump('<pre>',$_GET);
-	if( 2 == $_GET['pf-nominate-this']) {
+	if ( isset( $_GET['pf-nominate-this'] ) && 2 === intval( $_GET['pf-nominate-this'] ) ) {
 		$post_url = trailingslashit(get_bloginfo('wpurl')).'wp-admin/edit.php?pf-nominate-this=2';
-		echo '<form action="'.$post_url.'&action=post" method="post">';
+		echo '<form action="' . esc_attr( $post_url ) . '&action=post" method="post">';
 	} else {
 		echo '<form action="nominate-this.php?action=post" method="post">';
 	}
@@ -450,7 +456,7 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 		?>
 			<?php  ?>
 			<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr( $title );?>" />
-			<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo current_time( 'mysql' ); ?>" />
+			<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo esc_attr( current_time( 'mysql' ) ); ?>" />
 			<?php // Metadata goes here.
 			if ( isset( $url ) && ! empty( $url ) && ($url) != '' ) {
 				pf_log( 'Getting OpenGraph image on ' );
@@ -477,7 +483,7 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 		<div id="wphead">
 			<img id="header-logo" src="<?php echo esc_url( includes_url( 'images/blank.gif' ) ); ?>" alt="" width="16" height="16" />
 			<h1 id="site-heading">
-				<a href="<?php echo get_option( 'home' ); ?>/" target="_blank">
+				<a href="<?php echo esc_attr( get_option( 'home' ) ) ; ?>/" target="_blank">
 					<span id="site-title"><?php bloginfo( 'name' ); ?></span>
 				</a>
 			</h1>
@@ -490,18 +496,18 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 			if ( $pt == 'nomination' ) {
 				?>
                 <div id="message" class="updated">
-                <p><strong><?php _e( 'Your nomination has been saved.' ); ?></strong>
-                    <a href="#" onclick="window.close();"><?php _e( 'Close Window' ); ?></a>
+                <p><strong><?php esc_html_e( 'Your nomination has been saved.', 'pressforward' ); ?></strong>
+                    <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pressforward' ); ?></a>
                     </p>
                 </div>
 				<?php
 			} else {
 				?>
                 <div id="message" class="updated">
-                <p><strong><?php _e( 'Your post has been saved.' ); ?></strong>
-                <a onclick="window.opener.location.assign(this.href); window.close();" href="<?php echo get_permalink( $post_ID ); ?>"><?php _e( 'View post' ); ?></a>
-                | <a href="<?php echo get_edit_post_link( $post_ID ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php _e( 'Edit Post' ); ?></a>
-                | <a href="#" onclick="window.close();"><?php _e( 'Close Window' ); ?></a></p>
+                <p><strong><?php esc_html_e( 'Your post has been saved.', 'pressforward' ); ?></strong>
+                <a onclick="window.opener.location.assign(this.href); window.close();" href="<?php echo esc_attr( get_permalink( $post_ID ) ); ?>"><?php esc_html_e( 'View post', 'pressforward' ); ?></a>
+                | <a href="<?php echo esc_attr( get_edit_post_link( $post_ID ) ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php esc_html_e( 'Edit Post', 'pressforward' ); ?></a>
+                | <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pressforward' ); ?></a></p>
                 </div>
 				<?php
 			}
@@ -514,7 +520,7 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 				}
 				// var_dump($feed_nom); die();
 				?>
-                <div id="nom-message" class="<?php echo $feed_nom_class; ?>">
+                <div id="nom-message" class="<?php echo esc_attr( $feed_nom_class ); ?>">
                   <p><strong><?php
 				  	if ( ! current_user_can( 'publish_posts' ) || ( false == WP_DEBUG ) ) {
 				  		print_r( $feed_nom['simple'] );
@@ -526,13 +532,13 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 					<?php
 					if ( 0 !== $feed_nom['id'] ) {
 						?>
-                      <a href="<?php echo get_edit_post_link( $feed_nom['id'] ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php _e( 'Edit Feed' ); ?></a>
+                      <a href="<?php echo esc_attr( get_edit_post_link( $feed_nom['id'] ) ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php esc_html_e( 'Edit Feed', 'pressforward' ); ?></a>
                     <?php
 					} else {
 
 					}
 					?>
-                  | <a href="#" onclick="window.close();"><?php _e( 'Close Window' ); ?></a></p>
+                  | <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pressforward' ); ?></a></p>
                 </div>
 				<?php
 				update_option( 'pf_last_nominated_feed', array() );
@@ -596,7 +602,7 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 		remove_action( 'media_buttons', 'media_buttons' );
 		add_action( 'media_buttons', 'nominate_this_media_buttons' );
 		function nominate_this_media_buttons() {
-			_e( 'Add:','pf' );
+			esc_html_e( 'Add:','pf' );
 
 			if ( current_user_can( 'upload_files' ) ) {
 				?>
@@ -618,18 +624,19 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 </form>
 <div id="photo-add-url-div" style="display:none;">
 	<table><tr>
-	<td><label for="this_photo"><?php _e( 'URL','pf' ) ?></label></td>
+	<td><label for="this_photo"><?php esc_html_e( 'URL','pf' ) ?></label></td>
 	<td><input type="text" id="this_photo" name="this_photo" class="tb_this_photo text" onkeypress="if(event.keyCode==13) image_selector(this);" /></td>
 	</tr><tr>
-	<td><label for="this_photo_description"><?php _e( 'Description','pf' ) ?></label></td>
+	<td><label for="this_photo_description"><?php esc_html_e( 'Description','pf' ) ?></label></td>
 	<td><input type="text" id="this_photo_description" name="photo_description" class="tb_this_photo_description text" onkeypress="if(event.keyCode==13) image_selector(this);" value="<?php echo esc_attr( $title );?>"/></td>
 	</tr><tr>
-	<td><input type="button" class="button" onclick="image_selector(this)" value="<?php esc_attr_e( 'Insert Image' ); ?>" /></td>
+	<td><input type="button" class="button" onclick="image_selector(this)" value="<?php esc_attr_e( 'Insert Image', 'pressforward' ); ?>" /></td>
 	</tr></table>
 </div>
 <?php
 do_action( 'admin_footer' );
 do_action( 'admin_print_footer_scripts' );
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 echo '<pre>'.$cache_errors.'</pre>';
 ?>
 <script type="text/javascript">if(typeof wpOnload=='function')wpOnload();</script>
