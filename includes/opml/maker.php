@@ -48,7 +48,7 @@ class OPML_Maker {
 		?>
 		<opml version="2.0">
 		    <head>
-		        <title><?php echo $title; ?></title>
+		        <title><?php echo esc_html( $title ); ?></title>
 		        	<expansionState></expansionState>
 					<linkPublicUrl><?php // @todo ?></linkPublicUrl>
 					<lastCursor>1</lastCursor>
@@ -63,6 +63,7 @@ class OPML_Maker {
 					} else {
 
 					}
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo $this->assemble_tag( 'outline', $folder );
 						// var_dump($folder);
 						$feeds = $this->obj->get_feeds_by_folder( $folder->slug );
@@ -70,6 +71,7 @@ class OPML_Maker {
 					if ( ! empty( $feeds ) ) {
 						foreach ( $feeds as $feed ) {
 							// var_dump($feed);
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							echo "\t\t\t\t" . $this->assemble_tag( 'outline',$feed,true,array( 'folder', 'feedUrl' ) );
 						}
 					}
@@ -84,6 +86,7 @@ class OPML_Maker {
 						if ( $c > 0 ) {
 							echo "\t\t\t";
 						}
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo $this->assemble_tag( 'outline',$feed,true,array( 'folder', 'feedUrl' ) );
 						$c++;
 					}
