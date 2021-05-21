@@ -240,6 +240,7 @@ class Readability {
 	 */
 	protected function dbg( $msg ) {
 		if ( $this->debug ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput
 			echo '* ',$msg, "\n";
 		}
 		$this->external_logger( $msg );

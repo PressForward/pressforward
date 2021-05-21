@@ -146,6 +146,7 @@ class pf_simple_html_dom_node {
 
 	// dump node's tree
 	function dump( $show_attr = true, $deep = 0 ) {
+		// phpcs:disable WordPress.Security
 		$lead = str_repeat( '    ', $deep );
 
 		echo $lead . $this->tag;
@@ -197,6 +198,7 @@ class pf_simple_html_dom_node {
 		echo ' nodes: ' . count( $this->nodes );
 		echo ' tag_start: ' . $this->tag_start;
 		echo "\n";
+		// phpcs:enable WordPress.Security
 
 	}
 
