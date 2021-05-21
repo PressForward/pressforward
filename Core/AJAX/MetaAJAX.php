@@ -89,21 +89,22 @@ EOT;
 			}
 		}
 		$innerbox .= '</ul></div>'; ?>
-			<div id="meta_form_modal_<?php echo $item['post_id']; ?>" class="modal fade meta-form-modal" tabindex="-1" role="dialog" aria-labelledby="meta_form_modal_<?php echo $item['post_id']; ?>_label" aria-hidden="true">
+			<div id="meta_form_modal_<?php echo esc_attr( $item['post_id'] ); ?>" class="modal fade meta-form-modal" tabindex="-1" role="dialog" aria-labelledby="meta_form_modal_<?php echo esc_attr( $item['post_id'] ); ?>_label" aria-hidden="true">
 			  <div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-				<h3 id="meta_form_modal_<?php echo $item['post_id']; ?>_label">Metadata</h3>
+				<h3 id="meta_form_modal_<?php echo esc_attr( $item['post_id'] ); ?>_label"><?php esc_html_e( 'Metadata', 'pf' ); ?></h3>
 			  </div>
 			  <div class="modal-body">
 				<?php
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo $innerbox;
 				$nonce = wp_create_nonce( 'meta_form_nonce_' . $item['post_id'] );
-				echo '<input type="hidden" id="meta_form_' . $item['post_id'] . '_nonce_wpnonce" name="_wpnonce" value="' . $nonce . '">';
+				echo '<input type="hidden" id="meta_form_' . esc_attr( $item['post_id'] ) . '_nonce_wpnonce" name="_wpnonce" value="' . esc_attr( $nonce ) . '">';
 		?>
 			  </div>
 			  <div class="modal-footer">
-				<button type="button" class="save btn btn-success meta_form-save" data-post-id="<?php echo $item['post_id']; ?>" aria-hidden="false" onclick="pf.metaEdit(this)" >Save</button>
-				<button class="btn close-button" data-dismiss="modal" aria-hidden="true">Close</button>
+				<button type="button" class="save btn btn-success meta_form-save" data-post-id="<?php echo esc_attr( $item['post_id'] ); ?>" aria-hidden="false" onclick="pf.metaEdit(this)" ><?php esc_html_e( 'Save', 'pf' ); ?></button>
+				<button class="btn close-button" data-dismiss="modal" aria-hidden="true"><?php esc_html_e( 'Close', 'pf' ); ?></button>
 			  </div>
 			</div>
 		<?php
@@ -111,16 +112,18 @@ EOT;
 
 	public function pf_ajax_update_meta_fields() {
 		if ( isset( $_POST['post_id'] ) ) {
-			$id = $_POST['post_id'];
+			$id = intval( $_POST['post_id'] );
 		} else {
 			pressforward( 'ajax.configuration' )->pf_bad_call( 'pf_ajax_update_meta_fields', 'No post id.' );
 		}
 
-		if ( false == wp_verify_nonce( $_POST['nonce'], 'meta_form_nonce_' . $id ) ) {
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+		if ( false == wp_verify_nonce( $nonce, 'meta_form_nonce_' . $id ) ) {
 			pressforward( 'ajax.configuration' )->pf_bad_call( 'pf_ajax_update_meta_fields', 'Failed Nonce.' );
 		}
 
 		ob_start();
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		foreach ( $_POST['metadata'] as $key => $value ) {
 			switch ( $key ) {
 				case 'item_date':

@@ -46,8 +46,8 @@ class ItemsAJAX implements HasActions {
 	}
 
 	public function pf_ajax_move_to_archive() {
-		$item_post_id = $_POST['item_post_id'];
-		$nom_id       = $_POST['nom_id'];
+		$item_post_id = isset( $_POST['item_post_id'] ) ? intval( $_POST['item_post_id'] ) : 0;
+		$nom_id       = isset( $_POST['nom_id'] ) ? intval( $_POST['nom_id'] ) : 0;
 		$this->metas->update_pf_meta( $nom_id, 'pf_archive', 1 );
 		$this->metas->update_pf_meta( $item_post_id, 'pf_archive', 1 );
 		$check = $this->posts->update_post(
@@ -61,8 +61,8 @@ class ItemsAJAX implements HasActions {
 	}
 
 	public function pf_ajax_move_out_of_archive() {
-		$item_post_id = $_POST['item_post_id'];
-		$nom_id       = $_POST['nom_id'];
+		$item_post_id = isset( $_POST['item_post_id'] ) ? intval( $_POST['item_post_id'] ) : 0;
+		$nom_id       = isset( $_POST['nom_id'] ) ? intval( $_POST['nom_id'] ) : 0;
 		$this->metas->update_pf_meta( $nom_id, 'pf_archive', 'false' );
 		$this->metas->update_pf_meta( $item_post_id, 'pf_archive', 'false' );
 		$check = $this->posts->update_post(
@@ -87,12 +87,12 @@ class ItemsAJAX implements HasActions {
 	function pf_ajax_thing_deleter() {
 		ob_start();
 		if ( isset( $_POST['post_id'] ) ) {
-			$id = $_POST['post_id'];
+			$id = intval( $_POST['post_id'] );
 		} else {
 			pressforward( 'ajax.configuration' )->pf_bad_call( 'pf_ajax_thing_deleter', 'Option not sent' );
 		}
 		if ( isset( $_POST['made_readable'] ) ) {
-			$read_status = $_POST['made_readable'];
+			$read_status = sanitize_text_field( wp_unslash( $_POST['made_readable'] ) );
 		} else {
 			$read_status = false; }
 		$returned = pf_delete_item_tree( $id, true, true );
@@ -114,7 +114,7 @@ class ItemsAJAX implements HasActions {
 
 	function pf_ajax_get_comments() {
 		if ( has_action( 'pf_modal_comments' ) ) {
-			$id_for_comments = $_POST['id_for_comments'];
+			$id_for_comments = isset( $_POST['id_for_comments'] ) ? intval( $_POST['id_for_comments'] ) : 0;
 			do_action( 'pf_modal_comments', $id_for_comments );
 		}
 			die();

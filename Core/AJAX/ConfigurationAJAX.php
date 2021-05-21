@@ -191,6 +191,7 @@ EOT;
 				})();
 		});
 EOT;
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo '<script type="text/javascript">' . $script . '</script>';
 		}
 	}
@@ -390,7 +391,7 @@ EOT;
 	function pf_ajax_retain_display_setting() {
 		ob_start();
 		if ( isset( $_POST['pf_read_state'] ) ) {
-			$read_state = $_POST['pf_read_state'];
+			$read_state = sanitize_text_field( wp_unslash( $_POST['pf_read_state'] ) );
 		} else {
 			$read_status = false;
 		}
@@ -414,13 +415,13 @@ EOT;
 	function pf_ajax_user_setting() {
 		ob_start();
 		if ( isset( $_POST['pf_user_setting'] ) ) {
-			$setting_name = $_POST['pf_user_setting'];
+			$setting_name = sanitize_text_field( wp_unslash( $_POST['pf_user_setting'] ) );
 		} else {
 			$setting_name = false;
 			$this->pf_bad_call( 'pf_ajax_user_setting', 'No setting name, try again.' );
 		}
 		if ( isset( $_POST['setting'] ) ) {
-			$setting = $_POST['setting'];
+			$setting = sanitize_text_field( wp_unslash( $_POST['setting'] ) );
 		} else {
 			$setting = false;
 		}
