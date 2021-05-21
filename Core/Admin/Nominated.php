@@ -68,7 +68,7 @@ class Nominated implements HasActions {
 		// Mockup - https://gomockingbird.com/mockingbird/#mr28na1/I9lz7i
 				// Calling the feedlist within the pf class.
 		if ( isset( $_GET['pc'] ) ) {
-			$page = $_GET['pc'];
+			$page = intval( $_GET['pc'] );
 			$page = $page - 1;
 		} else {
 			$page = 0;
@@ -76,18 +76,18 @@ class Nominated implements HasActions {
 				$count       = $page * 20;
 				$countQ      = 0;
 				$extra_class = '';
-		if ( isset( $_GET['reveal'] ) && ( 'no_hidden' == $_GET['reveal'] ) ) {
+		if ( isset( $_GET['reveal'] ) && ( 'no_hidden' == sanitize_text_field( wp_unslash( $_GET['reveal'] ) ) ) ) {
 			$extra_class .= ' archived_visible';
 		} else {
 			$extra_class .= '';
 		}
 				?>
 				<div class="pf-loader"></div>
-				<div class="list pf_container pf-nominated full<?php echo $extra_class; ?>">
+				<div class="list pf_container pf-nominated full<?php echo esc_attr( $extra_class ); ?>">
 				<header id="app-banner">
 					<div class="title-span title">
 						<?php pressforward( 'controller.template_factory' )->the_page_headline( 'Nominated' ); ?>
-						<button class="btn btn-small" id="fullscreenfeed"> <?php _e( 'Full Screen', 'pf' ); ?> </button>
+						<button class="btn btn-small" id="fullscreenfeed"> <?php esc_html_e( 'Full Screen', 'pf' ); ?> </button>
 					</div><!-- End title -->
 						<?php pressforward( 'admin.templates' )->search_template(); ?>
 				</header><!-- End Header -->
@@ -99,14 +99,14 @@ class Nominated implements HasActions {
 					<?php pressforward( 'admin.templates' )->the_side_menu(); ?>
 					<?php pressforward( 'schema.folders' )->folderbox(); ?>
 					<div id="entries">
-						<?php echo '<img class="loading-top" src="' . PF_URL . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />'; ?>
+						<?php echo '<img class="loading-top" src="' . esc_attr( PF_URL ) . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />'; ?>
 						<div id="errors">
 							<div class="pressforward-alertbox" style="display:none;">
 								<div class="row-fluid">
 									<div class="span11 pf-alert">
 									</div>
 									<div class="span1 pf-dismiss">
-									<i class="icon-remove-circle">Close</i>
+									<i class="icon-remove-circle"><?php esc_html_e( 'Close', 'pf' ); ?></i>
 									</div>
 								</div>
 							</div>
@@ -123,7 +123,7 @@ class Nominated implements HasActions {
 								$metadata['current_user']    = $current_user->slug;
 								$metadata['current_user_id'] = $current_user_id = $current_user->ID;
 							?>
-							<span id="current-user-id"><?php echo $current_user_id; ?></span>
+							<span id="current-user-id"><?php echo esc_html( $current_user_id ); ?></span>
 															</div>
 					<?php
 					echo '<div class="row-fluid" class="nom-row">';
@@ -159,7 +159,7 @@ class Nominated implements HasActions {
 
 					);
 					if ( isset( $_GET['feed'] ) ) {
-						$nom_args['post_parent'] = $_GET['feed'];
+						$nom_args['post_parent'] = intval( $_GET['feed'] );
 					} elseif ( isset( $_GET['folder'] ) ) {
 						$parents_in_folder = new WP_Query(
 							array(
@@ -171,7 +171,8 @@ class Nominated implements HasActions {
 									array(
 										'taxonomy' => pressforward( 'schema.feeds' )->tag_taxonomy,
 										'field'    => 'term_id',
-										'terms'    => $_GET['folder'],
+										// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+										'terms'    => wp_unslash( $_GET['folder'] ),
 									),
 								),
 							)
@@ -306,21 +307,21 @@ class Nominated implements HasActions {
 						$pagePrev = '?page=pf-review' . $limit_q . '&pc=' . $pagePrevNb;
 						$pageNext = '?page=pf-review' . $limit_q . '&pc=' . $pageNextNb;
 						if ( isset( $_GET['folder'] ) ) {
-							$pageQ     = $_GET['folder'];
+							$pageQ     = sanitize_text_field( wp_unslash( $_GET['folder'] ) );
 							$pageQed   = '&folder=' . $pageQ;
 							$pageNext .= $pageQed;
 							$pagePrev .= $pageQed;
 
 						}
 						if ( isset( $_GET['feed'] ) ) {
-							$pageQ     = $_GET['feed'];
+							$pageQ     = sanitize_text_field( wp_unslash( $_GET['feed'] ) );
 							$pageQed   = '&feed=' . $pageQ;
 							$pageNext .= $pageQed;
 							$pagePrev .= $pageQed;
 
 						}
 						if ( isset( $_GET['pf-see'] ) && $_GET['pf-see'] != '' ) {
-							$pageQ     = $_GET['pf-see'];
+							$pageQ     = sanitize_text_field( wp_unslash( $_GET['pf-see'] ) );
 							$pageQed   = '&pf-see=' . $pageQ;
 							$pageNext .= $pageQed;
 							$pagePrev .= $pageQed;
@@ -328,14 +329,14 @@ class Nominated implements HasActions {
 						// Nasty hack because infinite scroll only works starting with page 2 for some reason.
 						echo '<div class="pf-navigation">';
 						if ( $pagePrevNb > 0 ) {
-							echo '<span class="feedprev"><a class="prevnav" href="admin.php' . $pagePrev . '">Previous Page</a></span> | ';
+							echo '<span class="feedprev"><a class="prevnav" href="admin.php' . esc_attr( $pagePrev ) . '">' . esc_html__( 'Previous Page', 'pf' ) . '</a></span> | ';
 						} else {
-							echo '<span class="feedprev">Previous Page</span> | ';
+							echo '<span class="feedprev">' . esc_html__( 'Previous Page', 'pf' ) . '</span> | ';
 						}
 						if ( $pageNextNb > $maxNbPages ) {
-							echo '<span class="feednext">Next Page</span>';
+							echo '<span class="feednext">' . esc_html__( 'Next Page', 'pf' ) . '</span>';
 						} else {
-							echo '<span class="feednext"><a class="nextnav" href="admin.php' . $pageNext . '">Next Page</a></span>';
+							echo '<span class="feednext"><a class="nextnav" href="admin.php' . esc_attr( $pageNext ) . '">' . esc_html__( 'Next Page', 'pf' ) . '</a></span>';
 						}
 						?>
 						<div class="clear"></div>
@@ -352,20 +353,23 @@ class Nominated implements HasActions {
 	public function send_nomination_for_publishing() {
 		global $post;
 
-		ob_start();
-		// verify if this is an auto save routine.
-		// If it is our form has not been submitted, so we dont want to do anything
-		// if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
-		if ( isset( $_POST['post_status'] ) && isset( $_POST['post_type'] ) && ( ( $_POST['post_status'] == 'publish' ) || ( $_POST['post_status'] == 'draft' ) ) && ( $_POST['post_type'] == $this->nomination_slug ) && ! empty( $_POST['ID'] ) ) {
-			// print_r($_POST); die();
-			$item_id = $this->metas->get_post_pf_meta( $_POST['ID'], 'item_id', true );
-			pf_log( 'Sending to last step ' . $item_id . ' from Nomination post ' . $_POST['ID'] );
-			ob_end_clean();
-			return $this->forward_tools->nomination_to_last_step( $item_id, $_POST['ID'] );
-		} else {
-			ob_end_clean();
+		if ( ! isset( $_POST['post_status'] ) || ! isset( $_POST['post_type'] ) || empty( $_POST['ID'] ) ) {
+			return;
 		}
 
+		$post_type   = sanitize_text_field( wp_unslash( $_POST['post_type' ) );
+		$post_status = sanitize_text_field( wp_unslash( $_POST['post_status' ) );
+		$post_id     = intval( $_POST['ID' );
+
+		if ( ( 'publish' === $post_status || 'draft' === $post_status ) && ( $this->nomination_slug === $post_type ) ) {
+			ob_start();
+
+			$item_id = $this->metas->get_post_pf_meta( $post_id, 'item_id', true );
+			pf_log( 'Sending to last step ' . $item_id . ' from Nomination post ' . $post_id );
+			ob_end_clean();
+			return $this->forward_tools->nomination_to_last_step( $item_id, $post_id );
+
+		}
 	}
 
 	public function nominate_this_tile() {
@@ -378,22 +382,22 @@ class Nominated implements HasActions {
 		global $post;
 		switch ( $column ) {
 			case 'nomcount':
-				echo $this->metas->get_post_pf_meta( $post->ID, 'nomination_count', true );
+				echo esc_html( $this->metas->get_post_pf_meta( $post->ID, 'nomination_count', true ) );
 				break;
 			case 'nominatedby':
 				$nominatorID = $this->metas->get_post_pf_meta( $post->ID, 'submitted_by', true );
 				$user        = get_user_by( 'id', $nominatorID );
 				if ( is_a( $user, 'WP_User' ) ) {
-					echo $user->display_name;
+					echo esc_html( $user->display_name );
 				}
 				break;
 			case 'original_author':
 				$orig_auth = $this->metas->get_post_pf_meta( $post->ID, 'item_author', true );
-				echo $orig_auth;
+				echo esc_html( $orig_auth );
 				break;
 			case 'date_nominated':
 				$dateNomed = $this->metas->get_post_pf_meta( $post->ID, 'date_nominated', true );
-				echo $dateNomed;
+				echo esc_html( $dateNomed );
 				break;
 
 		}
@@ -659,14 +663,15 @@ class Nominated implements HasActions {
 		 * @since 1.7
 		 */
 	public static function archive_a_nom() {
-		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
+		$pf_drafted_nonce = isset( $_POST['pf_drafted_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['pf_drafted_nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $pf_drafted_nonce, 'drafter' ) ) {
-			die( $this->__( 'Nonce not recieved. Are you sure you should be archiving?', 'pf' ) );
+			die( esc_html( $this->__( 'Nonce not recieved. Are you sure you should be archiving?', 'pf' ) ) );
 		} else {
 			$current_user    = wp_get_current_user();
 			$current_user_id = $current_user->ID;
-			pressforward( 'controller.metas' )->add_pf_meta( $_POST['nom_id'], 'archived_by_user_status', 'archived_' . $current_user_id );
-			print_r( __( 'Archived.', 'pf' ) );
+			$nom_id          = isset( $_POST['nom_id'] ) ? intval( $_POST['nom_id'] ) : 0;
+			pressforward( 'controller.metas' )->add_pf_meta( $nom_id, 'archived_by_user_status', 'archived_' . $current_user_id );
+			esc_html_e( 'Archived.', 'pf' );
 			// @TODO This should have a real AJAX response.
 			die();
 		}
@@ -674,20 +679,21 @@ class Nominated implements HasActions {
 
 
 	public function meta_box_printer( $title, $variable, $link = false, $anchor_text = 'Link' ) {
-		echo '<strong>' . $title . '</strong>: ';
+		echo '<strong>' . esc_html( $title ) . '</strong>: ';
 		if ( empty( $variable ) ) {
-			echo '<br /><input type="text" name="' . $title . '">';
+			echo '<br /><input type="text" name="' . esc_attr( $title ) . '">';
 		} else {
 			if ( $link === true ) {
 				if ( $anchor_text === 'Link' ) {
 					$anchor_text = $this->__( 'Link', 'pf' );
 				}
 				echo '<a href=';
-				echo $variable;
+				echo esc_attr( $variable );
 				echo '" target="_blank">';
-				echo $anchor_text;
+				echo esc_html( $anchor_text );
 				echo '</a>';
 			} else {
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo $variable;
 			}
 		}
@@ -698,8 +704,9 @@ class Nominated implements HasActions {
 	public function build_nomination() {
 
 		// Verify nonce
-		if ( ! wp_verify_nonce( $_POST[ PF_SLUG . '_nomination_nonce' ], 'nomination' ) ) {
-			die( __( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) ); }
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( empty( $_POST[ PF_SLUG . '_nomination_nonce' ] ) || ! wp_verify_nonce( wp_unslash( $_POST[ PF_SLUG . '_nomination_nonce' ] ), 'nomination' ) ) {
+			die( esc_html__( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) ); }
 
 		if ( '' != ( get_option( 'timezone_string' ) ) ) {
 			date_default_timezone_set( get_option( 'timezone_string' ) );
@@ -713,20 +720,24 @@ class Nominated implements HasActions {
 		ob_start();
 		$current_user = wp_get_current_user();
 		$userID       = $current_user->ID;
+
 		// set up nomination check
-		$item_wp_date = $_POST['item_wp_date'];
-		$item_id      = $_POST['item_id'];
+		$item_wp_date = isset( $_POST['item_wp_date'] ) ? sanitize_text_field( wp_unslash( $_POST['item_wp_date'] ) ) ? '';
+		$item_id      = isset( $_POST['item_id'] ) ? intval( $_POST['item_id'] ) : 0;
+		$item_post_id = isset( $_POST['item_post_id'] ) ? intval( $_POST['item_post_id'] ) : 0;
+
 		// die($item_wp_date);
 		pf_log( 'We handle the item into a nomination?' );
 
-		if ( ! empty( $_POST['pf_amplify'] ) && ( '1' == $_POST['pf_amplify'] ) ) {
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( ! empty( $_POST['pf_amplify'] ) && ( '1' == wp_unslash( $_POST['pf_amplify'] ) ) ) {
 			$amplify = true;
 		} else {
 			$amplify = false;
 		}
 			pf_log( 'Amplification?' );
 			pf_log( $amplify );
-			$nomination_id = $this->forward_tools->item_to_nomination( $item_id, $_POST['item_post_id'] );
+			$nomination_id = $this->forward_tools->item_to_nomination( $item_id, $item_post_id );
 			pf_log( 'ID received:' );
 			pf_log( $nomination_id );
 		if ( is_wp_error( $nomination_id ) || ! $nomination_id ) {
@@ -735,7 +746,7 @@ class Nominated implements HasActions {
 			$response = array(
 				'what'         => 'nomination',
 				'action'       => 'build_nomination',
-				'id'           => $_POST['item_post_id'],
+				'id'           => $item_post_id,
 				'data'         => 'Nomination failed',
 				'supplemental' => array(
 					'originID'  => $item_id,
@@ -767,16 +778,16 @@ class Nominated implements HasActions {
 	public function simple_nom_to_draft( $id = false ) {
 		global $post;
 		// ob_start();
-		$pf_drafted_nonce = $_POST['pf_nomination_nonce'];
+		$pf_drafted_nonce = isset( $_POST['pf_nomination_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['pf_nomination_nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $pf_drafted_nonce, 'nomination' ) ) {
-			die( __( 'Nonce not recieved. Are you sure you should be drafting?', 'pf' ) );
+			die( esc_html__( 'Nonce not recieved. Are you sure you should be drafting?', 'pf' ) );
 		} else {
 			ob_start();
 			if ( ! $id ) {
 				if (array_key_exists('nom_id', $_POST) && !empty($_POST['nom_id'])){
-					$id = $_POST['nom_id'];
+					$id = intval( $_POST['nom_id'] );
 				} else {
-					$post_id = $_POST['post_id'];
+					$post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
 					$item_id = $this->metas->retrieve_meta( $post_id, 'item_id' );
 					$id = $this->forward_tools->is_a_pf_type($item_id, $this->nomination_slug);
 				}
@@ -817,9 +828,9 @@ class Nominated implements HasActions {
 		// verify if this is an auto save routine.
 		// If it is our form has not been submitted, so we dont want to do anything
 		// if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
-		$pf_drafted_nonce = $_POST['pf_drafted_nonce'];
+		$pf_drafted_nonce = isset( $_POST['pf_drafted_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['pf_drafted_nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $pf_drafted_nonce, 'drafter' ) ) {
-			die( __( 'Nonce not recieved. Are you sure you should be drafting?', 'pf' ) );
+			die( esc_html__( 'Nonce not recieved. Are you sure you should be drafting?', 'pf' ) );
 		} else {
 			// Check
 			// print_r(__('Sending to Draft.', 'pf'));
@@ -827,8 +838,10 @@ class Nominated implements HasActions {
 			// print_r($_POST);
 			ob_start();
 
-			$item_id       = $_POST['item_id'];
-			$nomination_id = $this->forward_tools->nomination_to_last_step( $item_id, $_POST['nom_id'] );
+			$item_id = isset( $_POST['item_id'] ) ? intval( $_POST['item_id' ) : 0;
+			$nom_id  = isset( $_POST['nom_id'] ) ? intval( $_POST['nom_id' ) : 0;
+
+			$nomination_id = $this->forward_tools->nomination_to_last_step( $item_id, $nom_id );
 			$response      = array(
 				'what'         => 'draft',
 				'action'       => 'build_nom_draft',

@@ -39,7 +39,7 @@ class Preferences implements HasActions {
 
 	public function display_options_builder() {
 		if ( isset( $_GET['tab'] ) ) {
-			$tab = $_GET['tab'];
+			$tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
 		} else {
 			$tab = 'user'; }
 		$vars = array(
@@ -50,6 +50,8 @@ class Preferences implements HasActions {
 			'settings_tab_group' => '', // $this->prefrences_tab($tab)
 			'tabs'               => $this->tabs(),
 		);
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $this->templates->get_view( array( 'settings', 'settings-page' ), $vars );
 
 		return;
@@ -62,7 +64,7 @@ class Preferences implements HasActions {
 	 * @since 1.7
 	 */
 	function pf_admin_url() {
-		echo pf_get_admin_url();
+		echo esc_url( pf_get_admin_url() );
 	}
 	/**
 	 * Returns the URL of the admin page
@@ -81,7 +83,7 @@ class Preferences implements HasActions {
 		// $enabled_role = $roleObj->name;
 		foreach ( $roles as $slug => $role ) {
 			$defining_capability = pressforward( 'controller.users' )->pf_get_defining_capability_by_role( $slug );
-			?><option value="<?php echo $defining_capability; ?>" <?php selected( $enabled, $defining_capability ); ?>><?php _e( $role, PF_SLUG ); ?></option>
+			?><option value="<?php echo esc_attr( $defining_capability ); ?>" <?php selected( $enabled, $defining_capability ); ?>><?php esc_html_e( $role, PF_SLUG ); ?></option>
 			<?php
 		}
 	}
@@ -92,6 +94,7 @@ class Preferences implements HasActions {
 	 * @since 1.7
 	 */
 	function pf_shortcut_link() {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo pf_get_shortcut_link();
 	}
 
