@@ -149,14 +149,14 @@ class PF_Debugger extends PF_Module {
 			<p>Total Current Feed Items:
 			<?php
 				$feed_item = 'pf_feed_item';
-				echo wp_count_posts( $feed_item )->publish;
+				echo esc_html( wp_count_posts( $feed_item )->publish );
 				// var_dump(wp_count_posts($feed_item));
 				// var_dump(wp_count_posts('post'));
 			?><br />
 			<?php
 				$feed_item = 'pf_feed_item';
-				echo 'Month to date Feed Items: ' . $this->count_the_posts( $feed_item );
-				echo '<br />Last month Feed Items: ' . $this->count_the_posts( $feed_item, -1 );
+				echo 'Month to date Feed Items: ' . esc_html( $this->count_the_posts( $feed_item ) );
+				echo '<br />Last month Feed Items: ' . esc_html( $this->count_the_posts( $feed_item, -1 ) );
 				// var_dump(wp_count_posts($feed_item));
 				// var_dump(wp_count_posts('post'));
 			?>
@@ -164,21 +164,21 @@ class PF_Debugger extends PF_Module {
 			<p>Total Current Nominations:
 			<?php
 				// var_dump(wp_count_posts('nomination'));
-				echo wp_count_posts( 'nomination' )->draft;
-				echo '<br />Month to date Nominations: ' . $this->count_the_posts( 'nomination' );
-				echo '<br />Last month Nominations: ' . $this->count_the_posts( 'nomination', -1 );
+				echo esc_html( wp_count_posts( 'nomination' )->draft );
+				echo '<br />Month to date Nominations: ' . esc_html( $this->count_the_posts( 'nomination' ) );
+				echo '<br />Last month Nominations: ' . esc_html( $this->count_the_posts( 'nomination', -1 ) );
 
 			?>
 			</p>
 			<p>Total Actions Taken:
 			<?php
-				echo current( $action_count[0] );
+				echo esc_html( current( $action_count[0] ) );
 				// echo $action_count;
 			?>
 			</p>
 			<p>Total Nominations Published:
 			<?php
-				echo $nomed_posts;
+				echo esc_html( $nomed_posts );
 				// var_dump($nomed_posts );
 			?>
 			</p>
@@ -204,10 +204,11 @@ class PF_Debugger extends PF_Module {
 			<?php
 			if ( file_exists( $log_path ) ) {
 				echo '<pre>';
+				// phpcs:ignore WordPress.Security.EscapeOutput
 				echo file_get_contents( $log_path );
 				echo '</pre>';
 			} else {
-				echo 'The log does not exist.';
+				esc_html_e( 'The log does not exist.', 'pf' );
 			}
 			?>
 		</div>
@@ -251,18 +252,18 @@ class PF_Debugger extends PF_Module {
 		if ( current_user_can( get_option( 'pf_menu_log_access', 'administrator' ) ) ) {
 			?>
 			<p>
-			<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="<?php _e( 'Reset all Feed Retrieval Options', 'pf' ); ?>"><?php _e( 'Reset all Feed Retrieval Options', 'pf' ); ?></button>    <br />
+			<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="<?php esc_attr_e( 'Reset all Feed Retrieval Options', 'pf' ); ?>"><?php esc_html_e( 'Reset all Feed Retrieval Options', 'pf' ); ?></button>    <br />
 			<?php
 				$feed_go = get_option( PF_SLUG . '_feeds_go_switch', 0 );
 				$feed_iteration = get_option( PF_SLUG . '_feeds_iteration', 0 );
 				$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0 );
 				$chunk_state = get_option( PF_SLUG . '_ready_to_chunk', 1 );
 				$retrieval_state = sprintf( __( 'Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d  Ready to chunk? %4$d', 'pf' ), $feed_go, $feed_iteration, $retrieval_state, $chunk_state );
-				echo $retrieval_state;
+				echo esc_html( $retrieval_state );
 
 			?>
 			<br />
-			<button type="button" class="redoFeeds btn btn-warning" id="resetFeedOps" value="<?php _e( 'Switch feeds to new retrieval setup', 'pf' ); ?>"><?php _e( 'Switch feeds to new retrieval setup', 'pf' ); ?></button>    <br />
+			<button type="button" class="redoFeeds btn btn-warning" id="resetFeedOps" value="<?php esc_attr_e( 'Switch feeds to new retrieval setup', 'pf' ); ?>"><?php esc_html_e( 'Switch feeds to new retrieval setup', 'pf' ); ?></button>    <br />
 			</p>
 			<?php
 		}

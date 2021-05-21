@@ -317,29 +317,29 @@ class PF_RSS_Import extends PF_Module {
 		?>
 		<div class="pf-opt-group">
             <div class="rss-box ">
-                    <h3 class="hndle"><span><?php _e( 'Subscribe to Feeds', 'pf' ); ?></span></h3>
+                    <h3 class="hndle"><span><?php esc_html_e( 'Subscribe to Feeds', 'pf' ); ?></span></h3>
                     <div class="inside">
-                        <div><?php _e( 'Add Single Feed', 'pf' ); ?> (RSS or Atom)</div>
+                        <div><?php esc_html_e( 'Add Single Feed', 'pf' ); ?> (RSS or Atom)</div>
                             <div class="pf_feeder_input_box">
-                                <input id="<?php echo PF_SLUG . '_feedlist[single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo PF_SLUG . '_feedlist[single]'; ?>" value="" />
-                                <label class="description" for="<?php echo PF_SLUG . '_feedlist[single]'; ?>"><?php _e( '*Complete URL path', 'pf' ); ?></label>
-                                <a href="http://en.wikipedia.org/wiki/RSS">What is an RSS Feed?</a>
+                                <input id="<?php echo esc_attr( PF_SLUG ) . '_feedlist[single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo esc_attr( PF_SLUG ) . '_feedlist[single]'; ?>" value="" />
+                                <label class="description" for="<?php echo esc_attr( PF_SLUG ) . '_feedlist[single]'; ?>"><?php esc_html_e( '*Complete URL path', 'pf' ); ?></label>
+                                <a href="http://en.wikipedia.org/wiki/RSS"><?php esc_html_e( 'What is an RSS Feed?', 'pf' ); ?></a>
 
 
                             </div>
 
-                        <div><?php _e( 'Add OPML File', 'pf' ); ?></div>
+                        <div><?php esc_html_e( 'Add OPML File', 'pf' ); ?></div>
                             <div class="pf_feeder_input_box">
-                                <input id="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" class="pf_opml_file_upload_field regular-text" type="text" name="<?php echo PF_SLUG . '_feedlist[opml]'; ?>" value="" />
-                                <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml]'; ?>"><?php _e( '*Drop link to OPML here. No HTTPS allowed.', 'pf' ); ?></label>
-								or <a class="button-primary pf_primary_media_opml_upload" ><?php _e( 'Upload OPML file', 'pf' ); ?></a>
+                                <input id="<?php echo esc_attr( PF_SLUG ) . '_feedlist[opml]'; ?>" class="pf_opml_file_upload_field regular-text" type="text" name="<?php echo esc_attr( PF_SLUG ) . '_feedlist[opml]'; ?>" value="" />
+                                <label class="description" for="<?php echo esc_attr( PF_SLUG ) . '_feedlist[opml]'; ?>"><?php esc_html_e( '*Drop link to OPML here. No HTTPS allowed.', 'pf' ); ?></label>
+								or <a class="button-primary pf_primary_media_opml_upload" ><?php esc_html_e( 'Upload OPML file', 'pf' ); ?></a>
 
-								<p>&nbsp;Adding large OPML files may take some time.</p>
-                                <a href="http://en.wikipedia.org/wiki/Opml">What is an OPML file?</a>
+								<p>&nbsp;<?php esc_html_e( 'Adding large OPML files may take some time.', 'pf' ); ?></p>
+                                <a href="http://en.wikipedia.org/wiki/Opml"><?php esc_html_e( 'What is an OPML file?', 'pf' ); ?></a>
 
 
                             </div>
-                        <input type="submit" class="button-primary" value="<?php _e( 'Submit', 'pf' ); ?>" />
+                        <input type="submit" class="button-primary" value="<?php esc_attr_e( 'Submit', 'pf' ); ?>" />
                     </div>
             </div>
 		</div>
@@ -349,14 +349,14 @@ class PF_RSS_Import extends PF_Module {
 
 	public function feedlist_builder( $feedlist ) {
 		if ( empty( $feedlist ) ) {
-			echo __( 'No feeds added.', 'pf' );
+			esc_html_e( 'No feeds added.', 'pf' );
 			return;
 		}
 		foreach ( $feedlist as $feed ) {
 			if ( ( ! is_array( $feed )) && $feed != '' ) {
 				$feedID = md5( $feed );
-				echo '<li id="feed-' . $feedID . '" class="feed-list-item">' . $feed . ' <input id="' . $feedID . '" type="submit" class="removeMyFeed icon-remove" value="   Remove"></input>';
-				echo '<input type="hidden" name="feed_url" id="o_feed_url_' . $feedID . '" value="' . $feed . '"></li>';
+				echo '<li id="feed-' . esc_attr( $feedID ) . '" class="feed-list-item">' . esc_attr( $feed ) . ' <input id="' . esc_attr( $feedID ) . '" type="submit" class="removeMyFeed icon-remove" value="   ' . esc_attr__( 'Remove', 'pf' ) . '"></input>';
+				echo '<input type="hidden" name="feed_url" id="o_feed_url_' . esc_attr( $feedID ) . '" value="' . esc_attr( $feed ) . '"></li>';
 			} elseif ( is_array( $feed ) ) {
 				$this->feedlist_builder( $feed );
 			}
@@ -498,9 +498,9 @@ class PF_RSS_Import extends PF_Module {
 	public function remove_a_feed() {
 
 		if ( ! empty( $_POST['o_feed_url'] ) ) {
-			$feedURL = $_POST['o_feed_url'];
-			if ( ! wp_verify_nonce( $_POST[ PF_SLUG . '_o_feed_nonce' ], 'feedremove' ) ) {
-				die( __( 'Nonce check failed. Please ensure you\'re supposed to be removing feeds.', 'pf' ) ); }
+			$feedURL = sanitize_text_field( wp_unslash( $_POST['o_feed_url'] ) );
+			if ( empty( $_POST[ PF_SLUG . '_o_feed_nonce' ] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ PF_SLUG . '_o_feed_nonce' ] ) ), 'feedremove' ) ) {
+				die( esc_html__( 'Nonce check failed. Please ensure you\'re supposed to be removing feeds.', 'pf' ) ); }
 			/**
 			$feedlist = get_option( PF_SLUG . '_feedlist' );
 
@@ -524,9 +524,9 @@ class PF_RSS_Import extends PF_Module {
 				$result = $feedURL . __( ' has been removed from your feedlist.', 'pf' );
 			}
 
-			die( $result );
+			die( esc_html( $result ) );
 		} else {
-			die( __( 'Error', 'pf' ) );
+			die( esc_html__( 'Error', 'pf' ) );
 		}
 
 	}

@@ -263,14 +263,14 @@ class PF_OPML_Subscribe extends PF_Module {
 		?>
 
             <div class="opml-box">
-                    <h3><span><?php _e( 'Subscribe to OPML as Feed', 'pf' ); ?></span></h3>
+                    <h3><span><?php esc_html_e( 'Subscribe to OPML as Feed', 'pf' ); ?></span></h3>
                     <div>
-                        <div><?php _e( 'Add OPML Subscription', 'pf' ); ?> (OPML or XML)</div>
+                        <div><?php esc_html_e( 'Add OPML Subscription', 'pf' ); ?> (OPML or XML)</div>
                             <div class="pf_feeder_input_box">
-                                <input id="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>" value="" />
-                                <label class="description" for="<?php echo PF_SLUG . '_feedlist[opml_single]'; ?>"><?php _e( '*Complete URL path', 'pf' ); ?></label>
+                                <input id="<?php echo esc_attr( PF_SLUG ) . '_feedlist[opml_single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo esc_attr( PF_SLUG . '_feedlist[opml_single]' ); ?>" value="" />
+                                <label class="description" for="<?php echo esc_attr( PF_SLUG . '_feedlist[opml_single]' ); ?>"><?php esc_html_e( '*Complete URL path', 'pf' ); ?></label>
 
-                        		<input type="submit" class="button-primary" value="<?php _e( 'Submit', 'pf' ); ?>" />
+                        		<input type="submit" class="button-primary" value="<?php esc_attr_e( 'Submit', 'pf' ); ?>" />
                     		</div>
             		</div>
 			</div>
@@ -300,6 +300,7 @@ class PF_OPML_Subscribe extends PF_Module {
 					pf_log( 'With result of:' );
 					pf_log( $check );
 					if ( is_wp_error( $check ) ) {
+						// phpcs:ignore WordPress.Security.EscapeOutput
 						wp_die( $check );
 					}
 					$subscribe_string = 'It could not be created.';
@@ -388,8 +389,10 @@ class PF_OPML_Subscribe extends PF_Module {
 		} else {
 			// @TODO this doesn't work yet.
 			// $folder_obj = $this->make_a_folder_object_from_term_slug($_GET['opml_folder']);
-			$this->master_opml_obj = new OPML_Object( get_site_url() . '?pf=opml&opml_folder=' . $_GET['opml_folder'] );
-			$this->master_opml_obj->set_title( 'PressForward Subscription List for the ' . $_GET['opml_folder'] . ' folder on ' . $site_name );
+			$opml_folder = sanitize_text_field( wp_unslash( $_GET['opml_folder'] ) );
+
+			$this->master_opml_obj = new OPML_Object( get_site_url() . '?pf=opml&opml_folder=' . $opml_folder );
+			$this->master_opml_obj->set_title( 'PressForward Subscription List for the ' . $opml_folder . ' folder on ' . $site_name );
 		}
 					// The Loop
 		if ( $feed_query->have_posts() ) {
@@ -412,6 +415,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		// var_dump($this->master_opml_obj); die();
 		header( 'Content-Type: text/x-opml' );
 		$opml = new OPML_Maker( $this->master_opml_obj );
+		// phpcs:ignore WordPress.Security.EscapeOutput
 		echo $opml->template();
 		die();
 
@@ -420,8 +424,16 @@ class PF_OPML_Subscribe extends PF_Module {
 	public function opml_tools() {
 		?>
 			<p>
-				You can share your subscription list as an OPML file by linking people to
-				<a href="<?php echo home_url( '/?pf=opml' ); ?>" target="_blank"><?php echo home_url( '/?pf=opml' ); ?></a>.
+				<?php
+				printf(
+					esc_html__( 'You can share your subscription list as an OPML file by linking people to %s', 'pf' ),
+					sprintf(
+						'<a href="%s" target="_blank">%s</a>',
+						esc_attr( home_url( '/?pf=opml' ) ),
+						esc_html( home_url( '/?pf=opml' ) )
+					)
+				);
+				?>
 			</p>
 		<?php
 	}
