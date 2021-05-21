@@ -374,7 +374,7 @@ class Forward_Tools {
 			$this->metas->update_pf_meta( $item_post_id, 'item_id', $item_id );
 			$this->metas->update_pf_meta( $item_post_id, 'pf_item_post_id', $item_post_id );
 			if ( ! empty( $_POST['item_link'] ) ) {
-				$this->metas->update_pf_meta( $item_post_id, 'item_link', $_POST['item_link'] );
+				$this->metas->update_pf_meta( $item_post_id, 'item_link', sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) );
 			}
 
 			if ( empty( $_POST['item_date'] ) ) {
@@ -382,7 +382,7 @@ class Forward_Tools {
 				// $_POST['item_date'] = $newDate;
 				$item_date = $newDate;
 			} else {
-				$item_date = $_POST['item_date'];
+				$item_date = sanitize_text_field( wp_unslash( $_POST['item_date'] ) );
 			}
 			$this->metas->update_pf_meta( $item_post_id, 'item_date', $item_date );
 			$this->metas->update_pf_meta( $item_post_id, 'item_wp_date', $item_date );
@@ -440,8 +440,11 @@ class Forward_Tools {
 
 	public function bookmarklet_to_nomination( $item_id = false, $post ) {
 		$_POST = array_merge( $_POST, $post );
+
+		$item_link = isset( $_POST['item_link'] ) ? sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) : '';
+
 		if ( ! $item_id ) {
-			$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+			$item_id = create_feed_item_id( $item_link, $post['post_title'] );
 			// $post['item_id'] = $item_id;
 		}
 
@@ -460,10 +463,11 @@ class Forward_Tools {
 			$post['post_type']     = pressforward( 'schema.nominations' )->post_type;
 			$post['post_date']     = current_time( 'Y-m-d H:i:s' );
 			$post['post_date_gmt'] = get_gmt_from_date( current_time( 'Y-m-d H:i:s' ) );
-			if ( strlen( esc_url( $_POST['item_link'] ) ) <= 243 ) {
-				$post['guid'] = esc_url( $_POST['item_link'] );
+
+			if ( strlen( esc_url( $item_link ) ) <= 243 ) {
+				$post['guid'] = esc_url( $item_link );
 			} else {
-				$post['guid'] = substr( esc_url( $_POST['item_link'] ), 0, 243 );
+				$post['guid'] = substr( esc_url( $item_link ), 0, 243 );
 			}
 			$post_array = $post;
 			// var_dump('<pre>'); var_dump($post); die();
@@ -490,7 +494,7 @@ class Forward_Tools {
 				}
 			}
 			if ( is_wp_error( $post ) ) {
-				wp_die( $post->get_error_message() );
+				wp_die( esc_html( $post->get_error_message() ) );
 			}
 			$post_ID = $post;
 
@@ -501,16 +505,21 @@ class Forward_Tools {
 				$item_date = $newDate;
 				// $_POST['item_date'] = $newDate;
 			} else {
-				$item_date = $_POST['item_date'];
+				$item_date = sanitize_text_field( wp_unslash( $_POST['item_date'] ) );
 			}
 
-			$url_parts = parse_url( $_POST['item_link'] );
-			if ( ! empty( $url_parts['host'] ) ) {
-				$source = $url_parts['host'];
-			} else {
-				$source = '';
+			$source = '';
+			if ( ! empty( $_POST['item_link'] ) ) {
+				$url_parts = parse_url( sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) );
+				if ( ! empty( $url_parts['host'] ) ) {
+					$source = $url_parts['host'];
+				}
 			}
-			$tags = $_POST['post_tags'];
+
+			$tags = [];
+			if ( ! empty( $_POST['post_tags'] ) ) {
+				$tags = map_deep( wp_unslash( $_POST['post_tags'] ), 'sanitize_text_field' );
+			}
 			if ( empty( $tags ) || is_wp_error( $tags ) ) {
 				$tags[] = 'via bookmarklet';
 				if ( is_wp_error( $tags ) ) {
@@ -548,11 +557,15 @@ class Forward_Tools {
 			if ( empty( $_POST['item_author'] ) ) {
 				$item_author = 'Author on Source';
 			} else {
-				$item_author = $_POST['item_author'];
+				$item_author = sanitize_text_field( wp_unslash( $_POST['item_author'] ) );
 			}
+
+			$item_link     = isset( $_POST['item_link'] ) ? sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) : '';
+			$item_feat_img = isset( $_POST['item_feat_img'] ) ? sanitize_text_field( wp_unslash( $_POST['item_feat_img'] ) ) : '';
+
 			$pf_meta_args = array(
 				$this->metas->meta_for_entry( 'item_id', $item_id ),
-				$this->metas->meta_for_entry( 'item_link', $_POST['item_link'] ),
+				$this->metas->meta_for_entry( 'item_link', $item_link ),
 				// $this->metas->meta_for_entry( 'nomination_count', 1 ),
 				$this->metas->meta_for_entry( 'source_title', 'Bookmarklet' ),
 				$this->metas->meta_for_entry( 'item_date', $item_date ),
@@ -561,7 +574,7 @@ class Forward_Tools {
 				$this->metas->meta_for_entry( 'item_author', $item_author ),
 				// $this->metas->meta_for_entry('authors', $_POST['authors']),
 				$this->metas->meta_for_entry( 'pf_source_link', $source ),
-				$this->metas->meta_for_entry( 'item_feat_img', $_POST['item_feat_img'] ),
+				$this->metas->meta_for_entry( 'item_feat_img', $item_feat_img ),
 				$this->metas->meta_for_entry( 'submitted_by', $userString ),
 				// $this->metas->meta_for_entry( 'nominator_array', array( $userID ) ),
 				// The item_wp_date allows us to sort the items with a query.
@@ -581,7 +594,8 @@ class Forward_Tools {
 			$nominators = $this->apply_nomination_data( $post_ID );
 			$this->metas->update_pf_meta( $post_ID, 'nominator_array', $nominators );
 			if ( !empty( $_POST['item_author'] ) ) {
-				pressforward( 'controller.metas' )->update_pf_meta( $post_ID, 'item_author', \sanitize_text_field($_POST['item_author']) );
+				$item_author = sanitize_text_field( wp_unslash( $_POST['item_author'] ) );
+				pressforward( 'controller.metas' )->update_pf_meta( $post_ID, 'item_author', \sanitize_text_field( $item_author );
 			}
 			return $post_ID;
 		} else {
@@ -596,7 +610,8 @@ class Forward_Tools {
 				$this->item_interface->update_post( $post );
 			}
 			if ( !empty( $_POST['item_author'] ) ) {
-				pressforward( 'controller.metas' )->update_pf_meta( $nom_and_post_check, 'item_author', \sanitize_text_field($_POST['item_author']) );
+				$item_author = sanitize_text_field( wp_unslash( $_POST['item_author'] ) );
+				pressforward( 'controller.metas' )->update_pf_meta( $nom_and_post_check, 'item_author', $item_author );
 			}
 			return $nom_and_post_check;
 		}
@@ -605,7 +620,9 @@ class Forward_Tools {
 
 	public function bookmarklet_to_last_step( $item_id = false, $post ) {
 		if ( ! $item_id ) {
-			$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+			$item_link = isset( $_POST['item_link'] ) ? sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) : '';
+
+			$item_id = create_feed_item_id( $item_link, $post['post_title'] );
 		}
 		$nomination_id = $this->bookmarklet_to_nomination( $item_id, $post );
 		pf_log( $nomination_id );
@@ -616,7 +633,7 @@ class Forward_Tools {
 		$result = pressforward('utility.relate')->basic_relate( 'draft', $nomination_id, 'off', $user_id );
 
 		if (isset($_POST['post_category']) && !empty($_POST['post_category']) && !is_array($_POST['post_category'])){
-			$categories = explode(',', $_POST['post_category']);
+			$categories = explode( ',', sanitize_text_field( wp_unslash( $_POST['post_category'] ) ) );
 			if ( is_array( $categories ) && count( $categories ) > 0) {
 				wp_set_post_categories( $post_id, $categories, false );
 				wp_set_post_categories( $nomination_id, $categories, false );

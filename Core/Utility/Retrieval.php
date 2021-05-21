@@ -399,8 +399,9 @@ class Retrieval {
 	public function ajax_update_feed_handler() {
 		global $pf;
 		// pf_log( $_POST );
-		pf_log( 'Starting ajax_update_feed_handler with ID of ' . $_POST['feed_id'] );
-		$obj = get_post( $_POST['feed_id'] );
+		$post_id = isset( $_POST['feed_id'] ) ? intval( $_POST['feed_id'] ) : 0;
+		pf_log( 'Starting ajax_update_feed_handler with ID of ' . $post_id );
+		$obj = get_post( $post_id );
 		pf_log( $obj );
 		$Feeds = pressforward( 'schema.feeds' );
 		$id    = $obj->ID;
@@ -614,11 +615,11 @@ class Retrieval {
 	}
 
 	public function alter_for_retrieval() {
-		if ( ! isset( $_GET['press'] ) || 'forward' !== $_GET['press'] ) {
+		if ( ! isset( $_GET['press'] ) || 'forward' !== sanitize_text_field( wp_unslash( $_GET['press'] ) ) ) {
 			return;
 		}
 
-		$nonce       = isset( $_REQUEST['nonce'] ) ? $_REQUEST['nonce'] : '';
+		$nonce       = isset( $_REQUEST['nonce'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['nonce'] ) ) : '';
 		$nonce_check = get_option( 'chunk_nonce' );
 		pf_log( 'Nonce is:' );
 		pf_log( $nonce_check );

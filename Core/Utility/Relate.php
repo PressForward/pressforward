@@ -230,7 +230,7 @@ class Relate implements HasActions {
 	 * Function for AJAX action to mark an item as starred or unstarred.
 	 */
 	public function ajax_star() {
-		$item_id = $_POST['post_id'];
+		$post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
 		$userObj = wp_get_current_user();
 		$user_id = $userObj->ID;
 		$result  = 'nada';
@@ -309,9 +309,9 @@ class Relate implements HasActions {
 	 */
 	public function ajax_relate() {
 		pf_log( 'Invoked: pf_ajax_relate()' );
-		$item_id           = $_POST['post_id'];
-		$relationship_type = $_POST['schema'];
-		$switch            = $_POST['isSwitch'];
+		$item_id           = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
+		$relationship_type = isset( $_POST['schema'] ) ? sanitize_text_field( wp_unslash( $_POST['schema'] ) ) : '';
+		$switch            = isset( $_POST['isSwitch'] ) ? sanitize_text_field( wp_unslash( $_POST['isSwitch'] ) ) : '';
 		$userObj           = wp_get_current_user();
 		$user_id           = $userObj->ID;
 		$result            = 'nada';
@@ -349,7 +349,8 @@ class Relate implements HasActions {
 
 		// $archiveQuery = new WP_Query( $args );
 		if ( isset( $_POST['date_limit'] ) ) {
-			$date_limit = $_POST['date_limit'];
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$date_limit = wp_unslash( $_POST['date_limit'] );
 
 			switch ( $date_limit ) {
 				case '1week':
