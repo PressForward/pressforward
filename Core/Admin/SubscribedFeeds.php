@@ -177,12 +177,13 @@ class SubscribedFeeds implements HasActions, HasFilters {
 				$lr_text = mysql2date( __( 'Y/m/d' ), $last_retrieved );
 			}
 
-			$lr_text = '<abbr title="' . $t_time . '">' . $lr_text . '</abbr>';
+			$lr_text = '<abbr title="' . esc_attr( $t_time ) . '">' . esc_html( $lr_text ) . '</abbr>';
 		}
 
 		$feed_url = $this->metas->get_post_pf_meta( $post_id, 'feedUrl', true );
 		$lr_text .= sprintf( '<input type="hidden" id="pf-feed-%d-url" value="%s" />', intval( $post_id ), esc_attr( $feed_url ) );
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $lr_text;
 	}
 
@@ -217,12 +218,13 @@ class SubscribedFeeds implements HasActions, HasFilters {
 				$lr_text = mysql2date( __( 'Y/m/d' ), $last_retrieved );
 			}
 
-			$lr_text = '<abbr title="' . $t_time . '">' . $lr_text . '</abbr>';
+			$lr_text = '<abbr title="' . esc_attr( $t_time ) . '">' . esc_html( $lr_text ) . '</abbr>';
 		}
 
 		$feed_url = $this->metas->get_post_pf_meta( $post_id, 'feedUrl', true );
 		$lr_text .= sprintf( '<input type="hidden" id="pf-feed-%d-url" value="%s" />', intval( $post_id ), esc_attr( $feed_url ) );
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $lr_text;
 	}
 
@@ -411,7 +413,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 		<fieldset class="inline-edit-pressforward">
 			<div class="inline-edit-col">
 				<label for="pf-feed-url">
-					<span class="title"><?php _e( 'Feed URL', 'pressforward' ); ?></span>
+					<span class="title"><?php esc_html_e( 'Feed URL', 'pressforward' ); ?></span>
 					<span class="input-text-wrap">
 						<input class="inline-edit-pf-feed-input" type="text" value="" name="pf-quick-edit-feed-url" id="pf-quick-edit-feed-url" />
 					</span>
@@ -442,7 +444,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 			return;
 		}
 
-		if ( ! wp_verify_nonce( $_POST['_pf_quick_edit_nonce'], 'pf-quick-edit' ) ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_pf_quick_edit_nonce'] ) ), 'pf-quick-edit' ) ) {
 			return;
 		}
 
@@ -451,7 +453,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 			return;
 		}
 
-		$feed_url = stripslashes( $_POST['pf-quick-edit-feed-url'] );
+		$feed_url = sanitize_text_field( wp_unslash( $_POST['pf-quick-edit-feed-url'] ) );
 
 		$this->metas->update_pf_meta( $post_id, 'feedUrl', $feed_url );
 	}

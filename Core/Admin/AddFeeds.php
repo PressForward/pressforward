@@ -60,7 +60,7 @@ class AddFeeds implements HasActions, HasFilters {
 
 	public function display_feeder_builder() {
 		if ( isset( $_GET['tab'] ) ) {
-			$tab = $_GET['tab'];
+			$tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
 		} else {
 			$tab = 'primary_feed_type'; }
 		$user_ID   = get_current_user_id();

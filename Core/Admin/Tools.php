@@ -55,7 +55,7 @@ class Tools implements HasActions, HasFilters {
 
 	public function display_tools_builder() {
 		if ( isset( $_GET['tab'] ) ) {
-			$tab = $_GET['tab'];
+			$tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
 		} else {
 			$tab = 'nominate-this'; }
 		$vars = array(
@@ -67,6 +67,8 @@ class Tools implements HasActions, HasFilters {
 			'settings_tab_group' => '',
 			'tabs'               => $this->tabs(),
 		);
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $this->templates->get_view( array( 'settings', 'settings-page' ), $vars );
 
 		return;
