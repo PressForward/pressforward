@@ -13,7 +13,7 @@
 
 		$feed_hb_state = get_option( PF_SLUG . '_feeds_hb_state' );
 		$iteration = $feed_hb_state['feeds_iteration'] + 1;
-		print_r(
+		printf(
 			esc_html__( 'Retrieving feeds. Currently at %1$s feed number %2$s of %3$s', 'pf' ),
 			'<span id="rf-feed-title">' . esc_html( $feed_hb_state['feed_title'] ) . '</span>',
 			'<span id="rf-iteration">' . esc_html( $iteration ) . '</span>',
