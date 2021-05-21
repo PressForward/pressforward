@@ -304,7 +304,7 @@ class PF_Comments extends PF_Module {
 			die( esc_html__( 'Sorry, you don\'t have the privileges to add editorial comments. Please talk to your Administrator.', 'pf' ) ); }
 
 		// Verify that comment was actually entered
-		$comment_content = ! empty( $_POST['content'] ) ? trim( sanitize_textarea_field( wp_unslash( $_POST['content'] ) ) );
+		$comment_content = ! empty( $_POST['content'] ) ? trim( sanitize_textarea_field( wp_unslash( $_POST['content'] ) ) ) : '';
 		if ( ! $comment_content ) {
 			die( esc_html__( 'Please enter a comment.', 'pf' ) ); }
 

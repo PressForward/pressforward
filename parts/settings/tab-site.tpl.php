@@ -28,8 +28,8 @@
 			echo $alert;
 		}
 	?>
-	<input type="hidden" id="pf_metrics_config[checked]" name="pf_metrics_config[checked]" value="<?php echo esc_attr( $metrics_config['checked']; ) ?>">
-	<input type="hidden" id="pf_metrics_config[checkin_complete]" name="pf_metrics_config[checkin_complete]" value="<?php echo esc_attr( $metrics_config['checkin_complete']; ) ?>">
+	<input type="hidden" id="pf_metrics_config[checked]" name="pf_metrics_config[checked]" value="<?php echo esc_attr( $metrics_config['checked'] ); ?>">
+	<input type="hidden" id="pf_metrics_config[checkin_complete]" name="pf_metrics_config[checkin_complete]" value="<?php echo esc_attr( $metrics_config['checkin_complete'] ); ?>">
 	<select id="pf_metrics_config[basic]" name="pf_metrics_config[basic]">
 		<option value="yes" <?php if ( $metrics_config['basic'] == 'yes' ) { echo 'selected="selected"'; }?>><?php esc_html_e( 'Yes', 'pf' ); ?></option>
 		<option value="no" <?php if ( $metrics_config['basic'] == 'no' ) { echo 'selected="selected"'; }?>><?php esc_html_e( 'No', 'pf' ); ?></option>

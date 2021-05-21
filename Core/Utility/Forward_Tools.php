@@ -595,7 +595,7 @@ class Forward_Tools {
 			$this->metas->update_pf_meta( $post_ID, 'nominator_array', $nominators );
 			if ( !empty( $_POST['item_author'] ) ) {
 				$item_author = sanitize_text_field( wp_unslash( $_POST['item_author'] ) );
-				pressforward( 'controller.metas' )->update_pf_meta( $post_ID, 'item_author', \sanitize_text_field( $item_author );
+				pressforward( 'controller.metas' )->update_pf_meta( $post_ID, 'item_author', \sanitize_text_field( $item_author ) );
 			}
 			return $post_ID;
 		} else {

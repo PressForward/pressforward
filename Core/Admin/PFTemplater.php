@@ -207,7 +207,7 @@ class PFTemplater {
 		$php_self     = isset( $_SERVER['PHP_SELF'] ) ? sanitize_text_field( wp_unslash( $_SERVER['PHP_SELF'] ) ) : '';
 		$query_string = isset( $_SERVER['QUERY_STRING'] ) ? sanitize_text_field( wp_unslash( $_SERVER['QUERY_STRING'] ) ) : '';
 		?>
-			<form id="feeds-search" method="post" action="<?php echo esc_attr( basename( $php_self. '?' . $query_string . '&action=post'; ?>">
+			<form id="feeds-search" method="post" action="<?php echo esc_attr( basename( $php_self. '?' . $query_string . '&action=post' ) ); ?>">
 					<label for="search-terms"><?php esc_html_e( 'Search', 'pf' ); ?></label>
 				<input type="text" name="search-terms" id="search-terms" placeholder="<?php esc_attr_e( 'Enter search terms', 'pf' ); ?>">
 				<input type="submit" class="btn btn-small" value="<?php esc_attr_e( 'Search', 'pf' ); ?>">
