@@ -153,15 +153,17 @@ class PF_Advancement implements Advance_System, HasActions {
 
 	public function prep_bookmarklet( $post_id ) {
 		if ( isset( $_POST['post_format'] ) ) {
-			if ( current_theme_supports( 'post-formats', $_POST['post_format'] ) ) {
-				set_post_format( $post_id, $_POST['post_format'] ); } elseif ( '0' == $_POST['post_format'] ) {
+			$post_format = sanitize_text_field( wp_unslash( $_POST['post_format'] ) );
+			if ( current_theme_supports( 'post-formats', $post_format ) ) {
+				set_post_format( $post_id, $post_format ); } elseif ( '0' == $post_format ) {
 				set_post_format( $post_id, false ); }
 		}
 
 		if ( isset( $_POST['post_category'] ) && is_array( $_POST['post_category'] ) ) {
 			// var_dump($_POST['post_category']); die();
 			$categories = array();
-			foreach ( $_POST['post_category'] as $category_id ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			foreach ( wp_unslash( $_POST['post_category'] ) as $category_id ) {
 				$categories[ $category_id ] = intval( $category_id );
 			}
 			wp_set_object_terms( $post_id, $categories, 'category', false );

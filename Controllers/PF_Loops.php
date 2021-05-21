@@ -181,7 +181,7 @@ class PF_Loops {
 		$post_args['post_status'] = 'publish';
 		// die();
 		if ( isset( $_GET['feed'] ) ) {
-			$post_args['post_parent'] = $_GET['feed'];
+			$post_args['post_parent'] = intval( $_GET['feed'] );
 		} elseif ( isset( $_GET['folder'] ) ) {
 			$parents_in_folder = new \WP_Query(
 				array(
@@ -193,7 +193,8 @@ class PF_Loops {
 						array(
 							'taxonomy' => pressforward( 'schema.feeds' )->tag_taxonomy,
 							'field'    => 'term_id',
-							'terms'    => $_GET['folder'],
+							// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+							'terms'    => wp_unslash( $_GET['folder'] ),
 						),
 					),
 				)

@@ -25,6 +25,7 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 		define( 'IS_A_PF', $this->is_a_pf_page() );
 		add_filter( 'ab_alert_specimens_labels', array( $this, 'alter_alert_boxes' ) );
 		if ( WP_DEBUG && $this->is_pf ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput
 			@trigger_error( $this->pf_current_screen_trace, E_USER_NOTICE );
 		}
 	}
@@ -159,10 +160,10 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 
 	public function get_the_folder_view_title() {
 		if ( isset( $_GET['feed'] ) ) {
-			$title = get_the_title( $_GET['feed'] );
+			$title = get_the_title( sanitize_text_field( wp_unslash( $_GET['feed'] ) ) );
 		} elseif ( isset( $_GET['folder'] ) ) {
 
-			$term  = get_term( $_GET['folder'], pressforward( 'schema.feeds' )->tag_taxonomy );
+			$term  = get_term( sanitize_text_field( wp_unslash( $_GET['folder'] ) ), pressforward( 'schema.feeds' )->tag_taxonomy );
 			$title = $term->name;
 
 		} else {
@@ -182,21 +183,21 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 		}
 
 		if ( isset( $_POST['search-terms'] ) ) {
-			$variant   .= ' <span class="search-term-title">' . __( 'Search for:', 'pf' ) . ' ' . $_POST['search-terms'] . '</span>';
+			$variant   .= ' <span class="search-term-title">' . esc_html__( 'Search for:', 'pf' ) . ' ' . esc_html( sanitize_text_field( wp_unslash( $_POST['search-terms'] ) ) ). '</span>';
 			$is_variant = true;
 		}
 
 		if ( isset( $_GET['by'] ) ) {
-			$variant   .= ' <span>' . $showing . ' - ' . ucfirst( $_GET['by'] ) . '</span>';
+			$variant   .= ' <span>' . esc_html( $showing ) . ' - ' . ucfirst( sanitize_text_field( wp_unslash( $_GET['by'] ) ) ) . '</span>';
 			$is_variant = true;
 		}
 
 		if ( isset( $_GET['pc'] ) ) {
-			$page = $_GET['pc'];
+			$page = intval( $_GET['pc'] );
 			$page = $page;
 			if ( $page > 0 ) {
 				$pageNumForPrint = sprintf( __( 'Page %1$d', 'pf' ), $page );
-				$variant        .= ' <span> ' . $pageNumForPrint . '</span>';
+				$variant        .= ' <span> ' . esc_html( $pageNumForPrint ) . '</span>';
 				$is_variant      = true;
 			}
 		}
@@ -207,30 +208,31 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 			if ( 'no_hidden' == $_GET['reveal'] ) {
 				$revealing = 'hidden';
 			} else {
-				$revealing = $_GET['reveal'];
+				$revealing = sanitize_text_field( wp_unslash( $_GET['reveal'] ) );
 			}
 
-			$variant   .= ' <span>' . $showing . ' ' . $revealing . '</span>';
+			$variant   .= ' <span>' . esc_html( $showing . ' ' . $revealing ) . '</span>';
 			$is_variant = true;
 		}
 
 		if ( isset( $_GET['pf-see'] ) ) {
 			$only = ' ';
 			$and  = 'only ';
-			if ( 'archive-only' == $_GET['pf-see'] ) {
+			$pf_see = sanitize_text_field( wp_unslash( $_GET['pf-see'] ) );
+			if ( 'archive-only' == $pf_see ) {
 				$only .= $and . __( 'archived', 'pf' );
 				$and   = ' ';
 			}
-			if ( 'starred-only' == $_GET['pf-see'] ) {
+			if ( 'starred-only' == $pf_see ) {
 				$only .= $and . __( 'starred', 'pf' );
 			}
-			if ( 'unread-only' == $_GET['pf-see'] ) {
+			if ( 'unread-only' == $pf_see ) {
 				$only .= $and . __( 'unread', 'pf' );
 			}
-			if ( 'drafted-only' == $_GET['pf-see'] ) {
+			if ( 'drafted-only' == $pf_see ) {
 				$only .= $and . __( 'drafted', 'pf' );
 			}
-			$variant   .= ' <span>' . $showing . $only . '</span>';
+			$variant   .= ' <span>' . esc_html( $showing . $only ) . '</span>';
 			$is_variant = true;
 		}
 
@@ -246,7 +248,7 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 
 	public function get_page_headline( $page_title = '' ) {
 		if ( $this->is_a_pf_page() ) {
-			$title = '<h1>' . PF_TITLE;
+			$title = '<h1>' . esc_html( PF_TITLE );
 
 			if ( ! empty( $page_title ) ) {
 				$page_title = ' ' . $page_title;
@@ -258,7 +260,7 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 
 			$end_title = '</h1> <span id="h-after"> &#8226; </span>';
 
-			$title = $title . $middle . $end_title;
+			$title = $title . esc_html( $middle ) . $end_title;
 
 			return $title;
 		} else {
@@ -267,6 +269,7 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 	}
 
 	public function the_page_headline( $title = '' ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput
 		echo $this->get_page_headline( $title );
 		return;
 	}
