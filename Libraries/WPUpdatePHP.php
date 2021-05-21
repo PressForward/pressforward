@@ -109,16 +109,16 @@ class WPUpdatePhp {
 	public function get_admin_notice( $level = 'minimum' ) {
 		if ( 'recommended' === $level ) {
 			if ( ! empty( $this->plugin_name ) ) {
-				return '<p>' . $this->plugin_name . ' recommends a PHP version higher than ' . $this->recommended_version . '. Read more information about <a href="http://www.wpupdatephp.com/update/">how you can update</a>.</p>';
+				return '<p>' . esc_html( $this->plugin_name ) . ' recommends a PHP version higher than ' . esc_html( $this->recommended_version ) . '. Read more information about <a href="http://www.wpupdatephp.com/update/">how you can update</a>.</p>';
 			} else {
-				return '<p>This plugin recommends a PHP version higher than ' . $this->recommended_version . '. Read more information about <a href="http://www.wpupdatephp.com/update/">how you can update</a>.</p>';
+				return '<p>This plugin recommends a PHP version higher than ' . esc_html( $this->recommended_version ) . '. Read more information about <a href="http://www.wpupdatephp.com/update/">how you can update</a>.</p>';
 			}
 		}
 
 		if ( ! empty( $this->plugin_name ) ) {
-			return '<p>Unfortunately, ' . $this->plugin_name . ' cannot run on PHP versions older than ' . $this->minimum_version . '. Read more information about <a href="http://www.wpupdatephp.com/update/">how you can update</a>.</p>';
+			return '<p>Unfortunately, ' . esc_html( $this->plugin_name ) . ' cannot run on PHP versions older than ' . esc_html( $this->minimum_version ) . '. Read more information about <a href="http://www.wpupdatephp.com/update/">how you can update</a>.</p>';
 		} else {
-			return '<p>Unfortunately, this plugin cannot run on PHP versions older than ' . $this->minimum_version . '. Read more information about <a href="http://www.wpupdatephp.com/update/">how you can update</a>.</p>';
+			return '<p>Unfortunately, this plugin cannot run on PHP versions older than ' . esc_html( $this->minimum_version ) . '. Read more information about <a href="http://www.wpupdatephp.com/update/">how you can update</a>.</p>';
 		}
 	}
 
@@ -130,6 +130,7 @@ class WPUpdatePhp {
 	 */
 	public function minimum_admin_notice() {
 		echo '<div class="error">';
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $this->get_admin_notice( 'minimum' );
 		echo '</div>';
 	}
@@ -142,6 +143,7 @@ class WPUpdatePhp {
 	 */
 	public function recommended_admin_notice() {
 		echo '<div class="error">';
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $this->get_admin_notice( 'recommended' );
 		echo '</div>';
 	}

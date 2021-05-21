@@ -110,10 +110,12 @@ class URLResolver {
 		$url_results = array();
 		for ( $i = 0; $i < $this->max_redirects; $i++ ) {
 			// During debug mode, print out each URL that we visit.
+			// phpcs:disable WordPress.Security
 			if ( $this->is_debug ) {
 				if ( $i ) { print ' |- '; }
 				print $url;
 			}
+			// phpcs:enable WordPress.Security
 
 			// Fetch the redirect information...
 			$url_result = $this->fetchURLResult( $url );
@@ -128,6 +130,7 @@ class URLResolver {
 
 			// Also print a short status line regarding the URL once it is fetched
 			if ( $this->is_debug ) {
+				// phpcs:ignore WordPress.Security
 				print ' ' . $url_result->debugStatus() . "\n";
 			}
 
@@ -135,9 +138,11 @@ class URLResolver {
 			// the result when that error happens
 			if ( $url_result->didErrorOccur() ) {
 				if ( $this->is_debug ) {
+					// phpcs:disable WordPress.Security
 					print ' |! ' . $url_result->getURL() . ' ' . $url_result->debugStatus() . "\n";
 					if ( $url_result->didErrorOccur() ) { print ' \->  ' . $url_result->getErrorMessageString() . "\n"; }
 					print "\n";
+					// phpcs:enable WordPress.Security
 				}
 
 				$this->closeCurl();
@@ -243,6 +248,7 @@ class URLResolver {
 		$this->closeCurl();
 
 		if ( $this->is_debug ) {
+			// phpcs:ignore WordPress.Security
 			print ' |> ' . $return_url->getURL() . ' ' . $return_url->debugStatus() . "\n\n";
 		}
 

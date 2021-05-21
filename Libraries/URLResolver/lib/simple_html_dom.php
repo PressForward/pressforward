@@ -136,6 +136,8 @@ class simple_html_dom_node {
 		$this->children = null;
 	}
 
+	// phpcs:disable WordPress.Security
+
 	// dump node's tree
 	function dump( $show_attr = true, $deep = 0 ) {
 		$lead = str_repeat( '    ', $deep );
@@ -191,6 +193,8 @@ class simple_html_dom_node {
 		echo "\n";
 
 	}
+
+	// phpcs:enable WordPress.Security
 
 	// returns the parent of node
 	function parent() {

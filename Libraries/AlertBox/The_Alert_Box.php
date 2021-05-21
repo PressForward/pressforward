@@ -273,7 +273,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 
 		public function dismiss_alerts_ajax() {
 			ob_start();
-			$filtered_post_types = sanitize_text_field( $_POST['filtered_post_types'] );
+			$filtered_post_types = isset( $_POST['filtered_post_types'] ) ? sanitize_text_field( wp_unslash( $_POST['filtered_post_types'] ) ) : '';
 			if ( ! current_user_can( 'edit_posts' ) ) {
 				$response = array(
 				   'what' => 'the_alert_box',
@@ -294,7 +294,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			if ( ! empty( $_POST['all_alerts'] ) ) {
 				$alerts = the_alert_box()->dismiss_all_alerts( 0, $fpt_array );
 			} else {
-				$alert = intval( $_POST['alert'] );
+				$alert = isset( $_POST['alert'] ) ? intval( $_POST['alert'] ) : null;
 				$alerts = the_alert_box()->dismiss_alert( $alert );
 			}
 			if ( ! isset( $alerts ) || ! $alerts || (0 == $alerts) ) {
@@ -334,7 +334,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 		public function remove_alerted_posts() {
 			ob_start();
 			// @todo Nonce this function
-			$filtered_post_types = $_POST['filtered_post_types'];
+			$filtered_post_types = isset( $_POST['filtered_post_types'] ) ? sanitize_text_field( wp_unslash( $_POST['filtered_post_types'] ) ) : '';
 			if ( ! current_user_can( 'delete_others_posts' ) ) {
 				$response = array(
 				   'what' => 'the_alert_box',
@@ -411,11 +411,13 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			edit_post_link( __( 'Edit', 'pf' ) );
 			echo ' ';
 			if ( current_user_can( 'edit_others_posts' ) ) {
-				echo '| <a href="#" class="alert-dismisser" title="' . __( 'Dismiss', 'pf' ) . '" data-alert-post-id="' . get_the_ID() . '" data-alert-dismiss-check="' . self::alert_label( 'dismiss_one_check' ) . ' ' . get_the_title() . '?' . '" ' . self::alert_box_type_data( get_post_type( get_the_ID() ) ) . ' >' . __( 'Dismiss', 'pf' ) . '</a>';
+			  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '| <a href="#" class="alert-dismisser" title="' . esc_attr__( 'Dismiss', 'pf' ) . '" data-alert-post-id="' . esc_attr( get_the_ID() ) . '" data-alert-dismiss-check="' . esc_attr( self::alert_label( 'dismiss_one_check' ) . ' ' . get_the_title() . '?' ) . '" ' . self::alert_box_type_data( get_post_type( get_the_ID() ) ) . ' >' . esc_html__( 'Dismiss', 'pf' ) . '</a>';
 			}
 			echo ' ';
 			if ( current_user_can( 'delete_others_posts' ) ) {
-				echo '| <a href="' . get_delete_post_link( get_the_ID() ) . '" title="' . __( 'Delete', 'pf' ) . '" ' . self::alert_box_type_data( get_post_type( get_the_ID() ) ) . ' >' . __( 'Delete', 'pf' ) . '</a>';
+			  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '| <a href="' . esc_attr( get_delete_post_link( get_the_ID() ) ) . '" title="' . esc_attr__( 'Delete', 'pf' ) . '" ' . self::alert_box_type_data( get_post_type( get_the_ID() ) ) . ' >' . esc_html__( 'Delete', 'pf' ) . '</a>';
 			}
 
 		}
@@ -445,19 +447,21 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 						$editText = self::alert_label( 'dismiss_all' );
 						$editCheck = self::alert_label( 'dismiss_all_check' );
 
-						  echo '<p><a href="#" id="dismiss_all_alert_specimens" style="color:GoldenRod;font-weight:bold;" title="' . $editText . '" data-dismiss-all-check="' . $editCheck . '" ' . self::alert_box_type_data( $q ) . ' >' . $editText . '</a></p>';
+						  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						  echo '<p><a href="#" id="dismiss_all_alert_specimens" style="color:GoldenRod;font-weight:bold;" title="' . esc_attr( $editText ) . '" data-dismiss-all-check="' . esc_attr( $editCheck ) . '" ' . self::alert_box_type_data( $q ) . ' >' . esc_html( $editText ) . '</a></p>';
 					}
 					if ( current_user_can( 'delete_others_posts' ) ) {
 						$deleteText = self::alert_label( 'delete_all' );
-						echo '<p><a href="#" id="delete_all_alert_specimens" style="color:red;font-weight:bold;" title="' . __( 'Delete all posts with alerts', 'pf' ) . '" alert-check="' . $alertCheck . '" ' . self::alert_box_type_data( $q ) . ' >' . $deleteText . '</a></p>';
+						  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo '<p><a href="#" id="delete_all_alert_specimens" style="color:red;font-weight:bold;" title="' . esc_html__( 'Delete all posts with alerts', 'pf' ) . '" alert-check="' . esc_attr( $alertCheck ) . '" ' . self::alert_box_type_data( $q ) . ' >' . esc_html( $deleteText ) . '</a></p>';
 					}
 				} else {
 					$return_string = self::alert_label( 'all_well' );
-					echo $return_string;
+					echo esc_html( $return_string );
 
 				}
 			} else {
-				echo self::alert_label( 'turned_off' );
+				echo esc_html( self::alert_label( 'turned_off' ) );
 			}
 		}
 
@@ -527,10 +531,10 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 					} else {
 						$mark = '';
 					}
-					echo '<input id="' . $element . '" type="checkbox" name="' . $this->option_name . '[' . $parent_element . '][' . $element . ']" value="true" ' . $mark . ' class="' . $args['parent_element'] . ' ' . $args['element'] . '" />  <label for="' . $this->option_name . '[' . $parent_element . '][' . $element . ']" class="' . $args['parent_element'] . ' ' . $args['element'] . '" >' . $label . '</label>';
+					echo '<input id="' . esc_attr( $element ) . '" type="checkbox" name="' . esc_attr( $this->option_name . '[' . $parent_element . '][' . $element ) . ']" value="true" ' . esc_attr( $mark ) . ' class="' . esc_attr( $args['parent_element'] . ' ' . $args['element'] ) . '" />  <label for="' . esc_attr( $this->option_name . '[' . $parent_element . '][' . $element ) . ']" class="' . esc_attr( $args['parent_element'] . ' ' . $args['element'] ) . '" >' . esc_html( $label ) . '</label>';
 				  break;
 				case 'text':
-					echo "<input type='text' id='" . $element . "' name='" . $this->option_name . '[' . $parent_element . '][' . $element . "]' value='" . esc_attr( self::setting( $args, $default ) ) . "' class='" . $args['parent_element'] . ' ' . $args['element'] . "' /> <label for='" . $this->option_name . '[' . $parent_element . '][' . $element . "]' class='" . $args['parent_element'] . ' ' . $args['element'] . "' >" . $label . '</label>';
+					echo "<input type='text' id='" . esc_attr( $element ) . "' name='" . esc_attr( $this->option_name . '[' . $parent_element . '][' . $element ) . "]' value='" . esc_attr( self::setting( $args, $default ) ) . "' class='" . esc_attr( $args['parent_element'] . ' ' . $args['element'] ) . "' /> <label for='" . esc_attr( $this->option_name . '[' . $parent_element . '][' . $element ) . "]' class='" . esc_attr( $args['parent_element'] . ' ' . $args['element'] ) . "' >" . esc_html( $label ) . '</label>';
 				  break;
 			}
 		}
