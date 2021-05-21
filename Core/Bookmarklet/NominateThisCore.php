@@ -63,7 +63,7 @@ class NominateThisCore implements HasActions {
 	 * Generates markup for the Submit meta box on the Nominate This interface.
 	 */
 	public function submit_meta_box() {
-		$url = isset( $_GET['u'] ) ? esc_url( $_GET['u'] ) : '';
+		$url = isset( $_GET['u'] ) ? esc_url( sanitize_text_field( wp_unslash( $_GET['u'] ) ) ) : '';
 		$author_retrieved = pressforward( 'controller.metas' )->get_author_from_url( $url );
 
 		?>
@@ -90,7 +90,7 @@ class NominateThisCore implements HasActions {
 		if ( $create_post_cap_test ) {
 			submit_button( __( 'Send to ' . ucwords( $publish_type ) ), 'primary', 'publish', false );
 		} else {
-			echo '<!-- User cannot '.$publish_type.' posts -->';
+			echo '<!-- User cannot ' . esc_html( $publish_type ) . ' posts -->';
 		} ?>
 				<span class="spinner" style="display: none;"></span>
 			</p>
@@ -102,10 +102,10 @@ class NominateThisCore implements HasActions {
 					$author_value = $author_retrieved;
 				}
 				?>
-			<label for="item_author"><input type="text" id="item_author" name="item_author" value="<?php echo $author_value; ?>" /><br />&nbsp;<?php echo apply_filters( 'pf_author_nominate_this_prompt', __( 'Enter Authors', 'pf' ) ); ?></label>
+			<label for="item_author"><input type="text" id="item_author" name="item_author" value="<?php echo esc_attr( $author_value ); ?>" /><br />&nbsp;<?php echo esc_html( apply_filters( 'pf_author_nominate_this_prompt', __( 'Enter Authors', 'pf' ) ) ); ?></label>
 			</p>
 			<p>
-			<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php _e( 'Nominate feed associated with item.', 'pf' ); ?></label>
+			<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php esc_html_e( 'Nominate feed associated with item.', 'pf' ); ?></label>
 			</p>
 			<?php if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) :
 					$post_formats = get_theme_support( 'post-formats' );
@@ -113,9 +113,9 @@ class NominateThisCore implements HasActions {
 					$default_format = get_option( 'default_post_format', '0' );
 				?>
 			<p>
-				<label for="post_format"><?php _e( 'Post Format:','pf' ); ?>
+				<label for="post_format"><?php esc_html_e( 'Post Format:', 'pf' ); ?>
 				<select name="post_format" id="post_format">
-				<option value="0"><?php _ex( 'Standard', 'Post format' ); ?></option>
+				<option value="0"><?php echo esc_html( _x( 'Standard', 'Post format', 'pf' ) ); ?></option>
 				<?php foreach ( $post_formats[0] as $format ) :  ?>
 					<option<?php selected( $default_format, $format ); ?> value="<?php echo esc_attr( $format ); ?>"> <?php echo esc_html( get_post_format_string( $format ) ); ?></option>
 				<?php endforeach; ?>
@@ -136,7 +136,7 @@ endif;
 	 * Generates markup for the Tags meta box on the Nominate This interface.
 	 */
 	public function tags_meta_box() {
-		$url = isset( $_GET['u'] ) ? esc_url( $_GET['u'] ) : '';
+		$url = isset( $_GET['u'] ) ? esc_url( sanitize_text_field( wp_unslash( $_GET['u'] ) ) ) : '';
 
 		$og = null;
 		if ( $url ) {
@@ -161,7 +161,7 @@ endif;
 		?>
 		<div id="taxonomy-tags" class="tagdiv">
 			<p>
-				<label for="post_tags"><input type="text" id="post_tags" name="post_tags" value="<?php echo esc_html( $post_tags ); ?>" /><br />&nbsp;<?php echo apply_filters( 'pf_tags_prompt', __( 'Enter Tags', 'pf' ) ); ?></label>
+				<label for="post_tags"><input type="text" id="post_tags" name="post_tags" value="<?php echo esc_html( $post_tags ); ?>" /><br />&nbsp;<?php echo esc_attr( apply_filters( 'pf_tags_prompt', __( 'Enter Tags', 'pf' ) ) ); ?></label>
 			</p>
 		</div>
 		<?php
@@ -191,26 +191,29 @@ endif;
 		// $post_ID = $post['ID'] = (int) $_POST['post_id'];
 		if ( $internal ){
 			if ( ! current_user_can( get_option( 'pf_menu_nominate_this_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) ) ) ) {
-				wp_die( __( 'You do not have access to the Nominate This bookmarklet.' ) );
+				wp_die( esc_html_e( 'You do not have access to the Nominate This bookmarklet.', 'pf' ) );
 			}
 		}
 		pf_log('POST Input');
 		pf_log($_POST);
 		pf_log('Continue with data');
-		$post['post_category'] = isset( $_POST['post_category'] ) ? $_POST['post_category'] : '';
-		$post['tax_input']     = isset( $_POST['tax_input'] ) ? $_POST['tax_input'] : '';
-		$post['post_title']    = isset( $_POST['title'] ) ? $_POST['title'] : '';
+		$post['post_category'] = isset( $_POST['post_category'] ) ? sanitize_text_field( wp_unslash( $_POST['post_category'] ) ) : '';
+		$post['tax_input']     = isset( $_POST['tax_input'] ) ? sanitize_text_field( wp_unslash( $_POST['tax_input'] ) ) : '';
+		$post['post_title']    = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
 		if ( empty( $post['post_title'] ) ) {
-			$post['post_title'] = isset( $_POST['post_title'] ) ? $_POST['post_title'] : '';
+			$post['post_title'] = isset( $_POST['post_title'] ) ? sanitize_text_field( wp_unslash( $_POST['post_title'] ) ) : '';
 		}
-		$content = isset( $_POST['content'] ) ? $_POST['content'] : '';
+		$content = isset( $_POST['content'] ) ? sanitize_text_field( wp_unslash( $_POST['content'] ) ) : '';
 		// pf_log($post['post_category']);
 		// pf_log($_POST['post_category']);
 
 		// var_dump('<pre>'); var_dump($_POST, $post); die();
 		// set the post_content and status
 		$post['post_content'] = $content;
-		$post['guid'] = $_POST['item_link'];
+
+		$item_link = isset( $_POST['item_link'] ) ? sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) : '';
+		$post['guid'] = $item_link;;
+
 		if ( isset( $_POST['publish'] ) && current_user_can( 'publish_posts' ) ) {
 			$post['post_status'] = 'publish';
 		} elseif ( isset( $_POST['review'] ) ) {
@@ -224,8 +227,8 @@ endif;
 				'simple' => '',
 			);
 			// var_dump('<pre>'); var_dump($_POST['pf-feed-subscribe']); die();
-		if ( ! empty( $_POST['pf-feed-subscribe'] ) && ( 'subscribe' == $_POST['pf-feed-subscribe'] ) ) {
-			$url_array      = parse_url( esc_url( $_POST['item_link'] ) );
+		if ( ! empty( $_POST['pf-feed-subscribe'] ) && ( 'subscribe' == sanitize_text_field( wp_unslash( $_POST['pf-feed-subscribe'] ) ) ) ) {
+			$url_array      = parse_url( esc_url( $item_link ) );
 			$sourceLink     = 'http://' . $url_array['host'];
 			$create_started = 'Attempting to nominate a feed with the result of: <br />';
 			if ( current_user_can( 'edit_posts' ) ) {
@@ -283,7 +286,8 @@ endif;
 			pf_log( $post );
 			$_POST = array_merge( $_POST, $post );
 			// var_dump($post); die();
-		if ( isset( $_POST['publish'] ) && ( ( $_POST['publish'] == 'Last Step' ) || ( $_POST['publish'] == 'Send to ' . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ) )) ) {
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( isset( $_POST['publish'] ) && ( ( wp_unslash( $_POST['publish'] ) == 'Last Step' ) || ( wp_unslash( $_POST['publish'] ) == 'Send to ' . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ) )) ) {
 			$post['post_type']   = 'nomination';
 			$post_ID = pressforward( 'utility.forward_tools' )->bookmarklet_to_last_step( false, $post );
 
@@ -291,15 +295,16 @@ endif;
 			$post_ID = pressforward( 'utility.forward_tools' )->bookmarklet_to_nomination( false, $post );
 		}
 
-		if ( ! empty( $_POST['item_feat_img'] ) && ( $_POST['item_feat_img'] != '' ) ) {
-			pressforward( 'schema.feed_item' )->set_ext_as_featured( $post_ID, $_POST['item_feat_img'] );
+		if ( ! empty( $_POST['item_feat_img'] ) ) {
+			pressforward( 'schema.feed_item' )->set_ext_as_featured( $post_ID, sanitize_text_field( wp_unslash( $_POST['item_feat_img'] ) ) );
 		}
 			$upload = false;
 		if ( ! empty( $_POST['photo_src'] ) && current_user_can( 'upload_files' ) ) {
-			foreach ( (array) $_POST['photo_src'] as $key => $image ) {
+			$photo_src = map_deep( wp_unslash( $_POST['photo_src'] ), 'sanitize_text_field' );
+			foreach ( (array) $photo_src as $key => $image ) {
 				// see if files exist in content - we don't want to upload non-used selected files.
-				if ( strpos( $_POST['content'], htmlspecialchars( $image ) ) !== false ) {
-					$desc   = isset( $_POST['photo_description'][ $key ] ) ? $_POST['photo_description'][ $key ] : '';
+				if ( strpos( $content, htmlspecialchars( $image ) ) !== false ) {
+					$desc   = isset( $_POST['photo_description'][ $key ] ) ? sanitize_textarea_field( wp_unslash( $_POST['photo_description'][ $key ] ) ) : '';
 					$upload = media_sideload_image( $image, $post_ID, $desc );
 
 					// Replace the POSTED content <img> with correct uploaded ones. Regex contains fix for Magic Quotes
@@ -312,7 +317,7 @@ endif;
 			// error handling for media_sideload
 		if ( is_wp_error( $upload ) ) {
 			wp_delete_post( $post_ID );
-			wp_die( $upload );
+			wp_die( esc_html( print_r( $upload, true ) ) );
 			// Why is this here?
 			// Oh, because it is trying to upload the images in the item into our
 			// system. But if that doesn't work, something has gone pretty wrong.
