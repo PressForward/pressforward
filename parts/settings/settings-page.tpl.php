@@ -42,8 +42,14 @@ $private_key = (pressforward('controller.jwt')->get_a_user_private_key());
 					if (current_user_can($tab_meta['cap'])) {
 						$title = $tab_meta['title'];
 						$class = ($tab == $current) ? 'nav-tab-active' : '';
-						_b( $tab );
-						echo "<a class='nav-tab " . esc_attr( $class ) . "' id='" . esc_attr( $tab ) . "-tab' href='#top#" . esc_attr( $tab ) . "' data-tab-target='#" . esc_attr( $tab ) . "'>" . esc_html( $title ) . "</a>";
+						printf(
+							"<a class='nav-tab %s' id='%s-tab' href='#top#%s' data-tab-target='#%s'>%s</a>",
+							esc_attr( $class ),
+							esc_attr( $tab ),
+							esc_attr( $tab ),
+							esc_attr( $tab ),
+							esc_html( $title )
+						);
 					}
 				}
 					?>

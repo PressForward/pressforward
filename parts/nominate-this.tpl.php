@@ -12,7 +12,7 @@ if ( 'as_paragraph' == $context ) {
 				<p class="description"><?php esc_html_e( 'If your bookmarks toolbar is hidden: copy the code below, open your Bookmarks manager, create new bookmark, type Press This into the name field and paste the code into the URL field.', 'pf' ); ?></p>
 				<p><textarea rows="5" cols="120" readonly="readonly"><?php echo esc_html( htmlspecialchars( pf_get_shortcut_link() ) ); ?></textarea></p>
 			</div><br />
-<!--
+
 			<div>
 			<h3><?php esc_html_e( 'Nominate This Extension', 'pf' ); ?></h3>
 			<p><?php esc_html_e( 'Nominate This now has an extension for Chrome with additional functionality.', 'pf' );?></p>
@@ -26,7 +26,7 @@ if ( 'as_paragraph' == $context ) {
 			</p>
 			</div>
 		</div>
--->
+
 <?php
 } elseif ( 'as_feed' == $context ) {
 	?>
@@ -73,7 +73,8 @@ if ( 'as_paragraph' == $context ) {
 						</p>
 						<p>
 						<?php printf(
-							esc_html__( 'Drag the button up to your bookmark bar or <a href="%1$s" class="%1$s">click here to find out more</a>.', 'pf' ),
+							// phpcs:ignore WordPress.Security.EscapeOutput
+							__( 'Drag the button up to your bookmark bar or <a href="%1$s" class="%1$s">click here to find out more</a>.', 'pf' ),
 							esc_url( 'admin.php?page=pf-tools' ),
 							esc_attr( 'remove-nom-this-prompt' )
 						);
