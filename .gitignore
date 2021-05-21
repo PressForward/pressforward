@@ -205,3 +205,4 @@ assets/stats-app/node_modules
 /Libraries/Jaxion/tests
 /Libraries/enumeration/test
 /Libraries/MozillaReadability/test
+/Libraries/FiveFiltersReadability/examples
