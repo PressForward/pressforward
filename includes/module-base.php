@@ -110,7 +110,7 @@ class PF_Module {
 			<table class="form-table">
 				<tr>
 					<th scope="row">
-						<label for="pressforward-dashboard-enable"><?php echo esc_html( sprintf( _e( 'Enable %s', 'pressforward' ), $modsetup['name'] ) ); ?></label>
+						<label for="pressforward-dashboard-enable"><?php echo esc_html( sprintf( __( 'Enable %s', 'pressforward' ), $modsetup['name'] ) ); ?></label>
 					</th>
 
 					<td>
