@@ -2,5 +2,9 @@
     "name": "pressforward/pressforward",
     "type": "project",
     "license": "AGPLv3",
-    "require": {}
+    "require-dev": {
+        "wp-coding-standards/wpcs": "^2.3",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
+        "phpcompatibility/phpcompatibility-wp": "*"
+    }
 }
