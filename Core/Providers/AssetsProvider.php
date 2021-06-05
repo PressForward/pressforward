@@ -73,19 +73,6 @@ class AssetsProvider extends ServiceProvider {
 					$exclusions = array( 'pf-options' );
 					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				},
-				'handle'    => $slug . '-bootstrap-responsive-style',
-				'src'       => 'Libraries/twitter-bootstrap/css/bootstrap-responsive',
-				'deps'      => array( $slug . '-bootstrap-style' )
-			)
-		);
-
-		$assets->register_style(
-			array(
-				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
-					$exclusions = array( 'pf-options' );
-					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
-				},
 				'handle'    => $slug . '-style',
 				'src'       => 'assets/css/pressforward',
 				'deps'      => array( 'thickbox', $slug . '-reset-style' ),
