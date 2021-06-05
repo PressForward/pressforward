@@ -518,16 +518,6 @@ class Menu implements HasActions, HasFilters {
 			} else {
 				update_option( 'pf_use_advanced_user_roles', 'no' );
 			}
-
-			if ( isset( $_POST['pf_metrics_config'] ) ) {
-				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				$pf_metrics_opt_check             = wp_unslash( $_POST['pf_metrics_config'] );
-				$pf_metrics_opt_check['detailed'] = 'no';
-				$pf_metrics_opt_check['checked']  = 'yes';
-				update_option( 'pf_metrics_config', $pf_metrics_opt_check );
-			} else {
-				update_option( 'pf_metrics_config', array() );
-			}
 		}
 
 		do_action( 'pf_admin_op_page_save' );
