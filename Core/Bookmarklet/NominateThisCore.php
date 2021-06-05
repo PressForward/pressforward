@@ -286,7 +286,7 @@ endif;
 			pf_log( $post );
 			$_POST = array_merge( $_POST, $post );
 			// var_dump($post); die();
-		if ( isset( $_POST['publish'] ) && ( ( wp_unslash( $_POST['publish'] ) == 'Last Step' ) || ( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) == 'Send to ' . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ) )) ) {
+		if ( isset( $_POST['publish'] ) && ( ( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) == 'Last Step' ) || ( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) == 'Send to ' . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ) )) ) {
 			$post['post_type']   = 'nomination';
 			$post_ID = pressforward( 'utility.forward_tools' )->bookmarklet_to_last_step( false, $post );
 

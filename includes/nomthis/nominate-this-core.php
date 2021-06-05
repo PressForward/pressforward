@@ -27,7 +27,7 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
 	$posted = nominate_it();
 	$post_ID = $posted;
 } else {
-	$title = isset( $_GET['t'] ) ? sanitize_text_field( trim( strip_tags( html_entity_decode( wp_unslash( $_GET['t'] ) , ENT_QUOTES ) ) ) ) : '';
+	$title = isset( $_GET['t'] ) ? trim( strip_tags( html_entity_decode( sanitize_text_field( wp_unslash( $_GET['t'] ) , ENT_QUOTES ) ) ) ) : '';
 	// $post_ID = wp_insert_post(array('post_title' => $title, 'post_type' => 'nomination', 'guid' => $_GET['u']));
 	// $post_ID = $post->ID;
 	// pf_log('Establish post '.$post_ID);
