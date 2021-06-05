@@ -499,15 +499,6 @@ class Menu implements HasActions, HasFilters {
 				: 'draft';
 			update_option( PF_SLUG . '_draft_post_status', $pf_draft_post_status );
 
-			if ( isset( $_POST[PF_SLUG.'_advanced_meta_handling'] ) ) {
-				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				$meta_handling_check = wp_unslash( $_POST[PF_SLUG.'_advanced_meta_handling'] );
-				// print_r($pf_links_opt_check); die();
-				update_option( PF_SLUG.'_advanced_meta_handling', $meta_handling_check );
-			} else {
-				update_option( PF_SLUG.'_advanced_meta_handling', 'no' );
-			}
-
 			if ( class_exists( 'The_Alert_Box' ) ) {
 				// var_dump($_POST);
 				if ( empty( $_POST[ pressforward( 'library.alertbox' )->option_name() ] ) ) {
