@@ -147,98 +147,6 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo 'new Array(' . get_images_from_uri( $url ) . ')';
 			break;
-
-			case 'photo_js': ?>
-				// gather images and load some default JS
-				var last = null
-				var img, img_tag, aspect, w, h, skip, i, strtoappend = "";
-				if(photostorage == false) {
-				var my_src = eval(
-					jQuery.ajax({
-						type: "GET",
-						url: "<?php echo esc_url( $current_url ); ?>",
-						cache : false,
-						async : false,
-						data: "ajax=photo_images&u=<?php echo urlencode( $url ); ?>",
-						dataType : "script"
-					}).responseText
-				);
-				if(my_src.length == 0) {
-					var my_src = eval(
-						jQuery.ajax({
-							type: "GET",
-							url: "<?php echo esc_url( $current_url ); ?>",
-							cache : false,
-							async : false,
-							data: "ajax=photo_images&u=<?php echo urlencode( $url ); ?>",
-							dataType : "script"
-						}).responseText
-					);
-					if(my_src.length == 0) {
-						strtoappend = '<?php esc_html_e( 'Unable to retrieve images or no images on page.','pf' ); ?>';
-					}
-				}
-				}
-				for (i = 0; i < my_src.length; i++) {
-					img = new Image();
-					img.src = my_src[i];
-					img_attr = 'id="img' + i + '"';
-					skip = false;
-
-					maybeappend = '<a href="?ajax=photo_thickbox&amp;i=' + encodeURIComponent(img.src) + '&amp;u=<?php echo urlencode( $url ); ?>&amp;height=400&amp;width=500" title="" class="thickbox"><img src="' + img.src + '" ' + img_attr + '/></a>';
-
-					if (img.width && img.height) {
-						if (img.width >= 30 && img.height >= 30) {
-							aspect = img.width / img.height;
-							scale = (aspect > 1) ? (71 / img.width) : (71 / img.height);
-
-							w = img.width;
-							h = img.height;
-
-							if (scale < 1) {
-    						w = parseInt(img.width * scale);
-    						h = parseInt(img.height * scale);
-							}
-							img_attr += ' style="width: ' + w + 'px; height: ' + h + 'px;"';
-							strtoappend += maybeappend;
-						}
-					} else {
-						strtoappend += maybeappend;
-					}
-				}
-
-				function pick(img, desc) {
-					if (img) {
-						if('object' == typeof jQuery('.photolist input') && jQuery('.photolist input').length != 0) length = jQuery('.photolist input').length;
-						if(length == 0) length = 1;
-						jQuery('.photolist').append('<input name="photo_src[' + length + ']" value="' + img +'" type="hidden"/>');
-						jQuery('.photolist').append('<input name="photo_description[' + length + ']" value="' + desc +'" type="hidden"/>');
-						insert_editor( "\n\n" + encodeURI('<p style="text-align: center;"><a href="<?php echo esc_js( $url) ; ?>"><img src="' + img +'" alt="' + desc + '" /></a></p>'));
-					}
-					return false;
-				}
-
-				function image_selector(el) {
-					var desc, src, parent = jQuery(el).closest('#photo-add-url-div');
-
-					if ( parent.length ) {
-						desc = parent.find('input.tb_this_photo_description').val() || '';
-						src = parent.find('input.tb_this_photo').val() || ''
-					} else {
-						desc = jQuery('#tb_this_photo_description').val() || '';
-						src = jQuery('#tb_this_photo').val() || ''
-					}
-
-					tb_remove();
-					pick(src, desc);
-					jQuery('#extra-fields').hide();
-					jQuery('#extra-fields').html('');
-					return false;
-				}
-
-				jQuery('#extra-fields').html('<div class="postbox"><h2><?php esc_html_e( 'Add Photos','pf' ); ?> <small id="photo_directions">(<?php esc_html_e( 'click images to select' ) ?>)</small></h2><ul class="actions"><li><a href="#" id="photo-add-url" class="button button-small"><?php esc_html_e( 'Add from URL','pf' ) ?> +</a></li></ul><div class="inside"><div class="titlewrap"><div id="img_container"></div></div><p id="options"><a href="#" class="close button"><?php esc_html_e( 'Cancel','pf' ); ?></a><a href="#" class="refresh button"><?php esc_html_e( 'Refresh','pf' ); ?></a></p></div>');
-				jQuery('#img_container').html(strtoappend);
-				<?php break;
 		}
 		die;
 	}
@@ -378,7 +286,6 @@ var photostorage = false;
 						data: "ajax=photo_js&u=<?php echo esc_js( urlencode( $url ) ); ?>",
 						dataType : "script",
 						success : function(data) {
-							eval(data);
 							photostorage = jQuery('#extra-fields').html();
 							setup_photo_actions();
 						}
