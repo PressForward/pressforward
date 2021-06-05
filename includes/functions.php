@@ -1388,8 +1388,7 @@ function pf_process_delete_queue() {
 		return;
 	}
 
-	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-	$nonce       = wp_unslash( $_GET['pf_process_delete_queue'] );
+	$nonce       = sanitize_text_field( wp_unslash( $_GET['pf_process_delete_queue'] ) );
 	$saved_nonce = get_option( 'pf_delete_queue_nonce' );
 	if ( $saved_nonce !== $nonce ) {
 		pf_log( 'nonce indicates not ready.' );

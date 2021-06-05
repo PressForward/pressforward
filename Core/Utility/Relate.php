@@ -349,8 +349,7 @@ class Relate implements HasActions {
 
 		// $archiveQuery = new WP_Query( $args );
 		if ( isset( $_POST['date_limit'] ) ) {
-			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$date_limit = wp_unslash( $_POST['date_limit'] );
+			$date_limit = sanitize_text_field( wp_unslash( $_POST['date_limit'] ) );
 
 			switch ( $date_limit ) {
 				case '1week':

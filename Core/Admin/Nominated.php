@@ -171,8 +171,7 @@ class Nominated implements HasActions {
 									array(
 										'taxonomy' => pressforward( 'schema.feeds' )->tag_taxonomy,
 										'field'    => 'term_id',
-										// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-										'terms'    => wp_unslash( $_GET['folder'] ),
+										'terms'    => sanitize_text_field( wp_unslash( $_GET['folder'] ) ),
 									),
 								),
 							)
@@ -704,8 +703,7 @@ class Nominated implements HasActions {
 	public function build_nomination() {
 
 		// Verify nonce
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		if ( empty( $_POST[ PF_SLUG . '_nomination_nonce' ] ) || ! wp_verify_nonce( wp_unslash( $_POST[ PF_SLUG . '_nomination_nonce' ] ), 'nomination' ) ) {
+		if ( empty( $_POST[ PF_SLUG . '_nomination_nonce' ] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ PF_SLUG . '_nomination_nonce' ] ) ), 'nomination' ) ) {
 			die( esc_html__( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) ); }
 
 		if ( '' != ( get_option( 'timezone_string' ) ) ) {
@@ -729,8 +727,7 @@ class Nominated implements HasActions {
 		// die($item_wp_date);
 		pf_log( 'We handle the item into a nomination?' );
 
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		if ( ! empty( $_POST['pf_amplify'] ) && ( '1' == wp_unslash( $_POST['pf_amplify'] ) ) ) {
+		if ( ! empty( $_POST['pf_amplify'] ) && ( '1' == sanitize_text_field( wp_unslash( $_POST['pf_amplify'] ) ) ) ) {
 			$amplify = true;
 		} else {
 			$amplify = false;

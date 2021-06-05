@@ -215,8 +215,7 @@ class Menu implements HasActions, HasFilters {
 				}
 
 				if ( isset( $_GET['reveal'] ) ) {
-					// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-					$archive_feed_args['reveal'] = wp_unslash( $_GET['reveal'] );
+					$archive_feed_args['reveal'] = sanitize_text_field( wp_unslash( $_GET['reveal'] ) );
 				}
 
 				foreach ( pressforward( 'controller.loops' )->archive_feed_to_display( $archive_feed_args ) as $item ) {
@@ -410,8 +409,7 @@ class Menu implements HasActions, HasFilters {
 
 			foreach ( $arrayedAdminRights as $right => $parts ) {
 				if ( isset( $_POST[ $right ] ) ) {
-					// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-					$enabled = wp_unslash( $_POST[ $right ] );
+					$enabled = sanitize_text_field( wp_unslash( $_POST[ $right ] ) );
 					update_option( $right, $enabled );
 					$feed_caps      = pressforward( 'schema.feeds' )->map_feed_caps();
 					$feed_item_caps = pressforward( 'schema.feed_item' )->map_feed_item_caps();
@@ -505,19 +503,15 @@ class Menu implements HasActions, HasFilters {
 					// var_dump('<pre>'); var_dump($_POST); var_dump('</pre>');
 					update_option( pressforward( 'library.alertbox' )->option_name(), 'false' );
 				} else {
-					// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-					update_option( pressforward( 'library.alertbox' )->option_name(), wp_unslash( $_POST[ pressforward( 'library.alertbox' )->option_name() ] ) );
+					update_option( pressforward( 'library.alertbox' )->option_name(), sanitize_text_field( wp_unslash( $_POST[ pressforward( 'library.alertbox' )->option_name() ] ) ) );
 				}
 			}
 
+			$pf_author_opt_check = 'no';
 			if ( isset( $_POST['pf_use_advanced_user_roles'] ) ) {
-				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				$pf_author_opt_check = wp_unslash( $_POST['pf_use_advanced_user_roles'] );
-				// print_r($pf_links_opt_check); die();
-				update_option( 'pf_use_advanced_user_roles', $pf_author_opt_check );
-			} else {
-				update_option( 'pf_use_advanced_user_roles', 'no' );
+				$pf_author_opt_check = 'yes' === sanitize_text_field( wp_unslash( $_POST['pf_use_advanced_user_roles'] ) ) ? 'yes' : 'no';
 			}
+			update_option( 'pf_use_advanced_user_roles', $pf_author_opt_check );
 		}
 
 		do_action( 'pf_admin_op_page_save' );
