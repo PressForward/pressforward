@@ -251,6 +251,13 @@ function commentModal() {
 }
 
 function PFBootstrapInits() {
+	jQuery('.dropdown-toggle').on(
+		'click',
+		function() {
+			var $clickedParent = jQuery(this).closest('.dropdown');
+			$clickedParent.toggleClass( 'open' );
+		}
+	);
 
 	jQuery('.nom-to-archive').tooltip({
 		placement: 'top',
