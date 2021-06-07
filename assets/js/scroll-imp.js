@@ -3,11 +3,12 @@ jQuery(document).ready(function () {
 
 	var container = jQuery('#entries');
 
-	container.infinitescroll({
-		navSelector: '.pf-navigation',    // selector for the paged navigation
-		nextSelector: '.feednext a',  // selector for the NEXT link (to page 2)
-		itemSelector: '.feed-item',     // selector for all items you'll retrieve
+	container.infiniteScroll({
+		path: '.feednext a',
+		hideNav: '.pf-navigation',    // selector for the paged navigation
+		append: '.feed-item',     // selector for all items you'll retrieve
 		debug: false,
+		history: false,
 		options: { debug: false },
 		loading: {
 			finishedMsg: 'No more pages to load.',

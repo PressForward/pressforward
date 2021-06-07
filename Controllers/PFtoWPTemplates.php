@@ -260,7 +260,7 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 
 			$end_title = '</h1> <span id="h-after"> &#8226; </span>';
 
-			$title = $title . esc_html( $middle ) . $end_title;
+			$title = $title . $middle . $end_title;
 
 			return $title;
 		} else {

@@ -64,6 +64,7 @@ class PF_Loops {
 				'relationship'     => false,
 				'search_terms'     => '',
 				'exclude_archived' => false,
+				'count_total'      => false,
 			), $args
 		);
 
@@ -249,7 +250,16 @@ class PF_Loops {
 			$c++;
 		}
 
-		return $feedObject;
+		if ( $r['count_total'] ) {
+			$retval = [
+				'items'         => $feedObject,
+				'max_num_pages' => $feed_items->max_num_pages,
+			];
+		} else {
+			$retval = $feedObject;
+		}
+
+		return $retval;
 	}
 
 

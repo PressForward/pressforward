@@ -474,7 +474,7 @@ function detect_view_change() {
 
 
 console.log('Waiting for load.');
-jQuery(document).ready(function () {
+jQuery(window).on('load', function () {
 	// executes when complete page is fully loaded, including all frames, objects and images
 
 	jQuery('.pf-loader').delay(300).fadeOut("slow", function () {

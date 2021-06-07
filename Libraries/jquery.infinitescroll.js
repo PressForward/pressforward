@@ -1,791 +1,1909 @@
-/*jshint undef: true */
-/*global jQuery: true */
-
-/*
-   --------------------------------
-   Infinite Scroll
-   --------------------------------
-   + https://github.com/paulirish/infinite-scroll
-   + version 2.0b2.120519
-   + Copyright 2011/12 Paul Irish & Luke Shumard
-   + Licensed under the MIT license
-
-   + Documentation: http://infinite-scroll.com/
-*/
-
-(function (window, $, undefined) {
-	"use strict";
-
-	$.infinitescroll = function infscr(options, callback, element) {
-		this.element = $( element );
-
-		// Flag the object in the event of a failed creation
-		if ( ! this._create( options, callback )) {
-			this.failed = true;
-		}
-	};
-
-	$.infinitescroll.defaults = {
-		loading: {
-			finished: undefined,
-			finishedMsg: "<em>Congratulations, you've reached the end of the internet.</em>",
-			img: "data:image/gif;base64,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",
-			msg: null,
-			msgText: "<em>Loading the next set of posts...</em>",
-			selector: null,
-			speed: 'fast',
-			start: undefined
-		},
-		state: {
-			isDuringAjax: false,
-			isInvalidPage: false,
-			isDestroyed: false,
-			isDone: false, // For when it goes all the way through the archive.
-			isPaused: false,
-			currPage: 1
-		},
-		debug: false,
-		behavior: undefined,
-		binder: $( window ), // used to cache the selector
-		nextSelector: "div.navigation a:first",
-		navSelector: "div.navigation",
-		contentSelector: null, // rename to pageFragment
-		extraScrollPx: 150,
-		itemSelector: "div.post",
-		animate: false,
-		pathParse: undefined,
-		dataType: 'html',
-		appendCallback: true,
-		bufferPx: 40,
-		errorCallback: function () { },
-		infid: 0, // Instance ID
-		pixelsFromNavToBottom: undefined,
-		path: undefined, // Either parts of a URL as an array (e.g. ["/page/", "/"] or a function that takes in the page number and returns a URL
-		prefill: false // When the document is smaller than the window, load data until the document is larger or links are exhausted
-	};
-
-	$.infinitescroll.prototype = {
-
-		/*
-            ----------------------------
-            Private methods
-            ----------------------------
-            */
-
-		// Bind or unbind from scroll
-		_binding: function infscr_binding(binding) {
-
-			var instance = this,
-			opts = instance.options;
-
-			opts.v = '2.0b2.111027';
-
-			// if behavior is defined and this function is extended, call that instead of default
-			if ( ! ! opts.behavior && this['_binding_' + opts.behavior] !== undefined) {
-				this['_binding_' + opts.behavior].call( this );
-				return;
-			}
-
-			if (binding !== 'bind' && binding !== 'unbind') {
-				this._debug( 'Binding value  ' + binding + ' not valid' );
-				return false;
-			}
-
-			if (binding === 'unbind') {
-				(this.options.binder).unbind( 'smartscroll.infscr.' + instance.options.infid );
-			} else {
-				(this.options.binder)[binding]('smartscroll.infscr.' + instance.options.infid, function () {
-					instance.scroll();
-				});
-			}
-
-			this._debug( 'Binding', binding );
-		},
-
-		// Fundamental aspects of the plugin are initialized
-		_create: function infscr_create(options, callback) {
-
-			// Add custom options to defaults
-			var opts = $.extend( true, {}, $.infinitescroll.defaults, options );
-			var $window = $( window );
-			var instance = this;
-
-			// Validate selectors
-			if ( ! this._validate( options )) { return false; }
-			this.options = opts;
-
-			// Validate page fragment path
-			var path = $( opts.nextSelector ).attr( 'href' );
-			if ( ! path) {
-				this._debug( 'Navigation selector not found' );
-				return false;
-			}
-
-			// Set the path to be a relative URL from root.
-			opts.path = opts.path || this._determinepath( path );
-
-			// contentSelector is 'page fragment' option for .load() / .ajax() calls
-			opts.contentSelector = opts.contentSelector || this.element;
-
-			// loading.selector - if we want to place the load message in a specific selector, defaulted to the contentSelector
-			opts.loading.selector = opts.loading.selector || opts.contentSelector;
-
-			// Define loading.msg
-			opts.loading.msg = opts.loading.msg || $( '<div id="infscr-loading"><img alt="Loading..." src="' + opts.loading.img + '" /><div>' + opts.loading.msgText + '</div></div>' );
-
-			// Preload loading.img
-			(new Image()).src = opts.loading.img;
-
-			// distance from nav links to bottom
-			// computed as: height of the document + top offset of container - top offset of nav link
-			if (opts.pixelsFromNavToBottom === undefined) {
-				opts.pixelsFromNavToBottom = $( document ).height() - $( opts.navSelector ).offset().top;
-			}
-
-			var self = this;
-
-			// determine loading.start actions
-			opts.loading.start = opts.loading.start || function() {
-				$( opts.navSelector ).hide();
-				opts.loading.msg
-				.appendTo( opts.loading.selector )
-				.show(opts.loading.speed, $.proxy(function() {
-					this.beginAjax( opts );
-				}, self));
-			};
-
-			// determine loading.finished actions
-			opts.loading.finished = opts.loading.finished || function() {
-				opts.loading.msg.fadeOut( 'normal' );
-			};
-
-			// callback loading
-			opts.callback = function(instance,data) {
-				if ( ! ! opts.behavior && instance['_callback_' + opts.behavior] !== undefined) {
-					instance['_callback_' + opts.behavior].call( $( opts.contentSelector )[0], data );
-				}
-
-				if (callback) {
-					callback.call( $( opts.contentSelector )[0], data, opts );
-				}
-
-				if (opts.prefill) {
-					$window.bind( "resize.infinite-scroll", instance._prefill );
-				}
-			};
-
-			if (options.debug) {
-				// Tell IE9 to use its built-in console
-				if (Function.prototype.bind && (typeof console === 'object' || typeof console === 'function') && typeof console.log === "object") { { { { { { { { { { { { { { { { { { { {
-					["log","info","warn","error","assert","dir","clear","profile","profileEnd"]
-						.forEach(function (method) {
-							console[method] = this.call( console[method], console );
-						}, Function.prototype.bind);
-					} } } } } } } } } } } } } } } } } } } }
-			}
-
-			this._setup();
-
-			// Setups the prefill method for use
-			if (opts.prefill) {
-				this._prefill();
-			}
-
-			// Return true to indicate successful creation
-			return true;
-		},
-
-		_prefill: function infscr_prefill() {
-			var instance = this;
-			var $document = $( document );
-			var $window = $( window );
-
-			function needsPrefill() {
-				return ($document.height() <= $window.height());
-			}
-
-			this._prefill = function() {
-				if (needsPrefill()) {
-					instance.scroll();
-				}
-
-				$window.bind("resize.infinite-scroll", function() {
-					if (needsPrefill()) {
-						$window.unbind( "resize.infinite-scroll" );
-						instance.scroll();
-					}
-				});
-			};
-
-			// Call self after setting up the new function
-			this._prefill();
-		},
-
-		// Console log wrapper
-		_debug: function infscr_debug() {
-			if (true !== this.options.debug) {
-				return;
-			}
-
-			if (typeof console !== 'undefined' && typeof console.log === 'function') {
-				// Modern browsers
-				// Single argument, which is a string
-				if ((Array.prototype.slice.call( arguments )).length === 1 && typeof Array.prototype.slice.call( arguments )[0] === 'string') {
-					console.log( (Array.prototype.slice.call( arguments )).toString() );
-				} else {
-					console.log( Array.prototype.slice.call( arguments ) );
-				}
-			} else if ( ! Function.prototype.bind && typeof console !== 'undefined' && typeof console.log === 'object') { { { { { { { { { { { { { { { { { { { {
-				// IE8
-				Function.prototype.call.call( console.log, console, Array.prototype.slice.call( arguments ) );
-				} } } } } } } } } } } } } } } } } } } }
-		},
-
-		// find the number to increment in the path.
-		_determinepath: function infscr_determinepath(path) {
-
-			var opts = this.options;
-
-			// if behavior is defined and this function is extended, call that instead of default
-			if ( ! ! opts.behavior && this['_determinepath_' + opts.behavior] !== undefined) {
-				return this['_determinepath_' + opts.behavior].call( this,path );
-			}
-
-			if ( ! ! opts.pathParse) {
-
-				this._debug( 'pathParse manual' );
-				return opts.pathParse( path, this.options.state.currPage + 1 );
-
-			} else if (path.match( /^(.*?)\b2\b(.*?$)/ )) {
-				path = path.match( /^(.*?)\b2\b(.*?$)/ ).slice( 1 );
-
-				// if there is any 2 in the url at all.
-			} else if (path.match( /^(.*?)2(.*?$)/ )) {
-
-				// page= is used in django:
-				// http://www.infinite-scroll.com/changelog/comment-page-1/#comment-127
-				if (path.match( /^(.*?page=)2(\/.*|$)/ )) {
-					path = path.match( /^(.*?page=)2(\/.*|$)/ ).slice( 1 );
-					return path;
-				}
-
-				path = path.match( /^(.*?)2(.*?$)/ ).slice( 1 );
-
-			} else {
-
-				// page= is used in drupal too but second page is page=1 not page=2:
-				// thx Jerod Fritz, vladikoff
-				if (path.match( /^(.*?page=)1(\/.*|$)/ )) {
-					path = path.match( /^(.*?page=)1(\/.*|$)/ ).slice( 1 );
-					return path;
-				} else {
-					this._debug( 'Sorry, we couldn\'t parse your Next (Previous Posts) URL. Verify your the css selector points to the correct A tag. If you still get this error: yell, scream, and kindly ask for help at infinite-scroll.com.' );
-					// Get rid of isInvalidPage to allow permalink to state
-					opts.state.isInvalidPage = true;  // prevent it from running on this page.
-				}
-			}
-			this._debug( 'determinePath', path );
-			return path;
-
-		},
-
-		// Custom error
-		_error: function infscr_error(xhr) {
-
-			var opts = this.options;
-
-			// if behavior is defined and this function is extended, call that instead of default
-			if ( ! ! opts.behavior && this['_error_' + opts.behavior] !== undefined) {
-				this['_error_' + opts.behavior].call( this,xhr );
-				return;
-			}
-
-			if (xhr !== 'destroy' && xhr !== 'end') {
-				xhr = 'unknown';
-			}
-
-			this._debug( 'Error', xhr );
-
-			if (xhr === 'end') {
-				this._showdonemsg();
-			}
-
-			opts.state.isDone = true;
-			opts.state.currPage = 1; // if you need to go back to this instance
-			opts.state.isPaused = false;
-			this._binding( 'unbind' );
-
-		},
-
-		// Load Callback
-		_loadcallback: function infscr_loadcallback(box, data) {
-
-			var opts = this.options,
-			callback = this.options.callback, // GLOBAL OBJECT FOR CALLBACK
-			result = (opts.state.isDone) ? 'done' : ( ! opts.appendCallback) ? 'no-append' : 'append',
-			frag;
-
-			// if behavior is defined and this function is extended, call that instead of default
-			if ( ! ! opts.behavior && this['_loadcallback_' + opts.behavior] !== undefined) {
-				this['_loadcallback_' + opts.behavior].call( this,box,data );
-				return;
-			}
-
-			switch (result) {
-				case 'done':
-					this._showdonemsg();
-					return false;
-
-				case 'no-append':
-					if (opts.dataType === 'html') {
-						data = '<div>' + data + '</div>';
-						data = $( data ).find( opts.itemSelector );
-					}
-					break;
-
-				case 'append':
-					var children = box.children();
-					// if it didn't return anything
-					if (children.length === 0) {
-						return this._error( 'end' );
-					}
-
-					// use a documentFragment because it works when content is going into a table or UL
-					frag = document.createDocumentFragment();
-					while (box[0].firstChild) {
-						frag.appendChild( box[0].firstChild );
-					}
-
-					this._debug( 'contentSelector', $( opts.contentSelector )[0] );
-					$( opts.contentSelector )[0].appendChild( frag );
-					// previously, we would pass in the new DOM element as context for the callback
-					// however we're now using a documentfragment, which doesn't have parents or children,
-					// so the context is the contentContainer guy, and we pass in an array
-					// of the elements collected as the first argument.
-					data = children.get();
-					break;
-			}
-
-			// loadingEnd function
-			opts.loading.finished.call( $( opts.contentSelector )[0],opts );
-
-			// smooth scroll to ease in the new content
-			if (opts.animate) {
-				var scrollTo = $( window ).scrollTop() + $( '#infscr-loading' ).height() + opts.extraScrollPx + 'px';
-				$( 'html,body' ).animate( { scrollTop: scrollTo }, 800, function () { opts.state.isDuringAjax = false; } );
-			}
-
-			if ( ! opts.animate) {
-				// once the call is done, we can allow it again.
-				opts.state.isDuringAjax = false;
-			}
-
-			callback( this,data );
-		},
-
-		_nearbottom: function infscr_nearbottom() {
-
-			var opts = this.options,
-			pixelsFromWindowBottomToBottom = 0 + $( document ).height() - (opts.binder.scrollTop()) - $( window ).height();
-
-			// if behavior is defined and this function is extended, call that instead of default
-			if ( ! ! opts.behavior && this['_nearbottom_' + opts.behavior] !== undefined) {
-				return this['_nearbottom_' + opts.behavior].call( this );
-			}
-
-			this._debug( 'math:', pixelsFromWindowBottomToBottom, opts.pixelsFromNavToBottom );
-
-			// if distance remaining in the scroll (including buffer) is less than the orignal nav to bottom....
-			return (pixelsFromWindowBottomToBottom - opts.bufferPx < opts.pixelsFromNavToBottom);
-
-		},
-
-		// Pause / temporarily disable plugin from firing
-		_pausing: function infscr_pausing(pause) {
-
-			var opts = this.options;
-
-			// if behavior is defined and this function is extended, call that instead of default
-			if ( ! ! opts.behavior && this['_pausing_' + opts.behavior] !== undefined) {
-				this['_pausing_' + opts.behavior].call( this,pause );
-				return;
-			}
-
-			// If pause is not 'pause' or 'resume', toggle it's value
-			if (pause !== 'pause' && pause !== 'resume' && pause !== null) {
-				this._debug( 'Invalid argument. Toggling pause value instead' );
-			}
-
-			pause = (pause && (pause === 'pause' || pause === 'resume')) ? pause : 'toggle';
-
-			switch (pause) {
-				case 'pause':
-					opts.state.isPaused = true;
-				break;
-
-				case 'resume':
-					opts.state.isPaused = false;
-				break;
-
-				case 'toggle':
-					opts.state.isPaused = ! opts.state.isPaused;
-				break;
-			}
-
-			this._debug( 'Paused', opts.state.isPaused );
-			return false;
-
-		},
-
-		// Behavior is determined
-		// If the behavior option is undefined, it will set to default and bind to scroll
-		_setup: function infscr_setup() {
-
-			var opts = this.options;
-
-			// if behavior is defined and this function is extended, call that instead of default
-			if ( ! ! opts.behavior && this['_setup_' + opts.behavior] !== undefined) {
-				this['_setup_' + opts.behavior].call( this );
-				return;
-			}
-
-			this._binding( 'bind' );
-
-			return false;
-
-		},
-
-		// Show done message
-		_showdonemsg: function infscr_showdonemsg() {
-
-			var opts = this.options;
-
-			// if behavior is defined and this function is extended, call that instead of default
-			if ( ! ! opts.behavior && this['_showdonemsg_' + opts.behavior] !== undefined) {
-				this['_showdonemsg_' + opts.behavior].call( this );
-				return;
-			}
-
-			opts.loading.msg
-			.find( 'img' )
-			.hide()
-			.parent()
-			.find( 'div' ).html( opts.loading.finishedMsg ).animate({ opacity: 1 }, 2000, function () {
-				$( this ).parent().fadeOut( 'normal' );
-			});
-
-			// user provided callback when done
-			opts.errorCallback.call( $( opts.contentSelector )[0],'done' );
-		},
-
-		// grab each selector option and see if any fail
-		_validate: function infscr_validate(opts) {
-			for (var key in opts) {
-				if (key.indexOf && key.indexOf( 'Selector' ) > -1 && $( opts[key] ).length === 0) {
-					this._debug( 'Your ' + key + ' found no elements.' );
-					return false;
-				}
-			}
-
-			return true;
-		},
-
-		/*
-            ----------------------------
-            Public methods
-            ----------------------------
-            */
-
-		// Bind to scroll
-		bind: function infscr_bind() {
-			this._binding( 'bind' );
-		},
-
-		// Destroy current instance of plugin
-		destroy: function infscr_destroy() {
-
-			this.options.state.isDestroyed = true;
-			return this._error( 'destroy' );
-
-		},
-
-		// Set pause value to false
-		pause: function infscr_pause() {
-			this._pausing( 'pause' );
-		},
-
-		// Set pause value to false
-		resume: function infscr_resume() {
-			this._pausing( 'resume' );
-		},
-
-		beginAjax: function infscr_ajax(opts) {
-			var instance = this,
-				path = opts.path,
-				box, desturl, method, condition;
-
-			// increment the URL bit. e.g. /page/3/
-			opts.state.currPage++;
-
-			// if we're dealing with a table we can't use DIVs
-			box = $( opts.contentSelector ).is( 'table' ) ? $( '<tbody/>' ) : $( '<div/>' );
-
-			desturl = (typeof path === 'function') ? path( opts.state.currPage ) : path.join( opts.state.currPage );
-			instance._debug( 'heading into ajax', desturl );
-
-			method = (opts.dataType === 'html' || opts.dataType === 'json' ) ? opts.dataType : 'html+callback';
-			if (opts.appendCallback && opts.dataType === 'html') {
-				method += '+callback';
-			}
-
-			switch (method) {
-
-				case 'html+callback':
-
-					instance._debug( 'Using HTML via .load() method' );
-					box.load(desturl + ' ' + opts.itemSelector, undefined, function infscr_ajax_callback(responseText) {
-						instance._loadcallback( box, responseText );
-					});
-
-					break;
-
-				case 'html':
-					instance._debug( 'Using ' + (method.toUpperCase()) + ' via $.ajax() method' );
-					$.ajax({
-						// params
-						url: desturl,
-						dataType: opts.dataType,
-						complete: function infscr_ajax_callback(jqXHR, textStatus) {
-							condition = (typeof (jqXHR.isResolved) !== 'undefined') ? (jqXHR.isResolved()) : (textStatus === "success" || textStatus === "notmodified");
-							if (condition) {
-								instance._loadcallback( box, jqXHR.responseText );
-							} else {
-								instance._error( 'end' );
-							}
-						}
-					});
-
-					break;
-				case 'json':
-					instance._debug( 'Using ' + (method.toUpperCase()) + ' via $.ajax() method' );
-					$.ajax({
-						dataType: 'json',
-						type: 'GET',
-						url: desturl,
-						success: function (data, textStatus, jqXHR) {
-							condition = (typeof (jqXHR.isResolved) !== 'undefined') ? (jqXHR.isResolved()) : (textStatus === "success" || textStatus === "notmodified");
-							if (opts.appendCallback) {
-								// if appendCallback is true, you must defined template in options.
-								// note that data passed into _loadcallback is already an html (after processed in opts.template(data)).
-								if (opts.template !== undefined) {
-									var theData = opts.template( data );
-									box.append( theData );
-									if (condition) {
-										instance._loadcallback( box, theData );
-									} else {
-										instance._error( 'end' );
-									}
-									} else {
-									instance._debug( "template must be defined." );
-									instance._error( 'end' );
-									}
-							} else {
-								// if appendCallback is false, we will pass in the JSON object. you should handle it yourself in your callback.
-								if (condition) {
-									instance._loadcallback( box, data );
-								} else {
-									instance._error( 'end' );
-								}
-							}
-						},
-						error: function() {
-							instance._debug( "JSON ajax request failed." );
-							instance._error( 'end' );
-						}
-					});
-
-					break;
-			}
-		},
-
-		// Retrieve next set of content items
-		retrieve: function infscr_retrieve(pageNum) {
-			pageNum = pageNum || null;
-
-			var instance = this,
-			opts = instance.options;
-
-			// if behavior is defined and this function is extended, call that instead of default
-			if ( ! ! opts.behavior && this['retrieve_' + opts.behavior] !== undefined) {
-				this['retrieve_' + opts.behavior].call( this,pageNum );
-				return;
-			}
-
-			// for manual triggers, if destroyed, get out of here
-			if (opts.state.isDestroyed) {
-				this._debug( 'Instance is destroyed' );
-				return false;
-			}
-
-			// we dont want to fire the ajax multiple times
-			opts.state.isDuringAjax = true;
-
-			opts.loading.start.call( $( opts.contentSelector )[0],opts );
-		},
-
-		// Check to see next page is needed
-		scroll: function infscr_scroll() {
-
-			var opts = this.options,
-			state = opts.state;
-
-			// if behavior is defined and this function is extended, call that instead of default
-			if ( ! ! opts.behavior && this['scroll_' + opts.behavior] !== undefined) {
-				this['scroll_' + opts.behavior].call( this );
-				return;
-			}
-
-			if (state.isDuringAjax || state.isInvalidPage || state.isDone || state.isDestroyed || state.isPaused) {
-				return;
-			}
-
-			if ( ! this._nearbottom()) {
-				return;
-			}
-
-			this.retrieve();
-
-		},
-
-		// Toggle pause value
-		toggle: function infscr_toggle() {
-			this._pausing();
-		},
-
-		// Unbind from scroll
-		unbind: function infscr_unbind() {
-			this._binding( 'unbind' );
-		},
-
-		// update options
-		update: function infscr_options(key) {
-			if ($.isPlainObject( key )) {
-				this.options = $.extend( true,this.options,key );
-			}
-		}
-	};
-
-	/*
-        ----------------------------
-        Infinite Scroll function
-        ----------------------------
-
-        Borrowed logic from the following...
-
-        jQuery UI
-        - https://github.com/jquery/jquery-ui/blob/master/ui/jquery.ui.widget.js
-
-        jCarousel
-        - https://github.com/jsor/jcarousel/blob/master/Libraries/jquery.jcarousel.js
-
-        Masonry
-        - https://github.com/desandro/masonry/blob/master/jquery.masonry.js
-
-	*/
-
-	$.fn.infinitescroll = function infscr_init(options, callback) {
-
-		var thisCall = typeof options;
-
-		switch (thisCall) {
-
-			// method
-			case 'string':
-				var args = Array.prototype.slice.call( arguments, 1 );
-
-				this.each(function () {
-					var instance = $.data( this, 'infinitescroll' );
-					if ( ! instance) {
-						// not setup yet
-						// return $.error('Method ' + options + ' cannot be called until Infinite Scroll is setup');
-						return false;
-					}
-
-					if ( ! $.isFunction( instance[options] ) || options.charAt( 0 ) === "_") {
-						// return $.error('No such method ' + options + ' for Infinite Scroll');
-						return false;
-					}
-
-					// no errors!
-					instance[options].apply( instance, args );
-				});
-
-			break;
-
-			// creation
-			case 'object':
-
-				this.each(function () {
-					var instance = $.data( this, 'infinitescroll' );
-					if (instance) {
-
-						// update options of current instance
-						instance.update( options );
-
-					} else {
-
-						// initialize new instance
-						instance = new $.infinitescroll( options, callback, this );
-
-						// don't attach if instantiation failed
-						if ( ! instance.failed) {
-							$.data( this, 'infinitescroll', instance );
-						}
-
-					}
-				});
-
-			break;
-
-		}
-
-		return this;
-	};
-
-	/*
-     * smartscroll: debounced scroll event for jQuery *
-     * https://github.com/lukeshumard/smartscroll
-     * Based on smartresize by @louis_remi: https://github.com/lrbabe/jquery.smartresize.js *
-     * Copyright 2011 Louis-Remi & Luke Shumard * Licensed under the MIT license. *
-     */
-
-	var event = $.event,
-	scrollTimeout;
-
-	event.special.smartscroll = {
-		setup: function () {
-			$( this ).bind( "scroll", event.special.smartscroll.handler );
-		},
-		teardown: function () {
-			$( this ).unbind( "scroll", event.special.smartscroll.handler );
-		},
-		handler: function (event, execAsap) {
-			// Save the context
-			var context = this,
-			args = arguments;
-
-			// set correct event type
-			event.type = "smartscroll";
-
-			if (scrollTimeout) { clearTimeout( scrollTimeout ); }
-			scrollTimeout = setTimeout(function () {
-				$.event.handle.apply( context, args );
-			}, execAsap === "execAsap" ? 0 : 100);
-		}
-	};
-
-	$.fn.smartscroll = function (fn) {
-		return fn ? this.bind( "smartscroll", fn ) : this.trigger( "smartscroll", ["execAsap"] );
-	};
-
-})(window, jQuery);
+/*!
+ * Infinite Scroll PACKAGED v4.0.1
+ * Automatically add next page
+ *
+ * Licensed GPLv3 for open source use
+ * or Infinite Scroll Commercial License for commercial use
+ *
+ * https://infinite-scroll.com
+ * Copyright 2018-2020 Metafizzy
+ */
+
+/**
+ * Bridget makes jQuery widgets
+ * v3.0.0
+ * MIT license
+ */
+
+( function( window, factory ) {
+  // module definition
+ if ( typeof module == 'object' && module.exports ) {
+   // CommonJS
+   module.exports = factory(
+       window,
+       require('jquery'),
+   );
+ } else {
+   // browser global
+   window.jQueryBridget = factory(
+       window,
+       window.jQuery,
+   );
+ }
+
+}( window, function factory( window, jQuery ) {
+
+// ----- utils ----- //
+
+// helper function for logging errors
+// $.error breaks jQuery chaining
+let console = window.console;
+let logError = typeof console == 'undefined' ? function() {} :
+  function( message ) {
+    console.error( message );
+  };
+
+// ----- jQueryBridget ----- //
+
+function jQueryBridget( namespace, PluginClass, $ ) {
+  $ = $ || jQuery || window.jQuery;
+  if ( !$ ) {
+    return;
+  }
+
+  // add option method -> $().plugin('option', {...})
+  if ( !PluginClass.prototype.option ) {
+    // option setter
+    PluginClass.prototype.option = function( opts ) {
+      if ( !opts ) return;
+
+      this.options = Object.assign( this.options || {}, opts );
+    };
+  }
+
+  // make jQuery plugin
+  $.fn[ namespace ] = function( arg0, ...args ) {
+    if ( typeof arg0 == 'string' ) {
+      // method call $().plugin( 'methodName', { options } )
+      return methodCall( this, arg0, args );
+    }
+    // just $().plugin({ options })
+    plainCall( this, arg0 );
+    return this;
+  };
+
+  // $().plugin('methodName')
+  function methodCall( $elems, methodName, args ) {
+    let returnValue;
+    let pluginMethodStr = `$().${namespace}("${methodName}")`;
+
+    $elems.each( function( i, elem ) {
+      // get instance
+      let instance = $.data( elem, namespace );
+      if ( !instance ) {
+        logError( `${namespace} not initialized.` +
+          ` Cannot call method ${pluginMethodStr}` );
+        return;
+      }
+
+      let method = instance[ methodName ];
+      if ( !method || methodName.charAt( 0 ) == '_' ) {
+        logError(`${pluginMethodStr} is not a valid method`);
+        return;
+      }
+
+      // apply method, get return value
+      let value = method.apply( instance, args );
+      // set return value if value is returned, use only first value
+      returnValue = returnValue === undefined ? value : returnValue;
+    } );
+
+    return returnValue !== undefined ? returnValue : $elems;
+  }
+
+  function plainCall( $elems, options ) {
+    $elems.each( function( i, elem ) {
+      let instance = $.data( elem, namespace );
+      if ( instance ) {
+        // set options & init
+        instance.option( options );
+        instance._init();
+      } else {
+        // initialize new instance
+        instance = new PluginClass( elem, options );
+        $.data( elem, namespace, instance );
+      }
+    } );
+  }
+
+}
+
+// -----  ----- //
+
+return jQueryBridget;
+
+} ) );
+/**
+ * EvEmitter v2.0.0
+ * Lil' event emitter
+ * MIT License
+ */
+
+( function( global, factory ) {
+  // universal module definition
+  if ( typeof module == 'object' && module.exports ) {
+    // CommonJS - Browserify, Webpack
+    module.exports = factory();
+  } else {
+    // Browser globals
+    global.EvEmitter = factory();
+  }
+
+}( typeof window != 'undefined' ? window : this, function() {
+
+function EvEmitter() {}
+
+let proto = EvEmitter.prototype;
+
+proto.on = function( eventName, listener ) {
+  if ( !eventName || !listener ) return this;
+
+  // set events hash
+  let events = this._events = this._events || {};
+  // set listeners array
+  let listeners = events[ eventName ] = events[ eventName ] || [];
+  // only add once
+  if ( !listeners.includes( listener ) ) {
+    listeners.push( listener );
+  }
+
+  return this;
+};
+
+proto.once = function( eventName, listener ) {
+  if ( !eventName || !listener ) return this;
+
+  // add event
+  this.on( eventName, listener );
+  // set once flag
+  // set onceEvents hash
+  let onceEvents = this._onceEvents = this._onceEvents || {};
+  // set onceListeners object
+  let onceListeners = onceEvents[ eventName ] = onceEvents[ eventName ] || {};
+  // set flag
+  onceListeners[ listener ] = true;
+
+  return this;
+};
+
+proto.off = function( eventName, listener ) {
+  let listeners = this._events && this._events[ eventName ];
+  if ( !listeners || !listeners.length ) return this;
+
+  let index = listeners.indexOf( listener );
+  if ( index != -1 ) {
+    listeners.splice( index, 1 );
+  }
+
+  return this;
+};
+
+proto.emitEvent = function( eventName, args ) {
+  let listeners = this._events && this._events[ eventName ];
+  if ( !listeners || !listeners.length ) return this;
+
+  // copy over to avoid interference if .off() in listener
+  listeners = listeners.slice( 0 );
+  args = args || [];
+  // once stuff
+  let onceListeners = this._onceEvents && this._onceEvents[ eventName ];
+
+  for ( let listener of listeners ) {
+    let isOnce = onceListeners && onceListeners[ listener ];
+    if ( isOnce ) {
+      // remove listener
+      // remove before trigger to prevent recursion
+      this.off( eventName, listener );
+      // unset once flag
+      delete onceListeners[ listener ];
+    }
+    // trigger listener
+    listener.apply( this, args );
+  }
+
+  return this;
+};
+
+proto.allOff = function() {
+  delete this._events;
+  delete this._onceEvents;
+  return this;
+};
+
+return EvEmitter;
+
+} ) );
+/**
+ * Fizzy UI utils v3.0.0
+ * MIT license
+ */
+
+( function( global, factory ) {
+  // universal module definition
+  if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory( global );
+  } else {
+    // browser global
+    global.fizzyUIUtils = factory( global );
+  }
+
+}( this, function factory( global ) {
+
+let utils = {};
+
+// ----- extend ----- //
+
+// extends objects
+utils.extend = function( a, b ) {
+  return Object.assign( a, b );
+};
+
+// ----- modulo ----- //
+
+utils.modulo = function( num, div ) {
+  return ( ( num % div ) + div ) % div;
+};
+
+// ----- makeArray ----- //
+
+// turn element or nodeList into an array
+utils.makeArray = function( obj ) {
+  // use object if already an array
+  if ( Array.isArray( obj ) ) return obj;
+
+  // return empty array if undefined or null. #6
+  if ( obj === null || obj === undefined ) return [];
+
+  let isArrayLike = typeof obj == 'object' && typeof obj.length == 'number';
+  // convert nodeList to array
+  if ( isArrayLike ) return [ ...obj ];
+
+  // array of single index
+  return [ obj ];
+};
+
+// ----- removeFrom ----- //
+
+utils.removeFrom = function( ary, obj ) {
+  let index = ary.indexOf( obj );
+  if ( index != -1 ) {
+    ary.splice( index, 1 );
+  }
+};
+
+// ----- getParent ----- //
+
+utils.getParent = function( elem, selector ) {
+  while ( elem.parentNode && elem != document.body ) {
+    elem = elem.parentNode;
+    if ( elem.matches( selector ) ) return elem;
+  }
+};
+
+// ----- getQueryElement ----- //
+
+// use element as selector string
+utils.getQueryElement = function( elem ) {
+  if ( typeof elem == 'string' ) {
+    return document.querySelector( elem );
+  }
+  return elem;
+};
+
+// ----- handleEvent ----- //
+
+// enable .ontype to trigger from .addEventListener( elem, 'type' )
+utils.handleEvent = function( event ) {
+  let method = 'on' + event.type;
+  if ( this[ method ] ) {
+    this[ method ]( event );
+  }
+};
+
+// ----- filterFindElements ----- //
+
+utils.filterFindElements = function( elems, selector ) {
+  // make array of elems
+  elems = utils.makeArray( elems );
+
+  return elems
+    // check that elem is an actual element
+    .filter( ( elem ) => elem instanceof HTMLElement )
+    .reduce( ( ffElems, elem ) => {
+      // add elem if no selector
+      if ( !selector ) {
+        ffElems.push( elem );
+        return ffElems;
+      }
+      // filter & find items if we have a selector
+      // filter
+      if ( elem.matches( selector ) ) {
+        ffElems.push( elem );
+      }
+      // find children
+      let childElems = elem.querySelectorAll( selector );
+      // concat childElems to filterFound array
+      ffElems = ffElems.concat( ...childElems );
+      return ffElems;
+    }, [] );
+};
+
+// ----- debounceMethod ----- //
+
+utils.debounceMethod = function( _class, methodName, threshold ) {
+  threshold = threshold || 100;
+  // original method
+  let method = _class.prototype[ methodName ];
+  let timeoutName = methodName + 'Timeout';
+
+  _class.prototype[ methodName ] = function() {
+    clearTimeout( this[ timeoutName ] );
+
+    let args = arguments;
+    this[ timeoutName ] = setTimeout( () => {
+      method.apply( this, args );
+      delete this[ timeoutName ];
+    }, threshold );
+  };
+};
+
+// ----- docReady ----- //
+
+utils.docReady = function( onDocReady ) {
+  let readyState = document.readyState;
+  if ( readyState == 'complete' || readyState == 'interactive' ) {
+    // do async to allow for other scripts to run. metafizzy/flickity#441
+    setTimeout( onDocReady );
+  } else {
+    document.addEventListener( 'DOMContentLoaded', onDocReady );
+  }
+};
+
+// ----- htmlInit ----- //
+
+// http://bit.ly/3oYLusc
+utils.toDashed = function( str ) {
+  return str.replace( /(.)([A-Z])/g, function( match, $1, $2 ) {
+    return $1 + '-' + $2;
+  } ).toLowerCase();
+};
+
+let console = global.console;
+
+// allow user to initialize classes via [data-namespace] or .js-namespace class
+// htmlInit( Widget, 'widgetName' )
+// options are parsed from data-namespace-options
+utils.htmlInit = function( WidgetClass, namespace ) {
+  utils.docReady( function() {
+    let dashedNamespace = utils.toDashed( namespace );
+    let dataAttr = 'data-' + dashedNamespace;
+    let dataAttrElems = document.querySelectorAll( `[${dataAttr}]` );
+    let jQuery = global.jQuery;
+
+    [ ...dataAttrElems ].forEach( ( elem ) => {
+      let attr = elem.getAttribute( dataAttr );
+      let options;
+      try {
+        options = attr && JSON.parse( attr );
+      } catch ( error ) {
+        // log error, do not initialize
+        if ( console ) {
+          console.error( `Error parsing ${dataAttr} on ${elem.className}: ${error}` );
+        }
+        return;
+      }
+      // initialize
+      let instance = new WidgetClass( elem, options );
+      // make available via $().data('namespace')
+      if ( jQuery ) {
+        jQuery.data( elem, namespace, instance );
+      }
+    } );
+
+  } );
+};
+
+// -----  ----- //
+
+return utils;
+
+} ) );
+// core
+( function( window, factory ) {
+  // universal module definition
+  if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+        window,
+        require('ev-emitter'),
+        require('fizzy-ui-utils'),
+    );
+  } else {
+    // browser global
+    window.InfiniteScroll = factory(
+        window,
+        window.EvEmitter,
+        window.fizzyUIUtils,
+    );
+  }
+
+}( window, function factory( window, EvEmitter, utils ) {
+
+let jQuery = window.jQuery;
+// internal store of all InfiniteScroll intances
+let instances = {};
+
+function InfiniteScroll( element, options ) {
+  let queryElem = utils.getQueryElement( element );
+
+  if ( !queryElem ) {
+    console.error( 'Bad element for InfiniteScroll: ' + ( queryElem || element ) );
+    return;
+  }
+  element = queryElem;
+  // do not initialize twice on same element
+  if ( element.infiniteScrollGUID ) {
+    let instance = instances[ element.infiniteScrollGUID ];
+    instance.option( options );
+    return instance;
+  }
+
+  this.element = element;
+  // options
+  this.options = { ...InfiniteScroll.defaults };
+  this.option( options );
+  // add jQuery
+  if ( jQuery ) {
+    this.$element = jQuery( this.element );
+  }
+
+  this.create();
+}
+
+// defaults
+InfiniteScroll.defaults = {
+  // path: null,
+  // hideNav: null,
+  // debug: false,
+};
+
+// create & destroy methods
+InfiniteScroll.create = {};
+InfiniteScroll.destroy = {};
+
+let proto = InfiniteScroll.prototype;
+// inherit EvEmitter
+Object.assign( proto, EvEmitter.prototype );
+
+// --------------------------  -------------------------- //
+
+// globally unique identifiers
+let GUID = 0;
+
+proto.create = function() {
+  // create core
+  // add id for InfiniteScroll.data
+  let id = this.guid = ++GUID;
+  this.element.infiniteScrollGUID = id; // expando
+  instances[ id ] = this; // associate via id
+  // properties
+  this.pageIndex = 1; // default to first page
+  this.loadCount = 0;
+  this.updateGetPath();
+  // bail if getPath not set, or returns falsey #776
+  let hasPath = this.getPath && this.getPath();
+  if ( !hasPath ) {
+    console.error('Disabling InfiniteScroll');
+    return;
+  }
+  this.updateGetAbsolutePath();
+  this.log( 'initialized', [ this.element.className ] );
+  this.callOnInit();
+  // create features
+  for ( let method in InfiniteScroll.create ) {
+    InfiniteScroll.create[ method ].call( this );
+  }
+};
+
+proto.option = function( opts ) {
+  Object.assign( this.options, opts );
+};
+
+// call onInit option, used for binding events on init
+proto.callOnInit = function() {
+  let onInit = this.options.onInit;
+  if ( onInit ) {
+    onInit.call( this, this );
+  }
+};
+
+// ----- events ----- //
+
+proto.dispatchEvent = function( type, event, args ) {
+  this.log( type, args );
+  let emitArgs = event ? [ event ].concat( args ) : args;
+  this.emitEvent( type, emitArgs );
+  // trigger jQuery event
+  if ( !jQuery || !this.$element ) {
+    return;
+  }
+  // namespace jQuery event
+  type += '.infiniteScroll';
+  let $event = type;
+  if ( event ) {
+    // create jQuery event
+    /* eslint-disable-next-line new-cap */
+    let jQEvent = jQuery.Event( event );
+    jQEvent.type = type;
+    $event = jQEvent;
+  }
+  this.$element.trigger( $event, args );
+};
+
+let loggers = {
+  initialized: ( className ) => `on ${className}`,
+  request: ( path ) => `URL: ${path}`,
+  load: ( response, path ) => `${response.title || ''}. URL: ${path}`,
+  error: ( error, path ) => `${error}. URL: ${path}`,
+  append: ( response, path, items ) => `${items.length} items. URL: ${path}`,
+  last: ( response, path ) => `URL: ${path}`,
+  history: ( title, path ) => `URL: ${path}`,
+  pageIndex: function( index, origin ) {
+    return `current page determined to be: ${index} from ${origin}`;
+  },
+};
+
+// log events
+proto.log = function( type, args ) {
+  if ( !this.options.debug ) return;
+
+  let message = `[InfiniteScroll] ${type}`;
+  let logger = loggers[ type ];
+  if ( logger ) message += '. ' + logger.apply( this, args );
+  console.log( message );
+};
+
+// -------------------------- methods used amoung features -------------------------- //
+
+proto.updateMeasurements = function() {
+  this.windowHeight = window.innerHeight;
+  let rect = this.element.getBoundingClientRect();
+  this.top = rect.top + window.scrollY;
+};
+
+proto.updateScroller = function() {
+  let elementScroll = this.options.elementScroll;
+  if ( !elementScroll ) {
+    // default, use window
+    this.scroller = window;
+    return;
+  }
+  // if true, set to element, otherwise use option
+  this.scroller = elementScroll === true ? this.element :
+    utils.getQueryElement( elementScroll );
+  if ( !this.scroller ) {
+    throw new Error(`Unable to find elementScroll: ${elementScroll}`);
+  }
+};
+
+// -------------------------- page path -------------------------- //
+
+proto.updateGetPath = function() {
+  let optPath = this.options.path;
+  if ( !optPath ) {
+    console.error(`InfiniteScroll path option required. Set as: ${optPath}`);
+    return;
+  }
+  // function
+  let type = typeof optPath;
+  if ( type == 'function' ) {
+    this.getPath = optPath;
+    return;
+  }
+  // template string: '/pages/{{#}}.html'
+  let templateMatch = type == 'string' && optPath.match('{{#}}');
+  if ( templateMatch ) {
+    this.updateGetPathTemplate( optPath );
+    return;
+  }
+  // selector: '.next-page-selector'
+  this.updateGetPathSelector( optPath );
+};
+
+proto.updateGetPathTemplate = function( optPath ) {
+  // set getPath with template string
+  this.getPath = () => {
+    let nextIndex = this.pageIndex + 1;
+    return optPath.replace( '{{#}}', nextIndex );
+  };
+  // get pageIndex from location
+  // convert path option into regex to look for pattern in location
+  // escape query (?) in url, allows for parsing GET parameters
+  let regexString = optPath
+    .replace( /(\\\?|\?)/, '\\?' )
+    .replace( '{{#}}', '(\\d\\d?\\d?)' );
+  let templateRe = new RegExp( regexString );
+  let match = location.href.match( templateRe );
+
+  if ( match ) {
+    this.pageIndex = parseInt( match[1], 10 );
+    this.log( 'pageIndex', [ this.pageIndex, 'template string' ] );
+  }
+};
+
+let pathRegexes = [
+  // WordPress & Tumblr - example.com/page/2
+  // Jekyll - example.com/page2
+  /^(.*?\/?page\/?)(\d\d?\d?)(.*?$)/,
+  // Drupal - example.com/?page=1
+  /^(.*?\/?\?page=)(\d\d?\d?)(.*?$)/,
+  // catch all, last occurence of a number
+  /(.*?)(\d\d?\d?)(?!.*\d)(.*?$)/,
+];
+
+// try matching href to pathRegexes patterns
+let getPathParts = InfiniteScroll.getPathParts = function( href ) {
+  if ( !href ) return;
+  for ( let regex of pathRegexes ) {
+    let match = href.match( regex );
+    if ( match ) {
+      let [ , begin, index, end ] = match;
+      return { begin, index, end };
+    }
+  }
+};
+
+proto.updateGetPathSelector = function( optPath ) {
+  // parse href of link: '.next-page-link'
+  let hrefElem = document.querySelector( optPath );
+  if ( !hrefElem ) {
+    console.error(`Bad InfiniteScroll path option. Next link not found: ${optPath}`);
+    return;
+  }
+
+  let href = hrefElem.getAttribute('href');
+  let pathParts = getPathParts( href );
+  if ( !pathParts ) {
+    console.error(`InfiniteScroll unable to parse next link href: ${href}`);
+    return;
+  }
+
+  let { begin, index, end } = pathParts;
+  this.isPathSelector = true; // flag for checkLastPage()
+  this.getPath = () => begin + ( this.pageIndex + 1 ) + end;
+  // get pageIndex from href
+  this.pageIndex = parseInt( index, 10 ) - 1;
+  this.log( 'pageIndex', [ this.pageIndex, 'next link' ] );
+};
+
+proto.updateGetAbsolutePath = function() {
+  let path = this.getPath();
+  // path doesn't start with http or /
+  let isAbsolute = path.match( /^http/ ) || path.match( /^\// );
+  if ( isAbsolute ) {
+    this.getAbsolutePath = this.getPath;
+    return;
+  }
+
+  let { pathname } = location;
+  // query parameter #829. example.com/?pg=2
+  let isQuery = path.match( /^\?/ );
+  // /foo/bar/index.html => /foo/bar
+  let directory = pathname.substring( 0, pathname.lastIndexOf('/') );
+  let pathStart = isQuery ? pathname : directory + '/';
+
+  this.getAbsolutePath = () => pathStart + this.getPath();
+};
+
+// -------------------------- nav -------------------------- //
+
+// hide navigation
+InfiniteScroll.create.hideNav = function() {
+  let nav = utils.getQueryElement( this.options.hideNav );
+  if ( !nav ) return;
+
+  nav.style.display = 'none';
+  this.nav = nav;
+};
+
+InfiniteScroll.destroy.hideNav = function() {
+  if ( this.nav ) this.nav.style.display = '';
+};
+
+// -------------------------- destroy -------------------------- //
+
+proto.destroy = function() {
+  this.allOff(); // remove all event listeners
+  // call destroy methods
+  for ( let method in InfiniteScroll.destroy ) {
+    InfiniteScroll.destroy[ method ].call( this );
+  }
+
+  delete this.element.infiniteScrollGUID;
+  delete instances[ this.guid ];
+  // remove jQuery data. #807
+  if ( jQuery && this.$element ) {
+    jQuery.removeData( this.element, 'infiniteScroll' );
+  }
+};
+
+// -------------------------- utilities -------------------------- //
+
+// https://remysharp.com/2010/07/21/throttling-function-calls
+InfiniteScroll.throttle = function( fn, threshold ) {
+  threshold = threshold || 200;
+  let last, timeout;
+
+  return function() {
+    let now = +new Date();
+    let args = arguments;
+    let trigger = () => {
+      last = now;
+      fn.apply( this, args );
+    };
+    if ( last && now < last + threshold ) {
+      // hold on to it
+      clearTimeout( timeout );
+      timeout = setTimeout( trigger, threshold );
+    } else {
+      trigger();
+    }
+  };
+};
+
+InfiniteScroll.data = function( elem ) {
+  elem = utils.getQueryElement( elem );
+  let id = elem && elem.infiniteScrollGUID;
+  return id && instances[ id ];
+};
+
+// set internal jQuery, for Webpack + jQuery v3
+InfiniteScroll.setJQuery = function( jqry ) {
+  jQuery = jqry;
+};
+
+// -------------------------- setup -------------------------- //
+
+utils.htmlInit( InfiniteScroll, 'infinite-scroll' );
+
+// add noop _init method for jQuery Bridget. #768
+proto._init = function() {};
+
+let { jQueryBridget } = window;
+if ( jQuery && jQueryBridget ) {
+  jQueryBridget( 'infiniteScroll', InfiniteScroll, jQuery );
+}
+
+// --------------------------  -------------------------- //
+
+return InfiniteScroll;
+
+} ) );
+// page-load
+( function( window, factory ) {
+  // universal module definition
+  if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+        window,
+        require('./core'),
+    );
+  } else {
+    // browser global
+    factory(
+        window,
+        window.InfiniteScroll,
+    );
+  }
+
+}( window, function factory( window, InfiniteScroll ) {
+
+let proto = InfiniteScroll.prototype;
+
+Object.assign( InfiniteScroll.defaults, {
+  // append: false,
+  loadOnScroll: true,
+  checkLastPage: true,
+  responseBody: 'text',
+  domParseResponse: true,
+  // prefill: false,
+  // outlayer: null,
+} );
+
+InfiniteScroll.create.pageLoad = function() {
+  this.canLoad = true;
+  this.on( 'scrollThreshold', this.onScrollThresholdLoad );
+  this.on( 'load', this.checkLastPage );
+  if ( this.options.outlayer ) {
+    this.on( 'append', this.onAppendOutlayer );
+  }
+};
+
+proto.onScrollThresholdLoad = function() {
+  if ( this.options.loadOnScroll ) this.loadNextPage();
+};
+
+let domParser = new DOMParser();
+
+proto.loadNextPage = function() {
+  if ( this.isLoading || !this.canLoad ) return;
+
+  let { responseBody, domParseResponse, fetchOptions } = this.options;
+  let path = this.getAbsolutePath();
+  this.isLoading = true;
+  if ( typeof fetchOptions == 'function' ) fetchOptions = fetchOptions();
+
+  let fetchPromise = fetch( path, fetchOptions )
+    .then( ( response ) => {
+      if ( !response.ok ) {
+        let error = new Error( response.statusText );
+        this.onPageError( error, path, response );
+        return { response };
+      }
+
+      return response[ responseBody ]().then( ( body ) => {
+        let canDomParse = responseBody == 'text' && domParseResponse;
+        if ( canDomParse ) {
+          body = domParser.parseFromString( body, 'text/html' );
+        }
+        if ( response.status == 204 ) {
+          this.lastPageReached( body, path );
+          return { body, response };
+        } else {
+          return this.onPageLoad( body, path, response );
+        }
+      } );
+    } )
+    .catch( ( error ) => {
+      this.onPageError( error, path );
+    } );
+
+  this.dispatchEvent( 'request', null, [ path, fetchPromise ] );
+
+  return fetchPromise;
+};
+
+proto.onPageLoad = function( body, path, response ) {
+  // done loading if not appending
+  if ( !this.options.append ) {
+    this.isLoading = false;
+  }
+  this.pageIndex++;
+  this.loadCount++;
+  this.dispatchEvent( 'load', null, [ body, path, response ] );
+  return this.appendNextPage( body, path, response );
+};
+
+proto.appendNextPage = function( body, path, response ) {
+  let { append, responseBody, domParseResponse } = this.options;
+  // do not append json
+  let isDocument = responseBody == 'text' && domParseResponse;
+  if ( !isDocument || !append ) return { body, response };
+
+  let items = body.querySelectorAll( append );
+  let promiseValue = { body, response, items };
+  // last page hit if no items. #840
+  if ( !items || !items.length ) {
+    this.lastPageReached( body, path );
+    return promiseValue;
+  }
+
+  let fragment = getItemsFragment( items );
+  let appendReady = () => {
+    this.appendItems( items, fragment );
+    this.isLoading = false;
+    this.dispatchEvent( 'append', null, [ body, path, items, response ] );
+    return promiseValue;
+  };
+
+  // TODO add hook for option to trigger appendReady
+  if ( this.options.outlayer ) {
+    return this.appendOutlayerItems( fragment, appendReady );
+  } else {
+    return appendReady();
+  }
+};
+
+proto.appendItems = function( items, fragment ) {
+  if ( !items || !items.length ) return;
+
+  // get fragment if not provided
+  fragment = fragment || getItemsFragment( items );
+  refreshScripts( fragment );
+  this.element.appendChild( fragment );
+};
+
+function getItemsFragment( items ) {
+  // add items to fragment
+  let fragment = document.createDocumentFragment();
+  if ( items ) fragment.append( ...items );
+  return fragment;
+}
+
+// replace <script>s with copies so they load
+// <script>s added by InfiniteScroll will not load
+// similar to https://stackoverflow.com/questions/610995
+function refreshScripts( fragment ) {
+  let scripts = fragment.querySelectorAll('script');
+  for ( let script of scripts ) {
+    let freshScript = document.createElement('script');
+    // copy attributes
+    let attrs = script.attributes;
+    for ( let attr of attrs ) {
+      freshScript.setAttribute( attr.name, attr.value );
+    }
+    // copy inner script code. #718, #782
+    freshScript.innerHTML = script.innerHTML;
+    script.parentNode.replaceChild( freshScript, script );
+  }
+}
+
+// ----- outlayer ----- //
+
+proto.appendOutlayerItems = function( fragment, appendReady ) {
+  let imagesLoaded = InfiniteScroll.imagesLoaded || window.imagesLoaded;
+  if ( !imagesLoaded ) {
+    console.error('[InfiniteScroll] imagesLoaded required for outlayer option');
+    this.isLoading = false;
+    return;
+  }
+  // append once images loaded
+  return new Promise( function( resolve ) {
+    imagesLoaded( fragment, function() {
+      let bodyResponse = appendReady();
+      resolve( bodyResponse );
+    } );
+  } );
+};
+
+proto.onAppendOutlayer = function( response, path, items ) {
+  this.options.outlayer.appended( items );
+};
+
+// ----- checkLastPage ----- //
+
+// check response for next element
+proto.checkLastPage = function( body, path ) {
+  let { checkLastPage, path: pathOpt } = this.options;
+  if ( !checkLastPage ) return;
+
+  // if path is function, check if next path is truthy
+  if ( typeof pathOpt == 'function' ) {
+    let nextPath = this.getPath();
+    if ( !nextPath ) {
+      this.lastPageReached( body, path );
+      return;
+    }
+  }
+  // get selector from checkLastPage or path option
+  let selector;
+  if ( typeof checkLastPage == 'string' ) {
+    selector = checkLastPage;
+  } else if ( this.isPathSelector ) {
+    // path option is selector string
+    selector = pathOpt;
+  }
+  // check last page for selector
+  // bail if no selector or not document response
+  if ( !selector || !body.querySelector ) return;
+
+  // check if response has selector
+  let nextElem = body.querySelector( selector );
+  if ( !nextElem ) this.lastPageReached( body, path );
+};
+
+proto.lastPageReached = function( body, path ) {
+  this.canLoad = false;
+  this.dispatchEvent( 'last', null, [ body, path ] );
+};
+
+// ----- error ----- //
+
+proto.onPageError = function( error, path, response ) {
+  this.isLoading = false;
+  this.canLoad = false;
+  this.dispatchEvent( 'error', null, [ error, path, response ] );
+  return error;
+};
+
+// -------------------------- prefill -------------------------- //
+
+InfiniteScroll.create.prefill = function() {
+  if ( !this.options.prefill ) return;
+
+  let append = this.options.append;
+  if ( !append ) {
+    console.error(`append option required for prefill. Set as :${append}`);
+    return;
+  }
+  this.updateMeasurements();
+  this.updateScroller();
+  this.isPrefilling = true;
+  this.on( 'append', this.prefill );
+  this.once( 'error', this.stopPrefill );
+  this.once( 'last', this.stopPrefill );
+  this.prefill();
+};
+
+proto.prefill = function() {
+  let distance = this.getPrefillDistance();
+  this.isPrefilling = distance >= 0;
+  if ( this.isPrefilling ) {
+    this.log('prefill');
+    this.loadNextPage();
+  } else {
+    this.stopPrefill();
+  }
+};
+
+proto.getPrefillDistance = function() {
+  // element scroll
+  if ( this.options.elementScroll ) {
+    return this.scroller.clientHeight - this.scroller.scrollHeight;
+  }
+  // window
+  return this.windowHeight - this.element.clientHeight;
+};
+
+proto.stopPrefill = function() {
+  this.log('stopPrefill');
+  this.off( 'append', this.prefill );
+};
+
+// --------------------------  -------------------------- //
+
+return InfiniteScroll;
+
+} ) );
+// scroll-watch
+( function( window, factory ) {
+  // universal module definition
+  if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+        window,
+        require('./core'),
+        require('fizzy-ui-utils'),
+    );
+  } else {
+    // browser global
+    factory(
+        window,
+        window.InfiniteScroll,
+        window.fizzyUIUtils,
+    );
+  }
+
+}( window, function factory( window, InfiniteScroll, utils ) {
+
+let proto = InfiniteScroll.prototype;
+
+// default options
+Object.assign( InfiniteScroll.defaults, {
+  scrollThreshold: 400,
+  // elementScroll: null,
+} );
+
+InfiniteScroll.create.scrollWatch = function() {
+  // events
+  this.pageScrollHandler = this.onPageScroll.bind( this );
+  this.resizeHandler = this.onResize.bind( this );
+
+  let scrollThreshold = this.options.scrollThreshold;
+  let isEnable = scrollThreshold || scrollThreshold === 0;
+  if ( isEnable ) this.enableScrollWatch();
+};
+
+InfiniteScroll.destroy.scrollWatch = function() {
+  this.disableScrollWatch();
+};
+
+proto.enableScrollWatch = function() {
+  if ( this.isScrollWatching ) return;
+
+  this.isScrollWatching = true;
+  this.updateMeasurements();
+  this.updateScroller();
+  // TODO disable after error?
+  this.on( 'last', this.disableScrollWatch );
+  this.bindScrollWatchEvents( true );
+};
+
+proto.disableScrollWatch = function() {
+  if ( !this.isScrollWatching ) return;
+
+  this.bindScrollWatchEvents( false );
+  delete this.isScrollWatching;
+};
+
+proto.bindScrollWatchEvents = function( isBind ) {
+  let addRemove = isBind ? 'addEventListener' : 'removeEventListener';
+  this.scroller[ addRemove ]( 'scroll', this.pageScrollHandler );
+  window[ addRemove ]( 'resize', this.resizeHandler );
+};
+
+proto.onPageScroll = InfiniteScroll.throttle( function() {
+  let distance = this.getBottomDistance();
+  if ( distance <= this.options.scrollThreshold ) {
+    this.dispatchEvent('scrollThreshold');
+  }
+} );
+
+proto.getBottomDistance = function() {
+  let bottom, scrollY;
+  if ( this.options.elementScroll ) {
+    bottom = this.scroller.scrollHeight;
+    scrollY = this.scroller.scrollTop + this.scroller.clientHeight;
+  } else {
+    bottom = this.top + this.element.clientHeight;
+    scrollY = window.scrollY + this.windowHeight;
+  }
+  return bottom - scrollY;
+};
+
+proto.onResize = function() {
+  this.updateMeasurements();
+};
+
+utils.debounceMethod( InfiniteScroll, 'onResize', 150 );
+
+// --------------------------  -------------------------- //
+
+return InfiniteScroll;
+
+} ) );
+// history
+( function( window, factory ) {
+  // universal module definition
+  if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+        window,
+        require('./core'),
+        require('fizzy-ui-utils'),
+    );
+  } else {
+    // browser global
+    factory(
+        window,
+        window.InfiniteScroll,
+        window.fizzyUIUtils,
+    );
+  }
+
+}( window, function factory( window, InfiniteScroll, utils ) {
+
+let proto = InfiniteScroll.prototype;
+
+Object.assign( InfiniteScroll.defaults, {
+  history: 'replace',
+  // historyTitle: false,
+} );
+
+let link = document.createElement('a');
+
+// ----- create/destroy ----- //
+
+InfiniteScroll.create.history = function() {
+  if ( !this.options.history ) return;
+
+  // check for same origin
+  link.href = this.getAbsolutePath();
+  // MS Edge does not have origin on link
+  // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/12236493/
+  let linkOrigin = link.origin || link.protocol + '//' + link.host;
+  let isSameOrigin = linkOrigin == location.origin;
+  if ( !isSameOrigin ) {
+    console.error( '[InfiniteScroll] cannot set history with different origin: ' +
+      `${link.origin} on ${location.origin} . History behavior disabled.` );
+    return;
+  }
+
+  // two ways to handle changing history
+  if ( this.options.append ) {
+    this.createHistoryAppend();
+  } else {
+    this.createHistoryPageLoad();
+  }
+};
+
+proto.createHistoryAppend = function() {
+  this.updateMeasurements();
+  this.updateScroller();
+  // array of scroll positions of appended pages
+  this.scrollPages = [
+    // first page
+    {
+      top: 0,
+      path: location.href,
+      title: document.title,
+    },
+  ];
+  this.scrollPage = this.scrollPages[0];
+  // events
+  this.scrollHistoryHandler = this.onScrollHistory.bind( this );
+  this.unloadHandler = this.onUnload.bind( this );
+  this.scroller.addEventListener( 'scroll', this.scrollHistoryHandler );
+  this.on( 'append', this.onAppendHistory );
+  this.bindHistoryAppendEvents( true );
+};
+
+proto.bindHistoryAppendEvents = function( isBind ) {
+  let addRemove = isBind ? 'addEventListener' : 'removeEventListener';
+  this.scroller[ addRemove ]( 'scroll', this.scrollHistoryHandler );
+  window[ addRemove ]( 'unload', this.unloadHandler );
+};
+
+proto.createHistoryPageLoad = function() {
+  this.on( 'load', this.onPageLoadHistory );
+};
+
+InfiniteScroll.destroy.history =
+proto.destroyHistory = function() {
+  let isHistoryAppend = this.options.history && this.options.append;
+  if ( isHistoryAppend ) {
+    this.bindHistoryAppendEvents( false );
+  }
+};
+
+// ----- append history ----- //
+
+proto.onAppendHistory = function( response, path, items ) {
+  // do not proceed if no items. #779
+  if ( !items || !items.length ) return;
+
+  let firstItem = items[0];
+  let elemScrollY = this.getElementScrollY( firstItem );
+  // resolve path
+  link.href = path;
+  // add page data to hash
+  this.scrollPages.push({
+    top: elemScrollY,
+    path: link.href,
+    title: response.title,
+  });
+};
+
+proto.getElementScrollY = function( elem ) {
+  if ( this.options.elementScroll ) {
+    return elem.offsetTop - this.top;
+  } else {
+    let rect = elem.getBoundingClientRect();
+    return rect.top + window.scrollY;
+  }
+};
+
+proto.onScrollHistory = function() {
+  // cycle through positions, find biggest without going over
+  let scrollPage = this.getClosestScrollPage();
+  // set history if changed
+  if ( scrollPage != this.scrollPage ) {
+    this.scrollPage = scrollPage;
+    this.setHistory( scrollPage.title, scrollPage.path );
+  }
+};
+
+utils.debounceMethod( InfiniteScroll, 'onScrollHistory', 150 );
+
+proto.getClosestScrollPage = function() {
+  let scrollViewY;
+  if ( this.options.elementScroll ) {
+    scrollViewY = this.scroller.scrollTop + this.scroller.clientHeight / 2;
+  } else {
+    scrollViewY = window.scrollY + this.windowHeight / 2;
+  }
+
+  let scrollPage;
+  for ( let page of this.scrollPages ) {
+    if ( page.top >= scrollViewY ) break;
+
+    scrollPage = page;
+  }
+  return scrollPage;
+};
+
+proto.setHistory = function( title, path ) {
+  let optHistory = this.options.history;
+  let historyMethod = optHistory && history[ optHistory + 'State' ];
+  if ( !historyMethod ) return;
+
+  history[ optHistory + 'State' ]( null, title, path );
+  if ( this.options.historyTitle ) document.title = title;
+  this.dispatchEvent( 'history', null, [ title, path ] );
+};
+
+// scroll to top to prevent initial scroll-reset after page refresh
+// https://stackoverflow.com/a/18633915/182183
+proto.onUnload = function() {
+  if ( this.scrollPage.top === 0 ) return;
+
+  // calculate where scroll position would be on refresh
+  let scrollY = window.scrollY - this.scrollPage.top + this.top;
+  // disable scroll event before setting scroll #679
+  this.destroyHistory();
+  scrollTo( 0, scrollY );
+};
+
+// ----- load history ----- //
+
+// update URL
+proto.onPageLoadHistory = function( response, path ) {
+  this.setHistory( response.title, path );
+};
+
+// --------------------------  -------------------------- //
+
+return InfiniteScroll;
+
+} ) );
+// button
+( function( window, factory ) {
+  // universal module definition
+  if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+        window,
+        require('./core'),
+        require('fizzy-ui-utils'),
+    );
+  } else {
+    // browser global
+    factory(
+        window,
+        window.InfiniteScroll,
+        window.fizzyUIUtils,
+    );
+  }
+
+}( window, function factory( window, InfiniteScroll, utils ) {
+
+// -------------------------- InfiniteScrollButton -------------------------- //
+
+class InfiniteScrollButton {
+  constructor( element, infScroll ) {
+    this.element = element;
+    this.infScroll = infScroll;
+    // events
+    this.clickHandler = this.onClick.bind( this );
+    this.element.addEventListener( 'click', this.clickHandler );
+    infScroll.on( 'request', this.disable.bind( this ) );
+    infScroll.on( 'load', this.enable.bind( this ) );
+    infScroll.on( 'error', this.hide.bind( this ) );
+    infScroll.on( 'last', this.hide.bind( this ) );
+  }
+
+  onClick( event ) {
+    event.preventDefault();
+    this.infScroll.loadNextPage();
+  }
+
+  enable() {
+    this.element.removeAttribute('disabled');
+  }
+
+  disable() {
+    this.element.disabled = 'disabled';
+  }
+
+  hide() {
+    this.element.style.display = 'none';
+  }
+
+  destroy() {
+    this.element.removeEventListener( 'click', this.clickHandler );
+  }
+
+}
+
+// -------------------------- InfiniteScroll methods -------------------------- //
+
+// InfiniteScroll.defaults.button = null;
+
+InfiniteScroll.create.button = function() {
+  let buttonElem = utils.getQueryElement( this.options.button );
+  if ( buttonElem ) {
+    this.button = new InfiniteScrollButton( buttonElem, this );
+  }
+};
+
+InfiniteScroll.destroy.button = function() {
+  if ( this.button ) this.button.destroy();
+};
+
+// --------------------------  -------------------------- //
+
+InfiniteScroll.Button = InfiniteScrollButton;
+
+return InfiniteScroll;
+
+} ) );
+// status
+( function( window, factory ) {
+  // universal module definition
+  if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+        window,
+        require('./core'),
+        require('fizzy-ui-utils'),
+    );
+  } else {
+    // browser global
+    factory(
+        window,
+        window.InfiniteScroll,
+        window.fizzyUIUtils,
+    );
+  }
+
+}( window, function factory( window, InfiniteScroll, utils ) {
+
+let proto = InfiniteScroll.prototype;
+
+// InfiniteScroll.defaults.status = null;
+
+InfiniteScroll.create.status = function() {
+  let statusElem = utils.getQueryElement( this.options.status );
+  if ( !statusElem ) return;
+
+  // elements
+  this.statusElement = statusElem;
+  this.statusEventElements = {
+    request: statusElem.querySelector('.infinite-scroll-request'),
+    error: statusElem.querySelector('.infinite-scroll-error'),
+    last: statusElem.querySelector('.infinite-scroll-last'),
+  };
+  // events
+  this.on( 'request', this.showRequestStatus );
+  this.on( 'error', this.showErrorStatus );
+  this.on( 'last', this.showLastStatus );
+  this.bindHideStatus('on');
+};
+
+proto.bindHideStatus = function( bindMethod ) {
+  let hideEvent = this.options.append ? 'append' : 'load';
+  this[ bindMethod ]( hideEvent, this.hideAllStatus );
+};
+
+proto.showRequestStatus = function() {
+  this.showStatus('request');
+};
+
+proto.showErrorStatus = function() {
+  this.showStatus('error');
+};
+
+proto.showLastStatus = function() {
+  this.showStatus('last');
+  // prevent last then append event race condition from showing last status #706
+  this.bindHideStatus('off');
+};
+
+proto.showStatus = function( eventName ) {
+  show( this.statusElement );
+  this.hideStatusEventElements();
+  let eventElem = this.statusEventElements[ eventName ];
+  show( eventElem );
+};
+
+proto.hideAllStatus = function() {
+  hide( this.statusElement );
+  this.hideStatusEventElements();
+};
+
+proto.hideStatusEventElements = function() {
+  for ( let type in this.statusEventElements ) {
+    let eventElem = this.statusEventElements[ type ];
+    hide( eventElem );
+  }
+};
+
+// --------------------------  -------------------------- //
+
+function hide( elem ) {
+  setDisplay( elem, 'none' );
+}
+
+function show( elem ) {
+  setDisplay( elem, 'block' );
+}
+
+function setDisplay( elem, value ) {
+  if ( elem ) {
+    elem.style.display = value;
+  }
+}
+
+// --------------------------  -------------------------- //
+
+return InfiniteScroll;
+
+} ) );
+/*!
+ * imagesLoaded v4.1.4
+ * JavaScript is all like "You images are done yet or what?"
+ * MIT License
+ */
+
+( function( window, factory ) { 'use strict';
+  // universal module definition
+
+  /*global define: false, module: false, require: false */
+
+  if ( typeof define == 'function' && define.amd ) {
+    // AMD
+    define( [
+      'ev-emitter/ev-emitter'
+    ], function( EvEmitter ) {
+      return factory( window, EvEmitter );
+    });
+  } else if ( typeof module == 'object' && module.exports ) {
+    // CommonJS
+    module.exports = factory(
+      window,
+      require('ev-emitter')
+    );
+  } else {
+    // browser global
+    window.imagesLoaded = factory(
+      window,
+      window.EvEmitter
+    );
+  }
+
+})( typeof window !== 'undefined' ? window : this,
+
+// --------------------------  factory -------------------------- //
+
+function factory( window, EvEmitter ) {
+
+'use strict';
+
+var $ = window.jQuery;
+var console = window.console;
+
+// -------------------------- helpers -------------------------- //
+
+// extend objects
+function extend( a, b ) {
+  for ( var prop in b ) {
+    a[ prop ] = b[ prop ];
+  }
+  return a;
+}
+
+var arraySlice = Array.prototype.slice;
+
+// turn element or nodeList into an array
+function makeArray( obj ) {
+  if ( Array.isArray( obj ) ) {
+    // use object if already an array
+    return obj;
+  }
+
+  var isArrayLike = typeof obj == 'object' && typeof obj.length == 'number';
+  if ( isArrayLike ) {
+    // convert nodeList to array
+    return arraySlice.call( obj );
+  }
+
+  // array of single index
+  return [ obj ];
+}
+
+// -------------------------- imagesLoaded -------------------------- //
+
+/**
+ * @param {Array, Element, NodeList, String} elem
+ * @param {Object or Function} options - if function, use as callback
+ * @param {Function} onAlways - callback function
+ */
+function ImagesLoaded( elem, options, onAlways ) {
+  // coerce ImagesLoaded() without new, to be new ImagesLoaded()
+  if ( !( this instanceof ImagesLoaded ) ) {
+    return new ImagesLoaded( elem, options, onAlways );
+  }
+  // use elem as selector string
+  var queryElem = elem;
+  if ( typeof elem == 'string' ) {
+    queryElem = document.querySelectorAll( elem );
+  }
+  // bail if bad element
+  if ( !queryElem ) {
+    console.error( 'Bad element for imagesLoaded ' + ( queryElem || elem ) );
+    return;
+  }
+
+  this.elements = makeArray( queryElem );
+  this.options = extend( {}, this.options );
+  // shift arguments if no options set
+  if ( typeof options == 'function' ) {
+    onAlways = options;
+  } else {
+    extend( this.options, options );
+  }
+
+  if ( onAlways ) {
+    this.on( 'always', onAlways );
+  }
+
+  this.getImages();
+
+  if ( $ ) {
+    // add jQuery Deferred object
+    this.jqDeferred = new $.Deferred();
+  }
+
+  // HACK check async to allow time to bind listeners
+  setTimeout( this.check.bind( this ) );
+}
+
+ImagesLoaded.prototype = Object.create( EvEmitter.prototype );
+
+ImagesLoaded.prototype.options = {};
+
+ImagesLoaded.prototype.getImages = function() {
+  this.images = [];
+
+  // filter & find items if we have an item selector
+  this.elements.forEach( this.addElementImages, this );
+};
+
+/**
+ * @param {Node} element
+ */
+ImagesLoaded.prototype.addElementImages = function( elem ) {
+  // filter siblings
+  if ( elem.nodeName == 'IMG' ) {
+    this.addImage( elem );
+  }
+  // get background image on element
+  if ( this.options.background === true ) {
+    this.addElementBackgroundImages( elem );
+  }
+
+  // find children
+  // no non-element nodes, #143
+  var nodeType = elem.nodeType;
+  if ( !nodeType || !elementNodeTypes[ nodeType ] ) {
+    return;
+  }
+  var childImgs = elem.querySelectorAll('img');
+  // concat childElems to filterFound array
+  for ( var i=0; i < childImgs.length; i++ ) {
+    var img = childImgs[i];
+    this.addImage( img );
+  }
+
+  // get child background images
+  if ( typeof this.options.background == 'string' ) {
+    var children = elem.querySelectorAll( this.options.background );
+    for ( i=0; i < children.length; i++ ) {
+      var child = children[i];
+      this.addElementBackgroundImages( child );
+    }
+  }
+};
+
+var elementNodeTypes = {
+  1: true,
+  9: true,
+  11: true
+};
+
+ImagesLoaded.prototype.addElementBackgroundImages = function( elem ) {
+  var style = getComputedStyle( elem );
+  if ( !style ) {
+    // Firefox returns null if in a hidden iframe https://bugzil.la/548397
+    return;
+  }
+  // get url inside url("...")
+  var reURL = /url\((['"])?(.*?)\1\)/gi;
+  var matches = reURL.exec( style.backgroundImage );
+  while ( matches !== null ) {
+    var url = matches && matches[2];
+    if ( url ) {
+      this.addBackground( url, elem );
+    }
+    matches = reURL.exec( style.backgroundImage );
+  }
+};
+
+/**
+ * @param {Image} img
+ */
+ImagesLoaded.prototype.addImage = function( img ) {
+  var loadingImage = new LoadingImage( img );
+  this.images.push( loadingImage );
+};
+
+ImagesLoaded.prototype.addBackground = function( url, elem ) {
+  var background = new Background( url, elem );
+  this.images.push( background );
+};
+
+ImagesLoaded.prototype.check = function() {
+  var _this = this;
+  this.progressedCount = 0;
+  this.hasAnyBroken = false;
+  // complete if no images
+  if ( !this.images.length ) {
+    this.complete();
+    return;
+  }
+
+  function onProgress( image, elem, message ) {
+    // HACK - Chrome triggers event before object properties have changed. #83
+    setTimeout( function() {
+      _this.progress( image, elem, message );
+    });
+  }
+
+  this.images.forEach( function( loadingImage ) {
+    loadingImage.once( 'progress', onProgress );
+    loadingImage.check();
+  });
+};
+
+ImagesLoaded.prototype.progress = function( image, elem, message ) {
+  this.progressedCount++;
+  this.hasAnyBroken = this.hasAnyBroken || !image.isLoaded;
+  // progress event
+  this.emitEvent( 'progress', [ this, image, elem ] );
+  if ( this.jqDeferred && this.jqDeferred.notify ) {
+    this.jqDeferred.notify( this, image );
+  }
+  // check if completed
+  if ( this.progressedCount == this.images.length ) {
+    this.complete();
+  }
+
+  if ( this.options.debug && console ) {
+    console.log( 'progress: ' + message, image, elem );
+  }
+};
+
+ImagesLoaded.prototype.complete = function() {
+  var eventName = this.hasAnyBroken ? 'fail' : 'done';
+  this.isComplete = true;
+  this.emitEvent( eventName, [ this ] );
+  this.emitEvent( 'always', [ this ] );
+  if ( this.jqDeferred ) {
+    var jqMethod = this.hasAnyBroken ? 'reject' : 'resolve';
+    this.jqDeferred[ jqMethod ]( this );
+  }
+};
+
+// --------------------------  -------------------------- //
+
+function LoadingImage( img ) {
+  this.img = img;
+}
+
+LoadingImage.prototype = Object.create( EvEmitter.prototype );
+
+LoadingImage.prototype.check = function() {
+  // If complete is true and browser supports natural sizes,
+  // try to check for image status manually.
+  var isComplete = this.getIsImageComplete();
+  if ( isComplete ) {
+    // report based on naturalWidth
+    this.confirm( this.img.naturalWidth !== 0, 'naturalWidth' );
+    return;
+  }
+
+  // If none of the checks above matched, simulate loading on detached element.
+  this.proxyImage = new Image();
+  this.proxyImage.addEventListener( 'load', this );
+  this.proxyImage.addEventListener( 'error', this );
+  // bind to image as well for Firefox. #191
+  this.img.addEventListener( 'load', this );
+  this.img.addEventListener( 'error', this );
+  this.proxyImage.src = this.img.src;
+};
+
+LoadingImage.prototype.getIsImageComplete = function() {
+  // check for non-zero, non-undefined naturalWidth
+  // fixes Safari+InfiniteScroll+Masonry bug infinite-scroll#671
+  return this.img.complete && this.img.naturalWidth;
+};
+
+LoadingImage.prototype.confirm = function( isLoaded, message ) {
+  this.isLoaded = isLoaded;
+  this.emitEvent( 'progress', [ this, this.img, message ] );
+};
+
+// ----- events ----- //
+
+// trigger specified handler for event type
+LoadingImage.prototype.handleEvent = function( event ) {
+  var method = 'on' + event.type;
+  if ( this[ method ] ) {
+    this[ method ]( event );
+  }
+};
+
+LoadingImage.prototype.onload = function() {
+  this.confirm( true, 'onload' );
+  this.unbindEvents();
+};
+
+LoadingImage.prototype.onerror = function() {
+  this.confirm( false, 'onerror' );
+  this.unbindEvents();
+};
+
+LoadingImage.prototype.unbindEvents = function() {
+  this.proxyImage.removeEventListener( 'load', this );
+  this.proxyImage.removeEventListener( 'error', this );
+  this.img.removeEventListener( 'load', this );
+  this.img.removeEventListener( 'error', this );
+};
+
+// -------------------------- Background -------------------------- //
+
+function Background( url, element ) {
+  this.url = url;
+  this.element = element;
+  this.img = new Image();
+}
+
+// inherit LoadingImage prototype
+Background.prototype = Object.create( LoadingImage.prototype );
+
+Background.prototype.check = function() {
+  this.img.addEventListener( 'load', this );
+  this.img.addEventListener( 'error', this );
+  this.img.src = this.url;
+  // check if image is already complete
+  var isComplete = this.getIsImageComplete();
+  if ( isComplete ) {
+    this.confirm( this.img.naturalWidth !== 0, 'naturalWidth' );
+    this.unbindEvents();
+  }
+};
+
+Background.prototype.unbindEvents = function() {
+  this.img.removeEventListener( 'load', this );
+  this.img.removeEventListener( 'error', this );
+};
+
+Background.prototype.confirm = function( isLoaded, message ) {
+  this.isLoaded = isLoaded;
+  this.emitEvent( 'progress', [ this, this.element, message ] );
+};
+
+// -------------------------- jQuery -------------------------- //
+
+ImagesLoaded.makeJQueryPlugin = function( jQuery ) {
+  jQuery = jQuery || window.jQuery;
+  if ( !jQuery ) {
+    return;
+  }
+  // set local variable
+  $ = jQuery;
+  // $().imagesLoaded()
+  $.fn.imagesLoaded = function( options, callback ) {
+    var instance = new ImagesLoaded( this, options, callback );
+    return instance.jqDeferred.promise( $(this) );
+  };
+};
+// try making plugin
+ImagesLoaded.makeJQueryPlugin();
+
+// --------------------------  -------------------------- //
+
+return ImagesLoaded;
+
+});

@@ -416,10 +416,12 @@ function pf_prep_item_for_submit( $item ) {
 		}
 
 		if ( is_array( $itemPart ) ) {
-			$itemPart = implode( ',',$itemPart );
+			$theItemPart = implode( ',', $itemPart );
+		} else {
+			$theItemPart = $itemPart;
 		}
 
-		echo '<input type="hidden" name="' . esc_attr( $itemKey ) . '" id="' . esc_attr( $itemKey . '_' . $itemid ) . '" id="' . esc_attr( $itemKey ) . '" value="' . esc_attr( $itemPart ) . '" />';
+		echo '<input type="hidden" name="' . esc_attr( $itemKey ) . '" id="' . esc_attr( $itemKey . '_' . $itemid ) . '" id="' . esc_attr( $itemKey ) . '" value="' . esc_attr( $theItemPart ) . '" />';
 
 	}
 

@@ -218,7 +218,10 @@ class Menu implements HasActions, HasFilters {
 					$archive_feed_args['reveal'] = sanitize_text_field( wp_unslash( $_GET['reveal'] ) );
 				}
 
-				foreach ( pressforward( 'controller.loops' )->archive_feed_to_display( $archive_feed_args ) as $item ) {
+				$archive_feed_args['count_total'] = true;
+
+				$items_to_display = pressforward( 'controller.loops' )->archive_feed_to_display( $archive_feed_args );
+				foreach ( $items_to_display['items'] as $item ) {
 
 					pressforward( 'admin.templates' )->form_of_an_item( $item, $c );
 
@@ -244,17 +247,16 @@ class Menu implements HasActions, HasFilters {
 			echo '</div><!-- End main -->';
 
 			// Nasty hack because infinite scroll only works starting with page 2 for some reason.
-			if ( $page == 0 ) {
-				$page = 1; }
-			$pagePrev = $page - 1;
-			$pageNext = $page + 1;
+			$previous_page = $page - 1;
+			$next_page     = $page + 1;
+
 			if ( ! empty( $_GET['by'] ) ) {
 				$limit_q = '&by=' . $limit;
 			} else {
 				$limit_q = '';
 			}
-			$pagePrev = '?page=pf-menu' . $limit_q . '&pc=' . $pagePrev;
-			$pageNext = '?page=pf-menu' . $limit_q . '&pc=' . $pageNext;
+			$pagePrev = '?page=pf-menu' . $limit_q . '&pc=' . $previous_page;
+			$pageNext = '?page=pf-menu' . $limit_q . '&pc=' . $next_page;
 			if ( isset( $_GET['folder'] ) ) {
 				$pageQ     = sanitize_text_field( wp_unslash( $_GET['folder'] ) );
 				$pageQed   = '&folder=' . $pageQ;
@@ -272,14 +274,13 @@ class Menu implements HasActions, HasFilters {
 			if ( $c > 19 ) {
 
 				echo '<div class="pf-navigation">';
-				if ( -1 > $pagePrev ) {
-					echo '<!-- something has gone wrong -->';
-				} elseif ( 1 > $pagePrev ) {
-					echo '<span class="feedprev"><a class="prevnav" href="admin.php?page=pf-menu">' . esc_html__( 'Previous Page', 'pf' ) . '</a></span> | ';
-				} elseif ( $pagePrev > -1 ) {
+				if ( $previous_page > 0 ) {
 					echo '<span class="feedprev"><a class="prevnav" href="admin.php' . esc_attr( $pagePrev ) . '">' . esc_html__( 'Previous Page', 'pf' ) . '</a></span> | ';
 				}
-				echo '<span class="feednext"><a class="nextnav" href="admin.php' . esc_attr( $pageNext ) . '">' . esc_html__( 'Next Page', 'pf' ) . '</a></span>';
+
+				if ( $next_page <= $items_to_display['max_num_pages'] ) {
+					echo '<span class="feednext"><a class="nextnav" href="admin.php' . esc_attr( $pageNext ) . '">' . esc_html__( 'Next Page', 'pf' ) . '</a></span>';
+				}
 				echo '</div>';
 			}
 		?>
