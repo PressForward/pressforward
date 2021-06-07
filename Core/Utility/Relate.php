@@ -230,7 +230,7 @@ class Relate implements HasActions {
 	 * Function for AJAX action to mark an item as starred or unstarred.
 	 */
 	public function ajax_star() {
-		$post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
+		$item_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
 		$userObj = wp_get_current_user();
 		$user_id = $userObj->ID;
 		$result  = 'nada';
