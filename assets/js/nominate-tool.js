@@ -456,7 +456,7 @@ window.pfntSubmit = function (publish) {
 	window.pfnt.submitObject.post_tags = window.document.querySelector('#pressforward-nt__preview-tags-container input').value;
 	window.pfnt.submitObject.post_category = '';
 	var categories = window.document.getElementsByClassName('pressforward-nt__li-select-item__input');
-	for (let categoryCheckbox of categories) {
+	for (categoryCheckbox in categories) {
 		if (true === categoryCheckbox.checked) {
 			window.pfnt.submitObject.post_category += categoryCheckbox.value + ',';
 		}
