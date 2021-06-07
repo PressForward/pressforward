@@ -444,16 +444,20 @@ function detect_view_change() {
 		var parent_e = element.parents('article');
 		var parent_h = parent_e.height();
 		var parent_head = parent_e.find('header');
+		var parent_d = element.closest( '.dropdown' );
 		//console.log(parent_h);
-		if (element.hasClass('amplify-down')) {
+		if (parent_e.hasClass('amplify-down')) {
 			parent_e.removeClass('amplify-down');
+			parent_d.removeClass( 'open' );
 		} else {
 			parent_e.addClass('amplify-down');
+			parent_d.addClass( 'open' );
 			is_pf_open = true;
 		}
 	});
 
 	jQuery('.pressforward #wpbody').on('click', '.grid div:not(.amplify-group.open)', function (evt) {
+		return;
 		var element_p = jQuery('.amplify-group.open');
 		//console.log(element_p);
 		if (is_pf_open) {
