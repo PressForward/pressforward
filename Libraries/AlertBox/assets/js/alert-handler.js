@@ -1,4 +1,4 @@
-jQuery( window ).load(function() {
+jQuery( document ).ready(function() {
 	jQuery( '#delete_all_alert_specimens' ).click(function (evt) {
 		evt.preventDefault();
 		var element = jQuery( this );

@@ -61,7 +61,7 @@
 	});
 }(jQuery));
 
-jQuery( window ).load(function() {
+jQuery( document ).ready(function() {
 	var percentComplete = 0;
 	percentComplete = ((parseInt( jQuery( "#rf-iteration" ).text(),10 )) / (parseInt( jQuery( "#rf-total-feeds" ).text(),10 ))) * 100;
 	console.log( percentComplete );

@@ -339,7 +339,7 @@ function PFBootstrapInits() {
 }
 
 function attach_menu_on_scroll_past() {
-	jQuery(window).scroll(function () {
+	jQuery(window).on( 'scroll', function () {
 		var y_scroll_pos = window.pageYOffset;
 		var scroll_pos_test = 90;
 		// set to whatever you want it to be
@@ -371,7 +371,7 @@ function attach_menu_on_scroll_past() {
 		}
 	});
 
-	jQuery(window).resize(function () {
+	jQuery(window).on('resize', function () {
 		var width = jQuery('#entries').innerWidth();
 		jQuery('.nav-fix').width(width - 80);
 		if (40 > jQuery('#adminmenuback').width()) {
@@ -531,7 +531,7 @@ function removeURLParameter(url, parameter) {
 
 jQuery(window).load(function () {
 
-	jQuery('#gogrid').click(function (evt) {
+	jQuery('#gogrid').on('click', function (evt) {
 		evt.preventDefault();
 		jQuery("div.pf_container").removeClass('list').addClass('grid');
 		jQuery('#gogrid').addClass('unset');
@@ -543,7 +543,7 @@ jQuery(window).load(function () {
 		});
 	});
 
-	jQuery('#golist').click(function (evt) {
+	jQuery('#golist').on( 'click', function (evt) {
 		evt.preventDefault();
 		jQuery("div.pf_container").removeClass('grid').addClass('list');
 		jQuery('#golist').addClass('unset');
@@ -555,7 +555,7 @@ jQuery(window).load(function () {
 		});
 	});
 
-	jQuery('#gomenu').click(function (evt) {
+	jQuery('#gomenu').on( 'click', function (evt) {
 		evt.preventDefault();
 		jQuery('#feed-folders').hide('slide', {
 			direction: 'right',
@@ -563,7 +563,7 @@ jQuery(window).load(function () {
 		}, 150);
 	});
 
-	jQuery('#gomenu').click(function (evt) {
+	jQuery('#gomenu').on( 'click', function (evt) {
 		pf.toggler(evt, this, function (evt) {
 			var toolswin = jQuery('#tools');
 			jQuery("div.pf_container").removeClass('full');
@@ -585,14 +585,14 @@ jQuery(window).load(function () {
 			jQuery("div.pf_container").addClass('full');
 		});
 	});
-	jQuery('#gofolders').click(function (evt) {
+	jQuery('#gofolders').on( 'click', function (evt) {
 		evt.preventDefault();
 		jQuery('#tools').hide('slide', {
 			direction: 'right',
 			easing: 'linear'
 		}, 150);
 	});
-	jQuery('#gofolders').click(function (evt) {
+	jQuery('#gofolders').on( 'click', function (evt) {
 		pf.toggler(evt, this, function (evt) {
 			var folderswin = jQuery('#feed-folders');
 			jQuery("div.pf_container").removeClass('full');
@@ -614,7 +614,7 @@ jQuery(window).load(function () {
 
 
 
-	jQuery('#feed-folders .folder').click(function (evt) {
+	jQuery('#feed-folders .folder').on( 'click', function (evt) {
 		evt.preventDefault();
 		var obj = jQuery(this);
 		var id = obj.attr('href');
@@ -631,7 +631,7 @@ jQuery(window).load(function () {
 		window.location.href = url;
 	});
 
-	jQuery('#feed-folders .feed').click(function (evt) {
+	jQuery('#feed-folders .feed').on('click', function (evt) {
 		evt.preventDefault();
 		var obj = jQuery(this);
 		var id = obj.children('a').attr('href');
@@ -648,7 +648,7 @@ jQuery(window).load(function () {
 		window.location.href = url;
 	});
 
-	jQuery('.scroll-toggler').click(function (evt) {
+	jQuery('.scroll-toggler').on('click', function (evt) {
 		evt.preventDefault();
 		var element = jQuery(this);
 		var go_scroll_id = element.attr('id');
@@ -675,7 +675,7 @@ jQuery(window).load(function () {
 
 	});
 
-	jQuery('#deletefeedarchive').click(function (evt) {
+	jQuery('#deletefeedarchive').on( 'click', function (evt) {
 		evt.preventDefault();
 		jQuery('.loading-top').show();
 		jQuery.post(ajaxurl, {
