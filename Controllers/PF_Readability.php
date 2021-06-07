@@ -120,10 +120,11 @@ class PF_Readability {
 
 			$authorship = isset( $_POST['authorship'] ) ? sanitize_text_field( wp_unslash( $_POST['authorship'] ) ) : '';
 
+			$content = isset( $_POST['content'] ) ? wp_kses_post( wp_unslash( $_POST['content'] ) ) : '';
+
 			$args = array(
 				'force'      => $force,
-				// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-				'descrip'    => $_POST['content'],
+				'descrip'    => $content,
 				'url'        => $url,
 				'authorship' => $authorship,
 				'post_id'    => $post_id,

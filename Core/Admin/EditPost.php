@@ -103,7 +103,7 @@ class EditPost implements HasActions {
 			return $post_id; }
 
 		if ( array_key_exists( 'pf_feed_default_author', $_POST ) ) {
-			pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_feed_default_author', esc_html( sanitize_text_field( wp_unslash( $_POST['pf_feed_default_author'] ) ) ) );
+			pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_feed_default_author', sanitize_text_field( wp_unslash( $_POST['pf_feed_default_author'] ) ) );
 		}
 
 		return $post_id;
@@ -119,7 +119,7 @@ class EditPost implements HasActions {
 		if ( ! array_key_exists( 'pf_forward_to_origin', $_POST ) ) {
 
 		} else {
-			pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_forward_to_origin', esc_attr( sanitize_text_field( wp_unslash( $_POST['pf_forward_to_origin'] ) ) ) );
+			pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_forward_to_origin', sanitize_text_field( wp_unslash( $_POST['pf_forward_to_origin'] ) ) );
 		}
 
 		return $post_id;
