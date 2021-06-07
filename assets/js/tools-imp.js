@@ -1,5 +1,5 @@
 jQuery(window).load(function () {
-	jQuery(".refreshfeed").click(function (evt) {
+	jQuery(".refreshfeed").on( 'click', function (evt) {
 		evt.preventDefault();
 		jQuery('.loading-top').show();
 		jQuery('#responses').css('display', 'block');
@@ -20,7 +20,7 @@ jQuery(window).load(function () {
 
 	});
 
-	jQuery(".cleanfeeds").click(function (evt) {
+	jQuery(".cleanfeeds").on( 'click', function (evt) {
 		evt.preventDefault();
 		jQuery('.loading-top').show();
 		jQuery.post(ajaxurl, {
@@ -36,7 +36,7 @@ jQuery(window).load(function () {
 
 	});
 
-	jQuery("#pressforward-nt__regenerate-button").click(function (evt) {
+	jQuery("#pressforward-nt__regenerate-button").on( 'click', function (evt) {
 		// evt.preventDefault();
 		// jQuery('.loading-top').show();
 		jQuery.post(ajaxurl, {

@@ -14,10 +14,10 @@ function pf_set_sort_statement(statement, sort_class){
 /**
  * Implementation of sort for pf
 **/
-jQuery( window ).load(function() {
+jQuery( window ).on('load', function() {
 	jQuery( ".feed-item" ).tsort( "span.sortable_nom_timestamp", {order:'desc'} );
 	pf_show_unsort();
-	jQuery( '#sortbyitemdate' ).click(function (evt){
+	jQuery( '#sortbyitemdate' ).on( 'click', function (evt){
 		pf.toggler(evt, this, function(evt){
 				jQuery( ".feed-item" ).tsort( "span.sortableitemdate", {order:'desc'} );
 				pf_set_sort_statement( 'Sorted by item date, descending', 'by-item-date' );
@@ -27,7 +27,7 @@ jQuery( window ).load(function() {
             }
 		);
 	});
-	jQuery( '#sortbyfeedindate' ).click(function (evt){
+	jQuery( '#sortbyfeedindate' ).on( 'click', function (evt){
 		pf.toggler(evt, this, function(evt){
 			jQuery( ".feed-item" ).tsort( "span.sortablerssdate", {order:'desc'} );
 			pf_set_sort_statement( 'Sorted by time retrieved, descending', 'by-feed-in-date' );
@@ -36,7 +36,7 @@ jQuery( window ).load(function() {
 			pf_set_sort_statement( 'Sorted by time retrieved, ascending', 'by-feed-in-date' );
 		});
 	});
-	jQuery( '#sortbynomdate' ).click(function (evt){
+	jQuery( '#sortbynomdate' ).on( 'click', function (evt){
 		pf.toggler(evt, this, function(evt){
 			jQuery( ".feed-item" ).tsort( "span.sortable_nom_timestamp", {order:'desc'} );
 			pf_set_sort_statement( 'Sorted by time nominated, descending', 'by-nominated-date' );
@@ -45,7 +45,7 @@ jQuery( window ).load(function() {
 			pf_set_sort_statement( 'Sorted by time nominated, ascending', 'by-nominated-date' );
 		});
 	});
-	jQuery( '#sortbynomcount' ).click(function (evt){
+	jQuery( '#sortbynomcount' ).on( 'click', function (evt){
 		pf.toggler(evt, this, function(evt){
 			jQuery( ".feed-item" ).tsort( "span.sortable_nom_count", {order:'desc'} );
 			pf_set_sort_statement( 'Sorted by nominations, descending', 'by-nominations-date' );

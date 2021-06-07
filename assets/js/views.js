@@ -474,7 +474,7 @@ function detect_view_change() {
 
 
 console.log('Waiting for load.');
-jQuery(window).load(function () {
+jQuery(document).ready(function () {
 	// executes when complete page is fully loaded, including all frames, objects and images
 
 	jQuery('.pf-loader').delay(300).fadeOut("slow", function () {
@@ -529,7 +529,7 @@ function removeURLParameter(url, parameter) {
 	}
 }
 
-jQuery(window).load(function () {
+jQuery(window).on('load', function () {
 
 	jQuery('#gogrid').on('click', function (evt) {
 		evt.preventDefault();

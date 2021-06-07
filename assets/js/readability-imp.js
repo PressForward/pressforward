@@ -433,7 +433,7 @@ function modalNomReadReset() {
 	});
 }
 
-jQuery(window).load(function () {
+jQuery(window).on('load', function () {
 	allContentModal();
 	modalReadReset();
 	modalNomReadReset();

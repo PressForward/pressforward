@@ -1,5 +1,5 @@
-jQuery( document ).ready(function() {
-	jQuery( '#delete_all_alert_specimens' ).click(function (evt) {
+jQuery( window ).on( 'load', function() {
+	jQuery( '#delete_all_alert_specimens' ).on( 'click', function (evt) {
 		evt.preventDefault();
 		var element = jQuery( this );
 		var alertConfirm = element.attr( 'alert-check' );
@@ -16,7 +16,7 @@ jQuery( document ).ready(function() {
             });
 		}
 	});
-	jQuery( '#dismiss_all_alert_specimens' ).click(function (evt) {
+	jQuery( '#dismiss_all_alert_specimens' ).on( 'click', function (evt) {
 		evt.preventDefault();
 		var element = jQuery( this );
 		var dismiss_all_confirm = element.attr( 'data-dismiss-all-check' );
@@ -34,7 +34,7 @@ jQuery( document ).ready(function() {
                 });
 		}
 	});
-	jQuery( '.alert-dismisser' ).click(function(evt){
+	jQuery( '.alert-dismisser' ).on( 'click', function(evt){
 		evt.preventDefault();
 		var element = jQuery( this );
 		var dismissConfirm = element.attr( 'data-alert-dismiss-check' );

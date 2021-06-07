@@ -19,7 +19,7 @@ jQuery( window ).load(function() {
 var archivesVisible = 0;
 
 jQuery( window ).load(function() {
-	jQuery( "#showarchived" ).click( function (evt){
+	jQuery( "#showarchived" ).on( 'click', function (evt){
 		evt.preventDefault();
 		if (jQuery( '#showarchived' ).hasClass( 'hidearchived' )) {
 			archivesVisible = 0;
@@ -36,7 +36,7 @@ jQuery( window ).load(function() {
 		}
 	}
 	);
-	jQuery( "#archivenoms" ).click(function(evt){
+	jQuery( "#archivenoms" ).on( 'click', function(evt){
 		jQuery( '.loading-top' ).show();
 		jQuery( '.nom-container' ).hide();
 		jQuery.post(ajaxurl, {
