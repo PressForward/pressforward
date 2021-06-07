@@ -48,7 +48,7 @@ class AdminBar implements HasActions, HasFilters {
 			} else {
 				$alert = '<span style="display: inline-block; background-color: #d54e21; color: #fff; box-sizing: border-box; font-size: 9px; line-height: 10px; font-weight: 600;  margin: 1px 0 0 6px; vertical-align: top; border: 4px solid #23282D; z-index: 26;"><span style="display: block; padding: 0 11px; margin: -4px;">' . $alert_count . '</span></span>';
 			}
-			$title = '<div id="pf_metrics_alert" style="display: block; padding-top: 2px; float: left; margin-right:6px;"><img src="' . PF_URL . 'pressforward-16.png" alt="PressForward"></div> <div style="display: block; float: right;"><span>PF</span>' . $alert . '<script>' . $js_config . '</script></div>';
+			$title = '<div id="pf_metrics_alert" style="display: block; padding-top: 2px; float: left; margin-right:6px;"><img src="' . PF_URL . 'pressforward-16.png" alt="PressForward"></div> <div style="display: block; float: right;"><span>PF</span>' . $alert . '</div>';
 			$url   = admin_url( 'admin.php?page=pf-options#top#site' );
 			$wp_admin_bar->add_menu(
 				array(
