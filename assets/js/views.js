@@ -406,21 +406,25 @@ function detect_view_change() {
 		//console.log(element);
 		var parent_e = element.parents('article');
 		var parent_h = parent_e.height();
+		var parent_d = element.closest( '.dropdown' );
 		//console.log(parent_h);
 		if (element.hasClass('amplify-down')) {
 			element.removeClass('amplify-down');
 			jQuery(parent_e).removeClass('show-overflow');
 			jQuery(parent_e).css('height', '');
+			jQuery(parent_d).removeClass('open');
 		} else {
 			element.addClass('amplify-down');
 			jQuery(parent_e).addClass('show-overflow');
 			jQuery(parent_e).height(parent_h);
+			jQuery(parent_d).addClass('open');
 			is_pf_open = true;
 		}
 	});
 
 	jQuery('.pressforward #wpbody').on('click', '.list div:not(.amplify-group.open)', function (evt) {
 		var element_p = jQuery('.amplify-group.open');
+		return;
 		//console.log(element_p);
 		if (is_pf_open) {
 			//console.log(element_p.length);
