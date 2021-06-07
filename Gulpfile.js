@@ -1,7 +1,7 @@
 'use strict';
 
 var gulp = require('gulp');
-var sass = require('gulp-sass');
+var sass = require('@selfisekai/gulp-sass');
 var uglify = require('gulp-uglify');
 var extrep = require('gulp-ext-replace');
 var cleanCSS = require('gulp-clean-css');
@@ -27,57 +27,48 @@ gulp.task('default', function () {
 
 gulp.task('minify', function () {
 	gulp.src(['assets/js/*.js', '!assets/js/*.min.js'])
-		.pipe(babel({
-			presets: ['es2015']
-		}))
 		.pipe(uglify().on('error', console.error))
+		.pipe(babel({
+			'presets': [
+				'@babel/preset-env'
+			]
+		}))
 		.pipe(extrep('.min.js'))
 		.pipe(gulp.dest('assets/js/'));
 
 	gulp.src(['Libraries/jquery-fullscreen/*.js', '!Libraries/jquery-fullscreen/*.min.js'])
-		.pipe(babel({
-			presets: ['es2015']
-		}))
+		.pipe(babel())
 		.pipe(uglify().on('error', console.error).on('error', console.error))
 		.pipe(extrep('.min.js'))
 		.pipe(gulp.dest('Libraries/jquery-fullscreen/'));
 
 	gulp.src(['Libraries/jquery-tinysort/*.js', '!Libraries/jquery-tinysort/*.min.js'])
-		.pipe(babel({
-			presets: ['es2015']
-		}))
+		.pipe(babel())
 		.pipe(uglify().on('error', console.error))
 		.pipe(extrep('.min.js'))
 		.pipe(gulp.dest('Libraries/jquery-tinysort/'));
 
 	gulp.src(['Libraries/AlertBox/assets/js/*.js', '!Libraries/AlertBox/assets/js/*.min.js'])
 		.pipe(uglify().on('error', console.error))
-		.pipe(babel({
-			presets: ['es2015']
-		}))
+		.pipe(babel())
 		.pipe(extrep('.min.js'))
 		.pipe(gulp.dest('Libraries/AlertBox/assets/js/'));
 
-	gulp.src(['Libraries/*.js', '!Libraries/*.min.js'])
-		.pipe(babel({
-			presets: ['es2015']
-		}))
+	gulp.src(['Libraries/*.js', '!Libraries/jquery.infinitescroll.js', '!Libraries/twitter-bootstrap/js/*.js', '!Libraries/*.min.js'])
+		.pipe(babel())
 		.pipe(uglify().on('error', console.error))
 		.pipe(extrep('.min.js'))
 		.pipe(gulp.dest('Libraries/'));
 
 	gulp.src(['Libraries/twitter-bootstrap/js/*.js', '!Libraries/twitter-bootstrap/js/*.min.js'])
-		.pipe(babel({
-			presets: ['es2015']
-		}))
+		.pipe(babel())
 		.pipe(uglify().on('error', console.error))
 		.pipe(extrep('.min.js'))
 		.pipe(gulp.dest('Libraries/twitter-bootstrap/js/'));
 
 	gulp.src(['Libraries/MozillaReadability/*.js', '!Libraries/MozillaReadability/*.min.js'])
-		.pipe(babel({
-			presets: ['es2015']
-		}))
+		.pipe(uglify().on('error', console.error))
+		.pipe(babel())
 		.pipe(uglify().on('error', console.error))
 		.pipe(extrep('.min.js'))
 		.pipe(gulp.dest('Libraries/BookmarkletReadability/'));

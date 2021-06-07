@@ -6,15 +6,18 @@
 	"directories": {
 		"test": "tests"
 	},
-	"dependencies": {
-		"@babel/core": "^7.5.4"
-	},
 	"devDependencies": {
+		"@babel/core": "^7.14.3",
+		"@babel/preset-env": "^7.14.4",
+		"@selfisekai/gulp-sass": "^4.2.0",
 		"gulp": "^4.0.2",
-		"gulp-clean-css": "^3.9.2",
+		"gulp-babel": "^8.0.0",
+		"gulp-clean-css": "^4.3.0",
 		"gulp-ext-replace": "^0.3.0",
-		"gulp-sourcemaps": "^2.6.4",
-		"gulp-uglify": "^3.0.2"
+		"gulp-sourcemaps": "^3.0.0",
+		"gulp-uglify": "^3.0.2",
+		"node-gyp": "^7.1.2",
+		"node-sass": "^6.0.0"
 	},
 	"scripts": {
 		"test": "test",
