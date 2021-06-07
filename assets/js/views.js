@@ -276,12 +276,6 @@ function PFBootstrapInits() {
 		title: 'Star'
 
 	});
-	jQuery('.itemInfobutton').tooltip({
-		placement: 'top',
-		trigger: 'hover',
-		title: 'Star'
-
-	});
 	jQuery('.itemCommentModal').tooltip({
 		placement: 'top',
 		trigger: 'hover',

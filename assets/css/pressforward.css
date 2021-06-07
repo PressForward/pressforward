@@ -239,7 +239,7 @@ p {
 .feed-item-info-box {
   display: none; }
 
-.popover-inner .feed-item-info-box {
+.popover-body .feed-item-info-box {
   display: block;
   font-size: 10px;
   line-height: 13px;
