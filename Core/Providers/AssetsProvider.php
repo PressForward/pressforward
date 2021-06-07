@@ -187,9 +187,21 @@ class AssetsProvider extends ServiceProvider {
 				'condition' => function( $hook ) use ( $provider ) {
 									return $provider->check_hook_for_pressforward_string( $hook );
 				},
+				'handle'    => 'pf-popper',
+				'src'       => 'Libraries/popper',
+				'deps'      => array(),
+			)
+		);
+
+		$assets->register_script(
+			array(
+				'type'      => 'admin',
+				'condition' => function( $hook ) use ( $provider ) {
+									return $provider->check_hook_for_pressforward_string( $hook );
+				},
 				'handle'    => $slug . '-twitter-bootstrap',
 				'src'       => 'Libraries/twitter-bootstrap/js/bootstrap',
-				'deps'      => array( 'pf' ),
+				'deps'      => array( 'pf', 'pf-popper' ),
 			)
 		);
 
