@@ -111,7 +111,7 @@ p {
 }
 
 .btn-small {
-	padding: 3px 9px;
+	padding: 3px 6px;
 	font-size: 12px;
 	line-height: 18px;
 }
@@ -1186,7 +1186,7 @@ body {
     *zoom: 1;
     margin-bottom: 1.5em; }
   .grid #entries article.feed-item header h1 {
-    font-size: 1.125em;
+    font-size: .9em;
     line-height: 1.55556em; }
   .grid #entries article.feed-item.open {
     font-size: 1em;
