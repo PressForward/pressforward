@@ -206,7 +206,7 @@ class Feed_Items implements HasActions, HasFilters {
 		// register_taxonomy_for_object_type( pressforward('admin.nominated')->post_type, 'post_type_name');
 	}
 
-	public static function get( $args = array() ) {
+	public function get( $args = array() ) {
 		$wp_args = array(
 			'post_type'        => pf_feed_item_post_type(),
 			'post_status'      => 'publish',
@@ -251,7 +251,7 @@ class Feed_Items implements HasActions, HasFilters {
 		return $posts;
 	}
 
-	public static function get_by_item_id( $item_id ) {
+	public function get_by_item_id( $item_id ) {
 		$args = array(
 			'meta_key'   => pressforward( 'controller.metas' )->get_key( 'item_id' ),
 			'meta_value' => $item_id,
@@ -1111,7 +1111,7 @@ class Feed_Items implements HasActions, HasFilters {
 	 * @param array $tags
 	 * @param bool  $append True if you want to append rather than replace
 	 */
-	public static function set_tags( $post_id, $tags, $append = false ) {
+	public function set_tags( $post_id, $tags, $append = false ) {
 		return wp_set_object_terms( $post_id, $tags, $this->tag_taxonomy, $append );
 	}
 
@@ -1136,7 +1136,7 @@ class Feed_Items implements HasActions, HasFilters {
 	 *
 	 * Will create the necessary tags if they're not found
 	 */
-	public static function convert_raw_tags( $tags ) {
+	public function convert_raw_tags( $tags ) {
 		$retval = array(
 			$this->tag_taxonomy => $tags,
 		);
