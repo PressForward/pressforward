@@ -1513,6 +1513,8 @@ function assure_log_string( $message ) {
 function pf_log( $message = '', $display = false, $reset = false, $return = false ) {
 	static $debug;
 
+	$trace = debug_backtrace();
+
 	if ( $return && ( 0 === $debug ) ) {
 		return assure_log_string( $message );
 	}
@@ -1561,7 +1563,6 @@ function pf_log( $message = '', $display = false, $reset = false, $return = fals
 
 	$message = assure_log_string( $message );
 
-	$trace = debug_backtrace();
 	foreach ( $trace as $key => $call ) {
 
 		if ( in_array( $call['function'], array( 'call_user_func_array', 'do_action', 'apply_filter', 'call_user_func', 'do_action_ref_array', 'require_once' ) ) ) {
