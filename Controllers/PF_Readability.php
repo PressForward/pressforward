@@ -28,8 +28,6 @@ class PF_Readability {
 			$url = pressforward( 'controller.http_tools' )->resolve_full_url( $url );
 			// var_dump($url); die();
 			$descrip = rawurldecode( $descrip );
-		if ( get_magic_quotes_gpc() ) {
-			$descrip = stripslashes( $descrip ); }
 
 		if ( $authorship == 'aggregation' ) {
 			$aggregated = true;
