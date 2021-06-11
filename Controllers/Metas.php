@@ -1122,7 +1122,7 @@ class Metas implements HasFilters, HasActions {
 	}
 
 	public function get_author_from_url( $url ) {
-		$response  = pf_file_get_html( $url );
+		$response  = file_get_html( $url );
 		$possibles = array();
 		if ( empty( $response ) ) {
 			return false;
