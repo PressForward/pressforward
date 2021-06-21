@@ -203,7 +203,7 @@ endif;
 		if ( empty( $post['post_title'] ) ) {
 			$post['post_title'] = isset( $_POST['post_title'] ) ? sanitize_text_field( wp_unslash( $_POST['post_title'] ) ) : '';
 		}
-		$content = isset( $_POST['content'] ) ? sanitize_text_field( wp_unslash( $_POST['content'] ) ) : '';
+		$content = isset( $_POST['content'] ) ? wp_kses_post( wp_unslash( $_POST['content'] ) ) : '';
 		// pf_log($post['post_category']);
 		// pf_log($_POST['post_category']);
 
