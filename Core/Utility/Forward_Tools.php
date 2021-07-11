@@ -189,6 +189,10 @@ class Forward_Tools {
 		}
 	}
 
+	public function send_email_for_new_comment( $title_post ) {
+		$this->advance_interface->inform_of_email_action( $title_post );
+	}
+
 	public function transition_to_nomination( $item_post_id, $from_meta_added_item = false ) {
 		// Create
 		$post          = $this->item_interface->get_post( $item_post_id, ARRAY_A );
