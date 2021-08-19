@@ -1,6 +1,7 @@
 'use strict';
 
-var gulp = require('gulp');
+var gulp = require( 'gulp' );
+const { series, parallel } = require('gulp');
 var sass = require('@selfisekai/gulp-sass');
 var uglify = require('gulp-uglify');
 var extrep = require('gulp-ext-replace');
@@ -10,12 +11,8 @@ var babel = require('gulp-babel');
 
 gulp.task('sass', function () {
 	return gulp.src('assets/sass/**/*.scss')
-		.pipe(sass())
-		.on('error', sass.logError)
-		.pipe(gulp.dest('assets/css/'))
-		.on('error', function (error) {
-			console.log(error);
-		});
+		.pipe(sass.sync().on('error', sass.logError))
+		.pipe(gulp.dest('assets/css/'));
 });
 
 // Watch task
@@ -25,68 +22,81 @@ gulp.task('default', function () {
 	gulp.watch('**/*.css', ['minify-css']);
 });
 
-gulp.task('minify', function () {
-	gulp.src(['assets/js/*.js', '!assets/js/*.min.js'])
-		.pipe(uglify().on('error', console.error))
+gulp.task('minify-core-js', function() {
+	return gulp.src(['assets/js/*.js', '!assets/js/*.min.js'])
 		.pipe(babel({
-			'presets': [
-				'@babel/preset-env'
-			]
+			presets: [ '@babel/preset-env' ]
 		}))
+		.pipe(uglify().on('error', console.error))
 		.pipe(extrep('.min.js'))
-		.pipe(gulp.dest('assets/js/'));
+		.pipe(gulp.dest('assets/js'));
+});
 
-	gulp.src(['Libraries/jquery-fullscreen/*.js', '!Libraries/jquery-fullscreen/*.min.js'])
+gulp.task( 'minify-jquery-fullscreen', function() {
+	return gulp.src(['Libraries/jquery-fullscreen/*.js', '!Libraries/jquery-fullscreen/*.min.js'])
 		.pipe(babel())
 		.pipe(uglify().on('error', console.error).on('error', console.error))
 		.pipe(extrep('.min.js'))
 		.pipe(gulp.dest('Libraries/jquery-fullscreen/'));
+});
 
-	gulp.src(['Libraries/jquery-tinysort/*.js', '!Libraries/jquery-tinysort/*.min.js'])
+gulp.task( 'minify-jquery-tinysort', function() {
+	return gulp.src(['Libraries/jquery-tinysort/*.js', '!Libraries/jquery-tinysort/*.min.js'])
 		.pipe(babel())
 		.pipe(uglify().on('error', console.error))
 		.pipe(extrep('.min.js'))
 		.pipe(gulp.dest('Libraries/jquery-tinysort/'));
+});
 
-	gulp.src(['Libraries/AlertBox/assets/js/*.js', '!Libraries/AlertBox/assets/js/*.min.js'])
+gulp.task( 'minify-alertbox', function() {
+	return gulp.src(['Libraries/AlertBox/assets/js/*.js', '!Libraries/AlertBox/assets/js/*.min.js'])
 		.pipe(uglify().on('error', console.error))
 		.pipe(babel())
 		.pipe(extrep('.min.js'))
 		.pipe(gulp.dest('Libraries/AlertBox/assets/js/'));
+});
 
-	gulp.src(['Libraries/*.js', '!Libraries/jquery.infinitescroll.js', '!Libraries/twitter-bootstrap/js/*.js', '!Libraries/*.min.js'])
-		.pipe(babel())
-		.pipe(uglify().on('error', console.error))
-		.pipe(extrep('.min.js'))
-		.pipe(gulp.dest('Libraries/'));
-
-	gulp.src(['Libraries/twitter-bootstrap/js/*.js', '!Libraries/twitter-bootstrap/js/*.min.js'])
-		.pipe(babel())
+gulp.task( 'minify-bootstrap', function() {
+	return gulp.src(['Libraries/twitter-bootstrap/js/*.js', '!Libraries/twitter-bootstrap/js/*.min.js'])
+		.pipe(babel({
+			presets: [ '@babel/preset-env' ]
+		}))
 		.pipe(uglify().on('error', console.error))
 		.pipe(extrep('.min.js'))
 		.pipe(gulp.dest('Libraries/twitter-bootstrap/js/'));
+});
 
-	gulp.src(['Libraries/MozillaReadability/*.js', '!Libraries/MozillaReadability/*.min.js'])
+
+gulp.task( 'minify-readability', function() {
+	return gulp.src(['Libraries/MozillaReadability/*.js', '!Libraries/MozillaReadability/*.min.js'])
 		.pipe(uglify().on('error', console.error))
 		.pipe(babel())
 		.pipe(uglify().on('error', console.error))
 		.pipe(extrep('.min.js'))
 		.pipe(gulp.dest('Libraries/BookmarkletReadability/'));
-
 });
 
-gulp.task('minify-css', () => {
-	gulp.src(['./assets/css/*.css', '!./assets/css/*.min.css'])
+gulp.task( 'minify-js', parallel( 'minify-core-js', 'minify-jquery-fullscreen', 'minify-jquery-tinysort', 'minify-alertbox', 'minify-bootstrap', 'minify-readability' ) );
+
+gulp.task( 'minify-core-css', () => {
+	return gulp.src(['./assets/css/*.css', '!./assets/css/*.min.css'])
 		.pipe(sourcemaps.init())
 		.pipe(cleanCSS())
 		.pipe(sourcemaps.write())
 		.pipe(extrep('.min.css'))
 		.pipe(gulp.dest('./assets/css/'));
 
-	gulp.src(['./Libraries/twitter-bootstrap/css/*.css', '!./Libraries/twitter-bootstrap/css/*.min.css'])
+});
+
+gulp.task('minify-bootstrap-css', () => {
+	return gulp.src(['./Libraries/twitter-bootstrap/css/*.css', '!./Libraries/twitter-bootstrap/css/*.min.css'])
 		.pipe(sourcemaps.init())
 		.pipe(cleanCSS())
 		.pipe(sourcemaps.write())
 		.pipe(extrep('.min.css'))
 		.pipe(gulp.dest('./Libraries/twitter-bootstrap/css/'));
 });
+
+gulp.task( 'minify-css', parallel( 'minify-core-css', 'minify-bootstrap-css' ) );
+
+gulp.task( 'minify', parallel( 'minify-js', 'minify-css' ) );
