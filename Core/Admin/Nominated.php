@@ -460,7 +460,7 @@ class Nominated implements HasActions {
 		$link_to_item  = $this->metas->get_post_pf_meta( $nom_id, 'item_link', true );
 		$default_args  = array(
 			'html_before'      => '<p class="pf-source-statement">',
-			'source_statement' => 'Source: ',
+			'source_statement' => __( 'Source: ', 'pressforward' ),
 			'item_url'         => $link_to_item,
 			'link_target'      => '_blank',
 			'item_title'       => $title_of_item,
