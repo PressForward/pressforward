@@ -444,12 +444,22 @@ class Nominated implements HasActions {
 		}
 	}
 
-	public function get_the_source_statement( $nom_id ) {
+	/**
+	 * Builds the source statement for an item.
+	 *
+	 * @since 5.4.0 Introduced the $args parameter.
+	 *
+	 * @param int   $nom_id ID of the item.
+	 * @param array $args   Optional. An array of arguments used to build the markup.
+	 *                      Will override the corresponding options in the $_args array below.
+	 * @return string
+	 */
+	public function get_the_source_statement( $nom_id, $args = array() ) {
 
 		$title_of_item = get_the_title( $nom_id );
 		$link_to_item  = $this->metas->get_post_pf_meta( $nom_id, 'item_link', true );
-		$args          = array(
-			'html_before'      => '<p>',
+		$default_args  = array(
+			'html_before'      => '<p class="pf-source-statement">',
 			'source_statement' => 'Source: ',
 			'item_url'         => $link_to_item,
 			'link_target'      => '_blank',
@@ -457,7 +467,9 @@ class Nominated implements HasActions {
 			'html_after'       => '</p>',
 			'sourced'          => true,
 		);
-		$args          = apply_filters( 'pf_source_statement', $args );
+
+		$_args = array_merge( $default_args, $args );
+		$args  = apply_filters( 'pf_source_statement', $_args );
 		if ( true == $args['sourced'] ) {
 			$statement = sprintf(
 				'%1$s<a href="%2$s" target="%3$s" pf-nom-item-id="%4$s">%5$s</a>',
