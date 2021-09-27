@@ -788,6 +788,62 @@ function pf_replace_author_presentation( $author ) {
 add_filter( 'the_author', 'pf_replace_author_presentation' );
 
 /**
+ * Appends the source statement to post content.
+ *
+ * @since 5.4.0
+ *
+ * @param string $content
+ * @return string
+ */
+function pressforward_append_source_statement( $content ) {
+	$post = get_post();
+
+	if ( ! ( $post instanceof WP_Post ) ) {
+		return $content;
+	}
+
+	$link_to_item = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_link', true );
+
+	if ( ! $link_to_item ) {
+		return $content;
+	}
+
+	$source_statement = pressforward( 'admin.nominated' )->get_the_source_statement( $post->ID );
+	if ( ! $source_statement ) {
+		return $content;
+	}
+
+	/*
+	 * Try to remove legacy statements stored in post content.
+	 *
+	 * This will miss any customized source statements. In these cases, the admin will need
+	 * to manually remove.
+	 */
+	$regex   = '/Source: <a[^>]+pf-nom-item-id=[^>]+>.*?<\/a><\/p>/';
+	$content = preg_replace( $regex, '', $content );
+
+	/**
+	 * Filters the source statement markup to be added to the post content.
+	 *
+	 * @since 5.4.0
+	 *
+	 * @param string $source_statement Source statement.
+	 * @param int    $post_id          ID of the post.
+	 */
+	$source_statement = apply_filters( 'pressforward_source_statement_markup', $source_statement, $post->ID );
+
+	$source_position = get_option( 'pf_source_statement_position', 'bottom' );
+	if ( 'bottom' === $source_position ) {
+		$content .= $source_statement;
+	} else {
+		$content = $source_statement_markup . $content;
+	}
+
+	return $content;
+}
+add_filter( 'the_content', 'pressforward_append_source_statement', 8 );
+
+/**
  * A function to filter author urls and, if available, replace their display with the origonal item author urls.
  *
  * @since 3.x
