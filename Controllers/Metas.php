@@ -1122,21 +1122,29 @@ class Metas implements HasFilters, HasActions {
 	}
 
 	public function get_author_from_url( $url ) {
-		$response  = file_get_html( $url );
-		$possibles = array();
-		if ( empty( $response ) ) {
+		$response = pressforward( 'controller.http_tools' )->get_url_content( $url, 'wp_remote_get' );
+		if ( ! $response || is_wp_error( $response ) ) {
 			return false;
 		}
-		$possibles[] = $response->find( 'meta[name=author]', 0 );
-		$possibles[] = $response->find( 'meta[name=Author]', 0 );
-		$possibles[] = $response->find( 'meta[property=author]', 0 );
-		$possibles[] = $response->find( 'meta[property=Author]', 0 );
-		$possibles[] = $response->find( 'meta[name=parsely-author]', 0 );
-		$possibles[] = $response->find( 'meta[name=sailthru.author]', 0 );
 
-		foreach ( $possibles as $possible ) {
-			if ( false != $possible ) {
-				$author_meta = $possible;
+		$dom = new \DOMDocument;
+
+		libxml_use_internal_errors( true );
+		$dom->loadHTML( $response['body'] );
+		libxml_use_internal_errors( false );
+
+		$metas = $dom->getElementsByTagName( 'meta' );
+
+		foreach ( $metas as $meta ) {
+			$name = $meta->getAttribute( 'name' );
+			if ( in_array( $name, [ 'author', 'Author', 'parsely-author', 'sailthru.author' ], true ) ) {
+				$author_meta = $meta->getAttribute( 'content' );
+				break;
+			}
+
+			$property = $meta->getAttribute( 'property' );
+			if ( in_array( $property, [ 'author', 'Author' ], true ) ) {
+				$author_meta = $meta->getAttribute( 'content' );
 				break;
 			}
 		}
@@ -1145,8 +1153,7 @@ class Metas implements HasFilters, HasActions {
 			return false;
 		}
 
-		$author = $author_meta->content;
-		$author = trim( str_replace( 'by', '', $author ) );
+		$author = trim( str_replace( 'by', '', $author_meta ) );
 		$author = trim( str_replace( 'By', '', $author ) );
 
 		return $author;
