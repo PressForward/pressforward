@@ -55,7 +55,7 @@ class PFOpenGraph implements Iterator {
 		if ( false !== $cached ) {
 			$response_body = $cached;
 		} else {
-			$response = pf_de_https( $URI, 'wp_remote_get', array( 'timeout' => '5' ) );
+			$response = pf_de_https( $URI, 'wp_remote_get', array( 'timeout' => '30' ) );
 			if ( $response && ! is_wp_error( $response ) ) {
 				$response_body = wp_remote_retrieve_body( $response );
 			}
