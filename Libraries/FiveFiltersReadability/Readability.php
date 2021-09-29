@@ -95,7 +95,7 @@ class Readability {
 	public $regexps = array(
 		'unlikelyCandidates'   => '/combx|comment|community|disqus|extra|foot|header|menu|remark|rss|related|replies|shoutbox|sidebar|sponsor|social|ad\-break|agegate|pagination|pager|skip\-to\-text\-link|popup|yom\-remote|flash|js|el__featured\-video|kicker|meta|kicker\-label|headline|page\-title/i',
 		'okMaybeItsACandidate' => '/and|article|body|column|main|continues|postContent|content|post|story|related|shadow|story\-content|story\-body\-supplemental|story\-body|story\-body\-text|story\-continues|story\-content|story\-body\-text|story\-continues\-2|el__leafmedia\-\-speakable\-paragraph|no\-js|story\-content|morning\-briefing\-weather\-module/i',
-		'positive'             => '/article|body|story\-content|content|entry|hentry|main|page|attachment|pagination|post|text|blog|postContent|story|story\-body|story\-body\-supplemental|story\-body\-text|story\-continues|story\-content|story\-body\-text|story\-continues\-2|speakable|el__leafmedia\-\-speakable\-paragraph|articleBody|story\-content|story\-body|story\-body\-supplemental/i',
+		'positive'             => '/article|body|story\-content|content|entry|hentry|main|page|attachment|pagination|post|text|blog|postContent|story|story\-body|story\-body\-supplemental|story\-body\-text|story\-continues|story\-content|story\-body\-text|story\-continues\-2|speakable|el__leafmedia\-\-speakable\-paragraph|articleBody|article\-body|story\-content|story\-body|story\-body\-supplemental/i',
 		'negative'             => '/combx|comment|skip\-to\-text\-link|com\-|contact|foot|footer|_nav|footnote|masthead|media|meta|outbrain|taboola|promo|related|scroll|shoutbox|sidebar|sponsor|shopping|tags|tool|widget|el__featured\-video|flash\-state|video__end\-slate\-\-inactive|js|zn\-large\-media|script|fav|unmute|el__video__collection__close\-\-expandable|js__video__collection__close\-\-expandable|kicker|meta|kicker\-label|headline|page\-title/i',
 		'divToPElements'       => '/<(a|blockquote|dl|div|img|ol|p|pre|table|ul)/i',
 		'replaceBrs'           => '/(<br[^>]*>[ \n\r\t]*){2,}/i',
@@ -122,6 +122,7 @@ class Readability {
 	public function __construct( $html, $url = null, $parser = 'libxml', $logging_function = false ) {
 		$this->url    = $url;
 		$this->logger = $logging_function;
+		$this->logger = '_b';
 		/* Turn all double br's into p's */
 		$html = preg_replace( $this->regexps['replaceBrs'], '</p><p>', $html );
 		$html = preg_replace( $this->regexps['replaceFonts'], '<$1span>', $html );

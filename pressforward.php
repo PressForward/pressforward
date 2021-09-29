@@ -30,6 +30,8 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+require 'vendor/autoload.php';
+
 if ( ! class_exists( 'WPUpdatePHP' ) ) {
 	require 'Libraries/WPUpdatePHP.php';
 }

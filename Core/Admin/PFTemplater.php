@@ -622,6 +622,7 @@ class PFTemplater {
 				$text       = apply_filters( 'the_content', $text );
 				// global $wp_embed;
 				// $wp_embed->autoembed($text);
+
 				$embed = $this->show_embed( $id_for_comments );
 				if ( false != $embed ) {
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -891,6 +892,7 @@ class PFTemplater {
 
 	public function show_embed( $id_for_comments ) {
 		$item_link = pressforward( 'controller.metas' )->get_post_pf_meta( $id_for_comments, 'item_link' );
+		return false;
 		return pressforward( 'controller.readability' )->get_embed( $item_link );
 	}
 

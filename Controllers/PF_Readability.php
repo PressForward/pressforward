@@ -1,6 +1,10 @@
 <?php
 namespace PressForward\Controllers;
 
+use andreskrey\Readability\Readability;
+use andreskrey\Readability\Configuration;
+use andreskrey\Readability\ParseException;
+
 use WP_Ajax_Response;
 /**
  * Readability stuff
@@ -251,24 +255,28 @@ class PF_Readability {
 			$tidy->cleanRepair();
 			$html = $tidy->value;
 		}
+
 		// give it to Readability
-		$readabilitizer = pressforward( 'library.readability' );
-		$readability    = $readabilitizer( $html, $url );
+		//$readabilitizer = pressforward( 'library.readability' );
+		//$readability    = $readabilitizer( $html, $url );
+		$readability = new Readability(new Configuration());
+		$result = $readability->parse( $html );
 
 		// print debug output?
 		// useful to compare against Arc90's original JS version -
 		// simply click the bookmarklet with FireBug's
 		// console window open
-		$readability->debug = false;
+//		$readability->debug = false;
 
 		// convert links to footnotes?
-		$readability->convertLinksToFootnotes = false;
+//		$readability->convertLinksToFootnotes = false;
 
 		// process it
-		$result = $readability->init();
+//		$result = $readability->init();
 
 		if ( $result ) {
-			$content = $readability->getContent()->innerHTML;
+			$content = $readability->getContent();
+			_b( $content );
 			// $content = $contentOut->innerHTML;
 				// if we've got tidy, let's use it.
 			if ( function_exists( 'tidy_parse_string' ) ) {
