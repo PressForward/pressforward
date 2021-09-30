@@ -99,39 +99,34 @@ function start_pf_nom_this(){
 
 	return '';
 }
-	/**
-	 * Retrieve the Nominate This bookmarklet link.
-	 *
-	 * Use this in 'a' element 'href' attribute.
-	 *
-	 * @since 1.7
-	 * @see get_shortcut_link()
-	 *
-	 * @return string
-	 */
+
+/**
+ * Retrieve the Nominate This bookmarklet link.
+ *
+ * Use this in 'a' element 'href' attribute.
+ *
+ * Based on the Press This bookmarklet.
+ *
+ * @since 1.7
+ * @link See https://github.com/WordPress/press-this/blob/trunk/press-this-plugin.php
+ *
+ * @return string
+ */
 function pf_get_shortcut_link() {
-	$url = trailingslashit(get_bloginfo('wpurl')).'wp-admin/edit.php?pf-nominate-this=2';
-	// In case of breaking changes, version this. #WP20071
-	$link = "javascript:
-				var d=document,
-				w=window,
-				e=w.getSelection,
-				k=d.getSelection,
-				x=d.selection,
-				s=(e?e():(k)?k():(x?x.createRange().text:0)),
-				f='" . $url . "',
-				l=d.location,
-				e=encodeURIComponent,
-				u=f+'&u='+e(l.href)+'&t='+e(d.title)+'&s='+e(s)+'&v=4';
-				a=function(){if(!w.open(u,'t','toolbar=0,resizable=1,scrollbars=1,status=1,width=720px,height=620px'))l.href=u;};
-				if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0); else a();
-				void(0)";
+	$url = wp_json_encode( admin_url( 'edit.php?pf-nominate-this=2' ) );
+
+	// In case of breaking changes, bump version.
+	$version = 4;
+
+	$link = 'javascript:var d=document,w=window,e=w.getSelection,k=d.getSelection,x=d.selection,' .
+		's=(e?e():(k)?k():(x?x.createRange().text:0)),f=' . $url . ',l=d.location,e=encodeURIComponent,' .
+		'u=f+"&u="+e(l.href)+"&t="+e(d.title)+"&s="+e(s)+"&v=' . $version . '";' .
+		'a=function(){if(!w.open(u,"t","toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=620"))l.href=u;};' .
+		'if(/Firefox/.test(navigator.userAgent))setTimeout(a,0);else a();void(0)';
 
 	$link = str_replace( array( "\r", "\n", "\t" ),  '', $link );
 
 	return apply_filters( 'shortcut_link', $link );
-
-
 }
 
 /**
