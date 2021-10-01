@@ -486,13 +486,17 @@ jQuery(window).on('load', function () {
 
 	jQuery('.pf-loader').delay(300).fadeOut("slow", function () {
 		console.log('Load complete.');
+		var theModal, $closeEl, $modalEl;
 		jQuery('.pf_container').fadeIn("slow");
 		if (window.location.hash.indexOf("#") < 0) {
 			window.location.hash = '#ready';
 		} else if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
 			var hash = window.location.hash;
 			if (!jQuery(hash).hasClass('in')) {
-				jQuery(hash).modal('show');
+				$modalEl = jQuery(hash);
+				$closeEl = $modalEl.find( '.close' );
+				theModal = new bootstrap.Modal( $modalEl );
+				theModal.show( $closeEl );
 			}
 		}
 
@@ -503,7 +507,10 @@ jQuery(window).on('load', function () {
 			if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
 				var hash = window.location.hash;
 				if (!jQuery(hash).hasClass('in')) {
-					jQuery(hash).modal('show');
+					$modalEl = jQuery(hash);
+					$closeEl = $modalEl.find( '.close' );
+					theModal = new bootstrap.Modal( $modalEl );
+					theModal.show( $closeEl );
 				}
 			}
 		});

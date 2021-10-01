@@ -477,7 +477,7 @@ class PFTemplater {
 			?>
 			<header>
 			<?php
-				echo '<h1 class="item_title"><a href="#modal-' . esc_attr( $item['item_id'] ) . '" class="item-expander schema-actor" role="button" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . esc_html( self::display_a( $item['item_title'], 'title' ) ) . '</a></h1>';
+				echo '<h1 class="item_title"><a href="#modal-' . esc_attr( $item['item_id'] ) . '" class="item-expander schema-actor" role="button" data-bs-target="#modal-' . esc_attr( $item['item_id'] ) . '" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . esc_html( self::display_a( $item['item_title'], 'title' ) ) . '</a></h1>';
 				echo '<p class="source_title">' . esc_html( self::display_a( get_the_source_title( $id_for_comments ), 'source' ) ) . '</p>';
 			if ( $format === 'nomination' ) {
 				?>
@@ -597,78 +597,77 @@ class PFTemplater {
 			?>
 			<!-- Begin Modal -->
 			<div id="modal-<?php echo esc_attr( $item['item_id'] ); ?>" class="modal hide fade pfmodal" tabindex="-1" role="dialog" aria-labelledby="modal-<?php echo esc_attr( $item['item_id'] ); ?>-label" aria-hidden="true" pf-item-id="<?php echo esc_attr( $item['item_id'] ); ?>" pf-post-id="<?php echo esc_attr( $item['post_id'] ); ?>" pf-readability-status="<?php echo esc_attr( $item['readable_status'] ); ?>">
-		  <div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-			<div class="modal-mobile-nav pull-right hidden-desktop">
-				<div class="mobile-goPrev pull-left">
+				<div class="modal-dialog">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+						<div class="modal-mobile-nav pull-right hidden-desktop">
+							<div class="mobile-goPrev pull-left"></div>
+							<div class="mobile-goNext pull-right"></div>
+						</div>
 
-				</div>
-				<div class="mobile-goNext pull-right">
-
-				</div>
-			</div>
-			<h3 id="modal-<?php echo esc_html( $item['item_id'] ); ?>-label" class="modal_item_title"><?php echo esc_html( $item['item_title'] ); ?></h3>
-			<?php
-				echo '<em>' . esc_html__( 'Source', 'pf' ) . ': ' . esc_html( get_the_source_title( $id_for_comments ) ) . '</em> | ';
-				echo esc_html__( 'Author', 'pf' ) . ': ' . esc_html( get_the_item_author( $id_for_comments ) );
-			?>
-		  </div>
-		  <div class="row-fluid modal-body-row">
-			  <div class="modal-body span9" id="modal-body-<?php echo esc_attr( $item['item_id'] ); ?>">
-				<div class="readability-wait"></div><div class="main-text">
-				<?php
-				$contentObj = pressforward( 'library.htmlchecker' );
-				$text       = $contentObj->closetags( $item['item_content'] );
-				$text       = apply_filters( 'the_content', $text );
-				// global $wp_embed;
-				// $wp_embed->autoembed($text);
-				$embed = $this->show_embed( $id_for_comments );
-				if ( false != $embed ) {
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo $embed;
-				}
-				print_r( $text );
-
-				?>
-				</div>
-			  </div>
-			  <div class="modal-sidebar span3 hidden-tablet">
-				<div class="goPrev modal-side-item row-fluid">
-
-				</div>
-				<div class="modal-comments modal-side-item row-fluid">
-
-				</div>
-				<div class="goNext modal-side-item row-fluid">
-
-				</div>
-			  </div>
-			  </div>
-			  <div class="modal-footer">
-				<div class="row-fluid">
-				<div class="pull-left original-link">
-				<a target="_blank" href="<?php echo esc_attr( $item['item_link'] ); ?>"><?php esc_html_e( 'Read Original', 'pf' ); ?></a>
-					<?php
-					// if ($format != 'nomination'){
-					?>
-					| <a class="modal-readability-reset" target="#readable" href="<?php echo esc_attr( $item['item_link'] ); ?>" pf-item-id="<?php echo esc_attr( $item['item_id'] ); ?>" pf-post-id="<?php echo esc_attr( $item['post_id'] ); ?>" pf-modal-id="#modal-<?php echo esc_attr( $item['item_id'] ); ?>"><?php esc_html_e( 'Reset Readability', 'pf' ); ?></a>
+						<h3 id="modal-<?php echo esc_html( $item['item_id'] ); ?>-label" class="modal_item_title"><?php echo esc_html( $item['item_title'] ); ?></h3>
 						<?php
-						// }
-					?>
-				</div>
-				<div class="pull-right">
-				<?php
-				$this->form_of_actions_btns( $item, $c, true, $format, $metadata, $id_for_comments );
-				?>
-				</div>			</div>
-			<div class="item-tags pull-left row-fluid">
-			<?php
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo '<strong>' . esc_attr__( 'Item Tags', 'pf' ) . '</strong>: ' . $item['item_tags'];
-			?>
-			</div>
-		  </div>
-			</div>
+							echo '<em>' . esc_html__( 'Source', 'pf' ) . ': ' . esc_html( get_the_source_title( $id_for_comments ) ) . '</em> | ';
+							echo esc_html__( 'Author', 'pf' ) . ': ' . esc_html( get_the_item_author( $id_for_comments ) );
+						?>
+					</div><!-- .modal-header -->
+
+					<div class="row-fluid modal-body-row">
+						<div class="modal-body span9" id="modal-body-<?php echo esc_attr( $item['item_id'] ); ?>">
+						<div class="readability-wait"></div>
+						<div class="main-text">
+							<?php
+							$contentObj = pressforward( 'library.htmlchecker' );
+							$text       = $contentObj->closetags( $item['item_content'] );
+							$text       = apply_filters( 'the_content', $text );
+							// global $wp_embed;
+							// $wp_embed->autoembed($text);
+							$embed = $this->show_embed( $id_for_comments );
+							if ( false != $embed ) {
+								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								echo $embed;
+							}
+							print_r( $text );
+
+							?>
+						</div>
+					</div><!-- .modal-body-row -->
+
+					<div class="modal-sidebar span3 hidden-tablet">
+						<div class="goPrev modal-side-item row-fluid"></div>
+						<div class="modal-comments modal-side-item row-fluid"></div>
+						<div class="goNext modal-side-item row-fluid"></div>
+					</div>
+
+					<div class="modal-footer">
+						<div class="row-fluid">
+							<div class="pull-left original-link">
+								<a target="_blank" href="<?php echo esc_attr( $item['item_link'] ); ?>"><?php esc_html_e( 'Read Original', 'pf' ); ?></a>
+								<?php
+								// if ($format != 'nomination'){
+								?>
+								| <a class="modal-readability-reset" target="#readable" href="<?php echo esc_attr( $item['item_link'] ); ?>" pf-item-id="<?php echo esc_attr( $item['item_id'] ); ?>" pf-post-id="<?php echo esc_attr( $item['post_id'] ); ?>" pf-modal-id="#modal-<?php echo esc_attr( $item['item_id'] ); ?>"><?php esc_html_e( 'Reset Readability', 'pf' ); ?></a>
+									<?php
+									// }
+								?>
+							</div>
+
+							<div class="pull-right">
+								<?php
+								$this->form_of_actions_btns( $item, $c, true, $format, $metadata, $id_for_comments );
+								?>
+							</div>
+						</div><!-- .row-fluid -->
+
+						<div class="item-tags pull-left row-fluid">
+							<?php
+								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								echo '<strong>' . esc_attr__( 'Item Tags', 'pf' ) . '</strong>: ' . $item['item_tags'];
+							?>
+						</div>
+					</div><!-- .modal-footer -->
+				</div><!-- .modal-dialog -->
+			</div><!-- .modal -->
 			<!-- End Modal -->
 			<!-- pf_output_additional_modals -->
 		<?php
