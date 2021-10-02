@@ -134,6 +134,14 @@ function commentPopModal() {
 			},
 			function (comment_response) {
 				jQuery('#comment_modal_' + item_post_ID + ' .modal-body').html(comment_response);
+
+				setTimeout(
+					function() {
+						var mainContentHeight = element.find('.modal-body-row').height();
+						element.find('.modal-body-row .modal-body').height(mainContentHeight - 60);
+					},
+					100
+				);
 			});
 	});
 
@@ -205,6 +213,13 @@ function reviewModal() {
 
 			});
 
+		setTimeout(
+			function() {
+				var mainContentHeight = element.find('.modal-body-row').height();
+				element.find('.modal-body-row .modal-body').height(mainContentHeight);
+			},
+			100
+		);
 
 		var tabindex = element.parent().attr('tabindex');
 
