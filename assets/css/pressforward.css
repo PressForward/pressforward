@@ -1423,6 +1423,11 @@ h3 {
     border-right: transparent;
     padding: 1%;
     margin: 0; }
+  .pfmodal .modal-side-item h5 {
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 20px;
+  }
   .pfmodal .modal-comments {
     overflow-y: auto; }
   .pfmodal .goPrev, .pfmodal .goNext {
