@@ -867,7 +867,7 @@ class PFTemplater {
 					<?php
 					if ( $modal === true ) {
 						?>
-						<button class="btn btn-small" data-dismiss="modal" aria-hidden="true"><?php esc_html_e( 'Close', 'pf' ); ?></button>
+						<button class="btn btn-small" data-bs-dismiss="modal" aria-hidden="true"><?php esc_html_e( 'Close', 'pf' ); ?></button>
 						<?php
 					}
 					?>
