@@ -1494,6 +1494,9 @@ h3 {
   .pfmodal .footer-top > div {
 	flex: 1 0 50%;
   }
+  .pfmodal .footer-bottom {
+	width: 100%;
+  }
   .pfmodal .item-tags {
 	padding-bottom: 75px;
   }

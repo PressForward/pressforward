@@ -665,7 +665,7 @@ class PFTemplater {
 							</div>
 						</div><!-- .row-fluid -->
 
-						<div class="float-left">
+						<div class="footer-bottom">
 							<?php
 								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								echo '<strong>' . esc_attr__( 'Item Tags', 'pf' ) . '</strong>: ' . $item['item_tags'];
