@@ -43,8 +43,12 @@ jQuery( window ).load(function() {
 	}
 
 	jQuery( '.pf_container' ).on('click', '.schema-actor', function(evt){
-		evt.preventDefault();
 		var obj			= jQuery( this );
+
+		if ( ! obj.hasClass( 'item-expander' ) ) {
+			evt.preventDefault();
+		}
+
 		var schema		= obj.attr( 'pf-schema' );
 		var item 		= jQuery( this ).closest( 'article' );
 		var id			= item.attr( 'pf-post-id' );
@@ -142,6 +146,11 @@ jQuery( window ).load(function() {
 		objs.each( function(index) {
 			// console.log(this);
 			var obj = jQuery( this );
+
+			if ( obj.hasClass( 'item-expander' ) ) {
+				return;
+			}
+
 			var is_active = obj.hasClass( 'schema-active' );
 			var is_switchable = obj.hasClass( 'schema-switchable' );
 			var schema_class = 'schema-active';
@@ -150,6 +159,7 @@ jQuery( window ).load(function() {
 				schema_class = schema_class + ' ' + added_class;
 				if ( ! is_active) { is_active = obj.hasClass( added_class ); }
 			}
+
 			if ('off' == isSwitch) {
 				is_switchable = false;
 				// console.log('Switchable is set to off.');
