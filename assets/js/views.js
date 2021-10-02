@@ -361,8 +361,9 @@ function attach_menu_on_scroll_past() {
 			jQuery('#feeds-search > *').addClass('pull-left');
 			jQuery('#feeds-search > label').hide();
 
-			var width = jQuery('#entries').innerWidth();
-			jQuery('.nav-fix').width(width - 80);
+			var width = jQuery('.pf_container').innerWidth();
+			var containerOffset = jQuery('.pf_container').offset();
+			jQuery('.nav-fix').width(width - 20).offset( { left: containerOffset.left } );
 		} else {
 			jQuery('.pf_container .display').removeClass('nav-fix');
 			jQuery('.pf_container #feed-folders').removeClass('right-bar-fix');
