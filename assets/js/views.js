@@ -114,7 +114,7 @@ function modalNavigator(tabindex) {
 
 function commentPopModal() {
 
-	jQuery('.pf_container').on('shown', '.modal.comment-modal', function (evt) {
+	jQuery('.pfmodal').on('shown.bs.modal', function (evt) {
 		var elementC = jQuery(this);
 		var element = elementC.closest('article');
 		var modalID = elementC.closest('article').attr('id');
@@ -137,19 +137,19 @@ function commentPopModal() {
 			});
 	});
 
-	jQuery('.pf_container').on('hide', '.modal.comment-modal', function (evt) {
+	jQuery('.pfmodal').on('hide.bs.modal', function (evt) {
 		jQuery('#ef-comments_wrapper').remove();
 	});
 }
 
 function reshowModal() {
-	jQuery('.pf_container').on('show', '.modal.pfmodal', function (evt) {
+	jQuery('.pfmodal').on('show.bs.modal', function (evt) {
 		var element = jQuery(this);
 		var modalID = element.attr('id');
 		pf_make_url_hashed(modalID);
 	});
 
-	jQuery('.pf_container').on('shown', '.modal.pfmodal', function (evt) {
+	jQuery('.pfmodal').on('shown.bs.modal', function (evt) {
 		var element = jQuery(this);
 		var modalID = element.attr('id');
 		document.body.style.overflow = 'hidden';
@@ -181,7 +181,7 @@ function hide_non_modals() {
 function reviewModal() {
 	//Need to fix this to only trigger on the specific model, but not sure how yet.
 
-	jQuery('.pressforward_page_pf-review .pf_container').on('shown', ".modal.pfmodal", function (evt) {
+	jQuery('.pfmodal').on('shown.bs.modal', function (evt) {
 		//alert('Modal Triggered.');
 
 		var element = jQuery(this);
@@ -213,7 +213,7 @@ function reviewModal() {
 }
 
 function hideModal() {
-	jQuery('.pf_container').on('hide', ".modal.pfmodal", function (evt) {
+	jQuery('.pfmodal').on('hide.bs.modal', function (evt) {
 		jQuery(".pfmodal .modal-comments").html('');
 		if (typeof editorialCommentReply == 'function') {
 			editorialCommentReply.close();
@@ -228,7 +228,7 @@ function hideModal() {
 }
 
 function commentModal() {
-	jQuery('.pf_container').on('show', '.comment-modal', function (evt) {
+	jQuery('.pfmodal').on('show.bs.modal', function (evt) {
 		var element = jQuery(this);
 		var modalID = element.parent('article').attr('id');
 		var modalIDString = '#' + modalID;
