@@ -1374,7 +1374,8 @@ h3 {
 	flex-direction: column;
 	max-width: none;
 	max-height: 100%;
-	height: calc(100% - 3.5rem);
+	height: 100%;
+	margin: 0;
 	position: relative;
 	pointer-events: auto;
 	justify-content: space-between;
