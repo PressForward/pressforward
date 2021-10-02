@@ -366,7 +366,14 @@ class PF_Readability {
 	}
 
 	public function get_embed( $item_link ) {
-		$oembed = wp_oembed_get( $item_link );
+		$transient_key = 'pressforward_oembed_' . md5( $item_link );
+
+		$oembed = get_transient( $transient_key );
+		if ( false === $oembed ) {
+			$oembed = wp_oembed_get( $item_link );
+			set_transient( $transient_key, $oembed, WEEK_IN_SECONDS );
+		}
+
 		if ( false != $oembed ) {
 			$providers = pressforward( 'schema.feed_item' )->oembed_capables();
 			foreach ( $providers as $provider ) {
