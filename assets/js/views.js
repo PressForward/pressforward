@@ -84,7 +84,7 @@ function modalNavigator(tabindex) {
 		prevHTML += '<p class="prev_date">' + prevDate + '</p>';
 		//alert(modalID);
 		jQuery(modalID + ' div.modal-body-row div.modal-sidebar div.goPrev').html(prevHTML);
-		jQuery(modalID + ' div.mobile-goPrev').html('<i class="icon-arrow-left"></i> <a href="' + prevItemID + '" role="button" data-dismiss="modal" class="mobile-modal-navlink modal-nav" data-toggle="modal" data-backdrop="false">' + prevTitle + '</a> ');
+		jQuery(modalID + ' div.mobile-goPrev').html('<i class="icon-arrow-left"></i> <a href="' + prevItemID + '" role="button" data-bs-dismiss="modal" class="mobile-modal-navlink modal-nav">' + prevTitle + '</a> ');
 
 
 	}
@@ -105,7 +105,7 @@ function modalNavigator(tabindex) {
 		nextHTML += '<p class="next_date">' + nextDate + '</p>';
 		//alert(modalID);
 		jQuery(modalID + ' div.modal-body-row div.modal-sidebar div.goNext').html(nextHTML);
-		jQuery(modalID + ' div.mobile-goNext').html('&nbsp;| <a href="' + nextItemID + '" role="button" class="mobile-modal-navlink modal-nav" data-dismiss="modal" data-toggle="modal" data-backdrop="false">' + nextTitle + '</a> <i class="icon-arrow-right"></i>');
+		jQuery(modalID + ' div.mobile-goNext').html('&nbsp;| <a href="' + nextItemID + '" role="button" class="mobile-modal-navlink modal-nav" data-bs-dismiss="modal">' + nextTitle + '</a> <i class="icon-arrow-right"></i>');
 
 	}
 
@@ -127,22 +127,6 @@ function commentPopModal() {
 		var item_post_ID = element.attr('pf-item-post-id');
 		jQuery('#ef-comments_wrapper').remove();
 		//alert(modalIDString);
-		jQuery.post(ajaxurl, {
-				action: 'pf_ajax_get_comments',
-				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
-				id_for_comments: item_post_ID,
-			},
-			function (comment_response) {
-				jQuery('#comment_modal_' + item_post_ID + ' .modal-body').html(comment_response);
-
-				setTimeout(
-					function() {
-						var mainContentHeight = element.find('.modal-body-row').height();
-						element.find('.modal-body-row .modal-body').height(mainContentHeight - 60);
-					},
-					100
-				);
-			});
 	});
 
 	jQuery('.pfmodal').on('hide.bs.modal', function (evt) {
@@ -499,6 +483,8 @@ console.log('Waiting for load.');
 jQuery(window).on('load', function () {
 	// executes when complete page is fully loaded, including all frames, objects and images
 
+	var $allModals = jQuery('.pfmodal');
+
 	jQuery('.pf-loader').delay(300).fadeOut("slow", function () {
 		console.log('Load complete.');
 		var theModal, $closeEl, $modalEl;
@@ -526,6 +512,13 @@ jQuery(window).on('load', function () {
 					$closeEl = $modalEl.find( '.close' );
 					theModal = new bootstrap.Modal( $modalEl );
 					theModal.show( $closeEl );
+
+					$allModals.each(function(){
+						var $modalToClose = bootstrap.Modal.getInstance( this );
+						if ( $modalToClose ) {
+							$modalToClose.hide();
+						}
+					});
 				}
 			}
 		});
