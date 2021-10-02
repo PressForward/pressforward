@@ -15,8 +15,8 @@ function assure_closed_menus() {
 
 //via http://stackoverflow.com/questions/1662308/javascript-substr-limit-by-word-not-char
 function trim_words(theString, numWords) {
-	expString = theString.split(/\s+/, numWords);
-	theNewString = expString.join(" ");
+	var expString = theString.split(/\s+/, numWords);
+	var theNewString = expString.join(" ");
 	return theNewString;
 }
 
