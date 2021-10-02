@@ -82,6 +82,10 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 
 == Changelog ==
 
+= 5.2.8 =
+* Fix admin styling and JavaScript after Bootstrap 5.x updates
+* Improve admin load speed with caching techniques
+
 = 5.2.7 =
 * Rebuild CSS and JS assets
 
