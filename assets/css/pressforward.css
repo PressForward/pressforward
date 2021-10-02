@@ -1369,23 +1369,41 @@ h3 {
   width: 100%;
   height: 100%;
   overflow: hidden; }
+  .pfmodal .modal-dialog {
+	display: flex;
+	flex-direction: column;
+	max-width: none;
+	max-height: 100%;
+	height: calc(100% - 3.5rem);
+	position: relative;
+	pointer-events: auto;
+	justify-content: space-between;
+  }
   .pfmodal .modal-header {
+	flex: 0 0 content;
     background-color: white;
-    max-height: 13%; }
+  }
+  .pfmodal .modal_item_title {
+	font-weight: 700;
+  }
   .pfmodal .modal-mobile-nav {
     margin: 0 8px; }
+
   .pfmodal .modal-body-row {
-    background: white; }
+    background: white;
+	padding: 0 20px;
+	overflow: hidden;
+	flex: 1 1 80%;
+  }
+
   .pfmodal .modal-body {
-    min-height: 100%; }
-  .pfmodal .modal-body-row {
-    height: 80%;
-    overflow: hidden; }
+	flex: 1;
+	overflow-y: auto;
+  }
   .pfmodal .modal-sidebar {
     height: 100%;
     margin: 0;
-    /**width: 25.64102564102563%;**/
-    width: 25.5%; }
+  }
   .pfmodal .modal-side-item {
     border: 1px solid #eee;
     border-right: transparent;
@@ -1406,14 +1424,27 @@ h3 {
   .pfmodal .modal-comments {
     height: 50%; }
   .pfmodal .modal-footer {
-    max-height: 80%;
-    min-height: 48px; }
+	flex: 0 0 content;
+	flex-direction: column;
+  }
+  .pfmodal .footer-top {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+  }
+  .pfmodal .footer-top > div {
+	flex: 1 0 50%;
+  }
+  .pfmodal .item-tags {
+	padding-bottom: 75px;
+  }
+  .pfmodal .footer-actions {
+	text-align: right;
+  }
   .pfmodal .modal-body p, .pfmodal .modal-body div, .pfmodal .modal-body {
     margin: 1.5em 0;
     font-size: 18px;
     line-height: 1.7em; }
-  .pfmodal > div {
-    z-index: 2000; }
 
 .pf-navigation {
   width: 100%;

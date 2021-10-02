@@ -218,7 +218,7 @@ class PFTemplater {
 	public function nav_bar( $page = 'pf-menu' ) {
 		?>
 		<div class="display">
-			<div class="pf-btns pull-left btn-toolbar">
+			<div class="pf-btns float-left btn-toolbar">
 				<?php if ( 'pf-review' != $page ) { ?>
 					<div class="dropdown pf-view-dropdown btn-group" role="group">
 					  <button class="btn btn-default btn-small dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
@@ -298,7 +298,7 @@ class PFTemplater {
 				</div>
 			</div>
 
-			<div class="pull-right text-right">
+			<div class="float-right text-right">
 			<!-- or http://thenounproject.com/noun/list/#icon-No9479? -->
 				<?php
 				if ( function_exists( 'the_alert_box' ) ) {
@@ -310,7 +310,7 @@ class PFTemplater {
 				}
 
 				if ( 'pf-review' == $page ) {
-					echo '<button type="submit" class="delete btn btn-danger btn-small pull-left" id="archivenoms" value="' . esc_attr__( 'Archive all', 'pf' ) . '" >' . esc_attr__( 'Archive all', 'pf' ) . '</button>';
+					echo '<button type="submit" class="delete btn btn-danger btn-small float-left" id="archivenoms" value="' . esc_attr__( 'Archive all', 'pf' ) . '" >' . esc_attr__( 'Archive all', 'pf' ) . '</button>';
 				}
 
 					$user_ID          = get_current_user_id();
@@ -599,49 +599,53 @@ class PFTemplater {
 			<div id="modal-<?php echo esc_attr( $item['item_id'] ); ?>" class="modal hide fade pfmodal" tabindex="-1" role="dialog" aria-labelledby="modal-<?php echo esc_attr( $item['item_id'] ); ?>-label" aria-hidden="true" pf-item-id="<?php echo esc_attr( $item['item_id'] ); ?>" pf-post-id="<?php echo esc_attr( $item['post_id'] ); ?>" pf-readability-status="<?php echo esc_attr( $item['readable_status'] ); ?>">
 				<div class="modal-dialog">
 					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-						<div class="modal-mobile-nav pull-right hidden-desktop">
-							<div class="mobile-goPrev pull-left"></div>
-							<div class="mobile-goNext pull-right"></div>
+						<div class="modal-header-left">
+							<div class="modal-mobile-nav float-right d-none d-sm-block d-md-none">
+								<div class="mobile-goPrev float-left"></div>
+								<div class="mobile-goNext float-right"></div>
+							</div>
+
+							<h3 id="modal-<?php echo esc_html( $item['item_id'] ); ?>-label" class="modal_item_title"><?php echo esc_html( $item['item_title'] ); ?></h3>
+							<?php
+								echo '<em>' . esc_html__( 'Source', 'pf' ) . ': ' . esc_html( get_the_source_title( $id_for_comments ) ) . '</em> | ';
+								echo esc_html__( 'Author', 'pf' ) . ': ' . esc_html( get_the_item_author( $id_for_comments ) );
+							?>
 						</div>
 
-						<h3 id="modal-<?php echo esc_html( $item['item_id'] ); ?>-label" class="modal_item_title"><?php echo esc_html( $item['item_title'] ); ?></h3>
-						<?php
-							echo '<em>' . esc_html__( 'Source', 'pf' ) . ': ' . esc_html( get_the_source_title( $id_for_comments ) ) . '</em> | ';
-							echo esc_html__( 'Author', 'pf' ) . ': ' . esc_html( get_the_item_author( $id_for_comments ) );
-						?>
+						<button type="button" class="btn-close float-right" data-bs-dismiss="modal" aria-label="<?php echo esc_attr( 'Close', 'pressforward' ); ?>"></button>
 					</div><!-- .modal-header -->
 
-					<div class="row-fluid modal-body-row">
-						<div class="modal-body span9" id="modal-body-<?php echo esc_attr( $item['item_id'] ); ?>">
-						<div class="readability-wait"></div>
-						<div class="main-text">
-							<?php
-							$contentObj = pressforward( 'library.htmlchecker' );
-							$text       = $contentObj->closetags( $item['item_content'] );
-							$text       = apply_filters( 'the_content', $text );
-							// global $wp_embed;
-							// $wp_embed->autoembed($text);
-							$embed = $this->show_embed( $id_for_comments );
-							if ( false != $embed ) {
-								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-								echo $embed;
-							}
-							print_r( $text );
+					<div class="row modal-body-row">
+						<div class="modal-body col-9" id="modal-body-<?php echo esc_attr( $item['item_id'] ); ?>">
+							<div class="readability-wait"></div>
+							<div class="main-text">
+								<?php
+								$contentObj = pressforward( 'library.htmlchecker' );
+								$text       = $contentObj->closetags( $item['item_content'] );
+								$text       = apply_filters( 'the_content', $text );
+								// global $wp_embed;
+								// $wp_embed->autoembed($text);
+								$embed = $this->show_embed( $id_for_comments );
+								if ( false != $embed ) {
+									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+									echo $embed;
+								}
+								print_r( $text );
 
-							?>
+								?>
+							</div>
+						</div>
+
+						<div class="modal-sidebar col-3 hidden-tablet">
+							<div class="goPrev modal-side-item row-fluid"></div>
+							<div class="modal-comments modal-side-item row-fluid"></div>
+							<div class="goNext modal-side-item row-fluid"></div>
 						</div>
 					</div><!-- .modal-body-row -->
 
-					<div class="modal-sidebar span3 hidden-tablet">
-						<div class="goPrev modal-side-item row-fluid"></div>
-						<div class="modal-comments modal-side-item row-fluid"></div>
-						<div class="goNext modal-side-item row-fluid"></div>
-					</div>
-
 					<div class="modal-footer">
-						<div class="row-fluid">
-							<div class="pull-left original-link">
+						<div class="footer-top">
+							<div class="original-link">
 								<a target="_blank" href="<?php echo esc_attr( $item['item_link'] ); ?>"><?php esc_html_e( 'Read Original', 'pf' ); ?></a>
 								<?php
 								// if ($format != 'nomination'){
@@ -652,14 +656,14 @@ class PFTemplater {
 								?>
 							</div>
 
-							<div class="pull-right">
+							<div class="footer-actions">
 								<?php
 								$this->form_of_actions_btns( $item, $c, true, $format, $metadata, $id_for_comments );
 								?>
 							</div>
 						</div><!-- .row-fluid -->
 
-						<div class="item-tags pull-left row-fluid">
+						<div class="float-left">
 							<?php
 								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								echo '<strong>' . esc_attr__( 'Item Tags', 'pf' ) . '</strong>: ' . $item['item_tags'];
