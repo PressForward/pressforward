@@ -139,6 +139,19 @@ input[type="text"] {
 	border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) rgba(0,0,0,.25);
 }
 
+.btn-danger {
+	color: #fff;
+	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+	background-color: #da4f49;
+	background-image: -webkit-gradient(linear,0 0, 0 100%, from(#ee5f5b), to(#bd362f));
+	background-image: -webkit-linear-gradient(top, #ee5f5b, #bd362f);
+	background-image: -o-linear-gradient(top, #ee5f5b, #bd362f);
+	background-image: linear-gradient(to bottom, #ee5f5b, #bd362f);
+	background-image: -moz-linear-gradient(top, #ee5f5b, #bd362f);
+	background-repeat: repeat-x;
+	border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) rgba(0,0,0,.25);
+}
+
 [class^="icon-"] {
 	display: inline-block;
 	width: 14px;
@@ -850,6 +863,26 @@ input[type="text"] {
   margin: 0 0;
   font-size: 0;
   vertical-align: middle; }
+
+.pf-btns.btn-toolbar {
+  display: flex;
+}
+
+.pf-btns.btn-toolbar > div {
+	flex: 1;
+}
+
+.pf-btns-right {
+	text-align: right;
+}
+
+.pf-btns .btn {
+	margin-right: 8px;
+}
+
+.pf-btns .btn:last-child {
+	margin-right: 0;
+}
 
 .pf-btns .btn.btn-unrounded, article .pf-btns .btn {
   -webkit-border-radius: 0;
