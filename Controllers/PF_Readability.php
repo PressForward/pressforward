@@ -258,7 +258,12 @@ class PF_Readability {
 
 		// give it to Readability
 		$readability = new Readability(new Configuration());
-		$result = $readability->parse( $html );
+
+		try {
+			$result = $readability->parse( $html );
+		} catch ( ParseException $ex ) {
+			$result = null;
+		}
 
 		if ( $result ) {
 			$content = $readability->getContent();
