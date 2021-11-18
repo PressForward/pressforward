@@ -257,28 +257,13 @@ class PF_Readability {
 		}
 
 		// give it to Readability
-		//$readabilitizer = pressforward( 'library.readability' );
-		//$readability    = $readabilitizer( $html, $url );
 		$readability = new Readability(new Configuration());
 		$result = $readability->parse( $html );
 
-		// print debug output?
-		// useful to compare against Arc90's original JS version -
-		// simply click the bookmarklet with FireBug's
-		// console window open
-//		$readability->debug = false;
-
-		// convert links to footnotes?
-//		$readability->convertLinksToFootnotes = false;
-
-		// process it
-//		$result = $readability->init();
-
 		if ( $result ) {
 			$content = $readability->getContent();
-			_b( $content );
-			// $content = $contentOut->innerHTML;
-				// if we've got tidy, let's use it.
+
+			// if we've got tidy, let's use it.
 			if ( function_exists( 'tidy_parse_string' ) ) {
 				$tidy = tidy_parse_string(
 					$content,
