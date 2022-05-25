@@ -378,7 +378,8 @@ class PFTemplater {
 			do_action( 'pf_output_items', $item, $c, $format );
 			return;
 		}
-		$itemTagsArray        = explode( ',', $item['item_tags'] );
+
+		$itemTagsArray        = is_array( $item['item_tags'] ) ? $item['item_tags'] : explode( ',', $item['item_tags'] );
 		$itemTagClassesString = '';
 				$user_id      = $current_user->ID;
 		foreach ( $itemTagsArray as $itemTag ) {
@@ -508,7 +509,7 @@ class PFTemplater {
 										' . __( 'Authors', 'pf' ) . ': <span class="item_authors">' . $item['item_author'] . '</span><br />
 										' . __( 'Origin', 'pf' ) . ': <span class="source_name"><a target ="_blank" href="' . $sourceLink . '">' . $sourceLink . '</a></span><br />
 										' . __( 'Original Item', 'pf' ) . ': <span class="source_link"><a href="' . $item['item_link'] . '" class="item_url" target ="_blank">' . $item['item_title'] . '</a></span><br />
-										' . __( 'Tags', 'pf' ) . ': <span class="item_tags">' . $item['item_tags'] . '</span><br />
+										' . __( 'Tags', 'pf' ) . ': <span class="item_tags">' . esc_html( implode( ',', $itemTagsArray ) ) . '</span><br />
 										' . __( 'Times repeated in source', 'pf' ) . ': <span class="feed_repeat sortable_sources_repeat">' . $item['source_repeat'] . '</span><br />
 										';
 			if ( $format === 'nomination' ) {
@@ -656,7 +657,7 @@ class PFTemplater {
 						<div class="footer-bottom">
 							<?php
 								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-								echo '<strong>' . esc_attr__( 'Item Tags', 'pf' ) . '</strong>: ' . $item['item_tags'];
+								echo '<strong>' . esc_attr__( 'Item Tags', 'pf' ) . '</strong>: ' . implode( ', ', $itemTagsArray );
 							?>
 						</div>
 					</div><!-- .modal-footer -->

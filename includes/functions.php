@@ -404,8 +404,14 @@ function pf_prep_item_for_submit( $item ) {
 
 	foreach ( $item as $itemKey => $itemPart ) {
 
-		if ( $itemKey == 'item_content' ) {
-			$itemPart = htmlspecialchars( $itemPart );
+		switch ( $itemKey ) {
+			case 'item_content' :
+				$itemPart = htmlspecialchars( $itemPart );
+			break;
+
+			case 'nominators' :
+				$itemPart = wp_list_pluck( 'user_id', $itemPart );
+			break;
 		}
 
 		if ( is_array( $itemPart ) ) {

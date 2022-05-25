@@ -106,7 +106,8 @@ function get_the_nominator_ids($id = false) {
 		$id = get_the_ID();
 	}
 	$m = pressforward( 'controller.metas' )->get_post_pf_meta( $id, 'nominator_array' );
-	return array_keys($m);
+
+	return is_array( $m ) ? array_keys( $m ) : [];
 }
 
 function get_the_nominators() {

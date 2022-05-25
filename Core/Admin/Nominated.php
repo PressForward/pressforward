@@ -233,9 +233,21 @@ class Nominated implements HasActions {
 								$wp_nom_slugs[] = $tag->slug;
 							}
 						}
+
 						$metadata['nom_tags'] = $nomed_tag_slugs = $wp_nom_slugs;
-						$metadata['all_tags'] = $nom_tags .= $wp_nom_tags;
-						$nomTagsArray         = explode( ',', $item_nom_tags );
+
+
+						$nom_tags_string    = is_array( $nom_tags ) ? implode( ',', $nom_tags ) : $nom_tags;
+						$wp_nom_tags_string = is_array( $wp_nom_tags ) ? implode( ',', $wp_nom_tags ) : $wp_nom_tags;
+
+						$metadata['all_tags'] = $nom_tags_string . ',' . $nom_tags_string;
+
+						if ( is_array( $item_nom_tags ) ) {
+							$nomTagsArray = $item_nom_tags;
+						} else {
+							$nomTagsArray = explode( ',', $item_nom_tags );
+						}
+
 						$nomTagClassesString  = '';
 						foreach ( $nomTagsArray as $nomTag ) {
 							$nomTagClassesString .= pf_slugger( $nomTag, true, false, true );
