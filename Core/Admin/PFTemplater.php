@@ -501,34 +501,34 @@ class PFTemplater {
 				$sourceLink = 'http://' . $url_array['host'];
 			}
 									// http://nicolasgallagher.com/pure-css-speech-bubbles/demo/
-									$ibox      = '<div class="feed-item-info-box" id="info-box-' . $item['item_id'] . '">';
+									$ibox      = '<div class="feed-item-info-box" id="info-box-' . esc_attr( $item['item_id'] ) . '">';
 										$ibox .= '
-										' . __( 'Feed', 'pf' ) . ': <span class="feed_title">' . get_the_source_title( $id_for_comments ) . '</span><br />
-										' . __( 'Posted', 'pf' ) . ': <span class="feed_posted">' . date( 'M j, Y; g:ia', strtotime( $item['item_date'] ) ) . '</span><br />
-										' . __( 'Retrieved', 'pf' ) . ': <span class="item_meta item_meta_added_date">' . date( 'M j, Y; g:ia', strtotime( $item['item_added_date'] ) ) . '</span><br />
-										' . __( 'Authors', 'pf' ) . ': <span class="item_authors">' . $item['item_author'] . '</span><br />
-										' . __( 'Origin', 'pf' ) . ': <span class="source_name"><a target ="_blank" href="' . $sourceLink . '">' . $sourceLink . '</a></span><br />
-										' . __( 'Original Item', 'pf' ) . ': <span class="source_link"><a href="' . $item['item_link'] . '" class="item_url" target ="_blank">' . $item['item_title'] . '</a></span><br />
-										' . __( 'Tags', 'pf' ) . ': <span class="item_tags">' . esc_html( implode( ',', $itemTagsArray ) ) . '</span><br />
-										' . __( 'Times repeated in source', 'pf' ) . ': <span class="feed_repeat sortable_sources_repeat">' . $item['source_repeat'] . '</span><br />
+										' . esc_html__( 'Feed', 'pf' ) . ': <span class="feed_title">' . esc_html( get_the_source_title( $id_for_comments ) ) . '</span><br />
+										' . esc_html__( 'Posted', 'pf' ) . ': <span class="feed_posted">' . esc_html( date( 'M j, Y; g:ia', strtotime( $item['item_date'] ) ) ) . '</span><br />
+										' . esc_html__( 'Retrieved', 'pf' ) . ': <span class="item_meta item_meta_added_date">' . esc_html( date( 'M j, Y; g:ia', strtotime( $item['item_added_date'] ) ) ) . '</span><br />
+										' . esc_html__( 'Authors', 'pf' ) . ': <span class="item_authors">' . esc_html( $item['item_author'] ) . '</span><br />
+										' . esc_html__( 'Origin', 'pf' ) . ': <span class="source_name"><a target ="_blank" href="' . esc_attr( $sourceLink ) . '">' . esc_html( $sourceLink ) . '</a></span><br />
+										' . esc_html__( 'Original Item', 'pf' ) . ': <span class="source_link"><a href="' . esc_attr( $item['item_link'] ) . '" class="item_url" target ="_blank">' . esc_html( $item['item_title'] ) . '</a></span><br />
+										' . esc_html__( 'Tags', 'pf' ) . ': <span class="item_tags">' . esc_html( implode( ',', $itemTagsArray ) ) . '</span><br />
+										' . esc_html__( 'Times repeated in source', 'pf' ) . ': <span class="feed_repeat sortable_sources_repeat">' . esc_html( $item['source_repeat'] ) . '</span><br />
 										';
 			if ( $format === 'nomination' ) {
 
-				$ibox .= __( 'Number of nominations received', 'pf' )
-				. ': <span class="sortable_nom_count">' . $metadata['nom_count'] . '</span><br />'
-				. __( 'First submitted by', 'pf' )
-				. ': <span class="first_submitter">' . $metadata['submitters'] . '</span><br />'
-				. __( 'Nominated on', 'pf' )
-				. ': <span class="nominated_on">' . date( 'M j, Y; g:ia', strtotime( $metadata['date_nominated'] ) ) . '</span><br />'
-				. __( 'Nominated by', 'pf' )
-				. ': <span class="nominated_by">' . get_the_nominating_users() . '</span><br />';
+				$ibox .= esc_html__( 'Number of nominations received', 'pf' )
+				. ': <span class="sortable_nom_count">' . esc_html( $metadata['nom_count'] ) . '</span><br />'
+				. esc_html__( 'First submitted by', 'pf' )
+				. ': <span class="first_submitter">' . esc_html( $metadata['submitters'] ) . '</span><br />'
+				. esc_html__( 'Nominated on', 'pf' )
+				. ': <span class="nominated_on">' . esc_html( date( 'M j, Y; g:ia', strtotime( $metadata['date_nominated'] ) ) ) . '</span><br />'
+				. esc_html__( 'Nominated by', 'pf' )
+				. ': <span class="nominated_by">' . esc_html( get_the_nominating_users() ) . '</span><br />';
 			}
 
 										$draft_id = pf_is_drafted( $feed_item_id );
 			if ( false != $draft_id && ( current_user_can( 'edit_post', $draft_id ) ) ) {
 				// http://codex.wordpress.org/Function_Reference/edit_post_link
 				$edit_url = get_edit_post_link( $draft_id );
-				$ibox    .= '<br /><a class="edit_draft_from_info_box" href="' . $edit_url . '">' . __( 'Edit the draft based on this post.', 'pf' ) . '</a><br/>';
+				$ibox    .= '<br /><a class="edit_draft_from_info_box" href="' . esc_attr( $edit_url ) . '">' . esc_html__( 'Edit the draft based on this post.', 'pf' ) . '</a><br/>';
 			}
 
 									$ibox .= '</div>';
@@ -603,7 +603,7 @@ class PFTemplater {
 							?>
 						</div>
 
-						<button type="button" class="btn-close float-right" data-bs-dismiss="modal" aria-label="<?php echo esc_attr( 'Close', 'pressforward' ); ?>"></button>
+						<button type="button" class="btn-close float-right" data-bs-dismiss="modal" aria-label="<?php esc_attr_e( 'Close', 'pressforward' ); ?>"></button>
 					</div><!-- .modal-header -->
 
 					<div class="row modal-body-row">
