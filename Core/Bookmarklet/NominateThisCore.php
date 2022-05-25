@@ -207,7 +207,6 @@ endif;
 		// pf_log($post['post_category']);
 		// pf_log($_POST['post_category']);
 
-		// var_dump('<pre>'); var_dump($_POST, $post); die();
 		// set the post_content and status
 		$post['post_content'] = $content;
 
@@ -226,7 +225,6 @@ endif;
 				'error'  => false,
 				'simple' => '',
 			);
-			// var_dump('<pre>'); var_dump($_POST['pf-feed-subscribe']); die();
 		if ( ! empty( $_POST['pf-feed-subscribe'] ) && ( 'subscribe' == sanitize_text_field( wp_unslash( $_POST['pf-feed-subscribe'] ) ) ) ) {
 			$url_array      = parse_url( esc_url( $item_link ) );
 			$sourceLink     = 'http://' . $url_array['host'];
@@ -285,7 +283,6 @@ endif;
 			// $post['post_type']   = 'nomination';
 			pf_log( $post );
 			$_POST = array_merge( $_POST, $post );
-			// var_dump($post); die();
 		if ( isset( $_POST['publish'] ) && ( ( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) == 'Last Step' ) || ( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) == 'Send to ' . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ) )) ) {
 			$post['post_type']   = 'nomination';
 			$post_ID = pressforward( 'utility.forward_tools' )->bookmarklet_to_last_step( false, $post );
@@ -322,7 +319,6 @@ endif;
 			// system. But if that doesn't work, something has gone pretty wrong.
 			// $nom_check = true;
 		}
-			// var_dump($post); die();
 			return $post_ID;
 	}
 

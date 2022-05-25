@@ -1,4 +1,3 @@
-<?php // var_dump('atest'); ?>
 	<div id="tools">
 			<?php
 			// Widgets

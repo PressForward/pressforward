@@ -26,7 +26,6 @@ $tsClassLoader = new ClassLoader( 'DaveChild', 'Libraries/text-stats/src', false
 $tsClassLoader->filterFinalPath( 'DaveChild' . 'Libraries/text-stats/src', '' );
 $tsClassLoader->register();
 $classLoader = new ClassLoader( 'PressForward', dirname( __FILE__ ), false );
-// var_dump($classLoader->getIncludePath());
 $classLoader->filterFinalPath( 'PressForward' . DIRECTORY_SEPARATOR, '' );
 $classLoader->register();
 
@@ -36,9 +35,7 @@ function pressforward( $prop = false ) {
 	try {
 		$instance = new PressForward\Application( new Config( ConfigType::PLUGIN, __FILE__ ) );
 		$instance->boot();
-		// var_dump('New Boot');
 	} catch (Intraxia\Jaxion\Core\ApplicationAlreadyBootedException $e) {
-		// var_dump('Old boot.');
 		$instance = PressForward\Application::instance();
 
 	}

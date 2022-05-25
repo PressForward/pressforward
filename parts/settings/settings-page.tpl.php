@@ -37,7 +37,6 @@ $private_key = (pressforward('controller.jwt')->get_a_user_private_key());
 				<h2 class="nav-tab-wrapper" id="pf-settings-tabs">
 				<?php
 					$tabs = pressforward('admin.templates')->permitted_tabs($page_slug);
-					// var_dump($current);
 				foreach ($tabs as $tab => $tab_meta) {
 					if (current_user_can($tab_meta['cap'])) {
 						$title = $tab_meta['title'];
@@ -56,10 +55,8 @@ $private_key = (pressforward('controller.jwt')->get_a_user_private_key());
 				</h2>
 				<div class="tabwrappper">
 					<?php
-						// var_dump($page_slug); die();
 						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo pressforward('admin.templates')->settings_tab_group($current, $page_slug);
-						// var_dump(pressforward('admin.templates')->settings_tab_group($current, $page_slug)); die();
 						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo $settings_tab_group;
 

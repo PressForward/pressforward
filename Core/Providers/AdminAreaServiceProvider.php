@@ -88,7 +88,6 @@ class AdminAreaServiceProvider extends ServiceProvider {
 			}
 		);
 		// parent::register( $container );
-		// var_dump(__METHOD__); die();
 		//
 		// parent::register( $container );
 	}

@@ -148,7 +148,6 @@ class NominateThisEndpoint implements HasActions {
                   ),
 				),
 				'permission_callback' => function () {
-					//var_dump($_GET);
 					$return_var = false;
 					try {
 						$raw_key = isset( $_GET['k'] ) ? sanitize_text_field( wp_unslash( $_GET['k'] ) ) : '';
@@ -205,8 +204,6 @@ class NominateThisEndpoint implements HasActions {
 					// return true;
 					$return_var = false;
 					$request_params = $request->get_params();
-					// var_dump(hex2bin(trim($_POST['user_key']))); die();
-					// var_dump($request->get_json_params()); die();
 					try {
 						$key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin(trim($request_params['user_key'])));
 						// pf_log('Decode attempt 2 on');
@@ -219,7 +216,6 @@ class NominateThisEndpoint implements HasActions {
 						$return_var = false;
 						return $return_var;
 					} catch ( \UnexpectedValueException $e ){
-						// var_dump($e, $_POST['user_key']);
 						$return_var = new WP_Error( 'auth_fail_format', __( "Authentication key was not properly formated. ".$request_params['user_key'], "pf" ) );
 					} catch ( \InvalidArgumentException $e ){
 						$return_var = new WP_Error( 'auth_fail_key', __( "Authentication key was not properly supplied.", "pf" ) );
@@ -232,8 +228,6 @@ class NominateThisEndpoint implements HasActions {
 							return $return_var;
 						}
 					}
-					// var_dump($request->get_params());
-					// var_dump($return_var); die();
 					return $return_var;
 
 				},
@@ -256,7 +250,6 @@ class NominateThisEndpoint implements HasActions {
 	public function get_nominate_this($request){
 		define( 'IFRAME_REQUEST' , true );
 		define( 'WP_ADMIN', true );
-		//var_dump($request); var_dump($_GET); die();
 		global $pagenow;
 		header( 'Content-Type: ' . get_option( 'html_type' ) . '; charset=' . get_option( 'blog_charset' ) );
 		$nonce = wp_create_nonce( 'wp_rest' );
@@ -373,7 +366,6 @@ class NominateThisEndpoint implements HasActions {
 			$date_obj->add( $allowable_diff );
 			if ( $date_obj < $current_date_obj ) {
 				// Too old of a message
-				//var_dump( 'bad date' );
 				return '{"error": "bad date", "date_sent":"'.$date_obj->format('Y-m-d H:i:s').'", "date_internal":"'.$current_date_obj->format('Y-m-d H:i:s').'"}';
 			}
 		} else {
@@ -399,10 +391,7 @@ class NominateThisEndpoint implements HasActions {
 		$return_object->id = $id;
 		$response = new \WP_REST_Response($return_object);
 		$response->header( 'Content-Type', 'application/json' );
-		// var_dump('Test: ', $request->get_body());
 		return rest_ensure_response($response);
-		// return $id;
-		// return new WP_REST_Response($return_object);
 	}
 
 	public function get_nominate_this_script(){

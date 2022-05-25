@@ -73,7 +73,6 @@ class PF_REST_Taxonomies_Controller extends WP_REST_Taxonomies_Controller {
 				)
 			);
 		}
-		// var_dump($data->get_links());
 		return $data;
 	}
 

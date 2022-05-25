@@ -22,7 +22,6 @@ class Modules {
 	 * libraries are available
 	 */
 	function pressforward_init() {
-		// var_dump('PFI');
 		do_action( 'pressforward_init' );
 	}
 

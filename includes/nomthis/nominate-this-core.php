@@ -3,7 +3,6 @@ header( 'Content-Type: ' . get_option( 'html_type' ) . '; charset=' . get_option
 if (!WP_DEBUG){
 	error_reporting(0);
 }
-// var_dump($_POST);  die();
 set_transient( 'is_multi_author', true );
 
 require_once( ABSPATH . '/wp-admin/includes/meta-boxes.php' );
@@ -31,7 +30,6 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
 	// $post_ID = wp_insert_post(array('post_title' => $title, 'post_type' => 'nomination', 'guid' => $_GET['u']));
 	// $post_ID = $post->ID;
 	// pf_log('Establish post '.$post_ID);
-	// var_dump($_GET['u']); die();
 	global $pf_nt;
 
 	// Set Variables
@@ -326,7 +324,6 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 ?>
 <body class="press-this wp-admin wp-core-ui nominate-this <?php echo esc_attr( $admin_body_class ); ?>">
 <?php
-//var_dump('<pre>',$_GET);
 	if ( isset( $_GET['pf-nominate-this'] ) && 2 === intval( $_GET['pf-nominate-this'] ) ) {
 		$post_url = trailingslashit(get_bloginfo('wpurl')).'wp-admin/edit.php?pf-nominate-this=2';
 		echo '<form action="' . esc_attr( $post_url ) . '&action=post" method="post">';
@@ -367,10 +364,8 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 			if ( isset( $url ) && ! empty( $url ) && ($url) != '' ) {
 				pf_log( 'Getting OpenGraph image on ' );
 				pf_log( $url );
-				// var_dump($_POST['item_link']); die();
 				// Gets OG image
 				$itemFeatImg = pressforward( 'schema.feed_item' )->get_ext_og_img( $url );
-				// var_dump($itemFeatImg); die();
 			} else {
 				$itemFeatImg = false;
 			}
@@ -424,7 +419,6 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 				} else {
 					$feed_nom_class = 'updated';
 				}
-				// var_dump($feed_nom); die();
 				?>
                 <div id="nom-message" class="<?php echo esc_attr( $feed_nom_class ); ?>">
                   <p><strong><?php

@@ -51,7 +51,6 @@ class PF_JWT {
 	}
 
 	public function decode_with_jwt($token, $key, $alg = array('HS256')){
-		//var_dump($token, $key); die();
 		try {
 			$decode = $this->JWT->decode($token, $key, $alg);
 		} catch ( \Exception $e ) {

@@ -79,7 +79,7 @@ class Stats_Shortcodes {
 
 				)
 			);
-			// var_dump($the_query);
+
 			if ( $the_query->have_posts() ) :
 
 				while ( $the_query->have_posts() ) :

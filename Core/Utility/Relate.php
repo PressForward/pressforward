@@ -20,7 +20,6 @@ class Relate implements HasActions {
 	// var $advance_interface;
 	// var $post_interface;
 	public function __construct( Items $item_interface, Advance_System $advance_interface, Metas $meta_interface, Relationships $relationship_schema ) {
-		// var_dump('a');
 		$this->item_interface    = $item_interface;
 		$this->advance_interface = $advance_interface;
 		$this->metas             = $meta_interface;
@@ -391,8 +390,6 @@ class Relate implements HasActions {
 		}
 
 		$q = new WP_Query( $args );
-		// echo '<pre>';
-		// var_dump($q);# die();
 		/**     $dquerystr = $wpdb->prepare("
 			SELECT $wpdb->posts.*, $wpdb->postmeta.*.
 			FROM $wpdb->posts, $wpdb->postmeta
@@ -414,7 +411,6 @@ class Relate implements HasActions {
 				// This takes the $post objects and translates them into something I can do the standard WP functions on.
 				// setup_postdata($post);
 				$post_id = get_the_ID();
-				// var_dump(get_the_ID());
 				$id_list .= get_the_title() . ',';
 				// Switch the delete on to wipe rss archive posts from the database for testing.
 				$userObj = wp_get_current_user();
@@ -428,10 +424,7 @@ class Relate implements HasActions {
 		endif;
 
 		wp_reset_postdata();
-		// var_dump('IDs: ');
-		// var_dump($id_list); die();
 		ob_start();
-		// var_dump( $q );
 		$response = array(
 			'what'         => 'relationships',
 			'action'       => 'pf_archive_all_nominations',

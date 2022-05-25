@@ -885,7 +885,6 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		//sleep(2);
 
 		$nomination_two_id = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $feed_item_id );
-		//var_dump( $nomination_two_id ); die();
 
 		$nomination_post = get_post($nomination_two_id);
 
@@ -899,7 +898,6 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 
 		$this->check_feed_nominations_incremented($nomination_two_id, 2);
 
-		//var_dump(get_post_meta($final_id)); die();
 		$this->check_standard_metrics($feed_item_id, $final_id, $title);
 
 		$nomination_and_post_check = pressforward('utility.forward_tools')->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
@@ -915,8 +913,6 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		//$final_step_parent = pf_is_drafted( $item_id );
 		//$this->assertEquals($final_step_parent, $final_id);
 		$nom_nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_two_id, 'nominator_array' );
-		//var_dump($nom_nominators);
-		//var_dump($nominators = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nominator_array' )); var_dump($user_id_2, array_key_exists($user_id_2, $nominators)); die();
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nominator_array' );
 		$this->assertTrue(array_key_exists($user_id_2, $nominators));
 		$exists = array_key_exists($user_id, $nominators);

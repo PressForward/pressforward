@@ -14,7 +14,6 @@ class AssetsProvider extends ServiceProvider {
 	 */
 	public function register( Container $container ) {
 		$this->container = $container;
-		// var_dump($this->container); die();
 		$register = $this->container->fetch(
 			'assets'
 		);
@@ -447,7 +446,6 @@ class AssetsProvider extends ServiceProvider {
 				'deps'      => array( 'pf' ),
 			)
 		);
-		// var_dump($assets); die();
 	}
 
 	public function check_hook_for_pressforward_string( $hook, $exclusions = array(), $inclusions = array(), $all = false ) {

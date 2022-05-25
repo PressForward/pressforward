@@ -313,8 +313,6 @@ class SubscribedFeeds implements HasActions, HasFilters {
 				),
 			)
 		);
-
-		// var_dump($query); die();
 	}
 
 	/**

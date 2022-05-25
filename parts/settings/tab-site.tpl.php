@@ -85,7 +85,6 @@ if ( class_exists( 'The_Alert_Box' ) ) { ?>
 				$alert_settings = pressforward( 'library.alertbox' )->settings_fields();
 				$alert_switch = $alert_settings['switch'];
 				$check = pressforward( 'library.alertbox' )->setting( $alert_switch, $alert_switch['default'] );
-				// var_dump($check);
 					$check = pressforward( 'library.alertbox' )->setting( $alert_switch, $alert_switch['default'] );
 				if ( 'true' == $check ) {
 					$mark = 'checked';

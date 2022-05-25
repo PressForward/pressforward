@@ -13,7 +13,6 @@ Domain Path: /languages
 */
 
 
-// var_dump('2<pre>');
 // Set up some constants
 define( 'PF_SLUG', 'pf' );
 define( 'PF_TITLE', 'PressForward' );

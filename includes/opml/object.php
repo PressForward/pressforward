@@ -57,7 +57,6 @@ class OPML_Object {
 			} else {
 				$feed_obj->folder[] = $folder;
 			}
-			// var_dump($feed_obj);
 			$this->feeds[ $feed_obj->id ] = $feed_obj;
 		}
 	}
@@ -94,7 +93,6 @@ class OPML_Object {
 		$entry['title'] = ( ! empty( $entry['title'] ) ? $entry['title'] : false);
 		$entry['text'] = ( ! empty( $entry['text'] ) ? $entry['text'] : false);
 		$entry = $this->assure_title_and_text( $entry );
-		// var_dump($entry); die();
 		$folder->title = $entry['title'];
 		$folder->text = $entry['text'];
 		// pf_log('Making folder with title of '.$folder->title);
@@ -153,15 +151,8 @@ class OPML_Object {
 			$folder = $folder['slug'];
 		}
 		foreach ( $this->feeds as $feed ) {
-			// var_dump($feed);
 			if ( ! empty( $feed->folder ) ) {
 				foreach ( $feed->folder as $feed_folder ) {
-					// var_dump('folder: '.$folder);
-					// var_dump($feed_folder);
-					if ( ! is_object( $feed_folder ) ) {
-						var_dump( 'Not an object' );
-						var_dump( $feed_folder );
-					}
 					if ( $feed_folder->slug == $this->slugify( $folder ) ) {
 						$folder_a[] = $feed;
 					}
@@ -176,7 +167,6 @@ class OPML_Object {
 	public function get_feeds_without_folder() {
 		$folder_a = array();
 		foreach ( $this->feeds as $feed ) {
-			// var_dump($feed);
 			if ( empty( $feed->folder ) ) {
 				$folder_a[] = $feed;
 			}
@@ -245,7 +235,6 @@ class OPML_Object {
 			$clean;
 	}
 	public function slugify( $string, $case = true, $strict = false, $spaces = false ) {
-		// var_dump($string);
 		if ( is_array( $string ) ) {
 			$string = $string[0];
 		}
@@ -273,7 +262,6 @@ class OPML_Object {
 		$stringSlug = htmlspecialchars( $stringSlug, null, null, false );
 
 		if ( empty( $stringSlug ) ) {
-			// var_dump('probs: ' .$string); die();
 			return 'empty';
 		}
 

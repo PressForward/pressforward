@@ -155,7 +155,6 @@ class OPML_reader {
 			curl_close( $ch );
 			$file = simplexml_load_string( $data );
 		}
-		// echo '<pre>'; var_dump($data); #die();
 		if ( empty( $file ) ) {
 			pf_log( 'Received an empty file.' );
 			return false;
@@ -174,7 +173,6 @@ class OPML_reader {
 		// pf_log('OPML Reader process invoked: get_OPML_data');
 		$opml_data = $this->open_OPML( $url );
 
-		// var_dump($opml_data); die();
 		if ( ! $opml_data || empty( $opml_data ) ) {
 			// pf_log('Could not open the OPML file.');
 			// pf_log('Resulted in:');
@@ -198,7 +196,6 @@ class OPML_reader {
 		*/
 		foreach ( $opml_data->body->outline as $folder ) {
 			// pf_log($c++);
-			// var_dump($folder); die();
 			// Check if there are no folders.
 			if ( isset( $folder['xmlUrl'] ) ) {
 				// pf_log('Not a folder.');
@@ -216,9 +213,7 @@ class OPML_reader {
 				$b[] = $outline['xmlUrl'];
 			}
 		}
-		// var_dump($a);
-		// var_dump($b);
-		// die();
+
 		if ( $is_array ) {
 			pf_log( 'Is array:' );
 			pf_log( $b );

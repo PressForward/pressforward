@@ -1,8 +1,6 @@
 <?php
 namespace PressForward;
 
-// var_dump('2<pre>');
-// var_dump(__NAMESPACE__); //die();
 $obj = new Loader();
 // $obj->test();
 use Intraxia\Jaxion\Core\Application as JaxionCore;

@@ -26,7 +26,6 @@ class PFTemplater {
 		if ( isset( $vars['user_ID'] ) && ( true === $vars['user_ID'] ) ) {
 			$vars['user_ID'] = $this->users->get_current_user_id();
 		}
-		// if (WP_DEBUG){ var_dump( $view_file ); }
 		if ( ! file_exists( $view_file ) ) {
 			if ( PF_DEBUG ) {
 				pf_log( $view_file, true, false, true ); }
@@ -106,12 +105,9 @@ class PFTemplater {
 	}
 
 	public function settings_tab_group( $current, $page_slug = 'settings' ) {
-		// var_dump($page_slug); die();
 		$tabs = $this->permitted_tabs( $page_slug );
-		// var_dump($page_slug); die();
 		ob_start();
 		foreach ( $tabs as $tab => $tab_meta ) {
-			// var_dump( 'pf_do_'.$page_slug.'_tab_'.$tab ); //die();
 			if ( current_user_can( $tab_meta['cap'] ) ) {
 				if ( $current == $tab ) {
 					$class = 'pftab tab active';
@@ -123,12 +119,8 @@ class PFTemplater {
 					<?php
 						// like: pf_do_pf-add-feeds_tab_primary_feed_type
 					if ( has_action( 'pf_do_' . $page_slug . '_tab_' . $tab ) || ! array_key_exists( $tab, $tabs ) ) {
-						// var_dump('pf_do_'.$page_slug.'_tab_'.$tab); die();
-						// var_dump( 'pf_do_'.$page_slug.'_tab_'.$tab );
 						do_action( 'pf_do_' . $page_slug . '_tab_' . $tab );
 					} else {
-						// var_dump( 'pf_do_'.$page_slug.'_tab_'.$tab );
-						// var_dump('pf_do_'.$page_slug.'_tab_'.$tab); //die();
 						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo $this->the_settings_tab( $tab, $page_slug );
 					}
@@ -151,9 +143,6 @@ class PFTemplater {
 		$vars = array(
 			'current' => $tab,
 		);
-		// var_dump('<pre>');
-		// var_dump(debug_backtrace());
-		// var_dump($page_slug.' - '.$tab); die();
 		return $this->get_view( array( $page_slug, 'tab-' . $tab ), $vars );
 	}
 
@@ -432,7 +421,6 @@ class PFTemplater {
 		}
 		if ( $format === 'nomination' ) {
 			// $item = array_merge($metadata, $item);
-			// var_dump($item);
 			echo '<article class="feed-item entry nom-container ' . esc_attr( $archived_status_string ) . ' ' . esc_attr( get_pf_nom_class_tags( array( $metadata['submitters'], $metadata['nom_id'], $metadata['item_author'], $metadata['item_tags'], $metadata['item_id'] ) ) ) . ' ' . esc_attr( $readClass ) . '" id="' . esc_attr( $metadata['nom_id'] ) . '" style="' . esc_attr( $dependent_style ) . '" tabindex="' . esc_attr( $c ) . '" pf-post-id="' . esc_attr( $metadata['nom_id'] ) . '" pf-item-post-id="' . esc_attr( $id_for_comments ) . '" pf-feed-item-id="' . esc_attr( $metadata['item_id'] ) . '" pf-schema="read" pf-schema-class="article-read">';
 			?>
 			 <a style="display:none;" name="modal-<?php echo esc_attr( $metadata['item_id'] ); ?>"></a>
@@ -825,7 +813,6 @@ class PFTemplater {
 							echo '<a role="button" class="btn btn-small meta_form_modal-button" data-toggle="modal" href="#meta_form_modal_' . esc_attr( $item['post_id'] ) . '" data-post-id="' . esc_attr( $item['post_id'] ) . '" id="meta_form_modal_expander-' . esc_attr( $item['post_id'] ) . '" data-original-title="' . esc_attr__( 'Edit Metadata', 'pf' ) . '"><i class="icon-meta-form"></i></a>';
 						}
 					} else {
-						// var_dump(pf_get_relationship('nominate', $id_for_comments, $user_id));
 						if ( ( 1 == pf_get_relationship_value( 'nominate', $id_for_comments, $user_id ) ) || ( 1 == pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ) {
 							echo '<button class="btn btn-small nominate-now btn-success schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominated', 'pf' ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/pressforward-single-licon.png" /></button>';
 							// Add option here for admin-level users to send items direct to draft.

@@ -70,7 +70,6 @@ class PF_Module {
 					$feed_type = $this->feed_type;
 				}
 				add_action( 'pf_do_pf-add-feeds_tab_' . $feed_type, array( $this, 'add_to_feeder' ) );
-				// var_dump('mb: pf_do_pf-add-feeds_tab_'.$feed_type);
 				add_filter( 'pf_tabs_pf-add-feeds', array( $this, 'set_permitted_feeds_tabs' ) );
 			}
 			add_filter( 'dash_widget_bar', array( $this, 'add_dash_widgets_filter' ) );

@@ -6,7 +6,6 @@ use PressForward\Interfaces\SystemUsers as SystemUsers;
 class PFtoWPUsers implements SystemUsers {
 
 	function __construct( Metas $metas ) {
-		// var_dump('a');
 		$this->metas = $metas;
 	}
 

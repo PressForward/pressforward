@@ -110,7 +110,6 @@ function get_the_nominator_ids($id = false) {
 }
 
 function get_the_nominators() {
-	// var_dump(get_the_nominators());
 	$nominators = get_the_nominator_ids();
 	if ( ! empty( $nominators ) && ! is_array( $nominators ) && is_string( $nominators ) ) {
 		$nomers = explode( ',', $nominators );
@@ -213,7 +212,6 @@ function get_pf_feed_list( $status = 'publish', $page = 1, $order = 'ASC' ) {
 				'post_type'		=> pressforward( 'schema.feeds' )->post_type,
 			);
 			$child_query = get_children( $child_args, OBJECT );
-			// var_dump($child_query); die();
 		  	if ( ! empty( $child_query ) ) {
 				$return_string .= '<ul class="sub-feedlist">';
 				foreach ( $child_query as $post ) {

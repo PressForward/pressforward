@@ -41,7 +41,6 @@ function create_initial_pf_rest_post_routes() {
 		if ( ! is_subclass_of( $controller, 'WP_REST_Controller' ) ) {
 			continue;
 		}
-		// var_dump($class);
 		$controller->register_routes();
 	}
 	// die();

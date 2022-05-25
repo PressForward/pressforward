@@ -189,7 +189,6 @@ class PFOpenGraph implements Iterator {
 		}
 
 		// $tags = $doc->getElementsByTagName('keywords');
-		// var_dump($page->_values); die();
 		// Based on modifications at https://github.com/bashofmann/opengraph/blob/master/src/OpenGraph/OpenGraph.php
 		if ( ! isset( $page->_values['title'] ) ) {
 			$titles = $doc->getElementsByTagName( 'title' );

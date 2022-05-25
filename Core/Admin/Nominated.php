@@ -176,14 +176,12 @@ class Nominated implements HasActions {
 								),
 							)
 						);
-						// var_dump('<pre>'); var_dump($parents_in_folder); die();
 						$nom_args['post_parent__in'] = $parents_in_folder->posts;
 					}
 
 					add_filter( 'posts_request', 'prep_archives_query' );
 					$nom_query = new WP_Query( $nom_args );
 					remove_filter( 'posts_request', 'prep_archives_query' );
-					// var_dump($nom_query);
 					$count      = 0;
 					$countQ     = $nom_query->post_count;
 					$countQT    = $nom_query->found_posts;
@@ -412,7 +410,6 @@ class Nominated implements HasActions {
 		$nom_authors      = $this->metas->get_post_pf_meta( $post->ID, 'item_author', true );
 		$item_link        = $this->metas->get_post_pf_meta( $post->ID, 'item_link', true );
 		$date_nominated   = $this->metas->get_post_pf_meta( $post->ID, 'date_nominated', true );
-		// var_dump($date_nominated); die();
 		$user          = get_user_by( 'id', $submitted_by );
 		$item_tags     = $this->metas->get_post_pf_meta( $post->ID, 'item_tags', true );
 		$source_repeat = $this->metas->get_post_pf_meta( $post->ID, 'source_repeat', true );

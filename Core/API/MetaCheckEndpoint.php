@@ -82,7 +82,6 @@ class MetaCheckEndpoint implements HasActions {
                   ),
 				),
 				'permission_callback' => function () {
-					//var_dump($_GET);
 					$return_var = false;
 					try {
 						$the_key = isset( $_GET['k'] ) ? sanitize_text_field( wp_unslash( $_GET['k'] ) ) : '';
@@ -176,7 +175,6 @@ class MetaCheckEndpoint implements HasActions {
                     $metas->keywords = $trim_keywords;
                 }
             }
-                // var_dump($og); die();
                 // $response_body = wp_remote_retrieve_body( $response );
                 // $response_dom = pf_str_get_html( $response_body );
             if ( isset( $og->url ) ) {

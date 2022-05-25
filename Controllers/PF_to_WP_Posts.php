@@ -13,7 +13,6 @@ class PF_to_WP_Posts implements Items {
 		}
 		if ( ( false !== $item_id ) && in_array( $post['post_type'], array( 'post', 'pf_feed_item', 'nomination' ) ) ) {
 			$check = $this->check_not_existing( $item_id, $post['post_type'] );
-			// var_dump($post, $item_id, $check); die();
 			if ( true !== $check ) {
 				return $check;
 			}
@@ -85,19 +84,16 @@ class PF_to_WP_Posts implements Items {
 			),
 		);
 
-		// var_dump($args);
 		// The Query
 		$query = new \WP_Query( $args );
 
 		if ( ! $query->have_posts() ) {
 
-			// var_dump($query); die();
 			return true;
 		} else {
 			while ( $query->have_posts() ) {
 				$query->the_post();
 				$id = get_the_ID();
-				// var_dump($id); die();
 				wp_reset_postdata();
 				return $id;
 			}

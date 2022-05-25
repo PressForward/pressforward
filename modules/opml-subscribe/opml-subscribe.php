@@ -280,8 +280,6 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 
 	public static function pf_opml_subscriber_validate( $input ) {
-		// var_dump($input); die();
-		// var_dump(get_class()); die();
 		if ( ! empty( $input['opml_single'] ) ) {
 
 			if ( ! (is_array( $input['opml_single'] )) ) {
@@ -310,7 +308,6 @@ class PF_OPML_Subscribe extends PF_Module {
 					}
 					add_settings_error( 'add_pf_feeds', 'pf_feeds_validation_response', __( 'You have submitted an OPML feed.', 'pf' ) . $subscribe_string, 'updated' );
 				} else {
-					// var_dump($input); die();
 					// pressforward('schema.feeds')->update_url($input['opml_single']);
 				}
 			} else {
@@ -336,9 +333,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 
 	private function make_a_feed_object_from_post( $post_id = false ) {
-		// var_dump(pressforward('controller.metas')->get_post_pf_meta(get_the_ID()));
 		$meta = pressforward( 'controller.metas' )->get_all_metas( $post_id );
-		// var_dump($meta);
 		if ( ! empty( $meta['feedUrl'][0] ) ) {
 			if ( 'http' != substr( $meta['feedUrl'][0], 0, 4 ) ) {
 				$meta['feedUrl'][0] = 'http://' . $meta['feedUrl'][0];
@@ -347,7 +342,6 @@ class PF_OPML_Subscribe extends PF_Module {
 			return '';
 		}
 		$url_parts = parse_url( $meta['feedUrl'][0] );
-		// var_dump($url_parts);
 		$entry = array(
 				'title'		=> get_the_title( $post_id ),
 				'text'		=> get_the_content( $post_id ),
@@ -363,7 +357,6 @@ class PF_OPML_Subscribe extends PF_Module {
 		$terms = wp_get_post_terms( $post_id, pressforward( 'schema.feeds' )->tag_taxonomy );
 		$folders = array();
 		foreach ( $terms as $term ) {
-			// var_dump($term->name);
 			$folders[] = $this->master_opml_obj->get_folder( $term->name );
 		}
 		return $folders;
@@ -398,12 +391,9 @@ class PF_OPML_Subscribe extends PF_Module {
 		if ( $feed_query->have_posts() ) {
 			while ( $feed_query->have_posts() ) {
 				$feed_query->the_post();
-				// var_dump(get_the_ID());
 				$feed_obj = $this->make_a_feed_object_from_post( get_the_ID() );
-				// var_dump($feed_obj);
 				// Use OPML internals to slugify attached terms, retrieve them from the OPML folder object, deliver them into feed.
 				$parent = $this->make_parent_folder_from_post( get_the_ID() );
-				// var_dump($parent);
 				if ( empty( $parent ) ) {
 					$parent = false;
 				}
@@ -412,7 +402,6 @@ class PF_OPML_Subscribe extends PF_Module {
 		} else {
 			// no posts found
 		}
-		// var_dump($this->master_opml_obj); die();
 		header( 'Content-Type: text/x-opml' );
 		$opml = new OPML_Maker( $this->master_opml_obj );
 		// phpcs:ignore WordPress.Security.EscapeOutput

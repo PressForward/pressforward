@@ -64,7 +64,6 @@ class Menu implements HasActions, HasFilters {
 
 	function hook_default_scripts() {
 		if ( false != pressforward( 'controller.template_factory' )->is_a_pf_page() ) {
-			// var_dump('heartbeat'); die();
 			wp_enqueue_script( 'heartbeat' );
 			wp_enqueue_script( 'jquery-ui-progressbar' );
 			// wp_enqueue_script( PF_SLUG . '-heartbeat', PF_URL . 'assets/js/pf-heartbeat.js', array( 'heartbeat', 'jquery-ui-progressbar', 'jquery' ) );
@@ -198,7 +197,6 @@ class Menu implements HasActions, HasFilters {
 				} else {
 					$limit = false;
 				}
-				// var_dump($limit);
 				$archive_feed_args = array(
 					'start'          => $count + 1,
 					'posts_per_page' => false,
@@ -342,7 +340,6 @@ class Menu implements HasActions, HasFilters {
 			$user_ID = get_current_user_id();
 			if ( isset( $_POST['pf_user_scroll_switch'] ) ) {
 				$pf_user_scroll_switch = sanitize_text_field( wp_unslash( $_POST['pf_user_scroll_switch'] ) );
-				// var_dump($pf_user_scroll_switch); die();
 				update_user_option( $user_ID, 'pf_user_scroll_switch', $pf_user_scroll_switch );
 			} else {
 				update_user_option( $user_ID, 'pf_user_scroll_switch', 'false' );
@@ -350,7 +347,6 @@ class Menu implements HasActions, HasFilters {
 
 			if ( isset( $_POST['pf_user_menu_set'] ) ) {
 				$pf_user_menu_set = sanitize_text_field( wp_unslash( $_POST['pf_user_menu_set'] ) );
-				// var_dump($pf_user_scroll_switch); die();
 				update_user_option( $user_ID, 'pf_user_menu_set', $pf_user_menu_set );
 			} else {
 				update_user_option( $user_ID, 'pf_user_menu_set', 'false' );
@@ -358,7 +354,6 @@ class Menu implements HasActions, HasFilters {
 
 			if ( isset( $_POST['pf_pagefull'] ) ) {
 				$pf_pagefull = sanitize_text_field( wp_unslash( $_POST['pf_pagefull'] ) );
-				// var_dump($pf_user_scroll_switch); die();
 				update_user_option( $user_ID, 'pf_pagefull', $pf_pagefull );
 			} else {
 				update_user_option( $user_ID, 'pf_pagefull', 'false' );
@@ -427,10 +422,8 @@ class Menu implements HasActions, HasFilters {
 						}
 						// assign_pf_to_standard_roles();
 						$role = get_role( pf_get_role_by_capability( $enabled ) );
-						// var_dump($role); die();
 						$role->add_cap( $feed_caps['edit_posts'] );
 						$role->add_cap( $feed_item_caps['edit_posts'] );
-						// var_dump($role); die();
 					}
 				}
 			}
@@ -499,9 +492,7 @@ class Menu implements HasActions, HasFilters {
 			update_option( PF_SLUG . '_draft_post_status', $pf_draft_post_status );
 
 			if ( class_exists( 'The_Alert_Box' ) ) {
-				// var_dump($_POST);
 				if ( empty( $_POST[ pressforward( 'library.alertbox' )->option_name() ] ) ) {
-					// var_dump('<pre>'); var_dump($_POST); var_dump('</pre>');
 					update_option( pressforward( 'library.alertbox' )->option_name(), 'false' );
 				} else {
 					update_option( pressforward( 'library.alertbox' )->option_name(), sanitize_text_field( wp_unslash( $_POST[ pressforward( 'library.alertbox' )->option_name() ] ) ) );
@@ -550,7 +541,6 @@ class Menu implements HasActions, HasFilters {
 		global $pagenow;
 		if ( is_admin() && 'edit.php' === $pagenow && isset( $_GET['post_type'] ) && 'pf_feed' === sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) ) {
 			// $statuses = $query->query['post_status'];
-			// var_dump('<pre>'); var_dump( $query ); die();
 			// $query->query['post_status'] = '';
 			// $query->query_vars['post_status'] = '';
 		}

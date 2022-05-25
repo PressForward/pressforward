@@ -358,7 +358,6 @@ EOT;
 		} else {
 			$result = update_option( 'pf_metrics_config', $metrics_settings );
 		}
-		// var_dump($user_id);
 		$response    = array(
 			'what'   => 'pressforward',
 			'action' => 'pf_metrics_quick_submit',
@@ -398,7 +397,6 @@ EOT;
 		$userObj  = wp_get_current_user();
 		$user_id  = $userObj->ID;
 		$returned = $this->pf_switch_display_setting( $user_id, $read_state );
-		// var_dump($user_id);
 		$response    = array(
 			'what'   => 'pressforward',
 			'action' => 'pf_ajax_retain_display_setting',
@@ -428,7 +426,6 @@ EOT;
 
 		$user_id  = pressforward( 'controller.template_factory' )->user_id();
 		$returned = $this->pf_switch_user_option( $user_id, $setting_name, $setting );
-		// var_dump($user_id);
 		$response    = array(
 			'what'         => 'pressforward',
 			'action'       => 'pf_ajax_user_setting',

@@ -89,9 +89,7 @@ function pf_shortcut_link() {
 
 function start_pf_nom_this(){
 	global $pagenow;
-	//var_dump('2test2<pre>',$pagenow); die();
 	if( 'edit.php' == $pagenow && array_key_exists( 'pf-nominate-this', $_GET ) && 2 == $_GET['pf-nominate-this']) {
-		//var_dump(dirname(__FILE__),$wp_query->get('pf-nominate-this'),file_exists(dirname(__FILE__).'/nomthis/nominate-this.php'),(dirname(__FILE__).'/nomthis/nominate-this.php')); die();
 		//$someVar = $wp_query->get('some-var');
 		include(dirname(__FILE__).'/nomthis/nominate-this.php');
 		die();
@@ -866,7 +864,6 @@ function pf_forward_unto_source() {
 		}
 		$wait = get_option( 'pf_link_to_source', 0 );
 		$post_check = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'pf_forward_to_origin', true );
-		// var_dump($post_check); die();
 		if ( isset( $_GET['noforward'] ) && true == $_GET['noforward'] ) {
 
 		} else {
@@ -955,22 +952,12 @@ function pf_get_drafted_items( $post_type = 'pf_feed_item' ) {
 
 function filter_for_pf_archives_only( $sql ) {
 	global $wpdb;
-	// if (isset($_GET['pf-see']) && ('archive-only' == $_GET['pf-see'])){
-		$relate = pressforward( 'schema.relationships' );
-		$rt = $relate->table_name;
-		$user_id = get_current_user_id();
-		$read_id = pf_get_relationship_type_id( 'archive' );
 
-	/**		$sql .= " AND {$wpdb->posts}.ID
-				IN (
-					SELECT item_id
-					FROM {$rt}
-					WHERE {$rt}.user_id = {$user_id}
-					AND {$rt}.relationship_type = {$read_id}
-					AND {$rt}.value = 1
-				) ";
-	}
-*/	// var_dump($sql);
+	$relate = pressforward( 'schema.relationships' );
+	$rt = $relate->table_name;
+	$user_id = get_current_user_id();
+	$read_id = pf_get_relationship_type_id( 'archive' );
+
 	return $sql;
 
 }
@@ -1016,7 +1003,7 @@ function prep_archives_query( $q ) {
 	} else {
 		$offset = 0;
 	}
-		// var_dump('see'); die();
+
 		$relate = pressforward( 'schema.relationships' );
 		$rt = $relate->table_name;
 
@@ -1041,7 +1028,6 @@ function prep_archives_query( $q ) {
 		$pagefull = 20;
 		$user_id = get_current_user_id();
 		$read_id = pf_get_relationship_type_id( 'read' );
-		// var_dump($user_id); die();
 		$q = $wpdb->prepare("
 				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
@@ -1117,11 +1103,8 @@ function prep_archives_query( $q ) {
 				ORDER BY wpm1.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$offset}
 			 ", 'nomination', 'nomination');
-		 // var_dump($q);
 	}// End if().
-	// $archivalposts = $wpdb->get_results($dquerystr, OBJECT);
-	// return $archivalposts;
-	// var_dump('<pre>'); var_dump($q); die();
+
 	return $q;
 }
 
@@ -1323,7 +1306,6 @@ function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
  */
 function pf_exclude_queued_items_from_queries( $query ) {
 	$queued = get_option( 'pf_delete_queue' );
-	// var_dump($queued); die();
 	if ( ! $queued || ! is_array( $queued ) ) {
 		return $query;
 	}
@@ -1338,13 +1320,11 @@ function pf_exclude_queued_items_from_queries( $query ) {
 		$post__not_in = array_merge( $post__not_in, $queued );
 		$query->set( 'post__not_in', $post__not_in );
 	}
-
-	// pf_log($query);// die();
 }
+
 // add_action( 'pre_get_posts', 'pf_exclude_queued_items_from_queries', 999 );
 // Filter post results instead of manipulating the query.
 function pf_exclude_queued_items_from_query_results( $posts, $query ) {
-	// var_dump($posts[0]); die();
 	$type = $query->get( 'post_type' );
 	$post_types = array(
 		pressforward('schema.feeds')->post_type,
@@ -1353,7 +1333,6 @@ function pf_exclude_queued_items_from_query_results( $posts, $query ) {
 	);
 	if ( ( empty( $type ) ) || ( in_array( $type, $post_types ) ) ) {
 		$queued = get_option( 'pf_delete_queue' );
-		// var_dump($queued); die();
 		if ( ! $queued || ! is_array( $queued ) ) {
 			return $posts;
 		}

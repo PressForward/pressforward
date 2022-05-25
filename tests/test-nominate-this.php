@@ -54,7 +54,6 @@ class PF_Tests_Nominate_This_Process extends PF_UnitTestCase {
 		$this->assertFalse( ($feed_item_id === $nominate_id) );
 		$this->assertGreaterThan(0, $nominate_id);
 		$nomination_post = get_post( $nominate_id );
-		//var_dump($nomination_post); die();
 		$this->assertEquals( $nomination_post->post_title, $title );
 	}
 
@@ -160,7 +159,6 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$post = $this->a_feed_item($title, $time);
 		$_POST = array_merge($_POST, $post);
 		$_POST['publish'] = 'nominate';
-		//var_dump($_POST); die();
 		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 		$feed_id = $this->factory->feed->create();
 		$post['post_parent'] = $feed_id;
@@ -170,7 +168,6 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$feed_item_id = $this->factory->feed_item->create( $post );
 		$this->assertGreaterThan(0, $feed_item_id);
 		$is_a_type_check =  pressforward('utility.forward_tools')->is_a_pf_type( $item_id, pressforward( 'schema.feed_item' )->post_type );
-		//var_dump(get_post_meta($feed_item_id)); die();
 		$this->assertEquals($is_a_type_check, $feed_item_id);
 
 		$nomination_id = pressforward('bookmarklet.core')->nominate_it();
@@ -228,7 +225,6 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$post = $this->a_feed_item($title, $time);
 		$_POST = array_merge($_POST, $post);
 		$_POST['publish'] = 'nominate';
-		//var_dump($_POST); die();
 		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 		$feed_id = $this->factory->feed->create();
 		$post['post_parent'] = $feed_id;
@@ -238,7 +234,6 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$feed_item_id = $this->factory->feed_item->create( $post );
 		$this->assertGreaterThan(0, $feed_item_id);
 		$is_a_type_check =  pressforward('utility.forward_tools')->is_a_pf_type( $item_id, pressforward( 'schema.feed_item' )->post_type );
-		//var_dump(get_post_meta($feed_item_id)); die();
 		$this->assertEquals($is_a_type_check, $feed_item_id);
 
 		$nomination_id = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $feed_item_id );
