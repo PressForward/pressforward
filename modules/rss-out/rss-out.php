@@ -74,7 +74,9 @@ class PF_RSS_Out extends PF_Module {
 				<freebase:name>Aggregator</freebase:name>
 				<freebase:mid>/m/075x5v</freebase:mid>
 				<freebase:id>/en/aggregator</freebase:id>
-				<?php $admin_email = get_bloginfo( 'admin_email' );
+				<?php
+
+				$admin_email = get_bloginfo( 'admin_email' );
 				$userObj = get_user_by( 'email',$admin_email );
 				if ( ! $userObj ) {
 					$firstAdmin = get_users( array( 'role' => 'administrator', 'number' => 1 ) );
@@ -83,6 +85,7 @@ class PF_RSS_Out extends PF_Module {
 					}
 					$userObj = get_user_by( 'email',$admin_email );
 				}
+				?>
 
 				<managingEditor><?php bloginfo( 'admin_email' ); ?> (<?php echo esc_html( $userObj->display_name ); ?>)</managingEditor>
 				<webMaster><?php bloginfo( 'admin_email' ); ?> (<?php echo esc_html( $userObj->display_name ); ?>)</webMaster>
