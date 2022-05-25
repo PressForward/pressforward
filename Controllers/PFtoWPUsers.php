@@ -131,6 +131,12 @@ class PFtoWPUsers implements SystemUsers {
 				}
 			}
 		}
+
+		// If we get multiple roles back, grab the first one.
+		if ( is_array( $role_slug ) ) {
+			$role_slug = $role_slug[0];
+		}
+
 		// Even if we use $pf_use_advanced_user_roles, if it doesn't find any actual lowest option (like it is the case with contributor currently), it should still go to the default ones below
 		$role_slug = strtolower( $role_slug );
 		switch ( $role_slug ) {
