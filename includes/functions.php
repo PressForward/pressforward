@@ -117,8 +117,8 @@ function pf_get_shortcut_link() {
 	$version = 4;
 
 	$link = 'javascript:var d=document,w=window,e=w.getSelection,k=d.getSelection,x=d.selection,' .
-		's=(e?e():(k)?k():(x?x.createRange().text:0)),f=' . $url . ',l=d.location,e=encodeURIComponent,' .
-		'u=f+"&u="+e(l.href)+"&t="+e(d.title)+"&s="+e(s)+"&v=' . $version . '";' .
+		's=(e?e():(k)?k():(x?x.createRange().text:0)),f=' . esc_url_raw( $url ) . ',l=d.location,e=encodeURIComponent,' .
+		'u=f+"&u="+e(l.href)+"&t="+e(d.title)+"&s="+e(s)+"&v=' . esc_js( $version ) . '";' .
 		'a=function(){if(!w.open(u,"t","toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=620"))l.href=u;};' .
 		'if(/Firefox/.test(navigator.userAgent))setTimeout(a,0);else a();void(0)';
 
@@ -150,9 +150,9 @@ function pf_nomthis_bookmarklet() {
 				s=(e?e():(k)?k():(x?x.createRange().text:0)),
 				l=d.location,
 				e=encodeURIComponent,
-				ku='".bin2hex(pressforward('controller.jwt')->get_a_user_public_key())."',
-				ki='".get_user_meta($user_id, 'pf_jwt_private_key', true)."',
-				p='" . rest_url().pressforward('api.nominatethis')->endpoint_for_nominate_this_script . "?k='+ku,
+				ku='" . esc_js( bin2hex(pressforward('controller.jwt')->get_a_user_public_key()) ) ."',
+				ki='" . esc_js( get_user_meta($user_id, 'pf_jwt_private_key', true) ) ."',
+				p='" . esc_js( rest_url().pressforward('api.nominatethis')->endpoint_for_nominate_this_script ) . "?k='+ku,
 				pe=document.createElement('script'),
 				a=function(){pe.src=p;document.getElementsByTagName('head')[0].appendChild(pe);};
 				if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0); else a();

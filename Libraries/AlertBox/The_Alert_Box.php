@@ -408,6 +408,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			echo ' ';
 			edit_post_link( __( 'Edit', 'pf' ) );
 			echo ' ';
+
 			if ( current_user_can( 'edit_others_posts' ) ) {
 			  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo '| <a href="#" class="alert-dismisser" title="' . esc_attr__( 'Dismiss', 'pf' ) . '" data-alert-post-id="' . esc_attr( get_the_ID() ) . '" data-alert-dismiss-check="' . esc_attr( self::alert_label( 'dismiss_one_check' ) . ' ' . get_the_title() . '?' ) . '" ' . self::alert_box_type_data( get_post_type( get_the_ID() ) ) . ' >' . esc_html__( 'Dismiss', 'pf' ) . '</a>';
@@ -426,7 +427,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			} elseif ( is_bool( $v ) ) {
 				return '';
 			} else {
-				return 'alert-types="' . implode( ',',$v->query['post_type'] ) . '"';
+				return 'alert-types="' . esc_attr( implode( ',', $v->query['post_type'] ) ). '"';
 			}
 		}
 

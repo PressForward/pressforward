@@ -71,15 +71,12 @@ if ( 'as_paragraph' == $context ) {
 									you nominate or draft it in a post on your site.', 'pf');
 						?>
 						</p>
+
 						<p>
-						<?php printf(
-							// phpcs:ignore WordPress.Security.EscapeOutput
-							__( 'Drag the button up to your bookmark bar or <a href="%1$s" class="%1$s">click here to find out more</a>.', 'pf' ),
-							esc_url( 'admin.php?page=pf-tools' ),
-							esc_attr( 'remove-nom-this-prompt' )
-						);
-						?>
+							<?php esc_html_e( 'Drag the button up to your bookmark bar.', 'pf' ); ?>
+							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pf-tools' ) ); ?>" class="remove-nom-this-prompt"><?php esc_html_e( 'Click here to find out more.', 'pf' ); ?></a>
 						</p>
+
 						<p class="pressthis"><a class="button" onclick="return false;" oncontextmenu="if(window.navigator.userAgent.indexOf('WebKit')!=-1||window.navigator.userAgent.indexOf('MSIE')!=-1)jQuery('.pressthis-code').show().find('textarea').focus().select();return false;" href="<?php echo esc_js( htmlspecialchars( pf_get_shortcut_link() ) ); ?>"><span><?php esc_html_e( 'Nominate This', 'pf' ); ?></span></a></p>
 
 					</div>

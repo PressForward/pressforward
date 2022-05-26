@@ -141,8 +141,7 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
 					return "'" . implode( "','", $sources ) . "'";
 				}
 				$url = wp_kses( urldecode( $url ), null );
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo 'new Array(' . get_images_from_uri( $url ) . ')';
+				echo 'new Array(' . esc_js( get_images_from_uri( $url ) ) . ')';
 			break;
 		}
 		die;
@@ -245,7 +244,7 @@ var photostorage = false;
 						$content = '<object width="400" height="225"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="http://www.vimeo.com/moogaloop.swf?clip_id=' . $video_id . '&amp;server=www.vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1" />	<embed src="http://www.vimeo.com/moogaloop.swf?clip_id=' . $video_id . '&amp;server=www.vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="400" height="225"></embed></object>';
 
 						if ( trim( $selection ) == '' ) {
-							$selection = '<p><a href="http://www.vimeo.com/' . $video_id . '?pg=embed&sec=' . $video_id . '">' . $title . '</a> on <a href="http://vimeo.com?pg=embed&sec=' . $video_id . '">Vimeo</a></p>'; }
+							$selection = '<p><a href="http://www.vimeo.com/' . $video_id . '?pg=embed&sec=' . $video_id . '">' . esc_html( $title ) . '</a> on <a href="http://vimeo.com?pg=embed&sec=' . $video_id . '">Vimeo</a></p>'; }
 					} elseif ( strpos( $selection, '<object' ) !== false ) {
 						$content = $selection;
 					}
@@ -473,12 +472,6 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 				$content .= pressforward( 'schema.feed_item' )->get_content_through_aggregator( $url );
 			}
 		}
-
-		if (WP_DEBUG){
-			$cache_errors = ob_get_contents();
-		} else {
-			$cache_errors = '';
-		}
 		ob_end_clean();
 
 		//$source_position = get_option( 'pf_source_statement_position', 'bottom' );
@@ -536,8 +529,6 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 <?php
 do_action( 'admin_footer' );
 do_action( 'admin_print_footer_scripts' );
-// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-echo '<pre>'.$cache_errors.'</pre>';
 ?>
 <script type="text/javascript">if(typeof wpOnload=='function')wpOnload();</script>
 </body>

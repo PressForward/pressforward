@@ -21,8 +21,7 @@ function get_the_source_title( $id = false ) {
 }
 
 function the_source_title() {
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo get_the_source_title();
+	echo esc_html( get_the_source_title() );
 }
 
 function get_the_original_post_date() {
@@ -31,8 +30,7 @@ function get_the_original_post_date() {
 }
 
 function the_original_post_date() {
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo get_the_original_post_date();
+	echo esc_html( get_the_original_post_date() );
 }
 
 function get_the_item_author( $id = false ) {
@@ -44,8 +42,7 @@ function get_the_item_author( $id = false ) {
 }
 
 function the_item_author() {
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo get_the_item_author();
+	echo esc_html( get_the_item_author() );
 }
 
 function get_the_item_link( $id = false ) {
@@ -57,8 +54,7 @@ function get_the_item_link( $id = false ) {
 }
 
 function the_item_link() {
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo get_the_item_link();
+	echo esc_url( get_the_item_link() );
 }
 
 function get_the_item_feat_image() {
@@ -67,8 +63,7 @@ function get_the_item_feat_image() {
 }
 
 function the_item_feat_image() {
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo get_the_item_feat_image();
+	echo esc_html( get_the_item_feat_image() );
 }
 
 function get_the_item_tags() {
@@ -77,8 +72,7 @@ function get_the_item_tags() {
 }
 
 function the_item_tags() {
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo get_the_item_tags();
+	echo esc_html( get_the_item_tags() );
 }
 
 function get_the_repeats() {
@@ -87,8 +81,7 @@ function get_the_repeats() {
 }
 
 function the_item_repeats() {
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo get_the_repeats();
+	echo esc_html( get_the_repeats() );
 }
 
 function get_the_nomination_count() {
@@ -97,8 +90,7 @@ function get_the_nomination_count() {
 }
 
 function the_nomination_count() {
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo get_the_item_tags();
+	echo esc_html( get_the_item_tags() );
 }
 
 function get_the_nominator_ids($id = false) {
