@@ -106,16 +106,18 @@ class PF_Comments extends PF_Module {
 		if ( $commentSet['modal_state'] == false ) {
 
 		?>
-			<div id="comment_modal_<?php echo esc_html( $commentSet['id'] ); ?>" class="modal fade comment-modal" tabindex="-1" role="dialog" aria-labelledby="comment_modal_<?php echo esc_attr( $commentSet['id'] ); ?>_label" aria-hidden="true">
-			  <div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-				<h3 id="comment_modal_<?php echo esc_attr( $commentSet['id'] ); ?>_label"><?php esc_html_e( 'Comments', 'pf' ); ?></h3>
-			  </div>
-			  <div class="modal-body">
-				<?php esc_html_e( 'Loading comments...', 'pf' ); ?>
-			  </div>
-			  <div class="modal-footer">
-				<button class="btn" data-dismiss="modal" aria-hidden="true"><?php esc_html_e( 'Close', 'pf' ); ?></button>
+			<div id="comment_modal_<?php echo esc_html( $commentSet['id'] ); ?>" class="modal fade comment-modal pfmodal" tabindex="-1" role="dialog" aria-labelledby="comment_modal_<?php echo esc_attr( $commentSet['id'] ); ?>_label" aria-hidden="true">
+			  <div class="modal-dialog">
+				  <div class="modal-header">
+					<button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">x</button>
+					<h3 id="comment_modal_<?php echo esc_attr( $commentSet['id'] ); ?>_label"><?php esc_html_e( 'Comments', 'pf' ); ?></h3>
+				  </div>
+				  <div class="modal-body">
+					<?php esc_html_e( 'Loading comments...', 'pf' ); ?>
+				  </div>
+				  <div class="modal-footer">
+					<button class="btn" data-bs-dismiss="modal" aria-hidden="true"><?php esc_html_e( 'Close', 'pf' ); ?></button>
+				  </div>
 			  </div>
 			</div>
 		<?php

@@ -173,7 +173,7 @@ function hide_non_modals() {
 function reviewModal() {
 	//Need to fix this to only trigger on the specific model, but not sure how yet.
 
-	jQuery('.pfmodal').on('shown.bs.modal', function (evt) {
+	jQuery('.comment-modal').on('shown.bs.modal', function (evt) {
 		//alert('Modal Triggered.');
 
 		var element = jQuery(this);
@@ -193,7 +193,7 @@ function reviewModal() {
 			},
 			function (comment_response) {
 
-				jQuery('#' + modalID + '.pfmodal .modal-comments').html(comment_response);
+				jQuery('#' + modalID + '.comment-modal .modal-body').html(comment_response);
 
 			});
 
