@@ -701,8 +701,7 @@ class Nominated implements HasActions {
 				echo esc_html( $anchor_text );
 				echo '</a>';
 			} else {
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo $variable;
+				echo esc_html( $variable );
 			}
 		}
 
