@@ -348,6 +348,7 @@ function pf_feed_object( $itemTitle = '', $sourceTitle = '', $itemDate = '', $it
 }
 
 function pressforward_create_feed_item_id( $url, $title ) {
+	$url = sanitize_url( $url );
 	$url = str_replace('http://', '', $url);
 	$url = str_replace('https://', '', $url);
 	$hash = md5( untrailingslashit(trim($url)) );
