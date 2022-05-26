@@ -30,18 +30,6 @@ class AdminBar implements HasActions, HasFilters {
 		$valid_capability = get_option( 'pf_menu_preferences_access', $this->user_interface->pf_get_defining_capability_by_role( 'administrator' ) );
 		$metrics_config   = get_option( 'pf_metrics_config', array() );
 		if ( ( current_user_can( $valid_capability ) ) && ( ! is_array( $metrics_config ) || WP_DEBUG || ! array_key_exists( 'checked', $metrics_config ) || 'yes' !== $metrics_config['checked'] ) ) {
-			$js_config   = "(function(){
-				jQuery( document ).ready(function() {
-					console.log('Attaching prompt');
-					jQuery.post(ajaxurl, {
-						action: 'pf_metrics_prompt',
-						data: 'true'
-					}, function(response) {
-						console.log(1, response);
-						jQuery('head').append(jQuery(response).find('response_data').text());
-					});
-				});
-			})()";
 			$alert_count = '!';
 			if ( WP_DEBUG && array_key_exists( 'checked', $metrics_config ) && 'yes' === $metrics_config['checked'] ) {
 				$alert = '';
