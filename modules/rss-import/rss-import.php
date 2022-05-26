@@ -174,7 +174,7 @@ class PF_RSS_Import extends PF_Module {
 				} else {
 					$item_link = $item->get_link();
 				}
-				$id = create_feed_item_id( $item_link, $item->get_title() ); // die();
+				$id = pressforward_create_feed_item_id( $item_link, $item->get_title() ); // die();
 				pf_log( 'Now on feed ID ' . $id . '.' );
 				// print_r($item_categories_string); die();
 				if ( empty( $check_date ) ) {

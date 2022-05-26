@@ -66,7 +66,7 @@ class Feed_Item extends BasicModel {
 	}
 
 	private function create_hash_id( $url, $title ) {
-		$hash = create_feed_item_id( $url, $title );
+		$hash = pressforward_create_feed_item_id( $url, $title );
 		return $hash;
 	}
 

@@ -159,7 +159,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$post = $this->a_feed_item($title, $time);
 		$_POST = array_merge($_POST, $post);
 		$_POST['publish'] = 'nominate';
-		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+		$item_id = pressforward_create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 		$feed_id = $this->factory->feed->create();
 		$post['post_parent'] = $feed_id;
 
@@ -225,7 +225,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$post = $this->a_feed_item($title, $time);
 		$_POST = array_merge($_POST, $post);
 		$_POST['publish'] = 'nominate';
-		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+		$item_id = pressforward_create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 		$feed_id = $this->factory->feed->create();
 		$post['post_parent'] = $feed_id;
 

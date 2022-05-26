@@ -131,7 +131,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'test_feed_item_nom_create_middle' ) );
 		wp_set_current_user( $user_id );
 		$time = time();
-		$item_id = create_feed_item_id('Test link','Test item1');
+		$item_id = pressforward_create_feed_item_id('Test link','Test item1');
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => 'Test item1',
@@ -166,7 +166,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'test_feed_item_nom_create_middle' ) );
 		wp_set_current_user( $user_id );
 		$time = time();
-		$item_id = create_feed_item_id('Test link','Test item1');
+		$item_id = pressforward_create_feed_item_id('Test link','Test item1');
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => 'Test item1',
@@ -195,7 +195,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$time = time();
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'feed_item_meta_increment' ) );
 		wp_set_current_user( $user_id );
-		$item_id = create_feed_item_id('Test link', 'Test item2');
+		$item_id = pressforward_create_feed_item_id('Test link', 'Test item2');
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => 'Test item2',
@@ -247,7 +247,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		wp_set_current_user( $user_id );
 		$title = 'Test item4';
 		$url = 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=3';
-		$item_id = create_feed_item_id($url,$title);
+		$item_id = pressforward_create_feed_item_id($url,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -309,7 +309,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		wp_set_current_user( $user_id );
 		$title = 'Test item5';
 		$url = 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=23';
-		$item_id = create_feed_item_id($url,$title);
+		$item_id = pressforward_create_feed_item_id($url,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -373,7 +373,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		wp_set_current_user( $user_id );
 		$title = 'Test item4';
 		$url = 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=3';
-		$item_id = create_feed_item_id($url,$title);
+		$item_id = pressforward_create_feed_item_id($url,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -491,7 +491,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 			'post_tags'	=> 'test'
 		);
 		$_POST = array_merge($_POST, $post);
-		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+		$item_id = pressforward_create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 		$nomination_id = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
 		$this->assertGreaterThan( 0,  $nomination_id);
 
@@ -548,7 +548,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$time = time();
 		$post = $this->a_feed_item($title, $time);
 		$_POST = array_merge($_POST, $post);
-		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+		$item_id = pressforward_create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 		$nomination_id = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
 		$this->assertGreaterThan( 0,  $nomination_id);
 
@@ -659,7 +659,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 			'post_tags'	=> 'test'
 		);
 		$_POST = array_merge($_POST, $post);
-		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+		$item_id = pressforward_create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 		$feed_id = $this->factory->feed->create();
 		$post['post_parent'] = $feed_id;
 
@@ -752,7 +752,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$time = time();
 		$link = 'http://aramzs.github.io/tools/humans/ux/2017/02/08/audience-behavior-jcarn.html?cb=20';
 		$title = 'Test item20';
-		$item_id = create_feed_item_id($link,$title);
+		$item_id = pressforward_create_feed_item_id($link,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -804,7 +804,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$time = time();
 		$link = 'http://aramzs.github.io/tools/humans/ux/2017/02/08/audience-behavior-jcarn.html?cb=29';
 		$title = 'Test item29';
-		$item_id = create_feed_item_id($link,$title);
+		$item_id = pressforward_create_feed_item_id($link,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -849,7 +849,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$time = time();
 		$link = 'https://pressforward.org/new-blog-series-profiling-pressforwards-pilot-partners/'; //'http://appleinsider.com/articles/17/12/05/honors-new-view-10-phone-brings-iphone-x-animoji-to-android?cb=29';
 		$title = 'Test item29';
-		$item_id = create_feed_item_id($link,$title);
+		$item_id = pressforward_create_feed_item_id($link,$title);
 		$feed_item_id = $this->factory->feed_item->create( array(
 			'post_parent' => $feed_id,
 			'item_title' => $title,
@@ -951,7 +951,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 			'post_tags'	=> 'test'
 		);
 		$_POST = array_merge($_POST, $post);
-		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+		$item_id = pressforward_create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 		$feed_id = $this->factory->feed->create();
 		$post['post_parent'] = $feed_id;
 
@@ -1023,7 +1023,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 			'post_tags'	=> 'test'
 		);
 		$_POST = array_merge($_POST, $post);
-		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+		$item_id = pressforward_create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 		$feed_id = $this->factory->feed->create();
 		$post['post_parent'] = $feed_id;
 
@@ -1095,7 +1095,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 			'post_tags'	=> 'test'
 		);
 		$_POST = array_merge($_POST, $post);
-		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+		$item_id = pressforward_create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 		$feed_id = $this->factory->feed->create();
 		$post['post_parent'] = $feed_id;
 
@@ -1158,7 +1158,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$time = time();
 		$post = $this->a_feed_item($title, $time);
 		$_POST = array_merge($_POST, $post);
-		$item_id = create_feed_item_id( $_POST['item_link'], $post['post_title'] );
+		$item_id = pressforward_create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 		$feed_id = $this->factory->feed->create();
 		$post['post_parent'] = $feed_id;
 

@@ -347,7 +347,7 @@ function pf_feed_object( $itemTitle = '', $sourceTitle = '', $itemDate = '', $it
 	return $itemArray;
 }
 
-function create_feed_item_id( $url, $title ) {
+function pressforward_create_feed_item_id( $url, $title ) {
 	$url = str_replace('http://', '', $url);
 	$url = str_replace('https://', '', $url);
 	$hash = md5( untrailingslashit(trim($url)) );
@@ -1258,7 +1258,7 @@ function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 				);
 
 				$id = wp_update_post( $wp_args );
-				pressforward( 'controller.metas' )->update_pf_meta( $id, 'item_id', create_feed_item_id( pressforward( 'controller.metas' )->get_post_pf_meta( $item->ID, 'item_link' ), $item->post_title ) );
+				pressforward( 'controller.metas' )->update_pf_meta( $id, 'item_id', pressforward_create_feed_item_id( pressforward( 'controller.metas' )->get_post_pf_meta( $item->ID, 'item_link' ), $item->post_title ) );
 			}
 
 		break; // $feed_item_post_type

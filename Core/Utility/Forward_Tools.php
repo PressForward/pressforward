@@ -439,7 +439,7 @@ class Forward_Tools {
 		$item_link = isset( $_POST['item_link'] ) ? sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) : '';
 
 		if ( ! $item_id ) {
-			$item_id = create_feed_item_id( $item_link, $post['post_title'] );
+			$item_id = pressforward_create_feed_item_id( $item_link, $post['post_title'] );
 			// $post['item_id'] = $item_id;
 		}
 
@@ -614,7 +614,7 @@ class Forward_Tools {
 		if ( ! $item_id ) {
 			$item_link = isset( $_POST['item_link'] ) ? sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) : '';
 
-			$item_id = create_feed_item_id( $item_link, $post['post_title'] );
+			$item_id = pressforward_create_feed_item_id( $item_link, $post['post_title'] );
 		}
 		$nomination_id = $this->bookmarklet_to_nomination( $item_id, $post );
 		pf_log( $nomination_id );
