@@ -1,0 +1,7 @@
+tests/
+composer.lock
+.git
+.svnignore
+package-lock.json
+phpcs.xml.dist
+vendor/
