@@ -113,16 +113,13 @@ function start_pf_nom_this(){
 function pf_get_shortcut_link() {
 	$url = wp_json_encode( admin_url( 'edit.php?pf-nominate-this=2' ) );
 
-	// In case of breaking changes, bump version.
-	$version = 4;
+	$version = 5;
 
-	$link = 'javascript:var d=document,w=window,e=w.getSelection,k=d.getSelection,x=d.selection,' .
-		's=(e?e():(k)?k():(x?x.createRange().text:0)),f=' . esc_url_raw( $url ) . ',l=d.location,e=encodeURIComponent,' .
-		'u=f+"&u="+e(l.href)+"&t="+e(d.title)+"&s="+e(s)+"&v=' . esc_js( $version ) . '";' .
-		'a=function(){if(!w.open(u,"t","toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=620"))l.href=u;};' .
-		'if(/Firefox/.test(navigator.userAgent))setTimeout(a,0);else a();void(0)';
-
-	$link = str_replace( array( "\r", "\n", "\t" ),  '', $link );
+	$link = sprintf(
+		'javascript:var d=document,w=window,e=w.getSelection,k=d.getSelection,x=d.selection,s=e?e():k?k():x?x.createRange().text:0,f="%s",l=d.location,u=f+"&u="+(e=encodeURIComponent)(l.href)+"&t="+e(d.title)+"&s="+e(s)+"&v=%s",a=function(){w.open(u,"t","toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=620")||(l.href=u)};a();',
+		esc_url_raw( $url ),
+		esc_js( $version )
+	);
 
 	return apply_filters( 'shortcut_link', $link );
 }

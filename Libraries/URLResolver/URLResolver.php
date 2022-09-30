@@ -513,7 +513,7 @@ class URLResolver {
 			$this->closeHTMLDOM();
 		}
 
-		$this->html_dom = pf_str_get_html( $html_content );
+		$this->html_dom = str_get_html( $html_content );
 		// $this->html_dom->load($html_content);
 		return $this->html_dom;
 	}
