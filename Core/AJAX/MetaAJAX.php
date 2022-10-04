@@ -69,7 +69,7 @@ EOT;
 		return $field;
 	}
 
-	public function meta_labels_modal_box( $item, $c = 0, $format ) {
+	public function meta_labels_modal_box( $item, $c = 0, $format = null ) {
 		if ( $format !== 'nomination' ) {
 			echo '<!-- meta_labels_modal_box: not nomination -->';
 

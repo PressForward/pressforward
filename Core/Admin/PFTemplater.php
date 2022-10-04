@@ -727,7 +727,7 @@ class PFTemplater {
 
 	}
 
-	public function form_of_actions_btns( $item, $c, $modal = false, $format = 'standard', $metadata = array(), $id_for_comments ) {
+	public function form_of_actions_btns( $item, $c, $modal = false, $format = 'standard', $metadata = array(), $id_for_comments = null ) {
 			$item_id = 0;
 			$user    = wp_get_current_user();
 			$user_id = $user->ID;

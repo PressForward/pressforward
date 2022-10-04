@@ -181,7 +181,7 @@ class PF_Advancement implements Advance_System, HasActions {
 	 *
 	 * @return object A standard WP_Query object.
 	 */
-	public function pf_get_posts_by_id_for_check( $post_type = false, $item_id, $ids_only = false ) {
+	public function pf_get_posts_by_id_for_check( $post_type = false, $item_id = null, $ids_only = false ) {
 		global $wpdb;
 		// If the item is less than 24 hours old on nomination, check the whole database.
 		// $theDate = getdate();

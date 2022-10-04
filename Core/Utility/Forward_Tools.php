@@ -404,7 +404,7 @@ class Forward_Tools {
 		}
 	}
 
-	public function nomination_to_last_step( $item_id = false, $nomination_id, $make_readable = true ) {
+	public function nomination_to_last_step( $item_id = false, $nomination_id = null, $make_readable = true ) {
 		$post_check = $this->is_a_pf_type( $item_id, 'post' );
 
 		// Assign user status as well here.
@@ -433,7 +433,7 @@ class Forward_Tools {
 		return $post_id;
 	}
 
-	public function bookmarklet_to_nomination( $item_id = false, $post ) {
+	public function bookmarklet_to_nomination( $item_id = false, $post = null ) {
 		$_POST = array_merge( $_POST, $post );
 
 		$item_link = isset( $_POST['item_link'] ) ? sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) : '';
@@ -610,7 +610,7 @@ class Forward_Tools {
 
 	}
 
-	public function bookmarklet_to_last_step( $item_id = false, $post ) {
+	public function bookmarklet_to_last_step( $item_id = false, $post = null ) {
 		if ( ! $item_id ) {
 			$item_link = isset( $_POST['item_link'] ) ? sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) : '';
 

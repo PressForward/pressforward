@@ -478,7 +478,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			}
 		}
 
-		public static function find_a_setting( $args, $default = array(), $settings ) {
+		public static function find_a_setting( $args, $default = array(), $settings = [] ) {
 			if ( ! empty( $settings ) && ! isset( $_POST ) ) {
 				$settings = $settings;
 			} else {
