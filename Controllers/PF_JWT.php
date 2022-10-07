@@ -67,7 +67,7 @@ class PF_JWT {
 		$unique_strings_to_users = $this->system->get_option('pf_jwt_users', array());
 		if ( $new || !array_key_exists('by_id', $unique_strings_to_users) || !array_key_exists($user->ID, $unique_strings_to_users['by_id']) ){
 			$user_key = sanitize_key($this->random_bytes(rand(6,12)));
-			if ( array_key_exists($user->ID, $unique_strings_to_users['by_id']) ){
+			if ( ! empty( $unique_strings_to_users['by_id'] ) && array_key_exists( $user->ID, $unique_strings_to_users['by_id'] ) ){
 				// We need to unset the old version because we are in make-new mode.
 				$old_user_key = $unique_strings_to_users['by_id'][$user->ID];
 				unset($unique_strings_to_users['by_key'][$old_user_key]);
