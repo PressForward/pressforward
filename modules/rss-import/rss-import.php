@@ -153,10 +153,10 @@ class PF_RSS_Import extends PF_Module {
 					$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($guid[0]));
 					foreach ($arrIt as $sub) {
 						$subArray = $arrIt->getSubIterator();
-						if (array_key_exists('isPermaLink', $subArray) && isset($subArray['isPermaLink']) && $subArray['isPermaLink'] == "false") {
+						if ( is_array( $subArray ) && array_key_exists('isPermaLink', $subArray) && isset($subArray['isPermaLink']) && $subArray['isPermaLink'] == "false") {
 							$isPermalink = false;
 							break;
-						} else if (array_key_exists('isPermaLink', $subArray) && isset($subArray['isPermaLink']) && $subArray['isPermaLink'] && ($subArray['isPermaLink'] == "true")){
+						} elseif ( is_array( $subArray ) && array_key_exists('isPermaLink', $subArray) && isset($subArray['isPermaLink']) && $subArray['isPermaLink'] && ($subArray['isPermaLink'] == "true")){
 							$isPermalink = true;
 							break;
 						}
