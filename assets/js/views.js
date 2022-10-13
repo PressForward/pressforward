@@ -184,7 +184,7 @@ function reviewModal() {
 		//showDiv(jQuery('#entries'), jQuery('#'+modalID));
 		//var itemID = element.attr('pf-item-id');
 		//var postID = element.attr('pf-post-id');
-		var item_post_ID = element.parent().attr('pf-item-post-id');
+		var item_post_ID = element.closest('.feed-item').attr('pf-item-post-id');
 
 		jQuery.post(ajaxurl, {
 				action: 'pf_ajax_get_comments',
