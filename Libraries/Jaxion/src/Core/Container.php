@@ -248,7 +248,7 @@ class Container implements ContainerContract {
 	 *
 	 * @see    define
 	 */
-	public function offsetSet( $id, $value ) {
+	public function offsetSet( $id, $value ): void {
 		$this->define( $id, $value );
 	}
 
@@ -262,7 +262,7 @@ class Container implements ContainerContract {
 	 *
 	 * @see    fetch
 	 */
-	public function offsetGet( $id ) {
+	public function offsetGet( $id ): mixed {
 		return $this->fetch( $id );
 	}
 
@@ -275,7 +275,7 @@ class Container implements ContainerContract {
 	 *
 	 * @see    has
 	 */
-	public function offsetExists( $id ) {
+	public function offsetExists( $id ): bool {
 		return $this->has( $id );
 	}
 
@@ -286,14 +286,14 @@ class Container implements ContainerContract {
 	 *
 	 * @see   remove
 	 */
-	public function offsetUnset( $id ) {
+	public function offsetUnset( $id ): void {
 		$this->remove( $id );
 	}
 
 	/**
 	 * Sets the object properties to prepare for the loop.
 	 */
-	public function rewind() {
+	public function rewind(): void {
 		$this->position = 0;
 		$this->keys     = array_keys( $this->aliases );
 	}
@@ -303,7 +303,7 @@ class Container implements ContainerContract {
 	 *
 	 * @return object
 	 */
-	public function current() {
+	public function current(): mixed {
 		return $this->fetch( $this->keys[ $this->position ] );
 	}
 
@@ -312,14 +312,14 @@ class Container implements ContainerContract {
 	 *
 	 * @return string
 	 */
-	public function key() {
+	public function key(): mixed {
 		return $this->keys[ $this->position ];
 	}
 
 	/**
 	 * Increments to the next step in the loop.
 	 */
-	public function next() {
+	public function next(): void {
 		$this->position ++;
 	}
 
@@ -328,7 +328,7 @@ class Container implements ContainerContract {
 	 *
 	 * @return bool
 	 */
-	public function valid() {
+	public function valid(): bool {
 		return isset( $this->keys[ $this->position ] );
 	}
 }

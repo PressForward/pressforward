@@ -294,25 +294,25 @@ class PFOpenGraph implements Iterator {
 	 */
 	private $_position = 0;
 
-	public function rewind() {
+	public function rewind(): void {
 		reset( $this->_values );
 		$this->_position = 0;
 	}
 
-	public function current() {
+	public function current(): mixed {
 		return current( $this->_values );
 	}
 
-	public function key() {
+	public function key(): mixed {
 		return key( $this->_values );
 	}
 
-	public function next() {
+	public function next(): void {
 		next( $this->_values );
 		++$this->_position;
 	}
 
-	public function valid() {
+	public function valid(): bool {
 		return $this->_position < sizeof( $this->_values );
 	}
 }
