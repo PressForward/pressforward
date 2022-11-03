@@ -17,7 +17,7 @@
 		"gulp-sourcemaps": "^3.0.0",
 		"gulp-uglify": "^3.0.2",
 		"node-gyp": "^7.1.2",
-		"node-sass": "^6.0.0"
+		"node-sass": "^7.0.0"
 	},
 	"scripts": {
 		"test": "test",
