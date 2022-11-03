@@ -33,7 +33,6 @@ class PF_REST_Post_Types_Controller extends WP_REST_Post_Types_Controller {
 		foreach ( $pf_terms as $term ) {
 			$data = pressforward( 'api.pf_endpoint' )->filter_an_api_data_link( $data, $links, 'https://api.w.org/items', $term );
 		}
-		// var_dump($data); die();
 		return $data;
 	}
 

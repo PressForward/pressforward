@@ -546,12 +546,10 @@ class Readability {
 		$node         = null;
 		$nodesToScore = array();
 
-		// var_dump('<pre>',$allElements->item( $nodeIndex )); //die();
 		for ( $nodeIndex = 0; ( $node = $allElements->item( $nodeIndex ) ); ++$nodeIndex ) {
 			// for ($nodeIndex=$targetList->length-1; $nodeIndex >= 0; $nodeIndex--) {
 			// $node = $targetList->item($nodeIndex);
 			$tagName = strtoupper( $node->tagName );
-			// var_dump($node);
 			/* Remove unlikely candidates */
 			if ( $stripUnlikelyCandidates ) {
 				$unlikelyMatchString = $node->getAttribute( 'class' ) . $node->getAttribute( 'id' );
@@ -681,7 +679,6 @@ class Readability {
 			$readability->value = $readability->value * ( 1 - $this->getLinkDensity( $candidates[ $c ] ) );
 			if ( 'article' == $candidates[ $c ]->tagName ) {
 				$readability->value = $readability->value + 300;
-				// var_dump($candidates[$c]); die();
 			}
 
 			$this->dbg( 'Candidate: ' . $candidates[ $c ]->tagName . ' (' . $candidates[ $c ]->getAttribute( 'class' ) . ':' . $candidates[ $c ]->getAttribute( 'id' ) . ') with score ' . $readability->value );
@@ -940,7 +937,6 @@ class Readability {
 				$weight += 25;
 			}
 		}
-		// var_dump('<pre>', $e); //die();
 		/* Look for a special ID */
 		if ( $e->hasAttribute( 'id' ) && $e->getAttribute( 'id' ) != '' ) {
 			if ( preg_match( $this->regexps['negative'], $e->getAttribute( 'id' ) ) ) {
@@ -1144,7 +1140,6 @@ class Readability {
 						$toRemove = true;
 					}
 				}
-				// var_dump($tagsList->item($i-2)); die();
 				if ( ( false !== stripos( $tagsList->item( $i )->textContent, 'et al' ) ) || ( 1 === preg_match( '/\([1-9]\d{3,}\)/', $tagsList->item( $i )->textContent ) ) ) {
 					$this->dbg( ' content of element indicates reference.' );
 					$toRemove = false;

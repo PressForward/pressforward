@@ -43,7 +43,6 @@ class FeedEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 	}
 
 	public function filter_in_nomination_count( $data, $post, $request ) {
-		var_dump( $data );
 		return $data;
 	}
 

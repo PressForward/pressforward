@@ -24,9 +24,7 @@ class PF_Readability {
 			extract( $args, EXTR_SKIP );
 			set_time_limit( 0 );
 			$readability_stat = $url;
-			// var_dump($args);
 			$url = pressforward( 'controller.http_tools' )->resolve_full_url( $url );
-			// var_dump($url); die();
 			$descrip = rawurldecode( $descrip );
 
 		if ( $authorship == 'aggregation' ) {
@@ -221,8 +219,7 @@ class PF_Readability {
 				),
 			)
 		);
-		// var_dump($request); die();
-		// print_r($url); print_r(' - Readability<br />');
+
 		// change from Boone - use wp_remote_get() instead of file_get_contents()
 		// $request = wp_remote_get( $url, array('timeout' => '30') );
 		if ( is_wp_error( $request ) ) {
@@ -327,8 +324,6 @@ class PF_Readability {
 			if ( 120 > strlen( $content ) ) {
 				$content = false;}
 			// $content = stripslashes($content);
-			// print_r($content);
-			// var_dump($content); die();
 			// this will also output doctype and comments at top level
 			// $content = "";
 			// foreach($dom->childNodes as $node){
@@ -338,7 +333,6 @@ class PF_Readability {
 			// If Readability can't get the content, send back a FALSE to loop with.
 			$content = false;
 			// and let's throw up an error via AJAX as well, so we know what's going on.
-			// print_r($url . ' fails Readability.<br />');
 		}
 		if ( $content != false ) {
 				$contentObj = pressforward( 'library.htmlchecker' );
@@ -366,7 +360,14 @@ class PF_Readability {
 	}
 
 	public function get_embed( $item_link ) {
-		$oembed = wp_oembed_get( $item_link );
+		$transient_key = 'pressforward_oembed_' . md5( $item_link );
+
+		$oembed = get_transient( $transient_key );
+		if ( false === $oembed ) {
+			$oembed = wp_oembed_get( $item_link );
+			set_transient( $transient_key, $oembed, WEEK_IN_SECONDS );
+		}
+
 		if ( false != $oembed ) {
 			$providers = pressforward( 'schema.feed_item' )->oembed_capables();
 			foreach ( $providers as $provider ) {

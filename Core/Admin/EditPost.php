@@ -85,7 +85,6 @@ class EditPost implements HasActions {
 			}
 		}
 
-		// var_dump($post);
 		echo '<div class="misc-pub-section misc-pub-section-last">
 				<label>
 				<select id="pf_forward_to_origin_single" name="pf_forward_to_origin">
@@ -96,7 +95,6 @@ class EditPost implements HasActions {
 	}
 
 	public function save_submitbox_pf_feed_actions( $post_id ){
-		// var_dump($post_id, $_POST, DOING_AUTOSAVE, current_user_can( 'edit_posts', $post_id )); die();
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return $post_id; }
 		if ( ! current_user_can( 'edit_posts', $post_id ) ) {
@@ -114,7 +112,6 @@ class EditPost implements HasActions {
 			return $post_id; }
 		if ( ! current_user_can( 'edit_posts', $post_id ) ) {
 			return $post_id; }
-		// var_dump($_POST['pf_forward_to_origin']); die();
 		// $current = pressforward('controller.metas')->get_post_pf_meta();
 		if ( ! array_key_exists( 'pf_forward_to_origin', $_POST ) ) {
 

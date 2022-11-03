@@ -15,8 +15,8 @@ function assure_closed_menus() {
 
 //via http://stackoverflow.com/questions/1662308/javascript-substr-limit-by-word-not-char
 function trim_words(theString, numWords) {
-	expString = theString.split(/\s+/, numWords);
-	theNewString = expString.join(" ");
+	var expString = theString.split(/\s+/, numWords);
+	var theNewString = expString.join(" ");
 	return theNewString;
 }
 
@@ -84,7 +84,7 @@ function modalNavigator(tabindex) {
 		prevHTML += '<p class="prev_date">' + prevDate + '</p>';
 		//alert(modalID);
 		jQuery(modalID + ' div.modal-body-row div.modal-sidebar div.goPrev').html(prevHTML);
-		jQuery(modalID + ' div.mobile-goPrev').html('<i class="icon-arrow-left"></i> <a href="' + prevItemID + '" role="button" data-dismiss="modal" class="mobile-modal-navlink modal-nav" data-toggle="modal" data-backdrop="false">' + prevTitle + '</a> ');
+		jQuery(modalID + ' div.mobile-goPrev').html('<i class="icon-arrow-left"></i> <a href="' + prevItemID + '" role="button" data-bs-dismiss="modal" class="mobile-modal-navlink modal-nav">' + prevTitle + '</a> ');
 
 
 	}
@@ -105,7 +105,7 @@ function modalNavigator(tabindex) {
 		nextHTML += '<p class="next_date">' + nextDate + '</p>';
 		//alert(modalID);
 		jQuery(modalID + ' div.modal-body-row div.modal-sidebar div.goNext').html(nextHTML);
-		jQuery(modalID + ' div.mobile-goNext').html('&nbsp;| <a href="' + nextItemID + '" role="button" class="mobile-modal-navlink modal-nav" data-dismiss="modal" data-toggle="modal" data-backdrop="false">' + nextTitle + '</a> <i class="icon-arrow-right"></i>');
+		jQuery(modalID + ' div.mobile-goNext').html('&nbsp;| <a href="' + nextItemID + '" role="button" class="mobile-modal-navlink modal-nav" data-bs-dismiss="modal">' + nextTitle + '</a> <i class="icon-arrow-right"></i>');
 
 	}
 
@@ -114,7 +114,7 @@ function modalNavigator(tabindex) {
 
 function commentPopModal() {
 
-	jQuery('.pf_container').on('shown', '.modal.comment-modal', function (evt) {
+	jQuery('.pfmodal').on('shown.bs.modal', function (evt) {
 		var elementC = jQuery(this);
 		var element = elementC.closest('article');
 		var modalID = elementC.closest('article').attr('id');
@@ -127,29 +127,21 @@ function commentPopModal() {
 		var item_post_ID = element.attr('pf-item-post-id');
 		jQuery('#ef-comments_wrapper').remove();
 		//alert(modalIDString);
-		jQuery.post(ajaxurl, {
-				action: 'pf_ajax_get_comments',
-				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
-				id_for_comments: item_post_ID,
-			},
-			function (comment_response) {
-				jQuery('#comment_modal_' + item_post_ID + ' .modal-body').html(comment_response);
-			});
 	});
 
-	jQuery('.pf_container').on('hide', '.modal.comment-modal', function (evt) {
+	jQuery('.pfmodal').on('hide.bs.modal', function (evt) {
 		jQuery('#ef-comments_wrapper').remove();
 	});
 }
 
 function reshowModal() {
-	jQuery('.pf_container').on('show', '.modal.pfmodal', function (evt) {
+	jQuery('.pfmodal').on('show.bs.modal', function (evt) {
 		var element = jQuery(this);
 		var modalID = element.attr('id');
 		pf_make_url_hashed(modalID);
 	});
 
-	jQuery('.pf_container').on('shown', '.modal.pfmodal', function (evt) {
+	jQuery('.pfmodal').on('shown.bs.modal', function (evt) {
 		var element = jQuery(this);
 		var modalID = element.attr('id');
 		document.body.style.overflow = 'hidden';
@@ -181,7 +173,7 @@ function hide_non_modals() {
 function reviewModal() {
 	//Need to fix this to only trigger on the specific model, but not sure how yet.
 
-	jQuery('.pressforward_page_pf-review .pf_container').on('shown', ".modal.pfmodal", function (evt) {
+	jQuery('.comment-modal').on('shown.bs.modal', function (evt) {
 		//alert('Modal Triggered.');
 
 		var element = jQuery(this);
@@ -192,7 +184,7 @@ function reviewModal() {
 		//showDiv(jQuery('#entries'), jQuery('#'+modalID));
 		//var itemID = element.attr('pf-item-id');
 		//var postID = element.attr('pf-post-id');
-		var item_post_ID = element.parent().attr('pf-item-post-id');
+		var item_post_ID = element.closest('.feed-item').attr('pf-item-post-id');
 
 		jQuery.post(ajaxurl, {
 				action: 'pf_ajax_get_comments',
@@ -201,10 +193,17 @@ function reviewModal() {
 			},
 			function (comment_response) {
 
-				jQuery('#' + modalID + '.pfmodal .modal-comments').html(comment_response);
+				jQuery('#' + modalID + '.comment-modal .modal-body').html(comment_response);
 
 			});
 
+		setTimeout(
+			function() {
+				var mainContentHeight = element.find('.modal-body-row').height();
+				element.find('.modal-body-row .modal-body').height(mainContentHeight);
+			},
+			100
+		);
 
 		var tabindex = element.parent().attr('tabindex');
 
@@ -213,7 +212,7 @@ function reviewModal() {
 }
 
 function hideModal() {
-	jQuery('.pf_container').on('hide', ".modal.pfmodal", function (evt) {
+	jQuery('.pfmodal').on('hide.bs.modal', function (evt) {
 		jQuery(".pfmodal .modal-comments").html('');
 		if (typeof editorialCommentReply == 'function') {
 			editorialCommentReply.close();
@@ -228,7 +227,7 @@ function hideModal() {
 }
 
 function commentModal() {
-	jQuery('.pf_container').on('show', '.comment-modal', function (evt) {
+	jQuery('.pfmodal').on('show.bs.modal', function (evt) {
 		var element = jQuery(this);
 		var modalID = element.parent('article').attr('id');
 		var modalIDString = '#' + modalID;
@@ -362,8 +361,9 @@ function attach_menu_on_scroll_past() {
 			jQuery('#feeds-search > *').addClass('pull-left');
 			jQuery('#feeds-search > label').hide();
 
-			var width = jQuery('#entries').innerWidth();
-			jQuery('.nav-fix').width(width - 80);
+			var width = jQuery('.pf_container').innerWidth();
+			var containerOffset = jQuery('.pf_container').offset();
+			jQuery('.nav-fix').width(width - 20).offset( { left: containerOffset.left } );
 		} else {
 			jQuery('.pf_container .display').removeClass('nav-fix');
 			jQuery('.pf_container #feed-folders').removeClass('right-bar-fix');
@@ -484,15 +484,21 @@ console.log('Waiting for load.');
 jQuery(window).on('load', function () {
 	// executes when complete page is fully loaded, including all frames, objects and images
 
+	var $allModals = jQuery('.pfmodal');
+
 	jQuery('.pf-loader').delay(300).fadeOut("slow", function () {
 		console.log('Load complete.');
+		var theModal, $closeEl, $modalEl;
 		jQuery('.pf_container').fadeIn("slow");
 		if (window.location.hash.indexOf("#") < 0) {
 			window.location.hash = '#ready';
 		} else if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
 			var hash = window.location.hash;
 			if (!jQuery(hash).hasClass('in')) {
-				jQuery(hash).modal('show');
+				$modalEl = jQuery(hash);
+				$closeEl = $modalEl.find( '.close' );
+				theModal = new bootstrap.Modal( $modalEl );
+				theModal.show( $closeEl );
 			}
 		}
 
@@ -503,7 +509,17 @@ jQuery(window).on('load', function () {
 			if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
 				var hash = window.location.hash;
 				if (!jQuery(hash).hasClass('in')) {
-					jQuery(hash).modal('show');
+					$modalEl = jQuery(hash);
+					$closeEl = $modalEl.find( '.close' );
+					theModal = new bootstrap.Modal( $modalEl );
+					theModal.show( $closeEl );
+
+					$allModals.each(function(){
+						var $modalToClose = bootstrap.Modal.getInstance( this );
+						if ( $modalToClose ) {
+							$modalToClose.hide();
+						}
+					});
 				}
 			}
 		});

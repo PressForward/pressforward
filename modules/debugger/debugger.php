@@ -85,9 +85,7 @@ class PF_Debugger extends PF_Module {
 					'no_found_rows' 	=> true,
 					'fields' 			=> 'ids',
 				);
-				// var_dump($query_arg);
 				// $query = new WP_Query($query_arg);
-				// var_dump($query);
 				$total = 0;
 				$last_q = $posts_per_page;
 				while ( $last_q >= $posts_per_page ) {
@@ -143,27 +141,21 @@ class PF_Debugger extends PF_Module {
 			<h2>Current Log</h2>
 			<?php
 
-				// var_dump($feed_items_query->post_count);
 			?>
 			<p>Does not update in real time.</p>
 			<p>Total Current Feed Items:
 			<?php
 				$feed_item = 'pf_feed_item';
 				echo esc_html( wp_count_posts( $feed_item )->publish );
-				// var_dump(wp_count_posts($feed_item));
-				// var_dump(wp_count_posts('post'));
 			?><br />
 			<?php
 				$feed_item = 'pf_feed_item';
 				echo 'Month to date Feed Items: ' . esc_html( $this->count_the_posts( $feed_item ) );
 				echo '<br />Last month Feed Items: ' . esc_html( $this->count_the_posts( $feed_item, -1 ) );
-				// var_dump(wp_count_posts($feed_item));
-				// var_dump(wp_count_posts('post'));
 			?>
 			</p>
 			<p>Total Current Nominations:
 			<?php
-				// var_dump(wp_count_posts('nomination'));
 				echo esc_html( wp_count_posts( 'nomination' )->draft );
 				echo '<br />Month to date Nominations: ' . esc_html( $this->count_the_posts( 'nomination' ) );
 				echo '<br />Last month Nominations: ' . esc_html( $this->count_the_posts( 'nomination', -1 ) );
@@ -179,25 +171,21 @@ class PF_Debugger extends PF_Module {
 			<p>Total Nominations Published:
 			<?php
 				echo esc_html( $nomed_posts );
-				// var_dump($nomed_posts );
 			?>
 			</p>
 			<p>Total Retrieval Chunks Begun This:
 			<?php
 				pf_iterate_cycle_state( 'retrieval_chunks_begun', false, true );
-				// var_dump($nomed_posts );
 			?>
 			</p>
 			<p>Total Retrieval Cycles Begun This:
 			<?php
 				pf_iterate_cycle_state( 'retrieval_cycles_begun', false, true );
-				// var_dump($nomed_posts );
 			?>
 			</p>
 			<p>Total Retrieval Cycles Ended This:
 			<?php
 				pf_iterate_cycle_state( 'retrieval_cycles_ended', false, true );
-				// var_dump($nomed_posts );
 			?>
 			</p>
 			<br /><br />

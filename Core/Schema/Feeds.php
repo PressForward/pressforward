@@ -225,7 +225,6 @@ class Feeds implements HasActions, HasFilters {
 	 */
 	public function move_feed_tags_submenu( $pf ) {
 		global $typenow, $pagenow;
-		// var_dump($pf, $pagenow, $typenow); die();
 		if ( ( 'term.php' === $pagenow || 'edit-tags.php' === $pagenow ) && ! empty( $_GET['taxonomy'] ) && $this->tag_taxonomy === sanitize_text_field( wp_unslash( $_GET['taxonomy'] ) ) ) {
 			$pf = 'pf-menu';
 		}
@@ -417,7 +416,6 @@ class Feeds implements HasActions, HasFilters {
 	}
 
 	public function is_feed_term( $id ) {
-		// var_dump($id);
 		$termcheck = term_exists( (int) $id, $this->tag_taxonomy );
 		if ( empty( $termcheck ) ) {
 			return false;
@@ -429,11 +427,9 @@ class Feeds implements HasActions, HasFilters {
 	public function url_feed_row_action( $actions, $post ) {
 		if ( $post->post_type != $this->post_type ) {
 			return $actions;
-			// var_dump($actions); die();
 		}
 
 		$url = $this->metas->get_post_pf_meta( $post->ID, 'feedUrl' );
-		// var_dump($actions); die();
 		if ( isset( $actions['edit'] ) ) {
 			$edit_actions = $actions['edit'];
 		} else {
@@ -451,7 +447,6 @@ class Feeds implements HasActions, HasFilters {
 	public function refresh_feed_row_action( $actions, $post ) {
 		if ( $post->post_type != $this->post_type ) {
 				return $actions;
-			// var_dump($actions); die();
 		}
 
 		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="' . esc_attr( $post->ID ) . '" title="' . esc_attr__( 'Refresh this feed', 'pf' ) . '">' . esc_html__( 'Refresh&nbsp;Feed&nbsp;Items', 'pf' ) . '</a> | ';
@@ -484,11 +479,9 @@ class Feeds implements HasActions, HasFilters {
 			}
 		} elseif ( is_numeric( $ids ) || is_string( $ids ) ) {
 			if ( ! $this->is_feed_term( $ids ) ) {
-				var_dump( $ids . ' not a term in ' . $this->tag_taxonomy );
 				return false;
 			}
 			$children_terms = get_term_children( $ids, $this->tag_taxonomy );
-			// var_dump($children_terms);
 			foreach ( $children_terms as $child ) {
 				$children[ $child ] = $this->get_feed_folders( $child );
 			}
@@ -539,7 +532,6 @@ class Feeds implements HasActions, HasFilters {
 				),
 			);
 		} elseif ( is_array( $ids ) ) {
-			// var_dump($ids); die();
 			foreach ( $ids as $id ) {
 				$folder_set[ $id ] = $this->get_feed_folders( $id );
 			}
@@ -552,7 +544,6 @@ class Feeds implements HasActions, HasFilters {
 	}
 
 	public function get_feeds_without_folders( $ids = true ) {
-			// var_dump(pressforward('library.alertbox')->status()); die();
 		$q      = new \WP_Query(
 			array(
 				'post_type'   => $this->post_type,
@@ -588,7 +579,6 @@ class Feeds implements HasActions, HasFilters {
 
 	public function the_feeds_without_folders() {
 		global $wp_version;
-		// var_dump((float)$wp_version);
 		if ( 4.0 < (float) $wp_version ) {
 			$the_other_feeds = $this->get_feeds_without_folders();
 			foreach ( $the_other_feeds as $a_feed_id ) {
@@ -604,7 +594,6 @@ class Feeds implements HasActions, HasFilters {
 		?>
 		<ul class="feed_folders">
 				<?php
-				// var_dump($obj);
 				foreach ( $obj as $folder ) {
 					?>
 					<li class="feed_folder" id="folder-<?php echo esc_attr( $folder['term_id'] ); ?>">
@@ -629,7 +618,6 @@ class Feeds implements HasActions, HasFilters {
 		}
 		$this->the_folder( $folder );
 
-		// var_dump($folder);
 		if ( ! empty( $folder['children']['folders'] ) ) {
 			foreach ( $folder['children']['folders'] as $subfolder ) {
 				?>
@@ -666,7 +654,6 @@ class Feeds implements HasActions, HasFilters {
 	}
 
 	public function the_folder( $folder ) {
-		// var_dump($folder);
 		if ( is_array( $folder ) ) {
 			$term_obj = $folder['term'];
 		} else {
@@ -725,7 +712,6 @@ class Feeds implements HasActions, HasFilters {
 		pf_log( 'Preparing to transform feedlist into a list of feed posts.' );
 		$ordered_all_feeds_array = array_values( $all_feeds_array );
 		$tidy_all_feeds_array    = array_filter( $ordered_all_feeds_array, 'strlen' );
-		// print_r('<pre>'); var_dump($tidy_all_feeds_array); print_r('</pre>'); die();
 		foreach ( $tidy_all_feeds_array as $key => $feed ) {
 			$feedlist = $this->progressive_feedlist_transformer( $tidy_all_feeds_array, $feed, $key );
 		}
@@ -758,7 +744,7 @@ class Feeds implements HasActions, HasFilters {
 
 	// Not only is this moving feeds over into feed CPT posts, but this methodology will insure a time-out won't force the process to restart.
 	// There should probably be a AJAX interface for this, same as the AB subscribe method.
-	public function progressive_feedlist_transformer( $feedlist = array(), $xmlUrl, $key, $args = array() ) {
+	public function progressive_feedlist_transformer( $feedlist = array(), $xmlUrl = '', $key = '', $args = array() ) {
 		$post_args = array_merge( array( 'type' => 'rss-quick' ), $args );
 		$check     = $this->create( $xmlUrl, $post_args );
 		if ( is_numeric( $check ) && ( 0 < $check ) ) {
@@ -874,9 +860,6 @@ class Feeds implements HasActions, HasFilters {
 		pf_log( $post_id );
 		pf_log( 'for' );
 		pf_log( $wp_args );
-		// echo '<pre>';
-		// var_dump($post_id);
-		// echo '</pre>';
 		if ( is_numeric( $post_id ) && ( 0 < $post_id ) ) {
 			pf_log( 'The post_id is numeric and greater than 0, complete the ' . $insert_type . ' process' );
 			$this->set_pf_feed_type( $post_id, $r['type'] );
@@ -889,7 +872,6 @@ class Feeds implements HasActions, HasFilters {
 					// users would want to maintain.
 					if ( 'rss-quick' == $r['type'] ) {
 						$term = wp_insert_term( $tag, $this->tag_taxonomy );
-						// var_dump($term_id); die();
 						if ( is_wp_error( $term ) ) {
 							$term_id = $term->error_data['term_exists'];
 						} elseif ( is_array( $term ) ) {
@@ -920,7 +902,6 @@ class Feeds implements HasActions, HasFilters {
 	}
 
 	public function modify_post_views( $views ) {
-		// var_dump($views);
 		if ( isset( $views['publish'] ) ) {
 			$views['publish'] = str_replace( 'Published ', 'Active ', $views['publish'] );
 		}
@@ -934,7 +915,6 @@ class Feeds implements HasActions, HasFilters {
 	}
 
 	public function modify_post_edit_status( $status ) {
-		// var_dump($status);
 		if ( 'publish' == $status ) {
 				// $status = 'Active';
 		}
@@ -988,7 +968,6 @@ class Feeds implements HasActions, HasFilters {
 	 */
 
 	public function create( $feedUrl, $args = array() ) {
-		// print_r('<pre>'); var_dump($feedUrl); print_r('</pre>'); die();
 		$r = wp_parse_args(
 			$args, array(
 				'title'        => false,
@@ -1010,7 +989,6 @@ class Feeds implements HasActions, HasFilters {
 		);
 		pf_log( 'Received a create command with the following arguments:' );
 		pf_log( $r );
-		// var_dump('yo'); die();
 		if ( $r['type'] == 'rss' ) {
 			pf_log( 'We are creating an RSS feed' );
 			$theFeed = pf_fetch_feed( $feedUrl );
@@ -1346,9 +1324,6 @@ class Feeds implements HasActions, HasFilters {
 	public function set_feed_meta( $post_id, $args ) {
 		pf_log( 'Invoked: PF_Feeds_Schema::set_feed_meta' );
 		$c = 1;
-		// echo '<pre>';
-		// var_dump($args);
-		// echo '</pre>';
 		foreach ( $args as $k => $a ) {
 			pf_log( 'Setting ' . $post_id . ' Feed Meta: ' . $k . ' - ' . $a );
 			if ( ! $a ) {

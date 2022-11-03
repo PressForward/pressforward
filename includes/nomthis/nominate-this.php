@@ -16,7 +16,6 @@ if ( defined( 'WP_ADMIN' ) ) {
 global $pagenow;
 if (!$admin_avail){
 	$wp_bootstrap = dirname( dirname( dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) ) );
-	// echo '<pre>'; var_dump($_POST); die();
 	$wp_bootstrap_d = dirname( dirname( dirname( dirname( dirname( dirname( dirname( __FILE__ ) ) ) ) ) ) );
 
 	if ( is_dir( $wp_bootstrap . '/wp-admin' ) ) {
@@ -35,14 +34,11 @@ if (!$admin_avail){
 		$wp_bootstrap = $wp_bootstrap . '/wp/wp-admin';
 	} else {
 		echo 'Base directory attempt at: <pre>';
-		var_dump( $wp_bootstrap );
 			echo 'Nominate This can not find your WP-Admin directory';
 		die();
 	}
 
 	//$_POST['upgrade_no'] = 'donotupgrademebro';
-	//var_dump('<pre>',$_POST);
-	//var_dump(dirname(__FILE__),$wp_query->get('pf-nominate-this'),file_exists($wp_bootstrap . '/admin.php'),($wp_bootstrap . '/admin.php')); die();
 	/** WordPress Administration Bootstrap */
 	require_once( $wp_bootstrap . '/admin.php' );
 }

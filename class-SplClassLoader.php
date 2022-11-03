@@ -49,7 +49,6 @@ class SplClassLoader {
 	 * @param string $ns The namespace to use.
 	 */
 	public function __construct( $ns = null, $includePath = null, $useUnderlines = true ) {
-		// var_dump(__METHOD__);
 		$this->_namespace = $ns;
 		$this->_includePath = $includePath;
 		$this->_useUnderlines = $useUnderlines;
@@ -150,12 +149,9 @@ class SplClassLoader {
 			}
 
 			if ( false !== $this->_filterPattern ) {
-				// var_dump($this->_filterPattern);
-				// var_dump($fileName);
 				$fileName = str_replace( $this->_filterPattern['pattern'], $this->_filterPattern['replace'], $fileName );
-				// var_dump($fileName); die();
 			}
-			// var_dump(($this->_includePath !== null ? $this->_includePath . DIRECTORY_SEPARATOR : '') . $fileName );
+
 			require( $this->_includePath !== null ? $this->_includePath . DIRECTORY_SEPARATOR : '' ) . $fileName;
 		}
 	}

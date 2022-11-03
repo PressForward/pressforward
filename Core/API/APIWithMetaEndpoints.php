@@ -94,10 +94,8 @@ class APIWithMetaEndpoints {
 				if ( false !== $pos && 0 <= $pos ) {
 					$term_found = true;
 					$data->remove_link( $link );
-					// var_dump('term found', $term);
 					$term_link['href']      = str_replace( 'wp/v2/' . $term, 'pf/v1/' . $term, $term_link['href'] );
 					$links[ $link ][ $key ] = $term_link;
-					// var_dump($links);
 				} else {
 					$term_found = false;
 				}
@@ -115,7 +113,6 @@ class APIWithMetaEndpoints {
 
 	// Hook to filter 'rest_prepare_{post_type}' to actifate
 	public function filter_wp_to_pf_in_terms( $data, $post, $request ) {
-		// var_dump($data->add_link('https://api.w.org/term', array())); die();
 		$links = $data->get_links();
 		if ( isset( $links['https://api.w.org/term'] ) ) {
 			$data->remove_link( 'https://api.w.org/term' );
@@ -131,7 +128,6 @@ class APIWithMetaEndpoints {
 				)
 			);
 		}
-		// var_dump($links); die();
 		if ( isset( $links['https://api.w.org/post_type'] ) ) {
 			$data->remove_link( 'https://api.w.org/post_type' );
 			foreach ( $links['https://api.w.org/post_type'] as $key => $term_link ) {
@@ -165,7 +161,6 @@ class APIWithMetaEndpoints {
 		$data = $this->filter_an_api_data_link( $data, $links, 'about', 'taxonomies/pf_feed_category' );
 		$data = $this->filter_an_api_data_link( $data, $links, 'about', 'types/pf_feed' );
 		$data = $this->filter_an_api_data_link( $data, $links, 'about', 'types/pf_feed_item' );
-		// var_dump($data->get_links());
 		return $data;
 	}
 }

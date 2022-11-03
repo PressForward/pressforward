@@ -140,9 +140,7 @@ class Stats {
 		$args = $this->establish_query( $wp_query_args );
 
 		do_action( 'pf_stats_query_before', $args );
-		// var_dump($args); die();
 		$args = apply_filters( 'pf_qualified_stats_post_query', $args );
-		// var_dump($args); die();
 		// salon_sane()->slnm_log($args);
 		$q = new \WP_Query( $args );
 		do_action( 'pf_stats_query_after', $q );
@@ -201,7 +199,6 @@ class Stats {
 					$author_first_name = $name;
 				}
 			}
-			// var_dump($author_first_name . ': ');
 			$gender = $this->gender_checker->test( $author_first_name );
 			return $gender;
 		} else {
@@ -211,7 +208,6 @@ class Stats {
 
 	private function set_author_gender_confidence() {
 		if ( PHP_VERSION >= 5.4 ) {
-			// var_dump($gender . "\n");
 			$confidence = $this->gender_checker->getPreviousMatchConfidence();
 			$confidence = (string) $confidence;
 			return $confidence;
@@ -241,7 +237,6 @@ class Stats {
 		}
 		$s  = "\n<li>";
 		$s .= $author['name'] . ' (' . $author['count'] . ')';
-		// var_dump(pressforward_stats()->gender_checker->test($author['name']) ); var_dump( pressforward_stats()->gender_checker->getPreviousMatchConfidence() ); die();
 		// $s .= ' This author is likely ' . $author['gender'] . '. Confidence: ' . $author['gender_confidence'];
 		$s .= '</li>';
 		return $s;

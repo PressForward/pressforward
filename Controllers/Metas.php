@@ -861,34 +861,26 @@ class Metas implements HasFilters, HasActions {
 	public function attach_metas_by_use($post_object, $use = 'api', $admin = false) {
 		$post_id = $post_object->ID;
 		foreach ( $this->structure() as $key => $meta ) {
-			// var_dump($key);
 			if (in_array($use, $meta['use']) ){
 				if (in_array($this->map_post_type_to_level($post_object->post_type), $meta['level'])) {
 					if (false === $admin){
 						if (!in_array('adm', $meta['type']) ){
 							if (!property_exists($post_object, $key)){
-								// var_dump('yes'); die();
 								$post_object->$key = $this->get_post_pf_meta($post_id, $meta['name']);
 							} else {
-								// var_dump('set fail');
 							}
 						} else {
-							// var_dump('adm fail');
 						}
 					} else {
-						// var_dump('oops'); die();
 							if (!isset($post_object->$key)){
 								$post_object->$key = $this->get_post_pf_meta($post_id, $meta['name']);
 							}
 					}
 				} else {
-					// var_dump($this->map_post_type_to_level($post_object->post_type));
 				}
 			} else {
-				// var_dump( 'no' );
 			}
 		}
-		// die();
 		return $post_object;
 	}
 

@@ -18,7 +18,6 @@ class Forward_Tools {
 	// var $advance_interface;
 	// var $post_interface;
 	function __construct( Items $item_interface, Advance_System $advance_interface, Metas $meta_interface ) {
-		// var_dump('a');
 		$this->item_interface    = $item_interface;
 		$this->advance_interface = $advance_interface;
 		$this->metas             = $meta_interface;
@@ -115,7 +114,6 @@ class Forward_Tools {
 		if ( empty( $noms_counted ) || $noms_counted <= 0 ) {
 			$noms_counted = 0;
 		}
-		// var_dump($id);
 		if ( ! array_key_exists( $id, $nom_stats ) ) {
 			$nom_stats[ $id ] = array(
 				'nomination_id'       => $id,
@@ -151,7 +149,6 @@ class Forward_Tools {
 	public function apply_nomination_data( $id, $user_id = false, $is_post = false ) {
 		$user_id    = $this->assure_user_id( $user_id );
 		$nominators = $this->apply_nomination_array( $id, $user_id );
-		// var_dump($id, $nominators);
 		if ( $nominators['applied'] && ! $is_post ) {
 			$this->apply_nomination_user_data( $id, $user_id );
 			$this->apply_nomination_count( $id, $user_id );
@@ -283,7 +280,6 @@ class Forward_Tools {
 		if ( 0 !== $final_step_parent && false !== $final_step_parent ) {
 			// The nomination has already been pushed to final step.
 			// Increment it as well
-			// var_dump($final_step_parent); die();
 			$nominators = $this->apply_nomination_data( $final_step_parent, false, true );
 			$this->metas->update_pf_meta( $final_step_parent, 'nominator_array', $nominators );
 		}
@@ -363,7 +359,6 @@ class Forward_Tools {
 		$nomination_and_post_check = $this->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
 		pf_log( 'Is this a PF Type?' );
 		pf_log( $nomination_and_post_check );
-		// var_dump($nomination_and_post_check); die();
 		// $post_check = $this->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
 		if ( $nomination_and_post_check == false ) {
 
@@ -409,7 +404,7 @@ class Forward_Tools {
 		}
 	}
 
-	public function nomination_to_last_step( $item_id = false, $nomination_id, $make_readable = true ) {
+	public function nomination_to_last_step( $item_id = false, $nomination_id = null, $make_readable = true ) {
 		$post_check = $this->is_a_pf_type( $item_id, 'post' );
 
 		// Assign user status as well here.
@@ -438,13 +433,13 @@ class Forward_Tools {
 		return $post_id;
 	}
 
-	public function bookmarklet_to_nomination( $item_id = false, $post ) {
+	public function bookmarklet_to_nomination( $item_id = false, $post = null ) {
 		$_POST = array_merge( $_POST, $post );
 
 		$item_link = isset( $_POST['item_link'] ) ? sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) : '';
 
 		if ( ! $item_id ) {
-			$item_id = create_feed_item_id( $item_link, $post['post_title'] );
+			$item_id = pressforward_create_feed_item_id( $item_link, $post['post_title'] );
 			// $post['item_id'] = $item_id;
 		}
 
@@ -455,7 +450,6 @@ class Forward_Tools {
 				$nomination_id = false;
 				$nomination_id = $this->item_to_nomination( $item_id, $item_check );
 				pressforward( 'utility.relate' )->basic_relate( 'nominate', $item_check, 'on' );
-				// var_dump($nomination_id); die();
 			} else {
 				$nomination_id = false;
 			}
@@ -470,7 +464,6 @@ class Forward_Tools {
 				$post['guid'] = substr( esc_url( $item_link ), 0, 243 );
 			}
 			$post_array = $post;
-			// var_dump('<pre>'); var_dump($post); die();
 			// $post['post_type'] = 'post';
 			// PF NOTE: This is where the inital post is created.
 			// PF NOTE: Put get_post_nomination_status here.
@@ -498,7 +491,6 @@ class Forward_Tools {
 			}
 			$post_ID = $post;
 
-			// var_dump('<pre>'); var_dump($post); var_dump($post_array); die();
 			$this->advance_interface->prep_bookmarklet( $post );
 			if ( ! isset( $_POST['item_date'] ) ) {
 				$newDate   = date( 'Y-m-d H:i:s' );
@@ -618,11 +610,11 @@ class Forward_Tools {
 
 	}
 
-	public function bookmarklet_to_last_step( $item_id = false, $post ) {
+	public function bookmarklet_to_last_step( $item_id = false, $post = null ) {
 		if ( ! $item_id ) {
 			$item_link = isset( $_POST['item_link'] ) ? sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) : '';
 
-			$item_id = create_feed_item_id( $item_link, $post['post_title'] );
+			$item_id = pressforward_create_feed_item_id( $item_link, $post['post_title'] );
 		}
 		$nomination_id = $this->bookmarklet_to_nomination( $item_id, $post );
 		pf_log( $nomination_id );
@@ -647,7 +639,6 @@ class Forward_Tools {
 			$post_type = array( 'post', pressforward( 'schema.nominations' )->post_type );
 		}
 		$attempt = $this->advance_interface->get_pf_type_by_id( $item_id, $post_type );
-		// var_dump($post_type); die();
 		if ( ! empty( $attempt ) ) {
 			$r = $attempt;
 			pf_log( 'Existing post at ' . $r );

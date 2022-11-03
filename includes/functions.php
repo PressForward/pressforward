@@ -89,9 +89,7 @@ function pf_shortcut_link() {
 
 function start_pf_nom_this(){
 	global $pagenow;
-	//var_dump('2test2<pre>',$pagenow); die();
 	if( 'edit.php' == $pagenow && array_key_exists( 'pf-nominate-this', $_GET ) && 2 == $_GET['pf-nominate-this']) {
-		//var_dump(dirname(__FILE__),$wp_query->get('pf-nominate-this'),file_exists(dirname(__FILE__).'/nomthis/nominate-this.php'),(dirname(__FILE__).'/nomthis/nominate-this.php')); die();
 		//$someVar = $wp_query->get('some-var');
 		include(dirname(__FILE__).'/nomthis/nominate-this.php');
 		die();
@@ -99,39 +97,31 @@ function start_pf_nom_this(){
 
 	return '';
 }
-	/**
-	 * Retrieve the Nominate This bookmarklet link.
-	 *
-	 * Use this in 'a' element 'href' attribute.
-	 *
-	 * @since 1.7
-	 * @see get_shortcut_link()
-	 *
-	 * @return string
-	 */
-function pf_get_shortcut_link() {
-	$url = trailingslashit(get_bloginfo('wpurl')).'wp-admin/edit.php?pf-nominate-this=2';
-	// In case of breaking changes, version this. #WP20071
-	$link = "javascript:
-				var d=document,
-				w=window,
-				e=w.getSelection,
-				k=d.getSelection,
-				x=d.selection,
-				s=(e?e():(k)?k():(x?x.createRange().text:0)),
-				f='" . $url . "',
-				l=d.location,
-				e=encodeURIComponent,
-				u=f+'&u='+e(l.href)+'&t='+e(d.title)+'&s='+e(s)+'&v=4';
-				a=function(){if(!w.open(u,'t','toolbar=0,resizable=1,scrollbars=1,status=1,width=720px,height=620px'))l.href=u;};
-				if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0); else a();
-				void(0)";
 
-	$link = str_replace( array( "\r", "\n", "\t" ),  '', $link );
+/**
+ * Retrieve the Nominate This bookmarklet link.
+ *
+ * Use this in 'a' element 'href' attribute.
+ *
+ * Based on the Press This bookmarklet.
+ *
+ * @since 1.7
+ * @link See https://github.com/WordPress/press-this/blob/trunk/press-this-plugin.php
+ *
+ * @return string
+ */
+function pf_get_shortcut_link() {
+	$url = wp_json_encode( admin_url( 'edit.php?pf-nominate-this=2' ) );
+
+	$version = 5;
+
+	$link = sprintf(
+		'javascript:var d=document,w=window,e=w.getSelection,k=d.getSelection,x=d.selection,s=e?e():k?k():x?x.createRange().text:0,f="%s",l=d.location,u=f+"&u="+(e=encodeURIComponent)(l.href)+"&t="+e(d.title)+"&s="+e(s)+"&v=%s",a=function(){w.open(u,"t","toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=620")||(l.href=u)};a();',
+		esc_url_raw( $url ),
+		esc_js( $version )
+	);
 
 	return apply_filters( 'shortcut_link', $link );
-
-
 }
 
 /**
@@ -157,9 +147,9 @@ function pf_nomthis_bookmarklet() {
 				s=(e?e():(k)?k():(x?x.createRange().text:0)),
 				l=d.location,
 				e=encodeURIComponent,
-				ku='".bin2hex(pressforward('controller.jwt')->get_a_user_public_key())."',
-				ki='".get_user_meta($user_id, 'pf_jwt_private_key', true)."',
-				p='" . rest_url().pressforward('api.nominatethis')->endpoint_for_nominate_this_script . "?k='+ku,
+				ku='" . esc_js( bin2hex(pressforward('controller.jwt')->get_a_user_public_key()) ) ."',
+				ki='" . esc_js( get_user_meta($user_id, 'pf_jwt_private_key', true) ) ."',
+				p='" . esc_js( rest_url().pressforward('api.nominatethis')->endpoint_for_nominate_this_script ) . "?k='+ku,
 				pe=document.createElement('script'),
 				a=function(){pe.src=p;document.getElementsByTagName('head')[0].appendChild(pe);};
 				if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0); else a();
@@ -354,7 +344,8 @@ function pf_feed_object( $itemTitle = '', $sourceTitle = '', $itemDate = '', $it
 	return $itemArray;
 }
 
-function create_feed_item_id( $url, $title ) {
+function pressforward_create_feed_item_id( $url, $title ) {
+	$url = sanitize_url( $url );
 	$url = str_replace('http://', '', $url);
 	$url = str_replace('https://', '', $url);
 	$hash = md5( untrailingslashit(trim($url)) );
@@ -372,7 +363,7 @@ function create_feed_item_id( $url, $title ) {
  *
  * @return object A standard WP_Query object.
  */
-function pf_get_posts_by_id_for_check( $post_type = false, $item_id, $ids_only = false ) {
+function pf_get_posts_by_id_for_check( $post_type = false, $item_id = null, $ids_only = false ) {
 	global $wpdb;
 	// If the item is less than 24 hours old on nomination, check the whole database.
 	// $theDate = getdate();
@@ -411,8 +402,14 @@ function pf_prep_item_for_submit( $item ) {
 
 	foreach ( $item as $itemKey => $itemPart ) {
 
-		if ( $itemKey == 'item_content' ) {
-			$itemPart = htmlspecialchars( $itemPart );
+		switch ( $itemKey ) {
+			case 'item_content' :
+				$itemPart = htmlspecialchars( $itemPart );
+			break;
+
+			case 'nominators' :
+				$itemPart = wp_list_pluck( 'user_id', $itemPart );
+			break;
 		}
 
 		if ( is_array( $itemPart ) ) {
@@ -871,7 +868,6 @@ function pf_forward_unto_source() {
 		}
 		$wait = get_option( 'pf_link_to_source', 0 );
 		$post_check = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'pf_forward_to_origin', true );
-		// var_dump($post_check); die();
 		if ( isset( $_GET['noforward'] ) && true == $_GET['noforward'] ) {
 
 		} else {
@@ -960,22 +956,12 @@ function pf_get_drafted_items( $post_type = 'pf_feed_item' ) {
 
 function filter_for_pf_archives_only( $sql ) {
 	global $wpdb;
-	// if (isset($_GET['pf-see']) && ('archive-only' == $_GET['pf-see'])){
-		$relate = pressforward( 'schema.relationships' );
-		$rt = $relate->table_name;
-		$user_id = get_current_user_id();
-		$read_id = pf_get_relationship_type_id( 'archive' );
 
-	/**		$sql .= " AND {$wpdb->posts}.ID
-				IN (
-					SELECT item_id
-					FROM {$rt}
-					WHERE {$rt}.user_id = {$user_id}
-					AND {$rt}.relationship_type = {$read_id}
-					AND {$rt}.value = 1
-				) ";
-	}
-*/	// var_dump($sql);
+	$relate = pressforward( 'schema.relationships' );
+	$rt = $relate->table_name;
+	$user_id = get_current_user_id();
+	$read_id = pf_get_relationship_type_id( 'archive' );
+
 	return $sql;
 
 }
@@ -1021,7 +1007,7 @@ function prep_archives_query( $q ) {
 	} else {
 		$offset = 0;
 	}
-		// var_dump('see'); die();
+
 		$relate = pressforward( 'schema.relationships' );
 		$rt = $relate->table_name;
 
@@ -1046,7 +1032,6 @@ function prep_archives_query( $q ) {
 		$pagefull = 20;
 		$user_id = get_current_user_id();
 		$read_id = pf_get_relationship_type_id( 'read' );
-		// var_dump($user_id); die();
 		$q = $wpdb->prepare("
 				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 				FROM {$wpdb->posts}, {$wpdb->postmeta}
@@ -1122,11 +1107,8 @@ function prep_archives_query( $q ) {
 				ORDER BY wpm1.meta_value DESC
 				LIMIT {$pagefull} OFFSET {$offset}
 			 ", 'nomination', 'nomination');
-		 // var_dump($q);
 	}// End if().
-	// $archivalposts = $wpdb->get_results($dquerystr, OBJECT);
-	// return $archivalposts;
-	// var_dump('<pre>'); var_dump($q); die();
+
 	return $q;
 }
 
@@ -1157,9 +1139,9 @@ function pf_iterate_cycle_state( $option_name, $option_limit = false, $echo = fa
 		update_option( PF_SLUG . '_' . $option_name, $retrieval_cycle );
 	}
 	if ( $echo ) {
-		echo '<br />' . esc_html( sprintf( __( 'Day: %', 'pressforward' ), $retrieval_cycle['day'] ) );
-		echo '<br />' . esc_html( sprintf( __( 'Week: %', 'pressforward' ), $retrieval_cycle['week'] ) );
-		echo '<br />' . esc_html( sprintf( __( 'Month: %', 'pressforward' ), $retrieval_cycle['month'] ) );
+		echo '<br />' . esc_html( sprintf( __( 'Day: %s', 'pressforward' ), $retrieval_cycle['day'] ) );
+		echo '<br />' . esc_html( sprintf( __( 'Week: %s', 'pressforward' ), $retrieval_cycle['week'] ) );
+		echo '<br />' . esc_html( sprintf( __( 'Month: %s', 'pressforward' ), $retrieval_cycle['month'] ) );
 	} elseif ( ! $option_limit ) {
 		return $retrieval_cycle;
 	} elseif ( $option_limit ) {
@@ -1274,7 +1256,7 @@ function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 				);
 
 				$id = wp_update_post( $wp_args );
-				pressforward( 'controller.metas' )->update_pf_meta( $id, 'item_id', create_feed_item_id( pressforward( 'controller.metas' )->get_post_pf_meta( $item->ID, 'item_link' ), $item->post_title ) );
+				pressforward( 'controller.metas' )->update_pf_meta( $id, 'item_id', pressforward_create_feed_item_id( pressforward( 'controller.metas' )->get_post_pf_meta( $item->ID, 'item_link' ), $item->post_title ) );
 			}
 
 		break; // $feed_item_post_type
@@ -1328,7 +1310,6 @@ function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
  */
 function pf_exclude_queued_items_from_queries( $query ) {
 	$queued = get_option( 'pf_delete_queue' );
-	// var_dump($queued); die();
 	if ( ! $queued || ! is_array( $queued ) ) {
 		return $query;
 	}
@@ -1343,13 +1324,11 @@ function pf_exclude_queued_items_from_queries( $query ) {
 		$post__not_in = array_merge( $post__not_in, $queued );
 		$query->set( 'post__not_in', $post__not_in );
 	}
-
-	// pf_log($query);// die();
 }
+
 // add_action( 'pre_get_posts', 'pf_exclude_queued_items_from_queries', 999 );
 // Filter post results instead of manipulating the query.
 function pf_exclude_queued_items_from_query_results( $posts, $query ) {
-	// var_dump($posts[0]); die();
 	$type = $query->get( 'post_type' );
 	$post_types = array(
 		pressforward('schema.feeds')->post_type,
@@ -1358,7 +1337,6 @@ function pf_exclude_queued_items_from_query_results( $posts, $query ) {
 	);
 	if ( ( empty( $type ) ) || ( in_array( $type, $post_types ) ) ) {
 		$queued = get_option( 'pf_delete_queue' );
-		// var_dump($queued); die();
 		if ( ! $queued || ! is_array( $queued ) ) {
 			return $posts;
 		}

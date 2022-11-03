@@ -3,7 +3,6 @@ header( 'Content-Type: ' . get_option( 'html_type' ) . '; charset=' . get_option
 if (!WP_DEBUG){
 	error_reporting(0);
 }
-// var_dump($_POST);  die();
 set_transient( 'is_multi_author', true );
 
 require_once( ABSPATH . '/wp-admin/includes/meta-boxes.php' );
@@ -31,7 +30,6 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
 	// $post_ID = wp_insert_post(array('post_title' => $title, 'post_type' => 'nomination', 'guid' => $_GET['u']));
 	// $post_ID = $post->ID;
 	// pf_log('Establish post '.$post_ID);
-	// var_dump($_GET['u']); die();
 	global $pf_nt;
 
 	// Set Variables
@@ -143,8 +141,7 @@ if ( isset( $_REQUEST['action'] ) && 'post' == $_REQUEST['action'] ) {
 					return "'" . implode( "','", $sources ) . "'";
 				}
 				$url = wp_kses( urldecode( $url ), null );
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo 'new Array(' . get_images_from_uri( $url ) . ')';
+				echo 'new Array(' . esc_js( get_images_from_uri( $url ) ) . ')';
 			break;
 		}
 		die;
@@ -247,7 +244,7 @@ var photostorage = false;
 						$content = '<object width="400" height="225"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="http://www.vimeo.com/moogaloop.swf?clip_id=' . $video_id . '&amp;server=www.vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1" />	<embed src="http://www.vimeo.com/moogaloop.swf?clip_id=' . $video_id . '&amp;server=www.vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="400" height="225"></embed></object>';
 
 						if ( trim( $selection ) == '' ) {
-							$selection = '<p><a href="http://www.vimeo.com/' . $video_id . '?pg=embed&sec=' . $video_id . '">' . $title . '</a> on <a href="http://vimeo.com?pg=embed&sec=' . $video_id . '">Vimeo</a></p>'; }
+							$selection = '<p><a href="http://www.vimeo.com/' . $video_id . '?pg=embed&sec=' . $video_id . '">' . esc_html( $title ) . '</a> on <a href="http://vimeo.com?pg=embed&sec=' . $video_id . '">Vimeo</a></p>'; }
 					} elseif ( strpos( $selection, '<object' ) !== false ) {
 						$content = $selection;
 					}
@@ -326,7 +323,6 @@ $admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( 
 ?>
 <body class="press-this wp-admin wp-core-ui nominate-this <?php echo esc_attr( $admin_body_class ); ?>">
 <?php
-//var_dump('<pre>',$_GET);
 	if ( isset( $_GET['pf-nominate-this'] ) && 2 === intval( $_GET['pf-nominate-this'] ) ) {
 		$post_url = trailingslashit(get_bloginfo('wpurl')).'wp-admin/edit.php?pf-nominate-this=2';
 		echo '<form action="' . esc_attr( $post_url ) . '&action=post" method="post">';
@@ -367,10 +363,8 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 			if ( isset( $url ) && ! empty( $url ) && ($url) != '' ) {
 				pf_log( 'Getting OpenGraph image on ' );
 				pf_log( $url );
-				// var_dump($_POST['item_link']); die();
 				// Gets OG image
 				$itemFeatImg = pressforward( 'schema.feed_item' )->get_ext_og_img( $url );
-				// var_dump($itemFeatImg); die();
 			} else {
 				$itemFeatImg = false;
 			}
@@ -424,7 +418,6 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 				} else {
 					$feed_nom_class = 'updated';
 				}
-				// var_dump($feed_nom); die();
 				?>
                 <div id="nom-message" class="<?php echo esc_attr( $feed_nom_class ); ?>">
                   <p><strong><?php
@@ -478,12 +471,6 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 			if ( $url != '' ) {
 				$content .= pressforward( 'schema.feed_item' )->get_content_through_aggregator( $url );
 			}
-		}
-
-		if (WP_DEBUG){
-			$cache_errors = ob_get_contents();
-		} else {
-			$cache_errors = '';
 		}
 		ob_end_clean();
 
@@ -542,8 +529,6 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 <?php
 do_action( 'admin_footer' );
 do_action( 'admin_print_footer_scripts' );
-// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-echo '<pre>'.$cache_errors.'</pre>';
 ?>
 <script type="text/javascript">if(typeof wpOnload=='function')wpOnload();</script>
 </body>

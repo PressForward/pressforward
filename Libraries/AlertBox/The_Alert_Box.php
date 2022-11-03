@@ -214,7 +214,6 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 
 		public function remove_alert_on_edit( $post_id ) {
 			$status = $this->status();
-			// var_dump(get_post_status( $post_id )); die();
 			if ( ( '' != get_post_meta( $post_id, self::alert_meta_key(), true ) ) && ( 'publish' == get_post_status( $post_id ) ) ) {
 				self::dismiss_alert( $post_id );
 			} else {
@@ -260,9 +259,8 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			if ( ('publish' != $current_post_status ) && ( $post_status != $current_post_status ) ) {
 				$id = wp_update_post( array( 'ID' => $post_id, 'post_status' => $post_status['status'] ) );
 			}
-			// var_dump($post_status);
-			      // update the post, which calls save_post again
-			// var_dump(self::alert_meta_key().' b'); die();
+
+			  // update the post, which calls save_post again
 			update_post_meta( $post_id, self::alert_meta_key(), '' );
 
 			// re-hook this function
@@ -410,6 +408,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			echo ' ';
 			edit_post_link( __( 'Edit', 'pf' ) );
 			echo ' ';
+
 			if ( current_user_can( 'edit_others_posts' ) ) {
 			  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo '| <a href="#" class="alert-dismisser" title="' . esc_attr__( 'Dismiss', 'pf' ) . '" data-alert-post-id="' . esc_attr( get_the_ID() ) . '" data-alert-dismiss-check="' . esc_attr( self::alert_label( 'dismiss_one_check' ) . ' ' . get_the_title() . '?' ) . '" ' . self::alert_box_type_data( get_post_type( get_the_ID() ) ) . ' >' . esc_html__( 'Dismiss', 'pf' ) . '</a>';
@@ -428,7 +427,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			} elseif ( is_bool( $v ) ) {
 				return '';
 			} else {
-				return 'alert-types="' . implode( ',',$v->query['post_type'] ) . '"';
+				return 'alert-types="' . esc_attr( implode( ',', $v->query['post_type'] ) ). '"';
 			}
 		}
 
@@ -479,7 +478,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			}
 		}
 
-		public static function find_a_setting( $args, $default = array(), $settings ) {
+		public static function find_a_setting( $args, $default = array(), $settings = [] ) {
 			if ( ! empty( $settings ) && ! isset( $_POST ) ) {
 				$settings = $settings;
 			} else {
@@ -551,7 +550,6 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 		}
 
 		public function settings_field_settings_page() {
-			// var_dump('die');die();
 			register_setting( 'general', self::$option_name, array( $this, 'validator' ) );
 			$args = the_alert_box()->settings_fields();
 			add_settings_field( 'alert_box_check', self::alert_label( 'activate_q' ), array( $this, 'settings_field_maker' ), 'general', 'default', $args['switch'] );
@@ -560,7 +558,6 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 		public function validator( $input ) {
 			// $output = get_option( $this->option_name );
 			// update_option($this->option_name, $_POST['alert_box_options']);
-			// var_dump($_POST['alert_box_options']); die();
 			return $input;
 		}
 
@@ -568,10 +565,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 
 			$alert_settings = self::settings_fields();
 			$alert_switch = $alert_settings['switch'];
-			// var_dump('<pre>');
-			// var_dump($alert_switch);
 			$check = self::find_a_setting( $alert_switch, $alert_switch['default'], get_option( self::$option_name, array() ) );// die();
-			// var_dump($check);
 			if ( 'true' == $check ) {
 				$state = true;
 			} else {

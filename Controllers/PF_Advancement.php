@@ -91,7 +91,6 @@ class PF_Advancement implements Advance_System, HasActions {
 			}
 		}
 		// $old_category_terms = get_the_terms($old_post, 'category');
-		// var_dump($old_terms); die();
 		// foreach ($old_terms as $old_term){
 		// wp_set_object_terms($new_post, $old_term->term_id, $old_term->taxonomy, true);
 		// }
@@ -160,7 +159,6 @@ class PF_Advancement implements Advance_System, HasActions {
 		}
 
 		if ( isset( $_POST['post_category'] ) && is_array( $_POST['post_category'] ) ) {
-			// var_dump($_POST['post_category']); die();
 			$categories = array();
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 			foreach ( wp_unslash( $_POST['post_category'] ) as $category_id ) {
@@ -183,7 +181,7 @@ class PF_Advancement implements Advance_System, HasActions {
 	 *
 	 * @return object A standard WP_Query object.
 	 */
-	public function pf_get_posts_by_id_for_check( $post_type = false, $item_id, $ids_only = false ) {
+	public function pf_get_posts_by_id_for_check( $post_type = false, $item_id = null, $ids_only = false ) {
 		global $wpdb;
 		// If the item is less than 24 hours old on nomination, check the whole database.
 		// $theDate = getdate();
@@ -208,7 +206,6 @@ class PF_Advancement implements Advance_System, HasActions {
 		}
 
 		$postsAfter = new \WP_Query( $r );
-		// var_dump($postsAfter, $r); die();
 		pf_log( ' Checking for posts with item ID ' . $item_id . ' returned query with ' . $postsAfter->post_count . ' items.' );
 		// pf_log($postsAfter);
 		return $postsAfter;

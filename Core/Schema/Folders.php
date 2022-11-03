@@ -113,7 +113,6 @@ class Folders implements HasActions, HasFilters {
 	}
 
 	public function is_feed_term( $id ) {
-		// var_dump($id);
 		$termcheck = term_exists( (int) $id, $this->tag_taxonomy );
 		if ( empty( $termcheck ) ) {
 			return false;
@@ -148,11 +147,9 @@ class Folders implements HasActions, HasFilters {
 			}
 		} elseif ( is_numeric( $ids ) || is_string( $ids ) ) {
 			if ( ! $this->is_feed_term( $ids ) ) {
-				var_dump( $ids . ' not a term in ' . $this->tag_taxonomy );
 				return false;
 			}
 			$children_terms = get_term_children( $ids, $this->tag_taxonomy );
-			// var_dump($children_terms);
 			foreach ( $children_terms as $child ) {
 				$children[ $child ] = $this->get_feed_folders( $child );
 			}
@@ -203,7 +200,6 @@ class Folders implements HasActions, HasFilters {
 				),
 			);
 		} elseif ( is_array( $ids ) ) {
-			// var_dump($ids); die();
 			foreach ( $ids as $id ) {
 				$folder_set[ $id ] = $this->get_feed_folders( $id );
 			}
@@ -250,7 +246,6 @@ class Folders implements HasActions, HasFilters {
 
 	public function the_feeds_without_folders() {
 		global $wp_version;
-		// var_dump((float)$wp_version);
 		if ( 4.0 < (float) $wp_version ) {
 			$the_other_feeds = $this->get_feeds_without_folders();
 			foreach ( $the_other_feeds as $a_feed_id ) {
@@ -268,7 +263,6 @@ class Folders implements HasActions, HasFilters {
 		?>
 		<ul class="feed_folders">
 				<?php
-				// var_dump($obj);
 				foreach ( $obj as $folder ) {
 					?>
 					<li class="feed_folder" id="folder-<?php echo esc_attr( $folder['term_id'] ); ?>">
@@ -293,7 +287,6 @@ class Folders implements HasActions, HasFilters {
 		}
 		$this->the_folder( $folder );
 
-		// var_dump($folder);
 		if ( ! empty( $folder['children']['folders'] ) ) {
 			foreach ( $folder['children']['folders'] as $subfolder ) {
 				?>
@@ -330,7 +323,6 @@ class Folders implements HasActions, HasFilters {
 	}
 
 	public function the_folder( $folder ) {
-		// var_dump($folder);
 		if ( is_array( $folder ) ) {
 			$term_obj = $folder['term'];
 		} else {

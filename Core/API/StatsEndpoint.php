@@ -320,7 +320,6 @@ class StatsEndpoint implements HasActions {
 			}
 			$args['date_query'] = $date_query;
 			$q = $this->stats->stats_query_for_pf_published_posts( $args );
-			// var_dump($q);
 			$ids     = $q->posts;
 			$authors = array();
 			foreach ( $ids as $id ) {

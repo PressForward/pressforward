@@ -65,12 +65,9 @@ class OPML_Maker {
 					}
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo $this->assemble_tag( 'outline', $folder );
-						// var_dump($folder);
 						$feeds = $this->obj->get_feeds_by_folder( $folder->slug );
-						// var_dump($feeds);
 					if ( ! empty( $feeds ) ) {
 						foreach ( $feeds as $feed ) {
-							// var_dump($feed);
 							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							echo "\t\t\t\t" . $this->assemble_tag( 'outline',$feed,true,array( 'folder', 'feedUrl' ) );
 						}

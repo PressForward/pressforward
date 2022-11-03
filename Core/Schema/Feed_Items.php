@@ -300,7 +300,7 @@ class Feed_Items implements HasActions, HasFilters {
 			'post_parent'  => $r['post_parent'],
 		);
 		// pf_log($r);
-		$item_id = create_feed_item_id( $r['item_link'], $r['item_title'] );
+		$item_id = pressforward_create_feed_item_id( $r['item_link'], $r['item_title'] );
 		$post_id = pressforward( 'controller.items' )->insert_post( $wp_args, false, $item_id );
 		pf_log( 'Post created with ID of ' . $post_id );
 
@@ -484,7 +484,6 @@ class Feed_Items implements HasActions, HasFilters {
 		$count     = wp_count_posts( pf_feed_item_post_type() );
 		$pub_count = $count->publish;
 		$pages     = $pub_count / 100;
-		// var_dump($pages);
 		if ( ( $pages < 1 ) && ( $pages > 0 ) ) {
 			$pages = 1;
 		} else {
@@ -500,7 +499,6 @@ class Feed_Items implements HasActions, HasFilters {
 				'fields'                 => 'ids',
 			);
 			$archiveQuery = new \WP_Query( $args );
-			// var_dump($archiveQuery);
 			if ( ! empty( $archiveQuery ) ) {
 				foreach ( $archiveQuery->posts as $key => $post_id ) {
 					// Switch the delete on to wipe rss archive posts from the database for testing.
@@ -1022,7 +1020,6 @@ class Feed_Items implements HasActions, HasFilters {
 				$imgTitle         = $imgParts['filename'];
 				$resolved_img_ext = pressforward( 'schema.feed_item' )->resolve_image_type( $ogImage );
 			if ( ( $resolved_img_ext != ( 'jpg' || 'png' || 'jrpg' || 'bmp' || 'gif' || 'jpeg' ) ) || ( $imgExt != ( 'jpg' || 'png' || 'jrpg' || 'bmp' || 'gif' || 'jpeg' ) ) ) {
-				// var_dump($resolved_img_ext); die();
 				return;
 			}
 
@@ -1038,7 +1035,6 @@ class Feed_Items implements HasActions, HasFilters {
 				// '/' . get_option(upload_path, 'wp-content/uploads') . '/' . date("o")
 				$uploadDir  = wp_upload_dir();
 				$ogCacheImg = $uploadDir['path'] . '/' . $postID . '-' . $imgTitle . '.' . $resolved_img_ext;
-				// var_dump($ogCacheImg); die();
 			if ( ! file_exists( $ogCacheImg ) ) {
 
 				$result = copy( $ogImage, $ogCacheImg );

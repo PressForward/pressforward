@@ -32,8 +32,7 @@ wp.api.loadPromise.done(function () {
 			//window.pf.location = 'authors';
 			window.pf.stats.authors = {
 				endpoint: function () {
-
-					return wp.api.utils.getRootUrl() + 'wp-json/pf/v1/stats/authors';
+					return wpApiSettings.root + 'pf/v1/stats/authors';
 				},
 				arguments: function (page) {
 					return window.pf.stats.authors.endpoint() + '?page=' + page;
@@ -116,7 +115,7 @@ wp.api.loadPromise.done(function () {
 		if ('stats' === window.pf.location || (jQuery('body').hasClass("pressforward_page_pf-tools"))) {
 			window.pf.stats.valid_posts = {
 				endpoint: function () {
-					return wp.api.utils.getRootUrl() + 'wp-json/pf/v1/stats/pf_posted';
+					return wpApiSettings.root + 'pf/v1/stats/pf_posted';
 				},
 				arguments: function (page) {
 					return window.pf.stats.valid_posts.endpoint() + '?page=' + page;

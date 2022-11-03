@@ -41,7 +41,6 @@ class LibrariesProvider extends ServiceProvider {
 		 * <pre><code><?php
 		 *  $url = 'http://hacktext.com/2015/03/the-myopic-web-shrinking-the-filter-bubble-with-dropcat-2212/';
 		 *  $bob = pressforward('library.readability');
-		 *  var_dump($bob(wp_remote_get( $url )['body'], $url));
 		 *
 		 * @var [type]
 		 */

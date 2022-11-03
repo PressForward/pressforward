@@ -26,7 +26,6 @@ class PFTemplater {
 		if ( isset( $vars['user_ID'] ) && ( true === $vars['user_ID'] ) ) {
 			$vars['user_ID'] = $this->users->get_current_user_id();
 		}
-		// if (WP_DEBUG){ var_dump( $view_file ); }
 		if ( ! file_exists( $view_file ) ) {
 			if ( PF_DEBUG ) {
 				pf_log( $view_file, true, false, true ); }
@@ -106,12 +105,9 @@ class PFTemplater {
 	}
 
 	public function settings_tab_group( $current, $page_slug = 'settings' ) {
-		// var_dump($page_slug); die();
 		$tabs = $this->permitted_tabs( $page_slug );
-		// var_dump($page_slug); die();
 		ob_start();
 		foreach ( $tabs as $tab => $tab_meta ) {
-			// var_dump( 'pf_do_'.$page_slug.'_tab_'.$tab ); //die();
 			if ( current_user_can( $tab_meta['cap'] ) ) {
 				if ( $current == $tab ) {
 					$class = 'pftab tab active';
@@ -123,12 +119,8 @@ class PFTemplater {
 					<?php
 						// like: pf_do_pf-add-feeds_tab_primary_feed_type
 					if ( has_action( 'pf_do_' . $page_slug . '_tab_' . $tab ) || ! array_key_exists( $tab, $tabs ) ) {
-						// var_dump('pf_do_'.$page_slug.'_tab_'.$tab); die();
-						// var_dump( 'pf_do_'.$page_slug.'_tab_'.$tab );
 						do_action( 'pf_do_' . $page_slug . '_tab_' . $tab );
 					} else {
-						// var_dump( 'pf_do_'.$page_slug.'_tab_'.$tab );
-						// var_dump('pf_do_'.$page_slug.'_tab_'.$tab); //die();
 						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo $this->the_settings_tab( $tab, $page_slug );
 					}
@@ -151,9 +143,6 @@ class PFTemplater {
 		$vars = array(
 			'current' => $tab,
 		);
-		// var_dump('<pre>');
-		// var_dump(debug_backtrace());
-		// var_dump($page_slug.' - '.$tab); die();
 		return $this->get_view( array( $page_slug, 'tab-' . $tab ), $vars );
 	}
 
@@ -218,113 +207,115 @@ class PFTemplater {
 	public function nav_bar( $page = 'pf-menu' ) {
 		?>
 		<div class="display">
-			<div class="pf-btns pull-left btn-toolbar">
-				<?php if ( 'pf-review' != $page ) { ?>
-					<div class="dropdown pf-view-dropdown btn-group" role="group">
-					  <button class="btn btn-default btn-small dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-						<?php esc_html_e( 'View', 'pf' ); ?>
+			<div class="pf-btns btn-toolbar">
+				<div class="pf-btns-left">
+					<?php if ( 'pf-review' != $page ) { ?>
+						<div class="dropdown pf-view-dropdown btn-group" role="group">
+						  <button class="btn btn-default btn-small dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+							<?php esc_html_e( 'View', 'pf' ); ?>
+							<span class="caret"></span>
+						  </button>
+							<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+							<?php
+								$view_check = get_user_meta( pressforward( 'controller.template_factory' )->user_id(), 'pf_user_read_state', true );
+							if ( 'golist' == $view_check ) {
+								$this->dropdown_option( __( 'Grid', 'pf' ), 'gogrid', 'pf-top-menu-selection display-state' );
+								$this->dropdown_option( __( 'List', 'pf' ), 'golist', 'pf-top-menu-selection unset display-state' );
+							} else {
+								$this->dropdown_option( __( 'Grid', 'pf' ), 'gogrid', 'pf-top-menu-selection unset display-state' );
+								$this->dropdown_option( __( 'List', 'pf' ), 'golist', 'pf-top-menu-selection display-state' );
+							}
+								$pf_user_scroll_switch = get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() );
+								// empty or true
+							if ( 'false' == $pf_user_scroll_switch ) {
+								$this->dropdown_option( __( 'Infinite Scroll (Reloads Page)', 'pf' ), 'goinfinite', 'pf-top-menu-selection scroll-toggler' );
+							} else {
+								$this->dropdown_option( __( 'Paginate (Reloads Page)', 'pf' ), 'gopaged', 'pf-top-menu-selection scroll-toggler' );
+							}
+
+							?>
+							 </ul>
+						</div>
+					<?php } ?>
+					<div class="dropdown pf-filter-dropdown btn-group" role="group">
+					  <button class="btn btn-default dropdown-toggle btn-small" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
+						<?php esc_html_e( 'Filter', 'pf' ); ?>
 						<span class="caret"></span>
 					  </button>
-						<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+					  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
 						<?php
-							$view_check = get_user_meta( pressforward( 'controller.template_factory' )->user_id(), 'pf_user_read_state', true );
-						if ( 'golist' == $view_check ) {
-							$this->dropdown_option( __( 'Grid', 'pf' ), 'gogrid', 'pf-top-menu-selection display-state' );
-							$this->dropdown_option( __( 'List', 'pf' ), 'golist', 'pf-top-menu-selection unset display-state' );
+						if ( 'pf-review' != $page ) {
+							$this->dropdown_option( __( 'Reset filter', 'pf' ), 'showNormal' );
+							$this->dropdown_option( __( 'My starred', 'pf' ), 'showMyStarred' );
+							$this->dropdown_option( __( 'Show hidden', 'pf' ), 'showMyHidden' );
+							$this->dropdown_option( __( 'My nominations', 'pf' ), 'showMyNominations' );
+							$this->dropdown_option( __( 'Unread', 'pf' ), 'showUnread' );
+							$this->dropdown_option( __( 'Drafted', 'pf' ), 'showDrafted' );
 						} else {
-							$this->dropdown_option( __( 'Grid', 'pf' ), 'gogrid', 'pf-top-menu-selection unset display-state' );
-							$this->dropdown_option( __( 'List', 'pf' ), 'golist', 'pf-top-menu-selection display-state' );
-						}
-							$pf_user_scroll_switch = get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() );
-							// empty or true
-						if ( 'false' == $pf_user_scroll_switch ) {
-							$this->dropdown_option( __( 'Infinite Scroll (Reloads Page)', 'pf' ), 'goinfinite', 'pf-top-menu-selection scroll-toggler' );
-						} else {
-							$this->dropdown_option( __( 'Paginate (Reloads Page)', 'pf' ), 'gopaged', 'pf-top-menu-selection scroll-toggler' );
-						}
+							if ( isset( $_POST['search-terms'] ) || isset( $_GET['by'] ) || isset( $_GET['pf-see'] ) || isset( $_GET['reveal'] ) ) {
+								$this->dropdown_option( __( 'Reset filter', 'pf' ), 'showNormalNominations' );
+							}
+							$this->dropdown_option( __( 'My starred', 'pf' ), 'sortstarredonly', 'starredonly', null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=starred-only' ) );
+							// $this->dropdown_option( __( 'Toggle visibility of archived', 'pf' ), 'showarchived' );
+							$this->dropdown_option( __( 'Only archived', 'pf' ), 'showarchiveonly', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=archive-only' ) );
+							$this->dropdown_option( __( 'Unread', 'pf' ), 'showUnreadOnly', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=unread-only' ) );
+							$this->dropdown_option( __( 'Drafted', 'pf' ), 'showDrafted', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=drafted-only' ) );
 
+						}
 						?>
-						 </ul>
+					  </ul>
 					</div>
-				<?php } ?>
-				<div class="dropdown pf-filter-dropdown btn-group" role="group">
-				  <button class="btn btn-default dropdown-toggle btn-small" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
-					<?php esc_html_e( 'Filter', 'pf' ); ?>
-					<span class="caret"></span>
-				  </button>
-				  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
-					<?php
-					if ( 'pf-review' != $page ) {
-						$this->dropdown_option( __( 'Reset filter', 'pf' ), 'showNormal' );
-						$this->dropdown_option( __( 'My starred', 'pf' ), 'showMyStarred' );
-						$this->dropdown_option( __( 'Show hidden', 'pf' ), 'showMyHidden' );
-						$this->dropdown_option( __( 'My nominations', 'pf' ), 'showMyNominations' );
-						$this->dropdown_option( __( 'Unread', 'pf' ), 'showUnread' );
-						$this->dropdown_option( __( 'Drafted', 'pf' ), 'showDrafted' );
-					} else {
-						if ( isset( $_POST['search-terms'] ) || isset( $_GET['by'] ) || isset( $_GET['pf-see'] ) || isset( $_GET['reveal'] ) ) {
-							$this->dropdown_option( __( 'Reset filter', 'pf' ), 'showNormalNominations' );
+					<div class="dropdown pf-sort-dropdown btn-group" role="group">
+					  <button class="btn btn-default dropdown-toggle btn-small" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-expanded="true">
+						<?php esc_html_e( 'Sort', 'pf' ); ?>
+						<span class="caret"></span>
+					  </button>
+					  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu3">
+						<?php
+							$this->dropdown_option( __( 'Reset', 'pf' ), 'sort-reset' );
+							$this->dropdown_option( __( 'Date of item', 'pf' ), 'sortbyitemdate' );
+							$this->dropdown_option( __( 'Date retrieved', 'pf' ), 'sortbyfeedindate' );
+						if ( 'pf-review' == $page ) {
+							$this->dropdown_option( __( 'Date nominated', 'pf' ), 'sortbynomdate' );
+							$this->dropdown_option( __( 'Nominations received', 'pf' ), 'sortbynomcount' );
 						}
-						$this->dropdown_option( __( 'My starred', 'pf' ), 'sortstarredonly', 'starredonly', null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=starred-only' ) );
-						// $this->dropdown_option( __( 'Toggle visibility of archived', 'pf' ), 'showarchived' );
-						$this->dropdown_option( __( 'Only archived', 'pf' ), 'showarchiveonly', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=archive-only' ) );
-						$this->dropdown_option( __( 'Unread', 'pf' ), 'showUnreadOnly', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=unread-only' ) );
-						$this->dropdown_option( __( 'Drafted', 'pf' ), 'showDrafted', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=drafted-only' ) );
-
-					}
-					?>
-				  </ul>
+						?>
+						<?php // <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Feed name</a></li> ?>
+					  </ul>
+					</div>
+					<div class="btn-group" role="group">
+						<a href="https://pressforwardadmin.gitbooks.io/pressforward-documentation/content/" target="_blank" id="pf-help" class="btn btn-small"><?php esc_html_e( 'Need help?', 'pf' ); ?></a>
+					</div>
 				</div>
-				<div class="dropdown pf-sort-dropdown btn-group" role="group">
-				  <button class="btn btn-default dropdown-toggle btn-small" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-expanded="true">
-					<?php esc_html_e( 'Sort', 'pf' ); ?>
-					<span class="caret"></span>
-				  </button>
-				  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu3">
+
+				<div class="pf-btns-right">
+				<!-- or http://thenounproject.com/noun/list/#icon-No9479? -->
 					<?php
-						$this->dropdown_option( __( 'Reset', 'pf' ), 'sort-reset' );
-						$this->dropdown_option( __( 'Date of item', 'pf' ), 'sortbyitemdate' );
-						$this->dropdown_option( __( 'Date retrieved', 'pf' ), 'sortbyfeedindate' );
+					if ( function_exists( 'the_alert_box' ) ) {
+											add_filter( 'ab_alert_specimens_post_types', array( $this, 'alert_filterer' ) );
+											add_filter( 'ab_alert_safe', array( $this, 'alert_safe_filterer' ) );
+											$alerts = pressforward( 'library.alertbox' )->get_specimens();
+											remove_filter( 'ab_alert_safe', array( $this, 'alert_safe_filterer' ) );
+											remove_filter( 'ab_alert_specimens_post_types', array( $this, 'alert_filterer' ) );
+					}
+
 					if ( 'pf-review' == $page ) {
-						$this->dropdown_option( __( 'Date nominated', 'pf' ), 'sortbynomdate' );
-						$this->dropdown_option( __( 'Nominations received', 'pf' ), 'sortbynomcount' );
+						echo '<button type="submit" class="delete btn btn-danger btn-small float-left" id="archivenoms" value="' . esc_attr__( 'Archive all', 'pf' ) . '" >' . esc_attr__( 'Archive all', 'pf' ) . '</button>';
 					}
+
+						$user_ID          = get_current_user_id();
+						$pf_user_menu_set = get_user_option( 'pf_user_menu_set', $user_ID );
+					if ( 'true' == $pf_user_menu_set ) {
+						if ( ! empty( $alerts ) && ( 0 != $alerts->post_count ) ) {
+							echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . esc_html__( 'Menu', 'pf' ) . ' <i class="icon-tasks"></i> (!)</a>';
+						} else {
+							echo '<a class="btn btn-small" id="gomenu" href="#">' . esc_html__( 'Menu', 'pf' ) . ' <i class="icon-tasks"></i></a>';
+						}
+					}
+						echo '<a class="btn btn-small" id="gofolders" href="#">' . esc_html__( 'Folders', 'pf' ) . '</a>';
 					?>
-					<?php // <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Feed name</a></li> ?>
-				  </ul>
+
 				</div>
-				<div class="btn-group" role="group">
-					<a href="https://pressforwardadmin.gitbooks.io/pressforward-documentation/content/" target="_blank" id="pf-help" class="btn btn-small"><?php esc_html_e( 'Need help?', 'pf' ); ?></a>
-				</div>
-			</div>
-
-			<div class="pull-right text-right">
-			<!-- or http://thenounproject.com/noun/list/#icon-No9479? -->
-				<?php
-				if ( function_exists( 'the_alert_box' ) ) {
-										add_filter( 'ab_alert_specimens_post_types', array( $this, 'alert_filterer' ) );
-										add_filter( 'ab_alert_safe', array( $this, 'alert_safe_filterer' ) );
-										$alerts = pressforward( 'library.alertbox' )->get_specimens();
-										remove_filter( 'ab_alert_safe', array( $this, 'alert_safe_filterer' ) );
-										remove_filter( 'ab_alert_specimens_post_types', array( $this, 'alert_filterer' ) );
-				}
-
-				if ( 'pf-review' == $page ) {
-					echo '<button type="submit" class="delete btn btn-danger btn-small pull-left" id="archivenoms" value="' . esc_attr__( 'Archive all', 'pf' ) . '" >' . esc_attr__( 'Archive all', 'pf' ) . '</button>';
-				}
-
-					$user_ID          = get_current_user_id();
-					$pf_user_menu_set = get_user_option( 'pf_user_menu_set', $user_ID );
-				if ( 'true' == $pf_user_menu_set ) {
-					if ( ! empty( $alerts ) && ( 0 != $alerts->post_count ) ) {
-						echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . esc_html__( 'Menu', 'pf' ) . ' <i class="icon-tasks"></i> (!)</a>';
-					} else {
-						echo '<a class="btn btn-small" id="gomenu" href="#">' . esc_html__( 'Menu', 'pf' ) . ' <i class="icon-tasks"></i></a>';
-					}
-				}
-					echo '<a class="btn btn-small" id="gofolders" href="#">' . esc_html__( 'Folders', 'pf' ) . '</a>';
-				?>
-
 			</div>
 		</div><!-- End btn-group -->
 		<?php
@@ -387,7 +378,8 @@ class PFTemplater {
 			do_action( 'pf_output_items', $item, $c, $format );
 			return;
 		}
-		$itemTagsArray        = explode( ',', $item['item_tags'] );
+
+		$itemTagsArray        = is_array( $item['item_tags'] ) ? $item['item_tags'] : explode( ',', $item['item_tags'] );
 		$itemTagClassesString = '';
 				$user_id      = $current_user->ID;
 		foreach ( $itemTagsArray as $itemTag ) {
@@ -430,7 +422,6 @@ class PFTemplater {
 		}
 		if ( $format === 'nomination' ) {
 			// $item = array_merge($metadata, $item);
-			// var_dump($item);
 			echo '<article class="feed-item entry nom-container ' . esc_attr( $archived_status_string ) . ' ' . esc_attr( get_pf_nom_class_tags( array( $metadata['submitters'], $metadata['nom_id'], $metadata['item_author'], $metadata['item_tags'], $metadata['item_id'] ) ) ) . ' ' . esc_attr( $readClass ) . '" id="' . esc_attr( $metadata['nom_id'] ) . '" style="' . esc_attr( $dependent_style ) . '" tabindex="' . esc_attr( $c ) . '" pf-post-id="' . esc_attr( $metadata['nom_id'] ) . '" pf-item-post-id="' . esc_attr( $id_for_comments ) . '" pf-feed-item-id="' . esc_attr( $metadata['item_id'] ) . '" pf-schema="read" pf-schema-class="article-read">';
 			?>
 			 <a style="display:none;" name="modal-<?php echo esc_attr( $metadata['item_id'] ); ?>"></a>
@@ -477,7 +468,7 @@ class PFTemplater {
 			?>
 			<header>
 			<?php
-				echo '<h1 class="item_title"><a href="#modal-' . esc_attr( $item['item_id'] ) . '" class="item-expander schema-actor" role="button" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . esc_html( self::display_a( $item['item_title'], 'title' ) ) . '</a></h1>';
+				echo '<h1 class="item_title"><a href="#modal-' . esc_attr( $item['item_id'] ) . '" class="item-expander schema-actor" role="button" data-bs-target="#modal-' . esc_attr( $item['item_id'] ) . '" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . esc_html( self::display_a( $item['item_title'], 'title' ) ) . '</a></h1>';
 				echo '<p class="source_title">' . esc_html( self::display_a( get_the_source_title( $id_for_comments ), 'source' ) ) . '</p>';
 			if ( $format === 'nomination' ) {
 				?>
@@ -510,34 +501,34 @@ class PFTemplater {
 				$sourceLink = 'http://' . $url_array['host'];
 			}
 									// http://nicolasgallagher.com/pure-css-speech-bubbles/demo/
-									$ibox      = '<div class="feed-item-info-box" id="info-box-' . $item['item_id'] . '">';
+									$ibox      = '<div class="feed-item-info-box" id="info-box-' . esc_attr( $item['item_id'] ) . '">';
 										$ibox .= '
-										' . __( 'Feed', 'pf' ) . ': <span class="feed_title">' . get_the_source_title( $id_for_comments ) . '</span><br />
-										' . __( 'Posted', 'pf' ) . ': <span class="feed_posted">' . date( 'M j, Y; g:ia', strtotime( $item['item_date'] ) ) . '</span><br />
-										' . __( 'Retrieved', 'pf' ) . ': <span class="item_meta item_meta_added_date">' . date( 'M j, Y; g:ia', strtotime( $item['item_added_date'] ) ) . '</span><br />
-										' . __( 'Authors', 'pf' ) . ': <span class="item_authors">' . $item['item_author'] . '</span><br />
-										' . __( 'Origin', 'pf' ) . ': <span class="source_name"><a target ="_blank" href="' . $sourceLink . '">' . $sourceLink . '</a></span><br />
-										' . __( 'Original Item', 'pf' ) . ': <span class="source_link"><a href="' . $item['item_link'] . '" class="item_url" target ="_blank">' . $item['item_title'] . '</a></span><br />
-										' . __( 'Tags', 'pf' ) . ': <span class="item_tags">' . $item['item_tags'] . '</span><br />
-										' . __( 'Times repeated in source', 'pf' ) . ': <span class="feed_repeat sortable_sources_repeat">' . $item['source_repeat'] . '</span><br />
+										' . esc_html__( 'Feed', 'pf' ) . ': <span class="feed_title">' . esc_html( get_the_source_title( $id_for_comments ) ) . '</span><br />
+										' . esc_html__( 'Posted', 'pf' ) . ': <span class="feed_posted">' . esc_html( date( 'M j, Y; g:ia', strtotime( $item['item_date'] ) ) ) . '</span><br />
+										' . esc_html__( 'Retrieved', 'pf' ) . ': <span class="item_meta item_meta_added_date">' . esc_html( date( 'M j, Y; g:ia', strtotime( $item['item_added_date'] ) ) ) . '</span><br />
+										' . esc_html__( 'Authors', 'pf' ) . ': <span class="item_authors">' . esc_html( $item['item_author'] ) . '</span><br />
+										' . esc_html__( 'Origin', 'pf' ) . ': <span class="source_name"><a target ="_blank" href="' . esc_attr( $sourceLink ) . '">' . esc_html( $sourceLink ) . '</a></span><br />
+										' . esc_html__( 'Original Item', 'pf' ) . ': <span class="source_link"><a href="' . esc_attr( $item['item_link'] ) . '" class="item_url" target ="_blank">' . esc_html( $item['item_title'] ) . '</a></span><br />
+										' . esc_html__( 'Tags', 'pf' ) . ': <span class="item_tags">' . esc_html( implode( ',', $itemTagsArray ) ) . '</span><br />
+										' . esc_html__( 'Times repeated in source', 'pf' ) . ': <span class="feed_repeat sortable_sources_repeat">' . esc_html( $item['source_repeat'] ) . '</span><br />
 										';
 			if ( $format === 'nomination' ) {
 
-				$ibox .= __( 'Number of nominations received', 'pf' )
-				. ': <span class="sortable_nom_count">' . $metadata['nom_count'] . '</span><br />'
-				. __( 'First submitted by', 'pf' )
-				. ': <span class="first_submitter">' . $metadata['submitters'] . '</span><br />'
-				. __( 'Nominated on', 'pf' )
-				. ': <span class="nominated_on">' . date( 'M j, Y; g:ia', strtotime( $metadata['date_nominated'] ) ) . '</span><br />'
-				. __( 'Nominated by', 'pf' )
-				. ': <span class="nominated_by">' . get_the_nominating_users() . '</span><br />';
+				$ibox .= esc_html__( 'Number of nominations received', 'pf' )
+				. ': <span class="sortable_nom_count">' . esc_html( $metadata['nom_count'] ) . '</span><br />'
+				. esc_html__( 'First submitted by', 'pf' )
+				. ': <span class="first_submitter">' . esc_html( $metadata['submitters'] ) . '</span><br />'
+				. esc_html__( 'Nominated on', 'pf' )
+				. ': <span class="nominated_on">' . esc_html( date( 'M j, Y; g:ia', strtotime( $metadata['date_nominated'] ) ) ) . '</span><br />'
+				. esc_html__( 'Nominated by', 'pf' )
+				. ': <span class="nominated_by">' . esc_html( get_the_nominating_users() ) . '</span><br />';
 			}
 
 										$draft_id = pf_is_drafted( $feed_item_id );
 			if ( false != $draft_id && ( current_user_can( 'edit_post', $draft_id ) ) ) {
 				// http://codex.wordpress.org/Function_Reference/edit_post_link
 				$edit_url = get_edit_post_link( $draft_id );
-				$ibox    .= '<br /><a class="edit_draft_from_info_box" href="' . $edit_url . '">' . __( 'Edit the draft based on this post.', 'pf' ) . '</a><br/>';
+				$ibox    .= '<br /><a class="edit_draft_from_info_box" href="' . esc_attr( $edit_url ) . '">' . esc_html__( 'Edit the draft based on this post.', 'pf' ) . '</a><br/>';
 			}
 
 									$ibox .= '</div>';
@@ -597,78 +588,81 @@ class PFTemplater {
 			?>
 			<!-- Begin Modal -->
 			<div id="modal-<?php echo esc_attr( $item['item_id'] ); ?>" class="modal hide fade pfmodal" tabindex="-1" role="dialog" aria-labelledby="modal-<?php echo esc_attr( $item['item_id'] ); ?>-label" aria-hidden="true" pf-item-id="<?php echo esc_attr( $item['item_id'] ); ?>" pf-post-id="<?php echo esc_attr( $item['post_id'] ); ?>" pf-readability-status="<?php echo esc_attr( $item['readable_status'] ); ?>">
-		  <div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-			<div class="modal-mobile-nav pull-right hidden-desktop">
-				<div class="mobile-goPrev pull-left">
+				<div class="modal-dialog">
+					<div class="modal-header">
+						<div class="modal-header-left">
+							<div class="modal-mobile-nav float-right d-none d-sm-block d-md-none">
+								<div class="mobile-goPrev float-left"></div>
+								<div class="mobile-goNext float-right"></div>
+							</div>
 
-				</div>
-				<div class="mobile-goNext pull-right">
+							<h3 id="modal-<?php echo esc_html( $item['item_id'] ); ?>-label" class="modal_item_title"><?php echo esc_html( $item['item_title'] ); ?></h3>
+							<?php
+								echo '<em>' . esc_html__( 'Source', 'pf' ) . ': ' . esc_html( get_the_source_title( $id_for_comments ) ) . '</em> | ';
+								echo esc_html__( 'Author', 'pf' ) . ': ' . esc_html( get_the_item_author( $id_for_comments ) );
+							?>
+						</div>
 
-				</div>
-			</div>
-			<h3 id="modal-<?php echo esc_html( $item['item_id'] ); ?>-label" class="modal_item_title"><?php echo esc_html( $item['item_title'] ); ?></h3>
-			<?php
-				echo '<em>' . esc_html__( 'Source', 'pf' ) . ': ' . esc_html( get_the_source_title( $id_for_comments ) ) . '</em> | ';
-				echo esc_html__( 'Author', 'pf' ) . ': ' . esc_html( get_the_item_author( $id_for_comments ) );
-			?>
-		  </div>
-		  <div class="row-fluid modal-body-row">
-			  <div class="modal-body span9" id="modal-body-<?php echo esc_attr( $item['item_id'] ); ?>">
-				<div class="readability-wait"></div><div class="main-text">
-				<?php
-				$contentObj = pressforward( 'library.htmlchecker' );
-				$text       = $contentObj->closetags( $item['item_content'] );
-				$text       = apply_filters( 'the_content', $text );
-				// global $wp_embed;
-				// $wp_embed->autoembed($text);
-				$embed = $this->show_embed( $id_for_comments );
-				if ( false != $embed ) {
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo $embed;
-				}
-				print_r( $text );
+						<button type="button" class="btn-close float-right" data-bs-dismiss="modal" aria-label="<?php esc_attr_e( 'Close', 'pressforward' ); ?>"></button>
+					</div><!-- .modal-header -->
 
-				?>
-				</div>
-			  </div>
-			  <div class="modal-sidebar span3 hidden-tablet">
-				<div class="goPrev modal-side-item row-fluid">
+					<div class="row modal-body-row">
+						<div class="modal-body col-9" id="modal-body-<?php echo esc_attr( $item['item_id'] ); ?>">
+							<div class="readability-wait"></div>
+							<div class="main-text">
+								<?php
+								$contentObj = pressforward( 'library.htmlchecker' );
+								$text       = $contentObj->closetags( $item['item_content'] );
+								$text       = apply_filters( 'the_content', $text );
+								// global $wp_embed;
+								// $wp_embed->autoembed($text);
+								$embed = $this->show_embed( $id_for_comments );
+								if ( false != $embed ) {
+									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+									echo $embed;
+								}
+								print_r( $text );
 
-				</div>
-				<div class="modal-comments modal-side-item row-fluid">
+								?>
+							</div>
+						</div>
 
-				</div>
-				<div class="goNext modal-side-item row-fluid">
+						<div class="modal-sidebar col-3 hidden-tablet">
+							<div class="goPrev modal-side-item row-fluid"></div>
+							<div class="modal-comments modal-side-item row-fluid"></div>
+							<div class="goNext modal-side-item row-fluid"></div>
+						</div>
+					</div><!-- .modal-body-row -->
 
-				</div>
-			  </div>
-			  </div>
-			  <div class="modal-footer">
-				<div class="row-fluid">
-				<div class="pull-left original-link">
-				<a target="_blank" href="<?php echo esc_attr( $item['item_link'] ); ?>"><?php esc_html_e( 'Read Original', 'pf' ); ?></a>
-					<?php
-					// if ($format != 'nomination'){
-					?>
-					| <a class="modal-readability-reset" target="#readable" href="<?php echo esc_attr( $item['item_link'] ); ?>" pf-item-id="<?php echo esc_attr( $item['item_id'] ); ?>" pf-post-id="<?php echo esc_attr( $item['post_id'] ); ?>" pf-modal-id="#modal-<?php echo esc_attr( $item['item_id'] ); ?>"><?php esc_html_e( 'Reset Readability', 'pf' ); ?></a>
-						<?php
-						// }
-					?>
-				</div>
-				<div class="pull-right">
-				<?php
-				$this->form_of_actions_btns( $item, $c, true, $format, $metadata, $id_for_comments );
-				?>
-				</div>			</div>
-			<div class="item-tags pull-left row-fluid">
-			<?php
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo '<strong>' . esc_attr__( 'Item Tags', 'pf' ) . '</strong>: ' . $item['item_tags'];
-			?>
-			</div>
-		  </div>
-			</div>
+					<div class="modal-footer">
+						<div class="footer-top">
+							<div class="original-link">
+								<a target="_blank" href="<?php echo esc_attr( $item['item_link'] ); ?>"><?php esc_html_e( 'Read Original', 'pf' ); ?></a>
+								<?php
+								// if ($format != 'nomination'){
+								?>
+								| <a class="modal-readability-reset" target="#readable" href="<?php echo esc_attr( $item['item_link'] ); ?>" pf-item-id="<?php echo esc_attr( $item['item_id'] ); ?>" pf-post-id="<?php echo esc_attr( $item['post_id'] ); ?>" pf-modal-id="#modal-<?php echo esc_attr( $item['item_id'] ); ?>"><?php esc_html_e( 'Reset Readability', 'pf' ); ?></a>
+									<?php
+									// }
+								?>
+							</div>
+
+							<div class="footer-actions">
+								<?php
+								$this->form_of_actions_btns( $item, $c, true, $format, $metadata, $id_for_comments );
+								?>
+							</div>
+						</div><!-- .row-fluid -->
+
+						<div class="footer-bottom">
+							<?php
+								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+								echo '<strong>' . esc_attr__( 'Item Tags', 'pf' ) . '</strong>: ' . implode( ', ', $itemTagsArray );
+							?>
+						</div>
+					</div><!-- .modal-footer -->
+				</div><!-- .modal-dialog -->
+			</div><!-- .modal -->
 			<!-- End Modal -->
 			<!-- pf_output_additional_modals -->
 		<?php
@@ -733,7 +727,7 @@ class PFTemplater {
 
 	}
 
-	public function form_of_actions_btns( $item, $c, $modal = false, $format = 'standard', $metadata = array(), $id_for_comments ) {
+	public function form_of_actions_btns( $item, $c, $modal = false, $format = 'standard', $metadata = array(), $id_for_comments = null ) {
 			$item_id = 0;
 			$user    = wp_get_current_user();
 			$user_id = $user->ID;
@@ -820,7 +814,6 @@ class PFTemplater {
 							echo '<a role="button" class="btn btn-small meta_form_modal-button" data-toggle="modal" href="#meta_form_modal_' . esc_attr( $item['post_id'] ) . '" data-post-id="' . esc_attr( $item['post_id'] ) . '" id="meta_form_modal_expander-' . esc_attr( $item['post_id'] ) . '" data-original-title="' . esc_attr__( 'Edit Metadata', 'pf' ) . '"><i class="icon-meta-form"></i></a>';
 						}
 					} else {
-						// var_dump(pf_get_relationship('nominate', $id_for_comments, $user_id));
 						if ( ( 1 == pf_get_relationship_value( 'nominate', $id_for_comments, $user_id ) ) || ( 1 == pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ) {
 							echo '<button class="btn btn-small nominate-now btn-success schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominated', 'pf' ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/pressforward-single-licon.png" /></button>';
 							// Add option here for admin-level users to send items direct to draft.
@@ -868,7 +861,7 @@ class PFTemplater {
 					<?php
 					if ( $modal === true ) {
 						?>
-						<button class="btn btn-small" data-dismiss="modal" aria-hidden="true"><?php esc_html_e( 'Close', 'pf' ); ?></button>
+						<button class="btn btn-small" data-bs-dismiss="modal" aria-hidden="true"><?php esc_html_e( 'Close', 'pf' ); ?></button>
 						<?php
 					}
 					?>

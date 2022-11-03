@@ -153,10 +153,10 @@ class PF_RSS_Import extends PF_Module {
 					$arrIt = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($guid[0]));
 					foreach ($arrIt as $sub) {
 						$subArray = $arrIt->getSubIterator();
-						if (array_key_exists('isPermaLink', $subArray) && isset($subArray['isPermaLink']) && $subArray['isPermaLink'] == "false") {
+						if ( is_array( $subArray ) && array_key_exists('isPermaLink', $subArray) && isset($subArray['isPermaLink']) && $subArray['isPermaLink'] == "false") {
 							$isPermalink = false;
 							break;
-						} else if (array_key_exists('isPermaLink', $subArray) && isset($subArray['isPermaLink']) && $subArray['isPermaLink'] && ($subArray['isPermaLink'] == "true")){
+						} elseif ( is_array( $subArray ) && array_key_exists('isPermaLink', $subArray) && isset($subArray['isPermaLink']) && $subArray['isPermaLink'] && ($subArray['isPermaLink'] == "true")){
 							$isPermalink = true;
 							break;
 						}
@@ -174,7 +174,7 @@ class PF_RSS_Import extends PF_Module {
 				} else {
 					$item_link = $item->get_link();
 				}
-				$id = create_feed_item_id( $item_link, $item->get_title() ); // die();
+				$id = pressforward_create_feed_item_id( $item_link, $item->get_title() ); // die();
 				pf_log( 'Now on feed ID ' . $id . '.' );
 				// print_r($item_categories_string); die();
 				if ( empty( $check_date ) ) {
@@ -406,16 +406,13 @@ class PF_RSS_Import extends PF_Module {
 				wp_die( 'Bad feed input. Why are you trying to place an array?' );
 			}
 		}
-		// var_dump($_POST);
-		// die();
-		// print_r($inputSingle);
+
 		if ( ! empty( $input['opml'] ) ) {
 			self::process_opml( $input['opml'] );
 			$subed[] = 'an OPML file.';
 		}
 
 		if ( ! empty( $input['opml_uploader'] ) ) {
-			// var_dump($input); die();
 			pf_log( 'Attempting to upload on OPML file.' );
 			$keys = array_keys( $_FILES );
 			$i = 0; foreach ( $_FILES as $ofile ) {
@@ -448,7 +445,6 @@ class PF_RSS_Import extends PF_Module {
 
 			$subed[] = 'an OPML uploaded file.';
 		}
-		// var_dump($_FILES); die();
 		if ( ! empty( $_POST['o_feed_url'] ) ) {
 				$offender = array_search( $_POST['o_feed_url'], $feedlist );
 			if ( $offender !== false ) {
@@ -576,52 +572,4 @@ class PF_RSS_Import extends PF_Module {
 		wp_enqueue_script( 'feed-manip-ajax', $pf->modules['rss-import']->module_url . 'assets/js/feed-manip-imp.js', array( 'jquery', PF_SLUG . '-twitter-bootstrap' ) );
 		wp_enqueue_style( PF_SLUG . '-feeder-style', $pf->modules['rss-import']->module_url . 'assets/css/feeder-styles.css' );
 	}
-
-
 }
-
-
-function pf_test_import() {
-	if ( is_super_admin() && ! empty( $_GET['pf_test_import'] ) ) {
-		var_dump( pf_get_starred_items_for_user( get_current_user_id(), 'simple' ) );
-		return;
-		$feed = pf_fetch_feed( 'http://teleogistic.net/feed' );
-
-		$source = $feed->subscribe_url();
-
-		foreach ( $feed->get_items() as $item ) {
-			$io = new PF_Feed_Item();
-
-			// Check for existing items before importing
-			$foo = $io->get( array(
-				'url' => $item->get_link( 0 ),
-				'foo' => 'bar',
-			) );
-
-			if ( empty( $foo ) ) {
-				$tags = wp_list_pluck( $item->get_categories(), 'term' );
-				$fi_id = $io->create( array(
-					'title'   => $item->get_title(),
-					'url'     => $item->get_link( 0 ),
-					'content' => $item->get_content(),
-					'source'  => $source,
-					'date'    => strtotime( $item->get_date() ),
-					'tags'    => $tags,
-				) );
-			} else {
-				$fi_id = $foo[0]->ID;
-			}
-
-			pf_star_item_for_user( $fi_id, get_current_user_id() );
-			if ( rand( 0, 1 ) ) {
-				echo 'deleted:';
-				var_dump( pf_unstar_item_for_user( $fi_id, get_current_user_id() ) );
-			}
-
-			echo 'starred: ';
-			var_dump( pf_is_item_starred_for_user( $fi_id, get_current_user_id() ) );
-			var_dump( $fi_id );
-		}
-	}
-}
-add_action( 'admin_init', 'pf_test_import' );

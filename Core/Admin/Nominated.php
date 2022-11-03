@@ -176,14 +176,12 @@ class Nominated implements HasActions {
 								),
 							)
 						);
-						// var_dump('<pre>'); var_dump($parents_in_folder); die();
 						$nom_args['post_parent__in'] = $parents_in_folder->posts;
 					}
 
 					add_filter( 'posts_request', 'prep_archives_query' );
 					$nom_query = new WP_Query( $nom_args );
 					remove_filter( 'posts_request', 'prep_archives_query' );
-					// var_dump($nom_query);
 					$count      = 0;
 					$countQ     = $nom_query->post_count;
 					$countQT    = $nom_query->found_posts;
@@ -235,9 +233,21 @@ class Nominated implements HasActions {
 								$wp_nom_slugs[] = $tag->slug;
 							}
 						}
+
 						$metadata['nom_tags'] = $nomed_tag_slugs = $wp_nom_slugs;
-						$metadata['all_tags'] = $nom_tags .= $wp_nom_tags;
-						$nomTagsArray         = explode( ',', $item_nom_tags );
+
+
+						$nom_tags_string    = is_array( $nom_tags ) ? implode( ',', $nom_tags ) : $nom_tags;
+						$wp_nom_tags_string = is_array( $wp_nom_tags ) ? implode( ',', $wp_nom_tags ) : $wp_nom_tags;
+
+						$metadata['all_tags'] = $nom_tags_string . ',' . $nom_tags_string;
+
+						if ( is_array( $item_nom_tags ) ) {
+							$nomTagsArray = $item_nom_tags;
+						} else {
+							$nomTagsArray = explode( ',', $item_nom_tags );
+						}
+
 						$nomTagClassesString  = '';
 						foreach ( $nomTagsArray as $nomTag ) {
 							$nomTagClassesString .= pf_slugger( $nomTag, true, false, true );
@@ -412,7 +422,6 @@ class Nominated implements HasActions {
 		$nom_authors      = $this->metas->get_post_pf_meta( $post->ID, 'item_author', true );
 		$item_link        = $this->metas->get_post_pf_meta( $post->ID, 'item_link', true );
 		$date_nominated   = $this->metas->get_post_pf_meta( $post->ID, 'date_nominated', true );
-		// var_dump($date_nominated); die();
 		$user          = get_user_by( 'id', $submitted_by );
 		$item_tags     = $this->metas->get_post_pf_meta( $post->ID, 'item_tags', true );
 		$source_repeat = $this->metas->get_post_pf_meta( $post->ID, 'source_repeat', true );
@@ -692,8 +701,7 @@ class Nominated implements HasActions {
 				echo esc_html( $anchor_text );
 				echo '</a>';
 			} else {
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo $variable;
+				echo esc_html( $variable );
 			}
 		}
 

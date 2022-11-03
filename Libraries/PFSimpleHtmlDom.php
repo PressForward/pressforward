@@ -118,11 +118,6 @@ function str_get_html(
 	return $dom->load($str, $lowercase, $stripRN);
 }
 
-function dump_html_tree($node, $show_attr = true, $deep = 0)
-{
-	$node->dump($node);
-}
-
 class simple_html_dom_node
 {
 	public $nodetype = HDOM_TYPE_TEXT;
@@ -157,80 +152,6 @@ class simple_html_dom_node
 		$this->nodes = null;
 		$this->parent = null;
 		$this->children = null;
-	}
-
-	function dump($show_attr = true, $depth = 0)
-	{
-		echo str_repeat("\t", $depth) . $this->tag;
-
-		if ($show_attr && count($this->attr) > 0) {
-			echo '(';
-			foreach ($this->attr as $k => $v) {
-				echo "[$k]=>\"$v\", ";
-			}
-			echo ')';
-		}
-
-		echo "\n";
-
-		if ($this->nodes) {
-			foreach ($this->nodes as $node) {
-				$node->dump($show_attr, $depth + 1);
-			}
-		}
-	}
-
-	function dump_node($echo = true)
-	{
-		$string = $this->tag;
-
-		if (count($this->attr) > 0) {
-			$string .= '(';
-			foreach ($this->attr as $k => $v) {
-				$string .= "[$k]=>\"$v\", ";
-			}
-			$string .= ')';
-		}
-
-		if (count($this->_) > 0) {
-			$string .= ' $_ (';
-			foreach ($this->_ as $k => $v) {
-				if (is_array($v)) {
-					$string .= "[$k]=>(";
-					foreach ($v as $k2 => $v2) {
-						$string .= "[$k2]=>\"$v2\", ";
-					}
-					$string .= ')';
-				} else {
-					$string .= "[$k]=>\"$v\", ";
-				}
-			}
-			$string .= ')';
-		}
-
-		if (isset($this->text)) {
-			$string .= " text: ({$this->text})";
-		}
-
-		$string .= ' HDOM_INNER_INFO: ';
-
-		if (isset($node->_[HDOM_INFO_INNER])) {
-			$string .= "'" . $node->_[HDOM_INFO_INNER] . "'";
-		} else {
-			$string .= ' NULL ';
-		}
-
-		$string .= ' children: ' . count($this->children);
-		$string .= ' nodes: ' . count($this->nodes);
-		$string .= ' tag_start: ' . $this->tag_start;
-		$string .= "\n";
-
-		if ($echo) {
-			echo $string;
-			return;
-		} else {
-			return $string;
-		}
 	}
 
 	function parent($parent = null)
@@ -1613,11 +1534,6 @@ class simple_html_dom
 
 		unset($this->doc);
 		unset($this->noise);
-	}
-
-	function dump($show_attr = true)
-	{
-		$this->root->dump($show_attr);
 	}
 
 	protected function prepare(

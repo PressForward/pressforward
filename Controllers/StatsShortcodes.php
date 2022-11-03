@@ -86,7 +86,6 @@ class PF_Stats_Shortcodes {
 
 				)
 			);
-			// var_dump($the_query);
 			if ( $the_query->have_posts() ) :
 
 				while ( $the_query->have_posts() ) :
@@ -236,13 +235,11 @@ class PF_Stats_Shortcodes {
 				$author_first_name = $name;
 			}
 		}
-		// var_dump($author_first_name . ': ');
 		$gender = pressforward_stats()->gender_checker->test( $author_first_name );
 		return $gender;
 	}
 
 	private function set_author_gender_confidence() {
-		// var_dump($gender . "\n");
 		$confidence = pressforward_stats()->gender_checker->getPreviousMatchConfidence();
 		$confidence = (string) $confidence;
 		return $confidence;
@@ -270,7 +267,6 @@ class PF_Stats_Shortcodes {
 		}
 		$s  = "\n<li>";
 		$s .= $author['name'] . ' (' . $author['count'] . ')';
-		// var_dump(pressforward_stats()->gender_checker->test($author['name']) ); var_dump( pressforward_stats()->gender_checker->getPreviousMatchConfidence() ); die();
 		$s .= ' This author is likely ' . $author['gender'] . '. Confidence: ' . $author['gender_confidence'];
 		$s .= '</li>';
 		return $s;

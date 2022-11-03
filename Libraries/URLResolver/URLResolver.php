@@ -381,7 +381,6 @@ class URLResolver {
 
 			// Load the HTML DOM using PHP Simple HTML DOM
 			$html_dom = $this->loadHTMLDOM( $body );
-			// var_dump($html_dom);
 			// If the DOM could not be parsed, mark it as a fatal error. Reasonable
 			// HTTP redirects may be available, but this notes it didn't get everything
 			if ( ! $html_dom ) {
@@ -399,19 +398,14 @@ class URLResolver {
 				// just always use the meta tag, as it is often used for noscript browsers
 				// or for long-delayed page reloads... But some pages do return just a very
 				// short noscript/meta refresh (t.co/pic.twitter.com) and it is good to catch
-				// var_dump(1);
 				$body_tag = $html_dom->find( 'body', 0 );
 				if ( empty( $body_tag->content ) ) {
-					// var_dump(2);
 					$meta_refresh_tag = $html_dom->find( 'meta' );
-					// var_dump($meta_refresh_tag[0]->content);
 					if ( ! isset( $meta_refresh_tag[0]->content ) ) {
-							// var_dump('empty meta_refresh');
 					}
 					if ( isset( $meta_refresh_tag[0]->content ) &&
 				    	preg_match( '/^\s*(\d+)\s*;\s*URL=(.*)/i', $meta_refresh_tag[0]->content, $matches ) ) {
 							$matches[2] = str_replace( "'", '', $matches[2] );
-							// var_dump($matches);
 						if ( ! $matches[1] <= 2 ) {
 							$result->setRedirectTarget( $this->fullyQualifyURI( $matches[2], $url ) );
 						}
@@ -519,7 +513,7 @@ class URLResolver {
 			$this->closeHTMLDOM();
 		}
 
-		$this->html_dom = pf_str_get_html( $html_content );
+		$this->html_dom = str_get_html( $html_content );
 		// $this->html_dom->load($html_content);
 		return $this->html_dom;
 	}

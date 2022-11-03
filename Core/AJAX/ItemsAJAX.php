@@ -96,7 +96,6 @@ class ItemsAJAX implements HasActions {
 		} else {
 			$read_status = false; }
 		$returned = pf_delete_item_tree( $id, true, true );
-		// var_dump( $returned );
 		$vd = ob_get_clean();
 
 		$response    = array(
