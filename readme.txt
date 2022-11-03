@@ -3,7 +3,7 @@ Contributors: PressForward, AramZS, boonebgorges, lmrhody, asmmap, regan008, joa
 Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 3.0.1
-Tested up to: 6.0
+Tested up to: 6.1
 Stable tag: 5.2.9
 License: AGPLv3
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -81,6 +81,13 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+
+= 5.2.10 =
+* Fixed incorrect syntax in bookmarklet code
+* Improved PHP 8 compatibility
+* Fix bug in comment AJAX that prevented submission in some cases
+* Security hardening
+* Updates to Twitter Bootstrap library
 
 = 5.2.9 =
 * WP 6.0 compatibility
