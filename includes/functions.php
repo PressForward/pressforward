@@ -787,7 +787,7 @@ add_filter( 'the_author', 'pf_replace_author_presentation' );
 /**
  * Appends the source statement to post content.
  *
- * @since 5.4.0
+ * @since 5.3.0
  *
  * @param string $content
  * @return string
