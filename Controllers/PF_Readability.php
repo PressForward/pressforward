@@ -148,7 +148,6 @@ class PF_Readability {
 		if ( $post_id != 0 ) {
 
 			$content = html_entity_decode( $itemReadReady );
-			// $content = pressforward('utility.forward_tools')->append_source_statement($post_id, $content, true);
 			$update_ready = array(
 				'ID'           => $post_id,
 				'post_content' => $content,
