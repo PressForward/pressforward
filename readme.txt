@@ -83,6 +83,7 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 == Changelog ==
 
 = 5.3.0 =
+* Source statement is now appended to the post content dynamically, rather than inserted into the database.
 * Improved caching of external post fetches.
 * Improved caching and performance when fetching OpenGraph items.
 * Fixed bug in folder syntax when querying for nominations.
