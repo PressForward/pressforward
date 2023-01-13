@@ -793,6 +793,11 @@ add_filter( 'the_author', 'pf_replace_author_presentation' );
  * @return string
  */
 function pressforward_append_source_statement( $content ) {
+	// Don't append in the admin.
+	if ( is_admin() ) {
+		return $content;
+	}
+
 	$post = get_post();
 
 	if ( ! ( $post instanceof WP_Post ) ) {
