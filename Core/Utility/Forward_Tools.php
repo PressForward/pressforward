@@ -230,7 +230,7 @@ class Forward_Tools {
 			$item_content_obj = pressforward( 'controller.readability' )->get_readable_text( $readArgs );
 			$item_content     = htmlspecialchars_decode( $item_content_obj['readable'] );
 			$word_count       = str_word_count( $item_content );
-			// $item_content = $this->append_source_statement($post_id, $item_content, $source);
+
 			$saved__POST = $_POST;
 			$_POST       = array();
 			$post_id     = $this->item_interface->update_post(
