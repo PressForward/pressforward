@@ -13,9 +13,10 @@ class PF_Stats_Controller extends WP_REST_Controller {
 		register_rest_route(
 			$namespace, '/' . $base, array(
 				array(
-					'methods'  => WP_REST_Server::READABLE,
-					'callback' => array( $this, 'get_items' ),
-					'priority' => 10,
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_items' ),
+					'priority'            => 10,
+					'permission_callback' => [ $this, 'get_items_permissions_check' ],
 				),
 			)
 		);
@@ -48,6 +49,9 @@ class PF_Stats_Controller extends WP_REST_Controller {
 		return new WP_REST_Response( $data, 200 );
 	}
 
+	public function get_items_permissions_check( $request ) {
+		return true;
+	}
 }
 
 function activate_pf_stats_controller() {

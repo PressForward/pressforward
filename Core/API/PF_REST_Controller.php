@@ -13,9 +13,10 @@ class PF_REST_Controller extends WP_REST_Controller {
 		register_rest_route(
 			$namespace, '/' . $base, array(
 				array(
-					'methods'  => WP_REST_Server::READABLE,
-					'callback' => array( $this, 'get_pf_status' ),
-					'priority' => 10,
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_pf_status' ),
+					'priority'            => 10,
+					'permission_callback' => [ $this, 'get_pf_status_permissions_check' ],
 				),
 			)
 		);
@@ -40,6 +41,10 @@ class PF_REST_Controller extends WP_REST_Controller {
 			'active_modules' => $active_modules,
 		);
 		return new WP_REST_Response( $data, 200 );
+	}
+
+	public function get_pf_status_permissions_check( $request ) {
+		return true;
 	}
 
 }
