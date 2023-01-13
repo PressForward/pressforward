@@ -82,6 +82,11 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 
 == Changelog ==
 
+= 5.3.0 =
+* Improved caching of external post fetches.
+* Improved caching and performance when fetching OpenGraph items.
+* Fixed bug in folder syntax when querying for nominations.
+
 = 5.2.10 =
 * Fixed incorrect syntax in bookmarklet code
 * Improved PHP 8 compatibility
