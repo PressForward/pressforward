@@ -784,6 +784,27 @@ function pf_replace_author_presentation( $author ) {
 }
 add_filter( 'the_author', 'pf_replace_author_presentation' );
 
+/*
+ * Try to remove legacy statements stored in post content when editing.
+ *
+ * This will miss any customized source statements. In these cases, the admin will need
+ * to manually remove.
+ *
+ * This trick does not work with the Block Editor, since content is not passed through
+ * `sanitize_post()` with the 'edit' context. In the Block Editor, the 'Source' statement
+ * will continue to appear, even though it's removed on the front end.
+ *
+ * @since 5.3.0
+ *
+ * @param $content
+ * @return string
+ */
+function pressforward_remove_legacy_source_statement( $content ) {
+	$regex = '/^(?:<p>)?Source: <a[^>]+>.*?<\/a>(?:<\/p>)?$/m';
+	return preg_replace( $regex, '', $content );
+}
+add_filter( 'edit_post_content', 'pressforward_remove_legacy_source_statement' );
+
 /**
  * Appends the source statement to post content.
  *
@@ -793,20 +814,11 @@ add_filter( 'the_author', 'pf_replace_author_presentation' );
  * @return string
  */
 function pressforward_append_source_statement( $content ) {
-	// Don't append in the admin.
-	if ( is_admin() ) {
-		return $content;
-	}
+	global $pagenow;
 
 	$post = get_post();
 
 	if ( ! ( $post instanceof WP_Post ) ) {
-		return $content;
-	}
-
-	$link_to_item = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_link', true );
-
-	if ( ! $link_to_item ) {
 		return $content;
 	}
 
@@ -815,14 +827,12 @@ function pressforward_append_source_statement( $content ) {
 		return $content;
 	}
 
-	/*
-	 * Try to remove legacy statements stored in post content.
-	 *
-	 * This will miss any customized source statements. In these cases, the admin will need
-	 * to manually remove.
-	 */
-	$regex   = '/Source: <a[^>]+pf-nom-item-id=[^>]+>.*?<\/a><\/p>/';
-	$content = preg_replace( $regex, '', $content );
+	$content = pressforward_remove_legacy_source_statement( $content );
+
+	// Don't append in on the post.php edit screen.
+	if ( 'post.php' === $pagenow ) {
+		return $content;
+	}
 
 	/**
 	 * Filters the source statement markup to be added to the post content.

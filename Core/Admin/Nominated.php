@@ -469,30 +469,57 @@ class Nominated implements HasActions {
 	 * @return string
 	 */
 	public function get_the_source_statement( $nom_id, $args = array() ) {
-
 		$title_of_item = get_the_title( $nom_id );
 		$link_to_item  = $this->metas->get_post_pf_meta( $nom_id, 'item_link', true );
 		$default_args  = array(
-			'html_before'      => '<p class="pf-source-statement">',
-			'source_statement' => __( 'Source: ', 'pressforward' ),
-			'item_url'         => $link_to_item,
-			'link_target'      => '_blank',
-			'item_title'       => $title_of_item,
-			'html_after'       => '</p>',
-			'sourced'          => true,
+			'html_before' => '<p class="pf-source-statement">',
+			// translators: Link to item source URL.
+			'format'      => __( 'Source: %s', 'pressforward' ),
+			'item_url'    => $link_to_item,
+			'link_target' => '_blank',
+			'item_title'  => $title_of_item,
+			'html_after'  => '</p>',
+			'sourced'     => true,
 		);
 
 		$_args = array_merge( $default_args, $args );
 		$args  = apply_filters( 'pf_source_statement', $_args );
 		if ( true == $args['sourced'] ) {
-			$statement = sprintf(
-				'%1$s<a href="%2$s" target="%3$s" pf-nom-item-id="%4$s">%5$s</a>',
-				esc_html( $args['source_statement'] ),
-				esc_url( $args['item_url'] ),
-				esc_attr( $args['link_target'] ),
-				esc_attr( $nom_id ),
-				esc_html( $args['item_title'] )
-			);
+			$statement = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'pf_source_statement', true );
+			if ( ! $statement ) {
+				// Backward compatibility with 'source_statement' string concatenation.
+				if ( isset( $args['source_statement'] ) ) {
+					$statement = sprintf(
+						'%1$s<a href="%2$s" target="%3$s" pf-nom-item-id="%4$s">%5$s</a>',
+						esc_html( __( 'Source: ', 'pressforward' ) ),
+						esc_url( $args['item_url'] ),
+						esc_attr( $args['link_target'] ),
+						esc_attr( $nom_id ),
+						esc_html( $args['item_title'] )
+					);
+				} else {
+					$statement = sprintf(
+						esc_html( $args['format'] ),
+						sprintf(
+							'<a href="%s">%s</a>',
+							esc_attr( $args['item_url'] ),
+							esc_html( $args['item_title'] )
+						)
+					);
+				}
+			}
+
+			// Ensure 'target' and 'pf-nom-item-id' attributes on output.
+			$target_attr = sprintf( 'target="%s"', esc_attr( $args['link_target'] ) );
+			if ( false === strpos( $statement, $target_attr ) ) {
+				$statement = preg_replace( '|<a (href="[^"]+")|', '<a \1 ' . $target_attr, $statement );
+			}
+
+			$nom_id_attr = sprintf( 'pf-nom-item-id="%s"', esc_attr( $nom_id ) );
+			if ( false === strpos( $statement, $nom_id_attr ) ) {
+				$statement = preg_replace( '|<a (href="[^"]+")|', '<a \1 ' . $nom_id_attr, $statement );
+			}
+
 			$statement = $args['html_before'] . $statement . $args['html_after'];
 		} else {
 			$statement = '';
