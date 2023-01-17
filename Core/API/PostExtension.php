@@ -12,6 +12,9 @@ use WP_Ajax_Response;
 class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilters {
 
 	protected $basename;
+	public $metas;
+	public $post_type;
+	public $level;
 
 	function __construct( Metas $metas ) {
 		$this->metas     = $metas;

@@ -9,6 +9,9 @@ use PressForward\Core\Schema\Feed_Items;
 class NominationsAJAX implements HasActions {
 
 	protected $basename;
+	public $metas;
+	public $posts;
+	public $items;
 
 	function __construct( Metas $metas, PF_to_WP_Posts $posts, Feed_Items $items ) {
 		$this->metas = $metas;

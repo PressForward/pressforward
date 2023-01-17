@@ -11,6 +11,9 @@ use PressForward\Interfaces\SystemMeta;
  * Functionality related to nominations.
  */
 class Metas implements HasFilters, HasActions {
+	public $meta_interface;
+	public $system;
+	public $master_field;
 
 	public function __construct( SystemMeta $metas, System $system ) {
 		$this->meta_interface = $metas;

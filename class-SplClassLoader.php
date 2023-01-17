@@ -39,6 +39,7 @@ class SplClassLoader {
 
 	private $_fileExtension = '.php';
 	private $_namespace;
+	private $_useUnderlines;
 	private $_includePath;
 	private $_namespaceSeparator = '\\';
 	private $_filterPattern = false;

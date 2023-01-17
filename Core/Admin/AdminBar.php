@@ -7,6 +7,8 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
 use PressForward\Interfaces\SystemUsers;
 
 class AdminBar implements HasActions, HasFilters {
+	public $user_interface;
+
 	function __construct( SystemUsers $user_interface ) {
 		$this->user_interface = $user_interface;
 

@@ -11,8 +11,9 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
  */
 
 class Folders implements HasActions, HasFilters {
-	// var $post_type;
-	// var $tag_taxonomy;
+	public $post_type;
+	public $tag_taxonomy;
+
 	public function __construct() {
 		$this->tag_taxonomy = 'pf_feed_category';
 		$this->post_type    = 'pf_feed';

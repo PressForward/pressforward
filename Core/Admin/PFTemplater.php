@@ -4,6 +4,9 @@ namespace PressForward\Core\Admin;
 use PressForward\Interfaces\Templates as Templates;
 use PressForward\Interfaces\SystemUsers as SystemUsers;
 class PFTemplater {
+	public $factory;
+	public $parts;
+	public $users;
 
 	public function __construct( Templates $template_factory, SystemUsers $users ) {
 		$this->factory = $template_factory;

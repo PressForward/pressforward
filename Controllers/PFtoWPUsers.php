@@ -4,6 +4,7 @@ namespace PressForward\Controllers;
 use PressForward\Interfaces\SystemUsers as SystemUsers;
 
 class PFtoWPUsers implements SystemUsers {
+	public $metas;
 
 	function __construct( Metas $metas ) {
 		$this->metas = $metas;

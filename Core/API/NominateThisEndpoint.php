@@ -11,6 +11,10 @@ use WP_Error;
 class NominateThisEndpoint implements HasActions {
 
 	protected $api_base;
+	public $templates;
+	public $endpoint_for_nominate_this_endpoint;
+	public $endpoint_for_nominate_this_script;
+	public $endpoint_for_nominate_endpoint;
 
 	function __construct( $api_base, PFTemplater $templates ) {
 		$this->api_base = $api_base;

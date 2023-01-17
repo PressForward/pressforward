@@ -4,6 +4,7 @@ namespace PressForward\Core\Admin;
 use Intraxia\Jaxion\Contract\Core\HasActions;
 
 class EditPost implements HasActions {
+	public $post_type;
 
 	function __construct() {
 		$this->post_type = 'post';

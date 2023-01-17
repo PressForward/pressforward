@@ -9,6 +9,9 @@ use URLResolver;
  */
 
 class HTTPTools implements HasActions {
+	public $url_resolver;
+	public $system;
+	public $meta;
 
 	function __construct( URLResolver $resolver, System $system, Metas $meta ) {
 		$this->url_resolver = $resolver;

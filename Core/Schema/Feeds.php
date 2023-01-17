@@ -15,6 +15,10 @@ use PressForward\Controllers\Metas;
 class Feeds implements HasActions, HasFilters {
 	protected $filter_data = array();
 
+	public $post_type;
+	public $tag_taxonomy;
+	public $metas;
+
 	public function __construct( Metas $metas ) {
 		$this->post_type    = 'pf_feed';
 		$this->tag_taxonomy = 'pf_feed_category';

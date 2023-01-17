@@ -17,6 +17,8 @@ use WP_Error;
 class StatsEndpoint implements HasActions {
 
 	protected $api_base;
+	public $metas;
+	public $stats;
 
 	function __construct( $api_base, Metas $metas, Stats $stats ) {
 		$this->api_base             = $api_base;

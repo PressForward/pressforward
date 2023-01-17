@@ -17,6 +17,10 @@ class Forward_Tools {
 	// var $tag_taxonomy;
 	// var $advance_interface;
 	// var $post_interface;
+	public $item_interface;
+	public $advance_interface;
+	public $metas;
+
 	function __construct( Items $item_interface, Advance_System $advance_interface, Metas $meta_interface ) {
 		$this->item_interface    = $item_interface;
 		$this->advance_interface = $advance_interface;

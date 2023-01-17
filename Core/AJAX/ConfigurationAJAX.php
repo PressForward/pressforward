@@ -13,6 +13,11 @@ use WP_Ajax_Response;
 class ConfigurationAJAX implements HasActions {
 
 	protected $basename;
+	public $metas;
+	public $posts;
+	public $items;
+	public $user_interface;
+	public $pf_jwt;
 
 	function __construct( Metas $metas, PF_to_WP_Posts $posts, Feed_Items $items, SystemUsers $user_interface, PF_JWT $pf_jwt ) {
 		$this->metas          = $metas;

@@ -9,6 +9,9 @@ use PressForward\Core\Schema\Feed_Items;
 class SourceAJAX implements HasActions {
 
 	protected $basename;
+	public $readability;
+	public $retrieval;
+	public $items;
 
 	function __construct( PF_Readability $readability, Retrieval $retrieval, Feed_Items $items ) {
 		$this->readability = $readability;

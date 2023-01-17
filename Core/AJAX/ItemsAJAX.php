@@ -11,6 +11,9 @@ use WP_Ajax_Response;
 class ItemsAJAX implements HasActions {
 
 	protected $basename;
+	public $metas;
+	public $posts;
+	public $items;
 
 	function __construct( Metas $metas, PF_to_WP_Posts $posts, Feed_Items $items ) {
 		$this->metas = $metas;

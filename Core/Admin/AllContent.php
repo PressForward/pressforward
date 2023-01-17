@@ -11,6 +11,7 @@ use PressForward\Core\Schema\Nominations as Nominations;
 use PressForward\Controllers\Metas;
 
 class AllContent implements HasActions {
+	public $user_interface;
 
 	function __construct( SystemUsers $user_interface ) {
 		$this->user_interface = $user_interface;

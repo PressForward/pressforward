@@ -7,6 +7,8 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
  * Functionality related to nominations
  */
 class Nominations implements HasActions, HasFilters {
+	public $post_type;
+
 	function __construct() {
 		$this->post_type = 'nomination';
 		// add_action('edit_post', array( $this, 'send_nomination_for_publishing'));

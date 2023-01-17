@@ -12,6 +12,9 @@ use WP_Ajax_Response;
 class FolderExtension extends APIWithMetaEndpoints implements HasFilters {
 
 	protected $basename;
+	protected $tax;
+	protected $level;
+	public $pf_metas;
 
 	function __construct( Metas $metas ) {
 		$this->pf_metas = $metas;

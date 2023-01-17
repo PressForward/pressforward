@@ -8,6 +8,7 @@ use PressForward\Interfaces\SystemUsers;
 class Menu implements HasActions, HasFilters {
 
 	protected $basename;
+	public $user_interface;
 
 	function __construct( $basename, SystemUsers $user_interface ) {
 		$this->basename       = $basename;

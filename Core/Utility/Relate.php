@@ -14,11 +14,11 @@ use WP_Ajax_Response;
  * PressForward relationships tools.
  */
 class Relate implements HasActions {
+	public $item_interface;
+	public $advance_interface;
+	public $metas;
+	public $relationships;
 
-	// var $post_type;
-	// var $tag_taxonomy;
-	// var $advance_interface;
-	// var $post_interface;
 	public function __construct( Items $item_interface, Advance_System $advance_interface, Metas $meta_interface, Relationships $relationship_schema ) {
 		$this->item_interface    = $item_interface;
 		$this->advance_interface = $advance_interface;

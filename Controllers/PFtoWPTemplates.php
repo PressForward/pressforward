@@ -5,6 +5,11 @@ use PressForward\Interfaces\Templates as Template_Interface;
 use Intraxia\Jaxion\Contract\Core\HasActions;
 
 class PFtoWPTemplates implements Template_Interface, HasActions {
+	protected $is_pf;
+	protected $user_id;
+	protected $pf_current_screen_trace;
+	public $the_screen;
+
 	function __construct() {
 
 	}

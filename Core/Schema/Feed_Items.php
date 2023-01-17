@@ -18,6 +18,9 @@ class Feed_Items implements HasActions, HasFilters {
 	var $post_type;
 	var $tag_taxonomy;
 
+	public $items;
+	public $metas;
+
 	public function __construct( Items $items, Metas $metas ) {
 		$this->post_type    = 'pf_feed_item';
 		$this->tag_taxonomy = 'pf_feed_item_tag';

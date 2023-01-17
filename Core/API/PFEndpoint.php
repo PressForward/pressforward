@@ -12,6 +12,9 @@ use WP_Ajax_Response;
 class PFEndpoint extends APIWithMetaEndpoints implements HasActions {
 
 	protected $basename;
+	public $metas;
+	public $post_type;
+	public $level;
 
 	function __construct( Metas $metas ) {
 		$this->metas     = $metas;

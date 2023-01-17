@@ -13,6 +13,9 @@ use WP_Error;
 class ReadabilityEndpoint implements HasActions {
 
 	protected $api_base;
+	public $readability;
+	public $forward_tools;
+	public $html_checker;
 
 	function __construct( $api_base, PF_Readability $readability, Forward_Tools $forward_tools, HTMLChecker $html_checker ) {
 		$this->api_base             = $api_base;

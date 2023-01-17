@@ -9,6 +9,8 @@ use Intraxia\Jaxion\Contract\Core\HasActions as HasActions;
  * PressForward to WP post object lifecycle tools
  */
 class PF_Advancement implements Advance_System, HasActions {
+	public $metas;
+
 	// var $last_step_state;
 	// var $last_step_post_type;
 	public function __construct( Metas $metas ) {

@@ -10,7 +10,7 @@ use Intraxia\Jaxion\Contract\Core\HasActions;
  * Database class for manipulating feed items
  */
 class Relationships implements HasActions {
-
+	public $table_name;
 
 	public function __construct() {
 		global $wpdb;

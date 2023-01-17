@@ -10,6 +10,9 @@ use Firebase\JWT\JWT as JWT;
  */
 
 class PF_JWT {
+	public $system_users;
+	public $system;
+	public $JWT;
 
 	function __construct( SystemUsers $users, System $system ) {
 		$this->system_users = $users;

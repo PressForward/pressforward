@@ -12,6 +12,11 @@ use WP_Ajax_Response;
 use WP_Query;
 
 class Nominated implements HasActions {
+	public $metas;
+	public $template_factory;
+	public $forward_tools;
+	public $nomination_slug;
+	public $user_interface;
 
 	function __construct( $metas, PFTemplater $template_factory, Forward_Tools $forward_tools, Nominations $nominations, SystemUsers $user_interface ) {
 		$this->metas            = $metas;

@@ -13,6 +13,9 @@ use PressForward\Controllers\Metas;
 use AlertBox\The_Alert_Box as The_Alert_Box;
 
 class SubscribedFeeds implements HasActions, HasFilters {
+	public $user_interface;
+	public $alertbox;
+	public $metas;
 
 	function __construct( SystemUsers $user_interface, The_Alert_Box $alertbox, Metas $metas ) {
 		$this->user_interface = $user_interface;

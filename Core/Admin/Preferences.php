@@ -8,6 +8,7 @@ use Intraxia\Jaxion\Contract\Core\HasActions as HasActions;
 class Preferences implements HasActions {
 
 	protected $basename;
+	public $templates;
 
 	function __construct( $basename, PFTemplater $templates ) {
 		$this->basename  = $basename;

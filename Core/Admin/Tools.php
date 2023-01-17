@@ -8,6 +8,7 @@ use PressForward\Core\Admin\PFTemplater;
 class Tools implements HasActions, HasFilters {
 
 	protected $basename;
+	public $templates;
 
 	function __construct( $basename, PFTemplater $templates ) {
 		$this->basename  = $basename;

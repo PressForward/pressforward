@@ -19,6 +19,9 @@ class Stats {
 	var $feed_post_type;
 	var $meta_key;
 
+	public $metas;
+	public $meta_author_key;
+
 	var $base;
 	var $access;
 	var $shortcodes;

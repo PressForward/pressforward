@@ -12,6 +12,8 @@ use PressForward\Core\Schema\Nominations as Nominations;
 use PressForward\Controllers\Metas;
 
 class AddFeeds implements HasActions, HasFilters {
+	public $user_interface;
+
 	function __construct( SystemUsers $user_interface ) {
 		$this->user_interface = $user_interface;
 

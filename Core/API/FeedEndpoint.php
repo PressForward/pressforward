@@ -12,6 +12,9 @@ use WP_Ajax_Response;
 class FeedEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilters {
 
 	protected $basename;
+	public $metas;
+	public $post_type;
+	public $level;
 
 	function __construct( Metas $metas ) {
 		$this->metas     = $metas;
