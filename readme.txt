@@ -82,6 +82,11 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 
 == Changelog ==
 
+= 5.3.1 =
+* Added Source field to the bookmarklet interface.
+* Fixed bug where Source statement was appended incorrectly to certain pieces of content.
+* Fixed bug that prevented metas from being transferred during nomination advancement.
+
 = 5.3.0 =
 * Source statement is now appended to the post content dynamically, rather than inserted into the database.
 * Improved caching of external post fetches.
