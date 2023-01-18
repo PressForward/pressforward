@@ -396,18 +396,18 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 			if ( $pt == 'nomination' ) {
 				?>
                 <div id="message" class="updated">
-                <p><strong><?php esc_html_e( 'Your nomination has been saved.', 'pressforward' ); ?></strong>
-                    <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pressforward' ); ?></a>
+                <p><strong><?php esc_html_e( 'Your nomination has been saved.', 'pf' ); ?></strong>
+                    <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pf' ); ?></a>
                     </p>
                 </div>
 				<?php
 			} else {
 				?>
                 <div id="message" class="updated">
-                <p><strong><?php esc_html_e( 'Your post has been saved.', 'pressforward' ); ?></strong>
-                <a onclick="window.opener.location.assign(this.href); window.close();" href="<?php echo esc_attr( get_permalink( $post_ID ) ); ?>"><?php esc_html_e( 'View post', 'pressforward' ); ?></a>
-                | <a href="<?php echo esc_attr( get_edit_post_link( $post_ID ) ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php esc_html_e( 'Edit Post', 'pressforward' ); ?></a>
-                | <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pressforward' ); ?></a></p>
+                <p><strong><?php esc_html_e( 'Your post has been saved.', 'pf' ); ?></strong>
+                <a onclick="window.opener.location.assign(this.href); window.close();" href="<?php echo esc_attr( get_permalink( $post_ID ) ); ?>"><?php esc_html_e( 'View post', 'pf' ); ?></a>
+                | <a href="<?php echo esc_attr( get_edit_post_link( $post_ID ) ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php esc_html_e( 'Edit Post', 'pf' ); ?></a>
+                | <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pf' ); ?></a></p>
                 </div>
 				<?php
 			}
@@ -431,13 +431,13 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 					<?php
 					if ( 0 !== $feed_nom['id'] ) {
 						?>
-                      <a href="<?php echo esc_attr( get_edit_post_link( $feed_nom['id'] ) ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php esc_html_e( 'Edit Feed', 'pressforward' ); ?></a>
+                      <a href="<?php echo esc_attr( get_edit_post_link( $feed_nom['id'] ) ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php esc_html_e( 'Edit Feed', 'pf' ); ?></a>
                     <?php
 					} else {
 
 					}
 					?>
-                  | <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pressforward' ); ?></a></p>
+                  | <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pf' ); ?></a></p>
                 </div>
 				<?php
 				update_option( 'pf_last_nominated_feed', array() );
@@ -523,7 +523,7 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 	<td><label for="this_photo_description"><?php esc_html_e( 'Description','pf' ) ?></label></td>
 	<td><input type="text" id="this_photo_description" name="photo_description" class="tb_this_photo_description text" onkeypress="if(event.keyCode==13) image_selector(this);" value="<?php echo esc_attr( $title );?>"/></td>
 	</tr><tr>
-	<td><input type="button" class="button" onclick="image_selector(this)" value="<?php esc_attr_e( 'Insert Image', 'pressforward' ); ?>" /></td>
+	<td><input type="button" class="button" onclick="image_selector(this)" value="<?php esc_attr_e( 'Insert Image', 'pf' ); ?>" /></td>
 	</tr></table>
 </div>
 <?php

@@ -606,7 +606,7 @@ class PFTemplater {
 							?>
 						</div>
 
-						<button type="button" class="btn-close float-right" data-bs-dismiss="modal" aria-label="<?php esc_attr_e( 'Close', 'pressforward' ); ?>"></button>
+						<button type="button" class="btn-close float-right" data-bs-dismiss="modal" aria-label="<?php esc_attr_e( 'Close', 'pf' ); ?>"></button>
 					</div><!-- .modal-header -->
 
 					<div class="row modal-body-row">

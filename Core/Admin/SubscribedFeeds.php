@@ -414,7 +414,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 		<fieldset class="inline-edit-pressforward">
 			<div class="inline-edit-col">
 				<label for="pf-feed-url">
-					<span class="title"><?php esc_html_e( 'Feed URL', 'pressforward' ); ?></span>
+					<span class="title"><?php esc_html_e( 'Feed URL', 'pf' ); ?></span>
 					<span class="input-text-wrap">
 						<input class="inline-edit-pf-feed-input" type="text" value="" name="pf-quick-edit-feed-url" id="pf-quick-edit-feed-url" />
 					</span>

@@ -39,7 +39,7 @@ class MetaBoxes implements HasActions {
 
 		add_meta_box(
 			'pf_source',
-			__( 'Source', 'pressforward' ),
+			__( 'Source', 'pf' ),
 			[ $this, 'source_meta_box' ],
 			[ $draft_post_type ],
 			'advanced'
@@ -63,7 +63,7 @@ class MetaBoxes implements HasActions {
 
 		?>
 
-		<label for="pressforward-source-statement"><?php esc_html_e( 'The following source statement will be appended to this item:', 'pressforward' ); ?></label>
+		<label for="pressforward-source-statement"><?php esc_html_e( 'The following source statement will be appended to this item:', 'pf' ); ?></label>
 
 		<?php
 

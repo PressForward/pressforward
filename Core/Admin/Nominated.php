@@ -474,7 +474,7 @@ class Nominated implements HasActions {
 		$default_args  = array(
 			'html_before' => '<p class="pf-source-statement">',
 			// translators: Link to item source URL.
-			'format'      => __( 'Source: %s', 'pressforward' ),
+			'format'      => __( 'Source: %s', 'pf' ),
 			'item_url'    => $link_to_item,
 			'link_target' => '_blank',
 			'item_title'  => $title_of_item,
@@ -491,7 +491,7 @@ class Nominated implements HasActions {
 				if ( isset( $args['source_statement'] ) ) {
 					$statement = sprintf(
 						'%1$s<a href="%2$s" target="%3$s" pf-nom-item-id="%4$s">%5$s</a>',
-						esc_html( __( 'Source: ', 'pressforward' ) ),
+						esc_html( __( 'Source: ', 'pf' ) ),
 						esc_url( $args['item_url'] ),
 						esc_attr( $args['link_target'] ),
 						esc_attr( $nom_id ),

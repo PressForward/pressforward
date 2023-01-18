@@ -1210,9 +1210,9 @@ function pf_iterate_cycle_state( $option_name, $option_limit = false, $echo = fa
 		update_option( PF_SLUG . '_' . $option_name, $retrieval_cycle );
 	}
 	if ( $echo ) {
-		echo '<br />' . esc_html( sprintf( __( 'Day: %s', 'pressforward' ), $retrieval_cycle['day'] ) );
-		echo '<br />' . esc_html( sprintf( __( 'Week: %s', 'pressforward' ), $retrieval_cycle['week'] ) );
-		echo '<br />' . esc_html( sprintf( __( 'Month: %s', 'pressforward' ), $retrieval_cycle['month'] ) );
+		echo '<br />' . esc_html( sprintf( __( 'Day: %s', 'pf' ), $retrieval_cycle['day'] ) );
+		echo '<br />' . esc_html( sprintf( __( 'Week: %s', 'pf' ), $retrieval_cycle['week'] ) );
+		echo '<br />' . esc_html( sprintf( __( 'Month: %s', 'pf' ), $retrieval_cycle['month'] ) );
 	} elseif ( ! $option_limit ) {
 		return $retrieval_cycle;
 	} elseif ( $option_limit ) {
