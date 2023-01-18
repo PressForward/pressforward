@@ -105,12 +105,14 @@ class Metas implements HasFilters, HasActions {
 			foreach ( $meta['level'] as $level ) {
 				if ( in_array( $level, $post_types ) ) {
 					$level_check = true;
+					break;
 				}
 			}
+
 			if ( $level_check ) {
 				$this->transition_meta( $this->get_name( $meta ), $idA, $idB );
 			} else {
-				return;
+				continue;
 			}
 		}
 		if ( $term_transition ) {
