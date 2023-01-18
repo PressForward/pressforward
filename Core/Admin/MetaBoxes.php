@@ -63,7 +63,7 @@ class MetaBoxes implements HasActions {
 
 		?>
 
-		<p><?php esc_html_e( 'The following source statement will be appended to this item:', 'pressforward' ); ?></p>
+		<label for="pressforward-source-statement"><?php esc_html_e( 'The following source statement will be appended to this item:', 'pressforward' ); ?></label>
 
 		<?php
 
