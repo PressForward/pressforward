@@ -173,6 +173,10 @@ var photostorage = false;
         padding: 0 5px;
     }
 
+	.metabox-holder-advanced {
+		margin-top: 20px;
+	}
+
     @media screen and (min-width: 670px) {
         #side-sortables {
     		float: right;
@@ -511,6 +515,10 @@ if ( isset( $posted ) && intval( $posted ) ) { } else {
 		wp_editor( $content, 'content', $editor_settings );
 
 		?>
+		</div>
+
+		<div class="metabox-holder metabox-holder-advanced">
+			<?php do_meta_boxes( 'nomthis', 'advanced', $empty_nomination ); ?>
 		</div>
 	</div>
 </div>

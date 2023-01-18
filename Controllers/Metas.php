@@ -835,6 +835,16 @@ class Metas implements HasFilters, HasActions {
 				'level'      => array( 'feed' ),
 				'serialize'  => false,
 			),
+			'pf_source_statement'     => array(
+				'name'       => 'pf_source_statement',
+				'title'      => __( 'Source statement string', 'pf' ),
+				'definition' => __( 'The string containing the "Source" statement appended to an item.', 'pf' ),
+				'function'   => '',
+				'type'       => array( 'adm' ),
+				'use'        => array(),
+				'level'      => array( 'feed', 'item', 'nomination', 'post' ),
+				'serialize'  => false,
+			),
 		);
 
 		$metas = apply_filters( 'pf_meta_terms', $metas );

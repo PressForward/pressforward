@@ -23,6 +23,10 @@ class MetaBoxes implements HasActions {
 				'method' => 'add_meta_boxes',
 			],
 			[
+				'hook'   => 'add_meta_boxes_nomthis',
+				'method' => 'add_meta_boxes',
+			],
+			[
 				'hook'   => 'save_post',
 				'method' => 'save_source_meta_box',
 			],
@@ -41,7 +45,7 @@ class MetaBoxes implements HasActions {
 			'pf_source',
 			__( 'Source', 'pf' ),
 			[ $this, 'source_meta_box' ],
-			[ $draft_post_type ],
+			[ $draft_post_type, 'nomthis' ],
 			'advanced'
 		);
 	}
@@ -54,12 +58,23 @@ class MetaBoxes implements HasActions {
 	 * @param WP_Post $post Post object.
 	 */
 	public function source_meta_box( $post ) {
-		$item_link  = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_link', true );
-		$item_title = html_entity_decode( get_the_title( $post ) );
+		$args = [];
+		if ( ! $post->ID ) {
+			// For the bookmarklet.
+			$url = isset( $_GET['u'] ) ? esc_url( sanitize_text_field( wp_unslash( $_GET['u'] ) ) ) : '';
 
-		$source_statement = pressforward( 'admin.nominated' )->get_the_source_statement( $post->ID );
+			$og = null;
+			if ( $url ) {
+				$og = pressforward( 'library.opengraph' )->fetch( $url );
+				if ( $og ) {
+					$args['item_title'] = $og->title;
+					$args['item_url'] = $og->url;
 
-		$link = sprintf( '<a href="%s">%s</a>', $item_link, $item_title );
+				}
+			}
+		}
+
+		$source_statement = pressforward( 'admin.nominated' )->get_the_source_statement( $post->ID, $args );
 
 		?>
 
@@ -89,7 +104,7 @@ class MetaBoxes implements HasActions {
 
 		remove_filter( 'wp_editor_settings', $height_cb, 10, 2 );
 
-		wp_nonce_field( 'pressforward-source-' . $post->ID, 'pressforward-source-nonce', false );
+		wp_nonce_field( 'pressforward-source', 'pressforward-source-nonce', false );
 
 		?>
 
@@ -107,7 +122,7 @@ class MetaBoxes implements HasActions {
 			return;
 		}
 
-		check_admin_referer( 'pressforward-source-' . $post_id, $nonce_key );
+		check_admin_referer( 'pressforward-source', $nonce_key );
 
 		if ( ! isset( $_POST['pressforward-source-statement'] ) ) {
 			return;
