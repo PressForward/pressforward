@@ -822,6 +822,14 @@ function pressforward_append_source_statement( $content ) {
 		return $content;
 	}
 
+	// Only append to PF content. We use the existence of one of the following as a proxy.
+	$statement_text = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'pf_source_statement', true );
+	// Direct call to get_post_meta to avoid PF's fallback values.
+	$item_link = get_post_meta( $post->ID, 'item_link', true );
+	if ( ! $statement_text && ! $item_link ) {
+		return $content;
+	}
+
 	$source_statement = pressforward( 'admin.nominated' )->get_the_source_statement( $post->ID );
 	if ( ! $source_statement ) {
 		return $content;
