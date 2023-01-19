@@ -71,7 +71,7 @@ $r = new Readability($html, $url);
 $r->init();
 echo $r->articleContent->innerHTML;
 */
-
+#[\AllowDynamicProperties]
 class Readability {
 
 	public $version                       = '1.7.1-without-multi-page';
