@@ -140,33 +140,40 @@ class HTTPTools implements HasActions {
 		$args      = func_get_args();
 		$url       = str_replace( '&amp;', '&', $url );
 		$url_first = $url;
+		$r         = false;
 		if ( ! $function ) {
 			$url = set_url_scheme( $url, 'http' );
 			$r = false;
 		} else {
 			$args[0] = $url;
 			unset( $args[1] );
-			$r = call_user_func_array( $function, $args );
-			// "A variable is considered empty if it does not exist or if its value equals FALSE"
-			if ( is_wp_error( $r ) || empty( $r ) ) {
-				$non_ssl_url = set_url_scheme( $url, 'http' );
-				if ( $non_ssl_url != $url ) {
-							$args[0] = $non_ssl_url;
-					$r               = call_user_func_array( $function, $args );
-				}
-					// $r = false;
-				if ( ! $r || is_wp_error( $r ) ) {
-					// Last Chance!
-					if ( 'file_get_contents' != $function ) {
-						$response = file_get_contents( $url_first );
-					} else {
-						// bail
-						$response = false;
+
+			$cache_key = $function . '_' . $url;
+			$cached    = wp_cache_get( $cache_key, 'pressforward_external_pages' );
+			if ( false === $cached ) {
+				$args[1] = [ 'timeout' => 30 ];
+				$r = call_user_func_array( $function, $args );
+				// "A variable is considered empty if it does not exist or if its value equals FALSE"
+				if ( is_wp_error( $r ) || empty( $r ) ) {
+					$non_ssl_url = set_url_scheme( $url, 'http' );
+					if ( $non_ssl_url != $url ) {
+						$args[0] = $non_ssl_url;
+						$r = call_user_func_array( $function, $args );
 					}
+						// $r = false;
+					if ( ! $r || is_wp_error( $r ) ) {
+						// Last Chance!
+						if ( 'file_get_contents' != $function ) {
+							$response = file_get_contents( $url_first );
+						} else {
+							// bail
+							$response = false;
+						}
+					}
+					wp_cache_set( $cache_key, $r, 'pressforward_external_pages' );
+				} else {
+					$r = $cached;
 				}
-				wp_cache_set( $cache_key, $r, 'pressforward_external_pages' );
-			} else {
-				$r = $cached;
 			}
 		}
 		$response          = $r;
