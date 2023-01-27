@@ -15,7 +15,6 @@ use PressForward\Core\Admin\EditPost;
 use PressForward\Core\Admin\FoldersMenu;
 use PressForward\Core\Admin\AllContent;
 use PressForward\Core\Admin\SubscribedFeeds;
-use PressForward\Core\Admin\MetaBoxes;
 use PressForward\Core\Admin\AdminBar;
 
 class AdminAreaServiceProvider extends ServiceProvider {
@@ -50,12 +49,6 @@ class AdminAreaServiceProvider extends ServiceProvider {
 			'admin.subscribed_feeds',
 			function( $container ) {
 				return new SubscribedFeeds( $container->fetch( 'controller.users' ), $container->fetch( 'library.alertbox' ), $container->fetch( 'controller.metas' ) );
-			}
-		);
-		$container->share(
-			'admin.meta_boxes',
-			function( $container ) {
-				return new MetaBoxes();
 			}
 		);
 		$container->share(

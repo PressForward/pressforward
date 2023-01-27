@@ -485,28 +485,24 @@ class Nominated implements HasActions {
 		$_args = array_merge( $default_args, $args );
 		$args  = apply_filters( 'pf_source_statement', $_args );
 		if ( true == $args['sourced'] ) {
-			$statement = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'pf_source_statement', true );
-			if ( ! $statement ) {
-				// Backward compatibility with 'source_statement' string concatenation.
-				if ( isset( $args['source_statement'] ) ) {
-					$statement = sprintf(
-						'%1$s<a href="%2$s" target="%3$s" pf-nom-item-id="%4$s">%5$s</a>',
-						esc_html( __( 'Source: ', 'pf' ) ),
-						esc_url( $args['item_url'] ),
-						esc_attr( $args['link_target'] ),
-						esc_attr( $nom_id ),
+			if ( isset( $args['source_statement'] ) ) {
+				$statement = sprintf(
+					'%1$s<a href="%2$s" target="%3$s" pf-nom-item-id="%4$s">%5$s</a>',
+					esc_html( __( 'Source: ', 'pf' ) ),
+					esc_url( $args['item_url'] ),
+					esc_attr( $args['link_target'] ),
+					esc_attr( $nom_id ),
+					esc_html( $args['item_title'] )
+				);
+			} else {
+				$statement = sprintf(
+					esc_html( $args['format'] ),
+					sprintf(
+						'<a href="%s">%s</a>',
+						esc_attr( $args['item_url'] ),
 						esc_html( $args['item_title'] )
-					);
-				} else {
-					$statement = sprintf(
-						esc_html( $args['format'] ),
-						sprintf(
-							'<a href="%s">%s</a>',
-							esc_attr( $args['item_url'] ),
-							esc_html( $args['item_title'] )
-						)
-					);
-				}
+					)
+				);
 			}
 
 			// Ensure 'target' and 'pf-nom-item-id' attributes on output.
