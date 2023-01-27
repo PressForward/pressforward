@@ -46,12 +46,16 @@ class PF_Advancement implements Advance_System, HasActions {
 
 	public function inform_of_nomination(){
 		$admin_email = get_option( 'pf_nomination_send_email', array() );
-		if($admin_email) {
-			$siteurl = get_option( 'siteurl', '' );
-			$blogname = get_option( 'blogname', '' );
-			$admin_emails = explode(",", $admin_email);
-			foreach ($admin_emails as $email){
-				wp_mail(trim($email), "New nomination on '".$blogname."'", "A new nomination has been created! Please check it online on " . $siteurl . "/wp-admin/admin.php?page=pf-review");
+		if ( $admin_email ) {
+			$siteurl      = get_option( 'siteurl', '' );
+			$blogname     = get_option( 'blogname', '' );
+			$admin_emails = explode( ',', $admin_email );
+			foreach ( $admin_emails as $email ) {
+				wp_mail(
+					trim( $email ),
+					sprintf( esc_html__( 'New nomination on %s', 'pf' ), esc_html( $blogname ) ),
+					sprintf( esc_html__( 'A new nomination has been created! Please check it online on %s.', 'pf' ), esc_html( $siteurl . '/wp-admin/admin.php?page=pf-review' ) )
+				);
 			}
 		}
 	}
