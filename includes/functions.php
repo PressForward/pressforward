@@ -1580,3 +1580,51 @@ function pf_message( $message = '', $display = false, $reset = false ) {
 	$returned_message = pf_log( $message, false, $reset, true );
 	return $returned_message;
 }
+
+/**
+ * Migrates 5.3.0 source statements to be part of the post content.
+ *
+ * @since 5.4.0
+ */
+function pressforward_migrate_530_source_statements() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	if ( get_option( 'pressforward_migrated_530_source_statements' ) ) {
+		return;
+	}
+
+	global $wpdb;
+
+	$post_ids = $wpdb->get_col( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = 'pf_source_statement'" );
+
+	foreach ( $post_ids as $post_id ) {
+		$post = get_post( $post_id );
+		if ( ! $post ) {
+			continue;
+		}
+
+		$source_statement = get_post_meta( $post_id, 'pf_source_statement', true );
+		if ( ! $source_statement ) {
+			continue;
+		}
+
+		// Sanity check.
+		if ( false !== strpos( $post->post_content, $source_statement ) ) {
+			continue;
+		}
+
+		$new_post_content = $post->post_content . "\n" . $source_statement;
+
+		wp_update_post(
+			[
+				'ID'           => $post_id,
+				'post_content' => $new_post_content,
+			]
+		);
+	}
+
+	update_option( 'pressforward_migrated_530_source_statements', 1 );
+}
+add_action( 'admin_init', 'pressforward_migrate_530_source_statements' );
