@@ -61,6 +61,18 @@ class EditPost implements HasActions {
 		if ( 'pf_feed' === $post->post_type ){
 			return;
 		}
+
+		/**
+		 * Filters whether PF's "Link to source" dropdown should appear in the Publish actions area.
+		 *
+		 * @since 5.4.0
+		 *
+		 * @param bool $show Defaults to true.
+		 */
+		if ( ! apply_filters( 'pressforward_show_link_to_source_dropdown', true ) ) {
+			return;
+		}
+
 		// new post check
 		if ( in_array( $pagenow, array( 'post-new.php' ) ) ) {
 			$option_value = get_option( 'pf_link_to_source' );
