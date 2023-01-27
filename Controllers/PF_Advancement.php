@@ -214,26 +214,8 @@ class PF_Advancement implements Advance_System, HasActions {
 		return $postsAfter;
 	}
 
-	// Utility Functions
-	function pull_content_images_into_pf( $post_ID, $item_content, $photo_src, $photo_description ) {
-		$content = isset( $item_content ) ? $item_content : '';
-
-		$upload = false;
-		if ( ! empty( $photo_src ) && current_user_can( 'upload_files' ) ) {
-			foreach ( (array) $photo_src as $key => $image ) {
-				// see if files exist in content - we don't want to upload non-used selected files.
-				if ( strpos( $content, htmlspecialchars( $image ) ) !== false ) {
-					$desc   = isset( $photo_description[ $key ] ) ? $photo_description[ $key ] : '';
-					$upload = media_sideload_image( $image, $post_ID, $desc );
-
-					// Replace the POSTED content <img> with correct uploaded ones. Regex contains fix for Magic Quotes
-					if ( ! is_wp_error( $upload ) ) {
-						$content = preg_replace( '/<img ([^>]*)src=\\\?(\"|\')' . preg_quote( htmlspecialchars( $image ), '/' ) . '\\\?(\2)([^>\/]*)\/*>/is', $upload, $content ); }
-				}
-			}
-		}
-
-		return $content;
-	}
-
+	/**
+	 * No longer used.
+	 */
+	public function pull_content_images_into_pf() {}
 }
