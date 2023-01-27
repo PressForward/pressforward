@@ -1,109 +1,125 @@
 <?php
+/**
+ * Readability wrapper.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Controllers;
 
 use WP_Ajax_Response;
+
 /**
  * Readability stuff
  */
-
 class PF_Readability {
 
 	/**
 	 * Abstract function to make everything readable.
 	 *
-	 * Potential arguments to base via array
-	 *          $args = array(
-	 *          'force'         => $force,
-	 *          'descrip'       => $_POST['content'],
-	 *          'url'           => $url,
-	 *          'authorship'    => $_POST['authorship']
-	 *      );
+	 * @param array $args {
+	 *   Potential arguments to base via array.
+	 *   @var string $force      'force' to force through.
+	 *   @var string $descrip    Post content.
+	 *   @var string $url        Content URL.
+	 *   @var string $authorship Authorship string.
+	 * }
 	 */
 	public function get_readable_text( $args ) {
-			// ob_start();
-			extract( $args, EXTR_SKIP );
-			set_time_limit( 0 );
-			$readability_stat = $url;
-			$url = pressforward( 'controller.http_tools' )->resolve_full_url( $url );
-			$descrip = rawurldecode( $descrip );
+		// phpcs:ignore WordPress.PHP.DontExtract
+		extract( $args, EXTR_SKIP );
+		set_time_limit( 0 );
+		$readability_stat = $url;
+		$url              = pressforward( 'controller.http_tools' )->resolve_full_url( $url );
+		$descrip          = rawurldecode( $descrip );
 
-		if ( $authorship == 'aggregation' ) {
+		if ( 'aggregation' === $authorship ) {
 			$aggregated = true;
 		} else {
 			$aggregated = false;
 		}
-			$stripped_descrip = strip_tags( $descrip );
-		if ( ( str_word_count( $stripped_descrip ) <= 150 ) || $aggregated || $force == 'force' ) {
-			$itemReadReady = $this->readability_object( $url );
-			// print_r(  wp_richedit_pre($itemReadReady));
-			if ( $itemReadReady != 'error-secured' ) {
-				if ( ! $itemReadReady ) {
+
+		$stripped_descrip = wp_strip_all_tags( $descrip );
+		if ( ( str_word_count( $stripped_descrip ) <= 150 ) || $aggregated || 'force' === $force ) {
+			$item_read_ready = $this->readability_object( $url );
+
+			if ( 'error-secured' !== $item_read_ready ) {
+				if ( ! $item_read_ready ) {
 					$read_status       = 'failed_readability';
 					$readability_stat .= __( ' This content failed Readability.', 'pf' );
-					// $itemReadReady .= '<br />';
+
 					$url = str_replace( '&amp;', '&', $url );
 					// Try and get the OpenGraph description.
 					if ( pressforward( 'library.opengraph' )->fetch( $url ) ) {
-						$node          = pressforward( 'library.opengraph' )->fetch( $url );
-						if (false !== $node){
-							$itemReadReady = $node->description;
+						$node = pressforward( 'library.opengraph' )->fetch( $url );
+						if ( false !== $node ) {
+							$item_read_ready = $node->description;
 						} else {
 							// Ugh... we can't get anything huh?
 							$read_status = 'failed_readability_og_meta';
-							// $itemReadReady .= '<br />';
+							// $item_read_ready .= '<br />';
 							// We'll want to return a false to loop with.
-							$itemReadReady = $descrip;
+							$item_read_ready = $descrip;
 						}
-					} //Note the @ below. This is because get_meta_tags doesn't have a failure state to check, it just throws errors. Thanks PHP...
-					elseif ( '' != ( $contentHtml = @get_meta_tags( $url ) ) ) {
-						// Try and get the HEAD > META DESCRIPTION tag.
-						$read_status = 'failed_readability_og';
-						// $itemReadReady .= '<br />';
-						$itemReadReady = $contentHtml['description'];
-
 					} else {
-						// Ugh... we can't get anything huh?
-						$read_status = 'failed_readability_og_meta';
-						// $itemReadReady .= '<br />';
-						// We'll want to return a false to loop with.
-						$itemReadReady = $descrip;
+						/*
+						 * Note the @ below. This is because get_meta_tags doesn't have a
+						 * failure state to check, it just throws errors. Thanks PHP...
+						 */
+						// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+						$content_html = @get_meta_tags( $url );
+						if ( '' !== $content_html ) {
+							// Try and get the HEAD > META DESCRIPTION tag.
+							$read_status     = 'failed_readability_og';
+							$item_read_ready = $content_html['description'];
 
+						} else {
+							// Ugh... we can't get anything huh?
+							$read_status = 'failed_readability_og_meta';
+
+							// We'll want to return a false to loop with.
+							$item_read_ready = $descrip;
+
+						}
 					}
-					if ( strlen( $itemReadReady ) < strlen( $descrip ) ) {
-						$itemReadReady     = $descrip;
+
+					if ( strlen( $item_read_ready ) < strlen( $descrip ) ) {
+						$item_read_ready   = $descrip;
 						$readability_stat .= ' Retrieved text is less than original text.';
 						$read_status       = 'already_readable';
 					}
-					$itemReadReady = $this->process_in_oembeds( $url, $itemReadReady );
+					$item_read_ready = $this->process_in_oembeds( $url, $item_read_ready );
 				} else {
-					$read_status   = 'made_readable';
-					$itemReadReady = $this->process_in_oembeds( $url, $itemReadReady );
+					$read_status     = 'made_readable';
+					$item_read_ready = $this->process_in_oembeds( $url, $item_read_ready );
 				}
 			} else {
-				$read_status   = 'secured';
-				$itemReadReady = $descrip;
+				$read_status     = 'secured';
+				$item_read_ready = $descrip;
 			}
 		} else {
-			$read_status   = 'already_readable';
-			$itemReadReady = $descrip;
+			$read_status     = 'already_readable';
+			$item_read_ready = $descrip;
 		}
 
-			$return_args = array(
-				'status'   => $read_status,
-				'readable' => $itemReadReady,
-				'url'      => $url,
-			);
-			// ob_end_flush();
-			return $return_args;
+		$return_args = array(
+			'status'   => $read_status,
+			'readable' => $item_read_ready,
+			'url'      => $url,
+		);
+
+		return $return_args;
 
 	}
 
 	/**
 	 * Handles a readability request via POST
+	 *
+	 * @param bool $quickresponse Whether to do a quick response.
 	 */
 	public function make_it_readable( $quickresponse = false ) {
 
-		// Verify nonce
+		// Verify nonce.
 		if ( ! isset( $_POST[ PF_SLUG . '_nomination_nonce' ] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ PF_SLUG . '_nomination_nonce' ] ) ), 'nomination' ) ) {
 			die( esc_html__( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) ); }
 		ob_start();
@@ -113,8 +129,9 @@ class PF_Readability {
 		$post_id     = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
 		$force       = isset( $_POST['force'] ) ? sanitize_text_field( wp_unslash( $_POST['force'] ) ) : '';
 		$url         = isset( $_POST['url'] ) ? sanitize_text_field( wp_unslash( $_POST['url'] ) ) : '';
-		// error_reporting(0);
-		if ( ( false === ( $itemReadReady = get_transient( 'item_readable_content_' . $item_id ) ) ) || $force == 'force' ) {
+
+		$item_read_ready = get_transient( 'item_readable_content_' . $item_id );
+		if ( false === $item_read_ready || 'force' === $force ) {
 
 			$authorship = isset( $_POST['authorship'] ) ? sanitize_text_field( wp_unslash( $_POST['authorship'] ) ) : '';
 
@@ -130,24 +147,28 @@ class PF_Readability {
 
 			$readable_ready = $this->get_readable_text( $args );
 
-			$read_status   = $readable_ready['status'];
-			$itemReadReady = $readable_ready['readable'];
-			$readable_url  = $readable_ready['url'];
-			if ( ! strpos( $itemReadReady, $readable_url ) ) {
-				$itemReadReady = $this->process_in_oembeds( $readable_url, $itemReadReady );
+			$read_status     = $readable_ready['status'];
+			$item_read_ready = $readable_ready['readable'];
+			$readable_url    = $readable_ready['url'];
+			if ( ! strpos( $item_read_ready, $readable_url ) ) {
+				$item_read_ready = $this->process_in_oembeds( $readable_url, $item_read_ready );
 			}
 
-			set_transient( 'item_readable_content_' . $item_id, $itemReadReady, 60 * 60 * 24 );
+			set_transient( 'item_readable_content_' . $item_id, $item_read_ready, 60 * 60 * 24 );
 		}
 
-		$contentObj    = pressforward( 'library.htmlchecker' );
-		$itemReadReady = $contentObj->closetags( $itemReadReady );
+		$content_obj     = pressforward( 'library.htmlchecker' );
+		$item_read_ready = $content_obj->closetags( $item_read_ready );
 		pf_log( 'Making readable' );
 
-		// BIG FREAKING WARNING: This WILL NOT WORK if you have WP_DEBUG and WP_DEBUG_DISPLAY true and either your theme or plugins have bad functions on the save_post hook.
-		if ( $post_id != 0 ) {
+		/*
+		 * BIG FREAKING WARNING: This WILL NOT WORK if you have WP_DEBUG and
+		 * WP_DEBUG_DISPLAY true and either your theme or plugins have bad functions
+		 * on the save_post hook.
+		 */
+		if ( 0 !== $post_id ) {
 
-			$content = html_entity_decode( $itemReadReady );
+			$content      = html_entity_decode( $item_read_ready );
 			$update_ready = array(
 				'ID'           => $post_id,
 				'post_content' => $content,
@@ -163,46 +184,47 @@ class PF_Readability {
 					pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'readable_status', 0 );
 					$error = $update_check->get_error_message();
 				}
-				$responseItemReadReady = $this->get_embed( $url ) . $itemReadReady;
-				$source_statement      = pressforward( 'utility.forward_tools' )->append_source_statement( $post_id, '', true );
+				$response_item_read_ready = $this->get_embed( $url ) . $item_read_ready;
+				$source_statement         = pressforward( 'utility.forward_tools' )->append_source_statement( $post_id, '', true );
 			} else {
 				$error            = 'Not Updated, retrieved content is longer than stored content.';
 				$source_statement = pressforward( 'utility.forward_tools' )->append_source_statement( $post_id, '', true );
 			}
 		}
-		$domDocErrors = '';
-		$dderrors     = libxml_get_errors();
+		$dom_doc_errors = '';
+		$dderrors       = libxml_get_errors();
 		foreach ( $dderrors as $dderror ) {
-			$domDocErrors .= ' Error: ' . $dderror->code . ' Line:' . $dderror->line . ' ' . $dderror->message;
+			$dom_doc_errors .= ' Error: ' . $dderror->code . ' Line:' . $dderror->line . ' ' . $dderror->message;
 		}
 
-			$response    = array(
-				'what'         => 'full_item_content',
-				'action'       => 'make_readable',
-				'id'           => $item_id,
-				'data'         => htmlspecialchars( $responseItemReadReady ),
-				'supplemental' => array(
-					'readable_status'         => $read_status,
-					'error'                   => $error,
-					'buffered'                => ob_get_contents(),
-					'domDoc_errors'           => $domDocErrors,
-					'readable_applied_to_url' => $url,
-					'source_statement'        => $source_statement,
-				),
-			);
-			$xmlResponse = new WP_Ajax_Response( $response );
-			$xmlResponse->send();
-			libxml_clear_errors();
-			ob_end_flush();
-			die();
+		$response = array(
+			'what'         => 'full_item_content',
+			'action'       => 'make_readable',
+			'id'           => $item_id,
+			'data'         => htmlspecialchars( $response_item_read_ready ),
+			'supplemental' => array(
+				'readable_status'         => $read_status,
+				'error'                   => $error,
+				'buffered'                => ob_get_contents(),
+				'domDoc_errors'           => $dom_doc_errors,
+				'readable_applied_to_url' => $url,
+				'source_statement'        => $source_statement,
+			),
+		);
+
+		$xml_response = new WP_Ajax_Response( $response );
+		$xml_response->send();
+		libxml_clear_errors();
+		ob_end_flush();
+		die();
 	}
 
 	/**
-	 * Runs a URL through Readability and hands back the stripped content
+	 * Runs a URL through Readability and hands back the stripped content.
 	 *
 	 * @since 1.7
 	 * @see http://www.keyvan.net/2010/08/php-readability/
-	 * @param $url
+	 * @param string $url URL to fetch.
 	 */
 	public function readability_object( $url ) {
 
@@ -210,7 +232,9 @@ class PF_Readability {
 		$url = pressforward( 'controller.http_tools' )->resolve_full_url( $url );
 
 		$request = pf_de_https(
-			$url, 'wp_remote_get', array(
+			$url,
+			'wp_remote_get',
+			array(
 				'timeout'    => '30',
 				'user-agent' => 'AdsBot-Google (+http://www.google.com/adsbot.html)',
 				'headers'    => array(
@@ -219,11 +243,8 @@ class PF_Readability {
 			)
 		);
 
-		// change from Boone - use wp_remote_get() instead of file_get_contents()
-		// $request = wp_remote_get( $url, array('timeout' => '30') );
 		if ( is_wp_error( $request ) ) {
 			$content = 'error-secured';
-			// print_r($request); die();
 			return $content;
 		}
 		if ( ! empty( $request['body'] ) ) {
@@ -240,33 +261,41 @@ class PF_Readability {
 		return $content;
 	}
 
+	/**
+	 * Processes content through Readability.
+	 *
+	 * @param string $html HTML content.
+	 * @param string $url  URL.
+	 * @return string
+	 */
 	public function process_readability( $html, $url ) {
-		// check if tidy exists to clean up the input.
+		// Check if tidy exists to clean up the input.
 		if ( function_exists( 'tidy_parse_string' ) ) {
 			$tidy = tidy_parse_string( $html, array( 'wrap' => 0 ), 'UTF8' );
 			$tidy->cleanRepair();
 			$html = $tidy->value;
 		}
-		// give it to Readability
+
+		// Give it to Readability.
 		$readabilitizer = pressforward( 'library.readability' );
 		$readability    = $readabilitizer( $html, $url );
 
-		// print debug output?
-		// useful to compare against Arc90's original JS version -
-		// simply click the bookmarklet with FireBug's
-		// console window open
+		// Print debug output?
+		// Useful to compare against Arc90's original JS version -
+		// simply click the bookmarklet with FireBug's console window open.
 		$readability->debug = false;
 
-		// convert links to footnotes?
+		// Convert links to footnotes?
+		// phpcs:disable WordPress.NamingConventions
 		$readability->convertLinksToFootnotes = false;
 
-		// process it
+		// Process it.
 		$result = $readability->init();
 
 		if ( $result ) {
 			$content = $readability->getContent()->innerHTML;
-			// $content = $contentOut->innerHTML;
-				// if we've got tidy, let's use it.
+
+			// If we've got tidy, let's use it.
 			if ( function_exists( 'tidy_parse_string' ) ) {
 				$tidy = tidy_parse_string(
 					$content,
@@ -281,39 +310,44 @@ class PF_Readability {
 				$content = $tidy->value;
 			}
 
-			$content    = balanceTags( $content, true );
-			$content    = ent2ncr( $content );
-			$content    = convert_chars( $content );
-			$domRotated = 0;
-			$dom        = new \domDocument( '1.0', 'utf-8' );
+			$content     = balanceTags( $content, true );
+			$content     = ent2ncr( $content );
+			$content     = convert_chars( $content );
+			$dom_rotated = 0;
+			$dom         = new \domDocument( '1.0', 'utf-8' );
 
+			// phpcs:disable WordPress.NamingConventions
 			$dom->preserveWhiteSpace = true;
 			$dom->substituteEntities = true;
 			$dom->resolveExternals   = true;
+			$dom->preserveWhiteSpace = true;
+			// phpcs:enable WordPress.NamingConventions
+
 			$dom->loadXML( '<fullContent>' . $content . '</fullContent>' );
 			$images = $dom->getElementsByTagName( 'img' );
 			foreach ( $images as $image ) {
 				$img = $image->getAttribute( 'src' );
-				if ( ( ( strpos( $img, '/' ) ) === 0 ) || ( strpos( $img, 'http' ) != 0 ) ) {
-					$urlArray = parse_url( $url );
-					if ( ( strpos( $img, 'http' ) != 0 ) ) {
-						$urlBase = 'http://' . $urlArray['host'] . '/';
+				if ( ( ( strpos( $img, '/' ) ) === 0 ) || ( strpos( $img, 'http' ) !== 0 ) ) {
+					$url_array = wp_parse_url( $url );
+					if ( ( strpos( $img, 'http' ) !== 0 ) ) {
+						$url_base = 'http://' . $url_array['host'] . '/';
 					} else {
-						$urlBase = 'http://' . $urlArray['host'];
+						$url_base = 'http://' . $url_array['host'];
 					}
-					if ( ! is_wp_error( wp_remote_head( $urlBase . $img ) ) ) {
-						$image->setAttribute( 'src', $urlBase . $img );
-						$domRotated++;
+					if ( ! is_wp_error( wp_remote_head( $url_base . $img ) ) ) {
+						$image->setAttribute( 'src', $url_base . $img );
+						$dom_rotated++;
 					} elseif ( ! is_wp_error( wp_remote_head( $url . $img ) ) ) {
 						$image->setAttribute( 'src', $url . $img );
-						$domRotated++;
+						$dom_rotated++;
 					} else {
+						// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 						$image->parentNode->removeChild( $image );
-						$domRotated++;
+						$dom_rotated++;
 					}
 				}
 			}
-			if ( $domRotated > 0 ) {
+			if ( $dom_rotated > 0 ) {
 				$content = $dom->saveXML();
 				$rel     = '(<\\?xml version="1\\.0" encoding="utf-8"\\?>)';
 				$content = preg_replace( '/' . $rel . '/is', ' ', $content );
@@ -321,31 +355,34 @@ class PF_Readability {
 				$content = preg_replace( '/' . $rel . '/is', ' ', $content );
 			}
 			if ( 120 > strlen( $content ) ) {
-				$content = false;}
-			// $content = stripslashes($content);
-			// this will also output doctype and comments at top level
-			// $content = "";
-			// foreach($dom->childNodes as $node){
-			// $content .= $dom->saveXML($node)."\n";
-			// }
+				$content = false;
+			}
 		} else {
 			// If Readability can't get the content, send back a FALSE to loop with.
 			$content = false;
 			// and let's throw up an error via AJAX as well, so we know what's going on.
 		}
-		if ( $content != false ) {
-				$contentObj = pressforward( 'library.htmlchecker' );
-				$content    = $contentObj->closetags( $content );
-				$content    = $this->process_in_oembeds( $url, $content );
+
+		if ( false !== $content ) {
+				$content_obj = pressforward( 'library.htmlchecker' );
+				$content     = $content_obj->closetags( $content );
+				$content     = $this->process_in_oembeds( $url, $content );
 		}
 
 		return $content;
 	}
 
+	/**
+	 * Processes embed content into post content.
+	 *
+	 * @param string $item_link    URL of the embed.
+	 * @param string $item_content Item content.
+	 * @return string
+	 */
 	public function process_in_oembeds( $item_link, $item_content ) {
 		$providers = pressforward( 'schema.feed_item' )->oembed_capables();
 		foreach ( $providers as $provider ) {
-			if ( ( false == strpos( $item_content, $item_link ) ) && ( 0 != strpos( $item_link, $provider ) ) ) {
+			if ( ( false === strpos( $item_content, $item_link ) ) && ( 0 !== strpos( $item_link, $provider ) ) ) {
 				$added_content = '
 
 				' . $item_link . '
@@ -355,9 +392,14 @@ class PF_Readability {
 			}
 		}
 		return $item_content;
-
 	}
 
+	/**
+	 * Gets an embed for a URL.
+	 *
+	 * @param string $item_link URL of item to embed.
+	 * @return string|bool
+	 */
 	public function get_embed( $item_link ) {
 		$transient_key = 'pressforward_oembed_' . md5( $item_link );
 
@@ -367,10 +409,10 @@ class PF_Readability {
 			set_transient( $transient_key, $oembed, WEEK_IN_SECONDS );
 		}
 
-		if ( false != $oembed ) {
+		if ( false !== $oembed ) {
 			$providers = pressforward( 'schema.feed_item' )->oembed_capables();
 			foreach ( $providers as $provider ) {
-				if ( 0 != strpos( $item_link, $provider ) ) {
+				if ( 0 !== strpos( $item_link, $provider ) ) {
 					return $oembed;
 				}
 			}
