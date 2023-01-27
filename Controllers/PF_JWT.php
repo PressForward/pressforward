@@ -1,191 +1,294 @@
 <?php
+/**
+ * JWT tools.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Controllers;
 
-// use Intraxia\Jaxion\Contract\Core\HasActions;
 use PressForward\Interfaces\System;
 use PressForward\Interfaces\SystemUsers;
 use Firebase\JWT\JWT as JWT;
+
 /**
- * Readability stuff
+ * JWT functionality.
  */
-
 class PF_JWT {
+	/**
+	 * SystemUsers object.
+	 *
+	 * @access public
+	 * @var PressForward\Interfaces\SystemUsers
+	 */
 	public $system_users;
-	public $system;
-	public $JWT;
 
-	function __construct( SystemUsers $users, System $system ) {
+	/**
+	 * System object.
+	 *
+	 * @access public
+	 * @var PressForward\Interfaces\System
+	 */
+	public $system;
+
+	/**
+	 * JWT object.
+	 *
+	 * @access public
+	 * @var Firebase\JWT\JWT
+	 */
+	public $jwt;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param PressForward\Interfaces\SystemUsers $users  SystemUsers object.
+	 * @param PressForward\Interfaces\System      $system Systemobject.
+	 */
+	public function __construct( SystemUsers $users, System $system ) {
 		$this->system_users = $users;
-		$this->system = $system;
-		$this->JWT = new JWT;
+		$this->system       = $system;
+		$this->jwt          = new JWT();
 	}
 
-	public function random_bytes( $num ){
-		if ( function_exists('random_bytes') ){
+	/**
+	 * Returns a random string based on an input.
+	 *
+	 * @param int $num Number.
+	 * @throws TypeError|Exception On error.
+	 * @return string
+	 */
+	public function random_bytes( $num ) {
+		if ( function_exists( 'random_bytes' ) ) {
 			try {
-			    $value = random_bytes($num);
-			} catch (\TypeError $e) {
-			    // Well, it's an integer, so this IS unexpected.
-			    die("An unexpected error has occurred when generating a cryptographic API key.");
-			} catch (\Error $e) {
-			    // This is also unexpected because 32 is a reasonable integer.
-			    die("An unexpected error has occurred when generating a cryptographic API key.");
-			} catch (\Exception $e) {
-			    // If you get this message, the CSPRNG failed hard.
-			    die("Could not generate a random string. Is our OS secure?");
+				$value = random_bytes( $num );
+			} catch ( \TypeError $e ) {
+				// Well, it's an integer, so this IS unexpected.
+				die( esc_html__( 'An unexpected error has occurred when generating a cryptographic API key.', 'pf' ) );
+			} catch ( \Error $e ) {
+				// This is also unexpected because 32 is a reasonable integer.
+				die( esc_html__( 'An unexpected error has occurred when generating a cryptographic API key.', 'pf' ) );
+			} catch ( \Exception $e ) {
+				// If you get this message, the CSPRNG failed hard.
+				die( esc_html__( 'Could not generate a random string. Is our OS secure?', 'pf' ) );
 			}
-			return bin2hex($value);
+			return bin2hex( $value );
 		} else {
-			throw new Exception("PressForward cannot provide a cryptographically secure API key.", 1);
+			throw new Exception( __( 'PressForward cannot provide a cryptographically secure API key.', 'pf' ), 1 );
 		}
 	}
 
-	public function system_key(){
-		$system_key = $this->system->get_option('pf_system_jwt_key', false);
-		if (!$system_key){
-			$system_key = $this->random_bytes(64);
+	/**
+	 * Gets the system key.
+	 *
+	 * Creates one if it doesn't exist.
+	 *
+	 * @return int
+	 */
+	public function system_key() {
+		$system_key = $this->system->get_option( 'pf_system_jwt_key', false );
+		if ( ! $system_key ) {
+			$system_key = $this->random_bytes( 64 );
 			$this->system->update_option( 'pf_system_jwt_key', $system_key );
 		}
 		return $system_key;
 	}
 
-	public function encode_with_jwt($token, $key,  $alg = 'HS256' ){
-		return $this->JWT->encode($token, $key, $alg);
+	/**
+	 * Encodes a token.
+	 *
+	 * @param string $token Token.
+	 * @param string $key   Key.
+	 * @param string $alg   Algorithm.
+	 * @return string
+	 */
+	public function encode_with_jwt( $token, $key, $alg = 'HS256' ) {
+		return $this->jwt->encode( $token, $key, $alg );
 	}
 
-	public function decode_with_jwt($token, $key, $alg = array('HS256')){
+	/**
+	 * Decodes a token.
+	 *
+	 * @param string $token Token.
+	 * @param string $key   Key.
+	 * @param array  $alg   Algorithm.
+	 * @return bool
+	 */
+	public function decode_with_jwt( $token, $key, $alg = array( 'HS256' ) ) {
 		try {
-			$decode = $this->JWT->decode($token, $key, $alg);
+			$decode = $this->jwt->decode( $token, $key, $alg );
 		} catch ( \Exception $e ) {
-			// echo 'Caught exception: ',  $e->getMessage(), "\n";
 			return false;
 		}
 		return $decode;
 	}
 
-	public function make_a_public_key( $new = false ){
+	/**
+	 * Make a public key.
+	 *
+	 * @param bool $new Whether we're in make-new mode.
+	 * @return string $key
+	 */
+	public function make_a_public_key( $new = false ) {
 		$key_seed = 'pf';
-		//$key_public = sanitize_key($this->random_bytes(4));
-		$user = $this->system_users->get_current_user();
-		$unique_strings_to_users = $this->system->get_option('pf_jwt_users', array());
-		if ( $new || !array_key_exists('by_id', $unique_strings_to_users) || !array_key_exists($user->ID, $unique_strings_to_users['by_id']) ){
-			$user_key = sanitize_key($this->random_bytes(rand(6,12)));
-			if ( ! empty( $unique_strings_to_users['by_id'] ) && array_key_exists( $user->ID, $unique_strings_to_users['by_id'] ) ){
+
+		$user                    = $this->system_users->get_current_user();
+		$unique_strings_to_users = $this->system->get_option( 'pf_jwt_users', array() );
+		if ( $new || ! array_key_exists( 'by_id', $unique_strings_to_users ) || ! array_key_exists( $user->ID, $unique_strings_to_users['by_id'] ) ) {
+			$user_key = sanitize_key( $this->random_bytes( wp_rand( 6, 12 ) ) );
+			if ( ! empty( $unique_strings_to_users['by_id'] ) && array_key_exists( $user->ID, $unique_strings_to_users['by_id'] ) ) {
 				// We need to unset the old version because we are in make-new mode.
-				$old_user_key = $unique_strings_to_users['by_id'][$user->ID];
-				unset($unique_strings_to_users['by_key'][$old_user_key]);
-				unset($unique_strings_to_users['by_id'][$user->ID]);
+				$old_user_key = $unique_strings_to_users['by_id'][ $user->ID ];
+				unset( $unique_strings_to_users['by_key'][ $old_user_key ] );
+				unset( $unique_strings_to_users['by_id'][ $user->ID ] );
 			}
-			$unique_strings_to_users['by_key'][$user_key] = $user->ID;
-			$unique_strings_to_users['by_id'][$user->ID] = $user_key;
+			$unique_strings_to_users['by_key'][ $user_key ] = $user->ID;
+			$unique_strings_to_users['by_id'][ $user->ID ]  = $user_key;
 			$this->system->update_option( 'pf_jwt_users', $unique_strings_to_users );
 		} else {
-			$user_key = $unique_strings_to_users['by_id'][$user->ID];
+			$user_key = $unique_strings_to_users['by_id'][ $user->ID ];
 		}
 		$user_seed = $user_key;
-		//$key = 'pf'.'|'.$key_public.'|'.$key_seed.'|'.$user_seed;
+
 		$key_set = array(
-			'key_seed'		=>	$key_seed,
-			'user_seed'		=>	$user_seed,
+			'key_seed'  => $key_seed,
+			'user_seed' => $user_seed,
 		);
-		$key = $this->encode_with_jwt($key_set, $this->system_key());
+		$key     = $this->encode_with_jwt( $key_set, $this->system_key() );
 		return $key;
 	}
 
-	public function get_a_user_public_key( $user_id = false, $new = false ){
-		if (!$user_id){
-			$user = $this->system_users->get_current_user();
+	/**
+	 * Gets a user's public key.
+	 *
+	 * @param int  $user_id ID of the user.
+	 * @param bool $new     Whether this is new.
+	 * @return string
+	 */
+	public function get_a_user_public_key( $user_id = false, $new = false ) {
+		if ( ! $user_id ) {
+			$user    = $this->system_users->get_current_user();
 			$user_id = $user->ID;
 		}
-		$existing_key = $this->system_users->get_user_meta($user_id, 'pf_public_key', true);
-		if ( $new || !$existing_key ){
+		$existing_key = $this->system_users->get_user_meta( $user_id, 'pf_public_key', true );
+		if ( $new || ! $existing_key ) {
 			$key = $this->make_a_public_key( true );
-			$this->system_users->update_user_meta($user_id, 'pf_public_key', $key);
+			$this->system_users->update_user_meta( $user_id, 'pf_public_key', $key );
 			return $key;
 		} else {
 			return $existing_key;
 		}
 	}
 
-	public function make_a_jwt_private_key(){
-		$extra = ord($this->system->get_site_info('url'));
-		$key_seed = sanitize_key($extra);
-		$key_private = sanitize_key($this->random_bytes(64));
-		$key = $key_seed.$key_private;
-		return base64_encode($key);
+	/**
+	 * Makes a private key.
+	 *
+	 * @return string
+	 */
+	public function make_a_jwt_private_key() {
+		$extra       = ord( $this->system->get_site_info( 'url' ) );
+		$key_seed    = sanitize_key( $extra );
+		$key_private = sanitize_key( $this->random_bytes( 64 ) );
+		$key         = $key_seed . $key_private;
+
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+		return base64_encode( $key );
 	}
 
-	public function map_private_key_to_user( $user_id = false ){
-		if (!$user_id){
-			$user = $this->system_users->get_current_user();
+	/**
+	 * Maps a private key to a user.
+	 *
+	 * @param int $user_id ID of the user.
+	 * @return $key
+	 */
+	public function map_private_key_to_user( $user_id = false ) {
+		if ( ! $user_id ) {
+			$user    = $this->system_users->get_current_user();
 			$user_id = $user->ID;
 		}
 		$key = $this->make_a_jwt_private_key();
-		$this->system_users->update_user_meta($user_id, 'pf_jwt_private_key', $key);
+		$this->system_users->update_user_meta( $user_id, 'pf_jwt_private_key', $key );
 		return $key;
 	}
 
-	public function get_a_user_private_key( $user_id = false, $new = false ){
-		if (!$user_id){
-			$user = $this->system_users->get_current_user();
+	/**
+	 * Get a user's private key.
+	 *
+	 * @param int  $user_id ID of the user.
+	 * @param bool $new     Whether this is a new user.
+	 * @return string
+	 */
+	public function get_a_user_private_key( $user_id = false, $new = false ) {
+		if ( ! $user_id ) {
+			$user    = $this->system_users->get_current_user();
 			$user_id = $user->ID;
 		}
-		$existing_key = $this->system_users->get_user_meta($user_id, 'pf_jwt_private_key', true);
-		if ( $new || !$existing_key ){
+		$existing_key = $this->system_users->get_user_meta( $user_id, 'pf_jwt_private_key', true );
+		if ( $new || ! $existing_key ) {
 			$key = $this->map_private_key_to_user( $user_id );
-			// $this->system_users->update_user_meta($user_id, 'pf_jwt_private_key', $key);
 			return $key;
 		} else {
 			return $existing_key;
 		}
 	}
 
-	public function get_user_by_key($key_array){
-		if (!array_key_exists('key_seed', $key_array) || !array_key_exists('user_seed', $key_array)){
+	/**
+	 * Gets a user by a key array.
+	 *
+	 * @param array $key_array Key array.
+	 * @return int
+	 */
+	public function get_user_by_key( $key_array ) {
+		if ( ! array_key_exists( 'key_seed', $key_array ) || ! array_key_exists( 'user_seed', $key_array ) ) {
 			return false;
 		}
-		$unique_strings_to_users = $this->system->get_option('pf_jwt_users', array());
-		if (!array_key_exists($key_array['user_seed'], $unique_strings_to_users['by_key'])){
+		$unique_strings_to_users = $this->system->get_option( 'pf_jwt_users', array() );
+		if ( ! array_key_exists( $key_array['user_seed'], $unique_strings_to_users['by_key'] ) ) {
 			return false;
 		}
-		$user_id = $unique_strings_to_users['by_key'][$key_array['user_seed']];
+		$user_id = $unique_strings_to_users['by_key'][ $key_array['user_seed'] ];
 		return $user_id;
 	}
 
-	public function get_a_user_private_key_for_decrypt( $public_pf_key ){
+	/**
+	 * Gets a private key based on a public key.
+	 *
+	 * @param string $public_pf_key Key.
+	 * @return string
+	 */
+	public function get_a_user_private_key_for_decrypt( $public_pf_key ) {
 		$key_parts = array();
-		//$decoded_key = base64_decode($public_pf_key);
-		//$key_parts = explode('|', $decoded_key);
-		//$user_key = array_pop($key_parts);
-		//$site_url = array_pop($key_parts);
-		$key_obj = $this->decode_with_jwt($public_pf_key, $this->system_key());
+		$key_obj   = $this->decode_with_jwt( $public_pf_key, $this->system_key() );
 		$key_array = (array) $key_obj;
-		$user_id = $this->get_user_by_key($key_array);
-		if ( false === $user_id ){
+		$user_id   = $this->get_user_by_key( $key_array );
+
+		if ( false === $user_id ) {
 			return false;
 		}
-		//$user = get_user_by( 'id', $user_id );
-		$key = $this->system_users->get_user_meta($user_id, 'pf_jwt_private_key', true);
+
+		$key = $this->system_users->get_user_meta( $user_id, 'pf_jwt_private_key', true );
 		return $key;
 	}
 
-	public function get_a_user_from_public_key( $public_pf_key ){
+	/**
+	 * Gets a user from a public key.
+	 *
+	 * @param string $public_pf_key Key.
+	 * @return bool|WP_User
+	 */
+	public function get_a_user_from_public_key( $public_pf_key ) {
 		$key_parts = array();
-		//$decoded_key = base64_decode($public_pf_key);
-		//$key_parts = explode('|', $decoded_key);
-		//$user_key = array_pop($key_parts);
-		//$site_url = array_pop($key_parts);
-		$key_obj = $this->decode_with_jwt($public_pf_key, $this->system_key());
+		$key_obj   = $this->decode_with_jwt( $public_pf_key, $this->system_key() );
 		$key_array = (array) $key_obj;
-		if (!array_key_exists('key_seed', $key_array) || !array_key_exists('user_seed', $key_array)){
+		if ( ! array_key_exists( 'key_seed', $key_array ) || ! array_key_exists( 'user_seed', $key_array ) ) {
 			return false;
 		}
-		$unique_strings_to_users = $this->system->get_option('pf_jwt_users', array());
-		if (!array_key_exists($key_array['user_seed'], $unique_strings_to_users['by_key'])){
+		$unique_strings_to_users = $this->system->get_option( 'pf_jwt_users', array() );
+		if ( ! array_key_exists( $key_array['user_seed'], $unique_strings_to_users['by_key'] ) ) {
 			return false;
 		}
-		$user_id = $unique_strings_to_users['by_key'][$key_array['user_seed']];
-		$user = get_user_by( 'id', $user_id );
+		$user_id = $unique_strings_to_users['by_key'][ $key_array['user_seed'] ];
+		$user    = get_user_by( 'id', $user_id );
 		return $user;
 	}
 
