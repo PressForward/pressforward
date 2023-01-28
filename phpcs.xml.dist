@@ -60,5 +60,6 @@
 
 	<rule ref="PEAR.NamingConventions.ValidClassName.Invalid">
 		<exclude-pattern>Controllers/PF_to_WP_Meta.php</exclude-pattern>
+		<exclude-pattern>Controllers/PF_to_WP_Posts.php</exclude-pattern>
 	</rule>
 </ruleset>
