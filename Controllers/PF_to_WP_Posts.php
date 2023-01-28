@@ -54,11 +54,12 @@ class PF_to_WP_Posts implements Items {
 			   SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
 			   FROM {$wpdb->posts}, {$wpdb->postmeta}
 			   WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-			   AND {$wpdb->postmeta}.meta_key = '{$item_id_key}'
+			   AND {$wpdb->postmeta}.meta_key = %s
 			   AND {$wpdb->postmeta}.meta_value = %s
 			   AND {$wpdb->posts}.post_type = %s
 			   ORDER BY {$wpdb->posts}.post_date DESC
 			",
+				$item_id_key,
 				$item_id,
 				$post_type
 			);
