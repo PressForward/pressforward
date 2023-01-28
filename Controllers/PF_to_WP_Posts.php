@@ -58,7 +58,9 @@ class PF_to_WP_Posts implements Items {
 			   AND {$wpdb->postmeta}.meta_value = %s
 			   AND {$wpdb->posts}.post_type = %s
 			   ORDER BY {$wpdb->posts}.post_date DESC
-			", $item_id, $post_type
+			",
+				$item_id,
+				$post_type
 			);
 			// AND $wpdb->posts.post_date < NOW() <- perhaps by removing we can better prevent simultaneous duplications?
 			// Since I've altered the query, I could change this to just see if there are any items in the query results
@@ -72,7 +74,8 @@ class PF_to_WP_Posts implements Items {
 			}
 		}
 		pf_log( 'Checking with post 3.2 method.' );
-		// WP_Query arguments
+
+		// WP_Query arguments.
 		$args = array(
 			'post_type'  => $post_type,
 			'meta_query' => array(
@@ -84,7 +87,7 @@ class PF_to_WP_Posts implements Items {
 			),
 		);
 
-		// The Query
+		// The Query.
 		$query = new \WP_Query( $args );
 
 		if ( ! $query->have_posts() ) {
@@ -99,5 +102,4 @@ class PF_to_WP_Posts implements Items {
 			}
 		}
 	}
-
 }
