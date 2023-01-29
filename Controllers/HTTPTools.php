@@ -1,30 +1,68 @@
 <?php
+/**
+ * HTTP utilities.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Controllers;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use PressForward\Interfaces\System;
 use URLResolver;
-/**
- * Readability stuff
- */
 
+/**
+ * HTTP utilities.
+ */
 class HTTPTools implements HasActions {
+	/**
+	 * URLResolver object.
+	 *
+	 * @access public
+	 * @var URLResolver
+	 */
 	public $url_resolver;
+
+	/**
+	 * Systems object.
+	 *
+	 * @access public
+	 * @var PressForward\Interfaces\System
+	 */
 	public $system;
+
+	/**
+	 * Metas object.
+	 *
+	 * @access public
+	 * @var PressForward\Controllers\Meta
+	 */
 	public $meta;
 
-	function __construct( URLResolver $resolver, System $system, Metas $meta ) {
+	/**
+	 * Constructor.
+	 *
+	 * @param URLResolver                    $resolver URLResolver object.
+	 * @param PressForward\Interfaces\System $system   System object.
+	 * @param PressForward\Controllers\Metas $meta     Metas object.
+	 */
+	public function __construct( URLResolver $resolver, System $system, Metas $meta ) {
 		$this->url_resolver = $resolver;
 		$this->system       = $system;
 		$this->meta         = $meta;
 	}
 
+	/**
+	 * Sets up action hooks for this class.
+	 *
+	 * @return array
+	 */
 	public function action_hooks() {
 		$actions = array(
 			array(
 				'hook'     => 'init',
 				'method'   => 'register_non_persistent_cache_groups',
-				'priority' => 10
+				'priority' => 10,
 			),
 		);
 		return $actions;
@@ -36,14 +74,22 @@ class HTTPTools implements HasActions {
 	 * We cache external URI fetches, but only for a single pageload.
 	 */
 	public function register_non_persistent_cache_groups() {
-		wp_cache_add_non_persistent_groups( array(
-			'pressforward_external_pages',
-		) );
+		wp_cache_add_non_persistent_groups(
+			array(
+				'pressforward_external_pages',
+			)
+		);
 	}
 
+	/**
+	 * Resolves a URL.
+	 *
+	 * @param string $url URL.
+	 * @return string
+	 */
 	public function resolve_source_url( $url ) {
 		$url       = $this->resolve_a_url( $url );
-		$url_array = parse_url( $url );
+		$url_array = wp_parse_url( $url );
 		if ( empty( $url_array['host'] ) ) {
 			return;
 		}
@@ -51,6 +97,12 @@ class HTTPTools implements HasActions {
 		return $source_url;
 	}
 
+	/**
+	 * Resolves a URL.
+	 *
+	 * @param string $url URL to resolve.
+	 * @return string
+	 */
 	public function resolve_full_url( $url ) {
 		$url = $this->resolve_a_url( $url );
 		return $url;
@@ -65,12 +117,12 @@ class HTTPTools implements HasActions {
 	 * @return bool True value for a submitted URL that matches an aggregation service.
 	 */
 	public function resolve_a_url( $url ) {
-		$url_array = parse_url( $url );
+		$url_array = wp_parse_url( $url );
 		if ( empty( $url_array['host'] ) ) {
 			return $url;
 		} else {
 			$check = $this->url_is_aggregation_service( $url );
-			if ( $check && in_array( 'curl', get_loaded_extensions() ) ) {
+			if ( $check && in_array( 'curl', get_loaded_extensions(), true ) ) {
 				$url = $this->url_resolver->resolveURL( $url )->getURL();
 			}
 		}
@@ -114,7 +166,12 @@ class HTTPTools implements HasActions {
 		return $check;
 	}
 
-	function attempt_to_get_cookiepath() {
+	/**
+	 * Attempts to get a path for the cookie.
+	 *
+	 * @return string
+	 */
+	public function attempt_to_get_cookiepath() {
 		$reset       = true;
 		$upload_dir  = wp_upload_dir();
 		$cookie_path = $upload_dir['basedir'] . 'cookie.txt';
@@ -127,23 +184,33 @@ class HTTPTools implements HasActions {
 		} else {
 			$debug = 1;
 		}
+
+		// phpcs:disable WordPress.WP.AlternativeFunctions
 		if ( $reset ) {
-			$fo = fopen( $cookie_path, 'w' ) or pf_log( 'Can\'t open cookie file.' );
+			$fo = fopen( $cookie_path, 'w' ) || pf_log( 'Can\'t open cookie file.' );
 			fwrite( $fo, '' );
 			fclose( $fo );
-
 		}
+		// phpcs:enable WordPress.WP.AlternativeFunctions
+
 		return $cookie_path;
 	}
 
-	function get_url_content( $url, $function = false ) {
+	/**
+	 * Gets the content from a URL.
+	 *
+	 * @param string   $url      URL.
+	 * @param callable $function Callback for fetching.
+	 * @return string
+	 */
+	public function get_url_content( $url, $function = false ) {
 		$args      = func_get_args();
 		$url       = str_replace( '&amp;', '&', $url );
 		$url_first = $url;
 		$r         = false;
 		if ( ! $function ) {
 			$url = set_url_scheme( $url, 'http' );
-			$r = false;
+			$r   = false;
 		} else {
 			$args[0] = $url;
 			unset( $args[1] );
@@ -152,21 +219,20 @@ class HTTPTools implements HasActions {
 			$cached    = wp_cache_get( $cache_key, 'pressforward_external_pages' );
 			if ( false === $cached ) {
 				$args[1] = [ 'timeout' => 30 ];
-				$r = call_user_func_array( $function, $args );
-				// "A variable is considered empty if it does not exist or if its value equals FALSE"
+				$r       = call_user_func_array( $function, $args );
 				if ( is_wp_error( $r ) || empty( $r ) ) {
 					$non_ssl_url = set_url_scheme( $url, 'http' );
-					if ( $non_ssl_url != $url ) {
+					if ( $non_ssl_url !== $url ) {
 						$args[0] = $non_ssl_url;
-						$r = call_user_func_array( $function, $args );
+						$r       = call_user_func_array( $function, $args );
 					}
-						// $r = false;
+
 					if ( ! $r || is_wp_error( $r ) ) {
 						// Last Chance!
-						if ( 'file_get_contents' != $function ) {
+						if ( 'file_get_contents' !== $function ) {
+							// phpcs:ignore WordPress.WP.AlternativeFunctions
 							$response = file_get_contents( $url_first );
 						} else {
-							// bail
 							$response = false;
 						}
 					}
@@ -178,11 +244,11 @@ class HTTPTools implements HasActions {
 		}
 		$response          = $r;
 		$loaded_extensions = get_loaded_extensions();
-		if ( (false === $response) || empty( $response ) || is_wp_error( $response ) || ( ! empty( $response ) && ! empty( $response['headers'] ) && isset( $response['headers']['content-length'] ) && ( 50 > strlen( $response['headers']['content-length'] ) ) ) && in_array( 'curl', $loaded_extensions ) ) {
+		if ( ( false === $response ) || empty( $response ) || is_wp_error( $response ) || ( ! empty( $response ) && ! empty( $response['headers'] ) && isset( $response['headers']['content-length'] ) && ( 50 > strlen( $response['headers']['content-length'] ) ) ) && in_array( 'curl', $loaded_extensions, true ) ) {
 			$cookie_path = 'cookie.txt';
 			if ( defined( 'COOKIE_PATH_FOR_CURL' ) ) {
 				$cookie_path = constant( 'COOKIE_PATH_FOR_CURL' );
-				if ( ! isset( $cookie_path ) || false == $cookie_path ) {
+				if ( ! isset( $cookie_path ) || false === $cookie_path ) {
 					$cookie_path = $this->attempt_to_get_cookiepath();
 					if ( false === $cookie_path ) {
 						return false;
@@ -194,6 +260,9 @@ class HTTPTools implements HasActions {
 					return false;
 				}
 			}
+
+			// @todo See https://github.com/PressForward/pressforward/issues/1135.
+			// phpcs:disable WordPress.WP.AlternativeFunctions
 			$curl = curl_init( $args[0] );
 
 			curl_setopt( $curl, constant( 'CURLOPT_FAILONERROR' ), true );
@@ -204,17 +273,19 @@ class HTTPTools implements HasActions {
 			curl_setopt( $curl, constant( 'CURLOPT_SSL_VERIFYPEER' ), false );
 			$fetch_ua = apply_filters( 'pf_useragent_retrieval_control', 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)' );
 			curl_setopt( $curl, constant( 'CURLOPT_USERAGENT' ), $fetch_ua );
-			// The following 2 set up lines work with sites like www.nytimes.com
+			// The following 2 set up lines work with sites like www.nytimes.com.
 			curl_setopt( $curl, constant( 'CURLOPT_COOKIEFILE' ), $cookie_path ); // you can change this path to whetever you want.
 			curl_setopt( $curl, constant( 'CURLOPT_COOKIEJAR' ), $cookie_path ); // you can change this path to whetever you want.
 			$encode = apply_filters( 'pf_encoding_retrieval_control', true );
-			if ($encode){
+			if ( $encode ) {
 				$response = mb_convert_encoding( curl_exec( $curl ), 'HTML-ENTITIES', 'UTF-8' );
 			} else {
 				$response = curl_exec( $curl );
 			}
 			// Will return false or the content.
 			curl_close( $curl );
+
+			// phpcs:enable WordPress.WP.AlternativeFunctions
 			return array( 'body' => $response );
 		} else {
 			return $response;
