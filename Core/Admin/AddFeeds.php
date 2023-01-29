@@ -36,7 +36,6 @@ class AddFeeds implements HasActions, HasFilters {
 	 */
 	public function __construct( SystemUsers $user_interface ) {
 		$this->user_interface = $user_interface;
-
 	}
 
 	/**
