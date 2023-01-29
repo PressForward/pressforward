@@ -1,16 +1,41 @@
 <?php
+/**
+ * Utilities for the edit post panel.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Admin;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
 
+/**
+ * Utilities for the edit post panel.
+ */
 class EditPost implements HasActions {
+	/**
+	 * Post type.
+	 *
+	 * @access public
+	 * @var string
+	 */
 	public $post_type;
 
-	function __construct() {
+	/**
+	 * Contstructor.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function __construct() {
 		$this->post_type = 'post';
-
 	}
 
+	/**
+	 * Sets up action hooks for this class.
+	 *
+	 * @return array
+	 */
 	public function action_hooks() {
 		// Modify the Singleton Edit page.
 		$hooks = array(
@@ -34,13 +59,17 @@ class EditPost implements HasActions {
 		return $hooks;
 	}
 
+	/**
+	 * Display callback for 'default author' area.
+	 */
 	public function default_feed_author() {
 		global $post, $pagenow;
-		if ( 'pf_feed' !== $post->post_type ){
+		if ( 'pf_feed' !== $post->post_type ) {
 			return;
 		}
-		// new post check
-		if ( in_array( $pagenow, array( 'post-new.php' ) ) ) {
+
+		// New post check.
+		if ( in_array( $pagenow, array( 'post-new.php' ), true ) ) {
 			$value = '';
 		} else {
 			$value = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'pf_feed_default_author', true );
@@ -48,17 +77,21 @@ class EditPost implements HasActions {
 				$value = '';
 			}
 		}
+
 		echo '<div class="misc-pub-section misc-pub-section-last">
 			<label>
 			<input type="text" id="pf_feed_default_author" name="pf_feed_default_author"
-               placeholder="Default feed author" value="' . esc_attr( $value ) . '" />
+               placeholder="' . esc_attr__( 'Default feed author', 'pf' ) . '" value="' . esc_attr( $value ) . '" />
 			<br />
-			Enter default author for this feed.</label></div>';
+			' . esc_html__( 'Enter default author for this feed.', 'pf' ) . '</label></div>';
 	}
 
+	/**
+	 * Show 'Forward' options for submit box.
+	 */
 	public function posted_submitbox_pf_actions() {
 		global $post, $pagenow;
-		if ( 'pf_feed' === $post->post_type ){
+		if ( 'pf_feed' === $post->post_type ) {
 			return;
 		}
 
@@ -73,8 +106,8 @@ class EditPost implements HasActions {
 			return;
 		}
 
-		// new post check
-		if ( in_array( $pagenow, array( 'post-new.php' ) ) ) {
+		// New post check.
+		if ( in_array( $pagenow, array( 'post-new.php' ), true ) ) {
 			$option_value = get_option( 'pf_link_to_source' );
 			if ( empty( $option_value ) ) {
 				$value = 'no-forward';
@@ -98,42 +131,55 @@ class EditPost implements HasActions {
 			}
 		}
 
+		// @todo Needs i18n fixes.
 		echo '<div class="misc-pub-section misc-pub-section-last">
 				<label>
 				<select id="pf_forward_to_origin_single" name="pf_forward_to_origin">
-				  <option value="forward"' . ( 'forward' == $value ? ' selected ' : '' ) . '>Forward</option>
-				  <option value="no-forward"' . ( 'no-forward' == $value ? ' selected ' : '' ) . '>Don\'t Forward</option>
+				  <option value="forward"' . ( 'forward' === $value ? ' selected ' : '' ) . '>' . esc_html__( 'Forward', 'pf' ) . '</option>
+				  <option value="no-forward"' . ( 'no-forward' === $value ? ' selected ' : '' ) . '>' . esc_html__( "Don't Forward", 'pf' ) . '</option>
 				</select><br />
-				to item\'s original URL</label></div>';
+				' . esc_html__( "to item's original URL", 'pf' ) . '</label></div>';
 	}
 
-	public function save_submitbox_pf_feed_actions( $post_id ){
+	/**
+	 * Save callback for 'Default Author' submit box actions.
+	 *
+	 * @param int $post_id ID of the post being saved.
+	 */
+	public function save_submitbox_pf_feed_actions( $post_id ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-			return $post_id; }
-		if ( ! current_user_can( 'edit_posts', $post_id ) ) {
-			return $post_id; }
+			return $post_id;
+		}
 
-		if ( array_key_exists( 'pf_feed_default_author', $_POST ) ) {
+		if ( ! current_user_can( 'edit_posts', $post_id ) ) {
+			return $post_id;
+		}
+
+		if ( array_key_exists( 'pf_feed_default_author', $_POST, true ) ) {
 			pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_feed_default_author', sanitize_text_field( wp_unslash( $_POST['pf_feed_default_author'] ) ) );
 		}
 
 		return $post_id;
 	}
 
+	/**
+	 * Save callback for 'forward to origin' submit box actions.
+	 *
+	 * @param int $post_id ID of the post being saved.
+	 */
 	public function save_submitbox_pf_actions( $post_id ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-			return $post_id; }
-		if ( ! current_user_can( 'edit_posts', $post_id ) ) {
-			return $post_id; }
-		// $current = pressforward('controller.metas')->get_post_pf_meta();
-		if ( ! array_key_exists( 'pf_forward_to_origin', $_POST ) ) {
+			return $post_id;
+		}
 
-		} else {
+		if ( ! current_user_can( 'edit_posts', $post_id ) ) {
+			return $post_id;
+		}
+
+		if ( array_key_exists( 'pf_forward_to_origin', $_POST, true ) ) {
 			pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_forward_to_origin', sanitize_text_field( wp_unslash( $_POST['pf_forward_to_origin'] ) ) );
 		}
 
 		return $post_id;
 	}
-
-
 }
