@@ -1,21 +1,51 @@
 <?php
+/**
+ * User utilities.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Controllers;
 
 use PressForward\Interfaces\SystemUsers as SystemUsers;
 
+/**
+ * User utilities.
+ */
 class PFtoWPUsers implements SystemUsers {
+	/**
+	 * Metas object.
+	 *
+	 * @access public
+	 * @var PressForward\Controllers\Metas $metas
+	 */
 	public $metas;
 
-	function __construct( Metas $metas ) {
+	/**
+	 * Constructor.
+	 *
+	 * @param PressForward\Controllers\Metas $metas Metas object.
+	 */
+	public function __construct( Metas $metas ) {
 		$this->metas = $metas;
 	}
 
+	/**
+	 * Checks whether a user nominated a given post.
+	 *
+	 * @param int $post_id ID of the nominated item.
+	 * @param int $user_id ID of the user. Optional. Defaults to current user.
+	 * @return bool
+	 */
 	public function did_user_nominate( $post_id, $user_id = false ) {
 		$nominators = $this->metas->get_post_pf_meta( $id, 'nominator_array' );
 		if ( ! $user_id ) {
 			$current_user = wp_get_current_user();
 			$user_id      = $current_user->ID;
 		}
+
+		// @todo The $nominators array may need to be cast to int before doing a strict check.
+		// phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 		if ( ! empty( $nominators ) && in_array( $user_id, $nominators ) ) {
 			return true;
 		} else {
@@ -23,14 +53,31 @@ class PFtoWPUsers implements SystemUsers {
 		}
 	}
 
+	/**
+	 * Wrapper for get_user_option().
+	 *
+	 * @param string $option Option name.
+	 * @return mixed
+	 */
 	public function get_user_option( $option ) {
 		return get_user_option( $option );
 	}
 
+	/**
+	 * Wrapper for current_user_can().
+	 *
+	 * @param string $capacity Capability to check.
+	 * @return bool
+	 */
 	public function current_user_can( $capacity ) {
 		return current_user_can( $capacity );
 	}
 
+	/**
+	 * Wrapper for get_current_user_id().
+	 *
+	 * @return int
+	 */
 	public function get_current_user_id() {
 		return get_current_user_id();
 	}
@@ -44,12 +91,13 @@ class PFtoWPUsers implements SystemUsers {
 	 *
 	 * @return array $role_reversal An array with capailities as keys pointing to what roles they match to.
 	 */
-
-	function pf_get_capabilities( $cap = false ) {
+	public function pf_get_capabilities( $cap = false ) {
 		// Get the WP_Roles object.
 		global $wp_roles;
+
 		// Set up array for storage.
 		$role_reversal = array();
+
 		// Walk through the roles object by role and get capabilities.
 		foreach ( $wp_roles->roles as $role_slug => $role_set ) {
 
@@ -60,6 +108,7 @@ class PFtoWPUsers implements SystemUsers {
 				}
 			}
 		}
+
 		// Allow users to get specific capabilities.
 		if ( ! $cap ) {
 			return $role_reversal;
@@ -83,24 +132,24 @@ class PFtoWPUsers implements SystemUsers {
 	 *
 	 * @return string|object Returns either the string name of the role or the WP object created by get_role.
 	 */
-
-	function pf_get_role_by_capability( $cap, $lowest = true, $obj = false ) {
+	public function pf_get_role_by_capability( $cap, $lowest = true, $obj = false ) {
 		// Get set of roles for capability.
 		$roles = $this->pf_get_capabilities( $cap );
-		// We probobly want to get the lowest role with that capability
+
+		// We probably want to get the lowest role with that capability.
 		if ( $lowest ) {
 			$roles = array_reverse( $roles );
 		}
+
 		$arrayvalues = array_values( $roles );
 		$the_role    = array_shift( $arrayvalues );
+
 		if ( ! $obj ) {
 			return $the_role;
 		} else {
 			return get_role( $the_role );
 		}
-
 	}
-
 
 	/**
 	 * Get the capability that uniquely matches a specific role.
@@ -118,16 +167,16 @@ class PFtoWPUsers implements SystemUsers {
 	 *
 	 * @return string The slug for the defining capability of the given role.
 	 */
-	function pf_get_defining_capability_by_role( $role_slug ) {
+	public function pf_get_defining_capability_by_role( $role_slug ) {
 		$pf_use_advanced_user_roles = get_option( 'pf_use_advanced_user_roles', 'no' );
 		// For those who wish to ignore the super-cool auto-detection for fringe-y sites that
 		// let their user capabilities go wild.
-		if ( 'no' != $pf_use_advanced_user_roles ) {
+		if ( 'no' !== $pf_use_advanced_user_roles ) {
 			$caps = $this->pf_get_capabilities();
 			foreach ( $caps as $slug => $cap ) {
 				$low_role = $this->pf_get_role_by_capability( $slug );
 				// Return the first capability only applicable to that role.
-				if ( $role_slug == ( $low_role ) ) {
+				if ( $role_slug === $low_role ) {
 					return $slug;
 				}
 			}
@@ -138,41 +187,59 @@ class PFtoWPUsers implements SystemUsers {
 			$role_slug = $role_slug[0];
 		}
 
-		// Even if we use $pf_use_advanced_user_roles, if it doesn't find any actual lowest option (like it is the case with contributor currently), it should still go to the default ones below
+		/*
+		 * Even if we use $pf_use_advanced_user_roles, if it doesn't find
+		 * any actual lowest option (like it is the case with contributor
+		 * currently), it should still go to the default ones below.
+		 */
 		$role_slug = strtolower( $role_slug );
 		switch ( $role_slug ) {
 			case 'administrator':
 				return 'manage_options';
-				break;
+
 			case 'editor':
 				return 'edit_others_posts';
-				break;
+
 			case 'author':
 				return 'publish_posts';
-				break;
+
 			case 'contributor':
 				return 'edit_posts';
-				break;
+
 			case 'subscriber':
 				return 'read';
-				break;
 		}
 	}
 
-	function pf_capability_mapper( $cap, $role_slug ) {
+	/**
+	 * Maps PF capabilities to a role.
+	 *
+	 * @param string $cap       Capability.
+	 * @param string $role_slug Role.
+	 */
+	public function pf_capability_mapper( $cap, $role_slug ) {
 		$feed_caps      = pressforward( 'schema.feeds' )->map_feed_caps();
 		$feed_item_caps = pressforward( 'schema.feed_item' )->map_feed_item_caps();
-		if ( array_key_exists( $cap, $feed_caps ) ) {
+
+		if ( array_key_exists( $cap, $feed_caps, true ) ) {
 			$role = get_role( $role_slug );
 			$role->add_cap( $feed_caps[ $cap ] );
 		}
-		if ( array_key_exists( $cap, $feed_item_caps ) ) {
+
+		if ( array_key_exists( $cap, $feed_item_caps, true ) ) {
 			$role = get_role( $role_slug );
 			$role->add_cap( $feed_item_caps[ $cap ] );
 		}
 	}
 
-	function assign_pf_to_standard_roles() {
+	/**
+	 * Assigns PressForward capabilities to the default WP roles.
+	 *
+	 * @todo This method is not called anywhere in PF and should be removed.
+	 *
+	 * @return void
+	 */
+	public function assign_pf_to_standard_roles() {
 		$roles = array(
 			'administrator',
 			'editor',
@@ -180,9 +247,9 @@ class PFtoWPUsers implements SystemUsers {
 			'contributor',
 			'subscriber',
 		);
-		$caps  = $this->pf_get_capabilities();
-		// $feed_caps = pressforward('schema.feeds')->map_feed_caps();
-		// $feed_item_caps = pressforward()->schema->map_feed_item_caps();
+
+		$caps = $this->pf_get_capabilities();
+
 		foreach ( $caps as $cap => $role ) {
 			foreach ( $role as $a_role ) {
 				$this->pf_capability_mapper( $cap, $a_role );
@@ -190,19 +257,46 @@ class PFtoWPUsers implements SystemUsers {
 		}
 	}
 
+	/**
+	 * Gets the user capability for a given PF action type.
+	 *
+	 * @param string $option_name Option name.
+	 * @param string $role        Role name.
+	 * @return string
+	 */
 	public function user_level( $option_name, $role ) {
 		return get_option( $option_name, $this->pf_get_defining_capability_by_role( $role ) );
 	}
 
-	public function get_current_user(){
+	/**
+	 * Wrapper for wp_get_current_user().
+	 *
+	 * @return WP_User
+	 */
+	public function get_current_user() {
 		return wp_get_current_user();
 	}
 
-	public function get_user_meta($user_id, $meta_key, $single = true){
-		return get_user_meta($user_id, $meta_key, $single);
-	}
-	public function update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ){
-		return update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
+	/**
+	 * Wrapper for get_user_meta().
+	 *
+	 * @param int    $user_id  ID of the user.
+	 * @param string $meta_key Meta key.
+	 * @param bool   $single   Whether to return a single row.
+	 */
+	public function get_user_meta( $user_id, $meta_key, $single = true ) {
+		return get_user_meta( $user_id, $meta_key, $single );
 	}
 
+	/**
+	 * Wrapper for update_user_meta().
+	 *
+	 * @param int    $user_id    ID of the user.
+	 * @param string $meta_key   Meta key.
+	 * @param mixed  $meta_value Meta value.
+	 * @param mixed  $prev_value Optional. Previous value.
+	 */
+	public function update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ) {
+		return update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
+	}
 }
