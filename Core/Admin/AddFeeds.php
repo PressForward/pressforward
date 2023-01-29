@@ -1,4 +1,10 @@
 <?php
+/**
+ * Add Feeds admin panel.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Admin;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
@@ -11,14 +17,33 @@ use PressForward\Core\Utility\Forward_Tools as Forward_Tools;
 use PressForward\Core\Schema\Nominations as Nominations;
 use PressForward\Controllers\Metas;
 
+/**
+ * Add Feeds admin panel.
+ */
 class AddFeeds implements HasActions, HasFilters {
+	/**
+	 * SystemUsers interface.
+	 *
+	 * @access public
+	 * @var PressForward\Interfaces\SystemUsers
+	 */
 	public $user_interface;
 
-	function __construct( SystemUsers $user_interface ) {
+	/**
+	 * Constructor.
+	 *
+	 * @param PressForward\Interfaces\SystemUsers $user_interface SystemUsers object.
+	 */
+	public function __construct( SystemUsers $user_interface ) {
 		$this->user_interface = $user_interface;
 
 	}
 
+	/**
+	 * Sets up action hooks for this class.
+	 *
+	 * @return array
+	 */
 	public function action_hooks() {
 		return array(
 			array(
@@ -29,6 +54,11 @@ class AddFeeds implements HasActions, HasFilters {
 		);
 	}
 
+	/**
+	 * Sets up filter hooks for this class.
+	 *
+	 * @return array
+	 */
 	public function filter_hooks() {
 		return array(
 			array(
@@ -46,9 +76,13 @@ class AddFeeds implements HasActions, HasFilters {
 		);
 	}
 
+	/**
+	 * Adds 'Add Feeds' admin panel.
+	 *
+	 * @return void
+	 */
 	public function add_plugin_admin_menu() {
-
-		// Feed-listing page is accessible only to Editors and above
+		// Feed-listing page is accessible only to Editors and above.
 		add_submenu_page(
 			PF_MENU_SLUG,
 			__( 'Add Feeds', 'pf' ),
@@ -60,11 +94,18 @@ class AddFeeds implements HasActions, HasFilters {
 
 	}
 
+	/**
+	 * Callback for the display of the 'Add Feeds' panel.
+	 *
+	 * @return string
+	 */
 	public function display_feeder_builder() {
 		if ( isset( $_GET['tab'] ) ) {
 			$tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
 		} else {
-			$tab = 'primary_feed_type'; }
+			$tab = 'primary_feed_type';
+		}
+
 		$user_ID   = get_current_user_id();
 		$form_head = '<form method="post" action="options.php" enctype="multipart/form-data">';
 		$vars      = array(
@@ -82,6 +123,12 @@ class AddFeeds implements HasActions, HasFilters {
 		return '';
 	}
 
+	/**
+	 * Adds tabs for 'Subscribe to Feeds' section.
+	 *
+	 * @param array $permitted_tabs Tab definitions.
+	 * @return array()
+	 */
 	public function set_permitted_tools_tabs( $permitted_tabs ) {
 		$permitted_tabs['primary_feed_type'] = array(
 			'title' => __( 'Subscribe to Feeds', 'pf' ),
@@ -90,6 +137,12 @@ class AddFeeds implements HasActions, HasFilters {
 		return $permitted_tabs;
 	}
 
+	/**
+	 * Adds tabs for 'Alerts' section.
+	 *
+	 * @param array $permitted_tabs Tab definitions.
+	 * @return array()
+	 */
 	public function set_permitted_tools_tabs_alerts( $permitted_tabs ) {
 		$permitted_tabs['alerts'] = array(
 			'title' => __( 'Alerts', 'pf' ),
