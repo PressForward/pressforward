@@ -1,4 +1,10 @@
 <?php
+/**
+ * Nominated functionality.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Admin;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
@@ -11,14 +17,60 @@ use PressForward\Interfaces\SystemUsers;
 use WP_Ajax_Response;
 use WP_Query;
 
+/**
+ * Nominated functionality.
+ */
 class Nominated implements HasActions {
+	/**
+	 * Metas object.
+	 *
+	 * @access public
+	 * @var object
+	 */
 	public $metas;
+
+	/**
+	 * PFTemplater object.
+	 *
+	 * @access public
+	 * @var PressForward\Core\Admin\PFTemplater
+	 */
 	public $template_factory;
+
+	/**
+	 * Forward_Tools interface.
+	 *
+	 * @access public
+	 * @var PressForward\Core\Utility\Forward_Tools
+	 */
 	public $forward_tools;
+
+	/**
+	 * Nomination slug.
+	 *
+	 * @access public
+	 * @var string
+	 */
 	public $nomination_slug;
+
+	/**
+	 * SystemUsers interface.
+	 *
+	 * @access public
+	 * @var PressForward\Interfaces\SystemUsers
+	 */
 	public $user_interface;
 
-	function __construct( $metas, PFTemplater $template_factory, Forward_Tools $forward_tools, Nominations $nominations, SystemUsers $user_interface ) {
+	/**
+	 * Constructor.
+	 *
+	 * @param object                                  $metas            Metas object.
+	 * @param PressForward\Core\Admin\PFTemplater     $template_factory PFTemplater object.
+	 * @param PressForward\Core\Utility\Forward_Tools $forward_tools    Forward_Tools object.
+	 * @param PressForward\Core\Schema\Nominations    $nominations      Nominations object.
+	 * @param PressForward\Interfaces\SystemUsers     $user_interface   SystemUsers object.
+	 */
+	public function __construct( $metas, PFTemplater $template_factory, Forward_Tools $forward_tools, Nominations $nominations, SystemUsers $user_interface ) {
 		$this->metas            = $metas;
 		$this->template_factory = $template_factory;
 		$this->forward_tools    = $forward_tools;
@@ -26,6 +78,9 @@ class Nominated implements HasActions {
 		$this->user_interface   = $user_interface;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function action_hooks() {
 		return array(
 			array(
@@ -53,9 +108,10 @@ class Nominated implements HasActions {
 		);
 	}
 
-
+	/**
+	 * Adds the 'Nominated' admin panel.
+	 */
 	public function add_plugin_admin_menu() {
-
 		add_submenu_page(
 			PF_MENU_SLUG,
 			__( 'Nominated', 'pf' ),
@@ -64,78 +120,91 @@ class Nominated implements HasActions {
 			PF_SLUG . '-review',
 			array( $this, 'display_review_builder' )
 		);
-
 	}
 
+	/**
+	 * Builds the interface for the review tool.
+	 */
 	public function display_review_builder() {
-		// Code for Under Review menu page generation
-		// Duping code from 1053 in main.
-		// Mockup - https://gomockingbird.com/mockingbird/#mr28na1/I9lz7i
-				// Calling the feedlist within the pf class.
+		/*
+		 * Code for Under Review menu page generation.
+		 * Duping code from 1053 in main.
+		 * Mockup - https://gomockingbird.com/mockingbird/#mr28na1/I9lz7i
+		 * Calling the feedlist within the pf class.
+		 */
 		if ( isset( $_GET['pc'] ) ) {
 			$page = intval( $_GET['pc'] );
-			$page = $page - 1;
+			--$page;
 		} else {
 			$page = 0;
 		}
-				$count       = $page * 20;
-				$countQ      = 0;
-				$extra_class = '';
-		if ( isset( $_GET['reveal'] ) && ( 'no_hidden' == sanitize_text_field( wp_unslash( $_GET['reveal'] ) ) ) ) {
+
+		$count       = $page * 20;
+		$count_q     = 0;
+		$extra_class = '';
+
+		if ( isset( $_GET['reveal'] ) && ( 'no_hidden' === sanitize_text_field( wp_unslash( $_GET['reveal'] ) ) ) ) {
 			$extra_class .= ' archived_visible';
 		} else {
 			$extra_class .= '';
 		}
-				?>
-				<div class="pf-loader"></div>
-				<div class="list pf_container pf-nominated full<?php echo esc_attr( $extra_class ); ?>">
-				<header id="app-banner">
-					<div class="title-span title">
-						<?php pressforward( 'controller.template_factory' )->the_page_headline( 'Nominated' ); ?>
-						<button class="btn btn-small" id="fullscreenfeed"> <?php esc_html_e( 'Full Screen', 'pf' ); ?> </button>
-					</div><!-- End title -->
-						<?php pressforward( 'admin.templates' )->search_template(); ?>
-				</header><!-- End Header -->
 
-				<?php pressforward( 'admin.templates' )->nav_bar( 'pf-review' ); ?>
+		?>
+		<div class="pf-loader"></div>
 
+		<div class="list pf_container pf-nominated full<?php echo esc_attr( $extra_class ); ?>">
+			<header id="app-banner">
+				<div class="title-span title">
+					<?php pressforward( 'controller.template_factory' )->the_page_headline( 'Nominated' ); ?>
+					<button class="btn btn-small" id="fullscreenfeed"> <?php esc_html_e( 'Full Screen', 'pf' ); ?> </button>
+				</div><!-- End title -->
 
-				<div role="main">
-					<?php pressforward( 'admin.templates' )->the_side_menu(); ?>
-					<?php pressforward( 'schema.folders' )->folderbox(); ?>
-					<div id="entries">
-						<?php echo '<img class="loading-top" src="' . esc_attr( PF_URL ) . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />'; ?>
-						<div id="errors">
-							<div class="pressforward-alertbox" style="display:none;">
-								<div class="row-fluid">
-									<div class="span11 pf-alert">
-									</div>
-									<div class="span1 pf-dismiss">
+				<?php pressforward( 'admin.templates' )->search_template(); ?>
+			</header><!-- End Header -->
+
+			<?php pressforward( 'admin.templates' )->nav_bar( 'pf-review' ); ?>
+
+			<div role="main">
+				<?php pressforward( 'admin.templates' )->the_side_menu(); ?>
+				<?php pressforward( 'schema.folders' )->folderbox(); ?>
+
+				<div id="entries">
+					<?php echo '<img class="loading-top" src="' . esc_attr( PF_URL ) . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />'; ?>
+					<div id="errors">
+						<div class="pressforward-alertbox" style="display:none;">
+							<div class="row-fluid">
+								<div class="span11 pf-alert">
+								</div>
+
+								<div class="span1 pf-dismiss">
 									<i class="icon-remove-circle"><?php esc_html_e( 'Close', 'pf' ); ?></i>
-									</div>
 								</div>
 							</div>
 						</div>
+					</div>
 
+					<?php
+					// Hidden here, user options, like 'show archived' etc...
+					?>
 
-				<?php
+					<div id="page_data" style="display:none">
+						<?php
+						$current_user    = wp_get_current_user();
+						$current_user_id = $current_user->ID;
 
-				// Hidden here, user options, like 'show archived' etc...
+						$metadata['current_user']    = $current_user->slug;
+						$metadata['current_user_id'] = $current_user_id;
 						?>
-						<div id="page_data" style="display:none">
-							<?php
-								$current_user                = wp_get_current_user();
-								$metadata['current_user']    = $current_user->slug;
-								$metadata['current_user_id'] = $current_user_id = $current_user->ID;
-							?>
-							<span id="current-user-id"><?php echo esc_html( $current_user_id ); ?></span>
-															</div>
+
+						<span id="current-user-id"><?php echo esc_html( $current_user_id ); ?></span>
+					</div>
+
 					<?php
 					echo '<div class="row-fluid" class="nom-row">';
-					// Bootstrap Accordion group
+					// Bootstrap Accordion group.
 					echo '<div class="span12 nom-container" id="nom-accordion">';
 					wp_nonce_field( 'drafter', 'pf_drafted_nonce', false );
-					// Reset Post Data
+					// Reset Post Data.
 					wp_reset_postdata();
 
 					// This part here is for eventual use in pagination and then infinite scroll.
@@ -149,24 +218,23 @@ class Nominated implements HasActions {
 
 					// Now we must loop.
 					// Eventually we may want to provide options to change some of these, so we're going to provide the default values for now.
-					$pageCheck = absint( $page );
-					if ( ! $pageCheck ) {
-						$pageCheck = 1; }
+					$page_check = absint( $page );
+					if ( ! $page_check ) {
+						$page_check = 1;
+					}
 
 					$nom_args = array(
-
 						'post_type'        => 'nomination',
 						'orderby'          => 'date',
 						'order'            => 'DESC',
 						'posts_per_page'   => 20,
 						'suppress_filters' => false,
 						'offset'           => $offset, // The query function will turn page into a 1 if it is a 0.
-
 					);
 					if ( isset( $_GET['feed'] ) ) {
 						$nom_args['post_parent'] = intval( $_GET['feed'] );
 					} elseif ( isset( $_GET['folder'] ) ) {
-						$parents_in_folder = new WP_Query(
+						$parents_in_folder           = new WP_Query(
 							array(
 								'post_type'              => pressforward( 'schema.feeds' )->post_type,
 								'fields'                 => 'ids',
@@ -187,60 +255,84 @@ class Nominated implements HasActions {
 					add_filter( 'posts_request', 'prep_archives_query' );
 					$nom_query = new WP_Query( $nom_args );
 					remove_filter( 'posts_request', 'prep_archives_query' );
-					$count      = 0;
-					$countQ     = $nom_query->post_count;
-					$countQT    = $nom_query->found_posts;
-					$maxNbPages = $nom_query->max_num_pages;
-					// print_r($countQ);
+
+					$count        = 0;
+					$count_q      = $nom_query->post_count;
+					$count_qt     = $nom_query->found_posts;
+					$max_nb_pages = $nom_query->max_num_pages;
+
 					while ( $nom_query->have_posts() ) :
 						$nom_query->the_post();
 
 						// declare some variables for use, mostly in various meta roles.
 						// 1773 in rssforward.php for various post meta.
-						// Get the submitter's user slug
-						$metadata['submitters'] = $submitter_slug = get_the_author_meta( 'nicename' );
-						// Nomination (post) ID
-						$metadata['nom_id'] = $nom_id = get_the_ID();
+						// Get the submitter's user slug.
+						$submitter_slug         = get_the_author_meta( 'nicename' );
+						$metadata['submitters'] = $submitter_slug;
+
+						// Nomination (post) ID.
+						$nom_id             = get_the_ID();
+						$metadata['nom_id'] = $nom_id;
+
 						// Get the WP database ID of the original item in the database.
 						$metadata['pf_item_post_id'] = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'pf_item_post_id', true );
+
 						// Number of Nominations recieved.
-						$metadata['nom_count'] = $nom_count = pressforward( 'controller.metas' )->retrieve_meta( $nom_id, 'nomination_count' );
-						// Permalink to orig content
-						$metadata['permalink'] = $nom_permalink = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_link', true );
-						$urlArray              = parse_url( $nom_permalink );
-						// Source Site
-						$metadata['source_link'] = isset( $urlArray['host'] ) ? $sourceLink = 'http://' . $urlArray['host'] : '';
-						// Source site slug
-						$metadata['source_slug'] = $sourceSlug = isset( $urlArray['host'] ) ? pf_slugger( $urlArray['host'], true, false, true ) : '';
-						// RSS Author designation
-						$metadata['item_author'] = $item_authorship = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_author', true );
-						// Datetime item was nominated
-						$metadata['date_nominated'] = $date_nomed = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'date_nominated', true );
-						// Datetime item was posted to its home RSS
-						$metadata['item_date'] = $date_posted = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_date', true );
-						// Unique RSS item ID
-						$metadata['item_id'] = $rss_item_id = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_id', true );
+						$nom_count             = pressforward( 'controller.metas' )->retrieve_meta( $nom_id, 'nomination_count' );
+						$metadata['nom_count'] = $nom_count;
+
+						// Permalink to orig content.
+						$nom_permalink         = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_link', true );
+						$metadata['permalink'] = $nom_permalink;
+
+						$url_array = wp_parse_url( $nom_permalink );
+
+						// Source Site.
+						$source_link             = isset( $url_array['host'] ) ? 'http://' . $url_array['host'] : '';
+						$metadata['source_link'] = isset( $url_array['host'] ) ? $source_link = 'http://' . $url_array['host'] : '';
+
+						// Source site slug.
+						$source_slug             = isset( $url_array['host'] ) ? pf_slugger( $url_array['host'], true, false, true ) : '';
+						$metadata['source_slug'] = $source_slug;
+
+						// RSS Author designation.
+						$item_authorship         = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_author', true );
+						$metadata['item_author'] = $item_authorship;
+
+						// Datetime item was nominated.
+						$date_nomed                 = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'date_nominated', true );
+						$metadata['date_nominated'] = $date_nomed;
+
+						// Datetime item was posted to its home RSS.
+						$date_posted           = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_date', true );
+						$metadata['item_date'] = $date_posted;
+
+						// Unique RSS item ID.
+						$rss_item_id         = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_id', true );
+						$metadata['item_id'] = $rss_item_id;
+
 						// RSS-passed tags, comma seperated.
-						$item_nom_tags = $nom_tags = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_tags', true );
-						$wp_nom_tags   = '';
-						$getTheTags    = array();// get_the_tags();
-						if ( empty( $getTheTags ) ) {
-							$getTheTags[]   = '';
+						$nom_tags      = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_tags', true );
+						$item_nom_tags = $nom_tags;
+
+						$wp_nom_tags  = '';
+						$get_the_tags = array();
+						if ( empty( $get_the_tags ) ) {
+							$get_the_tags[] = '';
 							$wp_nom_tags    = '';
 							$wp_nom_slugs[] = '';
 						} else {
-							foreach ( $getTheTags as $tag ) {
+							foreach ( $get_the_tags as $tag ) {
 								$wp_nom_tags .= ', ';
 								$wp_nom_tags .= $tag->name;
 							}
 							$wp_nom_slugs = array();
-							foreach ( $getTheTags as $tag ) {
+							foreach ( $get_the_tags as $tag ) {
 								$wp_nom_slugs[] = $tag->slug;
 							}
 						}
 
-						$metadata['nom_tags'] = $nomed_tag_slugs = $wp_nom_slugs;
-
+						$metadata['nom_tags'] = $wp_nom_slugs;
 
 						$nom_tags_string    = is_array( $nom_tags ) ? implode( ',', $nom_tags ) : $nom_tags;
 						$wp_nom_tags_string = is_array( $wp_nom_tags ) ? implode( ',', $wp_nom_tags ) : $wp_nom_tags;
@@ -248,50 +340,59 @@ class Nominated implements HasActions {
 						$metadata['all_tags'] = $nom_tags_string . ',' . $nom_tags_string;
 
 						if ( is_array( $item_nom_tags ) ) {
-							$nomTagsArray = $item_nom_tags;
+							$nom_tags_array = $item_nom_tags;
 						} else {
-							$nomTagsArray = explode( ',', $item_nom_tags );
+							$nom_tags_array = explode( ',', $item_nom_tags );
 						}
 
-						$nomTagClassesString  = '';
-						foreach ( $nomTagsArray as $nomTag ) {
-							$nomTagClassesString .= pf_slugger( $nomTag, true, false, true );
-							$nomTagClassesString .= ' '; }
+						$nom_tag_classes_string = '';
+						foreach ( $nom_tags_array as $nom_tag ) {
+							$nom_tag_classes_string .= pf_slugger( $nom_tag, true, false, true );
+							$nom_tag_classes_string .= ' ';
+						}
+
 						// RSS-passed tags as slugs.
-						$metadata['item_tags'] = $nom_tag_slugs = $nomTagClassesString;
+						$metadata['item_tags'] = $nom_tag_classes_string;
 						// All users who nominated.
-						$metadata['nominators'] = $nominators = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'nominator_array', true );
+						$metadata['nominators'] = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'nominator_array', true );
+
 						// Number of times repeated in source.
-						$metadata['source_repeat'] = $source_repeat = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'source_repeat', true );
-						// Post-object tags
-						$metadata['item_title']   = $item_title = get_the_title();
+						$source_repeat             = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'source_repeat', true );
+						$metadata['source_repeat'] = $source_repeat;
+
+						// Post-object tags.
+						$metadata['item_title']   = get_the_title();
 						$metadata['item_content'] = get_the_content();
 						// UNIX datetime last modified.
-						$metadata['timestamp_nom_last_modified'] = $timestamp_nom_last_modified = get_the_modified_date( 'U' );
+						$metadata['timestamp_nom_last_modified'] = get_the_modified_date( 'U' );
 						// UNIX datetime added to nominations.
-						$metadata['timestamp_unix_date_nomed'] = $timestamp_unix_date_nomed = strtotime( $date_nomed );
+						$metadata['timestamp_unix_date_nomed'] = strtotime( $date_nomed );
 						// UNIX datetime item was posted to its home RSS.
-						$metadata['timestamp_item_posted'] = $timestamp_item_posted = strtotime( $date_posted );
-						$metadata['archived_status']       = $archived_status = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'archived_by_user_status' );
-						$userObj                           = wp_get_current_user();
-						$user_id                           = $userObj->ID;
+						$metadata['timestamp_item_posted'] = strtotime( $date_posted );
+
+						$archived_status             = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'archived_by_user_status' );
+						$metadata['archived_status'] = $archived_status;
+
+						$user_obj = wp_get_current_user();
+						$user_id  = $user_obj->ID;
 
 						if ( ! empty( $metadata['archived_status'] ) ) {
 							$archived_status_string     = '';
 							$archived_user_string_match = 'archived_' . $current_user_id;
 							foreach ( $archived_status as $user_archived_status ) {
-								if ( $user_archived_status == $archived_user_string_match ) {
+								if ( $user_archived_status === $archived_user_string_match ) {
 									$archived_status_string = 'archived';
 									$dependent_style        = 'display:none;';
 								}
 							}
-						} elseif ( 1 == pf_get_relationship_value( 'archive', $nom_id, $user_id ) ) {
+						} elseif ( 1 === (int) pf_get_relationship_value( 'archive', $nom_id, $user_id ) ) {
 							$archived_status_string = 'archived';
 							$dependent_style        = 'display:none;';
 						} else {
 							$dependent_style        = '';
 							$archived_status_string = '';
 						}
+
 						$item = pf_feed_object( get_the_title(), pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'source_title', true ), $date_posted, $item_authorship, get_the_content(), $nom_permalink, get_the_post_thumbnail( $nom_id /**, 'nom_thumb'*/ ), $rss_item_id, pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_wp_date', true ), $nom_tags, $date_nomed, $source_repeat, $nom_id, '1' );
 
 						pressforward( 'admin.templates' )->form_of_an_item( $item, $c, 'nomination', $metadata );
@@ -299,7 +400,7 @@ class Nominated implements HasActions {
 						$c++;
 						endwhile;
 
-					// Reset Post Data
+					// Reset Post Data.
 					wp_reset_postdata();
 					?>
 					<div class="clear"></div>
@@ -307,63 +408,71 @@ class Nominated implements HasActions {
 					echo '</div><!-- End under review entries -->';
 
 					echo '</div><!-- End main -->';
-					if ( $countQT > $countQ ) {
-						$page += 1;
-						if ( $page == 0 ) {
-							$page = 1; }
-						$pagePrevNb = $page - 1;
-						$pageNextNb = $page + 1;
+					if ( $count_qt > $count_q ) {
+						$page++;
+						if ( 0 === $page ) {
+							$page = 1;
+						}
+
+						$page_prev_nb = $page - 1;
+						$page_next_nb = $page + 1;
+
 						if ( ! empty( $_GET['by'] ) ) {
 							$limit_q = '&by=' . $limit;
 						} else {
 							$limit_q = '';
 						}
-						$pagePrev = '?page=pf-review' . $limit_q . '&pc=' . $pagePrevNb;
-						$pageNext = '?page=pf-review' . $limit_q . '&pc=' . $pageNextNb;
+
+						$page_prev = '?page=pf-review' . $limit_q . '&pc=' . $page_prev_nb;
+						$page_next = '?page=pf-review' . $limit_q . '&pc=' . $page_next_nb;
 						if ( isset( $_GET['folder'] ) ) {
-							$pageQ     = sanitize_text_field( wp_unslash( $_GET['folder'] ) );
-							$pageQed   = '&folder=' . $pageQ;
-							$pageNext .= $pageQed;
-							$pagePrev .= $pageQed;
+							$page_q     = sanitize_text_field( wp_unslash( $_GET['folder'] ) );
+							$page_qed   = '&folder=' . $page_q;
+							$page_next .= $page_qed;
+							$page_prev .= $page_qed;
 
 						}
+
 						if ( isset( $_GET['feed'] ) ) {
-							$pageQ     = sanitize_text_field( wp_unslash( $_GET['feed'] ) );
-							$pageQed   = '&feed=' . $pageQ;
-							$pageNext .= $pageQed;
-							$pagePrev .= $pageQed;
-
+							$page_q     = sanitize_text_field( wp_unslash( $_GET['feed'] ) );
+							$page_qed   = '&feed=' . $page_q;
+							$page_next .= $page_qed;
+							$page_prev .= $page_qed;
 						}
-						if ( isset( $_GET['pf-see'] ) && $_GET['pf-see'] != '' ) {
-							$pageQ     = sanitize_text_field( wp_unslash( $_GET['pf-see'] ) );
-							$pageQed   = '&pf-see=' . $pageQ;
-							$pageNext .= $pageQed;
-							$pagePrev .= $pageQed;
+
+						if ( isset( $_GET['pf-see'] ) && '' !== $_GET['pf-see'] ) {
+							$page_q     = sanitize_text_field( wp_unslash( $_GET['pf-see'] ) );
+							$page_qed   = '&pf-see=' . $page_q;
+							$page_next .= $page_qed;
+							$page_prev .= $page_qed;
 						}
 						// Nasty hack because infinite scroll only works starting with page 2 for some reason.
 						echo '<div class="pf-navigation">';
-						if ( $pagePrevNb > 0 ) {
-							echo '<span class="feedprev"><a class="prevnav" href="admin.php' . esc_attr( $pagePrev ) . '">' . esc_html__( 'Previous Page', 'pf' ) . '</a></span> | ';
+						if ( $page_prev_nb > 0 ) {
+							echo '<span class="feedprev"><a class="prevnav" href="admin.php' . esc_attr( $page_prev ) . '">' . esc_html__( 'Previous Page', 'pf' ) . '</a></span> | ';
 						} else {
 							echo '<span class="feedprev">' . esc_html__( 'Previous Page', 'pf' ) . '</span> | ';
 						}
-						if ( $pageNextNb > $maxNbPages ) {
+						if ( $page_next_nb > $max_nb_pages ) {
 							echo '<span class="feednext">' . esc_html__( 'Next Page', 'pf' ) . '</span>';
 						} else {
-							echo '<span class="feednext"><a class="nextnav" href="admin.php' . esc_attr( $pageNext ) . '">' . esc_html__( 'Next Page', 'pf' ) . '</a></span>';
+							echo '<span class="feednext"><a class="nextnav" href="admin.php' . esc_attr( $page_next ) . '">' . esc_html__( 'Next Page', 'pf' ) . '</a></span>';
 						}
 						?>
 						<div class="clear"></div>
 						<?php
 						echo '</div>';
 					}
-			?>
+					?>
 			<div class="clear"></div>
 			<?php
 			echo '</div><!-- End container-fluid -->';
 
 	}
 
+	/**
+	 * Sends a nomination for publishing.
+	 */
 	public function send_nomination_for_publishing() {
 		global $post;
 
@@ -382,16 +491,24 @@ class Nominated implements HasActions {
 			pf_log( 'Sending to last step ' . $item_id . ' from Nomination post ' . $post_id );
 			ob_end_clean();
 			return $this->forward_tools->nomination_to_last_step( $item_id, $post_id );
-
 		}
 	}
 
+	/**
+	 * Generates title for Nominate This.
+	 */
 	public function nominate_this_tile() {
 		$this->template_factory->nominate_this( 'as_feed' );
 	}
 
-		// Via http://slides.helenhousandi.com/wcnyc2012.html#15 and http://svn.automattic.com/wordpress/tags/3.4/wp-admin/includes/class-wp-posts-list-table.php
-	function nomination_custom_columns( $column ) {
+	/**
+	 * Adds columns to nomination page.
+	 *
+	 * Via http://slides.helenhousandi.com/wcnyc2012.html#15 and http://svn.automattic.com/wordpress/tags/3.4/wp-admin/includes/class-wp-posts-list-table.php.
+	 *
+	 * @param string $column Column key.
+	 */
+	public function nomination_custom_columns( $column ) {
 
 		global $post;
 		switch ( $column ) {
@@ -399,8 +516,8 @@ class Nominated implements HasActions {
 				echo esc_html( $this->metas->get_post_pf_meta( $post->ID, 'nomination_count', true ) );
 				break;
 			case 'nominatedby':
-				$nominatorID = $this->metas->get_post_pf_meta( $post->ID, 'submitted_by', true );
-				$user        = get_user_by( 'id', $nominatorID );
+				$nominator_id = $this->metas->get_post_pf_meta( $post->ID, 'submitted_by', true );
+				$user         = get_user_by( 'id', $nominator_id );
 				if ( is_a( $user, 'WP_User' ) ) {
 					echo esc_html( $user->display_name );
 				}
@@ -410,16 +527,18 @@ class Nominated implements HasActions {
 				echo esc_html( $orig_auth );
 				break;
 			case 'date_nominated':
-				$dateNomed = $this->metas->get_post_pf_meta( $post->ID, 'date_nominated', true );
-				echo esc_html( $dateNomed );
+				$date_nomed = $this->metas->get_post_pf_meta( $post->ID, 'date_nominated', true );
+				echo esc_html( $date_nomed );
 				break;
 
 		}
 	}
 
+	/**
+	 * Builds the nomination box.
+	 */
 	public function nominations_box_builder() {
-		// wp_nonce_field( 'nominate_meta', 'nominate_meta_nonce' );
-		$origin_item_ID   = $this->metas->get_post_pf_meta( $post->ID, 'item_id', true );
+		$origin_item_id   = $this->metas->get_post_pf_meta( $post->ID, 'item_id', true );
 		$nomination_count = $this->metas->get_post_pf_meta( $post->ID, 'nomination_count', true );
 		$submitted_by     = $this->metas->get_post_pf_meta( $post->ID, 'submitted_by', true );
 		$source_title     = $this->metas->get_post_pf_meta( $post->ID, 'source_title', true );
@@ -427,11 +546,11 @@ class Nominated implements HasActions {
 		$nom_authors      = $this->metas->get_post_pf_meta( $post->ID, 'item_author', true );
 		$item_link        = $this->metas->get_post_pf_meta( $post->ID, 'item_link', true );
 		$date_nominated   = $this->metas->get_post_pf_meta( $post->ID, 'date_nominated', true );
-		$user          = get_user_by( 'id', $submitted_by );
-		$item_tags     = $this->metas->get_post_pf_meta( $post->ID, 'item_tags', true );
-		$source_repeat = $this->metas->get_post_pf_meta( $post->ID, 'source_repeat', true );
-		if ( ! empty( $origin_item_ID ) ) {
-			$this->meta_box_printer( __( 'Item ID', 'pf' ), $origin_item_ID );
+		$user             = get_user_by( 'id', $submitted_by );
+		$item_tags        = $this->metas->get_post_pf_meta( $post->ID, 'item_tags', true );
+		$source_repeat    = $this->metas->get_post_pf_meta( $post->ID, 'source_repeat', true );
+		if ( ! empty( $origin_item_id ) ) {
+			$this->meta_box_printer( __( 'Item ID', 'pf' ), $origin_item_id );
 		}
 		if ( empty( $nomination_count ) ) {
 			$nomination_count = 1;}
@@ -484,7 +603,7 @@ class Nominated implements HasActions {
 
 		$_args = array_merge( $default_args, $args );
 		$args  = apply_filters( 'pf_source_statement', $_args );
-		if ( true == $args['sourced'] ) {
+		if ( true === $args['sourced'] ) {
 			if ( isset( $args['source_statement'] ) ) {
 				$statement = sprintf(
 					'%1$s<a href="%2$s" target="%3$s" pf-nom-item-id="%4$s">%5$s</a>',
@@ -524,6 +643,12 @@ class Nominated implements HasActions {
 
 	}
 
+	/**
+	 * Gets the first nomination for an item.
+	 *
+	 * @param int    $item_id   ID of the item.
+	 * @param string $post_type Post typue.
+	 */
 	public function get_first_nomination( $item_id, $post_type ) {
 		$q = pf_get_posts_by_id_for_check( $post_type, $item_id, true );
 		if ( 0 < $q->post_count ) {
@@ -535,6 +660,13 @@ class Nominated implements HasActions {
 		}
 	}
 
+	/**
+	 * Check whether an item is nominated.
+	 *
+	 * @param int          $item_id   ID of the item.
+	 * @param string|array $post_type Post type.
+	 * @param bool         $update    Not used.
+	 */
 	public function is_nominated( $item_id, $post_type = false, $update = false ) {
 		if ( ! $post_type ) {
 			$post_type = array( 'post', 'nomination' );
@@ -551,6 +683,11 @@ class Nominated implements HasActions {
 		return $r;
 	}
 
+	/**
+	 * Resolve nomination state for an item.
+	 *
+	 * @param int $item_id ID of the item.
+	 */
 	public function resolve_nomination_state( $item_id ) {
 		$pt = array( 'nomination' );
 		if ( $this->is_nominated( $item_id, $pt ) ) {
@@ -573,6 +710,13 @@ class Nominated implements HasActions {
 		}
 	}
 
+	/**
+	 * Increments nomination count for an item.
+	 *
+	 * @param int  $id ID of the item.
+	 * @param bool $up True for increment, false for decrement.
+	 * @return bool
+	 */
 	public function change_nomination_count( $id, $up = true ) {
 		$nom_count = $this->metas->retrieve_meta( $id, 'nomination_count' );
 		if ( $up ) {
@@ -585,18 +729,35 @@ class Nominated implements HasActions {
 		return $check;
 	}
 
+	/**
+	 * Updates nominator array for an item.
+	 *
+	 * @param int  $id     ID of the item.
+	 * @param bool $update Not used.
+	 * @return bool
+	 */
 	public function toggle_nominator_array( $id, $update = true ) {
 		$nominators = $this->forward_tools->update_nomination_array( $id );
 		$check      = $this->metas->update_pf_meta( $id, 'nominator_array', $nominators );
 		return $check;
 	}
 
+	/**
+	 * Checks whether a user nominated an item.
+	 *
+	 * @param int $id      ID of the item.
+	 * @param int $user_id ID of the user. Defaults to current user.
+	 * @return bool
+	 */
 	public function did_user_nominate( $id, $user_id = false ) {
 		$nominators = $this->metas->retrieve_meta( $id, 'nominator_array' );
 		if ( ! $user_id ) {
 			$current_user = wp_get_current_user();
 			$user_id      = $current_user->ID;
 		}
+
+		// @todo Check that nominator array is cast to int.
+		// phpcs:ignore
 		if ( ! empty( $nominators ) && in_array( $user_id, $nominators ) ) {
 			return true;
 		} else {
@@ -604,10 +765,17 @@ class Nominated implements HasActions {
 		}
 	}
 
+	/**
+	 * Checks post nomination status.
+	 *
+	 * @param int  $item_id ID of the item.
+	 * @param bool $force   Not used.
+	 * @return bool
+	 */
 	public function handle_post_nomination_status( $item_id, $force = false ) {
 		$nomination_state = $this->is_nominated( $item_id );
 		$check            = false;
-		if ( false != $nomination_state ) {
+		if ( false !== $nomination_state ) {
 			if ( $this->did_user_nominate( $nomination_state ) ) {
 				$this->change_nomination_count( $nomination_state, false );
 				$this->toggle_nominator_array( $nomination_state, false );
@@ -627,63 +795,89 @@ class Nominated implements HasActions {
 		return $check;
 	}
 
-	public function remove_post_nomination( $date, $item_id, $post_type, $updateCount = true ) {
-		$postsAfter = pf_get_posts_by_id_for_check( $post_type, $item_id );
+	/**
+	 * Removes post nomination.
+	 *
+	 * @todo Does not appear to be used in PF.
+	 *
+	 * @param string $date         Not used.
+	 * @param int    $item_id      ID of the item.
+	 * @param string $post_type    Post type.
+	 * @param bool   $update_count Whether to update count.
+	 * @return void
+	 */
+	public function remove_post_nomination( $date, $item_id, $post_type, $update_count = true ) {
+		$posts_after = pf_get_posts_by_id_for_check( $post_type, $item_id );
 		// Assume that it will not find anything.
 		$check = false;
-		if ( $postsAfter->have_posts() ) :
-			while ( $postsAfter->have_posts() ) :
-				$postsAfter->the_post();
+		if ( $posts_after->have_posts() ) {
+			while ( $posts_after->have_posts() ) {
+				$posts_after->the_post();
 
-					$id             = get_the_ID();
-					$origin_item_id = $this->metas->retrieve_meta( $id, 'item_id' );
-					$current_user   = wp_get_current_user();
-				if ( $origin_item_id == $item_id ) {
-					$check    = true;
-					$nomCount = $this->metas->retrieve_meta( $id, 'nomination_count' );
-					$nomCount--;
-					$this->metas->update_pf_meta( $id, 'nomination_count', $nomCount );
-					if ( 0 != $current_user->ID ) {
+				$id             = get_the_ID();
+				$origin_item_id = $this->metas->retrieve_meta( $id, 'item_id' );
+				$current_user   = wp_get_current_user();
+
+				if ( (int) $origin_item_id === (int) $item_id ) {
+					$check     = true;
+					$nom_count = $this->metas->retrieve_meta( $id, 'nomination_count' );
+					$nom_count--;
+					$this->metas->update_pf_meta( $id, 'nomination_count', $nom_count );
+					if ( $current_user->ID ) {
 						$this->toggle_nominator_array( $id );
 					}
 				}
-			endwhile;   else :
-				pf_log( ' No nominations found for ' . $item_id );
-			endif;
+			}
+		} else {
+			pf_log( ' No nominations found for ' . $item_id );
 			wp_reset_postdata();
+		}
 	}
 
-	public function get_post_nomination_status( $date, $item_id, $post_type, $updateCount = true ) {
+	/**
+	 * Gets the nomination status for a post.
+	 *
+	 * @todo Does not appear to be used in PF.
+	 *
+	 * @param string $date         Not used.
+	 * @param int    $item_id      ID of the item.
+	 * @param string $post_type    Post type.
+	 * @param bool   $update_count Whether to update count.
+	 * @return string
+	 */
+	public function get_post_nomination_status( $date, $item_id, $post_type, $update_count = true ) {
 		global $post;
+
 		// Get the query object, limiting by date, type and metavalue ID.
 		pf_log( 'Get posts matching ' . $item_id );
-		$postsAfter = pf_get_posts_by_id_for_check( $post_type, $item_id );
+		$posts_after = pf_get_posts_by_id_for_check( $post_type, $item_id );
+
 		// Assume that it will not find anything.
 		$check = false;
 		pf_log( 'Check for nominated posts.' );
-		if ( $postsAfter->have_posts() ) :
-			while ( $postsAfter->have_posts() ) :
-				$postsAfter->the_post();
+		if ( $posts_after->have_posts() ) {
+			while ( $posts_after->have_posts() ) {
+				$posts_after->the_post();
 
 				$id = get_the_ID();
 				pf_log( 'Deal with nominated post ' . $id );
 				$origin_item_id = $this->metas->retrieve_meta( $id, 'item_id' );
 				$current_user   = wp_get_current_user();
-				if ( $origin_item_id == $item_id ) {
+				if ( (int) $origin_item_id === (int) $item_id ) {
 					$check = true;
 					// Only update the nomination count on request.
-					if ( $updateCount ) {
-						if ( 0 == $current_user->ID ) {
+					if ( $update_count ) {
+						if ( ! $current_user->ID ) {
 							// Not logged in.
 							// If we ever reveal this to non users and want to count nominations by all, here is where it will go.
 							pf_log( 'Can not find user for updating nomionation count.' );
-							$nomCount = $this->metas->retrieve_meta( $id, 'nomination_count' );
-							$nomCount++;
-							$this->metas->update_pf_meta( $id, 'nomination_count', $nomCount );
-														$check = 'no_user';
+							$nom_count = $this->metas->retrieve_meta( $id, 'nomination_count' );
+							$nom_count++;
+							$this->metas->update_pf_meta( $id, 'nomination_count', $nom_count );
+							$check = 'no_user';
 						} else {
 							$nominators_orig = $this->metas->retrieve_meta( $id, 'nominator_array' );
-							if ( ! array_key_exists( $current_user->ID, $nominators_orig ) ) {
+							if ( ! array_key_exists( $current_user->ID, $nominators_orig, true ) ) {
 								$check = $this->toggle_nominator_array( $id, false );
 							} else {
 								$check = 'user_nominated_already';
@@ -691,25 +885,26 @@ class Nominated implements HasActions {
 						}
 
 						return $check;
-						break;
 					}
 				} else {
 					pf_log( 'No nominations found for ' . $item_id );
 					$check = 'unmatched_post';
 				}
-			endwhile;   else :
-				pf_log( ' No nominations found for ' . $item_id );
-				$check = 'unmatched_post';
-			endif;
-			wp_reset_postdata();
-			return $check;
+			}
+		} else {
+			pf_log( ' No nominations found for ' . $item_id );
+			$check = 'unmatched_post';
+		}
+
+		wp_reset_postdata();
+		return $check;
 	}
 
-		/**
-		 * Handles an archive action submitted via AJAX
-		 *
-		 * @since 1.7
-		 */
+	/**
+	 * Handles an archive action submitted via AJAX
+	 *
+	 * @since 1.7
+	 */
 	public static function archive_a_nom() {
 		$pf_drafted_nonce = isset( $_POST['pf_drafted_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['pf_drafted_nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $pf_drafted_nonce, 'drafter' ) ) {
@@ -725,14 +920,21 @@ class Nominated implements HasActions {
 		}
 	}
 
-
+	/**
+	 * Prints the content of a metabox.
+	 *
+	 * @param string $title       Title.
+	 * @param string $variable    Variable.
+	 * @param bool   $link        Whether to link.
+	 * @param string $anchor_text Text for link.
+	 */
 	public function meta_box_printer( $title, $variable, $link = false, $anchor_text = 'Link' ) {
 		echo '<strong>' . esc_html( $title ) . '</strong>: ';
 		if ( empty( $variable ) ) {
 			echo '<br /><input type="text" name="' . esc_attr( $title ) . '">';
 		} else {
-			if ( $link === true ) {
-				if ( $anchor_text === 'Link' ) {
+			if ( true === $link ) {
+				if ( 'Link' === $anchor_text ) {
 					$anchor_text = $this->__( 'Link', 'pf' );
 				}
 				echo '<a href=';
@@ -748,43 +950,52 @@ class Nominated implements HasActions {
 		echo '<br />';
 	}
 
+	/**
+	 * AJAX callback for building a nomination.
+	 */
 	public function build_nomination() {
-
-		// Verify nonce
+		// Verify nonce.
 		if ( empty( $_POST[ PF_SLUG . '_nomination_nonce' ] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ PF_SLUG . '_nomination_nonce' ] ) ), 'nomination' ) ) {
 			die( esc_html__( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) ); }
 
-		if ( '' != ( get_option( 'timezone_string' ) ) ) {
+		if ( '' !== ( get_option( 'timezone_string' ) ) ) {
+			// @todo Investigate.
+			// phpcs:ignore WordPress.DateTime
 			date_default_timezone_set( get_option( 'timezone_string' ) );
 		}
-		// ref http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields, http://wpseek.com/wp_insert_post/
+
+		// ref http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields, http://wpseek.com/wp_insert_post/.
 		$time = current_time( 'mysql', $gmt = 0 );
-		// @todo Play with post_exists (wp-admin/includes/post.php ln 493) to make sure that submissions have not already been submitted in some other method.
-			// Perhaps with some sort of "Are you sure you don't mean this... reddit style thing?
-			// Should also figure out if I can create a version that triggers on nomination publishing to send to main posts.
-		// There is some serious delay here while it goes through the database. We need some sort of loading bar.
+
+		/*
+		 * @todo Play with post_exists (wp-admin/includes/post.php ln 493) to make sure that submissions have not already been submitted in some other method.
+		 * Perhaps with some sort of "Are you sure you don't mean this... reddit style thing?
+		 * Should also figure out if I can create a version that triggers on nomination publishing to send to main posts.
+		 * There is some serious delay here while it goes through the database. We need some sort of loading bar.
+		 */
 		ob_start();
 		$current_user = wp_get_current_user();
-		$userID       = $current_user->ID;
+		$user_id      = $current_user->ID;
 
-		// set up nomination check
+		// Set up nomination check.
 		$item_wp_date = isset( $_POST['item_wp_date'] ) ? sanitize_text_field( wp_unslash( $_POST['item_wp_date'] ) ) : '';
 		$item_id      = isset( $_POST['item_id'] ) ? intval( $_POST['item_id'] ) : 0;
 		$item_post_id = isset( $_POST['item_post_id'] ) ? intval( $_POST['item_post_id'] ) : 0;
 
-		// die($item_wp_date);
 		pf_log( 'We handle the item into a nomination?' );
 
-		if ( ! empty( $_POST['pf_amplify'] ) && ( '1' == sanitize_text_field( wp_unslash( $_POST['pf_amplify'] ) ) ) ) {
+		if ( ! empty( $_POST['pf_amplify'] ) && ( '1' === sanitize_text_field( wp_unslash( $_POST['pf_amplify'] ) ) ) ) {
 			$amplify = true;
 		} else {
 			$amplify = false;
 		}
-			pf_log( 'Amplification?' );
-			pf_log( $amplify );
-			$nomination_id = $this->forward_tools->item_to_nomination( $item_id, $item_post_id );
-			pf_log( 'ID received:' );
-			pf_log( $nomination_id );
+
+		pf_log( 'Amplification?' );
+		pf_log( $amplify );
+		$nomination_id = $this->forward_tools->item_to_nomination( $item_id, $item_post_id );
+		pf_log( 'ID received:' );
+		pf_log( $nomination_id );
+
 		if ( is_wp_error( $nomination_id ) || ! $nomination_id ) {
 			pf_log( 'Nomination has gone wrong somehow.' );
 			pf_log( $nomination_id );
@@ -795,12 +1006,11 @@ class Nominated implements HasActions {
 				'data'         => 'Nomination failed',
 				'supplemental' => array(
 					'originID'  => $item_id,
-					'nominater' => $userID,
+					'nominater' => $user_id,
 					'buffered'  => ob_get_flush(),
 				),
 			);
 		} else {
-			// $this->metas->transition_post_meta( $_POST['item_post_id'], $newNomID, $amplify );
 			$response = array(
 				'what'         => 'nomination',
 				'action'       => 'build_nomination',
@@ -808,79 +1018,84 @@ class Nominated implements HasActions {
 				'data'         => $nomination_id . ' nominated.',
 				'supplemental' => array(
 					'originID'  => $item_id,
-					'nominater' => $userID,
+					'nominater' => $user_id,
 					'buffered'  => ob_get_flush(),
 				),
 			);
 
 		}
-				$xmlResponse = new WP_Ajax_Response( $response );
-				$xmlResponse->send();
-			ob_end_flush();
-			die();
+
+		$xml_response = new WP_Ajax_Response( $response );
+		$xml_response->send();
+		ob_end_flush();
+		die();
 	}
 
+	/**
+	 * AJAX callback for 'simple_nom_to_draft' action.
+	 *
+	 * @param int $id Item ID.
+	 */
 	public function simple_nom_to_draft( $id = false ) {
 		global $post;
-		// ob_start();
+
 		$pf_drafted_nonce = isset( $_POST['pf_nomination_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['pf_nomination_nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $pf_drafted_nonce, 'nomination' ) ) {
 			die( esc_html__( 'Nonce not recieved. Are you sure you should be drafting?', 'pf' ) );
 		} else {
 			ob_start();
 			if ( ! $id ) {
-				if (array_key_exists('nom_id', $_POST) && !empty($_POST['nom_id'])){
+				if ( array_key_exists( 'nom_id', $_POST, true ) && ! empty( $_POST['nom_id'] ) ) {
 					$id = intval( $_POST['nom_id'] );
 				} else {
 					$post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
 					$item_id = $this->metas->retrieve_meta( $post_id, 'item_id' );
-					$id = $this->forward_tools->is_a_pf_type($item_id, $this->nomination_slug);
+					$id      = $this->forward_tools->is_a_pf_type( $item_id, $this->nomination_slug );
 				}
-				// $nom = get_post($id);
+
 				$item_id = $this->metas->retrieve_meta( $id, 'item_id' );
 			}
+
 			$item_id      = $this->metas->retrieve_meta( $id, 'item_id' );
 			$last_step_id = $this->forward_tools->nomination_to_last_step( $item_id, $id );
-			// Check
-				add_post_meta( $id, 'nom_id', $id, true );
-				// $this->metas->transition_post_meta($id, $new_post_id, true);
-				$already_has_thumb = has_post_thumbnail( $id );
+
+			add_post_meta( $id, 'nom_id', $id, true );
+
+			$already_has_thumb = has_post_thumbnail( $id );
 			if ( $already_has_thumb ) {
 				$post_thumbnail_id = get_post_thumbnail_id( $id );
 				set_post_thumbnail( $last_step_id, $post_thumbnail_id );
 			}
 
-				$response = array(
-					'what'         => 'draft',
-					'action'       => 'simple_nom_to_draft',
-					'id'           => $last_step_id,
-					'data'         => $last_step_id . ' drafted.',
-					'supplemental' => array(
-						'originID' => $id,
-						'buffered' => ob_get_flush(),
-					),
-				);
+			$response = array(
+				'what'         => 'draft',
+				'action'       => 'simple_nom_to_draft',
+				'id'           => $last_step_id,
+				'data'         => $last_step_id . ' drafted.',
+				'supplemental' => array(
+					'originID' => $id,
+					'buffered' => ob_get_flush(),
+				),
+			);
 
-				$xmlResponse = new WP_Ajax_Response( $response );
-				$xmlResponse->send();
-				ob_end_flush();
-				die();
+			$xml_response = new WP_Ajax_Response( $response );
+			$xml_response->send();
+			ob_end_flush();
+			die();
 		}
 	}
 
-	function build_nom_draft() {
+	/**
+	 * AJAX callback for building a nomination draft.
+	 */
+	public function build_nom_draft() {
 		global $post;
 		// verify if this is an auto save routine.
-		// If it is our form has not been submitted, so we dont want to do anything
-		// if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
+		// If it is our form has not been submitted, so we dont want to do anything.
 		$pf_drafted_nonce = isset( $_POST['pf_drafted_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['pf_drafted_nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $pf_drafted_nonce, 'drafter' ) ) {
 			die( esc_html__( 'Nonce not recieved. Are you sure you should be drafting?', 'pf' ) );
 		} else {
-			// Check
-			// print_r(__('Sending to Draft.', 'pf'));
-			// Check
-			// print_r($_POST);
 			ob_start();
 
 			$item_id = isset( $_POST['item_id'] ) ? sanitize_text_field( wp_unslash( $_POST['item_id'] ) ) : 0;
@@ -897,12 +1112,10 @@ class Nominated implements HasActions {
 					'buffered' => ob_get_flush(),
 				),
 			);
-			$xmlResponse   = new WP_Ajax_Response( $response );
-			$xmlResponse->send();
+			$xml_response  = new WP_Ajax_Response( $response );
+			$xml_response->send();
 			ob_end_flush();
 			die();
 		}
 	}
-
-
 }
