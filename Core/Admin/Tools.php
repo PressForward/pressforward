@@ -1,22 +1,51 @@
 <?php
+/**
+ * Tools admin panel.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Admin;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
 use PressForward\Core\Admin\PFTemplater;
 
+/**
+ * Tools admin panel.
+ */
 class Tools implements HasActions, HasFilters {
-
+	/**
+	 * Basename.
+	 *
+	 * @access protected
+	 * @var string
+	 */
 	protected $basename;
+
+	/**
+	 * PFTemplater object.
+	 *
+	 * @access public
+	 * @var PressForward\Core\Admin\PFTemplater
+	 */
 	public $templates;
 
-	function __construct( $basename, PFTemplater $templates ) {
+	/**
+	 * Constructor.
+	 *
+	 * @param string                              $basename  Basename.
+	 * @param PressForward\Core\Admin\PFTemplater $templates PFTemplater object.
+	 */
+	public function __construct( $basename, PFTemplater $templates ) {
 		$this->basename  = $basename;
 		$this->templates = $templates;
 		add_filter( 'pf_tabs_pf-tools', array( $this, 'set_permitted_tools_tabs' ) );
-		// return true;
 	}
 
+	/**
+	 * Sets up Tools admin panel.
+	 */
 	public function add_plugin_admin_menu() {
 		$this->templates->add_submenu_page(
 			PF_MENU_SLUG,
@@ -28,6 +57,9 @@ class Tools implements HasActions, HasFilters {
 		);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function filter_hooks() {
 		return array(
 			array(
@@ -39,6 +71,9 @@ class Tools implements HasActions, HasFilters {
 		);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function action_hooks() {
 		return array(
 			array(
@@ -54,11 +89,16 @@ class Tools implements HasActions, HasFilters {
 		);
 	}
 
+	/**
+	 * Display callback for Tools admin panel.
+	 */
 	public function display_tools_builder() {
 		if ( isset( $_GET['tab'] ) ) {
 			$tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
 		} else {
-			$tab = 'nominate-this'; }
+			$tab = 'nominate-this';
+		}
+
 		$vars = array(
 			'current'            => $tab,
 			'user_ID'            => true,
@@ -71,40 +111,61 @@ class Tools implements HasActions, HasFilters {
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $this->templates->get_view( array( 'settings', 'settings-page' ), $vars );
-
-		return;
 	}
 
+	/**
+	 * Sets up tabs for Tools panel.
+	 *
+	 * @param array $permitted_tabs Tabs array.
+	 * @return array
+	 */
 	public function set_permitted_tools_tabs( $permitted_tabs ) {
-		$permitted_tabs['nominate-this']    = array(
+		$permitted_tabs['nominate-this'] = array(
 			'title' => __( 'Bookmarklet', 'pf' ),
 			'cap'   => $this->templates->users->pf_get_defining_capability_by_role( 'contributor' ),
 		);
-		$permitted_tabs['reset-refresh']    = array(
+
+		$permitted_tabs['reset-refresh'] = array(
 			'title' => __( 'Debug and Refresh', 'pf' ),
 			'cap'   => $this->templates->users->pf_get_defining_capability_by_role( 'administrator' ),
 		);
+
 		$permitted_tabs['retrieval-status'] = array(
 			'title' => __( 'Retrieval Status', 'pf' ),
 			'cap'   => $this->templates->users->pf_get_defining_capability_by_role( 'contributor' ),
 		);
-		$permitted_tabs['stats']            = array(
+
+		$permitted_tabs['stats'] = array(
 			'title' => __( 'Statistics', 'pf' ),
 			'cap'   => $this->templates->users->pf_get_defining_capability_by_role( 'contributor' ),
 		);
+
 		return $permitted_tabs;
 	}
 
+	/**
+	 * Gets settings tabs for Tools panel.
+	 *
+	 * @param string $tab Tab name.
+	 * @return string
+	 */
 	public function tab_group( $tab ) {
 		return $this->templates->settings_tab_group( $tab, 'pf-tools' );
 	}
 
+	/**
+	 * Gets tabs for Tools panel.
+	 *
+	 * @return array
+	 */
 	public function tabs() {
 		return $this->templates->permitted_tabs( 'pf-tools' );
 	}
 
+	/**
+	 * Sets up Nominate This endpoint.
+	 */
 	public function nom_this_endpoint() {
 		\start_pf_nom_this();
 	}
-
 }
