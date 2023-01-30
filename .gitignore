@@ -139,6 +139,9 @@ csx
 # Windows Store app package directory
 AppPackages/
 
+# ctags
+/tags
+
 # Others
 sql/
 *.Cache
