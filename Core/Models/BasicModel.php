@@ -1,9 +1,31 @@
 <?php
+/**
+ * Base class for data models.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Models;
 
+/**
+ * BasicModel class.
+ */
 class BasicModel {
+	/**
+	 * Data array.
+	 *
+	 * @access protected
+	 * @var array
+	 */
 	protected $data = array();
 
+	/**
+	 * Constructor.
+	 *
+	 * @param array $item      Data about item.
+	 * @param array $handlers  Controllers.
+	 * @param array $post_type Post type name.
+	 */
 	public function __construct( $item = array(), $handlers = array(), $post_type = false ) {
 		if ( empty( $handlers ) ) {
 			$handlers = array(
@@ -16,41 +38,64 @@ class BasicModel {
 		$this->set_up_metas( $item, $handlers['metas'] );
 		$this->init( $item, $handlers, $post_type );
 	}
+
 	/**
 	 * Magic methods are apparently not super perfomant.
 	 * Avoid using them if you don't have to. Devs should
 	 * prefer the custom getters and setters that follow.
+	 *
+	 * @param string $key Key.
+	 * @return bool
 	 */
 	public function __isset( $key ) {
 		return isset( $this->data[ $key ] );
 	}
+
+	/**
+	 * Magic getter.
+	 *
+	 * @param string $key Key.
+	 * @return mixed
+	 */
 	public function __get( $key ) {
 		return $this->get( $key );
 	}
+
+	/**
+	 * Magic setter.
+	 *
+	 * @param string $key   Key.
+	 * @param mixed  $value Value.
+	 */
 	public function __set( $key, $value ) {
 		$this->set( $key, $value );
 	}
 
-	// Setters and getters
 	/**
 	 * Set a property for the object.
 	 *
-	 * @param string $key   Key to access the property
-	 * @param any    $value    Value to store in the property.
+	 * @param string $key   Key to access the property.
+	 * @param mixed  $value Value to store in the property.
 	 */
 	public function set( $key, $value ) {
 		$value = apply_filters( 'pf_' . $this->type . '_property_' . $key, $value, $this );
+
 		if ( 0 === strpos( $key, $this->type_key . '_' ) ) {
 			$key = str_replace( $this->type_key . '_', '', $key );
 		}
+
 		if ( 0 === strpos( $key, 'post_' ) ) {
 			$key = str_replace( 'post_', '', $key );
 		}
-		if ( method_exists( $this, $f = 'set_' . $key ) ) {
-			$value = call_user_func( array( $this, $f ), $value );
+
+		$method_name = 'get_' . $key;
+		if ( method_exists( $this, $method_name ) ) {
+			$value = call_user_func( array( $this, $method_name ), $value );
 		}
+
 		$this->data[ $key ] = $value;
 	}
+
 	/**
 	 * Get an untreated property of the object.
 	 *
@@ -59,30 +104,42 @@ class BasicModel {
 	 * that have been treated in accordance with their accepted
 	 * use then use the specific getter for that property type.
 	 *
-	 * @param  string $key  The name of the property.
-	 * @return any          Property value.
+	 * @param  string $key     The name of the property.
+	 * @param  string $sub_key Optional. The name of the subproperty.
+	 * @return mixed           Property value.
 	 */
 	public function get( $key, $sub_key = false ) {
 		if ( 0 === strpos( $key, $this->type_key . '_' ) ) {
 			$key = str_replace( $this->type_key . '_', '', $key );
 		}
+
 		if ( 0 === strpos( $key, 'post_' ) ) {
 			$key = str_replace( 'post_', '', $key );
 		}
-		if ( method_exists( $this, $f = 'get_' . $key ) ) {
-			$value = call_user_func( array( $this, $f ) );
+
+		$method_name = 'get_' . $key;
+		if ( method_exists( $this, $method_name ) ) {
+			$value = call_user_func( array( $this, $method_name ) );
 			return $value;
 		}
+
 		if ( false !== $sub_key ) {
 			$array_property = $this->data[ $key ];
 			return $array_property[ $sub_key ];
 		}
+
 		return isset( $this->data[ $key ] ) ? $this->data[ $key ] : null;
 	}
 
+	/**
+	 * Sets up meta data.
+	 *
+	 * @param array  $set_metas   Metas to set.
+	 * @param object $meta_system Metas controller.
+	 */
 	public function set_up_metas( $set_metas = array(), $meta_system ) {
 		foreach ( $meta_system->structure as $meta_key => $meta_data ) {
-			if ( in_array( $this->type, $meta_data['level'] ) ) {
+			if ( in_array( $this->type, $meta_data['level'], true ) ) {
 				if ( ( array_key_exists( $meta_key, $set_metas ) || empty( $set_metas[ $meta_key ] ) ) && ! empty( $meta_data['defaults'] ) ) {
 					$metas[ $meta_key ] = $meta_data['default'];
 				} else {
@@ -90,10 +147,9 @@ class BasicModel {
 				}
 			}
 		}
+
 		foreach ( $defaults as $key => $default ) {
 			$this->set( $key, $default );
 		}
 	}
-
-
 }
