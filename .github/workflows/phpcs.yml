@@ -3,7 +3,7 @@ name: PHPCS
 on: [push]
 
 jobs:
-  hsph-test-phpcs:
+  test-phpcs:
 
     runs-on: ubuntu-latest
 
