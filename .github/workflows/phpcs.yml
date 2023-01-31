@@ -1,0 +1,32 @@
+name: PHPCS
+
+on: [push]
+
+jobs:
+  hsph-test-phpcs:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    # We update composer to avoid builds failing because of composer bugs see DWOPS-182
+    - name: Update Composer
+      run: |
+        sudo composer self-update --1
+        sudo chown $USER $HOME/.composer
+
+    # This step is only required for plugins/themes that actualy have composer dependencies.
+    # That said it's just easier to add this by default for every plugin/theme.
+    - name: Configure Composer
+      run: composer config -g github-oauth.github.com ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Install PHPCS & WPCS
+      run: composer require wp-coding-standards/wpcs
+
+    # PHPCS doesn't locate the WordPress rules alone, we need to tell PHPCS where to find them.
+    - name: Configure PHPCS
+      run: vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs
+
+    - name: Run PHPCS
+      run: vendor/bin/phpcs ./
