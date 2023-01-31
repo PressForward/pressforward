@@ -780,16 +780,6 @@ class Metas implements HasFilters, HasActions {
 				'level'      => array( 'feed' ),
 				'serialize'  => false,
 			),
-			'pf_feed_last_retrieved'  => array(
-				'name'       => 'pf_feed_last_retrieved',
-				'title'      => __( 'Last retrieved', 'pf' ),
-				'definition' => __( 'Last time feed was retrieved', 'pf' ),
-				'function'   => __( 'Stores last timestamp feed was retrieved.', 'pf' ),
-				'type'       => array( 'adm' ),
-				'use'        => array( 'api' ),
-				'level'      => array( 'feed' ),
-				'serialize'  => false,
-			),
 			'pf_feed_default_author'  => array(
 				'name'       => 'pf_feed_default_author',
 				'title'      => __( 'Default Feed Author', 'pf' ),
@@ -938,11 +928,11 @@ class Metas implements HasFilters, HasActions {
 	 * Attaches metadata to a post object based on the intended use context.
 	 *
 	 * @param WP_Post $post_object Post object.
-	 * @param string  $use         Context of use.
+	 * @param string  $use_context Context of use.
 	 * @param bool    $admin       Whether it's an admin request. Default false.
 	 * @return WP_Post
 	 */
-	public function attach_metas_by_use( $post_object, $use = 'api', $admin = false ) {
+	public function attach_metas_by_use( $post_object, $use_context = 'api', $admin = false ) {
 		$post_id = $post_object->ID;
 		foreach ( $this->structure() as $key => $meta ) {
 			if ( in_array( $use, $meta['use'], true ) ) {
@@ -953,10 +943,8 @@ class Metas implements HasFilters, HasActions {
 								$post_object->$key = $this->get_post_pf_meta( $post_id, $meta['name'] );
 							}
 						}
-					} else {
-						if ( ! isset( $post_object->$key ) ) {
+					} elseif ( ! isset( $post_object->$key ) ) {
 							$post_object->$key = $this->get_post_pf_meta( $post_id, $meta['name'] );
-						}
 					}
 				}
 			}
@@ -1391,13 +1379,13 @@ class Metas implements HasFilters, HasActions {
 	/**
 	 * Filter of 'pf_forward_to_origin' postmeta, for REST API.
 	 *
-	 * @param mixed  $null      For short-circuiting call.
+	 * @param mixed  $retval    For short-circuiting call.
 	 * @param int    $object_id ID of the object.
 	 * @param string $meta_key  Meta key.
 	 * @param bool   $single    "Single" param to get_post_meta().
 	 * @return mixed
 	 */
-	public function usable_forward_to_origin_status( $null, $object_id, $meta_key, $single ) {
+	public function usable_forward_to_origin_status( $retval, $object_id, $meta_key, $single ) {
 		if ( 'pf_forward_to_origin' !== $meta_key ) {
 			return $null;
 		}

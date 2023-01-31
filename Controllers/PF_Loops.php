@@ -274,7 +274,7 @@ class PF_Loops {
 				$readable_status
 			);
 
-			$c++;
+			++$c;
 		}
 
 		if ( $r['count_total'] ) {

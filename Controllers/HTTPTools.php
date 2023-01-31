@@ -128,9 +128,7 @@ class HTTPTools implements HasActions {
 		}
 
 		return $url;
-
 	}
-
 
 	/**
 	 * Return an array of known aggregation services.
@@ -176,8 +174,11 @@ class HTTPTools implements HasActions {
 		$upload_dir  = wp_upload_dir();
 		$cookie_path = $upload_dir['basedir'] . 'cookie.txt';
 		if ( ! is_file( $cookie_path ) ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions
 			touch( $cookie_path );
 		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions
 		if ( ! is_writable( $cookie_path ) ) {
 			pf_log( "Can't write to the cookie at $cookie_path." );
 			return false;
@@ -200,36 +201,36 @@ class HTTPTools implements HasActions {
 	 * Gets the content from a URL.
 	 *
 	 * @param string   $url      URL.
-	 * @param callable $function Callback for fetching.
+	 * @param callable $the_function Callback for fetching.
 	 * @return string
 	 */
-	public function get_url_content( $url, $function = false ) {
+	public function get_url_content( $url, $the_function = false ) {
 		$args      = func_get_args();
 		$url       = str_replace( '&amp;', '&', $url );
 		$url_first = $url;
 		$r         = false;
-		if ( ! $function ) {
+		if ( ! $the_function ) {
 			$url = set_url_scheme( $url, 'http' );
 			$r   = false;
 		} else {
 			$args[0] = $url;
 			unset( $args[1] );
 
-			$cache_key = $function . '_' . $url;
+			$cache_key = $the_function . '_' . $url;
 			$cached    = wp_cache_get( $cache_key, 'pressforward_external_pages' );
 			if ( false === $cached ) {
 				$args[1] = [ 'timeout' => 30 ];
-				$r       = call_user_func_array( $function, $args );
+				$r       = call_user_func_array( $the_function, $args );
 				if ( is_wp_error( $r ) || empty( $r ) ) {
 					$non_ssl_url = set_url_scheme( $url, 'http' );
 					if ( $non_ssl_url !== $url ) {
 						$args[0] = $non_ssl_url;
-						$r       = call_user_func_array( $function, $args );
+						$r       = call_user_func_array( $the_function, $args );
 					}
 
 					if ( ! $r || is_wp_error( $r ) ) {
 						// Last Chance!
-						if ( 'file_get_contents' !== $function ) {
+						if ( 'file_get_contents' !== $the_function ) {
 							// phpcs:ignore WordPress.WP.AlternativeFunctions
 							$response = file_get_contents( $url_first );
 						} else {

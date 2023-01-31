@@ -50,7 +50,7 @@ class Stats_Shortcodes {
 					$content    = get_post_field( 'post_content', get_the_ID() );
 					$word_count = str_word_count( wp_strip_all_tags( $content ) );
 					$wc         = $wc + $word_count;
-					$c++;
+					++$c;
 					endwhile;
 
 				wp_reset_postdata();
@@ -109,7 +109,7 @@ class Stats_Shortcodes {
 					$content    = get_post_field( 'post_content', get_the_ID() );
 					$word_count = str_word_count( wp_strip_all_tags( $content ) );
 					$wc         = $wc + $word_count;
-					$c++;
+					++$c;
 					endwhile;
 
 				wp_reset_postdata();
@@ -161,7 +161,7 @@ class Stats_Shortcodes {
 				while ( $the_query->have_posts() ) :
 					$the_query->the_post();
 					$authors = $this->set_author_into_leaderboard( get_the_ID(), $authors );
-					$c++;
+					++$c;
 				endwhile;
 
 				wp_reset_postdata();
@@ -215,27 +215,27 @@ class Stats_Shortcodes {
 		foreach ( $authors as $author ) {
 			$total = $total + $author['count'];
 			if ( $author['count'] < 2 ) {
-				$singles++;
+				++$singles;
 			}
 			if ( $author['count'] > 2 ) {
-				$more_than_two++;
+				++$more_than_two;
 			}
 			if ( ! empty( $author['gender'] ) ) {
 				if ( 'MALE' === $author['gender'] ) {
-					$male++;
+					++$male;
 					$article_count_male += $author['count'];
 				}
 				if ( 'FEMALE' === $author['gender'] ) {
-					$female++;
+					++$female;
 					$article_count_female += $author['count'];
 				}
 				if ( 'UNKNOWN' === $author['gender'] ) {
-					$unknown++;
+					++$unknown;
 					$article_count_unknown += $author['count'];
 				}
 			}
 			$leaderboard .= $this->add_author_leaderboard_entry( $author );
-			$count++;
+			++$count;
 		}
 		$leaderboard  .= '</ul>';
 		$more_than_one = $count - $singles;

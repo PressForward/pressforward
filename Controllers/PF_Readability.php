@@ -109,15 +109,12 @@ class PF_Readability {
 		);
 
 		return $return_args;
-
 	}
 
 	/**
 	 * Handles a readability request via POST
-	 *
-	 * @param bool $quickresponse Whether to do a quick response.
 	 */
-	public function make_it_readable( $quickresponse = false ) {
+	public function make_it_readable() {
 
 		// Verify nonce.
 		if ( ! isset( $_POST[ PF_SLUG . '_nomination_nonce' ] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ PF_SLUG . '_nomination_nonce' ] ) ), 'nomination' ) ) {
@@ -336,14 +333,14 @@ class PF_Readability {
 					}
 					if ( ! is_wp_error( wp_remote_head( $url_base . $img ) ) ) {
 						$image->setAttribute( 'src', $url_base . $img );
-						$dom_rotated++;
+						++$dom_rotated;
 					} elseif ( ! is_wp_error( wp_remote_head( $url . $img ) ) ) {
 						$image->setAttribute( 'src', $url . $img );
-						$dom_rotated++;
+						++$dom_rotated;
 					} else {
 						// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 						$image->parentNode->removeChild( $image );
-						$dom_rotated++;
+						++$dom_rotated;
 					}
 				}
 			}

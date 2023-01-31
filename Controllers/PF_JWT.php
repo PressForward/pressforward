@@ -126,15 +126,15 @@ class PF_JWT {
 	/**
 	 * Make a public key.
 	 *
-	 * @param bool $new Whether we're in make-new mode.
+	 * @param bool $is_new Whether we're in make-new mode.
 	 * @return string $key
 	 */
-	public function make_a_public_key( $new = false ) {
+	public function make_a_public_key( $is_new = false ) {
 		$key_seed = 'pf';
 
 		$user                    = $this->system_users->get_current_user();
 		$unique_strings_to_users = $this->system->get_option( 'pf_jwt_users', array() );
-		if ( $new || ! array_key_exists( 'by_id', $unique_strings_to_users ) || ! array_key_exists( $user->ID, $unique_strings_to_users['by_id'] ) ) {
+		if ( $is_new || ! array_key_exists( 'by_id', $unique_strings_to_users ) || ! array_key_exists( $user->ID, $unique_strings_to_users['by_id'] ) ) {
 			$user_key = sanitize_key( $this->random_bytes( wp_rand( 6, 12 ) ) );
 			if ( ! empty( $unique_strings_to_users['by_id'] ) && array_key_exists( $user->ID, $unique_strings_to_users['by_id'] ) ) {
 				// We need to unset the old version because we are in make-new mode.
@@ -162,16 +162,16 @@ class PF_JWT {
 	 * Gets a user's public key.
 	 *
 	 * @param int  $user_id ID of the user.
-	 * @param bool $new     Whether this is new.
+	 * @param bool $is_new     Whether this is new.
 	 * @return string
 	 */
-	public function get_a_user_public_key( $user_id = false, $new = false ) {
+	public function get_a_user_public_key( $user_id = false, $is_new = false ) {
 		if ( ! $user_id ) {
 			$user    = $this->system_users->get_current_user();
 			$user_id = $user->ID;
 		}
 		$existing_key = $this->system_users->get_user_meta( $user_id, 'pf_public_key', true );
-		if ( $new || ! $existing_key ) {
+		if ( $is_new || ! $existing_key ) {
 			$key = $this->make_a_public_key( true );
 			$this->system_users->update_user_meta( $user_id, 'pf_public_key', $key );
 			return $key;
@@ -215,16 +215,16 @@ class PF_JWT {
 	 * Get a user's private key.
 	 *
 	 * @param int  $user_id ID of the user.
-	 * @param bool $new     Whether this is a new user.
+	 * @param bool $is_new  Whether this is a new user.
 	 * @return string
 	 */
-	public function get_a_user_private_key( $user_id = false, $new = false ) {
+	public function get_a_user_private_key( $user_id = false, $is_new = false ) {
 		if ( ! $user_id ) {
 			$user    = $this->system_users->get_current_user();
 			$user_id = $user->ID;
 		}
 		$existing_key = $this->system_users->get_user_meta( $user_id, 'pf_jwt_private_key', true );
-		if ( $new || ! $existing_key ) {
+		if ( $is_new || ! $existing_key ) {
 			$key = $this->map_private_key_to_user( $user_id );
 			return $key;
 		} else {

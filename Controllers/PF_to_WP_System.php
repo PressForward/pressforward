@@ -36,11 +36,11 @@ class PF_to_WP_System implements System {
 	/**
 	 * Wrapper for get_option().
 	 *
-	 * @param string $option  Option name.
-	 * @param mixed  $default Default option value.
+	 * @param string $option        Option name.
+	 * @param mixed  $default_value Default option value.
 	 */
-	public function get_option( $option, $default ) {
-		return get_option( $option, $default );
+	public function get_option( $option, $default_value ) {
+		return get_option( $option, $default_value );
 	}
 
 	/**

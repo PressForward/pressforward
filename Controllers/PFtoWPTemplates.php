@@ -390,13 +390,13 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 	 * @param string   $menu_title  Title to use for menu.
 	 * @param string   $capability  Cap to check for access.
 	 * @param string   $menu_slug   Slug for the menu item.
-	 * @param callable $function    Display callback.
+	 * @param callable $the_function    Display callback.
 	 * @param string   $icon_url    URL of the icon.
 	 * @param int      $position    Position.
 	 * @return void
 	 */
-	public function add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function = '', $icon_url = '', $position = null ) {
-		add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position );
+	public function add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $the_function = '', $icon_url = '', $position = null ) {
+		add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $the_function, $icon_url, $position );
 	}
 
 	/**
@@ -407,10 +407,10 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 	 * @param string   $menu_title  Title to use for menu.
 	 * @param string   $capability  Cap to check for access.
 	 * @param string   $menu_slug   Slug for the menu item.
-	 * @param callable $function    Display callback.
+	 * @param callable $the_function    Display callback.
 	 * @return void
 	 */
-	public function add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function = '' ) {
-		add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
+	public function add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $the_function = '' ) {
+		add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $the_function );
 	}
 }
