@@ -1,10 +1,19 @@
 <?php
+/**
+ * Terms controller for PF content.
+ *
+ * @package PressForward
+ */
 
 /**
  * Extend the main WP_REST_Posts_Controller to a private endpoint controller.
  */
 class PF_REST_Terms_Controller extends WP_REST_Terms_Controller {
-
+	/**
+	 * Constructor.
+	 *
+	 * @param string $taxonomy Taxonomy.
+	 */
 	public function __construct( $taxonomy ) {
 		parent::__construct( $taxonomy );
 		$this->taxonomy  = $taxonomy;
@@ -12,11 +21,6 @@ class PF_REST_Terms_Controller extends WP_REST_Terms_Controller {
 		$tax_obj         = get_taxonomy( $taxonomy );
 		$this->rest_base = ! empty( $tax_obj->rest_base ) ? $tax_obj->rest_base : $tax_obj->name;
 	}
-
-	public function register_routes() {
-		parent::register_routes();
-	}
-
 }
 
 /**
@@ -41,6 +45,7 @@ function create_initial_pf_rest_term_routes() {
 		if ( ! class_exists( $class ) ) {
 			continue;
 		}
+
 		$controller = new $class( $taxonomy->name );
 		if ( ! is_subclass_of( $controller, 'WP_REST_Controller' ) ) {
 			continue;
@@ -48,10 +53,5 @@ function create_initial_pf_rest_term_routes() {
 
 		$controller->register_routes();
 	}
-	// die();
 }
-
 add_action( 'rest_api_init', 'create_initial_pf_rest_term_routes', 11 );
-
-// $controller = new PF_REST_Posts_Controller;
-// $controller->register_routes();
