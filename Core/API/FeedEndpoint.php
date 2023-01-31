@@ -1,4 +1,10 @@
 <?php
+/**
+ * Feed REST API utilities.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\API;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
@@ -9,20 +15,56 @@ use PressForward\Core\API\APIWithMetaEndpoints;
 
 use WP_Ajax_Response;
 
+/**
+ * Feed REST API utilities.
+ */
 class FeedEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilters {
-
+	/**
+	 * Basename.
+	 *
+	 * @access protected
+	 * @var string
+	 */
 	protected $basename;
+
+	/**
+	 * Metas object.
+	 *
+	 * @access public
+	 * @var PressForward\Controllers\Metas
+	 */
 	public $metas;
+
+	/**
+	 * Post type.
+	 *
+	 * @access public
+	 * @var string
+	 */
 	public $post_type;
+
+	/**
+	 * Level.
+	 *
+	 * @access public
+	 * @var string
+	 */
 	public $level;
 
-	function __construct( Metas $metas ) {
+	/**
+	 * Constructor.
+	 *
+	 * @param PressForward\Controllers\Metas $metas Metas object.
+	 */
+	public function __construct( Metas $metas ) {
 		$this->metas     = $metas;
 		$this->post_type = pressforward( 'schema.feeds' )->post_type;
 		$this->level     = 'feed';
 	}
 
-
+	/**
+	 * {@inheritdoc}
+	 */
 	public function action_hooks() {
 		$actions = array(
 			array(
@@ -30,9 +72,13 @@ class FeedEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 				'method' => 'register_rest_post_read_meta_fields',
 			),
 		);
+
 		return $actions;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function filter_hooks() {
 		$filter = array(
 			array(
@@ -45,9 +91,14 @@ class FeedEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 		return $filter;
 	}
 
+	/**
+	 * Not used.
+	 *
+	 * @param mixed $data    Not used.
+	 * @param mixed $post    Not used.
+	 * @param mixed $request Not used.
+	 */
 	public function filter_in_nomination_count( $data, $post, $request ) {
 		return $data;
 	}
-
-
 }
