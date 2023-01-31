@@ -2,9 +2,15 @@
     "name": "pressforward/pressforward",
     "type": "project",
     "license": "AGPLv3",
+	"repositories": [
+      {
+        "type": "git",
+        "url": "https://github.com/WordPress/WordPress-Coding-Standards"
+      }
+    ],
     "require-dev": {
-        "wp-coding-standards/wpcs": "^2.3",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
+        "wp-coding-standards/wpcs": "dev-develop#2.3.0-fix-vsprintf",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "phpcompatibility/phpcompatibility-wp": "*"
     },
     "config": {
