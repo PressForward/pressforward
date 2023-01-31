@@ -31,7 +31,6 @@ class PF_REST_Controller extends WP_REST_Controller {
 				),
 			)
 		);
-
 	}
 
 	/**

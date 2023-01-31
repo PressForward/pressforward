@@ -115,13 +115,13 @@ class APIWithMetaEndpoints {
 	/**
 	 * Generates a meta response for a field.
 	 *
-	 * @param array                    $object     Meta information.
+	 * @param array                    $the_object Meta information.
 	 * @param string                   $field_name Field name.
 	 * @param WP_REST_Request|WP_Error $request    Request object.
 	 * @return mixed
 	 */
-	public function meta_response( $object, $field_name, $request ) {
-		$response = $this->metas->get_post_pf_meta( $object['id'], $field_name, true );
+	public function meta_response( $the_object, $field_name, $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+		$response = $this->metas->get_post_pf_meta( $the_object['id'], $field_name, true );
 		if ( empty( $response ) || is_wp_error( $response ) ) {
 			return 'false';
 		} else {
@@ -174,7 +174,7 @@ class APIWithMetaEndpoints {
 	 * @param WP_REST_Request  $request Request object.
 	 * @return WP_REST_Response
 	 */
-	public function filter_wp_to_pf_in_terms( $data, $post, $request ) {
+	public function filter_wp_to_pf_in_terms( $data, $post, $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		$links = $data->get_links();
 		if ( isset( $links['https://api.w.org/term'] ) ) {
 			$data->remove_link( 'https://api.w.org/term' );

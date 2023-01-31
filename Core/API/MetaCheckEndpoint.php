@@ -134,13 +134,11 @@ class MetaCheckEndpoint implements HasActions {
 								return $return_var;
 							}
 						}
-
 					},
 					'priority'            => 10,
 				),
 			)
 		);
-
 	}
 
 	/**
@@ -267,7 +265,7 @@ class MetaCheckEndpoint implements HasActions {
 
 			foreach ( $twitter_keys as $key => $prop ) {
 				$twitter_data->$prop = $og->$key;
-			};
+			}
 
 			$obj->open_graph = $og_data;
 			$obj->twitter    = $twitter_data;

@@ -239,7 +239,6 @@ class NominateThisEndpoint implements HasActions {
 							return $return_var;
 						}
 					}
-
 				},
 				'priority'            => 10,
 			)
@@ -297,7 +296,6 @@ class NominateThisEndpoint implements HasActions {
 						}
 					}
 					return $return_var;
-
 				},
 				'priority'            => 10,
 			)
@@ -529,7 +527,7 @@ EOF;
 		header( 'Content-Type: application/javascript; charset=' . get_option( 'blog_charset' ) );
 		echo 'window.pfSiteData = {}; ';
 		echo 'window.pfSiteData.site_url = "' . esc_js( \get_site_url() ) . '"; ';
-		echo 'window.pfSiteData.plugin_url = "' . esc_js( plugin_dir_url( dirname( dirname( __FILE__ ) ) ) ) . '"; ';
+		echo 'window.pfSiteData.plugin_url = "' . esc_js( plugin_dir_url( dirname( __DIR__ ) ) ) . '"; ';
 		echo 'window.pfSiteData.submit_endpoint = "' . esc_js( trailingslashit( \get_site_url() ) . 'wp-json/' . $this->api_base['base_namespace'] . $this->api_base['version'] . '/' . $this->api_base['submit'] ) . '"; ';
 		echo 'window.pfSiteData.categories_endpoint = "' . esc_js( trailingslashit( \get_site_url() ) ) . 'wp-json/wp/v2/categories"; ';
 		echo 'window.pfSiteData.font_face = "' . esc_js( $font_face_js ) . '"';

@@ -160,7 +160,6 @@ class ReadabilityEndpoint implements HasActions {
 				),
 			)
 		);
-
 	}
 	/**
 	 * Validate a request argument based on details registered to the route.

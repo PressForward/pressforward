@@ -31,7 +31,6 @@ class PF_Stats_Controller extends WP_REST_Controller {
 				),
 			)
 		);
-
 	}
 
 	/**
