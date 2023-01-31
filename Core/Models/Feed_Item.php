@@ -24,7 +24,7 @@ class Feed_Item extends BasicModel {
 	protected $data = array();
 
 	/**
-	 * Constructor.
+	 * Initalizes model.
 	 *
 	 * @param array $item      Data about item.
 	 * @param array $handlers  Controllers.
