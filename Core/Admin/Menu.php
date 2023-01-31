@@ -157,7 +157,6 @@ class Menu implements HasActions, HasFilters {
 		$base_pages = array( PF_SLUG . '-feeder', PF_SLUG . '-options', PF_SLUG . '-review', PF_MENU_SLUG );
 		$thepages   = array_merge( $base_pages, (array) $thepages );
 		return $thepages;
-
 	}
 
 	/**
@@ -274,7 +273,7 @@ class Menu implements HasActions, HasFilters {
 				foreach ( $items_to_display['items'] as $item ) {
 					pressforward( 'admin.templates' )->form_of_an_item( $item, $c );
 
-					$c++;
+					++$c;
 
 					/*
 					 * Check out the built comment form from EditFlow at https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/editorial-comments.php.

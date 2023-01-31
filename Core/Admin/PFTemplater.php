@@ -187,11 +187,11 @@ class PFTemplater {
 		foreach ( $tabs as $tab => $tab_meta ) {
 			if ( current_user_can( $tab_meta['cap'] ) ) {
 				if ( $current === $tab ) {
-					$class = 'pftab tab active';
+					$class_name = 'pftab tab active';
 				} else {
-					$class = 'pftab tab'; }
+					$class_name = 'pftab tab'; }
 				?>
-				<div id="<?php echo esc_attr( $tab ); ?>" class="<?php echo esc_attr( $class ); ?>">
+				<div id="<?php echo esc_attr( $tab ); ?>" class="<?php echo esc_attr( $class_name ); ?>">
 				<h2><?php echo esc_html( $tab_meta['title'] ); ?></h2>
 					<?php
 						// like: pf_do_pf-add-feeds_tab_primary_feed_type.
@@ -233,14 +233,14 @@ class PFTemplater {
 	/**
 	 * Sets up the admin submenu page.
 	 *
-	 * @param string $parent_slug See add_submenu_page().
-	 * @param string $page_title  See add_submenu_page().
-	 * @param string $menu_title  See add_submenu_page().
-	 * @param string $capability  See add_submenu_page().
-	 * @param string $menu_slug   See add_submenu_page().
-	 * @param string $function    See add_submenu_page().
+	 * @param string $parent_slug  See add_submenu_page().
+	 * @param string $page_title   See add_submenu_page().
+	 * @param string $menu_title   See add_submenu_page().
+	 * @param string $capability   See add_submenu_page().
+	 * @param string $menu_slug    See add_submenu_page().
+	 * @param string $the_function See add_submenu_page().
 	 */
-	public function add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function = '' ) {
+	public function add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $the_function = '' ) {
 		if ( is_array( $capability ) ) {
 			$capability = $this->users->user_level( $capability[0], $capability[1] );
 		}
@@ -250,22 +250,22 @@ class PFTemplater {
 			$menu_title,
 			$capability,
 			$menu_slug,
-			$function
+			$the_function
 		);
 	}
 
 	/**
 	 * Sets up the admin menu page.
 	 *
-	 * @param string $page_title See add_menu_page().
-	 * @param string $menu_title See add_menu_page().
-	 * @param string $capability See add_menu_page().
-	 * @param string $menu_slug  See add_menu_page().
-	 * @param string $function   See add_menu_page().
-	 * @param string $icon_url   See add_menu_page().
-	 * @param int    $position   See add_menu_page().
+	 * @param string $page_title   See add_menu_page().
+	 * @param string $menu_title   See add_menu_page().
+	 * @param string $capability   See add_menu_page().
+	 * @param string $menu_slug    See add_menu_page().
+	 * @param string $the_function See add_menu_page().
+	 * @param string $icon_url     See add_menu_page().
+	 * @param int    $position     See add_menu_page().
 	 */
-	public function add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function = '', $icon_url = '', $position = null ) {
+	public function add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $the_function = '', $icon_url = '', $position = null ) {
 		if ( is_array( $capability ) ) {
 			$capability = $this->users->user_level( $capability[0], $capability[1] );
 		}
@@ -275,7 +275,7 @@ class PFTemplater {
 			$menu_title,
 			$capability,
 			$menu_slug,
-			$function,
+			$the_function,
 			$icon_url,
 			$position
 		);
@@ -449,16 +449,16 @@ class PFTemplater {
 	/**
 	 * Builds a dropdown option.
 	 *
-	 * @param string $string        Dropdown text.
+	 * @param string $the_string    Dropdown text.
 	 * @param string $id            'id' attribute.
-	 * @param string $class         Class name.
+	 * @param string $class_name    Class name.
 	 * @param string $form_id       'id' attribute of the form.
 	 * @param string $schema_action Schema action attribute.
 	 * @param string $schema_class  Schema class attribute.
 	 * @param string $href          'href' class attribute.
 	 * @param string $target        'target' attribute.
 	 */
-	public function dropdown_option( $string, $id, $class = 'pf-top-menu-selection', $form_id = '', $schema_action = '', $schema_class = '', $href = '', $target = '' ) {
+	public function dropdown_option( $the_string, $id, $class_name = 'pf-top-menu-selection', $form_id = '', $schema_action = '', $schema_class = '', $href = '', $target = '' ) {
 
 		$option  = '<li role="presentation"><a role="menuitem" id="';
 		$option .= $id;
@@ -491,7 +491,7 @@ class PFTemplater {
 		}
 
 		$option .= '>';
-		$option .= esc_html( $string );
+		$option .= esc_html( $the_string );
 		$option .= '</a></li>';
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -832,12 +832,12 @@ class PFTemplater {
 	 * Establishes the rules for item display.
 	 * Position should be title, source, graf.
 	 *
-	 * @param string $string   String to prepare.
-	 * @param string $position Position. 'source', 'title', 'graf'.
-	 * @param string $page     Not used.
+	 * @param string $the_string String to prepare.
+	 * @param string $position   Position. 'source', 'title', 'graf'.
+	 * @param string $page       Not used.
 	 * @return string
 	 */
-	public function display_a( $string, $position = 'source', $page = 'list' ) {
+	public function display_a( $the_string, $position = 'source', $page = 'list' ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		$title_ln_length = 30;
 		$title_lns       = 3;
 
@@ -981,14 +981,12 @@ class PFTemplater {
 						if ( 'yes' === $meta_handling && $user_level_check ) {
 							echo '<a role="button" class="btn btn-small meta_form_modal-button" data-toggle="modal" href="#meta_form_modal_' . esc_attr( $item['post_id'] ) . '" data-post-id="' . esc_attr( $item['post_id'] ) . '" id="meta_form_modal_expander-' . esc_attr( $item['post_id'] ) . '" data-original-title="' . esc_attr__( 'Edit Metadata', 'pf' ) . '"><i class="icon-meta-form"></i></a>';
 						}
+					} elseif ( ( 1 === pf_get_relationship_value( 'nominate', $id_for_comments, $user_id ) ) || ( 1 === pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ) {
+						echo '<button class="btn btn-small nominate-now btn-success schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominated', 'pf' ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/pressforward-single-licon.png" /></button>';
+						// Add option here for admin-level users to send items direct to draft.
 					} else {
-						if ( ( 1 === pf_get_relationship_value( 'nominate', $id_for_comments, $user_id ) ) || ( 1 === pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ) {
-							echo '<button class="btn btn-small nominate-now btn-success schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominated', 'pf' ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/pressforward-single-licon.png" /></button>';
-							// Add option here for admin-level users to send items direct to draft.
-						} else {
-							echo '<button class="btn btn-small nominate-now schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominate', 'pf' ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/pressforward-single-licon.png" /></button>';
-							// Add option here for admin-level users to send items direct to draft.
-						}
+						echo '<button class="btn btn-small nominate-now schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominate', 'pf' ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/pressforward-single-licon.png" /></button>';
+						// Add option here for admin-level users to send items direct to draft.
 					}
 
 					$amplify_group_classes = 'dropdown btn-group amplify-group';

@@ -113,14 +113,14 @@ class Preferences implements HasActions {
 	/**
 	 * Builds dropdown option for user role dropdown.
 	 *
-	 * @param string $option  'option_name' in wp_options for this setting.
-	 * @param string $default Default passed to get_option().
+	 * @param string $option        'option_name' in wp_options for this setting.
+	 * @param string $default_value Default passed to get_option().
 	 */
-	public function pf_get_user_role_select( $option, $default ) {
+	public function pf_get_user_role_select( $option, $default_value ) {
 		global $wp_roles;
 
 		$roles   = $wp_roles->get_names();
-		$enabled = get_option( $option, $default );
+		$enabled = get_option( $option, $default_value );
 
 		foreach ( $roles as $slug => $role ) {
 			$defining_capability = pressforward( 'controller.users' )->pf_get_defining_capability_by_role( $slug );

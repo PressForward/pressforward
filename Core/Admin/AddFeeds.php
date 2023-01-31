@@ -90,7 +90,6 @@ class AddFeeds implements HasActions, HasFilters {
 			PF_SLUG . '-feeder',
 			array( $this, 'display_feeder_builder' )
 		);
-
 	}
 
 	/**

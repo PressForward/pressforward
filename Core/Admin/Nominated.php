@@ -396,8 +396,8 @@ class Nominated implements HasActions {
 						$item = pf_feed_object( get_the_title(), pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'source_title', true ), $date_posted, $item_authorship, get_the_content(), $nom_permalink, get_the_post_thumbnail( $nom_id /**, 'nom_thumb'*/ ), $rss_item_id, pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_wp_date', true ), $nom_tags, $date_nomed, $source_repeat, $nom_id, '1' );
 
 						pressforward( 'admin.templates' )->form_of_an_item( $item, $c, 'nomination', $metadata );
-						$count++;
-						$c++;
+						++$count;
+						++$c;
 						endwhile;
 
 					// Reset Post Data.
@@ -409,7 +409,7 @@ class Nominated implements HasActions {
 
 					echo '</div><!-- End main -->';
 					if ( $count_qt > $count_q ) {
-						$page++;
+						++$page;
 						if ( 0 === $page ) {
 							$page = 1;
 						}
@@ -467,7 +467,6 @@ class Nominated implements HasActions {
 			<div class="clear"></div>
 			<?php
 			echo '</div><!-- End container-fluid -->';
-
 	}
 
 	/**
@@ -640,7 +639,6 @@ class Nominated implements HasActions {
 			$statement = '';
 		}
 		return $statement;
-
 	}
 
 	/**
@@ -720,9 +718,9 @@ class Nominated implements HasActions {
 	public function change_nomination_count( $id, $up = true ) {
 		$nom_count = $this->metas->retrieve_meta( $id, 'nomination_count' );
 		if ( $up ) {
-			$nom_count++;
+			++$nom_count;
 		} else {
-			$nom_count--;
+			--$nom_count;
 		}
 		$check = $this->metas->update_pf_meta( $id, 'nomination_count', $nom_count );
 		pf_log( 'Nomination now has a nomination count of ' . $nom_count . ' applied to post_meta with the result of ' . $check );
@@ -821,7 +819,7 @@ class Nominated implements HasActions {
 				if ( (int) $origin_item_id === (int) $item_id ) {
 					$check     = true;
 					$nom_count = $this->metas->retrieve_meta( $id, 'nomination_count' );
-					$nom_count--;
+					--$nom_count;
 					$this->metas->update_pf_meta( $id, 'nomination_count', $nom_count );
 					if ( $current_user->ID ) {
 						$this->toggle_nominator_array( $id );
@@ -872,7 +870,7 @@ class Nominated implements HasActions {
 							// If we ever reveal this to non users and want to count nominations by all, here is where it will go.
 							pf_log( 'Can not find user for updating nomionation count.' );
 							$nom_count = $this->metas->retrieve_meta( $id, 'nomination_count' );
-							$nom_count++;
+							++$nom_count;
 							$this->metas->update_pf_meta( $id, 'nomination_count', $nom_count );
 							$check = 'no_user';
 						} else {
@@ -932,19 +930,17 @@ class Nominated implements HasActions {
 		echo '<strong>' . esc_html( $title ) . '</strong>: ';
 		if ( empty( $variable ) ) {
 			echo '<br /><input type="text" name="' . esc_attr( $title ) . '">';
-		} else {
-			if ( true === $link ) {
-				if ( 'Link' === $anchor_text ) {
-					$anchor_text = $this->__( 'Link', 'pf' );
-				}
+		} elseif ( true === $link ) {
+			if ( 'Link' === $anchor_text ) {
+				$anchor_text = $this->__( 'Link', 'pf' );
+			}
 				echo '<a href=';
 				echo esc_attr( $variable );
 				echo '" target="_blank">';
 				echo esc_html( $anchor_text );
 				echo '</a>';
-			} else {
-				echo esc_html( $variable );
-			}
+		} else {
+			echo esc_html( $variable );
 		}
 
 		echo '<br />';
