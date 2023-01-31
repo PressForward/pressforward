@@ -215,8 +215,7 @@ class Feeds implements HasActions, HasFilters {
 					'show_in_rest'          => true,
 					'rest_base'             => 'feeds',
 					'rest_controller_class' => 'PF_REST_Posts_Controller',
-					// 'menu_position' => 100
-					'show_ui'               => true, // for testing only
+					'show_ui'               => true, // for testing only.
 					'capability_type'       => $this->post_type,
 					'capabilities'          => $this->map_feed_caps(),
 				)
@@ -277,6 +276,7 @@ class Feeds implements HasActions, HasFilters {
 	 */
 	public function move_feed_tags_submenu( $pf ) {
 		global $typenow, $pagenow;
+		// phpcs:ignore WordPress.PHP.YodaConditions.NotYoda
 		if ( ( 'term.php' === $pagenow || 'edit-tags.php' === $pagenow ) && ! empty( $_GET['taxonomy'] ) && $this->tag_taxonomy === sanitize_text_field( wp_unslash( $_GET['taxonomy'] ) ) ) {
 			$pf = 'pf-menu';
 		}
@@ -309,14 +309,14 @@ class Feeds implements HasActions, HasFilters {
 
 		if ( 'edit_' . $this->post_type === $cap ) {
 			/* If editing a feed, assign the required capability. */
-			if ( $user_id == $post->post_author ) {
+			if ( $user_id === $post->post_author ) {
 				$caps[] = $post_type->cap->edit_posts;
 			} else {
 				$caps[] = $post_type->cap->edit_others_posts;
 			}
 		} elseif ( 'delete_' . $this->post_type === $cap ) {
 			/* If deleting a feed, assign the required capability. */
-			if ( $user_id == $post->post_author ) {
+			if ( $user_id === $post->post_author ) {
 				$caps[] = $post_type->cap->delete_posts;
 			} else {
 				$caps[] = $post_type->cap->delete_others_posts; }
@@ -324,7 +324,7 @@ class Feeds implements HasActions, HasFilters {
 			/* If reading a private feed, assign the required capability. */
 			if ( 'private' !== $post->post_status ) {
 				$caps[] = 'read';
-			} elseif ( $user_id == $post->post_author ) {
+			} elseif ( $user_id === $post->post_author ) {
 				$caps[] = 'read';
 			} else {
 				$caps[] = $post_type->cap->read_private_posts;
@@ -342,7 +342,6 @@ class Feeds implements HasActions, HasFilters {
 	 * @return array
 	 */
 	public function feed_option_page_cap( $cap ) {
-		// apply_filters( "option_page_capability_{$option_page}", $capability );
 		$caps = $this->map_feed_caps();
 		return $caps['edit_posts'];
 	}
@@ -359,6 +358,8 @@ class Feeds implements HasActions, HasFilters {
 				'exclude_from_search'       => false,
 				'show_in_admin_all_list'    => true,
 				'show_in_admin_status_list' => true,
+
+				// Translators: Under Review feed count.
 				'label_count'               => _n_noop( 'Under Review <span class="count">(%s)</span>', 'Under Review <span class="count">(%s)</span>' ),
 			)
 		);
@@ -489,6 +490,7 @@ class Feeds implements HasActions, HasFilters {
 		}
 		$query .= ' GROUP BY post_status';
 
+		// phpcs:ignore WordPress.DB
 		$results = (array) $wpdb->get_results( $wpdb->prepare( $query, $type, $parent_id ), ARRAY_A );
 		$counts  = array_fill_keys( get_post_stati(), 0 );
 
@@ -855,7 +857,7 @@ class Feeds implements HasActions, HasFilters {
 			return;
 		}
 
-		if ( ( 'trash' == $feed_obj->post_status ) || ( 'removed_' . $this->post_type == $feed_obj->post_status ) || ( $this->post_type != $feed_obj->post_type ) ) {
+		if ( ( 'trash' === $feed_obj->post_status ) || ( 'removed_' . $this->post_type === $feed_obj->post_status ) || ( $this->post_type !== $feed_obj->post_type ) ) {
 			return;
 		}
 		?>
@@ -875,7 +877,7 @@ class Feeds implements HasActions, HasFilters {
 	public function disallow_add_new() {
 		global $pagenow;
 		/* Check current admin page. */
-		if ( $pagenow == 'post-new.php' && isset( $_GET['post_type'] ) && $_GET['post_type'] == $this->post_type ) {
+		if ( 'post-new.php' === $pagenow && isset( $_GET['post_type'] ) && $_GET['post_type'] === $this->post_type ) {
 			wp_safe_redirect( admin_url( '/admin.php?page=pf-feeder', 'http' ), 301 );
 			exit;
 		}
@@ -912,7 +914,7 @@ class Feeds implements HasActions, HasFilters {
 	 *
 	 * @since 3.5.0
 	 *
-	 * @param int $feed_item_id ID of the feed item.
+	 * @param int $feed_id ID of the feed item.
 	 * @return bool
 	 */
 	public function set_feed_last_checked( $feed_id ) {
@@ -924,7 +926,7 @@ class Feeds implements HasActions, HasFilters {
 			return false;
 		}
 
-		return pressforward( 'controller.metas' )->update_pf_meta( $feed_id, 'pf_feed_last_checked', date( 'Y-m-d H:i:s' ) );
+		return pressforward( 'controller.metas' )->update_pf_meta( $feed_id, 'pf_feed_last_checked', gmdate( 'Y-m-d H:i:s' ) );
 	}
 
 	/**
@@ -1069,7 +1071,7 @@ class Feeds implements HasActions, HasFilters {
 			$post_id = $r['ID'];
 		}
 
-		if ( $insert_type == 'insert' ) {
+		if ( 'insert' === $insert_type ) {
 			$post_id = pressforward( 'controller.items' )->insert_post( $wp_args );
 		}
 
@@ -1088,7 +1090,7 @@ class Feeds implements HasActions, HasFilters {
 				foreach ( $r['tags'] as $slug => $tag ) {
 					// Assume that OPML files have folder structures that
 					// users would want to maintain.
-					if ( 'rss-quick' == $r['type'] ) {
+					if ( 'rss-quick' === $r['type'] ) {
 						$term = wp_insert_term( $tag, $this->tag_taxonomy );
 						if ( is_wp_error( $term ) ) {
 							$term_id = $term->error_data['term_exists'];
@@ -1192,7 +1194,7 @@ class Feeds implements HasActions, HasFilters {
 				'url'          => $feed_url,
 				'htmlUrl'      => false,
 				'type'         => 'rss',
-				'feed_url'      => $feed_url,
+				'feed_url'     => $feed_url,
 				'description'  => false,
 				'feed_author'  => false,
 				'feed_icon'    => false,
@@ -1207,7 +1209,7 @@ class Feeds implements HasActions, HasFilters {
 		);
 		pf_log( 'Received a create command with the following arguments:' );
 		pf_log( $r );
-		if ( $r['type'] == 'rss' ) {
+		if ( 'rss' === $r['type'] ) {
 			pf_log( 'We are creating an RSS feed' );
 			$the_feed = pf_fetch_feed( $feed_url );
 			if ( is_wp_error( $the_feed ) ) {
@@ -1225,11 +1227,11 @@ class Feeds implements HasActions, HasFilters {
 						pf_log( 'The RSS feed failed 3rd verification' );
 						return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
 					} else {
-						$r['url']     = $feed_url;
+						$r['url']      = $feed_url;
 						$r['feed_url'] = $feed_url;
 					}
 				} else {
-					$r['url']     = $feed_url;
+					$r['url']      = $feed_url;
 					$r['feed_url'] = $feed_url;
 				}
 			} else {
@@ -1342,11 +1344,11 @@ class Feeds implements HasActions, HasFilters {
 	/**
 	 * Check if a post or posts exists with get, if it does not  return false. If it does, return the array of posts.
 	 *
-	 * @param string $url URL
+	 * @param string $url URL.
 	 * @return array|bool
 	 */
 	public function has_feed( $url ) {
-		$parsed = parse_url( $url );
+		$parsed = wp_parse_url( $url );
 		if ( ! isset( $parsed['scheme'] ) ) {
 			$url = 'http://' . $url;
 		}
@@ -1396,8 +1398,14 @@ class Feeds implements HasActions, HasFilters {
 		);
 	}
 
-	// When walking through the feedlist, if it is an old entry,
-	// call this function to renew the feed post with better data.
+	/**
+	 * Updates a feed based on URL.
+	 *
+	 * When walking through the feedlist, if it is an old entry,
+	 * call this function to renew the feed post with better data.
+	 *
+	 * @param string $url URL.
+	 */
 	public function update_url( $url ) {
 		global $post;
 		pf_log( 'Invoked: PF_Feeds_Schema::update_url' );
@@ -1416,7 +1424,7 @@ class Feeds implements HasActions, HasFilters {
 					$feed_post['url'] = $url;
 					$this->update( $post_id, $feed_post );
 				} else {
-					$url == pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'feed_url', true );
+					$url = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'feed_url', true );
 					if ( $url ) {
 						wp_delete_post( $post_id, true );
 					}
@@ -1430,7 +1438,12 @@ class Feeds implements HasActions, HasFilters {
 		}
 	}
 
-	// A function to update an existing feed CPT entry.
+	/**
+	 * A function to update an existing feed CPT entry.
+	 *
+	 * @param int   $post_id ID of the post.
+	 * @param array $args    Update args.
+	 */
 	public function update( $post_id, $args ) {
 		pf_log( 'Invoked: PF_FEEDS_SCHEMA::update' );
 		$r = wp_parse_args(
@@ -1450,25 +1463,28 @@ class Feeds implements HasActions, HasFilters {
 				'tags'         => array(),
 			)
 		);
+
 		if ( ! $r['url'] ) {
-			$feedURL = get_the_guid( $post_id );
-			if ( empty( $feedURL ) ) {
+			$feed_url = get_the_guid( $post_id );
+			if ( empty( $feed_url ) ) {
 				return false;
 			}
 		} else {
-			$feedURL = $r['url'];
+			$feed_url = $r['url'];
 		}
-		if ( $r['type'] == 'rss' ) {
-			$the_feed = pf_fetch_feed( $feedURL );
+
+		if ( 'rss' === $r['type'] ) {
+			$the_feed = pf_fetch_feed( $feed_url );
 			if ( is_wp_error( $the_feed ) ) {
 				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
 			} else {
 				$r = $this->setup_rss_meta( $r, $the_feed );
 			}
 		}
-		if ( 'rss-quick' == $r['type'] ) {
+
+		if ( 'rss-quick' === $r['type'] ) {
 			pf_log( 'Updating a rss-quick' );
-			$the_feed = pf_fetch_feed( $feedURL );
+			$the_feed = pf_fetch_feed( $feed_url );
 			if ( is_wp_error( $the_feed ) ) {
 				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
 			} else {
@@ -1485,6 +1501,14 @@ class Feeds implements HasActions, HasFilters {
 		return $check;
 	}
 
+	/**
+	 * Updates feed.
+	 *
+	 * @todo What is the difference between this and the update() method above?
+	 *
+	 * @param int   $post_id ID of the post.
+	 * @param array $args    Arguments.
+	 */
 	public function update_title( $post_id, $args ) {
 		pf_log( 'Invoked: PF_FEEDS_SCHEMA::update' );
 		$r = wp_parse_args(
@@ -1504,17 +1528,19 @@ class Feeds implements HasActions, HasFilters {
 				'tags'         => array(),
 			)
 		);
+
 		if ( ! $r['url'] ) {
-			$feedURL = get_the_guid( $post_id );
-			if ( empty( $feedURL ) ) {
+			$feed_url = get_the_guid( $post_id );
+			if ( empty( $feed_url ) ) {
 				return false;
 			}
 		} else {
-			$feedURL = $r['url'];
+			$feed_url = $r['url'];
 		}
-		if ( 'rss-quick' == $r['type'] ) {
+
+		if ( 'rss-quick' === $r['type'] ) {
 			pf_log( 'Updating a rss-quick' );
-			$the_feed = pf_fetch_feed( $feedURL );
+			$the_feed = pf_fetch_feed( $feed_url );
 			if ( is_wp_error( $the_feed ) ) {
 				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
 			} else {
@@ -1532,105 +1558,142 @@ class Feeds implements HasActions, HasFilters {
 		return $check['ID'];
 	}
 
-	// This function makes it easy to set the type of 'feed', which is important when we move to using something other than RSS.
+	/**
+	 * This function makes it easy to set the type of 'feed', which is important when we move to using something other than RSS.
+	 *
+	 * @param int    $id   ID of the feed.
+	 * @param string $type Feed type.
+	 */
 	public function set_pf_feed_type( $id, $type = 'rss' ) {
 		pf_log( 'Invoked: PF_Feed_Schema::set_pf_feed_type for ' . $id );
-		$updateResult = pressforward( 'controller.metas' )->update_pf_meta( $id, 'feed_type', $type );
+		$update_result = pressforward( 'controller.metas' )->update_pf_meta( $id, 'feed_type', $type );
 		pf_log( 'Attempted to update to type ' . $type . ' with results of: ' );
-		pf_log( $updateResult );
-		if ( is_wp_error( $updateResult ) ) {
-			return $updateResult->get_error_message();
+		pf_log( $update_result );
+		if ( is_wp_error( $update_result ) ) {
+			return $update_result->get_error_message();
 		} else {
 			return true;
 		}
 	}
 
+	/**
+	 * Gets the feed type of a feed.
+	 *
+	 * @param int $id ID of the feed.
+	 * @return string
+	 */
 	public function get_pf_feed_type( $id ) {
 		pf_log( 'Invoked: PF_Feed_Schema::get_pf_feed_type(' . $id . ')' );
-		$updateResult = pressforward( 'controller.metas' )->get_post_pf_meta( $id, 'feed_type', true );
-		if ( is_wp_error( $updateResult ) ) {
-			return $updateResult->get_error_message();
-		} elseif ( ! $updateResult ) {
+		$update_result = pressforward( 'controller.metas' )->get_post_pf_meta( $id, 'feed_type', true );
+		if ( is_wp_error( $update_result ) ) {
+			return $update_result->get_error_message();
+		} elseif ( ! $update_result ) {
 			return false;
 		} else {
-			return $updateResult;
+			return $update_result;
 		}
 	}
 
-	// This function processes the meta data passed to the create or
-	// update feed object and turns it into post_meta.
-	//
-	// Note that the goal with all feed meta is to describe it
-	// in a way as similar to OPML as possible for accurate
-	// output later.
+	/**
+	 * This function processes the meta data passed to the create or update feed object and turns it into post_meta.
+	 *
+	 * Note that the goal with all feed meta is to describe it in a way as similar
+	 * to OPML as possible for accurate output later.
+	 *
+	 * @param int   $post_id ID of the post.
+	 * @param array $args    Arguments.
+	 */
 	public function set_feed_meta( $post_id, $args ) {
 		pf_log( 'Invoked: PF_Feeds_Schema::set_feed_meta' );
 		$c = 1;
 		foreach ( $args as $k => $a ) {
 			pf_log( 'Setting ' . $post_id . ' Feed Meta: ' . $k . ' - ' . $a );
-			if ( ! $a ) {
-
-			} else {
+			if ( $a ) {
 				pressforward( 'controller.metas' )->update_pf_meta( $post_id, $k, $a );
 			}
 			++$c;
-
 		}
 
-		if ( $c + 1 == count( $args ) ) {
+		if ( ( $c + 1 ) === count( $args ) ) {
 			pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_meta_data_check', 'complete' );
-
 		}
 	}
 
-	public function _filter_where_guid( $where ) {
+	/**
+	 * 'posts_where' filter callback for 'guid' query parameter.
+	 *
+	 * @param string $where SQL string.
+	 * @return string
+	 */
+	public function _filter_where_guid( $where ) { // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
 		global $wpdb;
 		$where .= $wpdb->prepare( " AND {$wpdb->posts}.guid = %s ", $this->filter_data['guid'] );
 		return $where;
 	}
 
+	/**
+	 * Filter callback to modify alert status to 'publish'.
+	 *
+	 * @param array $status_data Status data.
+	 * @return array
+	 */
 	public function make_alert_return_to_publish( $status_data ) {
-		if ( ( ! empty( $status_data['type'] ) ) && ( $this->post_type == $status_data['type'] ) ) {
+		if ( ( ! empty( $status_data['type'] ) ) && ( $this->post_type === $status_data['type'] ) ) {
 			$status_data['status'] = 'publish';
 			return $status_data;
 		}
 	}
 
-	function admin_enqueue_scripts() {
+	/**
+	 * Enqueues Feed-related scripts in the admin.
+	 */
+	public function admin_enqueue_scripts() {
 		global $pagenow;
 
-		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
+		$hook = 0 !== func_num_args() ? func_get_arg( 0 ) : '';
 
-		if ( ! in_array( $pagenow, array( 'admin.php' ) ) ) {
-			return; }
+		if ( ! in_array( $pagenow, array( 'admin.php' ), true ) ) {
+			return;
+		}
 
-		if ( ! in_array( $hook, array( 'pressforward_page_pf-feeder' ) ) ) {
-			return; }
+		if ( ! in_array( $hook, array( 'pressforward_page_pf-feeder' ), true ) ) {
+			return;
+		}
 
+		// phpcs:ignore
 		// wp_enqueue_script( 'feed_control_script', PF_URL . '/assets/js/feeds_control.js', array('jquery', PF_SLUG . '-twitter-bootstrap'), PF_VERSION );
 	}
 
-	function admin_enqueue_edit_feed_scripts() {
+	/**
+	 * Enqueues Feed-related scripts in the edit.php Feed edit panel.
+	 */
+	public function admin_enqueue_edit_feed_scripts() {
 		global $pagenow;
 
-		$hook = 0 != func_num_args() ? func_get_arg( 0 ) : '';
+		$hook = 0 !== func_num_args() ? func_get_arg( 0 ) : '';
 
-		if ( in_array( $pagenow, array( 'edit.php' ) ) ) {
-			if ( false != pressforward( 'controller.template_factory' )->is_a_pf_page() ) {
-				wp_enqueue_script( 'feed_edit_manip', PF_URL . 'assets/js/subscribed-feeds-actions.js', array( 'jquery' ), PF_VERSION );
+		if ( in_array( $pagenow, array( 'edit.php' ), true ) ) {
+			if ( ! pressforward( 'controller.template_factory' )->is_a_pf_page() ) {
+				wp_enqueue_script( 'feed_edit_manip', PF_URL . 'assets/js/subscribed-feeds-actions.js', array( 'jquery' ), PF_VERSION, true );
 			}
 		}
 
-		if ( ! in_array( $pagenow, array( 'post.php' ) ) ) {
-			return; }
+		if ( ! in_array( $pagenow, array( 'post.php' ), true ) ) {
+			return;
+		}
 
-		if ( ! in_array( $hook, array( 'pf_feed' ) ) ) {
-			// return;
-			wp_enqueue_script( 'feed_edit_manip', PF_URL . 'assets/js/subscribed-feeds-actions.js', array( 'jquery' ), PF_VERSION ); }
+		if ( ! in_array( $hook, array( 'pf_feed' ), true ) ) {
+			wp_enqueue_script( 'feed_edit_manip', PF_URL . 'assets/js/subscribed-feeds-actions.js', array( 'jquery' ), PF_VERSION, true );
+		}
 	}
 
-	function feed_save_message( $messages ) {
-		// add_filter( 'post_updated_messages', array( $this, 'feed_save_message' ) );
+	/**
+	 * Gets a message to display after feed save.
+	 *
+	 * @param array $messages Messages to be displayed.
+	 * @return array
+	 */
+	public function feed_save_message( $messages ) {
 		$post             = get_post();
 		$post_type        = get_post_type( $post );
 		$post_type_object = get_post_type_object( $post_type );
@@ -1647,8 +1710,8 @@ class Feeds implements HasActions, HasFilters {
 			7  => __( 'The feed was saved successfully.', 'pf' ),
 			8  => __( 'Feed submitted.', 'pf' ),
 			9  => sprintf(
+				// translators: Publish box date format, see http://php.net/date.
 				__( 'Feed scheduled for: <strong>%1$s</strong>.', 'pf' ),
-				// translators: Publish box date format, see http://php.net/date
 				date_i18n( __( 'M j, Y @ G:i', 'pf' ), strtotime( $post->post_date ) )
 			),
 			10 => __( 'Feed draft updated.', 'pf' ),
@@ -1670,7 +1733,4 @@ class Feeds implements HasActions, HasFilters {
 
 		return $messages;
 	}
-
-
-
 }
