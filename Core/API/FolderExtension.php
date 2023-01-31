@@ -1,4 +1,10 @@
 <?php
+/**
+ * Folder extensions for REST API.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\API;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
@@ -9,19 +15,57 @@ use PressForward\Core\API\APIWithMetaEndpoints;
 
 use WP_Ajax_Response;
 
+/**
+ * Folder extensions for REST API.
+ */
 class FolderExtension extends APIWithMetaEndpoints implements HasFilters {
 
+	/**
+	 * Basename.
+	 *
+	 * @access protected
+	 * @var string
+	 */
 	protected $basename;
+
+	/**
+	 * Taxonomy.
+	 *
+	 * @access protected
+	 * @var string
+	 */
 	protected $tax;
+
+	/**
+	 * Level.
+	 *
+	 * @access protected
+	 * @var string
+	 */
 	protected $level;
+
+	/**
+	 * Metas object.
+	 *
+	 * @access public
+	 * @var PressForward\Controllers\Metas
+	 */
 	public $pf_metas;
 
-	function __construct( Metas $metas ) {
+	/**
+	 * Constructor.
+	 *
+	 * @param PressForward\Controllers\Metas $metas Metas object.
+	 */
+	public function __construct( Metas $metas ) {
 		$this->pf_metas = $metas;
 		$this->tax      = pressforward( 'schema.folders' )->tag_taxonomy;
 		$this->level    = 'feed';
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function filter_hooks() {
 		$filter = array(
 			array(
@@ -31,6 +75,7 @@ class FolderExtension extends APIWithMetaEndpoints implements HasFilters {
 				'args'     => 3,
 			),
 		);
+
 		return $filter;
 	}
 }
