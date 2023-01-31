@@ -1,51 +1,76 @@
 <?php
+/**
+ * REST API utilities.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\API;
 
 use PressForward\Controllers\Metas;
 
+/**
+ * REST API utilities.
+ */
 class APIWithMetaEndpoints {
-
+	/**
+	 * Gets endpoint route path.
+	 *
+	 * @param string $endpoint Endpoint path.
+	 * @return string
+	 */
 	public function pf_route( $endpoint = '' ) {
 		return 'pf/v1' . $endpoint;
 	}
 
+	/**
+	 * Gets a list of registered metadata.
+	 *
+	 * @return array
+	 */
 	public function valid_metas() {
 		$metas      = $this->metas->structure();
 		$post_metas = array();
+
 		foreach ( $metas as $meta ) {
 			// Don't use the serialized array.
-			if ( $meta['name'] === 'pf_meta' ) {
+			if ( 'pf_meta' === $meta['name'] ) {
 				continue;
 			}
-			// Only use Post level data
-			if ( ! in_array( $this->level, $meta['level'] ) ) {
+
+			// Only use Post level data.
+			if ( ! in_array( $this->level, $meta['level'], true ) ) {
 				continue;
 			}
-			// Don't use metas that belong elsewhere
+
+			// Don't use metas that belong elsewhere.
 			if ( ! empty( $meta['move'] ) ) {
 				continue;
 			}
+
 			// Only use metas marked for use in the top level API.
-			if ( ! in_array( 'api', $meta['use'] ) ) {
+			if ( ! in_array( 'api', $meta['use'], true ) ) {
 				continue;
 			}
+
 			// Don't use metas marked as depreciated.
-			if ( in_array( 'dep', $meta['type'] ) ) {
+			if ( in_array( 'dep', $meta['type'], true ) ) {
 				continue;
 			}
+
 			$post_metas[] = $meta['name'];
 		}
+
 		return $post_metas;
 	}
 
 	/**
-	 * Get valid metas for this post object type and register them as api fields
-	 *
-	 * @return [type] [description]
+	 * Get valid metas for this post object type and register them as API fields.
 	 */
 	public function register_rest_post_read_meta_fields() {
 		global $wp_rest_server;
-		// https://github.com/PressForward/pressforward/issues/859#issuecomment-257587107
+
+		// https://github.com/PressForward/pressforward/issues/859#issuecomment-257587107.
 		if ( isset( $wp_rest_server ) ) {
 			$routes = $wp_rest_server->get_routes();
 			if ( ( 'post' === $this->level ) && ( ! isset( $routes['/wp/v2/posts'] ) ) ) {
@@ -54,18 +79,28 @@ class APIWithMetaEndpoints {
 		} else {
 			return false;
 		}
+
 		foreach ( $this->valid_metas() as $key ) {
 			$this->register_rest_post_read_field( $key, true );
 		}
 	}
 
-
+	/**
+	 * Registers meta fields for display in the API.
+	 *
+	 * @param string      $key    Meta key.
+	 * @param bool|string $action Action.
+	 */
 	public function register_rest_post_read_field( $key, $action = false ) {
-		// http://v2.wp-api.org/extending/modifying/
+		// http://v2.wp-api.org/extending/modifying/.
 		if ( ! $action ) {
-			$action = array( $this, $key . '_response' ); }
+			$action = array( $this, $key . '_response' );
+		}
+
 		if ( true === $action ) {
-			$action = array( $this, 'meta_response' ); }
+			$action = array( $this, 'meta_response' );
+		}
+
 		register_rest_field(
 			$this->post_type,
 			$key,
@@ -77,7 +112,14 @@ class APIWithMetaEndpoints {
 		);
 	}
 
-
+	/**
+	 * Generates a meta response for a field.
+	 *
+	 * @param array                    $object     Meta information.
+	 * @param string                   $field_name Field name.
+	 * @param WP_REST_Request|WP_Error $request    Request object.
+	 * @return mixed
+	 */
 	public function meta_response( $object, $field_name, $request ) {
 		$response = $this->metas->get_post_pf_meta( $object['id'], $field_name, true );
 		if ( empty( $response ) || is_wp_error( $response ) ) {
@@ -87,6 +129,15 @@ class APIWithMetaEndpoints {
 		}
 	}
 
+	/**
+	 * Generates full API link from passed parameters.
+	 *
+	 * @param WP_REST_Response $data  The response object.
+	 * @param array            $links Links.
+	 * @param string           $link  Link.
+	 * @param string           $term  Term endpoint.
+	 * @return WP_REST_Response
+	 */
 	public function filter_an_api_data_link( $data, $links, $link, $term ) {
 		if ( isset( $links[ $link ] ) ) {
 			foreach ( $links[ $link ] as $key => $term_link ) {
@@ -100,6 +151,7 @@ class APIWithMetaEndpoints {
 					$term_found = false;
 				}
 			}
+
 			if ( $term_found ) {
 				$data->add_links(
 					array(
@@ -108,10 +160,20 @@ class APIWithMetaEndpoints {
 				);
 			}
 		}
+
 		return $data;
 	}
 
-	// Hook to filter 'rest_prepare_{post_type}' to actifate
+	/**
+	 * Callback to add PF data to 'links' object on API response.
+	 *
+	 * Hook to filter 'rest_prepare_{post_type}' to activate.
+	 *
+	 * @param WP_REST_Response $data    Response object.
+	 * @param WP_Post          $post    Post object.
+	 * @param WP_REST_Request  $request Request object.
+	 * @return WP_REST_Response
+	 */
 	public function filter_wp_to_pf_in_terms( $data, $post, $request ) {
 		$links = $data->get_links();
 		if ( isset( $links['https://api.w.org/term'] ) ) {
