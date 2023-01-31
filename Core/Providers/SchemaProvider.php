@@ -1,4 +1,10 @@
 <?php
+/**
+ * Service provider for PF schema.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Providers;
 
 use PressForward\Core\Admin\Menu;
@@ -11,10 +17,16 @@ use PressForward\Core\Schema\Feed_Items;
 use PressForward\Core\Schema\Feeds;
 use PressForward\Core\Schema\Relationships;
 
+/**
+ * AssetsProvider class.
+ */
 class SchemaProvider extends ServiceProvider {
-
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @param Container $container Container.
+	 */
 	public function register( Container $container ) {
-
 		$container->share(
 			'schema.relationships',
 			function() {
@@ -51,6 +63,5 @@ class SchemaProvider extends ServiceProvider {
 		);
 
 		parent::register( $container );
-
 	}
 }
