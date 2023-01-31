@@ -1,4 +1,6 @@
 <?php
+// phpcs:ignoreFile
+// Currently unused in PressForward.
 
 /**
  * Extend the main WP_REST_Posts_Controller to a private endpoint controller.
