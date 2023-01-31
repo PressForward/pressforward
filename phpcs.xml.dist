@@ -24,17 +24,19 @@
 	<file>./Core/</file>
 
 	<!-- Check for PHP cross-version compatibility. -->
-	<config name="testVersion" value="5.3-"/>
-	<!-- <rule ref="PHPCompatibilityWP" /> -->
+	<rule ref="PHPCompatibilityWP">
+		<config name="testVersion" value="5.3-"/>
+	</rule>
 
 	<!-- Include the WordPress-Extra standard. -->
 	<rule ref="WordPress">
 		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />
 		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
-		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found" />
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax.Found" />
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_tax_query" />
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_query" />
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_key" />
+		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_value" />
 
 		<exclude-pattern>class-SplClassLoader.php</exclude-pattern>
 		<exclude-pattern>Controllers/StatsShortcodes.php</exclude-pattern>
