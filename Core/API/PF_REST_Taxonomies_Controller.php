@@ -1,25 +1,29 @@
 <?php
+/**
+ * PF_REST_Taxonomies_Controller class.
+ *
+ * @package PressForward
+ */
 
 /**
  * Extend the main WP_REST_Posts_Controller to a private endpoint controller.
  */
 class PF_REST_Taxonomies_Controller extends WP_REST_Taxonomies_Controller {
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		parent::__construct();
 		$this->namespace = 'pf/v1';
 		add_filter( 'rest_prepare_taxonomy', array( $this, 'filter_taxonomies_links' ), 11, 3 );
 	}
 
-	public function register_routes() {
-		parent::register_routes();
-	}
-
 	/**
 	 * Get all public taxonomies
 	 *
-	 * @param WP_REST_Request $request
-	 * @return array
+	 * @param WP_REST_Request $request Request object.
+	 * @return WP_REST_Response
 	 */
 	public function get_items( $request ) {
 		if ( ! empty( $request['type'] ) ) {
@@ -43,20 +47,28 @@ class PF_REST_Taxonomies_Controller extends WP_REST_Taxonomies_Controller {
 	}
 
 	/**
-	 * Get a specific taxonomy
+	 * Get a specific taxonomy.
 	 *
-	 * @param WP_REST_Request $request
-	 * @return array|WP_Error
+	 * @param WP_REST_Request $request Request object.
+	 * @return WP_REST_Response
 	 */
 	public function get_item( $request ) {
 		$tax_obj = get_taxonomy( $request['taxonomy'] );
-		if ( empty( $tax_obj ) || ( 'pf_feed_category' != $tax_obj->name ) ) {
+		if ( empty( $tax_obj ) || ( 'pf_feed_category' !== $tax_obj->name ) ) {
 			return new WP_Error( 'rest_taxonomy_invalid', __( 'Invalid PF resource.' ), array( 'status' => 404 ) );
 		}
 		$data = $this->prepare_item_for_response( $tax_obj, $request );
 		return rest_ensure_response( $data );
 	}
 
+	/**
+	 * Adds PF links data to taxonomy data in API response.
+	 *
+	 * @param WP_REST_Response $data    Response data.
+	 * @param WP_Post          $post    Post data.
+	 * @param WP_REST_Request  $request Request data.
+	 * @return WP_REST_Response
+	 */
 	public function filter_taxonomies_links( $data, $post, $request ) {
 		$links = $data->get_links();
 		if ( isset( $links['https://api.w.org/items'] ) ) {
@@ -73,17 +85,16 @@ class PF_REST_Taxonomies_Controller extends WP_REST_Taxonomies_Controller {
 				)
 			);
 		}
+
 		return $data;
 	}
-
 }
 
+/**
+ * Loads endpoint for PF taxonomies.
+ */
 function activate_pf_taxonomies_controller() {
 	$controller = new PF_REST_Taxonomies_Controller();
 	return $controller->register_routes();
 }
-
 add_action( 'rest_api_init', 'activate_pf_taxonomies_controller', 11 );
-
-// $controller = new PF_REST_Posts_Controller;
-// $controller->register_routes();
