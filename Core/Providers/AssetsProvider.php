@@ -1,29 +1,42 @@
 <?php
+/**
+ * Service provider for admin area.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Providers;
 
 use Intraxia\Jaxion\Contract\Core\Container as Container;
 use Intraxia\Jaxion\Assets\Register as Assets;
 use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 
+/**
+ * AssetsProvider class.
+ */
 class AssetsProvider extends ServiceProvider {
-
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @param Container $container
+	 * @param Container $container Container.
 	 */
 	public function register( Container $container ) {
 		$this->container = $container;
-		$register = $this->container->fetch(
+		$register        = $this->container->fetch(
 			'assets'
 		);
 
 		$this->add_assets( $register );
 	}
 
-	protected function add_assets( Assets $assets ) {
+	/**
+	 * Registers static assets.
+	 *
+	 * @param Intraxia\Jaxion\Assets\Register $assets Assets object.
+	 */
+	protected function add_assets( Intraxia\Jaxion\Assets\Register $assets ) {
 		$slug = 'pf';
-		$url   = $this->container->fetch( 'url' );
+		$url  = $this->container->fetch( 'url' );
 		$assets->set_debug( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG );
 
 		$provider = $this;
@@ -44,8 +57,7 @@ class AssetsProvider extends ServiceProvider {
 				'type'      => 'admin',
 				'condition' => ( function( $hook ) use ( $provider ) {
 					$exclusions = array( 'pf-options' );
-					//return true;
-									return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
+					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				} ),
 				'handle'    => $slug . '-reset-style',
 				'src'       => 'assets/css/reset',
@@ -61,7 +73,7 @@ class AssetsProvider extends ServiceProvider {
 				},
 				'handle'    => $slug . '-bootstrap-style',
 				'src'       => 'Libraries/twitter-bootstrap/css/bootstrap',
-				'deps'      => array( $slug . '-reset-style' )
+				'deps'      => array( $slug . '-reset-style' ),
 			)
 		);
 
@@ -86,7 +98,7 @@ class AssetsProvider extends ServiceProvider {
 					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				},
 				'handle'    => $slug . '-settings-style',
-				'src'       => 'assets/css/pf-settings'
+				'src'       => 'assets/css/pf-settings',
 			)
 		);
 
@@ -98,11 +110,11 @@ class AssetsProvider extends ServiceProvider {
 				},
 				'handle'    => $slug . '-subscribed-styles',
 				'src'       => 'assets/css/pf-subscribed',
-				'deps'      => array( $slug . '-style' )
+				'deps'      => array( $slug . '-style' ),
 			)
 		);
 
-		// Scripts
+		// Scripts.
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
@@ -128,20 +140,6 @@ class AssetsProvider extends ServiceProvider {
 				'deps'      => array( 'jquery', 'wp-api', 'pf' ),
 			)
 		);
-
-		// Scripts
-		/**
-		* $assets->register_script( array(
-		*   'type'  => 'admin',
-		*   'condition' => function( $hook ) use ( $provider ) {
-		*       $inclusions = array( 'edit.php' );
-		*       return $provider->check_hook_for_pressforward_string( $hook, array(), $inclusions, true );
-		*   },
-		*   'handle'    => 'stats-app',
-		*   'src'       => 'assets/stats-app/dist/app',
-		*   'deps'      => array( 'pf', 'jquery', 'wp-api' ),
-		* ) );
-		*/
 
 		$assets->register_script(
 			array(
@@ -184,7 +182,7 @@ class AssetsProvider extends ServiceProvider {
 			array(
 				'type'      => 'admin',
 				'condition' => function( $hook ) use ( $provider ) {
-									return $provider->check_hook_for_pressforward_string( $hook );
+					return $provider->check_hook_for_pressforward_string( $hook );
 				},
 				'handle'    => 'pf-popper',
 				'src'       => 'Libraries/popper',
@@ -196,7 +194,7 @@ class AssetsProvider extends ServiceProvider {
 			array(
 				'type'      => 'admin',
 				'condition' => function( $hook ) use ( $provider ) {
-									return $provider->check_hook_for_pressforward_string( $hook );
+					return $provider->check_hook_for_pressforward_string( $hook );
 				},
 				'handle'    => $slug . '-twitter-bootstrap',
 				'src'       => 'Libraries/twitter-bootstrap/js/bootstrap',
@@ -208,8 +206,8 @@ class AssetsProvider extends ServiceProvider {
 			array(
 				'type'      => 'admin',
 				'condition' => function( $hook ) use ( $provider ) {
-									$exclusions = array( 'toplevel_page_pf-menu' );
-									return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
+					$exclusions = array( 'toplevel_page_pf-menu' );
+					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				},
 				'handle'    => $slug . '-tools',
 				'src'       => 'assets/js/tools-imp',
@@ -219,35 +217,35 @@ class AssetsProvider extends ServiceProvider {
 
 		$assets->register_script(
 			array(
-				'type'	=> 'admin',
-				'condition'	=> function( $hook ) use ( $provider ) {
-									$exclusions = array( 'toplevel_page_pf-menu' );
-									return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
+				'type'      => 'admin',
+				'condition' => function( $hook ) use ( $provider ) {
+					$exclusions = array( 'toplevel_page_pf-menu' );
+					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				},
-				'handle'	=> $slug . '-jws',
-				'src'		=> 'assets/js/jws',
-				'deps'		=> array( 'pf', $slug . '-twitter-bootstrap' ),
+				'handle'    => $slug . '-jws',
+				'src'       => 'assets/js/jws',
+				'deps'      => array( 'pf', $slug . '-twitter-bootstrap' ),
 			)
 		);
 
 		$assets->register_script(
 			array(
-				'type'	=> 'admin',
-				'condition'	=> function( $hook ) use ( $provider ) {
-									$exclusions = array( 'toplevel_page_pf-menu' );
-									return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
+				'type'      => 'admin',
+				'condition' => function( $hook ) use ( $provider ) {
+					$exclusions = array( 'toplevel_page_pf-menu' );
+					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				},
-				'handle'	=> $slug . '-jwt',
-				'src'		=> 'assets/js/jwt',
-				'deps'		=> array( 'pf', $slug . '-twitter-bootstrap', $slug . '-jws' ),
+				'handle'    => $slug . '-jwt',
+				'src'       => 'assets/js/jwt',
+				'deps'      => array( 'pf', $slug . '-twitter-bootstrap', $slug . '-jws' ),
 			)
 		);
 
 		$assets->register_script(
 			array(
-				'type'	=> 'admin',
-				'condition'	=> function( $hook ) use ( $provider ) {
-									return $provider->check_hook_for_pressforward_string( $hook );
+				'type'      => 'admin',
+				'condition' => function( $hook ) use ( $provider ) {
+					return $provider->check_hook_for_pressforward_string( $hook );
 				},
 				'handle'    => $slug . '-jq-fullscreen',
 				'src'       => 'Libraries/jquery-fullscreen/jquery.fullscreen',
@@ -331,11 +329,11 @@ class AssetsProvider extends ServiceProvider {
 			array(
 				'type'      => 'admin',
 				'condition' => function( $hook ) use ( $provider ) {
-					if ( 'false' == get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() ) ) {
-
+					if ( 'false' === get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() ) ) {
 						return false;
 					}
-									return $provider->check_hook_for_pressforward_string( $hook );
+
+					return $provider->check_hook_for_pressforward_string( $hook );
 				},
 				'handle'    => $slug . '-scrollimp',
 				'src'       => 'assets/js/scroll-imp',
@@ -400,8 +398,7 @@ class AssetsProvider extends ServiceProvider {
 			array(
 				'type'      => 'admin',
 				'condition' => function( $hook ) use ( $provider ) {
-					// $exclusions = array('toplevel_page_pf-menu');
-									return $provider->check_hook_for_pressforward_string( $hook );
+					return $provider->check_hook_for_pressforward_string( $hook );
 				},
 				'handle'    => $slug . '-tools',
 				'src'       => 'assets/js/tools-imp',
@@ -448,11 +445,20 @@ class AssetsProvider extends ServiceProvider {
 		);
 	}
 
+	/**
+	 * Checks admin script enqueue hook for a PressForward-related substring.
+	 *
+	 * @param string $hook       Hook name.
+	 * @param array  $exclusions List of excluded strings.
+	 * @param array  $inclusions List of included strings.
+	 * @param bool   $all        Whether to check all.
+	 * @return bool
+	 */
 	public function check_hook_for_pressforward_string( $hook, $exclusions = array(), $inclusions = array(), $all = false ) {
 
-		 $position_test_one = strpos( $hook, 'pressforward' );
-		 $position_test_two = strpos( $hook, 'pf' );
-		// $position_test_two = strpos($hook, 'edit.php');
+		$position_test_one = strpos( $hook, 'pressforward' );
+		$position_test_two = strpos( $hook, 'pf' );
+
 		if ( empty( $inclusions ) && ( false === $position_test_one ) && ( false === $position_test_two ) ) {
 			return false;
 		}
@@ -479,7 +485,6 @@ class AssetsProvider extends ServiceProvider {
 			return $include;
 		}
 
-		 return true;
+		return true;
 	}
-
 }
