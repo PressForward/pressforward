@@ -1,11 +1,16 @@
 <?php
+/**
+ * Service provider for PF controllers.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Providers;
 
 use PressForward\Core\Admin\Menu;
 use Intraxia\Jaxion\Contract\Core\Container as Container;
 use Intraxia\Jaxion\Assets\Register as Assets;
 use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
-// use Intraxia\Jaxion\Contract\Core\ServiceProvider as ServiceProvider;
 use PressForward\Controllers\PFtoWPTemplates as Template_Factory;
 use PressForward\Controllers\PFtoWPUsers as Users;
 use PressForward\Controllers\PF_to_WP_Meta as PF_to_WP_Meta;
@@ -19,11 +24,16 @@ use PressForward\Controllers\PF_Readability;
 use PressForward\Controllers\HTTPTools;
 use PressForward\Controllers\Stats;
 
-
+/**
+ * ControllerServiceProvider class.
+ */
 class ControllerServiceProvider extends ServiceProvider {
-
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @param Container $container Container.
+	 */
 	public function register( Container $container ) {
-
 		$container->share(
 			'controller.meta_interface',
 			function() {
@@ -114,7 +124,5 @@ class ControllerServiceProvider extends ServiceProvider {
 				return new Stats( $container->fetch( 'controller.metas' ) );
 			}
 		);
-
-		// parent::register( $container );
 	}
 }

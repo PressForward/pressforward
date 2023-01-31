@@ -1,4 +1,10 @@
 <?php
+/**
+ * Service provider for third-party libraries.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Providers;
 
 use Intraxia\Jaxion\Contract\Core\Container as Container;
@@ -11,8 +17,15 @@ use AlertBox\The_Alert_Box as The_Alert_Box;
 use Readability;
 use URLResolver;
 
+/**
+ * LibrariesProvider class.
+ */
 class LibrariesProvider extends ServiceProvider {
-
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @param Container $container Container.
+	 */
 	public function register( Container $container ) {
 
 		$container->define(
@@ -36,14 +49,6 @@ class LibrariesProvider extends ServiceProvider {
 			}
 		);
 
-		/**
-		 *
-		 * <pre><code><?php
-		 *  $url = 'http://hacktext.com/2015/03/the-myopic-web-shrinking-the-filter-bubble-with-dropcat-2212/';
-		 *  $bob = pressforward('library.readability');
-		 *
-		 * @var [type]
-		 */
 		$container->define(
 			'library.readability',
 			function( $container ) {
@@ -59,7 +64,5 @@ class LibrariesProvider extends ServiceProvider {
 				return The_Alert_Box::init();
 			}
 		);
-
-		// parent::register( $container );
 	}
 }

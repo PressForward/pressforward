@@ -1,4 +1,10 @@
 <?php
+/**
+ * Service provider for PF data models.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Providers;
 
 use PressForward\Core\Admin\Menu;
@@ -8,10 +14,17 @@ use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 
 use PressForward\Core\Models\Feed_Item as Feed_Item;
 
+/**
+ * AssetsProvider class.
+ */
 class ModelsProvider extends ServiceProvider {
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @param Container $container Container.
+	 */
 	public function register( Container $container ) {
-
 		$container->define(
 			'model.feed_item',
 			function( $container ) {
@@ -20,7 +33,5 @@ class ModelsProvider extends ServiceProvider {
 				} );
 			}
 		);
-
-		// parent::register( $container );
 	}
 }
