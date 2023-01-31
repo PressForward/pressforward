@@ -1,4 +1,10 @@
 <?php
+/**
+ * Bookmarklet utilities.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Bookmarklet;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
@@ -9,13 +15,17 @@ use PressForward\Core\API\APIWithMetaEndpoints;
 
 use WP_Ajax_Response;
 
+/**
+ * NominateThisCore class.
+ */
 class NominateThisCore implements HasActions {
-	// implements HasActions, HasFilters
+	/**
+	 * Basename.
+	 *
+	 * @access protected
+	 * @var string
+	 */
 	protected $basename;
-
-	function __construct() {
-
-	}
 
 	/**
 	 * Sets up action hooks for registering meta boxes for the Nominate This interface.
@@ -63,35 +73,41 @@ class NominateThisCore implements HasActions {
 	 * Generates markup for the Submit meta box on the Nominate This interface.
 	 */
 	public function submit_meta_box() {
-		$url = isset( $_GET['u'] ) ? esc_url( sanitize_text_field( wp_unslash( $_GET['u'] ) ) ) : '';
+		$url              = isset( $_GET['u'] ) ? esc_url( sanitize_text_field( wp_unslash( $_GET['u'] ) ) ) : '';
 		$author_retrieved = pressforward( 'controller.metas' )->get_author_from_url( $url );
 
 		?>
 
 		<p id="publishing-actions">
 		<?php
-			$publish_type = get_option( PF_SLUG . '_draft_post_status', 'draft' );
 
-			$create_nom_post_cap_test = current_user_can( get_post_type_object( pressforward( 'schema.nominations' )->post_type )->cap->create_posts );
+		$publish_type = get_option( PF_SLUG . '_draft_post_status', 'draft' );
 
-			$pf_draft_post_type_value = get_option( PF_SLUG . '_draft_post_type', 'post' );
+		$create_nom_post_cap_test = current_user_can( get_post_type_object( pressforward( 'schema.nominations' )->post_type )->cap->create_posts );
 
-			if ('draft' == $publish_type){
-				$cap =  'edit_posts';
-			} else {
-				$cap = 'publish_posts';
-			}
-			$create_post_cap_test = current_user_can( get_post_type_object( $pf_draft_post_type_value )->cap->$cap );
-		if ($create_nom_post_cap_test){
-			submit_button( __( 'Nominate' ), 'button', 'draft', false, array( 'id' => 'save' ) );
+		$pf_draft_post_type_value = get_option( PF_SLUG . '_draft_post_type', 'post' );
+
+		if ( 'draft' === $publish_type ) {
+			$cap = 'edit_posts';
 		} else {
-			echo 'You do not have the ability to create nominations.';
+			$cap = 'publish_posts';
+		}
+
+		$create_post_cap_test = current_user_can( get_post_type_object( $pf_draft_post_type_value )->cap->$cap );
+
+		if ( $create_nom_post_cap_test ) {
+			submit_button( __( 'Nominate', 'pf' ), 'button', 'draft', false, array( 'id' => 'save' ) );
+		} else {
+			esc_html_e( 'You do not have the ability to create nominations.', 'pf' );
 		}
 		if ( $create_post_cap_test ) {
+			// @todo Fix i18n for this button text.
+			// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
 			submit_button( __( 'Send to ' . ucwords( $publish_type ) ), 'primary', 'publish', false );
 		} else {
 			echo '<!-- User cannot ' . esc_html( $publish_type ) . ' posts -->';
-		} ?>
+		}
+		?>
 				<span class="spinner" style="display: none;"></span>
 			</p>
 			<p>
@@ -107,26 +123,28 @@ class NominateThisCore implements HasActions {
 			<p>
 			<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php esc_html_e( 'Nominate feed associated with item.', 'pf' ); ?></label>
 			</p>
-			<?php if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) :
+			<?php
+			if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) :
 					$post_formats = get_theme_support( 'post-formats' );
 				if ( is_array( $post_formats[0] ) ) :
 					$default_format = get_option( 'default_post_format', '0' );
-				?>
+					?>
 			<p>
 				<label for="post_format"><?php esc_html_e( 'Post Format:', 'pf' ); ?>
 				<select name="post_format" id="post_format">
 				<option value="0"><?php echo esc_html( _x( 'Standard', 'Post format', 'pf' ) ); ?></option>
-				<?php foreach ( $post_formats[0] as $format ) :  ?>
+					<?php foreach ( $post_formats[0] as $format ) : ?>
 					<option<?php selected( $default_format, $format ); ?> value="<?php echo esc_attr( $format ); ?>"> <?php echo esc_html( get_post_format_string( $format ) ); ?></option>
 				<?php endforeach; ?>
 				</select></label>
 			</p>
-			<?php endif;
+					<?php
+			endif;
 endif;
 			// @deprecated 5.2.2 - Do not use this hook, use the following hook. This hook added to support existing plugins that use it.
 			do_action( 'nominate_this_sidebar_top' );
 			do_action( 'nominate_this_sidebar_head' );
-		?>
+			?>
 		<!-- Addressing things that come in under old action -->
 		<script>jQuery('.postbox .postbox').insertAfter(jQuery('.postbox').first());</script>
 		<?php
@@ -174,29 +192,30 @@ endif;
 	 * @subpackage Press_This
 	 * @since 2.6.0
 	 *
-	 * 	$_POST should contain:
-	 *		'post_category'
-	 *		'tax_input'
-	 * 		'title'
-	 * 		'post_title'
-	 * 		'content' / 'post_content'
-	 * 		'item_link'
-	 * 		?'publish'
+	 *  $_POST should contain:
+	 *      'post_category'
+	 *      'tax_input'
+	 *      'title'
+	 *      'post_title'
+	 *      'content' / 'post_content'
+	 *      'item_link'
+	 *      ?'publish'
 	 *
+	 * @param bool $internal Whether this is an internal nomination.
 	 * @return int Post ID
 	 */
 	public function nominate_it( $internal = true ) {
-
 		$post = array();
-		// $post_ID = $post['ID'] = (int) $_POST['post_id'];
-		if ( $internal ){
+		if ( $internal ) {
 			if ( ! current_user_can( get_option( 'pf_menu_nominate_this_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) ) ) ) {
 				wp_die( esc_html_e( 'You do not have access to the Nominate This bookmarklet.', 'pf' ) );
 			}
 		}
-		pf_log('POST Input');
-		pf_log($_POST);
-		pf_log('Continue with data');
+
+		pf_log( 'POST Input' );
+		pf_log( $_POST );
+		pf_log( 'Continue with data' );
+
 		$post['post_category'] = isset( $_POST['post_category'] ) ? sanitize_text_field( wp_unslash( $_POST['post_category'] ) ) : '';
 		$post['tax_input']     = isset( $_POST['tax_input'] ) ? sanitize_text_field( wp_unslash( $_POST['tax_input'] ) ) : '';
 		$post['post_title']    = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
@@ -204,14 +223,12 @@ endif;
 			$post['post_title'] = isset( $_POST['post_title'] ) ? sanitize_text_field( wp_unslash( $_POST['post_title'] ) ) : '';
 		}
 		$content = isset( $_POST['content'] ) ? wp_kses_post( wp_unslash( $_POST['content'] ) ) : '';
-		// pf_log($post['post_category']);
-		// pf_log($_POST['post_category']);
 
-		// set the post_content and status
+		// Set the post_content and status.
 		$post['post_content'] = $content;
 
-		$item_link = isset( $_POST['item_link'] ) ? sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) : '';
-		$post['guid'] = $item_link;;
+		$item_link    = isset( $_POST['item_link'] ) ? sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) : '';
+		$post['guid'] = $item_link;
 
 		if ( isset( $_POST['publish'] ) && current_user_can( 'publish_posts' ) ) {
 			$post['post_status'] = 'publish';
@@ -220,31 +237,36 @@ endif;
 		} else {
 			$post['post_status'] = get_option( PF_SLUG . '_draft_post_status', 'draft' );
 		}
-			$nom_check    = false;
-			$feed_nom     = array(
-				'error'  => false,
-				'simple' => '',
-			);
-		if ( ! empty( $_POST['pf-feed-subscribe'] ) && ( 'subscribe' == sanitize_text_field( wp_unslash( $_POST['pf-feed-subscribe'] ) ) ) ) {
-			$url_array      = parse_url( esc_url( $item_link ) );
-			$sourceLink     = 'http://' . $url_array['host'];
-			$create_started = 'Attempting to nominate a feed with the result of: <br />';
+
+		$nom_check = false;
+		$feed_nom  = array(
+			'error'  => false,
+			'simple' => '',
+		);
+
+		if ( ! empty( $_POST['pf-feed-subscribe'] ) && ( 'subscribe' === sanitize_text_field( wp_unslash( $_POST['pf-feed-subscribe'] ) ) ) ) {
+			$url_array      = wp_parse_url( esc_url( $item_link ) );
+			$source_link    = 'http://' . $url_array['host'];
+			$create_started = __( 'Attempting to nominate a feed with the result of:', 'pf' ) . '<br />';
 			if ( current_user_can( 'edit_posts' ) ) {
-				$create = pressforward( 'schema.feeds' )->create( $sourceLink, array( 'post_status' => 'under_review' ) );
+				$create = pressforward( 'schema.feeds' )->create( $source_link, array( 'post_status' => 'under_review' ) );
 				if ( is_numeric( $create ) ) {
-					$feed_nom['id']     = $create;
-					$create             = 'Feed created with ID of ' . $create;
-					$feed_nom['simple'] = 'The feed has been nominated successfully.';
+					$feed_nom['id'] = $create;
+
+					// translators: feed ID.
+					$create             = sprintf( __( 'Feed created with ID: %s', 'pf' ), $create );
+					$feed_nom['simple'] = __( 'The feed has been nominated successfully.', 'pf' );
 					$error_check        = pressforward( 'controller.metas' )->get_post_pf_meta( $feed_nom['id'], 'ab_alert_msg', true );
 					if ( ! empty( $error_check ) ) {
-						$create            .= ' But the following error occured: ' . $error_check;
-						$feed_nom['simple'] = 'There is a problem with the feed associated with this post. The feed could not be verified.';
+						// translators: Error text.
+						$create            .= ' ' . sprintf( __( 'But the following error occured: %s', 'pf' ), $error_check );
+						$feed_nom['simple'] = __( 'There is a problem with the feed associated with this post. The feed could not be verified.', 'pf' );
 					}
 					$feed_nom['error'] = $error_check;
 				} else {
 					$feed_nom['id']     = 0;
-					$feed_nom['simple'] = "PressForward was unable to identify a feed associated with this site. Please contact the site administrator or add the feed manually in the 'Add Feeds' panel.";
-					$message_one        = pf_message( 'An error occured when adding the feed: ' );
+					$feed_nom['simple'] = __( "PressForward was unable to identify a feed associated with this site. Please contact the site administrator or add the feed manually in the 'Add Feeds' panel.", 'pf' );
+					$message_one        = pf_message( __( 'An error occured when adding the feed: ', 'pf' ) );
 					if ( is_wp_error( $create ) ) {
 						$create_wp_error   = $create->get_error_message();
 						$message_two       = pf_message( $create_wp_error );
@@ -255,7 +277,7 @@ endif;
 					$create = $message_one . $message_two;
 				}
 			} else {
-				$create             = 'User doesn\'t have permission to create feeds.';
+				$create             = __( 'User doesn\'t have permission to create feeds.', 'pf' );
 				$feed_nom['id']     = 0;
 				$feed_nom['error']  = $create;
 				$feed_nom['simple'] = $create;
@@ -267,25 +289,27 @@ endif;
 		} else {
 			$feed_nom = array(
 				'id'     => 0,
-				'msg'    => 'No feed was nominated.',
-				'simple' => 'User hasn\'t nominated a feed.',
+				'msg'    => __( 'No feed was nominated.', 'pf' ),
+				'simple' => __( 'User hasn\'t nominated a feed.', 'pf' ),
 			);
 			update_option( 'pf_last_nominated_feed', $feed_nom );
 		}
 
 		// Why does this hinge on $upload?
-		// Post formats
+		// Post formats.
 
-		if ( 0 != $feed_nom['id'] ) {
+		if ( 0 !== (int) $feed_nom['id'] ) {
 			$post['post_parent'] = $feed_nom['id'];
 		}
-			$post['post_author'] = get_current_user_id();
-			// $post['post_type']   = 'nomination';
-			pf_log( $post );
-			$_POST = array_merge( $_POST, $post );
-		if ( isset( $_POST['publish'] ) && ( ( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) == 'Last Step' ) || ( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) == 'Send to ' . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ) )) ) {
-			$post['post_type']   = 'nomination';
-			$post_ID = pressforward( 'utility.forward_tools' )->bookmarklet_to_last_step( false, $post );
+		$post['post_author'] = get_current_user_id();
+
+		pf_log( $post );
+
+		$_POST = array_merge( $_POST, $post );
+		// @todo Fix button text with i18n issue mentioned earlier in this file.
+		if ( isset( $_POST['publish'] ) && ( ( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) === __( 'Last Step', 'pf' ) ) || ( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) === 'Send to ' . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ) ) ) ) {
+			$post['post_type'] = 'nomination';
+			$post_ID           = pressforward( 'utility.forward_tools' )->bookmarklet_to_last_step( false, $post );
 
 		} else {
 			$post_ID = pressforward( 'utility.forward_tools' )->bookmarklet_to_nomination( false, $post );
@@ -294,7 +318,9 @@ endif;
 		if ( ! empty( $_POST['item_feat_img'] ) ) {
 			pressforward( 'schema.feed_item' )->set_ext_as_featured( $post_ID, sanitize_text_field( wp_unslash( $_POST['item_feat_img'] ) ) );
 		}
-			$upload = false;
+
+		$upload = false;
+
 		if ( ! empty( $_POST['photo_src'] ) && current_user_can( 'upload_files' ) ) {
 			$photo_src = map_deep( wp_unslash( $_POST['photo_src'] ), 'sanitize_text_field' );
 			foreach ( (array) $photo_src as $key => $image ) {
@@ -303,24 +329,19 @@ endif;
 					$desc   = isset( $_POST['photo_description'][ $key ] ) ? sanitize_textarea_field( wp_unslash( $_POST['photo_description'][ $key ] ) ) : '';
 					$upload = media_sideload_image( $image, $post_ID, $desc );
 
-					// Replace the POSTED content <img> with correct uploaded ones. Regex contains fix for Magic Quotes
+					// Replace the POSTED content <img> with correct uploaded ones. Regex contains fix for Magic Quotes.
 					if ( ! is_wp_error( $upload ) ) {
 						$content = preg_replace( '/<img ([^>]*)src=\\\?(\"|\')' . preg_quote( htmlspecialchars( $image ), '/' ) . '\\\?(\2)([^>\/]*)\/*>/is', $upload, $content );
 					}
 				}
 			}
 		}
-			// error handling for media_sideload
+
+		// error handling for media_sideload.
 		if ( is_wp_error( $upload ) ) {
 			wp_delete_post( $post_ID );
-			wp_die( esc_html( print_r( $upload, true ) ) );
-			// Why is this here?
-			// Oh, because it is trying to upload the images in the item into our
-			// system. But if that doesn't work, something has gone pretty wrong.
-			// $nom_check = true;
 		}
-			return $post_ID;
+
+		return $post_ID;
 	}
-
-
 }
