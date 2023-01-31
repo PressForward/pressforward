@@ -1408,26 +1408,26 @@ class Feeds implements HasActions, HasFilters {
 		}
 
 		$c = 0;
-		foreach ( $posts as $post ) {
-			setup_postdata( $post );
-			$post_id = $post->ID;
+		foreach ( $posts as $the_post ) {
+			$post_id = $the_post->ID;
 			if ( is_numeric( $post_id ) ) {
 				if ( 0 === $c ) {
 					$feed_post        = get_post( $post_id, ARRAY_A );
 					$feed_post['url'] = $url;
 					$this->update( $post_id, $feed_post );
-				} elseif ( $url == pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'feed_url', true ) ) {
+				} else {
+					$url == pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'feed_url', true );
+					if ( $url ) {
 						wp_delete_post( $post_id, true );
+					}
+					++$c;
 				}
-				++$c;
 			} else {
 				// Let's duplicate WordPress's mechanic of 'update' creating a new post if it doesn't exist.
 				$id = $this->create( $url );
-				wp_reset_postdata();
 				return $id;
 			}
 		}
-		wp_reset_postdata();
 	}
 
 	// A function to update an existing feed CPT entry.
