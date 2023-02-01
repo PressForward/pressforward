@@ -25,6 +25,7 @@
 	<file>./Core/</file>
 	<file>./includes/</file>
 	<file>./init.php</file>
+	<file>./Interfaces</file>
 
 	<!-- Check for PHP cross-version compatibility. -->
 	<rule ref="PHPCompatibilityWP">
