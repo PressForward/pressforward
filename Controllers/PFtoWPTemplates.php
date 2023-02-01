@@ -386,13 +386,13 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 	/**
 	 * Wrapper for add_menu_page().
 	 *
-	 * @param string   $page_title  Title of the added page.
-	 * @param string   $menu_title  Title to use for menu.
-	 * @param string   $capability  Cap to check for access.
-	 * @param string   $menu_slug   Slug for the menu item.
+	 * @param string   $page_title      Title of the added page.
+	 * @param string   $menu_title      Title to use for menu.
+	 * @param string   $capability      Cap to check for access.
+	 * @param string   $menu_slug       Slug for the menu item.
 	 * @param callable $the_function    Display callback.
-	 * @param string   $icon_url    URL of the icon.
-	 * @param int      $position    Position.
+	 * @param string   $icon_url        URL of the icon.
+	 * @param int      $position        Position.
 	 * @return void
 	 */
 	public function add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $the_function = '', $icon_url = '', $position = null ) {
@@ -402,11 +402,11 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 	/**
 	 * Wrapper for add_submenu_page().
 	 *
-	 * @param string   $parent_slug Parent slug.
-	 * @param string   $page_title  Title of the added page.
-	 * @param string   $menu_title  Title to use for menu.
-	 * @param string   $capability  Cap to check for access.
-	 * @param string   $menu_slug   Slug for the menu item.
+	 * @param string   $parent_slug     Parent slug.
+	 * @param string   $page_title      Title of the added page.
+	 * @param string   $menu_title      Title to use for menu.
+	 * @param string   $capability      Cap to check for access.
+	 * @param string   $menu_slug       Slug for the menu item.
 	 * @param callable $the_function    Display callback.
 	 * @return void
 	 */

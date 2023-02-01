@@ -53,7 +53,7 @@ class PF_to_WP_Meta implements SystemMeta {
 	}
 
 	/**
-	 * Gets a single piece of for a post.
+	 * Gets a single piece of metadata for a post.
 	 *
 	 * @param int    $post_id ID of the post.
 	 * @param string $key     Metadata key.

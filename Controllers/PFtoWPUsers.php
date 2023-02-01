@@ -66,11 +66,11 @@ class PFtoWPUsers implements SystemUsers {
 	/**
 	 * Wrapper for current_user_can().
 	 *
-	 * @param string $capacity Capability to check.
+	 * @param string $capability Capability to check.
 	 * @return bool
 	 */
-	public function current_user_can( $capacity ) {
-		return current_user_can( $capacity );
+	public function current_user_can( $capability ) {
+		return current_user_can( $capability );
 	}
 
 	/**
