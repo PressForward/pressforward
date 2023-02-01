@@ -15,9 +15,9 @@ class OPML_Object {
 	 * @param string $url URL.
 	 */
 	public function __construct( $url ) {
-		$this->url = $url;
+		$this->url     = $url;
 		$this->folders = array();
-		$this->feeds = array();
+		$this->feeds   = array();
 	}
 
 	/**
@@ -27,6 +27,7 @@ class OPML_Object {
 	 */
 	public function set_folder( $folder_obj ) {
 		$folder_obj->slug = $this->slugify( $folder_obj->title );
+
 		$this->folders[ $folder_obj->slug ] = $folder_obj;
 	}
 
@@ -64,7 +65,7 @@ class OPML_Object {
 	 */
 	public function get_folder( $key ) {
 		$folders = $this->folders;
-		$key = $this->slugify( $key );
+		$key     = $this->slugify( $key );
 		return $folders[ $key ];
 	}
 
@@ -86,7 +87,7 @@ class OPML_Object {
 			if ( isset( $this->feeds[ $feed_obj->id ] ) ) {
 				$feed_obj = $this->feeds[ $feed_obj->id ];
 
-			} elseif ( !empty( $feed_obj ) && ( empty( $feed_obj->folder ) || ! is_array( $feed_obj->folder ) ) ) {
+			} elseif ( ! empty( $feed_obj ) && ( empty( $feed_obj->folder ) || ! is_array( $feed_obj->folder ) ) ) {
 				$feed_obj->folder = array();
 			}
 
@@ -117,7 +118,7 @@ class OPML_Object {
 				if ( $strict ) {
 					return false;
 				} else {
-					$check[ $key ] = '';
+					$check[ $key ]      = '';
 					$check['missing'][] = $key;
 				}
 			}
@@ -137,7 +138,7 @@ class OPML_Object {
 		} elseif ( ! empty( $entry['text'] ) && empty( $entry['title'] ) ) {
 			$entry['title'] = $entry['text'];
 		} elseif ( empty( $entry['title'] ) && empty( $entry['text'] ) && ! empty( $entry['feedUrl'] ) ) {
-			$entry['text'] = $entry['feedUrl'];
+			$entry['text']  = $entry['feedUrl'];
 			$entry['title'] = $entry['feedUrl'];
 		}
 
@@ -188,13 +189,16 @@ class OPML_Object {
 		$entry = $this->assure_title_and_text( $entry );
 		$entry = $this->check_keys( $entry, array( 'title', 'text', 'type', 'xmlUrl', 'htmlUrl', 'feedUrl' ) );
 
-		$feed->title   = $entry['title'];
-		$feed->text    = $entry['text'];
-		$feed->type    = $entry['type'];
+		$feed->title = $entry['title'];
+		$feed->text  = $entry['text'];
+		$feed->type  = $entry['type'];
+
+		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		$feed->id      = md5( $feed->feedUrl );
 		$feed->xmlUrl  = str_replace( '&amp;', '&', $entry['xmlUrl'] );
 		$feed->feedUrl = str_replace( '&amp;', '&', $entry['feedUrl'] );
 		$feed->htmlUrl = str_replace( '&amp;', '&', $entry['htmlUrl'] );
-		$feed->id      = md5( $feed->feedUrl );
+		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 		return $feed;
 	}
@@ -210,17 +214,22 @@ class OPML_Object {
 		if ( empty( $a->folder ) ) {
 			return 1;
 		}
+
 		if ( empty( $b->folder ) ) {
 			return -1;
 		}
+
 		$a = $a->folder[0];
 		$b = $b->folder[0];
+
 		if ( ! $a ) {
 			return -1;
 		}
-		if ( strcasecmp( $a, $b ) == 0 ) {
+
+		if ( strcasecmp( $a, $b ) === 0 ) {
 			return 0;
 		}
+
 		if ( strcasecmp( $a, $b ) < 0 ) {
 			return -1;
 		} else {
@@ -253,7 +262,7 @@ class OPML_Object {
 		foreach ( $this->feeds as $feed ) {
 			if ( ! empty( $feed->folder ) ) {
 				foreach ( $feed->folder as $feed_folder ) {
-					if ( $feed_folder->slug == $this->slugify( $folder ) ) {
+					if ( $feed_folder->slug === $this->slugify( $folder ) ) {
 						$folder_a[] = $feed;
 					}
 				}
@@ -309,37 +318,41 @@ class OPML_Object {
 		return pf_sanitize( $raw_string, $force_lowercase, $strict );
 	}
 
-	public function slugify( $string, $case = true, $strict = false, $spaces = false ) {
-		if ( is_array( $string ) ) {
-			$string = $string[0];
+	/**
+	 * Generates a slug for an item.
+	 *
+	 * @param string|array $input           Input.
+	 * @param bool         $force_lowercase True to force lowercase. Default true.
+	 * @param bool         $strict          True to force alphanumeric. Default false.
+	 * @param bool         $spaces          True to allow spaces. Default false.
+	 * @return string
+	 */
+	public function slugify( $input, $force_lowercase = true, $strict = false, $spaces = false ) {
+		if ( is_array( $input ) ) {
+			$input = $input[0];
 		}
-		$string = strip_tags( $string );
-		// replace non letter or digits by -
-		$string = preg_replace( '~[^\\pL\d]+~u', '-', $string );
-		if ( $spaces == false ) {
-			$stringSlug = str_replace( ' ', '-', $string );
-			$stringSlug = trim( $stringSlug );
-			$stringSlug = str_replace( '&amp;','&', $stringSlug );
-			// $charsToElim = array('?','/','\\');
-			$stringSlug = $this->sanitize( $stringSlug, $case, $strict );
+
+		$input = wp_strip_all_tags( $input );
+
+		// replace non letter or digits by -.
+		$input = preg_replace( '~[^\\pL\d]+~u', '-', $input );
+
+		if ( false === $spaces ) {
+			$string_slug = str_replace( ' ', '-', $input );
+			$string_slug = trim( $string_slug );
+			$string_slug = str_replace( '&amp;', '&', $string_slug );
+			$string_slug = $this->sanitize( $string_slug, $force_lowercase, $strict );
 		} else {
-			// $string = strip_tags($string);
-			// $stringArray = explode(' ', $string);
-			// $stringSlug = '';
-			// foreach ($stringArray as $stringPart){
-			// $stringSlug .= ucfirst($stringPart);
-			// }
-			$stringSlug = str_replace( '&amp;','&', $string );
-			// $charsToElim = array('?','/','\\');
-			$stringSlug = $this->sanitize( $stringSlug, $case, $strict );
+			$string_slug = str_replace( '&amp;', '&', $string );
+			$string_slug = $this->sanitize( $string_slug, $force_lowercase, $strict );
 		}
 
-		$stringSlug = htmlspecialchars( $stringSlug, null, null, false );
+		$string_slug = htmlspecialchars( $string_slug, null, null, false );
 
-		if ( empty( $stringSlug ) ) {
+		if ( empty( $string_slug ) ) {
 			return 'empty';
 		}
 
-		return $stringSlug;
+		return $string_slug;
 	}
 }
