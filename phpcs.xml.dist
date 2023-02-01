@@ -24,6 +24,7 @@
 	<file>./Controllers/</file>
 	<file>./Core/</file>
 	<file>./includes/</file>
+	<file>./init.php</file>
 
 	<!-- Check for PHP cross-version compatibility. -->
 	<rule ref="PHPCompatibilityWP">
