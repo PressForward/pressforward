@@ -23,6 +23,7 @@
 	<file>./Application.php</file>
 	<file>./Controllers/</file>
 	<file>./Core/</file>
+	<file>./includes/</file>
 
 	<!-- Check for PHP cross-version compatibility. -->
 	<rule ref="PHPCompatibilityWP">
