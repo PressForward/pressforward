@@ -444,10 +444,6 @@ function pf_prep_item_for_submit( $item ) {
 
 }
 
-function pf_get_user_level( $option, $default_level ) {
-
-}
-
 /**
  * Converts an https URL into http, to account for servers without SSL access.
  * If a function is passed, pf_de_https will return the function result
