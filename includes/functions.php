@@ -589,26 +589,8 @@ function get_pf_nom_class_tags( $the_array = array() ) {
  * @return string
  */
 function pf_noms_filter( $text ) {
-	global $post;
 	$text = get_the_content( '' );
-	$text = apply_filters( 'the_content', $text );
-	$text = str_replace( '\]\]\>', ']]&gt;', $text );
-	$text = preg_replace( '@<script[^>]*?>.*?</script>@si', '', $text );
-
-	$content_obj = pressforward( 'library.htmlchecker' );
-
-	$text = $content_obj->closetags( $text );
-	$text = strip_tags( $text, '<p>' );
-
-	$excerpt_length = 310;
-	$words          = explode( ' ', $text, $excerpt_length + 1 );
-	if ( is_array( $words ) && ( count( $words ) > $excerpt_length ) ) {
-		array_pop( $words );
-		array_push( $words, '...' );
-		$text = implode( ' ', $words );
-	}
-
-	return $text;
+	return pf_noms_excerpt( $text );
 }
 
 /**
