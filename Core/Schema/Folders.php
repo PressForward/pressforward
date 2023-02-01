@@ -1,4 +1,10 @@
 <?php
+/**
+ * Feed Items data control.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Schema;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
@@ -9,16 +15,34 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
  *
  * Folders are used to track and organize feeds. Here is where they are declared.
  */
-
 class Folders implements HasActions, HasFilters {
+	/**
+	 * Post type.
+	 *
+	 * @access public
+	 * @var string
+	 */
 	public $post_type;
+
+	/**
+	 * Tag taxonomy.
+	 *
+	 * @access public
+	 * @var string
+	 */
 	public $tag_taxonomy;
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		$this->tag_taxonomy = 'pf_feed_category';
 		$this->post_type    = 'pf_feed';
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function action_hooks() {
 		return array(
 			array(
@@ -32,6 +56,9 @@ class Folders implements HasActions, HasFilters {
 		);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function filter_hooks() {
 		$filters = array();
 		if ( is_admin() ) {
@@ -48,6 +75,9 @@ class Folders implements HasActions, HasFilters {
 		return $filters;
 	}
 
+	/**
+	 * Registers the Folder taxonomy.
+	 */
 	public function register_feed_tag_taxonomy() {
 		$labels = array(
 			'name'          => __( 'Folders', 'pf' ),
@@ -61,8 +91,11 @@ class Folders implements HasActions, HasFilters {
 		);
 
 		register_taxonomy(
-			$this->tag_taxonomy, '', apply_filters(
-				'pf_register_feed_tag_taxonomy_args', array(
+			$this->tag_taxonomy,
+			'',
+			apply_filters(
+				'pf_register_feed_tag_taxonomy_args',
+				array(
 					'labels'                => $labels,
 					'public'                => true,
 					'show_admin_columns'    => true,
@@ -72,7 +105,6 @@ class Folders implements HasActions, HasFilters {
 					'show_in_menu'          => PF_MENU_SLUG,
 					'hierarchical'          => true,
 					'update_count_callback' => '_update_post_term_count',
-					// 'show_in_menu' => PF_MENU_SLUG,
 					'rewrite'               => false,
 					'show_in_rest'          => true,
 					'rest_base'             => 'folders',
@@ -84,25 +116,29 @@ class Folders implements HasActions, HasFilters {
 		do_action( 'feed_folders_registered' );
 	}
 
+	/**
+	 * Associate the folder taxonomy with feeds.
+	 */
 	public function register_folders_for_feeds() {
 		register_taxonomy_for_object_type( $this->tag_taxonomy, $this->post_type );
 	}
+
 	/**
 	 * Ensure that 'Feed Tags' stays underneath the PressForward top-level item.
 	 *
-	 * @param string $pf The $parent_file value passed to the
-	 *        'parent_file' filter
+	 * @param string $pf The $parent_file value passed to the 'parent_file' filter.
 	 * @return string
 	 */
 	public function move_feed_tags_submenu( $pf ) {
 		global $typenow, $pagenow;
 
-		// Feed Tags edit page
+		// Feed Tags edit page.
+		// phpcs:ignore WordPress.PHP.YodaConditions.NotYoda
 		if ( 'edit-tags.php' === $pagenow && ! empty( $_GET['taxonomy'] ) && $this->tag_taxonomy === sanitize_text_field( wp_unslash( $_GET['taxonomy'] ) ) ) {
 			$pf = 'pf-menu';
 		}
 
-		// Edit Feed page
+		// Edit Feed page.
 		if ( 'post.php' === $pagenow && ! empty( $_GET['post'] ) ) {
 			global $post;
 			if ( $this->post_type === $post->post_type ) {
@@ -113,6 +149,12 @@ class Folders implements HasActions, HasFilters {
 		return $pf;
 	}
 
+	/**
+	 * Checks whether an ID corresponds to a pf_feed_category term.
+	 *
+	 * @param int $id ID.
+	 * @return bool
+	 */
 	public function is_feed_term( $id ) {
 		$termcheck = term_exists( (int) $id, $this->tag_taxonomy );
 		if ( empty( $termcheck ) ) {
@@ -122,6 +164,11 @@ class Folders implements HasActions, HasFilters {
 		}
 	}
 
+	/**
+	 * Gets list of top-level feed folders.
+	 *
+	 * @return array
+	 */
 	public function get_top_feed_folders() {
 		$terms = array( $this->tag_taxonomy );
 		$cats  = get_terms(
@@ -135,6 +182,12 @@ class Folders implements HasActions, HasFilters {
 		return $cats;
 	}
 
+	/**
+	 * Gets non-top-level feed folders.
+	 *
+	 * @param int|array|object $ids Single folder ID, or array/object of IDs.
+	 * @return array
+	 */
 	public function get_child_feed_folders( $ids = false ) {
 		$children = array();
 		if ( ! $ids ) {
@@ -163,18 +216,33 @@ class Folders implements HasActions, HasFilters {
 		} else {
 			return $ids;
 		}
+
 		return $children;
 	}
 
+	/**
+	 * Gets child folders of a folder.
+	 *
+	 * @param WP_Term $folder Term object.
+	 * @return array
+	 */
 	public function get_child_folders( $folder ) {
-			$children = get_term_children( $folder->term_id, $this->tag_taxonomy );
-			$folders  = array();
+		$children = get_term_children( $folder->term_id, $this->tag_taxonomy );
+		$folders  = array();
+
 		foreach ( $children as $child ) {
 			$folders[ $child ] = $this->get_feed_folders( $child );
 		}
-			return $folders;
+
+		return $folders;
 	}
 
+	/**
+	 * Gets feed folders.
+	 *
+	 * @param int|array|object $ids Single folder ID, or array/object of IDs.
+	 * @return array
+	 */
 	public function get_feed_folders( $ids = false ) {
 		$folder_set = array();
 		if ( ! $ids ) {
@@ -209,18 +277,22 @@ class Folders implements HasActions, HasFilters {
 		}
 
 		return $folder_set;
-
 	}
 
-	public function get_feeds_without_folders( $ids = true ) {
-		$q      = new \WP_Query(
+	/**
+	 * Gets a list of feeds without folders.
+	 *
+	 * @return array
+	 */
+	public function get_feeds_without_folders() {
+		$q = new \WP_Query(
 			array(
-				'post_type' => $this->post_type,
-				'orderby'   => 'title',
-				'order'     => 'ASC',
-				'nopaging'  => true,
+				'post_type'              => $this->post_type,
+				'orderby'                => 'title',
+				'order'                  => 'ASC',
+				'nopaging'               => true,
 				'update_post_meta_cache' => false,
-				'tax_query' => array(
+				'tax_query'              => array(
 					array(
 						'taxonomy' => $this->tag_taxonomy,
 						'operator' => 'NOT EXISTS',
@@ -229,10 +301,12 @@ class Folders implements HasActions, HasFilters {
 			)
 		);
 
-		$ids = wp_list_pluck( $q->posts, 'ID' );
-		return $ids;
+		return wp_list_pluck( $q->posts, 'ID' );
 	}
 
+	/**
+	 * Prints link to see all feeds and folders.
+	 */
 	public function link_to_see_all_feeds_and_folders() {
 		?>
 		<li class="feed" id="the-whole-feed-list">
@@ -245,6 +319,9 @@ class Folders implements HasActions, HasFilters {
 		<?php
 	}
 
+	/**
+	 * Gets list of feeds without folders.
+	 */
 	public function the_feeds_without_folders() {
 		global $wp_version;
 		if ( 4.0 < (float) $wp_version ) {
@@ -257,29 +334,41 @@ class Folders implements HasActions, HasFilters {
 		}
 	}
 
+	/**
+	 * Generates markup for feed folders.
+	 *
+	 * @param array $obj Optional. Folder tree.
+	 */
 	public function the_feed_folders( $obj = false ) {
 		if ( ! $obj ) {
 			$obj = $this->get_feed_folders();
 		}
+
 		?>
 		<ul class="feed_folders">
-				<?php
-				foreach ( $obj as $folder ) {
-					?>
-					<li class="feed_folder" id="folder-<?php echo esc_attr( $folder['term_id'] ); ?>">
-					<?php
-					$this->the_inside_of_folder( $folder );
-					?>
-					</li>
-					<?php
-				}
-
-				$this->the_feeds_without_folders();
+			<?php
+			foreach ( $obj as $folder ) {
 				?>
+				<li class="feed_folder" id="folder-<?php echo esc_attr( $folder['term_id'] ); ?>">
+				<?php
+				$this->the_inside_of_folder( $folder );
+				?>
+				</li>
+				<?php
+			}
+
+			$this->the_feeds_without_folders();
+			?>
 		</ul>
 		<?php
 	}
 
+	/**
+	 * Generates markup for the inside of a feed folder.
+	 *
+	 * @param array $folder  Term data.
+	 * @param bool  $wrapped Whether to have a 'feed_folder' wrapper div.
+	 */
 	public function the_inside_of_folder( $folder, $wrapped = false ) {
 		if ( $wrapped ) {
 			?>
@@ -318,11 +407,16 @@ class Folders implements HasActions, HasFilters {
 		}
 		if ( $wrapped ) {
 			?>
-		</li>
+			</li>
 			<?php
 		}
 	}
 
+	/**
+	 * Generates markup for the folder name/link.
+	 *
+	 * @param array $folder  Term data.
+	 */
 	public function the_folder( $folder ) {
 		if ( is_array( $folder ) ) {
 			$term_obj = $folder['term'];
@@ -339,30 +433,35 @@ class Folders implements HasActions, HasFilters {
 		<?php
 	}
 
+
+	/**
+	 * Generates markup for the folder name/link.
+	 *
+	 * @param mixed $feed Feed ID or object.
+	 */
 	public function the_feed( $feed ) {
 		$feed_obj = get_post( $feed );
 		?>
 		<li class="feed" id="feed-<?php echo esc_attr( $feed_obj->ID ); ?>">
 		<?php
 
-			printf( '<a href="%s" title="%s">%s</a>', esc_attr( $feed_obj->ID ), esc_attr( $feed_obj->post_title) , esc_html( $feed_obj->post_title ) );
+			printf( '<a href="%s" title="%s">%s</a>', esc_attr( $feed_obj->ID ), esc_attr( $feed_obj->post_title ), esc_html( $feed_obj->post_title ) );
 
 		?>
 		</li>
 		<?php
 	}
 
-
+	/**
+	 * Generates markup for the feed-folders element.
+	 */
 	public function folderbox() {
 		?>
-			<div id="feed-folders">
-					<h3><?php esc_html_e( 'Folders', 'pf' ); ?></h3>
-					<?php
-					$this->the_feed_folders();
-					?>
-				<div class="clear"></div>
-			</div>
+		<div id="feed-folders">
+			<h3><?php esc_html_e( 'Folders', 'pf' ); ?></h3>
+			<?php $this->the_feed_folders(); ?>
+			<div class="clear"></div>
+		</div>
 		<?php
 	}
-
 }
