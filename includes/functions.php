@@ -1005,22 +1005,12 @@ function pf_get_drafted_items( $post_type = 'pf_feed_item' ) {
 }
 
 /**
- * Unsure what this function is meant to do.
+ * Not used.
  *
- * @todo Remove this function.
- *
- * @param string $sql SQL string.
+ * @return mixed $retval Return value.
  */
-function filter_for_pf_archives_only( $sql ) {
-	global $wpdb;
-
-	$relate = pressforward( 'schema.relationships' );
-	$rt = $relate->table_name;
-	$user_id = get_current_user_id();
-	$read_id = pf_get_relationship_type_id( 'archive' );
-
-	return $sql;
-
+function filter_for_pf_archives_only( $retval ) {
+	return $retval;
 }
 
 /**
