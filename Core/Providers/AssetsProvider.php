@@ -34,7 +34,7 @@ class AssetsProvider extends ServiceProvider {
 	 *
 	 * @param Intraxia\Jaxion\Assets\Register $assets Assets object.
 	 */
-	protected function add_assets( $assets ) {
+	protected function add_assets( \Intraxia\Jaxion\Assets\Register $assets ) {
 		$slug = 'pf';
 		$url  = $this->container->fetch( 'url' );
 		$assets->set_debug( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG );
