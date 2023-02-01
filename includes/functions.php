@@ -906,20 +906,21 @@ function pf_forward_unto_source() {
 		add_filter( 'wds_process_canonical', '__return_false');
 	}
 
+	if ( ! empty( $_GET['noforward'] ) ) {
+		return;
+	}
+
 	$wait = get_option( 'pf_link_to_source', 0 );
 	$post_check = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'pf_forward_to_origin', true );
-	if ( isset( $_GET['noforward'] ) && true == $_GET['noforward'] ) {
 
-	} else {
-		if ( ( $wait > 0 ) && ( 'no-forward' !== $post_check ) ) {
-			echo '<META HTTP-EQUIV="refresh" CONTENT="' . esc_attr( $wait ) . ';URL=' . esc_attr( $link ) . '">';
-			?>
-				<script type="text/javascript">console.log('You are being redirected to the source item.');</script>
-			<?php
+	if ( ( $wait > 0 ) && ( 'no-forward' !== $post_check ) ) {
+		echo '<META HTTP-EQUIV="refresh" CONTENT="' . esc_attr( $wait ) . ';URL=' . esc_attr( $link ) . '">';
+		?>
+			<script type="text/javascript">console.log('You are being redirected to the source item.');</script>
+		<?php
 
-			echo '</head><body></body></html>';
-			die();
-		}
+		echo '</head><body></body></html>';
+		die();
 	}
 }
 
