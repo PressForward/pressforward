@@ -12,9 +12,6 @@ use PressForward\Controllers\Metas;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
-/**
- * Classes and functions for dealing with feed items
- */
 
 /**
  * Database class for manipulating feed items
