@@ -32,7 +32,7 @@ class AssetsProvider extends ServiceProvider {
 	/**
 	 * Registers static assets.
 	 *
-	 * @param Intraxia\Jaxion\Assets\Register $assets Assets object.
+	 * @param \Intraxia\Jaxion\Assets\Register $assets Assets object.
 	 */
 	protected function add_assets( \Intraxia\Jaxion\Assets\Register $assets ) {
 		$slug = 'pf';
