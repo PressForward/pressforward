@@ -1,22 +1,37 @@
 <?php
+/**
+ * Nominations data.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Schema;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
+
 /**
  * Functionality related to nominations
  */
 class Nominations implements HasActions, HasFilters {
+	/**
+	 * Post type.
+	 *
+	 * @access public
+	 * @var string
+	 */
 	public $post_type;
 
-	function __construct() {
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
 		$this->post_type = 'nomination';
-		// add_action('edit_post', array( $this, 'send_nomination_for_publishing'));
-		// add_action( 'manage_nomination_posts_custom_column',  array($this, 'nomination_custom_columns') );
-		// add_filter( "manage_edit-nomination_sortable_columns", array($this, "nomination_sortable_columns") );
-		// add_action( 'feeder_menu', array($this, "nominate_this_tile"), 11 );
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function action_hooks() {
 		return array(
 			array(
@@ -26,6 +41,9 @@ class Nominations implements HasActions, HasFilters {
 		);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function filter_hooks() {
 		return array(
 			array(
@@ -39,13 +57,12 @@ class Nominations implements HasActions, HasFilters {
 		);
 	}
 
-
 	/**
-	 * Register the 'nomination' post type
+	 * Registers the 'nomination' post type.
 	 *
 	 * @since 1.7
 	 */
-	function register_post_type() {
+	public function register_post_type() {
 		$args = array(
 			'labels'               => array(
 				'name'               => __( 'Nominations', 'pf' ),
@@ -77,8 +94,6 @@ class Nominations implements HasActions, HasFilters {
 		);
 
 		register_post_type( $this->post_type, $args );
-
-		// register_taxonomy_for_object_type( pressforward()->get_feed_folder_taxonomy(), $this->post_type );
 	}
 
 	/**
@@ -97,9 +112,15 @@ class Nominations implements HasActions, HasFilters {
 		);
 	}
 
-	// This and the next few functions are to modify the table that shows up when you click "Nominations".
-	function edit_nominations_columns( $columns ) {
-
+	/**
+	 * Adds custom columns to Nominations view.
+	 *
+	 * This and the next few functions are to modify the table that shows up when you click "Nominations".
+	 *
+	 * @param array $columns Column names and headers.
+	 * @return array
+	 */
+	public function edit_nominations_columns( $columns ) {
 		$columns = array(
 			'cb'              => '<input type="checkbox" />',
 			'title'           => __( 'Title', 'pf' ),
@@ -111,11 +132,14 @@ class Nominations implements HasActions, HasFilters {
 		);
 
 		return $columns;
-
 	}
 
-	// Make these columns sortable
-	function nomination_sortable_columns() {
+	/**
+	 * Make these Nominations columns sortable.
+	 *
+	 * @return array
+	 */
+	public function nomination_sortable_columns() {
 		return array(
 			'title'           => 'title',
 			'date'            => 'date',
@@ -126,15 +150,11 @@ class Nominations implements HasActions, HasFilters {
 		);
 	}
 
-	// The builder for the box that shows us the nomination metadata.
+	/**
+	 * The builder for the box that shows us the nomination metadata.
+	 */
 	public function nominations_box_builder() {
 		global $post;
-
 		do_action( 'nominations_box' );
-
 	}
-
-
-
-
 }
