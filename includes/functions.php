@@ -910,7 +910,7 @@ function pf_forward_unto_source() {
 		return;
 	}
 
-	$wait = get_option( 'pf_link_to_source', 0 );
+	$wait       = get_option( 'pf_link_to_source', 0 );
 	$post_check = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'pf_forward_to_origin', true );
 
 	if ( ( $wait > 0 ) && ( 'no-forward' !== $post_check ) ) {
@@ -923,7 +923,6 @@ function pf_forward_unto_source() {
 		die();
 	}
 }
-
 add_action( 'wp_head', 'pf_forward_unto_source', 1000 );
 
 /**
@@ -934,17 +933,23 @@ add_action( 'wp_head', 'pf_forward_unto_source', 1000 );
 function pf_debug_ipads() {
 	echo '<script src="http://debug.phonegap.com/target/target-script-min.js#pressforward"></script>';
 }
-// add_action ('wp_head', 'pf_debug_ipads');
-// add_action ('admin_head', 'pf_debug_ipads');
+
+/**
+ * Checks whether an item has been pushed to draft.
+ *
+ * @param int $item_id PF item ID.
+ * @return bool|int
+ */
 function pf_is_drafted( $item_id ) {
 	$a = array(
-			'no_found_rows' => true,
-			'fields' => 'ids',
-			'meta_key' => pressforward('controller.metas')->get_key('item_id'),
-			'meta_value' => $item_id,
-			'post_type'	=> get_option( PF_SLUG . '_draft_post_type', 'post' ),
-		);
+		'no_found_rows' => true,
+		'fields'        => 'ids',
+		'meta_key'      => pressforward( 'controller.metas' )->get_key( 'item_id' ),
+		'meta_value'    => $item_id,
+		'post_type'	    => get_option( PF_SLUG . '_draft_post_type', 'post' ),
+	);
 	$q = new WP_Query( $a );
+
 	if ( 0 < $q->post_count ) {
 		$draft = $q->posts;
 		return $draft[0];
@@ -956,44 +961,56 @@ function pf_is_drafted( $item_id ) {
 /**
  * Get a list of all drafted items.
  *
+ * @param string $post_type Post type. Defaults to 'pf_feed_item'.
  * @return array
  */
 function pf_get_drafted_items( $post_type = 'pf_feed_item' ) {
-	$drafts = new WP_Query( array(
-		'no_found_rows' => true,
-		'post_type' => get_option( PF_SLUG . '_draft_post_type', 'post' ),
-		'post_status' => 'any',
-		'meta_query' => array(
+	$drafts = new WP_Query(
 		array(
-				'key' => 'item_id',
+			'no_found_rows'          => true,
+			'post_type'              => get_option( PF_SLUG . '_draft_post_type', 'post' ),
+			'post_status'            => 'any',
+			'meta_query'             => array(
+				array(
+					'key' => 'item_id',
+				),
 			),
-		),
-		'update_post_meta_cache' => true,
-		'update_post_term_cache' => false,
-	) );
+			'update_post_meta_cache' => true,
+			'update_post_term_cache' => false,
+		)
+	);
 
 	$item_hashes = array();
 	foreach ( $drafts->posts as $p ) {
 		$item_hashes[] = pressforward( 'controller.metas' )->get_post_pf_meta( $p->ID, 'item_id', true );
 	}
 
-	$drafted_query = new WP_Query( array(
-		'no_found_rows' => true,
-		'post_status' => 'any',
-		'post_type' => $post_type,
-		'fields' => 'ids',
-		'meta_query' => array(
+	$drafted_query = new WP_Query(
 		array(
-				'key' => 'item_id',
-				'value' => $item_hashes,
-				'compare' => 'IN',
+			'no_found_rows' => true,
+			'post_status'   => 'any',
+			'post_type'     => $post_type,
+			'fields'        => 'ids',
+			'meta_query'    => array(
+			array(
+					'key'     => 'item_id',
+					'value'   => $item_hashes,
+					'compare' => 'IN',
+				),
 			),
-		),
-	) );
+		)
+	);
 
 	return array_map( 'intval', $drafted_query->posts );
 }
 
+/**
+ * Unsure what this function is meant to do.
+ *
+ * @todo Remove this function.
+ *
+ * @param string $sql SQL string.
+ */
 function filter_for_pf_archives_only( $sql ) {
 	global $wpdb;
 
