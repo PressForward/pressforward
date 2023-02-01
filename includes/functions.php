@@ -446,22 +446,23 @@ function pf_prep_item_for_submit( $item ) {
 
 /**
  * Converts an https URL into http, to account for servers without SSL access.
+ *
  * If a function is passed, pf_de_https will return the function result
  * instead of the string.
  *
  * @since 1.7
  *
- * @param string       $url
+ * @param string       $url      URL.
  * @param string|array $function Function to call first to try and get the URL.
  * @return string|object $r Returns the string URL, converted, when no function is passed.
- *
- * otherwise returns the result of the function after being checked for accessability.
+ *                          Otherwise returns the result of the function after being
+ *                          checked for accessibility.
  */
 function pf_de_https( $url, $function = false ) {
-	$args = func_get_args();
 	$url_orig = $url;
+
 	$url = str_replace( '&amp;','&', $url );
-	$url_first = $url;
+
 	if ( ! $function ) {
 		$r = set_url_scheme( $url, 'http' );
 		return $r;
@@ -469,13 +470,17 @@ function pf_de_https( $url, $function = false ) {
 		return pressforward( 'controller.http_tools' )->get_url_content( $url_orig, $function );
 	}
 }
-/**
- * Derived from WordPress's fetch feed function at: https://developer.wordpress.org/reference/functions/fetch_feed/
- */
-function pf_fetch_feed( $url ){
-	$theFeed = fetch_feed( $url );
-	if ( is_wp_error( $theFeed ) ) {
 
+/**
+ * Fetches a feed.
+ *
+ * Derived from WordPress's fetch feed function at: https://developer.wordpress.org/reference/functions/fetch_feed/.
+ *
+ * @param string $url URL.
+ */
+function pf_fetch_feed( $url ) {
+	$the_feed = fetch_feed( $url );
+	if ( is_wp_error( $the_feed ) ) {
 		if ( ! class_exists( 'SimplePie', false ) ) {
 			require_once( ABSPATH . WPINC . '/class-simplepie.php' );
 		}
@@ -488,6 +493,7 @@ function pf_fetch_feed( $url ){
 		$feed = new SimplePie();
 
 		$feed->set_sanitize_class( 'WP_SimplePie_Sanitize_KSES' );
+
 		// We must manually overwrite $feed->sanitize because SimplePie's
 		// constructor sets it before we have a chance to set the sanitization class
 		$feed->sanitize = new WP_SimplePie_Sanitize_KSES();
@@ -495,17 +501,21 @@ function pf_fetch_feed( $url ){
 		$feed->set_cache_class( 'WP_Feed_Cache' );
 		$feed->set_file_class( 'WP_SimplePie_File' );
 		add_filter( 'pf_encoding_retrieval_control', '__return_false' );
-		$feedXml = pf_de_https( $url, 'wp_remote_get' );
-		//$feedXml = mb_convert_encoding($feedXml['body'], 'UTF-8');
-		$feed->set_raw_data($feedXml['body']);
+
+		$feed_xml = pf_de_https( $url, 'wp_remote_get' );
+
+		$feed->set_raw_data( $feed_xml['body'] );
 		$feed->set_cache_duration( apply_filters( 'wp_feed_cache_transient_lifetime', 12 * HOUR_IN_SECONDS, $url ) );
+
 		/**
 		 * Fires just before processing the SimplePie feed object.
 		 *
 		 * @param object $feed SimplePie feed object (passed by reference).
 		 * @param mixed  $url  URL of feed to retrieve. If an array of URLs, the feeds are merged.
 		 */
+
 		do_action_ref_array( 'wp_feed_options', array( &$feed, $url ) );
+
 		$feed->init();
 		$feed->handle_content_type();
 		$feed->set_output_encoding( get_option( 'blog_charset' ) );
@@ -513,68 +523,70 @@ function pf_fetch_feed( $url ){
 		if ( $feed->error() ){
 			return new WP_Error( 'simplepie-error', $feed->error() );
 		}
+
 		return $feed;
 	} else {
-		return $theFeed;
+		return $the_feed;
 	}
 }
 
 /**
- * Converts and echos a list of terms to a set of slugs to be listed in the nomination CSS selector
+ * Converts and echos a list of terms to a set of slugs to be listed in the nomination CSS selector.
+ *
+ * @param array $the_array Data array.
  */
-function pf_nom_class_tagger( $array = array() ) {
+function pf_nom_class_tagger( $the_array = array() ) {
 
-	foreach ( $array as $class ) {
-		if ( ($class == '') || (empty( $class )) || ( ! isset( $class )) ) {
-			// Do nothing.
-		} elseif ( is_array( $class ) ) {
+	foreach ( $the_array as $class_name ) {
+		if ( empty( $class_name ) ) {
+			continue;
 
-			foreach ( $class as $subclass ) {
+		} elseif ( is_array( $class_name ) ) {
+			foreach ( $class_name as $sub_class ) {
 				echo ' ';
-				echo esc_attr( pf_slugger( $class, true, false, true ) );
+				echo esc_attr( pf_slugger( $class_name, true, false, true ) );
 			}
+
 		} else {
 			echo ' ';
-			echo esc_attr( pf_slugger( $class, true, false, true ) );
+			echo esc_attr( pf_slugger( $class_name, true, false, true ) );
 		}
 	}
-
 }
 
 /**
- * Converts and returns a list of terms as a set of slugs useful for nominations
+ * Converts and returns a list of terms as a set of slugs useful for nominations.
  *
  * @since 1.7
  *
- * @param array $array A set of terms.
- *
+ * @param array $the_array A set of terms.
  * @return string|object $tags A string containing a comma-seperated list of slugged tags.
  */
-function get_pf_nom_class_tags( $array = array() ) {
-
-	foreach ( $array as $class ) {
-		if ( ($class == '') || (empty( $class )) || ( ! isset( $class )) ) {
+function get_pf_nom_class_tags( $the_array = array() ) {
+	foreach ( $the_array as $class_name ) {
+		if ( empty( $class_name ) ) {
 			// Do nothing.
 			$tags = '';
-		} elseif ( is_array( $class ) ) {
+		} elseif ( is_array( $class_name ) ) {
 
-			foreach ( $class as $subclass ) {
+			foreach ( $class_name as $sub_class ) {
 				$tags = ' ';
-				$tags = pf_slugger( $class, true, false, true );
+				$tags = pf_slugger( $class_name, true, false, true );
 			}
 		} else {
 			$tags = ' ';
-			$tags = pf_slugger( $class, true, false, true );
+			$tags = pf_slugger( $class_name, true, false, true );
 		}
 	}
-	return $tags;
 
+	return $tags;
 }
 
 /**
  * Build an excerpt for a nomination. For filtering.
  *
  * @param string $text
+ * @return string
  */
 function pf_noms_filter( $text ) {
 	global $post;
@@ -582,12 +594,14 @@ function pf_noms_filter( $text ) {
 	$text = apply_filters( 'the_content', $text );
 	$text = str_replace( '\]\]\>', ']]&gt;', $text );
 	$text = preg_replace( '@<script[^>]*?>.*?</script>@si', '', $text );
+
 	$content_obj = pressforward( 'library.htmlchecker' );
+
 	$text = $content_obj->closetags( $text );
 	$text = strip_tags( $text, '<p>' );
 
 	$excerpt_length = 310;
-	$words = explode( ' ', $text, $excerpt_length + 1 );
+	$words          = explode( ' ', $text, $excerpt_length + 1 );
 	if ( is_array( $words ) && ( count( $words ) > $excerpt_length ) ) {
 		array_pop( $words );
 		array_push( $words, '...' );
@@ -596,7 +610,6 @@ function pf_noms_filter( $text ) {
 
 	return $text;
 }
-
 
 /**
  * Build an excerpt for nominations.
@@ -608,16 +621,17 @@ function pf_noms_filter( $text ) {
  * @return string $r Returns the adjusted excerpt.
  */
 function pf_noms_excerpt( $text ) {
-
 	$text = apply_filters( 'the_content', $text );
 	$text = str_replace( '\]\]\>', ']]&gt;', $text );
 	$text = preg_replace( '@<script[^>]*?>.*?</script>@si', '', $text );
+
 	$content_obj = pressforward( 'library.htmlchecker' );
+
 	$text = $content_obj->closetags( $text );
 	$text = strip_tags( $text, '<p>' );
 
 	$excerpt_length = 310;
-	$words = explode( ' ', $text, $excerpt_length + 1 );
+	$words          = explode( ' ', $text, $excerpt_length + 1 );
 	if ( is_array( $words ) && ( count( $words ) > $excerpt_length ) ) {
 		array_pop( $words );
 		array_push( $words, '...' );
