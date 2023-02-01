@@ -629,18 +629,17 @@ function pf_noms_excerpt( $text ) {
  * @since 3.x
  *
  * @param string $cap Optional. If given, the function will return a set of roles that have that capability.
- *
  * @return array $role_reversal An array with capailities as keys pointing to what roles they match to.
  */
-
 function pf_get_capabilities( $cap = false ) {
 	// Get the WP_Roles object.
 	global $wp_roles;
+
 	// Set up array for storage.
 	$role_reversal = array();
+
 	// Walk through the roles object by role and get capabilities.
 	foreach ( $wp_roles->roles as $role_slug => $role_set ) {
-
 		foreach ( $role_set['capabilities'] as $capability => $cap_bool ) {
 			// Don't store a capability if it is false for the role (though none are).
 			if ( $cap_bool ) {
@@ -648,6 +647,7 @@ function pf_get_capabilities( $cap = false ) {
 			}
 		}
 	}
+
 	// Allow users to get specific capabilities.
 	if ( ! $cap ) {
 		return $role_reversal;
@@ -665,30 +665,29 @@ function pf_get_capabilities( $cap = false ) {
  *
  * @since 3.x
  *
- * @param string $cap The slug for the capacity being checked against.
+ * @param string $cap    The slug for the capacity being checked against.
  * @param bool   $lowest Optional. If the function should return the lowest capable role. Default true.
- * @param bool   $obj Optional. If the function should return a role object instead of a string. Default false.
- *
+ * @param bool   $obj    Optional. If the function should return a role object instead of a string. Default false.
  * @return string|object Returns either the string name of the role or the WP object created by get_role.
  */
-
 function pf_get_role_by_capability( $cap, $lowest = true, $obj = false ) {
 	// Get set of roles for capability.
 	$roles = pf_get_capabilities( $cap );
+
 	// We probobly want to get the lowest role with that capability
 	if ( $lowest ) {
 		$roles = array_reverse( $roles );
 	}
+
 	$arrayvalues = array_values( $roles );
-	$the_role = array_shift( $arrayvalues );
+	$the_role    = array_shift( $arrayvalues );
+
 	if ( ! $obj ) {
 		return $the_role;
 	} else {
 		return get_role( $the_role );
 	}
-
 }
-
 
 /**
  * Get the capability that uniquely matches a specific role.
@@ -708,39 +707,47 @@ function pf_get_role_by_capability( $cap, $lowest = true, $obj = false ) {
  */
 function pf_get_defining_capability_by_role( $role_slug ) {
 	$pf_use_advanced_user_roles = get_option( 'pf_use_advanced_user_roles', 'no' );
+
 	// For those who wish to ignore the super-cool auto-detection for fringe-y sites that
 	// let their user capabilities go wild.
-	if ( 'no' != $pf_use_advanced_user_roles ) {
+	if ( 'no' !== $pf_use_advanced_user_roles ) {
 		$caps = pf_get_capabilities();
 		foreach ( $caps as $slug => $cap ) {
 			$low_role = pf_get_role_by_capability( $slug );
+
 			// Return the first capability only applicable to that role.
-			if ( $role_slug == ($low_role) ) {
+			if ( $role_slug === $low_role ) {
 				return $slug;
 			}
 		}
 	}
-    // Even if we use $pf_use_advanced_user_roles, if it doesn't find any actual lowest option (like it is the case with contributor currently), it should still go to the default ones below
+
+    // Even if we use $pf_use_advanced_user_roles, if it doesn't find any actual lowest option (like it is the case with contributor currently), it should still go to the default ones below.
     $role_slug = strtolower( $role_slug );
     switch ( $role_slug ) {
         case 'administrator':
             return 'manage_options';
-            break;
+
         case 'editor':
             return 'edit_others_posts';
-            break;
+
         case 'author':
             return 'publish_posts';
-            break;
+
         case 'contributor':
             return 'edit_posts';
-            break;
+
         case 'subscriber':
             return 'read';
-            break;
     }
 }
 
+/**
+ * Adds PF cap to WP role.
+ *
+ * @param string $cap       Capacity name.
+ * @param string $role_slug Role slug.
+ */
 function pf_capability_mapper( $cap, $role_slug ) {
 	$feed_caps = pressforward( 'schema.feeds' )->map_feed_caps();
 	$feed_item_caps = pressforward( 'schema.feed_item' )->map_feed_item_caps();
@@ -754,6 +761,9 @@ function pf_capability_mapper( $cap, $role_slug ) {
 	}
 }
 
+/**
+ * Assigns PF's caps to WP's default roles.
+ */
 function assign_pf_to_standard_roles() {
 	$roles = array(
 		'administrator',
@@ -762,9 +772,9 @@ function assign_pf_to_standard_roles() {
 		'contributor',
 		'subscriber',
 	);
+
 	$caps = pf_get_capabilities();
-	// $feed_caps = pressforward('schema.feeds')->map_feed_caps();
-	// $feed_item_caps = pressforward()->schema->map_feed_item_caps();
+
 	foreach ( $caps as $cap => $role ) {
 		foreach ( $role as $a_role ) {
 			pf_capability_mapper( $cap, $a_role );
@@ -773,26 +783,28 @@ function assign_pf_to_standard_roles() {
 }
 
 /**
- * A function to filter authors and, if available, replace their display with the origonal item author.
+ * A function to filter authors and, if available, replace their display with the original item author.
  *
- * Based on http://seoserpent.com/wordpress/custom-author-byline
+ * Based on http://seoserpent.com/wordpress/custom-author-byline.
  *
  * @since 3.x
  *
  * @param string $author The author string currently being displayed.
- *
  * @return string Returns the author.
  */
 function pf_replace_author_presentation( $author ) {
 	global $post;
-	if ( 'yes' == get_option( 'pf_present_author_as_primary', 'yes' ) ) {
-		$custom_author = pressforward( 'controller.metas' )->retrieve_meta( $post->ID, 'item_author' );
-		if ( $custom_author ) {
-			return $custom_author; }
-		return $author;
-	} else {
+
+	if ( 'yes' !== get_option( 'pf_present_author_as_primary', 'yes' ) ) {
 		return $author;
 	}
+
+	$custom_author = pressforward( 'controller.metas' )->retrieve_meta( $post->ID, 'item_author' );
+	if ( $custom_author ) {
+		return $custom_author;
+	}
+
+	return $author;
 }
 add_filter( 'the_author', 'pf_replace_author_presentation' );
 
@@ -807,6 +819,7 @@ add_filter( 'the_author', 'pf_replace_author_presentation' );
  */
 function pf_replace_author_uri_presentation( $author_uri ) {
 	global $post, $authordata;
+
 	if ( is_object( $post ) ) {
 		$id = $post->ID;
 	} elseif ( is_numeric( get_the_ID() ) ) {
@@ -814,50 +827,63 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 	} else {
 		return $author_uri;
 	}
-	if ( 'yes' == get_option( 'pf_present_author_as_primary', 'yes' ) ) {
-		$custom_author_uri = pressforward( 'controller.metas' )->retrieve_meta( $id, 'item_link' );
-		if ( ! $custom_author_uri || 0 == $custom_author_uri || empty( $custom_author_uri ) ) {
-			return $author_uri;
-		} else {
-			return $custom_author_uri;
-		}
-	} else {
+
+	if ( 'yes' !== get_option( 'pf_present_author_as_primary', 'yes' ) ) {
 		return $author_uri;
+	}
+
+	$custom_author_uri = pressforward( 'controller.metas' )->retrieve_meta( $id, 'item_link' );
+	if ( ! $custom_author_uri || 0 == $custom_author_uri || empty( $custom_author_uri ) ) {
+		return $author_uri;
+	} else {
+		return $custom_author_uri;
 	}
 }
 
 add_filter( 'author_link', 'pf_replace_author_uri_presentation' );
 
+/**
+ * Gets the canonical URL for the current PF item.
+ *
+ * @return bool|string
+ */
 function pf_canonical_url() {
-	if ( is_single() ) {
-		$obj = get_queried_object();
-		$post_ID = $obj->ID;
-		$link = pressforward( 'controller.metas' )->get_post_pf_meta( $post_ID, 'item_link', true );
-		if (empty($link)){
-			return false;
-		}
-		return $link;
-	} else {
+	if ( ! is_single() ) {
 		return false;
 	}
+
+	$link = pressforward( 'controller.metas' )->get_post_pf_meta( get_queried_object_id(), 'item_link', true );
+
+	if ( empty( $link ) ) {
+		return false;
+	}
+
+	return $link;
 }
 
+/**
+ * Filter callback that calls pf_canonical_url().
+ *
+ * @param string $url URL.
+ * @return string
+ */
 function pf_filter_canonical( $url ) {
-	if ( $link = pf_canonical_url() ) {
+	$link = pf_canonical_url();
+
+	if ( $link ) {
 		return $link;
 	} else {
 		return $url;
 	}
 }
-
 add_filter( 'wpseo_canonical', 'pf_filter_canonical' );
 add_filter( 'wpseo_opengraph_url', 'pf_filter_canonical' );
 add_filter("wds_filter_canonical", 'pf_filter_canonical');
 
 /**
- * A function to set up the HEAD data to forward users to origonal articles.
+ * A function to set up the HEAD data to forward users to original articles.
  *
- * Echos the approprite code to forward users.
+ * Echoes the approprite code to forward users.
  *
  * @since 3.x
  */
@@ -865,33 +891,34 @@ function pf_forward_unto_source() {
 	if ( ! is_singular() ) {
 		return false;
 	}
+
 	$link = pf_canonical_url();
-	if ( ! empty( $link ) && false !== $link ) {
+	if ( ! $link ) {
+		return false;
+	}
 
-		$obj = get_queried_object();
-		$post_id = $obj->ID;
+	$obj = get_queried_object();
+	$post_id = $obj->ID;
 
-		if ( has_action( 'wpseo_head' ) ) {
+	if ( ! has_action( 'wpseo_head' ) ) {
+		echo '<link rel="canonical" href="' . esc_attr( $link ) . '" />';
+		echo '<meta property="og:url" content="' . esc_attr( $link ) . '" />';
+		add_filter( 'wds_process_canonical', '__return_false');
+	}
 
-		} else {
-			echo '<link rel="canonical" href="' . esc_attr( $link ) . '" />';
-			echo '<meta property="og:url" content="' . esc_attr( $link ) . '" />';
-			add_filter( 'wds_process_canonical', '__return_false');
-		}
-		$wait = get_option( 'pf_link_to_source', 0 );
-		$post_check = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'pf_forward_to_origin', true );
-		if ( isset( $_GET['noforward'] ) && true == $_GET['noforward'] ) {
+	$wait = get_option( 'pf_link_to_source', 0 );
+	$post_check = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'pf_forward_to_origin', true );
+	if ( isset( $_GET['noforward'] ) && true == $_GET['noforward'] ) {
 
-		} else {
-			if ( ( $wait > 0 ) && ( 'no-forward' !== $post_check ) ) {
-				echo '<META HTTP-EQUIV="refresh" CONTENT="' . esc_attr( $wait ) . ';URL=' . esc_attr( $link ) . '">';
-				?>
-					<script type="text/javascript">console.log('You are being redirected to the source item.');</script>
-				<?php
+	} else {
+		if ( ( $wait > 0 ) && ( 'no-forward' !== $post_check ) ) {
+			echo '<META HTTP-EQUIV="refresh" CONTENT="' . esc_attr( $wait ) . ';URL=' . esc_attr( $link ) . '">';
+			?>
+				<script type="text/javascript">console.log('You are being redirected to the source item.');</script>
+			<?php
 
-				echo '</head><body></body></html>';
-				die();
-			}
+			echo '</head><body></body></html>';
+			die();
 		}
 	}
 }
@@ -899,7 +926,7 @@ function pf_forward_unto_source() {
 add_action( 'wp_head', 'pf_forward_unto_source', 1000 );
 
 /**
- * Echos the script link to use phonegap's debugging tools.
+ * Echoes the script link to use phonegap's debugging tools.
  *
  * @since 3.x
  */
