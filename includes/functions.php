@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Miscellaneous utility functions
  *
@@ -27,18 +26,18 @@
  */
 function pressforward_register_module( $args ) {
 	$defaults = array(
-		'slug' => '',
+		'slug'  => '',
 		'class' => '',
 	);
 	$r = wp_parse_args( $args, $defaults );
 
-	// We need the 'class' and 'slug' terms
+	// We need the 'class' and 'slug' terms.
 	if ( empty( $r['class'] ) || empty( $r['slug'] ) ) {
 		return;
 	}
 
-	// Ensure the class exists before attempting to initialize it
-	// @todo Should probably have better error reporting
+	// Ensure the class exists before attempting to initialize it.
+	// @todo Should probably have better error reporting.
 	if ( ! class_exists( $r['class'] ) ) {
 		return;
 	}
@@ -60,7 +59,7 @@ function pressforward_register_module( $args ) {
 }
 
 /**
- * Echoes the URL of the admin page
+ * Echoes the URL of the admin page.
  *
  * @since 1.7
  */
@@ -68,7 +67,7 @@ function pf_admin_url() {
 	echo esc_url( pf_get_admin_url() );
 }
 	/**
-	 * Returns the URL of the admin page
+	 * Returns the URL of the admin page.
 	 *
 	 * @return string
 	 */
@@ -78,7 +77,7 @@ function pf_get_admin_url() {
 
 
 /**
- * Echoes the Nominate This bookmarklet link
+ * Echoes the Nominate This bookmarklet link.
  *
  * @since 1.7
  */
@@ -87,11 +86,13 @@ function pf_shortcut_link() {
 	echo pf_get_shortcut_link();
 }
 
+/**
+ * Catches pf-nominate-this requests.
+ */
 function start_pf_nom_this(){
 	global $pagenow;
-	if( 'edit.php' == $pagenow && array_key_exists( 'pf-nominate-this', $_GET ) && 2 == $_GET['pf-nominate-this']) {
-		//$someVar = $wp_query->get('some-var');
-		include(dirname(__FILE__).'/nomthis/nominate-this.php');
+	if ( 'edit.php' === $pagenow && array_key_exists( 'pf-nominate-this', $_GET ) && 2 === (int) $_GET['pf-nominate-this'] ) {
+		include( dirname( __FILE__ ) . '/nomthis/nominate-this.php' );
 		die();
 	}
 
@@ -135,7 +136,6 @@ function pf_get_shortcut_link() {
  * @return string
  */
 function pf_nomthis_bookmarklet() {
-	//get_site_url(null, 'wp-json/'
 	$user = wp_get_current_user();
 	$user_id = $user->ID;
 	$link = "javascript:
@@ -158,11 +158,10 @@ function pf_nomthis_bookmarklet() {
 	$link = str_replace( array( "\r", "\n", "\t" ),  '', $link );
 
 	return apply_filters( 'pf_nomthis_bookmarklet', $link );
-
 }
 
 /**
- * Get the feed item post type name
+ * Get the feed item post type name.
  *
  * @since 1.7
  *
@@ -173,7 +172,7 @@ function pf_feed_item_post_type() {
 }
 
 /**
- * Get the feed item tag taxonomy name
+ * Get the feed item tag taxonomy name.
  *
  * @since 1.7
  *
@@ -184,241 +183,262 @@ function pf_feed_item_tag_taxonomy() {
 }
 
 /**
- * Get a feed excerpt
+ * Get a feed excerpt.
  */
 function pf_feed_excerpt( $text ) {
-
 	$text = apply_filters( 'the_content', $text );
 	$text = str_replace( '\]\]\>', ']]&gt;', $text );
 	$text = preg_replace( '@<script[^>]*?>.*?</script>@si', '', $text );
 	$text = strip_tags( $text );
 	$text = substr( $text, 0, 260 );
+
 	$excerpt_length = 28;
+
 	$words = explode( ' ', $text, $excerpt_length + 1 );
 	array_pop( $words );
 	array_push( $words, '...' );
-	$text = implode( ' ', $words );
+	$text  = implode( ' ', $words );
 
-	$contentObj = pressforward( 'library.htmlchecker' );
-	$item_content = $contentObj->closetags( $text );
+	$content_obj  = pressforward( 'library.htmlchecker' );
+	$item_content = $content_obj->closetags( $text );
 
 	return $text;
 }
 
 /**
- * Sanitize a string for use in URLs and filenames
+ * Sanitize a string for use in URLs and filenames.
  *
  * @since 1.7
  * @link http://stackoverflow.com/questions/2668854/sanitizing-strings-to-make-them-url-and-filename-safe
  *
- * @param string $string The string to be sanitized
- * @param bool   $force_lowercase True to force all characters to lowercase
- * @param bool   $anal True to scrub all non-alphanumeric characters
+ * @param string $string          The string to be sanitized.
+ * @param bool   $force_lowercase True to force all characters to lowercase.
+ * @param bool   $strict          True to scrub all non-alphanumeric characters.
  * @return string $clean The cleaned string
  */
-function pf_sanitize( $string, $force_lowercase = true, $anal = false ) {
+function pf_sanitize( $string, $force_lowercase = true, $strict = false ) {
 	$strip = array(
-	'~',
-	'`',
-	'!',
-	'@',
-	'#',
-	'$',
-	'%',
-	'^',
-	'&',
-	'*',
-	'(',
-	')',
-	'_',
-	'=',
-	'+',
-	'[',
-	'{',
-	']',
-				   '}',
-	'\\',
-	'|',
-	';',
-	':',
-	'"',
-	"'",
-	'&#8216;',
-	'&#8217;',
-	'&#8220;',
-	'&#8221;',
-	'&#8211;',
-	'&#8212;',
-				   '',
-	'',
-	',',
-	'<',
-	'.',
-	'>',
-	'/',
-	'?',
+		'~',
+		'`',
+		'!',
+		'@',
+		'#',
+		'$',
+		'%',
+		'^',
+		'&',
+		'*',
+		'(',
+		')',
+		'_',
+		'=',
+		'+',
+		'[',
+		'{',
+		']',
+		'}',
+		'\\',
+		'|',
+		';',
+		':',
+		'"',
+		"'",
+		'&#8216;',
+		'&#8217;',
+		'&#8220;',
+		'&#8221;',
+		'&#8211;',
+		'&#8212;',
+		'',
+		'',
+		',',
+		'<',
+		'.',
+		'>',
+		'/',
+		'?',
 	);
+
 	if ( is_array( $string ) ) {
 		$string = implode( ' ', $string );
 	}
+
 	$clean = trim( str_replace( $strip, '', strip_tags( $string ) ) );
 	$clean = preg_replace( '/\s+/', '-', $clean );
-	$clean = ($anal) ? preg_replace( '/[^a-zA-Z0-9]/', '', $clean ) : $clean ;
 
-	return ($force_lowercase) ?
-		(function_exists( 'mb_strtolower' )) ?
-			mb_strtolower( $clean, 'UTF-8' ) :
-			strtolower( $clean ) :
-		$clean;
+	if ( $strict ) {
+		$clean = preg_replace( '/[^a-zA-Z0-9]/', '', $clean );
+	}
+
+	if ( $force_lowercase ) {
+		$clean = function_exists( 'mb_strtolower' ) ? mb_strtolower( $clean, 'UTF-8' ) : strtolower( $clean );
+	}
+
+	return $clean;
 }
 
 /**
- * Create a slug from a string
+ * Create a slug from a string.
  *
  * @since 1.7
  * @uses pf_sanitize()
  *
- * @param string $string The string to convert
- * @param bool   $case True to force all characters to lowercase
- * @param bool   $string True to scrub all non-alphanumeric characters
- * @param bool   $spaces False to strip spaces
- * @return string $stringSlug The sanitized slug
+ * @param string $string The string to convert.
+ * @param bool   $case   True to force all characters to lowercase.
+ * @param bool   $string True to scrub all non-alphanumeric characters.
+ * @param bool   $spaces False to strip spaces.
+ * @return string $string_slug The sanitized slug.
  */
 function pf_slugger( $string, $case = false, $strict = true, $spaces = false ) {
 
-	if ( $spaces == false ) {
-		$string = strip_tags( $string );
-		$stringArray = explode( ' ', $string );
-		$stringSlug = '';
-		foreach ( $stringArray as $stringPart ) {
-			$stringSlug .= ucfirst( $stringPart );
+	if ( $spaces === false ) {
+		$string       = strip_tags( $string );
+		$string_array = explode( ' ', $string );
+		$string_slug  = '';
+
+		foreach ( $string_array as $stringPart ) {
+			$string_slug .= ucfirst( $stringPart );
 		}
-		$stringSlug = str_replace( '&amp;','&', $stringSlug );
-		// $charsToElim = array('?','/','\\');
-		$stringSlug = pf_sanitize( $stringSlug, $case, $strict );
+
+		$string_slug = str_replace( '&amp;','&', $string_slug );
+		$string_slug = pf_sanitize( $string_slug, $case, $strict );
 	} else {
-		// $string = strip_tags($string);
-		// $stringArray = explode(' ', $string);
-		// $stringSlug = '';
-		// foreach ($stringArray as $stringPart){
-		// $stringSlug .= ucfirst($stringPart);
-		// }
-		$stringSlug = str_replace( '&amp;','&', $string );
-		// $charsToElim = array('?','/','\\');
-		$stringSlug = pf_sanitize( $stringSlug, $case, $strict );
+		$string_slug = str_replace( '&amp;','&', $string );
+		$string_slug = pf_sanitize( $string_slug, $case, $strict );
 	}
 
-	return $stringSlug;
-
+	return $string_slug;
 }
 
 /**
- * Convert data to the standardized item format expected by PF
+ * Convert data to the standardized item format expected by PF.
  *
  * @since 1.7
- * @todo Take params as an array and use wp_parse_args()
+ * @todo Take params as an array and use wp_parse_args().
  *
- * @return array $itemArray
+ * @param string $item_title      Item title.
+ * @param string $source_title    Source title.
+ * @param string $item_date       Item date.
+ * @param string $item_author     Item author.
+ * @param string $item_link       Item link.
+ * @param string $item_feat_img   Item featured image URL.
+ * @param string $item_uid        Item UID.
+ * @param string $item_wp_date    Item date for WP.
+ * @param string $item_tags       Item tags.
+ * @param string $added_date      Added date.
+ * @param string $source_repeat   Source repeat.
+ * @param string $postid          Post ID.
+ * @param string $readable_status Readable status.
+ * @param array  $obj             Data array.
+ * @return array $item_array
  */
-function pf_feed_object( $itemTitle = '', $sourceTitle = '', $itemDate = '', $itemAuthor = '', $itemContent = '', $itemLink = '', $itemFeatImg = '', $itemUID = '', $itemWPDate = '', $itemTags = '', $addedDate = '', $sourceRepeat = '', $postid = '', $readable_status = '', $obj = array() ) {
+function pf_feed_object( $item_title = '', $source_title = '', $item_date = '', $item_author = '', $item_content = '', $item_link = '', $item_feat_img = '', $item_uid = '', $item_wp_date = '', $item_tags = '', $added_date = '', $source_repeat = '', $postid = '', $readable_status = '', $obj = array() ) {
 
 	// Assemble all the needed variables into our fancy object!
-	$itemArray = array(
-		'item_title'      => $itemTitle,
-		'source_title'    => $sourceTitle,
-		'item_date'       => $itemDate,
-		'item_author'     => $itemAuthor,
-		'item_content'    => $itemContent,
-		'item_link'       => $itemLink,
-		'item_feat_img'   => $itemFeatImg,
-		'item_id'         => $itemUID,
-		'item_wp_date'    => $itemWPDate,
-		'item_tags'       => $itemTags,
-		'item_added_date' => $addedDate,
-		'source_repeat'   => $sourceRepeat,
+	$item_array = array(
+		'item_title'      => $item_title,
+		'source_title'    => $source_title,
+		'item_date'       => $item_date,
+		'item_author'     => $item_author,
+		'item_content'    => $item_content,
+		'item_link'       => $item_link,
+		'item_feat_img'   => $item_feat_img,
+		'item_id'         => $item_uid,
+		'item_wp_date'    => $item_wp_date,
+		'item_tags'       => $item_tags,
+		'item_added_date' => $added_date,
+		'source_repeat'   => $source_repeat,
 		'post_id'		  => $postid,
 		'readable_status' => $readable_status,
-		'obj'				=> $obj,
+		'obj'             => $obj,
 	);
 
-	return $itemArray;
+	return $item_array;
 }
 
+/**
+ * Creates ID for PF object.
+ *
+ * @param string $url   URL.
+ * @param string $title Title. Not used.
+ * @return string
+ */
 function pressforward_create_feed_item_id( $url, $title ) {
 	$url = sanitize_url( $url );
-	$url = str_replace('http://', '', $url);
-	$url = str_replace('https://', '', $url);
-	$hash = md5( untrailingslashit(trim($url)) );
+	$url = str_replace( 'http://', '', $url );
+	$url = str_replace( 'https://', '', $url );
+
+	$hash = md5( untrailingslashit( trim( $url ) ) );
+
 	return $hash;
 }
 
 /**
- * Get all posts with 'item_id' set to a given item id
+ * Get all posts with 'item_id' set to a given item id.
  *
  * @since 1.7
  *
  * @param string $post_type The post type to limit results to.
- * @param string $item_id The origin item id.
- * @param bool   $ids_only Set to true if you want only an array of IDs returned in the query.
- *
+ * @param string $item_id   The origin item id.
+ * @param bool   $ids_only  Set to true if you want only an array of IDs returned in the query.
  * @return object A standard WP_Query object.
  */
 function pf_get_posts_by_id_for_check( $post_type = false, $item_id = null, $ids_only = false ) {
 	global $wpdb;
+
 	// If the item is less than 24 hours old on nomination, check the whole database.
-	// $theDate = getdate();
-	// $w = date('W');
 	$r = array(
-							'meta_key' => pressforward('controller.metas')->get_key('item_id'),
-							'meta_value' => $item_id,
-							'post_type'	=> array( 'post', pf_feed_item_post_type() ),
-						);
+		'meta_key'   => pressforward( 'controller.metas' )->get_key( 'item_id' ),
+		'meta_value' => $item_id,
+		'post_type'	 => array( 'post', pf_feed_item_post_type() ),
+	);
 
 	if ( $ids_only ) {
-		$r['fields'] = 'ids';
+		$r['fields']        = 'ids';
 		$r['no_found_rows'] = true;
 		$r['cache_results'] = false;
 
 	}
 
-	if ( false != $post_type ) {
+	if ( false !== $post_type ) {
 		$r['post_type'] = $post_type;
 	}
 
-	$postsAfter = new WP_Query( $r );
-	pf_log( ' Checking for posts with item ID ' . $item_id . ' returned query with ' . $postsAfter->post_count . ' items.' );
-	// pf_log($postsAfter);
-	return $postsAfter;
+	$posts_after = new WP_Query( $r );
+	pf_log( ' Checking for posts with item ID ' . $item_id . ' returned query with ' . $posts_after->post_count . ' items.' );
+
+	return $posts_after;
 }
 
 /**
- * Create the hidden inputs used when nominating a post from All Content
+ * Creates the hidden inputs used when nominating a post from All Content.
  *
  * @since 1.7
  */
 function pf_prep_item_for_submit( $item ) {
 	$item['item_content'] = htmlspecialchars( $item['item_content'] );
+
 	$itemid = $item['item_id'];
 
-	foreach ( $item as $itemKey => $itemPart ) {
+	foreach ( $item as $item_key => $item_part ) {
 
-		switch ( $itemKey ) {
+		switch ( $item_key ) {
 			case 'item_content' :
-				$itemPart = htmlspecialchars( $itemPart );
+				$item_part = htmlspecialchars( $item_part );
 			break;
 
 			case 'nominators' :
-				$itemPart = wp_list_pluck( 'user_id', $itemPart );
+				$item_part = wp_list_pluck( 'user_id', $item_part );
 			break;
 		}
 
-		if ( is_array( $itemPart ) ) {
-			$theItemPart = implode( ',', $itemPart );
+		if ( is_array( $item_part ) ) {
+			$the_item_part = implode( ',', $item_part );
 		} else {
-			$theItemPart = $itemPart;
+			$the_item_part = $item_part;
 		}
 
-		echo '<input type="hidden" name="' . esc_attr( $itemKey ) . '" id="' . esc_attr( $itemKey . '_' . $itemid ) . '" id="' . esc_attr( $itemKey ) . '" value="' . esc_attr( $theItemPart ) . '" />';
+		echo '<input type="hidden" name="' . esc_attr( $item_key ) . '" id="' . esc_attr( $item_key . '_' . $itemid ) . '" id="' . esc_attr( $item_key ) . '" value="' . esc_attr( $the_item_part ) . '" />';
 
 	}
 
@@ -566,8 +586,8 @@ function pf_noms_filter( $text ) {
 	$text = apply_filters( 'the_content', $text );
 	$text = str_replace( '\]\]\>', ']]&gt;', $text );
 	$text = preg_replace( '@<script[^>]*?>.*?</script>@si', '', $text );
-	$contentObj = pressforward( 'library.htmlchecker' );
-	$text = $contentObj->closetags( $text );
+	$content_obj = pressforward( 'library.htmlchecker' );
+	$text = $content_obj->closetags( $text );
 	$text = strip_tags( $text, '<p>' );
 
 	$excerpt_length = 310;
@@ -596,8 +616,8 @@ function pf_noms_excerpt( $text ) {
 	$text = apply_filters( 'the_content', $text );
 	$text = str_replace( '\]\]\>', ']]&gt;', $text );
 	$text = preg_replace( '@<script[^>]*?>.*?</script>@si', '', $text );
-	$contentObj = pressforward( 'library.htmlchecker' );
-	$text = $contentObj->closetags( $text );
+	$content_obj = pressforward( 'library.htmlchecker' );
+	$text = $content_obj->closetags( $text );
 	$text = strip_tags( $text, '<p>' );
 
 	$excerpt_length = 310;
