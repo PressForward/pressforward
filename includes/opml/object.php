@@ -297,61 +297,18 @@ class OPML_Object {
 		return $this->feeds[ $unique_id ];
 	}
 
-	function sanitize( $string, $force_lowercase = true, $anal = false ) {
-		$strip = array(
-		'~',
-		'`',
-		'!',
-		'@',
-		'#',
-		'$',
-		'%',
-		'^',
-		'&',
-		'*',
-		'(',
-		')',
-		'_',
-		'=',
-		'+',
-		'[',
-		'{',
-		']',
-					   '}',
-		'\\',
-		'|',
-		';',
-		':',
-		'"',
-		"'",
-		'&#8216;',
-		'&#8217;',
-		'&#8220;',
-		'&#8221;',
-		'&#8211;',
-		'&#8212;',
-					   '',
-		'',
-		',',
-		'<',
-		'.',
-		'>',
-		'/',
-		'?',
-		);
-		if ( is_array( $string ) ) {
-			$string = implode( ' ', $string );
-		}
-		$clean = trim( str_replace( $strip, '', strip_tags( $string ) ) );
-		$clean = preg_replace( '/\s+/', '-', $clean );
-		$clean = ($anal) ? preg_replace( '/[^a-zA-Z0-9]/', '', $clean ) : $clean ;
-
-		return ($force_lowercase) ?
-			(function_exists( 'mb_strtolower' )) ?
-				mb_strtolower( $clean, 'UTF-8' ) :
-				strtolower( $clean ) :
-			$clean;
+	/**
+	 * Sanitizes a string.
+	 *
+	 * @param string $raw_string      The string to be sanitized.
+	 * @param bool   $force_lowercase True to force all characters to lowercase.
+	 * @param bool   $strict          True to scrub all non-alphanumeric characters.
+	 * @return string $clean The cleaned string
+	 */
+	public function sanitize( $raw_string, $force_lowercase = true, $strict = false ) {
+		return pf_sanitize( $raw_string, $force_lowercase, $strict );
 	}
+
 	public function slugify( $string, $case = true, $strict = false, $spaces = false ) {
 		if ( is_array( $string ) ) {
 			$string = $string[0];
