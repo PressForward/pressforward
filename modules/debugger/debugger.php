@@ -243,7 +243,7 @@ class PF_Debugger extends PF_Module {
 	 * If you have no styles, etc, just ignore this
 	 */
 	public function admin_enqueue_styles() {
-		wp_register_style( PF_SLUG . '-debug-style', PF_URL . 'includes/debugger/css/style.css', [], WP_VERSION );
+		wp_register_style( PF_SLUG . '-debug-style', PF_URL . 'includes/debugger/css/style.css', [], $GLOBALS['wp_version'] );
 	}
 
 	/**
