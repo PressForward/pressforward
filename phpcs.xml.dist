@@ -50,6 +50,10 @@
 
 		<exclude-pattern>class-SplClassLoader.php</exclude-pattern>
 		<exclude-pattern>Controllers/StatsShortcodes.php</exclude-pattern>
+
+		<!-- Most third-party libraries don't need to be scanned for coding standards -->
+		<exclude-pattern>Libraries/random_compat</exclude-pattern>
+		<exclude-pattern>Libraries/text-stats</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress.Security">
@@ -78,5 +82,9 @@
 		<exclude-pattern>Controllers/PF_to_WP_Meta.php</exclude-pattern>
 		<exclude-pattern>Controllers/PF_to_WP_Posts.php</exclude-pattern>
 		<exclude-pattern>Controllers/PF_to_WP_System.php</exclude-pattern>
+	</rule>
+
+	<rule ref="PHPCompatibility.Keywords.ForbiddenNamesAsDeclared.resourceFound">
+		<exclude-pattern>Libraries/text-stats</exclude-pattern>
 	</rule>
 </ruleset>
