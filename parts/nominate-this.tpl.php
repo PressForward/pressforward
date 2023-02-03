@@ -1,9 +1,15 @@
 <?php
-if ( 'as_paragraph' == $context ) {
-?>
+/**
+ * Template for Nominate This section of tools panel.
+ *
+ * @package PressForward
+ */
+
+if ( 'as_paragraph' === $context ) {
+	?>
 		<div class="tool-box">
 			<h3 class="title"><?php esc_html_e( 'Nominate This', 'pf' ); ?></h3>
-			<p><?php esc_html_e( 'Nominate This is a bookmarklet: a little app that runs in your browser and lets you grab bits of the web.', 'pf' );?></p>
+			<p><?php esc_html_e( 'Nominate This is a bookmarklet: a little app that runs in your browser and lets you grab bits of the web.', 'pf' ); ?></p>
 
 			<p><?php esc_html_e( 'Use Nominate This to clip text, images and videos from any web page. Then edit and add more straight from Nominate This before you save or publish it in a post on your site.', 'pf' ); ?></p>
 			<p class="description"><?php esc_html_e( 'Drag-and-drop the following link to your bookmarks bar or right click it and add it to your favorites for a posting shortcut.', 'pf' ); ?></p>
@@ -15,27 +21,27 @@ if ( 'as_paragraph' == $context ) {
 
 			<div>
 			<h3><?php esc_html_e( 'Nominate This Extension', 'pf' ); ?></h3>
-			<p><?php esc_html_e( 'Nominate This now has an extension for Chrome with additional functionality.', 'pf' );?></p>
-			<p><a href="https://github.com/PressForward/PressForwardChromeExtension/releases" target="_blank"><?php esc_html_e( 'You can download this new extension at our GitHub repository.', 'pf' );?></a></p>
-			<p><?php esc_html_e( 'Once you have installed the extension, it needs your API keys.', 'pf' );?></p>
+			<p><?php esc_html_e( 'Nominate This now has an extension for Chrome with additional functionality.', 'pf' ); ?></p>
+			<p><a href="https://github.com/PressForward/PressForwardChromeExtension/releases" target="_blank"><?php esc_html_e( 'You can download this new extension at our GitHub repository.', 'pf' ); ?></a></p>
+			<p><?php esc_html_e( 'Once you have installed the extension, it needs your API keys.', 'pf' ); ?></p>
 			<p>
-				<?php esc_html_e( 'Click here to send the installed extension your API keys:', 'pf' );?><br />
+				<?php esc_html_e( 'Click here to send the installed extension your API keys:', 'pf' ); ?><br />
 				<a class="button" id="pressforward-nt__setup-button" onclick=""><?php esc_html_e( 'Send API Keys to Extension', 'pf' ); ?></span></a> <br /><br />
-				<?php esc_html_e( 'Click here to regenerate API keys:', 'pf' );?><br />
+				<?php esc_html_e( 'Click here to regenerate API keys:', 'pf' ); ?><br />
 				<a class="button" id="pressforward-nt__regenerate-button" onclick=""><?php esc_html_e( 'Regenerate and send API Keys to Extension', 'pf' ); ?></span></a> <br />
 			</p>
 			</div>
 		</div>
 
-<?php
-} elseif ( 'as_feed' == $context ) {
+	<?php
+} elseif ( 'as_feed' === $context ) {
 	?>
 	<div class="pf-opt-group span5">
 		<div class="rss-box postbox">
 				<div class="handlediv"><br></div>
 				<h3 class="hndle"><span><?php esc_html_e( 'Nominate This', 'pf' ); ?></span></h3>
 				<div class="inside">
-					<p><?php esc_html_e( 'Nominate This is a bookmarklet: a little app that runs in your browser and lets you grab bits of the web.', 'pf' );?></p>
+					<p><?php esc_html_e( 'Nominate This is a bookmarklet: a little app that runs in your browser and lets you grab bits of the web.', 'pf' ); ?></p>
 
 					<p><?php esc_html_e( 'Use Nominate This to clip text, images and videos from any web page. Then edit and add more straight from Nominate This before you save or publish it in a post on your site.', 'pf' ); ?></p>
 					<p class="description"><?php esc_html_e( 'Drag-and-drop the following link to your bookmarks bar or right click it and add it to your favorites for a posting shortcut.', 'pf' ); ?></p>
@@ -49,7 +55,7 @@ if ( 'as_paragraph' == $context ) {
 		</div>
 		</div>
 		<?php
-} elseif ( 'as_feed_item' == $context && empty( $_GET['pc'] ) ) {
+} elseif ( 'as_feed_item' === $context && empty( $_GET['pc'] ) ) {
 
 	?>
 
@@ -66,9 +72,7 @@ if ( 'as_paragraph' == $context ) {
 				<div class="item_excerpt" id="excerpt1">
 					<p>
 						<?php
-							esc_html_e('Use Nominate This to pull in text, images and videos from any web page.
-									Then you can edit, add author and category before
-									you nominate or draft it in a post on your site.', 'pf');
+							esc_html_e( 'Use Nominate This to pull in text, images and videos from any web page. Then you can edit, add author and category before you nominate or draft it in a post on your site.', 'pf' );
 						?>
 						</p>
 
