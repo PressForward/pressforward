@@ -1,3 +1,11 @@
+<?php
+/**
+ * Template for stats tools tab.
+ *
+ * @package PressForward
+ */
+
+?>
 <div id="stats">
 	<div style="width: 100%">
 		<p><?php esc_html_e( 'About your PressForward Install (Requires the WordPress REST API.)', 'pf' ); ?></p>
