@@ -21,14 +21,7 @@
 	<exclude-pattern>Libraries/gender-checker/</exclude-pattern>
 	<exclude-pattern>modules/foo</exclude-pattern>
 
-	<file>./Application.php</file>
-	<file>./Controllers/</file>
-	<file>./Core/</file>
-	<file>./includes/</file>
-	<file>./init.php</file>
-	<file>./Interfaces</file>
-	<file>./modules</file>
-	<file>./parts</file>
+	<file>.</file>
 
 	<!-- Check for PHP cross-version compatibility. -->
 	<rule ref="PHPCompatibilityWP">
@@ -51,9 +44,8 @@
 		<exclude-pattern>class-SplClassLoader.php</exclude-pattern>
 		<exclude-pattern>Controllers/StatsShortcodes.php</exclude-pattern>
 
-		<!-- Most third-party libraries don't need to be scanned for coding standards -->
-		<exclude-pattern>Libraries/random_compat</exclude-pattern>
-		<exclude-pattern>Libraries/text-stats</exclude-pattern>
+		<!-- Third-party libraries don't need to be scanned for coding standards -->
+		<exclude-pattern>Libraries/</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress.Security">
