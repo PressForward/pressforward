@@ -125,7 +125,7 @@ class Preferences implements HasActions {
 		foreach ( $roles as $slug => $role ) {
 			$defining_capability = pressforward( 'controller.users' )->pf_get_defining_capability_by_role( $slug );
 			?>
-			<option value="<?php echo esc_attr( $defining_capability ); ?>" <?php selected( $enabled, $defining_capability ); ?>><?php esc_html( $role ); ?></option>
+			<option value="<?php echo esc_attr( $defining_capability ); ?>" <?php selected( $enabled, $defining_capability ); ?>><?php echo esc_html( $role ); ?></option>
 			<?php
 		}
 	}
