@@ -473,8 +473,6 @@ class Nominated implements HasActions {
 	 * Sends a nomination for publishing.
 	 */
 	public function send_nomination_for_publishing() {
-		global $post;
-
 		if ( ! isset( $_POST['post_status'] ) || ! isset( $_POST['post_type'] ) || empty( $_POST['ID'] ) ) {
 			return;
 		}
@@ -508,8 +506,8 @@ class Nominated implements HasActions {
 	 * @param string $column Column key.
 	 */
 	public function nomination_custom_columns( $column ) {
-
 		global $post;
+
 		switch ( $column ) {
 			case 'nomcount':
 				echo esc_html( $this->metas->get_post_pf_meta( $post->ID, 'nomination_count', true ) );
@@ -537,6 +535,8 @@ class Nominated implements HasActions {
 	 * Builds the nomination box.
 	 */
 	public function nominations_box_builder() {
+		global $post;
+
 		$origin_item_id   = $this->metas->get_post_pf_meta( $post->ID, 'item_id', true );
 		$nomination_count = $this->metas->get_post_pf_meta( $post->ID, 'nomination_count', true );
 		$submitted_by     = $this->metas->get_post_pf_meta( $post->ID, 'submitted_by', true );
@@ -844,8 +844,6 @@ class Nominated implements HasActions {
 	 * @return string
 	 */
 	public function get_post_nomination_status( $date, $item_id, $post_type, $update_count = true ) {
-		global $post;
-
 		// Get the query object, limiting by date, type and metavalue ID.
 		pf_log( 'Get posts matching ' . $item_id );
 		$posts_after = pf_get_posts_by_id_for_check( $post_type, $item_id );
@@ -1033,8 +1031,6 @@ class Nominated implements HasActions {
 	 * @param int $id Item ID.
 	 */
 	public function simple_nom_to_draft( $id = false ) {
-		global $post;
-
 		$pf_drafted_nonce = isset( $_POST['pf_nomination_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['pf_nomination_nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $pf_drafted_nonce, 'nomination' ) ) {
 			die( esc_html__( 'Nonce not recieved. Are you sure you should be drafting?', 'pf' ) );
@@ -1085,7 +1081,6 @@ class Nominated implements HasActions {
 	 * AJAX callback for building a nomination draft.
 	 */
 	public function build_nom_draft() {
-		global $post;
 		// verify if this is an auto save routine.
 		// If it is our form has not been submitted, so we dont want to do anything.
 		$pf_drafted_nonce = isset( $_POST['pf_drafted_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['pf_drafted_nonce'] ) ) : '';
