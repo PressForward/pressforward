@@ -372,7 +372,7 @@ class Feeds implements HasActions, HasFilters {
 		global $post;
 
 		if ( $post->post_type !== $this->post_type ) {
-				return;
+			return;
 		}
 
 		$value = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'pf_no_feed_alert', true );
@@ -1407,7 +1407,6 @@ class Feeds implements HasActions, HasFilters {
 	 * @param string $url URL.
 	 */
 	public function update_url( $url ) {
-		global $post;
 		pf_log( 'Invoked: PF_Feeds_Schema::update_url' );
 		$posts = $this->has_feed( $url );
 		if ( ! $posts ) {
