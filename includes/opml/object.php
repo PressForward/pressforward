@@ -10,6 +10,38 @@
  */
 class OPML_Object {
 	/**
+	 * URL of the OPML.
+	 *
+	 * @access protected
+	 * @var string
+	 */
+	protected $url = '';
+
+	/**
+	 * Title of the OPML.
+	 *
+	 * @access protected
+	 * @var string
+	 */
+	protected $url = '';
+
+	/**
+	 * Folders.
+	 *
+	 * @access protected
+	 * @var array
+	 */
+	protected $folders = [];
+
+	/**
+	 * Feeds.
+	 *
+	 * @access protected
+	 * @var array
+	 */
+	protected $feeds = [];
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string $url URL.
