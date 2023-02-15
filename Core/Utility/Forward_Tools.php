@@ -693,6 +693,7 @@ class Forward_Tools {
 
 			if ( empty( $tags ) || is_wp_error( $tags ) ) {
 				$tags[] = 'via bookmarklet';
+				// @phpstan-ignore-next-line
 				if ( is_wp_error( $tags ) ) {
 					pf_log( $tags );
 				}
