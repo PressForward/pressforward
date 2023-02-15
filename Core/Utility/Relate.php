@@ -460,6 +460,8 @@ class Relate implements HasActions {
 
 		$id_list = '';
 
+		$user_id = get_current_user_id();
+
 		if ( $q->have_posts() ) {
 			while ( $q->have_posts() ) {
 				$q->the_post();
@@ -469,9 +471,6 @@ class Relate implements HasActions {
 				$id_list .= get_the_title() . ',';
 
 				// Switch the delete on to wipe rss archive posts from the database for testing.
-				$user_obj = wp_get_current_user();
-				$user_id  = $user_obj->ID;
-
 				pf_set_relationship( 'archive', $post_id, $user_id, '1' );
 				pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_archive', 1 );
 			}
