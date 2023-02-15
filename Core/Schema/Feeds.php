@@ -1085,7 +1085,7 @@ class Feeds implements HasActions, HasFilters {
 			$this->set_pf_feed_type( $post_id, $r['type'] );
 			pf_log( 'Tags found:' );
 			pf_log( $r['tags'] );
-			if ( array_key_exists( 'tags', $r, true ) && ! empty( $r['tags'] ) ) {
+			if ( array_key_exists( 'tags', $r ) && ! empty( $r['tags'] ) ) {
 				// @TODO make this a function of the PF_Folders class.
 				foreach ( $r['tags'] as $slug => $tag ) {
 					// Assume that OPML files have folder structures that
