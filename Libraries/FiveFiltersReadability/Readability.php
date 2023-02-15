@@ -74,6 +74,8 @@ echo $r->articleContent->innerHTML;
 #[\AllowDynamicProperties]
 class Readability {
 
+	public $logger;
+
 	public $version                       = '1.7.1-without-multi-page';
 	public $convertLinksToFootnotes       = false;
 	public $revertForcedParagraphElements = true;
