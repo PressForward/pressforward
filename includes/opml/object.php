@@ -123,7 +123,7 @@ class OPML_Object {
 				}
 			}
 		}
-		return $array;
+		return $check;
 	}
 
 	/**
@@ -343,7 +343,7 @@ class OPML_Object {
 			$string_slug = str_replace( '&amp;', '&', $string_slug );
 			$string_slug = $this->sanitize( $string_slug, $force_lowercase, $strict );
 		} else {
-			$string_slug = str_replace( '&amp;', '&', $string );
+			$string_slug = str_replace( '&amp;', '&', $input );
 			$string_slug = $this->sanitize( $string_slug, $force_lowercase, $strict );
 		}
 
