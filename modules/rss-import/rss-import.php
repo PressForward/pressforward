@@ -17,11 +17,6 @@ class PF_RSS_Import extends PF_Module {
 		parent::start();
 
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
-
-		if ( is_admin() ) {
-			add_action( 'wp_ajax_nopriv_remove_a_feed', array( $this, 'remove_a_feed' ) );
-			add_action( 'wp_ajax_remove_a_feed', array( $this, 'remove_a_feed' ) );
-		}
 	}
 
 	/**
@@ -452,13 +447,6 @@ class PF_RSS_Import extends PF_Module {
 			$subed[] = 'an OPML uploaded file.';
 		}
 
-		if ( ! empty( $_POST['o_feed_url'] ) ) {
-			$offender = array_search( $_POST['o_feed_url'], $feedlist, true );
-			if ( false !== $offender ) {
-				unset( $feedlist[ $offender ] );
-			}
-		}
-
 		$subscribe_string = '';
 
 		if ( ( 1 === count( $subed ) ) && ! empty( $check ) ) {
@@ -505,34 +493,6 @@ class PF_RSS_Import extends PF_Module {
 			pf_log( 'Adding this as a quick type so that we can process the list quickly' );
 			$opml_array = pressforward( 'schema.feeds' )->progressive_feedlist_transformer( $opml_array, $feed_xml, $key, $args );
 			// @todo Tag based on folder structure.
-		}
-	}
-
-	/**
-	 * Processes a feed removal request.
-	 */
-	public function remove_a_feed() {
-		if ( ! empty( $_POST['o_feed_url'] ) ) {
-			$feed_url = sanitize_text_field( wp_unslash( $_POST['o_feed_url'] ) );
-
-			if ( empty( $_POST[ PF_SLUG . '_o_feed_nonce' ] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ PF_SLUG . '_o_feed_nonce' ] ) ), 'feedremove' ) ) {
-				die( esc_html__( 'Nonce check failed. Please ensure you\'re supposed to be removing feeds.', 'pf' ) );
-			}
-
-			// The pf_feedlist setting is being filtered through the pf_feedlist_validate
-			// method, as a result of being registered with register_setting(). We'll work
-			// around this by unhooking the validation method during this update.
-			$check = update_option( PF_SLUG . '_feedlist', $_POST );
-
-			if ( ! $check ) {
-				$result = __( 'The feedlist failed to update.', 'pf' );
-			} else {
-				$result = $feed_url . __( ' has been removed from your feedlist.', 'pf' );
-			}
-
-			die( esc_html( $result ) );
-		} else {
-			die( esc_html__( 'Error', 'pf' ) );
 		}
 	}
 
