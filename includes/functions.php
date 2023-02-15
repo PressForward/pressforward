@@ -741,6 +741,8 @@ function pf_get_defining_capability_by_role( $role_slug ) {
 		case 'subscriber':
 			return 'read';
 	}
+
+	return '';
 }
 
 /**
