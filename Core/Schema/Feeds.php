@@ -508,7 +508,7 @@ class Feeds implements HasActions, HasFilters {
 		 *
 		 * @param object $counts    An object containing the current post_type's post
 		 *                          counts by status.
-		 * @param string $parent_id ID of the parent item.
+		 * @param int    $parent_id ID of the parent item.
 		 * @param string $perm      The permission to determine if the posts are 'readable'
 		 *                          by the current user.
 		 */
