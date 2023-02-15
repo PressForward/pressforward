@@ -188,9 +188,15 @@ class HTTPTools implements HasActions {
 
 		// phpcs:disable WordPress.WP.AlternativeFunctions
 		if ( $reset ) {
-			$fo = fopen( $cookie_path, 'w' ) || pf_log( 'Can\'t open cookie file.' );
-			fwrite( $fo, '' );
-			fclose( $fo );
+			$fo = fopen( $cookie_path, 'w' );
+			if ( ! $fo ) {
+				pf_log( 'Can\'t open cookie file.' );
+			}
+
+			if ( $fo ) {
+				fwrite( $fo, '' );
+				fclose( $fo );
+			}
 		}
 		// phpcs:enable WordPress.WP.AlternativeFunctions
 
