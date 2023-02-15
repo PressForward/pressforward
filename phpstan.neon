@@ -6,3 +6,5 @@ parameters:
     - ./vendor/
     - ./node_modules/
     - ./tests/
+    - ./Libraries/php-jwt
+    - ./Libraries/random_compat
