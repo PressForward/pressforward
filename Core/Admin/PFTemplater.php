@@ -861,10 +861,10 @@ class PFTemplater {
 				break;
 		}
 
-		$cut       = substr( $string, 0, $max + 1 );
+		$cut       = substr( $the_string, 0, $max + 1 );
 		$final_cut = substr( $cut, 0, -4 );
 		if ( strlen( $cut ) < $max ) {
-			$cut = substr( $string, 0, $max );
+			$cut = substr( $the_string, 0, $max );
 			return $cut;
 		} else {
 			$cut = $final_cut . ' ...';
