@@ -306,7 +306,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 				$response = array(
 				 'what' => 'the_alert_box',
 				 'action' => 'dismiss_alerts_ajax',
-				 'id' => $pages,
+				 'id' => $alerts,
 				 'data' => sprintf( __( 'Alert on post ID %s dismissed.', 'pf' ), $alert ),
 				  'supplemental' => array(
 					  'buffered' => ob_get_contents(),
@@ -316,7 +316,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 				$response = array(
 				   'what' => 'the_alert_box',
 				   'action' => 'dismiss_alerts_ajax',
-				   'id' => $pages,
+				   'id' => $alerts,
 				   'data' => __( 'Alerts dismissed.', 'pf' ),
 					'supplemental' => array(
 						'buffered' => ob_get_contents(),
