@@ -23,7 +23,7 @@ class OPML_Object {
 	 * @access protected
 	 * @var string
 	 */
-	protected $url = '';
+	protected $title = '';
 
 	/**
 	 * Folders.
