@@ -155,7 +155,7 @@ class EditPost implements HasActions {
 			return $post_id;
 		}
 
-		if ( array_key_exists( 'pf_feed_default_author', $_POST, true ) ) {
+		if ( array_key_exists( 'pf_feed_default_author', $_POST ) ) {
 			pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_feed_default_author', sanitize_text_field( wp_unslash( $_POST['pf_feed_default_author'] ) ) );
 		}
 
