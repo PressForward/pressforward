@@ -11,6 +11,13 @@
  * PF_OPML_Subscribe class.
  */
 class PF_OPML_Subscribe extends PF_Module {
+	/**
+	 * Master OPML object.
+	 *
+	 * @access protected
+	 * @var OPML_Object
+	 */
+	protected $master_opml_obj;
 
 	/**
 	 * Constructor.
