@@ -32,7 +32,7 @@ class OPML_reader {
 	 * @access protected
 	 * @var OPML_Object
 	 */
-	protected $opml_obj;
+	protected $opml;
 
 	/**
 	 * Construct an OPML_Reader object.
