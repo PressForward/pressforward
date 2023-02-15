@@ -356,28 +356,6 @@ class PF_RSS_Import extends PF_Module {
 	}
 
 	/**
-	 * Builds feed list markup.
-	 *
-	 * @param array $feedlist Feed list.
-	 */
-	public function feedlist_builder( $feedlist ) {
-		if ( empty( $feedlist ) ) {
-			esc_html_e( 'No feeds added.', 'pf' );
-			return;
-		}
-
-		foreach ( $feedlist as $feed ) {
-			if ( ! is_array( $feed ) && '' !== $feed ) {
-				$feed_id = md5( $feed );
-				echo '<li id="feed-' . esc_attr( $feed_id ) . '" class="feed-list-item">' . esc_attr( $feed ) . ' <input id="' . esc_attr( $feed_id ) . '" type="submit" class="removeMyFeed icon-remove" value="   ' . esc_attr__( 'Remove', 'pf' ) . '"></input>';
-				echo '<input type="hidden" name="feed_url" id="o_feed_url_' . esc_attr( $feed_id ) . '" value="' . esc_attr( $feed ) . '"></li>';
-			} elseif ( is_array( $feed ) ) {
-				$this->feedlist_builder( $feed );
-			}
-		}
-	}
-
-	/**
 	 * Validates a feedlist input.
 	 *
 	 * @param array $input Input array.
@@ -594,26 +572,5 @@ class PF_RSS_Import extends PF_Module {
 		} else {
 			return false;
 		}
-	}
-
-	/**
-	 * Enqueues admin scripts.
-	 */
-	public function admin_enqueue_scripts() {
-		global $pagenow;
-		$pf = pressforward( 'modules' );
-
-		$hook = 0 !== func_num_args() ? func_get_arg( 0 ) : '';
-
-		if ( ! in_array( $pagenow, array( 'admin.php' ), true ) ) {
-			return;
-		}
-
-		if ( ! in_array( $hook, array( 'pressforward_page_pf-feeder' ), true ) ) {
-			return;
-		}
-
-		wp_enqueue_script( 'feed-manip-ajax', $pf->modules['rss-import']->module_url . 'assets/js/feed-manip-imp.js', array( 'jquery', PF_SLUG . '-twitter-bootstrap' ), PF_VERSION, true );
-		wp_enqueue_style( PF_SLUG . '-feeder-style', $pf->modules['rss-import']->module_url . 'assets/css/feeder-styles.css', [], PF_VERSION );
 	}
 }
