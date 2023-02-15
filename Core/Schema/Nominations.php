@@ -154,7 +154,6 @@ class Nominations implements HasActions, HasFilters {
 	 * The builder for the box that shows us the nomination metadata.
 	 */
 	public function nominations_box_builder() {
-		global $post;
 		do_action( 'nominations_box' );
 	}
 }
