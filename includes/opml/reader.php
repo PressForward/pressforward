@@ -27,6 +27,14 @@ class OPML_reader {
 	public $opml_file;
 
 	/**
+	 * OPML object.
+	 *
+	 * @access protected
+	 * @var OPML_Object
+	 */
+	protected $opml_obj;
+
+	/**
 	 * Construct an OPML_Reader object.
 	 *
 	 * Accepts a file url string and opens the OPML file for reading.
