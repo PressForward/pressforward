@@ -743,7 +743,7 @@ class Feed_Items implements HasActions, HasFilters {
 					setup_postdata( $check_post );
 					if ( ( pressforward( 'controller.metas' )->get_post_pf_meta( $check_post->ID, 'item_id', $item_id, true ) ) === $item_id ) {
 						++$thepostscheck;
-						$post_id_to_pass = $post->ID;
+						$post_id_to_pass = $check_post->ID;
 						pf_log( 'We already have post ' . $post_id_to_pass . ' for ' );
 						pf_log( $item );
 						do_action(
@@ -783,8 +783,8 @@ class Feed_Items implements HasActions, HasFilters {
 						setup_postdata( $check_post );
 
 						// Post comparative values.
-						$the_title = $post->post_title;
-						$post_id   = $post->ID;
+						$the_title = $check_post->post_title;
+						$post_id   = $check_post->ID;
 
 						$post_date      = strtotime( $post->post_date );
 						$post_item_link = pressforward( 'controller.metas' )->get_post_pf_meta( $check_post->ID, 'item_link', true );
