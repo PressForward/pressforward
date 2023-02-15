@@ -18,7 +18,6 @@
 	<!-- Misc files that are not loaded in production -->
 	<exclude-pattern>Libraries/random_compat/other/build_phar.php</exclude-pattern>
 	<exclude-pattern>Libraries/FiveFiltersReadability/examples/</exclude-pattern>
-	<exclude-pattern>Libraries/gender-checker/</exclude-pattern>
 	<exclude-pattern>modules/foo</exclude-pattern>
 
 	<file>.</file>

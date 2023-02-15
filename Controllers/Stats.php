@@ -123,14 +123,6 @@ class Stats {
 	public $shortcodes;
 
 	/**
-	 * Gender checker object.
-	 *
-	 * @access public
-	 * @var object
-	 */
-	public $gender_checker;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param PressForward\Controllers\Metas $metas Metas object.
@@ -144,7 +136,6 @@ class Stats {
 		$this->includes();
 		$this->access();
 		$this->shortcodes( $shortcodes );
-		$this->gender_checker();
 	}
 
 	/**
@@ -166,26 +157,8 @@ class Stats {
 
 	/**
 	 * Sets up Stats libraries.
-	 *
-	 * @todo Remove gender checker.
 	 */
 	private function includes() {
-		require_once $this->root . '/Libraries/enumeration/src/Eloquent/Enumeration/Multiton.php';
-		require_once $this->root . '/Libraries/enumeration/src/Eloquent/Enumeration/Enumeration.php';
-		if ( PHP_VERSION >= 5.4 ) {
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Gender.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/Traits/NameList.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/Interfaces/Matcher.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/BabyNamesWSMatch.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/RestNamesWSMatch.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/RegExpV1Match.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/RegExpV2Match.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/MetaphoneWeightedMatch.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/MetaphoneMatch.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/ListWeightedMatch.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/ListMatch.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/GenderEngine.php';
-		}
 		require_once $this->root . '/Libraries/text-stats/src/DaveChild/TextStatistics/TextStatistics.php';
 	}
 
@@ -207,19 +180,6 @@ class Stats {
 	public function shortcodes( $shortcodes ) {
 		if ( empty( $this->shortcodes ) ) {
 			$this->shortcodes = $shortcodes;
-		}
-	}
-
-	/**
-	 * Sets up gender checker object.
-	 */
-	public function gender_checker() {
-		if ( empty( $this->gender_checker ) ) {
-			if ( PHP_VERSION >= 5.4 ) {
-				$this->gender_checker = new \GenderEngine\GenderEngine();
-			} else {
-				$this->gender_checker = new stdClass();
-			}
 		}
 	}
 
@@ -361,48 +321,6 @@ class Stats {
 	private function set_author_count( $author_slug, $authors ) {
 		$authors[ $author_slug ]['count'] = $authors[ $author_slug ]['count'] + 1;
 		return $authors;
-	}
-
-	/**
-	 * Sets author gender.
-	 *
-	 * @todo Remove. See https://github.com/PressForward/pressforward/issues/952.
-	 *
-	 * @param string $name Name.
-	 * @return string
-	 */
-	private function set_author_gender( $name ) {
-		if ( PHP_VERSION >= 5.4 ) {
-			$author_name             = (string) $name;
-			$author_first_name_array = explode( ' ', $author_name );
-			$author_first_name       = (string) $author_first_name_array[0];
-			if ( empty( $author_first_name ) ) {
-				if ( empty( $author_name ) ) {
-					$author_first_name = 'No author found.';
-				} else {
-					$author_first_name = $name;
-				}
-			}
-			$gender = $this->gender_checker->test( $author_first_name );
-			return $gender;
-		} else {
-			return '';
-		}
-	}
-
-	/**
-	 * Sets gender detection confidence.
-	 *
-	 * @todo Remove. See https://github.com/PressForward/pressforward/issues/952.
-	 */
-	private function set_author_gender_confidence() {
-		if ( PHP_VERSION >= 5.4 ) {
-			$confidence = $this->gender_checker->getPreviousMatchConfidence();
-			$confidence = (string) $confidence;
-			return $confidence;
-		} else {
-			return '';
-		}
 	}
 
 	/**

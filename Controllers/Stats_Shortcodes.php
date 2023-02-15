@@ -194,8 +194,6 @@ class Stats_Shortcodes {
 	/**
 	 * Gets author leaderboard based on data array.
 	 *
-	 * @todo Remove gender checker.
-	 *
 	 * @param array $authors Author data.
 	 * @return string
 	 */
@@ -220,20 +218,6 @@ class Stats_Shortcodes {
 			if ( $author['count'] > 2 ) {
 				++$more_than_two;
 			}
-			if ( ! empty( $author['gender'] ) ) {
-				if ( 'MALE' === $author['gender'] ) {
-					++$male;
-					$article_count_male += $author['count'];
-				}
-				if ( 'FEMALE' === $author['gender'] ) {
-					++$female;
-					$article_count_female += $author['count'];
-				}
-				if ( 'UNKNOWN' === $author['gender'] ) {
-					++$unknown;
-					$article_count_unknown += $author['count'];
-				}
-			}
 			$leaderboard .= $this->add_author_leaderboard_entry( $author );
 			++$count;
 		}
@@ -242,7 +226,6 @@ class Stats_Shortcodes {
 
 		// @todo Proper i18n and escaping.
 		$leaderboard = "<p>$count authors over $total articles. $singles authors archived only once. $more_than_one authors archived more than once. $more_than_two authors archived more than twice.</p>\n
-			<p>$female authors are probably female, writing $article_count_female articles. $male authors are probably male, writing $article_count_male articles. $unknown number of authors can't have their gender algorithmically determined, writing $article_count_unknown articles.</p>
 			\n" . $leaderboard;
 		return $leaderboard;
 	}
