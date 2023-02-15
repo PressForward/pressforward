@@ -306,7 +306,7 @@ function pf_slugger( $raw_string, $force_lowercase = false, $strict = true, $spa
 		$string_slug = str_replace( '&amp;', '&', $string_slug );
 		$string_slug = pf_sanitize( $string_slug, $force_lowercase, $strict );
 	} else {
-		$string_slug = str_replace( '&amp;', '&', $string_slug );
+		$string_slug = str_replace( '&amp;', '&', $raw_string );
 		$string_slug = pf_sanitize( $string_slug, $force_lowercase, $strict );
 	}
 
