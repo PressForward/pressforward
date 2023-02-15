@@ -10,6 +10,30 @@
  */
 class OPML_Maker {
 	/**
+	 * OPML file contents.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $file_contents = '';
+
+	/**
+	 * Whether to force safe mode.
+	 *
+	 * @access public
+	 * @var bool
+	 */
+	public $force_safe = true;
+
+	/**
+	 * OPML object.
+	 *
+	 * @access public
+	 * @var OPML_Object
+	 */
+	public $obj;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param object $opml_obj OPML_Object object.
