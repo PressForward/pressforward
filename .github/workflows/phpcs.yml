@@ -13,7 +13,7 @@ jobs:
     # We update composer to avoid builds failing because of composer bugs see DWOPS-182
     - name: Update Composer
       run: |
-        sudo composer self-update --1
+        sudo composer self-update --2
         sudo chown $USER $HOME/.composer
 
     # This step is only required for plugins/themes that actualy have composer dependencies.
