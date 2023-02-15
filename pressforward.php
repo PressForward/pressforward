@@ -30,7 +30,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-if ( ! class_exists( 'WPUpdatePHP' ) ) {
+if ( ! class_exists( 'WPUpdatePhp' ) ) {
 	require 'Libraries/WPUpdatePHP.php';
 }
 
@@ -38,7 +38,7 @@ if ( ! class_exists( 'MyCLabs\Enum\Enum' ) ) {
 	require 'Libraries/Enum.php';
 }
 
-$php_check = new WPUpdatePHP( '5.3.0' );
+$php_check = new WPUpdatePhp( '5.3.0' );
 $php_check->set_plugin_name( 'PressForward' );
 
 if ( ( PHP_VERSION < 5.3 ) || ( ! $php_check->does_it_meet_required_php_version( PHP_VERSION ) ) ) {
