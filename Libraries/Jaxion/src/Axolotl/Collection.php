@@ -42,7 +42,7 @@ class Collection implements CollectionContract {
 	 * @param string $type
 	 * @param array  $elements
 	 */
-	public function __construct( $type, array $elements = array() ) {
+	final public function __construct( $type, array $elements = array() ) {
 		$this->type = new Type( $type );
 
 		if ( $this->type->is_model() ) {

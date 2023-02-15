@@ -58,7 +58,7 @@ class Dictionary implements DictionaryContract {
 	 *
 	 * @throws InvalidArgumentException
 	 */
-	public function __construct( $key_type, $val_type, array $storage = array() ) {
+	final public function __construct( $key_type, $val_type, array $storage = array() ) {
 		$this->key_type = new Type( $key_type, true );
 		$this->val_type = new Type( $val_type );
 

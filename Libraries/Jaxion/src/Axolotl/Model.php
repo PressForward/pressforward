@@ -115,7 +115,7 @@ abstract class Model implements Serializes {
 	 *
 	 * @param array <string, mixed> $attributes
 	 */
-	public function __construct( array $attributes = array() ) {
+	final public function __construct( array $attributes = array() ) {
 		$this->maybe_boot();
 		$this->sync_original();
 
