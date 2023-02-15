@@ -662,6 +662,7 @@ class Collection implements CollectionContract {
 	 *
 	 * @return mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function current() {
 		return $this->at( $this->position );
 	}
@@ -669,6 +670,7 @@ class Collection implements CollectionContract {
 	/**
 	 * Move forward to next element.
 	 */
+	#[\ReturnTypeWillChange]
 	public function next() {
 		$this->position ++;
 	}
@@ -678,6 +680,7 @@ class Collection implements CollectionContract {
 	 *
 	 * @return mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function key() {
 		return $this->position;
 	}
@@ -687,6 +690,7 @@ class Collection implements CollectionContract {
 	 *
 	 * @return bool
 	 */
+	#[\ReturnTypeWillChange]
 	public function valid() {
 		return isset( $this->elements[ $this->position ] );
 	}
@@ -694,6 +698,7 @@ class Collection implements CollectionContract {
 	/**
 	 * Rewind the Iterator to the first element.
 	 */
+	#[\ReturnTypeWillChange]
 	public function rewind() {
 		$this->position = 0;
 	}

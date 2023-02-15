@@ -330,6 +330,7 @@ class Dictionary implements DictionaryContract {
 	 *
 	 * @return mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function current() {
 		$key = $this->keys[ $this->position ];
 		return $this->storage[ $key ];
@@ -338,6 +339,7 @@ class Dictionary implements DictionaryContract {
 	/**
 	 * Move forward to next element.
 	 */
+	#[\ReturnTypeWillChange]
 	public function next() {
 		$this->position ++;
 	}
@@ -347,6 +349,7 @@ class Dictionary implements DictionaryContract {
 	 *
 	 * @return mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function key() {
 		return $this->keys[ $this->position ];
 	}
@@ -356,6 +359,7 @@ class Dictionary implements DictionaryContract {
 	 *
 	 * @return bool
 	 */
+	#[\ReturnTypeWillChange]
 	public function valid() {
 		return isset( $this->keys[ $this->position ] );
 	}
@@ -363,6 +367,7 @@ class Dictionary implements DictionaryContract {
 	/**
 	 * Rewind the Iterator to the first element.
 	 */
+	#[\ReturnTypeWillChange]
 	public function rewind() {
 		$this->position = 0;
 		$this->keys = array_keys( $this->storage );
