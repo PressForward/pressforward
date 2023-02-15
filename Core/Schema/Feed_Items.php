@@ -536,38 +536,6 @@ class Feed_Items implements HasActions, HasFilters {
 	}
 
 	/**
-	 * Removes a post's attachments.
-	 *
-	 * Via http://wordpress.stackexchange.com/questions/109793/delete-associated-media-upon-page-deletion.
-	 *
-	 * @param int $post_id ID of the post.
-	 */
-	public function disassemble_feed_item_media( $post_id ) {
-
-		$attachments = new WP_Query(
-			array(
-				'post_type'              => 'attachment',
-				'posts_per_page'         => -1,
-				'post_status'            => 'any',
-				'post_parent'            => $post_id,
-				'fields'                 => 'ids',
-				'update_post_meta_cache' => false,
-				'update_post_term_cache' => false,
-			)
-		);
-
-		if ( empty( $attachments ) || empty( $attachments->posts ) ) {
-			return '';
-		}
-
-		foreach ( $attachments->posts as $key => $attachment_id ) {
-			if ( false === wp_delete_attachment( $attachment_id ) ) {
-				pf_log( 'Failed to delete attachment for ' . $post_id );
-			}
-		}
-	}
-
-	/**
 	 * Cleans up PF content on feed item deletion.
 	 */
 	public function disassemble_feed_items() {
