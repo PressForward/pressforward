@@ -216,7 +216,7 @@ endif;
 		pf_log( $_POST );
 		pf_log( 'Continue with data' );
 
-		$post['post_category'] = isset( $_POST['post_category'] ) ? sanitize_text_field( wp_unslash( $_POST['post_category'] ) ) : '';
+		$post['post_category'] = isset( $_POST['post_category'] ) ? array_map( 'intval', $_POST['post_category'] ) : [];
 		$post['tax_input']     = isset( $_POST['tax_input'] ) ? sanitize_text_field( wp_unslash( $_POST['tax_input'] ) ) : '';
 		$post['post_title']    = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
 		if ( empty( $post['post_title'] ) ) {
