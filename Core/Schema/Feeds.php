@@ -407,7 +407,7 @@ class Feeds implements HasActions, HasFilters {
 			pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_no_feed_alert', 0 );
 		} else {
 			$no_feed_alert = isset( $_POST['pf_no_feed_alert'] ) ? sanitize_text_field( wp_unslash( $_POST['pf_no_feed_alert'] ) ) : '';
-			pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_no_feed_alert', $pf_no_feed_alert );
+			pressforward( 'controller.metas' )->update_pf_meta( $post_id, 'pf_no_feed_alert', $no_feed_alert );
 		}
 
 		return $post_id;
