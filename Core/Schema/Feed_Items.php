@@ -916,7 +916,7 @@ class Feed_Items implements HasActions, HasFilters {
 				if ( ! empty( $_POST['item_feat_img'] ) ) {
 					// Turned off set_ext_as_featured here, as that should only occur when items are nominated.
 					// Before nominations, the featured image should remain a meta field with an external link.
-					$item_feat_img = get_transient( 'feed_img_' . $item_uid );
+					$item_feat_img = get_transient( 'feed_img_' . $new_nom_id );
 					if ( false === $item_feat_img ) {
 						set_time_limit( 0 );
 						// if it forces the issue when we try and get the image, there's nothing we can do.
@@ -937,7 +937,7 @@ class Feed_Items implements HasActions, HasFilters {
 						}
 
 						// Most RSS feed readers don't store the image locally. Should we?
-						set_transient( 'feed_img_' . $item_uid, $item_feat_img, 60 * 60 * 24 );
+						set_transient( 'feed_img_' . $new_nom_id, $item_feat_img, 60 * 60 * 24 );
 					}
 				}
 
