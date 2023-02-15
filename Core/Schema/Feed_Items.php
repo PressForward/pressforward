@@ -986,12 +986,6 @@ class Feed_Items implements HasActions, HasFilters {
 			pf_log( 'The following post did not go into the database correctly.' );
 			pf_log( $data );
 			$worked = 0;
-		} elseif ( is_wp_error( $post_attempt ) ) {
-			pf_log( 'Attempting to add ' . $data['item_title'] . ' to the database caused this error:' );
-			pf_log( $post_attempt );
-			pf_log( 'The following post caused the above error.' );
-			pf_log( $data );
-			$worked = 0;
 		} else {
 			pf_log( 'Create post in the database with the title ' . $data['item_title'] . ' and id of ' );
 			pf_log( $post_attempt );
