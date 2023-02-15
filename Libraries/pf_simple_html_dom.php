@@ -1112,6 +1112,7 @@ class simple_html_dom_node
 
 	function addClass($class)
 	{
+		global $debug_object;
 		if (is_string($class)) {
 			$class = explode(' ', $class);
 		}
@@ -1137,9 +1138,14 @@ class simple_html_dom_node
 
 	function hasClass($class)
 	{
+		global $debug_object;
 		if (is_string($class)) {
 			if (isset($this->class)) {
 				return in_array($class, explode(' ', $this->class), true);
+			}
+		} else {
+			if (is_object($debug_object)) {
+				$debug_object->debug_log(2, 'Invalid type: ', gettype($class));
 			}
 		}
 
