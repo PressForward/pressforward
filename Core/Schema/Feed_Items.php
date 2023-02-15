@@ -786,7 +786,7 @@ class Feed_Items implements HasActions, HasFilters {
 						$the_title = $check_post->post_title;
 						$post_id   = $check_post->ID;
 
-						$post_date      = strtotime( $post->post_date );
+						$post_date      = strtotime( $check_post->post_date );
 						$post_item_link = pressforward( 'controller.metas' )->get_post_pf_meta( $check_post->ID, 'item_link', true );
 
 						// Item comparative values.
