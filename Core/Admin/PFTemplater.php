@@ -463,7 +463,7 @@ class PFTemplater {
 		$option  = '<li role="presentation"><a role="menuitem" id="';
 		$option .= $id;
 		$option .= '" tabindex="-1" class="';
-		$option .= $class;
+		$option .= $class_name;
 		$option .= '"';
 
 		$option .= ' href="';
