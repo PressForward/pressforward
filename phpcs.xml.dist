@@ -38,9 +38,6 @@
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_key" />
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_value" />
 
-		<!-- Temporary -->
-		<exclude name="Universal.Files.SeparateFunctionsFromOO.Mixed" />
-
 		<exclude-pattern>class-SplClassLoader.php</exclude-pattern>
 		<exclude-pattern>Controllers/StatsShortcodes.php</exclude-pattern>
 

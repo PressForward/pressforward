@@ -89,12 +89,3 @@ class PF_REST_Taxonomies_Controller extends WP_REST_Taxonomies_Controller {
 		return $data;
 	}
 }
-
-/**
- * Loads endpoint for PF taxonomies.
- */
-function activate_pf_taxonomies_controller() {
-	$controller = new PF_REST_Taxonomies_Controller();
-	return $controller->register_routes();
-}
-add_action( 'rest_api_init', 'activate_pf_taxonomies_controller', 11 );

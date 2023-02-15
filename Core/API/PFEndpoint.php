@@ -80,12 +80,67 @@ class PFEndpoint extends APIWithMetaEndpoints implements HasActions {
 	 * Loads PF endpoint classes.
 	 */
 	public function callback_init() {
-		require_once 'PF_REST_Controller.php';
-		require_once 'PF_Stats_Controller.php';
-		require_once 'PF_REST_Taxonomies_Controller.php';
-		require_once 'PF_REST_Post_Types_Controller.php';
-		require_once 'PF_REST_Posts_Controller.php';
-		require_once 'PF_REST_Terms_Controller.php';
+		$class_names = [
+			'PF_REST_Controller',
+			'PF_Stats_Controller',
+			'PF_REST_Taxonomies_Controller',
+			'PF_REST_Post_Types_Controller',
+		];
+
+		foreach ( $class_names as $class_name ) {
+			require $class_name . '.php';
+			$controller = new $class_name();
+			$controller->register_routes();
+		}
+
+		require 'PF_REST_Posts_Controller.php';
+		foreach ( get_post_types( array( 'show_in_rest' => true ), 'objects' ) as $post_type ) {
+			$class_name = ! empty( $post_type->rest_controller_class ) ? $post_type->rest_controller_class : false;
+
+			if ( ! $class_name ) {
+				continue;
+			}
+
+			if ( 'PF_REST_Posts_Controller' !== $class_name ) {
+				continue;
+			}
+
+			if ( ! class_exists( $class_name ) ) {
+				continue;
+			}
+
+			$controller = new $class_name( $post_type->name );
+			if ( ! is_subclass_of( $controller, 'WP_REST_Controller' ) ) {
+				continue;
+			}
+
+			$controller->register_routes();
+		}
+
+		// Terms.
+		require 'PF_REST_Terms_Controller.php';
+		foreach ( get_taxonomies( array( 'show_in_rest' => true ), 'object' ) as $taxonomy ) {
+			$class_name = ! empty( $taxonomy->rest_controller_class ) ? $taxonomy->rest_controller_class : false;
+
+			if ( ! $class_name ) {
+				continue;
+			}
+
+			if ( 'PF_REST_Terms_Controller' !== $class_name ) {
+				continue;
+			}
+
+			if ( ! class_exists( $class_name ) ) {
+				continue;
+			}
+
+			$controller = new $class_name( $taxonomy->name );
+			if ( ! is_subclass_of( $controller, 'WP_REST_Controller' ) ) {
+				continue;
+			}
+
+			$controller->register_routes();
+		}
 	}
 
 	/**

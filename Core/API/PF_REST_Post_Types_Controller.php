@@ -82,12 +82,3 @@ class PF_REST_Post_Types_Controller extends WP_REST_Post_Types_Controller {
 		}
 	}
 }
-
-/**
- * Loads endpoint for PF post types.
- */
-function activate_pf_post_types_controller() {
-	$controller = new PF_REST_Post_Types_Controller();
-	return $controller->register_routes();
-}
-add_action( 'rest_api_init', 'activate_pf_post_types_controller', 11 );

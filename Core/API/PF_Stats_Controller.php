@@ -75,12 +75,3 @@ class PF_Stats_Controller extends WP_REST_Controller {
 		return true;
 	}
 }
-
-/**
- * Registers stats API endpoint.
- */
-function activate_pf_stats_controller() {
-	$controller = new PF_Stats_Controller();
-	$controller->register_routes();
-}
-add_action( 'rest_api_init', 'activate_pf_stats_controller', 11 );
