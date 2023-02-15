@@ -305,21 +305,6 @@ class Folders implements HasActions, HasFilters {
 	}
 
 	/**
-	 * Prints link to see all feeds and folders.
-	 */
-	public function link_to_see_all_feeds_and_folders() {
-		?>
-		<li class="feed" id="the-whole-feed-list">
-		<?php
-
-			printf( '<a href="%s" title="%s">%s</a>', esc_attr( $feed_obj->ID ), esc_attr( $feed_obj->post_title ), esc_html( $feed_obj->post_title ) );
-
-		?>
-		</li>
-		<?php
-	}
-
-	/**
 	 * Gets list of feeds without folders.
 	 */
 	public function the_feeds_without_folders() {
