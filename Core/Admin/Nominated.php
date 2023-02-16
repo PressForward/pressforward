@@ -873,7 +873,7 @@ class Nominated implements HasActions {
 							$check = 'no_user';
 						} else {
 							$nominators_orig = $this->metas->retrieve_meta( $id, 'nominator_array' );
-							if ( ! array_key_exists( $current_user->ID, $nominators_orig, true ) ) {
+							if ( ! array_key_exists( $current_user->ID, $nominators_orig ) ) {
 								$check = $this->toggle_nominator_array( $id, false );
 							} else {
 								$check = 'user_nominated_already';
@@ -1038,7 +1038,7 @@ class Nominated implements HasActions {
 		} else {
 			ob_start();
 			if ( ! $id ) {
-				if ( array_key_exists( 'nom_id', $_POST, true ) && ! empty( $_POST['nom_id'] ) ) {
+				if ( array_key_exists( 'nom_id', $_POST ) && ! empty( $_POST['nom_id'] ) ) {
 					$id = intval( $_POST['nom_id'] );
 				} else {
 					$post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;

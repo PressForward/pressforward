@@ -909,7 +909,7 @@ class Metas implements HasFilters, HasActions {
 			'post'         => 'post',
 		);
 		$mapping = apply_filters( 'pf_post_type_to_level', $mapping );
-		if ( array_key_exists( $post_type, $mapping, true ) ) {
+		if ( array_key_exists( $post_type, $mapping ) ) {
 			return $mapping[ $post_type ];
 		} else {
 			return false;

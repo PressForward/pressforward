@@ -223,12 +223,12 @@ class PFtoWPUsers implements SystemUsers {
 		$feed_caps      = pressforward( 'schema.feeds' )->map_feed_caps();
 		$feed_item_caps = pressforward( 'schema.feed_item' )->map_feed_item_caps();
 
-		if ( array_key_exists( $cap, $feed_caps, true ) ) {
+		if ( array_key_exists( $cap, $feed_caps ) ) {
 			$role = get_role( $role_slug );
 			$role->add_cap( $feed_caps[ $cap ] );
 		}
 
-		if ( array_key_exists( $cap, $feed_item_caps, true ) ) {
+		if ( array_key_exists( $cap, $feed_item_caps ) ) {
 			$role = get_role( $role_slug );
 			$role->add_cap( $feed_item_caps[ $cap ] );
 		}

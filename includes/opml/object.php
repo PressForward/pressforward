@@ -146,7 +146,7 @@ class OPML_Object {
 	public function check_keys( $check, $keys, $strict = false ) {
 		$check['missing'] = array();
 		foreach ( $keys as $key ) {
-			if ( ! array_key_exists( $key, $check, true ) ) {
+			if ( ! array_key_exists( $key, $check ) ) {
 				if ( $strict ) {
 					return false;
 				} else {
