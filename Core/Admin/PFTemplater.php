@@ -533,15 +533,16 @@ class PFTemplater {
 			$item_tag_classes_string .= ' ';
 		}
 
+		$read_class = '';
 		if ( 'nomination' === $format ) {
 			$feed_item_id    = $metadata['item_id'];
 			$id_for_comments = $metadata['pf_item_post_id']; // orig item post ID.
 
 			$read_stat = pf_get_relationship_value( 'read', $metadata['nom_id'], wp_get_current_user()->ID );
-			if ( ! $read_stat ) {
-				$read_class = '';
-			} else {
-				$read_class = 'article-read'; }
+			if ( $read_stat ) {
+				$read_class = 'article-read';
+			}
+
 			if ( ! isset( $metadata['nom_id'] ) || empty( $metadata['nom_id'] ) ) {
 				$metadata['nom_id'] = md5( $item['item_title'] ); }
 			if ( empty( $id_for_comments ) ) {
