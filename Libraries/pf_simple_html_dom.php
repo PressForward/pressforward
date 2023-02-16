@@ -130,6 +130,8 @@ class simple_html_dom_node
 	public $tag_start = 0;
 	private $dom = null;
 
+	public $class = '';
+
 	function __construct($dom)
 	{
 		$this->dom = $dom;
@@ -1316,6 +1318,8 @@ class simple_html_dom
 	public $lowercase = false;
 	public $original_size;
 	public $size;
+
+	public $optional_closing_array;
 
 	protected $pos;
 	protected $doc;
