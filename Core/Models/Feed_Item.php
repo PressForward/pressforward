@@ -16,6 +16,38 @@ use PressForward\Interfaces\SystemMeta as SystemMeta;
  */
 class Feed_Item extends BasicModel {
 	/**
+	 * Post type.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $post_type;
+
+	/**
+	 * Tag taxonomy.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $tag_taxonomy;
+
+	/**
+	 * ID of the feed item.
+	 *
+	 * @access public
+	 * @var int
+	 */
+	public $id;
+
+	/**
+	 * Content string.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $content;
+
+	/**
 	 * Data array.
 	 *
 	 * @access protected

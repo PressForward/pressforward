@@ -12,6 +12,38 @@ namespace PressForward\Core\Models;
  */
 class BasicModel {
 	/**
+	 * Type.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $type;
+
+	/**
+	 * Type key.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $type_key;
+
+	/**
+	 * Metas object.
+	 *
+	 * @access public
+	 * @var object
+	 */
+	public $metas;
+
+	/**
+	 * Processor object.
+	 *
+	 * @access public
+	 * @var object
+	 */
+	public $processor;
+
+	/**
 	 * Data array.
 	 *
 	 * @access protected
