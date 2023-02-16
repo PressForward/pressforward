@@ -119,10 +119,8 @@ class PF_RSS_Out extends PF_Module {
 					<?php
 					if ( ! empty( $item['item_tags'] ) ) {
 						$items = explode( ',', $item['item_tags'] );
-						if ( ! empty( $items ) ) {
-							foreach ( $items as $tag ) {
-								echo '<category><![CDATA[' . esc_html( $tag ) . ']]></category>';
-							}
+						foreach ( $items as $tag ) {
+							echo '<category><![CDATA[' . esc_html( $tag ) . ']]></category>';
 						}
 					}
 
