@@ -36,7 +36,7 @@ class Stats_Shortcodes {
 			$c         = 0;
 			$the_query = new WP_Query(
 				array(
-					'meta_key'       => pressforward_stats()->meta_key,
+					'meta_key'       => pressforward( 'controller.stats' )->meta_key,
 					'posts_per_page' => -1,
 					'no_found_rows'  => true,
 					'cache_results'  => false,
@@ -92,7 +92,7 @@ class Stats_Shortcodes {
 					'nopaging'      => true,
 					'no_found_rows' => true,
 					'cache_results' => false,
-					'meta_key'      => pressforward_stats()->meta_key,
+					'meta_key'      => pressforward( 'controller.stats' )->meta_key,
 					'date_query'    => array(
 						array(
 							'after' => '-2 months',
@@ -150,7 +150,7 @@ class Stats_Shortcodes {
 					'no_found_rows'  => true,
 					'cache_results'  => false,
 					'posts_per_page' => -1,
-					'meta_key'       => pressforward_stats()->meta_author_key,
+					'meta_key'       => pressforward( 'controller.stats' )->meta_author_key,
 				)
 			);
 
@@ -258,7 +258,7 @@ class Stats_Shortcodes {
 	 * @return array
 	 */
 	private function set_author_into_leaderboard( $id, $authors ) {
-		$author      = pf_get_post_meta( $id, pressforward_stats()->meta_author_key );
+		$author      = pf_get_post_meta( $id, pressforward( 'controller.stats' )->meta_author_key );
 		$author_slug = str_replace( ' ', '_', strtolower( $author ) );
 		if ( ! empty( $authors[ $author_slug ] ) ) {
 			$authors = $this->set_author_count( $author_slug, $authors );
