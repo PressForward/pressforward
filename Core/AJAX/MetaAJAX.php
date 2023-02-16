@@ -195,6 +195,7 @@ EOT;
 			$id = intval( $_POST['post_id'] );
 		} else {
 			pressforward( 'ajax.configuration' )->pf_bad_call( 'pf_ajax_update_meta_fields', 'No post id.' );
+			return;
 		}
 
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
