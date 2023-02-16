@@ -930,13 +930,14 @@ class Nominated implements HasActions {
 			echo '<br /><input type="text" name="' . esc_attr( $title ) . '">';
 		} elseif ( true === $link ) {
 			if ( 'Link' === $anchor_text ) {
-				$anchor_text = $this->__( 'Link', 'pf' );
+				$anchor_text = __( 'Link', 'pf' );
 			}
-				echo '<a href=';
-				echo esc_attr( $variable );
-				echo '" target="_blank">';
-				echo esc_html( $anchor_text );
-				echo '</a>';
+
+			echo '<a href=';
+			echo esc_attr( $variable );
+			echo '" target="_blank">';
+			echo esc_html( $anchor_text );
+			echo '</a>';
 		} else {
 			echo esc_html( $variable );
 		}
