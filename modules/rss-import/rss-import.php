@@ -157,7 +157,7 @@ class PF_RSS_Import extends PF_Module {
 						if ( is_array( $sub_array ) && array_key_exists( 'isPermaLink', $sub_array ) && isset( $sub_array['isPermaLink'] ) && 'false' === $sub_array['isPermaLink'] ) {
 							$is_permalink = false;
 							break;
-						} elseif ( is_array( $sub_array ) && array_key_exists( 'isPermaLink', $sub_array, true ) && isset( $sub_array['isPermaLink'] ) && $sub_array['isPermaLink'] && ( 'true' === $sub_array['isPermaLink'] ) ) {
+						} elseif ( is_array( $sub_array ) && array_key_exists( 'isPermaLink', $sub_array ) && isset( $sub_array['isPermaLink'] ) && $sub_array['isPermaLink'] && ( 'true' === $sub_array['isPermaLink'] ) ) {
 							$is_permalink = true;
 							break;
 						}
