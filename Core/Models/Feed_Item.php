@@ -115,7 +115,7 @@ class Feed_Item extends BasicModel {
 	 * @return DateTime
 	 */
 	public function date_maker( $format, $raw ) {
-		return DateTime::createFromFormat( $format, $raw );
+		return \DateTime::createFromFormat( $format, $raw );
 	}
 
 	/**
