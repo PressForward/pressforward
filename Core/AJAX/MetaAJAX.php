@@ -213,7 +213,7 @@ EOT;
 						$d = \DateTime::createFromFormat( 'Y-m-d H:i:s', trim( $value ) );
 						if ( ! $d ) {
 							$d = strtotime( trim( $value ) );
-							$d = DateTime::createFromFormat( 'U', $d );
+							$d = \DateTime::createFromFormat( 'U', $d );
 						}
 						if ( ! $d ) {
 							pf_log( __( 'Cannot find date', 'pf' ) );
