@@ -1076,7 +1076,10 @@ class Metas implements HasFilters, HasActions {
 			$field      = $field['master_field'];
 			$serialized = true;
 			$single     = true;
+		} else {
+			$key = $field;
 		}
+
 		$meta = $this->meta_interface->get_meta( $id, $field, $single );
 		if ( $serialized ) {
 			if ( empty( $meta ) || ! array_key_exists( $key, $meta ) ) {
@@ -1287,6 +1290,8 @@ class Metas implements HasFilters, HasActions {
 			$key        = $field['field'];
 			$field      = $field['master_field'];
 			$serialized = true;
+		} else {
+			$key = $field;
 		}
 
 		if ( $serialized ) {
