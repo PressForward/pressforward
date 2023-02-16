@@ -1,5 +1,5 @@
 parameters:
-  level: 0
+  level: 1
   bootstrapFiles:
     - constants.php
   paths:
@@ -11,3 +11,11 @@ parameters:
     - ./Libraries/php-jwt
     - ./Libraries/random_compat
     - ./Controllers/StatsShortcodes.php
+  ignoreErrors:
+    -
+      message: '#Variable \$[a-zA-Z0-9\\_]+ might not be defined.$#'
+      path: ./parts
+    -
+      message: '#^Constant SITECOOKIEPATH not found.$#'
+    -
+      message: '#^Constant WPINC not found.$#'
