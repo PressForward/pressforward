@@ -39,7 +39,7 @@ if ( isset( $_REQUEST['action'] ) && 'post' === $_REQUEST['action'] ) {
 	$posted      = nominate_it();
 	$the_post_id = $posted;
 } else {
-	$the_title = isset( $_GET['t'] ) ? trim( wp_strip_all_tags( html_entity_decode( sanitize_text_field( wp_unslash( $_GET['t'] ), ENT_QUOTES ) ) ) ) : '';
+	$the_title = isset( $_GET['t'] ) ? trim( wp_strip_all_tags( html_entity_decode( sanitize_text_field( wp_unslash( $_GET['t'] ) ), ENT_QUOTES ) ) ) : '';
 
 	global $pf_nt;
 
