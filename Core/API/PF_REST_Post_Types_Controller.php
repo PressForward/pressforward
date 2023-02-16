@@ -10,6 +10,22 @@
  */
 class PF_REST_Post_Types_Controller extends WP_REST_Post_Types_Controller {
 	/**
+	 * List of endpoints corresponding to PF taxonomies.
+	 *
+	 * @access protected
+	 * @var array
+	 */
+	protected $terms;
+
+	/**
+	 * List of PF taxonomies.
+	 *
+	 * @access protected
+	 * @var array
+	 */
+	protected $types;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
