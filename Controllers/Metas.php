@@ -168,7 +168,7 @@ class Metas implements HasFilters, HasActions {
 	public function transition_meta_terms( $id_a, $id_b ) {
 		$parent = wp_get_post_parent_id( $id_a );
 		$ids    = array( $id_a );
-		if ( ! empty( $parent ) && ! is_wp_error( $parent ) ) {
+		if ( ! empty( $parent ) ) {
 			$ids[] = $parent;
 		}
 		$item_id = $this->get_post_pf_meta( $id_a, 'pf_item_post_id' );
