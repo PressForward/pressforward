@@ -8,3 +8,4 @@ parameters:
     - ./tests/
     - ./Libraries/php-jwt
     - ./Libraries/random_compat
+    - ./Controllers/StatsShortcodes.php
