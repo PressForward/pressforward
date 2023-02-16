@@ -32,7 +32,7 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 	 * Metas object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Metas
+	 * @var \PressForward\Controllers\Metas
 	 */
 	public $metas;
 

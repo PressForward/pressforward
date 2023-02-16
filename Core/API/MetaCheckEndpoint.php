@@ -32,26 +32,26 @@ class MetaCheckEndpoint implements HasActions {
 	/**
 	 * JWT object.
 	 *
-	 * @access protected
+	 * @access public
 	 * @var \PressForward\Controllers\PF_JWT
 	 */
-	protected $jwt;
+	public $jwt;
 
 	/**
 	 * OpenGraph object.
 	 *
-	 * @access protected
+	 * @access public
 	 * @var \PFOpenGraph
 	 */
-	protected $og;
+	public $og;
 
 	/**
 	 * URL Resolver object.
 	 *
-	 * @access protected
+	 * @access public
 	 * @var \URLResolver
 	 */
-	protected $url_resolver;
+	public $url_resolver;
 
 	/**
 	 * Constructor.

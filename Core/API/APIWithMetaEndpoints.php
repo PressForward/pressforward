@@ -14,6 +14,30 @@ use PressForward\Controllers\Metas;
  */
 class APIWithMetaEndpoints {
 	/**
+	 * Metas object.
+	 *
+	 * @access public
+	 * @var PressForward\Controllers\Metas
+	 */
+	public $metas;
+
+	/**
+	 * Post type.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $post_type;
+
+	/**
+	 * Level.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $level;
+
+	/**
 	 * Gets endpoint route path.
 	 *
 	 * @param string $endpoint Endpoint path.
