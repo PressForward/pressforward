@@ -314,7 +314,7 @@ class Metas implements HasFilters, HasActions {
 			if ( $meta['name'] === $name ) {
 				if ( in_array( 'dep', $meta['type'], true ) ) {
 					pf_log( $name . ' is a deprecated meta type. Prepping to transfer to ' . $meta['move'] );
-					if ( ( ! isset( $value ) ) || ( false === $value ) || ( '' === $value ) || ( 0 === $value ) || ( empty( $value ) ) ) {
+					if ( ! $value ) {
 						pf_log( 'No value was passed. Get meta data from new meta key.' );
 						$value = $this->meta_interface->get_meta( $id_a, $meta['move'], true );
 					}
