@@ -357,11 +357,11 @@ class Menu implements HasActions, HasFilters {
 				'posts_per_page' => -1,
 			);
 		} else {
-			if ( ! empty( $date_less ) && $date_less < 12 ) {
+			if ( $date_less < 12 ) {
 				$y = gmdate( 'Y' );
 				$m = gmdate( 'm' );
 				$m = $m + $date_less;
-			} elseif ( ! empty( $date_less ) && $date_less >= 12 ) {
+			} elseif ( $date_less >= 12 ) {
 				$y = gmdate( 'Y' );
 				$y = $y - floor( $date_less / 12 );
 				$m = gmdate( 'm' );

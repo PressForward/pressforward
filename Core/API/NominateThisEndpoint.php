@@ -378,7 +378,7 @@ class NominateThisEndpoint implements HasActions {
 		$load = preg_replace( '/[^a-z0-9,_-]+/i', '', $load );
 		$load = array_unique( explode( ',', $load ) );
 
-		if ( empty( $load ) ) {
+		if ( '' === $load ) {
 			exit;
 		}
 

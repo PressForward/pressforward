@@ -227,14 +227,11 @@ class MetaCheckEndpoint implements HasActions {
 			if ( ! empty( $og->keywords ) ) {
 				if ( ! is_array( $og->keywords ) ) {
 					$keywords = explode( ',', $og->keywords );
-					if ( empty( $keywords ) ) {
+					if ( count( $keywords ) === 1 ) {
 						$keywords = explode( ';', $og->keywords );
 					}
-					if ( ! empty( $keywords ) ) {
-						$metas->keywords = $keywords;
-					} else {
-						$metas->keywords = fasle;
-					}
+
+					$metas->keywords = $keywords;
 				} else {
 					$metas->keywords = $og->keywords;
 				}
