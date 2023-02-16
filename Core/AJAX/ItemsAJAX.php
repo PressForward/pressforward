@@ -148,6 +148,7 @@ class ItemsAJAX implements HasActions {
 			$id = intval( $_POST['post_id'] );
 		} else {
 			pressforward( 'ajax.configuration' )->pf_bad_call( 'pf_ajax_thing_deleter', __( 'Option not sent', 'pf' ) );
+			return;
 		}
 
 		if ( isset( $_POST['made_readable'] ) ) {
