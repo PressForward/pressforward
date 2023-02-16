@@ -140,7 +140,6 @@ EOT;
 	 * @param array  $item   Item information.
 	 * @param int    $c      Count.
 	 * @param string $format Format.
-	 * @return array
 	 */
 	public function meta_labels_modal_box( $item, $c = 0, $format = null ) {
 		if ( 'nomination' !== $format ) {
