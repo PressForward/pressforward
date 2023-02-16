@@ -747,7 +747,7 @@ class Retrieval {
 				update_option( PF_SLUG . '_ready_to_chunk', 1 );
 				update_option( PF_SLUG . '_iterate_going_switch', 1 );
 				pressforward( 'schema.feed_item' )->assemble_feed_for_pull();
-			} elseif ( ( $feeds_meta_state['retrigger'] < ( time() + 86400 ) ) && ! ( empty( $feeds_meta_state ) ) ) {
+			} elseif ( $feeds_meta_state['retrigger'] < ( time() + 86400 ) ) {
 				// If it has been more than 24 hours and retrieval has been frozen in place
 				// and the retrieval state hasn't been reset, reset the check values and reset
 				// the meta state. If it is actually mid-process things should progress.
