@@ -54,7 +54,7 @@ function pf_delete_relationship( $relationship_type, $item_id, $user_id ) {
  *                                      relationship type.
  * @param int        $item_id           Item ID.
  * @param int        $user_id           User ID.
- * @return object The relationship object
+ * @return object|bool The relationship object
  */
 function pf_get_relationship( $relationship_type, $item_id, $user_id ) {
 	return pressforward( 'utility.relate' )->get_relationship( $relationship_type, $item_id, $user_id );

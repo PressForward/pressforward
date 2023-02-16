@@ -177,7 +177,7 @@ class Relate implements HasActions {
 	 *                                      relationship type.
 	 * @param int        $item_id           Item ID.
 	 * @param int        $user_id           User ID.
-	 * @return object The relationship object
+	 * @return object|bool The relationship object
 	 */
 	public function get_relationship( $relationship_type, $item_id, $user_id ) {
 		$relationship = $this->relationships;
