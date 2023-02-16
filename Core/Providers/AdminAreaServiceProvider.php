@@ -47,7 +47,7 @@ class AdminAreaServiceProvider extends ServiceProvider {
 		$container->share(
 			'admin.edit_post',
 			function( $container ) {
-				return new EditPost( $container->fetch( 'basename' ) );
+				return new EditPost();
 			}
 		);
 		$container->share(
