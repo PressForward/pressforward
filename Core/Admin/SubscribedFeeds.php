@@ -577,7 +577,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 			pf_log( $attachments );
 
 			foreach ( $attachments as $attachment ) {
-				wp_trash_post( $attachment->ID, true );
+				wp_trash_post( $attachment->ID );
 			}
 		}
 
