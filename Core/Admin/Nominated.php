@@ -418,7 +418,7 @@ class Nominated implements HasActions {
 						$page_next_nb = $page + 1;
 
 						if ( ! empty( $_GET['by'] ) ) {
-							$limit_q = '&by=' . $limit;
+							$limit_q = '&by=' .  sanitize_text_field( wp_unslash( $_GET['by'] ) );
 						} else {
 							$limit_q = '';
 						}
