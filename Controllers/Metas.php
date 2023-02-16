@@ -1328,6 +1328,8 @@ class Metas implements HasFilters, HasActions {
 			$master_meta[ $key ] = $value;
 			$value               = $master_meta;
 		}
+
+		$check = null;
 		if ( 'update' === $apply_type ) {
 			if ( $serialized ) {
 				$this->meta_interface->delete_meta( $id, $key, '' );
