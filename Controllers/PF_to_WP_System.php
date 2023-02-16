@@ -61,7 +61,7 @@ class PF_to_WP_System implements System {
 	 * @param mixed  $values Values passed to callback.
 	 */
 	public function apply_filters( $tag, $values ) {
-		return apply_filters( $tag, $value );
+		return apply_filters( $tag, $values );
 	}
 
 	/**
