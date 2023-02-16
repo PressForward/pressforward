@@ -368,6 +368,8 @@ class NominateThisEndpoint implements HasActions {
 	 * @param string $load Query string containing list of script handles.
 	 */
 	public function assembleScripts( $load ) {
+		global $wp_version;
+
 		// Set ABSPATH for execution.
 		if ( is_array( $load ) ) {
 			$load = implode( '', $load );
@@ -466,7 +468,7 @@ class NominateThisEndpoint implements HasActions {
 				return '{"error": "bad date", "date_sent":"' . $date_obj->format( 'Y-m-d H:i:s' ) . '", "date_internal":"' . $current_date_obj->format( 'Y-m-d H:i:s' ) . '"}';
 			}
 		} else {
-			return '{ error: "verification not available"} pk:' . $private_key . ' v:' . $verify . ' vr:' . $verify . '  uk: ' . hex2bin( trim( $user_key ) ) . ' pk portions:' . $pk_portions[0] . '    ' . $pk_portions[1];
+			return '{ error: "verification not available"} pk:' . $private_key . ' v:' . $verify . ' vr:' . $verify . '  uk: ' . hex2bin( trim( $user_key ) );
 		}
 
 		$user_id = pressforward( 'controller.jwt' )->get_user_by_key( $user_key );
