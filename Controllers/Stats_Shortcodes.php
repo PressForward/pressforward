@@ -258,7 +258,7 @@ class Stats_Shortcodes {
 	 * @return array
 	 */
 	private function set_author_into_leaderboard( $id, $authors ) {
-		$author      = pf_get_post_meta( $id, pressforward( 'controller.stats' )->meta_author_key );
+		$author      = get_post_meta( $id, pressforward( 'controller.stats' )->meta_author_key, true );
 		$author_slug = str_replace( ' ', '_', strtolower( $author ) );
 		if ( ! empty( $authors[ $author_slug ] ) ) {
 			$authors = $this->set_author_count( $author_slug, $authors );
