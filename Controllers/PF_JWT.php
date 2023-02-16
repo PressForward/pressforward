@@ -74,7 +74,7 @@ class PF_JWT {
 			}
 			return bin2hex( $value );
 		} else {
-			throw new Exception( __( 'PressForward cannot provide a cryptographically secure API key.', 'pf' ), 1 );
+			throw new \Exception( __( 'PressForward cannot provide a cryptographically secure API key.', 'pf' ), 1 );
 		}
 	}
 
