@@ -55,7 +55,7 @@ class PF_JWT {
 	 * Returns a random string based on an input.
 	 *
 	 * @param int $num Number.
-	 * @throws TypeError|Exception On error.
+	 * @throws \TypeError|\Error|\Exception On error.
 	 * @return string
 	 */
 	public function random_bytes( $num ) {
