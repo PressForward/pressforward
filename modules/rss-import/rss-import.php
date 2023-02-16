@@ -281,6 +281,7 @@ class PF_RSS_Import extends PF_Module {
 		// This needs error checking.
 		$author_array = ( $item->get_authors() );
 		if ( ! empty( $author_array ) ) {
+			$name_array = [];
 			foreach ( $author_array as $author ) {
 				$name_array[] = $author->get_name();
 			}
