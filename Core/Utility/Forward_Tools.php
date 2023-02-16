@@ -489,9 +489,9 @@ class Forward_Tools {
 		pf_log( $current_user );
 		if ( 0 === $current_user->ID ) {
 			// Not logged in.
-			$user_slug = 'external';
-			$user_name = __( 'External User', 'pf' );
-			$user_id   = 0;
+			$user_slug   = 'external';
+			$user_string = __( 'External User', 'pf' );
+			$user_id     = 0;
 			pf_log( 'Can not find a user to add to the nominated count of.' );
 		} else {
 			// Logged in.
@@ -575,6 +575,7 @@ class Forward_Tools {
 
 		// Assign user status as well here.
 		if ( ! $post_check ) {
+			$id = 0;
 			if ( $nomination_id ) {
 				if ( $make_readable ) {
 					$this->transition_to_readable_text( $nomination_id, true );

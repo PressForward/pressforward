@@ -1056,6 +1056,8 @@ class Feeds implements HasActions, HasFilters {
 		$wp_args = $r['wp_args'];
 		unset( $r['wp_args'] );
 
+		$post_id = null;
+
 		if ( 'update' === $insert_type ) {
 			$post_id = $r['ID'];
 		}
