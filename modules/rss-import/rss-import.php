@@ -116,7 +116,7 @@ class PF_RSS_Import extends PF_Module {
 		$the_feed = pf_fetch_feed( $a_feed_url );
 		remove_filter( 'wp_feed_cache_transient_lifetime', array( $this, 'return_cachetime' ) );
 
-		if ( ! $the_feed || empty( $the_feed ) || is_wp_error( $the_feed ) ) {
+		if ( empty( $the_feed ) || is_wp_error( $the_feed ) ) {
 			pf_log( 'Can not use Simple Pie to retrieve the feed' );
 			pf_log( $the_feed );
 			$alert = $this->set_to_alert( $a_feed->ID, $the_feed );
