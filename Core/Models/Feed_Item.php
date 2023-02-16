@@ -7,7 +7,7 @@
 
 namespace PressForward\Core\Models;
 
-use PressForward\Models\BasicModel;
+use PressForward\Core\Models\BasicModel;
 use PressForward\Interfaces\Items as Items;
 use PressForward\Interfaces\SystemMeta as SystemMeta;
 
