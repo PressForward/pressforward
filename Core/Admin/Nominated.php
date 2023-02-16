@@ -315,9 +315,10 @@ class Nominated implements HasActions {
 						$nom_tags      = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_tags', true );
 						$item_nom_tags = $nom_tags;
 
+						// @todo This makes no sense and is a bug.
 						$wp_nom_tags  = '';
 						$get_the_tags = array();
-						if ( empty( $get_the_tags ) ) {
+						if ( empty( $get_the_tags ) ) { // @phpstan-ignore-line
 							$get_the_tags[] = '';
 							$wp_nom_tags    = '';
 							$wp_nom_slugs[] = '';
