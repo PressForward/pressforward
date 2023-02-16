@@ -240,6 +240,8 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 		}
 
 		public function dismiss_alert( $post_id ) {
+			$id = null;
+
 			// unhook this function so it doesn't loop infinitely
 			remove_action( 'save_post', array( $this, 'remove_alert_on_edit' ) );
 
@@ -291,6 +293,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			}
 			if ( ! empty( $_POST['all_alerts'] ) ) {
 				$alerts = the_alert_box()->dismiss_all_alerts( 0, $fpt_array );
+				$alert = '';
 			} else {
 				$alert = isset( $_POST['alert'] ) ? intval( $_POST['alert'] ) : null;
 				$alerts = the_alert_box()->dismiss_alert( $alert );
@@ -373,6 +376,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 				}
 			} else {
 				$alerts = false;
+				$pages = 0;
 			}
 			if ( ! isset( $alerts ) || ! $alerts || (0 == $alerts) ) {
 				$response = array(
