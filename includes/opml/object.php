@@ -104,7 +104,7 @@ class OPML_Object {
 	/**
 	 * Sets a feed.
 	 *
-	 * @param object       $feed_obj Feed object.
+	 * @param object|bool  $feed_obj Feed object.
 	 * @param string|array $folder   Optional. Associated folder(s).
 	 */
 	public function set_feed( $feed_obj, $folder = false ) {

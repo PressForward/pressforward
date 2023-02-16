@@ -63,10 +63,10 @@ class OPML_Maker {
 	/**
 	 * Builds a tag.
 	 *
-	 * @param string $tag              Tag name.
-	 * @param object $obj              Data object.
-	 * @param bool   $self_closing     Whether the tag is self-closing.
-	 * @param array  $filter Optional. Array of properties that are skipped when building attributes.
+	 * @param string      $tag              Tag name.
+	 * @param object|bool $obj              Data object.
+	 * @param bool        $self_closing     Whether the tag is self-closing.
+	 * @param array       $filter Optional. Array of properties that are skipped when building attributes.
 	 * @return string
 	 */
 	public function assemble_tag( $tag, $obj, $self_closing = false, $filter = false ) {
