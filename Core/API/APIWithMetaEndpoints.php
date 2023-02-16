@@ -164,6 +164,7 @@ class APIWithMetaEndpoints {
 	 */
 	public function filter_an_api_data_link( $data, $links, $link, $term ) {
 		if ( isset( $links[ $link ] ) ) {
+			$term_found = false;
 			foreach ( $links[ $link ] as $key => $term_link ) {
 				$pos = strpos( $term_link['href'], 'wp/v2/' . $term );
 				if ( false !== $pos && 0 <= $pos ) {
@@ -171,8 +172,6 @@ class APIWithMetaEndpoints {
 					$data->remove_link( $link );
 					$term_link['href']      = str_replace( 'wp/v2/' . $term, 'pf/v1/' . $term, $term_link['href'] );
 					$links[ $link ][ $key ] = $term_link;
-				} else {
-					$term_found = false;
 				}
 			}
 
