@@ -84,8 +84,8 @@ class PF_OPML_Subscribe extends PF_Module {
 	/**
 	 * Sets a folder as a term.
 	 *
-	 * @param object $folder Folder object.
-	 * @param int    $id     Item ID.
+	 * @param mixed $folder Folder object.
+	 * @param int   $id     Item ID.
 	 */
 	public function set_folder_as_term( $folder, $id ) {
 		if ( empty( $folder ) ) {
