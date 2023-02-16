@@ -318,6 +318,8 @@ class Relationships implements HasActions {
 	public function delete( $args = array() ) {
 		global $wpdb;
 
+		$id = 0;
+
 		if ( ! empty( $args['id'] ) ) {
 			$id = $args['id'];
 		} else {
