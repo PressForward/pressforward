@@ -270,6 +270,35 @@ class Stats_Shortcodes {
 	}
 
 	/**
+	 * Sets author slug.
+	 *
+	 * @param string $author_slug Author slug.
+	 * @param array  $authors     Authors.
+	 * @return array
+	 */
+	private function set_author_count( $author_slug, $authors ) {
+		$authors[ $author_slug ]['count'] = $authors[ $author_slug ]['count'] + 1;
+		return $authors;
+	}
+
+	/**
+	 * Sets author object.
+	 *
+	 * @param string $author_slug Author slug.
+	 * @param string $author      Author name.
+	 * @param array  $authors     Authors.
+	 * @return array
+	 */
+	private function set_new_author_object( $author_slug, $author, $authors ) {
+		$authors[ $author_slug ] = array(
+			'count' => 1,
+			'name'  => $author,
+		);
+
+		return $authors;
+	}
+
+	/**
 	 * Renders shortcode.
 	 *
 	 * @param string $code Status code.
