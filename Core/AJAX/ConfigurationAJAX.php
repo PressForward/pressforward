@@ -141,7 +141,7 @@ class ConfigurationAJAX implements HasActions {
 		if ( isset( $_POST['pf_read_state'] ) ) {
 			$read_state = sanitize_text_field( wp_unslash( $_POST['pf_read_state'] ) );
 		} else {
-			$read_status = false;
+			$read_state = false;
 		}
 
 		$user_obj = wp_get_current_user();
