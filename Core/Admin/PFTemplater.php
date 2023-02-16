@@ -69,7 +69,7 @@ class PFTemplater {
 		}
 
 		if ( ! file_exists( $view_file ) ) {
-			if ( PF_DEBUG ) {
+			if ( defined( 'PF_DEBUG' ) && PF_DEBUG ) {
 				pf_log( $view_file, true, false, true );
 			}
 
