@@ -563,9 +563,10 @@ class Feed_Items implements HasActions, HasFilters {
 		pf_log( $query_for_del );
 
 		// The Loop.
-		if ( empty( $query_for_del ) || empty( $query_for_del->posts ) ) {
+		if ( empty( $query_for_del->posts ) ) {
 			return '';
 		}
+
 		foreach ( $query_for_del->posts as $key => $post_id ) {
 			// All the posts in this loop are older than 60 days from 'now'.
 			// Delete them all.
@@ -602,11 +603,9 @@ class Feed_Items implements HasActions, HasFilters {
 			);
 
 			$archive_query = new \WP_Query( $args );
-			if ( ! empty( $archive_query ) ) {
-				foreach ( $archive_query->posts as $key => $post_id ) {
-					// Switch the delete on to wipe rss archive posts from the database for testing.
-					pf_delete_item_tree( $post_id );
-				}
+			foreach ( $archive_query->posts as $key => $post_id ) {
+				// Switch the delete on to wipe rss archive posts from the database for testing.
+				pf_delete_item_tree( $post_id );
 			}
 
 			--$pages;
