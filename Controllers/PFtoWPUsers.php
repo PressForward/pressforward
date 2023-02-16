@@ -209,6 +209,8 @@ class PFtoWPUsers implements SystemUsers {
 			case 'subscriber':
 				return 'read';
 		}
+
+		return '';
 	}
 
 	/**
