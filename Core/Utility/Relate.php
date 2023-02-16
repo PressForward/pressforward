@@ -413,6 +413,7 @@ class Relate implements HasActions {
 			'posts_per_page' => -1,
 		);
 
+		$date_limit = null;
 		if ( isset( $_POST['date_limit'] ) ) {
 			$date_limit = sanitize_text_field( wp_unslash( $_POST['date_limit'] ) );
 
@@ -430,9 +431,12 @@ class Relate implements HasActions {
 					$before = array( 'year' => gmdate( 'Y' ) - 1 );
 					break;
 			}
-			$args['date_query'] = array(
-				'before' => $before,
-			);
+
+			if ( isset( $before ) ) {
+				$args['date_query'] = array(
+					'before' => $before,
+				);
+			}
 		} elseif ( false !== $limit ) {
 			$date_limit = $limit;
 
@@ -451,9 +455,11 @@ class Relate implements HasActions {
 					break;
 			}
 
-			$args['date_query'] = array(
-				'before' => $before,
-			);
+			if ( isset( $before ) ) {
+				$args['date_query'] = array(
+					'before' => $before,
+				);
+			}
 		}
 
 		$q = new WP_Query( $args );
