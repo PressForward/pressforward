@@ -838,7 +838,7 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 	}
 
 	$custom_author_uri = pressforward( 'controller.metas' )->retrieve_meta( $id, 'item_link' );
-	if ( ! $custom_author_uri || empty( $custom_author_uri ) ) {
+	if ( empty( $custom_author_uri ) ) {
 		return $author_uri;
 	} else {
 		return $custom_author_uri;
