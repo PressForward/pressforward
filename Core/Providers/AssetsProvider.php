@@ -44,7 +44,7 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_style(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function( $hook ) {
 					return true;
 				},
 				'handle'    => $slug . '-alert-styles',
@@ -105,7 +105,7 @@ class AssetsProvider extends ServiceProvider {
 		$assets->register_style(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function( $hook ) {
 					return pressforward( 'controller.template_factory' )->is_a_pf_page();
 				},
 				'handle'    => $slug . '-subscribed-styles',
