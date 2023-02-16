@@ -472,16 +472,18 @@ class PF_OPML_Subscribe extends PF_Module {
 		}
 
 		// The Loop.
-		if ( $feed_query->have_posts() ) {
-			while ( $feed_query->have_posts() ) {
-				$feed_query->the_post();
-				$feed_obj = $this->make_a_feed_object_from_post( get_the_ID() );
-				// Use OPML internals to slugify attached terms, retrieve them from the OPML folder object, deliver them into feed.
-				$parent = $this->make_parent_folder_from_post( get_the_ID() );
-				if ( empty( $parent ) ) {
-					$parent = false;
+		if ( ! empty( $feed_query ) ) {
+			if ( $feed_query->have_posts() ) {
+				while ( $feed_query->have_posts() ) {
+					$feed_query->the_post();
+					$feed_obj = $this->make_a_feed_object_from_post( get_the_ID() );
+					// Use OPML internals to slugify attached terms, retrieve them from the OPML folder object, deliver them into feed.
+					$parent = $this->make_parent_folder_from_post( get_the_ID() );
+					if ( empty( $parent ) ) {
+						$parent = false;
+					}
+					$this->master_opml_obj->set_feed( $feed_obj, $parent );
 				}
-				$this->master_opml_obj->set_feed( $feed_obj, $parent );
 			}
 		}
 
