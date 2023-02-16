@@ -146,10 +146,12 @@ class BasicModel {
 					$metas[ $meta_key ] = '';
 				}
 			}
-		}
 
-		foreach ( $defaults as $key => $default ) {
-			$this->set( $key, $default );
+			if ( ! empty( $meta_data['defaults'] ) ) {
+				foreach ( $meta_data['defaults'] as $key => $default ) {
+					$this->set( $key, $default );
+				}
+			}
 		}
 	}
 }
