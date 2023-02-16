@@ -498,11 +498,8 @@ class PF_Comments extends PF_Module {
 		);
 
 		$args = wp_parse_args( $args, $defaults );
-		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract
-		extract( $args, EXTR_SKIP );
 
-		// $args can be whatever, only use the args defined in defaults to compute the key.
-		$key          = md5( wp_json_encode( compact( array_keys( $defaults ) ) ) );
+		$key          = md5( wp_json_encode( $args ) );
 		$last_changed = wp_cache_get( 'last_changed', 'comment' );
 		if ( ! $last_changed ) {
 			$last_changed = time();
@@ -515,24 +512,24 @@ class PF_Comments extends PF_Module {
 			return $cache;
 		}
 
-		$post_id = absint( $post_id );
+		$post_id = absint( $args['post_id'] );
 
-		if ( 'hold' === $status ) {
+		if ( 'hold' === $args['status'] ) {
 			$approved = "comment_approved = '0'";
-		} elseif ( 'approve' === $status ) {
+		} elseif ( 'approve' === $args['status'] ) {
 			$approved = "comment_approved = '1'";
-		} elseif ( 'spam' === $status ) {
+		} elseif ( 'spam' === $args['status'] ) {
 			$approved = "comment_approved = 'spam'";
-		} elseif ( ! empty( $status ) ) {
-			$approved = $wpdb->prepare( 'comment_approved = %s', $status );
+		} elseif ( ! empty( $args['status'] ) ) {
+			$approved = $wpdb->prepare( 'comment_approved = %s', $args['status'] );
 		} else {
 			$approved = "( comment_approved = '0' OR comment_approved = '1' )";
 		}
 
-		$order = ( 'ASC' === $order ) ? 'ASC' : 'DESC';
+		$order = ( 'ASC' === $args['order'] ) ? 'ASC' : 'DESC';
 
-		if ( ! empty( $orderby ) ) {
-			$ordersby = is_array( $orderby ) ? $orderby : preg_split( '/[,\s]/', $orderby );
+		if ( ! empty( $args['orderby'] ) ) {
+			$ordersby = is_array( $args['orderby'] ) ? $args['orderby'] : preg_split( '/[,\s]/', $args['orderby'] );
 			$ordersby = array_intersect(
 				$ordersby,
 				array(
@@ -559,8 +556,8 @@ class PF_Comments extends PF_Module {
 			$orderby = 'comment_date_gmt';
 		}
 
-		$number = absint( $number );
-		$offset = absint( $offset );
+		$number = absint( $args['number'] );
+		$offset = absint( $args['offset'] );
 
 		if ( ! empty( $number ) ) {
 			if ( $offset ) {
@@ -578,26 +575,26 @@ class PF_Comments extends PF_Module {
 			$post_where .= $wpdb->prepare( 'comment_post_ID = %d AND ', $post_id );
 		}
 
-		if ( '' !== $author_email ) {
-			$post_where .= $wpdb->prepare( 'comment_author_email = %s AND ', $author_email );
+		if ( '' !== $args['author_email'] ) {
+			$post_where .= $wpdb->prepare( 'comment_author_email = %s AND ', $args['author_email'] );
 		}
 
-		if ( '' !== $karma ) {
-			$post_where .= $wpdb->prepare( 'comment_karma = %d AND ', $karma );
+		if ( '' !== $args['karma'] ) {
+			$post_where .= $wpdb->prepare( 'comment_karma = %d AND ', $args['karma'] );
 		}
 
-		if ( 'comment' === $type ) {
+		if ( 'comment' === $args['type'] ) {
 			$post_where .= "comment_type = '' AND ";
-		} elseif ( ! empty( $type ) ) {
-			$post_where .= $wpdb->prepare( 'comment_type = %s AND ', $type );
+		} elseif ( ! empty( $args['type'] ) ) {
+			$post_where .= $wpdb->prepare( 'comment_type = %s AND ', $args['type'] );
 		}
 
-		if ( '' !== $parent ) {
-			$post_where .= $wpdb->prepare( 'comment_parent = %d AND ', $parent );
+		if ( '' !== $args['parent'] ) {
+			$post_where .= $wpdb->prepare( 'comment_parent = %d AND ', $args['parent'] );
 		}
 
-		if ( '' !== $user_id ) {
-			$post_where .= $wpdb->prepare( 'user_id = %d AND ', $user_id );
+		if ( '' !== $args['user_id'] ) {
+			$post_where .= $wpdb->prepare( 'user_id = %d AND ', $args['user_id'] );
 		}
 
 		// phpcs:ignore WordPress.DB
