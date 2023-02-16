@@ -205,6 +205,7 @@ class MetaCheckEndpoint implements HasActions {
 			$og  = pressforward( 'library.opengraph' )->process( $doc );
 		}
 
+		$tags_retrieved = [];
 		if ( false !== $og ) {
 			if ( ! empty( $og ) && ! empty( $og->article_tag ) ) {
 				$tags_retrieved[] = $og->article_tag;
