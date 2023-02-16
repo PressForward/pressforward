@@ -479,7 +479,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 		}
 
 		public static function find_a_setting( $args, $default = array(), $settings = [] ) {
-			if ( ! empty( $settings ) && ! isset( $_POST ) ) {
+			if ( ! empty( $settings ) && empty( $_POST ) ) {
 				$settings = $settings;
 			} else {
 				$settings = get_option( self::$option_name, array() );
