@@ -231,6 +231,45 @@ class Stats_Shortcodes {
 	}
 
 	/**
+	 * Adds an author leaderboard entry.
+	 *
+	 * @param array $author Author data.
+	 * @return string
+	 */
+	private function add_author_leaderboard_entry( $author ) {
+		if ( empty( $author ) ) {
+			$author          = array();
+			$author['count'] = 0;
+		}
+		if ( ( empty( $author['name'] ) ) ) {
+			$author['name'] = 'No author found.';
+		}
+		$s  = "\n<li>";
+		$s .= $author['name'] . ' (' . $author['count'] . ')';
+		$s .= '</li>';
+		return $s;
+	}
+
+	/**
+	 * Adds author into leaderboard.
+	 *
+	 * @param int   $id      ID of the author.
+	 * @param array $authors Authors array.
+	 * @return array
+	 */
+	private function set_author_into_leaderboard( $id, $authors ) {
+		$author      = pf_get_post_meta( $id, pressforward_stats()->meta_author_key );
+		$author_slug = str_replace( ' ', '_', strtolower( $author ) );
+		if ( ! empty( $authors[ $author_slug ] ) ) {
+			$authors = $this->set_author_count( $author_slug, $authors );
+		} else {
+			$authors = $this->set_new_author_object( $author_slug, $author, $authors );
+		}
+
+		return $authors;
+	}
+
+	/**
 	 * Renders shortcode.
 	 *
 	 * @param string $code Status code.
