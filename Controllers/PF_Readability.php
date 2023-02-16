@@ -228,17 +228,7 @@ class PF_Readability {
 		set_time_limit( 0 );
 		$url = pressforward( 'controller.http_tools' )->resolve_full_url( $url );
 
-		$request = pf_de_https(
-			$url,
-			'wp_remote_get',
-			array(
-				'timeout'    => '30',
-				'user-agent' => 'AdsBot-Google (+http://www.google.com/adsbot.html)',
-				'headers'    => array(
-					'X-PressForward' => get_site_url(),
-				),
-			)
-		);
+		$request = pf_de_https( $url, 'wp_remote_get' );
 
 		if ( is_wp_error( $request ) ) {
 			$content = 'error-secured';
