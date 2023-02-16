@@ -554,7 +554,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	 */
 	public function pf_thing_trasher( $id = 0, $readability_status = false, $item_type = 'feed_item' ) {
 		if ( ! $id ) {
-			return new WP_Error( 'noID', __( 'No ID supplied for deletion', 'pf' ) );
+			return new \WP_Error( 'noID', __( 'No ID supplied for deletion', 'pf' ) );
 		}
 
 		pf_log( 'On trash hook:' );
