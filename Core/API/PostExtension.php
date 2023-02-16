@@ -119,7 +119,7 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 	public function rest_api_init_extension_hook_read_only( $action ) {
 		return array(
 			'hook'   => 'rest_api_init',
-			'method' => function() {
+			'method' => function() use ( $action ){
 				$this->register_rest_post_read_field( $action, true );
 			},
 		);
