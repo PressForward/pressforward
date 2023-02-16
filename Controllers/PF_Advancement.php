@@ -70,7 +70,7 @@ class PF_Advancement implements Advance_System, HasActions {
 	 *
 	 * @param string $tag_name Name of the term.
 	 * @param string $taxonomy Taxonomy. Defaults to 'post_tag'.
-	 * @return array See wp_insert_term().
+	 * @return array|\WP_Error
 	 */
 	public function create_terms( $tag_name, $taxonomy = 'post_tag' ) {
 		$id = term_exists( $tag_name, $taxonomy );
