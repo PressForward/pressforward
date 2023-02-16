@@ -169,10 +169,10 @@ class MetaCheckEndpoint implements HasActions {
 	 */
 	public function get_nominate_this_script() {
 		$url          = isset( $_GET['url'] ) ? sanitize_text_field( wp_unslash( $_GET['url'] ) ) : '';
-		$obj          = new stdClass();
-		$metas        = new stdClass();
-		$og_data      = new stdClass();
-		$twitter_data = new stdClass();
+		$obj          = new \stdClass();
+		$metas        = new \stdClass();
+		$og_data      = new \stdClass();
+		$twitter_data = new \stdClass();
 
 		if ( empty( $_GET['doc'] ) ) {
 			$og = pressforward( 'library.opengraph' )->fetch( $url );
