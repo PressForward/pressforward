@@ -40,6 +40,17 @@ class BasicModel {
 	}
 
 	/**
+	 * Init method.
+	 *
+	 * Should be overridden in a child class.
+	 *
+	 * @param array $item      Data about item.
+	 * @param array $handlers  Controllers.
+	 * @param array $post_type Post type name.
+	 */
+	public function init( $item = array(), $handlers = array(), $post_type = false ) {}
+
+	/**
 	 * Magic methods are apparently not super perfomant.
 	 * Avoid using them if you don't have to. Devs should
 	 * prefer the custom getters and setters that follow.
