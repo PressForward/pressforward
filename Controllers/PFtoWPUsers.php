@@ -38,7 +38,7 @@ class PFtoWPUsers implements SystemUsers {
 	 * @return bool
 	 */
 	public function did_user_nominate( $post_id, $user_id = false ) {
-		$nominators = $this->metas->get_post_pf_meta( $id, 'nominator_array' );
+		$nominators = $this->metas->get_post_pf_meta( $post_id, 'nominator_array' );
 		if ( ! $user_id ) {
 			$current_user = wp_get_current_user();
 			$user_id      = $current_user->ID;
