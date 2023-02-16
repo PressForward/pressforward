@@ -927,7 +927,7 @@ class Metas implements HasFilters, HasActions {
 	public function attach_metas_by_use( $post_object, $use_context = 'api', $admin = false ) {
 		$post_id = $post_object->ID;
 		foreach ( $this->structure() as $key => $meta ) {
-			if ( in_array( $use, $meta['use'], true ) ) {
+			if ( in_array( $use_context, $meta['use'], true ) ) {
 				if ( in_array( $this->map_post_type_to_level( $post_object->post_type ), $meta['level'], true ) ) {
 					if ( false === $admin ) {
 						if ( ! in_array( 'adm', $meta['type'], true ) ) {
