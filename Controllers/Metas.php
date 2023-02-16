@@ -347,6 +347,8 @@ class Metas implements HasFilters, HasActions {
 				return false;
 			}
 		}
+
+		return false;
 	}
 
 	/**
