@@ -30,6 +30,10 @@ function nominate_it() {
 $posted = false;
 
 // For submitted posts.
+$selection   = '';
+$the_title   = '';
+$current_url = '';
+$url         = '';
 if ( isset( $_REQUEST['action'] ) && 'post' === $_REQUEST['action'] ) {
 	check_admin_referer( 'nominate-this' );
 	$posted      = nominate_it();
@@ -40,7 +44,6 @@ if ( isset( $_REQUEST['action'] ) && 'post' === $_REQUEST['action'] ) {
 	global $pf_nt;
 
 	// Set Variables.
-	$selection = '';
 	if ( ! empty( $_GET['s'] ) ) {
 		$selection_search_term = sanitize_text_field( wp_unslash( $_GET['s'] ) );
 
@@ -353,6 +356,7 @@ if ( isset( $_GET['pf-nominate-this'] ) && 2 === intval( $_GET['pf-nominate-this
 
 <div id="poststuff" class="metabox-holder">
 <?php
+$empty_nomination = null;
 if ( empty( $posted ) ) {
 	$empty_nomination            = new WP_Post( new stdClass() );
 	$empty_nomination->post_type = 'nomination';
