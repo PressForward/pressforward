@@ -42,7 +42,7 @@ class FolderExtension extends APIWithMetaEndpoints implements HasFilters {
 	 * @access protected
 	 * @var string
 	 */
-	protected $level;
+	public $level;
 
 	/**
 	 * Metas object.
