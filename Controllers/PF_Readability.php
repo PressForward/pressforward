@@ -26,8 +26,11 @@ class PF_Readability {
 	 * }
 	 */
 	public function get_readable_text( $args ) {
-		// phpcs:ignore WordPress.PHP.DontExtract
-		extract( $args, EXTR_SKIP );
+		$force      = ! empty( $args['force'] ) ? $args['force'] : '';
+		$descrip    = ! empty( $args['descrip'] ) ? $args['descrip'] : '';
+		$url        = ! empty( $args['url'] ) ? $args['url'] : '';
+		$authorship = ! empty( $args['authorship'] ) ? $args['authorship'] : '';
+
 		set_time_limit( 0 );
 		$readability_stat = $url;
 		$url              = pressforward( 'controller.http_tools' )->resolve_full_url( $url );
