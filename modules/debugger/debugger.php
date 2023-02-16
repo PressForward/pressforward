@@ -78,11 +78,11 @@ class PF_Debugger extends PF_Module {
 		if ( ! $date_less ) {
 			$y = gmdate( 'Y' );
 			$m = gmdate( 'm' );
-		} elseif ( ! empty( $date_less ) && $date_less < 12 ) {
+		} elseif ( $date_less < 12 ) {
 			$y = gmdate( 'Y' );
 			$m = gmdate( 'm' );
 			$m = (int) $m + (int) $date_less;
-		} elseif ( ! empty( $date_less ) && $date_less >= 12 ) {
+		} elseif ( $date_less >= 12 ) {
 			$y = gmdate( 'Y' );
 			$y = $y - floor( $date_less / 12 );
 			$m = gmdate( 'm' );
