@@ -75,4 +75,8 @@
 	<rule ref="PHPCompatibility.Keywords.ForbiddenNamesAsDeclared.resourceFound">
 		<exclude-pattern>Libraries/text-stats</exclude-pattern>
 	</rule>
+
+	<rule ref="Squiz.Commenting.FileComment.Missing">
+		<exclude-pattern>pressforward.php</exclude-pattern>
+	</rule>
 </ruleset>
