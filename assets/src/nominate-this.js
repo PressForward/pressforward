@@ -5,11 +5,12 @@ import 'url-search-params-polyfill'
 import 'whatwg-fetch'
 
 (function(){
+	const params = new URLSearchParams( document.location.search )
+
 	addEventListener(
 		'DOMContentLoaded',
 		() => {
-			const params = new URLSearchParams( document.location.search )
-			const url    = params.get( 'u' )
+			const url = params.get( 'u' )
 
 			if ( url ) {
 				fetchUrlData( url )
@@ -34,11 +35,14 @@ import 'whatwg-fetch'
 				// Readability object will provide post content and author.
 				const readabilityObj = new Readability( domObject ).parse()
 
-				// Post content.
-				const cleanContent = DOMPurify.sanitize( readabilityObj.content )
-				const contentEditor = tinymce.get( 'content' )
-				if ( contentEditor ) {
-					contentEditor.setContent( cleanContent )
+				// Post content. Overwrite only if no selection is passed.
+				const selection = params.get( 's' )
+				if ( ! selection ) {
+					const cleanContent = DOMPurify.sanitize( readabilityObj.content )
+					const contentEditor = tinymce.get( 'content' )
+					if ( contentEditor ) {
+						contentEditor.setContent( cleanContent )
+					}
 				}
 
 				// Post author.
