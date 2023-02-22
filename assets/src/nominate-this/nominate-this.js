@@ -25,6 +25,11 @@ import { __ } from '@wordpress/i18n'
 		}
 	)
 
+	/**
+	 * Fetches data about a URL from the server.
+	 *
+	 * @param {string} url URL.
+	 */
 	const fetchUrlData = ( url ) => {
 		const fetchUrl = ajaxurl + '?action=pf_fetch_url_content&url=' + encodeURIComponent( url )
 
@@ -102,6 +107,11 @@ import { __ } from '@wordpress/i18n'
 			} )
 	}
 
+	/**
+	 * Sets or unsets the 'is-loading' body class.
+	 *
+	 * @param {bool} isLoading
+	 */
 	const setIsLoading = ( isLoading ) => {
 		if ( isLoading ) {
 			document.body.classList.add( 'is-loading' )
