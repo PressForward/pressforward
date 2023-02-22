@@ -1219,7 +1219,7 @@ class Metas implements HasFilters, HasActions {
 	 */
 	public function get_author_from_url( $url ) {
 		$response = pressforward( 'controller.http_tools' )->get_url_content( $url, 'wp_remote_get' );
-		if ( ! $response || is_wp_error( $response ) ) {
+		if ( ! $response || is_wp_error( $response ) || empty( $response['body'] ) ) {
 			return false;
 		}
 
