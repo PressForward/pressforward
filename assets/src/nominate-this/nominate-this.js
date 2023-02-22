@@ -8,6 +8,9 @@ import { __ } from '@wordpress/i18n'
 
 (function(){
 	const params = new URLSearchParams( document.location.search )
+	const hasSelection = !! params.get( 's' )
+
+	let requestIsPending = false
 
 	addEventListener(
 		'DOMContentLoaded',
@@ -16,6 +19,8 @@ import { __ } from '@wordpress/i18n'
 
 			if ( url ) {
 				fetchUrlData( url )
+
+				document.getElementById( 'loading-url' ).innerHTML = DOMPurify.sanitize( url, { ALLOWED_TAGS: [] } )
 			}
 		}
 	)
@@ -23,13 +28,42 @@ import { __ } from '@wordpress/i18n'
 	const fetchUrlData = ( url ) => {
 		const fetchUrl = ajaxurl + '?action=pf_fetch_url_content&url=' + encodeURIComponent( url )
 
-		setIsLoading( true )
+		// Only show the loading indicator if there's a delay of more than 2 seconds.
+		const requestStartTime = Date.now()
+		requestIsPending = true
+		setTimeout(
+			() => {
+				if ( ! requestIsPending ) {
+					return
+				}
+
+				setIsLoading( true )
+			},
+			2000
+		)
 
 		window.fetch( fetchUrl )
 			.then( response => response.json() )
 			.then( ( responseJSON ) => {
+				requestIsPending = false
+
+				// To avoid flashes, don't hide until at least five seconds has passed.
+				const timeElapsed = Date.now() - requestStartTime
+				if ( timeElapsed > 5000 ) {
+					setIsLoading( false )
+				} else {
+					setTimeout(
+						() => {
+							setIsLoading( false )
+						},
+						5000 - timeElapsed
+					)
+				}
+
 				// todo - failure to fetch
 				// todo isProbablyRenderable
+				// todo source statement
+				// todo URL should be prepended?
 
 				// DOM object is necessary for Readability as well as other parsing.
 				const domObject = new DOMParser().parseFromString( responseJSON.data.body, 'text/html' )
@@ -38,8 +72,7 @@ import { __ } from '@wordpress/i18n'
 				const readabilityObj = new Readability( domObject ).parse()
 
 				// Post content. Overwrite only if no selection is passed.
-				const selection = params.get( 's' )
-				if ( ! selection ) {
+				if ( ! hasSelection ) {
 					const cleanContent = DOMPurify.sanitize( readabilityObj.content )
 					const contentEditor = tinymce.get( 'content' )
 					if ( contentEditor ) {
@@ -70,7 +103,11 @@ import { __ } from '@wordpress/i18n'
 	}
 
 	const setIsLoading = ( isLoading ) => {
-
+		if ( isLoading ) {
+			document.body.classList.add( 'is-loading' )
+		} else {
+			document.body.classList.remove( 'is-loading' )
+		}
 	}
 
 	/**

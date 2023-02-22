@@ -185,6 +185,8 @@ var photostorage = false;
 </script>
 
 <?php
+	do_action( 'admin_enqueue_scripts' );
+
 	do_action( 'admin_print_styles' );
 	do_action( 'admin_print_scripts' );
 	do_action( 'admin_head' );
@@ -197,6 +199,25 @@ var photostorage = false;
 
 	.metabox-holder-advanced {
 		margin-top: 20px;
+	}
+
+	.loading-indicator {
+		align-items: center;
+		background: #fcf9e8;
+		display: flex;
+		gap: 10px;
+		justify-content: center;
+		opacity: 0;
+		height: 0;
+		padding: 10px 20px;
+		transition: visibility 0s, opacity 1s, height 1s;
+		visibility: hidden;
+	}
+
+	body.is-loading .loading-indicator {
+		height: 40px;
+		opacity: 1;
+		visibility: visible;
 	}
 
 	@media screen and (min-width: 670px) {
@@ -348,6 +369,12 @@ $the_admin_body_class  = ( is_rtl() ) ? 'rtl' : '';
 $the_admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( '_', '-', get_locale() ) ) );
 ?>
 <body class="press-this wp-admin wp-core-ui nominate-this <?php echo esc_attr( $the_admin_body_class ); ?>">
+
+<div id="loading-indicator" class="loading-indicator">
+	<?php // translators: URL being loaded ?>
+	<img src="<?php echo esc_url( admin_url( 'images/loading.gif' ) ); ?>" role="presentation" /> <span><?php printf( esc_html__( 'Loading content from %s.', 'pf' ), '<span id="loading-url"></span>' ); ?></span>
+</div>
+
 <?php
 if ( isset( $_GET['pf-nominate-this'] ) && 2 === intval( $_GET['pf-nominate-this'] ) ) {
 	$post_url = trailingslashit( get_bloginfo( 'wpurl' ) ) . 'wp-admin/edit.php?pf-nominate-this=2';
