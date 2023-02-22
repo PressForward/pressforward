@@ -27,6 +27,8 @@ class AssetsProvider extends ServiceProvider {
 		);
 
 		$this->add_assets( $register );
+
+		add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
 	}
 
 	/**
@@ -443,7 +445,14 @@ class AssetsProvider extends ServiceProvider {
 				'deps'      => array( 'pf' ),
 			)
 		);
+	}
 
+	/**
+	 * Registers scripts that are admin-only.
+	 *
+	 * @return void
+	 */
+	public function admin_enqueue_scripts() {
 		$build_scripts = [
 			'nominate-this',
 		];
