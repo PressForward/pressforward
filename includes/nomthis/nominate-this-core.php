@@ -169,6 +169,9 @@ if ( isset( $_REQUEST['action'] ) && 'post' === $_REQUEST['action'] ) {
 }
 	wp_enqueue_style( 'colors' );
 	wp_enqueue_script( 'post' );
+
+	wp_enqueue_script( 'nominate-this' );
+
 	_wp_admin_html_begin();
 ?>
 <title><?php esc_html_e( 'Nominate This', 'pf' ); ?></title>
@@ -371,34 +374,16 @@ if ( empty( $posted ) ) {
 	<input type="hidden" id="original_post_status" name="original_post_status" value="draft" />
 	<input type="hidden" id="prev_status" name="prev_status" value="draft" />
 	<input type="hidden" id="post_id" name="post_id" value="0" />
-	<?php
-	if ( ! empty( $url ) ) {
-		$og = pressforward( 'library.opengraph' )->fetch( $url );
 
-		if ( isset( $og->url ) ) {
-			$url = $og->url;
-		}
+	<?php if ( ! empty( $url ) ) : ?>
+		<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr( $the_title ); ?>" />
+		<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo esc_attr( current_time( 'mysql' ) ); ?>" />
 
-		?>
-						<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr( $the_title ); ?>" />
-			<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo esc_attr( current_time( 'mysql' ) ); ?>" />
-			<?php
-			// Metadata goes here.
-			if ( ! empty( $url ) ) {
-				pf_log( 'Getting OpenGraph image on ' );
-				pf_log( $url );
-				// Gets OG image.
-				$item_feat_img = pressforward( 'schema.feed_item' )->get_ext_og_img( $url );
-			} else {
-				$item_feat_img = false;
-			}
-			if ( ! $item_feat_img || is_wp_error( $item_feat_img ) ) {
-				$item_feat_img = '';
-			}
-			?>
-			<input type="hidden" id="item_link" name="item_link" value="<?php echo esc_url( $url ); ?>" />
-			<input type="hidden" id="item_feat_img" name="item_feat_img" value="<?php echo esc_url( $item_feat_img ); ?>" />
-			<?php } ?>
+		<input type="hidden" id="item_link" name="item_link" value="<?php echo esc_url( $url ); ?>" />
+	<?php endif; ?>
+
+	<input type="hidden" id="item_feat_img" name="item_feat_img" value="" />
+
 	<?php
 }
 // Post complete template.
@@ -498,7 +483,7 @@ if ( empty( $posted ) ) {
 		ob_start();
 		if ( ! $selection ) {
 			if ( '' !== $url ) {
-				$content .= pressforward( 'schema.feed_item' )->get_content_through_aggregator( $url );
+//				$content .= pressforward( 'schema.feed_item' )->get_content_through_aggregator( $url );
 			}
 		}
 		ob_end_clean();

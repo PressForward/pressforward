@@ -10,6 +10,7 @@
 		"@babel/core": "^7.14.3",
 		"@babel/preset-env": "^7.14.4",
 		"@selfisekai/gulp-sass": "^4.2.0",
+		"@wordpress/scripts": "^25.4.0",
 		"gulp": "^4.0.2",
 		"gulp-babel": "^8.0.0",
 		"gulp-clean-css": "^4.3.0",
@@ -26,7 +27,9 @@
 		"fmt:prettier": "prettier --write --single-quote --use-tabs --tab-width 4",
 		"lint": "run-p lint:js",
 		"lint:eslint": "eslint --ignore-path .gitignore",
-		"lint:js": "npm run lint:eslint -- ."
+		"lint:js": "npm run lint:eslint -- .",
+		"start": "wp-scripts start assets/src/nominate-this.js",
+		"build": "wp-scripts build assets/src/nominate-this.js"
 	},
 	"repository": {
 		"type": "git",
@@ -51,5 +54,11 @@
 	"bugs": {
 		"url": "https://github.com/PressForward/pressforward/issues"
 	},
-	"homepage": "https://github.com/PressForward/pressforward"
+	"homepage": "https://github.com/PressForward/pressforward",
+	"dependencies": {
+		"@mozilla/readability": "^0.4.2",
+		"dompurify": "^3.0.0",
+		"url-search-params-polyfill": "^8.1.1",
+		"whatwg-fetch": "^3.6.2"
+	}
 }

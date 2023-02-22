@@ -38,6 +38,10 @@ class NominateThisCore implements HasActions {
 				'hook'   => 'add_meta_boxes_nomthis',
 				'method' => 'add_meta_boxes',
 			),
+			array(
+				'hook'   => 'wp_ajax_pf_fetch_url_content',
+				'method' => 'fetch_url_content',
+			)
 		);
 	}
 	/**
@@ -73,78 +77,60 @@ class NominateThisCore implements HasActions {
 	 * Generates markup for the Submit meta box on the Nominate This interface.
 	 */
 	public function submit_meta_box() {
-		$url              = isset( $_GET['u'] ) ? esc_url( sanitize_text_field( wp_unslash( $_GET['u'] ) ) ) : '';
-		$author_retrieved = pressforward( 'controller.metas' )->get_author_from_url( $url );
 
 		?>
 
 		<p id="publishing-actions">
+			<?php
+
+			$publish_type = get_option( PF_SLUG . '_draft_post_status', 'draft' );
+
+			$create_nom_post_cap_test = current_user_can( get_post_type_object( pressforward( 'schema.nominations' )->post_type )->cap->create_posts );
+
+			$pf_draft_post_type_value = get_option( PF_SLUG . '_draft_post_type', 'post' );
+
+			if ( 'draft' === $publish_type ) {
+				$cap = 'edit_posts';
+			} else {
+				$cap = 'publish_posts';
+			}
+
+			$create_post_cap_test = current_user_can( get_post_type_object( $pf_draft_post_type_value )->cap->$cap );
+
+			if ( $create_nom_post_cap_test ) {
+				submit_button( __( 'Nominate', 'pf' ), 'button', 'draft', false, array( 'id' => 'save' ) );
+			} else {
+				esc_html_e( 'You do not have the ability to create nominations.', 'pf' );
+			}
+
+			if ( $create_post_cap_test ) {
+				// @todo Fix i18n for this button text.
+				// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
+				submit_button( __( 'Send to ' . ucwords( $publish_type ) ), 'primary', 'publish', false );
+			} else {
+				echo '<!-- User cannot ' . esc_html( $publish_type ) . ' posts -->';
+			}
+
+			?>
+			<span class="spinner" style="display: none;"></span>
+
+		</p>
+
+		<p>
+			<label for="item_author"><input type="text" id="item_author" name="item_author" value="" /><br />&nbsp;<?php echo esc_html( apply_filters( 'pf_author_nominate_this_prompt', __( 'Enter Authors', 'pf' ) ) ); ?></label>
+		</p>
+
+		<p>
+			<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php esc_html_e( 'Nominate feed associated with item.', 'pf' ); ?></label>
+		</p>
+
 		<?php
 
-		$publish_type = get_option( PF_SLUG . '_draft_post_status', 'draft' );
-
-		$create_nom_post_cap_test = current_user_can( get_post_type_object( pressforward( 'schema.nominations' )->post_type )->cap->create_posts );
-
-		$pf_draft_post_type_value = get_option( PF_SLUG . '_draft_post_type', 'post' );
-
-		if ( 'draft' === $publish_type ) {
-			$cap = 'edit_posts';
-		} else {
-			$cap = 'publish_posts';
-		}
-
-		$create_post_cap_test = current_user_can( get_post_type_object( $pf_draft_post_type_value )->cap->$cap );
-
-		if ( $create_nom_post_cap_test ) {
-			submit_button( __( 'Nominate', 'pf' ), 'button', 'draft', false, array( 'id' => 'save' ) );
-		} else {
-			esc_html_e( 'You do not have the ability to create nominations.', 'pf' );
-		}
-		if ( $create_post_cap_test ) {
-			// @todo Fix i18n for this button text.
-			// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
-			submit_button( __( 'Send to ' . ucwords( $publish_type ) ), 'primary', 'publish', false );
-		} else {
-			echo '<!-- User cannot ' . esc_html( $publish_type ) . ' posts -->';
-		}
+		// @deprecated 5.2.2 - Do not use this hook, use the following hook. This hook added to support existing plugins that use it.
+		do_action( 'nominate_this_sidebar_top' );
+		do_action( 'nominate_this_sidebar_head' );
 		?>
-				<span class="spinner" style="display: none;"></span>
-			</p>
-			<p>
-				<?php
-				if ( ! $author_retrieved ) {
-					$author_value = '';
-				} else {
-					$author_value = $author_retrieved;
-				}
-				?>
-			<label for="item_author"><input type="text" id="item_author" name="item_author" value="<?php echo esc_attr( $author_value ); ?>" /><br />&nbsp;<?php echo esc_html( apply_filters( 'pf_author_nominate_this_prompt', __( 'Enter Authors', 'pf' ) ) ); ?></label>
-			</p>
-			<p>
-			<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php esc_html_e( 'Nominate feed associated with item.', 'pf' ); ?></label>
-			</p>
-			<?php
-			if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) :
-					$post_formats = get_theme_support( 'post-formats' );
-				if ( is_array( $post_formats[0] ) ) :
-					$default_format = get_option( 'default_post_format', '0' );
-					?>
-			<p>
-				<label for="post_format"><?php esc_html_e( 'Post Format:', 'pf' ); ?>
-				<select name="post_format" id="post_format">
-				<option value="0"><?php echo esc_html( _x( 'Standard', 'Post format', 'pf' ) ); ?></option>
-					<?php foreach ( $post_formats[0] as $format ) : ?>
-					<option<?php selected( $default_format, $format ); ?> value="<?php echo esc_attr( $format ); ?>"> <?php echo esc_html( get_post_format_string( $format ) ); ?></option>
-				<?php endforeach; ?>
-				</select></label>
-			</p>
-					<?php
-			endif;
-endif;
-			// @deprecated 5.2.2 - Do not use this hook, use the following hook. This hook added to support existing plugins that use it.
-			do_action( 'nominate_this_sidebar_top' );
-			do_action( 'nominate_this_sidebar_head' );
-			?>
+
 		<!-- Addressing things that come in under old action -->
 		<script>jQuery('.postbox .postbox').insertAfter(jQuery('.postbox').first());</script>
 		<?php
@@ -154,32 +140,10 @@ endif;
 	 * Generates markup for the Tags meta box on the Nominate This interface.
 	 */
 	public function tags_meta_box() {
-		$url = isset( $_GET['u'] ) ? esc_url( sanitize_text_field( wp_unslash( $_GET['u'] ) ) ) : '';
-
-		$og = null;
-		if ( $url ) {
-			$og = pressforward( 'library.opengraph' )->fetch( $url );
-		}
-
-		$post_tags = 'via bookmarklet';
-		if ( $og ) {
-			$tags_retrieved = array( 'via bookmarklet' );
-
-			if ( ! empty( $og->article_tag ) ) {
-				$tags_retrieved[] = $og->article_tag;
-			}
-
-			if ( ! empty( $og->article_tag_additional ) ) {
-				$tags_retrieved = array_merge( $tags_retrieved, $og->article_tag_additional );
-			}
-
-			$post_tags = implode( ', ', $tags_retrieved );
-		}
-
 		?>
 		<div id="taxonomy-tags" class="tagdiv">
 			<p>
-				<label for="post_tags"><input type="text" id="post_tags" name="post_tags" value="<?php echo esc_html( $post_tags ); ?>" /><br />&nbsp;<?php echo esc_attr( apply_filters( 'pf_tags_prompt', __( 'Enter Tags', 'pf' ) ) ); ?></label>
+				<label for="post_tags"><input type="text" id="post_tags" name="post_tags" value="" /><br />&nbsp;<?php echo esc_attr( apply_filters( 'pf_tags_prompt', __( 'Enter Tags', 'pf' ) ) ); ?></label>
 			</p>
 		</div>
 		<?php
@@ -343,5 +307,31 @@ endif;
 		}
 
 		return $post_ID;
+	}
+
+	public function fetch_url_content() {
+		$url = isset( $_GET['url'] ) ? wp_unslash( $_GET['url'] ) : '';
+
+		if ( ! $url ) {
+			wp_send_json_error();
+		}
+
+		// @todo Consolidate with cached requests. See Controllers\HTTPTools\get_url_content().
+		$request = wp_remote_get(
+			$url,
+			[
+				'timeout' => 20,
+			]
+		);
+
+		if ( 200 !== wp_remote_retrieve_response_code( $request ) ) {
+			wp_send_json_error();
+		}
+
+		$retval = [
+			'body' => wp_remote_retrieve_body( $request )
+		];
+
+		wp_send_json_success( $retval );
 	}
 }
