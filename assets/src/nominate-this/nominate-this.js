@@ -65,44 +65,49 @@ import { __ } from '@wordpress/i18n'
 					)
 				}
 
-				// todo - failure to fetch
-				// todo isProbablyRenderable
-				// todo source statement
-				// todo URL should be prepended?
+				if ( responseJSON.success ) {
 
-				// DOM object is necessary for Readability as well as other parsing.
-				const domObject = new DOMParser().parseFromString( responseJSON.data.body, 'text/html' )
+					// todo isProbablyRenderable
+					// todo source statement
+					// todo URL should be prepended?
 
-				// Readability object will provide post content and author.
-				const readabilityObj = new Readability( domObject ).parse()
+					// DOM object is necessary for Readability as well as other parsing.
+					const domObject = new DOMParser().parseFromString( responseJSON.data.body, 'text/html' )
 
-				// Post content. Overwrite only if no selection is passed.
-				if ( ! hasSelection ) {
-					const cleanContent = DOMPurify.sanitize( readabilityObj.content )
-					const contentEditor = tinymce.get( 'content' )
-					if ( contentEditor ) {
-						contentEditor.setContent( cleanContent )
+					// Readability object will provide post content and author.
+					const readabilityObj = new Readability( domObject ).parse()
+
+					// Post content. Overwrite only if no selection is passed.
+					if ( ! hasSelection ) {
+						const cleanContent = DOMPurify.sanitize( readabilityObj.content )
+						const contentEditor = tinymce.get( 'content' )
+						if ( contentEditor ) {
+							contentEditor.setContent( cleanContent )
+						}
 					}
-				}
 
-				// Post author.
-				const authorField = document.getElementById( 'item_author' )
-				if ( authorField ) {
-					authorField.value = DOMPurify.sanitize( readabilityObj.byline, { ALLOWED_TAGS: [] } )
-				}
+					// Post author.
+					const authorField = document.getElementById( 'item_author' )
+					if ( authorField ) {
+						authorField.value = DOMPurify.sanitize( readabilityObj.byline, { ALLOWED_TAGS: [] } )
+					}
 
-				const tagsField = document.getElementById( 'post_tags' )
-				if ( tagsField ) {
-					const keywords = getKeywords( domObject )
-					tagsField.value = DOMPurify.sanitize( keywords.join( ', ' ), { ALLOWED_TAGS: [] } )
-				}
+					const tagsField = document.getElementById( 'post_tags' )
+					if ( tagsField ) {
+						const keywords = getKeywords( domObject )
+						tagsField.value = DOMPurify.sanitize( keywords.join( ', ' ), { ALLOWED_TAGS: [] } )
+					}
 
-				// Featured images.
-				const itemFeatImgField = document.getElementById( 'item_feat_img' )
-				if ( itemFeatImgField ) {
-					const sourceUrl = new URL( url )
-					const imageUrl = ensureAbsoluteUrl( getImageUrl( domObject ), sourceUrl.protocol + '//' + sourceUrl.hostname )
-					itemFeatImgField.value = DOMPurify.sanitize( imageUrl, { ALLOWED_TAGS: [] } )
+					// Featured images.
+					const itemFeatImgField = document.getElementById( 'item_feat_img' )
+					if ( itemFeatImgField ) {
+						const sourceUrl = new URL( url )
+						const imageUrl = ensureAbsoluteUrl( getImageUrl( domObject ), sourceUrl.protocol + '//' + sourceUrl.hostname )
+						itemFeatImgField.value = DOMPurify.sanitize( imageUrl, { ALLOWED_TAGS: [] } )
+					}
+				} else {
+					document.body.classList.add( 'is-failed-request' )
+
 				}
 			} )
 	}

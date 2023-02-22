@@ -201,21 +201,33 @@ var photostorage = false;
 		margin-top: 20px;
 	}
 
-	.loading-indicator {
+	.nomthis-indicator {
 		align-items: center;
-		background: #fcf9e8;
 		display: flex;
-		gap: 10px;
+		height: 0;
+		overflow: hidden;
+		transition: padding 1s, visibility 0s, opacity 1s, height 1s;
 		justify-content: center;
 		opacity: 0;
-		height: 0;
-		padding: 10px 20px;
-		transition: visibility 0s, opacity 1s, height 1s;
 		visibility: hidden;
+	}
+
+	.loading-indicator {
+		background: #fcf9e8;
+		gap: 10px;
 	}
 
 	body.is-loading .loading-indicator {
 		height: 40px;
+		padding: 10px 20px;
+		opacity: 1;
+		visibility: visible;
+	}
+
+	body.is-failed-request .failure-indicator {
+		background: #ffcccc;
+		height: 40px;
+		padding: 10px 20px;
 		opacity: 1;
 		visibility: visible;
 	}
@@ -370,9 +382,13 @@ $the_admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_repla
 ?>
 <body class="press-this wp-admin wp-core-ui nominate-this <?php echo esc_attr( $the_admin_body_class ); ?>">
 
-<div id="loading-indicator" class="loading-indicator">
+<div id="loading-indicator" class="loading-indicator nomthis-indicator">
 	<?php // translators: URL being loaded. ?>
 	<img src="<?php echo esc_url( admin_url( 'images/loading.gif' ) ); ?>" role="presentation" /> <span><?php printf( esc_html__( 'Loading content from %s.', 'pf' ), '<span id="loading-url"></span>' ); ?></span>
+</div>
+
+<div id="failure-indicator" class="failure-indicator nomthis-indicator">
+	<?php esc_html_e( 'Could not fetch remote URL' ); ?>
 </div>
 
 <?php
