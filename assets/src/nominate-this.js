@@ -4,6 +4,8 @@ import DOMPurify from 'dompurify'
 import 'url-search-params-polyfill'
 import 'whatwg-fetch'
 
+import { __ } from '@wordpress/i18n'
+
 (function(){
 	const params = new URLSearchParams( document.location.search )
 
@@ -95,7 +97,7 @@ import 'whatwg-fetch'
 			return 'article:tag' === tagIdentifier
 		}
 
-		let keywords = [ 'via bookmarklet' ]
+		let keywords = [ __( 'via bookmarklet', 'pf' ) ]
 		for ( const metaTag of metaTags ) {
 			if ( isKeywordTag( metaTag ) ) {
 				const tagKeywords = metaTag.content.length > 0 ? metaTag.content.split( ',' ) : null
