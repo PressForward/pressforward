@@ -98,8 +98,10 @@ import 'whatwg-fetch'
 		let keywords = [ 'via bookmarklet' ]
 		for ( const metaTag of metaTags ) {
 			if ( isKeywordTag( metaTag ) ) {
-				const tagKeywords = metaTag.content.split( ',' )
-				tagKeywords.map( tagKeyword => keywords.push( tagKeyword ) )
+				const tagKeywords = metaTag.content.length > 0 ? metaTag.content.split( ',' ) : null
+				if ( tagKeywords ) {
+					tagKeywords.map( tagKeyword => keywords.push( tagKeyword ) )
+				}
 			}
 		}
 
