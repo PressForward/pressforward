@@ -41,7 +41,7 @@ class NominateThisCore implements HasActions {
 			array(
 				'hook'   => 'wp_ajax_pf_fetch_url_content',
 				'method' => 'fetch_url_content',
-			)
+			),
 		);
 	}
 	/**
@@ -309,8 +309,13 @@ class NominateThisCore implements HasActions {
 		return $post_ID;
 	}
 
+	/**
+	 * Callback for 'wp_ajax_pf_fetch_url_content' AJAX request.
+	 *
+	 * @return void
+	 */
 	public function fetch_url_content() {
-		$url = isset( $_GET['url'] ) ? wp_unslash( $_GET['url'] ) : '';
+		$url = isset( $_GET['url'] ) ? sanitize_text_field( wp_unslash( $_GET['url'] ) ) : '';
 
 		if ( ! $url ) {
 			wp_send_json_error();
@@ -329,7 +334,7 @@ class NominateThisCore implements HasActions {
 		}
 
 		$retval = [
-			'body' => wp_remote_retrieve_body( $request )
+			'body' => wp_remote_retrieve_body( $request ),
 		];
 
 		wp_send_json_success( $retval );

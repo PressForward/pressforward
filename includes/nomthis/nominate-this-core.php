@@ -480,14 +480,6 @@ if ( empty( $posted ) ) {
 			$content .= $selection;
 		}
 
-		ob_start();
-		if ( ! $selection ) {
-			if ( '' !== $url ) {
-//				$content .= pressforward( 'schema.feed_item' )->get_content_through_aggregator( $url );
-			}
-		}
-		ob_end_clean();
-
 		remove_action( 'media_buttons', 'media_buttons' );
 		add_action( 'media_buttons', 'nominate_this_media_buttons' );
 
