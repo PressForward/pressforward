@@ -552,7 +552,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	 * @param int    $readability_status Readability status.
 	 * @param string $item_type          Default 'feed item'.
 	 */
-	public function pf_thing_trasher( $id = 0, $readability_status = false, $item_type = 'feed_item' ) {
+	public function pf_thing_trasher( $id = 0, $readability_status = 0, $item_type = 'feed_item' ) {
 		if ( ! $id ) {
 			return new \WP_Error( 'noID', __( 'No ID supplied for deletion', 'pf' ) );
 		}
