@@ -425,10 +425,10 @@ class Relate implements HasActions {
 					$before = '2 weeks ago';
 					break;
 				case '1month':
-					$before = array( 'month' => gmdate( 'm' ) - 1 );
+					$before = array( 'month' => (int) gmdate( 'm' ) - 1 );
 					break;
 				case '1year':
-					$before = array( 'year' => gmdate( 'Y' ) - 1 );
+					$before = array( 'year' => (int) gmdate( 'Y' ) - 1 );
 					break;
 			}
 
@@ -442,16 +442,16 @@ class Relate implements HasActions {
 
 			switch ( $date_limit ) {
 				case '1week':
-					$before = array( 'week' => gmdate( 'W' ) - 1 );
+					$before = array( 'week' => (int) gmdate( 'W' ) - 1 );
 					break;
 				case '2weeks':
-					$before = array( 'week' => gmdate( 'W' ) - 2 );
+					$before = array( 'week' => (int) gmdate( 'W' ) - 2 );
 					break;
 				case '1month':
-					$before = array( 'month' => gmdate( 'm' ) - 1 );
+					$before = array( 'month' => (int) gmdate( 'm' ) - 1 );
 					break;
 				case '1year':
-					$before = array( 'year' => gmdate( 'Y' ) - 1 );
+					$before = array( 'year' => (int) gmdate( 'Y' ) - 1 );
 					break;
 			}
 
