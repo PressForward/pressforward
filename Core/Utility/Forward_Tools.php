@@ -231,9 +231,9 @@ class Forward_Tools {
 	/**
 	 * Increments metadata on nomination.
 	 *
-	 * @param int $id      ID of the nomination.
-	 * @param int $user_id ID of the user.
-	 * @param int $is_post Whether this is a post. Default false.
+	 * @param int  $id      ID of the nomination.
+	 * @param int  $user_id ID of the user.
+	 * @param bool $is_post Whether this is a post. Default false.
 	 * @return array
 	 */
 	public function apply_nomination_data( $id, $user_id = 0, $is_post = false ) {
