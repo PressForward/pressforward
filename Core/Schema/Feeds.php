@@ -298,30 +298,34 @@ class Feeds implements HasActions, HasFilters {
 			return $caps;
 		}
 
-		$post      = null;
-		$post_type = null;
+		$caps_to_map = [
+			'edit_' . $this->post_type,
+			'delete_' . $this->post_type,
+			'read_' . $this->post_type,
+		];
 
-		/* If editing, deleting, or reading a feed, get the post and post type object. */
-		if ( 'edit_' . $this->post_type === $cap || 'delete_' . $this->post_type === $cap || 'read_' . $this->post_type === $cap ) {
-			$post      = get_post( $args[0] );
-			$post_type = get_post_type_object( $post->post_type );
-
-			/* Set an empty array for the caps. */
-			$caps = array();
+		if ( ! in_array( $cap, $caps_to_map ) ) {
+			return $caps;
 		}
+
+		$post      = get_post( $args[0] );
+		$post_type = get_post_type_object( $post->post_type );
+
+		// Set an empty array for the caps.
+		$caps = array();
 
 		if ( 'edit_' . $this->post_type === $cap ) {
 			/* If editing a feed, assign the required capability. */
 			if ( $post && $user_id === $post->post_author ) {
 				$caps[] = $post_type->cap->edit_posts;
-			} elseif ( $post_type ) {
+			} else {
 				$caps[] = $post_type->cap->edit_others_posts;
 			}
 		} elseif ( 'delete_' . $this->post_type === $cap ) {
 			/* If deleting a feed, assign the required capability. */
 			if ( $post && $user_id === $post->post_author ) {
 				$caps[] = $post_type->cap->delete_posts;
-			} elseif ( $post_type ) {
+			} else {
 				$caps[] = $post_type->cap->delete_others_posts;
 			}
 		} elseif ( 'read_' . $this->post_type === $cap ) {
@@ -330,7 +334,7 @@ class Feeds implements HasActions, HasFilters {
 				$caps[] = 'read';
 			} elseif ( $post && $user_id === $post->post_author ) {
 				$caps[] = 'read';
-			} elseif ( $post_type ) {
+			} else {
 				$caps[] = $post_type->cap->read_private_posts;
 			}
 		}
