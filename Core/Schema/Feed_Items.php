@@ -644,7 +644,7 @@ class Feed_Items implements HasActions, HasFilters {
 	 *
 	 * @param array $feed_obj Feed object data.
 	 */
-	public function assemble_feed_for_pull( $feed_obj = 0 ) {
+	public function assemble_feed_for_pull( $feed_obj = [] ) {
 		pf_log( 'Invoked: PF_Feed_Item::assemble_feed_for_pull()' );
 
 		ignore_user_abort( true );
