@@ -78,9 +78,17 @@ import { __ } from '@wordpress/i18n'
 					// Post content. Overwrite only if no selection is passed.
 					if ( ! hasSelection ) {
 						const cleanContent = DOMPurify.sanitize( processedReadableContent )
+
+						// "Visual" tab.
 						const contentEditor = tinymce.get( 'content' )
 						if ( contentEditor ) {
 							contentEditor.setContent( cleanContent )
+						}
+
+						// "Text" tab.
+						const contentTextarea = document.getElementById( 'content' )
+						if ( contentTextarea ) {
+							contentTextarea.innerHTML = cleanContent
 						}
 					}
 
