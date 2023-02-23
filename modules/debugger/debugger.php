@@ -70,8 +70,8 @@ class PF_Debugger extends PF_Module {
 	/**
 	 * Counts the post in a post type.
 	 *
-	 * @param string $post_type Post type.
-	 * @param int    $date_less Number of months.
+	 * @param string   $post_type Post type.
+	 * @param int|bool $date_less Number of months.
 	 * @return int
 	 */
 	public function count_the_posts( $post_type, $date_less = false ) {

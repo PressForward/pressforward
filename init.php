@@ -39,10 +39,10 @@ $class_loader->register();
 /**
  * PressForward instance.
  *
- * @param string $prop Optional. Use to fetch a property from the global instance.
+ * @param string|null $prop Optional. Use to fetch a property from the global instance.
  * @return mixed
  */
-function pressforward( $prop = false ) {
+function pressforward( $prop = null ) {
 	$instance = new stdClass();
 	try {
 		$instance = new PressForward\Application( new Config( ConfigType::PLUGIN, __FILE__ ) );

@@ -69,7 +69,7 @@ class OPML_Maker {
 	 * @param array       $filter Optional. Array of properties that are skipped when building attributes.
 	 * @return string
 	 */
-	public function assemble_tag( $tag, $obj, $self_closing = false, $filter = false ) {
+	public function assemble_tag( $tag, $obj, $self_closing = false, $filter = [] ) {
 		if ( empty( $obj ) ) {
 			return '';
 		}
@@ -176,7 +176,7 @@ class OPML_Maker {
 	 *
 	 * @param string $filepath Target file path. Defaults to blogroll.opml in the plugin directory.
 	 */
-	public function make_as_file( $filepath = false ) {
+	public function make_as_file( $filepath = '' ) {
 		// phpcs:disable WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 		if ( ! $filepath ) {
 			file_put_contents( plugin_dir_path( __FILE__ ) . 'blogroll.opml', $this->file_contents );

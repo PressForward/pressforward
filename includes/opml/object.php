@@ -104,10 +104,10 @@ class OPML_Object {
 	/**
 	 * Sets a feed.
 	 *
-	 * @param object|bool  $feed_obj Feed object.
-	 * @param string|array $folder   Optional. Associated folder(s).
+	 * @param object|bool       $feed_obj Feed object.
+	 * @param string|array|null $folder   Optional. Associated folder(s).
 	 */
-	public function set_feed( $feed_obj, $folder = false ) {
+	public function set_feed( $feed_obj, $folder = null ) {
 		if ( ! $folder ) {
 			// Do not set an unsorted feed if it has already been set
 			// as a sorted feed.

@@ -13,7 +13,7 @@
  * @param int $id ID of the item.
  * @return string
  */
-function get_the_source_title( $id = false ) {
+function get_the_source_title( $id = 0 ) {
 	if ( ! $id ) {
 		$id = get_the_ID();
 	}
@@ -68,7 +68,7 @@ function the_original_post_date() {
  * @param int $id ID.
  * @return string
  */
-function get_the_item_author( $id = false ) {
+function get_the_item_author( $id = 0 ) {
 	if ( ! $id ) {
 		$id = get_the_ID();
 	}
@@ -89,7 +89,7 @@ function the_item_author() {
  * @param int $id ID.
  * @return string
  */
-function get_the_item_link( $id = false ) {
+function get_the_item_link( $id = 0 ) {
 	if ( ! $id ) {
 		$id = get_the_ID();
 	}
@@ -178,7 +178,7 @@ function the_nomination_count() {
  * @param int $id ID.
  * @return array
  */
-function get_the_nominator_ids( $id = false ) {
+function get_the_nominator_ids( $id = 0 ) {
 	if ( ! $id ) {
 		$id = get_the_ID();
 	}

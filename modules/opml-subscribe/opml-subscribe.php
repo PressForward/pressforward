@@ -407,7 +407,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	 *
 	 * @param int $post_id ID of the post.
 	 */
-	private function make_a_feed_object_from_post( $post_id = false ) {
+	private function make_a_feed_object_from_post( $post_id = 0 ) {
 		$meta = pressforward( 'controller.metas' )->get_all_metas( $post_id );
 		if ( ! empty( $meta['feedUrl'][0] ) ) {
 			if ( 'http' !== substr( $meta['feedUrl'][0], 0, 4 ) ) {
