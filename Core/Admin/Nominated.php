@@ -666,7 +666,7 @@ class Nominated implements HasActions {
 	 * @param string|array $post_type Post type.
 	 * @param bool         $update    Not used.
 	 */
-	public function is_nominated( $item_id, $post_type = false, $update = false ) {
+	public function is_nominated( $item_id, $post_type = '', $update = false ) {
 		if ( ! $post_type ) {
 			$post_type = array( 'post', 'nomination' );
 		}
@@ -748,7 +748,7 @@ class Nominated implements HasActions {
 	 * @param int $user_id ID of the user. Defaults to current user.
 	 * @return bool
 	 */
-	public function did_user_nominate( $id, $user_id = false ) {
+	public function did_user_nominate( $id, $user_id = 0 ) {
 		$nominators = $this->metas->retrieve_meta( $id, 'nominator_array' );
 		if ( ! $user_id ) {
 			$current_user = wp_get_current_user();
