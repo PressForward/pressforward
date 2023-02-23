@@ -13,7 +13,7 @@ use PressForward\Core\Admin\PFTemplater as PFTemplater;
 use PressForward\Core\Utility\Forward_Tools as Forward_Tools;
 use PressForward\Core\Schema\Nominations as Nominations;
 use PressForward\Controllers\Metas;
-use PressForward\Interfaces\SystemUsers;
+use PressForward\Controllers\PFtoWPUsers;
 use WP_Ajax_Response;
 use WP_Query;
 
@@ -54,10 +54,10 @@ class Nominated implements HasActions {
 	public $nomination_slug;
 
 	/**
-	 * SystemUsers interface.
+	 * PFtoWPUsers class.
 	 *
 	 * @access public
-	 * @var \PressForward\Interfaces\SystemUsers
+	 * @var \PressForward\Controllers\PFtoWPUsers
 	 */
 	public $user_interface;
 
@@ -68,9 +68,9 @@ class Nominated implements HasActions {
 	 * @param \PressForward\Core\Admin\PFTemplater     $template_factory PFTemplater object.
 	 * @param \PressForward\Core\Utility\Forward_Tools $forward_tools    Forward_Tools object.
 	 * @param \PressForward\Core\Schema\Nominations    $nominations      Nominations object.
-	 * @param \PressForward\Interfaces\SystemUsers     $user_interface   SystemUsers object.
+	 * @param \PressForward\Controllers\PFtoWPUsers    $user_interface   PFtoWPUsers object.
 	 */
-	public function __construct( $metas, PFTemplater $template_factory, Forward_Tools $forward_tools, Nominations $nominations, SystemUsers $user_interface ) {
+	public function __construct( $metas, PFTemplater $template_factory, Forward_Tools $forward_tools, Nominations $nominations, PFtoWPUsers $user_interface ) {
 		$this->metas            = $metas;
 		$this->template_factory = $template_factory;
 		$this->forward_tools    = $forward_tools;
