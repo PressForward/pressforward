@@ -21,7 +21,7 @@ class Forward_Tools {
 	 * Items object.
 	 *
 	 * @access public
-	 * @var PressForward\Interfaces\Items
+	 * @var \PressForward\Interfaces\Items
 	 */
 	public $item_interface;
 
@@ -29,7 +29,7 @@ class Forward_Tools {
 	 * Advance_System object.
 	 *
 	 * @access public
-	 * @var PressForward\Interfaces\Advance_System
+	 * @var \PressForward\Interfaces\Advance_System
 	 */
 	public $advance_interface;
 
@@ -37,16 +37,16 @@ class Forward_Tools {
 	 * Metas object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Metas
+	 * @var \PressForward\Controllers\Metas
 	 */
 	public $metas;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Interfaces\Items          $item_interface    Items object.
-	 * @param PressForward\Interfaces\Advance_System $advance_interface Advance_System object.
-	 * @param PressForward\Controllers\Metas         $meta_interface    Metas object.
+	 * @param \PressForward\Interfaces\Items          $item_interface    Items object.
+	 * @param \PressForward\Interfaces\Advance_System $advance_interface Advance_System object.
+	 * @param \PressForward\Controllers\Metas         $meta_interface    Metas object.
 	 */
 	public function __construct( Items $item_interface, Advance_System $advance_interface, Metas $meta_interface ) {
 		$this->item_interface    = $item_interface;

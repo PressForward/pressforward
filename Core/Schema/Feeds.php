@@ -44,14 +44,14 @@ class Feeds implements HasActions, HasFilters {
 	 * Metas object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Items
+	 * @var \PressForward\Controllers\Metas
 	 */
 	public $metas;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Controllers\Metas $metas Metas object.
+	 * @param \PressForward\Controllers\Metas $metas Metas object.
 	 */
 	public function __construct( Metas $metas ) {
 		$this->post_type    = 'pf_feed';
@@ -538,7 +538,7 @@ class Feeds implements HasActions, HasFilters {
 	 * Adds list table row actions for feeds.
 	 *
 	 * @param array   $actions Action links.
-	 * @param WP_Post $post    Post object.
+	 * @param \WP_Post $post    Post object.
 	 * @return array
 	 */
 	public function url_feed_row_action( $actions, $post ) {
@@ -569,7 +569,7 @@ class Feeds implements HasActions, HasFilters {
 	 * Adds 'Refresh' list table row action for feeds.
 	 *
 	 * @param array   $actions Action links.
-	 * @param WP_Post $post    Post object.
+	 * @param \WP_Post $post    Post object.
 	 * @return array
 	 */
 	public function refresh_feed_row_action( $actions, $post ) {
@@ -1267,7 +1267,7 @@ class Feeds implements HasActions, HasFilters {
 	 * Gets a feed object corresponding to a URL.
 	 *
 	 * @param string $url URL.
-	 * @return WP_Post
+	 * @return \WP_Post
 	 */
 	public function get_feed( $url ) {
 		$posts = $this->has_feed( $url );

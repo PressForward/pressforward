@@ -45,7 +45,7 @@ class Feed_Items implements HasActions, HasFilters {
 	 * Items object.
 	 *
 	 * @access public
-	 * @var PressForward\Interfaces\Items
+	 * @var \PressForward\Interfaces\Items
 	 */
 	public $items;
 
@@ -53,15 +53,15 @@ class Feed_Items implements HasActions, HasFilters {
 	 * Metas object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Items
+	 * @var \PressForward\Controllers\Metas
 	 */
 	public $metas;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Interfaces\Items  $items Items object.
-	 * @param PressForward\Controllers\Metas $metas Metas object.
+	 * @param \PressForward\Interfaces\Items  $items Items object.
+	 * @param \PressForward\Controllers\Metas $metas Metas object.
 	 */
 	public function __construct( Items $items, Metas $metas ) {
 		$this->post_type    = 'pf_feed_item';
@@ -344,7 +344,7 @@ class Feed_Items implements HasActions, HasFilters {
 	 * Gets a post by a PF item ID.
 	 *
 	 * @param string $item_id PF item ID.
-	 * @return bool|WP_Post
+	 * @return bool|\WP_Post
 	 */
 	public function get_by_item_id( $item_id ) {
 		$args = array(
@@ -525,7 +525,7 @@ class Feed_Items implements HasActions, HasFilters {
 	public function set_parent_last_retrieved( $feed_item_id ) {
 		$feed_item = get_post( $feed_item_id );
 
-		if ( ! is_a( $feed_item, 'WP_Post' ) || empty( $feed_item->post_parent ) ) {
+		if ( ! is_a( $feed_item, '\WP_Post' ) || empty( $feed_item->post_parent ) ) {
 			return false;
 		}
 
