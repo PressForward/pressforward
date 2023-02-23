@@ -58,7 +58,7 @@ class BasicModel {
 	 * @param array  $handlers  Controllers.
 	 * @param string $post_type Post type name.
 	 */
-	public function __construct( $item = array(), $handlers = array(), $post_type = false ) {
+	public function __construct( $item = array(), $handlers = array(), $post_type = '' ) {
 		if ( empty( $handlers ) ) {
 			$handlers = array(
 				'processor' => pressforward( 'controller.items' ),
@@ -80,7 +80,7 @@ class BasicModel {
 	 * @param array  $handlers  Controllers.
 	 * @param string $post_type Post type name.
 	 */
-	public function init( $item = array(), $handlers = array(), $post_type = false ) {}
+	public function init( $item = array(), $handlers = array(), $post_type = '' ) {}
 
 	/**
 	 * Magic methods are apparently not super perfomant.

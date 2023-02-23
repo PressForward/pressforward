@@ -26,7 +26,7 @@ class Feed extends BasicModel {
 	 * @param array  $handlers  Controllers.
 	 * @param string $post_type Post type name.
 	 */
-	public function init( $item = array(), $handlers = array(), $post_type = false ) {
+	public function init( $item = array(), $handlers = array(), $post_type = '' ) {
 		$this->type     = 'feed';
 		$this->type_key = 'feed';
 	}

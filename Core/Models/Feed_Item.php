@@ -9,7 +9,7 @@ namespace PressForward\Core\Models;
 
 use PressForward\Core\Models\BasicModel;
 use PressForward\Interfaces\Items as Items;
-use PressForward\Interfaces\SystemMeta as SystemMeta;
+use PressForward\Controllers\Metas as Metas;
 
 /**
  * Feed_Item class.
@@ -62,7 +62,7 @@ class Feed_Item extends BasicModel {
 	 * @param array  $handlers  Controllers.
 	 * @param string $post_type Post type name.
 	 */
-	public function init( $item = array(), $handlers = array(), $post_type = false ) {
+	public function init( $item = array(), $handlers = array(), $post_type = '' ) {
 		$this->type     = 'feed_item';
 		$this->type_key = 'item';
 		if ( ! $post_type ) {
@@ -96,7 +96,7 @@ class Feed_Item extends BasicModel {
 	 * @param \PressForward\Interfaces\Items  $processor Items object.
 	 * @param \PressForward\Controllers\Metas $metas     Metas object.
 	 */
-	public function build_item( $post, Items $processor, SystemMeta $metas ) {
+	public function build_item( $post, Items $processor, Metas $metas ) {
 		$post = $processor->get_post( $post );
 		$this->set( 'id', $post->ID );
 		$this->set( 'user', $post->post_author );

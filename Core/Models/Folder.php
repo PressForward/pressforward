@@ -26,7 +26,7 @@ class Folder extends BasicModel {
 	 * @param array  $handlers  Controllers.
 	 * @param string $post_type Post type name.
 	 */
-	public function init( $item = array(), $handlers = array(), $post_type = false ) {
+	public function init( $item = array(), $handlers = array(), $post_type = '' ) {
 		$this->type     = 'folder';
 		$this->type_key = 'folder';
 	}
