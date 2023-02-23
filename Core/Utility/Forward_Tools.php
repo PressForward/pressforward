@@ -511,7 +511,7 @@ class Forward_Tools {
 	 *
 	 * @param int $item_id      Item ID.
 	 * @param int $item_post_id Item post ID.
-	 * @return int
+	 * @return int|\WP_Error
 	 */
 	public function item_to_nomination( $item_id, $item_post_id ) {
 		$nomination_and_post_check = $this->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
