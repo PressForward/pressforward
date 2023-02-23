@@ -70,7 +70,7 @@ import { __ } from '@wordpress/i18n'
 					const domObject = new DOMParser().parseFromString( responseJSON.data.body, 'text/html' )
 
 					// Readability object will provide post content and author.
-					const readabilityObj = new Readability( domObject ).parse()
+					const readabilityObj = new Readability( domObject.cloneNode( true ) ).parse()
 
 					// Detect embeds in the readable content and replace with raw URLs.
 					const processedReadableContent = processEmbeds( readabilityObj.content, responseJSON.data.embeds )
@@ -95,7 +95,11 @@ import { __ } from '@wordpress/i18n'
 					// Post author.
 					const authorField = document.getElementById( 'item_author' )
 					if ( authorField ) {
-						authorField.value = DOMPurify.sanitize( readabilityObj.byline, { ALLOWED_TAGS: [] } )
+						const authorFromLD = getAuthorFromLD( domObject )
+
+						const authorValue = authorFromLD ?? readabilityObj.byline
+
+						authorField.value = DOMPurify.sanitize( authorValue, { ALLOWED_TAGS: [] } )
 					}
 
 					const tagsField = document.getElementById( 'post_tags' )
@@ -140,6 +144,15 @@ import { __ } from '@wordpress/i18n'
 	 * @returns {array}
 	 */
 	const getKeywords = ( domObject ) => {
+		let keywords = [ __( 'via bookmarklet', 'pf' ) ]
+
+		// Prefer linked data if available.
+		const ld = getLDFromDomObject( domObject )
+		if ( ld && ld.hasOwnProperty( 'keywords' ) ) {
+			return [ ...keywords, ld.keywords.split( ',' ) ]
+		}
+
+		// Next, look at 'keyword' meta tags.
 		const metaTags = domObject.querySelectorAll( 'meta' )
 
 		const isKeywordTag = ( tag ) => {
@@ -155,7 +168,6 @@ import { __ } from '@wordpress/i18n'
 			return 'article:tag' === tagIdentifier
 		}
 
-		let keywords = [ __( 'via bookmarklet', 'pf' ) ]
 		for ( const metaTag of metaTags ) {
 			if ( isKeywordTag( metaTag ) ) {
 				const tagKeywords = metaTag.content.length > 0 ? metaTag.content.split( ',' ) : null
@@ -181,6 +193,21 @@ import { __ } from '@wordpress/i18n'
 	 * @returns {array}
 	 */
 	const getImageUrl = ( domObject ) => {
+		// Prefer linked data if available.
+		const ld = getLDFromDomObject( domObject )
+		if ( ld ) {
+			const ldThumbnailUrl = ld?.thumbnailUrl
+			if ( ldThumbnailUrl ) {
+				return ldThumbnailUrl
+			}
+
+			const ldImages = ld?.image
+			const ldImageUrl = ldImages ? ldImages[0].url : null
+			if ( ldImageUrl ) {
+				return ldImageUrl
+			}
+		}
+
 		const ogImageTag = domObject.querySelector( 'meta[property="og:image"]' )
 		if ( ogImageTag ) {
 			return ogImageTag.content
@@ -226,7 +253,7 @@ import { __ } from '@wordpress/i18n'
 	 *
 	 * @param {string} body Readable text, as determined by Readability.
 	 * @param {array} embeds Array of swappable embeds, as detected by the server.
-	 * @returns {array}
+	 * @return {array}
 	 */
 	const processEmbeds = ( body, embeds ) => {
 		const bodyDom = new DOMParser().parseFromString( body, 'text/html' )
@@ -260,5 +287,37 @@ import { __ } from '@wordpress/i18n'
 		}
 
 		return bodyDom.body.innerHTML
+	}
+
+	/**
+	 * Swaps embedded content with raw WP URLs.
+	 *
+	 * @param {HTMLDocument} domObject DOM object representing the source page.
+	 * @return {object}
+	 */
+	const getLDFromDomObject = ( domObject ) => {
+		const ldTag = domObject.querySelector( 'script[type="application/ld+json"]' )
+		if ( ! ldTag ) {
+			return;
+		}
+
+		return JSON.parse( ldTag.innerHTML )
+	}
+
+	/**
+	 * Swaps embedded content with raw WP URLs.
+	 *
+	 * @param {HTMLDocument} domObject DOM object representing the source page.
+	 * @return {string}
+	 */
+	const getAuthorFromLD = ( domObject ) => {
+		const ld = getLDFromDomObject( domObject )
+		if ( ! ld || ! ld.hasOwnProperty( 'author' ) ) {
+			return ''
+		}
+
+		const authorStrings = ld.author.map( author => author.name )
+
+		return authorStrings.join( ', ' )
 	}
 })()
