@@ -192,7 +192,7 @@ class Nominated implements HasActions {
 						$current_user    = wp_get_current_user();
 						$current_user_id = $current_user->ID;
 
-						$metadata['current_user']    = $current_user->slug;
+						$metadata['current_user']    = $current_user->user_nicename;
 						$metadata['current_user_id'] = $current_user_id;
 						?>
 
