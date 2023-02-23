@@ -19,7 +19,7 @@ interface Items {
 	 * @param int   $item_id PF item id.
 	 * @return mixed
 	 */
-	public function insert_post( $post, $error = false, $item_id = false );
+	public function insert_post( $post, $error = false, $item_id = 0 );
 
 	/**
 	 * Updates a post.
