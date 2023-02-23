@@ -10,26 +10,26 @@ namespace PressForward\Core\Admin;
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
 
-use PressForward\Interfaces\SystemUsers;
+use PressForward\Controllers\PFtoWPUsers;
 
 /**
  * Admin bar setup.
  */
 class AdminBar implements HasActions, HasFilters {
 	/**
-	 * SystemUsers interface.
+	 * PFtoWPUsers object.
 	 *
 	 * @access public
-	 * @var PressForward\Interfaces\SystemUsers
+	 * @var \PressForward\Controllers\PFtoWPUsers
 	 */
 	public $user_interface;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Interfaces\SystemUsers $user_interface SystemUsers object.
+	 * @param \PressForward\Controllers\PFtoWPUsers $user_interface PFtoWPUsers object.
 	 */
-	public function __construct( SystemUsers $user_interface ) {
+	public function __construct( PFtoWPUsers $user_interface ) {
 		$this->user_interface = $user_interface;
 	}
 
@@ -60,8 +60,8 @@ class AdminBar implements HasActions, HasFilters {
 	/**
 	 * Adds admin bar items.
 	 *
-	 * @param WP_Admin_Bar $wp_admin_bar Admin bar object.
-	 * @return WP_Admin_Bar
+	 * @param \WP_Admin_Bar $wp_admin_bar Admin bar object.
+	 * @return \WP_Admin_Bar
 	 */
 	public function add_plugin_admin_bar_menu( $wp_admin_bar ) {
 		$valid_capability = get_option( 'pf_menu_preferences_access', $this->user_interface->pf_get_defining_capability_by_role( 'administrator' ) );

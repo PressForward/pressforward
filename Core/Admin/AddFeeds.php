@@ -10,7 +10,7 @@ namespace PressForward\Core\Admin;
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
 
-use PressForward\Interfaces\SystemUsers;
+use PressForward\Controllers\PFtoWPUsers;
 
 use PressForward\Core\Admin\PFTemplater as PFTemplater;
 use PressForward\Core\Utility\Forward_Tools as Forward_Tools;
@@ -22,19 +22,19 @@ use PressForward\Controllers\Metas;
  */
 class AddFeeds implements HasActions, HasFilters {
 	/**
-	 * SystemUsers interface.
+	 * PFtoWPUsers object.
 	 *
 	 * @access public
-	 * @var PressForward\Interfaces\SystemUsers
+	 * @var \PressForward\Controllers\PFtoWPUsers
 	 */
 	public $user_interface;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Interfaces\SystemUsers $user_interface SystemUsers object.
+	 * @param \PressForward\Controllers\PFtoWPUsers $user_interface PFtoWPUsers object.
 	 */
-	public function __construct( SystemUsers $user_interface ) {
+	public function __construct( PFtoWPUsers $user_interface ) {
 		$this->user_interface = $user_interface;
 	}
 
