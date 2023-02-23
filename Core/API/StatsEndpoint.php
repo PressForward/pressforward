@@ -37,7 +37,7 @@ class StatsEndpoint implements HasActions {
 	 * Metas object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Metas
+	 * @var \PressForward\Controllers\Metas
 	 */
 	public $metas;
 
@@ -45,16 +45,16 @@ class StatsEndpoint implements HasActions {
 	 * Stats object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Stats
+	 * @var \PressForward\Controllers\Stats
 	 */
 	public $stats;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param array                          $api_base API base data.
-	 * @param PressForward\Controllers\Metas $metas    Metas object.
-	 * @param PressForward\Controllers\Stats $stats    Stats object.
+	 * @param array                           $api_base API base data.
+	 * @param \PressForward\Controllers\Metas $metas    Metas object.
+	 * @param \PressForward\Controllers\Stats $stats    Stats object.
 	 */
 	public function __construct( $api_base, Metas $metas, Stats $stats ) {
 		$this->api_base             = $api_base;
@@ -338,8 +338,8 @@ class StatsEndpoint implements HasActions {
 	 *
 	 * The parameter is already sanitized by this point so we can use it without any worries.
 	 *
-	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response|WP_Error
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function author_stats( $request ) {
 		if ( isset( $request['page'] ) ) {
@@ -385,8 +385,8 @@ class StatsEndpoint implements HasActions {
 	/**
 	 * Callback for pf_posted endpoint.
 	 *
-	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response|WP_Error
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function pf_posted( $request ) {
 		\ob_start();
@@ -470,8 +470,8 @@ class StatsEndpoint implements HasActions {
 	 *
 	 * The parameter is already sanitized by this point so we can use it without any worries.
 	 *
-	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Request
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Request
 	 */
 	public function overview( $request ) {
 		$args = array(

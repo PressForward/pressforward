@@ -24,7 +24,7 @@ class Menu implements HasActions, HasFilters {
 	protected $basename;
 
 	/**
-	 * SystemUsers interface.
+	 * PFtoWPUsers object.
 	 *
 	 * @access public
 	 * @var \PressForward\Controllers\PFtoWPUsers
