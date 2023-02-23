@@ -119,7 +119,7 @@ class OPML_Object {
 			if ( isset( $this->feeds[ $feed_obj->id ] ) ) {
 				$feed_obj = $this->feeds[ $feed_obj->id ];
 
-			} elseif ( ! empty( $feed_obj ) && ( empty( $feed_obj->folder ) || ! is_array( $feed_obj->folder ) ) ) {
+			} elseif ( empty( $feed_obj->folder ) || ! is_array( $feed_obj->folder ) ) {
 				$feed_obj->folder = array();
 			}
 
