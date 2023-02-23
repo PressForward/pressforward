@@ -36,10 +36,10 @@ class OPML_Object {
 	/**
 	 * Feeds.
 	 *
-	 * @access protected
+	 * @access public
 	 * @var array
 	 */
-	protected $feeds = [];
+	public $feeds = [];
 
 	/**
 	 * Constructor.
