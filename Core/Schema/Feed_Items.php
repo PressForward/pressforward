@@ -45,7 +45,7 @@ class Feed_Items implements HasActions, HasFilters {
 	 * Items object.
 	 *
 	 * @access public
-	 * @var \PressForward\Interfaces\Items
+	 * @var \PressForward\Controllers\PF_to_WP_Posts
 	 */
 	public $items;
 
