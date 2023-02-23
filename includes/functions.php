@@ -22,7 +22,7 @@
  *     @var string $slug A non-capatalized safe string.
  *     @var string $class The name of the module's class. Must match the folder name.
  * }
- * @return null
+ * @return void
  */
 function pressforward_register_module( $args ) {
 	$defaults = array(
@@ -455,8 +455,8 @@ function pf_prep_item_for_submit( $item ) {
  *
  * @since 1.7
  *
- * @param string       $url      URL.
- * @param string|array $callback Function to call first to try and get the URL.
+ * @param string        $url      URL.
+ * @param bool|callable $callback Function to call first to try and get the URL.
  * @return string|object $r Returns the string URL, converted, when no function is passed.
  *                          Otherwise returns the result of the function after being
  *                          checked for accessibility.
@@ -1213,7 +1213,7 @@ add_filter( 'upload_mimes', 'pf_custom_upload_opml' );
  *
  * @param string $option_name  Option name.
  * @param string $option_limit 'day', 'week', 'month'.
- * @param bool   $do_echo      Whether to echo results. Default fals.
+ * @param bool   $do_echo      Whether to echo results. Default false.
  */
 function pf_iterate_cycle_state( $option_name, $option_limit = false, $do_echo = false ) {
 	$default = array(
