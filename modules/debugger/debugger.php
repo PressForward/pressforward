@@ -84,9 +84,9 @@ class PF_Debugger extends PF_Module {
 			$m = (int) $m + (int) $date_less;
 		} elseif ( $date_less >= 12 ) {
 			$y = gmdate( 'Y' );
-			$y = $y - floor( $date_less / 12 );
+			$y = (int) $y - floor( $date_less / 12 );
 			$m = gmdate( 'm' );
-			$m = $m - ( abs( $date_less ) - ( 12 * floor( $date_less / 12 ) ) );
+			$m = (int) $m - ( abs( $date_less ) - ( 12 * floor( $date_less / 12 ) ) );
 		}
 
 		$posts_per_page = 200;
