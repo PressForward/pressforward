@@ -349,7 +349,7 @@ class Menu implements HasActions, HasFilters {
 	 * @param int    $date_less Number of months.
 	 * @return int
 	 */
-	public function count_the_posts( $post_type, $date_less = false ) {
+	public function count_the_posts( $post_type, $date_less = 0 ) {
 
 		if ( ! $date_less ) {
 			$query_arg = array(
