@@ -206,12 +206,12 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 
 	/**
-	 * Gets the data from an OPML file and turns it into a data object
-	 * as expected by PF
+	 * Gets the data from an OPML file and turns it into a data array as expected by PF.
 	 *
 	 * @global $pf Used to access the feed_object() method
 	 *
 	 * @param object $a_opml OPML object.
+	 * @return array
 	 */
 	public function get_data_object( $a_opml ) {
 		pf_log( 'Invoked: PF_OPML_Subscribe::get_data_object()' );
@@ -228,7 +228,7 @@ class PF_OPML_Subscribe extends PF_Module {
 
 		$c = 0;
 
-		$opml_object = array();
+		$opml_array = array();
 		foreach ( $opml_object->feeds as $feed_obj ) {
 			/**
 			 * The Unique ID for this feed.
@@ -279,7 +279,7 @@ class PF_OPML_Subscribe extends PF_Module {
 				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				$content = 'Subscribed: ' . $feed_obj->title . ' - ' . $feed_obj->type . ' - ' . $feed_obj->feedUrl . ' on ' . gmdate( 'r' );
 
-				$opml_object[ 'opml_' . $c ] = pf_feed_object(
+				$opml_array[ 'opml_' . $c ] = pf_feed_object(
 					$feed_obj->title,
 					'OPML Subscription from ' . $opml_object->get_title(),
 					gmdate( 'r' ),
@@ -300,13 +300,13 @@ class PF_OPML_Subscribe extends PF_Module {
 
 				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				pf_log( 'Setting new transient for ' . $feed_obj->feedUrl . ' of ' . $opml_object->get_title() . '.' );
-				set_transient( 'pf_' . $id, $opml_object[ 'opml_' . $c ], 60 * 10 );
+				set_transient( 'pf_' . $id, $opml_array[ 'opml_' . $c ], 60 * 10 );
 				++$c;
 
 			}
 		}
 
-		return $opml_object;
+		return $opml_array;
 	}
 
 	/**
