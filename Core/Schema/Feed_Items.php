@@ -208,7 +208,7 @@ class Feed_Items implements HasActions, HasFilters {
 	 * @param array $cap     Capability to check against $caps array.
 	 * @param int   $user_id ID of user.
 	 * @param array $args    Arguments.
-	 * @return caps
+	 * @return array
 	 */
 	public function feeds_item_map_meta_cap( $caps, $cap, $user_id, $args ) {
 		if ( empty( $args ) ) {
@@ -437,8 +437,8 @@ class Feed_Items implements HasActions, HasFilters {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param int    $post_id ID of the post.
-	 * @param string $content Optional. Post content. Falls back on content of post $post_id.
+	 * @param int         $post_id ID of the post.
+	 * @param string|bool $content Optional. Post content. Falls back on content of post $post_id.
 	 */
 	public function set_word_count( $post_id, $content = false ) {
 		if ( false === $content ) {
