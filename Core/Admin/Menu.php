@@ -358,13 +358,13 @@ class Menu implements HasActions, HasFilters {
 			);
 		} else {
 			if ( $date_less < 12 ) {
-				$y = gmdate( 'Y' );
-				$m = gmdate( 'm' );
+				$y = (int) gmdate( 'Y' );
+				$m = (int) gmdate( 'm' );
 				$m = $m + $date_less;
 			} elseif ( $date_less >= 12 ) {
-				$y = gmdate( 'Y' );
+				$y = (int) gmdate( 'Y' );
 				$y = $y - floor( $date_less / 12 );
-				$m = gmdate( 'm' );
+				$m = (int) gmdate( 'm' );
 				$m = $m - ( abs( $date_less ) - ( 12 * floor( $date_less / 12 ) ) );
 			}
 			$query_arg = array(
