@@ -58,9 +58,9 @@ class Feed_Item extends BasicModel {
 	/**
 	 * Initalizes model.
 	 *
-	 * @param array $item      Data about item.
-	 * @param array $handlers  Controllers.
-	 * @param array $post_type Post type name.
+	 * @param array  $item      Data about item.
+	 * @param array  $handlers  Controllers.
+	 * @param string $post_type Post type name.
 	 */
 	public function init( $item = array(), $handlers = array(), $post_type = false ) {
 		$this->type     = 'feed_item';
@@ -92,9 +92,9 @@ class Feed_Item extends BasicModel {
 	/**
 	 * Build an item out of a post object.
 	 *
-	 * @param WP_Post                            $post      Post object.
-	 * @param PressForward\Interfaces\Items      $processor Items object.
-	 * @param PressForward\Interfaces\SystemMeta $metas     SystemMeta object.
+	 * @param \WP_Post                        $post      Post object.
+	 * @param \PressForward\Interfaces\Items  $processor Items object.
+	 * @param \PressForward\Controllers\Metas $metas     Metas object.
 	 */
 	public function build_item( $post, Items $processor, SystemMeta $metas ) {
 		$post = $processor->get_post( $post );
@@ -144,7 +144,7 @@ class Feed_Item extends BasicModel {
 	 *
 	 * @param string $format Date format.
 	 * @param string $raw    Date string.
-	 * @return DateTime
+	 * @return \DateTime
 	 */
 	public function date_maker( $format, $raw ) {
 		return \DateTime::createFromFormat( $format, $raw );

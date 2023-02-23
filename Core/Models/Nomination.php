@@ -14,9 +14,9 @@ class Nomination extends BasicModel {
 	/**
 	 * Initalizes model.
 	 *
-	 * @param array $item      Data about item.
-	 * @param array $handlers  Controllers.
-	 * @param array $post_type Post type name.
+	 * @param array  $item      Data about item.
+	 * @param array  $handlers  Controllers.
+	 * @param string $post_type Post type name.
 	 */
 	public function init( $item = array(), $handlers = array(), $post_type = false ) {
 		$this->type     = 'nomination';

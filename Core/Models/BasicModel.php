@@ -54,9 +54,9 @@ class BasicModel {
 	/**
 	 * Constructor.
 	 *
-	 * @param array $item      Data about item.
-	 * @param array $handlers  Controllers.
-	 * @param array $post_type Post type name.
+	 * @param array  $item      Data about item.
+	 * @param array  $handlers  Controllers.
+	 * @param string $post_type Post type name.
 	 */
 	public function __construct( $item = array(), $handlers = array(), $post_type = false ) {
 		if ( empty( $handlers ) ) {
@@ -76,9 +76,9 @@ class BasicModel {
 	 *
 	 * Should be overridden in a child class.
 	 *
-	 * @param array $item      Data about item.
-	 * @param array $handlers  Controllers.
-	 * @param array $post_type Post type name.
+	 * @param array  $item      Data about item.
+	 * @param array  $handlers  Controllers.
+	 * @param string $post_type Post type name.
 	 */
 	public function init( $item = array(), $handlers = array(), $post_type = false ) {}
 
@@ -147,8 +147,8 @@ class BasicModel {
 	 * that have been treated in accordance with their accepted
 	 * use then use the specific getter for that property type.
 	 *
-	 * @param  string $key     The name of the property.
-	 * @param  string $sub_key Optional. The name of the subproperty.
+	 * @param  string      $key     The name of the property.
+	 * @param  string|bool $sub_key Optional. The name of the subproperty.
 	 * @return mixed           Property value.
 	 */
 	public function get( $key, $sub_key = false ) {
