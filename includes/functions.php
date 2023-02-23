@@ -382,12 +382,12 @@ function pressforward_create_feed_item_id( $url, $title ) { // phpcs:ignore Gene
  *
  * @since 1.7
  *
- * @param string $post_type The post type to limit results to.
- * @param string $item_id   The origin item id.
- * @param bool   $ids_only  Set to true if you want only an array of IDs returned in the query.
+ * @param null|string $post_type The post type to limit results to.
+ * @param string      $item_id   The origin item id.
+ * @param bool        $ids_only  Set to true if you want only an array of IDs returned in the query.
  * @return object A standard WP_Query object.
  */
-function pf_get_posts_by_id_for_check( $post_type = false, $item_id = null, $ids_only = false ) {
+function pf_get_posts_by_id_for_check( $post_type = null, $item_id = null, $ids_only = false ) {
 	global $wpdb;
 
 	// If the item is less than 24 hours old on nomination, check the whole database.
@@ -404,7 +404,7 @@ function pf_get_posts_by_id_for_check( $post_type = false, $item_id = null, $ids
 
 	}
 
-	if ( false !== $post_type ) {
+	if ( null !== $post_type ) {
 		$r['post_type'] = $post_type;
 	}
 
@@ -635,7 +635,7 @@ function pf_noms_excerpt( $text ) {
  * @param string $cap Optional. If given, the function will return a set of roles that have that capability.
  * @return array $role_reversal An array with capailities as keys pointing to what roles they match to.
  */
-function pf_get_capabilities( $cap = false ) {
+function pf_get_capabilities( $cap = '' ) {
 	// Get the WP_Roles object.
 	global $wp_roles;
 
@@ -1215,7 +1215,7 @@ add_filter( 'upload_mimes', 'pf_custom_upload_opml' );
  * @param string $option_limit 'day', 'week', 'month'.
  * @param bool   $do_echo      Whether to echo results. Default false.
  */
-function pf_iterate_cycle_state( $option_name, $option_limit = false, $do_echo = false ) {
+function pf_iterate_cycle_state( $option_name, $option_limit = '', $do_echo = false ) {
 	$default = array(
 		'day'        => 0,
 		'week'       => 0,
