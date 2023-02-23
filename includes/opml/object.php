@@ -28,10 +28,10 @@ class OPML_Object {
 	/**
 	 * Folders.
 	 *
-	 * @access protected
+	 * @access public
 	 * @var array
 	 */
-	protected $folders = [];
+	public $folders = [];
 
 	/**
 	 * Feeds.
