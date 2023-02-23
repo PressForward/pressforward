@@ -46,7 +46,7 @@ class PFOpenGraph implements Iterator {
 	 *
 	 * @param $URI    URI to page to parse for Open Graph data
 	 *
-	 * @return OpenGraph
+	 * @return PFOpenGraph
 	 */
 	public static function fetch( $URI ) {
 		$cache_key = 'wp_remote_get_' . $URI;
@@ -75,7 +75,7 @@ class PFOpenGraph implements Iterator {
 	 * false on error.
 	 *
 	 * @param $HTML  HTML document.
-	 * @return OpenGraph
+	 * @return PFOpenGraph
 	 */
 	static public function process( $HTML ) {
 		if ( ! empty( $HTML ) && ! is_wp_error( $HTML ) ) {
@@ -91,7 +91,7 @@ class PFOpenGraph implements Iterator {
 	 *
 	 * @param $HTML    HTML to parse
 	 *
-	 * @return OpenGraph
+	 * @return PFOpenGraph
 	 */
 	private static function _parse( $HTML ) {
 		$old_libxml_error = libxml_use_internal_errors( true );
