@@ -169,6 +169,9 @@ if ( isset( $_REQUEST['action'] ) && 'post' === $_REQUEST['action'] ) {
 }
 	wp_enqueue_style( 'colors' );
 	wp_enqueue_script( 'post' );
+
+	wp_enqueue_script( 'nominate-this' );
+
 	_wp_admin_html_begin();
 ?>
 <title><?php esc_html_e( 'Nominate This', 'pf' ); ?></title>
@@ -182,6 +185,8 @@ var photostorage = false;
 </script>
 
 <?php
+	do_action( 'admin_enqueue_scripts' );
+
 	do_action( 'admin_print_styles' );
 	do_action( 'admin_print_scripts' );
 	do_action( 'admin_head' );
@@ -194,6 +199,37 @@ var photostorage = false;
 
 	.metabox-holder-advanced {
 		margin-top: 20px;
+	}
+
+	.nomthis-indicator {
+		align-items: center;
+		display: flex;
+		height: 0;
+		overflow: hidden;
+		transition: padding 1s, visibility 0s, opacity 1s, height 1s;
+		justify-content: center;
+		opacity: 0;
+		visibility: hidden;
+	}
+
+	.loading-indicator {
+		background: #fcf9e8;
+		gap: 10px;
+	}
+
+	body.is-loading .loading-indicator {
+		height: 40px;
+		padding: 10px 20px;
+		opacity: 1;
+		visibility: visible;
+	}
+
+	body.is-failed-request .failure-indicator {
+		background: #ffcccc;
+		height: 40px;
+		padding: 10px 20px;
+		opacity: 1;
+		visibility: visible;
 	}
 
 	@media screen and (min-width: 670px) {
@@ -345,6 +381,16 @@ $the_admin_body_class  = ( is_rtl() ) ? 'rtl' : '';
 $the_admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( '_', '-', get_locale() ) ) );
 ?>
 <body class="press-this wp-admin wp-core-ui nominate-this <?php echo esc_attr( $the_admin_body_class ); ?>">
+
+<div id="loading-indicator" class="loading-indicator nomthis-indicator">
+	<?php // translators: URL being loaded. ?>
+	<img src="<?php echo esc_url( admin_url( 'images/loading.gif' ) ); ?>" role="presentation" /> <span><?php printf( esc_html__( 'Loading content from %s.', 'pf' ), '<span id="loading-url"></span>' ); ?></span>
+</div>
+
+<div id="failure-indicator" class="failure-indicator nomthis-indicator">
+	<?php esc_html_e( 'Could not fetch remote URL' ); ?>
+</div>
+
 <?php
 if ( isset( $_GET['pf-nominate-this'] ) && 2 === intval( $_GET['pf-nominate-this'] ) ) {
 	$post_url = trailingslashit( get_bloginfo( 'wpurl' ) ) . 'wp-admin/edit.php?pf-nominate-this=2';
@@ -371,34 +417,16 @@ if ( empty( $posted ) ) {
 	<input type="hidden" id="original_post_status" name="original_post_status" value="draft" />
 	<input type="hidden" id="prev_status" name="prev_status" value="draft" />
 	<input type="hidden" id="post_id" name="post_id" value="0" />
-	<?php
-	if ( ! empty( $url ) ) {
-		$og = pressforward( 'library.opengraph' )->fetch( $url );
 
-		if ( isset( $og->url ) ) {
-			$url = $og->url;
-		}
+	<?php if ( ! empty( $url ) ) : ?>
+		<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr( $the_title ); ?>" />
+		<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo esc_attr( current_time( 'mysql' ) ); ?>" />
 
-		?>
-						<input type="hidden" id="source_title" name="source_title" value="<?php echo esc_attr( $the_title ); ?>" />
-			<input type="hidden" id="date_nominated" name="date_nominated" value="<?php echo esc_attr( current_time( 'mysql' ) ); ?>" />
-			<?php
-			// Metadata goes here.
-			if ( ! empty( $url ) ) {
-				pf_log( 'Getting OpenGraph image on ' );
-				pf_log( $url );
-				// Gets OG image.
-				$item_feat_img = pressforward( 'schema.feed_item' )->get_ext_og_img( $url );
-			} else {
-				$item_feat_img = false;
-			}
-			if ( ! $item_feat_img || is_wp_error( $item_feat_img ) ) {
-				$item_feat_img = '';
-			}
-			?>
-			<input type="hidden" id="item_link" name="item_link" value="<?php echo esc_url( $url ); ?>" />
-			<input type="hidden" id="item_feat_img" name="item_feat_img" value="<?php echo esc_url( $item_feat_img ); ?>" />
-			<?php } ?>
+		<input type="hidden" id="item_link" name="item_link" value="<?php echo esc_url( $url ); ?>" />
+	<?php endif; ?>
+
+	<input type="hidden" id="item_feat_img" name="item_feat_img" value="" />
+
 	<?php
 }
 // Post complete template.
@@ -494,14 +522,6 @@ if ( empty( $posted ) ) {
 		if ( $selection ) {
 			$content .= $selection;
 		}
-
-		ob_start();
-		if ( ! $selection ) {
-			if ( '' !== $url ) {
-				$content .= pressforward( 'schema.feed_item' )->get_content_through_aggregator( $url );
-			}
-		}
-		ob_end_clean();
 
 		remove_action( 'media_buttons', 'media_buttons' );
 		add_action( 'media_buttons', 'nominate_this_media_buttons' );

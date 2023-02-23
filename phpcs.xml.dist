@@ -20,6 +20,9 @@
 	<exclude-pattern>Libraries/FiveFiltersReadability/examples/</exclude-pattern>
 	<exclude-pattern>modules/foo</exclude-pattern>
 
+	<!-- Do not scan built files. -->
+	<exclude-pattern>/build/</exclude-pattern>
+
 	<file>.</file>
 
 	<!-- Check for PHP cross-version compatibility. -->

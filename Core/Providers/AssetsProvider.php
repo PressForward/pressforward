@@ -27,6 +27,8 @@ class AssetsProvider extends ServiceProvider {
 		);
 
 		$this->add_assets( $register );
+
+		add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
 	}
 
 	/**
@@ -443,6 +445,29 @@ class AssetsProvider extends ServiceProvider {
 				'deps'      => array( 'pf' ),
 			)
 		);
+	}
+
+	/**
+	 * Registers scripts that are admin-only.
+	 *
+	 * @return void
+	 */
+	public function admin_enqueue_scripts() {
+		$build_scripts = [
+			'nominate-this',
+		];
+
+		foreach ( $build_scripts as $build_script ) {
+			$build_vars = require \PF_ROOT . '/build/' . $build_script . '.asset.php';
+
+			wp_register_script(
+				$build_script,
+				\PF_URL . '/build/' . $build_script . '.js',
+				$build_vars['dependencies'],
+				$build_vars['version'],
+				true
+			);
+		}
 	}
 
 	/**
