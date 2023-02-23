@@ -66,20 +66,18 @@ import { __ } from '@wordpress/i18n'
 				}
 
 				if ( responseJSON.success ) {
-
-					// todo isProbablyRenderable
-					// todo source statement
-					// todo URL should be prepended?
-
 					// DOM object is necessary for Readability as well as other parsing.
 					const domObject = new DOMParser().parseFromString( responseJSON.data.body, 'text/html' )
 
 					// Readability object will provide post content and author.
 					const readabilityObj = new Readability( domObject ).parse()
 
+					// Detect embeds in the readable content and replace with raw URLs.
+					const processedReadableContent = processEmbeds( readabilityObj.content, responseJSON.data.embeds )
+
 					// Post content. Overwrite only if no selection is passed.
 					if ( ! hasSelection ) {
-						const cleanContent = DOMPurify.sanitize( readabilityObj.content )
+						const cleanContent = DOMPurify.sanitize( processedReadableContent )
 						const contentEditor = tinymce.get( 'content' )
 						if ( contentEditor ) {
 							contentEditor.setContent( cleanContent )
@@ -213,5 +211,46 @@ import { __ } from '@wordpress/i18n'
 		}
 
 		return base + url
+	}
+
+	/**
+	 * Swaps embedded content with raw WP URLs.
+	 *
+	 * @param {string} body Readable text, as determined by Readability.
+	 * @param {array} embeds Array of swappable embeds, as detected by the server.
+	 * @returns {array}
+	 */
+	const processEmbeds = ( body, embeds ) => {
+		const bodyDom = new DOMParser().parseFromString( body, 'text/html' )
+
+		const iframes = bodyDom.querySelectorAll( 'iframe' )
+
+		const getAppendNode = ( el ) => {
+			const keepClimbing = [ 'FIGURE' ]
+
+			if ( keepClimbing.includes( el.tagName ) ) {
+				return getAppendNode( el.parentElement )
+			}
+
+			return el.parentElement
+		}
+
+		for ( const iframeNode of iframes ) {
+			embeds.map(
+				( embed ) => {
+					if ( iframeNode.src === embed.embedSrc ) {
+						const newEmbedNode = document.createElement( 'p' )
+
+						newEmbedNode.innerHTML = "\n\n" + DOMPurify.sanitize( decodeURIComponent( embed.embedUrl ), { ALLOWED_TAGS: [] } ) + "\n\n"
+
+						const appendBefore = getAppendNode( iframeNode )
+
+						appendBefore.insertAdjacentElement( 'beforebegin', newEmbedNode )
+					}
+				}
+			)
+		}
+
+		return bodyDom.body.innerHTML
 	}
 })()

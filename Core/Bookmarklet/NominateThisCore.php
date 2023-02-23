@@ -333,10 +333,64 @@ class NominateThisCore implements HasActions {
 			wp_send_json_error();
 		}
 
+		$request_body = wp_remote_retrieve_body( $request );
+
+		$providers = pressforward( 'schema.feed_item' )->oembed_capables();
+
 		$retval = [
-			'body' => wp_remote_retrieve_body( $request ),
+			'body'   => $request_body,
+			'embeds' => $this->detect_embeds( $request_body ),
 		];
 
 		wp_send_json_success( $retval );
+	}
+
+	/**
+	 * Detects embeds in an XML string and prepares a list of replacement URLs.
+	 *
+	 * @param string $body XML string fetched from remote URL.
+	 * @return array
+	 */
+	protected function detect_embeds( $body ) {
+		global $wp_embed;
+
+		libxml_use_internal_errors( true );
+
+		$doc = new \DOMDocument();
+		$doc->loadHTML( '<?xml encoding="UTF-8">' . $body );
+
+		$embed_providers = [
+			'#https?://(www.)?youtube\.com/(?:v|embed)/([^/\?]+)(.*)#i' => function( $matches, $url ) {
+				$retval = sprintf( 'https://youtube.com/watch?v=%s', urlencode( $matches[2] ) );
+
+				// If any query parameters were present, we re-add them.
+				if ( ! empty( $matches[3] ) && '?' === substr( $matches[3], 0, 1 ) ) {
+					parse_str( substr( $matches[3], 1 ), $query_vars );
+					foreach ( $query_vars as $key => $value ) {
+						$retval = add_query_arg( $key, $value, $retval );
+					}
+				}
+
+				return $retval;
+			},
+		];
+
+		$embeds = [];
+
+		$iframes = $doc->getElementsByTagName( 'iframe' );
+		foreach ( $iframes as $iframe_node ) {
+			foreach ( $embed_providers as $regex => $callback ) {
+				$iframe_src = $iframe_node->getAttribute( 'src' );
+
+				if ( preg_match( $regex, $iframe_src, $matches ) ) {
+					$embeds[] = [
+						'embedSrc' => $iframe_src,
+						'embedUrl' => $callback( $matches, $iframe_src ),
+					];
+				}
+			}
+		}
+
+		return $embeds;
 	}
 }
