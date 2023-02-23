@@ -10,7 +10,7 @@ namespace PressForward\Core\Admin;
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
 
-use PressForward\Interfaces\SystemUsers;
+use PressForward\Controllers\PFtoWPUsers as Users;
 
 use PressForward\Core\Admin\PFTemplater as PFTemplater;
 use PressForward\Core\Utility\Forward_Tools as Forward_Tools;
@@ -23,10 +23,10 @@ use AlertBox\The_Alert_Box as The_Alert_Box;
  */
 class SubscribedFeeds implements HasActions, HasFilters {
 	/**
-	 * SystemUsers object.
+	 * PFtoWPUsers object.
 	 *
 	 * @access public
-	 * @var PressForward\Interfaces\SystemUsers
+	 * @var \PressForward\Controllers\PFtoWPUsers
 	 */
 	public $user_interface;
 
@@ -34,7 +34,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	 * The_Alert_Box object.
 	 *
 	 * @access public
-	 * @var AlertBox\The_Alert_Box
+	 * @var \AlertBox\The_Alert_Box
 	 */
 	public $alertbox;
 
@@ -42,18 +42,18 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	 * Metas object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Metas
+	 * @var \PressForward\Controllers\Metas
 	 */
 	public $metas;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Interfaces\SystemUsers $user_interface SystemUsers object.
-	 * @param AlertBox\The_Alert_Box              $alertbox       The_Alert_Box object.
-	 * @param PressForward\Controllers\Metas      $metas          Metas object.
+	 * @param \PressForward\Controllers\PFtoWPUsers $user_interface Users object.
+	 * @param \AlertBox\The_Alert_Box               $alertbox       The_Alert_Box object.
+	 * @param \PressForward\Controllers\Metas       $metas          Metas object.
 	 */
-	public function __construct( SystemUsers $user_interface, The_Alert_Box $alertbox, Metas $metas ) {
+	public function __construct( Users $user_interface, The_Alert_Box $alertbox, Metas $metas ) {
 		$this->user_interface = $user_interface;
 		$this->alertbox       = $alertbox;
 		$this->metas          = $metas;
@@ -306,7 +306,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	 *
 	 * @since 3.4.0
 	 *
-	 * @param WP_Query $query Query object.
+	 * @param \WP_Query $query Query object.
 	 */
 	public function sort_by_last_retrieved( $query ) {
 		/*
@@ -370,7 +370,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	 *
 	 * @since 3.5.0
 	 *
-	 * @param WP_Query $query Query object.
+	 * @param \WP_Query $query Query object.
 	 */
 	public function sort_by_last_checked( $query ) {
 		/*
@@ -489,8 +489,8 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	 *
 	 * @since 3.5.0
 	 *
-	 * @param int     $post_id ID of the post being edited.
-	 * @param WP_Post $post    Post object.
+	 * @param int      $post_id ID of the post being edited.
+	 * @param \WP_Post $post    Post object.
 	 */
 	public function quick_edit_save( $post_id, $post ) {
 		// Only process on the correct post type.

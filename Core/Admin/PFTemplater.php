@@ -8,7 +8,7 @@
 namespace PressForward\Core\Admin;
 
 use PressForward\Interfaces\Templates as Templates;
-use PressForward\Interfaces\SystemUsers as SystemUsers;
+use PressForward\Controllers\PFtoWPUsers as Users;
 
 /**
  * Template class.
@@ -18,7 +18,7 @@ class PFTemplater {
 	 * Templates object.
 	 *
 	 * @access public
-	 * @var PressForwarb\Interfaces\Templates
+	 * @var \PressForward\Interfaces\Templates
 	 */
 	public $factory;
 
@@ -31,20 +31,20 @@ class PFTemplater {
 	public $parts;
 
 	/**
-	 * SystemUsers object.
+	 * PFtoWPUsers object.
 	 *
 	 * @access public
-	 * @var PressForwarb\Interfaces\SystemUsers
+	 * @var \PressForward\Controllers\PFtoWPUsers
 	 */
 	public $users;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Interfaces\Templates   $template_factory Templates object.
-	 * @param PressForward\Interfaces\SystemUsers $users            SystemUsers object.
+	 * @param \PressForward\Interfaces\Templates   $template_factory Templates object.
+	 * @param \PressForward\Interfaces\SystemUsers $users            PFtoWPUsers object.
 	 */
-	public function __construct( Templates $template_factory, SystemUsers $users ) {
+	public function __construct( Templates $template_factory, Users $users ) {
 		$this->factory = $template_factory;
 		$this->parts   = $this->factory->build_path( array( PF_ROOT, 'parts' ), false );
 		$this->users   = $users;

@@ -27,15 +27,15 @@ class Tools implements HasActions, HasFilters {
 	 * PFTemplater object.
 	 *
 	 * @access public
-	 * @var PressForward\Core\Admin\PFTemplater
+	 * @var \PressForward\Core\Admin\PFTemplater
 	 */
 	public $templates;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param string                              $basename  Basename.
-	 * @param PressForward\Core\Admin\PFTemplater $templates PFTemplater object.
+	 * @param string                               $basename  Basename.
+	 * @param \PressForward\Core\Admin\PFTemplater $templates PFTemplater object.
 	 */
 	public function __construct( $basename, PFTemplater $templates ) {
 		$this->basename  = $basename;
