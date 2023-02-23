@@ -22,7 +22,7 @@ class OPML_reader {
 	 * Parsed OPML file data
 	 *
 	 * @access public
-	 * @var SimpleXMLObject
+	 * @var SimpleXMLElement
 	 */
 	public $opml_file;
 
@@ -124,8 +124,8 @@ class OPML_reader {
 	/**
 	 * Recursively builds the OPML_Object for each folder.
 	 *
-	 * @param  SimpleXMLObject         $entry        XML object.
-	 * @param  boolean|SimpleXMLObject $parent_entry Optional. Parent object.
+	 * @param  SimpleXMLElement      $entry        XML object.
+	 * @param  bool|SimpleXMLElement $parent_entry Optional. Parent object.
 	 */
 	public function make_OPML_obj( $entry, $parent_entry = false ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		$entry_a = $this->get_opml_properties( $entry );
@@ -146,9 +146,9 @@ class OPML_reader {
 	}
 
 	/**
-	 * Builds the SimpleXMLObject's attributes into an array.
+	 * Builds the SimpleXMLElement's attributes into an array.
 	 *
-	 * @param  SimpleXMLObject $simple_xml_obj XML object.
+	 * @param  SimpleXMLElement $simple_xml_obj XML object.
 	 * @return array
 	 */
 	public function get_opml_properties( $simple_xml_obj ) {
