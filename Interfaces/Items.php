@@ -33,8 +33,8 @@ interface Items {
 	/**
 	 * Deletes a post.
 	 *
-	 * @param int|WP_Post $postid       Post.
-	 * @param bool        $force_delete Whether to force delete and skip trash.
+	 * @param int|\WP_Post $postid       Post.
+	 * @param bool         $force_delete Whether to force delete and skip trash.
 	 * @return mixed
 	 */
 	public function delete_post( $postid, $force_delete = false );
@@ -42,9 +42,9 @@ interface Items {
 	/**
 	 * Gets a post object.
 	 *
-	 * @param int|WP_Post $post   Post.
-	 * @param mixed       $output Output format.
-	 * @param string      $filter Filter.
+	 * @param int|\WP_Post $post   Post.
+	 * @param mixed        $output Output format.
+	 * @param string       $filter Filter.
 	 * @return mixed
 	 */
 	public function get_post( $post = null, $output = OBJECT, $filter = 'raw' );

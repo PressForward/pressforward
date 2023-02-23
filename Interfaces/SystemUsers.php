@@ -49,7 +49,7 @@ interface SystemUsers {
 	/**
 	 * Gets the current user.
 	 *
-	 * @return WP_User
+	 * @return \WP_User
 	 */
 	public function get_current_user();
 

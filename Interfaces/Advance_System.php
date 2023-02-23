@@ -29,8 +29,8 @@ interface Advance_System {
 	/**
 	 * Transitions an old post to a new one.
 	 *
-	 * @param int|WP_Post $old_post Source post.
-	 * @param int|WP_Post $new_post Destination post.
+	 * @param int|\WP_Post $old_post Source post.
+	 * @param int|\WP_Post $new_post Destination post.
 	 * @return void
 	 */
 	public function transition( $old_post, $new_post );
@@ -38,8 +38,8 @@ interface Advance_System {
 	/**
 	 * Migrates a featured image from one post to another.
 	 *
-	 * @param int|WP_Post $old_post Source post.
-	 * @param int|WP_Post $new_post Destination post.
+	 * @param int|\WP_Post $old_post Source post.
+	 * @param int|\WP_Post $new_post Destination post.
 	 * @return void
 	 */
 	public function transition_post_image( $old_post, $new_post );

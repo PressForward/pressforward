@@ -392,8 +392,8 @@ class Retrieval {
 	/**
 	 * This will attempt to retrieve the feed based on an available module function.
 	 *
-	 * @param string  $module_to_use Module name.
-	 * @param WP_Post $a_feed_obj    A feed object.
+	 * @param string   $module_to_use Module name.
+	 * @param \WP_Post $a_feed_obj    A feed object.
 	 */
 	public function get_the_feed_object( $module_to_use, $a_feed_obj ) {
 		$module   = pressforward( 'modules' )->modules[ $module_to_use ];
@@ -475,8 +475,8 @@ class Retrieval {
 	 * and handle the item correctly.
 	 * If check = true than this is just a validator for feeds.
 	 *
-	 * @param WP_Post $obj   Post object.
-	 * @param bool    $check For debugging.
+	 * @param \WP_Post $obj   Post object.
+	 * @param bool     $check For debugging.
 	 */
 	public function feed_handler( $obj, $check = false ) {
 		global $pf;
