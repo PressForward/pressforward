@@ -56,7 +56,7 @@ interface Advance_System {
 	 * Transitions a nomination to the last step, ie becoming a post draft.
 	 *
 	 * @param array $post Post args.
-	 * @return $id ID of the newly created post draft.
+	 * @return int ID of the newly created post draft.
 	 */
 	public function to_last_step( $post = array() );
 
