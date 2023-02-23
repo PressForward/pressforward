@@ -9,7 +9,7 @@ namespace PressForward\Core\Admin;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
-use PressForward\Interfaces\SystemUsers;
+use PressForward\Controllers\PFtoWPUsers;
 
 /**
  * Main admin menu setup utilities.
@@ -27,17 +27,17 @@ class Menu implements HasActions, HasFilters {
 	 * SystemUsers interface.
 	 *
 	 * @access public
-	 * @var PressForward\Interfaces\SystemUsers
+	 * @var \PressForward\Controllers\PFtoWPUsers
 	 */
 	public $user_interface;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param string                              $basename       Basename.
-	 * @param PressForward\Interfaces\SystemUsers $user_interface SystemUsers object.
+	 * @param string                                $basename       Basename.
+	 * @param \PressForward\Controllers\PFtoWPUsers $user_interface PFtoWPUsers object.
 	 */
-	public function __construct( $basename, SystemUsers $user_interface ) {
+	public function __construct( $basename, PFtoWPUsers $user_interface ) {
 		$this->basename       = $basename;
 		$this->user_interface = $user_interface;
 	}
