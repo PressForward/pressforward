@@ -41,8 +41,8 @@ class PFTemplater {
 	/**
 	 * Constructor.
 	 *
-	 * @param \PressForward\Interfaces\Templates   $template_factory Templates object.
-	 * @param \PressForward\Interfaces\SystemUsers $users            PFtoWPUsers object.
+	 * @param \PressForward\Interfaces\Templates    $template_factory Templates object.
+	 * @param \PressForward\Controllers\PFtoWPUsers $users            PFtoWPUsers object.
 	 */
 	public function __construct( Templates $template_factory, Users $users ) {
 		$this->factory = $template_factory;
@@ -54,7 +54,7 @@ class PFTemplater {
 	 * Get a given view (if it exists).
 	 *
 	 * @param string $view The slug of the view.
-	 * @param string $vars Variables passed to template.
+	 * @param array  $vars Variables passed to template.
 	 * @return string
 	 */
 	public function get_view( $view, $vars = array() ) {

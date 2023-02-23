@@ -27,15 +27,15 @@ class Preferences implements HasActions {
 	 * PFTemplater object.
 	 *
 	 * @access public
-	 * @var PressForward\Core\Admin\PFTemplater
+	 * @var \PressForward\Core\Admin\PFTemplater
 	 */
 	public $templates;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param string                              $basename  Not used.
-	 * @param PressForward\Core\Admin\PFTemplater $templates PFTemplater object.
+	 * @param string                               $basename  Not used.
+	 * @param \PressForward\Core\Admin\PFTemplater $templates PFTemplater object.
 	 */
 	public function __construct( $basename, PFTemplater $templates ) {
 		$this->basename  = $basename;

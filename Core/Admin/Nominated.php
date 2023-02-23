@@ -33,7 +33,7 @@ class Nominated implements HasActions {
 	 * PFTemplater object.
 	 *
 	 * @access public
-	 * @var PressForward\Core\Admin\PFTemplater
+	 * @var \PressForward\Core\Admin\PFTemplater
 	 */
 	public $template_factory;
 
@@ -41,7 +41,7 @@ class Nominated implements HasActions {
 	 * Forward_Tools interface.
 	 *
 	 * @access public
-	 * @var PressForward\Core\Utility\Forward_Tools
+	 * @var \PressForward\Core\Utility\Forward_Tools
 	 */
 	public $forward_tools;
 
@@ -57,18 +57,18 @@ class Nominated implements HasActions {
 	 * SystemUsers interface.
 	 *
 	 * @access public
-	 * @var PressForward\Interfaces\SystemUsers
+	 * @var \PressForward\Interfaces\SystemUsers
 	 */
 	public $user_interface;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param object                                  $metas            Metas object.
-	 * @param PressForward\Core\Admin\PFTemplater     $template_factory PFTemplater object.
-	 * @param PressForward\Core\Utility\Forward_Tools $forward_tools    Forward_Tools object.
-	 * @param PressForward\Core\Schema\Nominations    $nominations      Nominations object.
-	 * @param PressForward\Interfaces\SystemUsers     $user_interface   SystemUsers object.
+	 * @param object                                   $metas            Metas object.
+	 * @param \PressForward\Core\Admin\PFTemplater     $template_factory PFTemplater object.
+	 * @param \PressForward\Core\Utility\Forward_Tools $forward_tools    Forward_Tools object.
+	 * @param \PressForward\Core\Schema\Nominations    $nominations      Nominations object.
+	 * @param \PressForward\Interfaces\SystemUsers     $user_interface   SystemUsers object.
 	 */
 	public function __construct( $metas, PFTemplater $template_factory, Forward_Tools $forward_tools, Nominations $nominations, SystemUsers $user_interface ) {
 		$this->metas            = $metas;
