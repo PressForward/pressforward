@@ -11,8 +11,8 @@ use Intraxia\Jaxion\Contract\Core\HasActions;
 
 use PressForward\Core\Admin\PFTemplater;
 
-use WP_Ajax_Response;
-use WP_Error;
+use \WP_Ajax_Response;
+use \WP_Error;
 
 /**
  * Nominate This endpoint.
@@ -31,7 +31,7 @@ class NominateThisEndpoint implements HasActions {
 	 * PFTemplater object.
 	 *
 	 * @access public
-	 * @var PressForward\Core\Admin\PFTemplater
+	 * @var \PressForward\Core\Admin\PFTemplater
 	 */
 	public $templates;
 
@@ -62,8 +62,8 @@ class NominateThisEndpoint implements HasActions {
 	/**
 	 * Constructor.
 	 *
-	 * @param array                               $api_base  API base data.
-	 * @param PressForward\Core\Admin\PFTemplater $templates PFTemplater object.
+	 * @param array                                $api_base  API base data.
+	 * @param \PressForward\Core\Admin\PFTemplater $templates PFTemplater object.
 	 */
 	public function __construct( $api_base, PFTemplater $templates ) {
 		$this->api_base                            = $api_base;
@@ -305,8 +305,8 @@ class NominateThisEndpoint implements HasActions {
 	/**
 	 * Callback for base Nominate This endpoint.
 	 *
-	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response
 	 */
 	public function get_nominate_this_template( $request ) {
 		define( 'IFRAME_REQUEST', true );
@@ -320,7 +320,7 @@ class NominateThisEndpoint implements HasActions {
 	/**
 	 * Callback for Nominate This authpoint endpoint.
 	 *
-	 * @param WP_REST_Request $request Request object.
+	 * @param \WP_REST_Request $request Request object.
 	 */
 	public function get_nominate_this( $request ) {
 		define( 'IFRAME_REQUEST', true );
@@ -443,8 +443,8 @@ class NominateThisEndpoint implements HasActions {
 	/**
 	 * Callback for submission endpoint.
 	 *
-	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response
 	 */
 	public function handle_nomination_submission( $request ) {
 		// Already authorized at an upper API level.

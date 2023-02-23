@@ -32,7 +32,7 @@ class PFEndpoint extends APIWithMetaEndpoints implements HasActions {
 	 * Metas object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Metas
+	 * @var \PressForward\Controllers\Metas
 	 */
 	public $metas;
 
@@ -55,7 +55,7 @@ class PFEndpoint extends APIWithMetaEndpoints implements HasActions {
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Controllers\Metas $metas Metas object.
+	 * @param \PressForward\Controllers\Metas $metas Metas object.
 	 */
 	public function __construct( Metas $metas ) {
 		$this->metas     = $metas;

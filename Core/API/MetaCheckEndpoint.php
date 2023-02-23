@@ -14,8 +14,8 @@ use PressForward\Controllers\PF_JWT;
 use PFOpenGraph;
 use URLResolver;
 
-use WP_Ajax_Response;
-use WP_Error;
+use \WP_Ajax_Response;
+use \WP_Error;
 
 /**
  * MetaCheckEndpoint class.
@@ -56,10 +56,10 @@ class MetaCheckEndpoint implements HasActions {
 	/**
 	 * Constructor.
 	 *
-	 * @param array                           $api_base     API base data.
-	 * @param PressForward\Controllers\PF_JWT $jwt          PF_JWT object.
-	 * @param PFOpenGraph                     $og           PFOpenGraph object.
-	 * @param URLResolver                     $url_resolver URLResolver object.
+	 * @param array                            $api_base     API base data.
+	 * @param \PressForward\Controllers\PF_JWT $jwt          PF_JWT object.
+	 * @param PFOpenGraph                      $og           PFOpenGraph object.
+	 * @param URLResolver                      $url_resolver URLResolver object.
 	 */
 	public function __construct( $api_base, PF_JWT $jwt, PFOpenGraph $og, URLResolver $url_resolver ) {
 		$this->api_base             = $api_base;

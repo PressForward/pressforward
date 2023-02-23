@@ -13,7 +13,7 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
 use PressForward\Controllers\Metas;
 use PressForward\Core\API\APIWithMetaEndpoints;
 
-use WP_Ajax_Response;
+use \WP_Ajax_Response;
 
 /**
  * PostExtension class.
@@ -55,7 +55,7 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Controllers\Metas $metas Metas object.
+	 * @param \PressForward\Controllers\Metas $metas Metas object.
 	 */
 	public function __construct( Metas $metas ) {
 		$this->metas     = $metas;
@@ -128,10 +128,10 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 	/**
 	 * Adds PF 'links' fields to post data in response object.
 	 *
-	 * @param WP_REST_Response $data    Response object.
-	 * @param WP_Post          $post    Post object.
-	 * @param WP_REST_Request  $request Request object.
-	 * @return WP_REST_Request
+	 * @param \WP_REST_Response $data    Response object.
+	 * @param \WP_Post          $post    Post object.
+	 * @param \WP_REST_Request  $request Request object.
+	 * @return \WP_REST_Request
 	 */
 	public function add_rest_post_links( $data, $post, $request ) {
 		// http://v2.wp-api.org/extending/linking/.
