@@ -221,7 +221,7 @@ class Feed_Items implements HasActions, HasFilters {
 			'read_' . $this->post_type,
 		];
 
-		if ( ! in_array( $cap, $caps_to_map ) ) {
+		if ( ! in_array( $cap, $caps_to_map, true ) ) {
 			return $caps;
 		}
 

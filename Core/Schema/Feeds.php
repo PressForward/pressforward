@@ -304,7 +304,7 @@ class Feeds implements HasActions, HasFilters {
 			'read_' . $this->post_type,
 		];
 
-		if ( ! in_array( $cap, $caps_to_map ) ) {
+		if ( ! in_array( $cap, $caps_to_map, true ) ) {
 			return $caps;
 		}
 
@@ -541,7 +541,7 @@ class Feeds implements HasActions, HasFilters {
 	/**
 	 * Adds list table row actions for feeds.
 	 *
-	 * @param array   $actions Action links.
+	 * @param array    $actions Action links.
 	 * @param \WP_Post $post    Post object.
 	 * @return array
 	 */
@@ -572,7 +572,7 @@ class Feeds implements HasActions, HasFilters {
 	/**
 	 * Adds 'Refresh' list table row action for feeds.
 	 *
-	 * @param array   $actions Action links.
+	 * @param array    $actions Action links.
 	 * @param \WP_Post $post    Post object.
 	 * @return array
 	 */
