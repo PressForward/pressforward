@@ -63,32 +63,32 @@ interface Templates {
 	 * @param string $page_id Optional. If provided, the list is checked for this $page_id.
 	 * @return bool|array
 	 */
-	public function valid_pf_page_ids( $page_id = false);
+	public function valid_pf_page_ids( $page_id = '' );
 
 	/**
 	 * Adds menu page.
 	 *
-	 * @param string   $page_title      Title of the added page.
-	 * @param string   $menu_title      Title to use for menu.
-	 * @param string   $capability      Cap to check for access.
-	 * @param string   $menu_slug       Slug for the menu item.
-	 * @param callable $the_function    Display callback.
-	 * @param string   $icon_url        URL of the icon.
-	 * @param int      $position        Position.
+	 * @param string        $page_title      Title of the added page.
+	 * @param string        $menu_title      Title to use for menu.
+	 * @param string        $capability      Cap to check for access.
+	 * @param string        $menu_slug       Slug for the menu item.
+	 * @param callable|null $the_function    Display callback.
+	 * @param string        $icon_url        URL of the icon.
+	 * @param int           $position        Position.
 	 * @return void
 	 */
-	public function add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $the_function = '', $icon_url = '', $position = null );
+	public function add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $the_function = null, $icon_url = '', $position = null );
 
 	/**
 	 * Adds submenu page.
 	 *
-	 * @param string   $parent_slug     Parent slug.
-	 * @param string   $page_title      Title of the added page.
-	 * @param string   $menu_title      Title to use for menu.
-	 * @param string   $capability      Cap to check for access.
-	 * @param string   $menu_slug       Slug for the menu item.
-	 * @param callable $the_function    Display callback.
+	 * @param string        $parent_slug     Parent slug.
+	 * @param string        $page_title      Title of the added page.
+	 * @param string        $menu_title      Title to use for menu.
+	 * @param string        $capability      Cap to check for access.
+	 * @param string        $menu_slug       Slug for the menu item.
+	 * @param callable|null $the_function    Display callback.
 	 * @return void
 	 */
-	public function add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $the_function = '' );
+	public function add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $the_function = null );
 }
