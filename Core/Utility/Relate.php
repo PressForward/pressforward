@@ -346,7 +346,7 @@ class Relate implements HasActions {
 	 * @param string $switch_value      'on' to turn on.
 	 * @param int    $user_id           Defaults to currently logged-in user.
 	 */
-	public function basic_relate( $relationship_type, $item_post_id, $switch_value, $user_id = false ) {
+	public function basic_relate( $relationship_type, $item_post_id, $switch_value, $user_id = 0 ) {
 		if ( ! $user_id ) {
 			$user_obj = wp_get_current_user();
 			$user_id  = $user_obj->ID;

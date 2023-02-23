@@ -62,7 +62,7 @@ class Forward_Tools {
 	 * @param int $user_id ID of the user.
 	 * @return int
 	 */
-	public function assure_user_id( $user_id = false ) {
+	public function assure_user_id( $user_id = 0 ) {
 		if ( ! $user_id ) {
 			$current_user = wp_get_current_user();
 			$user_id      = $current_user->ID;
@@ -79,7 +79,7 @@ class Forward_Tools {
 	 * @param int $user_id ID of the user.
 	 * @return array
 	 */
-	public function apply_nomination_array( $id, $user_id = false ) {
+	public function apply_nomination_array( $id, $user_id = 0 ) {
 		pf_log( 'Processing Nominator Array on post ' );
 		pf_log( $id );
 		$nominators = $this->metas->get_post_pf_meta( $id, 'nominator_array' );
@@ -120,7 +120,7 @@ class Forward_Tools {
 	 * @param int $is_post Whether this is a post. Default false.
 	 * @return int
 	 */
-	public function apply_nomination_count( $id, $user_id = false, $is_post = false ) {
+	public function apply_nomination_count( $id, $user_id = 0, $is_post = false ) {
 		$nom_count = $this->metas->get_post_pf_meta( $id, 'nomination_count', true );
 		if ( empty( $nom_count ) ) {
 			$nom_count = 0;
@@ -148,7 +148,7 @@ class Forward_Tools {
 	 * @param int $is_post Whether this is a post. Default false.
 	 * @return int
 	 */
-	public function revoke_nomination_count( $id, $user_id = false, $is_post = false ) {
+	public function revoke_nomination_count( $id, $user_id = 0, $is_post = false ) {
 		$nom_count = $this->metas->get_post_pf_meta( $id, 'nomination_count', true );
 		if ( empty( $nom_count ) ) {
 			$nom_count = 0;
@@ -176,7 +176,7 @@ class Forward_Tools {
 	 * @param int $id      ID of the nomination.
 	 * @param int $user_id ID of the user.
 	 */
-	public function apply_nomination_user_data( $id, $user_id = false ) {
+	public function apply_nomination_user_data( $id, $user_id = 0 ) {
 		$nom_stats       = get_user_meta( $user_id, 'nom_stats', true );
 		$noms_counted    = get_user_meta( $user_id, 'nom_count', true );
 		$function_to_use = 'update_user_meta';
@@ -209,7 +209,7 @@ class Forward_Tools {
 	 * @param int $user_id ID of the user.
 	 * @return int
 	 */
-	public function revoke_nomination_user_data( $id, $user_id = false ) {
+	public function revoke_nomination_user_data( $id, $user_id = 0 ) {
 		$nom_stats    = get_user_meta( $user_id, 'nom_stats', true );
 		$noms_counted = get_user_meta( $user_id, 'nom_count', true );
 		if ( ! is_array( $nom_stats ) ) {
@@ -236,7 +236,7 @@ class Forward_Tools {
 	 * @param int $is_post Whether this is a post. Default false.
 	 * @return array
 	 */
-	public function apply_nomination_data( $id, $user_id = false, $is_post = false ) {
+	public function apply_nomination_data( $id, $user_id = 0, $is_post = false ) {
 		$user_id    = $this->assure_user_id( $user_id );
 		$nominators = $this->apply_nomination_array( $id, $user_id );
 		if ( $nominators['applied'] && ! $is_post ) {
@@ -570,7 +570,7 @@ class Forward_Tools {
 	 * @param bool $make_readable Whether to process content through Readability.
 	 * @return int
 	 */
-	public function nomination_to_last_step( $item_id = false, $nomination_id = null, $make_readable = true ) {
+	public function nomination_to_last_step( $item_id = 0, $nomination_id = 0, $make_readable = true ) {
 		$post_check = $this->is_a_pf_type( $item_id, 'post' );
 
 		// Assign user status as well here.
@@ -612,7 +612,7 @@ class Forward_Tools {
 	 * @param array $post    Array of post data.
 	 * @return int
 	 */
-	public function bookmarklet_to_nomination( $item_id = false, $post = null ) {
+	public function bookmarklet_to_nomination( $item_id = 0, $post = [] ) {
 		$_POST = array_merge( $_POST, $post );
 
 		$item_link = isset( $_POST['item_link'] ) ? sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) : '';
@@ -800,7 +800,7 @@ class Forward_Tools {
 	 * @param array $post    Array of post data.
 	 * @return int
 	 */
-	public function bookmarklet_to_last_step( $item_id = false, $post = null ) {
+	public function bookmarklet_to_last_step( $item_id = 0, $post = null ) {
 		if ( ! $item_id ) {
 			$item_link = isset( $_POST['item_link'] ) ? sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) : '';
 
@@ -833,7 +833,7 @@ class Forward_Tools {
 	 * @param bool   $update    Update.
 	 * @return bool
 	 */
-	public function is_a_pf_type( $item_id, $post_type = false, $update = false ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+	public function is_a_pf_type( $item_id, $post_type = '', $update = false ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		if ( ! $post_type ) {
 			$post_type = array( 'post', pressforward( 'schema.nominations' )->post_type );
 		}
