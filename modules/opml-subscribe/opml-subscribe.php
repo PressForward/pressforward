@@ -210,7 +210,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	 *
 	 * @global $pf Used to access the feed_object() method
 	 *
-	 * @param object $a_opml OPML object.
+	 * @param WP_Post $a_opml OPML post object.
 	 * @return array
 	 */
 	public function get_data_object( $a_opml ) {
@@ -239,8 +239,6 @@ class PF_OPML_Subscribe extends PF_Module {
 			 * OPML file, if it is even set at all. Which means it could be different
 			 * across more than one OPML file. But we don't want to add a feed more
 			 * than once, so we only use the feedUrl as a unique notifier.
-			 *
-			 * @var string
 			 */
 			pf_log( 'Prepping item ' . $feed_obj->title );
 			$id = $feed_obj->id;
