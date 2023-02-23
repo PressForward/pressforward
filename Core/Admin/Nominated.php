@@ -516,7 +516,7 @@ class Nominated implements HasActions {
 			case 'nominatedby':
 				$nominator_id = $this->metas->get_post_pf_meta( $post->ID, 'submitted_by', true );
 				$user         = get_user_by( 'id', $nominator_id );
-				if ( is_a( $user, 'WP_User' ) ) {
+				if ( is_a( $user, '\WP_User' ) ) {
 					echo esc_html( $user->display_name );
 				}
 				break;
