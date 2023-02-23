@@ -376,7 +376,7 @@ class PF_Readability {
 	public function process_in_oembeds( $item_link, $item_content ) {
 		$providers = pressforward( 'schema.feed_item' )->oembed_capables();
 		foreach ( $providers as $provider ) {
-			if ( ( false === strpos( $item_content, $item_link ) ) && ( 0 !== strpos( $item_link, $provider ) ) ) {
+			if ( false !== strpos( $item_content, $item_link ) ) {
 				$added_content = '
 
 				' . $item_link . '
