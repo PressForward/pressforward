@@ -1032,7 +1032,7 @@ class Nominated implements HasActions {
 	 *
 	 * @param int $id Item ID.
 	 */
-	public function simple_nom_to_draft( $id = false ) {
+	public function simple_nom_to_draft( $id = 0 ) {
 		$pf_drafted_nonce = isset( $_POST['pf_nomination_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['pf_nomination_nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $pf_drafted_nonce, 'nomination' ) ) {
 			die( esc_html__( 'Nonce not recieved. Are you sure you should be drafting?', 'pf' ) );
