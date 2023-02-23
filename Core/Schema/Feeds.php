@@ -287,11 +287,11 @@ class Feeds implements HasActions, HasFilters {
 	/**
 	 * Meta cap mapping for feeds.
 	 *
-	 * @param array $caps    Relevant caps for user.
-	 * @param array $cap     Capability to check against $caps array.
-	 * @param int   $user_id ID of user.
-	 * @param array $args    Arguments.
-	 * @return caps
+	 * @param array  $caps    Relevant caps for user.
+	 * @param string $cap     Capability to check against $caps array.
+	 * @param int    $user_id ID of user.
+	 * @param array  $args    Arguments.
+	 * @return array
 	 */
 	public function feeds_map_meta_cap( $caps, $cap, $user_id, $args ) {
 		if ( empty( $args ) ) {
@@ -603,7 +603,7 @@ class Feeds implements HasActions, HasFilters {
 	/**
 	 * Gets non-top-level feed folders.
 	 *
-	 * @param int|array|object $ids Single folder ID, or array/object of IDs.
+	 * @param int|array|object|bool $ids Single folder ID, or array/object of IDs.
 	 * @return array
 	 */
 	public function get_child_feed_folders( $ids = false ) {
@@ -641,7 +641,7 @@ class Feeds implements HasActions, HasFilters {
 	/**
 	 * Gets child folders of a folder.
 	 *
-	 * @param WP_Term $folder Term object.
+	 * @param \WP_Term $folder Term object.
 	 * @return array
 	 */
 	public function get_child_folders( $folder ) {
@@ -658,7 +658,7 @@ class Feeds implements HasActions, HasFilters {
 	/**
 	 * Gets feed folders.
 	 *
-	 * @param int|array|object $ids Single folder ID, or array/object of IDs.
+	 * @param int|array|object|bool $ids Single folder ID, or array/object of IDs.
 	 * @return array
 	 */
 	public function get_feed_folders( $ids = false ) {
@@ -739,7 +739,7 @@ class Feeds implements HasActions, HasFilters {
 	/**
 	 * Generates markup for feed folders.
 	 *
-	 * @param array $obj Optional. Folder tree.
+	 * @param array|bool $obj Optional. Folder tree.
 	 */
 	public function the_feed_folders( $obj = false ) {
 		if ( ! $obj ) {

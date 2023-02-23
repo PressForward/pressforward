@@ -185,7 +185,7 @@ class Folders implements HasActions, HasFilters {
 	/**
 	 * Gets non-top-level feed folders.
 	 *
-	 * @param int|array|object $ids Single folder ID, or array/object of IDs.
+	 * @param int|array|object|bool $ids Single folder ID, or array/object of IDs.
 	 * @return array
 	 */
 	public function get_child_feed_folders( $ids = false ) {
@@ -223,7 +223,7 @@ class Folders implements HasActions, HasFilters {
 	/**
 	 * Gets child folders of a folder.
 	 *
-	 * @param WP_Term $folder Term object.
+	 * @param \WP_Term $folder Term object.
 	 * @return array
 	 */
 	public function get_child_folders( $folder ) {
@@ -240,7 +240,7 @@ class Folders implements HasActions, HasFilters {
 	/**
 	 * Gets feed folders.
 	 *
-	 * @param int|array|object $ids Single folder ID, or array/object of IDs.
+	 * @param int|array|object|bool $ids Single folder ID, or array/object of IDs.
 	 * @return array
 	 */
 	public function get_feed_folders( $ids = false ) {
@@ -322,7 +322,7 @@ class Folders implements HasActions, HasFilters {
 	/**
 	 * Generates markup for feed folders.
 	 *
-	 * @param array $obj Optional. Folder tree.
+	 * @param array|bool $obj Optional. Folder tree.
 	 */
 	public function the_feed_folders( $obj = false ) {
 		if ( ! $obj ) {
