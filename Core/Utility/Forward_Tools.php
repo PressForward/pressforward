@@ -115,9 +115,9 @@ class Forward_Tools {
 	/**
 	 * Increments counts when a nomination is created.
 	 *
-	 * @param int $id      ID of the nomination.
-	 * @param int $user_id ID of the user.
-	 * @param int $is_post Whether this is a post. Default false.
+	 * @param int  $id      ID of the nomination.
+	 * @param int  $user_id ID of the user.
+	 * @param bool $is_post Whether this is a post. Default false.
 	 * @return int
 	 */
 	public function apply_nomination_count( $id, $user_id = 0, $is_post = false ) {
@@ -143,9 +143,9 @@ class Forward_Tools {
 	/**
 	 * Decrements counts when a nomination is revoked.
 	 *
-	 * @param int $id      ID of the nomination.
-	 * @param int $user_id ID of the user.
-	 * @param int $is_post Whether this is a post. Default false.
+	 * @param int  $id      ID of the nomination.
+	 * @param int  $user_id ID of the user.
+	 * @param bool $is_post Whether this is a post. Default false.
 	 * @return int
 	 */
 	public function revoke_nomination_count( $id, $user_id = 0, $is_post = false ) {
