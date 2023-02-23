@@ -69,7 +69,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	 * Gets a slug from a folder object.
 	 *
 	 * @param object $folder Folder object.
-	 * @return array
+	 * @return string
 	 */
 	public function folder_to_slug( $folder ) {
 		$category = $folder->title;
