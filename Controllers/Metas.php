@@ -20,7 +20,7 @@ class Metas implements HasFilters, HasActions {
 	 * SystemMeta object.
 	 *
 	 * @access public
-	 * @var PressForward\Interfaces\SystemMeta
+	 * @var \PressForward\Interfaces\SystemMeta
 	 */
 	public $meta_interface;
 
@@ -28,7 +28,7 @@ class Metas implements HasFilters, HasActions {
 	 * System object.
 	 *
 	 * @access public
-	 * @var PressForward\Interfaces\System
+	 * @var \PressForward\Interfaces\System
 	 */
 	public $system;
 
@@ -43,8 +43,8 @@ class Metas implements HasFilters, HasActions {
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Interfaces\SystemMeta $metas  SystemMeta object.
-	 * @param PressForward\Interfaces\System     $system System object.
+	 * @param \PressForward\Interfaces\SystemMeta $metas  SystemMeta object.
+	 * @param \PressForward\Interfaces\System     $system System object.
 	 */
 	public function __construct( SystemMeta $metas, System $system ) {
 		$this->meta_interface = $metas;
@@ -919,10 +919,10 @@ class Metas implements HasFilters, HasActions {
 	/**
 	 * Attaches metadata to a post object based on the intended use context.
 	 *
-	 * @param WP_Post $post_object Post object.
+	 * @param \WP_Post $post_object Post object.
 	 * @param string  $use_context Context of use.
 	 * @param bool    $admin       Whether it's an admin request. Default false.
-	 * @return WP_Post
+	 * @return \WP_Post
 	 */
 	public function attach_metas_by_use( $post_object, $use_context = 'api', $admin = false ) {
 		$post_id = $post_object->ID;
@@ -950,7 +950,7 @@ class Metas implements HasFilters, HasActions {
 	 * See https://developer.wordpress.org/reference/functions/register_meta/
 	 * and WP_REST_Term_Meta_Fields.
 	 *
-	 * @return [type] [description]
+	 * @return bool
 	 */
 	public function register_pf_metas() {
 		$metas = array();
@@ -1261,7 +1261,7 @@ class Metas implements HasFilters, HasActions {
 	 * @param int|string $id     the post ID.
 	 * @param string     $field  the post_meta field slug.
 	 * @param string     $value  the post_meta value.
-	 * @param string     $unique if the post_meta is unique.
+	 * @param bool       $unique if the post_meta is unique.
 	 *
 	 * @return int the check value from add_post_meta
 	 */
