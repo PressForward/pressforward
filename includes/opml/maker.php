@@ -76,15 +76,17 @@ class OPML_Maker {
 
 		$s = "<$tag";
 
-		foreach ( $obj as $property => $value ) {
-			if ( ! empty( $filter ) && in_array( $property, $filter, true ) ) {
-				continue;
-			}
+		if ( is_iterable( $obj ) ) {
+			foreach ( $obj as $property => $value ) {
+				if ( ! empty( $filter ) && in_array( $property, $filter, true ) ) {
+					continue;
+				}
 
-			if ( $this->force_safe ) {
-				$s .= ' ' . esc_attr( $property ) . '="' . esc_attr( $value ) . '"';
-			} else {
-				$s .= ' ' . $property . '="' . $value . '"';
+				if ( $this->force_safe ) {
+					$s .= ' ' . esc_attr( $property ) . '="' . esc_attr( $value ) . '"';
+				} else {
+					$s .= ' ' . $property . '="' . $value . '"';
+				}
 			}
 		}
 
