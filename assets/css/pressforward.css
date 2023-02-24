@@ -1470,8 +1470,13 @@ h3 {
 	font-weight: 700;
 	line-height: 20px;
   }
-  .pfmodal .modal-comments {
-    overflow-y: auto; }
+
+.pfmodal .modal-comments {
+	border-bottom: 4px solid #eee;
+	border-top: 4px solid #eee;
+	overflow-y: auto;
+}
+
   .pfmodal .goPrev, .pfmodal .goNext {
     height: 25%;
     font-size: .7rem;
