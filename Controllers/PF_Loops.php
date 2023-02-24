@@ -268,7 +268,7 @@ class PF_Loops {
 			}
 
 			$item_content = '';
-			$bodies = $doc->getElementsByTagName( 'body' );
+			$bodies       = $doc->getElementsByTagName( 'body' );
 			if ( $bodies && $bodies->length > 0 ) {
 				foreach ( $bodies->item( 0 )->childNodes as $child ) {
 					$item_content .= $doc->saveHTML( $child );
