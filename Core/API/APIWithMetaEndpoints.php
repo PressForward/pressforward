@@ -17,7 +17,7 @@ class APIWithMetaEndpoints {
 	 * Metas object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Metas
+	 * @var \PressForward\Controllers\Metas
 	 */
 	public $metas;
 
@@ -139,9 +139,9 @@ class APIWithMetaEndpoints {
 	/**
 	 * Generates a meta response for a field.
 	 *
-	 * @param array                    $the_object Meta information.
-	 * @param string                   $field_name Field name.
-	 * @param WP_REST_Request|WP_Error $request    Request object.
+	 * @param array                      $the_object Meta information.
+	 * @param string                     $field_name Field name.
+	 * @param \WP_REST_Request|\WP_Error $request    Request object.
 	 * @return mixed
 	 */
 	public function meta_response( $the_object, $field_name, $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
@@ -156,11 +156,11 @@ class APIWithMetaEndpoints {
 	/**
 	 * Generates full API link from passed parameters.
 	 *
-	 * @param WP_REST_Response $data  The response object.
-	 * @param array            $links Links.
-	 * @param string           $link  Link.
-	 * @param string           $term  Term endpoint.
-	 * @return WP_REST_Response
+	 * @param \WP_REST_Response $data  The response object.
+	 * @param array             $links Links.
+	 * @param string            $link  Link.
+	 * @param string            $term  Term endpoint.
+	 * @return \WP_REST_Response
 	 */
 	public function filter_an_api_data_link( $data, $links, $link, $term ) {
 		if ( isset( $links[ $link ] ) ) {
@@ -192,10 +192,10 @@ class APIWithMetaEndpoints {
 	 *
 	 * Hook to filter 'rest_prepare_{post_type}' to activate.
 	 *
-	 * @param WP_REST_Response $data    Response object.
-	 * @param WP_Post          $post    Post object.
-	 * @param WP_REST_Request  $request Request object.
-	 * @return WP_REST_Response
+	 * @param \WP_REST_Response $data    Response object.
+	 * @param \WP_Post          $post    Post object.
+	 * @param \WP_REST_Request  $request Request object.
+	 * @return \WP_REST_Response
 	 */
 	public function filter_wp_to_pf_in_terms( $data, $post, $request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		$links = $data->get_links();

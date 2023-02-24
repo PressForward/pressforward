@@ -13,7 +13,7 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
 use PressForward\Controllers\Metas;
 use PressForward\Core\API\APIWithMetaEndpoints;
 
-use WP_Ajax_Response;
+use \WP_Ajax_Response;
 
 /**
  * Folder extensions for REST API.
@@ -48,14 +48,14 @@ class FolderExtension extends APIWithMetaEndpoints implements HasFilters {
 	 * Metas object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Metas
+	 * @var \PressForward\Controllers\Metas
 	 */
 	public $pf_metas;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Controllers\Metas $metas Metas object.
+	 * @param \PressForward\Controllers\Metas $metas Metas object.
 	 */
 	public function __construct( Metas $metas ) {
 		$this->pf_metas = $metas;

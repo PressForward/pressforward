@@ -13,7 +13,7 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
 use PressForward\Controllers\Metas;
 use PressForward\Core\API\APIWithMetaEndpoints;
 
-use WP_Ajax_Response;
+use \WP_Ajax_Response;
 
 /**
  * Item REST API utilities.
@@ -31,7 +31,7 @@ class ItemEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 	 * Metas object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Metas
+	 * @var \PressForward\Controllers\Metas
 	 */
 	public $metas;
 
@@ -54,7 +54,7 @@ class ItemEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Controllers\Metas $metas Metas object.
+	 * @param \PressForward\Controllers\Metas $metas Metas object.
 	 */
 	public function __construct( Metas $metas ) {
 		$this->metas     = $metas;
@@ -99,10 +99,10 @@ class ItemEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 	/**
 	 * Adds post links to feed item with a parent.
 	 *
-	 * @param WP_REST_Response $data    Response object.
-	 * @param WP_Post          $post    Post object.
-	 * @param WP_REST_Request  $request Request object.
-	 * @return WP_REST_Response
+	 * @param \WP_REST_Response $data    Response object.
+	 * @param \WP_Post          $post    Post object.
+	 * @param \WP_REST_Request  $request Request object.
+	 * @return \WP_REST_Response
 	 */
 	public function add_rest_post_links( $data, $post, $request ) {
 		// http://v2.wp-api.org/extending/linking/.
