@@ -159,6 +159,7 @@ function reshowModal() {
 			'z-index': '9999'
 		};
 
+		jQuery( '#' + modalID + '.pfmodal' ).css( bigModal );
 	});
 }
 
@@ -168,7 +169,11 @@ function reviewModal() {
 	jQuery('.pfmodal').on('shown.bs.modal', function (evt) {
 		//alert('Modal Triggered.');
 
+
 		var element = jQuery(this);
+
+		var isCommentModal = element.hasClass( 'comment-modal' );
+
 		var modalID = element.attr('id');
 		var modalIDString = '#' + modalID;
 		//openModals.push(modalIDString);
@@ -184,7 +189,11 @@ function reviewModal() {
 				id_for_comments: item_post_ID,
 			},
 			function( comment_response ) {
-				jQuery( '#' + modalID + ' .modal-comments' ).html( comment_response );
+				if ( isCommentModal ) {
+					jQuery( '#' + modalID + '.comment-modal .modal-body' ).html( comment_response );
+				} else {
+					jQuery( '#' + modalID + ' .modal-comments' ).html( comment_response );
+				}
 			});
 
 		setTimeout(
