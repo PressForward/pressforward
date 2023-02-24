@@ -135,7 +135,7 @@ class Relate implements HasActions {
 			'value'             => $value,
 		);
 
-		if ( ! empty( $existing ) ) {
+		if ( ! is_bool( $existing ) ) {
 			$params['id'] = $existing->id;
 			$retval       = $relationship->update( $params );
 		} else {
@@ -159,7 +159,7 @@ class Relate implements HasActions {
 
 		if ( empty( $existing ) ) {
 			$deleted = true;
-		} else {
+		} elseif ( ! is_bool( $existing ) ) {
 			$relationship = $this->relationships;
 			$deleted      = $relationship->delete( array( 'id' => $existing->id ) );
 		}
@@ -218,7 +218,7 @@ class Relate implements HasActions {
 	public function get_relationship_value( $relationship_type, $item_id, $user_id ) {
 		$r = pf_get_relationship( $relationship_type, $item_id, $user_id );
 
-		if ( ! empty( $r ) ) {
+		if ( ! is_bool( $r ) ) {
 			$retval = $r->value;
 		} else {
 			$retval = false;
