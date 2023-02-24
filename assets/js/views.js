@@ -158,16 +158,8 @@ function reshowModal() {
 			'overflow': 'hidden',
 			'z-index': '9999'
 		};
-		jQuery('#' + modalID + '.pfmodal').css(bigModal).load(hide_non_modals());
 
 	});
-}
-
-function hide_non_modals() {
-	jQuery('#wpadminbar').hide();
-	jQuery('#adminmenuback').hide();
-	jQuery('#adminmenuwrap').hide();
-	jQuery('#wpfooter').hide();
 }
 
 function reviewModal() {
