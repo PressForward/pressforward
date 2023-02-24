@@ -112,7 +112,7 @@ class PF_JWT {
 	 * @param string $token Token.
 	 * @param string $key   Key.
 	 * @param array  $alg   Algorithm.
-	 * @return bool
+	 * @return bool|object
 	 */
 	public function decode_with_jwt( $token, $key, $alg = array( 'HS256' ) ) {
 		try {
@@ -236,7 +236,7 @@ class PF_JWT {
 	 * Gets a user by a key array.
 	 *
 	 * @param array $key_array Key array.
-	 * @return int
+	 * @return int|false
 	 */
 	public function get_user_by_key( $key_array ) {
 		if ( ! array_key_exists( 'key_seed', $key_array ) || ! array_key_exists( 'user_seed', $key_array ) ) {
@@ -254,7 +254,7 @@ class PF_JWT {
 	 * Gets a private key based on a public key.
 	 *
 	 * @param string $public_pf_key Key.
-	 * @return string
+	 * @return string|false
 	 */
 	public function get_a_user_private_key_for_decrypt( $public_pf_key ) {
 		$key_parts = array();

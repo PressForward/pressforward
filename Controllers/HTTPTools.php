@@ -85,13 +85,13 @@ class HTTPTools implements HasActions {
 	 * Resolves a URL.
 	 *
 	 * @param string $url URL.
-	 * @return string
+	 * @return string|false
 	 */
 	public function resolve_source_url( $url ) {
 		$url       = $this->resolve_a_url( $url );
 		$url_array = wp_parse_url( $url );
 		if ( empty( $url_array['host'] ) ) {
-			return;
+			return false;
 		}
 		$source_url = 'http://' . $url_array['host'];
 		return $source_url;
@@ -101,7 +101,7 @@ class HTTPTools implements HasActions {
 	 * Resolves a URL.
 	 *
 	 * @param string $url URL to resolve.
-	 * @return string
+	 * @return string|bool
 	 */
 	public function resolve_full_url( $url ) {
 		$url = $this->resolve_a_url( $url );
@@ -114,7 +114,7 @@ class HTTPTools implements HasActions {
 	 * @since 3.4.5
 	 *
 	 * @param string $url A web address URI.
-	 * @return bool True value for a submitted URL that matches an aggregation service.
+	 * @return bool|string True value for a submitted URL that matches an aggregation service.
 	 */
 	public function resolve_a_url( $url ) {
 		$url_array = wp_parse_url( $url );
@@ -167,7 +167,7 @@ class HTTPTools implements HasActions {
 	/**
 	 * Attempts to get a path for the cookie.
 	 *
-	 * @return string
+	 * @return string|bool
 	 */
 	public function attempt_to_get_cookiepath() {
 		$reset       = true;
@@ -208,7 +208,7 @@ class HTTPTools implements HasActions {
 	 *
 	 * @param string $url      URL.
 	 * @param string $the_function Callback for fetching.
-	 * @return string
+	 * @return mixed
 	 */
 	public function get_url_content( $url, $the_function = '' ) {
 		$args      = func_get_args();

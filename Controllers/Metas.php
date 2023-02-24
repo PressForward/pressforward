@@ -355,7 +355,7 @@ class Metas implements HasFilters, HasActions {
 	 * Return a PF Meta Object that is assuredly not depreciated.
 	 *
 	 * @param string $name Meta name.
-	 * @return array
+	 * @return mixed
 	 */
 	public function assure_key( $name ) {
 		$meta = $this->by_name( $name );
@@ -998,7 +998,7 @@ class Metas implements HasFilters, HasActions {
 	 * @param int    $id        Post ID.
 	 * @param mixed  $value     Value.
 	 * @param bool   $single    If the user wants to use the WordPress post_meta Single declaration. Default true.
-	 * @return string
+	 * @return string|array
 	 */
 	public function pass_meta( $field, $id = 0, $value = '', $single = true ) {
 		$metas = $this->structure();
@@ -1215,7 +1215,7 @@ class Metas implements HasFilters, HasActions {
 	 * Gets the 'author' metadata from a remote resource.
 	 *
 	 * @param string $url Remote URL.
-	 * @return string
+	 * @return string|false
 	 */
 	public function get_author_from_url( $url ) {
 		$response = pressforward( 'controller.http_tools' )->get_url_content( $url, 'wp_remote_get' );

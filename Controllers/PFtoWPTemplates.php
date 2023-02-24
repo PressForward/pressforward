@@ -18,7 +18,7 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 	 * Whether this is a PF page.
 	 *
 	 * @access protected
-	 * @var int
+	 * @var mixed
 	 */
 	protected $is_pf;
 
@@ -368,7 +368,7 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 
 			return $title;
 		} else {
-			return null;
+			return '';
 		}
 	}
 

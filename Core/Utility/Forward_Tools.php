@@ -207,7 +207,7 @@ class Forward_Tools {
 	 *
 	 * @param int $id      ID of the nomination.
 	 * @param int $user_id ID of the user.
-	 * @return int
+	 * @return int|bool
 	 */
 	public function revoke_nomination_user_data( $id, $user_id = 0 ) {
 		$nom_stats    = get_user_meta( $user_id, 'nom_stats', true );
@@ -256,7 +256,7 @@ class Forward_Tools {
 	 * Transitions an item to post draft.
 	 *
 	 * @param int $nomination_id ID of the nomination.
-	 * @return int
+	 * @return int|bool
 	 */
 	public function transition_to_last_step( $nomination_id ) {
 		$post         = $this->item_interface->get_post( $nomination_id, ARRAY_A );
@@ -288,7 +288,7 @@ class Forward_Tools {
 	 *
 	 * @param int  $item_post_id         Item post ID.
 	 * @param bool $from_meta_added_item From meta added item.
-	 * @return int
+	 * @return int|bool
 	 */
 	public function transition_to_nomination( $item_post_id, $from_meta_added_item = false ) {
 		// Create.
@@ -511,7 +511,7 @@ class Forward_Tools {
 	 *
 	 * @param int $item_id      Item ID.
 	 * @param int $item_post_id Item post ID.
-	 * @return int|\WP_Error
+	 * @return int|\WP_Error|bool
 	 */
 	public function item_to_nomination( $item_id, $item_post_id ) {
 		$nomination_and_post_check = $this->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
@@ -568,7 +568,7 @@ class Forward_Tools {
 	 * @param int  $item_id       ID of the item.
 	 * @param int  $nomination_id Nomination ID.
 	 * @param bool $make_readable Whether to process content through Readability.
-	 * @return int
+	 * @return int|bool
 	 */
 	public function nomination_to_last_step( $item_id = 0, $nomination_id = 0, $make_readable = true ) {
 		$post_check = $this->is_a_pf_type( $item_id, 'post' );
@@ -610,7 +610,7 @@ class Forward_Tools {
 	 *
 	 * @param int   $item_id ID of the item.
 	 * @param array $post    Array of post data.
-	 * @return int
+	 * @return int|bool
 	 */
 	public function bookmarklet_to_nomination( $item_id = 0, $post = [] ) {
 		$_POST = array_merge( $_POST, $post );

@@ -471,7 +471,7 @@ class StatsEndpoint implements HasActions {
 	 * The parameter is already sanitized by this point so we can use it without any worries.
 	 *
 	 * @param \WP_REST_Request $request Request object.
-	 * @return \WP_REST_Request
+	 * @return \WP_REST_Request|\WP_Error
 	 */
 	public function overview( $request ) {
 		$args = array(

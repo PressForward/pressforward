@@ -444,7 +444,7 @@ class NominateThisEndpoint implements HasActions {
 	 * Callback for submission endpoint.
 	 *
 	 * @param \WP_REST_Request $request Request object.
-	 * @return \WP_REST_Response
+	 * @return \WP_REST_Response|string
 	 */
 	public function handle_nomination_submission( $request ) {
 		// Already authorized at an upper API level.

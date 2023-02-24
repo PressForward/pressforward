@@ -99,7 +99,7 @@ class PF_to_WP_Posts implements Items {
 	 *
 	 * @param int $item_id   PF item ID.
 	 * @param int $post_type Post type.
-	 * @return int
+	 * @return int|bool
 	 */
 	public function check_not_existing( $item_id, $post_type ) {
 		global $wpdb;

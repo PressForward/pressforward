@@ -131,7 +131,7 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 	 * @param \WP_REST_Response $data    Response object.
 	 * @param \WP_Post          $post    Post object.
 	 * @param \WP_REST_Request  $request Request object.
-	 * @return \WP_REST_Request
+	 * @return \WP_REST_Response
 	 */
 	public function add_rest_post_links( $data, $post, $request ) {
 		// http://v2.wp-api.org/extending/linking/.

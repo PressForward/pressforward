@@ -22,8 +22,8 @@ class PF_REST_Taxonomies_Controller extends WP_REST_Taxonomies_Controller {
 	/**
 	 * Get all public taxonomies
 	 *
-	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function get_items( $request ) {
 		if ( ! empty( $request['type'] ) ) {
@@ -49,8 +49,8 @@ class PF_REST_Taxonomies_Controller extends WP_REST_Taxonomies_Controller {
 	/**
 	 * Get a specific taxonomy.
 	 *
-	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function get_item( $request ) {
 		$tax_obj = get_taxonomy( $request['taxonomy'] );

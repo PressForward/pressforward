@@ -115,7 +115,7 @@ class Relationships implements HasActions {
 	 *   @var string $value             Value.
 	 *   @var bool   $unique            Whether to enforce uniqueness. Default true.
 	 * }
-	 * @return int
+	 * @return int|false
 	 */
 	public function create( $args = array() ) {
 		global $wpdb;

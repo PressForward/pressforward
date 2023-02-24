@@ -60,8 +60,8 @@ class Feed_Items implements HasActions, HasFilters {
 	/**
 	 * Constructor.
 	 *
-	 * @param \PressForward\Interfaces\Items  $items Items object.
-	 * @param \PressForward\Controllers\Metas $metas Metas object.
+	 * @param \PressForward\Controllers\PF_to_WP_Posts $items Items object.
+	 * @param \PressForward\Controllers\Metas          $metas Metas object.
 	 */
 	public function __construct( Items $items, Metas $metas ) {
 		$this->post_type    = 'pf_feed_item';
@@ -369,7 +369,7 @@ class Feed_Items implements HasActions, HasFilters {
 	 * Creates a new feed item.
 	 *
 	 * @param array $args Creation arguments.
-	 * @return int
+	 * @return int|\WP_Error
 	 */
 	public function create( $args = array() ) {
 		$r = wp_parse_args(
@@ -1067,7 +1067,7 @@ class Feed_Items implements HasActions, HasFilters {
 	 * Get the content of a URL, using various fallbacks.
 	 *
 	 * @param string $url URL.
-	 * @return string
+	 * @return string|bool
 	 */
 	public static function get_content_through_aggregator( $url ) {
 		set_time_limit( 0 );

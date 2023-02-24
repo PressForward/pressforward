@@ -186,7 +186,7 @@ class Folders implements HasActions, HasFilters {
 	 * Gets non-top-level feed folders.
 	 *
 	 * @param int|array|object|bool $ids Single folder ID, or array/object of IDs.
-	 * @return array
+	 * @return array|bool
 	 */
 	public function get_child_feed_folders( $ids = false ) {
 		$children = array();
@@ -241,7 +241,7 @@ class Folders implements HasActions, HasFilters {
 	 * Gets feed folders.
 	 *
 	 * @param int|array|object|bool $ids Single folder ID, or array/object of IDs.
-	 * @return array
+	 * @return array|false
 	 */
 	public function get_feed_folders( $ids = false ) {
 		$folder_set = array();
