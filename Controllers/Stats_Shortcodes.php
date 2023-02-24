@@ -351,9 +351,9 @@ class Stats_Shortcodes {
 	/**
 	 * Sets a stats transient.
 	 *
-	 * @param string $key   Transient key.
-	 * @param mixed  $value Value.
-	 * @param int    $time  Expiration in days.
+	 * @param string    $key   Transient key.
+	 * @param mixed     $value Value.
+	 * @param int|false $time  Expiration in days.
 	 */
 	private function set_pf_transient( $key, $value, $time = false ) {
 		$time = ( false === $time ? ( 7 * DAY_IN_SECONDS ) : $time );

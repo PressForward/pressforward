@@ -86,7 +86,7 @@ class Stats {
 	 * Metas object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Metas
+	 * @var \PressForward\Controllers\Metas
 	 */
 	public $metas;
 
@@ -118,14 +118,14 @@ class Stats {
 	 * Shortcodes object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Stats_Shortcodes
+	 * @var \PressForward\Controllers\Stats_Shortcodes
 	 */
 	public $shortcodes;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Controllers\Metas $metas Metas object.
+	 * @param \PressForward\Controllers\Metas $metas Metas object.
 	 * @return void
 	 */
 	public function __construct( Metas $metas ) {
@@ -175,7 +175,7 @@ class Stats {
 	/**
 	 * Sets up shortcodes for stats.
 	 *
-	 * @param PressForward\Controllers\Stats_Shortcodes $shortcodes Shortcodes object.
+	 * @param \PressForward\Controllers\Stats_Shortcodes $shortcodes Shortcodes object.
 	 */
 	public function shortcodes( $shortcodes ) {
 		if ( empty( $this->shortcodes ) ) {

@@ -17,14 +17,14 @@ class PFtoWPUsers implements SystemUsers {
 	 * Metas object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Metas $metas
+	 * @var \PressForward\Controllers\Metas $metas
 	 */
 	public $metas;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Controllers\Metas $metas Metas object.
+	 * @param \PressForward\Controllers\Metas $metas Metas object.
 	 */
 	public function __construct( Metas $metas ) {
 		$this->metas = $metas;
@@ -87,7 +87,7 @@ class PFtoWPUsers implements SystemUsers {
 	 *
 	 * @since 3.x
 	 *
-	 * @param string $cap Optional. If given, the function will return a set of roles that have that capability.
+	 * @param string|bool $cap Optional. If given, the function will return a set of roles that have that capability.
 	 *
 	 * @return array $role_reversal An array with capailities as keys pointing to what roles they match to.
 	 */
@@ -273,7 +273,7 @@ class PFtoWPUsers implements SystemUsers {
 	/**
 	 * Wrapper for wp_get_current_user().
 	 *
-	 * @return WP_User
+	 * @return \WP_User
 	 */
 	public function get_current_user() {
 		return wp_get_current_user();

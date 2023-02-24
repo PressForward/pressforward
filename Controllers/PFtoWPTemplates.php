@@ -18,7 +18,7 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 	 * Whether this is a PF page.
 	 *
 	 * @access protected
-	 * @var boo
+	 * @var int
 	 */
 	protected $is_pf;
 
@@ -173,7 +173,7 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 	/**
 	 * Returns PF's admin page IDs, or checks whether a given screen is in the list.
 	 *
-	 * @param string $page_id Optional. If provided, the list is checked for this $page_id.
+	 * @param string|bool $page_id Optional. If provided, the list is checked for this $page_id.
 	 * @return bool|array
 	 */
 	public function valid_pf_page_ids( $page_id = false ) {
@@ -386,13 +386,13 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 	/**
 	 * Wrapper for add_menu_page().
 	 *
-	 * @param string   $page_title      Title of the added page.
-	 * @param string   $menu_title      Title to use for menu.
-	 * @param string   $capability      Cap to check for access.
-	 * @param string   $menu_slug       Slug for the menu item.
-	 * @param callable $the_function    Display callback.
-	 * @param string   $icon_url        URL of the icon.
-	 * @param int      $position        Position.
+	 * @param string          $page_title   Title of the added page.
+	 * @param string          $menu_title   Title to use for menu.
+	 * @param string          $capability   Cap to check for access.
+	 * @param string          $menu_slug    Slug for the menu item.
+	 * @param callable|string $the_function Display callback.
+	 * @param string          $icon_url     URL of the icon.
+	 * @param int             $position     Position.
 	 * @return void
 	 */
 	public function add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $the_function = '', $icon_url = '', $position = null ) {
@@ -402,12 +402,12 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 	/**
 	 * Wrapper for add_submenu_page().
 	 *
-	 * @param string   $parent_slug     Parent slug.
-	 * @param string   $page_title      Title of the added page.
-	 * @param string   $menu_title      Title to use for menu.
-	 * @param string   $capability      Cap to check for access.
-	 * @param string   $menu_slug       Slug for the menu item.
-	 * @param callable $the_function    Display callback.
+	 * @param string          $parent_slug  Parent slug.
+	 * @param string          $page_title   Title of the added page.
+	 * @param string          $menu_title   Title to use for menu.
+	 * @param string          $capability   Cap to check for access.
+	 * @param string          $menu_slug    Slug for the menu item.
+	 * @param callable|string $the_function Display callback.
 	 * @return void
 	 */
 	public function add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $the_function = '' ) {
