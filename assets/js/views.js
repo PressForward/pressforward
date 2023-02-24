@@ -154,7 +154,7 @@ function reshowModal() {
 			'left': '0',
 			'margin': '0',
 			'width': '100%',
-			'height': '100%',
+			'height': 'calc(100% - 32px)',
 			'overflow': 'hidden',
 			'z-index': '9999'
 		};
