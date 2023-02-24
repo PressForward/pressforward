@@ -28,7 +28,7 @@ class Post extends Base {
 	/**
 	 * Fillable attributes for the model.
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	protected $fillable = array( 'ID', 'author', 'slug', 'title', 'publish_date', 'content', 'excerpt' );
 

@@ -105,7 +105,7 @@ class PF_RSS_Import extends PF_Module {
 	 * @global $pf Used to access the feed_object() method.
 	 *
 	 * @param object $a_feed Feed object.
-	 * @return array
+	 * @return array|bool
 	 */
 	public function get_data_object( $a_feed ) {
 		pf_log( 'Invoked: PF_RSS_Import::get_data_object()' );

@@ -22,7 +22,7 @@ class OPML_reader {
 	 * Parsed OPML file data
 	 *
 	 * @access public
-	 * @var SimpleXMLElement
+	 * @var SimpleXMLElement|bool
 	 */
 	public $opml_file;
 
@@ -166,7 +166,7 @@ class OPML_reader {
 	 * Opens an OPML file and returns a corresponding SimpleXMLElement object.
 	 *
 	 * @param string $file File path.
-	 * @return SimpleXMLElement
+	 * @return SimpleXMLElement|bool
 	 */
 	public function open_OPML( $file ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
 		pf_log( 'open_OPML invoked.' );

@@ -280,7 +280,7 @@ class OPML_Object {
 	 * Gets feeds belonging to a folder.
 	 *
 	 * @param array $folder Folder data.
-	 * @return array
+	 * @return array|bool
 	 */
 	public function get_feeds_by_folder( $folder ) {
 		$folder_a = array();
@@ -311,7 +311,7 @@ class OPML_Object {
 	/**
 	 * Gets feeds that aren't in a folder.
 	 *
-	 * @return array
+	 * @return array|bool
 	 */
 	public function get_feeds_without_folder() {
 		$folder_a = array();

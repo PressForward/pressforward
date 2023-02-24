@@ -58,7 +58,7 @@ interface Container extends \ArrayAccess, \Iterator {
 	 *
 	 * @param string $alias
 	 *
-	 * @return bool
+	 * @return mixed
 	 */
 	public function remove( $alias );
 

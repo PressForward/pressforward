@@ -201,8 +201,6 @@ class Container implements ContainerContract {
 	 * {@inheritDoc}
 	 *
 	 * @param string $alias
-	 *
-	 * @return $this
 	 */
 	public function remove( $alias ) {
 		if ( isset( $this->aliases[ $alias ] ) ) {

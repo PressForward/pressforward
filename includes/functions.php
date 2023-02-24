@@ -1279,7 +1279,7 @@ function pf_iterate_cycle_state( $option_name, $option_limit = '', $do_echo = fa
  * @param int|WP_Post $item        ID or WP_Post object.
  * @param bool        $fake_delete If true, does not delete, but moves to "removed" post_status.
  * @param bool        $msg         Whether to return a message.
- * @return bool|array False on failure, otherwise post ID deletion queue.
+ * @return bool|string False on failure, otherwise post ID deletion queue.
  */
 function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 	$item = get_post( $item );
