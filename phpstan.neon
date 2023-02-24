@@ -1,21 +1,67 @@
 parameters:
-  level: 1
+  level: 2
+
   bootstrapFiles:
     - constants.php
+
   paths:
     - .
+
   excludePaths:
     - ./vendor/
     - ./node_modules/
     - ./tests/
     - ./Libraries/php-jwt
     - ./Libraries/random_compat
+    - ./Libraries/FiveFiltersReadability
     - ./Controllers/StatsShortcodes.php
+
+  scanFiles:
+    - ./Libraries/FiveFiltersReadability/Readability.php
+    - ./Libraries/php-jwt/src/JWT.php
+
   ignoreErrors:
-    -
+    - # Template files have variables included in function scope.
       message: '#Variable \$[a-zA-Z0-9\\_]+ might not be defined.$#'
       path: ./parts
-    -
+
+    - # WP-defined constant.
       message: '#^Constant SITECOOKIEPATH not found.$#'
-    -
+
+    - # WP-defined constant.
       message: '#^Constant WPINC not found.$#'
+
+    - # WordPress standard for array documentation.
+      message: '#^PHPDoc tag @var above a (function|method) has no effect.$#'
+
+    - # There's a documentation typo here.
+      message: '#^Property DaveChild\\TextStatistics\\TextStatistics::\$maxGradeLevel has unknown class DaveChild\\TextStatistics\\Maximum as its type.$#'
+      path: ./Libraries/text-stats/src/DaveChild/TextStatistics/TextStatistics.php
+
+    - # Not sure if this is a bug.
+      message: '#^Call to an undefined method object::find\(\)\.$#'
+      path: ./Libraries/URLResolver/URLResolver.php
+
+    - # PHPStan is being overly strict.
+      message: '#^Access to an undefined property.*$#'
+      path: ./Libraries/PFOpenGraph.php
+
+    - # Ignoring all PHPDoc-related issues in Jaxion.
+      message: '#^PHPDoc tag.*$#'
+      path: ./Libraries/Jaxion
+
+    - # WP_Query can return ints in `posts`, but doesn't in this case.
+      message: '#^Cannot access property \$[a-zA-Z0-9_]+ on int\|WP_Post\.$#'
+      path: ./Core/API/StatsEndpoint.php
+
+    - # get_taxonomies() is returning objects here, not strings.
+      message: '#Cannot access property \$rest_controller_class on string\.$#'
+      path: ./Core/API/PFEndpoint.php
+
+    - # False positive about property of a tidy object.
+      message: '#^Access to an undefined property tidy::\$value\.$#'
+      path: ./Controllers/PF_Readability.php
+
+    - # Non-typed stdClass objects passed in an array aren't understood by PHPStan. Should be refactored.
+      message: '#^Access to an undefined property object::\$[a-zA-Z]+\.$#'
+      path: ./modules/opml-subscribe/opml-subscribe.php
