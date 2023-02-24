@@ -70,5 +70,5 @@ interface SystemUsers {
 	 * @param mixed  $meta_value Meta value.
 	 * @param mixed  $prev_value Optional. Previous value.
 	 */
-	public function update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
+	public function update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' );
 }
