@@ -301,7 +301,7 @@ class PF_Readability {
 					'UTF8'
 				);
 
-				if ( $tidy instanceof tidy ) {
+				if ( $tidy instanceof \tidy ) {
 					$tidy->cleanRepair();
 					$content = $tidy->value;
 				}
