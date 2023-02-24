@@ -27,7 +27,7 @@ class HTTPTools implements HasActions {
 	 * Systems object.
 	 *
 	 * @access public
-	 * @var PressForward\Interfaces\System
+	 * @var \PressForward\Interfaces\System
 	 */
 	public $system;
 
@@ -35,16 +35,16 @@ class HTTPTools implements HasActions {
 	 * Metas object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Meta
+	 * @var \PressForward\Controllers\Metas
 	 */
 	public $meta;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param URLResolver                    $resolver URLResolver object.
-	 * @param PressForward\Interfaces\System $system   System object.
-	 * @param PressForward\Controllers\Metas $meta     Metas object.
+	 * @param \URLResolver                    $resolver URLResolver object.
+	 * @param \PressForward\Interfaces\System $system   System object.
+	 * @param \PressForward\Controllers\Metas $meta     Metas object.
 	 */
 	public function __construct( URLResolver $resolver, System $system, Metas $meta ) {
 		$this->url_resolver = $resolver;
@@ -206,11 +206,11 @@ class HTTPTools implements HasActions {
 	/**
 	 * Gets the content from a URL.
 	 *
-	 * @param string   $url      URL.
-	 * @param callable $the_function Callback for fetching.
+	 * @param string $url      URL.
+	 * @param string $the_function Callback for fetching.
 	 * @return string
 	 */
-	public function get_url_content( $url, $the_function = false ) {
+	public function get_url_content( $url, $the_function = '' ) {
 		$args      = func_get_args();
 		$url       = str_replace( '&amp;', '&', $url );
 		$url_first = $url;
