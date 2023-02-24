@@ -148,7 +148,7 @@ function reshowModal() {
 		var bigModal = {
 			'display': 'block',
 			'position': 'fixed',
-			'top': '0',
+			'top': '32px',
 			'right': '0',
 			'bottom': '100%',
 			'left': '0',
