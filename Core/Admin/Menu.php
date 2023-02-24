@@ -180,15 +180,17 @@ class Menu implements HasActions, HasFilters {
 		$user_obj = wp_get_current_user();
 		$user_id  = $user_obj->ID;
 
+		$per_page = 20;
+
 		// Calling the feedlist within the pf class.
 		if ( isset( $_GET['pc'] ) ) {
-			$page   = intval( $_GET['pc'] );
-			$page_c = $page - 1;
+			$current_page = intval( $_GET['pc'] );
 		} else {
-			$page   = 0;
-			$page_c = 0;
+			$current_page = 1;
 		}
-		$count       = $page_c * 20;
+
+		$current_start = ( ( $current_page - 1 ) * $per_page ) + 1;
+
 		$extra_class = '';
 		if ( isset( $_GET['reveal'] ) && ( 'no_hidden' === $_GET['reveal'] ) ) {
 			$extra_class .= ' archived_visible';
@@ -236,10 +238,7 @@ class Menu implements HasActions, HasFilters {
 				pressforward( 'admin.templates' )->nominate_this( 'as_feed_item' );
 
 				// Use this foreach loop to go through the overall feedlist, select each individual feed item (post) and do stuff with it.
-				// Based off SimplePie's tutorial at http://simplepie.org/wiki/tutorial/how_to_display_previous_feed_items_like_google_reader.
-				$c  = 1;
-				$ic = 0;
-				$c  = $c + $count;
+				$index = $current_start;
 
 				if ( isset( $_GET['by'] ) ) {
 					$limit = sanitize_text_field( wp_unslash( $_GET['by'] ) );
@@ -248,7 +247,7 @@ class Menu implements HasActions, HasFilters {
 				}
 
 				$archive_feed_args = array(
-					'start'          => $count + 1,
+					'start'          => $current_start,
 					// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 					'posts_per_page' => false,
 					'relationship'   => $limit,
@@ -271,9 +270,9 @@ class Menu implements HasActions, HasFilters {
 
 				$items_to_display = pressforward( 'controller.loops' )->archive_feed_to_display( $archive_feed_args );
 				foreach ( $items_to_display['items'] as $item ) {
-					pressforward( 'admin.templates' )->form_of_an_item( $item, $c );
+					pressforward( 'admin.templates' )->form_of_an_item( $item, $index );
 
-					++$c;
+					++$index;
 
 					/*
 					 * Check out the built comment form from EditFlow at https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/editorial-comments.php.
@@ -296,9 +295,8 @@ class Menu implements HasActions, HasFilters {
 			<?php
 			echo '</div><!-- End main -->';
 
-			// Nasty hack because infinite scroll only works starting with page 2 for some reason.
-			$previous_page = $page - 1;
-			$next_page     = $page + 1;
+			$previous_page = $current_page - 1;
+			$next_page     = $current_page + 1;
 
 			if ( ! empty( $_GET['by'] ) ) {
 				$limit_q = '&by=' . $limit;
@@ -321,10 +319,9 @@ class Menu implements HasActions, HasFilters {
 				$page_qed   = '&feed=' . $page_q;
 				$page_next .= $page_qed;
 				$page_prev .= $page_qed;
-
 			}
 
-			if ( $c > 19 ) {
+			if ( $index >= $per_page ) {
 				echo '<div class="pf-navigation">';
 				if ( $previous_page > 0 ) {
 					echo '<span class="feedprev"><a class="prevnav" href="admin.php' . esc_attr( $page_prev ) . '">' . esc_html__( 'Previous Page', 'pf' ) . '</a></span> | ';
