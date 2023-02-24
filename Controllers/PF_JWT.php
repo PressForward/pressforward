@@ -19,7 +19,7 @@ class PF_JWT {
 	 * SystemUsers object.
 	 *
 	 * @access public
-	 * @var PressForward\Interfaces\SystemUsers
+	 * @var \PressForward\Interfaces\SystemUsers
 	 */
 	public $system_users;
 
@@ -27,7 +27,7 @@ class PF_JWT {
 	 * System object.
 	 *
 	 * @access public
-	 * @var PressForward\Interfaces\System
+	 * @var \PressForward\Interfaces\System
 	 */
 	public $system;
 
@@ -35,20 +35,20 @@ class PF_JWT {
 	 * JWT object.
 	 *
 	 * @access public
-	 * @var Firebase\JWT\JWT
+	 * @var \Firebase\JWT\JWT
 	 */
 	public $jwt;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Interfaces\SystemUsers $users  SystemUsers object.
-	 * @param PressForward\Interfaces\System      $system Systemobject.
+	 * @param \PressForward\Interfaces\SystemUsers $users  SystemUsers object.
+	 * @param \PressForward\Interfaces\System      $system Systemobject.
 	 */
 	public function __construct( SystemUsers $users, System $system ) {
 		$this->system_users = $users;
 		$this->system       = $system;
-		$this->jwt          = new JWT(); // @phpstan-ignore-line
+		$this->jwt          = new JWT();
 	}
 
 	/**
@@ -199,7 +199,7 @@ class PF_JWT {
 	 * Maps a private key to a user.
 	 *
 	 * @param int $user_id ID of the user.
-	 * @return $key
+	 * @return string
 	 */
 	public function map_private_key_to_user( $user_id = false ) {
 		if ( ! $user_id ) {
@@ -274,7 +274,7 @@ class PF_JWT {
 	 * Gets a user from a public key.
 	 *
 	 * @param string $public_pf_key Key.
-	 * @return bool|WP_User
+	 * @return bool|\WP_User
 	 */
 	public function get_a_user_from_public_key( $public_pf_key ) {
 		$key_parts = array();
