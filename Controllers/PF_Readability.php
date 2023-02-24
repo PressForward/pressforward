@@ -300,8 +300,11 @@ class PF_Readability {
 					),
 					'UTF8'
 				);
-				$tidy->cleanRepair();
-				$content = $tidy->value;
+
+				if ( $tidy instanceof tidy ) {
+					$tidy->cleanRepair();
+					$content = $tidy->value;
+				}
 			}
 
 			$content     = balanceTags( $content, true );
