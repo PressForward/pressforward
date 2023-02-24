@@ -183,10 +183,8 @@ function reviewModal() {
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
 				id_for_comments: item_post_ID,
 			},
-			function (comment_response) {
-
-				jQuery('#' + modalID + '.comment-modal .modal-body').html(comment_response);
-
+			function( comment_response ) {
+				jQuery( '#' + modalID + ' .modal-comments' ).html( comment_response );
 			});
 
 		setTimeout(
