@@ -19,7 +19,7 @@ class PF_Advancement implements Advance_System, HasActions {
 	 * Metas object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Metas
+	 * @var \PressForward\Controllers\Metas
 	 */
 	public $metas;
 
@@ -105,8 +105,8 @@ class PF_Advancement implements Advance_System, HasActions {
 	/**
 	 * Transitions an old post to a new one.
 	 *
-	 * @param int|WP_Post $old_post Source post.
-	 * @param int|WP_Post $new_post Destination post.
+	 * @param int|\WP_Post $old_post Source post.
+	 * @param int|\WP_Post $new_post Destination post.
 	 * @return void
 	 */
 	public function transition( $old_post, $new_post ) {
@@ -119,8 +119,8 @@ class PF_Advancement implements Advance_System, HasActions {
 	/**
 	 * Transitions taxonomy terms from an old post to a new one.
 	 *
-	 * @param int|WP_Post $old_post Source post.
-	 * @param int|WP_Post $new_post Destination post.
+	 * @param int|\WP_Post $old_post Source post.
+	 * @param int|\WP_Post $new_post Destination post.
 	 * @return void
 	 */
 	public function transition_taxonomy_info( $old_post, $new_post ) {
@@ -155,8 +155,8 @@ class PF_Advancement implements Advance_System, HasActions {
 	/**
 	 * Migrates a featured image from one post to another.
 	 *
-	 * @param int|WP_Post $old_post Source post.
-	 * @param int|WP_Post $new_post Destination post.
+	 * @param int|\WP_Post $old_post Source post.
+	 * @param int|\WP_Post $new_post Destination post.
 	 * @return void
 	 */
 	public function transition_post_image( $old_post, $new_post ) {
@@ -171,7 +171,7 @@ class PF_Advancement implements Advance_System, HasActions {
 	 * Transitions a nomination to the last step, ie becoming a post draft.
 	 *
 	 * @param array $post Post args.
-	 * @return $id ID of the newly created post draft.
+	 * @return int ID of the newly created post draft.
 	 */
 	public function to_last_step( $post = array() ) {
 		$old_id = $post['ID'];
@@ -262,10 +262,10 @@ class PF_Advancement implements Advance_System, HasActions {
 	 *
 	 * @since 1.7
 	 *
-	 * @param string $post_type The post type to limit results to.
-	 * @param string $item_id   The origin item id.
-	 * @param bool   $ids_only  Set to true if you want only an array of IDs returned in the query.
-	 * @return object A standard WP_Query object.
+	 * @param string|bool $post_type The post type to limit results to.
+	 * @param string      $item_id   The origin item id.
+	 * @param bool        $ids_only  Set to true if you want only an array of IDs returned in the query.
+	 * @return \WP_Query
 	 */
 	public function pf_get_posts_by_id_for_check( $post_type = false, $item_id = null, $ids_only = false ) {
 		global $wpdb;
