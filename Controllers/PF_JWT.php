@@ -165,7 +165,7 @@ class PF_JWT {
 	 * @param bool $is_new     Whether this is new.
 	 * @return string
 	 */
-	public function get_a_user_public_key( $user_id = false, $is_new = false ) {
+	public function get_a_user_public_key( $user_id = 0, $is_new = false ) {
 		if ( ! $user_id ) {
 			$user    = $this->system_users->get_current_user();
 			$user_id = $user->ID;
@@ -201,7 +201,7 @@ class PF_JWT {
 	 * @param int $user_id ID of the user.
 	 * @return string
 	 */
-	public function map_private_key_to_user( $user_id = false ) {
+	public function map_private_key_to_user( $user_id = 0 ) {
 		if ( ! $user_id ) {
 			$user    = $this->system_users->get_current_user();
 			$user_id = $user->ID;
@@ -218,7 +218,7 @@ class PF_JWT {
 	 * @param bool $is_new  Whether this is a new user.
 	 * @return string
 	 */
-	public function get_a_user_private_key( $user_id = false, $is_new = false ) {
+	public function get_a_user_private_key( $user_id = 0, $is_new = false ) {
 		if ( ! $user_id ) {
 			$user    = $this->system_users->get_current_user();
 			$user_id = $user->ID;
