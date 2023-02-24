@@ -141,7 +141,7 @@ function reshowModal() {
 		pf_make_url_hashed(modalID);
 	});
 
-	jQuery('.pfmodal').on('shown.bs.modal', function (evt) {
+	jQuery('.comment-modal').on('shown.bs.modal', function (evt) {
 		var element = jQuery(this);
 		var modalID = element.attr('id');
 		document.body.style.overflow = 'hidden';
