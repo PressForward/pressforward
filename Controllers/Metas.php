@@ -1000,7 +1000,7 @@ class Metas implements HasFilters, HasActions {
 	 * @param bool   $single    If the user wants to use the WordPress post_meta Single declaration. Default true.
 	 * @return string
 	 */
-	public function pass_meta( $field, $id = false, $value = '', $single = true ) {
+	public function pass_meta( $field, $id = 0, $value = '', $single = true ) {
 		$metas = $this->structure();
 
 		// Check if it exists.
@@ -1353,7 +1353,7 @@ class Metas implements HasFilters, HasActions {
 	 * @param string $the_value Option value.
 	 * @return string
 	 */
-	public function forward_to_origin_status( $id, $check = true, $the_value = false ) {
+	public function forward_to_origin_status( $id, $check = true, $the_value = '' ) {
 		$item_id = pressforward( 'controller.metas' )->get_post_pf_meta( $id, 'item_id', true );
 		if ( empty( $item_id ) ) {
 			return 'no-forward';
