@@ -204,6 +204,14 @@ function reviewModal() {
 			100
 		);
 
+		// As the modal loads, we replace the `src` attribute on images, so that they load.
+		element.find( '.main-text img' ).each( function( k, v ) {
+			var imgSrc = v.dataset.hasOwnProperty( 'src' ) ? v.dataset.src : ''
+			if ( imgSrc ) {
+				v.setAttribute( 'src', imgSrc )
+			}
+		} )
+
 		var tabindex = element.parent().attr('tabindex');
 
 		modalNavigator(tabindex);

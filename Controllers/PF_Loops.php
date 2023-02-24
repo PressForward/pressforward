@@ -256,6 +256,25 @@ class PF_Loops {
 			$content_obj  = pressforward( 'library.htmlchecker' );
 			$item_content = $content_obj->closetags( $post->post_content );
 
+			// Remove image src attributes and replace with data-src attributes.
+			$doc = new \DOMDocument();
+			libxml_use_internal_errors( true );
+			$doc->loadHTML( '<?xml version="1.0" encoding="UTF-8"?>' . $item_content );
+			$imgs = $doc->getElementsByTagName( 'img' );
+			foreach ( $imgs as $img ) {
+				$img_src = $img->getAttribute( 'src' );
+				$img->removeAttribute( 'src' );
+				$img->setAttribute( 'data-src', $img_src );
+			}
+
+			$item_content = '';
+			$bodies = $doc->getElementsByTagName( 'body' );
+			if ( $bodies && $bodies->length > 0 ) {
+				foreach ( $bodies->item( 0 )->childNodes as $child ) {
+					$item_content .= $doc->saveHTML( $child );
+				}
+			}
+
 			$feed_object[ 'rss_archive_' . $c ] = pf_feed_object(
 				$post->post_title,
 				$source_title,
