@@ -1512,6 +1512,9 @@ h3 {
     margin: 1.5em 0;
     font-size: 18px;
     line-height: 1.7em; }
+  .pfmodal .modal-body div.clear {
+	margin: 0;
+  }
 
 .pf-navigation {
   width: 100%;

@@ -6,30 +6,38 @@
 
 #edit-flow-editorial-comments h3 {
 	padding-left: 25px;
-	background-image: url( editorial_comments_s16.png );
-	background-repeat: no-repeat;
-	background-position: 5px 5px;
 }
 
 #ef-comments {
-	margin-bottom: 10px;
 	background: #eee;
+	margin-bottom: 10px;
+	padding: 0;
 }
 
 #ef-comments li {
-	padding: 5px;
+	padding: 16px 0 0;
 	margin: 0px 0;
-	border-left: 5px solid #e5e5e5;
-	border-right: 5px solid #e5e5e5;
 	border-bottom: 1px solid #e5e5e5;
 	background: #fff;
+}
+
+#ef-comments li:first-child {
+	border-top: 1px solid #e5e5e5;
 }
 
 	#ef-comments li:hover p.row-actions {
 		visibility: visible;
 	}
 	#ef-comments li p.row-actions {
+		font-size: .85em;
+		font-weight: 700;
+		position: absolute;
+		opacity: .7;
+		right: 0;
+		bottom: 0;
+		margin: 0;
 		text-align: right;
+		visibility: hidden;
 	}
 
 	#ef-comments ul.children {
@@ -63,13 +71,13 @@
 
 		#ef-comments h5 span.meta {
 			color:#666666;
-			font-size:0.85em;
 			margin:0 0 1.5em;
 			font-style: normal;
 		}
 
 	#ef-comments .comment-content {
 		margin-left: 67px;
+		padding-right: 90px;
 	}
 
 		#ef-comments .comment-content p {
@@ -97,6 +105,11 @@
 				padding:4px 10px;
 			}
 
+#ef-comments .post-comment-wrap {
+	margin-top: 0;
+	position: relative;
+}
+
 .ef-comment {
 	font-size: 14px;
 	line-height: 18px;
@@ -115,6 +128,7 @@
 }
 
 .pfmodal.comment-modal {
+	font-size: 16px;
 	background-color: transparent;
 	top: 50px;
 	width: auto;
@@ -123,7 +137,7 @@
 
 .pfmodal.comment-modal .modal-dialog {
 	height: auto;
-	max-width: var(--bs-modal-width);
+	max-width: var( --bs-modal-width );
 	width: auto;
 }
 
