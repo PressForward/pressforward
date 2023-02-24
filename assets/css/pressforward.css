@@ -1422,17 +1422,19 @@ h3 {
   width: 100%;
   height: 100%;
   overflow: hidden; }
+
   .pfmodal .modal-dialog {
 	display: flex;
 	flex-direction: column;
 	max-width: none;
 	max-height: 100%;
 	height: 100%;
-	margin: 0;
+	margin: 0 auto;
 	position: relative;
 	pointer-events: auto;
 	justify-content: space-between;
   }
+
   .pfmodal .modal-header {
 	flex: 0 0 content;
     background-color: white;
