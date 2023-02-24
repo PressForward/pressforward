@@ -490,11 +490,13 @@ jQuery(window).on('load', function () {
 			window.location.hash = '#ready';
 		} else if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
 			var hash = window.location.hash;
-			if (!jQuery(hash).hasClass('in')) {
-				$modalEl = jQuery(hash);
+			$modalEl = jQuery(hash);
+			if ( 0 !== $modalEl.length && !jQuery(hash).hasClass('in')) {
 				$closeEl = $modalEl.find( '.close' );
 				theModal = new bootstrap.Modal( $modalEl );
 				theModal.show( $closeEl );
+			} else {
+				window.location.hash = '#ready';
 			}
 		}
 
