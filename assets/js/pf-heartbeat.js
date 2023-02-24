@@ -64,7 +64,6 @@
 jQuery( window ).on('load', function() {
 	var percentComplete = 0;
 	percentComplete = ((parseInt( jQuery( "#rf-iteration" ).text(),10 )) / (parseInt( jQuery( "#rf-total-feeds" ).text(),10 ))) * 100;
-	console.log( percentComplete );
 	if ( 1 > percentComplete ) {
 		percentComplete = 1;
 	}
