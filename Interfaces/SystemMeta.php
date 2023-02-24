@@ -32,7 +32,7 @@ interface SystemMeta {
 	 * @param mixed  $prev_value Optional. Previous value to match.
 	 * @return int|bool
 	 */
-	public function update_meta( $post_id, $meta_key, $meta_value, $prev_value );
+	public function update_meta( $post_id, $meta_key, $meta_value, $prev_value = '' );
 
 	/**
 	 * Deletes metadata for a post.
