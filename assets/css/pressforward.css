@@ -1414,14 +1414,14 @@ h3 {
   background-color: #f5f5f5;
   max-height: 100%;
   position: fixed;
-  top: 0;
+  top: 32px;
   right: 0;
   bottom: 100%;
   left: 0;
   margin: 0;
   width: 100%;
-  height: 100%;
-  overflow: hidden; }
+  height: calc(100% - 32px);
+}
 
   .pfmodal .modal-dialog {
 	display: flex;
