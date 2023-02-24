@@ -1,5 +1,5 @@
 parameters:
-  level: 2
+  level: 3
 
   bootstrapFiles:
     - constants.php
@@ -14,11 +14,13 @@ parameters:
     - ./Libraries/php-jwt
     - ./Libraries/random_compat
     - ./Libraries/FiveFiltersReadability
+    - ./Libraries/text-stats/src/DaveChild/TextStatistics/TextStatistics.php
     - ./Controllers/StatsShortcodes.php
 
   scanFiles:
     - ./Libraries/FiveFiltersReadability/Readability.php
     - ./Libraries/php-jwt/src/JWT.php
+    - ./Libraries/text-stats/src/DaveChild/TextStatistics/TextStatistics.php
 
   ignoreErrors:
     - # Template files have variables included in function scope.
@@ -33,10 +35,6 @@ parameters:
 
     - # WordPress standard for array documentation.
       message: '#^PHPDoc tag @var above a (function|method) has no effect.$#'
-
-    - # There's a documentation typo here.
-      message: '#^Property DaveChild\\TextStatistics\\TextStatistics::\$maxGradeLevel has unknown class DaveChild\\TextStatistics\\Maximum as its type.$#'
-      path: ./Libraries/text-stats/src/DaveChild/TextStatistics/TextStatistics.php
 
     - # Not sure if this is a bug.
       message: '#^Call to an undefined method object::find\(\)\.$#'
