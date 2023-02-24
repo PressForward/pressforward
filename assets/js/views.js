@@ -165,7 +165,7 @@ function reshowModal() {
 function reviewModal() {
 	//Need to fix this to only trigger on the specific model, but not sure how yet.
 
-	jQuery('.comment-modal').on('shown.bs.modal', function (evt) {
+	jQuery('.pfmodal').on('shown.bs.modal', function (evt) {
 		//alert('Modal Triggered.');
 
 		var element = jQuery(this);
