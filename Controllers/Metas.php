@@ -1183,7 +1183,7 @@ class Metas implements HasFilters, HasActions {
 	 * @return array
 	 */
 	public function get_all_metas( $post_id ) {
-		$all_metas = $this->meta_interface->get_metas( $post_id );
+		$all_metas = $this->meta_interface->get_meta( $post_id );
 		$structure = $this->structure();
 		foreach ( $all_metas as $key => $meta ) {
 			if ( isset( $structure[ $key ] ) && $structure[ $key ]['serialize'] ) {
