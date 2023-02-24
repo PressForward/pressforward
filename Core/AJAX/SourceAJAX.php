@@ -28,7 +28,7 @@ class SourceAJAX implements HasActions {
 	 * Readability object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\PF_Readability
+	 * @var \PressForward\Controllers\PF_Readability
 	 */
 	public $readability;
 
@@ -36,7 +36,7 @@ class SourceAJAX implements HasActions {
 	 * Retrieval object.
 	 *
 	 * @access public
-	 * @var PressForward\Core\Utility\Retrieval
+	 * @var \PressForward\Core\Utility\Retrieval
 	 */
 	public $retrieval;
 
@@ -44,16 +44,16 @@ class SourceAJAX implements HasActions {
 	 * Feed_Items object.
 	 *
 	 * @access public
-	 * @var PressForward\Core\Schema\Feed_Items
+	 * @var \PressForward\Core\Schema\Feed_Items
 	 */
 	public $items;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Controllers\PF_Readability $readability Readability object.
-	 * @param PressForward\Core\Utility\Retrieval     $retrieval   Retrieval object.
-	 * @param PressForward\Core\Schema\Feed_Items     $items       Feed_Items object.
+	 * @param \PressForward\Controllers\PF_Readability $readability Readability object.
+	 * @param \PressForward\Core\Utility\Retrieval     $retrieval   Retrieval object.
+	 * @param \PressForward\Core\Schema\Feed_Items     $items       Feed_Items object.
 	 */
 	public function __construct( PF_Readability $readability, Retrieval $retrieval, Feed_Items $items ) {
 		$this->readability = $readability;

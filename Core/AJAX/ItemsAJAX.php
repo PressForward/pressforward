@@ -30,7 +30,7 @@ class ItemsAJAX implements HasActions {
 	 * Metas object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Metas
+	 * @var \PressForward\Controllers\Metas
 	 */
 	public $metas;
 
@@ -38,7 +38,7 @@ class ItemsAJAX implements HasActions {
 	 * PF_to_WP_Posts object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\PF_to_WP_Posts
+	 * @var \PressForward\Controllers\PF_to_WP_Posts
 	 */
 	public $posts;
 
@@ -46,16 +46,16 @@ class ItemsAJAX implements HasActions {
 	 * Feed_Items object.
 	 *
 	 * @access public
-	 * @var PressForward\Core\Schema\Feed_Items
+	 * @var \PressForward\Core\Schema\Feed_Items
 	 */
 	public $items;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Controllers\Metas          $metas Metas object.
-	 * @param PressForward\Controllers\PF_to_WP_Posts $posts PF_to_WP_Posts object.
-	 * @param PressForward\Core\Schema\Feed_Items     $items Feed_Items object.
+	 * @param \PressForward\Controllers\Metas          $metas Metas object.
+	 * @param \PressForward\Controllers\PF_to_WP_Posts $posts PF_to_WP_Posts object.
+	 * @param \PressForward\Core\Schema\Feed_Items     $items Feed_Items object.
 	 */
 	public function __construct( Metas $metas, PF_to_WP_Posts $posts, Feed_Items $items ) {
 		$this->metas = $metas;

@@ -33,7 +33,7 @@ class ConfigurationAJAX implements HasActions {
 	 * Metas object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\Metas
+	 * @var \PressForward\Controllers\Metas
 	 */
 	public $metas;
 
@@ -41,7 +41,7 @@ class ConfigurationAJAX implements HasActions {
 	 * PF_to_WP_Posts object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\PF_to_WP_Posts
+	 * @var \PressForward\Controllers\PF_to_WP_Posts
 	 */
 	public $posts;
 
@@ -49,7 +49,7 @@ class ConfigurationAJAX implements HasActions {
 	 * Feed_Items object.
 	 *
 	 * @access public
-	 * @var PressForward\Core\Schema\Feed_Items
+	 * @var \PressForward\Core\Schema\Feed_Items
 	 */
 	public $items;
 
@@ -57,7 +57,7 @@ class ConfigurationAJAX implements HasActions {
 	 * SystemUsers object.
 	 *
 	 * @access public
-	 * @var PressForward\Interfaces\SystemUsers
+	 * @var \PressForward\Interfaces\SystemUsers
 	 */
 	public $user_interface;
 
@@ -65,18 +65,18 @@ class ConfigurationAJAX implements HasActions {
 	 * PF_JWT object.
 	 *
 	 * @access public
-	 * @var PressForward\Controllers\PF_JWT
+	 * @var \PressForward\Controllers\PF_JWT
 	 */
 	public $pf_jwt;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param PressForward\Controllers\Metas          $metas          Metas object.
-	 * @param PressForward\Controllers\PF_to_WP_Posts $posts          PF_to_WP_Posts object.
-	 * @param PressForward\Core\Schema\Feed_Items     $items          Feed_Items object.
-	 * @param PressForward\Interfaces\SystemUsers     $user_interface SystemUsers object.
-	 * @param PressForward\Controllers\PF_JWT         $pf_jwt         PF_JWT object.
+	 * @param \PressForward\Controllers\Metas          $metas          Metas object.
+	 * @param \PressForward\Controllers\PF_to_WP_Posts $posts          PF_to_WP_Posts object.
+	 * @param \PressForward\Core\Schema\Feed_Items     $items          Feed_Items object.
+	 * @param \PressForward\Interfaces\SystemUsers     $user_interface SystemUsers object.
+	 * @param \PressForward\Controllers\PF_JWT         $pf_jwt         PF_JWT object.
 	 */
 	public function __construct( Metas $metas, PF_to_WP_Posts $posts, Feed_Items $items, SystemUsers $user_interface, PF_JWT $pf_jwt ) {
 		$this->metas          = $metas;
