@@ -478,15 +478,12 @@ function detect_view_change() {
 
 }
 
-
-console.log('Waiting for load.');
 jQuery(window).on('load', function () {
 	// executes when complete page is fully loaded, including all frames, objects and images
 
 	var $allModals = jQuery('.pfmodal');
 
 	jQuery('.pf-loader').delay(300).fadeOut("slow", function () {
-		console.log('Load complete.');
 		var theModal, $closeEl, $modalEl;
 		jQuery('.pf_container').fadeIn("slow");
 		if (window.location.hash.indexOf("#") < 0) {
