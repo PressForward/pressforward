@@ -920,8 +920,8 @@ class Metas implements HasFilters, HasActions {
 	 * Attaches metadata to a post object based on the intended use context.
 	 *
 	 * @param \WP_Post $post_object Post object.
-	 * @param string  $use_context Context of use.
-	 * @param bool    $admin       Whether it's an admin request. Default false.
+	 * @param string   $use_context Context of use.
+	 * @param bool     $admin       Whether it's an admin request. Default false.
 	 * @return \WP_Post
 	 */
 	public function attach_metas_by_use( $post_object, $use_context = 'api', $admin = false ) {
