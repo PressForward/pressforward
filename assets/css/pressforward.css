@@ -1448,7 +1448,7 @@ h3 {
   .pfmodal .modal-body-row {
     background: white;
 	padding: 0 20px;
-	overflow: hidden;
+	overflow-y: scroll;
 	flex: 1 1 80%;
   }
 
@@ -1515,6 +1515,10 @@ h3 {
   .pfmodal .modal-body div.clear {
 	margin: 0;
   }
+
+.pfmodal .main-text img {
+	max-width: 100%;
+}
 
 .pf-navigation {
   width: 100%;
