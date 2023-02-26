@@ -403,7 +403,7 @@ class PF_Readability {
 	public function get_embed( $item_link ) {
 		// Only bother checking if this looks like an embeddable URL.
 		$wp_oembed = _wp_oembed_get_object();
-		$provider = $wp_oembed->get_provider( $item_link, [ 'discover' => false ] );
+		$provider  = $wp_oembed->get_provider( $item_link, [ 'discover' => false ] );
 
 		if ( ! $provider ) {
 			return '';
