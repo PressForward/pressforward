@@ -401,6 +401,14 @@ class PF_Readability {
 	 * @return string|bool
 	 */
 	public function get_embed( $item_link ) {
+		// Only bother checking if this looks like an embeddable URL.
+		$wp_oembed = _wp_oembed_get_object();
+		$provider = $wp_oembed->get_provider( $item_link, [ 'discover' => false ] );
+
+		if ( ! $provider ) {
+			return '';
+		}
+
 		$transient_key = 'pressforward_oembed_' . md5( $item_link );
 
 		$oembed = get_transient( $transient_key );
