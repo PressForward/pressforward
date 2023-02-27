@@ -84,7 +84,7 @@ class Tools implements HasActions, HasFilters {
 			array(
 				'hook'     => 'admin_init',
 				'method'   => 'nom_this_endpoint',
-				'priority' => 1,
+				'priority' => 2,
 			),
 		);
 	}
