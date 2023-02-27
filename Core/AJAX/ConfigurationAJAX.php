@@ -254,14 +254,14 @@ class ConfigurationAJAX implements HasActions {
 				'keygen'   => 'jwt',
 			),
 		);
+
+		ob_end_clean();
+
 		wp_send_json(
 			array(
 				'ku' => $user_public_key,
 				'ki' => $user_private_key,
 			)
 		);
-
-		ob_end_clean();
-		die();
 	}
 }
