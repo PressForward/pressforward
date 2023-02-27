@@ -10,7 +10,7 @@
 			<?php
 			// Widgets.
 			echo '<div class="primary-btn-tools">';
-			if ( 'pressforward_page_pf-review' === $slug && ( get_bloginfo( 'version' ) >= 3.7 ) && $version >= 0 && current_user_can( pf_get_defining_capability_by_role( 'administrator' ) ) ) {
+			if ( 'pressforward_page_pf-review' === $slug && $version >= 0 && current_user_can( pf_get_defining_capability_by_role( 'administrator' ) ) ) {
 				?>
 						<button type="submit" class="btn btn-warning pull-right" id="archivebefore" value="<?php esc_attr_e( 'Archive before', 'pf' ); ?>:" ><?php esc_html_e( 'Archive before', 'pf' ); ?>:</button>
 						<select class="pull-right" id="archiveBeforeOption">
