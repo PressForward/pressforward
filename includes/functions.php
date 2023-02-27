@@ -564,7 +564,7 @@ function pf_nom_class_tagger( $the_array = array() ) {
  * @todo This function overwrites in the foreach() loop, which is likely a bug.
  *
  * @param array $the_array A set of terms.
- * @return string|object $tags A string containing a comma-seperated list of slugged tags.
+ * @return string $tags A string containing a comma-seperated list of slugged tags.
  */
 function get_pf_nom_class_tags( $the_array = array() ) {
 	$tags = '';
