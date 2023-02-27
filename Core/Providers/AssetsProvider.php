@@ -112,7 +112,7 @@ class AssetsProvider extends ServiceProvider {
 				},
 				'handle'    => $slug . '-subscribed-styles',
 				'src'       => 'assets/css/pf-subscribed',
-				'deps'      => array( $slug . '-style' ),
+				'deps'      => [],
 			)
 		);
 
