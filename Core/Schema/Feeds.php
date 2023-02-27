@@ -316,14 +316,14 @@ class Feeds implements HasActions, HasFilters {
 
 		if ( 'edit_' . $this->post_type === $cap ) {
 			/* If editing a feed, assign the required capability. */
-			if ( $post && $user_id === $post->post_author ) {
+			if ( $post && $user_id === (int) $post->post_author ) {
 				$caps[] = $post_type->cap->edit_posts;
 			} else {
 				$caps[] = $post_type->cap->edit_others_posts;
 			}
 		} elseif ( 'delete_' . $this->post_type === $cap ) {
 			/* If deleting a feed, assign the required capability. */
-			if ( $post && $user_id === $post->post_author ) {
+			if ( $post && $user_id === (int) $post->post_author ) {
 				$caps[] = $post_type->cap->delete_posts;
 			} else {
 				$caps[] = $post_type->cap->delete_others_posts;
@@ -332,7 +332,7 @@ class Feeds implements HasActions, HasFilters {
 			/* If reading a private feed, assign the required capability. */
 			if ( $post && 'private' !== $post->post_status ) {
 				$caps[] = 'read';
-			} elseif ( $post && $user_id === $post->post_author ) {
+			} elseif ( $post && $user_id === (int) $post->post_author ) {
 				$caps[] = 'read';
 			} else {
 				$caps[] = $post_type->cap->read_private_posts;
