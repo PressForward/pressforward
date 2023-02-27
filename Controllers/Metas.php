@@ -127,14 +127,6 @@ class Metas implements HasFilters, HasActions {
 	 * @param bool $term_transition Whether to transition terms.
 	 */
 	public function transition_post_meta( $id_a, $id_b, $term_transition = false ) {
-		if ( ( ! is_string( $id_a ) || ! is_string( $id_b ) ) && ( ! is_numeric( $id_a ) || ! is_numeric( $id_b ) ) ) {
-			pf_log( 'Post meta transition failed.' );
-			pf_log( $id_a );
-			pf_log( $id_b );
-			pf_log( $term_transition );
-
-			return;
-		}
 		pf_log( 'Transition post ' . $id_a . ' to ' . $id_b );
 		foreach ( $this->structure() as $meta ) {
 			$post_types  = apply_filters( 'pf_transition_post_meta', array( 'item', 'nomination', 'post' ) );

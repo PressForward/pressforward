@@ -105,8 +105,8 @@ class PF_Advancement implements Advance_System, HasActions {
 	/**
 	 * Transitions an old post to a new one.
 	 *
-	 * @param int|\WP_Post $old_post Source post.
-	 * @param int|\WP_Post $new_post Destination post.
+	 * @param int $old_post Source post ID.
+	 * @param int $new_post Destination post ID.
 	 * @return void
 	 */
 	public function transition( $old_post, $new_post ) {
