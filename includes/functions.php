@@ -1639,9 +1639,13 @@ function pf_log( $message = '', $display = false, $reset = false, $do_return = f
 	// @todo error_log() should create path.
 	// phpcs:disable WordPress.WP.AlternativeFunctions
 	if ( $reset ) {
-		$fo = fopen( $log_path, 'w' ) || print_r( 'Can\'t open log file.' );
-		fwrite( $fo, "Log file reset.\n\n\n" );
-		fclose( $fo );
+		$fo = fopen( $log_path, 'w' );
+		if ( ! $fo ) {
+			print_r( 'Can\'t open log file.' );
+		} else {
+			fwrite( $fo, "Log file reset.\n\n\n" );
+			fclose( $fo );
+		}
 	}
 
 	if ( ! isset( $debug ) ) {
