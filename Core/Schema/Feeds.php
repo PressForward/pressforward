@@ -581,7 +581,7 @@ class Feeds implements HasActions, HasFilters {
 			return $actions;
 		}
 
-		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="' . esc_attr( $post->ID ) . '" title="' . esc_attr__( 'Refresh this feed', 'pf' ) . '">' . esc_html__( 'Refresh&nbsp;Feed&nbsp;Items', 'pf' ) . '</a> | ';
+		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="' . esc_attr( $post->ID ) . '" title="' . esc_attr__( 'Refresh this feed', 'pf' ) . '">' . esc_html__( 'Refresh Feed Items', 'pf' ) . '</a> | ';
 
 		return $actions;
 	}

@@ -21,3 +21,7 @@
       padding-left: 8px; }
       .list #entries article.feed-item header {
         width: 24%; }
+
+.row-actions a.refresh-feed {
+	white-space: nowrap;
+}
