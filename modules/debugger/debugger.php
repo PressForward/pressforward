@@ -168,11 +168,9 @@ class PF_Debugger extends PF_Module {
 		);
 
 		$nominated_to_posts = get_posts( $ntp_args );
-		if ( is_array( $nominated_to_posts ) ) {
-			$nomed_posts = count( $nominated_to_posts );
-		} else {
-			$nomed_posts = 0;
-		}
+
+		$nomed_posts = count( $nominated_to_posts );
+
 		?>
 		<div class="wrap">
 			<h2><?php esc_html_e( 'Current Log', 'pf' ); ?></h2>
