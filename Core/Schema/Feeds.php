@@ -731,12 +731,9 @@ class Feeds implements HasActions, HasFilters {
 	 * Gets list of feeds without folders.
 	 */
 	public function the_feeds_without_folders() {
-		global $wp_version;
-		if ( 4.0 < (float) $wp_version ) {
-			$the_other_feeds = $this->get_feeds_without_folders();
-			foreach ( $the_other_feeds as $a_feed_id ) {
-				$this->the_feed( $a_feed_id );
-			}
+		$the_other_feeds = $this->get_feeds_without_folders();
+		foreach ( $the_other_feeds as $a_feed_id ) {
+			$this->the_feed( $a_feed_id );
 		}
 	}
 
