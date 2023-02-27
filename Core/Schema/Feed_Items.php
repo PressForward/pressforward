@@ -531,10 +531,6 @@ class Feed_Items implements HasActions, HasFilters {
 
 		$feed_id = intval( $feed_item->post_parent );
 
-		if ( ! $feed_id ) {
-			return false;
-		}
-
 		return pressforward( 'controller.metas' )->update_pf_meta( $feed_id, 'pf_feed_last_retrieved', gmdate( 'Y-m-d H:i:s' ) );
 	}
 
