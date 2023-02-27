@@ -12,6 +12,8 @@ if ( ! WP_DEBUG ) {
 }
 set_transient( 'is_multi_author', true );
 
+set_current_screen();
+
 require_once ABSPATH . '/wp-admin/includes/meta-boxes.php';
 
 /**
