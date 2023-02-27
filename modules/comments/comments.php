@@ -344,7 +344,7 @@ class PF_Comments extends PF_Module {
 		}
 
 		// Check that we have a post_id and user logged in.
-		if ( $post_id && $current_user ) {
+		if ( $post_id && is_user_logged_in() ) {
 
 			// Set current time.
 			$time = current_time( 'mysql', $gmt = 0 );
