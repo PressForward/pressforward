@@ -226,10 +226,10 @@ class OPML_Object {
 		$feed->type  = $entry['type'];
 
 		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		$feed->id      = md5( $feed->feedUrl );
 		$feed->xmlUrl  = str_replace( '&amp;', '&', $entry['xmlUrl'] );
 		$feed->feedUrl = str_replace( '&amp;', '&', $entry['feedUrl'] );
 		$feed->htmlUrl = str_replace( '&amp;', '&', $entry['htmlUrl'] );
+		$feed->id      = md5( $feed->feedUrl );
 		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 		return $feed;
