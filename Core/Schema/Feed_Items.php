@@ -204,10 +204,10 @@ class Feed_Items implements HasActions, HasFilters {
 	/**
 	 * Meta cap mapping for feed items.
 	 *
-	 * @param array $caps    Relevant caps for user.
-	 * @param array $cap     Capability to check against $caps array.
-	 * @param int   $user_id ID of user.
-	 * @param array $args    Arguments.
+	 * @param array  $caps    Relevant caps for user.
+	 * @param string $cap     Capability to check against $caps array.
+	 * @param int    $user_id ID of user.
+	 * @param array  $args    Arguments.
 	 * @return array
 	 */
 	public function feeds_item_map_meta_cap( $caps, $cap, $user_id, $args ) {
