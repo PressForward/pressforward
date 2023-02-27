@@ -1184,7 +1184,7 @@ class Feed_Items implements HasActions, HasFilters {
 		$img_title        = $img_parts['filename'];
 		$resolved_img_ext = pressforward( 'schema.feed_item' )->resolve_image_type( $og_image );
 
-		if ( ! in_array( $resolved_img_ext, array( 'jpg', 'png', 'jrpg', 'bmp', 'gif', 'jpeg' ), true ) && ! in_array( $img_ext, array( 'jpg' || 'png' || 'jrpg' || 'bmp' || 'gif' || 'jpeg' ), true ) ) {
+		if ( ! in_array( $resolved_img_ext, array( 'jpg', 'png', 'jrpg', 'bmp', 'gif', 'jpeg' ), true ) && ! in_array( $img_ext, array( 'jpg', 'png', 'jrpg', 'bmp', 'gif', 'jpeg' ), true ) ) {
 			return;
 		}
 
