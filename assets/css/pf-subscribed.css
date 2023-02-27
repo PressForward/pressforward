@@ -25,3 +25,7 @@
 .row-actions a.refresh-feed {
 	white-space: nowrap;
 }
+
+.column-items_retrieved {
+	width: 55px;
+}
