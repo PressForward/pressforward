@@ -1252,18 +1252,6 @@ function pf_iterate_cycle_state( $option_name, $option_limit = '', $do_echo = fa
 		}
 		update_option( PF_SLUG . '_' . $option_name, $retrieval_cycle );
 		return $retrieval_cycle;
-	} else {
-		// @todo This clause can never be reached.
-		if ( strtotime( 'now' ) >= $retrieval_cycle[ 'next_' . $option_limit ] ) {
-			$retrieval_cycle[ $option_limit ]           = 1;
-			$retrieval_cycle[ 'next_' . $option_limit ] = strtotime( '+1 ' . $option_limit );
-		} else {
-			$retrieval_cycle[ $option_limit ] = $retrieval_cycle[ $option_limit ] + 1;
-		}
-
-		update_option( PF_SLUG . '_' . $option_name, $retrieval_cycle );
-
-		return $retrieval_cycle;
 	}
 }
 
