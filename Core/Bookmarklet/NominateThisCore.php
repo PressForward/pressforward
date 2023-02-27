@@ -322,24 +322,17 @@ class NominateThisCore implements HasActions {
 		}
 
 		// @todo Consolidate with cached requests. See Controllers\HTTPTools\get_url_content().
-		$request = wp_remote_get(
-			$url,
-			[
-				'timeout' => 20,
-			]
-		);
+		$response = pressforward( 'controller.http_tools' )->get_url_content( $url );
 
-		if ( 200 !== wp_remote_retrieve_response_code( $request ) ) {
+		if ( 200 !== $response['response_code'] ) {
 			wp_send_json_error();
 		}
-
-		$request_body = wp_remote_retrieve_body( $request );
 
 		$providers = pressforward( 'schema.feed_item' )->oembed_capables();
 
 		$retval = [
-			'body'   => $request_body,
-			'embeds' => $this->detect_embeds( $request_body ),
+			'body'   => $response['body'],
+			'embeds' => $this->detect_embeds( $response['body'] ),
 		];
 
 		wp_send_json_success( $retval );
