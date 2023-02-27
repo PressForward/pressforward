@@ -138,9 +138,11 @@ class OPML_reader {
 			$this->opml->set_feed( $feed_obj, $parent_entry );
 		} else {
 			$folder_obj = $this->opml->make_a_folder_obj( $entry_a );
-			$this->opml->set_folder( $folder_obj );
-			foreach ( $entry as $feed ) {
-				$this->make_OPML_obj( $feed, $folder_obj );
+			if ( ! empty( $folder_obj->title ) ) {
+				$this->opml->set_folder( $folder_obj );
+				foreach ( $entry as $feed ) {
+					$this->make_OPML_obj( $feed, $folder_obj );
+				}
 			}
 		}
 	}

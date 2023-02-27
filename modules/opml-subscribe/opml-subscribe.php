@@ -453,7 +453,10 @@ class PF_OPML_Subscribe extends PF_Module {
 			$folders = get_terms( pressforward( 'schema.feeds' )->tag_taxonomy );
 			foreach ( $folders as $folder ) {
 				$folder_obj = $this->make_a_folder_object_from_term( $folder );
-				$this->master_opml_obj->set_folder( $folder_obj );
+
+				if ( ! empty( $folder_obj->title ) ) {
+					$this->master_opml_obj->set_folder( $folder_obj );
+				}
 			}
 			$feed_query_args = array(
 				'post_type'      => pressforward( 'schema.feeds' )->post_type,
