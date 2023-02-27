@@ -1459,6 +1459,15 @@ h3 {
 	flex: 1;
 	overflow-y: auto;
   }
+
+.pfmodal .modal-body.single-item-modal-content {
+	margin-bottom: 0;
+	margin-top: 0;
+	max-height: 100%;
+	padding-bottom: 0;
+	padding-top: 0;
+}
+
   .pfmodal .modal-sidebar {
     height: 100%;
     margin: 0;
@@ -1523,6 +1532,10 @@ h3 {
   .pfmodal .modal-body div.clear {
 	margin: 0;
   }
+
+.pf-modal .main-text {
+	margin: 1.5em 0;
+}
 
 .pfmodal .main-text img {
 	max-width: 100%;

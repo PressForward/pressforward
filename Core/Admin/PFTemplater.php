@@ -768,7 +768,7 @@ class PFTemplater {
 					</div><!-- .modal-header -->
 
 					<div class="row modal-body-row">
-						<div class="modal-body col-9" id="modal-body-<?php echo esc_attr( $item['item_id'] ); ?>">
+						<div class="modal-body single-item-modal-content col-9" id="modal-body-<?php echo esc_attr( $item['item_id'] ); ?>">
 							<div class="readability-wait"></div>
 							<div class="main-text">
 								<?php
