@@ -165,45 +165,6 @@ class HTTPTools implements HasActions {
 	}
 
 	/**
-	 * Attempts to get a path for the cookie.
-	 *
-	 * @return string|bool
-	 */
-	public function attempt_to_get_cookiepath() {
-		$reset       = true;
-		$upload_dir  = wp_upload_dir();
-		$cookie_path = $upload_dir['basedir'] . 'cookie.txt';
-		if ( ! is_file( $cookie_path ) ) {
-			// phpcs:ignore WordPress.WP.AlternativeFunctions
-			touch( $cookie_path );
-		}
-
-		// phpcs:ignore WordPress.WP.AlternativeFunctions
-		if ( ! is_writable( $cookie_path ) ) {
-			pf_log( "Can't write to the cookie at $cookie_path." );
-			return false;
-		} else {
-			$debug = 1;
-		}
-
-		// phpcs:disable WordPress.WP.AlternativeFunctions
-		if ( $reset ) {
-			$fo = fopen( $cookie_path, 'w' );
-			if ( ! $fo ) {
-				pf_log( 'Can\'t open cookie file.' );
-			}
-
-			if ( $fo ) {
-				fwrite( $fo, '' );
-				fclose( $fo );
-			}
-		}
-		// phpcs:enable WordPress.WP.AlternativeFunctions
-
-		return $cookie_path;
-	}
-
-	/**
 	 * Gets the content from a URL.
 	 *
 	 * @since 5.4.0 Uses wp_remote_get() internally, rather than cURL or file_get_contents().
