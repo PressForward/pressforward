@@ -1667,9 +1667,7 @@ class Feeds implements HasActions, HasFilters {
 		$hook = 0 !== func_num_args() ? func_get_arg( 0 ) : '';
 
 		if ( in_array( $pagenow, array( 'edit.php' ), true ) ) {
-			if ( ! pressforward( 'controller.template_factory' )->is_a_pf_page() ) {
-				wp_enqueue_script( 'feed_edit_manip', PF_URL . 'assets/js/subscribed-feeds-actions.js', array( 'jquery' ), PF_VERSION, true );
-			}
+			wp_enqueue_script( 'feed_edit_manip', PF_URL . 'assets/js/subscribed-feeds-actions.js', array( 'jquery' ), PF_VERSION, true );
 		}
 
 		if ( ! in_array( $pagenow, array( 'post.php' ), true ) ) {
