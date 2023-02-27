@@ -360,86 +360,6 @@ class NominateThisEndpoint implements HasActions {
 	}
 
 	/**
-	 * Assemble scripts for Nominate This endpoint.
-	 *
-	 * @todo Seems to be unused.
-	 *
-	 * @param string $load Query string containing list of script handles.
-	 */
-	public function assembleScripts( $load ) {
-		global $wp_version;
-
-		// Set ABSPATH for execution.
-		if ( is_array( $load ) ) {
-			$load = implode( '', $load );
-		}
-
-		$load = preg_replace( '/[^a-z0-9,_-]+/i', '', $load );
-		$load = array_unique( explode( ',', $load ) );
-
-		if ( '' === $load ) {
-			exit;
-		}
-
-		// phpcs:disable
-		// include_once ABSPATH . 'wp-admin/includes/noop.php';
-		// require( ABSPATH . WPINC . '/script-loader.php' );
-		// require( ABSPATH . WPINC . '/version.php' );
-		// phpcs:enable
-
-		$compress_raw = isset( $_GET['c'] ) ? sanitize_text_field( wp_unslash( $_GET['c'] ) ) : '';
-
-		$compress       = ( ! empty( $compress_raw ) );
-		$force_gzip     = ( $compress && 'gzip' === $compress_raw );
-		$expires_offset = 31536000; // 1 year.
-		$out            = '';
-
-		$wp_scripts = new \WP_Scripts();
-		\wp_default_scripts( $wp_scripts );
-
-		$http_if_none_match = isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_IF_NONE_MATCH'] ) ) : '';
-		if ( $http_if_none_match === $wp_version ) {
-			$protocol = isset( $_SERVER['SERVER_PROTOCOL'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_PROTOCOL'] ) ) : '';
-			if ( ! in_array( $protocol, array( 'HTTP/1.1', 'HTTP/2', 'HTTP/2.0' ), true ) ) {
-				$protocol = 'HTTP/1.0';
-			}
-			header( "$protocol 304 Not Modified" );
-			exit();
-		}
-
-		foreach ( $load as $handle ) {
-			if ( ! array_key_exists( $handle, $wp_scripts->registered ) ) {
-				continue;
-			}
-
-			$path = ABSPATH . $wp_scripts->registered[ $handle ]->src;
-			$out .= $this->get_file( $path ) . "\n";
-		}
-
-		// phpcs:disable
-		// header( "Etag: $wp_version" );
-		// header( 'Content-Type: application/javascript; charset=UTF-8' );
-		// header( 'Expires: ' . gmdate( 'D, d M Y H:i:s', time() + $expires_offset ) . ' GMT' );
-		// header( "Cache-Control: public, max-age=$expires_offset" );
-
-		if ( $compress && ! ini_get( 'zlib.output_compression' ) && 'ob_gzhandler' != ini_get( 'output_handler' ) && isset( $_SERVER['HTTP_ACCEPT_ENCODING'] ) ) {
-			$http_accept_encoding = sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT_ENCODING'] ) );
-			// header( 'Vary: Accept-Encoding' ); // Handle proxies
-			if ( false !== stripos( $http_accept_encoding, 'deflate' ) && function_exists( 'gzdeflate' ) && ! $force_gzip ) {
-				// header( 'Content-Encoding: deflate' );
-				// $out = gzdeflate( $out, 3 );
-			} elseif ( false !== stripos( $http_accept_encoding, 'gzip' ) && function_exists( 'gzencode' ) ) {
-				// header( 'Content-Encoding: gzip' );
-				// $out = gzencode( $out, 3 );
-			}
-		}
-		// phpcs:enable
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $out;
-	}
-
-	/**
 	 * Callback for submission endpoint.
 	 *
 	 * @param \WP_REST_Request $request Request object.
@@ -537,8 +457,6 @@ EOF;
 
 		// phpcs:disable
 		// include_once $site_url . 'wp-includes/js/jquery/jquery.js';
-
-		// $this->assembleScripts( 'load%5B%5D=jquery-core,jquery-migrate,utils,moxiejs,plupload,jquery-ui-core,jquery-ui-widget' );
 
 		// // include_once $site_url . 'wp-includes/js/jquery/ui/position.min.js?';
 		// include_once $site_url . 'wp-includes/js/jquery/ui/menu.min.js';
