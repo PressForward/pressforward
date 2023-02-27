@@ -1422,8 +1422,9 @@ class Feeds implements HasActions, HasFilters {
 					if ( $url ) {
 						wp_delete_post( $post_id, true );
 					}
-					++$c;
 				}
+
+				++$c;
 			} else {
 				// Let's duplicate WordPress's mechanic of 'update' creating a new post if it doesn't exist.
 				$id = $this->create( $url );
