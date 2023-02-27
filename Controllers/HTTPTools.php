@@ -206,96 +206,47 @@ class HTTPTools implements HasActions {
 	/**
 	 * Gets the content from a URL.
 	 *
-	 * @param string $url      URL.
-	 * @param string $the_function Callback for fetching.
+	 * @since 5.4.0 Uses wp_remote_get() internally, rather than cURL or file_get_contents().
+	 *
+	 * @param string $url        URL.
+	 * @param string $deprecated No longer used.
 	 * @return mixed
 	 */
-	public function get_url_content( $url, $the_function = '' ) {
-		$args      = func_get_args();
-		$url       = str_replace( '&amp;', '&', $url );
-		$url_first = $url;
-		$r         = false;
-		if ( ! $the_function ) {
-			$url = set_url_scheme( $url, 'http' );
-			$r   = false;
-		} else {
-			$args[0] = $url;
-			unset( $args[1] );
+	public function get_url_content( $url, $deprecated = '' ) {
+		$url = str_replace( '&amp;', '&', $url );
 
-			$cache_key = $the_function . '_' . $url;
-			$cached    = wp_cache_get( $cache_key, 'pressforward_external_pages' );
-			if ( false === $cached ) {
-				$args[1] = [ 'timeout' => 30 ];
-				$r       = call_user_func_array( $the_function, $args );
-				if ( is_wp_error( $r ) || empty( $r ) ) {
-					$non_ssl_url = set_url_scheme( $url, 'http' );
-					if ( $non_ssl_url !== $url ) {
-						$args[0] = $non_ssl_url;
-						$r       = call_user_func_array( $the_function, $args );
-					}
+		$cached = wp_cache_get( $url, 'pressforward_external_pages' );
+		if ( false !== $cached ) {
+			return $cached;
+		}
 
-					if ( ! $r || is_wp_error( $r ) ) {
-						// Last Chance!
-						if ( 'file_get_contents' !== $the_function ) {
-							// phpcs:ignore WordPress.WP.AlternativeFunctions
-							$response = file_get_contents( $url_first );
-						} else {
-							$response = false;
-						}
-					}
-					wp_cache_set( $cache_key, $r, 'pressforward_external_pages' );
-				} else {
-					$r = $cached;
-				}
+		// @todo Allow some overrides, via an `$args` param and/or a filter.
+		$request_args = [
+			'timeout' => 30,
+		];
+
+		$response = wp_remote_get( $url, $request_args );
+
+		$response_code = wp_remote_retrieve_response_code( $response );
+
+		// In case of failures, attempt a non-HTTPS request. See #356p.
+		if ( $response_code >= 500 ) {
+			$non_ssl_response = wp_remote_get( set_url_scheme( $url, 'http' ), $request_args );
+
+			if ( 200 === wp_remote_retrieve_response_code( $non_ssl_response ) ) {
+				$response      = $non_ssl_response;
+				$response_code = 200;
 			}
 		}
-		$response          = $r;
-		$loaded_extensions = get_loaded_extensions();
-		if ( ( false === $response ) || empty( $response ) || is_wp_error( $response ) || ( ! empty( $response ) && ! empty( $response['headers'] ) && isset( $response['headers']['content-length'] ) && ( 50 > strlen( $response['headers']['content-length'] ) ) ) && in_array( 'curl', $loaded_extensions, true ) ) {
-			$cookie_path = 'cookie.txt';
-			if ( defined( 'COOKIE_PATH_FOR_CURL' ) ) {
-				$cookie_path = constant( 'COOKIE_PATH_FOR_CURL' );
-				if ( ! isset( $cookie_path ) || false === $cookie_path ) {
-					$cookie_path = $this->attempt_to_get_cookiepath();
-					if ( false === $cookie_path ) {
-						return false;
-					}
-				}
-			} else {
-				$cookie_path = $this->attempt_to_get_cookiepath();
-				if ( ! $cookie_path ) {
-					return false;
-				}
-			}
 
-			// @todo See https://github.com/PressForward/pressforward/issues/1135.
-			// phpcs:disable WordPress.WP.AlternativeFunctions
-			$curl = curl_init( $args[0] );
+		$response_body = wp_remote_retrieve_body( $response );
 
-			curl_setopt( $curl, constant( 'CURLOPT_FAILONERROR' ), true );
-			curl_setopt( $curl, constant( 'CURLOPT_FOLLOWLOCATION' ), true );
-			curl_setopt( $curl, constant( 'CURLOPT_RETURNTRANSFER' ), true );
-			curl_setopt( $curl, constant( 'CURLOPT_TIMEOUT' ), 15 );
-			curl_setopt( $curl, constant( 'CURLOPT_SSL_VERIFYHOST' ), false );
-			curl_setopt( $curl, constant( 'CURLOPT_SSL_VERIFYPEER' ), false );
-			$fetch_ua = apply_filters( 'pf_useragent_retrieval_control', 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)' );
-			curl_setopt( $curl, constant( 'CURLOPT_USERAGENT' ), $fetch_ua );
-			// The following 2 set up lines work with sites like www.nytimes.com.
-			curl_setopt( $curl, constant( 'CURLOPT_COOKIEFILE' ), $cookie_path ); // you can change this path to whetever you want.
-			curl_setopt( $curl, constant( 'CURLOPT_COOKIEJAR' ), $cookie_path ); // you can change this path to whetever you want.
-			$encode = apply_filters( 'pf_encoding_retrieval_control', true );
-			if ( $encode ) {
-				$response = mb_convert_encoding( curl_exec( $curl ), 'HTML-ENTITIES', 'UTF-8' );
-			} else {
-				$response = curl_exec( $curl );
-			}
-			// Will return false or the content.
-			curl_close( $curl );
+		// We cache regardless of response code, to avoid multiple pings for 404s, etc.
+		wp_cache_set( $url, $response_body, 'pressforward_external_pages' );
 
-			// phpcs:enable WordPress.WP.AlternativeFunctions
-			return array( 'body' => $response );
-		} else {
-			return $response;
-		}
+		return [
+			'body'          => $response_body,
+			'response_code' => $response_code,
+		];
 	}
 }
