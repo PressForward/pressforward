@@ -1,5 +1,9 @@
 jQuery(window).load(function () {
 	var firstTab = jQuery('.pressforward #pf-settings-tabs .nav-tab').first();
+	if ( firstTab.length === 0 ) {
+		return;
+	}
+
 	var firstTarget = firstTab.attr('data-tab-target');
 
 	function tabToTarget(target, tab) {
