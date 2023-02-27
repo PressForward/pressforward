@@ -391,16 +391,6 @@ class PF_OPML_Subscribe extends PF_Module {
 	}
 
 	/**
-	 * Makes a folder object from a term slug.
-	 *
-	 * @param string $slug Slug.
-	 */
-	private function make_a_folder_object_from_term_slug( $slug ) {
-		$obj = get_term_by( 'slug', $slug, pressforward( 'schema.feeds' )->tag_taxonomy );
-		return $this->make_a_folder_object_from_term( $obj );
-	}
-
-	/**
 	 * Makes a feed object from a post.
 	 *
 	 * @param int $post_id ID of the post.
