@@ -27,7 +27,7 @@
 
 	<!-- Check for PHP cross-version compatibility. -->
 	<rule ref="PHPCompatibilityWP">
-		<config name="testVersion" value="5.3-"/>
+		<config name="testVersion" value="5.7-"/>
 	</rule>
 
 	<!-- Include the WordPress-Extra standard. -->
