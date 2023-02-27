@@ -245,8 +245,6 @@ class Metas implements HasFilters, HasActions {
 		} else {
 			return wp_set_object_terms( $id_b, intval( $term_object->term_id ), 'category', true );
 		}
-
-		return true;
 	}
 
 	/**

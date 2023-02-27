@@ -34,7 +34,6 @@ $php_check->set_plugin_name( 'PressForward' );
 
 if ( ( PHP_VERSION < 5.3 ) || ( ! $php_check->does_it_meet_required_php_version( PHP_VERSION ) ) ) {
 	wp_die( 'As of version 3.9.0 PressForward requires at least PHP 5.3.' );
-	return;
 } else {
 	require 'init.php';
 }
