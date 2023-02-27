@@ -127,7 +127,6 @@ class NominateThisEndpoint implements HasActions {
 					),
 					'permission_callback' => function () {
 						if ( ! current_user_can( get_option( 'pf_menu_nominate_this_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) ) ) ) {
-							wp_die( esc_html__( 'You do not have the capacity to access the Nominate This bookmarklet.', 'pf' ) );
 							return false;
 						} else {
 							return true;
