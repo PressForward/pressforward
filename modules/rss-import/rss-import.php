@@ -285,6 +285,10 @@ class PF_RSS_Import extends PF_Module {
 			foreach ( $author_array as $author ) {
 				$name_array[] = $author->get_name();
 			}
+
+			// Remove empties.
+			$name_array = array_filter( $name_array );
+
 			$authors = implode( ', ', $name_array );
 			$authors = $authors;
 
