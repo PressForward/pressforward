@@ -193,12 +193,7 @@ function get_the_nominator_ids( $id = 0 ) {
  * @return array
  */
 function get_the_nominators() {
-	$nominators = get_the_nominator_ids();
-	if ( ! empty( $nominators ) && ! is_array( $nominators ) && is_string( $nominators ) ) {
-		$nomers = explode( ',', $nominators );
-	} else {
-		$nomers = $nominators;
-	}
+	$nomers = get_the_nominator_ids();
 
 	$nominating_user_ids = $nomers;
 	$nominating_users    = array();
