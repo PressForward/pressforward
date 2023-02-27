@@ -1023,7 +1023,7 @@ class Feeds implements HasActions, HasFilters {
 			$insert_type = 'update';
 		}
 
-		if ( empty( $wp_args['post_title'] ) || ! $wp_args['post_title'] ) {
+		if ( empty( $wp_args['post_title'] ) ) {
 			pf_log( 'Missing a title, assigning the URL' );
 			$wp_args['post_title'] = $r['url'];
 		}
