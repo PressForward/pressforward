@@ -974,20 +974,24 @@ function pf_is_drafted( $item_id ) {
  * @return array
  */
 function pf_get_drafted_items( $post_type = 'pf_feed_item' ) {
-	$drafts = new WP_Query(
-		array(
-			'no_found_rows'          => true,
-			'post_type'              => get_option( PF_SLUG . '_draft_post_type', 'post' ),
-			'post_status'            => 'any',
-			'meta_query'             => array(
-				array(
-					'key' => 'item_id',
-				),
+	$draft_query_args = [
+		'no_found_rows'          => true,
+		'post_type'              => get_option( PF_SLUG . '_draft_post_type', 'post' ),
+		'post_status'            => 'any',
+		'meta_query'             => array(
+			array(
+				'key' => 'item_id',
 			),
-			'update_post_meta_cache' => true,
-			'update_post_term_cache' => false,
-		)
-	);
+		),
+		'update_post_meta_cache' => true,
+		'update_post_term_cache' => false,
+	];
+
+	if ( ! current_user_can( 'edit_others_posts' ) ) {
+		$draft_query_args['author'] = get_current_user_id();
+	}
+
+	$drafts = new WP_Query( $draft_query_args );
 
 	$item_hashes = array();
 	foreach ( $drafts->posts as $p ) {
