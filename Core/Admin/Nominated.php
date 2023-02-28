@@ -829,7 +829,7 @@ class Nominated implements HasActions {
 
 		// Set up nomination check.
 		$item_wp_date = isset( $_POST['item_wp_date'] ) ? sanitize_text_field( wp_unslash( $_POST['item_wp_date'] ) ) : '';
-		$item_id      = isset( $_POST['item_id'] ) ? intval( $_POST['item_id'] ) : 0;
+		$item_id      = isset( $_POST['item_id'] ) ? sanitize_text_field( $_POST['item_id'] ) : '';
 		$item_post_id = isset( $_POST['item_post_id'] ) ? intval( $_POST['item_post_id'] ) : 0;
 
 		pf_log( 'We handle the item into a nomination?' );
