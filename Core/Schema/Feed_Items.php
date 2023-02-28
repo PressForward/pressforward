@@ -147,6 +147,7 @@ class Feed_Items implements HasActions, HasFilters {
 					'show_in_admin_bar'     => false,
 					'show_in_rest'          => true, // $rest_enabled,
 					'rest_base'             => 'feed_items',
+					'rest_namespace'        => 'pf/v1',
 					'rest_controller_class' => 'PF_REST_Posts_Controller',
 					'capability_type'       => $this->post_type,
 					'capabilities'          => $this->map_feed_item_caps(),

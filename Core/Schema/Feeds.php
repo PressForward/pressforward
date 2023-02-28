@@ -213,6 +213,7 @@ class Feeds implements HasActions, HasFilters {
 					'show_in_menu'          => PF_MENU_SLUG,
 					'show_in_admin_bar'     => true,
 					'show_in_rest'          => true,
+					'rest_namespace'        => 'pf/v1',
 					'rest_base'             => 'feeds',
 					'rest_controller_class' => 'PF_REST_Posts_Controller',
 					'show_ui'               => true, // for testing only.
