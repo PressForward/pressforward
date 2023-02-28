@@ -1075,7 +1075,6 @@ input[type="text"] {
   min-height: 46px;
   overflow: visible !important;
   margin: 0 auto;
-  min-width: 600px;
 }
 
 .nav-fix {
@@ -1225,6 +1224,13 @@ body {
     float: left;
     width: 75%;
     padding: 40px; }
+
+@media screen and (max-width: 600px) {
+	#entries {
+		padding: 16px;
+	}
+}
+
   #entries .display {
     overflow: hidden;
     *zoom: 1;
@@ -1333,6 +1339,12 @@ body {
 	}
 }
 */
+
+.pressforward .grid.full #entries article.feed-item {
+  width: 23%;
+  padding: 1.6% 2% 2% 2%;
+}
+
 @media all and (min-width: 1051px) and (max-width: 1390px) {
   .pressforward .grid #entries article.feed-item {
     width: 48%; }
@@ -1618,10 +1630,6 @@ h3 {
 
 .full #entries {
   width: 100%; }
-
-.pressforward .grid.full #entries article.feed-item {
-  width: 23%;
-  padding: 1.6% 2% 2% 2%; }
 
 .pressforward .grid.full #entries article.feed-item header {
   margin-bottom: 1em;
