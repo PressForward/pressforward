@@ -35,6 +35,11 @@ class Nominations implements HasActions, HasFilters {
 	public function action_hooks() {
 		return array(
 			array(
+				'hook'   => 'transition_post_status',
+				'method' => 'maybe_send_promotion_notifications',
+				'args'   => 3,
+			),
+			array(
 				'hook'   => 'init',
 				'method' => 'register_post_type',
 			),
@@ -155,5 +160,62 @@ class Nominations implements HasActions, HasFilters {
 	 */
 	public function nominations_box_builder() {
 		do_action( 'nominations_box' );
+	}
+
+	/**
+	 * Sends notifications to nominating users when an item is published.
+	 *
+	 * @since 5.4.0
+	 *
+	 * @param string   $new_status New post status.
+	 * @param string   $old_status Old post status.
+	 * @param \WP_Post $post       Post object.
+	 */
+	public function maybe_send_promotion_notifications( $new_status, $old_status, \WP_Post $post ) {
+		if ( 'publish' !== $new_status ) {
+			return;
+		}
+
+		if ( $post->post_type !== pressforward()->fetch( 'controller.advancement' )->last_step_post_type() ) {
+			return;
+		}
+
+		$nominators = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'nominator_array' );
+		foreach ( $nominators as $nominator ) {
+			if ( ! pressforward()->fetch( 'controller.users' )->get_user_setting( $nominator['user_id'], 'nomination-promoted-email-toggle' ) ) {
+				continue;
+			}
+
+			$user = get_userdata( $nominator['user_id'] );
+			if ( ! $user ) {
+				continue;
+			}
+
+			$site_name = get_bloginfo( 'name' );
+
+			$subject = sprintf(
+				// translators: Name of the site.
+				__( 'An item you nominated on %s has been published', 'pf' ),
+				$site_name
+			);
+
+			$message = $subject . "\n\n";
+
+			$message .= sprintf(
+				// translators: Title of the post.
+				__( 'Title: %s', 'pf' ),
+				get_the_title( $post )
+			);
+
+			$message .= "\n";
+
+			$message .= sprintf(
+				// translators: URL of the post.
+				__( 'URL: %s', 'pf' ),
+				get_permalink( $post )
+			);
+
+			wp_mail( $user->user_email, $subject, $message );
+		}
 	}
 }
