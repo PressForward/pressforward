@@ -215,6 +215,7 @@ class PF_Advancement implements Advance_System, HasActions {
 	 *
 	 * @param int    $item_id   ID of the item.
 	 * @param string $post_type Post type.
+	 * @return int ID of the corresponding WP post, if found.
 	 */
 	public function get_pf_type_by_id( $item_id, $post_type ) {
 		$q = $this->pf_get_posts_by_id_for_check( $post_type, $item_id, true );
@@ -222,7 +223,7 @@ class PF_Advancement implements Advance_System, HasActions {
 			$nom = $q->posts;
 			$r   = $nom[0];
 		} else {
-			$r = false;
+			$r = 0;
 		}
 		/* Restore original Post Data */
 		wp_reset_postdata();

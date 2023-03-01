@@ -273,10 +273,10 @@ class NominateThisCore implements HasActions {
 		// @todo Fix button text with i18n issue mentioned earlier in this file.
 		if ( isset( $_POST['publish'] ) && ( ( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) === __( 'Last Step', 'pf' ) ) || ( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) === 'Send to ' . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ) ) ) ) {
 			$post['post_type'] = 'nomination';
-			$post_ID           = pressforward( 'utility.forward_tools' )->bookmarklet_to_last_step( false, $post );
+			$post_ID           = pressforward( 'utility.forward_tools' )->bookmarklet_to_last_step( '', $post );
 
 		} else {
-			$post_ID = pressforward( 'utility.forward_tools' )->bookmarklet_to_nomination( false, $post );
+			$post_ID = pressforward( 'utility.forward_tools' )->bookmarklet_to_nomination( '', $post );
 		}
 
 		if ( ! empty( $_POST['item_feat_img'] ) ) {

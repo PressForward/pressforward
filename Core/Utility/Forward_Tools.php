@@ -231,7 +231,7 @@ class Forward_Tools {
 	/**
 	 * Increments metadata on nomination.
 	 *
-	 * @param int  $id      ID of the nomination.
+	 * @param int  $id      WP post ID of the nomination.
 	 * @param int  $user_id ID of the user.
 	 * @param bool $is_post Whether this is a post. Default false.
 	 * @return array
@@ -255,7 +255,7 @@ class Forward_Tools {
 	/**
 	 * Transitions an item to post draft.
 	 *
-	 * @param int $nomination_id ID of the nomination.
+	 * @param int $nomination_id WP post ID of the nomination.
 	 * @return int|bool
 	 */
 	public function transition_to_last_step( $nomination_id ) {
@@ -404,9 +404,9 @@ class Forward_Tools {
 	/**
 	 * Process nominator info on nomination.
 	 *
-	 * @param int  $id         PF item ID.
-	 * @param int  $item_id    Item ID.
-	 * @param bool $can_delete Can delete.
+	 * @param int    $id         WP Item ID, or false if none was found.
+	 * @param string $item_id    PF Item ID.
+	 * @param bool   $can_delete Can delete.
 	 * @return array
 	 */
 	public function nomination_user_transition_check( $id, $item_id, $can_delete = false ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
@@ -509,8 +509,8 @@ class Forward_Tools {
 	/**
 	 * Transitions a new item to a nomination.
 	 *
-	 * @param int $item_id      Item ID.
-	 * @param int $item_post_id Item post ID.
+	 * @param string $item_id      PF Item ID.
+	 * @param int    $item_post_id Item post ID.
 	 * @return int|\WP_Error|bool
 	 */
 	public function item_to_nomination( $item_id, $item_post_id ) {
@@ -565,12 +565,12 @@ class Forward_Tools {
 	/**
 	 * Transitions a nomination to a post draft.
 	 *
-	 * @param int  $item_id       ID of the item.
-	 * @param int  $nomination_id Nomination ID.
-	 * @param bool $make_readable Whether to process content through Readability.
+	 * @param string $item_id       PF ID of the item.
+	 * @param int    $nomination_id Nomination ID.
+	 * @param bool   $make_readable Whether to process content through Readability.
 	 * @return int|bool
 	 */
-	public function nomination_to_last_step( $item_id = 0, $nomination_id = 0, $make_readable = true ) {
+	public function nomination_to_last_step( $item_id = '', $nomination_id = 0, $make_readable = true ) {
 		$post_check = $this->is_a_pf_type( $item_id, 'post' );
 
 		// Assign user status as well here.
@@ -595,8 +595,8 @@ class Forward_Tools {
 	/**
 	 * Transitions an item to a post draft.
 	 *
-	 * @param int $item_id      Item ID.
-	 * @param int $item_post_id Item post ID.
+	 * @param string $item_id      PF Item ID.
+	 * @param int    $item_post_id Item post ID.
 	 * @return int
 	 */
 	public function item_to_last_step( $item_id, $item_post_id ) {
@@ -608,11 +608,11 @@ class Forward_Tools {
 	/**
 	 * Transitions an item from the bookmarklet to a draft.
 	 *
-	 * @param int   $item_id ID of the item.
-	 * @param array $post    Array of post data.
+	 * @param string $item_id PF ID of the item.
+	 * @param array  $post    Array of post data.
 	 * @return int|bool
 	 */
-	public function bookmarklet_to_nomination( $item_id = 0, $post = [] ) {
+	public function bookmarklet_to_nomination( $item_id = '', $post = [] ) {
 		$_POST = array_merge( $_POST, $post );
 
 		$item_link = isset( $_POST['item_link'] ) ? sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) : '';
@@ -796,11 +796,11 @@ class Forward_Tools {
 	/**
 	 * Transitions an item from the bookmarklet to a draft.
 	 *
-	 * @param int   $item_id ID of the item.
-	 * @param array $post    Array of post data.
+	 * @param string $item_id PF ID of the item.
+	 * @param array  $post    Array of post data.
 	 * @return int
 	 */
-	public function bookmarklet_to_last_step( $item_id = 0, $post = null ) {
+	public function bookmarklet_to_last_step( $item_id = '', $post = null ) {
 		if ( ! $item_id ) {
 			$item_link = isset( $_POST['item_link'] ) ? sanitize_text_field( wp_unslash( $_POST['item_link'] ) ) : '';
 
@@ -828,10 +828,10 @@ class Forward_Tools {
 	/**
 	 * Checks whether an item is of a PressForward type.
 	 *
-	 * @param int    $item_id   ID of the item.
+	 * @param string $item_id   ID of the item.
 	 * @param string $post_type Optional. Post type of the item.
 	 * @param bool   $update    Update.
-	 * @return bool
+	 * @return int ID of the WP item,
 	 */
 	public function is_a_pf_type( $item_id, $post_type = '', $update = false ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		if ( ! $post_type ) {
@@ -843,7 +843,7 @@ class Forward_Tools {
 			$r = $attempt;
 			pf_log( 'Existing post at ' . $r );
 		} else {
-			$r = false;
+			$r = 0;
 		}
 
 		return $r;
