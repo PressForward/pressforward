@@ -1,4 +1,10 @@
 <?php
+/**
+ * Stats endpoint.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\API;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
@@ -13,20 +19,54 @@ use DaveChild\TextStatistics\Text as Text;
 
 use WP_Ajax_Response;
 use WP_Error;
-// use \WP_REST_Controller;
+
+/**
+ * Stats endpoint.
+ */
 class StatsEndpoint implements HasActions {
 
+	/**
+	 * API base data.
+	 *
+	 * @access protected
+	 * @var array
+	 */
 	protected $api_base;
 
-	function __construct( $api_base, Metas $metas, Stats $stats ) {
+	/**
+	 * Metas object.
+	 *
+	 * @access public
+	 * @var \PressForward\Controllers\Metas
+	 */
+	public $metas;
+
+	/**
+	 * Stats object.
+	 *
+	 * @access public
+	 * @var \PressForward\Controllers\Stats
+	 */
+	public $stats;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param array                           $api_base API base data.
+	 * @param \PressForward\Controllers\Metas $metas    Metas object.
+	 * @param \PressForward\Controllers\Stats $stats    Stats object.
+	 */
+	public function __construct( $api_base, Metas $metas, Stats $stats ) {
 		$this->api_base             = $api_base;
 		$this->api_base['endpoint'] = 'stats';
 		$this->metas                = $metas;
 		$this->stats                = $stats;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function action_hooks() {
-		// add_action( 'rest_api_init', 'activate_pf_rest_controller', 11 );
 		$actions = array(
 			array(
 				'hook'     => 'rest_api_init',
@@ -37,7 +77,10 @@ class StatsEndpoint implements HasActions {
 		return $actions;
 	}
 
-	function activate() {
+	/**
+	 * Registers routes for Stats endpoint.
+	 */
+	public function activate() {
 		$controller = $this;
 		$controller->register_routes();
 	}
@@ -49,7 +92,9 @@ class StatsEndpoint implements HasActions {
 		$namespace = $this->api_base['base_namespace'] . $this->api_base['version'];
 		$base      = $this->api_base['endpoint'];
 		register_rest_route(
-			$namespace, '/' . $base . '/overview', array(
+			$namespace,
+			'/' . $base . '/overview',
+			array(
 				array(
 					'methods'             => \WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'overview' ),
@@ -134,14 +179,16 @@ class StatsEndpoint implements HasActions {
 						),
 					),
 					'permission_callback' => function () {
-						return true; // current_user_can( 'edit_others_posts' );
+						return true;
 					},
 					'priority'            => 10,
 				),
 			)
 		);
 		register_rest_route(
-			$namespace, '/' . $base . '/authors', array(
+			$namespace,
+			'/' . $base . '/authors',
+			array(
 				array(
 					'methods'             => \WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'author_stats' ),
@@ -240,19 +287,21 @@ class StatsEndpoint implements HasActions {
 						),
 					),
 					'permission_callback' => function () {
-						return true; // current_user_can( 'edit_others_posts' );
+						return true;
 					},
 					'priority'            => 10,
 				),
 			)
 		);
 		register_rest_route(
-			$namespace, '/' . $base . '/pf_posted', array(
+			$namespace,
+			'/' . $base . '/pf_posted',
+			array(
 				array(
 					'methods'             => \WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'pf_posted' ),
 					'args'                => array(
-						'page' => array(
+						'page'     => array(
 							// description should be a human readable description of the argument.
 							'description'       => esc_html__( 'Page of posts created by PressForward.', 'pf' ),
 							// Set the argument to be required for the endpoint.
@@ -267,16 +316,16 @@ class StatsEndpoint implements HasActions {
 							},
 						),
 						'per_page' => array(
-							'default' => 40,
+							'default'           => 40,
 							'sanitize_callback' => 'absint',
 						),
-						'offset' => array(
+						'offset'   => array(
 							'required'          => false,
 							'sanitize_callback' => 'intval',
 						),
 					),
 					'permission_callback' => function () {
-						return true; // current_user_can( 'edit_others_posts' );
+						return true;
 					},
 					'priority'            => 10,
 				),
@@ -284,26 +333,28 @@ class StatsEndpoint implements HasActions {
 		);
 	}
 
-
 	/**
 	 * This is our callback function that embeds our resource in a WP_REST_Response.
 	 *
 	 * The parameter is already sanitized by this point so we can use it without any worries.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function author_stats( $request ) {
 		if ( isset( $request['page'] ) ) {
-			// \rest_ensure_response(
 			$args = array(
 				'paged'  => $request['page'],
-				// 'no_found_rows' => true,
 				'fields' => 'ids',
 			);
+
 			$date_limits = array(
 				'year',
 				'month',
 				'day',
 			);
-			$date_query  = array();
+
+			$date_query = array();
 			foreach ( $date_limits as $limit ) {
 				if ( ! empty( $request[ 'after_' . $limit ] ) ) {
 					if ( ! isset( $date_query['after'] ) ) {
@@ -319,28 +370,31 @@ class StatsEndpoint implements HasActions {
 				}
 			}
 			$args['date_query'] = $date_query;
-			$q = $this->stats->stats_query_for_pf_published_posts( $args );
-			$ids     = $q->posts;
-			$authors = array();
+			$q                  = $this->stats->stats_query_for_pf_published_posts( $args );
+			$ids                = $q->posts;
+			$authors            = array();
 			foreach ( $ids as $id ) {
 				$authors = $this->stats->set_author_into_leaderboard( $id, $authors );
 			}
 
-			return rest_ensure_response(
-				$authors
-			);
-			// unencode via js with the html_entity_decode function we use elsewhere.
+			return rest_ensure_response( $authors );
 		}
 		return new \WP_Error( 'rest_invalid', esc_html__( 'The page parameter is required.', 'pf' ), array( 'status' => 400 ) );
 	}
 
+	/**
+	 * Callback for pf_posted endpoint.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response|\WP_Error
+	 */
 	public function pf_posted( $request ) {
 		\ob_start();
 		if ( isset( $request['page'] ) ) {
 			$args = array();
-			if ( isset( $request['per_page'] ) && is_numeric( $request['per_page'] ) ){
+			if ( isset( $request['per_page'] ) && is_numeric( $request['per_page'] ) ) {
 				$per_page = intval( $request['per_page'] );
-				if ( $per_page > 100){
+				if ( $per_page > 100 ) {
 					$per_page = 100;
 				}
 				if ( $per_page < 1 ) {
@@ -350,8 +404,9 @@ class StatsEndpoint implements HasActions {
 			} else {
 				$posts_per_page = 40;
 			}
+
 			$args['posts_per_page'] = $posts_per_page;
-			if ( isset( $request['page'] ) && is_numeric( $request['page'] ) ){
+			if ( isset( $request['page'] ) && is_numeric( $request['page'] ) ) {
 				$page = intval( $request['page'] );
 				if ( $page < 1 ) {
 					$page = 1;
@@ -359,46 +414,47 @@ class StatsEndpoint implements HasActions {
 			} else {
 				$page = 1;
 			}
+
 			$args['paged'] = $page;
-			if ( isset( $request['offset'] ) && is_numeric( $request['offset'] ) ){
+			if ( isset( $request['offset'] ) && is_numeric( $request['offset'] ) ) {
 				$offset = intval( $request['offset'] );
 			} else {
 				$offset = 0;
 			}
-			$offset_total = (($posts_per_page * ($page-1)) + $offset);
-			if ($offset === 0 || $offset_total < 1){
+
+			$offset_total = ( ( $posts_per_page * ( $page - 1 ) ) + $offset );
+			if ( 0 === $offset || $offset_total < 1 ) {
 				$args['offset'] = $offset_total;
 			}
 
-			$q    = $this->stats->stats_query_for_pf_published_posts( $args );
+			$q = $this->stats->stats_query_for_pf_published_posts( $args );
 
 			$posts = $q->posts;
 			foreach ( $posts as $post ) {
 				$post_content                = $post->post_content;
-				$post_content_cleaner        = strip_tags( stripslashes( html_entity_decode( htmlspecialchars_decode( htmlspecialchars( $post_content ) ) ) ) );
+				$post_content_cleaner        = wp_strip_all_tags( stripslashes( html_entity_decode( htmlspecialchars_decode( htmlspecialchars( $post_content ) ) ) ) );
 				$post_content_cleaner        = preg_replace( '/[^A-Za-z0-9\-]/', ' ', $post_content_cleaner );
 				$post_content_cleaner        = str_replace( array( "\n", "\r", "\r\n" ), ' ', $post_content_cleaner );
-				$post->stripped_post_content = strip_tags( $post_content );
+				$post->stripped_post_content = wp_strip_all_tags( $post_content );
 				$post->wordcount             = str_word_count( $post->stripped_post_content );
 				$post->sentences             = Text::sentenceCount( $post->stripped_post_content );
-				$textStatistics              = new TS\TextStatistics();
-				$reading_score               = $textStatistics->fleschKincaidReadingEase( $post->stripped_post_content );
+				$test_statistics             = new TS\TextStatistics();
+				$reading_score               = $test_statistics->fleschKincaidReadingEase( $post->stripped_post_content );
 				$post->flesch_kincaid_score  = $reading_score;
 				$item_link                   = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_link' );
-				$url_parts                   = parse_url( $item_link );
-				unset($post->post_password);
+				$url_parts                   = wp_parse_url( $item_link );
+				unset( $post->post_password );
 				if ( ! empty( $url_parts ) && isset( $url_parts['host'] ) ) {
 					$post->source_link = $url_parts['host'];
 				} else {
-					$post->source_link = 'No Source Found';
+					$post->source_link = __( 'No Source Found', 'pf' );
 				}
 				$post->nominators = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'nominator_array' );
-				$post = pressforward( 'controller.metas' )->attach_metas_by_use($post);
-				// $post->source_link = $this->metas->get_post_pf_meta( $post->ID, 'pf_source_link' );
+				$post             = pressforward( 'controller.metas' )->attach_metas_by_use( $post );
 			}
-			$response = rest_ensure_response(
-				$posts
-			);
+
+			$response = rest_ensure_response( $posts );
+
 			$response->header( 'X-PF-PageRequested', (int) $page );
 			$response->header( 'X-WP-Total', (int) $q->found_posts );
 			$response->header( 'X-WP-TotalPages', (int) $q->max_num_pages );
@@ -413,19 +469,22 @@ class StatsEndpoint implements HasActions {
 	 * This is our callback function that embeds our resource in a WP_REST_Response.
 	 *
 	 * The parameter is already sanitized by this point so we can use it without any worries.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Request|\WP_Error
 	 */
 	public function overview( $request ) {
-		// \rest_ensure_response(
 		$args = array(
-			// 'no_found_rows' => true,
 			'fields' => 'ids',
 		);
+
 		$date_limits = array(
 			'year',
 			'month',
 			'day',
 		);
-		$date_query  = array();
+
+		$date_query = array();
 		foreach ( $date_limits as $limit ) {
 			if ( ! empty( $request[ 'after_' . $limit ] ) ) {
 				if ( ! isset( $date_query['after'] ) ) {
@@ -445,9 +504,5 @@ class StatsEndpoint implements HasActions {
 		return rest_ensure_response(
 			$counts
 		);
-		// unencode via js with the html_entity_decode function we use elsewhere.
-		// return new \WP_Error( 'rest_invalid', esc_html__( 'The page parameter is required.', 'pf' ), array( 'status' => 400 ) );
 	}
-
-
 }

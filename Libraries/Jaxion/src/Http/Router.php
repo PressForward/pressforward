@@ -20,7 +20,7 @@ use InvalidArgumentException;
  * @method Endpoint editable(string $route, callable $callback, array $options = array())
  * @method Endpoint all(string $route, callable $callback, array $options = array())
  */
-class Router implements HasActions {
+final class Router implements HasActions {
 	/**
 	 * Resource's vendor prefix.
 	 *

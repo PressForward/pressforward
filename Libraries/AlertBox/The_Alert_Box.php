@@ -240,6 +240,8 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 		}
 
 		public function dismiss_alert( $post_id ) {
+			$id = null;
+
 			// unhook this function so it doesn't loop infinitely
 			remove_action( 'save_post', array( $this, 'remove_alert_on_edit' ) );
 
@@ -291,6 +293,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			}
 			if ( ! empty( $_POST['all_alerts'] ) ) {
 				$alerts = the_alert_box()->dismiss_all_alerts( 0, $fpt_array );
+				$alert = '';
 			} else {
 				$alert = isset( $_POST['alert'] ) ? intval( $_POST['alert'] ) : null;
 				$alerts = the_alert_box()->dismiss_alert( $alert );
@@ -306,7 +309,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 				$response = array(
 				 'what' => 'the_alert_box',
 				 'action' => 'dismiss_alerts_ajax',
-				 'id' => $pages,
+				 'id' => $alerts,
 				 'data' => sprintf( __( 'Alert on post ID %s dismissed.', 'pf' ), $alert ),
 				  'supplemental' => array(
 					  'buffered' => ob_get_contents(),
@@ -316,7 +319,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 				$response = array(
 				   'what' => 'the_alert_box',
 				   'action' => 'dismiss_alerts_ajax',
-				   'id' => $pages,
+				   'id' => $alerts,
 				   'data' => __( 'Alerts dismissed.', 'pf' ),
 					'supplemental' => array(
 						'buffered' => ob_get_contents(),
@@ -373,6 +376,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 				}
 			} else {
 				$alerts = false;
+				$pages = 0;
 			}
 			if ( ! isset( $alerts ) || ! $alerts || (0 == $alerts) ) {
 				$response = array(
@@ -479,7 +483,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 		}
 
 		public static function find_a_setting( $args, $default = array(), $settings = [] ) {
-			if ( ! empty( $settings ) && ! isset( $_POST ) ) {
+			if ( ! empty( $settings ) && empty( $_POST ) ) {
 				$settings = $settings;
 			} else {
 				$settings = get_option( self::$option_name, array() );

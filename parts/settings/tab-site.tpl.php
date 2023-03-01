@@ -1,6 +1,10 @@
 <?php
+/**
+ * Template for Preferences section.
+ *
+ * @package PressForward
+ */
 
-// pressforward()->pf_update_php_notice->does_it_meet_required_php_version();
 ?>
 <p>
 	<?php esc_html_e( 'These preferences are available only to users with an Administrator role in PressForward. Options set on this page will determine behavior across the site as a whole.', 'pf' ); ?>
@@ -19,11 +23,11 @@
 <hr />
 <p>
 	<?php
-		$default_pf_use_advanced_user_roles = get_option( 'pf_use_advanced_user_roles', 'no' );
+	$default_pf_use_advanced_user_roles = get_option( 'pf_use_advanced_user_roles', 'no' );
 	?>
 	<select id="pf_use_advanced_user_roles" name="pf_use_advanced_user_roles">
-		<option value="yes" <?php if ( $default_pf_use_advanced_user_roles == 'yes' ) { echo 'selected="selected"'; }?>>Yes</option>
-		<option value="no" <?php if ( $default_pf_use_advanced_user_roles == 'no' ) { echo 'selected="selected"'; }?>>No</option>
+		<option value="yes" <?php selected( $default_pf_use_advanced_user_roles, 'yes' ); ?>><?php esc_html_e( 'Yes', 'pf' ); ?></option>
+		<option value="no" <?php selected( $default_pf_use_advanced_user_roles, 'no' ); ?>><?php esc_html_e( 'No', 'pf' ); ?></option>
 	</select>
 	<label class="description" for="pf_use_advanced_user_roles"> <?php esc_html_e( 'Use advanced user role management? (May be needed if you customize user roles or capabilities).', 'pf' ); ?> </label>
 </p>
@@ -45,11 +49,11 @@
 <hr />
 <p>
 	<?php
-		$default_pf_present_author_value = get_option( 'pf_present_author_as_primary', 'yes' );
+	$default_pf_present_author_value = get_option( 'pf_present_author_as_primary', 'yes' );
 	?>
 	<select id="pf_present_author_as_primary" name="pf_present_author_as_primary">
-		<option value="yes" <?php if ( $default_pf_present_author_value == 'yes' ) { echo 'selected="selected"'; }?>>Yes</option>
-		<option value="no" <?php if ( $default_pf_present_author_value == 'no' ) { echo 'selected="selected"'; }?>>No</option>
+		<option value="yes" <?php selected( $default_pf_present_author_value, 'yes' ); ?>><?php esc_html_e( 'Yes', 'pf' ); ?></option>
+		<option value="no" <?php selected( $default_pf_present_author_value, 'no' ); ?>><?php esc_html_e( 'No', 'pf' ); ?></option>
 	</select>
 	<?php
 
@@ -59,14 +63,16 @@
 <p>
 	<?php esc_html_e( 'When this preference is on, the name of the author in a PressFoward item will appear in the item_author custom field when the item is sent to Draft. This author will overwrite the creator of the post.', 'pf' ); ?>
 </p>
+
 <hr />
+
 <p>
 	<?php
-		$pf_source_statement_position = get_option( 'pf_source_statement_position', 'bottom' );
+	$pf_source_statement_position = get_option( 'pf_source_statement_position', 'bottom' );
 	?>
 	<select id="pf_source_statement_position" name="pf_source_statement_position">
-		<option value="top" <?php if ( $pf_source_statement_position == 'top' ) { echo 'selected="selected"'; }?>><?php esc_html_e( 'Top', 'pf' ); ?></option>
-		<option value="bottom" <?php if ( $pf_source_statement_position == 'bottom' ) { echo 'selected="selected"'; }?>><?php esc_html_e( 'Bottom', 'pf' ); ?></option>
+		<option value="top" <?php selected( $pf_source_statement_position, 'top' ); ?>><?php esc_html_e( 'Top', 'pf' ); ?></option>
+		<option value="bottom" <?php selected( $pf_source_statement_position, 'bottom' ); ?>><?php esc_html_e( 'Bottom', 'pf' ); ?></option>
 	</select>
 	<?php
 
@@ -77,31 +83,30 @@
 	<?php esc_html_e( 'Choose the position for source title and link on published content.', 'pf' ); ?>
 </p>
 <hr />
-<?php
-if ( class_exists( 'The_Alert_Box' ) ) { ?>
-		<p>
-			<?php
-			if ( class_exists( 'The_Alert_Box' ) ) {
-				$alert_settings = pressforward( 'library.alertbox' )->settings_fields();
-				$alert_switch = $alert_settings['switch'];
-				$check = pressforward( 'library.alertbox' )->setting( $alert_switch, $alert_switch['default'] );
-					$check = pressforward( 'library.alertbox' )->setting( $alert_switch, $alert_switch['default'] );
-				if ( 'true' == $check ) {
-					$mark = 'checked';
-				} else {
-					$mark = '';
-				}
-					echo '<input id="alert_switch" type="checkbox" name="' . esc_attr( pressforward( 'library.alertbox' )->option_name() . '[' . $alert_switch['parent_element'] . '][' . $alert_switch['element'] . ']' ) . '" value="true" ' . esc_attr( $mark ) . ' class="' . esc_attr( $alert_switch['parent_element'] . ' ' . $alert_switch['element'] ) . '" />  <label for="' . esc_attr( pressforward( 'library.alertbox' )->option_name() . '[' . $alert_switch['parent_element'] . '][' . $alert_switch['element'] . ']' ) . '" class="' . esc_attr( $alert_switch['parent_element'] . ' ' . $alert_switch['element'] ) . '" >' . esc_html( $alert_switch['label_for'] ) . '</label>';
-			}
-			?>
-		</p>
-		<p>
-			<?php esc_html_e( 'When alerts are on, feeds that continually return errors display as alerted. You can dismiss alerts in the Subscribed Feeds page.', 'pf' ); ?>
-		</p>
-		<hr />
-<?php
-}
-?>
+
+<?php if ( class_exists( 'The_Alert_Box' ) ) : ?>
+	<p>
+		<?php
+		$alert_settings = pressforward( 'library.alertbox' )->settings_fields();
+		$alert_switch   = $alert_settings['switch'];
+
+		$check = pressforward( 'library.alertbox' )->setting( $alert_switch, $alert_switch['default'] );
+		if ( 'true' === $check ) {
+			$mark = 'checked';
+		} else {
+			$mark = '';
+		}
+
+		echo '<input id="alert_switch" type="checkbox" name="' . esc_attr( pressforward( 'library.alertbox' )->option_name() . '[' . $alert_switch['parent_element'] . '][' . $alert_switch['element'] . ']' ) . '" value="true" ' . esc_attr( $mark ) . ' class="' . esc_attr( $alert_switch['parent_element'] . ' ' . $alert_switch['element'] ) . '" />  <label for="' . esc_attr( pressforward( 'library.alertbox' )->option_name() . '[' . $alert_switch['parent_element'] . '][' . $alert_switch['element'] . ']' ) . '" class="' . esc_attr( $alert_switch['parent_element'] . ' ' . $alert_switch['element'] ) . '" >' . esc_html( $alert_switch['label_for'] ) . '</label>';
+		?>
+	</p>
+
+	<p>
+		<?php esc_html_e( 'When alerts are on, feeds that continually return errors display as alerted. You can dismiss alerts in the Subscribed Feeds page.', 'pf' ); ?>
+	</p>
+	<hr />
+<?php endif; ?>
+
 <p>
 	<?php
 		$default_pf_link_value = get_option( 'pf_retain_time', 2 );
@@ -139,12 +144,16 @@ if ( class_exists( 'The_Alert_Box' ) ) { ?>
 </p>
 <hr />
 <p>
-	<select name="<?php echo esc_attr( PF_SLUG ); ?>_draft_post_status" id="<?php echo esc_attr( PF_SLUG ); ?>_draft_post_status"><?php
-		$post_statuses = get_post_statuses();
-		$pf_draft_post_status_value = get_option( PF_SLUG . '_draft_post_status', 'draft' );
-	foreach ( $post_statuses as $status_name => $status_label ) : ?>
-			<option value="<?php echo esc_attr( $status_name ); ?>" <?php if ( $pf_draft_post_status_value === $status_name ) { echo 'selected="selected"'; } ?>><?php echo esc_html( $status_label ); ?></option><?php
-		endforeach; ?>
+	<select name="<?php echo esc_attr( PF_SLUG ); ?>_draft_post_status" id="<?php echo esc_attr( PF_SLUG ); ?>_draft_post_status">
+	<?php
+	$post_statuses              = get_post_statuses();
+	$pf_draft_post_status_value = get_option( PF_SLUG . '_draft_post_status', 'draft' );
+	?>
+
+	<?php foreach ( $post_statuses as $status_name => $status_label ) : ?>
+		<option value="<?php echo esc_attr( $status_name ); ?>" <?php selected( $pf_draft_post_status_value, $status_name ); ?>><?php echo esc_html( $status_label ); ?></option>
+	<?php endforeach; ?>
+
 	</select>
 	<label class="description" for="<?php echo esc_attr( PF_SLUG ); ?>_draft_post_status"><?php esc_html_e( 'Post status for new content.', 'pf' ); ?></label>
 </p>
@@ -153,15 +162,54 @@ if ( class_exists( 'The_Alert_Box' ) ) { ?>
 </p>
 <hr />
 <p>
-	<select name="<?php echo esc_attr( PF_SLUG ); ?>_draft_post_type" id="<?php echo esc_attr( PF_SLUG ); ?>_draft_post_type"><?php
-		$post_types = get_post_types( array( 'public' => true ), 'objects' );
-		$pf_draft_post_type_value = get_option( PF_SLUG . '_draft_post_type', 'post' );
-	foreach ( $post_types as $post_type ) : ?>
-			<option value="<?php echo esc_attr( $post_type->name ); ?>" <?php if ( $pf_draft_post_type_value === $post_type->name ) { echo 'selected="selected"'; } ?>><?php echo esc_html( $post_type->label ); ?></option><?php
-		endforeach; ?>
+	<select name="<?php echo esc_attr( PF_SLUG ); ?>_draft_post_type" id="<?php echo esc_attr( PF_SLUG ); ?>_draft_post_type">
+	<?php
+	$the_post_types           = get_post_types( array( 'public' => true ), 'objects' );
+	$pf_draft_post_type_value = get_option( PF_SLUG . '_draft_post_type', 'post' );
+	?>
+
+	<?php foreach ( $the_post_types as $the_post_type ) : ?>
+		<option value="<?php echo esc_attr( $the_post_type->name ); ?>" <?php selected( $pf_draft_post_type_value, $the_post_type->name ); ?>><?php echo esc_html( $the_post_type->label ); ?></option>
+	<?php endforeach; ?>
 	</select>
 	<label class="description" for="<?php echo esc_attr( PF_SLUG ); ?>_draft_post_type"><?php esc_html_e( 'Post type for new content.', 'pf' ); ?></label>
 </p>
+
 <p>
 	<?php esc_html_e( 'Your WordPress site may have more than one Post Type installed, this setting will allow you to send nominations to the post type of your choice.', 'pf' ); ?>
 </p>
+
+<hr />
+
+<?php
+$nomination_success_default  = get_option( 'pf_user_nomination_success_email_default', 'off' );
+$nomination_promoted_default = get_option( 'pf_user_nomination_promoted_email_default', 'on' );
+?>
+
+<fieldset>
+	<legend><?php esc_html_e( 'Email Notifications', 'pf' ); ?></legend>
+
+	<p><?php esc_html_e( 'Configure the default user preferences for email notifications. Note that individual users can override these preferences on the User Options panel.', 'pf' ); ?></p>
+
+	<p>
+		<label for="pf-user-nomination-success-email-default">
+			<select id="pf-user-nomination-success-email-default" name="pf-user-nomination-success-email-default">
+				<option value="on" <?php selected( 'on' === $nomination_success_default ); ?>><?php esc_html_e( 'Enabled', 'pf' ); ?></option>
+				<option value="off" <?php selected( 'on' !== $nomination_success_default ); ?>><?php esc_html_e( 'Disabled', 'pf' ); ?></option>
+			</select>
+
+			<?php esc_html_e( 'User has successfully nominated an item', 'pf' ); ?>
+		</label>
+	</p>
+
+	<p>
+		<label for="pf-user-nomination-promoted-email-default">
+			<select id="pf-user-nomination-promoted-email-default" name="pf-user-nomination-promoted-email-default">
+				<option value="on" <?php selected( 'on' === $nomination_promoted_default ); ?>><?php esc_html_e( 'Enabled', 'pf' ); ?></option>
+				<option value="off" <?php selected( 'on' !== $nomination_promoted_default ); ?>><?php esc_html_e( 'Disabled', 'pf' ); ?></option>
+			</select>
+
+			<?php esc_html_e( 'An item that the user has nominated is promoted', 'pf' ); ?>
+		</label>
+	</p>
+</fieldset>

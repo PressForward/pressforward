@@ -182,27 +182,12 @@ class PF_Stats_Shortcodes {
 			if ( $author['count'] > 2 ) {
 				$more_than_two++;
 			}
-			if ( ! empty( $author['gender'] ) ) {
-				if ( 'MALE' == $author['gender'] ) {
-					$male++;
-					$article_count_male += $author['count'];
-				}
-				if ( 'FEMALE' == $author['gender'] ) {
-					$female++;
-					$article_count_female += $author['count'];
-				}
-				if ( 'UNKNOWN' == $author['gender'] ) {
-					$unknown++;
-					$article_count_unknown += $author['count'];
-				}
-			}
 			$leaderboard .= $this->add_author_leaderboard_entry( $author );
 			$count++;
 		}
 		$leaderboard  .= '</ul>';
 		$more_than_one = $count - $singles;
 		$leaderboard   = "<p>$count authors over $total articles. $singles authors archived only once. $more_than_one authors archived more than once. $more_than_two authors archived more than twice.</p>\n
-			<p>$female authors are probably female, writing $article_count_female articles. $male authors are probably male, writing $article_count_male articles. $unknown number of authors can't have their gender algorithmically determined, writing $article_count_unknown articles.</p>
 			\n" . $leaderboard;
 		return $leaderboard;
 	}
@@ -224,34 +209,10 @@ class PF_Stats_Shortcodes {
 		return $authors;
 	}
 
-	private function set_author_gender( $name ) {
-		$author_name             = (string) $name;
-		$author_first_name_array = explode( ' ', $author_name );
-		$author_first_name       = (string) $author_first_name_array[0];
-		if ( empty( $author_first_name ) ) {
-			if ( empty( $author_name ) ) {
-				$author_first_name = 'No author found.';
-			} else {
-				$author_first_name = $name;
-			}
-		}
-		$gender = pressforward_stats()->gender_checker->test( $author_first_name );
-		return $gender;
-	}
-
-	private function set_author_gender_confidence() {
-		$confidence = pressforward_stats()->gender_checker->getPreviousMatchConfidence();
-		$confidence = (string) $confidence;
-		return $confidence;
-
-	}
-
 	private function set_new_author_object( $author_slug, $author, $authors ) {
 		$authors[ $author_slug ] = array(
-			'count'             => 1,
-			'name'              => $author,
-			'gender'            => $this->set_author_gender( $author ),
-			'gender_confidence' => $this->set_author_gender_confidence(),
+			'count' => 1,
+			'name'  => $author,
 		);
 
 		return $authors;
@@ -267,7 +228,6 @@ class PF_Stats_Shortcodes {
 		}
 		$s  = "\n<li>";
 		$s .= $author['name'] . ' (' . $author['count'] . ')';
-		$s .= ' This author is likely ' . $author['gender'] . '. Confidence: ' . $author['gender_confidence'];
 		$s .= '</li>';
 		return $s;
 	}

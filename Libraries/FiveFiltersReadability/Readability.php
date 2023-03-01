@@ -71,8 +71,10 @@ $r = new Readability($html, $url);
 $r->init();
 echo $r->articleContent->innerHTML;
 */
-
+#[\AllowDynamicProperties]
 class Readability {
+
+	public $logger;
 
 	public $version                       = '1.7.1-without-multi-page';
 	public $convertLinksToFootnotes       = false;
@@ -129,7 +131,7 @@ class Readability {
 		if ( trim( $html ) == '' ) {
 			$html = '<html></html>';
 		}
-		if ( $parser == 'html5lib' && ( $this->dom = HTML5_Parser::parse( $html ) ) ) {
+		if ( $parser == 'html5lib' && class_exists( 'HTML5_Parser' ) && ( $this->dom = HTML5_Parser::parse( $html ) ) ) {
 			// all good
 		} else {
 			$this->dom                     = new DOMDocument();

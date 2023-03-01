@@ -1,22 +1,44 @@
 <?php
+/**
+ * Nominations data.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Schema;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
+
 /**
  * Functionality related to nominations
  */
 class Nominations implements HasActions, HasFilters {
-	function __construct() {
+	/**
+	 * Post type.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $post_type;
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
 		$this->post_type = 'nomination';
-		// add_action('edit_post', array( $this, 'send_nomination_for_publishing'));
-		// add_action( 'manage_nomination_posts_custom_column',  array($this, 'nomination_custom_columns') );
-		// add_filter( "manage_edit-nomination_sortable_columns", array($this, "nomination_sortable_columns") );
-		// add_action( 'feeder_menu', array($this, "nominate_this_tile"), 11 );
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function action_hooks() {
 		return array(
+			array(
+				'hook'   => 'transition_post_status',
+				'method' => 'maybe_send_promotion_notifications',
+				'args'   => 3,
+			),
 			array(
 				'hook'   => 'init',
 				'method' => 'register_post_type',
@@ -24,6 +46,9 @@ class Nominations implements HasActions, HasFilters {
 		);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function filter_hooks() {
 		return array(
 			array(
@@ -37,13 +62,12 @@ class Nominations implements HasActions, HasFilters {
 		);
 	}
 
-
 	/**
-	 * Register the 'nomination' post type
+	 * Registers the 'nomination' post type.
 	 *
 	 * @since 1.7
 	 */
-	function register_post_type() {
+	public function register_post_type() {
 		$args = array(
 			'labels'               => array(
 				'name'               => __( 'Nominations', 'pf' ),
@@ -75,8 +99,6 @@ class Nominations implements HasActions, HasFilters {
 		);
 
 		register_post_type( $this->post_type, $args );
-
-		// register_taxonomy_for_object_type( pressforward()->get_feed_folder_taxonomy(), $this->post_type );
 	}
 
 	/**
@@ -95,9 +117,15 @@ class Nominations implements HasActions, HasFilters {
 		);
 	}
 
-	// This and the next few functions are to modify the table that shows up when you click "Nominations".
-	function edit_nominations_columns( $columns ) {
-
+	/**
+	 * Adds custom columns to Nominations view.
+	 *
+	 * This and the next few functions are to modify the table that shows up when you click "Nominations".
+	 *
+	 * @param array $columns Column names and headers.
+	 * @return array
+	 */
+	public function edit_nominations_columns( $columns ) {
 		$columns = array(
 			'cb'              => '<input type="checkbox" />',
 			'title'           => __( 'Title', 'pf' ),
@@ -109,11 +137,14 @@ class Nominations implements HasActions, HasFilters {
 		);
 
 		return $columns;
-
 	}
 
-	// Make these columns sortable
-	function nomination_sortable_columns() {
+	/**
+	 * Make these Nominations columns sortable.
+	 *
+	 * @return array
+	 */
+	public function nomination_sortable_columns() {
 		return array(
 			'title'           => 'title',
 			'date'            => 'date',
@@ -124,15 +155,91 @@ class Nominations implements HasActions, HasFilters {
 		);
 	}
 
-	// The builder for the box that shows us the nomination metadata.
+	/**
+	 * The builder for the box that shows us the nomination metadata.
+	 */
 	public function nominations_box_builder() {
-		global $post;
-
 		do_action( 'nominations_box' );
-
 	}
 
+	/**
+	 * Sends notifications to nominating users when an item is published.
+	 *
+	 * @since 5.4.0
+	 *
+	 * @param string   $new_status New post status.
+	 * @param string   $old_status Old post status.
+	 * @param \WP_Post $post       Post object.
+	 */
+	public function maybe_send_promotion_notifications( $new_status, $old_status, \WP_Post $post ) {
+		if ( 'publish' !== $new_status ) {
+			return;
+		}
 
+		if ( pressforward()->fetch( 'controller.advancement' )->last_step_post_type() !== $post->post_type ) {
+			return;
+		}
 
+		$nominators = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'nominator_array' );
+		foreach ( $nominators as $nominator ) {
+			if ( ! pressforward()->fetch( 'controller.users' )->get_user_setting( $nominator['user_id'], 'nomination-promoted-email-toggle' ) ) {
+				continue;
+			}
 
+			$user = get_userdata( $nominator['user_id'] );
+			if ( ! $user ) {
+				continue;
+			}
+
+			$site_name = get_bloginfo( 'name' );
+
+			$subject = sprintf(
+				// translators: Name of the site.
+				__( 'An item you nominated on %s has been published', 'pf' ),
+				$site_name
+			);
+
+			$message = $subject . "\n\n";
+
+			$message .= sprintf(
+				// translators: Title of the post.
+				__( 'Title: %s', 'pf' ),
+				get_the_title( $post )
+			);
+
+			$message .= "\n";
+
+			$message .= sprintf(
+				// translators: URL of the post.
+				__( 'URL: %s', 'pf' ),
+				get_permalink( $post )
+			);
+
+			$message .= "\n\n" . pressforward( 'controller.users' )->get_email_notification_footer();
+
+			/**
+			 * Filters the subject line of the "nomination promoted" notification email.
+			 *
+			 * @since 5.4.0
+			 *
+			 * @param string $subject    Subject line.
+			 * @param int    $wp_post_id ID of the nominated item.
+			 * @param int    $user_id    ID of the user receiving the email.
+			 */
+			$subject = apply_filters( 'pf_nomination_promoted_email_subject', $subject, $post->ID, $user->ID );
+
+			/**
+			 * Filters the content of the "nomination promoted" notification email.
+			 *
+			 * @since 5.4.0
+			 *
+			 * @param string $message    Message content.
+			 * @param int    $wp_post_id ID of the nominated item.
+			 * @param int    $user_id    ID of the user receiving the email.
+			 */
+			$message = apply_filters( 'pf_nomination_promoted_email_content', $message, $post->ID, $user->ID );
+
+			wp_mail( $user->user_email, $subject, $message );
+		}
+	}
 }

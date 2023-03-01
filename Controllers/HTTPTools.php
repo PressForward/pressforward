@@ -1,27 +1,68 @@
 <?php
+/**
+ * HTTP utilities.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Controllers;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use PressForward\Interfaces\System;
 use URLResolver;
+
 /**
- * Readability stuff
+ * HTTP utilities.
  */
-
 class HTTPTools implements HasActions {
+	/**
+	 * URLResolver object.
+	 *
+	 * @access public
+	 * @var URLResolver
+	 */
+	public $url_resolver;
 
-	function __construct( URLResolver $resolver, System $system, Metas $meta ) {
+	/**
+	 * Systems object.
+	 *
+	 * @access public
+	 * @var \PressForward\Interfaces\System
+	 */
+	public $system;
+
+	/**
+	 * Metas object.
+	 *
+	 * @access public
+	 * @var \PressForward\Controllers\Metas
+	 */
+	public $meta;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \URLResolver                    $resolver URLResolver object.
+	 * @param \PressForward\Interfaces\System $system   System object.
+	 * @param \PressForward\Controllers\Metas $meta     Metas object.
+	 */
+	public function __construct( URLResolver $resolver, System $system, Metas $meta ) {
 		$this->url_resolver = $resolver;
 		$this->system       = $system;
 		$this->meta         = $meta;
 	}
 
+	/**
+	 * Sets up action hooks for this class.
+	 *
+	 * @return array
+	 */
 	public function action_hooks() {
 		$actions = array(
 			array(
 				'hook'     => 'init',
 				'method'   => 'register_non_persistent_cache_groups',
-				'priority' => 10
+				'priority' => 10,
 			),
 		);
 		return $actions;
@@ -33,21 +74,35 @@ class HTTPTools implements HasActions {
 	 * We cache external URI fetches, but only for a single pageload.
 	 */
 	public function register_non_persistent_cache_groups() {
-		wp_cache_add_non_persistent_groups( array(
-			'pressforward_external_pages',
-		) );
+		wp_cache_add_non_persistent_groups(
+			array(
+				'pressforward_external_pages',
+			)
+		);
 	}
 
+	/**
+	 * Resolves a URL.
+	 *
+	 * @param string $url URL.
+	 * @return string|false
+	 */
 	public function resolve_source_url( $url ) {
 		$url       = $this->resolve_a_url( $url );
-		$url_array = parse_url( $url );
+		$url_array = wp_parse_url( $url );
 		if ( empty( $url_array['host'] ) ) {
-			return;
+			return false;
 		}
 		$source_url = 'http://' . $url_array['host'];
 		return $source_url;
 	}
 
+	/**
+	 * Resolves a URL.
+	 *
+	 * @param string $url URL to resolve.
+	 * @return string|bool
+	 */
 	public function resolve_full_url( $url ) {
 		$url = $this->resolve_a_url( $url );
 		return $url;
@@ -59,23 +114,21 @@ class HTTPTools implements HasActions {
 	 * @since 3.4.5
 	 *
 	 * @param string $url A web address URI.
-	 * @return bool True value for a submitted URL that matches an aggregation service.
+	 * @return bool|string True value for a submitted URL that matches an aggregation service.
 	 */
 	public function resolve_a_url( $url ) {
-		$url_array = parse_url( $url );
+		$url_array = wp_parse_url( $url );
 		if ( empty( $url_array['host'] ) ) {
 			return $url;
 		} else {
 			$check = $this->url_is_aggregation_service( $url );
-			if ( $check && in_array( 'curl', get_loaded_extensions() ) ) {
+			if ( $check && in_array( 'curl', get_loaded_extensions(), true ) ) {
 				$url = $this->url_resolver->resolveURL( $url )->getURL();
 			}
 		}
 
 		return $url;
-
 	}
-
 
 	/**
 	 * Return an array of known aggregation services.
@@ -111,100 +164,50 @@ class HTTPTools implements HasActions {
 		return $check;
 	}
 
-	function attempt_to_get_cookiepath() {
-		$reset       = true;
-		$upload_dir  = wp_upload_dir();
-		$cookie_path = $upload_dir['basedir'] . 'cookie.txt';
-		if ( ! is_file( $cookie_path ) ) {
-			touch( $cookie_path );
-		}
-		if ( ! is_writable( $cookie_path ) ) {
-			pf_log( "Can't write to the cookie at $cookie_path." );
-			return false;
-		} else {
-			$debug = 1;
-		}
-		if ( $reset ) {
-			$fo = fopen( $cookie_path, 'w' ) or pf_log( 'Can\'t open cookie file.' );
-			fwrite( $fo, '' );
-			fclose( $fo );
+	/**
+	 * Gets the content from a URL.
+	 *
+	 * @since 5.4.0 Uses wp_remote_get() internally, rather than cURL or file_get_contents().
+	 *
+	 * @param string $url        URL.
+	 * @param string $deprecated No longer used.
+	 * @return mixed
+	 */
+	public function get_url_content( $url, $deprecated = '' ) {
+		$url = str_replace( '&amp;', '&', $url );
 
+		$cached = wp_cache_get( $url, 'pressforward_external_pages' );
+		if ( false !== $cached ) {
+			return $cached;
 		}
-		return $cookie_path;
-	}
 
-	function get_url_content( $url, $function = false ) {
-		$args      = func_get_args();
-		$url       = str_replace( '&amp;', '&', $url );
-		$url_first = $url;
-		if ( ! $function ) {
-			$url = set_url_scheme( $url, 'http' );
-			$r = false;
-		} else {
-			$args[0] = $url;
-			unset( $args[1] );
-			$r = call_user_func_array( $function, $args );
-			// "A variable is considered empty if it does not exist or if its value equals FALSE"
-			if ( is_wp_error( $r ) || empty( $r ) ) {
-				$non_ssl_url = set_url_scheme( $url, 'http' );
-				if ( $non_ssl_url != $url ) {
-							$args[0] = $non_ssl_url;
-					$r               = call_user_func_array( $function, $args );
-				}
-					// $r = false;
-				if ( ! $r || is_wp_error( $r ) ) {
-					// Last Chance!
-					if ( 'file_get_contents' != $function ) {
-						$response = file_get_contents( $url_first );
-					} else {
-						// bail
-						$response = false;
-					}
-				}
+		// @todo Allow some overrides, via an `$args` param and/or a filter.
+		$request_args = [
+			'timeout' => 30,
+		];
+
+		$response = wp_remote_get( $url, $request_args );
+
+		$response_code = wp_remote_retrieve_response_code( $response );
+
+		// In case of failures, attempt a non-HTTPS request. See #356p.
+		if ( $response_code >= 500 ) {
+			$non_ssl_response = wp_remote_get( set_url_scheme( $url, 'http' ), $request_args );
+
+			if ( 200 === wp_remote_retrieve_response_code( $non_ssl_response ) ) {
+				$response      = $non_ssl_response;
+				$response_code = 200;
 			}
 		}
-		$response          = $r;
-		$loaded_extensions = get_loaded_extensions();
-		if ( (false === $response) || empty( $response ) || is_wp_error( $response ) || ( ! empty( $response ) && ! empty( $response['headers'] ) && isset( $response['headers']['content-length'] ) && ( 50 > strlen( $response['headers']['content-length'] ) ) ) && in_array( 'curl', $loaded_extensions ) ) {
-			$cookie_path = 'cookie.txt';
-			if ( defined( 'COOKIE_PATH_FOR_CURL' ) ) {
-				$cookie_path = constant( 'COOKIE_PATH_FOR_CURL' );
-				if ( ! isset( $cookie_path ) || false == $cookie_path ) {
-					$cookie_path = $this->attempt_to_get_cookiepath();
-					if ( false === $cookie_path ) {
-						return false;
-					}
-				}
-			} else {
-				$cookie_path = $this->attempt_to_get_cookiepath();
-				if ( ! $cookie_path ) {
-					return false;
-				}
-			}
-			$curl = curl_init( $args[0] );
 
-			curl_setopt( $curl, constant( 'CURLOPT_FAILONERROR' ), true );
-			curl_setopt( $curl, constant( 'CURLOPT_FOLLOWLOCATION' ), true );
-			curl_setopt( $curl, constant( 'CURLOPT_RETURNTRANSFER' ), true );
-			curl_setopt( $curl, constant( 'CURLOPT_TIMEOUT' ), 15 );
-			curl_setopt( $curl, constant( 'CURLOPT_SSL_VERIFYHOST' ), false );
-			curl_setopt( $curl, constant( 'CURLOPT_SSL_VERIFYPEER' ), false );
-			$fetch_ua = apply_filters( 'pf_useragent_retrieval_control', 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)' );
-			curl_setopt( $curl, constant( 'CURLOPT_USERAGENT' ), $fetch_ua );
-			// The following 2 set up lines work with sites like www.nytimes.com
-			curl_setopt( $curl, constant( 'CURLOPT_COOKIEFILE' ), $cookie_path ); // you can change this path to whetever you want.
-			curl_setopt( $curl, constant( 'CURLOPT_COOKIEJAR' ), $cookie_path ); // you can change this path to whetever you want.
-			$encode = apply_filters( 'pf_encoding_retrieval_control', true );
-			if ($encode){
-				$response = mb_convert_encoding( curl_exec( $curl ), 'HTML-ENTITIES', 'UTF-8' );
-			} else {
-				$response = curl_exec( $curl );
-			}
-			// Will return false or the content.
-			curl_close( $curl );
-			return array( 'body' => $response );
-		} else {
-			return $response;
-		}
+		$response_body = wp_remote_retrieve_body( $response );
+
+		// We cache regardless of response code, to avoid multiple pings for 404s, etc.
+		wp_cache_set( $url, $response_body, 'pressforward_external_pages' );
+
+		return [
+			'body'          => $response_body,
+			'response_code' => $response_code,
+		];
 	}
 }

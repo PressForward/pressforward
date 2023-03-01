@@ -1,10 +1,15 @@
 <?php
+/**
+ * Service provider for admin area.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Providers;
 
 use PressForward\Core\Admin\Menu;
 use Intraxia\Jaxion\Contract\Core\Container as Container;
 use Intraxia\Jaxion\Assets\Register as Assets;
-// use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 
 use PressForward\Core\Admin\PFTemplater;
@@ -17,9 +22,15 @@ use PressForward\Core\Admin\AllContent;
 use PressForward\Core\Admin\SubscribedFeeds;
 use PressForward\Core\Admin\AdminBar;
 
+/**
+ * AdminAreaServiceProvider class.
+ */
 class AdminAreaServiceProvider extends ServiceProvider {
-
-
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @param Container $container Container.
+	 */
 	public function register( Container $container ) {
 		$container->share(
 			'admin.templates',
@@ -36,7 +47,7 @@ class AdminAreaServiceProvider extends ServiceProvider {
 		$container->share(
 			'admin.edit_post',
 			function( $container ) {
-				return new EditPost( $container->fetch( 'basename' ) );
+				return new EditPost();
 			}
 		);
 		$container->share(
@@ -82,14 +93,10 @@ class AdminAreaServiceProvider extends ServiceProvider {
 					$container->fetch( 'controller.metas' ),
 					$container->fetch( 'admin.templates' ),
 					$container->fetch( 'utility.forward_tools' ),
-					$container->fetch( 'schema.nominations' ), // Switch this to a modal
+					$container->fetch( 'schema.nominations' ),
 					$container->fetch( 'controller.users' )
 				);
 			}
 		);
-		// parent::register( $container );
-		//
-		// parent::register( $container );
 	}
-
 }

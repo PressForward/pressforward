@@ -1,12 +1,15 @@
 <?php
+/**
+ * Service provider for AJAX handlers.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Providers;
 
 use Intraxia\Jaxion\Contract\Core\Container as Container;
 use Intraxia\Jaxion\Assets\Register as Assets;
-// use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
-
-// use PressForward\Controllers\PF_JWT as PF_JWT;
 
 use PressForward\Core\AJAX\ConfigurationAJAX;
 use PressForward\Core\AJAX\ItemsAJAX;
@@ -14,9 +17,15 @@ use PressForward\Core\AJAX\SourceAJAX;
 use PressForward\Core\AJAX\NominationsAJAX;
 use PressForward\Core\AJAX\MetaAJAX;
 
+/**
+ * AJAXServiceProvider class.
+ */
 class AJAXServiceProvider extends ServiceProvider {
-
-
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @param Container $container Container.
+	 */
 	public function register( Container $container ) {
 		$container->share(
 			'ajax.configuration',
@@ -52,7 +61,5 @@ class AJAXServiceProvider extends ServiceProvider {
 				return new MetaAJAX( $container->fetch( 'controller.metas' ), $container->fetch( 'controller.items' ), $container->fetch( 'schema.feed_item' ) );
 			}
 		);
-
 	}
-
 }

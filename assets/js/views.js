@@ -141,42 +141,39 @@ function reshowModal() {
 		pf_make_url_hashed(modalID);
 	});
 
-	jQuery('.pfmodal').on('shown.bs.modal', function (evt) {
+	jQuery('.comment-modal').on('shown.bs.modal', function (evt) {
 		var element = jQuery(this);
 		var modalID = element.attr('id');
 		document.body.style.overflow = 'hidden';
 		var bigModal = {
 			'display': 'block',
 			'position': 'fixed',
-			'top': '0',
+			'top': '32px',
 			'right': '0',
 			'bottom': '100%',
 			'left': '0',
 			'margin': '0',
 			'width': '100%',
-			'height': '100%',
+			'height': 'calc(100% - 32px)',
 			'overflow': 'hidden',
 			'z-index': '9999'
 		};
-		jQuery('#' + modalID + '.pfmodal').css(bigModal).load(hide_non_modals());
 
+		jQuery( '#' + modalID + '.pfmodal' ).css( bigModal );
 	});
-}
-
-function hide_non_modals() {
-	jQuery('#wpadminbar').hide();
-	jQuery('#adminmenuback').hide();
-	jQuery('#adminmenuwrap').hide();
-	jQuery('#wpfooter').hide();
 }
 
 function reviewModal() {
 	//Need to fix this to only trigger on the specific model, but not sure how yet.
 
-	jQuery('.comment-modal').on('shown.bs.modal', function (evt) {
+	jQuery('.pfmodal').on('shown.bs.modal', function (evt) {
 		//alert('Modal Triggered.');
 
+
 		var element = jQuery(this);
+
+		var isCommentModal = element.hasClass( 'comment-modal' );
+
 		var modalID = element.attr('id');
 		var modalIDString = '#' + modalID;
 		//openModals.push(modalIDString);
@@ -191,10 +188,12 @@ function reviewModal() {
 				//We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
 				id_for_comments: item_post_ID,
 			},
-			function (comment_response) {
-
-				jQuery('#' + modalID + '.comment-modal .modal-body').html(comment_response);
-
+			function( comment_response ) {
+				if ( isCommentModal ) {
+					jQuery( '#' + modalID + '.comment-modal .modal-body' ).html( comment_response );
+				} else {
+					jQuery( '#' + modalID + ' .modal-comments' ).html( comment_response );
+				}
 			});
 
 		setTimeout(
@@ -204,6 +203,14 @@ function reviewModal() {
 			},
 			100
 		);
+
+		// As the modal loads, we replace the `src` attribute on images, so that they load.
+		element.find( '.main-text img' ).each( function( k, v ) {
+			var imgSrc = v.dataset.hasOwnProperty( 'src' ) ? v.dataset.src : ''
+			if ( imgSrc ) {
+				v.setAttribute( 'src', imgSrc )
+			}
+		} )
 
 		var tabindex = element.parent().attr('tabindex');
 
@@ -479,26 +486,25 @@ function detect_view_change() {
 
 }
 
-
-console.log('Waiting for load.');
 jQuery(window).on('load', function () {
 	// executes when complete page is fully loaded, including all frames, objects and images
 
 	var $allModals = jQuery('.pfmodal');
 
 	jQuery('.pf-loader').delay(300).fadeOut("slow", function () {
-		console.log('Load complete.');
 		var theModal, $closeEl, $modalEl;
 		jQuery('.pf_container').fadeIn("slow");
 		if (window.location.hash.indexOf("#") < 0) {
 			window.location.hash = '#ready';
 		} else if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
 			var hash = window.location.hash;
-			if (!jQuery(hash).hasClass('in')) {
-				$modalEl = jQuery(hash);
+			$modalEl = jQuery(hash);
+			if ( 0 !== $modalEl.length && !jQuery(hash).hasClass('in')) {
 				$closeEl = $modalEl.find( '.close' );
 				theModal = new bootstrap.Modal( $modalEl );
 				theModal.show( $closeEl );
+			} else {
+				window.location.hash = '#ready';
 			}
 		}
 

@@ -201,8 +201,6 @@ class Container implements ContainerContract {
 	 * {@inheritDoc}
 	 *
 	 * @param string $alias
-	 *
-	 * @return $this
 	 */
 	public function remove( $alias ) {
 		if ( isset( $this->aliases[ $alias ] ) ) {
@@ -248,6 +246,7 @@ class Container implements ContainerContract {
 	 *
 	 * @see    define
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetSet( $id, $value ) {
 		$this->define( $id, $value );
 	}
@@ -262,6 +261,7 @@ class Container implements ContainerContract {
 	 *
 	 * @see    fetch
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet( $id ) {
 		return $this->fetch( $id );
 	}
@@ -275,6 +275,7 @@ class Container implements ContainerContract {
 	 *
 	 * @see    has
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetExists( $id ) {
 		return $this->has( $id );
 	}
@@ -286,13 +287,17 @@ class Container implements ContainerContract {
 	 *
 	 * @see   remove
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetUnset( $id ) {
 		$this->remove( $id );
 	}
 
 	/**
 	 * Sets the object properties to prepare for the loop.
+	 *
+	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function rewind() {
 		$this->position = 0;
 		$this->keys     = array_keys( $this->aliases );
@@ -303,6 +308,7 @@ class Container implements ContainerContract {
 	 *
 	 * @return object
 	 */
+	#[\ReturnTypeWillChange]
 	public function current() {
 		return $this->fetch( $this->keys[ $this->position ] );
 	}
@@ -312,6 +318,7 @@ class Container implements ContainerContract {
 	 *
 	 * @return string
 	 */
+	#[\ReturnTypeWillChange]
 	public function key() {
 		return $this->keys[ $this->position ];
 	}
@@ -319,6 +326,7 @@ class Container implements ContainerContract {
 	/**
 	 * Increments to the next step in the loop.
 	 */
+	#[\ReturnTypeWillChange]
 	public function next() {
 		$this->position ++;
 	}
@@ -328,6 +336,7 @@ class Container implements ContainerContract {
 	 *
 	 * @return bool
 	 */
+	#[\ReturnTypeWillChange]
 	public function valid() {
 		return isset( $this->keys[ $this->position ] );
 	}

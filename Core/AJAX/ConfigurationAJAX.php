@@ -1,4 +1,10 @@
 <?php
+/**
+ * AJAX callbacks for configuration panels.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\AJAX;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
@@ -10,20 +16,81 @@ use PressForward\Controllers\PF_JWT as PF_JWT;
 
 use WP_Ajax_Response;
 
+/**
+ * AJAX callbacks for configuration panels.
+ */
 class ConfigurationAJAX implements HasActions {
 
+	/**
+	 * Basename.
+	 *
+	 * @access protected
+	 * @var string
+	 */
 	protected $basename;
 
-	function __construct( Metas $metas, PF_to_WP_Posts $posts, Feed_Items $items, SystemUsers $user_interface, PF_JWT $pf_jwt ) {
+	/**
+	 * Metas object.
+	 *
+	 * @access public
+	 * @var \PressForward\Controllers\Metas
+	 */
+	public $metas;
+
+	/**
+	 * PF_to_WP_Posts object.
+	 *
+	 * @access public
+	 * @var \PressForward\Controllers\PF_to_WP_Posts
+	 */
+	public $posts;
+
+	/**
+	 * Feed_Items object.
+	 *
+	 * @access public
+	 * @var \PressForward\Core\Schema\Feed_Items
+	 */
+	public $items;
+
+	/**
+	 * SystemUsers object.
+	 *
+	 * @access public
+	 * @var \PressForward\Interfaces\SystemUsers
+	 */
+	public $user_interface;
+
+	/**
+	 * PF_JWT object.
+	 *
+	 * @access public
+	 * @var \PressForward\Controllers\PF_JWT
+	 */
+	public $pf_jwt;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \PressForward\Controllers\Metas          $metas          Metas object.
+	 * @param \PressForward\Controllers\PF_to_WP_Posts $posts          PF_to_WP_Posts object.
+	 * @param \PressForward\Core\Schema\Feed_Items     $items          Feed_Items object.
+	 * @param \PressForward\Interfaces\SystemUsers     $user_interface SystemUsers object.
+	 * @param \PressForward\Controllers\PF_JWT         $pf_jwt         PF_JWT object.
+	 */
+	public function __construct( Metas $metas, PF_to_WP_Posts $posts, Feed_Items $items, SystemUsers $user_interface, PF_JWT $pf_jwt ) {
 		$this->metas          = $metas;
 		$this->posts          = $posts;
 		$this->items          = $items;
 		$this->user_interface = $user_interface;
 		$this->pf_jwt         = $pf_jwt;
-				add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed' ) );
+
+		add_action( 'wp_ajax_reset_feed', array( $this, 'reset_feed' ) );
 	}
 
-
+	/**
+	 * {@inheritdoc}
+	 */
 	public function action_hooks() {
 		return array(
 			array(
@@ -42,8 +109,14 @@ class ConfigurationAJAX implements HasActions {
 		);
 	}
 
-	function pf_bad_call( $action, $msg = 'You made a bad call and it did not work. Try again.' ) {
-		$response    = array(
+	/**
+	 * Error-generating callback for AJAX calls.
+	 *
+	 * @param string $action Action string.
+	 * @param string $msg    Message.
+	 */
+	public function pf_bad_call( $action, $msg = 'You made a bad call and it did not work. Try again.' ) {
+		$response = array(
 			'what'         => 'pressforward',
 			'action'       => $action,
 			'id'           => pressforward( 'controller.template_factory' )->user_id(),
@@ -53,36 +126,44 @@ class ConfigurationAJAX implements HasActions {
 				'timestamp' => current_time( 'Y-m-d H:i:s' ),
 			),
 		);
-		$xmlResponse = new WP_Ajax_Response( $response );
-		$xmlResponse->send();
+
+		$xml_response = new WP_Ajax_Response( $response );
+		$xml_response->send();
 		ob_end_clean();
 		die();
 	}
 
-	function pf_ajax_retain_display_setting() {
+	/**
+	 * AJAX callback for 'wp_ajax_pf_ajax_retain_display_setting'.
+	 */
+	public function pf_ajax_retain_display_setting() {
 		ob_start();
 		if ( isset( $_POST['pf_read_state'] ) ) {
 			$read_state = sanitize_text_field( wp_unslash( $_POST['pf_read_state'] ) );
 		} else {
-			$read_status = false;
+			$read_state = false;
 		}
-		$userObj  = wp_get_current_user();
-		$user_id  = $userObj->ID;
+
+		$user_obj = wp_get_current_user();
+		$user_id  = $user_obj->ID;
 		$returned = $this->pf_switch_display_setting( $user_id, $read_state );
-		$response    = array(
+		$response = array(
 			'what'   => 'pressforward',
 			'action' => 'pf_ajax_retain_display_setting',
 			'id'     => $user_id,
 			'data'   => (string) $returned,
 		);
-		$xmlResponse = new WP_Ajax_Response( $response );
-		$xmlResponse->send();
+
+		$xml_response = new WP_Ajax_Response( $response );
+		$xml_response->send();
 		ob_end_clean();
 		die();
-
 	}
 
-	function pf_ajax_user_setting() {
+	/**
+	 * AJAX callback for 'wp_ajax_pf_ajax_user_setting'.
+	 */
+	public function pf_ajax_user_setting() {
 		ob_start();
 		if ( isset( $_POST['pf_user_setting'] ) ) {
 			$setting_name = sanitize_text_field( wp_unslash( $_POST['pf_user_setting'] ) );
@@ -96,9 +177,9 @@ class ConfigurationAJAX implements HasActions {
 			$setting = false;
 		}
 
-		$user_id  = pressforward( 'controller.template_factory' )->user_id();
-		$returned = $this->pf_switch_user_option( $user_id, $setting_name, $setting );
-		$response    = array(
+		$user_id      = pressforward( 'controller.template_factory' )->user_id();
+		$returned     = $this->pf_switch_user_option( $user_id, $setting_name, $setting );
+		$response     = array(
 			'what'         => 'pressforward',
 			'action'       => 'pf_ajax_user_setting',
 			'id'           => $user_id,
@@ -109,14 +190,18 @@ class ConfigurationAJAX implements HasActions {
 				'set'      => $setting,
 			),
 		);
-		$xmlResponse = new WP_Ajax_Response( $response );
-		$xmlResponse->send();
+		$xml_response = new WP_Ajax_Response( $response );
+		$xml_response->send();
 		ob_end_clean();
 		die();
-
 	}
 
-
+	/**
+	 * Changes a user's display setting.
+	 *
+	 * @param int    $user_id    User ID.
+	 * @param string $read_state Read state.
+	 */
 	public function pf_switch_display_setting( $user_id, $read_state ) {
 		if ( ! current_user_can( 'edit_user', $user_id ) ) {
 			return false;
@@ -126,8 +211,14 @@ class ConfigurationAJAX implements HasActions {
 		return $check;
 	}
 
-
-	function pf_switch_user_option( $user_id, $option, $state ) {
+	/**
+	 * Changes a user option.
+	 *
+	 * @param int    $user_id User ID.
+	 * @param string $option  Option name.
+	 * @param mixed  $state   New value.
+	 */
+	public function pf_switch_user_option( $user_id, $option, $state ) {
 		if ( ! current_user_can( 'edit_user', $user_id ) ) {
 			return false;
 		}
@@ -136,17 +227,23 @@ class ConfigurationAJAX implements HasActions {
 		return $check;
 	}
 
+	/**
+	 * AJAX callback for 'wp_ajax_reset_feed'.
+	 */
 	public function reset_feed() {
 		pressforward( 'schema.feed_item' )->reset_feed();
 		die();
 	}
 
+	/**
+	 * AJAX callback for 'wp_ajax_regenerate_user_keys'.
+	 */
 	public function regenerate_user_keys() {
 		ob_start();
-		$user_public_key = \bin2hex($this->pf_jwt->get_a_user_public_key( false, true ));
+		$user_public_key  = \bin2hex( $this->pf_jwt->get_a_user_public_key( false, true ) );
 		$user_private_key = $this->pf_jwt->get_a_user_private_key( false, true );
-		$the_user = $this->user_interface->get_current_user();
-		$response    = array(
+		$the_user         = $this->user_interface->get_current_user();
+		$response         = array(
 			'what'         => 'pressforward',
 			'action'       => 'pf_ajax_regenerate_user_keys',
 			'id'           => $the_user->ID,
@@ -157,11 +254,14 @@ class ConfigurationAJAX implements HasActions {
 				'keygen'   => 'jwt',
 			),
 		);
-		wp_send_json( array( 'ku' => $user_public_key, 'ki' => $user_private_key ) );
-		// $xmlResponse = new WP_Ajax_Response( $response );
-		// $xmlResponse->send();
-		ob_end_clean();
-		die();
-	}
 
+		ob_end_clean();
+
+		wp_send_json(
+			array(
+				'ku' => $user_public_key,
+				'ki' => $user_private_key,
+			)
+		);
+	}
 }

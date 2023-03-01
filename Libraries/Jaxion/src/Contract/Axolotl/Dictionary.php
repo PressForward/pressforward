@@ -69,6 +69,7 @@ interface Dictionary extends Iterator, Countable, Serializes {
 	 *
 	 * @return int
 	 */
+	#[\ReturnTypeWillChange]
 	public function count();
 
 	/**

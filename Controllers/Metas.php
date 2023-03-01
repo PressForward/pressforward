@@ -1,4 +1,9 @@
 <?php
+/**
+ * Postmeta tools.
+ *
+ * @package PressForward
+ */
 
 namespace PressForward\Controllers;
 
@@ -11,13 +16,47 @@ use PressForward\Interfaces\SystemMeta;
  * Functionality related to nominations.
  */
 class Metas implements HasFilters, HasActions {
+	/**
+	 * SystemMeta object.
+	 *
+	 * @access public
+	 * @var \PressForward\Interfaces\SystemMeta
+	 */
+	public $meta_interface;
 
+	/**
+	 * System object.
+	 *
+	 * @access public
+	 * @var \PressForward\Interfaces\System
+	 */
+	public $system;
+
+	/**
+	 * Master field.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $master_field;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \PressForward\Interfaces\SystemMeta $metas  SystemMeta object.
+	 * @param \PressForward\Interfaces\System     $system System object.
+	 */
 	public function __construct( SystemMeta $metas, System $system ) {
 		$this->meta_interface = $metas;
 		$this->system         = $system;
 		$this->master_field   = 'pf_meta';
 	}
 
+	/**
+	 * Sets up filter hooks for this class.
+	 *
+	 * @return array
+	 */
 	public function filter_hooks() {
 		$filters = array(
 			array(
@@ -31,6 +70,11 @@ class Metas implements HasFilters, HasActions {
 		return $filters;
 	}
 
+	/**
+	 * Sets up action hooks for this class.
+	 *
+	 * @return array
+	 */
 	public function action_hooks() {
 		$filters = array(
 			array(
@@ -43,23 +87,16 @@ class Metas implements HasFilters, HasActions {
 		return $filters;
 	}
 
-	public function setup_source_statement_on_content( $content ) {
-		$content = pressforward( 'utility.forward_tools' )->append_source_statement( $post_id, $content, true );
-	}
-
 	/**
 	 * Take an array of objects describing post_metas and set them to the id of a post.
 	 *
 	 * @since 3.x
 	 *
-	 * @param int   $id   a post object ID number
+	 * @param int   $id   A post object ID number.
 	 * @param array $args {
-	 *                    An array of objects containing post_meta data
-	 *
-	 *             @var array {
-	 *                        @var string $name the post_meta slug
-	 *                         @var string $value The post_meta's value.
-	 *            }
+	 *   An array of objects containing post_meta data.
+	 *   @var string $name The post_meta slug.
+	 *   @var string $value The post_meta's value.
 	 * }
 	 */
 	public function establish_post( $id, $args ) {
@@ -71,7 +108,9 @@ class Metas implements HasFilters, HasActions {
 	/**
 	 * Takes a post_meta name and a post_meta value and turns it into an for use.
 	 *
-	 * @return array an array useful in thevarious parts of the post_meta setting process
+	 * @param string $key   Meta key.
+	 * @param mixed  $value Meta value.
+	 * @return array An array useful in thevarious parts of the post_meta setting process.
 	 */
 	public function meta_for_entry( $key, $value ) {
 		return array(
@@ -83,67 +122,76 @@ class Metas implements HasFilters, HasActions {
 	/**
 	 * With two post IDs copy all the standard PressForward meta from one post to another.
 	 *
-	 * @param int $idA the ID of the post that has all the meta info already set
-	 * @param int $idB the ID of the post that needs to have the meta info attached to it
+	 * @param int  $id_a            The ID of the post that has all the meta info already set.
+	 * @param int  $id_b            The ID of the post that needs to have the meta info attached to it.
+	 * @param bool $term_transition Whether to transition terms.
 	 */
-	public function transition_post_meta( $idA, $idB, $term_transition = false ) {
-		if ( ( ! is_string( $idA ) || ! is_string( $idB ) ) && ( ! is_numeric( $idA ) || ! is_numeric( $idB ) ) ) {
-			pf_log( 'Post meta transition failed.' );
-			pf_log( $idA );
-			pf_log( $idB );
-			pf_log( $term_transition );
-
-			return;
-		}
-		pf_log( 'Transition post ' . $idA . ' to ' . $idB );
+	public function transition_post_meta( $id_a, $id_b, $term_transition = false ) {
+		pf_log( 'Transition post ' . $id_a . ' to ' . $id_b );
 		foreach ( $this->structure() as $meta ) {
 			$post_types  = apply_filters( 'pf_transition_post_meta', array( 'item', 'nomination', 'post' ) );
 			$level_check = false;
 			foreach ( $meta['level'] as $level ) {
-				if ( in_array( $level, $post_types ) ) {
+				if ( in_array( $level, $post_types, true ) ) {
 					$level_check = true;
+					break;
 				}
 			}
+
 			if ( $level_check ) {
-				$this->transition_meta( $this->get_name( $meta ), $idA, $idB );
+				$this->transition_meta( $this->get_name( $meta ), $id_a, $id_b );
 			} else {
-				return;
+				continue;
 			}
 		}
 		if ( $term_transition ) {
 			pf_log( 'Transitioning Terms.' );
-			$this->transition_meta_terms( $idA, $idB );
+			$this->transition_meta_terms( $id_a, $id_b );
 		}
 	}
 
-	public function transition_meta_terms( $idA, $idB ) {
-		$parent = wp_get_post_parent_id( $idA );
-		$ids    = array( $idA );
-		if ( ! empty( $parent ) && ! is_wp_error( $parent ) ) {
+	/**
+	 * Transitions terms from one item to another.
+	 *
+	 * @param int $id_a ID of the first item.
+	 * @param int $id_b ID of the second item.
+	 * @return void
+	 */
+	public function transition_meta_terms( $id_a, $id_b ) {
+		$parent = wp_get_post_parent_id( $id_a );
+		$ids    = array( $id_a );
+		if ( ! empty( $parent ) ) {
 			$ids[] = $parent;
 		}
-		$item_id = $this->get_post_pf_meta( $idA, 'pf_item_post_id' );
+		$item_id = $this->get_post_pf_meta( $id_a, 'pf_item_post_id' );
 		if ( ! empty( $item_id ) && ! is_wp_error( $item_id ) ) {
 			$ids[] = $item_id;
 		}
 
 		$term_objects = wp_get_object_terms( $ids, array( pressforward( 'schema.feeds' )->tag_taxonomy, 'post_tag', 'category' ) );
-		$item_tags    = $this->get_post_pf_meta( $idA, 'item_tags' );
+		$item_tags    = $this->get_post_pf_meta( $id_a, 'item_tags' );
 		if ( ! empty( $term_objects ) ) {
 			foreach ( $term_objects as $term ) {
-				wp_set_object_terms( $idB, $term->term_id, $term->taxonomy, true );
-				if ( pressforward( 'schema.feeds' )->tag_taxonomy == $term->taxonomy ) {
-					$check = $this->cascade_taxonomy_tagging( $idB, $term->slug, 'slug' );
+				wp_set_object_terms( $id_b, $term->term_id, $term->taxonomy, true );
+				if ( pressforward( 'schema.feeds' )->tag_taxonomy === $term->taxonomy ) {
+					$check = $this->cascade_taxonomy_tagging( $id_b, $term->slug, 'slug' );
 					if ( ! $check ) {
-						$this->build_and_assign_new_taxonomy_tag( $idB, $term->name );
+						$this->build_and_assign_new_taxonomy_tag( $id_b, $term->name );
 					}
 				}
 			}
 		}
-		$this->handle_item_tags( $idB, $item_tags );
+		$this->handle_item_tags( $id_b, $item_tags );
 	}
 
-	public function handle_item_tags( $idB, $item_tags ) {
+	/**
+	 * Handles attaching tags to an item.
+	 *
+	 * @param int   $id_b      ID of the item.
+	 * @param array $item_tags Array of tags.
+	 * @return array
+	 */
+	public function handle_item_tags( $id_b, $item_tags ) {
 		if ( ! empty( $item_tags ) ) {
 			pf_log( 'Attempting to attach item_tags.' );
 			if ( ! is_array( $item_tags ) ) {
@@ -153,9 +201,9 @@ class Metas implements HasFilters, HasActions {
 			foreach ( $item_tags as $key => $tag ) {
 				$tag               = trim( $tag );
 				$item_tags[ $key ] = $tag;
-				$check             = $this->cascade_taxonomy_tagging( $idB, $tag, 'name' );
+				$check             = $this->cascade_taxonomy_tagging( $id_b, $tag, 'name' );
 				if ( ! $check ) {
-					$this->build_and_assign_new_taxonomy_tag( $idB, $tag );
+					$this->build_and_assign_new_taxonomy_tag( $id_b, $tag );
 				}
 			}
 
@@ -168,14 +216,13 @@ class Metas implements HasFilters, HasActions {
 	/**
 	 * If term exists among current categories or terms, assign it.
 	 *
-	 * @param [type] $idB          [description]
-	 * @param [type] $term_id      [description]
-	 * @param string $term_id_type [description]
-	 *
-	 * @return [type] [description]
+	 * @param int    $id_b         Post ID.
+	 * @param mixed  $term_id      Identifier for term.
+	 * @param string $term_id_type Field of `$term_id`.
+	 * @return mixed
 	 */
-	public function cascade_taxonomy_tagging( $idB, $term_id, $term_id_type = 'slug' ) {
-		pf_log( 'Trying to assign taxonomy for ' . $idB );
+	public function cascade_taxonomy_tagging( $id_b, $term_id, $term_id_type = 'slug' ) {
+		pf_log( 'Trying to assign taxonomy for ' . $id_b );
 		$term_object = get_term_by( $term_id_type, $term_id, 'category' );
 		if ( empty( $term_object ) ) {
 			pf_log( 'No category match.' );
@@ -185,26 +232,23 @@ class Metas implements HasFilters, HasActions {
 
 				return false;
 			} else {
-				return wp_set_object_terms( $idB, intval( $term_object->term_id ), 'post_tag', true );
+				return wp_set_object_terms( $id_b, intval( $term_object->term_id ), 'post_tag', true );
 			}
 		} else {
-			return wp_set_object_terms( $idB, intval( $term_object->term_id ), 'category', true );
+			return wp_set_object_terms( $id_b, intval( $term_object->term_id ), 'category', true );
 		}
-
-		return true;
 	}
 
 	/**
 	 * When no tag exists, PF will use this function to build and assign a new
 	 * post tag.
 	 *
-	 * @param [type] $idB           [description]
-	 * @param [type] $full_tag_name [description]
-	 *
-	 * @return [type] [description]
+	 * @param int    $id_b          Item ID.
+	 * @param string $full_tag_name Tag name.
+	 * @return void
 	 */
-	public function build_and_assign_new_taxonomy_tag( $idB, $full_tag_name ) {
-		pf_log( 'Attaching new tag to ' . $idB . ' with a name of ' . $full_tag_name );
+	public function build_and_assign_new_taxonomy_tag( $id_b, $full_tag_name ) {
+		pf_log( 'Attaching new tag to ' . $id_b . ' with a name of ' . $full_tag_name );
 		$term_args = array(
 			'description' => 'Added by PressForward',
 			'parent'      => 0,
@@ -213,7 +257,7 @@ class Metas implements HasFilters, HasActions {
 		$r         = wp_insert_term( $full_tag_name, 'post_tag', $term_args );
 		if ( ! is_wp_error( $r ) && ! empty( $r['term_id'] ) ) {
 			pf_log( 'Making a new post_tag, ID:' . $r['term_id'] );
-			wp_set_object_terms( $idB, intval( $r['term_id'] ), 'post_tag', true );
+			wp_set_object_terms( $id_b, intval( $r['term_id'] ), 'post_tag', true );
 		} else {
 			pf_log( 'Failed making a new post_tag' );
 			pf_log( $r );
@@ -223,19 +267,16 @@ class Metas implements HasFilters, HasActions {
 	/**
 	 * With a post_meta slug and two post IDs copy a post_meta from one post to another.
 	 *
-	 * @param string $name the post_meta slug
-	 * @param int    $idA  the post which already has the post_meta data
-	 * @param int    $idB  the post which needs the post_meta copied to it
-	 *
+	 * @param string $name The post_meta slug.
+	 * @param int    $id_a The post which already has the post_meta data.
+	 * @param int    $id_b The post which needs the post_meta copied to it.
 	 * @return int the result of the update_post_meta function
 	 */
-	public function transition_meta( $name, $idA, $idB ) {
-		// pf_log( 'Transition ' . $idA . ' meta field ' . $name );
-		$meta_value = $this->meta_interface->get_meta( $idA, $name, true );
-		$result     = $this->check_for_and_transfer_depreciated_meta( $name, $meta_value, $idA, $idB );
+	public function transition_meta( $name, $id_a, $id_b ) {
+		$meta_value = $this->meta_interface->get_meta( $id_a, $name, true );
+		$result     = $this->check_for_and_transfer_depreciated_meta( $name, $meta_value, $id_a, $id_b );
 		if ( ! $result ) {
-			// pf_log( $name . ' not depreciated, updating on post ' . $idB );
-			$result = $this->meta_interface->update_meta( $idB, $name, $meta_value );
+			$result = $this->meta_interface->update_meta( $id_b, $name, $meta_value );
 		}
 
 		return $result;
@@ -251,23 +292,23 @@ class Metas implements HasFilters, HasActions {
 	 *
 	 * @since 3.x
 	 *
-	 * @param string $name  the post_meta slug
-	 * @param string $value the post_meta value
-	 * @param int    $idA   the id of the post that already has the post_meta set
-	 * @param int    $idB   the id of the post that needs the post_meta set
+	 * @param string $name  The post_meta slug.
+	 * @param string $value The post_meta value.
+	 * @param int    $id_a  The id of the post that already has the post_meta set.
+	 * @param int    $id_b  The id of the post that needs the post_meta set.
 	 *
 	 * @return bool true if the post_meta is supported by PressForward
 	 */
-	public function check_for_and_transfer_depreciated_meta( $name, $value, $idA, $idB ) {
+	public function check_for_and_transfer_depreciated_meta( $name, $value, $id_a, $id_b ) {
 		foreach ( $this->structure() as $meta ) {
-			if ( $meta['name'] == $name ) {
-				if ( in_array( 'dep', $meta['type'] ) ) {
-					pf_log( $name . ' is a depreciated meta type. Prepping to transfer to ' . $meta['move'] );
-					if ( ( ! isset( $value ) ) || ( false == $value ) || ( '' == $value ) || ( 0 == $value ) || ( empty( $value ) ) ) {
+			if ( $meta['name'] === $name ) {
+				if ( in_array( 'dep', $meta['type'], true ) ) {
+					pf_log( $name . ' is a deprecated meta type. Prepping to transfer to ' . $meta['move'] );
+					if ( ! $value ) {
 						pf_log( 'No value was passed. Get meta data from new meta key.' );
-						$value = $this->meta_interface->get_meta( $idA, $meta['move'], true );
+						$value = $this->meta_interface->get_meta( $id_a, $meta['move'], true );
 					}
-					$this->meta_interface->update_meta( $idB, $meta['move'], $value );
+					$this->meta_interface->update_meta( $id_b, $meta['move'], $value );
 
 					return true;
 				}
@@ -282,14 +323,13 @@ class Metas implements HasFilters, HasActions {
 	 *
 	 * @since 3.x
 	 *
-	 * @param string $name the meta name we're checking to see if it is an
-	 *                     an official PF meta
-	 *
+	 * @param string $name The meta name we're checking to see if it is an
+	 *                     an official PF meta.
 	 * @return string|bool returns PF meta object, false if not
 	 */
 	public function by_name( $name ) {
 		foreach ( $this->structure() as $meta ) {
-			if ( $name == $meta['name'] ) {
+			if ( $name === $meta['name'] ) {
 				return $meta;
 			} else {
 				pf_log( $name . ' is not a PF meta type.' );
@@ -297,18 +337,18 @@ class Metas implements HasFilters, HasActions {
 				return false;
 			}
 		}
+
+		return false;
 	}
 
 	/**
 	 * Return a PF Meta Object that is assuredly not depreciated.
 	 *
-	 * @param [type] $name [description]
-	 *
-	 * @return [type] [description]
+	 * @param string $name Meta name.
+	 * @return mixed
 	 */
 	public function assure_key( $name ) {
 		$meta = $this->by_name( $name );
-		// pf_log('Assuring '.$name.' is PF meta.');
 		if ( ( false !== $meta ) && ! empty( $meta['move'] ) ) {
 			return $this->by_name( $meta['move'] );
 		} elseif ( false !== $meta ) {
@@ -326,9 +366,8 @@ class Metas implements HasFilters, HasActions {
 	/**
 	 * Return the meta database key.
 	 *
-	 * @param [type] $name [description]
-	 *
-	 * @return [type] [description]
+	 * @param string $name Key.
+	 * @return string
 	 */
 	public function get_key( $name ) {
 		$meta = $this->assure_key( $name );
@@ -338,6 +377,9 @@ class Metas implements HasFilters, HasActions {
 
 	/**
 	 * Get the name (database key) out of the meta object.
+	 *
+	 * @param array $meta Meta array.
+	 * @return string
 	 */
 	public function get_name( $meta ) {
 		return $meta['name'];
@@ -352,7 +394,7 @@ class Metas implements HasFilters, HasActions {
 	 */
 	public function structure() {
 		// Inspired by http://www.loc.gov/standards/metable.html
-		// Adm=Administrative, Struc=Structural, Desc=Descriptive, Req=Required, Rep=Repeatable, Set=Set, Aggr=Aggregate, Dep = Depreciated
+		// Adm=Administrative, Struc=Structural, Desc=Descriptive, Req=Required, Rep=Repeatable, Set=Set, Aggr=Aggregate, Dep = Depreciated.
 		$metas = array(
 			'item_id'                 => array(
 				'name'       => 'item_id',
@@ -720,16 +762,6 @@ class Metas implements HasFilters, HasActions {
 				'level'      => array( 'feed' ),
 				'serialize'  => false,
 			),
-			'pf_feed_last_retrieved'  => array(
-				'name'       => 'pf_feed_last_retrieved',
-				'title'      => __( 'Last retrieved', 'pf' ),
-				'definition' => __( 'Last time feed was retrieved', 'pf' ),
-				'function'   => __( 'Stores last timestamp feed was retrieved.', 'pf' ),
-				'type'       => array( 'adm' ),
-				'use'        => array( 'api' ),
-				'level'      => array( 'feed' ),
-				'serialize'  => false,
-			),
 			'pf_feed_default_author'  => array(
 				'name'       => 'pf_feed_default_author',
 				'title'      => __( 'Default Feed Author', 'pf' ),
@@ -830,6 +862,16 @@ class Metas implements HasFilters, HasActions {
 				'level'      => array( 'feed' ),
 				'serialize'  => false,
 			),
+			'pf_source_statement'     => array(
+				'name'       => 'pf_source_statement',
+				'title'      => __( 'Source statement string', 'pf' ),
+				'definition' => __( 'The string containing the "Source" statement appended to an item.', 'pf' ),
+				'function'   => '',
+				'type'       => array( 'adm' ),
+				'use'        => array(),
+				'level'      => array( 'feed', 'item', 'nomination', 'post' ),
+				'serialize'  => false,
+			),
 		);
 
 		$metas = apply_filters( 'pf_meta_terms', $metas );
@@ -837,48 +879,56 @@ class Metas implements HasFilters, HasActions {
 		return $metas;
 	}
 
-	public function map_post_type_to_level($post_type){
+	/**
+	 * Maps post type to meta "level".
+	 *
+	 * @param string $post_type Post type.
+	 * @return bool|string
+	 */
+	public function map_post_type_to_level( $post_type ) {
 		$mapping = array(
-				'feed'       => 'pf_feed',
-				'item'      => 'pf_feed_item',
-				'nomination' => 'nomination',
-				'post'   => 'post'
+			'feed'       => 'pf_feed',
+			'item'       => 'pf_feed_item',
+			'nomination' => 'nomination',
+			'post'       => 'post',
 		);
 		$mapping = array(
-				'pf_feed'       => 'feed',
-				'pf_feed_item'      => 'item',
-				'nomination' => 'nomination',
-				'post'   => 'post'
+			'pf_feed'      => 'feed',
+			'pf_feed_item' => 'item',
+			'nomination'   => 'nomination',
+			'post'         => 'post',
 		);
 		$mapping = apply_filters( 'pf_post_type_to_level', $mapping );
-		if (array_key_exists($post_type, $mapping)){
-			return $mapping[$post_type];
+		if ( array_key_exists( $post_type, $mapping ) ) {
+			return $mapping[ $post_type ];
 		} else {
 			return false;
 		}
 	}
 
-	public function attach_metas_by_use($post_object, $use = 'api', $admin = false) {
+	/**
+	 * Attaches metadata to a post object based on the intended use context.
+	 *
+	 * @param \WP_Post $post_object Post object.
+	 * @param string   $use_context Context of use.
+	 * @param bool     $admin       Whether it's an admin request. Default false.
+	 * @return \WP_Post
+	 */
+	public function attach_metas_by_use( $post_object, $use_context = 'api', $admin = false ) {
 		$post_id = $post_object->ID;
 		foreach ( $this->structure() as $key => $meta ) {
-			if (in_array($use, $meta['use']) ){
-				if (in_array($this->map_post_type_to_level($post_object->post_type), $meta['level'])) {
-					if (false === $admin){
-						if (!in_array('adm', $meta['type']) ){
-							if (!property_exists($post_object, $key)){
-								$post_object->$key = $this->get_post_pf_meta($post_id, $meta['name']);
-							} else {
+			if ( in_array( $use_context, $meta['use'], true ) ) {
+				if ( in_array( $this->map_post_type_to_level( $post_object->post_type ), $meta['level'], true ) ) {
+					if ( false === $admin ) {
+						if ( ! in_array( 'adm', $meta['type'], true ) ) {
+							if ( ! property_exists( $post_object, $key ) ) {
+								$post_object->$key = $this->get_post_pf_meta( $post_id, $meta['name'] );
 							}
-						} else {
 						}
-					} else {
-							if (!isset($post_object->$key)){
-								$post_object->$key = $this->get_post_pf_meta($post_id, $meta['name']);
-							}
+					} elseif ( ! isset( $post_object->$key ) ) {
+							$post_object->$key = $this->get_post_pf_meta( $post_id, $meta['name'] );
 					}
-				} else {
 				}
-			} else {
 			}
 		}
 		return $post_object;
@@ -887,10 +937,10 @@ class Metas implements HasFilters, HasActions {
 	/**
 	 * Register metas to prevent core from breaking when adding them to API.
 	 *
-	 * https://developer.wordpress.org/reference/functions/register_meta/
+	 * See https://developer.wordpress.org/reference/functions/register_meta/
 	 * and WP_REST_Term_Meta_Fields.
 	 *
-	 * @return [type] [description]
+	 * @return bool
 	 */
 	public function register_pf_metas() {
 		$metas = array();
@@ -898,7 +948,7 @@ class Metas implements HasFilters, HasActions {
 			if ( $meta['serialize'] ) {
 				continue;
 			}
-			if ( ! in_array( 'api', $meta['use'] ) ) {
+			if ( ! in_array( 'api', $meta['use'], true ) ) {
 				continue;
 			}
 			$metas[ $key ]                 = array();
@@ -931,19 +981,27 @@ class Metas implements HasFilters, HasActions {
 		return true;
 	}
 
-	/*
+	/**
 	 * A function to check and retrieve the right meta field for a post.
+	 *
+	 * @param string $field     The post_meta field to retrieve.
+	 * @param int    $id        Post ID.
+	 * @param mixed  $value     Value.
+	 * @param bool   $single    If the user wants to use the WordPress post_meta Single declaration. Default true.
+	 * @return string|array
 	 */
-	public function pass_meta( $field, $id = false, $value = '', $single = true ) {
+	public function pass_meta( $field, $id = 0, $value = '', $single = true ) {
 		$metas = $this->structure();
+
 		// Check if it exists.
 		if ( empty( $metas[ $field ] ) ) {
 			pf_log( 'The field ' . $field . ' is not supported.' );
 
 			return $field;
 		}
-		// Check if it has been depreciated (dep). If so retrieve
-		if ( in_array( 'dep', $metas[ $field ]['type'] ) ) {
+
+		// Check if it has been depreciated (dep). If so retrieve.
+		if ( in_array( 'dep', $metas[ $field ]['type'], true ) ) {
 			$new_field = $metas[ $field ]['move'];
 			pf_log( 'You tried to use depreciated field ' . $field . ' it was moved to ' . $new_field );
 			$this->transition_depreciated_meta( $field, $id, $value, $single, $new_field );
@@ -962,13 +1020,19 @@ class Metas implements HasFilters, HasActions {
 
 	/**
 	 * Transitions meta values from old depreciated meta_slugs to new ones.
+	 *
+	 * @param string $field     The post_meta field to retrieve.
+	 * @param int    $id        Post ID.
+	 * @param mixed  $value     Value.
+	 * @param bool   $single    If the user wants to use the WordPress post_meta Single declaration. Default true.
+	 * @param string $new_field New meta slug.
 	 */
 	public function transition_depreciated_meta( $field, $id, $value, $single, $new_field ) {
 		$result = false;
-		// Note - empty checks for FALSE
+		// Note - empty checks for FALSE.
 		$old = $this->meta_interface->get_meta( $id, $field, $single );
 		$new = $this->meta_interface->get_meta( $id, $new_field, $single );
-		if ( ( false != $id ) && ! empty( $old ) && empty( $new ) ) {
+		if ( ! empty( $id ) && ! empty( $old ) && empty( $new ) ) {
 			if ( empty( $value ) ) {
 				$result = $this->meta_interface->update_meta( $id, $new_field, $old );
 			} else {
@@ -987,8 +1051,8 @@ class Metas implements HasFilters, HasActions {
 	 *
 	 * @since 3.x
 	 *
-	 * @param int    $id     post ID
-	 * @param string $field  the post_meta field to retrieve
+	 * @param int    $id     Post ID.
+	 * @param string $field  The post_meta field to retrieve.
 	 * @param bool   $obj    If the user wants to return a PressForward post_meta description object. Default false.
 	 * @param bool   $single If the user wants to use the WordPress post_meta Single decleration. Default true.
 	 *
@@ -1002,11 +1066,14 @@ class Metas implements HasFilters, HasActions {
 			$field      = $field['master_field'];
 			$serialized = true;
 			$single     = true;
+		} else {
+			$key = $field;
 		}
+
 		$meta = $this->meta_interface->get_meta( $id, $field, $single );
 		if ( $serialized ) {
 			if ( empty( $meta ) || ! array_key_exists( $key, $meta ) ) {
-				if ( !is_array( $meta ) ) {
+				if ( ! is_array( $meta ) ) {
 					$meta = [];
 				}
 				$old_meta     = $this->meta_interface->get_meta( $id, $key, $single );
@@ -1017,14 +1084,12 @@ class Metas implements HasFilters, HasActions {
 			} else {
 				$meta = $meta[ $key ];
 			}
-			// pf_log($key);
-			// pf_log($meta);
+
 			$meta = $this->check_value( $meta, $id, $key );
 		} else {
 			$meta = $this->check_value( $meta, $id, $field );
 		}
-		// pf_log($field);
-		// pf_log($meta);
+
 		if ( $obj ) {
 			$metas             = $this->structure();
 			$meta_obj          = $metas[ $field ];
@@ -1036,6 +1101,14 @@ class Metas implements HasFilters, HasActions {
 		return $meta;
 	}
 
+	/**
+	 * Checks a meta value.
+	 *
+	 * @param mixed  $meta_value Meta value.
+	 * @param int    $id         Post ID.
+	 * @param string $field      Field name.
+	 * @return mixed
+	 */
 	public function check_value( $meta_value, $id, $field ) {
 		switch ( $field ) {
 			case 'item_link':
@@ -1059,7 +1132,6 @@ class Metas implements HasFilters, HasActions {
 				}
 				break;
 
-				// no break
 			default:
 				// code...
 				break;
@@ -1070,11 +1142,21 @@ class Metas implements HasFilters, HasActions {
 
 	/**
 	 * An alias for $this->retrieve_meta that allows you to use the standard argument set from get_post_meta.
+	 *
+	 * @param int    $id     Post ID.
+	 * @param string $field  The post_meta field to retrieve.
+	 * @param bool   $single If the user wants to use the WordPress post_meta Single decleration. Default true.
+	 * @param bool   $obj    If the user wants to return a PressForward post_meta description object. Default false.
 	 */
 	public function get_post_pf_meta( $id, $field, $single = true, $obj = false ) {
 		return $this->retrieve_meta( $id, $field, $obj, $single );
 	}
 
+	/**
+	 * Gets a list of all PF meta keys.
+	 *
+	 * @return array
+	 */
 	public function get_all_meta_keys() {
 		$meta_keys = array();
 		foreach ( $this->structure() as $meta ) {
@@ -1084,8 +1166,14 @@ class Metas implements HasFilters, HasActions {
 		return $meta_keys;
 	}
 
+	/**
+	 * Gets all PF metadata belonging to a post.
+	 *
+	 * @param int $post_id The post ID.
+	 * @return array
+	 */
 	public function get_all_metas( $post_id ) {
-		$all_metas = $this->meta_interface->get_metas( $post_id );
+		$all_metas = $this->meta_interface->get_meta( $post_id );
 		$structure = $this->structure();
 		foreach ( $all_metas as $key => $meta ) {
 			if ( isset( $structure[ $key ] ) && $structure[ $key ]['serialize'] ) {
@@ -1099,10 +1187,10 @@ class Metas implements HasFilters, HasActions {
 	/**
 	 * Update post_meta on a post using PressForward post_meta standardization.
 	 *
-	 * @param int|string $id         the post ID
-	 * @param string     $field      the post_meta field slug
-	 * @param string     $value      the post_meta value
-	 * @param string     $prev_value the previous value to insure proper replacement
+	 * @param int|string $id         The post ID.
+	 * @param string     $field      The post_meta field slug.
+	 * @param string     $value      The post_meta value.
+	 * @param string     $prev_value The previous value to insure proper replacement.
 	 *
 	 * @return int the check value from update_post_meta
 	 */
@@ -1113,22 +1201,36 @@ class Metas implements HasFilters, HasActions {
 		return $check;
 	}
 
+	/**
+	 * Gets the 'author' metadata from a remote resource.
+	 *
+	 * @param string $url Remote URL.
+	 * @return string|false
+	 */
 	public function get_author_from_url( $url ) {
-		$response  = file_get_html( $url );
-		$possibles = array();
-		if ( empty( $response ) ) {
+		$response = pressforward( 'controller.http_tools' )->get_url_content( $url, 'wp_remote_get' );
+		if ( ! $response || is_wp_error( $response ) || empty( $response['body'] ) ) {
 			return false;
 		}
-		$possibles[] = $response->find( 'meta[name=author]', 0 );
-		$possibles[] = $response->find( 'meta[name=Author]', 0 );
-		$possibles[] = $response->find( 'meta[property=author]', 0 );
-		$possibles[] = $response->find( 'meta[property=Author]', 0 );
-		$possibles[] = $response->find( 'meta[name=parsely-author]', 0 );
-		$possibles[] = $response->find( 'meta[name=sailthru.author]', 0 );
 
-		foreach ( $possibles as $possible ) {
-			if ( false != $possible ) {
-				$author_meta = $possible;
+		$dom = new \DOMDocument();
+
+		libxml_use_internal_errors( true );
+		$dom->loadHTML( $response['body'] );
+		libxml_use_internal_errors( false );
+
+		$metas = $dom->getElementsByTagName( 'meta' );
+
+		foreach ( $metas as $meta ) {
+			$name = $meta->getAttribute( 'name' );
+			if ( in_array( $name, [ 'author', 'Author', 'parsely-author', 'sailthru.author' ], true ) ) {
+				$author_meta = $meta->getAttribute( 'content' );
+				break;
+			}
+
+			$property = $meta->getAttribute( 'property' );
+			if ( in_array( $property, [ 'author', 'Author' ], true ) ) {
+				$author_meta = $meta->getAttribute( 'content' );
 				break;
 			}
 		}
@@ -1137,8 +1239,7 @@ class Metas implements HasFilters, HasActions {
 			return false;
 		}
 
-		$author = $author_meta->content;
-		$author = trim( str_replace( 'by', '', $author ) );
+		$author = trim( str_replace( 'by', '', $author_meta ) );
 		$author = trim( str_replace( 'By', '', $author ) );
 
 		return $author;
@@ -1147,10 +1248,10 @@ class Metas implements HasFilters, HasActions {
 	/**
 	 * Add post_meta on a post using PressForward post_meta standardization.
 	 *
-	 * @param int|string $id     the post ID
-	 * @param string     $field  the post_meta field slug
-	 * @param string     $value  the post_meta value
-	 * @param string     $unique if the post_meta is unique
+	 * @param int|string $id     the post ID.
+	 * @param string     $field  the post_meta field slug.
+	 * @param string     $value  the post_meta value.
+	 * @param bool       $unique if the post_meta is unique.
 	 *
 	 * @return int the check value from add_post_meta
 	 */
@@ -1164,16 +1265,25 @@ class Metas implements HasFilters, HasActions {
 		return $check;
 	}
 
+	/**
+	 * Applies PF-standardize postmeta.
+	 *
+	 * @param int|string $id         The post ID.
+	 * @param string     $field      The post_meta field slug.
+	 * @param string     $value      The post_meta value.
+	 * @param string     $state      Unique status of the postmeta.
+	 * @param string     $apply_type 'update' or 'add'.
+	 */
 	public function apply_pf_meta( $id, $field, $value = '', $state = null, $apply_type = 'update' ) {
 		$serialized = false;
 		if ( is_array( $field ) ) {
 			$key        = $field['field'];
 			$field      = $field['master_field'];
 			$serialized = true;
-			// pf_log($key);
+		} else {
+			$key = $field;
 		}
-		// pf_log($field.': ');
-		// pf_log($value);
+
 		if ( $serialized ) {
 			$switch_value = $key;
 		} else {
@@ -1197,7 +1307,6 @@ class Metas implements HasFilters, HasActions {
 		}
 		if ( $serialized ) {
 			$master_meta = $this->meta_interface->get_meta( $id, $field, true );
-			// pf_log($master_meta);
 			if ( empty( $master_meta ) ) {
 				$master_meta = array();
 				$apply_type  = 'add';
@@ -1208,27 +1317,33 @@ class Metas implements HasFilters, HasActions {
 			}
 			$master_meta[ $key ] = $value;
 			$value               = $master_meta;
-			// pf_log($value);
 		}
-		if ( 'update' == $apply_type ) {
+
+		$check = null;
+		if ( 'update' === $apply_type ) {
 			if ( $serialized ) {
-				// pf_log($key);
 				$this->meta_interface->delete_meta( $id, $key, '' );
 			}
 			$check = $this->meta_interface->update_meta( $id, $field, $value, $state );
 			if ( ! $check ) {
 				$check = $this->meta_interface->update_meta( $id, $field, $value, $state );
 			}
-		} elseif ( 'add' == $apply_type ) {
+		} elseif ( 'add' === $apply_type ) {
 			$check = $this->meta_interface->add_meta( $id, $field, $value, $state );
 		}
-		// pf_log($field);
-		// pf_log($value);
-		// pf_log($check);
+
 		return $check;
 	}
 
-	public function forward_to_origin_status( $id, $check = true, $the_value = false ) {
+	/**
+	 * Gets the 'forward to origin' status of a post.
+	 *
+	 * @param int    $id        ID of the post.
+	 * @param bool   $check     Whether to query the database.
+	 * @param string $the_value Option value.
+	 * @return string
+	 */
+	public function forward_to_origin_status( $id, $check = true, $the_value = '' ) {
 		$item_id = pressforward( 'controller.metas' )->get_post_pf_meta( $id, 'item_id', true );
 		if ( empty( $item_id ) ) {
 			return 'no-forward';
@@ -1250,9 +1365,18 @@ class Metas implements HasFilters, HasActions {
 		return $value;
 	}
 
-	public function usable_forward_to_origin_status( $null, $object_id, $meta_key, $single ) {
-		if ( $meta_key !== 'pf_forward_to_origin' ) {
-			return $null;
+	/**
+	 * Filter of 'pf_forward_to_origin' postmeta, for REST API.
+	 *
+	 * @param mixed  $retval    For short-circuiting call.
+	 * @param int    $object_id ID of the object.
+	 * @param string $meta_key  Meta key.
+	 * @param bool   $single    "Single" param to get_post_meta().
+	 * @return mixed
+	 */
+	public function usable_forward_to_origin_status( $retval, $object_id, $meta_key, $single ) {
+		if ( 'pf_forward_to_origin' !== $meta_key ) {
+			return $retval;
 		}
 		remove_filter( 'get_post_metadata', array( $this, 'usable_forward_to_origin_status' ), 10 );
 		$value = $this->forward_to_origin_status( $object_id );

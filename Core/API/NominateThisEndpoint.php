@@ -1,33 +1,88 @@
 <?php
+/**
+ * Nominate This endpoint.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\API;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
 
 use PressForward\Core\Admin\PFTemplater;
 
-use WP_Ajax_Response;
-use WP_Error;
+use \WP_Ajax_Response;
+use \WP_Error;
 
+/**
+ * Nominate This endpoint.
+ */
 class NominateThisEndpoint implements HasActions {
 
+	/**
+	 * API base.
+	 *
+	 * @access protected
+	 * @var array
+	 */
 	protected $api_base;
 
-	function __construct( $api_base, PFTemplater $templates ) {
-		$this->api_base = $api_base;
-		$this->api_base['endpoint'] = 'nominatethis';
-		$this->templates = $templates;
-		$namespace = $this->api_base['base_namespace'] . $this->api_base['version'];
-		$base = $this->api_base['endpoint'];
-		$this->api_base['authpoint'] = 'nominate';
-		$this->api_base['scriptpoint'] = 'nomscript';
-		$this->api_base['submit'] = 'submit-nomination';
-		$this->endpoint_for_nominate_this_endpoint = $namespace. '/' . $base;
-		$this->endpoint_for_nominate_this_script = $namespace. '/' . $this->api_base['scriptpoint'];
-		$this->endpoint_for_nominate_endpoint = $namespace. '/' . 	$this->api_base['authpoint'];
+	/**
+	 * PFTemplater object.
+	 *
+	 * @access public
+	 * @var \PressForward\Core\Admin\PFTemplater
+	 */
+	public $templates;
+
+	/**
+	 * Path for base endpoint.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $endpoint_for_nominate_this_endpoint;
+
+	/**
+	 * Path for script.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $endpoint_for_nominate_this_script;
+
+	/**
+	 * Path for auth endpoint.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $endpoint_for_nominate_endpoint;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param array                                $api_base  API base data.
+	 * @param \PressForward\Core\Admin\PFTemplater $templates PFTemplater object.
+	 */
+	public function __construct( $api_base, PFTemplater $templates ) {
+		$this->api_base                            = $api_base;
+		$this->api_base['endpoint']                = 'nominatethis';
+		$this->templates                           = $templates;
+		$namespace                                 = $this->api_base['base_namespace'] . $this->api_base['version'];
+		$base                                      = $this->api_base['endpoint'];
+		$this->api_base['authpoint']               = 'nominate';
+		$this->api_base['scriptpoint']             = 'nomscript';
+		$this->api_base['submit']                  = 'submit-nomination';
+		$this->endpoint_for_nominate_this_endpoint = $namespace . '/' . $base;
+		$this->endpoint_for_nominate_this_script   = $namespace . '/' . $this->api_base['scriptpoint'];
+		$this->endpoint_for_nominate_endpoint      = $namespace . '/' . $this->api_base['authpoint'];
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function action_hooks() {
-		// add_action( 'rest_api_init', 'activate_pf_rest_controller', 11 );
 		$actions = array(
 			array(
 				'hook'     => 'rest_api_init',
@@ -38,7 +93,10 @@ class NominateThisEndpoint implements HasActions {
 		return $actions;
 	}
 
-	function activate() {
+	/**
+	 * Sets up Nominate This routes.
+	 */
+	public function activate() {
 		$controller = $this;
 		$controller->register_routes();
 	}
@@ -48,354 +106,320 @@ class NominateThisEndpoint implements HasActions {
 	 */
 	public function register_routes() {
 		$namespace = $this->api_base['base_namespace'] . $this->api_base['version'];
-		$base = $this->api_base['endpoint'];
-		register_rest_route( $namespace, '/' . $base, array(
+		$base      = $this->api_base['endpoint'];
+		register_rest_route(
+			$namespace,
+			'/' . $base,
 			array(
-				'methods'         => \WP_REST_Server::READABLE,
-				'callback'        => array( $this, 'get_nominate_this_template' ),
-				'args' => array(
-			      'context' => array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
-					// type specifies the type of data that the argument should be.
-					'type'        => 'string',
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'default'	  => 'view'
-			      ),
-			    ),
-				'permission_callback' => function () {
-					if ( ! current_user_can( get_option( 'pf_menu_nominate_this_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) ) ) ){
-	  				  	wp_die( esc_html__( 'You do not have the capacity to access the Nominate This bookmarklet.', 'pf' ) );
-	  				  	return false;
-					} else {
-						return true;
-					} //$this->templates->users->pf_get_defining_capability_by_role( 'contributor' );
-			  	},
-				'priority'  => 10,
-			),
-		));
-		register_rest_route($namespace, '/'.$this->api_base['authpoint'], array(
-			array(
-				'methods'         => \WP_REST_Server::READABLE,
-				'callback'        => array( $this, 'get_nominate_this' ),
-				'args' => array(
-				  'context' => array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
-					// type specifies the type of data that the argument should be.
-					'type'        => 'string',
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'default'	  => 'view'
-				  ),
-				  'u' => array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
-					// type specifies the type of data that the argument should be.
-					'type'        => 'string',
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'default'	  => 'view'
-				  ),
-				  's' => array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
-					// type specifies the type of data that the argument should be.
-					'type'        => 'string',
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'default'	  => 'view'
-				  ),
-				  'v' => array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
-					// type specifies the type of data that the argument should be.
-					'type'        => 'string',
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'default'	  => ''
-				  ),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_nominate_this_template' ),
+					'args'                => array(
+						'context' => array(
+							// description should be a human readable description of the argument.
+							'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
+							// type specifies the type of data that the argument should be.
+							'type'        => 'string',
+							// Set the argument to be required for the endpoint.
+							'required'    => false,
+							'default'     => 'view',
+						),
+					),
+					'permission_callback' => function () {
+						if ( ! current_user_can( get_option( 'pf_menu_nominate_this_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) ) ) ) {
+							return false;
+						} else {
+							return true;
+						}
+					},
+					'priority'            => 10,
 				),
-				'permission_callback' => function () {
-					return false;
-				},
-				'priority'  => 10,
-			),
-		));
-		register_rest_route($namespace, '/'.$this->api_base['scriptpoint'],
+			)
+		);
+
+		register_rest_route(
+			$namespace,
+			'/' . $this->api_base['authpoint'],
 			array(
-				'methods'         => \WP_REST_Server::READABLE,
-				'callback'        => array( $this, 'get_nominate_this_script' ),
-				'args' => array(
-				  'context' => array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'Supplies the Nominate This js script for building the bookmarklet.', 'pf' ),
-					// type specifies the type of data that the argument should be.
-					'type'        => 'string',
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'default'	  => 'view'
-				  ),
-                  'k' => array(
-                      // description should be a human readable description of the argument.
-                    'description' => esc_html__( 'Public Key.', 'pf' ),
-                    // type specifies the type of data that the argument should be.
-                    'type'        => 'string',
-                    // Set the argument to be required for the endpoint.
-                    'required'    => true,
-                    'default'	  => '0'
-                  ),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_nominate_this' ),
+					'args'                => array(
+						'context' => array(
+							// description should be a human readable description of the argument.
+							'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
+							// type specifies the type of data that the argument should be.
+							'type'        => 'string',
+							// Set the argument to be required for the endpoint.
+							'required'    => false,
+							'default'     => 'view',
+						),
+						'u'       => array(
+							// description should be a human readable description of the argument.
+							'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
+							// type specifies the type of data that the argument should be.
+							'type'        => 'string',
+							// Set the argument to be required for the endpoint.
+							'required'    => false,
+							'default'     => 'view',
+						),
+						's'       => array(
+							// description should be a human readable description of the argument.
+							'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
+							// type specifies the type of data that the argument should be.
+							'type'        => 'string',
+							// Set the argument to be required for the endpoint.
+							'required'    => false,
+							'default'     => 'view',
+						),
+						'v'       => array(
+							// description should be a human readable description of the argument.
+							'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
+							// type specifies the type of data that the argument should be.
+							'type'        => 'string',
+							// Set the argument to be required for the endpoint.
+							'required'    => false,
+							'default'     => '',
+						),
+					),
+					'permission_callback' => function () {
+						return false;
+					},
+					'priority'            => 10,
+				),
+			)
+		);
+
+		register_rest_route(
+			$namespace,
+			'/' . $this->api_base['scriptpoint'],
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_nominate_this_script' ),
+				'args'                => array(
+					'context' => array(
+						// description should be a human readable description of the argument.
+						'description' => esc_html__( 'Supplies the Nominate This js script for building the bookmarklet.', 'pf' ),
+						// type specifies the type of data that the argument should be.
+						'type'        => 'string',
+						// Set the argument to be required for the endpoint.
+						'required'    => false,
+						'default'     => 'view',
+					),
+					'k'       => array(
+						// description should be a human readable description of the argument.
+						'description' => esc_html__( 'Public Key.', 'pf' ),
+						// type specifies the type of data that the argument should be.
+						'type'        => 'string',
+						// Set the argument to be required for the endpoint.
+						'required'    => true,
+						'default'     => '0',
+					),
 				),
 				'permission_callback' => function () {
 					$return_var = false;
 					try {
 						$raw_key = isset( $_GET['k'] ) ? sanitize_text_field( wp_unslash( $_GET['k'] ) ) : '';
-						$key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin( $raw_key ));
-						if (!$key){
-							$return_var = new WP_Error( 'auth_fail_id', __( "Request was signed with incorrect key.", "pf" ) );
+						$key = pressforward( 'controller.jwt' )->get_a_user_private_key_for_decrypt( hex2bin( $raw_key ) );
+						if ( ! $key ) {
+							$return_var = new WP_Error( 'auth_fail_id', __( 'Request was signed with incorrect key.', 'pf' ) );
 						}
-						// $return_var = true;
 						return $return_var;
-					} catch ( \UnexpectedValueException $e ){
-						$return_var = new WP_Error( 'auth_fail_format', __( "Authentication key was not properly formated.", "pf" ) );
-					} catch ( \InvalidArgumentException $e ){
-						$return_var = new WP_Error( 'auth_fail_key', __( "Authentication key was not properly supplied.", "pf" ) );
-					} catch ( \DomainException $e ){
-						$return_var = new WP_Error( 'auth_fail_ssl', __( "SSL cannot be applied to the key.", "pf" ) );
+					} catch ( \UnexpectedValueException $e ) {
+						$return_var = new WP_Error( 'auth_fail_format', __( 'Authentication key was not properly formated.', 'pf' ) );
+					} catch ( \InvalidArgumentException $e ) {
+						$return_var = new WP_Error( 'auth_fail_key', __( 'Authentication key was not properly supplied.', 'pf' ) );
+					} catch ( \DomainException $e ) {
+						$return_var = new WP_Error( 'auth_fail_ssl', __( 'SSL cannot be applied to the key.', 'pf' ) );
 					} catch ( \Exception $e ) {
-						if ( false === $return_var){
-							return new WP_Error( 'auth_fail_whoknows', __( "Authentication failed for reasons unclear.", "pf" ) );
+						if ( false === $return_var ) {
+							return new WP_Error( 'auth_fail_whoknows', __( 'Authentication failed for reasons unclear.', 'pf' ) );
 						} else {
 							return $return_var;
 						}
 					}
-
 				},
-				'priority'  => 10,
+				'priority'            => 10,
 			)
 		);
 
-		register_rest_route($namespace, '/'.$this->api_base['submit'],
+		register_rest_route(
+			$namespace,
+			'/' . $this->api_base['submit'],
 			array(
-				'methods'         => \WP_REST_Server::EDITABLE,
-				'callback'        => array( $this, 'handle_nomination_submission' ),
-				'args' => array(
-				  'context' => array(
-					  // description should be a human readable description of the argument.
-					'description' => esc_html__( 'The endpoint to which the Nominate This bookmarklet submits to.', 'pf' ),
-					// type specifies the type of data that the argument should be.
-					'type'        => 'string',
-					// Set the argument to be required for the endpoint.
-					'required'    => false,
-					'default'	  => 'view'
-				  ),
-                  'k' => array(
-                      // description should be a human readable description of the argument.
-                    'description' => esc_html__( 'Public Key.', 'pf' ),
-                    // type specifies the type of data that the argument should be.
-                    'type'        => 'string',
-                    // Set the argument to be required for the endpoint.
-                    'required'    => true,
-                    'default'	  => '0'
-                  )
+				'methods'             => \WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'handle_nomination_submission' ),
+				'args'                => array(
+					'context' => array(
+						// description should be a human readable description of the argument.
+						'description' => esc_html__( 'The endpoint to which the Nominate This bookmarklet submits to.', 'pf' ),
+						// type specifies the type of data that the argument should be.
+						'type'        => 'string',
+						// Set the argument to be required for the endpoint.
+						'required'    => false,
+						'default'     => 'view',
+					),
+					'k'       => array(
+						// description should be a human readable description of the argument.
+						'description' => esc_html__( 'Public Key.', 'pf' ),
+						// type specifies the type of data that the argument should be.
+						'type'        => 'string',
+						// Set the argument to be required for the endpoint.
+						'required'    => true,
+						'default'     => '0',
+					),
 				),
 				'permission_callback' => function ( $request ) {
-					// return true;
 					$return_var = false;
 					$request_params = $request->get_params();
 					try {
-						$key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin(trim($request_params['user_key'])));
-						// pf_log('Decode attempt 2 on');
-						// pf_log($key);
-						if (!$key){
-							$return_var = new WP_Error( 'auth_fail_id', __( "Request was signed with incorrect key.", "pf" ) );
+						$key = pressforward( 'controller.jwt' )->get_a_user_private_key_for_decrypt( hex2bin( trim( $request_params['user_key'] ) ) );
+						if ( ! $key ) {
+							$return_var = new WP_Error( 'auth_fail_id', __( 'Request was signed with incorrect key.', 'pf' ) );
 						} else {
 							$return_var = true;
 						}
 						$return_var = false;
 						return $return_var;
-					} catch ( \UnexpectedValueException $e ){
-						$return_var = new WP_Error( 'auth_fail_format', __( "Authentication key was not properly formated. ".$request_params['user_key'], "pf" ) );
-					} catch ( \InvalidArgumentException $e ){
-						$return_var = new WP_Error( 'auth_fail_key', __( "Authentication key was not properly supplied.", "pf" ) );
-					} catch ( \DomainException $e ){
-						$return_var = new WP_Error( 'auth_fail_ssl', __( "SSL cannot be applied to the key.", "pf" ) );
+					} catch ( \UnexpectedValueException $e ) {
+						$return_var = new WP_Error( 'auth_fail_format', __( 'Authentication key was not properly formated.', 'pf' ), $request_params['user_key'] );
+					} catch ( \InvalidArgumentException $e ) {
+						$return_var = new WP_Error( 'auth_fail_key', __( 'Authentication key was not properly supplied.', 'pf' ) );
+					} catch ( \DomainException $e ) {
+						$return_var = new WP_Error( 'auth_fail_ssl', __( 'SSL cannot be applied to the key.', 'pf' ) );
 					} catch ( \Exception $e ) {
-						if ( false === $return_var){
-							return new WP_Error( 'auth_fail_whoknows', __( "Authentication failed for reasons unclear.", "pf" ) );
+						if ( false === $return_var ) {
+							return new WP_Error( 'auth_fail_whoknows', __( 'Authentication failed for reasons unclear.', 'pf' ) );
 						} else {
 							return $return_var;
 						}
 					}
 					return $return_var;
-
 				},
-				'priority'  => 10,
+				'priority'            => 10,
 			)
 		);
-
 	}
 
+	/**
+	 * Callback for base Nominate This endpoint.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response
+	 */
 	public function get_nominate_this_template( $request ) {
 		define( 'IFRAME_REQUEST', true );
 		define( 'WP_ADMIN', false );
 		global $pagenow;
-		//wp_verify_nonce( $nonce, 'wp_rest' );
 		return rest_ensure_response(
 			include PF_ROOT . '/includes/nomthis/nominate-this-core.php'
 		);
 	}
 
-	public function get_nominate_this($request){
-		define( 'IFRAME_REQUEST' , true );
+	/**
+	 * Callback for Nominate This authpoint endpoint.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 */
+	public function get_nominate_this( $request ) {
+		define( 'IFRAME_REQUEST', true );
 		define( 'WP_ADMIN', true );
 		global $pagenow;
 		header( 'Content-Type: ' . get_option( 'html_type' ) . '; charset=' . get_option( 'blog_charset' ) );
 		$nonce = wp_create_nonce( 'wp_rest' );
 		ob_start();
-		wp_login_form(array(
-			'redirect'	=>	rest_url($this->endpoint_for_nominate_this_endpoint.'?nonce='.$nonce, 'html')
-		));
+		wp_login_form(
+			array(
+				'redirect' => rest_url( $this->endpoint_for_nominate_this_endpoint . '?nonce=' . $nonce, 'html' ),
+			)
+		);
 		$login = ob_get_clean();
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $login;
 		die();
-
 	}
 
+	/**
+	 * Fetches the content of a template file.
+	 *
+	 * @param string $path Path to load.
+	 * @return string
+	 */
 	public function get_file( $path ) {
-
 		if ( function_exists( 'realpath' ) ) {
 			$path = realpath( $path );
 		}
 
+		// phpcs:disable
 		if ( ! $path || ! @is_file( $path ) ) {
 			return '';
 		}
 
 		return @file_get_contents( $path );
+		// phpcs:enable
 	}
 
-	public function assembleScripts( $load ) {
-		/** Set ABSPATH for execution */
-
-		if ( is_array( $load ) ) {
-			$load = implode( '', $load );
-		}
-
-		$load = preg_replace( '/[^a-z0-9,_-]+/i', '', $load );
-		$load = array_unique( explode( ',', $load ) );
-
-		if ( empty( $load ) ) {
-			exit;
-		}
-
-		// include_once ABSPATH . 'wp-admin/includes/noop.php';
-		// require( ABSPATH . WPINC . '/script-loader.php' );
-		// require( ABSPATH . WPINC . '/version.php' );
-
-		$compress_raw = isset( $_GET['c'] ) ? sanitize_text_field( wp_unslash( $_GET['c'] ) ) : '';
-
-		$compress       = ( ! empty( $compress_raw ) );
-		$force_gzip     = ( $compress && 'gzip' == $compress_raw );
-		$expires_offset = 31536000; // 1 year
-		$out            = '';
-
-		$wp_scripts = new \WP_Scripts();
-		\wp_default_scripts( $wp_scripts );
-
-		$http_if_none_match = isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_IF_NONE_MATCH'] ) ) : '';
-		if ( $http_if_none_match === $wp_version ) {
-			$protocol = isset( $_SERVER['SERVER_PROTOCOL'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_PROTOCOL'] ) ) : '';
-			if ( ! in_array( $protocol, array( 'HTTP/1.1', 'HTTP/2', 'HTTP/2.0' ) ) ) {
-				$protocol = 'HTTP/1.0';
-			}
-			header( "$protocol 304 Not Modified" );
-			exit();
-		}
-
-		foreach ( $load as $handle ) {
-			if ( ! array_key_exists( $handle, $wp_scripts->registered ) ) {
-				continue;
-			}
-
-			$path = ABSPATH . $wp_scripts->registered[ $handle ]->src;
-			$out .= $this->get_file( $path ) . "\n";
-		}
-
-		// header( "Etag: $wp_version" );
-		// header( 'Content-Type: application/javascript; charset=UTF-8' );
-		// header( 'Expires: ' . gmdate( 'D, d M Y H:i:s', time() + $expires_offset ) . ' GMT' );
-		// header( "Cache-Control: public, max-age=$expires_offset" );
-
-		if ( $compress && ! ini_get( 'zlib.output_compression' ) && 'ob_gzhandler' != ini_get( 'output_handler' ) && isset( $_SERVER['HTTP_ACCEPT_ENCODING'] ) ) {
-			$http_accept_encoding = sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT_ENCODING'] ) );
-			// header( 'Vary: Accept-Encoding' ); // Handle proxies
-			if ( false !== stripos( $http_accept_encoding, 'deflate' ) && function_exists( 'gzdeflate' ) && ! $force_gzip ) {
-				// header( 'Content-Encoding: deflate' );
-				// $out = gzdeflate( $out, 3 );
-			} elseif ( false !== stripos( $http_accept_encoding, 'gzip' ) && function_exists( 'gzencode' ) ) {
-				// header( 'Content-Encoding: gzip' );
-				// $out = gzencode( $out, 3 );
-			}
-		}
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $out;
-	}
-
+	/**
+	 * Callback for submission endpoint.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response|string
+	 */
 	public function handle_nomination_submission( $request ) {
 		// Already authorized at an upper API level.
-		// return esc_html( implode( $_REQUEST ) );
-		// $_POST = $request->get_json_params();
-		pf_log('Nomination Submitted');
-		$_POST = array_merge($_POST, $request->get_params());
+		pf_log( 'Nomination Submitted' );
+		$_POST = array_merge( $_POST, $request->get_params() );
 
 		$user_key = isset( $_POST['user_key'] ) ? sanitize_text_field( wp_unslash( $_POST['user_key'] ) ) : '';
-		$verify  = isset( $_POST['verify'] ) ? sanitize_text_field( wp_unslash( $_POST['verify'] ) ) : '';
+		$verify   = isset( $_POST['verify'] ) ? sanitize_text_field( wp_unslash( $_POST['verify'] ) ) : '';
 
-		$private_key = pressforward('controller.jwt')->get_a_user_private_key_for_decrypt(hex2bin(trim( $user_key )));
-		//$pk_portions = explode('.', $_POST['verify']);
-		$verify = pressforward('controller.jwt')->decode_with_jwt(trim( $verify ), $private_key);
+		$private_key = pressforward( 'controller.jwt' )->get_a_user_private_key_for_decrypt( hex2bin( trim( $user_key ) ) );
+
+		$verify = pressforward( 'controller.jwt' )->decode_with_jwt( trim( $verify ), $private_key );
 		if ( ( false !== $verify ) && property_exists( $verify, 'date' ) ) {
-			$date_obj = \date_create( '@' . ( $verify->date ) );
+			$date_obj         = \date_create( '@' . $verify->date );
 			$current_date_obj = new \DateTime();
-			// 15 minutes
+			// 15 minutes.
 			$allowable_diff = new \DateInterval( 'PT15M' );
 			$date_obj->add( $allowable_diff );
 			if ( $date_obj < $current_date_obj ) {
-				// Too old of a message
-				return '{"error": "bad date", "date_sent":"'.$date_obj->format('Y-m-d H:i:s').'", "date_internal":"'.$current_date_obj->format('Y-m-d H:i:s').'"}';
+				// Too old of a message.
+				return '{"error": "bad date", "date_sent":"' . $date_obj->format( 'Y-m-d H:i:s' ) . '", "date_internal":"' . $current_date_obj->format( 'Y-m-d H:i:s' ) . '"}';
 			}
 		} else {
-			return '{ error: "verification not available"}'.' pk:'.$private_key.' v:'.$verify.' vr:' . $verify . '  uk: '.hex2bin(trim( $user_key )). ' pk portions:'. $pk_portions[0]. '    '. $pk_portions[1];
+			return '{ error: "verification not available"} pk:' . $private_key . ' v:' . $verify . ' vr:' . $verify . '  uk: ' . hex2bin( trim( $user_key ) );
 		}
 
-		$user_id = pressforward('controller.jwt')->get_user_by_key( $user_key );
-		wp_set_current_user($user_id);
+		$user_id = pressforward( 'controller.jwt' )->get_user_by_key( $user_key );
+		wp_set_current_user( $user_id );
 
-		$user_data = isset( $_POST['data'] ) ? sanitize_text_field( wp_unslash( $_POST['data'] ) ) : '';
-		$decrypted_data = pressforward('controller.jwt')->decode_with_jwt(trim( $user_data ), $private_key);
-		if ( false === $decrypted_data ){
+		$user_data      = isset( $_POST['data'] ) ? sanitize_text_field( wp_unslash( $_POST['data'] ) ) : '';
+		$decrypted_data = pressforward( 'controller.jwt' )->decode_with_jwt( trim( $user_data ), $private_key );
+
+		if ( false === $decrypted_data ) {
 			return '{ "error": "bad data" }';
 		}
-		pf_log('Nomination Data received: ');
-		pf_log($decrypted_data);
-		$_POST = array_merge( $_POST, (array) $decrypted_data );
+
+		pf_log( 'Nomination Data received: ' );
+		pf_log( $decrypted_data );
+		$_POST               = array_merge( $_POST, (array) $decrypted_data );
 		$_POST['post_title'] = isset( $_POST['post_title'] ) ? urldecode( sanitize_text_field( wp_unslash( $_POST['post_title'] ) ) ) : '';
-		$_POST['content'] = isset( $_POST['content'] ) ? urldecode( sanitize_text_field( wp_unslash( $_POST['content'] ) ) ) : '';
-		$_POST['publish'] = isset( $_POST['publish'] ) ? urldecode( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) ) : '';
-		$id = pressforward('bookmarklet.core')->nominate_it(false);
-		$return_object = new \stdClass();
-		$return_object->id = $id;
-		$response = new \WP_REST_Response($return_object);
+		$_POST['content']    = isset( $_POST['content'] ) ? urldecode( sanitize_text_field( wp_unslash( $_POST['content'] ) ) ) : '';
+		$_POST['publish']    = isset( $_POST['publish'] ) ? urldecode( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) ) : '';
+		$id                  = pressforward( 'bookmarklet.core' )->nominate_it( false );
+		$return_object       = new \stdClass();
+		$return_object->id   = $id;
+		$response            = new \WP_REST_Response( $return_object );
 		$response->header( 'Content-Type', 'application/json' );
-		return rest_ensure_response($response);
+		return rest_ensure_response( $response );
 	}
 
-	public function get_nominate_this_script(){
-		$fontFace = <<<EOF
+	/**
+	 * Callback for script endpoint.
+	 */
+	public function get_nominate_this_script() {
+		// phpcs:disable
+		$font_face   = <<<EOF
 @font-face {
     font-family: 'tinymce';
     src: url(data:application/font-woff2;charset=utf-8;base64,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) format('woff2'),
@@ -412,22 +436,27 @@ class NominateThisEndpoint implements HasActions {
     font-style: normal;
 }
 EOF;
-		$fontFaceJS = trim(preg_replace('/\s+/', ' ', $fontFace));;
+		// phpcs:enable
+
+		$font_face_js = trim( preg_replace( '/\s+/', ' ', $font_face ) );
+
 		$site_url = ABSPATH;
+
+		// phpcs:ignore
 		// $basic_scripts = '/wp-admin/load-scripts.php?c=1&load%5B%5D=jquery,jquery-core,jquery-migrate,utils,moxiejs,plupload,jquery-ui-core,jquery-ui-widget';
+
 		header( 'Content-Type: application/javascript; charset=' . get_option( 'blog_charset' ) );
 		echo 'window.pfSiteData = {}; ';
-		echo 'window.pfSiteData.site_url = "'. esc_js( \get_site_url() ) . '"; ';
-		echo 'window.pfSiteData.plugin_url = "'. esc_js( plugin_dir_url( dirname(dirname(__FILE__)) ) ) . '"; ';
-		echo 'window.pfSiteData.submit_endpoint = "' . esc_js( trailingslashit(\get_site_url()) . 'wp-json/' . $this->api_base['base_namespace'] . $this->api_base['version'] . '/' . $this->api_base['submit'] ) . '"; ';
-		echo 'window.pfSiteData.categories_endpoint = "'. esc_js( trailingslashit(\get_site_url()) ) . 'wp-json/wp/v2/categories"; ';
-		echo 'window.pfSiteData.fontFace = "' . esc_js( $fontFaceJS ) . '"';
+		echo 'window.pfSiteData.site_url = "' . esc_js( \get_site_url() ) . '"; ';
+		echo 'window.pfSiteData.plugin_url = "' . esc_js( plugin_dir_url( dirname( __DIR__ ) ) ) . '"; ';
+		echo 'window.pfSiteData.submit_endpoint = "' . esc_js( trailingslashit( \get_site_url() ) . 'wp-json/' . $this->api_base['base_namespace'] . $this->api_base['version'] . '/' . $this->api_base['submit'] ) . '"; ';
+		echo 'window.pfSiteData.categories_endpoint = "' . esc_js( trailingslashit( \get_site_url() ) ) . 'wp-json/wp/v2/categories"; ';
+		echo 'window.pfSiteData.font_face = "' . esc_js( $font_face_js ) . '"';
 		include_once PF_ROOT . '/assets/js/jws.js';
 		include_once PF_ROOT . '/assets/js/jwt.js';
 
+		// phpcs:disable
 		// include_once $site_url . 'wp-includes/js/jquery/jquery.js';
-
-		// $this->assembleScripts( 'load%5B%5D=jquery-core,jquery-migrate,utils,moxiejs,plupload,jquery-ui-core,jquery-ui-widget' );
 
 		// // include_once $site_url . 'wp-includes/js/jquery/ui/position.min.js?';
 		// include_once $site_url . 'wp-includes/js/jquery/ui/menu.min.js';
@@ -441,8 +470,8 @@ EOF;
 		// include_once PF_ROOT . '/Libraries/tinymce/js/tinymce/tinymce.min.js';
 		// include_once PF_ROOT . '/Libraries/SummerNote/summernote.js';
 		include_once PF_ROOT . '/assets/js/nominate-tool.js';
+		// phpcs:enable
+
 		die();
 	}
-
-
 }

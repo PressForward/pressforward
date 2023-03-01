@@ -1,4 +1,10 @@
 <?php
+/**
+ * Readability endpoint.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\API;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
@@ -7,14 +13,55 @@ use PressForward\Controllers\PF_Readability;
 use PressForward\Core\Utility\Forward_Tools;
 use PressForward\Libraries\HTMLChecker;
 
-use WP_Ajax_Response;
-use WP_Error;
-// use \WP_REST_Controller;
+use \WP_Ajax_Response;
+use \WP_Error;
+
+/**
+ * Readability endpoint.
+ */
 class ReadabilityEndpoint implements HasActions {
 
+	/**
+	 * API base data.
+	 *
+	 * @access protected
+	 * @var array
+	 */
 	protected $api_base;
 
-	function __construct( $api_base, PF_Readability $readability, Forward_Tools $forward_tools, HTMLChecker $html_checker ) {
+	/**
+	 * PFReadability object.
+	 *
+	 * @access public
+	 * @var \PressForward\Controllers\PF_Readability
+	 */
+	public $readability;
+
+	/**
+	 * HTMLChecker object.
+	 *
+	 * @access public
+	 * @var \PressForward\Core\Utility\Forward_Tools
+	 */
+	public $forward_tools;
+
+	/**
+	 * HTMLChecker object.
+	 *
+	 * @access public
+	 * @var \PressForward\Libraries\HTMLChecker
+	 */
+	public $html_checker;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param array                                    $api_base      API base data.
+	 * @param \PressForward\Controllers\PF_Readability $readability   PF_Readability object.
+	 * @param \PressForward\Core\Utility\Forward_Tools $forward_tools Forward_Tools object.
+	 * @param \PressForward\Libraries\HTMLChecker      $html_checker  HTMLChecker object.
+	 */
+	public function __construct( $api_base, PF_Readability $readability, Forward_Tools $forward_tools, HTMLChecker $html_checker ) {
 		$this->api_base             = $api_base;
 		$this->api_base['endpoint'] = 'readability';
 		$this->readability          = $readability;
@@ -22,8 +69,10 @@ class ReadabilityEndpoint implements HasActions {
 		$this->html_checker         = $html_checker;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function action_hooks() {
-		// add_action( 'rest_api_init', 'activate_pf_rest_controller', 11 );
 		$actions = array(
 			array(
 				'hook'     => 'rest_api_init',
@@ -34,7 +83,10 @@ class ReadabilityEndpoint implements HasActions {
 		return $actions;
 	}
 
-	function activate() {
+	/**
+	 * Sets up endpoint registration.
+	 */
+	public function activate() {
 		$controller = $this;
 		$controller->register_routes();
 	}
@@ -46,7 +98,9 @@ class ReadabilityEndpoint implements HasActions {
 		$namespace = $this->api_base['base_namespace'] . $this->api_base['version'];
 		$base      = $this->api_base['endpoint'];
 		register_rest_route(
-			$namespace, '/' . $base, array(
+			$namespace,
+			'/' . $base,
+			array(
 				array(
 					'methods'             => \WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'make_html_readable' ),
@@ -73,7 +127,7 @@ class ReadabilityEndpoint implements HasActions {
 						),
 					),
 					'permission_callback' => function () {
-						return false; // current_user_can( 'edit_others_posts' );
+						return false;
 					},
 					'priority'            => 10,
 				),
@@ -81,7 +135,9 @@ class ReadabilityEndpoint implements HasActions {
 		);
 
 		register_rest_route(
-			$namespace, '/' . $base . '/url', array(
+			$namespace,
+			'/' . $base . '/url',
+			array(
 				array(
 					'methods'             => \WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'get_readable_from_url' ),
@@ -98,21 +154,20 @@ class ReadabilityEndpoint implements HasActions {
 						),
 					),
 					'permission_callback' => function () {
-						return false; // current_user_can( 'edit_others_posts' );
+						return false;
 					},
 					'priority'            => 10,
 				),
 			)
 		);
-
 	}
 	/**
 	 * Validate a request argument based on details registered to the route.
 	 *
-	 * @param  mixed           $value   Value of the 'filter' argument.
-	 * @param  WP_REST_Request $request The current request object.
-	 * @param  string          $param   Key of the parameter. In this case it is 'html_doc'.
-	 * @return WP_Error|boolean
+	 * @param  mixed            $value   Value of the 'filter' argument.
+	 * @param  \WP_REST_Request $request The current request object.
+	 * @param  string           $param   Key of the parameter. In this case it is 'html_doc'.
+	 * @return \WP_Error|boolean
 	 */
 	public function is_valid_html( $value, $request, $param ) {
 		// If the argument is not a string return an error.
@@ -125,28 +180,27 @@ class ReadabilityEndpoint implements HasActions {
 	/**
 	 * Sanitize a request argument based on details registered to the route.
 	 *
-	 * @param  mixed           $value   Value of the 'filter' argument.
-	 * @param  WP_REST_Request $request The current request object.
-	 * @param  string          $param   Key of the parameter. In this case it is 'html_doc'.
+	 * @param  mixed            $value   Value of the 'filter' argument.
+	 * @param  \WP_REST_Request $request The current request object.
+	 * @param  string           $param   Key of the parameter. In this case it is 'html_doc'.
 	 * @return string
 	 */
 	public function is_sane_html( $value, $request, $param ) {
-		return $value;
 		// Readability will take care of sanitization.
-		// return wp_kses_post($value);
+		return $value;
 	}
 
 	/**
 	 * Validate a request argument based on details registered to the route.
 	 *
-	 * @param  mixed           $value   Value of the 'filter' argument.
-	 * @param  WP_REST_Request $request The current request object.
-	 * @param  string          $param   Key of the parameter. In this case it is 'source_url'.
-	 * @return WP_Error|boolean
+	 * @param  mixed            $value   Value of the 'filter' argument.
+	 * @param  \WP_REST_Request $request The current request object.
+	 * @param  string           $param   Key of the parameter. In this case it is 'source_url'.
+	 * @return \WP_Error|boolean
 	 */
 	public function is_valid_url( $value, $request, $param ) {
 		// If the argument is not a string return an error.
-		if ( false == parse_url( $value ) || ( filter_var( $value, FILTER_VALIDATE_URL ) === false ) ) {
+		if ( false === wp_parse_url( $value ) || ( filter_var( $value, FILTER_VALIDATE_URL ) === false ) ) {
 			return new WP_Error( 'rest_invalid_param', esc_html__( 'The source_url argument must be a well formed URL.', 'pf' ), array( 'status' => 400 ) );
 		} else {
 			return true;
@@ -156,10 +210,10 @@ class ReadabilityEndpoint implements HasActions {
 	/**
 	 * Sanitize a request argument based on details registered to the route.
 	 *
-	 * @param  mixed           $value   Value of the 'filter' argument.
-	 * @param  WP_REST_Request $request The current request object.
-	 * @param  string          $param   Key of the parameter. In this case it is 'source_url'.
-	 * @return WP_Error|string
+	 * @param  mixed            $value   Value of the 'filter' argument.
+	 * @param  \WP_REST_Request $request The current request object.
+	 * @param  string           $param   Key of the parameter. In this case it is 'source_url'.
+	 * @return \WP_Error|string
 	 */
 	public function is_sane_url( $value, $request, $param ) {
 		return filter_var( $value, FILTER_SANITIZE_URL );
@@ -169,10 +223,12 @@ class ReadabilityEndpoint implements HasActions {
 	 * This is our callback function that embeds our resource in a WP_REST_Response.
 	 *
 	 * The parameter is already sanitized by this point so we can use it without any worries.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response|\WP_Error
 	 */
 	public function make_html_readable( $request ) {
 		if ( isset( $request['html_doc'] ) && isset( $request['source_url'] ) ) {
-			// \rest_ensure_response(
 			return rest_ensure_response(
 				htmlspecialchars( $this->readability->process_readability( $request['html_doc'], $request['source_url'] ) )
 			);
@@ -181,11 +237,15 @@ class ReadabilityEndpoint implements HasActions {
 		return new \WP_Error( 'rest_invalid', esc_html__( 'The html_doc and source_url parameters are required.', 'pf' ), array( 'status' => 400 ) );
 	}
 
+	/**
+	 * Callback for /readability/url endpoint.
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response
+	 */
 	public function get_readable_from_url( $request ) {
 		return rest_ensure_response(
 			htmlspecialchars( $this->readability->readability_object( $request['source_url'] ) )
 		);
 	}
-
-
 }

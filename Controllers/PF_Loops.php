@@ -1,29 +1,45 @@
 <?php
+/**
+ * Loop tools.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Controllers;
 
+/**
+ * PF_Loops class.
+ */
 class PF_Loops {
 
-	public function __construct() {
-
-	}
+	/**
+	 * Constructor.
+	 *
+	 * @return void
+	 */
+	public function __construct() {}
 
 	// This function feeds items to our display feed function pf_reader_builder.
 	// It is just taking our database of rssarchival items and putting them into a
 	// format that the builder understands.
+
 	/**
 	 * Fetch a collection of feed items and format for use in the reader.
 	 *
-	 * @param  int    $pageTop      First item to display on the page. Note that it
-	 *                              is decremented by 1, so should not be 0.
-	 * @param  int    $pagefull     Number of items to show per page.
-	 * @param  int    $fromUnixTime Feed items will only be returned when their
-	 *                              publish date is later than this. Must be in
-	 *                              UNIX format.
-	 * @param  bool   $limitless    True to show all feed items. Skips pagination,
-	 *                              but obeys $fromUnixTime. Default: false.
-	 * @param  string $limit        Limit to feed items with certain relationships
-	 *                              set. Note that relationships are relative to
-	 *                              logged-in user. (starred|nominated)
+	 * @param array $args {
+	 *   Array of optional arguments.
+	 *   @var int    $pageTop      First item to display on the page. Note that it
+	 *                             is decremented by 1, so should not be 0.
+	 *   @var int    $pagefull     Number of items to show per page.
+	 *   @var int    $fromUnixTime Feed items will only be returned when their
+	 *                             publish date is later than this. Must be in
+	 *                             UNIX format.
+	 *   @var bool   $limitless    True to show all feed items. Skips pagination,
+	 *                             but obeys $fromUnixTime. Default: false.
+	 *   @var string $limit        Limit to feed items with certain relationships
+	 *                             set. Note that relationships are relative to
+	 *                             logged-in user (starred|nominated).
+	 * }
 	 * @return array
 	 */
 	public static function archive_feed_to_display( $args = array() ) {
@@ -65,7 +81,8 @@ class PF_Loops {
 				'search_terms'     => '',
 				'exclude_archived' => false,
 				'count_total'      => false,
-			), $args
+			),
+			$args
 		);
 
 		if ( empty( $r['from_unix_time'] ) || ( $r['from_unix_time'] < 100 ) ) {
@@ -75,9 +92,15 @@ class PF_Loops {
 		$r['start'] = $r['start'] - 1;
 
 		if ( ! $r['posts_per_page'] ) {
-			$user_obj            = wp_get_current_user();
-			$user_id             = $user_obj->ID;
+			$user_obj = wp_get_current_user();
+			$user_id  = $user_obj->ID;
+
+			// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 			$r['posts_per_page'] = get_user_option( 'pf_pagefull', $user_id );
+			if ( $r['posts_per_page'] > 100 ) {
+				$r['posts_per_page'] = 100;
+			}
+
 			if ( empty( $r['posts_per_page'] ) ) {
 				$r['posts_per_page'] = 20;
 			}
@@ -87,14 +110,16 @@ class PF_Loops {
 			'post_type'      => pf_feed_item_post_type(),
 
 			// Ordering by 'sortable_item_date' > 0.
+			// phpcs:disable WordPress.DB.SlowDBQuery
 			'meta_key'       => 'sortable_item_date',
 			'meta_value'     => $r['from_unix_time'],
 			'meta_type'      => 'SIGNED',
 			'meta_compare'   => '>',
+			// phpcs:enable WordPress.DB.SlowDBQuery
 			'orderby'        => 'meta_value',
 			'order'          => 'DESC',
 
-			// Pagination
+			// Pagination.
 			'posts_per_page' => $r['posts_per_page'],
 			'offset'         => $r['start'],
 		);
@@ -157,7 +182,7 @@ class PF_Loops {
 
 			if ( isset( $drafted_items ) ) {
 				// Intersect to match only those items that have drafts.
-				if ( ! empty( $post_args['post__in'] ) && array( 0 ) != $drafted_items ) {
+				if ( ! empty( $post_args['post__in'] ) && array( 0 ) !== $drafted_items ) {
 					$post_args['post__in'] = array_intersect( $post_args['post__in'], $drafted_items );
 				} else {
 					$post_args['post__in'] = $drafted_items;
@@ -180,7 +205,7 @@ class PF_Loops {
 		}
 
 		$post_args['post_status'] = 'publish';
-		// die();
+
 		if ( isset( $_GET['feed'] ) ) {
 			$post_args['post_parent'] = intval( $_GET['feed'] );
 		} elseif ( isset( $_GET['folder'] ) ) {
@@ -190,6 +215,8 @@ class PF_Loops {
 					'fields'                 => 'ids',
 					'update_post_term_cache' => false,
 					'update_post_meta_cache' => false,
+
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 					'tax_query'              => array(
 						array(
 							'taxonomy' => pressforward( 'schema.feeds' )->tag_taxonomy,
@@ -200,6 +227,7 @@ class PF_Loops {
 					),
 				)
 			);
+
 			$post_args['post_parent__in'] = $parents_in_folder->posts;
 			if ( empty( $post_args['post_parent__in'] ) ) {
 				return array();
@@ -208,8 +236,8 @@ class PF_Loops {
 
 		$feed_items = new \WP_Query( $post_args );
 
-		$feedObject = array();
-		$c          = 0;
+		$feed_object = array();
+		$c           = 0;
 
 		foreach ( $feed_items->posts as $post ) {
 			$post_id = $post->ID;
@@ -225,10 +253,29 @@ class PF_Loops {
 			$source_repeat   = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'source_repeat', true );
 			$readable_status = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'readable_status', true );
 
-			$contentObj   = pressforward( 'library.htmlchecker' );
-			$item_content = $contentObj->closetags( $post->post_content );
+			$content_obj  = pressforward( 'library.htmlchecker' );
+			$item_content = $content_obj->closetags( $post->post_content );
 
-			$feedObject[ 'rss_archive_' . $c ] = pf_feed_object(
+			// Remove image src attributes and replace with data-src attributes.
+			$doc = new \DOMDocument();
+			libxml_use_internal_errors( true );
+			$doc->loadHTML( '<?xml version="1.0" encoding="UTF-8"?>' . $item_content );
+			$imgs = $doc->getElementsByTagName( 'img' );
+			foreach ( $imgs as $img ) {
+				$img_src = $img->getAttribute( 'src' );
+				$img->removeAttribute( 'src' );
+				$img->setAttribute( 'data-src', $img_src );
+			}
+
+			$item_content = '';
+			$bodies       = $doc->getElementsByTagName( 'body' );
+			if ( $bodies && $bodies->length > 0 ) {
+				foreach ( $bodies->item( 0 )->childNodes as $child ) {
+					$item_content .= $doc->saveHTML( $child );
+				}
+			}
+
+			$feed_object[ 'rss_archive_' . $c ] = pf_feed_object(
 				$post->post_title,
 				$source_title,
 				$item_date,
@@ -240,22 +287,22 @@ class PF_Loops {
 				$item_wp_date,
 				$item_tags,
 				// Manual ISO 8601 date for pre-PHP5 systems.
-				date( 'o-m-d\TH:i:sO', strtotime( $post->post_date ) ),
+				gmdate( 'o-m-d\TH:i:sO', strtotime( $post->post_date ) ),
 				$source_repeat,
 				$post_id,
 				$readable_status
 			);
 
-			$c++;
+			++$c;
 		}
 
 		if ( $r['count_total'] ) {
 			$retval = [
-				'items'         => $feedObject,
+				'items'         => $feed_object,
 				'max_num_pages' => $feed_items->max_num_pages,
 			];
 		} else {
-			$retval = $feedObject;
+			$retval = $feed_object;
 		}
 
 		return $retval;

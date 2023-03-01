@@ -1,4 +1,10 @@
 <?php
+/**
+ * Service provider for admin area.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Providers;
 
 use PressForward\Core\Admin\Menu;
@@ -10,8 +16,15 @@ use PressForward\Core\Utility\Forward_Tools;
 use PressForward\Core\Utility\Relate;
 use PressForward\Core\Utility\Retrieval;
 
+/**
+ * AssetsProvider class.
+ */
 class UtilityProvider extends ServiceProvider {
-
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @param Container $container Container.
+	 */
 	public function register( Container $container ) {
 
 		$container->share(
@@ -43,7 +56,5 @@ class UtilityProvider extends ServiceProvider {
 				return new Retrieval();
 			}
 		);
-
-		// parent::register( $container );
 	}
 }

@@ -1,4 +1,10 @@
 <?php
+/**
+ * Stats utilities.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Controllers;
 
 use stdClass;
@@ -7,23 +13,121 @@ use WP_Error;
 use WP_Query;
 use PressForward\Controllers\Metas;
 use PressForward\Controllers\Stats_Shortcodes as Stats_Shortcodes;
-// use \WP_REST_Controller;
+
+/**
+ * Stats utilities.
+ */
 class Stats {
+	/**
+	 * Slug.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $slug;
 
-	var $slug;
-	var $title;
-	var $root;
-	var $file_path;
-	var $url;
-	var $ver;
-	var $feed_post_type;
-	var $meta_key;
+	/**
+	 * Title.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $title;
 
-	var $base;
-	var $access;
-	var $shortcodes;
-	var $gender_checker;
+	/**
+	 * Root path.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $root;
 
+	/**
+	 * File path.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $file_path;
+
+	/**
+	 * URL.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $url;
+
+	/**
+	 * Stats version.
+	 *
+	 * @access public
+	 * @var float
+	 */
+	public $ver;
+
+	/**
+	 * Feed post type.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $feed_post_type;
+
+	/**
+	 * Meta key for stats.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $meta_key;
+
+	/**
+	 * Metas object.
+	 *
+	 * @access public
+	 * @var \PressForward\Controllers\Metas
+	 */
+	public $metas;
+
+	/**
+	 * Meta key for author.
+	 *
+	 * @access public
+	 * @var string
+	 */
+	public $meta_author_key;
+
+	/**
+	 * Not used.
+	 *
+	 * @access public
+	 * @var mixed
+	 */
+	public $base;
+
+	/**
+	 * Not used.
+	 *
+	 * @access public
+	 * @var mixed
+	 */
+	public $access;
+
+	/**
+	 * Shortcodes object.
+	 *
+	 * @access public
+	 * @var \PressForward\Controllers\Stats_Shortcodes
+	 */
+	public $shortcodes;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \PressForward\Controllers\Metas $metas Metas object.
+	 * @return void
+	 */
 	public function __construct( Metas $metas ) {
 		$shortcodes  = new Stats_Shortcodes();
 		$this->metas = $metas;
@@ -32,12 +136,16 @@ class Stats {
 		$this->includes();
 		$this->access();
 		$this->shortcodes( $shortcodes );
-		$this->gender_checker();
-
 	}
+
+	/**
+	 * Sets up data for the Stats engine.
+	 *
+	 * @return void
+	 */
 	private function define_constants() {
 		$this->slug            = 'pf_stats';
-		$this->title           = 'PressForward Stats';
+		$this->title           = __( 'PressForward Stats', 'pf' );
 		$this->root            = PF_ROOT;
 		$this->file_path       = $this->root . '/' . basename( __FILE__ );
 		$this->url             = plugins_url( '/', __FILE__ );
@@ -46,48 +154,40 @@ class Stats {
 		$this->meta_key        = pressforward( 'controller.metas' )->get_key( 'item_id' );
 		$this->meta_author_key = 'item_author';
 	}
+
+	/**
+	 * Sets up Stats libraries.
+	 */
 	private function includes() {
-		require_once $this->root . '/Libraries/enumeration/src/Eloquent/Enumeration/Multiton.php';
-		require_once $this->root . '/Libraries/enumeration/src/Eloquent/Enumeration/Enumeration.php';
-		if ( PHP_VERSION >= 5.4 ) {
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Gender.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/Traits/NameList.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/Interfaces/Matcher.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/BabyNamesWSMatch.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/RestNamesWSMatch.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/RegExpV1Match.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/RegExpV2Match.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/MetaphoneWeightedMatch.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/MetaphoneMatch.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/ListWeightedMatch.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/Matchers/ListMatch.php';
-			require_once $this->root . '/Libraries/gender-checker/src/GenderEngine/GenderEngine.php';
-		}
 		require_once $this->root . '/Libraries/text-stats/src/DaveChild/TextStatistics/TextStatistics.php';
 	}
 
-	public function base() {
+	/**
+	 * Not used.
+	 */
+	public function base() {}
 
-	}
-	public function access() {
+	/**
+	 * Not used.
+	 */
+	public function access() {}
 
-	}
-
+	/**
+	 * Sets up shortcodes for stats.
+	 *
+	 * @param \PressForward\Controllers\Stats_Shortcodes $shortcodes Shortcodes object.
+	 */
 	public function shortcodes( $shortcodes ) {
 		if ( empty( $this->shortcodes ) ) {
 			$this->shortcodes = $shortcodes;
 		}
 	}
-	public function gender_checker() {
-		if ( empty( $this->gender_checker ) ) {
-			if ( PHP_VERSION >= 5.4 ) {
-				$this->gender_checker = new \GenderEngine\GenderEngine();
-			} else {
-				$this->gender_checker = new stdClass();
-			}
-		}
-	}
 
+	/**
+	 * Gets the meta_query args for the stats query.
+	 *
+	 * @return array
+	 */
 	private function meta_query_args() {
 		return array(
 			'pf_item_check' => array(
@@ -97,6 +197,11 @@ class Stats {
 		);
 	}
 
+	/**
+	 * Gets the post_status value for the stats query.
+	 *
+	 * @return string
+	 */
 	private function post_status_query_args() {
 		$status = get_option( PF_SLUG . '_draft_post_status', 'draft' );
 		if ( 'draft' !== $status ) {
@@ -107,10 +212,21 @@ class Stats {
 		return $status_check;
 	}
 
+	/**
+	 * Gets the post type for the stats query.
+	 *
+	 * @return string
+	 */
 	private function post_type_for_query() {
 		return get_option( PF_SLUG . '_draft_post_type', 'post' );
 	}
 
+	/**
+	 * Creates argument array for a WP_Query.
+	 *
+	 * @param array $wp_query_args Overrides for default argument values.
+	 * @return array
+	 */
 	private function establish_query( $wp_query_args ) {
 		$default_meta_query = $this->meta_query_args();
 		if ( isset( $wp_query_args['meta_query'] ) ) {
@@ -135,18 +251,31 @@ class Stats {
 		return $args;
 	}
 
+	/**
+	 * Creates a WP_Query object for compiling stats.
+	 *
+	 * @param array $wp_query_args Arguments to pass to WP_Query.
+	 * @return WP_Query
+	 */
 	public function stats_query_for_pf_published_posts( $wp_query_args ) {
-
 		$args = $this->establish_query( $wp_query_args );
 
 		do_action( 'pf_stats_query_before', $args );
 		$args = apply_filters( 'pf_qualified_stats_post_query', $args );
-		// salon_sane()->slnm_log($args);
+
 		$q = new \WP_Query( $args );
+
 		do_action( 'pf_stats_query_after', $q );
 		return $q;
 	}
 
+	/**
+	 * Loads info for a specific author into the leaderboard.
+	 *
+	 * @param int   $id      ID of the user.
+	 * @param array $authors Array of author info.
+	 * @return array
+	 */
 	public function set_author_into_leaderboard( $id, $authors ) {
 		$author                = $this->metas->get_post_pf_meta( $id, $this->meta_author_key );
 		$author_and_test       = explode( ' and ', $author );
@@ -182,66 +311,62 @@ class Stats {
 		return $authors;
 	}
 
+	/**
+	 * Increases author count by 1.
+	 *
+	 * @param string $author_slug Author slug.
+	 * @param array  $authors     Array of author info.
+	 * @return array
+	 */
 	private function set_author_count( $author_slug, $authors ) {
 		$authors[ $author_slug ]['count'] = $authors[ $author_slug ]['count'] + 1;
 		return $authors;
 	}
 
-	private function set_author_gender( $name ) {
-		if ( PHP_VERSION >= 5.4 ) {
-			$author_name             = (string) $name;
-			$author_first_name_array = explode( ' ', $author_name );
-			$author_first_name       = (string) $author_first_name_array[0];
-			if ( empty( $author_first_name ) ) {
-				if ( empty( $author_name ) ) {
-					$author_first_name = 'No author found.';
-				} else {
-					$author_first_name = $name;
-				}
-			}
-			$gender = $this->gender_checker->test( $author_first_name );
-			return $gender;
-		} else {
-			return '';
-		}
-	}
-
-	private function set_author_gender_confidence() {
-		if ( PHP_VERSION >= 5.4 ) {
-			$confidence = $this->gender_checker->getPreviousMatchConfidence();
-			$confidence = (string) $confidence;
-			return $confidence;
-		} else {
-			return '';
-		}
-	}
-
+	/**
+	 * Sets up data about an author.
+	 *
+	 * @param string $author_slug Slug for the author, used as a lookup key.
+	 * @param string $author      Author name.
+	 * @param array  $authors     Existing list of authors.
+	 * @return array
+	 */
 	private function set_new_author_object( $author_slug, $author, $authors ) {
 		$authors[ $author_slug ] = array(
 			'count' => 1,
 			'name'  => $author,
-										// 'gender'          => $this->set_author_gender($author),
-										// 'gender_confidence'   => $this->set_author_gender_confidence()
 		);
 
 		return $authors;
 	}
 
+	/**
+	 * Gets the leaderboard entry text for an author.
+	 *
+	 * @param array $author Author info.
+	 * @return string
+	 */
 	private function add_author_leaderboard_entry( $author ) {
 		if ( empty( $author ) ) {
 			$author          = array();
 			$author['count'] = 0;
 		}
 		if ( ( empty( $author['name'] ) ) ) {
-			$author['name'] = 'No author found.';
+			$author['name'] = __( 'No author found.', 'pf' );
 		}
 		$s  = "\n<li>";
-		$s .= $author['name'] . ' (' . $author['count'] . ')';
-		// $s .= ' This author is likely ' . $author['gender'] . '. Confidence: ' . $author['gender_confidence'];
+		$s .= esc_html( $author['name'] ) . ' (' . esc_html( $author['count'] ) . ')';
 		$s .= '</li>';
 		return $s;
 	}
 
+	/**
+	 * Gets a set of stat counts.
+	 *
+	 * @param array $args       Arguments for WP_Query.
+	 * @param array $date_query Optional. Date query args.
+	 * @return array
+	 */
 	public function counts( $args, $date_query = array() ) {
 		$query                   = $args;
 		$query['date_query']     = $date_query;
@@ -272,5 +397,4 @@ class Stats {
 
 		return $r;
 	}
-
 }

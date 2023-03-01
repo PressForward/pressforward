@@ -1,31 +1,45 @@
 <?php
+/**
+ * Plugin loader.
+ *
+ * @package PressForward
+ */
 
 namespace PressForward;
 
 use SplClassLoader as JaxionClassLoader;
 
+/**
+ * Loader class.
+ */
 class Loader {
 
-	function __construct() {
-
+	/**
+	 * Constructor.
+	 */
+	public function __construct() {
 		$this->includes();
 		$this->namespace_to();
-
 	}
 
-	function test() {
+	/**
+	 * Not used.
+	 */
+	public function test() {
 		echo 'This thing';
 	}
 
-	function includes() {
-		$classLoader = new JaxionClassLoader( 'Intraxia\Jaxion', dirname( __FILE__ ) . '/Libraries/Jaxion/src' );
-		$classLoader->filterFinalPath( 'Intraxia' . DIRECTORY_SEPARATOR . 'Jaxion' . DIRECTORY_SEPARATOR, '' );
-		$classLoader->register();
-
+	/**
+	 * Sets up class loader for Jaxion.
+	 */
+	public function includes() {
+		$class_loader = new JaxionClassLoader( 'Intraxia\Jaxion', __DIR__ . '/Libraries/Jaxion/src' );
+		$class_loader->filterFinalPath( 'Intraxia' . DIRECTORY_SEPARATOR . 'Jaxion' . DIRECTORY_SEPARATOR, '' );
+		$class_loader->register();
 	}
 
-	function namespace_to() {
-
-	}
-
+	/**
+	 * Not used.
+	 */
+	public function namespace_to() {}
 }

@@ -1,17 +1,43 @@
 <?php
+/**
+ * Admin bar setup.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Admin;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
 
-use PressForward\Interfaces\SystemUsers;
+use PressForward\Controllers\PFtoWPUsers;
 
+/**
+ * Admin bar setup.
+ */
 class AdminBar implements HasActions, HasFilters {
-	function __construct( SystemUsers $user_interface ) {
-		$this->user_interface = $user_interface;
+	/**
+	 * PFtoWPUsers object.
+	 *
+	 * @access public
+	 * @var \PressForward\Controllers\PFtoWPUsers
+	 */
+	public $user_interface;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param \PressForward\Controllers\PFtoWPUsers $user_interface PFtoWPUsers object.
+	 */
+	public function __construct( PFtoWPUsers $user_interface ) {
+		$this->user_interface = $user_interface;
 	}
 
+	/**
+	 * Sets up action hooks for this class.
+	 *
+	 * @return array
+	 */
 	public function action_hooks() {
 		return array(
 			array(
@@ -22,10 +48,21 @@ class AdminBar implements HasActions, HasFilters {
 		);
 	}
 
+	/**
+	 * Sets up filter hooks for this class.
+	 *
+	 * @return array
+	 */
 	public function filter_hooks() {
 		return array();
 	}
 
+	/**
+	 * Adds admin bar items.
+	 *
+	 * @param \WP_Admin_Bar $wp_admin_bar Admin bar object.
+	 * @return \WP_Admin_Bar
+	 */
 	public function add_plugin_admin_bar_menu( $wp_admin_bar ) {
 		$valid_capability = get_option( 'pf_menu_preferences_access', $this->user_interface->pf_get_defining_capability_by_role( 'administrator' ) );
 		$metrics_config   = get_option( 'pf_metrics_config', array() );
@@ -44,12 +81,11 @@ class AdminBar implements HasActions, HasFilters {
 					'title' => $title,
 					'href'  => $url,
 					'meta'  => array(
-						'title' => 'PressForward Alert',
+						'title' => __( 'PressForward Alert', 'pf' ),
 					),
 				)
 			);
 		}
 		return $wp_admin_bar;
 	}
-
 }

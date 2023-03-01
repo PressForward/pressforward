@@ -1,4 +1,10 @@
 <?php
+/**
+ * Utilities related to post advancement.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Controllers;
 
 use PressForward\Interfaces\Advance_System as Advance_System;
@@ -9,14 +15,28 @@ use Intraxia\Jaxion\Contract\Core\HasActions as HasActions;
  * PressForward to WP post object lifecycle tools
  */
 class PF_Advancement implements Advance_System, HasActions {
-	// var $last_step_state;
-	// var $last_step_post_type;
+	/**
+	 * Metas object.
+	 *
+	 * @access public
+	 * @var \PressForward\Controllers\Metas
+	 */
+	public $metas;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \PressForward\Controllers\Metas $metas Metas object.
+	 */
 	public function __construct( Metas $metas ) {
 		$this->metas = $metas;
-		// $this->last_step_state = $this->last_step_state();
-		// $this->last_step_post_type = $this->last_step_post_type();
 	}
 
+	/**
+	 * Sets up action hooks for this class.
+	 *
+	 * @return array
+	 */
 	public function action_hooks() {
 		$actions = array(
 			array(
@@ -27,34 +47,68 @@ class PF_Advancement implements Advance_System, HasActions {
 		return $actions;
 	}
 
+	/**
+	 * Gets the post status for the "last step" in the advancement process.
+	 *
+	 * @return string
+	 */
 	public function last_step_state() {
 		return get_option( PF_SLUG . '_draft_post_status', 'draft' );
 	}
 
+	/**
+	 * Gets the post type for the "last step" in the advancement process.
+	 *
+	 * @return string
+	 */
 	public function last_step_post_type() {
 		return get_option( PF_SLUG . '_draft_post_type', 'post' );
 	}
 
-	public function create_terms($tag_name, $taxonomy = 'post_tag'){
-		if ( $id = term_exists($tag_name, $taxonomy) )
+	/**
+	 * Creates a term in a taxonomy.
+	 *
+	 * @param string $tag_name Name of the term.
+	 * @param string $taxonomy Taxonomy. Defaults to 'post_tag'.
+	 * @return array|\WP_Error
+	 */
+	public function create_terms( $tag_name, $taxonomy = 'post_tag' ) {
+		$id = term_exists( $tag_name, $taxonomy );
+		if ( $id ) {
 			return $id;
+		}
 
-		return wp_insert_term($tag_name, $taxonomy);
+		return wp_insert_term( $tag_name, $taxonomy );
 	}
 
-	public function inform_of_nomination(){
+	/**
+	 * Sends an email notification of a new nomination.
+	 */
+	public function inform_of_nomination() {
 		$admin_email = get_option( 'pf_nomination_send_email', array() );
-		if($admin_email) {
-			$siteurl = get_option( 'siteurl', '' );
-			$blogname = get_option( 'blogname', '' );
-			$admin_emails = explode(",", $admin_email);
-			foreach ($admin_emails as $email){
-				wp_mail(trim($email), "New nomination on '".$blogname."'", "A new nomination has been created! Please check it online on " . $siteurl . "/wp-admin/admin.php?page=pf-review");
+		if ( $admin_email ) {
+			$siteurl      = get_option( 'siteurl', '' );
+			$blogname     = get_option( 'blogname', '' );
+			$admin_emails = explode( ',', $admin_email );
+			foreach ( $admin_emails as $email ) {
+				wp_mail(
+					trim( $email ),
+					/* translators: Site name */
+					sprintf( esc_html__( 'New nomination on %s', 'pf' ), esc_html( $blogname ) ),
+					/* translators: URL of Nominations panel */
+					sprintf( esc_html__( 'A new nomination has been created! Please check it online on %s.', 'pf' ), esc_html( $siteurl . '/wp-admin/admin.php?page=pf-review' ) )
+				);
 			}
 		}
 	}
 
-	// Transition Tools
+	/**
+	 * Transitions an old post to a new one.
+	 *
+	 * @param int $old_post Source post ID.
+	 * @param int $new_post Destination post ID.
+	 * @return void
+	 */
 	public function transition( $old_post, $new_post ) {
 		$this->transition_post_image( $old_post, $new_post );
 		$this->metas->transition_post_meta( $old_post, $new_post );
@@ -62,8 +116,14 @@ class PF_Advancement implements Advance_System, HasActions {
 		do_action( 'transition_pf_post_meta', $old_post, $new_post );
 	}
 
+	/**
+	 * Transitions taxonomy terms from an old post to a new one.
+	 *
+	 * @param int|\WP_Post $old_post Source post.
+	 * @param int|\WP_Post $new_post Destination post.
+	 * @return void
+	 */
 	public function transition_taxonomy_info( $old_post, $new_post ) {
-		// $old_terms = array();
 		$taxonomies = apply_filters( 'pf_valid_post_taxonomies', array( 'category', 'post_tag' ) );
 		foreach ( $taxonomies as $taxonomy ) {
 			$old_tax_terms = get_the_terms( $old_post, $taxonomy );
@@ -90,12 +150,15 @@ class PF_Advancement implements Advance_System, HasActions {
 				pf_log( $tag_info );
 			}
 		}
-		// $old_category_terms = get_the_terms($old_post, 'category');
-		// foreach ($old_terms as $old_term){
-		// wp_set_object_terms($new_post, $old_term->term_id, $old_term->taxonomy, true);
-		// }
 	}
 
+	/**
+	 * Migrates a featured image from one post to another.
+	 *
+	 * @param int|\WP_Post $old_post Source post.
+	 * @param int|\WP_Post $new_post Destination post.
+	 * @return void
+	 */
 	public function transition_post_image( $old_post, $new_post ) {
 		$already_has_thumb = has_post_thumbnail( $old_post );
 		if ( $already_has_thumb ) {
@@ -104,8 +167,12 @@ class PF_Advancement implements Advance_System, HasActions {
 		}
 	}
 
-	// Step Tools
-	// NOTE: The old ID should always be a nomination.
+	/**
+	 * Transitions a nomination to the last step, ie becoming a post draft.
+	 *
+	 * @param array $post Post args.
+	 * @return int ID of the newly created post draft.
+	 */
 	public function to_last_step( $post = array() ) {
 		$old_id = $post['ID'];
 		unset( $post['ID'] );
@@ -116,12 +183,19 @@ class PF_Advancement implements Advance_System, HasActions {
 		pf_log( $post );
 		$post['post_content'] = pressforward( 'controller.readability' )->process_in_oembeds( pressforward( 'controller.metas' )->get_post_pf_meta( $old_id, 'item_link' ), $post['post_content'] );
 		$post['post_content'] = pressforward( 'utility.forward_tools' )->append_source_statement( $old_id, $post['post_content'], true );
-		$id                   = pressforward( 'controller.items' )->insert_post( $post, true, pressforward( 'controller.metas' )->get_post_pf_meta( $old_id, 'item_id' ) );
+
+		$id = pressforward( 'controller.items' )->insert_post( $post, true, pressforward( 'controller.metas' )->get_post_pf_meta( $old_id, 'item_id' ) );
 
 		do_action( 'pf_transition_to_last_step', $id );
 		return $id;
 	}
 
+	/**
+	 * Transitions a post to a nomination.
+	 *
+	 * @param array $post Post args.
+	 * @return int ID of the new nomination post.
+	 */
 	public function to_nomination( $post = array() ) {
 		$post['post_status']   = 'draft';
 		$post['post_type']     = pressforward( 'schema.nominations' )->post_type;
@@ -136,26 +210,40 @@ class PF_Advancement implements Advance_System, HasActions {
 		return $id;
 	}
 
-	// Checking for the existence of posts in previous PF states.
+	/**
+	 * Checks for the existence of posts in previous PF states.
+	 *
+	 * @param int    $item_id   ID of the item.
+	 * @param string $post_type Post type.
+	 * @return int ID of the corresponding WP post, if found.
+	 */
 	public function get_pf_type_by_id( $item_id, $post_type ) {
 		$q = $this->pf_get_posts_by_id_for_check( $post_type, $item_id, true );
 		if ( 0 < $q->post_count ) {
 			$nom = $q->posts;
 			$r   = $nom[0];
 		} else {
-			$r = false;
+			$r = 0;
 		}
 		/* Restore original Post Data */
 		wp_reset_postdata();
 		return $r;
 	}
 
+	/**
+	 * Prepares a post sent from the bookmarklet.
+	 *
+	 * @param int $post_id ID of the post.
+	 * @return void
+	 */
 	public function prep_bookmarklet( $post_id ) {
 		if ( isset( $_POST['post_format'] ) ) {
 			$post_format = sanitize_text_field( wp_unslash( $_POST['post_format'] ) );
 			if ( current_theme_supports( 'post-formats', $post_format ) ) {
-				set_post_format( $post_id, $post_format ); } elseif ( '0' == $post_format ) {
-				set_post_format( $post_id, false ); }
+				set_post_format( $post_id, $post_format );
+			} elseif ( '0' === $post_format ) {
+				set_post_format( $post_id, false );
+			}
 		}
 
 		if ( isset( $_POST['post_category'] ) && is_array( $_POST['post_category'] ) ) {
@@ -171,24 +259,24 @@ class PF_Advancement implements Advance_System, HasActions {
 	}
 
 	/**
-	 * Get all posts with 'item_id' set to a given item id
+	 * Get all posts with 'item_id' set to a given item id.
 	 *
 	 * @since 1.7
 	 *
-	 * @param string $post_type The post type to limit results to.
-	 * @param string $item_id The origin item id.
-	 * @param bool   $ids_only Set to true if you want only an array of IDs returned in the query.
-	 *
-	 * @return object A standard WP_Query object.
+	 * @param string|bool $post_type The post type to limit results to.
+	 * @param string      $item_id   The origin item id.
+	 * @param bool        $ids_only  Set to true if you want only an array of IDs returned in the query.
+	 * @return \WP_Query
 	 */
 	public function pf_get_posts_by_id_for_check( $post_type = false, $item_id = null, $ids_only = false ) {
 		global $wpdb;
+
 		// If the item is less than 24 hours old on nomination, check the whole database.
-		// $theDate = getdate();
-		// $w = date('W');
 		$r = array(
+			// phpcs:disable WordPress.DB.SlowDBQuery
 			'meta_key'   => $this->metas->get_key( 'item_id' ),
 			'meta_value' => $item_id,
+			// phpcs:enable WordPress.DB.SlowDBQuery
 			'post_type'  => array( 'post', pf_feed_item_post_type() ),
 		);
 
@@ -196,41 +284,22 @@ class PF_Advancement implements Advance_System, HasActions {
 			$r['fields']        = 'ids';
 			$r['no_found_rows'] = true;
 			$r['cache_results'] = false;
-
 		}
 
 		$r['post_status'] = array( 'publish', 'alert_specimen', 'under_review', 'future', 'draft', 'pending', 'private' );
 
-		if ( false != $post_type ) {
+		if ( false !== $post_type ) {
 			$r['post_type'] = $post_type;
 		}
 
-		$postsAfter = new \WP_Query( $r );
-		pf_log( ' Checking for posts with item ID ' . $item_id . ' returned query with ' . $postsAfter->post_count . ' items.' );
-		// pf_log($postsAfter);
-		return $postsAfter;
+		$posts_after = new \WP_Query( $r );
+		pf_log( ' Checking for posts with item ID ' . $item_id . ' returned query with ' . $posts_after->post_count . ' items.' );
+
+		return $posts_after;
 	}
 
-	// Utility Functions
-	function pull_content_images_into_pf( $post_ID, $item_content, $photo_src, $photo_description ) {
-		$content = isset( $item_content ) ? $item_content : '';
-
-		$upload = false;
-		if ( ! empty( $photo_src ) && current_user_can( 'upload_files' ) ) {
-			foreach ( (array) $photo_src as $key => $image ) {
-				// see if files exist in content - we don't want to upload non-used selected files.
-				if ( strpos( $content, htmlspecialchars( $image ) ) !== false ) {
-					$desc   = isset( $photo_description[ $key ] ) ? $photo_description[ $key ] : '';
-					$upload = media_sideload_image( $image, $post_ID, $desc );
-
-					// Replace the POSTED content <img> with correct uploaded ones. Regex contains fix for Magic Quotes
-					if ( ! is_wp_error( $upload ) ) {
-						$content = preg_replace( '/<img ([^>]*)src=\\\?(\"|\')' . preg_quote( htmlspecialchars( $image ), '/' ) . '\\\?(\2)([^>\/]*)\/*>/is', $upload, $content ); }
-				}
-			}
-		}
-
-		return $content;
-	}
-
+	/**
+	 * No longer used.
+	 */
+	public function pull_content_images_into_pf() {}
 }

@@ -38,7 +38,7 @@ abstract class Enum
 	 *
 	 * @throws \UnexpectedValueException if incompatible type is given.
 	 */
-	public function __construct($value)
+	final public function __construct($value)
 	{
 		if (!$this->isValid($value)) {
 			throw new \UnexpectedValueException("Value '$value' is not part of the enum " . get_called_class());

@@ -1,9 +1,14 @@
 <?php
+/**
+ * Service provider for REST API.
+ *
+ * @package PressForward
+ */
+
 namespace PressForward\Core\Providers;
 
 use Intraxia\Jaxion\Contract\Core\Container as Container;
 use Intraxia\Jaxion\Assets\Register as Assets;
-// use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 
 use PressForward\Core\API\PostExtension;
@@ -15,8 +20,15 @@ use PressForward\Core\API\ReadabilityEndpoint;
 use PressForward\Core\API\NominateThisEndpoint;
 use PressForward\Core\API\StatsEndpoint;
 
+/**
+ * APIProvider class.
+ */
 class APIProvider extends ServiceProvider {
-
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @param Container $container Container.
+	 */
 	public function register( Container $container ) {
 
 		$api_base = array(
@@ -79,5 +91,4 @@ class APIProvider extends ServiceProvider {
 
 		return $container;
 	}
-
 }

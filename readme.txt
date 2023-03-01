@@ -2,9 +2,9 @@
 Contributors: PressForward, AramZS, boonebgorges, lmrhody, asmmap, regan008, joanftroyano, clioweb
 Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
-Requires at least: 3.0.1
+Requires at least: 5.7
 Tested up to: 6.1
-Stable tag: 5.2.10
+Stable tag: 5.4.0
 License: AGPLv3
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -81,6 +81,34 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+
+= 5.4.0 =
+* Bumped WordPress requirement to 5.7.
+* Overhaul to the way that the Nominate This window fetches remote content, for improved performance, improved parsing of source with content, and better error handling.
+* Rolled back dynamic source statement from 5.3.0 in favor of legacy source statement in post body.
+* Introduced new, optional email notifications for nominators (on successful nomination, and on nomination promotion).
+* Added support for JSON-LD data detection when fetching remote items in Nominate This.
+* Fixed bug that prevented categories from being properly saved during the nomination process.
+* Fixed bug that prevented Subscribed Feeds from being edited in the Block Editor.
+* Fixed bug that caused 'Drafted' filter to show others' drafts to users who don't have the proper permissions.
+* Internal improvements to conform with WordPress coding standards and best practices.
+* Fixed bug that prevented certain OPML imports from completing.
+* Fixed bug that prevented the 'Refresh Feed Items' button from working.
+* Fixed bug that triggered JavaScript errors when loading certain items directly in the Reader interface.
+* Fixed pagination bugs in Reader mode.
+* Improved appearance and functionality of modals after recent Bootstrap library update.
+* Improved compatibility with PHP 8.1+.
+
+= 5.3.1 =
+* Added Source field to the bookmarklet interface.
+* Fixed bug where Source statement was appended incorrectly to certain pieces of content.
+* Fixed bug that prevented metas from being transferred during nomination advancement.
+
+= 5.3.0 =
+* Source statement is now appended to the post content dynamically, rather than inserted into the database.
+* Improved caching of external post fetches.
+* Improved caching and performance when fetching OpenGraph items.
+* Fixed bug in folder syntax when querying for nominations.
 
 = 5.2.10 =
 * Fixed incorrect syntax in bookmarklet code

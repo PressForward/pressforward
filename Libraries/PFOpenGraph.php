@@ -44,21 +44,21 @@ class PFOpenGraph implements Iterator {
 	 * Fetches a URI and parses it for Open Graph data, returns
 	 * false on error.
 	 *
-	 * @param $URI    URI to page to parse for Open Graph data
-	 *
-	 * @return OpenGraph
+	 * @param $URI URI to page to parse for Open Graph data
+	 * @return PFOpenGraph|bool
 	 */
 	public static function fetch( $URI ) {
-		$cached = wp_cache_get( $URI, 'pressforward_external_pages' );
+		$cache_key = 'wp_remote_get_' . $URI;
+		$cached = wp_cache_get( $cache_key, 'pressforward_external_pages' );
 		$response_body = null;
 		if ( false !== $cached ) {
 			$response_body = $cached;
 		} else {
-			$response = pf_de_https( $URI, 'wp_remote_get', array( 'timeout' => '5' ) );
+			$response = pf_de_https( $URI, 'wp_remote_get' );
 			if ( $response && ! is_wp_error( $response ) ) {
 				$response_body = wp_remote_retrieve_body( $response );
-				wp_cache_set( $URI, $response_body, 'pressforward_external_pages' );
 			}
+			wp_cache_set( $cache_key, $response_body, 'pressforward_external_pages' );
 		}
 
 		if ( ! $response_body ) {
@@ -73,8 +73,8 @@ class PFOpenGraph implements Iterator {
 	 * Takes an HTML document and parses it for Open Graph data, returns
 	 * false on error.
 	 *
-	 * @param $HTML  HTML document.
-	 * @return OpenGraph
+	 * @param $HTML HTML document.
+	 * @return PFOpenGraph|bool
 	 */
 	static public function process( $HTML ) {
 		if ( ! empty( $HTML ) && ! is_wp_error( $HTML ) ) {
@@ -90,7 +90,7 @@ class PFOpenGraph implements Iterator {
 	 *
 	 * @param $HTML    HTML to parse
 	 *
-	 * @return OpenGraph
+	 * @return PFOpenGraph|bool
 	 */
 	private static function _parse( $HTML ) {
 		$old_libxml_error = libxml_use_internal_errors( true );
@@ -294,24 +294,29 @@ class PFOpenGraph implements Iterator {
 	 */
 	private $_position = 0;
 
+	#[\ReturnTypeWillChange]
 	public function rewind() {
 		reset( $this->_values );
 		$this->_position = 0;
 	}
 
+	#[\ReturnTypeWillChange]
 	public function current() {
 		return current( $this->_values );
 	}
 
+	#[\ReturnTypeWillChange]
 	public function key() {
 		return key( $this->_values );
 	}
 
+	#[\ReturnTypeWillChange]
 	public function next() {
 		next( $this->_values );
 		++$this->_position;
 	}
 
+	#[\ReturnTypeWillChange]
 	public function valid() {
 		return $this->_position < sizeof( $this->_values );
 	}

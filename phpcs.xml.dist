@@ -20,21 +20,32 @@
 	<exclude-pattern>Libraries/FiveFiltersReadability/examples/</exclude-pattern>
 	<exclude-pattern>modules/foo</exclude-pattern>
 
-	<!-- Iterate over all PHP files by default -->
+	<!-- Do not scan built files. -->
+	<exclude-pattern>/build/</exclude-pattern>
+
 	<file>.</file>
 
 	<!-- Check for PHP cross-version compatibility. -->
-	<config name="testVersion" value="5.3-"/>
-	<!-- <rule ref="PHPCompatibilityWP" /> -->
+	<rule ref="PHPCompatibilityWP">
+		<config name="testVersion" value="5.7-"/>
+	</rule>
 
 	<!-- Include the WordPress-Extra standard. -->
-	<!--
 	<rule ref="WordPress">
 		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />
 		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
-		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found" />
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax.Found" />
+		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_tax_query" />
+		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_query" />
+		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_key" />
+		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_value" />
+
+		<exclude-pattern>class-SplClassLoader.php</exclude-pattern>
+		<exclude-pattern>Controllers/StatsShortcodes.php</exclude-pattern>
+
+		<!-- Third-party libraries don't need to be scanned for coding standards -->
+		<exclude-pattern>Libraries/</exclude-pattern>
 	</rule>
-	-->
 
 	<rule ref="WordPress.Security">
 		<exclude name="WordPress.Security.NonceVerification" />
@@ -58,4 +69,17 @@
 		</properties>
 	</rule>
 
+	<rule ref="PEAR.NamingConventions.ValidClassName.Invalid">
+		<exclude-pattern>Controllers/PF_to_WP_Meta.php</exclude-pattern>
+		<exclude-pattern>Controllers/PF_to_WP_Posts.php</exclude-pattern>
+		<exclude-pattern>Controllers/PF_to_WP_System.php</exclude-pattern>
+	</rule>
+
+	<rule ref="PHPCompatibility.Keywords.ForbiddenNamesAsDeclared.resourceFound">
+		<exclude-pattern>Libraries/text-stats</exclude-pattern>
+	</rule>
+
+	<rule ref="Squiz.Commenting.FileComment.Missing">
+		<exclude-pattern>pressforward.php</exclude-pattern>
+	</rule>
 </ruleset>
