@@ -82,6 +82,23 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 
 == Changelog ==
 
+= 5.4.0 =
+* Bumped WordPress requirement to 5.7.
+* Overhaul to the way that the Nominate This window fetches remote content, for improved performance, improved parsing of source with content, and better error handling.
+* Rolled back dynamic source statement from 5.3.0 in favor of legacy source statement in post body.
+* Introduced new, optional email notifications for nominators (on successful nomination, and on nomination promotion).
+* Added support for JSON-LD data detection when fetching remote items in Nominate This.
+* Fixed bug that prevented categories from being properly saved during the nomination process.
+* Fixed bug that prevented Subscribed Feeds from being edited in the Block Editor.
+* Fixed bug that caused 'Drafted' filter to show others' drafts to users who don't have the proper permissions.
+* Internal improvements to conform with WordPress coding standards and best practices.
+* Fixed bug that prevented certain OPML imports from completing.
+* Fixed bug that prevented the 'Refresh Feed Items' button from working.
+* Fixed bug that triggered JavaScript errors when loading certain items directly in the Reader interface.
+* Fixed pagination bugs in Reader mode.
+* Improved appearance and functionality of modals after recent Bootstrap library update.
+* Improved compatibility with PHP 8.1+.
+
 = 5.3.1 =
 * Added Source field to the bookmarklet interface.
 * Fixed bug where Source statement was appended incorrectly to certain pieces of content.
