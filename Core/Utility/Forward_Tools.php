@@ -755,7 +755,7 @@ class Forward_Tools {
 				$this->metas->meta_for_entry( 'sortable_item_date', strtotime( $item_date ) ),
 				$this->metas->meta_for_entry( 'item_tags', $tags ),
 				$this->metas->meta_for_entry( 'source_repeat', 1 ),
-				$this->metas->meta_for_entry( 'revertible_feed_text', $post['post_content'] ),
+				$this->metas->meta_for_entry( 'revertible_feed_text', $post_array['post_content'] ),
 
 			);
 			$this->metas->establish_post( $post_ID, $pf_meta_args );
