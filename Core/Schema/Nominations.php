@@ -176,7 +176,7 @@ class Nominations implements HasActions, HasFilters {
 			return;
 		}
 
-		if ( $post->post_type !== pressforward()->fetch( 'controller.advancement' )->last_step_post_type() ) {
+		if ( pressforward()->fetch( 'controller.advancement' )->last_step_post_type() !== $post->post_type ) {
 			return;
 		}
 

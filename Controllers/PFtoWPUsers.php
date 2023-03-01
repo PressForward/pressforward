@@ -243,23 +243,21 @@ class PFtoWPUsers implements SystemUsers {
 	 */
 	public function get_user_setting( $user_id, $setting ) {
 		switch ( $setting ) {
-			case 'nomination-success-email-toggle' :
+			case 'nomination-success-email-toggle':
 				$saved = get_user_option( 'pf_nomination_success_email_toggle', $user_id );
 				if ( false === $saved ) {
 					$saved = get_option( 'pf_user_nomination_success_email_default', 'off' );
 				}
 
 				return 'on' === $saved;
-			break;
 
-			case 'nomination-promoted-email-toggle' :
+			case 'nomination-promoted-email-toggle':
 				$saved = get_user_option( 'pf_nomination_promoted_email_toggle', $user_id );
 				if ( false === $saved ) {
 					$saved = get_option( 'pf_user_nomination_promoted_email_default', 'on' );
 				}
 
 				return 'on' === $saved;
-			break;
 		}
 	}
 
@@ -341,9 +339,12 @@ class PFtoWPUsers implements SystemUsers {
 	public function get_email_notification_footer() {
 		$footer = sprintf(
 			// translators: 1. Site name. 2. Settings URL.
-			__( '---
+			__(
+				'---
 
-You are subscribed to receive emails from %1$s. To change your email preferences, visit %2$s.', 'pf' ),
+You are subscribed to receive emails from %1$s. To change your email preferences, visit %2$s.',
+				'pf'
+			),
 			get_bloginfo( 'blogname' ),
 			admin_url( 'admin.php?page=pf-options#user' )
 		);

@@ -566,8 +566,10 @@ class Menu implements HasActions, HasFilters {
 			update_option( PF_SLUG . '_draft_post_status', $pf_draft_post_status );
 
 			$notification_options = [
+				// PHPCS false positive.
+				// phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
 				'pf-user-nomination-success-email-default'  => 'pf_user_nomination_success_email_default',
-				'pf-user-nomination-promoted-email-default' => 'pf_user_nomination_promoted_email_default'
+				'pf-user-nomination-promoted-email-default' => 'pf_user_nomination_promoted_email_default',
 			];
 
 			foreach ( $notification_options as $nopt_post_key => $nopt_option_name ) {
