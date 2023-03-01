@@ -346,7 +346,7 @@ class NominateThisCore implements HasActions {
 			// translators: 1. Name of the site; 2. URL of the site.
 			__( 'You have successfully nominated an item on %1$s (%2$s).', 'pf' ),
 			$site_name,
-			get_bloginfo( 'home' )
+			get_bloginfo( 'url' )
 		);
 
 		$message .= "\n\n";
