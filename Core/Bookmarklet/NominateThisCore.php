@@ -370,6 +370,8 @@ class NominateThisCore implements HasActions {
 			);
 		}
 
+		$message .= "\n\n" . pressforward( 'controller.users' )->get_email_notification_footer();
+
 		wp_mail( $user->user_email, $subject, $message );
 	}
 

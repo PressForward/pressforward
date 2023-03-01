@@ -339,4 +339,24 @@ class PFtoWPUsers implements SystemUsers {
 	public function update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ) {
 		return update_user_meta( $user_id, $meta_key, $meta_value, $prev_value );
 	}
+
+	/**
+	 * Gets the text for the footer of an email notification.
+	 *
+	 * @since 5.4.0
+	 *
+	 * @return string
+	 */
+	public function get_email_notification_footer() {
+		$footer = sprintf(
+			// translators: 1. Site name. 2. Settings URL.
+			__( '---
+
+You are subscribed to receive emails from %1$s. To change your email preferences, visit %2$s.', 'pf' ),
+			get_bloginfo( 'blogname' ),
+			admin_url( 'admin.php?page=pf-options#user' )
+		);
+
+		return $footer;
+	}
 }
