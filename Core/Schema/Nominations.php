@@ -217,6 +217,28 @@ class Nominations implements HasActions, HasFilters {
 
 			$message .= "\n\n" . pressforward( 'controller.users' )->get_email_notification_footer();
 
+			/**
+			 * Filters the subject line of the "nomination promoted" notification email.
+			 *
+			 * @since 5.4.0
+			 *
+			 * @param string $subject    Subject line.
+			 * @param int    $wp_post_id ID of the nominated item.
+			 * @param int    $user_id    ID of the user receiving the email.
+			 */
+			$subject = apply_filters( 'pf_nomination_promoted_email_subject', $subject, $post->ID, $user->ID );
+
+			/**
+			 * Filters the content of the "nomination promoted" notification email.
+			 *
+			 * @since 5.4.0
+			 *
+			 * @param string $message    Message content.
+			 * @param int    $wp_post_id ID of the nominated item.
+			 * @param int    $user_id    ID of the user receiving the email.
+			 */
+			$message = apply_filters( 'pf_nomination_promoted_email_content', $message, $post->ID, $user->ID );
+
 			wp_mail( $user->user_email, $subject, $message );
 		}
 	}
