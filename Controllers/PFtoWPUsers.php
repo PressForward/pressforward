@@ -260,15 +260,6 @@ class PFtoWPUsers implements SystemUsers {
 
 				return 'on' === $saved;
 			break;
-
-			case 'nomination-duplicate-email-toggle' :
-				$saved = get_user_option( 'pf_nomination_duplicate_email_toggle', $user_id );
-				if ( false === $saved ) {
-					$saved = 'off';
-				}
-
-				return 'on' === $saved;
-			break;
 		}
 	}
 
