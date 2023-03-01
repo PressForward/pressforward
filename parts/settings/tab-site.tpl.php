@@ -178,3 +178,38 @@
 <p>
 	<?php esc_html_e( 'Your WordPress site may have more than one Post Type installed, this setting will allow you to send nominations to the post type of your choice.', 'pf' ); ?>
 </p>
+
+<hr />
+
+<?php
+$nomination_success_default  = get_option( 'pf_user_nomination_success_email_default', 'off' );
+$nomination_promoted_default = get_option( 'pf_user_nomination_promoted_email_default', 'on' );
+?>
+
+<fieldset>
+	<legend><?php esc_html_e( 'Email Notifications', 'pf' ); ?></legend>
+
+	<p><?php esc_html_e( 'Configure the default user preferences for email notifications. Note that individual users can override these preferences on the User Options panel.', 'pf' ); ?></p>
+
+	<p>
+		<label for="pf-user-nomination-success-email-default">
+			<select id="pf-user-nomination-success-email-default" name="pf-user-nomination-success-email-default">
+				<option value="on" <?php selected( 'on' === $nomination_success_default ); ?>><?php esc_html_e( 'Enabled', 'pf' ); ?></option>
+				<option value="off" <?php selected( 'on' !== $nomination_success_default ); ?>><?php esc_html_e( 'Disabled', 'pf' ); ?></option>
+			</select>
+
+			<?php esc_html_e( 'User has successfully nominated an item', 'pf' ); ?>
+		</label>
+	</p>
+
+	<p>
+		<label for="pf-user-nomination-promoted-email-default">
+			<select id="pf-user-nomination-promoted-email-default" name="pf-user-nomination-promoted-email-default">
+				<option value="on" <?php selected( 'on' === $nomination_promoted_default ); ?>><?php esc_html_e( 'Enabled', 'pf' ); ?></option>
+				<option value="off" <?php selected( 'on' !== $nomination_promoted_default ); ?>><?php esc_html_e( 'Disabled', 'pf' ); ?></option>
+			</select>
+
+			<?php esc_html_e( 'An item that the user has nominated is promoted', 'pf' ); ?>
+		</label>
+	</p>
+</fieldset>

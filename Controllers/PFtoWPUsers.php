@@ -246,7 +246,7 @@ class PFtoWPUsers implements SystemUsers {
 			case 'nomination-success-email-toggle' :
 				$saved = get_user_option( 'pf_nomination_success_email_toggle', $user_id );
 				if ( false === $saved ) {
-					$saved = 'off';
+					$saved = get_option( 'pf_user_nomination_success_email_default', 'off' );
 				}
 
 				return 'on' === $saved;
@@ -255,7 +255,7 @@ class PFtoWPUsers implements SystemUsers {
 			case 'nomination-promoted-email-toggle' :
 				$saved = get_user_option( 'pf_nomination_promoted_email_toggle', $user_id );
 				if ( false === $saved ) {
-					$saved = 'on';
+					$saved = get_option( 'pf_user_nomination_promoted_email_default', 'on' );
 				}
 
 				return 'on' === $saved;

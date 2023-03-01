@@ -565,6 +565,21 @@ class Menu implements HasActions, HasFilters {
 				: 'draft';
 			update_option( PF_SLUG . '_draft_post_status', $pf_draft_post_status );
 
+			$notification_options = [
+				'pf-user-nomination-success-email-default'  => 'pf_user_nomination_success_email_default',
+				'pf-user-nomination-promoted-email-default' => 'pf_user_nomination_promoted_email_default'
+			];
+
+			foreach ( $notification_options as $nopt_post_key => $nopt_option_name ) {
+				if ( ! isset( $_POST[ $nopt_post_key ] ) ) {
+					continue;
+				}
+
+				$nopt_option_value = 'on' === sanitize_text_field( wp_unslash( $_POST[ $nopt_post_key ] ) ) ? 'on' : 'off';
+
+				update_option( $nopt_option_name, $nopt_option_value );
+			}
+
 			if ( class_exists( 'The_Alert_Box' ) ) {
 				if ( empty( $_POST[ pressforward( 'library.alertbox' )->option_name() ] ) ) {
 					update_option( pressforward( 'library.alertbox' )->option_name(), 'false' );
