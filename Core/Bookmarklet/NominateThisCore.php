@@ -381,7 +381,7 @@ class NominateThisCore implements HasActions {
 		 * @param int    $wp_post_id  ID of the nominated item.
 		 * @param int    $post_author ID of the user receiving the email.
 		 */
-		$subject = apply_filters( 'pf_nomination_success_email_subject', $subject, $wp_post_id, $post_author );
+		$subject = apply_filters( 'pf_nomination_success_email_subject', $subject, $wp_post_id, (int) $post_author );
 
 		/**
 		 * Filters the content of the "nomination success" notification email.
@@ -392,7 +392,7 @@ class NominateThisCore implements HasActions {
 		 * @param int    $wp_post_id  ID of the nominated item.
 		 * @param int    $post_author ID of the user receiving the email.
 		 */
-		$message = apply_filters( 'pf_nomination_success_email_content', $message, $wp_post_id, $post_author );
+		$message = apply_filters( 'pf_nomination_success_email_content', $message, $wp_post_id, (int) $post_author );
 
 		wp_mail( $user->user_email, $subject, $message );
 	}
