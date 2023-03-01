@@ -421,6 +421,24 @@ class Menu implements HasActions, HasFilters {
 			} else {
 				update_user_option( $user_ID, 'pf_pagefull', 'false' );
 			}
+
+			if ( ! empty( $_POST['pf-user-nomination-success-email-toggle'] ) ) {
+				update_user_option( $user_ID, 'pf_nomination_success_email_toggle', 'on' );
+			} else {
+				update_user_option( $user_ID, 'pf_nomination_success_email_toggle', 'off' );
+			}
+
+			if ( ! empty( $_POST['pf-user-nomination-promoted-email-toggle'] ) ) {
+				update_user_option( $user_ID, 'pf_nomination_promoted_email_toggle', 'on' );
+			} else {
+				update_user_option( $user_ID, 'pf_nomination_promoted_email_toggle', 'off' );
+			}
+
+			if ( ! empty( $_POST['pf-user-nomination-duplicate-email-toggle'] ) ) {
+				update_user_option( $user_ID, 'pf_nomination_duplicate_email_toggle', 'on' );
+			} else {
+				update_user_option( $user_ID, 'pf_nomination_duplicate_email_toggle', 'off' );
+			}
 		}
 
 		$verify_pages = array();

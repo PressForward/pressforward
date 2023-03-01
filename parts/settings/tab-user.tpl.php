@@ -69,3 +69,15 @@ $current_user_id = get_current_user_id();
 
 	<?php esc_html_e( 'Setting this number determines how many items will appear on the All Content and Nominated pages when infinite scroll is turned off.', 'pf' ); ?>
 </p>
+
+<hr />
+
+<fieldset>
+	<legend><?php esc_html_e( 'Email Notifications', 'pf' ); ?></legend>
+
+	<p><?php esc_html_e( 'Send me an email notification when:', 'pf' ); ?></p>
+
+	<input id="pf-user-nomination-success-email-toggle" type="checkbox" name="pf-user-nomination-success-email-toggle" value="1" <?php checked( pressforward()->fetch( 'controller.users' )->get_user_setting( get_current_user_id(), 'nomination-success-email-toggle' ) ); ?> /> <label for="pf-user-nomination-success-email-toggle"><?php esc_html_e( "I've successfully nominated an item", 'pf' ); ?></label><br />
+	<input id="pf-user-nomination-promoted-email-toggle" type="checkbox" name="pf-user-nomination-promoted-email-toggle" value="1" <?php checked( pressforward()->fetch( 'controller.users' )->get_user_setting( get_current_user_id(), 'nomination-promoted-email-toggle' ) ); ?> /> <label for="pf-user-nomination-promoted-email-toggle"><?php esc_html_e( "An item that I've nominated is promoted", 'pf' ); ?></label><br />
+	<input id="pf-user-nomination-duplicate-email-toggle" type="checkbox" name="pf-user-nomination-duplicate-email-toggle" value="1" <?php checked( pressforward()->fetch( 'controller.users' )->get_user_setting( get_current_user_id(), 'nomination-duplicate-email-toggle' ) ); ?> /> <label for="pf-user-nomination-duplicate-email-toggle"><?php esc_html_e( "Another user nominates an item that previously I've nominated", 'pf' ); ?></label>
+</fieldset>

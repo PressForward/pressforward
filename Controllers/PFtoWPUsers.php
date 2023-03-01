@@ -235,6 +235,44 @@ class PFtoWPUsers implements SystemUsers {
 	}
 
 	/**
+	 * Gets a user setting.
+	 *
+	 * @param int    $user_id User ID.
+	 * @param string $setting Setting name.
+	 * @return mixed
+	 */
+	public function get_user_setting( $user_id, $setting ) {
+		switch ( $setting ) {
+			case 'nomination-success-email-toggle' :
+				$saved = get_user_option( 'pf_nomination_success_email_toggle', $user_id );
+				if ( false === $saved ) {
+					$saved = 'off';
+				}
+
+				return 'on' === $saved;
+			break;
+
+			case 'nomination-promoted-email-toggle' :
+				$saved = get_user_option( 'pf_nomination_promoted_email_toggle', $user_id );
+				if ( false === $saved ) {
+					$saved = 'on';
+				}
+
+				return 'on' === $saved;
+			break;
+
+			case 'nomination-duplicate-email-toggle' :
+				$saved = get_user_option( 'pf_nomination_duplicate_email_toggle', $user_id );
+				if ( false === $saved ) {
+					$saved = 'off';
+				}
+
+				return 'on' === $saved;
+			break;
+		}
+	}
+
+	/**
 	 * Assigns PressForward capabilities to the default WP roles.
 	 *
 	 * @todo This method is not called anywhere in PF and should be removed.

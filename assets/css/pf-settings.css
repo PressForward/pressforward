@@ -31,3 +31,8 @@
   text-decoration: none;
   text-shadow: 0 2px 0 #fff;
   padding-top: 7px; }
+
+.pftab legend {
+	font-weight: 700;
+}
+
