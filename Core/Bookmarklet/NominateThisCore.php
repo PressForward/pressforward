@@ -306,7 +306,71 @@ class NominateThisCore implements HasActions {
 			wp_delete_post( $post_ID );
 		}
 
+		if ( $post_ID ) {
+			$this->maybe_send_success_notification( $post_ID );
+		}
+
 		return $post_ID;
+	}
+
+	/**
+	 * Sends "success" notification to nomination author after successful nomination.
+	 *
+	 * @param int $wp_post_id WP post ID of the newly created item.
+	 */
+	protected function maybe_send_success_notification( $wp_post_id ) {
+		$wp_post = get_post( $wp_post_id );
+		if ( ! $wp_post ) {
+			return;
+		}
+
+		$post_author = $wp_post->post_author;
+		if ( ! pressforward()->fetch( 'controller.users' )->get_user_setting( $post_author, 'nomination-success-email-toggle' ) ) {
+			return;
+		}
+
+		$user = get_userdata( $post_author );
+		if ( ! $user ) {
+			return;
+		}
+
+		$site_name = get_bloginfo( 'name' );
+
+		$subject = sprintf(
+			// translators: Name of the site.
+			__( '[%s] You have successfully nominated an item', 'pf' ),
+			$site_name
+		);
+
+		$message = sprintf(
+			// translators: 1. Name of the site; 2. URL of the site.
+			__( 'You have successfully nominated an item on %1$s (%2$s).', 'pf' ),
+			$site_name,
+			get_bloginfo( 'home' )
+		);
+
+		$message .= "\n\n";
+
+		$message .= sprintf(
+			// translators: 1. Title of the source item. 2. URL of the nomination source item.
+			__( 'Source item: %1$s (%2$s)', 'pf' ),
+			get_the_title( $wp_post ),
+			pressforward( 'controller.metas' )->get_post_pf_meta( $wp_post_id, 'item_link' )
+		);
+
+		$nominations_cap = get_option( 'pf_menu_under_review_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) );
+
+		if ( user_can( $post_author, $nominations_cap ) ) {
+			$message .= "\n\n";
+
+			$message .= sprintf(
+				// translators: URL of the Nominations panel.
+				__( 'Manage nominations: %s', 'pf' ),
+				admin_url( 'admin.php?page=pf-review' )
+			);
+		}
+
+		wp_mail( $user->user_email, $subject, $message );
 	}
 
 	/**
