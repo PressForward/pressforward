@@ -2,12 +2,11 @@
 /**
  * Plugin bootstrap.
  *
- * @package Pressforward
+ * @package PressForward
  */
 
-require 'vendor/autoload.php';
-
 // Out-of-namespace dependencies.
+require 'vendor/autoload.php';
 require 'class-SplClassLoader.php';
 require_once 'Libraries/random_compat/lib/random.php';
 require_once 'Libraries/php-jwt/src/JWT.php';
