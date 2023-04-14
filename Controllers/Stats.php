@@ -156,11 +156,9 @@ class Stats {
 	}
 
 	/**
-	 * Sets up Stats libraries.
+	 * Deprecated.
 	 */
-	private function includes() {
-		require_once $this->root . '/Libraries/text-stats/src/DaveChild/TextStatistics/TextStatistics.php';
-	}
+	private function includes() {}
 
 	/**
 	 * Not used.

@@ -25,11 +25,6 @@ use Intraxia\Jaxion\Core\Config;
 use Intraxia\Jaxion\Core\ConfigType;
 use SplClassLoader as ClassLoader;
 
-// @todo This call to filterFinalPath is likely a bug.
-$ts_class_loader = new ClassLoader( 'DaveChild', 'Libraries/text-stats/src', false );
-$ts_class_loader->filterFinalPath( 'DaveChild/Libraries/text-stats/src', '' );
-$ts_class_loader->register();
-
 $class_loader = new ClassLoader( 'PressForward', __DIR__, false );
 $class_loader->filterFinalPath( 'PressForward' . DIRECTORY_SEPARATOR, '' );
 $class_loader->register();
