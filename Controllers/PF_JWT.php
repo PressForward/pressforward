@@ -111,10 +111,9 @@ class PF_JWT {
 	 *
 	 * @param string $token Token.
 	 * @param string $key   Key.
-	 * @param array  $alg   Algorithm.
 	 * @return bool|object
 	 */
-	public function decode_with_jwt( $token, $key, $alg = array( 'HS256' ) ) {
+	public function decode_with_jwt( $token, $key ) {
 		try {
 			$decode = $this->jwt->decode( $token, $key );
 		} catch ( \Exception $e ) {
