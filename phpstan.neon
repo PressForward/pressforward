@@ -12,7 +12,6 @@ parameters:
     - ./node_modules/
     - ./tests/
     - ./Libraries/FiveFiltersReadability
-    - ./Controllers/StatsShortcodes.php
 
   scanFiles:
     - ./Libraries/FiveFiltersReadability/Readability.php

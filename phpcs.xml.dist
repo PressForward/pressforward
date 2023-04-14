@@ -40,7 +40,6 @@
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_value" />
 
 		<exclude-pattern>class-SplClassLoader.php</exclude-pattern>
-		<exclude-pattern>Controllers/StatsShortcodes.php</exclude-pattern>
 
 		<!-- Third-party libraries don't need to be scanned for coding standards -->
 		<exclude-pattern>Libraries/</exclude-pattern>
