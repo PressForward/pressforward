@@ -5,9 +5,10 @@
  * @package Pressforward
  */
 
+require 'vendor/autoload.php';
+
 // Out-of-namespace dependencies.
 require 'class-SplClassLoader.php';
-require 'Libraries/PFSimpleHtmlDom.php';
 require_once 'Libraries/random_compat/lib/random.php';
 require_once 'Libraries/php-jwt/src/JWT.php';
 require 'Libraries/URLResolver/URLResolver.php';
