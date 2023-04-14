@@ -24,6 +24,7 @@
     },
     "require": {
         "simplehtmldom/simplehtmldom": "^2.0-RC",
-        "firebase/php-jwt": "^6.4"
+        "firebase/php-jwt": "^6.4",
+        "paragonie/random_compat": "^9.99"
     }
 }
