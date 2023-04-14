@@ -11,7 +11,6 @@ parameters:
     - ./vendor/
     - ./node_modules/
     - ./tests/
-    - ./Libraries/php-jwt
     - ./Libraries/random_compat
     - ./Libraries/FiveFiltersReadability
     - ./Libraries/text-stats/src/DaveChild/TextStatistics/TextStatistics.php
@@ -19,7 +18,6 @@ parameters:
 
   scanFiles:
     - ./Libraries/FiveFiltersReadability/Readability.php
-    - ./Libraries/php-jwt/src/JWT.php
     - ./Libraries/text-stats/src/DaveChild/TextStatistics/TextStatistics.php
 
   ignoreErrors:
