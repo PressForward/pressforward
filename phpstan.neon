@@ -31,10 +31,6 @@ parameters:
     - # WordPress standard for array documentation.
       message: '#^PHPDoc tag @var above a (function|method) has no effect.$#'
 
-    - # Not sure if this is a bug.
-      message: '#^Call to an undefined method object::find\(\)\.$#'
-      path: ./Libraries/URLResolver/URLResolver.php
-
     - # PHPStan is being overly strict.
       message: '#^Access to an undefined property.*$#'
       path: ./Libraries/PFOpenGraph.php

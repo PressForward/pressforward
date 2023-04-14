@@ -15,7 +15,7 @@ use PressForward\Libraries\HTMLChecker as HTMLChecker;
 use PFOpenGraph;
 use AlertBox\The_Alert_Box as The_Alert_Box;
 use Readability;
-use URLResolver;
+use \mattwright\URLResolver;
 
 /**
  * LibrariesProvider class.
