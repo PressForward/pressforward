@@ -513,7 +513,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$user_id_2 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'bookmarklet_to_nomination2' ) );
 		wp_set_current_user( $user_id_2 );
 
-		$post_type = array( 'post', pressforward( 'schema.nominations' )->post_type );
+		$post_type = array( pressforward_draft_post_type(), pressforward( 'schema.nominations' )->post_type );
 
 		// Check by item_id.
 		$nom_and_post_check = pressforward('utility.forward_tools')->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
@@ -570,7 +570,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$user_id_2 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'bookmarklet_to_nomination2' ) );
 		wp_set_current_user( $user_id_2 );
 
-		$post_type = array( 'post', pressforward( 'schema.nominations' )->post_type );
+		$post_type = array( pressforward_draft_post_type(), pressforward( 'schema.nominations' )->post_type );
 
 		// Check by item_id.
 		$nom_and_post_check = pressforward('utility.forward_tools')->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
@@ -691,7 +691,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$user_id_2 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'bookmarklet_to_nomination2' ) );
 		wp_set_current_user( $user_id_2 );
 
-		$post_type = array( 'post', pressforward( 'schema.nominations' )->post_type );
+		$post_type = array( pressforward_draft_post_type(), pressforward( 'schema.nominations' )->post_type );
 
 		// Check by item_id.
 		$nom_and_post_check = pressforward('utility.forward_tools')->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
@@ -869,7 +869,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$this->check_standard_metrics($feed_item_id, $final_id, $title);
 
 		$final_post = get_post($final_id);
-		$this->assertEquals($final_post->post_type, 'post');
+		$this->assertEquals($final_post->post_type, pressforward_draft_post_type());
 
 		$nominate = pressforward('controller.metas')->get_post_pf_meta($final_id, 'nom_id');
 
@@ -902,9 +902,9 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 
 		$nomination_and_post_check = pressforward('utility.forward_tools')->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
 		$this->assertEquals($nomination_and_post_check, $nomination_two_id);
-		$this->assertEquals( get_option( PF_SLUG . '_draft_post_type', 'post' ), 'post' );
+		$this->assertEquals( pressforward_draft_post_type(), 'post' );
 		$final_post = get_post($final_id);
-		$this->assertEquals( get_option( PF_SLUG . '_draft_post_type', 'post' ), $final_post->post_type );
+		$this->assertEquals( pressforward_draft_post_type(), $final_post->post_type );
 		$this->assertEquals( pressforward('controller.metas')->get_post_pf_meta( $final_id, 'item_id', true ), $item_id );
 
 //		$nominators = pressforward('utility.forward_tools')->apply_nomination_data($final_id. false, true);

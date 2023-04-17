@@ -28,7 +28,7 @@ class EditPost implements HasActions {
 	 * @return void
 	 */
 	public function __construct() {
-		$this->post_type = 'post';
+		$this->post_type = pressforward_draft_post_type();
 	}
 
 	/**

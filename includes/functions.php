@@ -163,6 +163,24 @@ function pf_nomthis_bookmarklet() {
 }
 
 /**
+ * Get the draft post type name.
+ *
+ * @since 5.5.0
+ *
+ * @return string The name of the draft post_type for PressForward.
+ */
+function pressforward_draft_post_type() {
+	$post_type = get_option( PF_SLUG . '_draft_post_type', 'post' );
+
+	/**
+	 * Filters the 'draft' post type.
+	 *
+	 * @param string Defaults to 'post'.
+	 */
+	return apply_filters( 'pressforward_draft_post_type', $post_type );
+}
+
+/**
  * Get the feed item post type name.
  *
  * @since 1.7
@@ -394,7 +412,7 @@ function pf_get_posts_by_id_for_check( $post_type = null, $item_id = null, $ids_
 	$r = array(
 		'meta_key'   => pressforward( 'controller.metas' )->get_key( 'item_id' ),
 		'meta_value' => $item_id,
-		'post_type'  => array( 'post', pf_feed_item_post_type() ),
+		'post_type'  => array( pressforward_draft_post_type(), pf_feed_item_post_type() ),
 	);
 
 	if ( $ids_only ) {
@@ -955,7 +973,7 @@ function pf_is_drafted( $item_id ) {
 		'fields'        => 'ids',
 		'meta_key'      => pressforward( 'controller.metas' )->get_key( 'item_id' ),
 		'meta_value'    => $item_id,
-		'post_type'     => get_option( PF_SLUG . '_draft_post_type', 'post' ),
+		'post_type'     => pressforward_draft_post_type(),
 	);
 	$q = new WP_Query( $a );
 
@@ -976,7 +994,7 @@ function pf_is_drafted( $item_id ) {
 function pf_get_drafted_items( $post_type = 'pf_feed_item' ) {
 	$draft_query_args = [
 		'no_found_rows'          => true,
-		'post_type'              => get_option( PF_SLUG . '_draft_post_type', 'post' ),
+		'post_type'              => pressforward_draft_post_type(),
 		'post_status'            => 'any',
 		'meta_query'             => array(
 			array(
@@ -1415,7 +1433,7 @@ function pf_exclude_queued_items_from_queries( $query ) {
 	}
 
 	$type = $query->get( 'post_type' );
-	if ( ( empty( $type ) ) || ( 'post' !== $type ) ) {
+	if ( ( empty( $type ) ) || ( pressforward_draft_post_type() !== $type ) ) {
 		if ( 300 <= count( $queued ) ) {
 			$queued_chunk = array_chunk( $queued, 100 );
 			$queued       = $queued_chunk[0];

@@ -668,7 +668,7 @@ class Nominated implements HasActions {
 	 */
 	public function is_nominated( $item_id, $post_type = '', $update = false ) {
 		if ( ! $post_type ) {
-			$post_type = array( 'post', 'nomination' );
+			$post_type = array( pressforward_draft_post_type(), 'nomination' );
 		}
 		$attempt = $this->get_first_nomination( $item_id, $post_type );
 		if ( ! empty( $attempt ) ) {

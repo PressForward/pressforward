@@ -216,7 +216,7 @@ class Stats {
 	 * @return string
 	 */
 	private function post_type_for_query() {
-		return get_option( PF_SLUG . '_draft_post_type', 'post' );
+		return pressforward_draft_post_type();
 	}
 
 	/**

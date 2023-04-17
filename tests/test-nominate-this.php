@@ -127,10 +127,10 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		// $theDate = getdate();
 		// $w = date('W');
 		$r = array(
-								'meta_key' => pressforward('controller.metas')->get_key('item_id'),
-								'meta_value' => $item_id,
-								'post_type'	=> array( 'post', pf_feed_item_post_type() ),
-							);
+			'meta_key'   => pressforward('controller.metas')->get_key('item_id'),
+			'meta_value' => $item_id,
+			'post_type'	 => array( pressforward_draft_post_type(), pf_feed_item_post_type() ),
+		);
 
 		if ( $ids_only ) {
 			$r['fields'] = 'ids';

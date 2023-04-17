@@ -87,7 +87,7 @@ class NominateThisCore implements HasActions {
 
 			$create_nom_post_cap_test = current_user_can( get_post_type_object( pressforward( 'schema.nominations' )->post_type )->cap->create_posts );
 
-			$pf_draft_post_type_value = get_option( PF_SLUG . '_draft_post_type', 'post' );
+			$pf_draft_post_type_value = pressforward_draft_post_type();
 
 			if ( 'draft' === $publish_type ) {
 				$cap = 'edit_posts';

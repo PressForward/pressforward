@@ -571,7 +571,7 @@ class Forward_Tools {
 	 * @return int|bool
 	 */
 	public function nomination_to_last_step( $item_id = '', $nomination_id = 0, $make_readable = true ) {
-		$post_check = $this->is_a_pf_type( $item_id, 'post' );
+		$post_check = $this->is_a_pf_type( $item_id, pressforward_draft_post_type() );
 
 		// Assign user status as well here.
 		if ( ! $post_check ) {
@@ -777,7 +777,7 @@ class Forward_Tools {
 
 			// Update the existing post with values from the bookmarklet, which is assumed more accurate.
 			$post['ID'] = $nom_and_post_check;
-			$post_check = $this->is_a_pf_type( $item_id, 'post' );
+			$post_check = $this->is_a_pf_type( $item_id, pressforward_draft_post_type() );
 
 			// If this is a nomination but has not yet been published, assume bookmarklet has best version of content.
 			if ( false !== $post_check ) {
@@ -835,7 +835,7 @@ class Forward_Tools {
 	 */
 	public function is_a_pf_type( $item_id, $post_type = '', $update = false ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		if ( ! $post_type ) {
-			$post_type = array( 'post', pressforward( 'schema.nominations' )->post_type );
+			$post_type = array( pressforward_draft_post_type(), pressforward( 'schema.nominations' )->post_type );
 		}
 
 		$attempt = $this->advance_interface->get_pf_type_by_id( $item_id, $post_type );

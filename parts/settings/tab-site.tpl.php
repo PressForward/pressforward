@@ -165,7 +165,7 @@
 	<select name="<?php echo esc_attr( PF_SLUG ); ?>_draft_post_type" id="<?php echo esc_attr( PF_SLUG ); ?>_draft_post_type">
 	<?php
 	$the_post_types           = get_post_types( array( 'public' => true ), 'objects' );
-	$pf_draft_post_type_value = get_option( PF_SLUG . '_draft_post_type', 'post' );
+	$pf_draft_post_type_value = pressforward_draft_post_type();
 	?>
 
 	<?php foreach ( $the_post_types as $the_post_type ) : ?>
