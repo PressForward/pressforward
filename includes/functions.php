@@ -175,7 +175,7 @@ function pressforward_draft_post_type() {
 	/**
 	 * Filters the 'draft' post type.
 	 *
-	 * @param string Defaults to 'post'.
+	 * @param string $post_type Defaults to 'post'.
 	 */
 	return apply_filters( 'pressforward_draft_post_type', $post_type );
 }
