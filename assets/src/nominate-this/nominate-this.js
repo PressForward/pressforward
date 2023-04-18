@@ -149,7 +149,8 @@ import { __ } from '@wordpress/i18n'
 		// Prefer linked data if available.
 		const ld = getLDFromDomObject( domObject )
 		if ( ld && ld.hasOwnProperty( 'keywords' ) ) {
-			return [ ...keywords, ld.keywords.split( ',' ) ]
+			const keywordArray = Array.isArray( ld.keywords ) ? ld.keywords : ld.keywords.split( ',' )
+			return [ ...keywords, keywordArray ]
 		}
 
 		// Next, look at 'keyword' meta tags.
@@ -316,7 +317,12 @@ import { __ } from '@wordpress/i18n'
 			return ''
 		}
 
-		const authorStrings = ld.author.map( author => author.name )
+		let authorStrings = []
+		if ( Array.isArray( ld.author ) ) {
+			authorStrings = ld.author.map( author => author.name )
+		} else {
+			authorStrings = [ ld.author.name ]
+		}
 
 		return authorStrings.join( ', ' )
 	}
