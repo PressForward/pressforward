@@ -40,14 +40,6 @@ gulp.task( 'minify-jquery-fullscreen', function() {
 		.pipe(gulp.dest('Libraries/jquery-fullscreen/'));
 });
 
-gulp.task( 'minify-jquery-tinysort', function() {
-	return gulp.src(['Libraries/jquery-tinysort/*.js', '!Libraries/jquery-tinysort/*.min.js'])
-		.pipe(babel())
-		.pipe(uglify().on('error', console.error))
-		.pipe(extrep('.min.js'))
-		.pipe(gulp.dest('Libraries/jquery-tinysort/'));
-});
-
 gulp.task( 'minify-alertbox', function() {
 	return gulp.src(['Libraries/AlertBox/assets/js/*.js', '!Libraries/AlertBox/assets/js/*.min.js'])
 		.pipe(uglify().on('error', console.error))
@@ -76,7 +68,7 @@ gulp.task( 'minify-readability', function() {
 		.pipe(gulp.dest('Libraries/BookmarkletReadability/'));
 });
 
-gulp.task( 'minify-js', parallel( 'minify-core-js', 'minify-jquery-fullscreen', 'minify-jquery-tinysort', 'minify-alertbox', 'minify-bootstrap', 'minify-readability' ) );
+gulp.task( 'minify-js', parallel( 'minify-core-js', 'minify-jquery-fullscreen', 'minify-alertbox', 'minify-bootstrap', 'minify-readability' ) );
 
 gulp.task( 'minify-core-css', () => {
 	return gulp.src(['./assets/css/*.css', '!./assets/css/*.min.css'])

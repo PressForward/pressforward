@@ -174,18 +174,6 @@ class AssetsProvider extends ServiceProvider {
 				'condition' => function( $hook ) use ( $provider ) {
 					return $provider->check_hook_for_pressforward_string( $hook );
 				},
-				'handle'    => $slug . '-tinysort',
-				'src'       => 'Libraries/jquery-tinysort/jquery.tinysort',
-				'deps'      => array( 'pf' ),
-			)
-		);
-
-		$assets->register_script(
-			array(
-				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
-					return $provider->check_hook_for_pressforward_string( $hook );
-				},
 				'handle'    => 'pf-popper',
 				'src'       => 'Libraries/popper',
 				'deps'      => array(),
@@ -263,7 +251,7 @@ class AssetsProvider extends ServiceProvider {
 				},
 				'handle'    => $slug . '-sort-imp',
 				'src'       => 'assets/js/sort-imp',
-				'deps'      => array( 'pf', $slug . '-tinysort', $slug . '-twitter-bootstrap', $slug . '-jq-fullscreen' ),
+				'deps'      => array( 'pf', $slug . '-twitter-bootstrap', $slug . '-jq-fullscreen' ),
 			)
 		);
 

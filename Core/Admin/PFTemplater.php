@@ -395,13 +395,20 @@ class PFTemplater {
 
 						<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu3">
 							<?php
-							$this->dropdown_option( __( 'Reset', 'pf' ), 'sort-reset' );
-							$this->dropdown_option( __( 'Date of item', 'pf' ), 'sortbyitemdate' );
-							$this->dropdown_option( __( 'Date retrieved', 'pf' ), 'sortbyfeedindate' );
+
+							$sort_base_url = get_admin_url( null, 'admin.php?page=' . $page );
+							if ( isset( $_GET['pf-see'] ) ) {
+								$sort_base_url = add_query_arg( 'pf-see', sanitize_text_field( wp_unslash( $_GET['pf-see'] ) ), $sort_base_url );
+							}
+
+							$this->dropdown_option( __( 'Reset', 'pf' ), 'sort-reset', null, null, null, null, $sort_base_url );
+							$this->dropdown_option( __( 'Date of item', 'pf' ), 'sortbyitemdate', null, null, null, null, add_query_arg( 'sort-by', 'item-date', $sort_base_url ) );
+							$this->dropdown_option( __( 'Date retrieved', 'pf' ), 'sortbyfeedindate', null, null, null, null, add_query_arg( 'sort-by', 'feed-in-date', $sort_base_url ) );
 
 							if ( 'pf-review' === $page ) {
-								$this->dropdown_option( __( 'Date nominated', 'pf' ), 'sortbynomdate' );
-								$this->dropdown_option( __( 'Nominations received', 'pf' ), 'sortbynomcount' );
+								$this->dropdown_option(
+									__( 'Date nominated', 'pf' ), 'sortbynomdate', null, null, null, null, add_query_arg( 'sort-by', 'nom-date', $sort_base_url ) );
+								$this->dropdown_option( __( 'Nominations received', 'pf' ), 'sortbynomcount', null, null, null, null, add_query_arg( 'sort-by', 'nom-count', $sort_base_url ) );
 							}
 							?>
 						</ul>

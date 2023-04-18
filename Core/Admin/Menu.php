@@ -268,6 +268,26 @@ class Menu implements HasActions, HasFilters {
 
 				$archive_feed_args['count_total'] = true;
 
+				if ( isset( $_GET['sort-by'] ) ) {
+					$sort_by    = sanitize_text_field( wp_unslash( $_GET['sort-by'] ) );
+					$sort_order = isset( $_GET['sort-order'] ) && 'asc' === strtolower( sanitize_text_field( wp_unslash( $_GET['sort-order'] ) ) ) ? 'ASC' : 'DESC';
+
+					switch ( $sort_by ) {
+						case 'item-date' :
+						default :
+							$archive_feed_args['orderby'] = [
+								'meta_value' => $sort_order,
+							];
+						break;
+
+						case 'feed-in-date' :
+							$archive_feed_args['orderby'] = [
+								'date' => $sort_order,
+							];
+						break;
+					}
+				}
+
 				$items_to_display = pressforward( 'controller.loops' )->archive_feed_to_display( $archive_feed_args );
 				foreach ( $items_to_display['items'] as $item ) {
 					pressforward( 'admin.templates' )->form_of_an_item( $item, $index );

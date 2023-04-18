@@ -81,6 +81,7 @@ class PF_Loops {
 				'search_terms'     => '',
 				'exclude_archived' => false,
 				'count_total'      => false,
+				'orderby'          => '',
 			),
 			$args
 		);
@@ -115,9 +116,7 @@ class PF_Loops {
 			'meta_value'     => $r['from_unix_time'],
 			'meta_type'      => 'SIGNED',
 			'meta_compare'   => '>',
-			// phpcs:enable WordPress.DB.SlowDBQuery
-			'orderby'        => 'meta_value',
-			'order'          => 'DESC',
+			'orderby'        => $r['orderby'],
 
 			// Pagination.
 			'posts_per_page' => $r['posts_per_page'],

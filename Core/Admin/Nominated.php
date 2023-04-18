@@ -231,6 +231,52 @@ class Nominated implements HasActions {
 						'suppress_filters' => false,
 						'offset'           => $offset, // The query function will turn page into a 1 if it is a 0.
 					);
+
+					if ( isset( $_GET['sort-by'] ) ) {
+						$sort_by    = sanitize_text_field( wp_unslash( $_GET['sort-by'] ) );
+						$sort_order = isset( $_GET['sort-order'] ) && 'asc' === strtolower( sanitize_text_field( wp_unslash( $_GET['sort-order'] ) ) ) ? 'ASC' : 'DESC';
+
+						switch ( $sort_by ) {
+							case 'item-date' :
+							default :
+								$nom_args['orderby'] = [
+									'meta_value' => $sort_order,
+								];
+							break;
+
+							case 'feed-in-date' :
+								$nom_args['orderby'] = [
+									'date' => $sort_order,
+								];
+							break;
+
+							case 'nom-date' :
+								$nom_args['meta_key'] = 'sortable_nom_date';
+								$nom_args['orderby']  = [
+									'meta_value' => $sort_order,
+								];
+							break;
+
+							case 'nom-count' :
+								$nom_args['meta_key']   = '';
+								$nom_args['meta_value'] = '';
+
+								$nom_args['meta_query'] = [
+									'nomination_count' => [
+										'key' => 'nomination_count',
+										'compare' => 'EXISTS',
+										'type' => 'SIGNED',
+									],
+								];
+
+								$nom_args['orderby'] = [
+									'nomination_count' => $sort_order,
+									'date'             => 'DESC',
+								];
+							break;
+						}
+					}
+
 					if ( isset( $_GET['feed'] ) ) {
 						$nom_args['post_parent'] = intval( $_GET['feed'] );
 					} elseif ( isset( $_GET['folder'] ) ) {

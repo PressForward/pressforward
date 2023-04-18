@@ -335,6 +335,42 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 			$is_variant = true;
 		}
 
+		if ( isset( $_GET['sort-by'] ) ) {
+			$sort_by    = sanitize_text_field( wp_unslash( $_GET['sort-by'] ) );
+			$sort_order = isset( $_GET['sort-order'] ) && 'asc' === strtolower( sanitize_text_field( wp_unslash( $_GET['sort-order'] ) ) ) ? 'ASC' : 'DESC';
+
+			switch ( $sort_by ) {
+				case 'item-date' :
+					$sort_by_text = 'ASC' === $sort_order ? __( 'Sorted by item date, ascending', 'pf' ) : __( 'Sorted by item date, descending', 'pf' );
+				break;
+
+				case 'feed-in-date' :
+					$sort_by_text = 'ASC' === $sort_order ? __( 'Sorted by time retrieved, ascending', 'pf' ) : __( 'Sorted by time retrieved, descending', 'pf' );
+				break;
+
+				case 'nom-date' :
+					$sort_by_text = 'ASC' === $sort_order ? __( 'Sorted by time nominated, ascending', 'pf' ) : __( 'Sorted by time nominated, descending', 'pf' );
+				break;
+
+				case 'nom-count' :
+					$sort_by_text = 'ASC' === $sort_order ? __( 'Sorted by nominations, ascending', 'pf' ) : __( 'Sorted by nominations, descending', 'pf' );
+				break;
+
+				default :
+					$sort_by_text = '';
+				break;
+			}
+
+			if ( $sort_by_text ) {
+				if ( ! empty( $variant ) ) {
+					$variant .= ' |';
+				}
+
+				$variant   .= '&nbsp;<span>' . esc_html( $sort_by_text ) . '</span>';
+				$is_variant = true;
+			}
+		}
+
 		$variant = apply_filters( 'pf_title_variation', $variant, $is_variant );
 
 		if ( ! empty( $variant ) ) {
