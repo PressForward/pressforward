@@ -406,8 +406,7 @@ class PFTemplater {
 							$this->dropdown_option( __( 'Date retrieved', 'pf' ), 'sortbyfeedindate', null, null, null, null, add_query_arg( 'sort-by', 'feed-in-date', $sort_base_url ) );
 
 							if ( 'pf-review' === $page ) {
-								$this->dropdown_option(
-									__( 'Date nominated', 'pf' ), 'sortbynomdate', null, null, null, null, add_query_arg( 'sort-by', 'nom-date', $sort_base_url ) );
+								$this->dropdown_option( __( 'Date nominated', 'pf' ), 'sortbynomdate', null, null, null, null, add_query_arg( 'sort-by', 'nom-date', $sort_base_url ) );
 								$this->dropdown_option( __( 'Nominations received', 'pf' ), 'sortbynomcount', null, null, null, null, add_query_arg( 'sort-by', 'nom-count', $sort_base_url ) );
 							}
 							?>

@@ -273,18 +273,18 @@ class Menu implements HasActions, HasFilters {
 					$sort_order = isset( $_GET['sort-order'] ) && 'asc' === strtolower( sanitize_text_field( wp_unslash( $_GET['sort-order'] ) ) ) ? 'ASC' : 'DESC';
 
 					switch ( $sort_by ) {
-						case 'item-date' :
-						default :
+						case 'item-date':
+						default:
 							$archive_feed_args['orderby'] = [
 								'meta_value' => $sort_order,
 							];
-						break;
+							break;
 
-						case 'feed-in-date' :
+						case 'feed-in-date':
 							$archive_feed_args['orderby'] = [
 								'date' => $sort_order,
 							];
-						break;
+							break;
 					}
 				}
 

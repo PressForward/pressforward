@@ -237,35 +237,35 @@ class Nominated implements HasActions {
 						$sort_order = isset( $_GET['sort-order'] ) && 'asc' === strtolower( sanitize_text_field( wp_unslash( $_GET['sort-order'] ) ) ) ? 'ASC' : 'DESC';
 
 						switch ( $sort_by ) {
-							case 'item-date' :
-							default :
+							case 'item-date':
+							default:
 								$nom_args['orderby'] = [
 									'meta_value' => $sort_order,
 								];
-							break;
+								break;
 
-							case 'feed-in-date' :
+							case 'feed-in-date':
 								$nom_args['orderby'] = [
 									'date' => $sort_order,
 								];
-							break;
+								break;
 
-							case 'nom-date' :
+							case 'nom-date':
 								$nom_args['meta_key'] = 'sortable_nom_date';
 								$nom_args['orderby']  = [
 									'meta_value' => $sort_order,
 								];
-							break;
+								break;
 
-							case 'nom-count' :
+							case 'nom-count':
 								$nom_args['meta_key']   = '';
 								$nom_args['meta_value'] = '';
 
 								$nom_args['meta_query'] = [
 									'nomination_count' => [
-										'key' => 'nomination_count',
+										'key'     => 'nomination_count',
 										'compare' => 'EXISTS',
-										'type' => 'SIGNED',
+										'type'    => 'SIGNED',
 									],
 								];
 
@@ -273,7 +273,7 @@ class Nominated implements HasActions {
 									'nomination_count' => $sort_order,
 									'date'             => 'DESC',
 								];
-							break;
+								break;
 						}
 					}
 
