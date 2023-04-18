@@ -336,19 +336,6 @@ class AssetsProvider extends ServiceProvider {
 				'type'      => 'admin',
 				'condition' => function( $hook ) use ( $provider ) {
 					$exclusions = array( 'toplevel_page_pf-menu' );
-					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
-				},
-				'handle'    => $slug . '-media-query-imp',
-				'src'       => 'assets/js/media-query-imp',
-				'deps'      => array( 'pf', 'thickbox', 'media-upload' ),
-			)
-		);
-
-		$assets->register_script(
-			array(
-				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
-					$exclusions = array( 'toplevel_page_pf-menu' );
 					$inclusions = array( 'edit.php' );
 					return $provider->check_hook_for_pressforward_string( $hook, $exclusions, $inclusions );
 				},
@@ -430,6 +417,7 @@ class AssetsProvider extends ServiceProvider {
 	 */
 	public function admin_enqueue_scripts() {
 		$build_scripts = [
+			'add-feeds',
 			'nominate-this',
 		];
 

@@ -323,6 +323,7 @@ class PF_RSS_Import extends PF_Module {
 	 */
 	public function add_to_feeder() {
 		wp_enqueue_media();
+		wp_enqueue_script( 'add-feeds' );
 
 		$feedlist = get_option( PF_SLUG . '_feedlist' );
 

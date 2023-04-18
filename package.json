@@ -28,8 +28,8 @@
 		"lint": "run-p lint:js",
 		"lint:eslint": "eslint --ignore-path .gitignore",
 		"lint:js": "npm run lint:eslint -- .",
-		"start": "wp-scripts start assets/src/nominate-this/nominate-this.js",
-		"build": "wp-scripts build assets/src/nominate-this/nominate-this.js"
+		"start": "wp-scripts start assets/src/add-feeds/add-feeds.js assets/src/nominate-this/nominate-this.js",
+		"build": "wp-scripts build assets/src/add-feeds/add-feeds.js assets/src/nominate-this/nominate-this.js"
 	},
 	"repository": {
 		"type": "git",

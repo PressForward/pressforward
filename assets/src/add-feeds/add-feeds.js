@@ -1,12 +1,14 @@
+import { __ } from '@wordpress/i18n'
+
 jQuery(window).load(function() {
 
 	jQuery('.pf_primary_media_opml_upload').click(function(e) {
 			e.preventDefault();
 			// via http://stackoverflow.com/questions/13847714/wordpress-3-5-custom-media-upload-for-your-theme-options?cachebusterTimestamp=1405277969630
 			var custom_uploader = wp.media({
-				title: 'Upload .OPML or .XML',
+				title: __( 'Upload .OPML or .XML', 'pressforward' ),
 				button: {
-					text: 'Add to Subscription list'
+					text: __( 'Add to Subscription list', 'pressforward' )
 				},
 				multiple: false  // Set this to true to allow multiple files to be selected
 			})
@@ -17,7 +19,7 @@ jQuery(window).load(function() {
 				//$('.custom_media_id').val(attachment.id);
 			})
 			.open();
-		return false;       
+		return false;
 	});
 
 });
