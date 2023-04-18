@@ -764,6 +764,9 @@ class Forward_Tools {
 			$nominators = $this->apply_nomination_data( $post_ID );
 			$this->metas->update_pf_meta( $post_ID, 'nominator_array', $nominators );
 
+			// When sorting by Nomination Date, we are only interested in the date of the first nomination.
+			$this->metas->update_pf_meta( $post_ID, 'sortable_nom_date', current_time( 'mysql' ) );
+
 			if ( ! empty( $_POST['item_author'] ) ) {
 				$item_author = sanitize_text_field( wp_unslash( $_POST['item_author'] ) );
 				pressforward( 'controller.metas' )->update_pf_meta( $post_ID, 'item_author', \sanitize_text_field( $item_author ) );
