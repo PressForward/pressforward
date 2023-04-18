@@ -94,9 +94,9 @@ class PF_Advancement implements Advance_System, HasActions {
 				wp_mail(
 					trim( $email ),
 					/* translators: Site name */
-					sprintf( esc_html__( 'New nomination on %s', 'pf' ), esc_html( $blogname ) ),
+					sprintf( esc_html__( 'New nomination on %s', 'pressforward' ), esc_html( $blogname ) ),
 					/* translators: URL of Nominations panel */
-					sprintf( esc_html__( 'A new nomination has been created! Please check it online on %s.', 'pf' ), esc_html( $siteurl . '/wp-admin/admin.php?page=pf-review' ) )
+					sprintf( esc_html__( 'A new nomination has been created! Please check it online on %s.', 'pressforward' ), esc_html( $siteurl . '/wp-admin/admin.php?page=pf-review' ) )
 				);
 			}
 		}

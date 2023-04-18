@@ -1255,11 +1255,11 @@ function pf_iterate_cycle_state( $option_name, $option_limit = '', $do_echo = fa
 
 	if ( $do_echo ) {
 		// translators: Day count.
-		echo '<br />' . esc_html( sprintf( __( 'Day: %s', 'pf' ), $retrieval_cycle['day'] ) );
+		echo '<br />' . esc_html( sprintf( __( 'Day: %s', 'pressforward' ), $retrieval_cycle['day'] ) );
 		// translators: Week count.
-		echo '<br />' . esc_html( sprintf( __( 'Week: %s', 'pf' ), $retrieval_cycle['week'] ) );
+		echo '<br />' . esc_html( sprintf( __( 'Week: %s', 'pressforward' ), $retrieval_cycle['week'] ) );
 		// translators: Month count.
-		echo '<br />' . esc_html( sprintf( __( 'Month: %s', 'pf' ), $retrieval_cycle['month'] ) );
+		echo '<br />' . esc_html( sprintf( __( 'Month: %s', 'pressforward' ), $retrieval_cycle['month'] ) );
 	} elseif ( ! $option_limit ) {
 		return $retrieval_cycle;
 	} elseif ( $option_limit ) {
@@ -1299,7 +1299,7 @@ function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 	if ( ! $item || ! ( $item instanceof WP_Post ) ) {
 		if ( $msg ) {
 			pf_log( 'Post Not Found.' );
-			return __( 'Post Not Found.', 'pf' );
+			return __( 'Post Not Found.', 'pressforward' );
 		} else {
 			return false;
 		}
@@ -1311,7 +1311,7 @@ function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 	if ( ! in_array( $item->post_type, array( $feed_item_post_type, $feed_post_type, 'nomination' ), true ) ) {
 		if ( $msg ) {
 			pf_log( 'Post Type Not Matched' );
-			return __( 'Post Type Not Matched', 'pf' );
+			return __( 'Post Type Not Matched', 'pressforward' );
 		} else {
 			return false;
 		}
@@ -1321,7 +1321,7 @@ function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 	if ( in_array( $item->ID, $queued, true ) ) {
 		if ( $msg ) {
 			pf_log( 'Post Type Already Queued' );
-			return __( 'Post Type Already Queued', 'pf' );
+			return __( 'Post Type Already Queued', 'pressforward' );
 		} else {
 			return false;
 		}

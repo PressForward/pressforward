@@ -126,19 +126,19 @@ class PFTemplater {
 		if ( 'settings' === $slug ) {
 			$permitted_tabs = array(
 				'user'         => array(
-					'title' => __( 'User Options', 'pf' ),
+					'title' => __( 'User Options', 'pressforward' ),
 					'cap'   => get_option( 'pf_menu_all_content_access', $this->users->pf_get_defining_capability_by_role( 'contributor' ) ),
 				),
 				'site'         => array(
-					'title' => __( 'Site Options', 'pf' ),
+					'title' => __( 'Site Options', 'pressforward' ),
 					'cap'   => get_option( 'pf_menu_preferences_access', $this->users->pf_get_defining_capability_by_role( 'administrator' ) ),
 				),
 				'user-control' => array(
-					'title' => __( 'User Control', 'pf' ),
+					'title' => __( 'User Control', 'pressforward' ),
 					'cap'   => get_option( 'pf_menu_preferences_access', $this->users->pf_get_defining_capability_by_role( 'administrator' ) ),
 				),
 				'modules'      => array(
-					'title' => __( 'Module Control', 'pf' ),
+					'title' => __( 'Module Control', 'pressforward' ),
 					'cap'   => get_option( 'pf_menu_preferences_access', $this->users->pf_get_defining_capability_by_role( 'administrator' ) ),
 				),
 			);
@@ -169,7 +169,7 @@ class PFTemplater {
 		$vars    = array(
 			'current'    => $tab,
 			'user_ID'    => $user_ID,
-			'page_title' => __( 'PressForward Preferences', 'pf' ),
+			'page_title' => __( 'PressForward Preferences', 'pressforward' ),
 			'page_slug'  => 'settings',
 		);
 		return $this->get_view( $this->factory->build_path( array( 'settings', 'settings-page' ), false ), $vars );
@@ -308,9 +308,9 @@ class PFTemplater {
 		$query_string = isset( $_SERVER['QUERY_STRING'] ) ? sanitize_text_field( wp_unslash( $_SERVER['QUERY_STRING'] ) ) : '';
 		?>
 			<form id="feeds-search" method="post" action="<?php echo esc_attr( basename( $php_self . '?' . $query_string . '&action=post' ) ); ?>">
-					<label for="search-terms"><?php esc_html_e( 'Search', 'pf' ); ?></label>
-				<input type="text" name="search-terms" id="search-terms" placeholder="<?php esc_attr_e( 'Enter search terms', 'pf' ); ?>">
-				<input type="submit" class="btn btn-small" value="<?php esc_attr_e( 'Search', 'pf' ); ?>">
+					<label for="search-terms"><?php esc_html_e( 'Search', 'pressforward' ); ?></label>
+				<input type="text" name="search-terms" id="search-terms" placeholder="<?php esc_attr_e( 'Enter search terms', 'pressforward' ); ?>">
+				<input type="submit" class="btn btn-small" value="<?php esc_attr_e( 'Search', 'pressforward' ); ?>">
 			</form>
 		<?php
 	}
@@ -328,7 +328,7 @@ class PFTemplater {
 					<?php if ( 'pf-review' !== $page ) { ?>
 						<div class="dropdown pf-view-dropdown btn-group" role="group">
 							<button class="btn btn-default btn-small dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-								<?php esc_html_e( 'View', 'pf' ); ?>
+								<?php esc_html_e( 'View', 'pressforward' ); ?>
 								<span class="caret"></span>
 							</button>
 
@@ -338,19 +338,19 @@ class PFTemplater {
 							$view_check = get_user_meta( pressforward( 'controller.template_factory' )->user_id(), 'pf_user_read_state', true );
 
 							if ( 'golist' === $view_check ) {
-								$this->dropdown_option( __( 'Grid', 'pf' ), 'gogrid', 'pf-top-menu-selection display-state' );
-								$this->dropdown_option( __( 'List', 'pf' ), 'golist', 'pf-top-menu-selection unset display-state' );
+								$this->dropdown_option( __( 'Grid', 'pressforward' ), 'gogrid', 'pf-top-menu-selection display-state' );
+								$this->dropdown_option( __( 'List', 'pressforward' ), 'golist', 'pf-top-menu-selection unset display-state' );
 							} else {
-								$this->dropdown_option( __( 'Grid', 'pf' ), 'gogrid', 'pf-top-menu-selection unset display-state' );
-								$this->dropdown_option( __( 'List', 'pf' ), 'golist', 'pf-top-menu-selection display-state' );
+								$this->dropdown_option( __( 'Grid', 'pressforward' ), 'gogrid', 'pf-top-menu-selection unset display-state' );
+								$this->dropdown_option( __( 'List', 'pressforward' ), 'golist', 'pf-top-menu-selection display-state' );
 							}
 
 							$pf_user_scroll_switch = get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() );
 
 							if ( 'false' === $pf_user_scroll_switch ) {
-								$this->dropdown_option( __( 'Infinite Scroll (Reloads Page)', 'pf' ), 'goinfinite', 'pf-top-menu-selection scroll-toggler' );
+								$this->dropdown_option( __( 'Infinite Scroll (Reloads Page)', 'pressforward' ), 'goinfinite', 'pf-top-menu-selection scroll-toggler' );
 							} else {
-								$this->dropdown_option( __( 'Paginate (Reloads Page)', 'pf' ), 'gopaged', 'pf-top-menu-selection scroll-toggler' );
+								$this->dropdown_option( __( 'Paginate (Reloads Page)', 'pressforward' ), 'gopaged', 'pf-top-menu-selection scroll-toggler' );
 							}
 
 							?>
@@ -360,27 +360,27 @@ class PFTemplater {
 
 					<div class="dropdown pf-filter-dropdown btn-group" role="group">
 						<button class="btn btn-default dropdown-toggle btn-small" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
-							<?php esc_html_e( 'Filter', 'pf' ); ?>
+							<?php esc_html_e( 'Filter', 'pressforward' ); ?>
 							<span class="caret"></span>
 						</button>
 
 						<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
 						<?php
 						if ( 'pf-review' !== $page ) {
-							$this->dropdown_option( __( 'Reset filter', 'pf' ), 'showNormal' );
-							$this->dropdown_option( __( 'My starred', 'pf' ), 'showMyStarred' );
-							$this->dropdown_option( __( 'Show hidden', 'pf' ), 'showMyHidden' );
-							$this->dropdown_option( __( 'My nominations', 'pf' ), 'showMyNominations' );
-							$this->dropdown_option( __( 'Unread', 'pf' ), 'showUnread' );
-							$this->dropdown_option( __( 'Drafted', 'pf' ), 'showDrafted' );
+							$this->dropdown_option( __( 'Reset filter', 'pressforward' ), 'showNormal' );
+							$this->dropdown_option( __( 'My starred', 'pressforward' ), 'showMyStarred' );
+							$this->dropdown_option( __( 'Show hidden', 'pressforward' ), 'showMyHidden' );
+							$this->dropdown_option( __( 'My nominations', 'pressforward' ), 'showMyNominations' );
+							$this->dropdown_option( __( 'Unread', 'pressforward' ), 'showUnread' );
+							$this->dropdown_option( __( 'Drafted', 'pressforward' ), 'showDrafted' );
 						} else {
 							if ( isset( $_POST['search-terms'] ) || isset( $_GET['by'] ) || isset( $_GET['pf-see'] ) || isset( $_GET['reveal'] ) ) {
-								$this->dropdown_option( __( 'Reset filter', 'pf' ), 'showNormalNominations' );
+								$this->dropdown_option( __( 'Reset filter', 'pressforward' ), 'showNormalNominations' );
 							}
-							$this->dropdown_option( __( 'My starred', 'pf' ), 'sortstarredonly', 'starredonly', null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=starred-only' ) );
-							$this->dropdown_option( __( 'Only archived', 'pf' ), 'showarchiveonly', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=archive-only' ) );
-							$this->dropdown_option( __( 'Unread', 'pf' ), 'showUnreadOnly', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=unread-only' ) );
-							$this->dropdown_option( __( 'Drafted', 'pf' ), 'showDrafted', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=drafted-only' ) );
+							$this->dropdown_option( __( 'My starred', 'pressforward' ), 'sortstarredonly', 'starredonly', null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=starred-only' ) );
+							$this->dropdown_option( __( 'Only archived', 'pressforward' ), 'showarchiveonly', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=archive-only' ) );
+							$this->dropdown_option( __( 'Unread', 'pressforward' ), 'showUnreadOnly', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=unread-only' ) );
+							$this->dropdown_option( __( 'Drafted', 'pressforward' ), 'showDrafted', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=drafted-only' ) );
 
 						}
 						?>
@@ -389,7 +389,7 @@ class PFTemplater {
 
 					<div class="dropdown pf-sort-dropdown btn-group" role="group">
 						<button class="btn btn-default dropdown-toggle btn-small" type="button" id="dropdownMenu3" data-toggle="dropdown" aria-expanded="true">
-							<?php esc_html_e( 'Sort', 'pf' ); ?>
+							<?php esc_html_e( 'Sort', 'pressforward' ); ?>
 							<span class="caret"></span>
 						</button>
 
@@ -401,20 +401,20 @@ class PFTemplater {
 								$sort_base_url = add_query_arg( 'pf-see', sanitize_text_field( wp_unslash( $_GET['pf-see'] ) ), $sort_base_url );
 							}
 
-							$this->dropdown_option( __( 'Reset', 'pf' ), 'sort-reset', null, null, null, null, $sort_base_url );
-							$this->dropdown_option( __( 'Date of item', 'pf' ), 'sortbyitemdate', null, null, null, null, add_query_arg( 'sort-by', 'item-date', $sort_base_url ) );
-							$this->dropdown_option( __( 'Date retrieved', 'pf' ), 'sortbyfeedindate', null, null, null, null, add_query_arg( 'sort-by', 'feed-in-date', $sort_base_url ) );
+							$this->dropdown_option( __( 'Reset', 'pressforward' ), 'sort-reset', null, null, null, null, $sort_base_url );
+							$this->dropdown_option( __( 'Date of item', 'pressforward' ), 'sortbyitemdate', null, null, null, null, add_query_arg( 'sort-by', 'item-date', $sort_base_url ) );
+							$this->dropdown_option( __( 'Date retrieved', 'pressforward' ), 'sortbyfeedindate', null, null, null, null, add_query_arg( 'sort-by', 'feed-in-date', $sort_base_url ) );
 
 							if ( 'pf-review' === $page ) {
-								$this->dropdown_option( __( 'Date nominated', 'pf' ), 'sortbynomdate', null, null, null, null, add_query_arg( 'sort-by', 'nom-date', $sort_base_url ) );
-								$this->dropdown_option( __( 'Nominations received', 'pf' ), 'sortbynomcount', null, null, null, null, add_query_arg( 'sort-by', 'nom-count', $sort_base_url ) );
+								$this->dropdown_option( __( 'Date nominated', 'pressforward' ), 'sortbynomdate', null, null, null, null, add_query_arg( 'sort-by', 'nom-date', $sort_base_url ) );
+								$this->dropdown_option( __( 'Nominations received', 'pressforward' ), 'sortbynomcount', null, null, null, null, add_query_arg( 'sort-by', 'nom-count', $sort_base_url ) );
 							}
 							?>
 						</ul>
 					</div>
 
 					<div class="btn-group" role="group">
-						<a href="https://pressforwardadmin.gitbooks.io/pressforward-documentation/content/" target="_blank" id="pf-help" class="btn btn-small"><?php esc_html_e( 'Need help?', 'pf' ); ?></a>
+						<a href="https://pressforwardadmin.gitbooks.io/pressforward-documentation/content/" target="_blank" id="pf-help" class="btn btn-small"><?php esc_html_e( 'Need help?', 'pressforward' ); ?></a>
 					</div>
 				</div>
 
@@ -430,7 +430,7 @@ class PFTemplater {
 					}
 
 					if ( 'pf-review' === $page ) {
-						echo '<button type="submit" class="delete btn btn-danger btn-small float-left" id="archivenoms" value="' . esc_attr__( 'Archive all', 'pf' ) . '" >' . esc_attr__( 'Archive all', 'pf' ) . '</button>';
+						echo '<button type="submit" class="delete btn btn-danger btn-small float-left" id="archivenoms" value="' . esc_attr__( 'Archive all', 'pressforward' ) . '" >' . esc_attr__( 'Archive all', 'pressforward' ) . '</button>';
 					}
 
 					$user_ID          = get_current_user_id();
@@ -438,12 +438,12 @@ class PFTemplater {
 
 					if ( 'true' === $pf_user_menu_set ) {
 						if ( ! empty( $alerts ) && ( 0 !== $alerts->post_count ) ) {
-							echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . esc_html__( 'Menu', 'pf' ) . ' <i class="icon-tasks"></i> (!)</a>';
+							echo '<a class="btn btn-small btn-warning" id="gomenu" href="#">' . esc_html__( 'Menu', 'pressforward' ) . ' <i class="icon-tasks"></i> (!)</a>';
 						} else {
-							echo '<a class="btn btn-small" id="gomenu" href="#">' . esc_html__( 'Menu', 'pf' ) . ' <i class="icon-tasks"></i></a>';
+							echo '<a class="btn btn-small" id="gomenu" href="#">' . esc_html__( 'Menu', 'pressforward' ) . ' <i class="icon-tasks"></i></a>';
 						}
 					}
-						echo '<a class="btn btn-small" id="gofolders" href="#">' . esc_html__( 'Folders', 'pf' ) . '</a>';
+						echo '<a class="btn btn-small" id="gofolders" href="#">' . esc_html__( 'Folders', 'pressforward' ) . '</a>';
 					?>
 
 				</div>
@@ -603,9 +603,9 @@ class PFTemplater {
 
 		if ( current_user_can( 'manage_options' ) ) {
 			if ( 'nomination' === $format ) {
-				echo '<i class="icon-remove pf-item-remove" pf-post-id="' . esc_attr( $metadata['nom_id'] ) . '" title="' . esc_attr__( 'Delete', 'pf' ) . '"></i>';
+				echo '<i class="icon-remove pf-item-remove" pf-post-id="' . esc_attr( $metadata['nom_id'] ) . '" title="' . esc_attr__( 'Delete', 'pressforward' ) . '"></i>';
 			} else {
-				echo '<i class="icon-remove pf-item-remove" pf-post-id="' . esc_attr( $id_for_comments ) . '" title="' . esc_attr__( 'Delete', 'pf' ) . '"></i>';
+				echo '<i class="icon-remove pf-item-remove" pf-post-id="' . esc_attr( $id_for_comments ) . '" title="' . esc_attr__( 'Delete', 'pressforward' ) . '"></i>';
 			}
 		}
 
@@ -626,7 +626,7 @@ class PFTemplater {
 			$read_class = 'marked-read';
 		}
 
-		echo '<i class="icon-ok-sign schema-read schema-actor schema-switchable ' . esc_attr( $read_class ) . '" pf-item-post-id="' . esc_attr( $id_for_comments ) . '" pf-schema="read" pf-schema-class="marked-read" title="' . esc_attr__( 'Mark as Read', 'pf' ) . '"></i>';
+		echo '<i class="icon-ok-sign schema-read schema-actor schema-switchable ' . esc_attr( $read_class ) . '" pf-item-post-id="' . esc_attr( $id_for_comments ) . '" pf-schema="read" pf-schema-class="marked-read" title="' . esc_attr__( 'Mark as Read', 'pressforward' ) . '"></i>';
 
 		echo '</div>';
 
@@ -640,16 +640,16 @@ class PFTemplater {
 					?>
 					<div class="sortable-hidden-meta" style="display:none;">
 						<?php
-						esc_html_e( 'UNIX timestamp from source RSS', 'pf' );
+						esc_html_e( 'UNIX timestamp from source RSS', 'pressforward' );
 						echo ': <span class="sortable_source_timestamp sortableitemdate">' . esc_html( $metadata['timestamp_item_posted'] ) . '</span><br />';
 
-						esc_html_e( 'UNIX timestamp last modified', 'pf' );
+						esc_html_e( 'UNIX timestamp last modified', 'pressforward' );
 						echo ': <span class="sortable_mod_timestamp">' . esc_html( $metadata['timestamp_nom_last_modified'] ) . '</span><br />';
 
-						esc_html_e( 'UNIX timestamp date nominated', 'pf' );
+						esc_html_e( 'UNIX timestamp date nominated', 'pressforward' );
 						echo ': <span class="sortable_nom_timestamp">' . esc_html( $metadata['timestamp_unix_date_nomed'] ) . '</span><br />';
 
-						esc_html_e( 'Slug for origin site', 'pf' );
+						esc_html_e( 'Slug for origin site', 'pressforward' );
 						echo ': <span class="sortable_origin_link_slug">' . esc_html( $metadata['source_slug'] ) . '</span><br />';
 
 						// Add an action here for others to provide additional sortables.
@@ -675,23 +675,23 @@ class PFTemplater {
 				// http://nicolasgallagher.com/pure-css-speech-bubbles/demo/.
 				$ibox  = '<div class="feed-item-info-box" id="info-box-' . esc_attr( $item['item_id'] ) . '">';
 				$ibox .= '
-					' . esc_html__( 'Feed', 'pf' ) . ': <span class="feed_title">' . esc_html( get_the_source_title( $id_for_comments ) ) . '</span><br />
-					' . esc_html__( 'Posted', 'pf' ) . ': <span class="feed_posted">' . esc_html( gmdate( 'M j, Y; g:ia', strtotime( $item['item_date'] ) ) ) . '</span><br />
-					' . esc_html__( 'Retrieved', 'pf' ) . ': <span class="item_meta item_meta_added_date">' . esc_html( gmdate( 'M j, Y; g:ia', strtotime( $item['item_added_date'] ) ) ) . '</span><br />
-					' . esc_html__( 'Authors', 'pf' ) . ': <span class="item_authors">' . esc_html( $item['item_author'] ) . '</span><br />
-					' . esc_html__( 'Origin', 'pf' ) . ': <span class="source_name"><a target ="_blank" href="' . esc_attr( $source_link ) . '">' . esc_html( $source_link ) . '</a></span><br />
-					' . esc_html__( 'Original Item', 'pf' ) . ': <span class="source_link"><a href="' . esc_attr( $item['item_link'] ) . '" class="item_url" target ="_blank">' . esc_html( $item['item_title'] ) . '</a></span><br />
-					' . esc_html__( 'Tags', 'pf' ) . ': <span class="item_tags">' . esc_html( implode( ',', $item_tags_array ) ) . '</span><br />
-					' . esc_html__( 'Times repeated in source', 'pf' ) . ': <span class="feed_repeat sortable_sources_repeat">' . esc_html( $item['source_repeat'] ) . '</span><br />
+					' . esc_html__( 'Feed', 'pressforward' ) . ': <span class="feed_title">' . esc_html( get_the_source_title( $id_for_comments ) ) . '</span><br />
+					' . esc_html__( 'Posted', 'pressforward' ) . ': <span class="feed_posted">' . esc_html( gmdate( 'M j, Y; g:ia', strtotime( $item['item_date'] ) ) ) . '</span><br />
+					' . esc_html__( 'Retrieved', 'pressforward' ) . ': <span class="item_meta item_meta_added_date">' . esc_html( gmdate( 'M j, Y; g:ia', strtotime( $item['item_added_date'] ) ) ) . '</span><br />
+					' . esc_html__( 'Authors', 'pressforward' ) . ': <span class="item_authors">' . esc_html( $item['item_author'] ) . '</span><br />
+					' . esc_html__( 'Origin', 'pressforward' ) . ': <span class="source_name"><a target ="_blank" href="' . esc_attr( $source_link ) . '">' . esc_html( $source_link ) . '</a></span><br />
+					' . esc_html__( 'Original Item', 'pressforward' ) . ': <span class="source_link"><a href="' . esc_attr( $item['item_link'] ) . '" class="item_url" target ="_blank">' . esc_html( $item['item_title'] ) . '</a></span><br />
+					' . esc_html__( 'Tags', 'pressforward' ) . ': <span class="item_tags">' . esc_html( implode( ',', $item_tags_array ) ) . '</span><br />
+					' . esc_html__( 'Times repeated in source', 'pressforward' ) . ': <span class="feed_repeat sortable_sources_repeat">' . esc_html( $item['source_repeat'] ) . '</span><br />
 										';
 				if ( 'nomination' === $format ) {
-					$ibox .= esc_html__( 'Number of nominations received', 'pf' )
+					$ibox .= esc_html__( 'Number of nominations received', 'pressforward' )
 					. ': <span class="sortable_nom_count">' . esc_html( $metadata['nom_count'] ) . '</span><br />'
-					. esc_html__( 'First submitted by', 'pf' )
+					. esc_html__( 'First submitted by', 'pressforward' )
 					. ': <span class="first_submitter">' . esc_html( $metadata['submitters'] ) . '</span><br />'
-					. esc_html__( 'Nominated on', 'pf' )
+					. esc_html__( 'Nominated on', 'pressforward' )
 					. ': <span class="nominated_on">' . esc_html( gmdate( 'M j, Y; g:ia', strtotime( $metadata['date_nominated'] ) ) ) . '</span><br />'
-					. esc_html__( 'Nominated by', 'pf' )
+					. esc_html__( 'Nominated by', 'pressforward' )
 					. ': <span class="nominated_by">' . esc_html( get_the_nominating_users() ) . '</span><br />';
 				}
 
@@ -699,7 +699,7 @@ class PFTemplater {
 				if ( ! $draft_id && ( current_user_can( 'edit_post', $draft_id ) ) ) {
 					// http://codex.wordpress.org/Function_Reference/edit_post_link.
 					$edit_url = get_edit_post_link( $draft_id );
-					$ibox    .= '<br /><a class="edit_draft_from_info_box" href="' . esc_attr( $edit_url ) . '">' . esc_html__( 'Edit the draft based on this post.', 'pf' ) . '</a><br/>';
+					$ibox    .= '<br /><a class="edit_draft_from_info_box" href="' . esc_attr( $edit_url ) . '">' . esc_html__( 'Edit the draft based on this post.', 'pressforward' ) . '</a><br/>';
 				}
 
 				$ibox .= '</div>';
@@ -765,12 +765,12 @@ class PFTemplater {
 
 							<h3 id="modal-<?php echo esc_html( $item['item_id'] ); ?>-label" class="modal_item_title"><?php echo esc_html( $item['item_title'] ); ?></h3>
 							<?php
-								echo '<em>' . esc_html__( 'Source', 'pf' ) . ': ' . esc_html( get_the_source_title( $id_for_comments ) ) . '</em> | ';
-								echo esc_html__( 'Author', 'pf' ) . ': ' . esc_html( get_the_item_author( $id_for_comments ) );
+								echo '<em>' . esc_html__( 'Source', 'pressforward' ) . ': ' . esc_html( get_the_source_title( $id_for_comments ) ) . '</em> | ';
+								echo esc_html__( 'Author', 'pressforward' ) . ': ' . esc_html( get_the_item_author( $id_for_comments ) );
 							?>
 						</div>
 
-						<button type="button" class="btn-close float-right" data-bs-dismiss="modal" aria-label="<?php esc_attr_e( 'Close', 'pf' ); ?>"></button>
+						<button type="button" class="btn-close float-right" data-bs-dismiss="modal" aria-label="<?php esc_attr_e( 'Close', 'pressforward' ); ?>"></button>
 					</div><!-- .modal-header -->
 
 					<div class="row modal-body-row">
@@ -803,7 +803,7 @@ class PFTemplater {
 					<div class="modal-footer">
 						<div class="footer-top">
 							<div class="original-link">
-								<a target="_blank" href="<?php echo esc_attr( $item['item_link'] ); ?>"><?php esc_html_e( 'Read Original', 'pf' ); ?></a> | <a class="modal-readability-reset" target="#readable" href="<?php echo esc_attr( $item['item_link'] ); ?>" pf-item-id="<?php echo esc_attr( $item['item_id'] ); ?>" pf-post-id="<?php echo esc_attr( $item['post_id'] ); ?>" pf-modal-id="#modal-<?php echo esc_attr( $item['item_id'] ); ?>"><?php esc_html_e( 'Reset Readability', 'pf' ); ?></a>
+								<a target="_blank" href="<?php echo esc_attr( $item['item_link'] ); ?>"><?php esc_html_e( 'Read Original', 'pressforward' ); ?></a> | <a class="modal-readability-reset" target="#readable" href="<?php echo esc_attr( $item['item_link'] ); ?>" pf-item-id="<?php echo esc_attr( $item['item_id'] ); ?>" pf-post-id="<?php echo esc_attr( $item['post_id'] ); ?>" pf-modal-id="#modal-<?php echo esc_attr( $item['item_id'] ); ?>"><?php esc_html_e( 'Reset Readability', 'pressforward' ); ?></a>
 							</div>
 
 							<div class="footer-actions">
@@ -816,7 +816,7 @@ class PFTemplater {
 						<div class="footer-bottom">
 							<?php
 								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-								echo '<strong>' . esc_attr__( 'Item Tags', 'pf' ) . '</strong>: ' . implode( ', ', $item_tags_array );
+								echo '<strong>' . esc_attr__( 'Item Tags', 'pressforward' ) . '</strong>: ' . implode( ', ', $item_tags_array );
 							?>
 						</div>
 					</div><!-- .modal-footer -->
@@ -937,7 +937,7 @@ class PFTemplater {
 						} else {
 							echo '<form name="form-' . esc_attr( $item['item_id'] ) . '">'
 							. '<div class="nominate-result-' . esc_attr( $item['item_id'] ) . '">'
-							. '<img class="loading-' . esc_attr( $item['item_id'] ) . '" src="' . esc_attr( PF_URL ) . 'assets/images/ajax-loader.gif" alt="' . esc_attr__( 'Loading', 'pf' ) . '..." style="display: none" />'
+							. '<img class="loading-' . esc_attr( $item['item_id'] ) . '" src="' . esc_attr( PF_URL ) . 'assets/images/ajax-loader.gif" alt="' . esc_attr__( 'Loading', 'pressforward' ) . '..." style="display: none" />'
 							. '</div>';
 							pf_prep_item_for_submit( $item );
 							wp_nonce_field( 'nomination', PF_SLUG . '_nomination_nonce', false );
@@ -946,13 +946,13 @@ class PFTemplater {
 					}
 
 					// Perhaps use http://twitter.github.com/bootstrap/javascript.html#popovers instead?
-					echo '<button class="btn btn-small itemInfobutton" data-toggle="tooltip" title="' . esc_attr__( 'Info', 'pf' ) . '" id="info-' . esc_attr( $item['item_id'] ) . '-' . esc_attr( $info_pop ) . '" data-placement="' . esc_attr( $info_pop ) . '" data-class="info-box-popover' . esc_attr( $info_modal_class ) . '" data-title="" data-target="' . esc_attr( $item['item_id'] ) . '"><i class="icon-info-sign"></i></button>';
+					echo '<button class="btn btn-small itemInfobutton" data-toggle="tooltip" title="' . esc_attr__( 'Info', 'pressforward' ) . '" id="info-' . esc_attr( $item['item_id'] ) . '-' . esc_attr( $info_pop ) . '" data-placement="' . esc_attr( $info_pop ) . '" data-class="info-box-popover' . esc_attr( $info_modal_class ) . '" data-title="" data-target="' . esc_attr( $item['item_id'] ) . '"><i class="icon-info-sign"></i></button>';
 
 					if ( pf_is_item_starred_for_user( $id_for_comments, $user_id ) ) {
 						echo '<!-- item_id selected = ' . esc_html( $item_id ) . ' -->';
-						echo '<button class="btn btn-small star-item btn-warning" data-toggle="tooltip" title="' . esc_attr__( 'Star', 'pf' ) . '"><i class="icon-star"></i></button>';
+						echo '<button class="btn btn-small star-item btn-warning" data-toggle="tooltip" title="' . esc_attr__( 'Star', 'pressforward' ) . '"><i class="icon-star"></i></button>';
 					} else {
-						echo '<button class="btn btn-small star-item" data-toggle="tooltip" title="' . esc_attr__( 'Star', 'pf' ) . '"><i class="icon-star"></i></button>';
+						echo '<button class="btn btn-small star-item" data-toggle="tooltip" title="' . esc_attr__( 'Star', 'pressforward' ) . '"><i class="icon-star"></i></button>';
 					}
 
 					if ( has_action( 'pf_comment_action_button' ) ) {
@@ -972,27 +972,27 @@ class PFTemplater {
 							$nom_count_classes .= ' btn-info';
 						}
 
-						echo '<a class="' . esc_attr( $nom_count_classes ) . '" data-toggle="tooltip" title="' . esc_attr__( 'Nomination Count', 'pf' ) . '" form="' . esc_attr( $metadata['nom_id'] ) . '">' . esc_html( $metadata['nom_count'] ) . '<i class="icon-play"></i></button></a>';
+						echo '<a class="' . esc_attr( $nom_count_classes ) . '" data-toggle="tooltip" title="' . esc_attr__( 'Nomination Count', 'pressforward' ) . '" form="' . esc_attr( $metadata['nom_id'] ) . '">' . esc_html( $metadata['nom_count'] ) . '<i class="icon-play"></i></button></a>';
 						$archive_status = '';
 						if ( 1 === pressforward( 'controller.metas' )->get_post_pf_meta( $metadata['nom_id'], 'pf_archive', true ) ) {
 							$archive_status = 'btn-warning';
 						}
-						echo '<a class="btn btn-small nom-to-archive schema-switchable schema-actor ' . esc_attr( $archive_status ) . '" pf-schema="archive" pf-schema-class="archived" pf-schema-class="btn-warning" data-toggle="tooltip" title="' . esc_attr__( 'Archive', 'pf' ) . '" form="' . esc_attr( $metadata['nom_id'] ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/archive.png" /></button></a>';
+						echo '<a class="btn btn-small nom-to-archive schema-switchable schema-actor ' . esc_attr( $archive_status ) . '" pf-schema="archive" pf-schema-class="archived" pf-schema-class="btn-warning" data-toggle="tooltip" title="' . esc_attr__( 'Archive', 'pressforward' ) . '" form="' . esc_attr( $metadata['nom_id'] ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/archive.png" /></button></a>';
 						$draft_status = '';
 						if ( ( '1' === pf_get_relationship_value( 'draft', $metadata['nom_id'], $user_id ) ) || ( '1' === pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ) {
 							$draft_status = 'btn-success';
 						}
-						echo '<a href="#nominate" class="btn btn-small nom-to-draft schema-actor ' . esc_attr( $draft_status ) . '" pf-schema="draft" pf-schema-class="btn-success" form="' . esc_attr( $metadata['item_id'] ) . '" data-original-title="' . esc_attr__( 'Draft', 'pf' ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/pressforward-licon.png" /></a>';
+						echo '<a href="#nominate" class="btn btn-small nom-to-draft schema-actor ' . esc_attr( $draft_status ) . '" pf-schema="draft" pf-schema-class="btn-success" form="' . esc_attr( $metadata['item_id'] ) . '" data-original-title="' . esc_attr__( 'Draft', 'pressforward' ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/pressforward-licon.png" /></a>';
 						$meta_handling    = get_option( PF_SLUG . '_advanced_meta_handling', 'no' );
 						$user_level_check = current_user_can( pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'administrator' ) );
 						if ( 'yes' === $meta_handling && $user_level_check ) {
-							echo '<a role="button" class="btn btn-small meta_form_modal-button" data-toggle="modal" href="#meta_form_modal_' . esc_attr( $item['post_id'] ) . '" data-post-id="' . esc_attr( $item['post_id'] ) . '" id="meta_form_modal_expander-' . esc_attr( $item['post_id'] ) . '" data-original-title="' . esc_attr__( 'Edit Metadata', 'pf' ) . '"><i class="icon-meta-form"></i></a>';
+							echo '<a role="button" class="btn btn-small meta_form_modal-button" data-toggle="modal" href="#meta_form_modal_' . esc_attr( $item['post_id'] ) . '" data-post-id="' . esc_attr( $item['post_id'] ) . '" id="meta_form_modal_expander-' . esc_attr( $item['post_id'] ) . '" data-original-title="' . esc_attr__( 'Edit Metadata', 'pressforward' ) . '"><i class="icon-meta-form"></i></a>';
 						}
 					} elseif ( ( 1 === pf_get_relationship_value( 'nominate', $id_for_comments, $user_id ) ) || ( 1 === pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ) {
-						echo '<button class="btn btn-small nominate-now btn-success schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominated', 'pf' ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/pressforward-single-licon.png" /></button>';
+						echo '<button class="btn btn-small nominate-now btn-success schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominated', 'pressforward' ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/pressforward-single-licon.png" /></button>';
 						// Add option here for admin-level users to send items direct to draft.
 					} else {
-						echo '<button class="btn btn-small nominate-now schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominate', 'pf' ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/pressforward-single-licon.png" /></button>';
+						echo '<button class="btn btn-small nominate-now schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominate', 'pressforward' ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/pressforward-single-licon.png" /></button>';
 						// Add option here for admin-level users to send items direct to draft.
 					}
 
@@ -1015,14 +1015,14 @@ class PFTemplater {
 									$send_to_draft_classes .= ' btn-success';
 								}
 
-								self::dropdown_option( __( 'Send to ', 'pf' ) . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ), 'amplify-draft-' . $item['item_id'], $send_to_draft_classes, $item['item_id'], 'draft', 'btn-success' );
+								self::dropdown_option( __( 'Send to ', 'pressforward' ) . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ), 'amplify-draft-' . $item['item_id'], $send_to_draft_classes, $item['item_id'], 'draft', 'btn-success' );
 
 								?>
 								<li class="divider"></li>
 								<?php
 							}
 								$tweet_intent = self::tweet_intent( $id_for_comments );
-								self::dropdown_option( __( 'Tweet', 'pf' ), 'amplify-tweet-' . $item['item_id'], 'amplify-option', $item['item_id'], '', '', $tweet_intent, '_blank' );
+								self::dropdown_option( __( 'Tweet', 'pressforward' ), 'amplify-tweet-' . $item['item_id'], 'amplify-option', $item['item_id'], '', '', $tweet_intent, '_blank' );
 								do_action( 'pf_amplify_buttons' );
 							?>
 						</ul>
@@ -1031,7 +1031,7 @@ class PFTemplater {
 					<?php
 					if ( true === $modal ) {
 						?>
-						<button class="btn btn-small" data-bs-dismiss="modal" aria-hidden="true"><?php esc_html_e( 'Close', 'pf' ); ?></button>
+						<button class="btn btn-small" data-bs-dismiss="modal" aria-hidden="true"><?php esc_html_e( 'Close', 'pressforward' ); ?></button>
 						<?php
 					}
 					?>

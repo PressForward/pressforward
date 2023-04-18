@@ -34,9 +34,9 @@ class PF_Comments extends PF_Module {
 	 */
 	public function module_setup() {
 		$mod_settings = array(
-			'name'        => __( 'Internal Commenting', 'pf' ),
+			'name'        => __( 'Internal Commenting', 'pressforward' ),
 			'slug'        => 'comments',
-			'description' => __( 'This module provides a way for users to comment on posts throughout the editorial process. Internal commenting is only visible in the PressForward plugin and will not be publicly visible when published as a Post.', 'pf' ),
+			'description' => __( 'This module provides a way for users to comment on posts throughout the editorial process. Internal commenting is only visible in the PressForward plugin and will not be publicly visible when published as a Post.', 'pressforward' ),
 			'thumbnail'   => '',
 			'options'     => '',
 		);
@@ -85,7 +85,7 @@ class PF_Comments extends PF_Module {
 
 		if ( ! $comment_set['modal_state'] ) {
 
-			echo '<a role="button" class="btn ' . esc_attr( $btnstate ) . ' itemCommentModal comments-expander" title="' . esc_attr__( 'Comment', 'pf' ) . '" data-toggle="modal" href="#comment_modal_' . esc_attr( $comment_set['id'] ) . '" id="comments-expander-' . esc_attr( $comment_set['id'] ) . '" ><span class="comments-expander-count">' . esc_html( $count ) . '</span><i class="' . esc_attr( $iconstate ) . '"></i></a>';
+			echo '<a role="button" class="btn ' . esc_attr( $btnstate ) . ' itemCommentModal comments-expander" title="' . esc_attr__( 'Comment', 'pressforward' ) . '" data-toggle="modal" href="#comment_modal_' . esc_attr( $comment_set['id'] ) . '" id="comments-expander-' . esc_attr( $comment_set['id'] ) . '" ><span class="comments-expander-count">' . esc_html( $count ) . '</span><i class="' . esc_attr( $iconstate ) . '"></i></a>';
 
 		} else {
 			echo '<a role="button" class="btn ' . esc_attr( $btnstate ) . ' btn-small itemCommentModal comments-expander active" ><span class="comments-expander-count">' . esc_html( $count ) . '</span><i class="' . esc_attr( $iconstate ) . '"></i></a>';
@@ -101,8 +101,8 @@ class PF_Comments extends PF_Module {
 	public function control_menu_access( $admin_rights ) {
 		$admin_rights['pf_feature_comments_access'] = array(
 			'default' => 'contributor',
-			'title'   => __( 'Internal Commenting Feature', 'pf' ),
-			'details' => __( 'This module provides a text box for users to comment on posts throughout the editorial process. Comments are not publicly visible when the post is published.', 'pf' ),
+			'title'   => __( 'Internal Commenting Feature', 'pressforward' ),
+			'details' => __( 'This module provides a text box for users to comment on posts throughout the editorial process. Comments are not publicly visible when the post is published.', 'pressforward' ),
 		);
 
 		return $admin_rights;
@@ -121,16 +121,16 @@ class PF_Comments extends PF_Module {
 				<div class="modal-dialog modal-lg">
 					<div class="modal-content">
 						<div class="modal-header">
-							<h3 id="comment_modal_<?php echo esc_attr( $comment_set['id'] ); ?>_label"><?php esc_html_e( 'Comments', 'pf' ); ?></h3>
-							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php esc_attr_e( 'Close', 'pf' ); ?>"></button>
+							<h3 id="comment_modal_<?php echo esc_attr( $comment_set['id'] ); ?>_label"><?php esc_html_e( 'Comments', 'pressforward' ); ?></h3>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php esc_attr_e( 'Close', 'pressforward' ); ?>"></button>
 						</div>
 
 						<div class="modal-body">
-							<?php esc_html_e( 'Loading comments...', 'pf' ); ?>
+							<?php esc_html_e( 'Loading comments...', 'pressforward' ); ?>
 						</div>
 
 						<div class="modal-footer">
-							<button class="btn" data-bs-dismiss="modal" aria-hidden="true"><?php esc_html_e( 'Close', 'pf' ); ?></button>
+							<button class="btn" data-bs-dismiss="modal" aria-hidden="true"><?php esc_html_e( 'Close', 'pressforward' ); ?></button>
 						</div>
 					</div>
 				</div>
@@ -153,7 +153,7 @@ class PF_Comments extends PF_Module {
 		$comments_allowed = get_option( 'pf_feature_comments_access', pf_get_defining_capability_by_role( 'contributor' ) );
 
 		if ( ! current_user_can( $comments_allowed ) ) {
-			esc_html_e( 'You do not have permission to access this area.' );
+			esc_html_e( 'You do not have permission to access this area.', 'pressforward' );
 			echo '<div class="clear"></div>';
 			return;
 		}
@@ -209,7 +209,7 @@ class PF_Comments extends PF_Module {
 		if ( ( current_user_can( $comments_allowed ) ) ) {
 
 			?>
-			<a href="#" id="ef-comment_respond" onclick="PFEditorialCommentReply.open();return false;" class="button-primary alignright hide-if-no-js" title=" <?php esc_html_e( 'Respond to this post', 'pf' ); ?>"><span><?php esc_html_e( 'Add Comment', 'pf' ); ?></span></a>
+			<a href="#" id="ef-comment_respond" onclick="PFEditorialCommentReply.open();return false;" class="button-primary alignright hide-if-no-js" title=" <?php esc_html_e( 'Respond to this post', 'pressforward' ); ?>"><span><?php esc_html_e( 'Add Comment', 'pressforward' ); ?></span></a>
 
 			<!-- Reply form, hidden until reply clicked by user. -->
 			<div id="ef-replyrow" style="display: none;">
@@ -221,8 +221,8 @@ class PF_Comments extends PF_Module {
 					<a class="ef-replysave button-primary alignright" href="#comments-form">
 						<span id="ef-replybtn"><?php esc_html_e( 'Submit Response', 'edit-flow' ); ?></span>
 					</a>
-					<a class="ef-replycancel button-secondary alignright" href="#comments-form"><?php esc_html_e( 'Cancel', 'pf' ); ?></a>
-					<img alt="<?php esc_attr_e( 'Sending comment...', 'pf' ); ?>" src="<?php echo esc_attr( admin_url( '/images/wpspin_light.gif' ) ); ?>" class="alignright" style="display: none;" id="ef-comment_loading" />
+					<a class="ef-replycancel button-secondary alignright" href="#comments-form"><?php esc_html_e( 'Cancel', 'pressforward' ); ?></a>
+					<img alt="<?php esc_attr_e( 'Sending comment...', 'pressforward' ); ?>" src="<?php echo esc_attr( admin_url( '/images/wpspin_light.gif' ) ); ?>" class="alignright" style="display: none;" id="ef-comment_loading" />
 					<br class="clear" style="margin-bottom:35px;" />
 					<span style="display: none;" class="error"></span>
 				</p>
@@ -266,7 +266,7 @@ class PF_Comments extends PF_Module {
 
 		// Comments can only be added by users that can edit the post.
 		if ( current_user_can( $comments_allowed, $comment->comment_post_ID ) ) {
-			$actions['reply'] = '<a onclick="PFEditorialCommentReply.open(\'' . esc_attr( $comment->comment_ID ) . '\',\'' . esc_attr( $comment->comment_post_ID ) . '\');return false;" class="vim-r hide-if-no-js" title="' . esc_attr__( 'Reply to this comment', 'pf' ) . '" href="#">' . esc_html__( 'Reply', 'pf' ) . '</a>';
+			$actions['reply'] = '<a onclick="PFEditorialCommentReply.open(\'' . esc_attr( $comment->comment_ID ) . '\',\'' . esc_attr( $comment->comment_post_ID ) . '\');return false;" class="vim-r hide-if-no-js" title="' . esc_attr__( 'Reply to this comment', 'pressforward' ) . '" href="#">' . esc_html__( 'Reply', 'pressforward' ) . '</a>';
 
 			$sep = ' ';
 			$i   = 0;
@@ -295,7 +295,7 @@ class PF_Comments extends PF_Module {
 					<?php
 					printf(
 						// translators: 1. Comment author name; 2. Comment date; 3. Comment time.
-						wp_kses_post( __( '<span class="comment-author">%1$s</span><span class="meta"> said on %2$s at %3$s</span>', 'pf' ) ),
+						wp_kses_post( __( '<span class="comment-author">%1$s</span><span class="meta"> said on %2$s at %3$s</span>', 'pressforward' ) ),
 						esc_html( comment_author_email_link( $comment->comment_author ) ),
 						esc_html( get_comment_date( get_option( 'date_format' ) ) ),
 						esc_html( get_comment_time() )
@@ -320,7 +320,7 @@ class PF_Comments extends PF_Module {
 
 		// Verify nonce.
 		if ( empty( $_POST['_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_nonce'] ) ), 'comment' ) ) {
-			die( esc_html__( "Nonce check failed. Please ensure you're supposed to be adding editorial comments.", 'pf' ) );
+			die( esc_html__( "Nonce check failed. Please ensure you're supposed to be adding editorial comments.", 'pressforward' ) );
 		}
 
 		// Get user info.
@@ -334,13 +334,13 @@ class PF_Comments extends PF_Module {
 		// Only allow the comment if user can edit post.
 		// @TODO: allow contributers to add comments as well.
 		if ( ! current_user_can( $comments_allowed, $post_id ) ) {
-			die( esc_html__( 'Sorry, you don\'t have the privileges to add editorial comments. Please talk to your Administrator.', 'pf' ) );
+			die( esc_html__( 'Sorry, you don\'t have the privileges to add editorial comments. Please talk to your Administrator.', 'pressforward' ) );
 		}
 
 		// Verify that comment was actually entered.
 		$comment_content = ! empty( $_POST['content'] ) ? trim( sanitize_textarea_field( wp_unslash( $_POST['content'] ) ) ) : '';
 		if ( ! $comment_content ) {
-			die( esc_html__( 'Please enter a comment.', 'pf' ) );
+			die( esc_html__( 'Please enter a comment.', 'pressforward' ) );
 		}
 
 		// Check that we have a post_id and user logged in.
@@ -424,7 +424,7 @@ class PF_Comments extends PF_Module {
 			$response->send();
 
 		} else {
-			die( esc_html__( 'There was a problem of some sort. Try again or contact your administrator.', 'pf' ) );
+			die( esc_html__( 'There was a problem of some sort. Try again or contact your administrator.', 'pressforward' ) );
 		}
 	}
 
@@ -434,7 +434,7 @@ class PF_Comments extends PF_Module {
 	public function admin_menu_callback() {
 		?>
 		<div class="wrap">
-			<h2><?php esc_html_e( 'Internal Commenting Options', 'pf' ); ?></h2>
+			<h2><?php esc_html_e( 'Internal Commenting Options', 'pressforward' ); ?></h2>
 			<br /><br />
 		</div>
 		<?php

@@ -109,7 +109,7 @@ class MetaCheckEndpoint implements HasActions {
 					'args'                => array(
 						'url' => array(
 							// description should be a human readable description of the argument.
-							'description' => esc_html__( 'URL of the page being analyzed.', 'pf' ),
+							'description' => esc_html__( 'URL of the page being analyzed.', 'pressforward' ),
 							// type specifies the type of data that the argument should be.
 							'type'        => 'string',
 							// Set the argument to be required for the endpoint.
@@ -118,7 +118,7 @@ class MetaCheckEndpoint implements HasActions {
 						),
 						'doc' => array(
 							// description should be a human readable description of the argument.
-							'description' => esc_html__( 'Document being scanned.', 'pf' ),
+							'description' => esc_html__( 'Document being scanned.', 'pressforward' ),
 							// type specifies the type of data that the argument should be.
 							'type'        => 'string',
 							// Set the argument to be required for the endpoint.
@@ -127,7 +127,7 @@ class MetaCheckEndpoint implements HasActions {
 						),
 						'k'   => array(
 							// description should be a human readable description of the argument.
-							'description' => esc_html__( 'Public Key.', 'pf' ),
+							'description' => esc_html__( 'Public Key.', 'pressforward' ),
 							// type specifies the type of data that the argument should be.
 							'type'        => 'string',
 							// Set the argument to be required for the endpoint.
@@ -141,19 +141,19 @@ class MetaCheckEndpoint implements HasActions {
 							$the_key = isset( $_GET['k'] ) ? sanitize_text_field( wp_unslash( $_GET['k'] ) ) : '';
 							$key = pressforward( 'controller.jwt' )->get_a_user_private_key_for_decrypt( hex2bin( $the_key ) );
 							if ( ! $key ) {
-								$return_var = new WP_Error( 'auth_fail_id', __( 'Request was signed with incorrect key.', 'pf' ) );
+								$return_var = new WP_Error( 'auth_fail_id', __( 'Request was signed with incorrect key.', 'pressforward' ) );
 							}
 							$return_var = true;
 							return $return_var;
 						} catch ( \UnexpectedValueException $e ) {
-							$return_var = new WP_Error( 'auth_fail_format', __( 'Authentication key was not properly formated.', 'pf' ) );
+							$return_var = new WP_Error( 'auth_fail_format', __( 'Authentication key was not properly formated.', 'pressforward' ) );
 						} catch ( \InvalidArgumentException $e ) {
-							$return_var = new WP_Error( 'auth_fail_key', __( 'Authentication key was not properly supplied.', 'pf' ) );
+							$return_var = new WP_Error( 'auth_fail_key', __( 'Authentication key was not properly supplied.', 'pressforward' ) );
 						} catch ( \DomainException $e ) {
-							$return_var = new WP_Error( 'auth_fail_ssl', __( 'SSL cannot be applied to the key.', 'pf' ) );
+							$return_var = new WP_Error( 'auth_fail_ssl', __( 'SSL cannot be applied to the key.', 'pressforward' ) );
 						} catch ( \Exception $e ) {
 							if ( false === $return_var ) {
-								return new WP_Error( 'auth_fail_whoknows', __( 'Authentication failed for reasons unclear.', 'pf' ) );
+								return new WP_Error( 'auth_fail_whoknows', __( 'Authentication failed for reasons unclear.', 'pressforward' ) );
 							} else {
 								return $return_var;
 							}

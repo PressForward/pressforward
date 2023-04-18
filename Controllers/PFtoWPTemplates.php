@@ -138,30 +138,30 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 	public function alter_alert_boxes( $alert_names ) {
 		if ( $this->is_pf ) {
 			$new_alert_names = array(
-				'name'               => _x( 'Feed Alerts', 'post type general name', 'pf' ),
-				'singular_name'      => _x( 'Alert', 'post type singular name', 'pf' ),
-				'menu_name'          => _x( 'Feed Alerts', 'admin menu', 'pf' ),
-				'name_admin_bar'     => _x( 'Feed Alert', 'add new on admin bar', 'pf' ),
-				'add_new'            => _x( 'Add Feed Alert', 'alert', 'pf' ),
-				'add_new_item'       => __( 'Add New Feed Alert', 'pf' ),
-				'new_item'           => __( 'New Feed Alert', 'pf' ),
-				'edit_item'          => __( 'Edit Feed Alert', 'pf' ),
-				'view_item'          => __( 'View Feed Alert', 'pf' ),
-				'all_items'          => __( 'All Feed Alerts', 'pf' ),
-				'search_items'       => __( 'Search Feed Alerts', 'pf' ),
-				'parent_item_colon'  => __( 'Parent Alerts:', 'pf' ),
-				'not_found'          => __( 'No feed alerts found.', 'pf' ),
-				'not_found_in_trash' => __( 'No feed alerts found in Trash.', 'pf' ),
-				'dismiss_one_check'  => __( 'This will set the feed to inactive. Are you sure you want to dismiss the alert on', 'pf' ),
-				'dismiss_all_check'  => __( 'Are you sure you want to dismiss all alerts? It will set all alerted feeds to inactive.', 'pf' ),
-				'dismiss_all'        => __( 'Dismiss all alerts', 'pf' ),
-				'delete_all_check'   => __( 'Are you sure you want to delete all feeds with alerts?', 'pf' ),
-				'delete_all'         => __( 'Delete all feeds with alerts', 'pf' ),
-				'dismissed'          => __( 'Inactive', 'pf' ),
-				'all_well'           => __( 'No problems!', 'pf' ),
-				'turn_on'            => __( 'Turn alerts on.', 'pf' ),
-				'activate_q'         => __( 'Active Alert Boxes?', 'pf' ),
-				'turned_off'         => __( 'Feed alert boxes not active.', 'pf' ),
+				'name'               => _x( 'Feed Alerts', 'post type general name', 'pressforward' ),
+				'singular_name'      => _x( 'Alert', 'post type singular name', 'pressforward' ),
+				'menu_name'          => _x( 'Feed Alerts', 'admin menu', 'pressforward' ),
+				'name_admin_bar'     => _x( 'Feed Alert', 'add new on admin bar', 'pressforward' ),
+				'add_new'            => _x( 'Add Feed Alert', 'alert', 'pressforward' ),
+				'add_new_item'       => __( 'Add New Feed Alert', 'pressforward' ),
+				'new_item'           => __( 'New Feed Alert', 'pressforward' ),
+				'edit_item'          => __( 'Edit Feed Alert', 'pressforward' ),
+				'view_item'          => __( 'View Feed Alert', 'pressforward' ),
+				'all_items'          => __( 'All Feed Alerts', 'pressforward' ),
+				'search_items'       => __( 'Search Feed Alerts', 'pressforward' ),
+				'parent_item_colon'  => __( 'Parent Alerts:', 'pressforward' ),
+				'not_found'          => __( 'No feed alerts found.', 'pressforward' ),
+				'not_found_in_trash' => __( 'No feed alerts found in Trash.', 'pressforward' ),
+				'dismiss_one_check'  => __( 'This will set the feed to inactive. Are you sure you want to dismiss the alert on', 'pressforward' ),
+				'dismiss_all_check'  => __( 'Are you sure you want to dismiss all alerts? It will set all alerted feeds to inactive.', 'pressforward' ),
+				'dismiss_all'        => __( 'Dismiss all alerts', 'pressforward' ),
+				'delete_all_check'   => __( 'Are you sure you want to delete all feeds with alerts?', 'pressforward' ),
+				'delete_all'         => __( 'Delete all feeds with alerts', 'pressforward' ),
+				'dismissed'          => __( 'Inactive', 'pressforward' ),
+				'all_well'           => __( 'No problems!', 'pressforward' ),
+				'turn_on'            => __( 'Turn alerts on.', 'pressforward' ),
+				'activate_q'         => __( 'Active Alert Boxes?', 'pressforward' ),
+				'turned_off'         => __( 'Feed alert boxes not active.', 'pressforward' ),
 			);
 			$new_alert_names = array_merge( $alert_names, $new_alert_names );
 			return $new_alert_names;
@@ -272,7 +272,7 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 	public function title_variant() {
 		$is_variant = false;
 		$variant    = '';
-		$showing    = __( 'Showing', 'pf' );
+		$showing    = __( 'Showing', 'pressforward' );
 
 		if ( isset( $_GET['feed'] ) || isset( $_GET['folder'] ) ) {
 			$variant   .= ' ' . $this->get_the_folder_view_title();
@@ -280,7 +280,7 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 		}
 
 		if ( isset( $_POST['search-terms'] ) ) {
-			$variant   .= ' <span class="search-term-title">' . esc_html__( 'Search for:', 'pf' ) . ' ' . esc_html( sanitize_text_field( wp_unslash( $_POST['search-terms'] ) ) ) . '</span>';
+			$variant   .= ' <span class="search-term-title">' . esc_html__( 'Search for:', 'pressforward' ) . ' ' . esc_html( sanitize_text_field( wp_unslash( $_POST['search-terms'] ) ) ) . '</span>';
 			$is_variant = true;
 		}
 
@@ -294,7 +294,7 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 			$page = $page;
 			if ( $page > 0 ) {
 				/* translators: Page number */
-				$page_num_for_print = sprintf( __( 'Page %1$d', 'pf' ), $page );
+				$page_num_for_print = sprintf( __( 'Page %1$d', 'pressforward' ), $page );
 
 				$variant .= ' <span> ' . esc_html( $page_num_for_print ) . '</span>';
 
@@ -305,7 +305,7 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 		if ( isset( $_GET['reveal'] ) ) {
 			$revealing = '';
 			if ( 'no_hidden' === $_GET['reveal'] ) {
-				$revealing = __( 'hidden', 'pf' );
+				$revealing = __( 'hidden', 'pressforward' );
 			} else {
 				$revealing = sanitize_text_field( wp_unslash( $_GET['reveal'] ) );
 			}
@@ -319,17 +319,17 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 			$and    = 'only ';
 			$pf_see = sanitize_text_field( wp_unslash( $_GET['pf-see'] ) );
 			if ( 'archive-only' === $pf_see ) {
-				$only .= $and . __( 'archived', 'pf' );
+				$only .= $and . __( 'archived', 'pressforward' );
 				$and   = ' ';
 			}
 			if ( 'starred-only' === $pf_see ) {
-				$only .= $and . __( 'starred', 'pf' );
+				$only .= $and . __( 'starred', 'pressforward' );
 			}
 			if ( 'unread-only' === $pf_see ) {
-				$only .= $and . __( 'unread', 'pf' );
+				$only .= $and . __( 'unread', 'pressforward' );
 			}
 			if ( 'drafted-only' === $pf_see ) {
-				$only .= $and . __( 'drafted', 'pf' );
+				$only .= $and . __( 'drafted', 'pressforward' );
 			}
 			$variant   .= ' <span>' . esc_html( $showing . $only ) . '</span>';
 			$is_variant = true;
@@ -341,19 +341,19 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 
 			switch ( $sort_by ) {
 				case 'item-date':
-					$sort_by_text = 'ASC' === $sort_order ? __( 'Sorted by item date, ascending', 'pf' ) : __( 'Sorted by item date, descending', 'pf' );
+					$sort_by_text = 'ASC' === $sort_order ? __( 'Sorted by item date, ascending', 'pressforward' ) : __( 'Sorted by item date, descending', 'pressforward' );
 					break;
 
 				case 'feed-in-date':
-					$sort_by_text = 'ASC' === $sort_order ? __( 'Sorted by time retrieved, ascending', 'pf' ) : __( 'Sorted by time retrieved, descending', 'pf' );
+					$sort_by_text = 'ASC' === $sort_order ? __( 'Sorted by time retrieved, ascending', 'pressforward' ) : __( 'Sorted by time retrieved, descending', 'pressforward' );
 					break;
 
 				case 'nom-date':
-					$sort_by_text = 'ASC' === $sort_order ? __( 'Sorted by time nominated, ascending', 'pf' ) : __( 'Sorted by time nominated, descending', 'pf' );
+					$sort_by_text = 'ASC' === $sort_order ? __( 'Sorted by time nominated, ascending', 'pressforward' ) : __( 'Sorted by time nominated, descending', 'pressforward' );
 					break;
 
 				case 'nom-count':
-					$sort_by_text = 'ASC' === $sort_order ? __( 'Sorted by nominations, ascending', 'pf' ) : __( 'Sorted by nominations, descending', 'pf' );
+					$sort_by_text = 'ASC' === $sort_order ? __( 'Sorted by nominations, ascending', 'pressforward' ) : __( 'Sorted by nominations, descending', 'pressforward' );
 					break;
 
 				default:

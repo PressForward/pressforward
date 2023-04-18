@@ -81,7 +81,7 @@ class AdminBar implements HasActions, HasFilters {
 					'title' => $title,
 					'href'  => $url,
 					'meta'  => array(
-						'title' => __( 'PressForward Alert', 'pf' ),
+						'title' => __( 'PressForward Alert', 'pressforward' ),
 					),
 				)
 			);

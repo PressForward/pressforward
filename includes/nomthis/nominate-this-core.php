@@ -82,10 +82,10 @@ if ( isset( $_REQUEST['action'] ) && 'post' === $_REQUEST['action'] ) {
 				/* ]]> */
 				</script>
 				<div class="postbox">
-					<h2><label for="embed-code"><?php esc_html_e( 'Embed Code', 'pf' ); ?></label></h2>
+					<h2><label for="embed-code"><?php esc_html_e( 'Embed Code', 'pressforward' ); ?></label></h2>
 					<div class="inside">
 						<textarea name="embed-code" id="embed-code" rows="8" cols="40"><?php echo esc_textarea( $selection ); ?></textarea>
-						<p id="options"><a href="#" class="select button"><?php esc_html_e( 'Insert Video', 'pf' ); ?></a> <a href="#" class="close button"><?php esc_html_e( 'Cancel', 'pf' ); ?></a></p>
+						<p id="options"><a href="#" class="select button"><?php esc_html_e( 'Insert Video', 'pressforward' ); ?></a> <a href="#" class="close button"><?php esc_html_e( 'Cancel', 'pressforward' ); ?></a></p>
 					</div>
 				</div>
 				<?php
@@ -103,7 +103,7 @@ if ( isset( $_REQUEST['action'] ) && 'post' === $_REQUEST['action'] ) {
 					});
 					/* ]]> */
 				</script>
-				<h3 class="tb"><label for="tb_this_photo_description"><?php esc_html_e( 'Description', 'pf' ); ?></label></h3>
+				<h3 class="tb"><label for="tb_this_photo_description"><?php esc_html_e( 'Description', 'pressforward' ); ?></label></h3>
 				<div class="titlediv">
 					<div class="titlewrap">
 						<input id="tb_this_photo_description" name="photo_description" class="tb_this_photo_description tbtitle text" onkeypress="if(event.keyCode==13) image_selector(this);" value="<?php echo esc_attr( $the_title ); ?>"/>
@@ -113,11 +113,11 @@ if ( isset( $_REQUEST['action'] ) && 'post' === $_REQUEST['action'] ) {
 				<p class="centered">
 					<input type="hidden" name="this_photo" value="<?php echo esc_attr( $image ); ?>" id="tb_this_photo" class="tb_this_photo" />
 					<a href="#" class="select">
-						<img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( __( 'Click to insert.', 'pf' ) ); ?>" title="<?php echo esc_attr( __( 'Click to insert.', 'pf' ) ); ?>" />
+						<img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( __( 'Click to insert.', 'pressforward' ) ); ?>" title="<?php echo esc_attr( __( 'Click to insert.', 'pressforward' ) ); ?>" />
 					</a>
 				</p>
 
-				<p id="options"><a href="#" class="select button"><?php esc_html_e( 'Insert Image', 'pf' ); ?></a> <a href="#" class="cancel button"><?php esc_html_e( 'Cancel', 'pf' ); ?></a></p>
+				<p id="options"><a href="#" class="select button"><?php esc_html_e( 'Insert Image', 'pressforward' ); ?></a> <a href="#" class="cancel button"><?php esc_html_e( 'Cancel', 'pressforward' ); ?></a></p>
 				<?php
 				break;
 			case 'photo_images':
@@ -176,7 +176,7 @@ if ( isset( $_REQUEST['action'] ) && 'post' === $_REQUEST['action'] ) {
 
 	_wp_admin_html_begin();
 ?>
-<title><?php esc_html_e( 'Nominate This', 'pf' ); ?></title>
+<title><?php esc_html_e( 'Nominate This', 'pressforward' ); ?></title>
 <script type="text/javascript">
 //<![CDATA[
 addLoadEvent = function(func){if(typeof jQuery!="undefined")jQuery(document).ready(func);else if(typeof wpOnload!='function'){wpOnload=func;}else{var oldonload=wpOnload;wpOnload=function(){oldonload();func();}}};
@@ -386,11 +386,11 @@ $the_admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_repla
 
 <div id="loading-indicator" class="loading-indicator nomthis-indicator">
 	<?php // translators: URL being loaded. ?>
-	<img src="<?php echo esc_url( admin_url( 'images/loading.gif' ) ); ?>" role="presentation" /> <span><?php printf( esc_html__( 'Loading content from %s.', 'pf' ), '<span id="loading-url"></span>' ); ?></span>
+	<img src="<?php echo esc_url( admin_url( 'images/loading.gif' ) ); ?>" role="presentation" /> <span><?php printf( esc_html__( 'Loading content from %s.', 'pressforward' ), '<span id="loading-url"></span>' ); ?></span>
 </div>
 
 <div id="failure-indicator" class="failure-indicator nomthis-indicator">
-	<?php esc_html_e( 'Could not fetch remote URL' ); ?>
+	<?php esc_html_e( 'Could not fetch remote URL', 'pressforward' ); ?>
 </div>
 
 <?php
@@ -451,18 +451,18 @@ if ( empty( $posted ) ) {
 			if ( 'nomination' === $pt ) {
 				?>
 				<div id="message" class="updated">
-				<p><strong><?php esc_html_e( 'Your nomination has been saved.', 'pf' ); ?></strong>
-					<a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pf' ); ?></a>
+				<p><strong><?php esc_html_e( 'Your nomination has been saved.', 'pressforward' ); ?></strong>
+					<a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pressforward' ); ?></a>
 					</p>
 				</div>
 				<?php
 			} else {
 				?>
 				<div id="message" class="updated">
-				<p><strong><?php esc_html_e( 'Your post has been saved.', 'pf' ); ?></strong>
-				<a onclick="window.opener.location.assign(this.href); window.close();" href="<?php echo esc_attr( get_permalink( $the_post_id ) ); ?>"><?php esc_html_e( 'View post', 'pf' ); ?></a>
-				| <a href="<?php echo esc_attr( get_edit_post_link( $the_post_id ) ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php esc_html_e( 'Edit Post', 'pf' ); ?></a>
-				| <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pf' ); ?></a></p>
+				<p><strong><?php esc_html_e( 'Your post has been saved.', 'pressforward' ); ?></strong>
+				<a onclick="window.opener.location.assign(this.href); window.close();" href="<?php echo esc_attr( get_permalink( $the_post_id ) ); ?>"><?php esc_html_e( 'View post', 'pressforward' ); ?></a>
+				| <a href="<?php echo esc_attr( get_edit_post_link( $the_post_id ) ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php esc_html_e( 'Edit Post', 'pressforward' ); ?></a>
+				| <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pressforward' ); ?></a></p>
 				</div>
 				<?php
 			}
@@ -489,11 +489,11 @@ if ( empty( $posted ) ) {
 					<?php
 					if ( 0 !== $feed_nom['id'] ) {
 						?>
-						<a href="<?php echo esc_attr( get_edit_post_link( $feed_nom['id'] ) ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php esc_html_e( 'Edit Feed', 'pf' ); ?></a>
+						<a href="<?php echo esc_attr( get_edit_post_link( $feed_nom['id'] ) ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php esc_html_e( 'Edit Feed', 'pressforward' ); ?></a>
 						<?php
 					}
 					?>
-					| <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pf' ); ?></a></p>
+					| <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pressforward' ); ?></a></p>
 				</div>
 				<?php
 				update_option( 'pf_last_nominated_feed', array() );
@@ -508,7 +508,7 @@ if ( empty( $posted ) ) {
 			</div>
 		</div>
 
-		<div id="waiting" style="display: none"><span class="spinner"></span> <span><?php esc_html_e( 'Loading...' ); ?></span></div>
+		<div id="waiting" style="display: none"><span class="spinner"></span> <span><?php esc_html_e( 'Loading...', 'pressforward' ); ?></span></div>
 
 		<div id="extra-fields" style="display: none"></div>
 
@@ -532,16 +532,16 @@ if ( empty( $posted ) ) {
 		 * Nominate This media buttons.
 		 */
 		function nominate_this_media_buttons() {
-			esc_html_e( 'Add:', 'pf' );
+			esc_html_e( 'Add:', 'pressforward' );
 
 			if ( current_user_can( 'upload_files' ) ) {
 				?>
-				<a id="photo_button" title="<?php esc_attr_e( 'Insert an Image' ); ?>" href="#">
-				<img alt="<?php esc_attr_e( 'Insert an Image' ); ?>" src="<?php echo esc_url( admin_url( 'images/media-button-image.gif?ver=20100531' ) ); ?>"/></a>
+				<a id="photo_button" title="<?php esc_attr_e( 'Insert an Image', 'pressforward' ); ?>" href="#">
+				<img alt="<?php esc_attr_e( 'Insert an Image', 'pressforward' ); ?>" src="<?php echo esc_url( admin_url( 'images/media-button-image.gif?ver=20100531' ) ); ?>"/></a>
 				<?php
 			}
 			?>
-			<a id="video_button" title="<?php esc_attr_e( 'Embed a Video' ); ?>" href="#"><img alt="<?php esc_attr_e( 'Embed a Video' ); ?>" src="<?php echo esc_url( admin_url( 'images/media-button-video.gif?ver=20100531' ) ); ?>"/></a>
+			<a id="video_button" title="<?php esc_attr_e( 'Embed a Video', 'pressforward' ); ?>" href="#"><img alt="<?php esc_attr_e( 'Embed a Video', 'pressforward' ); ?>" src="<?php echo esc_url( admin_url( 'images/media-button-video.gif?ver=20100531' ) ); ?>"/></a>
 			<?php
 		}
 
@@ -558,13 +558,13 @@ if ( empty( $posted ) ) {
 </form>
 <div id="photo-add-url-div" style="display:none;">
 	<table><tr>
-	<td><label for="this_photo"><?php esc_html_e( 'URL', 'pf' ); ?></label></td>
+	<td><label for="this_photo"><?php esc_html_e( 'URL', 'pressforward' ); ?></label></td>
 	<td><input type="text" id="this_photo" name="this_photo" class="tb_this_photo text" onkeypress="if(event.keyCode==13) image_selector(this);" /></td>
 	</tr><tr>
-	<td><label for="this_photo_description"><?php esc_html_e( 'Description', 'pf' ); ?></label></td>
+	<td><label for="this_photo_description"><?php esc_html_e( 'Description', 'pressforward' ); ?></label></td>
 	<td><input type="text" id="this_photo_description" name="photo_description" class="tb_this_photo_description text" onkeypress="if(event.keyCode==13) image_selector(this);" value="<?php echo esc_attr( $the_title ); ?>"/></td>
 	</tr><tr>
-	<td><input type="button" class="button" onclick="image_selector(this)" value="<?php esc_attr_e( 'Insert Image', 'pf' ); ?>" /></td>
+	<td><input type="button" class="button" onclick="image_selector(this)" value="<?php esc_attr_e( 'Insert Image', 'pressforward' ); ?>" /></td>
 	</tr></table>
 </div>
 <?php

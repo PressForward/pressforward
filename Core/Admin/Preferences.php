@@ -48,8 +48,8 @@ class Preferences implements HasActions {
 	public function add_plugin_admin_menu() {
 		add_submenu_page(
 			PF_MENU_SLUG,
-			__( 'Preferences', 'pf' ),
-			__( 'Preferences', 'pf' ),
+			__( 'Preferences', 'pressforward' ),
+			__( 'Preferences', 'pressforward' ),
 			'edit_posts',
 			PF_SLUG . '-options',
 			array( $this, 'display_options_builder' )
@@ -82,7 +82,7 @@ class Preferences implements HasActions {
 		$vars = array(
 			'current'            => $tab,
 			'user_ID'            => true,
-			'page_title'         => __( 'PressForward Preferences', 'pf' ),
+			'page_title'         => __( 'PressForward Preferences', 'pressforward' ),
 			'page_slug'          => 'settings',
 			'settings_tab_group' => '',
 			'tabs'               => $this->tabs(),

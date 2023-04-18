@@ -25,13 +25,13 @@ function get_the_source_title( $id = 0 ) {
 	$parent_id = get_post_ancestors( $id );
 
 	if ( empty( $parent_id[0] ) ) {
-		return __( 'Bookmarklet', 'pf' );
+		return __( 'Bookmarklet', 'pressforward' );
 	}
 
 	$parent = get_post( $parent_id[0] );
 	if ( empty( $parent ) ) {
 		pf_log( 'get_the_source_title could not find a post object checking with the ID of ' . $parent_id[0] );
-		return __( 'Unknown Feed', 'pf' );
+		return __( 'Unknown Feed', 'pressforward' );
 	}
 
 	$st = $parent->post_title;

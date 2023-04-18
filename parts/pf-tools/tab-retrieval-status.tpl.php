@@ -24,7 +24,7 @@
 		$iteration     = $feed_hb_state['feeds_iteration'] + 1;
 		printf(
 			// translators: 1. feed title, 2. current index in feed iteration, 3. total number of feeds.
-			esc_html__( 'Retrieving feeds. Currently at %1$s feed number %2$s of %3$s', 'pf' ),
+			esc_html__( 'Retrieving feeds. Currently at %1$s feed number %2$s of %3$s', 'pressforward' ),
 			'<span id="rf-feed-title">' . esc_html( $feed_hb_state['feed_title'] ) . '</span>',
 			'<span id="rf-iteration">' . esc_html( $iteration ) . '</span>',
 			'<span id="rf-total-feeds">' . esc_html( $feed_hb_state['total_feeds'] ) . '</span>'

@@ -343,7 +343,7 @@ class PFtoWPUsers implements SystemUsers {
 				'---
 
 You are subscribed to receive emails from %1$s. To change your email preferences, visit %2$s.',
-				'pf'
+				'pressforward'
 			),
 			get_bloginfo( 'blogname' ),
 			admin_url( 'admin.php?page=pf-options#user' )

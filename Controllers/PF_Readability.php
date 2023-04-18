@@ -49,7 +49,7 @@ class PF_Readability {
 			if ( 'error-secured' !== $item_read_ready ) {
 				if ( ! $item_read_ready ) {
 					$read_status       = 'failed_readability';
-					$readability_stat .= __( ' This content failed Readability.', 'pf' );
+					$readability_stat .= __( ' This content failed Readability.', 'pressforward' );
 
 					$url = str_replace( '&amp;', '&', $url );
 					// Try and get the OpenGraph description.
@@ -121,7 +121,7 @@ class PF_Readability {
 
 		// Verify nonce.
 		if ( ! isset( $_POST[ PF_SLUG . '_nomination_nonce' ] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ PF_SLUG . '_nomination_nonce' ] ) ), 'nomination' ) ) {
-			die( esc_html__( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) ); }
+			die( esc_html__( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pressforward' ) ); }
 		ob_start();
 		libxml_use_internal_errors( true );
 		$read_status = 'readable';

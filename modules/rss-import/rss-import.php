@@ -24,9 +24,9 @@ class PF_RSS_Import extends PF_Module {
 	 */
 	public function module_setup() {
 		$mod_settings = array(
-			'name'        => __( 'RSS Import Module', 'pf' ),
+			'name'        => __( 'RSS Import Module', 'pressforward' ),
 			'slug'        => 'rss-import',
-			'description' => __( 'This module provides the core functionality to read RSS feeds and translate them into PressForward\'s system.', 'pf' ),
+			'description' => __( 'This module provides the core functionality to read RSS feeds and translate them into PressForward\'s system.', 'pressforward' ),
 			'thumbnail'   => '',
 			'options'     => '',
 		);
@@ -80,7 +80,7 @@ class PF_RSS_Import extends PF_Module {
 
 		if ( $error_count >= $error_to_alert ) {
 			pressforward( 'library.alertbox' )->switch_post_type( $id );
-			pressforward( 'library.alertbox' )->add_bug_type_to_post( $id, __( 'Broken RSS feed.', 'pf' ) );
+			pressforward( 'library.alertbox' )->add_bug_type_to_post( $id, __( 'Broken RSS feed.', 'pressforward' ) );
 			$post_obj      = get_post( $id );
 			$old_content   = $post_obj->post_content;
 			$update_result = pressforward( 'controller.metas' )->update_pf_meta( $id, PF_SLUG . '_feed_error_count', 0 );
@@ -293,7 +293,7 @@ class PF_RSS_Import extends PF_Module {
 			$authors = $authors;
 
 		} else {
-			$authors = __( 'No author.', 'pf' );
+			$authors = __( 'No author.', 'pressforward' );
 		}
 
 		return $authors;
@@ -312,7 +312,7 @@ class PF_RSS_Import extends PF_Module {
 	 */
 	public function set_permitted_feeds_tabs( $permitted_tabs ) {
 		$permitted_tabs['primary_feed_type'] = array(
-			'title' => __( 'Subscribe to Feeds', 'pf' ),
+			'title' => __( 'Subscribe to Feeds', 'pressforward' ),
 			'cap'   => get_option( 'pf_menu_feeder_access', pf_get_defining_capability_by_role( 'editor' ) ),
 		);
 		return $permitted_tabs;
@@ -328,27 +328,27 @@ class PF_RSS_Import extends PF_Module {
 		?>
 		<div class="pf-opt-group">
 			<div class="rss-box ">
-				<h3 class="hndle"><span><?php esc_html_e( 'Subscribe to Feeds', 'pf' ); ?></span></h3>
+				<h3 class="hndle"><span><?php esc_html_e( 'Subscribe to Feeds', 'pressforward' ); ?></span></h3>
 				<div class="inside">
-					<div><?php esc_html_e( 'Add Single Feed', 'pf' ); ?> <?php esc_html_e( '(RSS or Atom)', 'pf' ); ?></div>
+					<div><?php esc_html_e( 'Add Single Feed', 'pressforward' ); ?> <?php esc_html_e( '(RSS or Atom)', 'pressforward' ); ?></div>
 
 					<div class="pf_feeder_input_box">
 						<input id="<?php echo esc_attr( PF_SLUG ) . '_feedlist[single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo esc_attr( PF_SLUG ) . '_feedlist[single]'; ?>" value="" />
-						<label class="description" for="<?php echo esc_attr( PF_SLUG ) . '_feedlist[single]'; ?>"><?php esc_html_e( '*Complete URL path', 'pf' ); ?></label>
-						<a href="http://en.wikipedia.org/wiki/RSS"><?php esc_html_e( 'What is an RSS Feed?', 'pf' ); ?></a>
+						<label class="description" for="<?php echo esc_attr( PF_SLUG ) . '_feedlist[single]'; ?>"><?php esc_html_e( '*Complete URL path', 'pressforward' ); ?></label>
+						<a href="http://en.wikipedia.org/wiki/RSS"><?php esc_html_e( 'What is an RSS Feed?', 'pressforward' ); ?></a>
 					</div>
 
-					<div><?php esc_html_e( 'Add OPML File', 'pf' ); ?></div>
+					<div><?php esc_html_e( 'Add OPML File', 'pressforward' ); ?></div>
 					<div class="pf_feeder_input_box">
 						<input id="<?php echo esc_attr( PF_SLUG ) . '_feedlist[opml]'; ?>" class="pf_opml_file_upload_field regular-text" type="text" name="<?php echo esc_attr( PF_SLUG ) . '_feedlist[opml]'; ?>" value="" />
-						<label class="description" for="<?php echo esc_attr( PF_SLUG ) . '_feedlist[opml]'; ?>"><?php esc_html_e( '*Drop link to OPML here. No HTTPS allowed.', 'pf' ); ?></label>
-						or <a class="button-primary pf_primary_media_opml_upload" ><?php esc_html_e( 'Upload OPML file', 'pf' ); ?></a>
+						<label class="description" for="<?php echo esc_attr( PF_SLUG ) . '_feedlist[opml]'; ?>"><?php esc_html_e( '*Drop link to OPML here. No HTTPS allowed.', 'pressforward' ); ?></label>
+						or <a class="button-primary pf_primary_media_opml_upload" ><?php esc_html_e( 'Upload OPML file', 'pressforward' ); ?></a>
 
-						<p>&nbsp;<?php esc_html_e( 'Adding large OPML files may take some time.', 'pf' ); ?></p>
-						<a href="http://en.wikipedia.org/wiki/Opml"><?php esc_html_e( 'What is an OPML file?', 'pf' ); ?></a>
+						<p>&nbsp;<?php esc_html_e( 'Adding large OPML files may take some time.', 'pressforward' ); ?></p>
+						<a href="http://en.wikipedia.org/wiki/Opml"><?php esc_html_e( 'What is an OPML file?', 'pressforward' ); ?></a>
 					</div>
 
-					<input type="submit" class="button-primary" value="<?php esc_attr_e( 'Submit', 'pf' ); ?>" />
+					<input type="submit" class="button-primary" value="<?php esc_attr_e( 'Submit', 'pressforward' ); ?>" />
 				</div>
 			</div>
 		</div>
@@ -456,16 +456,16 @@ class PF_RSS_Import extends PF_Module {
 
 		if ( ( 1 === count( $subed ) ) && ! empty( $check ) ) {
 			$edit_link = get_edit_post_link( $check );
-			$subed[99] = " <a href=\"$edit_link\" target=\"_blank\">" . __( 'Edit.', 'pf' ) . '</a>';
+			$subed[99] = " <a href=\"$edit_link\" target=\"_blank\">" . __( 'Edit.', 'pressforward' ) . '</a>';
 		}
 
 		foreach ( $subed as $sub ) {
 			$subscribe_string .= $sub;
 		}
 		if ( $something_broke ) {
-			add_settings_error( 'add_pf_feeds', 'pf_feeds_validation_response', __( 'You have submitted ', 'pf' ) . $subscribe_string . ' ' . __( 'The feed was not found.', 'pf' ), 'updated' );
+			add_settings_error( 'add_pf_feeds', 'pf_feeds_validation_response', __( 'You have submitted ', 'pressforward' ) . $subscribe_string . ' ' . __( 'The feed was not found.', 'pressforward' ), 'updated' );
 		} elseif ( ! empty( $subscribe_string ) ) {
-			add_settings_error( 'add_pf_feeds', 'pf_feeds_validation_response', __( 'You have submitted ', 'pf' ) . $subscribe_string, 'updated' );
+			add_settings_error( 'add_pf_feeds', 'pf_feeds_validation_response', __( 'You have submitted ', 'pressforward' ) . $subscribe_string, 'updated' );
 		}
 
 		return $input;

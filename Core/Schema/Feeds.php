@@ -185,17 +185,17 @@ class Feeds implements HasActions, HasFilters {
 	 */
 	public function register_feed_post_type() {
 		$labels = array(
-			'name'               => __( 'Subscribed Feeds', 'pf' ),
-			'singular_name'      => __( 'Feed', 'pf' ),
+			'name'               => __( 'Subscribed Feeds', 'pressforward' ),
+			'singular_name'      => __( 'Feed', 'pressforward' ),
 			'add_new'            => _x( 'Add New', 'pf', 'add new feed' ),
-			'all_items'          => __( 'All Feeds', 'pf' ),
-			'add_new_item'       => __( 'Add New Feed', 'pf' ),
-			'edit_item'          => __( 'Edit Feed', 'pf' ),
-			'new_item'           => __( 'New Feed', 'pf' ),
-			'view_item'          => __( 'View Feed', 'pf' ),
-			'search_items'       => __( 'Search Feeds', 'pf' ),
-			'not_found'          => __( 'No feeds found', 'pf' ),
-			'not_found_in_trash' => __( 'No feeds found in trash', 'pf' ),
+			'all_items'          => __( 'All Feeds', 'pressforward' ),
+			'add_new_item'       => __( 'Add New Feed', 'pressforward' ),
+			'edit_item'          => __( 'Edit Feed', 'pressforward' ),
+			'new_item'           => __( 'New Feed', 'pressforward' ),
+			'view_item'          => __( 'View Feed', 'pressforward' ),
+			'search_items'       => __( 'Search Feeds', 'pressforward' ),
+			'not_found'          => __( 'No feeds found', 'pressforward' ),
+			'not_found_in_trash' => __( 'No feeds found in trash', 'pressforward' ),
 		);
 
 		register_post_type(
@@ -205,7 +205,7 @@ class Feeds implements HasActions, HasFilters {
 				array(
 					'label'                 => $labels['name'],
 					'labels'                => $labels,
-					'description'           => __( 'Feeds imported by PressForward&#8217;s Feed Importer', 'pf' ),
+					'description'           => __( 'Feeds imported by PressForward&#8217;s Feed Importer', 'pressforward' ),
 					'public'                => false,
 					'hierarchical'          => true,
 					'supports'              => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields', 'page-attributes' ),
@@ -362,14 +362,14 @@ class Feeds implements HasActions, HasFilters {
 		register_post_status(
 			'under_review',
 			array(
-				'label'                     => _x( 'Under Review', 'pf' ),
+				'label'                     => _x( 'Under Review', 'pf', 'pressforward' ),
 				'public'                    => true,
 				'exclude_from_search'       => false,
 				'show_in_admin_all_list'    => true,
 				'show_in_admin_status_list' => true,
 
 				// Translators: Under Review feed count.
-				'label_count'               => _n_noop( 'Under Review <span class="count">(%s)</span>', 'Under Review <span class="count">(%s)</span>' ),
+				'label_count'               => _n_noop( 'Under Review <span class="count">(%s)</span>', 'Under Review <span class="count">(%s)</span>', 'pressforward' ),
 			)
 		);
 	}
@@ -394,7 +394,7 @@ class Feeds implements HasActions, HasFilters {
 
 		echo '<div class="misc-pub-section misc-pub-section-last">
 	         <span id="pf_no_feed_alert_single">'
-			. '<label><input type="checkbox"' . ( ! empty( $value ) ? ' checked="checked" ' : null ) . 'value="1" name="pf_no_feed_alert" /> ' . esc_html__( 'No alerts, never let feed go inactive.', 'pf' ) . '</label>'
+			. '<label><input type="checkbox"' . ( ! empty( $value ) ? ' checked="checked" ' : null ) . 'value="1" name="pf_no_feed_alert" /> ' . esc_html__( 'No alerts, never let feed go inactive.', 'pressforward' ) . '</label>'
 		. '</span></div>';
 	}
 
@@ -582,7 +582,7 @@ class Feeds implements HasActions, HasFilters {
 			return $actions;
 		}
 
-		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="' . esc_attr( $post->ID ) . '" title="' . esc_attr__( 'Refresh this feed', 'pf' ) . '">' . esc_html__( 'Refresh Feed Items', 'pf' ) . '</a> | ';
+		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="' . esc_attr( $post->ID ) . '" title="' . esc_attr__( 'Refresh this feed', 'pressforward' ) . '">' . esc_html__( 'Refresh Feed Items', 'pressforward' ) . '</a> | ';
 
 		return $actions;
 	}
@@ -965,7 +965,7 @@ class Feeds implements HasActions, HasFilters {
 		register_post_status(
 			'removed_' . $this->post_type,
 			array(
-				'label'                  => _x( 'Removed Feed', 'pf' ),
+				'label'                  => _x( 'Removed Feed', 'pf', 'pressforward' ),
 				'public'                 => false,
 				'exclude_from_search'    => true,
 				'show_in_admin_all_list' => false,
@@ -1218,7 +1218,7 @@ class Feeds implements HasActions, HasFilters {
 					$the_feed = pf_fetch_feed( $feed_url );
 					if ( is_wp_error( $the_feed ) ) {
 						pf_log( 'The RSS feed failed 3rd verification' );
-						return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
+						return new \WP_Error( 'badfeed', __( 'The feed fails verification.', 'pressforward' ) );
 					} else {
 						$r['url']      = $feed_url;
 						$r['feed_url'] = $feed_url;
@@ -1469,7 +1469,7 @@ class Feeds implements HasActions, HasFilters {
 		if ( 'rss' === $r['type'] ) {
 			$the_feed = pf_fetch_feed( $feed_url );
 			if ( is_wp_error( $the_feed ) ) {
-				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
+				return new \WP_Error( 'badfeed', __( 'The feed fails verification.', 'pressforward' ) );
 			} else {
 				$r = $this->setup_rss_meta( $r, $the_feed );
 			}
@@ -1479,7 +1479,7 @@ class Feeds implements HasActions, HasFilters {
 			pf_log( 'Updating a rss-quick' );
 			$the_feed = pf_fetch_feed( $feed_url );
 			if ( is_wp_error( $the_feed ) ) {
-				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
+				return new \WP_Error( 'badfeed', __( 'The feed fails verification.', 'pressforward' ) );
 			} else {
 				$r = $this->setup_rss_meta( $r, $the_feed );
 			}
@@ -1535,7 +1535,7 @@ class Feeds implements HasActions, HasFilters {
 			pf_log( 'Updating a rss-quick' );
 			$the_feed = pf_fetch_feed( $feed_url );
 			if ( is_wp_error( $the_feed ) ) {
-				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
+				return new \WP_Error( 'badfeed', __( 'The feed fails verification.', 'pressforward' ) );
 			} else {
 				$r = $this->setup_rss_meta( $r, $the_feed );
 			}
@@ -1691,21 +1691,21 @@ class Feeds implements HasActions, HasFilters {
 
 		$messages[ $this->post_type ] = array(
 			0  => '', // Unused. Messages start at index 1.
-			1  => __( 'Feed updated.', 'pf' ),
-			2  => __( 'Custom field updated.', 'pf' ),
-			3  => __( 'Custom field deleted.', 'pf' ),
-			4  => __( 'Feed updated.', 'pf' ),
+			1  => __( 'Feed updated.', 'pressforward' ),
+			2  => __( 'Custom field updated.', 'pressforward' ),
+			3  => __( 'Custom field deleted.', 'pressforward' ),
+			4  => __( 'Feed updated.', 'pressforward' ),
 			/* translators: %s: date and time of the revision */
-			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Feed restored to revision from %s', 'pf' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6  => __( 'The feed was made successfully active.', 'pf' ),
-			7  => __( 'The feed was saved successfully.', 'pf' ),
-			8  => __( 'Feed submitted.', 'pf' ),
+			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Feed restored to revision from %s', 'pressforward' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6  => __( 'The feed was made successfully active.', 'pressforward' ),
+			7  => __( 'The feed was saved successfully.', 'pressforward' ),
+			8  => __( 'Feed submitted.', 'pressforward' ),
 			9  => sprintf(
 				// translators: Publish box date format, see http://php.net/date.
-				__( 'Feed scheduled for: <strong>%1$s</strong>.', 'pf' ),
-				date_i18n( __( 'M j, Y @ G:i', 'pf' ), strtotime( $post->post_date ) )
+				__( 'Feed scheduled for: <strong>%1$s</strong>.', 'pressforward' ),
+				date_i18n( __( 'M j, Y @ G:i', 'pressforward' ), strtotime( $post->post_date ) )
 			),
-			10 => __( 'Feed draft updated.', 'pf' ),
+			10 => __( 'Feed draft updated.', 'pressforward' ),
 		);
 
 		if ( $post_type_object->publicly_queryable ) {

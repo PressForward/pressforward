@@ -166,7 +166,7 @@ EOT;
 		<div id="meta_form_modal_<?php echo esc_attr( $item['post_id'] ); ?>" class="modal fade meta-form-modal" tabindex="-1" role="dialog" aria-labelledby="meta_form_modal_<?php echo esc_attr( $item['post_id'] ); ?>_label" aria-hidden="true">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-				<h3 id="meta_form_modal_<?php echo esc_attr( $item['post_id'] ); ?>_label"><?php esc_html_e( 'Metadata', 'pf' ); ?></h3>
+				<h3 id="meta_form_modal_<?php echo esc_attr( $item['post_id'] ); ?>_label"><?php esc_html_e( 'Metadata', 'pressforward' ); ?></h3>
 			</div>
 
 			<div class="modal-body">
@@ -179,8 +179,8 @@ EOT;
 			</div>
 
 			<div class="modal-footer">
-				<button type="button" class="save btn btn-success meta_form-save" data-post-id="<?php echo esc_attr( $item['post_id'] ); ?>" aria-hidden="false" onclick="pf.metaEdit(this)" ><?php esc_html_e( 'Save', 'pf' ); ?></button>
-				<button class="btn close-button" data-dismiss="modal" aria-hidden="true"><?php esc_html_e( 'Close', 'pf' ); ?></button>
+				<button type="button" class="save btn btn-success meta_form-save" data-post-id="<?php echo esc_attr( $item['post_id'] ); ?>" aria-hidden="false" onclick="pf.metaEdit(this)" ><?php esc_html_e( 'Save', 'pressforward' ); ?></button>
+				<button class="btn close-button" data-dismiss="modal" aria-hidden="true"><?php esc_html_e( 'Close', 'pressforward' ); ?></button>
 			</div>
 		</div>
 
@@ -217,7 +217,7 @@ EOT;
 							$d = \DateTime::createFromFormat( 'U', $d );
 						}
 						if ( ! $d ) {
-							pf_log( __( 'Cannot find date', 'pf' ) );
+							pf_log( __( 'Cannot find date', 'pressforward' ) );
 						} else {
 							$this->metas->update_pf_meta( $id, 'sortable_item_date', $d->getTimestamp() );
 						}

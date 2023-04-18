@@ -80,14 +80,14 @@ class Folders implements HasActions, HasFilters {
 	 */
 	public function register_feed_tag_taxonomy() {
 		$labels = array(
-			'name'          => __( 'Folders', 'pf' ),
-			'singular_name' => __( 'Folder', 'pf' ),
-			'all_items'     => __( 'All Folders', 'pf' ),
-			'edit_item'     => __( 'Edit Folder', 'pf' ),
-			'update_item'   => __( 'Update Folder', 'pf' ),
-			'add_new_item'  => __( 'Add New Folder', 'pf' ),
-			'new_item_name' => __( 'New Folder', 'pf' ),
-			'search_items'  => __( 'Search Folders', 'pf' ),
+			'name'          => __( 'Folders', 'pressforward' ),
+			'singular_name' => __( 'Folder', 'pressforward' ),
+			'all_items'     => __( 'All Folders', 'pressforward' ),
+			'edit_item'     => __( 'Edit Folder', 'pressforward' ),
+			'update_item'   => __( 'Update Folder', 'pressforward' ),
+			'add_new_item'  => __( 'Add New Folder', 'pressforward' ),
+			'new_item_name' => __( 'New Folder', 'pressforward' ),
+			'search_items'  => __( 'Search Folders', 'pressforward' ),
 		);
 
 		register_taxonomy(
@@ -438,7 +438,7 @@ class Folders implements HasActions, HasFilters {
 	public function folderbox() {
 		?>
 		<div id="feed-folders">
-			<h3><?php esc_html_e( 'Folders', 'pf' ); ?></h3>
+			<h3><?php esc_html_e( 'Folders', 'pressforward' ); ?></h3>
 			<?php $this->the_feed_folders(); ?>
 			<div class="clear"></div>
 		</div>

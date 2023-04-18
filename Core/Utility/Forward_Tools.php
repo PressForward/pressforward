@@ -490,7 +490,7 @@ class Forward_Tools {
 		if ( 0 === $current_user->ID ) {
 			// Not logged in.
 			$user_slug   = 'external';
-			$user_string = __( 'External User', 'pf' );
+			$user_string = __( 'External User', 'pressforward' );
 			$user_id     = 0;
 			pf_log( 'Can not find a user to add to the nominated count of.' );
 		} else {

@@ -107,7 +107,7 @@ class ReadabilityEndpoint implements HasActions {
 					'args'                => array(
 						'html_doc'   => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'The html_doc parameter takes a block of HTML and parses it through readability to create a clean article.', 'pf' ),
+							'description'       => esc_html__( 'The html_doc parameter takes a block of HTML and parses it through readability to create a clean article.', 'pressforward' ),
 							// type specifies the type of data that the argument should be.
 							'type'              => 'string',
 							// Set the argument to be required for the endpoint.
@@ -117,7 +117,7 @@ class ReadabilityEndpoint implements HasActions {
 						),
 						'source_url' => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'The source_url parameter takes a URL for keeping note of in readability.', 'pf' ),
+							'description'       => esc_html__( 'The source_url parameter takes a URL for keeping note of in readability.', 'pressforward' ),
 							// type specifies the type of data that the argument should be.
 							'type'              => 'string',
 							// Set the argument to be required for the endpoint.
@@ -144,7 +144,7 @@ class ReadabilityEndpoint implements HasActions {
 					'args'                => array(
 						'source_url' => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'The source_url parameter takes a URL for keeping note of in readability.', 'pf' ),
+							'description'       => esc_html__( 'The source_url parameter takes a URL for keeping note of in readability.', 'pressforward' ),
 							// type specifies the type of data that the argument should be.
 							'type'              => 'string',
 							// Set the argument to be required for the endpoint.
@@ -172,7 +172,7 @@ class ReadabilityEndpoint implements HasActions {
 	public function is_valid_html( $value, $request, $param ) {
 		// If the argument is not a string return an error.
 		if ( ! is_string( $value ) ) {
-			return new WP_Error( 'rest_invalid_param', esc_html__( 'The html_doc argument must be a string.', 'pf' ), array( 'status' => 400 ) );
+			return new WP_Error( 'rest_invalid_param', esc_html__( 'The html_doc argument must be a string.', 'pressforward' ), array( 'status' => 400 ) );
 		} else {
 			return true;
 		}
@@ -201,7 +201,7 @@ class ReadabilityEndpoint implements HasActions {
 	public function is_valid_url( $value, $request, $param ) {
 		// If the argument is not a string return an error.
 		if ( false === wp_parse_url( $value ) || ( filter_var( $value, FILTER_VALIDATE_URL ) === false ) ) {
-			return new WP_Error( 'rest_invalid_param', esc_html__( 'The source_url argument must be a well formed URL.', 'pf' ), array( 'status' => 400 ) );
+			return new WP_Error( 'rest_invalid_param', esc_html__( 'The source_url argument must be a well formed URL.', 'pressforward' ), array( 'status' => 400 ) );
 		} else {
 			return true;
 		}
@@ -234,7 +234,7 @@ class ReadabilityEndpoint implements HasActions {
 			);
 			// unencode via js with the html_entity_decode function we use elsewhere.
 		}
-		return new \WP_Error( 'rest_invalid', esc_html__( 'The html_doc and source_url parameters are required.', 'pf' ), array( 'status' => 400 ) );
+		return new \WP_Error( 'rest_invalid', esc_html__( 'The html_doc and source_url parameters are required.', 'pressforward' ), array( 'status' => 400 ) );
 	}
 
 	/**

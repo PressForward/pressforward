@@ -114,8 +114,8 @@ class Nominated implements HasActions {
 	public function add_plugin_admin_menu() {
 		add_submenu_page(
 			PF_MENU_SLUG,
-			__( 'Nominated', 'pf' ),
-			__( 'Nominated', 'pf' ),
+			__( 'Nominated', 'pressforward' ),
+			__( 'Nominated', 'pressforward' ),
 			get_option( 'pf_menu_under_review_access', $this->user_interface->pf_get_defining_capability_by_role( 'contributor' ) ),
 			PF_SLUG . '-review',
 			array( $this, 'display_review_builder' )
@@ -156,7 +156,7 @@ class Nominated implements HasActions {
 			<header id="app-banner">
 				<div class="title-span title">
 					<?php pressforward( 'controller.template_factory' )->the_page_headline( 'Nominated' ); ?>
-					<button class="btn btn-small" id="fullscreenfeed"> <?php esc_html_e( 'Full Screen', 'pf' ); ?> </button>
+					<button class="btn btn-small" id="fullscreenfeed"> <?php esc_html_e( 'Full Screen', 'pressforward' ); ?> </button>
 				</div><!-- End title -->
 
 				<?php pressforward( 'admin.templates' )->search_template(); ?>
@@ -177,7 +177,7 @@ class Nominated implements HasActions {
 								</div>
 
 								<div class="span1 pf-dismiss">
-									<i class="icon-remove-circle"><?php esc_html_e( 'Close', 'pf' ); ?></i>
+									<i class="icon-remove-circle"><?php esc_html_e( 'Close', 'pressforward' ); ?></i>
 								</div>
 							</div>
 						</div>
@@ -496,14 +496,14 @@ class Nominated implements HasActions {
 						// Nasty hack because infinite scroll only works starting with page 2 for some reason.
 						echo '<div class="pf-navigation">';
 						if ( $page_prev_nb > 0 ) {
-							echo '<span class="feedprev"><a class="prevnav" href="admin.php' . esc_attr( $page_prev ) . '">' . esc_html__( 'Previous Page', 'pf' ) . '</a></span> | ';
+							echo '<span class="feedprev"><a class="prevnav" href="admin.php' . esc_attr( $page_prev ) . '">' . esc_html__( 'Previous Page', 'pressforward' ) . '</a></span> | ';
 						} else {
-							echo '<span class="feedprev">' . esc_html__( 'Previous Page', 'pf' ) . '</span> | ';
+							echo '<span class="feedprev">' . esc_html__( 'Previous Page', 'pressforward' ) . '</span> | ';
 						}
 						if ( $page_next_nb > $max_nb_pages ) {
-							echo '<span class="feednext">' . esc_html__( 'Next Page', 'pf' ) . '</span>';
+							echo '<span class="feednext">' . esc_html__( 'Next Page', 'pressforward' ) . '</span>';
 						} else {
-							echo '<span class="feednext"><a class="nextnav" href="admin.php' . esc_attr( $page_next ) . '">' . esc_html__( 'Next Page', 'pf' ) . '</a></span>';
+							echo '<span class="feednext"><a class="nextnav" href="admin.php' . esc_attr( $page_next ) . '">' . esc_html__( 'Next Page', 'pressforward' ) . '</a></span>';
 						}
 						?>
 						<div class="clear"></div>
@@ -596,30 +596,30 @@ class Nominated implements HasActions {
 		$item_tags        = $this->metas->get_post_pf_meta( $post->ID, 'item_tags', true );
 		$source_repeat    = $this->metas->get_post_pf_meta( $post->ID, 'source_repeat', true );
 		if ( ! empty( $origin_item_id ) ) {
-			$this->meta_box_printer( __( 'Item ID', 'pf' ), $origin_item_id );
+			$this->meta_box_printer( __( 'Item ID', 'pressforward' ), $origin_item_id );
 		}
 		if ( empty( $nomination_count ) ) {
 			$nomination_count = 1;}
-		$this->meta_box_printer( __( 'Nomination Count', 'pf' ), $nomination_count );
+		$this->meta_box_printer( __( 'Nomination Count', 'pressforward' ), $nomination_count );
 		if ( empty( $user ) ) {
 			$user = wp_get_current_user(); }
-		$this->meta_box_printer( __( 'Submitted By', 'pf' ), $user->display_name );
+		$this->meta_box_printer( __( 'Submitted By', 'pressforward' ), $user->display_name );
 		if ( ! empty( $source_title ) ) {
-			$this->meta_box_printer( __( 'Feed Title', 'pf' ), $source_title );
+			$this->meta_box_printer( __( 'Feed Title', 'pressforward' ), $source_title );
 		}
 		if ( empty( $posted_date ) ) {
-			$this->meta_box_printer( __( 'Posted by source on', 'pf' ), $posted_date );
+			$this->meta_box_printer( __( 'Posted by source on', 'pressforward' ), $posted_date );
 		} else {
-			$this->meta_box_printer( __( 'Source Posted', 'pf' ), $posted_date );
+			$this->meta_box_printer( __( 'Source Posted', 'pressforward' ), $posted_date );
 		}
-		$this->meta_box_printer( __( 'Source Authors', 'pf' ), $nom_authors );
-		$this->meta_box_printer( __( 'Source Link', 'pf' ), $item_link, true, __( 'Original Post', 'pf' ) );
-		$this->meta_box_printer( __( 'Item Tags', 'pf' ), $item_tags );
+		$this->meta_box_printer( __( 'Source Authors', 'pressforward' ), $nom_authors );
+		$this->meta_box_printer( __( 'Source Link', 'pressforward' ), $item_link, true, __( 'Original Post', 'pressforward' ) );
+		$this->meta_box_printer( __( 'Item Tags', 'pressforward' ), $item_tags );
 		if ( empty( $date_nominated ) ) {
 			$date_nominated = current_time( 'mysql' ); }
-		$this->meta_box_printer( __( 'Date Nominated', 'pf' ), $date_nominated );
+		$this->meta_box_printer( __( 'Date Nominated', 'pressforward' ), $date_nominated );
 		if ( ! empty( $source_repeat ) ) {
-			$this->meta_box_printer( __( 'Repeated in Feed', 'pf' ), $source_repeat );
+			$this->meta_box_printer( __( 'Repeated in Feed', 'pressforward' ), $source_repeat );
 		}
 	}
 
@@ -639,7 +639,7 @@ class Nominated implements HasActions {
 		$default_args  = array(
 			'html_before' => '<p class="pf-source-statement">',
 			// translators: Link to item source URL.
-			'format'      => __( 'Source: %s', 'pf' ),
+			'format'      => __( 'Source: %s', 'pressforward' ),
 			'item_url'    => $link_to_item,
 			'link_target' => '_blank',
 			'item_title'  => $title_of_item,
@@ -653,7 +653,7 @@ class Nominated implements HasActions {
 			if ( isset( $args['source_statement'] ) ) {
 				$statement = sprintf(
 					'%1$s<a href="%2$s" target="%3$s" pf-nom-item-id="%4$s">%5$s</a>',
-					esc_html( __( 'Source: ', 'pf' ) ),
+					esc_html( __( 'Source: ', 'pressforward' ) ),
 					esc_url( $args['item_url'] ),
 					esc_attr( $args['link_target'] ),
 					esc_attr( $nom_id ),
@@ -805,13 +805,13 @@ class Nominated implements HasActions {
 	public static function archive_a_nom() {
 		$pf_drafted_nonce = isset( $_POST['pf_drafted_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['pf_drafted_nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $pf_drafted_nonce, 'drafter' ) ) {
-			die( esc_html__( 'Nonce not recieved. Are you sure you should be archiving?', 'pf' ) );
+			die( esc_html__( 'Nonce not recieved. Are you sure you should be archiving?', 'pressforward' ) );
 		} else {
 			$current_user    = wp_get_current_user();
 			$current_user_id = $current_user->ID;
 			$nom_id          = isset( $_POST['nom_id'] ) ? intval( $_POST['nom_id'] ) : 0;
 			pressforward( 'controller.metas' )->add_pf_meta( $nom_id, 'archived_by_user_status', 'archived_' . $current_user_id );
-			esc_html_e( 'Archived.', 'pf' );
+			esc_html_e( 'Archived.', 'pressforward' );
 			// @TODO This should have a real AJAX response.
 			die();
 		}
@@ -831,7 +831,7 @@ class Nominated implements HasActions {
 			echo '<br /><input type="text" name="' . esc_attr( $title ) . '">';
 		} elseif ( true === $link ) {
 			if ( 'Link' === $anchor_text ) {
-				$anchor_text = __( 'Link', 'pf' );
+				$anchor_text = __( 'Link', 'pressforward' );
 			}
 
 			echo '<a href=';
@@ -852,7 +852,7 @@ class Nominated implements HasActions {
 	public function build_nomination() {
 		// Verify nonce.
 		if ( empty( $_POST[ PF_SLUG . '_nomination_nonce' ] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ PF_SLUG . '_nomination_nonce' ] ) ), 'nomination' ) ) {
-			die( esc_html__( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pf' ) ); }
+			die( esc_html__( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pressforward' ) ); }
 
 		if ( '' !== ( get_option( 'timezone_string' ) ) ) {
 			// @todo Investigate.
@@ -935,7 +935,7 @@ class Nominated implements HasActions {
 	public function simple_nom_to_draft( $id = 0 ) {
 		$pf_drafted_nonce = isset( $_POST['pf_nomination_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['pf_nomination_nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $pf_drafted_nonce, 'nomination' ) ) {
-			die( esc_html__( 'Nonce not recieved. Are you sure you should be drafting?', 'pf' ) );
+			die( esc_html__( 'Nonce not recieved. Are you sure you should be drafting?', 'pressforward' ) );
 		} else {
 			ob_start();
 			if ( ! $id ) {
@@ -987,7 +987,7 @@ class Nominated implements HasActions {
 		// If it is our form has not been submitted, so we dont want to do anything.
 		$pf_drafted_nonce = isset( $_POST['pf_drafted_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['pf_drafted_nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $pf_drafted_nonce, 'drafter' ) ) {
-			die( esc_html__( 'Nonce not recieved. Are you sure you should be drafting?', 'pf' ) );
+			die( esc_html__( 'Nonce not recieved. Are you sure you should be drafting?', 'pressforward' ) );
 		} else {
 			ob_start();
 

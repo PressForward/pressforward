@@ -8,7 +8,7 @@
  * Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
  * Author URI: http://pressforward.org/about/team/
  * License: GPL2
- * Text Domain: pf
+ * Text Domain: pressforward
  * Domain Path: /languages
  *
  * @package PressForward
@@ -42,6 +42,6 @@ if ( ( PHP_VERSION < 5.3 ) || ( ! $php_check->does_it_meet_required_php_version(
  * Loads plugin textdomain.
  */
 function pressforward_load_plugin_textdomain() {
-	load_plugin_textdomain( 'pf', false, basename( __DIR__ ) . '/languages/' );
+	load_plugin_textdomain( 'pressforward', false, basename( __DIR__ ) . '/languages/' );
 }
 add_action( 'plugins_loaded', 'pressforward_load_plugin_textdomain' );

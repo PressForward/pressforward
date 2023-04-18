@@ -312,12 +312,12 @@ class Stats_Shortcodes {
 		switch ( $code ) {
 			case 'pf_wordcount_last_thirty':
 				// translators: 1. Number of words; 2. Number of posts; 3. Number of days.
-				$s = sprintf( __( "I've read %1\$s words across %2\$s posts in the past %3\$s days.", 'pf' ), $args['word_count'], $args['count'], $args['days'] );
+				$s = sprintf( __( "I've read %1\$s words across %2\$s posts in the past %3\$s days.", 'pressforward' ), $args['word_count'], $args['count'], $args['days'] );
 				break;
 
 			case 'pf_wordcount_all':
 				// translators: 1. Number of words; 2. Number of posts; 3. Number of days.
-				$s = sprintf( __( "I've read %1\$s words across %2\$s posts in %3\$s time.", 'pf' ), $args['word_count'], $args['count'], $args['days'] );
+				$s = sprintf( __( "I've read %1\$s words across %2\$s posts in %3\$s time.", 'pressforward' ), $args['word_count'], $args['count'], $args['days'] );
 				break;
 
 			case 'pf_author_leaderboard':
@@ -326,7 +326,7 @@ class Stats_Shortcodes {
 
 			case 'read_nothing':
 				// translators: Number of days.
-				$s = sprintf( __( 'I\'ve read nothing in the past %s days.', 'pf' ), $args['days'] );
+				$s = sprintf( __( 'I\'ve read nothing in the past %s days.', 'pressforward' ), $args['days'] );
 				break;
 		}
 

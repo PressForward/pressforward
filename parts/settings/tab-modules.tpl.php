@@ -9,7 +9,7 @@
 
 <p class="description">
 	<?php // phpcs:ignore WordPress.Security.EscapeOutput.UnsafePrintingFunction ?>
-	<?php _e( '<strong>PressForward Modules</strong> are addons to alter or improve the functionality of the plugin.', 'pf' ); ?>
+	<?php _e( '<strong>PressForward Modules</strong> are addons to alter or improve the functionality of the plugin.', 'pressforward' ); ?>
 </p>
 
 <hr />

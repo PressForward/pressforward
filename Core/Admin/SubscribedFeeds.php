@@ -151,14 +151,14 @@ class SubscribedFeeds implements HasActions, HasFilters {
 			$alert_count_notice = '<span class="feed-alerts count-' . intval( $alert_count ) . '"><span class="alert-count">' . number_format_i18n( $alert_count ) . '</span></span>';
 
 			// translators: element containing an alert count.
-			$subscribed_feeds_menu_text = sprintf( __( 'Subscribed Feeds %s', 'pf' ), $alert_count_notice );
+			$subscribed_feeds_menu_text = sprintf( __( 'Subscribed Feeds %s', 'pressforward' ), $alert_count_notice );
 		} else {
-			$subscribed_feeds_menu_text = __( 'Subscribed Feeds', 'pf' );
+			$subscribed_feeds_menu_text = __( 'Subscribed Feeds', 'pressforward' );
 		}
 
 		add_submenu_page(
 			PF_MENU_SLUG,
-			__( 'Subscribed Feeds', 'pf' ),
+			__( 'Subscribed Feeds', 'pressforward' ),
 			$subscribed_feeds_menu_text,
 			get_option( 'pf_menu_feeder_access', $this->user_interface->pf_get_defining_capability_by_role( 'editor' ) ),
 			'edit.php?post_type=' . pressforward( 'schema.feeds' )->post_type
@@ -174,7 +174,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	 * @return array
 	 */
 	public function add_last_retrieved_date_column( $posts_columns ) {
-		$posts_columns['last_retrieved'] = __( 'Last Time Feed Item Retrieved', 'pf' );
+		$posts_columns['last_retrieved'] = __( 'Last Time Feed Item Retrieved', 'pressforward' );
 		return $posts_columns;
 	}
 
@@ -187,7 +187,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	 * @return array
 	 */
 	public function add_last_checked_date_column( $posts_columns ) {
-		$posts_columns['last_checked'] = __( 'Last Time Feed Checked', 'pf' );
+		$posts_columns['last_checked'] = __( 'Last Time Feed Checked', 'pressforward' );
 		return $posts_columns;
 	}
 
@@ -218,9 +218,9 @@ class SubscribedFeeds implements HasActions, HasFilters {
 
 			if ( $time_diff > 0 && $time_diff < DAY_IN_SECONDS ) {
 				// translators: Time difference.
-				$lr_text = sprintf( __( '%s ago', 'pf' ), human_time_diff( $lr_unix ) );
+				$lr_text = sprintf( __( '%s ago', 'pressforward' ), human_time_diff( $lr_unix ) );
 			} else {
-				$lr_text = mysql2date( __( 'Y/m/d' ), $last_retrieved );
+				$lr_text = mysql2date( __( 'Y/m/d', 'pressforward' ), $last_retrieved );
 			}
 
 			$lr_text = '<abbr title="' . esc_attr( $t_time ) . '">' . esc_html( $lr_text ) . '</abbr>';
@@ -260,9 +260,9 @@ class SubscribedFeeds implements HasActions, HasFilters {
 
 			if ( $time_diff > 0 && $time_diff < DAY_IN_SECONDS ) {
 				// translators: Time difference.
-				$lr_text = sprintf( __( '%s ago', 'pf' ), human_time_diff( $lr_unix ) );
+				$lr_text = sprintf( __( '%s ago', 'pressforward' ), human_time_diff( $lr_unix ) );
 			} else {
-				$lr_text = mysql2date( __( 'Y/m/d' ), $last_retrieved );
+				$lr_text = mysql2date( __( 'Y/m/d', 'pressforward' ), $last_retrieved );
 			}
 
 			$lr_text = '<abbr title="' . esc_attr( $t_time ) . '">' . esc_html( $lr_text ) . '</abbr>';
@@ -472,7 +472,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 		<fieldset class="inline-edit-pressforward">
 			<div class="inline-edit-col">
 				<label for="pf-feed-url">
-					<span class="title"><?php esc_html_e( 'Feed URL', 'pf' ); ?></span>
+					<span class="title"><?php esc_html_e( 'Feed URL', 'pressforward' ); ?></span>
 					<span class="input-text-wrap">
 						<input class="inline-edit-pf-feed-input" type="text" value="" name="pf-quick-edit-feed-url" id="pf-quick-edit-feed-url" />
 					</span>
@@ -554,7 +554,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	 */
 	public function pf_thing_trasher( $id = 0, $readability_status = 0, $item_type = 'feed_item' ) {
 		if ( ! $id ) {
-			return new \WP_Error( 'noID', __( 'No ID supplied for deletion', 'pf' ) );
+			return new \WP_Error( 'noID', __( 'No ID supplied for deletion', 'pressforward' ) );
 		}
 
 		pf_log( 'On trash hook:' );
