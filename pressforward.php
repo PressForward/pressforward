@@ -9,7 +9,7 @@
  * Author URI: http://pressforward.org/about/team/
  * License: GPL2
  * Text Domain: pressforward
- * Domain Path: /languages
+ * Domain Path: /languages/
  *
  * @package PressForward
  */
