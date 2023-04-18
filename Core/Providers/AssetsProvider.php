@@ -421,18 +421,6 @@ class AssetsProvider extends ServiceProvider {
 				'deps'      => array( 'pf' ),
 			)
 		);
-
-		$assets->register_script(
-			array(
-				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
-					return $provider->check_hook_for_pressforward_string( $hook );
-				},
-				'handle'    => $slug . '-add-nom-imp',
-				'src'       => 'assets/js/add-nom-imp',
-				'deps'      => array( 'pf' ),
-			)
-		);
 	}
 
 	/**
