@@ -617,7 +617,7 @@ class PFTemplater {
 				$extra_classes .= ' schema-active relationship-button-active';
 			}
 
-			echo '<i class="icon-eye-close hide-item pf-item-archive schema-archive schema-switchable schema-actor' . esc_attr( $extra_classes ) . '" pf-schema-class="relationship-button-active" pf-item-post-id="' . esc_attr( $id_for_comments ) . '" title="Hide" pf-schema="archive"></i>';
+			echo '<i class="icon-eye-close hide-item pf-item-archive schema-archive schema-switchable schema-actor' . esc_attr( $extra_classes ) . '" pf-schema-class="relationship-button-active" pf-item-post-id="' . esc_attr( $id_for_comments ) . '" title="' . esc_attr__( 'Hide', 'pressforward' ) . '" pf-schema="archive"></i>';
 		}
 
 		if ( ! $read_stat ) {
@@ -640,17 +640,17 @@ class PFTemplater {
 					?>
 					<div class="sortable-hidden-meta" style="display:none;">
 						<?php
-						esc_html_e( 'UNIX timestamp from source RSS', 'pressforward' );
-						echo ': <span class="sortable_source_timestamp sortableitemdate">' . esc_html( $metadata['timestamp_item_posted'] ) . '</span><br />';
+						// translators: Unix timestamp from the item's source RSS feed.
+						printf( esc_html__( 'UNIX timestamp from source RSS: %s', 'pressforward' ), '<span class="sortable_source_timestamp sortableitemdate">' . esc_html( $metadata['timestamp_item_posted'] ) . '</span>' ) . '<br />';
 
-						esc_html_e( 'UNIX timestamp last modified', 'pressforward' );
-						echo ': <span class="sortable_mod_timestamp">' . esc_html( $metadata['timestamp_nom_last_modified'] ) . '</span><br />';
+						// translators: Unix timestamp for the last modified date.
+						printf( esc_html__( 'UNIX timestamp last modified: %s', 'pressforward' ), '<span class="sortable_mod_timestamp">' . esc_html( $metadata['timestamp_nom_last_modified'] ) . '</span>' ) . '<br />';
 
-						esc_html_e( 'UNIX timestamp date nominated', 'pressforward' );
-						echo ': <span class="sortable_nom_timestamp">' . esc_html( $metadata['timestamp_unix_date_nomed'] ) . '</span><br />';
+						// translators: Unix timestamp for the date nominated.
+						printf( esc_html__( 'UNIX timestamp date nominated: %s', 'pressforward' ), '<span class="sortable_nom_timestamp">' . esc_html( $metadata['timestamp_unix_date_nomed'] ) . '</span>' ) . '<br />';
 
-						esc_html_e( 'Slug for origin site', 'pressforward' );
-						echo ': <span class="sortable_origin_link_slug">' . esc_html( $metadata['source_slug'] ) . '</span><br />';
+						// translators: Slug for the origin site.
+						printf( esc_html__( 'Slug for origin site: %s', 'pressforward' ), '<span class="sortable_origin_link_slug">' . esc_html( $metadata['source_slug'] ) . '</span>' ) . '<br />';
 
 						// Add an action here for others to provide additional sortables.
 						?>
@@ -667,32 +667,51 @@ class PFTemplater {
 
 				if ( ! $url_array || empty( $url_array['host'] ) ) {
 					pf_log( 'Could not find the source link for ' . $id_for_comments . ' Got: ' . $source_link );
-					$source_link = 'Source URL not found.';
+					$source_link = __( 'Source URL not found.', 'pressforward' );
 				} else {
 					$source_link = 'http://' . $url_array['host'];
 				}
 
 				// http://nicolasgallagher.com/pure-css-speech-bubbles/demo/.
-				$ibox  = '<div class="feed-item-info-box" id="info-box-' . esc_attr( $item['item_id'] ) . '">';
-				$ibox .= '
-					' . esc_html__( 'Feed', 'pressforward' ) . ': <span class="feed_title">' . esc_html( get_the_source_title( $id_for_comments ) ) . '</span><br />
-					' . esc_html__( 'Posted', 'pressforward' ) . ': <span class="feed_posted">' . esc_html( gmdate( 'M j, Y; g:ia', strtotime( $item['item_date'] ) ) ) . '</span><br />
-					' . esc_html__( 'Retrieved', 'pressforward' ) . ': <span class="item_meta item_meta_added_date">' . esc_html( gmdate( 'M j, Y; g:ia', strtotime( $item['item_added_date'] ) ) ) . '</span><br />
-					' . esc_html__( 'Authors', 'pressforward' ) . ': <span class="item_authors">' . esc_html( $item['item_author'] ) . '</span><br />
-					' . esc_html__( 'Origin', 'pressforward' ) . ': <span class="source_name"><a target ="_blank" href="' . esc_attr( $source_link ) . '">' . esc_html( $source_link ) . '</a></span><br />
-					' . esc_html__( 'Original Item', 'pressforward' ) . ': <span class="source_link"><a href="' . esc_attr( $item['item_link'] ) . '" class="item_url" target ="_blank">' . esc_html( $item['item_title'] ) . '</a></span><br />
-					' . esc_html__( 'Tags', 'pressforward' ) . ': <span class="item_tags">' . esc_html( implode( ',', $item_tags_array ) ) . '</span><br />
-					' . esc_html__( 'Times repeated in source', 'pressforward' ) . ': <span class="feed_repeat sortable_sources_repeat">' . esc_html( $item['source_repeat'] ) . '</span><br />
-										';
+				$ibox = '<div class="feed-item-info-box" id="info-box-' . esc_attr( $item['item_id'] ) . '">';
+
+				$ibox .= "\n";
+
+				// translators: Feed name.
+				$ibox .= sprintf( esc_html__( 'Feed: %s', 'pressforward' ), '<span class="feed_title">' . esc_html( get_the_source_title( $id_for_comments ) ) . '</span>' ) . '<br />';
+
+				// translators: Posted date.
+				$ibox .= sprintf( esc_html__( 'Posted: %s', 'pressforward' ), '<span class="feed_posted">' . esc_html( gmdate( 'M j, Y; g:ia', strtotime( $item['item_date'] ) ) ) . '</span>' ) . '<br />';
+
+				// translators: Date retrieved.
+				$ibox .= sprintf( esc_html__( 'Retrieved: %s', 'pressforward' ), '<span class="item_meta item_meta_added_date">' . esc_html( gmdate( 'M j, Y; g:ia', strtotime( $item['item_added_date'] ) ) ) . '</span>' ) . '<br />';
+
+				// translators: Author names.
+				$ibox .= sprintf( esc_html__( 'Authors: %s', 'pressforward' ), '<span class="item_authors">' . esc_html( $item['item_author'] ) . '</span>' ) . '<br />';
+
+				// translators: Link to source publication.
+				$ibox .= sprintf( esc_html__( 'Origin: %s', 'pressforward' ), '<span class="source_name"><a target ="_blank" href="' . esc_attr( $source_link ) . '">' . esc_html( $source_link ) . '</a></span>' ) . '<br />';
+
+				// translators: Link to original item.
+				$ibox .= sprintf( esc_html__( 'Original Item: %s', 'pressforward' ), '<span class="source_link"><a href="' . esc_attr( $item['item_link'] ) . '" class="item_url" target ="_blank">' . esc_html( $item['item_title'] ) . '</a></span>' ) . '<br />';
+
+				// translators: Source item tags.
+				$ibox .= sprintf( esc_html__( 'Tags: %s', 'pressforward' ), '<span class="item_tags">' . esc_html( implode( ',', $item_tags_array ) ) . '</span>' ) . '<br />';
+
+				// translators: Number of times repeated in source.
+				$ibox .= sprintf( esc_html__( 'Times repeated in source: %s', 'pressforward' ), '<span class="feed_repeat sortable_sources_repeat">' . esc_html( $item['source_repeat'] ) . '</span>' ) . '<br />';
+
 				if ( 'nomination' === $format ) {
-					$ibox .= esc_html__( 'Number of nominations received', 'pressforward' )
-					. ': <span class="sortable_nom_count">' . esc_html( $metadata['nom_count'] ) . '</span><br />'
-					. esc_html__( 'First submitted by', 'pressforward' )
-					. ': <span class="first_submitter">' . esc_html( $metadata['submitters'] ) . '</span><br />'
-					. esc_html__( 'Nominated on', 'pressforward' )
-					. ': <span class="nominated_on">' . esc_html( gmdate( 'M j, Y; g:ia', strtotime( $metadata['date_nominated'] ) ) ) . '</span><br />'
-					. esc_html__( 'Nominated by', 'pressforward' )
-					. ': <span class="nominated_by">' . esc_html( get_the_nominating_users() ) . '</span><br />';
+					// translators: Nominator count.
+					$ibox .= sprintf( esc_html__( 'Number of nominations received: %s', 'pressforward' ), '<span class="sortable_nom_count">' . esc_html( $metadata['nom_count'] ) . '</span>' ) . '<br />';
+					// translators: Name of first nominator.
+					$ibox .= sprintf( esc_html__( 'First submitted by: %s', 'pressforward' ), '<span class="first_submitter">' . esc_html( $metadata['submitters'] ) . '</span>' ) . '<br />';
+
+					// translators: Date and time of nomination.
+					$ibox .= sprintf( esc_html__( 'Nominated on: %s', 'pressforward' ), '<span class="nominated_on">' . esc_html( gmdate( 'M j, Y; g:ia', strtotime( $metadata['date_nominated'] ) ) ) . '</span>' ) . '<br />';
+
+					// translators: names of nominating users.
+					$ibox .= sprintf( esc_html__( 'Nominated by: %s', 'pressforward' ), '<span class="nominated_by">' . esc_html( get_the_nominating_users() ) . '</span>' ) . '<br />';
 				}
 
 				$draft_id = pf_is_drafted( $feed_item_id );
@@ -725,8 +744,11 @@ class PFTemplater {
 				?>
 				<div style="display:none;">
 				<?php
-					echo '<div class="item_meta item_meta_date">Published on ' . esc_html( $item['item_date'] ) . ' by <span class="item-authorship">' . esc_html( $item['item_author'] ) . '</span>.</div>';
-					echo 'Unix timestamp for item date:<span class="sortableitemdate">' . esc_html( strtotime( $item['item_date'] ) ) . '</span> and for added to feed date <span class="sortablerssdate">' . esc_html( strtotime( $item['item_added_date'] ) ) . '</span>.';
+					// translators: 1. Publication date; 2. Link to item author.
+					echo '<div class="item_meta item_meta_date">' . sprintf( esc_html__( 'Published on %1$s by %2$s.', 'pressforward' ), esc_html( $item['item_date'] ), '<span class="item-authorship">' . esc_html( $item['item_author'] ) . '</span>' ) . '</div>';
+
+					// translators: 1. Unix timestamp for item date; 2. Unix timestamp for date added to feed.
+					echo sprintf( esc_html__( 'Unix timestamp for item date: %1$s. Unix timestamp for date added to feed: %2$s', 'pressforward' ), '<span class="sortableitemdate">' . esc_html( strtotime( $item['item_date'] ) ) . '</span>', '<span class="sortablerssdate">' . esc_html( strtotime( $item['item_added_date'] ) ) . '</span>.' );
 				?>
 				</div>
 				<?php
