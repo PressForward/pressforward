@@ -96,14 +96,6 @@ class Feeds implements HasActions, HasFilters {
 					'method' => 'deal_with_old_feedlists',
 				),
 				array(
-					'hook'   => 'admin_enqueue_scripts',
-					'method' => 'admin_enqueue_scripts',
-				),
-				array(
-					'hook'   => 'admin_enqueue_scripts',
-					'method' => 'admin_enqueue_edit_feed_scripts',
-				),
-				array(
 					'hook'   => 'post_submitbox_misc_actions',
 					'method' => 'feed_submitbox_pf_actions',
 				),
@@ -1635,47 +1627,6 @@ class Feeds implements HasActions, HasFilters {
 			$status_data['status'] = 'publish';
 		}
 		return $status_data;
-	}
-
-	/**
-	 * Enqueues Feed-related scripts in the admin.
-	 */
-	public function admin_enqueue_scripts() {
-		global $pagenow;
-
-		$hook = 0 !== func_num_args() ? func_get_arg( 0 ) : '';
-
-		if ( ! in_array( $pagenow, array( 'admin.php' ), true ) ) {
-			return;
-		}
-
-		if ( ! in_array( $hook, array( 'pressforward_page_pf-feeder' ), true ) ) {
-			return;
-		}
-
-		// phpcs:ignore
-		// wp_enqueue_script( 'feed_control_script', PF_URL . '/assets/js/feeds_control.js', array('jquery', PF_SLUG . '-twitter-bootstrap'), PF_VERSION );
-	}
-
-	/**
-	 * Enqueues Feed-related scripts in the edit.php Feed edit panel.
-	 */
-	public function admin_enqueue_edit_feed_scripts() {
-		global $pagenow;
-
-		$hook = 0 !== func_num_args() ? func_get_arg( 0 ) : '';
-
-		if ( in_array( $pagenow, array( 'edit.php' ), true ) ) {
-			wp_enqueue_script( 'feed_edit_manip', PF_URL . 'assets/js/subscribed-feeds-actions.js', array( 'jquery' ), PF_VERSION, true );
-		}
-
-		if ( ! in_array( $pagenow, array( 'post.php' ), true ) ) {
-			return;
-		}
-
-		if ( ! in_array( $hook, array( 'pf_feed' ), true ) ) {
-			wp_enqueue_script( 'feed_edit_manip', PF_URL . 'assets/js/subscribed-feeds-actions.js', array( 'jquery' ), PF_VERSION, true );
-		}
 	}
 
 	/**

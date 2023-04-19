@@ -28,8 +28,8 @@
 		"lint": "run-p lint:js",
 		"lint:eslint": "eslint --ignore-path .gitignore",
 		"lint:js": "npm run lint:eslint -- .",
-		"start": "wp-scripts start assets/src/add-feeds/add-feeds.js assets/src/nominate-this/nominate-this.js assets/src/quick-edit/quick-edit.js assets/src/scroll/scroll.js",
-		"build": "wp-scripts build assets/src/add-feeds/add-feeds.js assets/src/nominate-this/nominate-this.js assets/src/quick-edit/quick-edit.js assets/src/scroll/scroll.js"
+		"start": "wp-scripts start assets/src/add-feeds/add-feeds.js assets/src/edit-feeds/edit-feeds.js assets/src/nominate-this/nominate-this.js assets/src/quick-edit/quick-edit.js assets/src/scroll/scroll.js",
+		"build": "wp-scripts build assets/src/add-feeds/add-feeds.js assets/src/edit-feeds/edit-feeds.js assets/src/nominate-this/nominate-this.js assets/src/quick-edit/quick-edit.js assets/src/scroll/scroll.js"
 	},
 	"repository": {
 		"type": "git",

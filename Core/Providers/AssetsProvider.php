@@ -376,6 +376,7 @@ class AssetsProvider extends ServiceProvider {
 	public function admin_enqueue_scripts() {
 		$build_scripts = [
 			'pf-add-feeds'     => 'add-feeds',
+			'pf-edit-feeds'    => 'edit-feeds',
 			'pf-nominate-this' => 'nominate-this',
 			'pf-quick-edit'    => 'quick-edit',
 			'pf-scroll'        => 'scroll',
@@ -395,8 +396,13 @@ class AssetsProvider extends ServiceProvider {
 
 		// Enqueuing that cannot happen inline.
 		$screen = get_current_screen();
+
 		if ( $screen && 'edit-pf_feed' === $screen->id ) {
 			wp_enqueue_script( 'pf-quick-edit' );
+		}
+
+		if ( $screen && 'pf_feed' === $screen->id ) {
+			wp_enqueue_script( 'pf-edit-feeds' );
 		}
 	}
 
