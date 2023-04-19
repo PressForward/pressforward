@@ -1,17 +1,12 @@
 window.wp = window.wp || {};
 
-
 (function($){
 	var ev,
 	    post_id,
 	    post_feed_url;
 
 	$( document ).ready( function() {
-		$( '.wp-list-table' ).on( 'click', function() {
-		} );
-		console.log( 'PF Quick Edit modifications loaded.' );
 		$( '#the-list' ).on( 'click', 'a.editinline', function() {
-			ev = this;
 			// console.log(ev);
 			// Gag. We set a timeout to ensure that core JS has moved the quick
 			// edit box before accessing pf-quick-edit-feed-url.
@@ -30,10 +25,10 @@ window.wp = window.wp || {};
 						}
 					}
 				);
+
 				if ( 'under_review' == set_post_status ) {
 					jQuery( 'body.post-type-pf_feed' ).find( '[name="_status"]' ).val( 'pending' );
 				}
-				// console.log(pulldownStatus);
 			}, 100 );
 		} );
 	} );
