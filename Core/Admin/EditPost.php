@@ -131,8 +131,7 @@ class EditPost implements HasActions {
 			}
 		}
 
-		echo
-			'<div class="misc-pub-section misc-pub-section-last">
+		echo '<div class="misc-pub-section misc-pub-section-last">
 				<label for="pf_forward_to_origin_single">' . esc_html__( "Forward to item's original URL?", 'pressforward' ) . '</label>' .
 				'<select id="pf_forward_to_origin_single" name="pf_forward_to_origin">
 					<option value="forward"' . ( 'forward' === $value ? ' selected ' : '' ) . '>' . esc_html__( 'Forward', 'pressforward' ) . '</option>
