@@ -1,3 +1,5 @@
+import { __, sprintf } from '@wordpress/i18n'
+
 /**
  * Display transform for pf
  **/
@@ -77,7 +79,8 @@ function modalNavigator(tabindex) {
 		prevExcerpt = trim_words(prevExcerpt, 20);
 		var prevDate = jQuery(prevObj).children('footer').children('p.pubdate').text();
 
-		var prevHTML = '<h5 class="prev_title">Previous: <a href="' + prevItemID + '" role="button" class="modal-nav" data-dismiss="modal" data-toggle="modal" data-backdrop="false">' + prevTitle + '</a></h5>';
+		// translators: Link to previous item.
+		var prevHTML = '<h5 class="prev_title">' + sprintf( __( 'Previous: %s', 'pressforward' ), '<a href="' + prevItemID + '" role="button" class="modal-nav" data-dismiss="modal" data-toggle="modal" data-backdrop="false">' + prevTitle + '</a>' ) + '</h5>';
 		prevHTML += '<p class="prev_source_title">' + prevSource + '</p>';
 		prevHTML += '<p class="prev_author">' + prevAuthor + '</p>';
 		prevHTML += '<p class="prev_excerpt">' + prevExcerpt + '</p>';
@@ -98,7 +101,8 @@ function modalNavigator(tabindex) {
 		nextExcerpt = trim_words(nextExcerpt, 20);
 		var nextDate = jQuery(nextObj).children('footer').children('p.pubdate').text();
 
-		var nextHTML = '<h5 class="next_title">Next: <a href="' + nextItemID + '" role="button" class="modal-nav" data-dismiss="modal" data-toggle="modal" data-backdrop="false">' + nextTitle + '</a></h5>';
+		// translators: Link to next item.
+		var nextHTML = '<h5 class="next_title">' + sprintf( __( 'Next: %s', 'pressforward' ), '<a href="' + nextItemID + '" role="button" class="modal-nav" data-dismiss="modal" data-toggle="modal" data-backdrop="false">' + nextTitle + '</a>' ) + '</h5>';
 		nextHTML += '<p class="next_source_title">' + nextSource + '</p>';
 		nextHTML += '<p class="next_author">' + nextAuthor + '</p>';
 		nextHTML += '<p class="next_excerpt">' + nextExcerpt + '</p>';
@@ -268,46 +272,46 @@ function PFBootstrapInits() {
 	jQuery('.nom-to-archive').tooltip({
 		placement: 'top',
 		trigger: 'hover',
-		title: 'Item'
+		title: __( 'Item', 'pressforward' )
 
 	});
 	jQuery('.nom-to-draft').tooltip({
 		placement: 'top',
 		trigger: 'hover',
-		title: 'Item'
+		title: __( 'Item', 'pressforward' )
 
 	});
 	jQuery('.nominate-now').tooltip({
 		placement: 'top',
 		trigger: 'hover',
-		title: 'Nominate'
+		title: __( 'Nominate', 'pressforward' )
 
 	});
 	jQuery('.star-item').tooltip({
 		placement: 'top',
 		trigger: 'hover',
-		title: 'Star'
+		title: __( 'Star', 'pressforward' )
 
 	});
 	jQuery('.itemCommentModal').tooltip({
 		placement: 'top',
 		trigger: 'hover',
-		title: 'Comment'
+		title: __( 'Comment', 'pressforward' )
 	});
 	jQuery('.nom-count').tooltip({
 		placement: 'top',
 		trigger: 'hover',
-		title: 'Nomination Count'
+		title: __( 'Nomination Count', 'pressforward' )
 	});
 	jQuery('.pf-amplify').tooltip({
 		placement: 'top',
 		trigger: 'hover',
-		title: 'Amplify'
+		title: __( 'Amplify', 'pressforward' )
 	});
 	jQuery('.meta_form_modal-button').tooltip({
 		placement: 'top',
 		trigger: 'hover',
-		title: 'Edit Metadata'
+		title: __( 'Edit Metadata', 'pressforward' )
 	});
 	jQuery('.itemInfobutton').popover({
 			html: true,
@@ -318,7 +322,6 @@ function PFBootstrapInits() {
 				var contentOutput = '<div class="feed-item-info-box">';
 				contentOutput += jQuery('#info-box-' + idCode).html();
 				contentOutput += '</div>';
-				console.log('Popover assembled');
 				return contentOutput;
 			}
 		})
@@ -696,7 +699,7 @@ jQuery(window).on('load', function () {
 			function (response) {
 				var check_set = html_entity_decode(jQuery(response).find("response_data").text());
 				if ('1' != check_set) {
-					alert('PressForward has lost its connection to your server. Reload page and try again.');
+					alert( __( 'PressForward has lost its connection to your server. Reload page and try again.', 'pressforward' ) );
 				} else {
 					location.reload();
 				}

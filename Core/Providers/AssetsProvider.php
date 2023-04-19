@@ -261,21 +261,9 @@ class AssetsProvider extends ServiceProvider {
 				'condition' => function( $hook ) use ( $provider ) {
 					return $provider->check_hook_for_pressforward_string( $hook );
 				},
-				'handle'    => $slug . '-views',
-				'src'       => 'assets/js/views',
-				'deps'      => array( 'pf', $slug . '-twitter-bootstrap', 'jquery-ui-core', 'jquery-effects-slide' ),
-			)
-		);
-
-		$assets->register_script(
-			array(
-				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
-					return $provider->check_hook_for_pressforward_string( $hook );
-				},
 				'handle'    => $slug . '-readability-imp',
 				'src'       => 'assets/js/readability-imp',
-				'deps'      => array( $slug . '-twitter-bootstrap', 'pf', $slug . '-views' ),
+				'deps'      => array( $slug . '-twitter-bootstrap', 'pf', 'pf-reader' ),
 			)
 		);
 
@@ -379,6 +367,7 @@ class AssetsProvider extends ServiceProvider {
 			'pf-edit-feeds'    => 'edit-feeds',
 			'pf-nominate-this' => 'nominate-this',
 			'pf-quick-edit'    => 'quick-edit',
+			'pf-reader'        => 'reader',
 			'pf-scroll'        => 'scroll',
 		];
 

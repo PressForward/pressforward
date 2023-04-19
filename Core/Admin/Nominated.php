@@ -126,6 +126,8 @@ class Nominated implements HasActions {
 	 * Builds the interface for the review tool.
 	 */
 	public function display_review_builder() {
+		wp_enqueue_script( 'pf-views' );
+
 		if ( 'false' !== get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() ) ) {
 			wp_enqueue_script( 'pf-scroll' );
 		}
