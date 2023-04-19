@@ -1,11 +1,9 @@
 import { __ } from '@wordpress/i18n'
 
-import { infiniteScroll } from 'infinite-scroll'
+import InfiniteScroll from 'infinite-scroll'
 
 jQuery(document).ready(function () {
-	var container = jQuery('#entries');
-
-	container.infiniteScroll({
+	const infScroll = new InfiniteScroll( document.getElementById( 'entries' ), {
 		path: '.feednext a',
 		hideNav: '.pf-navigation',    // selector for the paged navigation
 		append: '.feed-item',     // selector for all items you'll retrieve
@@ -20,7 +18,7 @@ jQuery(document).ready(function () {
 		}
 	});
 
-	container.on( 'append.infiniteScroll', function( event, body, path, arrayOfNewElems ) {
+	infScroll.on( 'append', function( event, body, path, arrayOfNewElems ) {
 
 		jQuery(arrayOfNewElems).each(function (elem) {
 			var element = jQuery(elem);
