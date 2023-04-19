@@ -336,20 +336,6 @@ class AssetsProvider extends ServiceProvider {
 				'type'      => 'admin',
 				'condition' => function( $hook ) use ( $provider ) {
 					$exclusions = array( 'toplevel_page_pf-menu' );
-					$inclusions = array( 'edit.php' );
-					return $provider->check_hook_for_pressforward_string( $hook, $exclusions, $inclusions );
-				},
-				'handle'    => $slug . '-quick-edit',
-				'src'       => 'assets/js/quick-edit',
-				'deps'      => array( 'pf' ),
-			)
-		);
-
-		$assets->register_script(
-			array(
-				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
-					$exclusions = array( 'toplevel_page_pf-menu' );
 					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				},
 				'handle'    => $slug . '-settings-tools',
@@ -419,6 +405,7 @@ class AssetsProvider extends ServiceProvider {
 		$build_scripts = [
 			'pf-add-feeds'     => 'add-feeds',
 			'pf-nominate-this' => 'nominate-this',
+			'pf-quick-edit'    => 'quick-edit',
 		];
 
 		foreach ( $build_scripts as $script_handle => $script_file ) {
@@ -431,6 +418,12 @@ class AssetsProvider extends ServiceProvider {
 				$build_vars['version'],
 				true
 			);
+		}
+
+		// Enqueuing that cannot happen inline.
+		$screen = get_current_screen();
+		if ( $screen && 'edit-pf_feed' === $screen->id ) {
+			wp_enqueue_script( 'pf-quick-edit' );
 		}
 	}
 
