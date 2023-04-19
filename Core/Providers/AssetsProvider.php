@@ -417,16 +417,16 @@ class AssetsProvider extends ServiceProvider {
 	 */
 	public function admin_enqueue_scripts() {
 		$build_scripts = [
-			'add-feeds',
-			'nominate-this',
+			'pf-add-feeds'     => 'add-feeds',
+			'pf-nominate-this' => 'nominate-this',
 		];
 
-		foreach ( $build_scripts as $build_script ) {
-			$build_vars = require \PF_ROOT . '/build/' . $build_script . '.asset.php';
+		foreach ( $build_scripts as $script_handle => $script_file ) {
+			$build_vars = require \PF_ROOT . '/build/' . $script_file . '.asset.php';
 
 			wp_register_script(
-				$build_script,
-				\PF_URL . '/build/' . $build_script . '.js',
+				$script_handle,
+				\PF_URL . '/build/' . $script_file . '.js',
 				$build_vars['dependencies'],
 				$build_vars['version'],
 				true

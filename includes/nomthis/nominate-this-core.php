@@ -172,7 +172,7 @@ if ( isset( $_REQUEST['action'] ) && 'post' === $_REQUEST['action'] ) {
 	wp_enqueue_style( 'colors' );
 	wp_enqueue_script( 'post' );
 
-	wp_enqueue_script( 'nominate-this' );
+	wp_enqueue_script( 'pf-nominate-this' );
 
 	_wp_admin_html_begin();
 ?>
