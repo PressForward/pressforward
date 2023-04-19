@@ -4841,6 +4841,11 @@
   "resolved" "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz"
   "version" "1.8.1"
 
+"ev-emitter@^2.1.0":
+  "integrity" "sha512-jQ5Ql18hdCQ4qS+RCrbLfz1n+Pags27q5TwMKvZyhp5hh2UULUYZUy1keqj6k6SYsdqIYjnmz7xyyEY0V67B8Q=="
+  "resolved" "https://registry.npmjs.org/ev-emitter/-/ev-emitter-2.1.2.tgz"
+  "version" "2.1.2"
+
 "event-emitter@^0.3.5":
   "integrity" "sha1-34xp7vFkeSPHFXuc6DhAYQsCzDk="
   "resolved" "https://registry.npmjs.org/event-emitter/-/event-emitter-0.3.5.tgz"
@@ -5240,6 +5245,11 @@
     "object.defaults" "^1.1.0"
     "object.pick" "^1.2.0"
     "parse-filepath" "^1.0.1"
+
+"fizzy-ui-utils@^3.0.0":
+  "integrity" "sha512-uJj38QFQiJ/KCio5tiZhwAjIbTXSIgzBCKdKVbaYfLS053F6z23Nb0o1ZoO9gnxOQWN7BCc35jsvrCtAq3gY9g=="
+  "resolved" "https://registry.npmjs.org/fizzy-ui-utils/-/fizzy-ui-utils-3.0.0.tgz"
+  "version" "3.0.0"
 
 "flagged-respawn@^1.0.0":
   "integrity" "sha512-lNaHNVymajmk0OJMBn8fVUAU1BtDeKIqKoVhk4xAALB57aALg6b4W0MfJ/cUE0g9YBXy5XhSlPIpYIJ7HaY/3Q=="
@@ -6141,6 +6151,14 @@
   "integrity" "sha512-EdDDZu4A2OyIK7Lr/2zG+w5jmbuk1DVBnEwREQvBzspBJkCEbRa8GxU1lghYcaGJCnRWibjDXlq779X1/y5xwg=="
   "resolved" "https://registry.npmjs.org/indent-string/-/indent-string-4.0.0.tgz"
   "version" "4.0.0"
+
+"infinite-scroll@^4.0.1":
+  "integrity" "sha512-14Utu6d8g6mO5PmwUxfAUK5uaKdClIkrJqLmBYXj/AMBRy5ApsCWkkY84HvsSq4MM1A062gtf58S9OiD5WBfRA=="
+  "resolved" "https://registry.npmjs.org/infinite-scroll/-/infinite-scroll-4.0.1.tgz"
+  "version" "4.0.1"
+  dependencies:
+    "ev-emitter" "^2.1.0"
+    "fizzy-ui-utils" "^3.0.0"
 
 "inflight@^1.0.4":
   "integrity" "sha1-Sb1jMdfQLQwJvJEKEHW6gWW1bfk="

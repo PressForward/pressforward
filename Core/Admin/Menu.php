@@ -177,6 +177,10 @@ class Menu implements HasActions, HasFilters {
 	 * Display function for the main All Content panel
 	 */
 	public function display_reader_builder() {
+		if ( 'false' !== get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() ) ) {
+			wp_enqueue_script( 'pf-scroll' );
+		}
+
 		$user_obj = wp_get_current_user();
 		$user_id  = $user_obj->ID;
 

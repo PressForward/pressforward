@@ -297,37 +297,9 @@ class AssetsProvider extends ServiceProvider {
 				'condition' => function( $hook ) use ( $provider ) {
 					return $provider->check_hook_for_pressforward_string( $hook );
 				},
-				'handle'    => $slug . '-infiniscroll',
-				'src'       => 'Libraries/jquery.infinitescroll',
-				'deps'      => array( 'pf', $slug . '-views', $slug . '-readability-imp', 'jquery' ),
-			)
-		);
-
-		$assets->register_script(
-			array(
-				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
-					return $provider->check_hook_for_pressforward_string( $hook );
-				},
 				'handle'    => $slug . '-relationships',
 				'src'       => 'assets/js/relationships',
 				'deps'      => array( 'pf' ),
-			)
-		);
-
-		$assets->register_script(
-			array(
-				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
-					if ( 'false' === get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() ) ) {
-						return false;
-					}
-
-					return $provider->check_hook_for_pressforward_string( $hook );
-				},
-				'handle'    => $slug . '-scrollimp',
-				'src'       => 'assets/js/scroll-imp',
-				'deps'      => array( $slug . '-infiniscroll', 'pf-relationships', $slug . '-views', 'jquery' ),
 			)
 		);
 
@@ -406,6 +378,7 @@ class AssetsProvider extends ServiceProvider {
 			'pf-add-feeds'     => 'add-feeds',
 			'pf-nominate-this' => 'nominate-this',
 			'pf-quick-edit'    => 'quick-edit',
+			'pf-scroll'        => 'scroll',
 		];
 
 		foreach ( $build_scripts as $script_handle => $script_file ) {
