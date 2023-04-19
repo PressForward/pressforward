@@ -2,6 +2,15 @@ import { __ } from '@wordpress/i18n'
 
 import InfiniteScroll from 'infinite-scroll'
 
+import {
+	reshowModal,
+	reviewModal,
+	hideModal,
+	commentPopModal,
+	PFBootstrapInits,
+	detect_view_change
+} from '../reader/util.js'
+
 jQuery(document).ready(function () {
 	const infScroll = new InfiniteScroll( document.getElementById( 'entries' ), {
 		path: '.feednext a',
@@ -40,15 +49,12 @@ jQuery(document).ready(function () {
 			}
 			if (jQuery('.nom-container').length != 0) {
 				jQuery('.list #' + itemID + ' header .actions').appendTo('#' + itemID + ' footer');
-				//console.log('Item Actions in foot.');
 			} else {
 				if (jQuery('#' + itemID + ' header .actions').length === 0) {
 					jQuery('.grid #' + itemID + ' header .actions').appendTo('#' + itemID + ' header');
-					//console.log('Item Actions in head.');
 				}
 				if (jQuery('#' + itemID + ' footer .actions').length === 0) {
 					jQuery('.list #' + itemID + ' header .actions').appendTo('#' + itemID + ' footer');
-					//console.log('Item Actions in foot.');
 				}
 			}
 		});
