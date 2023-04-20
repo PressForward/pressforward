@@ -27,6 +27,7 @@
         "firebase/php-jwt": "^6.4",
         "paragonie/random_compat": "^9.99",
         "davechild/textstatistics": "^1.0",
-        "mattwright/urlresolver": "^2.0"
+        "mattwright/urlresolver": "^2.0",
+        "fivefilters/readability.php": "^3.1"
     }
 }

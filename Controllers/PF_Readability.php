@@ -273,25 +273,43 @@ class PF_Readability {
 			}
 		}
 
-		// Give it to Readability.
-		$readabilitizer = pressforward( 'library.readability' );
-		$readability    = $readabilitizer( $html, $url );
+		$content = null;
 
-		// Print debug output?
-		// Useful to compare against Arc90's original JS version -
-		// simply click the bookmarklet with FireBug's console window open.
-		$readability->debug = false;
+		// Readability requirements: PHP 7.4, ext-dom, ext-mbstring, ext-xml.
+		$use_upstream_readability = version_compare( phpversion(), '7.4.0', '>=' ) && extension_loaded( 'mbstring' ) && extension_loaded( 'xml' ) && extension_loaded( 'dom' );
+		if ( $use_upstream_readability ) {
+			$configuration = new \fivefilters\Readability\Configuration();
+			$readability   = new \fivefilters\Readability\Readability( $configuration );
 
-		// Convert links to footnotes?
-		// phpcs:disable WordPress.NamingConventions
-		$readability->convertLinksToFootnotes = false;
+			try {
+				$readability->parse( $html );
+				$content = $readability->getContent();
+				_b( $content );
+			} catch ( ParseException $e ) {
 
-		// Process it.
-		$result = $readability->init();
+			}
 
-		if ( $result ) {
-			$content = $readability->getContent()->innerHTML;
+		} else {
+			// Give it to Readability.
+			$readabilitizer = pressforward( 'library.readability' );
+			$readability    = $readabilitizer( $html, $url );
 
+			// Print debug output?
+			// Useful to compare against Arc90's original JS version -
+			// simply click the bookmarklet with FireBug's console window open.
+			$readability->debug = false;
+
+			// Convert links to footnotes?
+			// phpcs:disable WordPress.NamingConventions
+			$readability->convertLinksToFootnotes = false;
+
+			// Process it.
+			$result = $readability->init();
+
+			$content = $result ? $readability->getContent()->innerHTML : '';
+		}
+
+		if ( null !== $content ) {
 			// If we've got tidy, let's use it.
 			if ( function_exists( 'tidy_parse_string' ) ) {
 				$tidy = tidy_parse_string(
@@ -364,9 +382,9 @@ class PF_Readability {
 		}
 
 		if ( false !== $content ) {
-				$content_obj = pressforward( 'library.htmlchecker' );
-				$content     = $content_obj->closetags( $content );
-				$content     = $this->process_in_oembeds( $url, $content );
+			$content_obj = pressforward( 'library.htmlchecker' );
+			$content     = $content_obj->closetags( $content );
+			$content     = $this->process_in_oembeds( $url, $content );
 		}
 
 		return $content;
