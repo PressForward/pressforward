@@ -581,7 +581,7 @@ class Feed_Items implements HasActions, HasFilters {
 		 * @param array $pre_delete Default null. Return non-null value to bail from deletion.
 		 * @param array $post_ids   IDs of feed items older than the specified date.
 		 */
-		$pre_delete = apply_filters( 'pressforward_pre_delete_expired_feed_items', null, $post_ids );
+		$pre_delete = apply_filters( 'pressforward_pre_delete_expired_feed_items', null, $query_for_del->posts );
 		if ( null !== $pre_delete ) {
 			return true;
 		}
