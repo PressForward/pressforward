@@ -542,6 +542,10 @@ class Feed_Items implements HasActions, HasFilters {
 		pf_log( 'Disassemble Feed Items Activated' );
 		$retain = get_option( 'pf_retain_time', 2 );
 
+		if ( 0 === (int) $retain ) {
+			return;
+		}
+
 		// Delete rss feed items with a date past a certain point.
 		$query_for_del = new \WP_Query(
 			array(

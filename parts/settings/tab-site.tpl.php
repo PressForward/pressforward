@@ -116,7 +116,7 @@
 	?>
 </p>
 <p>
-	<?php esc_html_e( 'This number determines the number of previous months that PressForward will retrieve items for All Content from subscribed feeds and the number of months that items will remain in PressForward.', 'pressforward' ); ?>
+	<?php esc_html_e( 'This number determines the number of previous months that PressForward will retrieve items for All Content from subscribed feeds and the number of months that items will remain in PressForward. Set to "0" to disable automatic cleanup; feed items will remain in the database until manually deleted.', 'pressforward' ); ?>
 </p>
 <hr />
 <p>
