@@ -8,6 +8,7 @@
  * Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
  * Author URI: http://pressforward.org/about/team/
  * License: GPL2
+ * Requires PHP: 7.2
  * Text Domain: pressforward
  * Domain Path: /languages/
  *
