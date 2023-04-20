@@ -388,6 +388,7 @@ class AssetsProvider extends ServiceProvider {
 
 		if ( $screen && 'edit-pf_feed' === $screen->id ) {
 			wp_enqueue_script( 'pf-quick-edit' );
+			wp_enqueue_script( 'pf-edit-feeds' );
 		}
 
 		if ( $screen && 'pf_feed' === $screen->id ) {

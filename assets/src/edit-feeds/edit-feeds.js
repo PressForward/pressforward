@@ -28,7 +28,12 @@ function pf_switch_status_look(){
   jQuery('body.post-type-pf_feed').find('#post_status option[value="draft"]').text( __( 'Inactive', 'pressforward' ) );
   jQuery('body.post-type-pf_feed').find('#post_status option[value="publish"]').text( __( 'Active', 'pressforward' ) );
 
-  const selectedStatus = document.getElementById( 'post_status' ).value
+  const statusField = document.getElementById( 'post_status' )
+  if ( ! statusField ) {
+	  return
+  }
+
+  const selectedStatus = statusField.value
 
   if ( selectedStatus === 'publish' ) {
     jQuery('body.post-type-pf_feed').find('#post-status-display').text( __( 'Active', 'pressforward' ) );
