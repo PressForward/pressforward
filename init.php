@@ -8,7 +8,6 @@
 // Out-of-namespace dependencies.
 require 'vendor/autoload.php';
 require 'class-SplClassLoader.php';
-require 'Libraries/FiveFiltersReadability/Readability.php';
 require 'Libraries/AlertBox/The_Alert_Box.php';
 require 'includes/opml/object.php';
 require 'includes/opml/reader.php';

@@ -14,7 +14,6 @@ use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
 use PressForward\Libraries\HTMLChecker as HTMLChecker;
 use PFOpenGraph;
 use AlertBox\The_Alert_Box as The_Alert_Box;
-use Readability;
 use \mattwright\URLResolver;
 
 /**
@@ -53,7 +52,11 @@ class LibrariesProvider extends ServiceProvider {
 			'library.readability',
 			function( $container ) {
 				return ( function( $html, $url = null, $parser = 'libxml', $logger = 'pf_log' ) {
-					return new Readability( $html, $url, $parser, $logger );
+					if ( ! class_exists( '\Readability' ) ) {
+						require_once PF_ROOT . '/Libraries/FiveFiltersReadability/Readability.php';
+					}
+
+					return new \Readability( $html, $url, $parser, $logger );
 				} );
 			}
 		);
