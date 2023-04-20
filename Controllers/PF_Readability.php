@@ -284,10 +284,9 @@ class PF_Readability {
 			try {
 				$readability->parse( $html );
 				$content = $readability->getContent();
-			} catch ( ParseException $e ) {
+			} catch ( \fivefilters\Readability\ParseException $e ) {
 				$content = null;
 			}
-
 		} else {
 			// Give it to Readability.
 			$readabilitizer = pressforward( 'library.readability' );
