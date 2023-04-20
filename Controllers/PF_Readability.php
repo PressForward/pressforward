@@ -284,9 +284,8 @@ class PF_Readability {
 			try {
 				$readability->parse( $html );
 				$content = $readability->getContent();
-				_b( $content );
 			} catch ( ParseException $e ) {
-
+				$content = null;
 			}
 
 		} else {
