@@ -349,6 +349,12 @@ export function PFBootstrapInits() {
 }
 
 export function attach_menu_on_scroll_past() {
+	const $pfContainer = jQuery( '.pf-container' )
+
+	if ( ! $pfContainer.length ) {
+		return
+	}
+
 	jQuery(window).on( 'scroll', function () {
 		var y_scroll_pos = window.pageYOffset;
 		var scroll_pos_test = 90;
@@ -365,7 +371,7 @@ export function attach_menu_on_scroll_past() {
 			jQuery('#feeds-search > *').addClass('pull-left');
 			jQuery('#feeds-search > label').hide();
 
-			var width = jQuery('.pf_container').innerWidth();
+			var width = $pfContainer.innerWidth();
 			var containerOffset = jQuery('.pf_container').offset();
 			jQuery('.nav-fix').width(width - 20).offset( { left: containerOffset.left } );
 		} else {
