@@ -568,6 +568,24 @@ class Feed_Items implements HasActions, HasFilters {
 			return '';
 		}
 
+		/**
+		 * Pre-delete action for old feed item clean-up.
+		 *
+		 * This allows plugins to disable clean-up, or to add their own clean-up routine
+		 * (such as offloading into a separate, non-WP system).
+		 *
+		 * Return a value other than `null` to disable PF's own deletion.
+		 *
+		 * @since 5.5.0
+		 *
+		 * @param array $pre_delete Default null. Return non-null value to bail from deletion.
+		 * @param array $post_ids   IDs of feed items older than the specified date.
+		 */
+		$pre_delete = apply_filters( 'pressforward_pre_delete_expired_feed_items', null, $post_ids );
+		if ( null !== $pre_delete ) {
+			return true;
+		}
+
 		foreach ( $query_for_del->posts as $key => $post_id ) {
 			pf_log( 'Cleaning up ' . $post_id );
 			pf_delete_item_tree( $post_id );
