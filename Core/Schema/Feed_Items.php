@@ -569,8 +569,6 @@ class Feed_Items implements HasActions, HasFilters {
 		}
 
 		foreach ( $query_for_del->posts as $key => $post_id ) {
-			// All the posts in this loop are older than 60 days from 'now'.
-			// Delete them all.
 			pf_log( 'Cleaning up ' . $post_id );
 			pf_delete_item_tree( $post_id );
 		}
