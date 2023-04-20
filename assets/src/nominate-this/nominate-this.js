@@ -149,7 +149,14 @@ import { __ } from '@wordpress/i18n'
 		// Prefer linked data if available.
 		const ld = getLDFromDomObject( domObject )
 		if ( ld && ld.hasOwnProperty( 'keywords' ) ) {
-			const keywordArray = Array.isArray( ld.keywords ) ? ld.keywords : ld.keywords.split( ',' )
+			let keywordArray
+			if ( Array.isArray( ld.keywords ) ) {
+				// If the keywords are structured, we don't have a reliable way of parsing them.
+				keywordArray = ld.keywords.filter( (keyword) => { return 'string' === typeof keyword } )
+			} else {
+				keywordArray = ld.keywords.split( ',' )
+			}
+
 			return [ ...keywords, keywordArray ]
 		}
 
