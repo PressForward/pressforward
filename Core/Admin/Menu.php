@@ -65,12 +65,6 @@ class Menu implements HasActions, HasFilters {
 				'hook'   => 'admin_init',
 				'method' => 'pf_options_admin_page_save',
 			),
-			// Launch a batch delete process, if necessary.
-			array(
-				'hook'   => 'admin_init',
-				'method' => 'launch_batch_delete',
-			),
-
 		);
 	}
 
@@ -158,20 +152,6 @@ class Menu implements HasActions, HasFilters {
 		$thepages   = array_merge( $base_pages, (array) $thepages );
 		return $thepages;
 	}
-
-	/**
-	 * Launch a batch delete, if one is queued.
-	 *
-	 * @since 3.6
-	 */
-	public function launch_batch_delete() {
-		if ( ! current_user_can( 'delete_posts' ) ) {
-			return;
-		}
-
-		pf_launch_batch_delete();
-	}
-
 
 	/**
 	 * Display function for the main All Content panel

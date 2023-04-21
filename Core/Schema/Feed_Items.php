@@ -546,12 +546,22 @@ class Feed_Items implements HasActions, HasFilters {
 			return;
 		}
 
+		/**
+		 * Filters the max number of items that should be deleted during trash collection.
+		 *
+		 * The number can be adjusted up or down, depending on server resources.
+		 *
+		 * @since 5.5.0
+		 *
+		 * @param int $batch_size Default 25.
+		 */
+		$batch_size = apply_filters( 'pressforward_delete_expired_feed_items_batch_size', 25 );
+
 		// Delete rss feed items with a date past a certain point.
 		$query_for_del = new \WP_Query(
 			array(
 				'post_type'              => $this->post_type,
-				// phpcs:ignore WordPress.WP.PostsPerPage
-				'posts_per_page'         => '150',
+				'posts_per_page'         => $batch_size,
 				'fields'                 => 'ids',
 				'update_post_term_cache' => false,
 				'date_query'             => array(

@@ -1478,28 +1478,39 @@ function pf_exclude_queued_items_from_query_results( $posts, $query ) {
 add_filter( 'posts_results', 'pf_exclude_queued_items_from_query_results', 999, 2 );
 
 /**
- * Detect and process a delete queue request.
+ * Ensures that the 'pf_process_delete_queue' task is scheduled.
  *
- * Request URLs are of the form example.com?pf_process_delete_queue=123,
- * where '123' is a single-use nonce stored in the 'pf_delete_queue_nonce' option.
+ * @since 5.5.0
+ */
+function pressforward_schedule_process_delete_queue() {
+	if ( ! wp_next_scheduled( 'pf_process_delete_queue' ) ) {
+		wp_schedule_event( time(), 'hourly', 'pf_process_delete_queue' );
+	}
+}
+add_action( 'init', 'pressforward_schedule_process_delete_queue' );
+
+/**
+ * Callback for 'pf_process_delete_queue' cron action.
  *
  * @since 3.6
+ * @since 5.5.0 Instead of being triggered by a custom nonce and a self-request,
+ *              deletion now has its own cron event.
  */
 function pf_process_delete_queue() {
-	if ( ! isset( $_GET['pf_process_delete_queue'] ) ) {
-		return;
-	}
-
-	$nonce       = sanitize_text_field( wp_unslash( $_GET['pf_process_delete_queue'] ) );
-	$saved_nonce = get_option( 'pf_delete_queue_nonce' );
-	if ( $saved_nonce !== $nonce ) {
-		pf_log( 'nonce indicates not ready.' );
-		return;
-	}
-
 	$queued = get_option( 'pf_delete_queue', array() );
-	pf_log( ' Delete queue ready' );
-	for ( $i = 0; $i <= 1; $i++ ) {
+
+	pf_log( 'Delete queue ready' );
+
+	/**
+	 * Filters the max batch size for processing the delete queue.
+	 *
+	 * @since 5.5.0
+	 *
+	 * @param int $batch_size Default 25.
+	 */
+	$batch_size = apply_filters( 'pressforward_process_delete_queue_batch_size', 25 );
+
+	for ( $i = 0; $i <= $batch_size; $i++ ) {
 		$post_id = array_shift( $queued );
 		if ( null !== $post_id ) {
 			pf_log( 'Deleting ' . $post_id );
@@ -1508,12 +1519,11 @@ function pf_process_delete_queue() {
 	}
 
 	update_option( 'pf_delete_queue', $queued );
-	delete_option( 'pf_delete_queue_nonce' );
 
+	// Clean up empty taxonomy terms, only when the queue is cleared.
 	if ( ! $queued ) {
 		delete_option( 'pf_delete_queue' );
 
-		// Clean up empty taxonomy terms.
 		$terms = get_terms(
 			pressforward( 'schema.feeds' )->tag_taxonomy,
 			array(
@@ -1526,35 +1536,9 @@ function pf_process_delete_queue() {
 				wp_delete_term( $term->term_id, pressforward( 'schema.feeds' )->tag_taxonomy );
 			}
 		}
-	} else {
-		pf_launch_batch_delete();
 	}
 }
-add_action( 'wp_loaded', 'pf_process_delete_queue' );
-
-/**
- * Launch the processing of the delete queue.
- *
- * @since 3.6
- */
-function pf_launch_batch_delete() {
-	// Nothing to do.
-	$queued = get_option( 'pf_delete_queue' );
-	if ( ! $queued ) {
-		delete_option( 'pf_delete_queue_nonce' );
-		return;
-	}
-
-	// If a nonce is saved, then a deletion is pending, and we should do nothing.
-	$saved_nonce = get_option( 'pf_delete_queue_nonce' );
-	if ( $saved_nonce ) {
-		return;
-	}
-
-	$nonce = wp_rand( 10000000, 99999999 );
-	add_option( 'pf_delete_queue_nonce', $nonce );
-	wp_remote_get( add_query_arg( 'pf_process_delete_queue', $nonce, home_url() ) );
-}
+add_action( 'pf_process_delete_queue', 'pf_process_delete_queue' );
 
 /**
  * Send takes an array dimension from a backtrace and puts it in log format.
