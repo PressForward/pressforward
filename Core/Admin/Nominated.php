@@ -215,17 +215,15 @@ class Nominated implements HasActions {
 
 					// This part here is for eventual use in pagination and then infinite scroll.
 
+					$c = 0;
+					$c = $c + $count;
 					if ( isset( $_GET['pc'] ) ) {
 						$offset = intval( $_GET['pc'] ) - 1;
 						$offset = $offset * 20;
+					} elseif ( $c < 20 ) {
+						$offset = 0;
 					} else {
-						$c = 0;
-						$c = $c + $count;
-						if ( $c < 20 ) {
-							$offset = 0;
-						} else {
-							$offset = $c;
-						}
+						$offset = $c;
 					}
 
 					// Now we must loop.
