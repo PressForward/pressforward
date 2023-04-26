@@ -1091,56 +1091,7 @@ function prep_archives_query( $q ) {
 
 	// See https://github.com/PressForward/pressforward/issues/1145.
 	// phpcs:disable WordPress.DB
-	if ( isset( $_GET['pf-see'] ) && 'archive-only' === $_GET['pf-see'] ) {
-		$pagefull = 20;
-		$user_id  = get_current_user_id();
-		$read_id  = pf_get_relationship_type_id( 'archive' );
-
-		// It is bad to use SQL_CALC_FOUND_ROWS, but we need it to replicate the same behaviour as non-archived items (including pagination).
-		$q = $wpdb->prepare(
-			"
-				SELECT SQL_CALC_FOUND_ROWS {$wpdb->posts}.*, {$wpdb->postmeta}.*
-				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->postmeta}.meta_key = 'pf_archive'
-				AND {$wpdb->postmeta}.meta_value > 0
-				AND {$wpdb->posts}.ID
-				GROUP BY {$wpdb->posts}.ID
-				ORDER BY {$wpdb->postmeta}.meta_value DESC, {$wpdb->posts}.post_date DESC
-				LIMIT {$pagefull} OFFSET {$offset}
-			",
-			'nomination'
-		);
-	} elseif ( isset( $_GET['pf-see'] ) && 'unread-only' === $_GET['pf-see'] ) {
-		$pagefull = 20;
-		$user_id  = get_current_user_id();
-		$read_id  = pf_get_relationship_type_id( 'read' );
-
-		$q = $wpdb->prepare(
-			"
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->posts}.post_status = 'draft'
-				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
-				AND {$wpdb->postmeta}.meta_value > 0
-				AND {$wpdb->posts}.ID
-				NOT IN (
-					SELECT item_id
-					FROM {$rt}
-					WHERE {$rt}.user_id = {$user_id}
-					AND {$rt}.relationship_type = {$read_id}
-					AND {$rt}.value = 1
-				)
-				GROUP BY {$wpdb->posts}.ID
-				ORDER BY {$wpdb->postmeta}.meta_value DESC
-				LIMIT {$pagefull} OFFSET {$offset}
-			",
-			'nomination'
-		);
-	} elseif ( isset( $_GET['action'] ) && isset( $_POST['search-terms'] ) ) {
+	if ( isset( $_GET['action'] ) && isset( $_POST['search-terms'] ) ) {
 		$pagefull = 20;
 		$user_id  = get_current_user_id();
 		$read_id  = pf_get_relationship_type_id( 'archive' );

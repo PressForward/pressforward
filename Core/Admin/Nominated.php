@@ -241,8 +241,34 @@ class Nominated implements HasActions {
 						'order'            => 'DESC',
 						'posts_per_page'   => 20,
 						'suppress_filters' => false,
+						'meta_query'       => [],
 						'offset'           => $offset, // The query function will turn page into a 1 if it is a 0.
 					);
+
+					if ( isset( $_GET['pf-see'] ) ) {
+						$pf_see = sanitize_text_field( wp_unslash( $_GET['pf-see'] ) );
+						switch ( $pf_see ) {
+							case 'archive-only' :
+								$nom_args['meta_query']['archive-only'] = [
+									'key'   => 'pf_archive',
+									'value' => '1',
+								];
+								$nom_args['post_status'] = 'removed_feed_item';
+							break;
+
+							case 'unread-only' :
+								$nom_args['meta_query']['unread-only'] = [
+									'key'     => 'sortable_item_date',
+									'value'   => 0,
+									'compare' => '>',
+								];
+
+								$nom_args['post_status'] = 'draft';
+
+								$nom_args['post__not_in'] = pf_get_read_items_for_user( get_current_user_id(), 'simple' );
+							break;
+						}
+					}
 
 					if ( isset( $_GET['sort-by'] ) ) {
 						$sort_by    = sanitize_text_field( wp_unslash( $_GET['sort-by'] ) );
