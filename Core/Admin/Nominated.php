@@ -276,6 +276,10 @@ class Nominated implements HasActions {
 						}
 					}
 
+					if ( isset( $_GET['action'] ) && isset( $_POST['search-terms'] ) ) {
+						$nom_args['s'] = sanitize_text_field( wp_unslash( $_POST['search-terms'] ) );
+					}
+
 					if ( isset( $_GET['sort-by'] ) ) {
 						$sort_by    = sanitize_text_field( wp_unslash( $_GET['sort-by'] ) );
 						$sort_order = isset( $_GET['sort-order'] ) && 'asc' === strtolower( sanitize_text_field( wp_unslash( $_GET['sort-order'] ) ) ) ? 'ASC' : 'DESC';
@@ -342,9 +346,7 @@ class Nominated implements HasActions {
 						$nom_args['post_parent__in'] = $parents_in_folder->posts;
 					}
 
-					add_filter( 'posts_request', 'prep_archives_query' );
 					$nom_query = new WP_Query( $nom_args );
-					remove_filter( 'posts_request', 'prep_archives_query' );
 
 					$count        = 0;
 					$count_q      = $nom_query->post_count;

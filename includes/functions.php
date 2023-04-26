@@ -1077,53 +1077,6 @@ function pf_filter_nominated_query_for_drafted( $query ) {
 add_action( 'pre_get_posts', 'pf_filter_nominated_query_for_drafted' );
 
 /**
- * 'posts_request' filter callback for nominations query.
- *
- * @todo Investigate.
- *
- * @param string $q Query string.
- */
-function prep_archives_query( $q ) {
-	global $wpdb;
-
-	$relate = pressforward( 'schema.relationships' );
-	$rt     = $relate->table_name;
-
-	// See https://github.com/PressForward/pressforward/issues/1145.
-	// phpcs:disable WordPress.DB
-	if ( isset( $_GET['action'] ) && isset( $_POST['search-terms'] ) ) {
-		$pagefull = 20;
-		$user_id  = get_current_user_id();
-		$read_id  = pf_get_relationship_type_id( 'archive' );
-
-		$search = sanitize_text_field( wp_unslash( $_POST['search-terms'] ) );
-		$like   = '%' . $wpdb->esc_like( $search ) . '%';
-
-		$q = $wpdb->prepare(
-			"
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
-				AND {$wpdb->postmeta}.meta_value > 0
-				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->posts}.post_status = 'draft'
-				AND ((({$wpdb->posts}.post_title LIKE '%s') OR ({$wpdb->posts}.post_content LIKE '%s')))
-				GROUP BY {$wpdb->posts}.ID
-				ORDER BY {$wpdb->postmeta}.meta_value DESC
-				LIMIT {$pagefull} OFFSET {$offset}
-			",
-			'nomination',
-			$like,
-			$like
-		);
-	}
-	// phpcs:enable WordPress.DB
-
-	return $q;
-}
-
-/**
  * Adds 'text/x-opml' mime type to WP.
  *
  * @param array $existing_mimes MIME type array.
