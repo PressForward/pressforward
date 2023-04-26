@@ -267,6 +267,11 @@ class Nominated implements HasActions {
 
 								$nom_args['post__not_in'] = pf_get_read_items_for_user( get_current_user_id(), 'simple' );
 							break;
+
+							case 'starred-only' :
+								$nom_args['post_status'] = 'draft';
+								$nom_args['post__in']    = pf_get_starred_items_for_user( get_current_user_id(), 'simple' );
+							break;
 						}
 					}
 

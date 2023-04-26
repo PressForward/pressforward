@@ -1117,45 +1117,6 @@ function prep_archives_query( $q ) {
 			$like,
 			$like
 		);
-	} elseif ( isset( $_GET['pf-see'] ) && 'starred-only' === $_GET['pf-see'] ) {
-		$pagefull = 20;
-		$user_id  = get_current_user_id();
-		$read_id  = pf_get_relationship_type_id( 'star' );
-
-		$q = $wpdb->prepare(
-			"
-				SELECT DISTINCT wposts.*
-				FROM {$wpdb->posts} wposts
-				LEFT JOIN {$wpdb->postmeta} wpm1 ON (wposts.ID = wpm1.post_id
-					AND wpm1.meta_key = 'sortable_item_date' AND wpm1.meta_value > 0 AND wposts.post_type = %s
-				)
-				LEFT JOIN {$wpdb->postmeta} wpm2 ON  (wposts.ID = wpm2.post_id
-					   AND wpm2.meta_key = 'pf_item_post_id' AND wposts.post_type = %s )
-				WHERE wposts.post_status = 'draft'
-				AND wpm1.meta_value > 0
-				AND wposts.ID
-				IN (
-					SELECT item_id
-					FROM {$rt}
-					WHERE {$rt}.user_id = {$user_id}
-					AND {$rt}.relationship_type = {$read_id}
-					AND {$rt}.value = 1
-				)
-				OR wpm2.meta_value
-				IN (
-					SELECT item_id
-					FROM {$rt}
-					WHERE {$rt}.user_id = {$user_id}
-					AND {$rt}.relationship_type = {$read_id}
-					AND {$rt}.value = 1
-				)
-				GROUP BY wpm2.post_id
-				ORDER BY wpm1.meta_value DESC
-				LIMIT {$pagefull} OFFSET {$offset}
-			",
-			'nomination',
-			'nomination'
-		);
 	}
 	// phpcs:enable WordPress.DB
 
