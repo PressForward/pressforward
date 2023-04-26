@@ -214,12 +214,18 @@ class Nominated implements HasActions {
 					wp_reset_postdata();
 
 					// This part here is for eventual use in pagination and then infinite scroll.
-					$c = 0;
-					$c = $c + $count;
-					if ( $c < 20 ) {
-						$offset = 0;
+
+					if ( isset( $_GET['pc'] ) ) {
+						$offset = intval( $_GET['pc'] ) - 1;
+						$offset = $offset * 20;
 					} else {
-						$offset = $c;
+						$c = 0;
+						$c = $c + $count;
+						if ( $c < 20 ) {
+							$offset = 0;
+						} else {
+							$offset = $c;
+						}
 					}
 
 					// Now we must loop.

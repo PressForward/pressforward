@@ -1086,13 +1086,6 @@ add_action( 'pre_get_posts', 'pf_filter_nominated_query_for_drafted' );
 function prep_archives_query( $q ) {
 	global $wpdb;
 
-	if ( isset( $_GET['pc'] ) ) {
-		$offset = intval( $_GET['pc'] ) - 1;
-		$offset = $offset * 20;
-	} else {
-		$offset = 0;
-	}
-
 	$relate = pressforward( 'schema.relationships' );
 	$rt     = $relate->table_name;
 
