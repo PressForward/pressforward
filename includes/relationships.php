@@ -140,3 +140,20 @@ function pf_get_starred_items_for_user( $user_id, $format = 'raw' ) {
 
 	return $rs;
 }
+
+/**
+ * Gets a list of read items for a given user.
+ *
+ * @param int    $user_id User ID.
+ * @param string $format  'simple' to get back just the item IDs. Otherwise raw relationship objects.
+ * @return array
+ */
+function pf_get_read_items_for_user( $user_id, $format = 'raw' ) {
+	$rs = pf_get_relationships_for_user( 'read', $user_id );
+
+	if ( 'simple' === $format ) {
+		$rs = wp_list_pluck( $rs, 'item_id' );
+	}
+
+	return $rs;
+}
