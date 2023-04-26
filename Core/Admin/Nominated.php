@@ -248,15 +248,16 @@ class Nominated implements HasActions {
 					if ( isset( $_GET['pf-see'] ) ) {
 						$pf_see = sanitize_text_field( wp_unslash( $_GET['pf-see'] ) );
 						switch ( $pf_see ) {
-							case 'archive-only' :
+							case 'archive-only':
 								$nom_args['meta_query']['archive-only'] = [
 									'key'   => 'pf_archive',
 									'value' => '1',
 								];
-								$nom_args['post_status'] = 'removed_feed_item';
-							break;
 
-							case 'unread-only' :
+								$nom_args['post_status'] = 'removed_feed_item';
+								break;
+
+							case 'unread-only':
 								$nom_args['meta_query']['unread-only'] = [
 									'key'     => 'sortable_item_date',
 									'value'   => 0,
@@ -266,12 +267,12 @@ class Nominated implements HasActions {
 								$nom_args['post_status'] = 'draft';
 
 								$nom_args['post__not_in'] = pf_get_read_items_for_user( get_current_user_id(), 'simple' );
-							break;
+								break;
 
-							case 'starred-only' :
+							case 'starred-only':
 								$nom_args['post_status'] = 'draft';
 								$nom_args['post__in']    = pf_get_starred_items_for_user( get_current_user_id(), 'simple' );
-							break;
+								break;
 						}
 					}
 
