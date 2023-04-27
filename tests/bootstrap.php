@@ -7,7 +7,7 @@ if ( ! $_tests_dir ) {
 
 $github_temp = getenv( 'RUNNER_TEMP' );
 if ( $github_temp ) {
-	$_tests_dir = RUNNER_TEMP . '/wordpress-tests-lib';
+	$_tests_dir = $github_temp . '/wordpress-tests-lib';
 }
 
 if ( ! defined( 'PF_DIR_TESTDATA' ) ) {
