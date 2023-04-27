@@ -33,7 +33,7 @@ class PF_Tests_OPML_Reader extends PF_UnitTestCase {
 
 	function test_load_opml_file() {
 		$this->assertInstanceOf( 'SimpleXMLElement', $this->reader->opml_file );
-		$this->assertInternalType( 'string', $this->reader->file_url );
+		$this->assertIsString( $this->reader->file_url );
 	}
 
 	function test_gets_opml_object() {
