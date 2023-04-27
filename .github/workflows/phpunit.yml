@@ -14,10 +14,9 @@ jobs:
       uses: php-actions/composer@v6
 
     - name: Set up MySQL
-      uses: mirromutth/mysql-action@v1.1
-      with:
-        mysql root password: root
-        mysql database: wordpress_test
+      run: |
+        sudo /etc/init.d/mysql start
+        mysql -e 'CREATE DATABASE wordpress_test' -uroot -proot
 
     - name: Set up WP and its test suite, and run phpunit
       run: |
