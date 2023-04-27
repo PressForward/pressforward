@@ -181,7 +181,11 @@ class Nominations implements HasActions, HasFilters {
 		}
 
 		$nominators = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'nominator_array' );
-		foreach ( $nominators as $nominator ) {
+		if ( ! $nominators ) {
+			return;
+		}
+
+		foreach ( (array) $nominators as $nominator ) {
 			if ( ! pressforward()->fetch( 'controller.users' )->get_user_setting( $nominator['user_id'], 'nomination-promoted-email-toggle' ) ) {
 				continue;
 			}
