@@ -1,12 +1,11 @@
 <?php
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
-var_Dump( getenv( 'GITHUB_ENV' ) );
-var_Dump( $_tests_dir );
+var_dump( 'ENV' );
+var_dump( $_ENV );
 if ( ! $_tests_dir ) {
 	$_tests_dir = '/tmp/wordpress-tests-lib';
 }
-var_Dump( $_tests_dir );
 
 if ( ! defined( 'PF_DIR_TESTDATA' ) ) {
 	define( 'PF_DIR_TESTDATA', __DIR__ . '/data' );
