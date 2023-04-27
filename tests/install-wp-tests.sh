@@ -12,7 +12,7 @@ DB_HOST=${4-localhost}
 WP_VERSION=${5-latest}
 SKIP_DB_CREATE=${6-false}
 
-BASE_DIR=${6-/tmp}
+BASE_DIR=${7-/tmp}
 echo $BASE_DIR
 
 if [[ $WP_TESTS_DIR == '' ]]; then
