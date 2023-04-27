@@ -183,44 +183,6 @@ class Folders implements HasActions, HasFilters {
 	}
 
 	/**
-	 * Gets non-top-level feed folders.
-	 *
-	 * @param int|array|object|bool $ids Single folder ID, or array/object of IDs.
-	 * @return array|bool
-	 */
-	public function get_child_feed_folders( $ids = false ) {
-		$children = array();
-		if ( ! $ids ) {
-			foreach ( $this->get_top_feed_folders() as $cat ) {
-				$term_childs = get_term_children( $cat->term_id, $this->tag_taxonomy );
-				if ( ! empty( $term_childs ) ) {
-					$children[ $cat->term_id ] = get_term_children( $cat->term_id, $this->tag_taxonomy );
-				} else {
-					$children[ $cat->term_id ] = false;
-				}
-			}
-		} elseif ( is_numeric( $ids ) || is_string( $ids ) ) {
-			if ( ! $this->is_feed_term( $ids ) ) {
-				return false;
-			}
-			$children_terms = get_term_children( $ids, $this->tag_taxonomy );
-			foreach ( $children_terms as $child ) {
-				$children[ $child ] = $this->get_feed_folders( $child );
-			}
-		} elseif ( is_array( $ids ) ) {
-			foreach ( $ids as $id ) {
-				$children[ $id ] = $this->get_feed_folders( $id );
-			}
-		} elseif ( is_object( $ids ) ) {
-			$children[ $ids->term_id ] = get_term_children( $ids->term_id, $this->tag_taxonomy );
-		} else {
-			return $ids;
-		}
-
-		return $children;
-	}
-
-	/**
 	 * Gets child folders of a folder.
 	 *
 	 * @param \WP_Term $folder Term object.
