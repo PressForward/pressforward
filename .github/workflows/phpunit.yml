@@ -17,9 +17,10 @@ jobs:
       uses: mirromutth/mysql-action@v1.1
       with:
         mysql root password: root
+        mysql database: wordpress_test
 
     - name: Runs test setup
-      run: bash tests/install-wp-tests.sh wordpress_test root root localhost latest
+      run: bash tests/install-wp-tests.sh wordpress_test root root localhost latest 1
 
     - name: Run PHPUnit
       uses: php-actions/phpunit@v3
