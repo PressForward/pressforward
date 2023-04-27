@@ -13,14 +13,13 @@ WP_VERSION=${5-latest}
 SKIP_DB_CREATE=${6-false}
 
 BASE_DIR=${7-/tmp}
-echo $BASE_DIR
 
 if [[ $WP_TESTS_DIR == '' ]]; then
-	export WP_TESTS_DIR="$BASE_DIR/wordpress-tests-lib"
+	WP_TESTS_DIR="$BASE_DIR/wordpress-tests-lib"
 fi
 
 if [[ $WP_CORE_DIR == '' ]]; then
-	export WP_CORE_DIR="$BASE_DIR/wordpress"
+	WP_CORE_DIR="$BASE_DIR/wordpress"
 fi
 
 echo $WP_TESTS_DIR
