@@ -1,13 +1,11 @@
 <?php
 
-class PF_UnitTestCase extends WP_UnitTestCase {
+use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
-	public function setUp() {
-		parent::setUp();
+class PF_UnitTestCase extends TestCase {
+	public $factory;
+
+	public function set_up() {
 		$this->factory = new PF_UnitTest_Factory;
-	}
-
-	public function tearDown() {
-		parent::tearDown();
 	}
 }

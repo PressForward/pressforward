@@ -4,8 +4,9 @@
  * @group OPML
  */
 class PF_Tests_OPML_Reader extends PF_UnitTestCase {
+	public $reader;
 
-	function setUp() {
+	function set_up() {
 		$this->reader = new OPML_reader( '' );
 		$this->reader->build_from_string(
 			'<?xml version="1.0"?>
