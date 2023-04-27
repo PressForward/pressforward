@@ -21,7 +21,7 @@ class PF_UnitTestCase extends TestCase {
 			function( $type ) use ( $wpdb ) {
 				return $wpdb->prepare( '%s', $type );
 			},
-			[ 'nomination', 'pf_feed', 'pf_feed_item' ]
+			[ 'nomination', 'pf_feed', 'pf_feed_item', 'attachment', 'post' ]
 		);
 		$pf_types_str = implode( ',', $pf_types );
 
@@ -29,6 +29,8 @@ class PF_UnitTestCase extends TestCase {
 		foreach ( $post_ids as $post_id ) {
 			wp_delete_post( $post_id, true );
 		}
+
+		delete_option( 'pf_delete_queue' );
 	}
 
 	/**
