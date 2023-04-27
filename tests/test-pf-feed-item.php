@@ -307,7 +307,7 @@ class PF_Tests_Feed_Item extends PF_UnitTestCase {
 			'source_title' => 'Test source title',
 			'item_date' => '20000',
 			'item_author' => 'foo',
-			'item_content' => 'Test content',
+			'item_content' => '<p>Test content</p>',
 			'item_link' => 'Test link',
 			'item_feat_img' => 'Test feat img',
 			'item_id' => pressforward_create_feed_item_id( 'Test link', 'Test item' ),
