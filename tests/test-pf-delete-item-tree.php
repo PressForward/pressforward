@@ -3,11 +3,6 @@
 class PF_Tests_PfDeleteItemTree extends PF_UnitTestCase {
 	protected $ids;
 
-	public function tear_down() {
-		// Remove all uploads.
-		//$this->remove_added_uploads();
-	}
-
 	public function test_should_return_false_for_bad_post_id() {
 		$this->assertFalse( pf_delete_item_tree( 12345 ) );
 	}
