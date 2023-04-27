@@ -421,9 +421,9 @@ class Feeds implements HasActions, HasFilters {
 	 * @return array
 	 */
 	public function custom_feed_column_name( $posts_columns ) {
-		$posts_columns['author']          = 'Added by';
-		$posts_columns['items_retrieved'] = 'Items';
-		$posts_columns['date']            = 'Date Added';
+		$posts_columns['author']          = __( 'Added by', 'pressforward' );
+		$posts_columns['items_retrieved'] = __( 'Items', 'pressforward' );
+		$posts_columns['date']            = __( 'Date Added', 'pressforward' );
 		return $posts_columns;
 	}
 
