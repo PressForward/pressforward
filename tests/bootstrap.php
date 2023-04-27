@@ -1,9 +1,13 @@
 <?php
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
-var_Dump( getenv( 'RUNNER_TEMP' ) );
 if ( ! $_tests_dir ) {
 	$_tests_dir = '/tmp/wordpress-tests-lib';
+}
+
+$github_temp = getenv( 'RUNNER_TEMP' );
+if ( $github_temp ) {
+	$_tests_dir = RUNNER_TEMP . '/wordpress-tests-lib';
 }
 
 if ( ! defined( 'PF_DIR_TESTDATA' ) ) {
