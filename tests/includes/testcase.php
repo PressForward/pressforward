@@ -30,4 +30,16 @@ class PF_UnitTestCase extends TestCase {
 			wp_delete_post( $post_id, true );
 		}
 	}
+
+	/**
+	 * Borrowed from WP.
+	 */
+	public function assertEqualSets( $expected, $actual, $message = '' ) {
+		$this->assertIsArray( $expected, $message . ' Expected value must be an array.' );
+		$this->assertIsArray( $actual, $message . ' Value under test is not an array.' );
+
+		sort( $expected );
+		sort( $actual );
+		$this->assertEquals( $expected, $actual, $message );
+	}
 }
