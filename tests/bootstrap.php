@@ -5,15 +5,12 @@ if ( ! $_tests_dir ) {
 	$_tests_dir = '/tmp/wordpress-tests-lib';
 }
 
-var_Dump( 'exists WP_TESTS_DIR ' . WP_TESTS_DIR );
-var_Dump( file_exists( WP_TESTS_DIR ) );
+var_Dump( 'exists WP_TESTS_DIR ' . $_tests_dir );
+var_Dump( file_exists( $_tests_dir ) );
 
-var_Dump( 'exists WP_TESTS_DIR/includes ' . WP_TESTS_DIR . '/includes' );
-var_Dump( file_exists( WP_TESTS_DIR . '/includes' ) );
+var_Dump( 'exists WP_TESTS_DIR/includes ' . $_tests_dir . '/includes' );
+var_Dump( file_exists( $_tests_dir . '/includes' ) );
 
-
-var_Dump( 'exists WP_CORE_DIR ' . WP_CORE_DIR );
-var_Dump( file_exists( WP_CORE_DIR ) );
 
 if ( ! defined( 'PF_DIR_TESTDATA' ) ) {
 	define( 'PF_DIR_TESTDATA', __DIR__ . '/data' );
