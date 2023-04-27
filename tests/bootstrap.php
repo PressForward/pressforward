@@ -5,6 +5,10 @@ if ( ! $_tests_dir ) {
 	$_tests_dir = '/tmp/wordpress-tests-lib';
 }
 
+if ( ! defined( 'PF_DIR_TESTDATA' ) ) {
+	define( 'PF_DIR_TESTDATA', __DIR__ . '/data' );
+}
+
 require_once $_tests_dir . '/includes/functions.php';
 if (PHP_VERSION < 7){
 	if ( (! class_exists( '\PHPUnit_Framework_TestCase' ) || ! class_exists( 'PHPUnit_Framework_TestCase' ) ) && class_exists( '\PHPUnit\Framework\TestCase' ) ) {
