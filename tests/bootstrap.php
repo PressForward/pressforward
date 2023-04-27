@@ -5,13 +5,6 @@ if ( ! $_tests_dir ) {
 	$_tests_dir = '/tmp/wordpress-tests-lib';
 }
 
-var_Dump( 'exists WP_TESTS_DIR ' . $_tests_dir );
-var_Dump( file_exists( $_tests_dir ) );
-
-var_Dump( 'exists WP_TESTS_DIR/includes ' . $_tests_dir . '/includes' );
-var_Dump( file_exists( $_tests_dir . '/includes' ) );
-
-
 if ( ! defined( 'PF_DIR_TESTDATA' ) ) {
 	define( 'PF_DIR_TESTDATA', __DIR__ . '/data' );
 }
