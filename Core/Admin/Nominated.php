@@ -1038,7 +1038,7 @@ class Nominated implements HasActions {
 			$item_id = isset( $_POST['item_id'] ) ? sanitize_text_field( wp_unslash( $_POST['item_id'] ) ) : 0;
 			$nom_id  = isset( $_POST['nom_id'] ) ? intval( $_POST['nom_id'] ) : 0;
 
-			$nomination_id = $this->forward_tools->nomination_to_last_step( $item_id, $nom_id );
+			$nomination_id = $this->forward_tools->nomination_to_last_step( $item_id, $nom_id, false );
 			$response      = array(
 				'what'         => 'draft',
 				'action'       => 'build_nom_draft',
