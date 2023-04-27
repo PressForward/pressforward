@@ -192,6 +192,8 @@ $RECYCLE.BIN/
 # Mergetool Diff files
 *.orig
 
+.phpunit.result.cache
+
 #############
 ## Node etc
 #############
