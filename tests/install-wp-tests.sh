@@ -22,9 +22,6 @@ if [[ $WP_CORE_DIR == '' ]]; then
 	WP_CORE_DIR="$BASE_DIR/wordpress"
 fi
 
-echo $WP_TESTS_DIR
-echo $WP_CORE_DIR
-
 download() {
     if [ `which curl` ]; then
         curl -s "$1" > "$2";
@@ -134,3 +131,6 @@ install_db() {
 install_wp
 install_test_suite
 install_db
+
+ls -la $WP_TESTS_DIR
+ls -la $WP_TESTS_DIR/includes
