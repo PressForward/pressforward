@@ -153,7 +153,6 @@ class PF_to_WP_Posts implements Items {
 		$query = new \WP_Query( $args );
 
 		if ( ! $query->have_posts() ) {
-
 			return true;
 		} else {
 			while ( $query->have_posts() ) {
@@ -163,5 +162,7 @@ class PF_to_WP_Posts implements Items {
 				return $id;
 			}
 		}
+
+		return true;
 	}
 }
