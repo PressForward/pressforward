@@ -451,6 +451,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 			'post_title' => $title,
 			'item_link' => 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=9',
 			'item_content' => 'Test content',
+			'post_content' => 'foo',
 			'source_title' => 'Test source title',
 			'sortable_item_date' => 10000,
 			'item_date' => 20000,
@@ -487,6 +488,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 			'item_content' => 'Test content',
 			'source_title' => 'Test source title',
 			'sortable_item_date' => 10000,
+			'post_content' => 'foo',
 			'item_date' => 20000,
 			'item_author' => 'foo',
 			'item_feat_img' => 'Test feat img',
@@ -550,6 +552,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$title = "Trump should skip civil-rights museum opening, NAACP says, calling his plans to attend ‘an insult’ - The Washington Post";
 		$time = time();
 		$post = $this->a_feed_item($title, $time);
+		$post['post_content'] = 'foo';
 		$_POST = array_merge($_POST, $post);
 		$item_id = pressforward_create_feed_item_id( $_POST['item_link'], $post['post_title'] );
 		$nomination_id = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
