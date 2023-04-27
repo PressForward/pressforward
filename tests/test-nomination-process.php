@@ -369,7 +369,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 
 	public function test_is_a_pf_type(){
 		$post_exists = pressforward('utility.forward_tools')->is_a_pf_type(3344);
-		$this->assertFalse( $post_exists );
+		$this->assertFalse( (bool) $post_exists );
 		$feed_id = $this->factory->feed->create();
 		$time = time();
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'feed_item_meta_increment' ) );

@@ -783,7 +783,7 @@ class Forward_Tools {
 			$post_check = $this->is_a_pf_type( $item_id, pressforward_draft_post_type() );
 
 			// If this is a nomination but has not yet been published, assume bookmarklet has best version of content.
-			if ( false !== $post_check ) {
+			if ( ! empty( $post_check ) ) {
 				$this->item_interface->update_post( $post );
 			}
 
