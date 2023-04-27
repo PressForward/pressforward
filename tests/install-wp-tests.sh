@@ -131,6 +131,3 @@ install_db() {
 install_wp
 install_test_suite
 install_db
-
-ls -la $WP_TESTS_DIR
-ls -la $WP_TESTS_DIR/includes

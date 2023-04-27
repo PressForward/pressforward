@@ -1,7 +1,6 @@
 <?php
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
-var_Dump( $_tests_dir );
 if ( ! $_tests_dir ) {
 	$_tests_dir = '/tmp/wordpress-tests-lib';
 }
