@@ -7,14 +7,17 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 	public function test_archive_feed_to_display_fromUnixTime() {
 		$feed_id = $this->factory->feed->create();
 
-		$feed_items = array();
+		$feed_items   = array();
+		$current_date = time();
 		for ( $i = 0; $i <= 5; $i++ ) {
+			$date_offset   = 10000 * ( $i + 1 ); // no zeroes
+			$sortable_date = $current_date + $date_offset;
 			$feed_items[ $i ] = $this->factory->feed_item->create( array(
-				'sortable_item_date' => 10000 * ( $i + 1 ), // no zeroes
+				'sortable_item_date' => $sortable_date,
 			) );
 		}
 
-		$found = pressforward( 'controller.loops' )->archive_feed_to_display( 1, 20, 25000 );
+		$found = pressforward( 'controller.loops' )->archive_feed_to_display( 1, 20, $current_date + 25000 );
 
 		$expected = array(
 			$feed_items[5],

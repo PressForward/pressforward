@@ -123,6 +123,10 @@ class PF_Loops {
 			'offset'         => $r['start'],
 		);
 
+		if ( empty( $post_args['orderby'] ) ) {
+			$post_args['orderby'] = [ 'meta_value' => 'DESC' ];
+		}
+
 		if ( $r['no_limit'] ) {
 			$post_args['posts_per_page'] = -1;
 		}
