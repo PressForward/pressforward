@@ -5,6 +5,8 @@ if ( ! $_tests_dir ) {
 	$_tests_dir = '/tmp/wordpress-tests-lib';
 }
 
+print_r( getenv( 'GITHUB_ENV' ) );
+
 if ( ! defined( 'PF_DIR_TESTDATA' ) ) {
 	define( 'PF_DIR_TESTDATA', __DIR__ . '/data' );
 }
