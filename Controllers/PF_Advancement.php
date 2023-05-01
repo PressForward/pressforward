@@ -21,7 +21,7 @@ class PF_Advancement implements Advance_System, HasActions {
 		$actions = array(
 			array(
 				'hook'   => 'pf_transition_to_nomination',
-				'method' => 'inform_of_nomination',
+				'method' => 'inform_of_email_action',
 			),
 		);
 		return $actions;
@@ -42,16 +42,28 @@ class PF_Advancement implements Advance_System, HasActions {
 		return wp_insert_term($tag_name, $taxonomy);
 	}
 
-	public function inform_of_nomination(){
+	public function inform_of_email_action( $title_post = false ){
 		$admin_email = get_option( 'pf_nomination_send_email', array() );
-		if($admin_email) {
+		if( $admin_email ) {
 			$siteurl = get_option( 'siteurl', '' );
 			$blogname = get_option( 'blogname', '' );
-			$admin_emails = explode(",", $admin_email);
-			foreach ($admin_emails as $email){
-				wp_mail(trim($email), "New nomination on '".$blogname."'", "A new nomination has been created! Please check it online on " . $siteurl . "/wp-admin/admin.php?page=pf-review");
+			$admin_emails = explode( ",", $admin_email );
+			foreach ( $admin_emails as $email ){
+				if( $title_post ) {
+					$this->send_mail_comment( $email, $blogname, $siteurl, $title_post );
+				} else {
+					$this->send_mail_nomination( $email, $blogname, $siteurl );
+				}
 			}
 		}
+	}
+
+	public function send_mail_nomination( $email, $blogname, $siteurl ){
+		wp_mail(trim($email), "New nomination on '".$blogname."'", "A new nomination has been created! Please check it online on " . $siteurl . "/wp-admin/admin.php?page=pf-review");
+	}
+
+	public function send_mail_comment( $email, $blogname, $siteurl, $title_post ){
+		wp_mail( trim( $email ), 'New comment on \'' . $blogname . '\'', 'A new comment has been posted for the nomination \'' . $title_post . '\'! Please check it online on ' . $siteurl . '/wp-admin/admin.php?page=pf-review' );
 	}
 
 	// Transition Tools
