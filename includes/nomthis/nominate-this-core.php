@@ -156,33 +156,6 @@ var photostorage = false;
 	</style>
 
 	<script type="text/javascript">
-	var wpActiveEditor = 'content';
-
-	function insert_plain_editor(text) {
-		if ( typeof(QTags) != 'undefined' )
-			QTags.insertContent(text);
-	}
-	function set_editor(text) {
-		if ( '' == text || '<p></p>' == text )
-			text = '<p><br /></p>';
-
-		if ( tinyMCE.activeEditor )
-			tinyMCE.execCommand('mceSetContent', false, text);
-	}
-	function insert_editor(text) {
-		if ( '' != text && tinyMCE.activeEditor && ! tinyMCE.activeEditor.isHidden()) {
-			tinyMCE.execCommand('mceInsertContent', false, '<p>' + decodeURI(tinymce.DOM.decode(text)) + '</p>', {format : 'raw'});
-		} else {
-			insert_plain_editor(decodeURI(text));
-		}
-	}
-	function append_editor(text) {
-		if ( '' != text && tinyMCE.activeEditor && ! tinyMCE.activeEditor.isHidden()) {
-			tinyMCE.execCommand('mceSetContent', false, tinyMCE.activeEditor.getContent({format : 'raw'}) + '<p>' + text + '</p>');
-		} else {
-			insert_plain_editor(text);
-		}
-	}
 
 	function show(tab_name) {
 		jQuery('#extra-fields').html('');
