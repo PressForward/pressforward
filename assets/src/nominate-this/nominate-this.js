@@ -36,6 +36,17 @@ import { __ } from '@wordpress/i18n'
 					}
 				},
 			500 )
+
+			// Set a reasonable default size for the window.
+			const { availWidth, availHeight } = window.screen
+
+			const maxWindowWidth = 700
+			const maxWindowHeight = 900
+
+			const newWindowWidth = maxWindowWidth > ( availWidth - 40 ) ? availWidth - 40 : maxWindowWidth
+			const newWindowHeight = maxWindowHeight > ( availHeight - 40 ) ? availHeight - 40 : maxWindowHeight
+
+			window.resizeTo( newWindowHeight, newWindowWidth );
 		}
 	)
 
