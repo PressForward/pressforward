@@ -395,26 +395,6 @@ if ( empty( $posted ) ) {
 			$content .= $selection;
 		}
 
-		remove_action( 'media_buttons', 'media_buttons' );
-		add_action( 'media_buttons', 'nominate_this_media_buttons' );
-
-		/**
-		 * Nominate This media buttons.
-		 */
-		function nominate_this_media_buttons() {
-			esc_html_e( 'Add:', 'pressforward' );
-
-			if ( current_user_can( 'upload_files' ) ) {
-				?>
-				<a id="photo_button" title="<?php esc_attr_e( 'Insert an Image', 'pressforward' ); ?>" href="#">
-				<img alt="<?php esc_attr_e( 'Insert an Image', 'pressforward' ); ?>" src="<?php echo esc_url( admin_url( 'images/media-button-image.gif?ver=20100531' ) ); ?>"/></a>
-				<?php
-			}
-			?>
-			<a id="video_button" title="<?php esc_attr_e( 'Embed a Video', 'pressforward' ); ?>" href="#"><img alt="<?php esc_attr_e( 'Embed a Video', 'pressforward' ); ?>" src="<?php echo esc_url( admin_url( 'images/media-button-video.gif?ver=20100531' ) ); ?>"/></a>
-			<?php
-		}
-
 		wp_editor( $content, 'content', $editor_settings );
 
 		?>
