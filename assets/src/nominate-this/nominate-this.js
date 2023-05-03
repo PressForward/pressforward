@@ -210,7 +210,9 @@ import { __ } from '@wordpress/i18n'
 			}
 
 			const ldImages = ld?.image
-			const ldImageUrl = ldImages ? ldImages[0].url : null
+			const ldImagesArray = ! Array.isArray( ldImages ) ? [ ldImages ] : ldImages
+
+			const ldImageUrl = ldImages ? ldImagesArray[0].url : null
 			if ( ldImageUrl ) {
 				return ldImageUrl
 			}
