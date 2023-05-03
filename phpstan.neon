@@ -22,9 +22,6 @@ parameters:
       path: ./parts
 
     - # WP-defined constant.
-      message: '#^Constant SITECOOKIEPATH not found.$#'
-
-    - # WP-defined constant.
       message: '#^Constant WPINC not found.$#'
 
     - # WordPress standard for array documentation.
