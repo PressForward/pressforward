@@ -29,6 +29,7 @@ class AssetsProvider extends ServiceProvider {
 		$this->add_assets( $register );
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
+		add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_styles' ] );
 	}
 
 	/**
@@ -393,6 +394,28 @@ class AssetsProvider extends ServiceProvider {
 
 		if ( $screen && 'pf_feed' === $screen->id ) {
 			wp_enqueue_script( 'pf-edit-feeds' );
+		}
+	}
+
+	/**
+	 * Registers styles that are admin-only.
+	 *
+	 * @return void
+	 */
+	public function admin_enqueue_styles() {
+		$build_styles = [
+			'pf-nominate-this' => 'nominate-this',
+		];
+
+		foreach ( $build_styles as $style_handle => $style_file ) {
+			$build_vars = require \PF_ROOT . '/build/' . $style_file . '.asset.php';
+
+			wp_register_style(
+				$style_handle,
+				\PF_URL . '/build/' . $style_file . '.css',
+				[],
+				$build_vars['version']
+			);
 		}
 	}
 

@@ -59,6 +59,7 @@
 		"@mozilla/readability": "^0.4.2",
 		"dompurify": "^3.0.0",
 		"infinite-scroll": "^4.0.1",
+		"postcss": "^8.4.23",
 		"url-search-params-polyfill": "^8.1.1",
 		"whatwg-fetch": "^3.6.2"
 	}

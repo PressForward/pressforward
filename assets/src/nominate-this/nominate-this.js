@@ -4,6 +4,8 @@ import DOMPurify from 'dompurify'
 import 'url-search-params-polyfill'
 import 'whatwg-fetch'
 
+import './nominate-this.scss'
+
 import { __ } from '@wordpress/i18n'
 
 (function(){

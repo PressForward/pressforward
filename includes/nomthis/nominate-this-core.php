@@ -302,7 +302,7 @@ if ( empty( $posted ) ) {
 
 		$editor_settings = array(
 			'teeny'         => true,
-			'textarea_rows' => '15',
+			'textarea_rows' => '18',
 		);
 
 		$content = '';
