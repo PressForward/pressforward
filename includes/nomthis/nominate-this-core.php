@@ -10,7 +10,6 @@ if ( ! WP_DEBUG ) {
 	// phpcs:ignore
 	error_reporting( 0 );
 }
-set_transient( 'is_multi_author', true );
 
 set_current_screen();
 
