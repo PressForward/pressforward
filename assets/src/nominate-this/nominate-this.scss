@@ -29,6 +29,10 @@ body.is-failed-request .failure-indicator {
 	visibility: visible;
 }
 
+#publishing-actions input {
+	margin-right: 10px;
+}
+
 #poststuff {
 	display: flex;
 	flex-direction: column;
