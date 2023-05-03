@@ -157,94 +157,9 @@ var photostorage = false;
 
 	<script type="text/javascript">
 
-	function show(tab_name) {
-		jQuery('#extra-fields').html('');
-		switch(tab_name) {
-			case 'video' :
-				jQuery('#extra-fields').load('<?php echo esc_url( $current_url ); ?>', { ajax: 'video', s: '<?php echo esc_attr( $selection ); ?>'}, function() {
-					<?php
-					$content = '';
-					if ( preg_match( '/youtube\.com\/watch/i', $url ) ) {
-						list( $the_domain, $video_id ) = explode( 'v=', $url );
-						$video_id                      = esc_attr( $video_id );
-						$content                       = '<object width="425" height="350"><param name="movie" value="http://www.youtube.com/v/' . $video_id . '"></param><param name="wmode" value="transparent"></param><embed src="http://www.youtube.com/v/' . $video_id . '" type="application/x-shockwave-flash" wmode="transparent" width="425" height="350"></embed></object>';
-
-					} elseif ( preg_match( '/vimeo\.com\/[0-9]+/i', $url ) ) {
-						list( $the_domain, $video_id ) = explode( '.com/', $url );
-						$video_id                      = esc_attr( $video_id );
-						$content                       = '<object width="400" height="225"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="http://www.vimeo.com/moogaloop.swf?clip_id=' . $video_id . '&amp;server=www.vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1" />	<embed src="http://www.vimeo.com/moogaloop.swf?clip_id=' . $video_id . '&amp;server=www.vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="400" height="225"></embed></object>';
-
-						if ( '' !== trim( $selection ) ) {
-							$selection = '<p><a href="http://www.vimeo.com/' . $video_id . '?pg=embed&sec=' . $video_id . '">' . esc_html( $the_title ) . '</a> on <a href="http://vimeo.com?pg=embed&sec=' . $video_id . '">Vimeo</a></p>'; }
-					} elseif ( strpos( $selection, '<object' ) !== false ) {
-						$content = $selection;
-					}
-					?>
-					<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-					jQuery('#embed-code').prepend('<?php echo htmlentities( $content ); ?>');
-				});
-				jQuery('#extra-fields').show();
-				return false;
-				break;
-			case 'photo' :
-				function setup_photo_actions() {
-					jQuery('.close').click(function() {
-						jQuery('#extra-fields').hide();
-						jQuery('#extra-fields').html('');
-					});
-					jQuery('.refresh').click(function() {
-						photostorage = false;
-						show('photo');
-					});
-					jQuery('#photo-add-url').click(function(){
-						var form = jQuery('#photo-add-url-div').clone();
-						jQuery('#img_container').empty().append( form.show() );
-					});
-					jQuery('#waiting').hide();
-					jQuery('#extra-fields').show();
-				}
-
-				jQuery('#waiting').show();
-				if(photostorage == false) {
-					jQuery.ajax({
-						type: "GET",
-						cache : false,
-						url: "<?php echo esc_js( $current_url ); ?>",
-						data: "ajax=photo_js&u=<?php echo esc_js( rawurlencode( $url ) ); ?>",
-						dataType : "script",
-						success : function(data) {
-							photostorage = jQuery('#extra-fields').html();
-							setup_photo_actions();
-						}
-					});
-				} else {
-					jQuery('#extra-fields').html(photostorage);
-					setup_photo_actions();
-				}
-				return false;
-				break;
-		}
-	}
 	jQuery(document).ready(function($) {
 		//resize screen
 		window.resizeTo(740,580);
-		// set button actions
-		jQuery('#photo_button').click(function() { show('photo'); return false; });
-		jQuery('#video_button').click(function() { show('video'); return false; });
-		// auto select
-		<?php if ( preg_match( '/youtube\.com\/watch/i', $url ) ) { ?>
-			show('video');
-		<?php } elseif ( preg_match( '/vimeo\.com\/[0-9]+/i', $url ) ) { ?>
-			show('video');
-		<?php } elseif ( preg_match( '/flickr\.com/i', $url ) ) { ?>
-			show('photo');
-		<?php } ?>
-		jQuery('#title').unbind();
-		jQuery('#publish, #save').click(function() { jQuery('.press-this #publishing-actions .spinner').css('display', 'inline-block'); });
-
-		$('#tagsdiv-post_tag, #categorydiv').children('h3, .handlediv').click(function(){
-			$(this).siblings('.inside').toggle();
-		});
 	});
 </script>
 </head>
