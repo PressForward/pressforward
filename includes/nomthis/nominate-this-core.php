@@ -69,99 +69,25 @@ wp_enqueue_style( 'colors' );
 wp_enqueue_script( 'post' );
 
 wp_enqueue_script( 'pf-nominate-this' );
+wp_enqueue_style( 'pf-nominate-this' );
 
 _wp_admin_html_begin();
-
 ?>
+
 <title><?php esc_html_e( 'Nominate This', 'pressforward' ); ?></title>
-<script type="text/javascript">
-//<![CDATA[
-addLoadEvent = function(func){if(typeof jQuery!="undefined")jQuery(document).ready(func);else if(typeof wpOnload!='function'){wpOnload=func;}else{var oldonload=wpOnload;wpOnload=function(){oldonload();func();}}};
-var userSettings = {'url':'<?php echo esc_js( SITECOOKIEPATH ); ?>','uid':'<?php echo esc_js( get_current_user_id() ); ?>','time':'<?php echo esc_js( time() ); ?>'};
-var ajaxurl = '<?php echo esc_js( admin_url( 'admin-ajax.php', 'relative' ) ); ?>', pagenow = 'nominate-this', isRtl = <?php echo (int) is_rtl(); ?>;
-var photostorage = false;
-//]]>
-</script>
 
 <?php
-	do_action( 'admin_enqueue_scripts' );
-
-	do_action( 'admin_print_styles' );
-	do_action( 'admin_print_scripts' );
-	do_action( 'admin_head' );
+do_action( 'admin_enqueue_scripts' );
+do_action( 'admin_print_styles' );
+do_action( 'admin_print_scripts' );
+do_action( 'admin_head' );
 ?>
 
-	<style type="text/css">
-	.postbox{
-		padding: 0 5px;
-	}
-
-	.metabox-holder-advanced {
-		margin-top: 20px;
-	}
-
-	.nomthis-indicator {
-		align-items: center;
-		display: flex;
-		height: 0;
-		overflow: hidden;
-		transition: padding 1s, visibility 0s, opacity 1s, height 1s;
-		justify-content: center;
-		opacity: 0;
-		visibility: hidden;
-	}
-
-	.loading-indicator {
-		background: #fcf9e8;
-		gap: 10px;
-	}
-
-	body.is-loading .loading-indicator {
-		height: 40px;
-		padding: 10px 20px;
-		opacity: 1;
-		visibility: visible;
-	}
-
-	body.is-failed-request .failure-indicator {
-		background: #ffcccc;
-		height: 40px;
-		padding: 10px 20px;
-		opacity: 1;
-		visibility: visible;
-	}
-
-	@media screen and (min-width: 670px) {
-		#side-sortables {
-			float: right;
-			width: 22%;
-			margin-right: 16%;
-		}
-		.posting {
-			float: left;
-			width: 58%;
-			margin-left: 2%;
-		}
-	}
-	@media screen and (max-width: 660px) {
-		#side-sortables {
-			width: 90%;
-			margin: 0 auto;
-		}
-		.posting {
-			width: 90%;
-			margin: 0 auto;
-		}
-	}
-	</style>
-
-	<script type="text/javascript">
-
-	jQuery(document).ready(function($) {
-		//resize screen
-		window.resizeTo(740,580);
-	});
+<script type="text/javascript">
+var ajaxurl = '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>';
+var pagenow = 'nominate-this';
 </script>
+
 </head>
 <?php
 $the_admin_body_class  = ( is_rtl() ) ? 'rtl' : '';
