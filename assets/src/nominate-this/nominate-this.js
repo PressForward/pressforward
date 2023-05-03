@@ -22,6 +22,18 @@ import { __ } from '@wordpress/i18n'
 
 				document.getElementById( 'loading-url' ).innerHTML = DOMPurify.sanitize( url, { ALLOWED_TAGS: [] } )
 			}
+
+			// Needed for the postbox toggles.
+			document.body.classList.add( 'js' )
+
+			// WP has a hardcoded exception for 'press-this' when saving postbox toggles.
+			setTimeout(
+				() => {
+					if ( 'undefined' !== typeof postboxes ) {
+						postboxes.post = 'press-this'
+					}
+				},
+			500 )
 		}
 	)
 

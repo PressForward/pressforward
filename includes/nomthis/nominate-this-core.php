@@ -405,6 +405,12 @@ if ( empty( $posted ) ) {
 		</div>
 	</div>
 </div>
+
+<?php
+// Needed for the closed-postboxes AJAX action.
+wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
+?>
+
 </form>
 
 <?php
