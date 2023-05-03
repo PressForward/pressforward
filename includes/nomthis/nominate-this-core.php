@@ -63,117 +63,15 @@ if ( isset( $_REQUEST['action'] ) && 'post' === $_REQUEST['action'] ) {
 
 	$current_url = isset( $_SERVER['PHP_SELF'] ) ? sanitize_text_field( wp_unslash( $_SERVER['PHP_SELF'] ) ) : '';
 
-	if ( ! empty( $_REQUEST['ajax'] ) ) {
-		switch ( $_REQUEST['ajax'] ) {
-			case 'video':
-				?>
-				<script type="text/javascript">
-				/* <![CDATA[ */
-					jQuery('.select').click(function() {
-						append_editor(jQuery('#embed-code').val());
-						jQuery('#extra-fields').hide();
-						jQuery('#extra-fields').html('');
-					});
-					jQuery('.close').click(function() {
-						jQuery('#extra-fields').hide();
-						jQuery('#extra-fields').html('');
-					});
-				/* ]]> */
-				</script>
-				<div class="postbox">
-					<h2><label for="embed-code"><?php esc_html_e( 'Embed Code', 'pressforward' ); ?></label></h2>
-					<div class="inside">
-						<textarea name="embed-code" id="embed-code" rows="8" cols="40"><?php echo esc_textarea( $selection ); ?></textarea>
-						<p id="options"><a href="#" class="select button"><?php esc_html_e( 'Insert Video', 'pressforward' ); ?></a> <a href="#" class="close button"><?php esc_html_e( 'Cancel', 'pressforward' ); ?></a></p>
-					</div>
-				</div>
-				<?php
-				break;
-
-			case 'photo_thickbox':
-				?>
-				<script type="text/javascript">
-					/* <![CDATA[ */
-					jQuery('.cancel').click(function() {
-						tb_remove();
-					});
-					jQuery('.select').click(function() {
-						image_selector(this);
-					});
-					/* ]]> */
-				</script>
-				<h3 class="tb"><label for="tb_this_photo_description"><?php esc_html_e( 'Description', 'pressforward' ); ?></label></h3>
-				<div class="titlediv">
-					<div class="titlewrap">
-						<input id="tb_this_photo_description" name="photo_description" class="tb_this_photo_description tbtitle text" onkeypress="if(event.keyCode==13) image_selector(this);" value="<?php echo esc_attr( $the_title ); ?>"/>
-					</div>
-				</div>
-
-				<p class="centered">
-					<input type="hidden" name="this_photo" value="<?php echo esc_attr( $image ); ?>" id="tb_this_photo" class="tb_this_photo" />
-					<a href="#" class="select">
-						<img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( __( 'Click to insert.', 'pressforward' ) ); ?>" title="<?php echo esc_attr( __( 'Click to insert.', 'pressforward' ) ); ?>" />
-					</a>
-				</p>
-
-				<p id="options"><a href="#" class="select button"><?php esc_html_e( 'Insert Image', 'pressforward' ); ?></a> <a href="#" class="cancel button"><?php esc_html_e( 'Cancel', 'pressforward' ); ?></a></p>
-				<?php
-				break;
-			case 'photo_images':
-				/**
-				 * Retrieve all image URLs from given URI.
-				 *
-				 * @package WordPress
-				 * @subpackage Press_This
-				 * @since 2.6.0
-				 *
-				 * @param string $uri URI.
-				 * @return string
-				 */
-				function get_images_from_uri( $uri ) {
-					$uri = preg_replace( '/\/#.+?$/', '', $uri );
-					if ( preg_match( '/\.(jpe?g|jpe|gif|png)\b/i', $uri ) && ! strpos( $uri, 'blogger.com' ) ) {
-						return "'" . esc_attr( html_entity_decode( $uri ) ) . "'";
-					}
-
-					$content = wp_remote_fopen( $uri );
-					if ( false === $content ) {
-						return '';
-					}
-
-					$host    = wp_parse_url( $uri );
-					$pattern = '/<img ([^>]*)src=(\"|\')([^<>\'\"]+)(\2)([^>]*)\/*>/i';
-					$content = str_replace( array( "\n", "\t", "\r" ), '', $content );
-					preg_match_all( $pattern, $content, $matches );
-					if ( empty( $matches[0] ) ) {
-						return ''; }
-					$sources = array();
-					foreach ( $matches[3] as $src ) {
-						// if no http in url.
-						if ( strpos( $src, 'http' ) === false ) {
-							// if it doesn't have a relative uri.
-							if ( strpos( $src, '../' ) === false && strpos( $src, './' ) === false && strpos( $src, '/' ) === 0 ) {
-								$src = 'http://' . str_replace( '//', '/', $host['host'] . '/' . $src );
-							}
-						} else {
-							$src = 'http://' . str_replace( '//', '/', $host['host'] . '/' . dirname( $host['path'] ) . '/' . $src ); }
-						$sources[] = esc_url( $src );
-					}
-					return "'" . implode( "','", $sources ) . "'";
-				}
-				$url = wp_kses( urldecode( $url ), null );
-				echo 'new Array(' . esc_js( get_images_from_uri( $url ) ) . ')';
-				break;
-		}
-		die;
-	}
 }
-	wp_enqueue_style( 'colors' );
-	wp_enqueue_script( 'post' );
 
-	wp_enqueue_script( 'pf-nominate-this' );
+wp_enqueue_style( 'colors' );
+wp_enqueue_script( 'post' );
 
-	_wp_admin_html_begin();
+wp_enqueue_script( 'pf-nominate-this' );
+
+_wp_admin_html_begin();
+
 ?>
 <title><?php esc_html_e( 'Nominate This', 'pressforward' ); ?></title>
 <script type="text/javascript">
