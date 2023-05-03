@@ -406,17 +406,7 @@ if ( empty( $posted ) ) {
 	</div>
 </div>
 </form>
-<div id="photo-add-url-div" style="display:none;">
-	<table><tr>
-	<td><label for="this_photo"><?php esc_html_e( 'URL', 'pressforward' ); ?></label></td>
-	<td><input type="text" id="this_photo" name="this_photo" class="tb_this_photo text" onkeypress="if(event.keyCode==13) image_selector(this);" /></td>
-	</tr><tr>
-	<td><label for="this_photo_description"><?php esc_html_e( 'Description', 'pressforward' ); ?></label></td>
-	<td><input type="text" id="this_photo_description" name="photo_description" class="tb_this_photo_description text" onkeypress="if(event.keyCode==13) image_selector(this);" value="<?php echo esc_attr( $the_title ); ?>"/></td>
-	</tr><tr>
-	<td><input type="button" class="button" onclick="image_selector(this)" value="<?php esc_attr_e( 'Insert Image', 'pressforward' ); ?>" /></td>
-	</tr></table>
-</div>
+
 <?php
 do_action( 'admin_footer' );
 do_action( 'admin_print_footer_scripts' );
