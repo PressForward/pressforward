@@ -18,7 +18,7 @@ use WP_Ajax_Response;
 /**
  * NominateThisCore class.
  */
-class NominateThisCore implements HasActions {
+class NominateThisCore implements HasActions, HasFilters {
 	/**
 	 * Basename.
 	 *
@@ -44,6 +44,21 @@ class NominateThisCore implements HasActions {
 			),
 		);
 	}
+
+	/**
+	 * Sets up filter hooks for registering meta boxes for the Nominate This interface.
+	 *
+	 * @return array
+	 */
+	public function filter_hooks() {
+		return [
+			[
+				'hook'   => 'ajax_query_attachments_args',
+				'method' => 'filter_media_library_query',
+			],
+		];
+	}
+
 	/**
 	 * Registers meta boxes for the Nominate This interface.
 	 */
@@ -147,6 +162,33 @@ class NominateThisCore implements HasActions {
 			</p>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Ensures that Media Library tab on Nominate This includes only those images the current user should see.
+	 *
+	 * Authors and lower should not see media uploaded by others.
+	 *
+	 * @since 5.5.0
+	 *
+	 * @param array $query WP_Query arguments.
+	 * @return array
+	 */
+	public function filter_media_library_query( $query ) {
+		// Only modify requests that originate in Nominate This.
+		$referer = wp_get_referer();
+		if ( ! $referer || false === strpos( $referer, 'pf-nominate-this' ) ) {
+			return $query;
+		}
+
+		// Editors and up can see everything.
+		if ( current_user_can( 'edit_others_posts' ) ) {
+			return $query;
+		}
+
+		$query['author__in'] = [ get_current_user_id() ];
+
+		return $query;
 	}
 
 	/**
