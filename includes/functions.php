@@ -118,7 +118,18 @@ function pf_get_shortcut_link() {
 	$version = 5;
 
 	$link = sprintf(
-		'javascript:var d=document,w=window,e=w.getSelection,k=d.getSelection,x=d.selection,s=e?e():k?k():x?x.createRange().text:0,f="%s",l=d.location,u=f+"&u="+(e=encodeURIComponent)(l.href)+"&t="+e(d.title)+"&s="+e(s)+"&v=%s",a=function(){w.open(u,"t","toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=620")||(l.href=u)};a();',
+		'javascript:' .
+		'var pfd=document,' .
+		'pfw=window,' .
+		'pfe=pfw.getSelection,' .
+		'pfk=pfd.getSelection,' .
+		'pfx=pfd.selection,' .
+		'pfs=pfe?pfe():pfk?pfk():pfx?pfx.createRange().text:0,' .
+		'pff="%s",' .
+		'pfl=pfd.location,' .
+		'pfu=pff+"&u="+(pfe=encodeURIComponent)(pfl.href)+"&t="+pfe(pfd.title)+"&s="+pfe(pfs)+"&v=%s",' .
+		'pfa=function(){pfw.open(pfu,"t","toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=620")||(pfl.href=pfu)};' .
+		'pfa();',
 		esc_url_raw( $url ),
 		esc_js( $version )
 	);
