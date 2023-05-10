@@ -8,7 +8,7 @@
  * Author: Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
  * Author URI: http://pressforward.org/about/team/
  * License: GPL2
- * Requires PHP: 7.2
+ * Requires PHP: 7.3
  * Text Domain: pressforward
  * Domain Path: /languages/
  *
@@ -26,8 +26,8 @@ if ( ! class_exists( 'MyCLabs\Enum\Enum' ) ) {
 	require 'Libraries/Enum.php';
 }
 
-if ( ! version_compare( phpversion(), '7.2', '>=' ) ) {
-	wp_die( esc_html__( 'PressForward requires PHP 7.2 or greater.', 'pressforward' ) );
+if ( ! version_compare( phpversion(), '7.3', '>=' ) ) {
+	wp_die( esc_html__( 'PressForward requires PHP 7.3 or greater.', 'pressforward' ) );
 } else {
 	require 'init.php';
 }
