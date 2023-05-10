@@ -29,6 +29,7 @@
         "paragonie/random_compat": "^9.99",
         "davechild/textstatistics": "^1.0",
         "mattwright/urlresolver": "^2.0",
-        "fivefilters/readability.php": "^3.1"
+        "fivefilters/readability.php": "~3.0.0",
+        "psr/log": "^1.0"
     }
 }
