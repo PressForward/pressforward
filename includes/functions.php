@@ -127,42 +127,6 @@ function pf_get_shortcut_link() {
 }
 
 /**
- * Retrieve the Nominate This bookmarklet link.
- *
- * Use this in 'a' element 'href' attribute.
- *
- * @since 1.7
- * @see get_shortcut_link()
- *
- * @return string
- */
-function pf_nomthis_bookmarklet() {
-	$user    = wp_get_current_user();
-	$user_id = $user->ID;
-
-	$link = "javascript:
-				var d=document,
-				w=window,
-				e=w.getSelection,
-				k=d.getSelection,
-				x=d.selection,
-				s=(e?e():(k)?k():(x?x.createRange().text:0)),
-				l=d.location,
-				e=encodeURIComponent,
-				ku='" . esc_js( bin2hex( pressforward( 'controller.jwt' )->get_a_user_public_key() ) ) . "',
-				ki='" . esc_js( get_user_meta( $user_id, 'pf_jwt_private_key', true ) ) . "',
-				p='" . esc_js( rest_url() . pressforward( 'api.nominatethis' )->endpoint_for_nominate_this_script ) . "?k='+ku,
-				pe=document.createElement('script'),
-				a=function(){pe.src=p;document.getElementsByTagName('head')[0].appendChild(pe);};
-				if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0); else a();
-				void(0)";
-
-	$link = str_replace( array( "\r", "\n", "\t" ), '', $link );
-
-	return apply_filters( 'pf_nomthis_bookmarklet', $link );
-}
-
-/**
  * Get the draft post type name.
  *
  * @since 5.5.0
