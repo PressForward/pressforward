@@ -89,11 +89,6 @@ class Nominated implements HasActions {
 				'priority' => 12,
 			),
 			array(
-				'hook'     => 'feeder_menu',
-				'method'   => 'nominate_this_tile',
-				'priority' => 11,
-			),
-			array(
 				'hook'   => 'edit_post',
 				'method' => 'send_nomination_for_publishing',
 			),
@@ -580,13 +575,6 @@ class Nominated implements HasActions {
 			ob_end_clean();
 			return $this->forward_tools->nomination_to_last_step( $item_id, $post_id );
 		}
-	}
-
-	/**
-	 * Generates title for Nominate This.
-	 */
-	public function nominate_this_tile() {
-		$this->template_factory->nominate_this( 'as_feed' );
 	}
 
 	/**
