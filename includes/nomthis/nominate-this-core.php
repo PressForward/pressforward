@@ -163,7 +163,8 @@ if ( empty( $posted ) ) {
 				?>
 				<div id="message" class="updated">
 				<p><strong><?php esc_html_e( 'Your nomination has been saved.', 'pressforward' ); ?></strong>
-					<a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pressforward' ); ?></a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pf-review' ) ); ?>"><?php esc_html_e( 'See all nominations', 'pressforward' ); ?></a>
+				| <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pressforward' ); ?></a>
 					</p>
 				</div>
 				<?php
