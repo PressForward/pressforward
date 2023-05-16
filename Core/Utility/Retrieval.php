@@ -358,7 +358,7 @@ class Retrieval {
 			}
 		}
 
-		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
+		$all_feeds_array         = apply_filters( 'imported_rss_feeds', $feedlist );
 		$ordered_all_feeds_array = array_values( $all_feeds_array );
 
 		return $ordered_all_feeds_array;
