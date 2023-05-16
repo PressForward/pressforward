@@ -82,6 +82,21 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 
 == Changelog ==
 
+= 5.5.0 =
+* Bumped required PHP version to 7.3.0.
+* Updated to latest version of Readability.php library, for server-side parsing of items imported via RSS.
+* Visual and usability improvements to Nominate This window.
+* Improvements to the 'Bookmarklet' section of the Tools admin panel, including a clipboard tool that makes it easier to set up the Nominate This bookmarklet on mobile devices.
+* Reworked the trash deletion system to use WordPress's pseudo-cron system, for improved reliability.
+* Improvements to internal library loading, and updates to various PHP libraries.
+* Improvements to internationalization, including integration with wordpress.org translation systems.
+* Fixed bug that caused tags not to be imported from Nominate This in certain cases.
+* Improvements to the way that trash deletion is handled on a per-item basis, including the ability to enter 0 as the "retain time", thereby disabling automatic deletion of old items.
+* Fixed bug that prevented users from uploading OPML files for import.
+* Refactored the Sort feature on the Reader interface for more reliable performance.
+* Internal improvements to allow for better customization of the "draft" post type via filter.
+* Eliminated a number of unused libraries.
+
 = 5.4.0 =
 * Bumped WordPress requirement to 5.7.
 * Overhaul to the way that the Nominate This window fetches remote content, for improved performance, improved parsing of source with content, and better error handling.
