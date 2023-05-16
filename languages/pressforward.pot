@@ -2,14 +2,14 @@
 # This file is distributed under the GPL2.
 msgid ""
 msgstr ""
-"Project-Id-Version: PressForward 5.5.0-alpha\n"
+"Project-Id-Version: PressForward 5.5.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pressforward\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-05-11T17:04:23-05:00\n"
+"POT-Creation-Date: 2023-05-16T15:45:46-05:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: pressforward\n"
@@ -656,12 +656,8 @@ msgstr ""
 #: assets/src/edit-feeds/edit-feeds.js:28
 #: assets/src/edit-feeds/edit-feeds.js:42
 #: assets/src/quick-edit/quick-edit.js:24
-#: build/edit-feeds.js:113
-#: build/edit-feeds.js:124
-#: build/quick-edit.js:109
-#: build/edit-feeds.js:78
-#: build/edit-feeds.js:92
-#: build/quick-edit.js:74
+#: build/edit-feeds.js:1
+#: build/quick-edit.js:1
 msgid "Inactive"
 msgstr ""
 
@@ -950,10 +946,8 @@ msgstr ""
 #: Core/Admin/Nominated.php:635
 #: Core/Admin/PFTemplater.php:997
 #: assets/src/reader/util.js:299
-#: build/reader.js:288
-#: build/scroll.js:288
-#: build/reader.js:299
-#: build/scroll.js:299
+#: build/reader.js:5
+#: build/scroll.js:5
 msgid "Nomination Count"
 msgstr ""
 
@@ -1284,10 +1278,8 @@ msgstr ""
 #: Core/Admin/PFTemplater.php:975
 #: Core/Admin/PFTemplater.php:977
 #: assets/src/reader/util.js:288
-#: build/reader.js:278
-#: build/scroll.js:278
-#: build/reader.js:288
-#: build/scroll.js:288
+#: build/reader.js:5
+#: build/scroll.js:5
 msgid "Star"
 msgstr ""
 
@@ -1301,10 +1293,8 @@ msgstr ""
 
 #: Core/Admin/PFTemplater.php:1011
 #: assets/src/reader/util.js:309
-#: build/reader.js:298
-#: build/scroll.js:298
-#: build/reader.js:309
-#: build/scroll.js:309
+#: build/reader.js:5
+#: build/scroll.js:5
 msgid "Edit Metadata"
 msgstr ""
 
@@ -1312,10 +1302,8 @@ msgstr ""
 #: Core/Bookmarklet/NominateThisCore.php:116
 #: Core/Schema/Nominations.php:75
 #: assets/src/reader/util.js:282
-#: build/reader.js:273
-#: build/scroll.js:273
-#: build/reader.js:282
-#: build/scroll.js:282
+#: build/reader.js:5
+#: build/scroll.js:5
 msgid "Nominate"
 msgstr ""
 
@@ -1973,36 +1961,36 @@ msgstr ""
 msgid "PressForward Retrieval Interval"
 msgstr ""
 
-#: Core/Utility/Retrieval.php:704
+#: Core/Utility/Retrieval.php:700
 msgid "Beginning the retrieval process"
 msgstr ""
 
-#: Core/Utility/Retrieval.php:709
+#: Core/Utility/Retrieval.php:705
 msgid "Iterate switched to going."
 msgstr ""
 
-#: Core/Utility/Retrieval.php:711
+#: Core/Utility/Retrieval.php:707
 msgid "Iterate option not switched."
 msgstr ""
 
-#: Core/Utility/Retrieval.php:734
+#: Core/Utility/Retrieval.php:730
 msgid "Created new metastate to check on next retrieval step."
 msgstr ""
 
-#: Core/Utility/Retrieval.php:736
+#: Core/Utility/Retrieval.php:732
 msgid "Metastate is already saved and active for next check."
 msgstr ""
 
-#: Core/Utility/Retrieval.php:741
-#: Core/Utility/Retrieval.php:779
+#: Core/Utility/Retrieval.php:737
+#: Core/Utility/Retrieval.php:775
 msgid "The sources are already being retrieved."
 msgstr ""
 
-#: Core/Utility/Retrieval.php:743
+#: Core/Utility/Retrieval.php:739
 msgid "The sources are stuck, clearing system to activate on next retrieve."
 msgstr ""
 
-#: Core/Utility/Retrieval.php:768
+#: Core/Utility/Retrieval.php:764
 msgid "The meta-state is too old. It is now reset. Next time, we will start retrieval over."
 msgstr ""
 
@@ -2128,10 +2116,8 @@ msgstr ""
 
 #: modules/comments/comments.php:88
 #: assets/src/reader/util.js:294
-#: build/reader.js:283
-#: build/scroll.js:283
-#: build/reader.js:294
-#: build/scroll.js:294
+#: build/reader.js:5
+#: build/scroll.js:5
 msgid "Comment"
 msgstr ""
 
@@ -2682,103 +2668,79 @@ msgid "PressForward requires PHP 7.3 or greater."
 msgstr ""
 
 #: assets/src/add-feeds/add-feeds.js:9
-#: build/add-feeds.js:98
-#: build/add-feeds.js:59
+#: build/add-feeds.js:1
 msgid "Upload .OPML or .XML"
 msgstr ""
 
 #: assets/src/add-feeds/add-feeds.js:11
-#: build/add-feeds.js:100
-#: build/add-feeds.js:61
+#: build/add-feeds.js:1
 msgid "Add to Subscription list"
 msgstr ""
 
 #: assets/src/edit-feeds/edit-feeds.js:27
-#: build/edit-feeds.js:112
-#: build/edit-feeds.js:77
+#: build/edit-feeds.js:1
 msgid "Activate"
 msgstr ""
 
 #: assets/src/edit-feeds/edit-feeds.js:29
 #: assets/src/edit-feeds/edit-feeds.js:39
 #: assets/src/quick-edit/quick-edit.js:22
-#: build/edit-feeds.js:114
-#: build/edit-feeds.js:121
-#: build/quick-edit.js:107
-#: build/edit-feeds.js:79
-#: build/edit-feeds.js:89
-#: build/quick-edit.js:72
+#: build/edit-feeds.js:1
+#: build/quick-edit.js:1
 msgid "Active"
 msgstr ""
 
 #: assets/src/edit-feeds/edit-feeds.js:45
 #: assets/src/edit-feeds/edit-feeds.js:54
-#: build/edit-feeds.js:126
-#: build/edit-feeds.js:132
-#: build/edit-feeds.js:95
-#: build/edit-feeds.js:104
+#: build/edit-feeds.js:1
 msgid "Save Inactive"
 msgstr ""
 
 #: assets/src/edit-feeds/edit-feeds.js:48
-#: build/edit-feeds.js:128
-#: build/edit-feeds.js:98
+#: build/edit-feeds.js:1
 msgid "Make Active"
 msgstr ""
 
 #: assets/src/reader/reader.js:200
-#: build/reader.js:740
-#: build/reader.js:765
+#: build/reader.js:1
 msgid "PressForward has lost its connection to your server. Reload page and try again."
 msgstr ""
 
 #. translators: Link to previous item.
 #: assets/src/reader/util.js:78
-#: build/reader.js:102
-#: build/scroll.js:102
-#: build/reader.js:78
-#: build/scroll.js:78
+#: build/reader.js:1
+#: build/scroll.js:1
 msgid "Previous: %s"
 msgstr ""
 
 #. translators: Link to next item.
+#. translators: Link to previous item.
 #: assets/src/reader/util.js:100
-#: build/reader.js:122
-#: build/scroll.js:122
-#: build/reader.js:100
-#: build/scroll.js:100
+#: build/reader.js:3
+#: build/scroll.js:3
 msgid "Next: %s"
 msgstr ""
 
+#. translators: Link to next item.
 #: assets/src/reader/util.js:270
 #: assets/src/reader/util.js:276
-#: build/reader.js:263
-#: build/reader.js:268
-#: build/scroll.js:263
-#: build/scroll.js:268
-#: build/reader.js:270
-#: build/reader.js:276
-#: build/scroll.js:270
-#: build/scroll.js:276
+#: build/reader.js:5
+#: build/scroll.js:5
 msgid "Item"
 msgstr ""
 
 #: assets/src/reader/util.js:304
-#: build/reader.js:293
-#: build/scroll.js:293
-#: build/reader.js:304
-#: build/scroll.js:304
+#: build/reader.js:5
+#: build/scroll.js:5
 msgid "Amplify"
 msgstr ""
 
 #: assets/src/scroll/scroll.js:23
-#: build/scroll.js:2113
-#: build/scroll.js:2032
+#: build/scroll.js:1
 msgid "No more pages to load."
 msgstr ""
 
 #: assets/src/scroll/scroll.js:24
-#: build/scroll.js:2114
-#: build/scroll.js:2033
+#: build/scroll.js:1
 msgid "Loading more items..."
 msgstr ""
