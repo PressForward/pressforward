@@ -202,7 +202,7 @@ class Retrieval {
 
 			// Get the basic URL for the feed.
 			$a_feed = $feedlist[ $feeds_iteration ];
-			pf_log( sprintf( 'Retrieving feed: %s (%s)', $a_feed->guid, $a_feed->ID );
+			pf_log( sprintf( 'Retrieving feed: %s (%s)', $a_feed->guid, $a_feed->ID ) );
 			pf_log( 'Set last_checked for ' . $a_feed->ID );
 			$result = pressforward( 'schema.feeds' )->set_feed_last_checked( $a_feed->ID );
 			pf_log( $result );
