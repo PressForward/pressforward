@@ -28,7 +28,7 @@ class EditPost implements HasActions {
 	 * @return void
 	 */
 	public function __construct() {
-		$this->post_type = 'post';
+		$this->post_type = pressforward_draft_post_type();
 	}
 
 	/**
@@ -81,9 +81,9 @@ class EditPost implements HasActions {
 		echo '<div class="misc-pub-section misc-pub-section-last">
 			<label>
 			<input type="text" id="pf_feed_default_author" name="pf_feed_default_author"
-               placeholder="' . esc_attr__( 'Default feed author', 'pf' ) . '" value="' . esc_attr( $value ) . '" />
+               placeholder="' . esc_attr__( 'Default feed author', 'pressforward' ) . '" value="' . esc_attr( $value ) . '" />
 			<br />
-			' . esc_html__( 'Enter default author for this feed.', 'pf' ) . '</label></div>';
+			' . esc_html__( 'Enter default author for this feed.', 'pressforward' ) . '</label></div>';
 	}
 
 	/**
@@ -131,14 +131,13 @@ class EditPost implements HasActions {
 			}
 		}
 
-		// @todo Needs i18n fixes.
 		echo '<div class="misc-pub-section misc-pub-section-last">
-				<label>
-				<select id="pf_forward_to_origin_single" name="pf_forward_to_origin">
-				  <option value="forward"' . ( 'forward' === $value ? ' selected ' : '' ) . '>' . esc_html__( 'Forward', 'pf' ) . '</option>
-				  <option value="no-forward"' . ( 'no-forward' === $value ? ' selected ' : '' ) . '>' . esc_html__( "Don't Forward", 'pf' ) . '</option>
-				</select><br />
-				' . esc_html__( "to item's original URL", 'pf' ) . '</label></div>';
+				<label for="pf_forward_to_origin_single">' . esc_html__( "Forward to item's original URL?", 'pressforward' ) . '</label>' .
+				'<select id="pf_forward_to_origin_single" name="pf_forward_to_origin">
+					<option value="forward"' . ( 'forward' === $value ? ' selected ' : '' ) . '>' . esc_html__( 'Forward', 'pressforward' ) . '</option>
+				  <option value="no-forward"' . ( 'no-forward' === $value ? ' selected ' : '' ) . '>' . esc_html__( "Don't Forward", 'pressforward' ) . '</option>
+				</select>'
+		. '</div>';
 	}
 
 	/**

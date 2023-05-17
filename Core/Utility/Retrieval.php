@@ -53,7 +53,7 @@ class Retrieval {
 		$pf_interval              = get_option( PF_SLUG . '_retrieval_frequency', 30 );
 		$schedules['pf_interval'] = array(
 			'interval' => $pf_interval * 60,
-			'display'  => __( 'PressForward Retrieval Interval', 'pf' ),
+			'display'  => __( 'PressForward Retrieval Interval', 'pressforward' ),
 		);
 		return $schedules;
 	}
@@ -84,8 +84,7 @@ class Retrieval {
 	 */
 	public function get_chunk_nonce() {
 		$nonce = wp_hash( time() );
-		pf_log( 'Create the retrieval nonce: ' );
-		pf_log( $nonce );
+		pf_log( sprintf( 'Created and saved retrieval nonce: %s', $nonce ) );
 		update_option( 'chunk_nonce', $nonce );
 		return $nonce;
 	}
@@ -121,7 +120,7 @@ class Retrieval {
 	public function step_through_feedlist() {
 		// Log the beginning of this function.
 		pf_iterate_cycle_state( 'retrieval_chunks_begun', true );
-		pf_log( 'step_through_feedlist begins.' );
+		pf_log( 'Beginning to step through feed list.' );
 
 		// Retrieve the list of feeds.
 		$feedlist = $this->pf_feedlist();
@@ -136,7 +135,8 @@ class Retrieval {
 		// Log the key we retrieved. This allows us to compare
 		// to the iteration state in order to avoid multiple
 		// processes spawning at the same time.
-		pf_log( 'The last key is: ' . $last_key );
+		pf_log( 'Beginning the retrieval process by determining the next feed that needs importing.' );
+		pf_log( 'The key belonging to the last item in the feedlist is: ' . $last_key );
 
 		// Get the option that stores the current step of iteration.
 		$feeds_iteration = get_option( PF_SLUG . '_feeds_iteration' );
@@ -182,7 +182,7 @@ class Retrieval {
 			// Regardless of success, iterate this process forward.
 			++$feeds_iteration;
 		} elseif ( ! $feeds_iteration ) {
-			pf_log( 'No, but we are at the beginning, so all is well here.' );
+			pf_log( 'No, but we are at the beginning of the feed list, so this result is expected.' );
 		} else {
 			// No rest for the iterative, so on we go.
 			pf_log( 'Yes' );
@@ -198,13 +198,11 @@ class Retrieval {
 
 			// The iteration state is not beyond the limit of the array
 			// which means we can move forward.
-			pf_log( 'The iteration is less than the last key.' );
+			pf_log( 'The iteration is less than the last key, which means there are more feeds to process..' );
 
 			// Get the basic URL for the feed.
 			$a_feed = $feedlist[ $feeds_iteration ];
-			pf_log( 'Retrieved feed' );
-			pf_log( ' from ' );
-			pf_log( $a_feed->guid );
+			pf_log( sprintf( 'Retrieving feed: %s (%s)', $a_feed->guid, $a_feed->ID ) );
 			pf_log( 'Set last_checked for ' . $a_feed->ID );
 			$result = pressforward( 'schema.feeds' )->set_feed_last_checked( $a_feed->ID );
 			pf_log( $result );
@@ -214,7 +212,7 @@ class Retrieval {
 			// iteration process. The 'going' switch is used elsewhere to check
 			// if the iteration process is active or ended.
 			$are_we_going = get_option( PF_SLUG . '_iterate_going_switch', 1 );
-			pf_log( 'Iterate going switch is set to: ' . $are_we_going );
+			pf_log( 'The flag indicating whether feed iteration is currently in progress is set to: ' . $are_we_going );
 			$total_feed_count = 0;
 			if ( is_array( $feedlist ) ) {
 				$total_feed_count = count( $feedlist );
@@ -339,7 +337,6 @@ class Retrieval {
 	 * results.
 	 */
 	public function pf_feedlist() {
-		pf_log( 'Invoked: PF_Feed_Retrieve::pf_feedlist()' );
 		// @TODO Not this way.
 		$args = array(
 			'posts_per_page' => -1,
@@ -361,8 +358,7 @@ class Retrieval {
 			}
 		}
 
-		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
-		pf_log( 'Sending feedlist to function.' );
+		$all_feeds_array         = apply_filters( 'imported_rss_feeds', $feedlist );
 		$ordered_all_feeds_array = array_values( $all_feeds_array );
 
 		return $ordered_all_feeds_array;
@@ -414,7 +410,7 @@ class Retrieval {
 		$post_id = isset( $_POST['feed_id'] ) ? intval( $_POST['feed_id'] ) : 0;
 		pf_log( 'Starting ajax_update_feed_handler with ID of ' . $post_id );
 		$obj = get_post( $post_id );
-		pf_log( $obj );
+
 		$feeds = pressforward( 'schema.feeds' );
 		$id    = $obj->ID;
 		pf_log( 'Feed ID ' . $id );
@@ -701,14 +697,14 @@ class Retrieval {
 			$status = update_option( PF_SLUG . '_iterate_going_switch', 1 );
 			// Echo to the user.
 
-			$message['action_taken'] = pf_message( __( 'Beginning the retrieval process', 'pf' ), true, true );
+			$message['action_taken'] = pf_message( __( 'Beginning the retrieval process', 'pressforward' ), true, true );
 
 			pf_iterate_cycle_state( 'retrieval_cycles_begun', true );
 
 			if ( $status ) {
-				pf_log( __( 'Iterate switched to going.', 'pf' ) );
+				pf_log( __( 'Iterate switched to going.', 'pressforward' ) );
 			} else {
-				pf_log( __( 'Iterate option not switched.', 'pf' ) );
+				pf_log( __( 'Iterate option not switched.', 'pressforward' ) );
 			}
 
 			// phpcs:disable
@@ -731,16 +727,16 @@ class Retrieval {
 				);
 
 				update_option( PF_SLUG . '_feeds_meta_state', $feeds_meta_state );
-				$message['action_taken'] = pf_message( __( 'Created new metastate to check on next retrieval step.', 'pf' ), true );
+				$message['action_taken'] = pf_message( __( 'Created new metastate to check on next retrieval step.', 'pressforward' ), true );
 			} else {
-				$message['action_taken'] = pf_message( __( 'Metastate is already saved and active for next check.', 'pf' ), true );
+				$message['action_taken'] = pf_message( __( 'Metastate is already saved and active for next check.', 'pressforward' ), true );
 				pf_log( $feeds_meta_state );
 			}
 
 			if ( $feeds_meta_state['retrigger'] > time() ) {
-				$message['action_taken'] = pf_message( __( 'The sources are already being retrieved.', 'pf' ), true );
+				$message['action_taken'] = pf_message( __( 'The sources are already being retrieved.', 'pressforward' ), true );
 			} elseif ( ( (int) $feed_go === (int) $feeds_meta_state['feed_go'] ) && ( (int) $feed_iteration === (int) $feeds_meta_state['feed_iteration'] ) && ( (int) $retrieval_state === (int) $feeds_meta_state['retrieval_state'] ) && ( (int) $chunk_state === (int) $feeds_meta_state['chunk_state'] ) ) {
-				$message['action_taken'] = pf_message( __( 'The sources are stuck, clearing system to activate on next retrieve.', 'pf' ), true );
+				$message['action_taken'] = pf_message( __( 'The sources are stuck, clearing system to activate on next retrieve.', 'pressforward' ), true );
 
 				// Wipe the checking option for use next time.
 				update_option( PF_SLUG . '_feeds_meta_state', array() );
@@ -765,7 +761,7 @@ class Retrieval {
 					'retrigger'       => $feeds_meta_state['retrigger'],
 				);
 				update_option( PF_SLUG . '_feeds_meta_state', $double_check );
-				$message['action_taken'] = pf_message( __( 'The meta-state is too old. It is now reset. Next time, we will start retrieval over.', 'pf' ), true );
+				$message['action_taken'] = pf_message( __( 'The meta-state is too old. It is now reset. Next time, we will start retrieval over.', 'pressforward' ), true );
 			} else {
 				$double_check = array(
 					'feed_go'         => $feeds_meta_state['feed_go'],
@@ -776,7 +772,7 @@ class Retrieval {
 				);
 				update_option( PF_SLUG . '_feeds_meta_state', $double_check );
 				pf_log( $double_check );
-				$message['action_taken'] = pf_message( __( 'The sources are already being retrieved.', 'pf' ), true );
+				$message['action_taken'] = pf_message( __( 'The sources are already being retrieved.', 'pressforward' ), true );
 			}
 
 			if ( $do_return ) {

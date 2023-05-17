@@ -80,14 +80,14 @@ class Folders implements HasActions, HasFilters {
 	 */
 	public function register_feed_tag_taxonomy() {
 		$labels = array(
-			'name'          => __( 'Folders', 'pf' ),
-			'singular_name' => __( 'Folder', 'pf' ),
-			'all_items'     => __( 'All Folders', 'pf' ),
-			'edit_item'     => __( 'Edit Folder', 'pf' ),
-			'update_item'   => __( 'Update Folder', 'pf' ),
-			'add_new_item'  => __( 'Add New Folder', 'pf' ),
-			'new_item_name' => __( 'New Folder', 'pf' ),
-			'search_items'  => __( 'Search Folders', 'pf' ),
+			'name'          => __( 'Folders', 'pressforward' ),
+			'singular_name' => __( 'Folder', 'pressforward' ),
+			'all_items'     => __( 'All Folders', 'pressforward' ),
+			'edit_item'     => __( 'Edit Folder', 'pressforward' ),
+			'update_item'   => __( 'Update Folder', 'pressforward' ),
+			'add_new_item'  => __( 'Add New Folder', 'pressforward' ),
+			'new_item_name' => __( 'New Folder', 'pressforward' ),
+			'search_items'  => __( 'Search Folders', 'pressforward' ),
 		);
 
 		register_taxonomy(
@@ -180,44 +180,6 @@ class Folders implements HasActions, HasFilters {
 			)
 		);
 		return $cats;
-	}
-
-	/**
-	 * Gets non-top-level feed folders.
-	 *
-	 * @param int|array|object|bool $ids Single folder ID, or array/object of IDs.
-	 * @return array|bool
-	 */
-	public function get_child_feed_folders( $ids = false ) {
-		$children = array();
-		if ( ! $ids ) {
-			foreach ( $this->get_top_feed_folders() as $cat ) {
-				$term_childs = get_term_children( $cat->term_id, $this->tag_taxonomy );
-				if ( ! empty( $term_childs ) ) {
-					$children[ $cat->term_id ] = get_term_children( $cat->term_id, $this->tag_taxonomy );
-				} else {
-					$children[ $cat->term_id ] = false;
-				}
-			}
-		} elseif ( is_numeric( $ids ) || is_string( $ids ) ) {
-			if ( ! $this->is_feed_term( $ids ) ) {
-				return false;
-			}
-			$children_terms = get_term_children( $ids, $this->tag_taxonomy );
-			foreach ( $children_terms as $child ) {
-				$children[ $child ] = $this->get_feed_folders( $child );
-			}
-		} elseif ( is_array( $ids ) ) {
-			foreach ( $ids as $id ) {
-				$children[ $id ] = $this->get_feed_folders( $id );
-			}
-		} elseif ( is_object( $ids ) ) {
-			$children[ $ids->term_id ] = get_term_children( $ids->term_id, $this->tag_taxonomy );
-		} else {
-			return $ids;
-		}
-
-		return $children;
 	}
 
 	/**
@@ -438,7 +400,7 @@ class Folders implements HasActions, HasFilters {
 	public function folderbox() {
 		?>
 		<div id="feed-folders">
-			<h3><?php esc_html_e( 'Folders', 'pf' ); ?></h3>
+			<h3><?php esc_html_e( 'Folders', 'pressforward' ); ?></h3>
 			<?php $this->the_feed_folders(); ?>
 			<div class="clear"></div>
 		</div>

@@ -145,7 +145,7 @@ class Stats {
 	 */
 	private function define_constants() {
 		$this->slug            = 'pf_stats';
-		$this->title           = __( 'PressForward Stats', 'pf' );
+		$this->title           = __( 'PressForward Stats', 'pressforward' );
 		$this->root            = PF_ROOT;
 		$this->file_path       = $this->root . '/' . basename( __FILE__ );
 		$this->url             = plugins_url( '/', __FILE__ );
@@ -156,11 +156,9 @@ class Stats {
 	}
 
 	/**
-	 * Sets up Stats libraries.
+	 * Deprecated.
 	 */
-	private function includes() {
-		require_once $this->root . '/Libraries/text-stats/src/DaveChild/TextStatistics/TextStatistics.php';
-	}
+	private function includes() {}
 
 	/**
 	 * Not used.
@@ -218,7 +216,7 @@ class Stats {
 	 * @return string
 	 */
 	private function post_type_for_query() {
-		return get_option( PF_SLUG . '_draft_post_type', 'post' );
+		return pressforward_draft_post_type();
 	}
 
 	/**
@@ -352,7 +350,7 @@ class Stats {
 			$author['count'] = 0;
 		}
 		if ( ( empty( $author['name'] ) ) ) {
-			$author['name'] = __( 'No author found.', 'pf' );
+			$author['name'] = __( 'No author found.', 'pressforward' );
 		}
 		$s  = "\n<li>";
 		$s .= esc_html( $author['name'] ) . ' (' . esc_html( $author['count'] ) . ')';

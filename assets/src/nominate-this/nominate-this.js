@@ -4,6 +4,8 @@ import DOMPurify from 'dompurify'
 import 'url-search-params-polyfill'
 import 'whatwg-fetch'
 
+import './nominate-this.scss'
+
 import { __ } from '@wordpress/i18n'
 
 (function(){
@@ -22,6 +24,29 @@ import { __ } from '@wordpress/i18n'
 
 				document.getElementById( 'loading-url' ).innerHTML = DOMPurify.sanitize( url, { ALLOWED_TAGS: [] } )
 			}
+
+			// Needed for the postbox toggles.
+			document.body.classList.add( 'js' )
+
+			// WP has a hardcoded exception for 'press-this' when saving postbox toggles.
+			setTimeout(
+				() => {
+					if ( 'undefined' !== typeof postboxes ) {
+						postboxes.post = 'press-this'
+					}
+				},
+			500 )
+
+			// Set a reasonable default size for the window.
+			const { availWidth, availHeight } = window.screen
+
+			const maxWindowWidth = 700
+			const maxWindowHeight = 900
+
+			const newWindowWidth = maxWindowWidth > ( availWidth - 40 ) ? availWidth - 40 : maxWindowWidth
+			const newWindowHeight = maxWindowHeight > ( availHeight - 40 ) ? availHeight - 40 : maxWindowHeight
+
+			window.resizeTo( newWindowHeight, newWindowWidth );
 		}
 	)
 
@@ -149,7 +174,15 @@ import { __ } from '@wordpress/i18n'
 		// Prefer linked data if available.
 		const ld = getLDFromDomObject( domObject )
 		if ( ld && ld.hasOwnProperty( 'keywords' ) ) {
-			return [ ...keywords, ld.keywords.split( ',' ) ]
+			let keywordArray
+			if ( Array.isArray( ld.keywords ) ) {
+				// If the keywords are structured, we don't have a reliable way of parsing them.
+				keywordArray = ld.keywords.filter( (keyword) => { return 'string' === typeof keyword } )
+			} else {
+				keywordArray = ld.keywords.split( ',' )
+			}
+
+			return [ ...keywords, keywordArray ]
 		}
 
 		// Next, look at 'keyword' meta tags.
@@ -202,7 +235,9 @@ import { __ } from '@wordpress/i18n'
 			}
 
 			const ldImages = ld?.image
-			const ldImageUrl = ldImages ? ldImages[0].url : null
+			const ldImagesArray = ! Array.isArray( ldImages ) ? [ ldImages ] : ldImages
+
+			const ldImageUrl = ldImages ? ldImagesArray[0].url : null
 			if ( ldImageUrl ) {
 				return ldImageUrl
 			}
@@ -316,7 +351,12 @@ import { __ } from '@wordpress/i18n'
 			return ''
 		}
 
-		const authorStrings = ld.author.map( author => author.name )
+		let authorStrings = []
+		if ( Array.isArray( ld.author ) ) {
+			authorStrings = ld.author.map( author => author.name )
+		} else {
+			authorStrings = [ ld.author.name ]
+		}
 
 		return authorStrings.join( ', ' )
 	}

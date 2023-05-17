@@ -1550,6 +1550,7 @@ h3 {
 }
 
 .pfmodal .main-text img {
+	height: auto;
 	max-width: 100%;
 }
 

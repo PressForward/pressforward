@@ -8,14 +8,17 @@ class PF_Tests_Nominate_This_Process extends PF_UnitTestCase {
 	public function test_archive_feed_to_display_fromUnixTime() {
 		$feed_id = $this->factory->feed->create();
 
-		$feed_items = array();
+		$feed_items   = array();
+		$current_date = time();
 		for ( $i = 0; $i <= 5; $i++ ) {
+			$date_offset   = 10000 * ( $i + 1 ); // no zeroes
+			$sortable_date = $current_date + $date_offset;
 			$feed_items[ $i ] = $this->factory->feed_item->create( array(
-				'sortable_item_date' => 10000 * ( $i + 1 ), // no zeroes
+				'sortable_item_date' => $sortable_date,
 			) );
 		}
 
-		$found = pressforward( 'controller.loops' )->archive_feed_to_display( 1, 20, 25000 );
+		$found = pressforward( 'controller.loops' )->archive_feed_to_display( 1, 20, $current_date + 25000 );
 
 		$expected = array(
 			$feed_items[5],
@@ -127,10 +130,10 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		// $theDate = getdate();
 		// $w = date('W');
 		$r = array(
-								'meta_key' => pressforward('controller.metas')->get_key('item_id'),
-								'meta_value' => $item_id,
-								'post_type'	=> array( 'post', pf_feed_item_post_type() ),
-							);
+			'meta_key'   => pressforward('controller.metas')->get_key('item_id'),
+			'meta_value' => $item_id,
+			'post_type'	 => array( pressforward_draft_post_type(), pf_feed_item_post_type() ),
+		);
 
 		if ( $ids_only ) {
 			$r['fields'] = 'ids';

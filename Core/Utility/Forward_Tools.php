@@ -490,7 +490,7 @@ class Forward_Tools {
 		if ( 0 === $current_user->ID ) {
 			// Not logged in.
 			$user_slug   = 'external';
-			$user_string = __( 'External User', 'pf' );
+			$user_string = __( 'External User', 'pressforward' );
 			$user_id     = 0;
 			pf_log( 'Can not find a user to add to the nominated count of.' );
 		} else {
@@ -571,7 +571,7 @@ class Forward_Tools {
 	 * @return int|bool
 	 */
 	public function nomination_to_last_step( $item_id = '', $nomination_id = 0, $make_readable = true ) {
-		$post_check = $this->is_a_pf_type( $item_id, 'post' );
+		$post_check = $this->is_a_pf_type( $item_id, pressforward_draft_post_type() );
 
 		// Assign user status as well here.
 		if ( ! $post_check ) {
@@ -764,6 +764,9 @@ class Forward_Tools {
 			$nominators = $this->apply_nomination_data( $post_ID );
 			$this->metas->update_pf_meta( $post_ID, 'nominator_array', $nominators );
 
+			// When sorting by Nomination Date, we are only interested in the date of the first nomination.
+			$this->metas->update_pf_meta( $post_ID, 'sortable_nom_date', current_time( 'mysql' ) );
+
 			if ( ! empty( $_POST['item_author'] ) ) {
 				$item_author = sanitize_text_field( wp_unslash( $_POST['item_author'] ) );
 				pressforward( 'controller.metas' )->update_pf_meta( $post_ID, 'item_author', \sanitize_text_field( $item_author ) );
@@ -777,10 +780,10 @@ class Forward_Tools {
 
 			// Update the existing post with values from the bookmarklet, which is assumed more accurate.
 			$post['ID'] = $nom_and_post_check;
-			$post_check = $this->is_a_pf_type( $item_id, 'post' );
+			$post_check = $this->is_a_pf_type( $item_id, pressforward_draft_post_type() );
 
 			// If this is a nomination but has not yet been published, assume bookmarklet has best version of content.
-			if ( false !== $post_check ) {
+			if ( ! empty( $post_check ) ) {
 				$this->item_interface->update_post( $post );
 			}
 
@@ -835,7 +838,7 @@ class Forward_Tools {
 	 */
 	public function is_a_pf_type( $item_id, $post_type = '', $update = false ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		if ( ! $post_type ) {
-			$post_type = array( 'post', pressforward( 'schema.nominations' )->post_type );
+			$post_type = array( pressforward_draft_post_type(), pressforward( 'schema.nominations' )->post_type );
 		}
 
 		$attempt = $this->advance_interface->get_pf_type_by_id( $item_id, $post_type );

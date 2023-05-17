@@ -1,11 +1,7 @@
 <?php
 
 class PF_Tests_PfDeleteItemTree extends PF_UnitTestCase {
-	public function tearDown() {
-		// Remove all uploads.
-		$this->remove_added_uploads();
-		parent::tearDown();
-	}
+	protected $ids;
 
 	public function test_should_return_false_for_bad_post_id() {
 		$this->assertFalse( pf_delete_item_tree( 12345 ) );
@@ -106,8 +102,8 @@ class PF_Tests_PfDeleteItemTree extends PF_UnitTestCase {
 	}
 
 	protected function make_attachment( $parent_post_id = 0, $upload = false ) {
-		if ( false !== $upload ) {
-			$filename = DIR_TESTDATA . '/images/test-image.jpg';
+		if ( false === $upload ) {
+			$filename = PF_DIR_TESTDATA . '/images/test-image.jpg';
 			$contents = file_get_contents( $filename );
 			$upload = wp_upload_bits( basename( $filename ), null, $contents );
 		}

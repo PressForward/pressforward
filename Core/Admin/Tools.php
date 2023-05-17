@@ -49,8 +49,8 @@ class Tools implements HasActions, HasFilters {
 	public function add_plugin_admin_menu() {
 		$this->templates->add_submenu_page(
 			PF_MENU_SLUG,
-			__( 'Tools', 'pf' ),
-			__( 'Tools', 'pf' ),
+			__( 'Tools', 'pressforward' ),
+			__( 'Tools', 'pressforward' ),
 			array( 'pf_menu_tools_access', 'contributor' ),
 			PF_SLUG . '-tools',
 			array( $this, 'display_tools_builder' )
@@ -102,7 +102,7 @@ class Tools implements HasActions, HasFilters {
 		$vars = array(
 			'current'            => $tab,
 			'user_ID'            => true,
-			'page_title'         => __( 'PressForward Tools', 'pf' ),
+			'page_title'         => __( 'PressForward Tools', 'pressforward' ),
 			'page_slug'          => 'pf-tools',
 			'no_save_button'     => true,
 			'settings_tab_group' => '',
@@ -121,22 +121,22 @@ class Tools implements HasActions, HasFilters {
 	 */
 	public function set_permitted_tools_tabs( $permitted_tabs ) {
 		$permitted_tabs['nominate-this'] = array(
-			'title' => __( 'Bookmarklet', 'pf' ),
+			'title' => __( 'Bookmarklet', 'pressforward' ),
 			'cap'   => $this->templates->users->pf_get_defining_capability_by_role( 'contributor' ),
 		);
 
 		$permitted_tabs['reset-refresh'] = array(
-			'title' => __( 'Debug and Refresh', 'pf' ),
+			'title' => __( 'Debug and Refresh', 'pressforward' ),
 			'cap'   => $this->templates->users->pf_get_defining_capability_by_role( 'administrator' ),
 		);
 
 		$permitted_tabs['retrieval-status'] = array(
-			'title' => __( 'Retrieval Status', 'pf' ),
+			'title' => __( 'Retrieval Status', 'pressforward' ),
 			'cap'   => $this->templates->users->pf_get_defining_capability_by_role( 'contributor' ),
 		);
 
 		$permitted_tabs['stats'] = array(
-			'title' => __( 'Statistics', 'pf' ),
+			'title' => __( 'Statistics', 'pressforward' ),
 			'cap'   => $this->templates->users->pf_get_defining_capability_by_role( 'contributor' ),
 		);
 

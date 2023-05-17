@@ -17,13 +17,7 @@
 
 		if ( data['pf_last_key'] != data['pf_feeds_iteration'] ) {
 			// jQuery('#status_check').css('display','block');
-			jQuery( "#retrieving_feeds" ).html(
-				function(){
-					var iterate = (parseInt( data['pf_feeds_iteration'],10 )) + 1;
-					return 'Retrieving feeds. Currently at <span id="rf-feed-title">' + data['pf_feed_title'] + '</span> feed number <span id="rf-iteration">' + iterate + '</span> of <span id="rf-total-feeds">' + data['pf_total_feeds'] + '</span>.';
-				}
-			);
-			// jQuery('#status_check').css('display', 'block');
+			jQuery( "#retrieving_feeds" ).html( data.pf_status_message );
 		}
 
 		// var pf_status_string =

@@ -1,6 +1,6 @@
 {
 	"name": "pressforward",
-	"version": "5.4.0",
+	"version": "5.5.0",
 	"description": "PressForward is a free plugin that provides an editorial workflow for content aggregation and curation within the WordPress dashboard. It is designed for bloggers and editorial teams who wish to collect, discuss, and share content from a variety of sources on the open web. ",
 	"main": "assets/js/pf.js",
 	"directories": {
@@ -28,8 +28,8 @@
 		"lint": "run-p lint:js",
 		"lint:eslint": "eslint --ignore-path .gitignore",
 		"lint:js": "npm run lint:eslint -- .",
-		"start": "wp-scripts start assets/src/nominate-this/nominate-this.js",
-		"build": "wp-scripts build assets/src/nominate-this/nominate-this.js"
+		"start": "wp-scripts start assets/src/add-feeds/add-feeds.js assets/src/edit-feeds/edit-feeds.js assets/src/nominate-this/nominate-this.js assets/src/quick-edit/quick-edit.js assets/src/reader/reader.js assets/src/scroll/scroll.js",
+		"build": "wp-scripts build assets/src/add-feeds/add-feeds.js assets/src/edit-feeds/edit-feeds.js assets/src/nominate-this/nominate-this.js assets/src/quick-edit/quick-edit.js assets/src/reader/reader.js assets/src/scroll/scroll.js"
 	},
 	"repository": {
 		"type": "git",
@@ -58,6 +58,8 @@
 	"dependencies": {
 		"@mozilla/readability": "^0.4.2",
 		"dompurify": "^3.0.0",
+		"infinite-scroll": "^4.0.1",
+		"postcss": "^8.4.23",
 		"url-search-params-polyfill": "^8.1.1",
 		"whatwg-fetch": "^3.6.2"
 	}

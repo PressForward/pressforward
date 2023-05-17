@@ -1,0 +1,27 @@
+name: PHPUnit
+
+on: [push]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Composer
+      uses: php-actions/composer@v6
+
+    - name: Set up MySQL
+      run: |
+        sudo /etc/init.d/mysql start
+        mysql -e 'CREATE DATABASE wordpress_test' -uroot -proot
+
+    - name: Set up WP and its test suite, and run phpunit
+      run: |
+        bash tests/install-wp-tests.sh wordpress_test root root localhost latest true $RUNNER_TEMP
+        WP_TESTS_DIR=$RUNNER_TEMP/wordpress-tests-lib
+        WP_CORE_DIR=$RUNNER_TEMP/wordpress
+        ls -la $WP_TESTS_DIR
+        ./vendor/bin/phpunit

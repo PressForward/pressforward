@@ -26,7 +26,7 @@ class PF_to_WP_Posts implements Items {
 		if ( isset( $post['post_date'] ) && ! isset( $post['post_date_gmt'] ) ) {
 			$post['post_date_gmt'] = get_gmt_from_date( $post['post_date'] );
 		}
-		if ( ( false !== $item_id ) && in_array( $post['post_type'], array( 'post', 'pf_feed_item', 'nomination' ), true ) ) {
+		if ( ( false !== $item_id ) && in_array( $post['post_type'], array( pressforward_draft_post_type(), 'pf_feed_item', 'nomination' ), true ) ) {
 			$check = $this->check_not_existing( $item_id, $post['post_type'] );
 			if ( true !== $check ) {
 				return $check;
@@ -153,7 +153,6 @@ class PF_to_WP_Posts implements Items {
 		$query = new \WP_Query( $args );
 
 		if ( ! $query->have_posts() ) {
-
 			return true;
 		} else {
 			while ( $query->have_posts() ) {
@@ -163,5 +162,7 @@ class PF_to_WP_Posts implements Items {
 				return $id;
 			}
 		}
+
+		return true;
 	}
 }

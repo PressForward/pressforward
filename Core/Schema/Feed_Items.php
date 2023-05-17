@@ -114,17 +114,17 @@ class Feed_Items implements HasActions, HasFilters {
 	 */
 	public function register_feed_item_post_type() {
 		$labels = array(
-			'name'               => __( 'Feed Items', 'pf' ),
-			'singular_name'      => __( 'Feed Item', 'pf' ),
+			'name'               => __( 'Feed Items', 'pressforward' ),
+			'singular_name'      => __( 'Feed Item', 'pressforward' ),
 			'add_new'            => _x( 'Add New', 'pf', 'add new feed item' ),
-			'all_items'          => __( 'All Feed Items', 'pf' ),
-			'add_new_item'       => __( 'Add New Feed Item', 'pf' ),
-			'edit_item'          => __( 'Edit Feed Item', 'pf' ),
-			'new_item'           => __( 'New Feed Item', 'pf' ),
-			'view_item'          => __( 'View Feed Item', 'pf' ),
-			'search_items'       => __( 'Search Feed Items', 'pf' ),
-			'not_found'          => __( 'No feed items found', 'pf' ),
-			'not_found_in_trash' => __( 'No feed items found in trash', 'pf' ),
+			'all_items'          => __( 'All Feed Items', 'pressforward' ),
+			'add_new_item'       => __( 'Add New Feed Item', 'pressforward' ),
+			'edit_item'          => __( 'Edit Feed Item', 'pressforward' ),
+			'new_item'           => __( 'New Feed Item', 'pressforward' ),
+			'view_item'          => __( 'View Feed Item', 'pressforward' ),
+			'search_items'       => __( 'Search Feed Items', 'pressforward' ),
+			'not_found'          => __( 'No feed items found', 'pressforward' ),
+			'not_found_in_trash' => __( 'No feed items found in trash', 'pressforward' ),
 		);
 
 		$modules = pressforward( 'modules' )->modules;
@@ -141,7 +141,7 @@ class Feed_Items implements HasActions, HasFilters {
 				array(
 					'label'                 => $labels['name'],
 					'labels'                => $labels,
-					'description'           => __( 'Feed items imported by PressForward&#8217;s RSS Importer', 'pf' ),
+					'description'           => __( 'Feed items imported by PressForward&#8217;s RSS Importer', 'pressforward' ),
 					'public'                => false,
 					'show_ui'               => true,
 					'show_in_admin_bar'     => false,
@@ -265,14 +265,14 @@ class Feed_Items implements HasActions, HasFilters {
 	 */
 	public function register_feed_item_tag_taxonomy() {
 		$labels = array(
-			'name'          => __( 'Feed Item Tags', 'pf' ),
-			'singular_name' => __( 'Feed Item Tag', 'pf' ),
-			'all_items'     => __( 'All Feed Item Tags', 'pf' ),
-			'edit_item'     => __( 'Edit Feed Item Tag', 'pf' ),
-			'update_item'   => __( 'Update Feed Item Tag', 'pf' ),
-			'add_new_item'  => __( 'Add New Feed Item Tag', 'pf' ),
-			'new_item_name' => __( 'New Feed Item Tag', 'pf' ),
-			'search_items'  => __( 'Search Feed Item Tags', 'pf' ),
+			'name'          => __( 'Feed Item Tags', 'pressforward' ),
+			'singular_name' => __( 'Feed Item Tag', 'pressforward' ),
+			'all_items'     => __( 'All Feed Item Tags', 'pressforward' ),
+			'edit_item'     => __( 'Edit Feed Item Tag', 'pressforward' ),
+			'update_item'   => __( 'Update Feed Item Tag', 'pressforward' ),
+			'add_new_item'  => __( 'Add New Feed Item Tag', 'pressforward' ),
+			'new_item_name' => __( 'New Feed Item Tag', 'pressforward' ),
+			'search_items'  => __( 'Search Feed Item Tags', 'pressforward' ),
 		);
 
 		register_taxonomy(
@@ -392,7 +392,7 @@ class Feed_Items implements HasActions, HasFilters {
 		if ( ! is_numeric( $r['item_wp_date'] ) ) {
 			$r['item_wp_date'] = strtotime( $r['item_wp_date'] );
 			if ( ! $r['item_wp_date'] ) {
-				return new \WP_Error( __( 'Date should be in UNIX format', 'pf' ) );
+				return new \WP_Error( __( 'Date should be in UNIX format', 'pressforward' ) );
 			}
 		}
 
@@ -542,12 +542,26 @@ class Feed_Items implements HasActions, HasFilters {
 		pf_log( 'Disassemble Feed Items Activated' );
 		$retain = get_option( 'pf_retain_time', 2 );
 
+		if ( 0 === (int) $retain ) {
+			return;
+		}
+
+		/**
+		 * Filters the max number of items that should be deleted during trash collection.
+		 *
+		 * The number can be adjusted up or down, depending on server resources.
+		 *
+		 * @since 5.5.0
+		 *
+		 * @param int $batch_size Default 25.
+		 */
+		$batch_size = apply_filters( 'pressforward_delete_expired_feed_items_batch_size', 25 );
+
 		// Delete rss feed items with a date past a certain point.
 		$query_for_del = new \WP_Query(
 			array(
 				'post_type'              => $this->post_type,
-				// phpcs:ignore WordPress.WP.PostsPerPage
-				'posts_per_page'         => '150',
+				'posts_per_page'         => $batch_size,
 				'fields'                 => 'ids',
 				'update_post_term_cache' => false,
 				'date_query'             => array(
@@ -564,9 +578,25 @@ class Feed_Items implements HasActions, HasFilters {
 			return '';
 		}
 
+		/**
+		 * Pre-delete action for old feed item clean-up.
+		 *
+		 * This allows plugins to disable clean-up, or to add their own clean-up routine
+		 * (such as offloading into a separate, non-WP system).
+		 *
+		 * Return a value other than `null` to disable PF's own deletion.
+		 *
+		 * @since 5.5.0
+		 *
+		 * @param null  $pre_delete Default null. Return non-null value to bail from deletion.
+		 * @param array $post_ids   IDs of feed items older than the specified date.
+		 */
+		$pre_delete = apply_filters( 'pressforward_pre_delete_expired_feed_items', null, $query_for_del->posts );
+		if ( null !== $pre_delete ) {
+			return true;
+		}
+
 		foreach ( $query_for_del->posts as $key => $post_id ) {
-			// All the posts in this loop are older than 60 days from 'now'.
-			// Delete them all.
 			pf_log( 'Cleaning up ' . $post_id );
 			pf_delete_item_tree( $post_id );
 		}
@@ -1323,7 +1353,7 @@ class Feed_Items implements HasActions, HasFilters {
 		register_post_status(
 			'removed_feed_item',
 			array(
-				'label'                  => _x( 'Removed Feed Item', 'pf' ),
+				'label'                  => _x( 'Removed Feed Item', 'pf', 'pressforward' ),
 				'public'                 => false,
 				'exclude_from_search'    => true,
 				'show_in_admin_all_list' => false,
@@ -1336,14 +1366,14 @@ class Feed_Items implements HasActions, HasFilters {
 	 */
 	public function register_feed_item_removed_status() {
 		$args = array(
-			'label'                     => _x( 'Removed Feed Item', 'pf' ),
+			'label'                     => _x( 'Removed Feed Item', 'pf', 'pressforward' ),
 			'public'                    => false,
 			'exclude_from_search'       => true,
 			'show_in_admin_all_list'    => false,
 			'show_in_admin_status_list' => false,
 
 			// translators: Removed feed item count.
-			'label_count'               => _n_noop( 'Removed <span class="count">(%s)</span>', 'Removed <span class="count">(%s)</span>' ),
+			'label_count'               => _n_noop( 'Removed <span class="count">(%s)</span>', 'Removed <span class="count">(%s)</span>', 'pressforward' ),
 		);
 
 		register_post_status( 'removed_feed_item', $args );

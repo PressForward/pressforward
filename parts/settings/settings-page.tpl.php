@@ -72,7 +72,7 @@ $private_key = ( pressforward( 'controller.jwt' )->get_a_user_private_key() );
 				<br />
 
 				<?php if ( empty( $no_save_button ) ) : ?>
-					<input type="submit" name="submit" class="button-primary" value="<?php esc_attr_e( 'Submit', 'pf' ); ?>" />
+					<input type="submit" name="submit" class="button-primary" value="<?php esc_attr_e( 'Submit', 'pressforward' ); ?>" />
 				<?php endif; ?>
 
 				<br />

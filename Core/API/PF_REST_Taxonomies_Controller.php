@@ -55,7 +55,7 @@ class PF_REST_Taxonomies_Controller extends WP_REST_Taxonomies_Controller {
 	public function get_item( $request ) {
 		$tax_obj = get_taxonomy( $request['taxonomy'] );
 		if ( empty( $tax_obj ) || ( 'pf_feed_category' !== $tax_obj->name ) ) {
-			return new WP_Error( 'rest_taxonomy_invalid', __( 'Invalid PF resource.' ), array( 'status' => 404 ) );
+			return new WP_Error( 'rest_taxonomy_invalid', __( 'Invalid PF resource.', 'pressforward' ), array( 'status' => 404 ) );
 		}
 		$data = $this->prepare_item_for_response( $tax_obj, $request );
 		return rest_ensure_response( $data );

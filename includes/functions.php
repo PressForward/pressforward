@@ -118,7 +118,18 @@ function pf_get_shortcut_link() {
 	$version = 5;
 
 	$link = sprintf(
-		'javascript:var d=document,w=window,e=w.getSelection,k=d.getSelection,x=d.selection,s=e?e():k?k():x?x.createRange().text:0,f="%s",l=d.location,u=f+"&u="+(e=encodeURIComponent)(l.href)+"&t="+e(d.title)+"&s="+e(s)+"&v=%s",a=function(){w.open(u,"t","toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=620")||(l.href=u)};a();',
+		'javascript:' .
+		'var pfd=document,' .
+		'pfw=window,' .
+		'pfe=pfw.getSelection,' .
+		'pfk=pfd.getSelection,' .
+		'pfx=pfd.selection,' .
+		'pfs=pfe?pfe():pfk?pfk():pfx?pfx.createRange().text:0,' .
+		'pff="%s",' .
+		'pfl=pfd.location,' .
+		'pfu=pff+"&u="+(pfe=encodeURIComponent)(pfl.href)+"&t="+pfe(pfd.title)+"&s="+pfe(pfs)+"&v=%s",' .
+		'pfa=function(){pfw.open(pfu,"t","toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=620")||(pfl.href=pfu)};' .
+		'pfa();',
 		esc_url_raw( $url ),
 		esc_js( $version )
 	);
@@ -127,39 +138,21 @@ function pf_get_shortcut_link() {
 }
 
 /**
- * Retrieve the Nominate This bookmarklet link.
+ * Get the draft post type name.
  *
- * Use this in 'a' element 'href' attribute.
+ * @since 5.5.0
  *
- * @since 1.7
- * @see get_shortcut_link()
- *
- * @return string
+ * @return string The name of the draft post_type for PressForward.
  */
-function pf_nomthis_bookmarklet() {
-	$user    = wp_get_current_user();
-	$user_id = $user->ID;
+function pressforward_draft_post_type() {
+	$post_type = get_option( PF_SLUG . '_draft_post_type', 'post' );
 
-	$link = "javascript:
-				var d=document,
-				w=window,
-				e=w.getSelection,
-				k=d.getSelection,
-				x=d.selection,
-				s=(e?e():(k)?k():(x?x.createRange().text:0)),
-				l=d.location,
-				e=encodeURIComponent,
-				ku='" . esc_js( bin2hex( pressforward( 'controller.jwt' )->get_a_user_public_key() ) ) . "',
-				ki='" . esc_js( get_user_meta( $user_id, 'pf_jwt_private_key', true ) ) . "',
-				p='" . esc_js( rest_url() . pressforward( 'api.nominatethis' )->endpoint_for_nominate_this_script ) . "?k='+ku,
-				pe=document.createElement('script'),
-				a=function(){pe.src=p;document.getElementsByTagName('head')[0].appendChild(pe);};
-				if (/Firefox/.test(navigator.userAgent)) setTimeout(a, 0); else a();
-				void(0)";
-
-	$link = str_replace( array( "\r", "\n", "\t" ), '', $link );
-
-	return apply_filters( 'pf_nomthis_bookmarklet', $link );
+	/**
+	 * Filters the 'draft' post type.
+	 *
+	 * @param string $post_type Defaults to 'post'.
+	 */
+	return apply_filters( 'pressforward_draft_post_type', $post_type );
 }
 
 /**
@@ -394,7 +387,7 @@ function pf_get_posts_by_id_for_check( $post_type = null, $item_id = null, $ids_
 	$r = array(
 		'meta_key'   => pressforward( 'controller.metas' )->get_key( 'item_id' ),
 		'meta_value' => $item_id,
-		'post_type'  => array( 'post', pf_feed_item_post_type() ),
+		'post_type'  => array( pressforward_draft_post_type(), pf_feed_item_post_type() ),
 	);
 
 	if ( $ids_only ) {
@@ -955,7 +948,7 @@ function pf_is_drafted( $item_id ) {
 		'fields'        => 'ids',
 		'meta_key'      => pressforward( 'controller.metas' )->get_key( 'item_id' ),
 		'meta_value'    => $item_id,
-		'post_type'     => get_option( PF_SLUG . '_draft_post_type', 'post' ),
+		'post_type'     => pressforward_draft_post_type(),
 	);
 	$q = new WP_Query( $a );
 
@@ -976,7 +969,7 @@ function pf_is_drafted( $item_id ) {
 function pf_get_drafted_items( $post_type = 'pf_feed_item' ) {
 	$draft_query_args = [
 		'no_found_rows'          => true,
-		'post_type'              => get_option( PF_SLUG . '_draft_post_type', 'post' ),
+		'post_type'              => pressforward_draft_post_type(),
 		'post_status'            => 'any',
 		'meta_query'             => array(
 			array(
@@ -1059,148 +1052,6 @@ function pf_filter_nominated_query_for_drafted( $query ) {
 add_action( 'pre_get_posts', 'pf_filter_nominated_query_for_drafted' );
 
 /**
- * 'posts_request' filter callback for nominations query.
- *
- * @todo Investigate.
- *
- * @param string $q Query string.
- */
-function prep_archives_query( $q ) {
-	global $wpdb;
-
-	if ( isset( $_GET['pc'] ) ) {
-		$offset = intval( $_GET['pc'] ) - 1;
-		$offset = $offset * 20;
-	} else {
-		$offset = 0;
-	}
-
-	$relate = pressforward( 'schema.relationships' );
-	$rt     = $relate->table_name;
-
-	// See https://github.com/PressForward/pressforward/issues/1145.
-	// phpcs:disable WordPress.DB
-	if ( isset( $_GET['pf-see'] ) && 'archive-only' === $_GET['pf-see'] ) {
-		$pagefull = 20;
-		$user_id  = get_current_user_id();
-		$read_id  = pf_get_relationship_type_id( 'archive' );
-
-		// It is bad to use SQL_CALC_FOUND_ROWS, but we need it to replicate the same behaviour as non-archived items (including pagination).
-		$q = $wpdb->prepare(
-			"
-				SELECT SQL_CALC_FOUND_ROWS {$wpdb->posts}.*, {$wpdb->postmeta}.*
-				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->postmeta}.meta_key = 'pf_archive'
-				AND {$wpdb->postmeta}.meta_value > 0
-				AND {$wpdb->posts}.ID
-				GROUP BY {$wpdb->posts}.ID
-				ORDER BY {$wpdb->postmeta}.meta_value DESC, {$wpdb->posts}.post_date DESC
-				LIMIT {$pagefull} OFFSET {$offset}
-			",
-			'nomination'
-		);
-	} elseif ( isset( $_GET['pf-see'] ) && 'unread-only' === $_GET['pf-see'] ) {
-		$pagefull = 20;
-		$user_id  = get_current_user_id();
-		$read_id  = pf_get_relationship_type_id( 'read' );
-
-		$q = $wpdb->prepare(
-			"
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->posts}.post_status = 'draft'
-				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
-				AND {$wpdb->postmeta}.meta_value > 0
-				AND {$wpdb->posts}.ID
-				NOT IN (
-					SELECT item_id
-					FROM {$rt}
-					WHERE {$rt}.user_id = {$user_id}
-					AND {$rt}.relationship_type = {$read_id}
-					AND {$rt}.value = 1
-				)
-				GROUP BY {$wpdb->posts}.ID
-				ORDER BY {$wpdb->postmeta}.meta_value DESC
-				LIMIT {$pagefull} OFFSET {$offset}
-			",
-			'nomination'
-		);
-	} elseif ( isset( $_GET['action'] ) && isset( $_POST['search-terms'] ) ) {
-		$pagefull = 20;
-		$user_id  = get_current_user_id();
-		$read_id  = pf_get_relationship_type_id( 'archive' );
-
-		$search = sanitize_text_field( wp_unslash( $_POST['search-terms'] ) );
-		$like   = '%' . $wpdb->esc_like( $search ) . '%';
-
-		$q = $wpdb->prepare(
-			"
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-				AND {$wpdb->postmeta}.meta_key = 'sortable_item_date'
-				AND {$wpdb->postmeta}.meta_value > 0
-				AND {$wpdb->posts}.post_type = %s
-				AND {$wpdb->posts}.post_status = 'draft'
-				AND ((({$wpdb->posts}.post_title LIKE '%s') OR ({$wpdb->posts}.post_content LIKE '%s')))
-				GROUP BY {$wpdb->posts}.ID
-				ORDER BY {$wpdb->postmeta}.meta_value DESC
-				LIMIT {$pagefull} OFFSET {$offset}
-			",
-			'nomination',
-			$like,
-			$like
-		);
-	} elseif ( isset( $_GET['pf-see'] ) && 'starred-only' === $_GET['pf-see'] ) {
-		$pagefull = 20;
-		$user_id  = get_current_user_id();
-		$read_id  = pf_get_relationship_type_id( 'star' );
-
-		$q = $wpdb->prepare(
-			"
-				SELECT DISTINCT wposts.*
-				FROM {$wpdb->posts} wposts
-				LEFT JOIN {$wpdb->postmeta} wpm1 ON (wposts.ID = wpm1.post_id
-					AND wpm1.meta_key = 'sortable_item_date' AND wpm1.meta_value > 0 AND wposts.post_type = %s
-				)
-				LEFT JOIN {$wpdb->postmeta} wpm2 ON  (wposts.ID = wpm2.post_id
-					   AND wpm2.meta_key = 'pf_item_post_id' AND wposts.post_type = %s )
-				WHERE wposts.post_status = 'draft'
-				AND wpm1.meta_value > 0
-				AND wposts.ID
-				IN (
-					SELECT item_id
-					FROM {$rt}
-					WHERE {$rt}.user_id = {$user_id}
-					AND {$rt}.relationship_type = {$read_id}
-					AND {$rt}.value = 1
-				)
-				OR wpm2.meta_value
-				IN (
-					SELECT item_id
-					FROM {$rt}
-					WHERE {$rt}.user_id = {$user_id}
-					AND {$rt}.relationship_type = {$read_id}
-					AND {$rt}.value = 1
-				)
-				GROUP BY wpm2.post_id
-				ORDER BY wpm1.meta_value DESC
-				LIMIT {$pagefull} OFFSET {$offset}
-			",
-			'nomination',
-			'nomination'
-		);
-	}
-	// phpcs:enable WordPress.DB
-
-	return $q;
-}
-
-/**
  * Adds 'text/x-opml' mime type to WP.
  *
  * @param array $existing_mimes MIME type array.
@@ -1237,11 +1088,11 @@ function pf_iterate_cycle_state( $option_name, $option_limit = '', $do_echo = fa
 
 	if ( $do_echo ) {
 		// translators: Day count.
-		echo '<br />' . esc_html( sprintf( __( 'Day: %s', 'pf' ), $retrieval_cycle['day'] ) );
+		echo '<br />' . esc_html( sprintf( __( 'Day: %s', 'pressforward' ), $retrieval_cycle['day'] ) );
 		// translators: Week count.
-		echo '<br />' . esc_html( sprintf( __( 'Week: %s', 'pf' ), $retrieval_cycle['week'] ) );
+		echo '<br />' . esc_html( sprintf( __( 'Week: %s', 'pressforward' ), $retrieval_cycle['week'] ) );
 		// translators: Month count.
-		echo '<br />' . esc_html( sprintf( __( 'Month: %s', 'pf' ), $retrieval_cycle['month'] ) );
+		echo '<br />' . esc_html( sprintf( __( 'Month: %s', 'pressforward' ), $retrieval_cycle['month'] ) );
 	} elseif ( ! $option_limit ) {
 		return $retrieval_cycle;
 	} elseif ( $option_limit ) {
@@ -1281,7 +1132,7 @@ function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 	if ( ! $item || ! ( $item instanceof WP_Post ) ) {
 		if ( $msg ) {
 			pf_log( 'Post Not Found.' );
-			return __( 'Post Not Found.', 'pf' );
+			return __( 'Post Not Found.', 'pressforward' );
 		} else {
 			return false;
 		}
@@ -1293,7 +1144,7 @@ function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 	if ( ! in_array( $item->post_type, array( $feed_item_post_type, $feed_post_type, 'nomination' ), true ) ) {
 		if ( $msg ) {
 			pf_log( 'Post Type Not Matched' );
-			return __( 'Post Type Not Matched', 'pf' );
+			return __( 'Post Type Not Matched', 'pressforward' );
 		} else {
 			return false;
 		}
@@ -1303,7 +1154,7 @@ function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 	if ( in_array( $item->ID, $queued, true ) ) {
 		if ( $msg ) {
 			pf_log( 'Post Type Already Queued' );
-			return __( 'Post Type Already Queued', 'pf' );
+			return __( 'Post Type Already Queued', 'pressforward' );
 		} else {
 			return false;
 		}
@@ -1415,7 +1266,7 @@ function pf_exclude_queued_items_from_queries( $query ) {
 	}
 
 	$type = $query->get( 'post_type' );
-	if ( ( empty( $type ) ) || ( 'post' !== $type ) ) {
+	if ( ( empty( $type ) ) || ( pressforward_draft_post_type() !== $type ) ) {
 		if ( 300 <= count( $queued ) ) {
 			$queued_chunk = array_chunk( $queued, 100 );
 			$queued       = $queued_chunk[0];
@@ -1460,28 +1311,39 @@ function pf_exclude_queued_items_from_query_results( $posts, $query ) {
 add_filter( 'posts_results', 'pf_exclude_queued_items_from_query_results', 999, 2 );
 
 /**
- * Detect and process a delete queue request.
+ * Ensures that the 'pf_process_delete_queue' task is scheduled.
  *
- * Request URLs are of the form example.com?pf_process_delete_queue=123,
- * where '123' is a single-use nonce stored in the 'pf_delete_queue_nonce' option.
+ * @since 5.5.0
+ */
+function pressforward_schedule_process_delete_queue() {
+	if ( ! wp_next_scheduled( 'pf_process_delete_queue' ) ) {
+		wp_schedule_event( time(), 'hourly', 'pf_process_delete_queue' );
+	}
+}
+add_action( 'init', 'pressforward_schedule_process_delete_queue' );
+
+/**
+ * Callback for 'pf_process_delete_queue' cron action.
  *
  * @since 3.6
+ * @since 5.5.0 Instead of being triggered by a custom nonce and a self-request,
+ *              deletion now has its own cron event.
  */
 function pf_process_delete_queue() {
-	if ( ! isset( $_GET['pf_process_delete_queue'] ) ) {
-		return;
-	}
-
-	$nonce       = sanitize_text_field( wp_unslash( $_GET['pf_process_delete_queue'] ) );
-	$saved_nonce = get_option( 'pf_delete_queue_nonce' );
-	if ( $saved_nonce !== $nonce ) {
-		pf_log( 'nonce indicates not ready.' );
-		return;
-	}
-
 	$queued = get_option( 'pf_delete_queue', array() );
-	pf_log( ' Delete queue ready' );
-	for ( $i = 0; $i <= 1; $i++ ) {
+
+	pf_log( 'Delete queue ready' );
+
+	/**
+	 * Filters the max batch size for processing the delete queue.
+	 *
+	 * @since 5.5.0
+	 *
+	 * @param int $batch_size Default 25.
+	 */
+	$batch_size = apply_filters( 'pressforward_process_delete_queue_batch_size', 25 );
+
+	for ( $i = 0; $i <= $batch_size; $i++ ) {
 		$post_id = array_shift( $queued );
 		if ( null !== $post_id ) {
 			pf_log( 'Deleting ' . $post_id );
@@ -1490,12 +1352,11 @@ function pf_process_delete_queue() {
 	}
 
 	update_option( 'pf_delete_queue', $queued );
-	delete_option( 'pf_delete_queue_nonce' );
 
+	// Clean up empty taxonomy terms, only when the queue is cleared.
 	if ( ! $queued ) {
 		delete_option( 'pf_delete_queue' );
 
-		// Clean up empty taxonomy terms.
 		$terms = get_terms(
 			pressforward( 'schema.feeds' )->tag_taxonomy,
 			array(
@@ -1508,35 +1369,9 @@ function pf_process_delete_queue() {
 				wp_delete_term( $term->term_id, pressforward( 'schema.feeds' )->tag_taxonomy );
 			}
 		}
-	} else {
-		pf_launch_batch_delete();
 	}
 }
-add_action( 'wp_loaded', 'pf_process_delete_queue' );
-
-/**
- * Launch the processing of the delete queue.
- *
- * @since 3.6
- */
-function pf_launch_batch_delete() {
-	// Nothing to do.
-	$queued = get_option( 'pf_delete_queue' );
-	if ( ! $queued ) {
-		delete_option( 'pf_delete_queue_nonce' );
-		return;
-	}
-
-	// If a nonce is saved, then a deletion is pending, and we should do nothing.
-	$saved_nonce = get_option( 'pf_delete_queue_nonce' );
-	if ( $saved_nonce ) {
-		return;
-	}
-
-	$nonce = wp_rand( 10000000, 99999999 );
-	add_option( 'pf_delete_queue_nonce', $nonce );
-	wp_remote_get( add_query_arg( 'pf_process_delete_queue', $nonce, home_url() ) );
-}
+add_action( 'pf_process_delete_queue', 'pf_process_delete_queue' );
 
 /**
  * Send takes an array dimension from a backtrace and puts it in log format.

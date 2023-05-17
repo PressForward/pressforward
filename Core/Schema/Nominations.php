@@ -70,18 +70,18 @@ class Nominations implements HasActions, HasFilters {
 	public function register_post_type() {
 		$args = array(
 			'labels'               => array(
-				'name'               => __( 'Nominations', 'pf' ),
-				'singular_name'      => __( 'Nomination', 'pf' ),
-				'add_new'            => __( 'Nominate', 'pf' ),
-				'add_new_item'       => __( 'Add New Nomination', 'pf' ),
-				'edit_item'          => __( 'Edit Nomination', 'pf' ),
-				'new_item'           => __( 'New Nomination', 'pf' ),
-				'view_item'          => __( 'View Nomination', 'pf' ),
-				'search_items'       => __( 'Search Nominations', 'pf' ),
-				'not_found'          => __( 'No nominations found', 'pf' ),
-				'not_found_in_trash' => __( 'No nominations found in Trash', 'pf' ),
+				'name'               => __( 'Nominations', 'pressforward' ),
+				'singular_name'      => __( 'Nomination', 'pressforward' ),
+				'add_new'            => __( 'Nominate', 'pressforward' ),
+				'add_new_item'       => __( 'Add New Nomination', 'pressforward' ),
+				'edit_item'          => __( 'Edit Nomination', 'pressforward' ),
+				'new_item'           => __( 'New Nomination', 'pressforward' ),
+				'view_item'          => __( 'View Nomination', 'pressforward' ),
+				'search_items'       => __( 'Search Nominations', 'pressforward' ),
+				'not_found'          => __( 'No nominations found', 'pressforward' ),
+				'not_found_in_trash' => __( 'No nominations found in Trash', 'pressforward' ),
 			),
-			'description'          => __( 'Posts from around the internet nominated for consideration to public posting', 'pf' ),
+			'description'          => __( 'Posts from around the internet nominated for consideration to public posting', 'pressforward' ),
 			// Not available to non-users.
 			'public'               => false,
 			// I want a UI for users to use, so true.
@@ -109,7 +109,7 @@ class Nominations implements HasActions, HasFilters {
 	public function nominations_meta_boxes() {
 		add_meta_box(
 			'pf-nominations',
-			__( 'Nomination Data', 'pf' ),
+			__( 'Nomination Data', 'pressforward' ),
 			array( $this, 'nominations_box_builder' ),
 			'nomination',
 			'side',
@@ -128,12 +128,12 @@ class Nominations implements HasActions, HasFilters {
 	public function edit_nominations_columns( $columns ) {
 		$columns = array(
 			'cb'              => '<input type="checkbox" />',
-			'title'           => __( 'Title', 'pf' ),
-			'date'            => __( 'Last Modified', 'pf' ),
-			'nomcount'        => __( 'Nominations', 'pf' ),
-			'nominatedby'     => __( 'Nominated By', 'pf' ),
-			'original_author' => __( 'Original Author', 'pf' ),
-			'date_nominated'  => __( 'Date Nominated', 'pf' ),
+			'title'           => __( 'Title', 'pressforward' ),
+			'date'            => __( 'Last Modified', 'pressforward' ),
+			'nomcount'        => __( 'Nominations', 'pressforward' ),
+			'nominatedby'     => __( 'Nominated By', 'pressforward' ),
+			'original_author' => __( 'Original Author', 'pressforward' ),
+			'date_nominated'  => __( 'Date Nominated', 'pressforward' ),
 		);
 
 		return $columns;
@@ -181,7 +181,11 @@ class Nominations implements HasActions, HasFilters {
 		}
 
 		$nominators = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'nominator_array' );
-		foreach ( $nominators as $nominator ) {
+		if ( ! $nominators ) {
+			return;
+		}
+
+		foreach ( (array) $nominators as $nominator ) {
 			if ( ! pressforward()->fetch( 'controller.users' )->get_user_setting( $nominator['user_id'], 'nomination-promoted-email-toggle' ) ) {
 				continue;
 			}
@@ -195,7 +199,7 @@ class Nominations implements HasActions, HasFilters {
 
 			$subject = sprintf(
 				// translators: Name of the site.
-				__( 'An item you nominated on %s has been published', 'pf' ),
+				__( 'An item you nominated on %s has been published', 'pressforward' ),
 				$site_name
 			);
 
@@ -203,7 +207,7 @@ class Nominations implements HasActions, HasFilters {
 
 			$message .= sprintf(
 				// translators: Title of the post.
-				__( 'Title: %s', 'pf' ),
+				__( 'Title: %s', 'pressforward' ),
 				get_the_title( $post )
 			);
 
@@ -211,7 +215,7 @@ class Nominations implements HasActions, HasFilters {
 
 			$message .= sprintf(
 				// translators: URL of the post.
-				__( 'URL: %s', 'pf' ),
+				__( 'URL: %s', 'pressforward' ),
 				get_permalink( $post )
 			);
 

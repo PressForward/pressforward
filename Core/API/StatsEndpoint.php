@@ -101,7 +101,7 @@ class StatsEndpoint implements HasActions {
 					'args'                => array(
 						'after_year'   => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
+							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
 							'validate_callback' => function( $page, $request_object ) {
@@ -114,7 +114,7 @@ class StatsEndpoint implements HasActions {
 						),
 						'after_month'  => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
 							'validate_callback' => function( $page, $request_object ) {
@@ -127,7 +127,7 @@ class StatsEndpoint implements HasActions {
 						),
 						'after_day'    => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'Limit query by day, use number of day.', 'pf' ),
+							'description'       => esc_html__( 'Limit query by day, use number of day.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
 							'validate_callback' => function( $page, $request_object ) {
@@ -140,7 +140,7 @@ class StatsEndpoint implements HasActions {
 						),
 						'before_year'  => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
+							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
 							'validate_callback' => function( $page, $request_object ) {
@@ -153,7 +153,7 @@ class StatsEndpoint implements HasActions {
 						),
 						'before_month' => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
 							'validate_callback' => function( $page, $request_object ) {
@@ -166,7 +166,7 @@ class StatsEndpoint implements HasActions {
 						),
 						'before_day'   => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
 							'validate_callback' => function( $page, $request_object ) {
@@ -195,7 +195,7 @@ class StatsEndpoint implements HasActions {
 					'args'                => array(
 						'page'         => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'Page of authors.', 'pf' ),
+							'description'       => esc_html__( 'Page of authors.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => true,
 							'default'           => 1,
@@ -209,7 +209,7 @@ class StatsEndpoint implements HasActions {
 						),
 						'after_year'   => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
+							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
 							'validate_callback' => function( $page, $request_object ) {
@@ -222,7 +222,7 @@ class StatsEndpoint implements HasActions {
 						),
 						'after_month'  => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
 							'validate_callback' => function( $page, $request_object ) {
@@ -235,7 +235,7 @@ class StatsEndpoint implements HasActions {
 						),
 						'after_day'    => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'Limit query by day, use number of day.', 'pf' ),
+							'description'       => esc_html__( 'Limit query by day, use number of day.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
 							'validate_callback' => function( $page, $request_object ) {
@@ -248,7 +248,7 @@ class StatsEndpoint implements HasActions {
 						),
 						'before_year'  => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pf' ),
+							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
 							'validate_callback' => function( $page, $request_object ) {
@@ -261,7 +261,7 @@ class StatsEndpoint implements HasActions {
 						),
 						'before_month' => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
 							'validate_callback' => function( $page, $request_object ) {
@@ -274,7 +274,7 @@ class StatsEndpoint implements HasActions {
 						),
 						'before_day'   => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pf' ),
+							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
 							'validate_callback' => function( $page, $request_object ) {
@@ -303,7 +303,7 @@ class StatsEndpoint implements HasActions {
 					'args'                => array(
 						'page'     => array(
 							// description should be a human readable description of the argument.
-							'description'       => esc_html__( 'Page of posts created by PressForward.', 'pf' ),
+							'description'       => esc_html__( 'Page of posts created by PressForward.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => true,
 							'default'           => 1,
@@ -379,7 +379,7 @@ class StatsEndpoint implements HasActions {
 
 			return rest_ensure_response( $authors );
 		}
-		return new \WP_Error( 'rest_invalid', esc_html__( 'The page parameter is required.', 'pf' ), array( 'status' => 400 ) );
+		return new \WP_Error( 'rest_invalid', esc_html__( 'The page parameter is required.', 'pressforward' ), array( 'status' => 400 ) );
 	}
 
 	/**
@@ -447,7 +447,7 @@ class StatsEndpoint implements HasActions {
 				if ( ! empty( $url_parts ) && isset( $url_parts['host'] ) ) {
 					$post->source_link = $url_parts['host'];
 				} else {
-					$post->source_link = __( 'No Source Found', 'pf' );
+					$post->source_link = __( 'No Source Found', 'pressforward' );
 				}
 				$post->nominators = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'nominator_array' );
 				$post             = pressforward( 'controller.metas' )->attach_metas_by_use( $post );
@@ -462,7 +462,7 @@ class StatsEndpoint implements HasActions {
 			return $response;
 			// unencode via js with the html_entity_decode function we use elsewhere.
 		}
-		return new \WP_Error( 'rest_invalid', esc_html__( 'The page parameter is required.', 'pf' ), array( 'status' => 400 ) );
+		return new \WP_Error( 'rest_invalid', esc_html__( 'The page parameter is required.', 'pressforward' ), array( 'status' => 400 ) );
 	}
 
 	/**

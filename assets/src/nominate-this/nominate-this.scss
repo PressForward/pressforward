@@ -1,0 +1,61 @@
+.nomthis-indicator {
+	align-items: center;
+	display: flex;
+	height: 0;
+	overflow: hidden;
+	transition: padding 1s, visibility 0s, opacity 1s, height 1s;
+	justify-content: center;
+	opacity: 0;
+	visibility: hidden;
+}
+
+.loading-indicator {
+	background: #fcf9e8;
+	gap: 10px;
+}
+
+body.is-loading .loading-indicator {
+	height: 40px;
+	padding: 10px 20px;
+	opacity: 1;
+	visibility: visible;
+}
+
+body.is-failed-request .failure-indicator {
+	background: #ffcccc;
+	height: 40px;
+	padding: 10px 20px;
+	opacity: 1;
+	visibility: visible;
+}
+
+#publishing-actions input {
+	margin-right: 10px;
+}
+
+#poststuff {
+	display: flex;
+	flex-direction: column;
+	gap: 25px;
+	padding: 20px;
+}
+
+#site-heading {
+	margin-top: 0;
+}
+
+@media screen and (min-width: 650px) {
+	#poststuff {
+		flex-direction: row;
+	}
+
+	#side-sortables {
+		flex: 0 0 300px;
+		order: 1;
+	}
+
+	.posting {
+		order: 0;
+		flex: 1;
+	}
+}

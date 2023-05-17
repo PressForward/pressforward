@@ -4,8 +4,9 @@
  * @group OPML
  */
 class PF_Tests_OPML_Reader extends PF_UnitTestCase {
+	public $reader;
 
-	function setUp() {
+	function set_up() {
 		$this->reader = new OPML_reader( '' );
 		$this->reader->build_from_string(
 			'<?xml version="1.0"?>
@@ -32,7 +33,7 @@ class PF_Tests_OPML_Reader extends PF_UnitTestCase {
 
 	function test_load_opml_file() {
 		$this->assertInstanceOf( 'SimpleXMLElement', $this->reader->opml_file );
-		$this->assertInternalType( 'string', $this->reader->file_url );
+		$this->assertIsString( $this->reader->file_url );
 	}
 
 	function test_gets_opml_object() {

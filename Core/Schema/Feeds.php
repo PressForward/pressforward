@@ -96,14 +96,6 @@ class Feeds implements HasActions, HasFilters {
 					'method' => 'deal_with_old_feedlists',
 				),
 				array(
-					'hook'   => 'admin_enqueue_scripts',
-					'method' => 'admin_enqueue_scripts',
-				),
-				array(
-					'hook'   => 'admin_enqueue_scripts',
-					'method' => 'admin_enqueue_edit_feed_scripts',
-				),
-				array(
 					'hook'   => 'post_submitbox_misc_actions',
 					'method' => 'feed_submitbox_pf_actions',
 				),
@@ -185,17 +177,17 @@ class Feeds implements HasActions, HasFilters {
 	 */
 	public function register_feed_post_type() {
 		$labels = array(
-			'name'               => __( 'Subscribed Feeds', 'pf' ),
-			'singular_name'      => __( 'Feed', 'pf' ),
+			'name'               => __( 'Subscribed Feeds', 'pressforward' ),
+			'singular_name'      => __( 'Feed', 'pressforward' ),
 			'add_new'            => _x( 'Add New', 'pf', 'add new feed' ),
-			'all_items'          => __( 'All Feeds', 'pf' ),
-			'add_new_item'       => __( 'Add New Feed', 'pf' ),
-			'edit_item'          => __( 'Edit Feed', 'pf' ),
-			'new_item'           => __( 'New Feed', 'pf' ),
-			'view_item'          => __( 'View Feed', 'pf' ),
-			'search_items'       => __( 'Search Feeds', 'pf' ),
-			'not_found'          => __( 'No feeds found', 'pf' ),
-			'not_found_in_trash' => __( 'No feeds found in trash', 'pf' ),
+			'all_items'          => __( 'All Feeds', 'pressforward' ),
+			'add_new_item'       => __( 'Add New Feed', 'pressforward' ),
+			'edit_item'          => __( 'Edit Feed', 'pressforward' ),
+			'new_item'           => __( 'New Feed', 'pressforward' ),
+			'view_item'          => __( 'View Feed', 'pressforward' ),
+			'search_items'       => __( 'Search Feeds', 'pressforward' ),
+			'not_found'          => __( 'No feeds found', 'pressforward' ),
+			'not_found_in_trash' => __( 'No feeds found in trash', 'pressforward' ),
 		);
 
 		register_post_type(
@@ -205,7 +197,7 @@ class Feeds implements HasActions, HasFilters {
 				array(
 					'label'                 => $labels['name'],
 					'labels'                => $labels,
-					'description'           => __( 'Feeds imported by PressForward&#8217;s Feed Importer', 'pf' ),
+					'description'           => __( 'Feeds imported by PressForward&#8217;s Feed Importer', 'pressforward' ),
 					'public'                => false,
 					'hierarchical'          => true,
 					'supports'              => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields', 'page-attributes' ),
@@ -362,14 +354,14 @@ class Feeds implements HasActions, HasFilters {
 		register_post_status(
 			'under_review',
 			array(
-				'label'                     => _x( 'Under Review', 'pf' ),
+				'label'                     => _x( 'Under Review', 'pf', 'pressforward' ),
 				'public'                    => true,
 				'exclude_from_search'       => false,
 				'show_in_admin_all_list'    => true,
 				'show_in_admin_status_list' => true,
 
 				// Translators: Under Review feed count.
-				'label_count'               => _n_noop( 'Under Review <span class="count">(%s)</span>', 'Under Review <span class="count">(%s)</span>' ),
+				'label_count'               => _n_noop( 'Under Review <span class="count">(%s)</span>', 'Under Review <span class="count">(%s)</span>', 'pressforward' ),
 			)
 		);
 	}
@@ -394,7 +386,7 @@ class Feeds implements HasActions, HasFilters {
 
 		echo '<div class="misc-pub-section misc-pub-section-last">
 	         <span id="pf_no_feed_alert_single">'
-			. '<label><input type="checkbox"' . ( ! empty( $value ) ? ' checked="checked" ' : null ) . 'value="1" name="pf_no_feed_alert" /> ' . esc_html__( 'No alerts, never let feed go inactive.', 'pf' ) . '</label>'
+			. '<label><input type="checkbox"' . ( ! empty( $value ) ? ' checked="checked" ' : null ) . 'value="1" name="pf_no_feed_alert" /> ' . esc_html__( 'No alerts, never let feed go inactive.', 'pressforward' ) . '</label>'
 		. '</span></div>';
 	}
 
@@ -429,9 +421,9 @@ class Feeds implements HasActions, HasFilters {
 	 * @return array
 	 */
 	public function custom_feed_column_name( $posts_columns ) {
-		$posts_columns['author']          = 'Added by';
-		$posts_columns['items_retrieved'] = 'Items';
-		$posts_columns['date']            = 'Date Added';
+		$posts_columns['author']          = __( 'Added by', 'pressforward' );
+		$posts_columns['items_retrieved'] = __( 'Items', 'pressforward' );
+		$posts_columns['date']            = __( 'Date Added', 'pressforward' );
 		return $posts_columns;
 	}
 
@@ -582,284 +574,9 @@ class Feeds implements HasActions, HasFilters {
 			return $actions;
 		}
 
-		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="' . esc_attr( $post->ID ) . '" title="' . esc_attr__( 'Refresh this feed', 'pf' ) . '">' . esc_html__( 'Refresh Feed Items', 'pf' ) . '</a> | ';
+		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="' . esc_attr( $post->ID ) . '" title="' . esc_attr__( 'Refresh this feed', 'pressforward' ) . '">' . esc_html__( 'Refresh Feed Items', 'pressforward' ) . '</a> | ';
 
 		return $actions;
-	}
-
-	/**
-	 * Gets list of top-level feed folders.
-	 *
-	 * @return array
-	 */
-	public function get_top_feed_folders() {
-		$terms = array( $this->tag_taxonomy );
-		$cats  = get_terms(
-			$terms,
-			array(
-				'parent'       => 0,
-				'hide_empty'   => 1,
-				'hierarchical' => 1,
-			)
-		);
-		return $cats;
-	}
-
-	/**
-	 * Gets non-top-level feed folders.
-	 *
-	 * @param int|array|object|bool $ids Single folder ID, or array/object of IDs.
-	 * @return array|bool
-	 */
-	public function get_child_feed_folders( $ids = false ) {
-		$children = array();
-		if ( ! $ids ) {
-			foreach ( $this->get_top_feed_folders() as $cat ) {
-				$term_childs = get_term_children( $cat->term_id, $this->tag_taxonomy );
-				if ( ! empty( $term_childs ) ) {
-					$children[ $cat->term_id ] = get_term_children( $cat->term_id, $this->tag_taxonomy );
-				} else {
-					$children[ $cat->term_id ] = false;
-				}
-			}
-		} elseif ( is_numeric( $ids ) || is_string( $ids ) ) {
-			if ( ! $this->is_feed_term( $ids ) ) {
-				return false;
-			}
-			$children_terms = get_term_children( $ids, $this->tag_taxonomy );
-			foreach ( $children_terms as $child ) {
-				$children[ $child ] = $this->get_feed_folders( $child );
-			}
-		} elseif ( is_array( $ids ) ) {
-			foreach ( $ids as $id ) {
-				$children[ $id ] = $this->get_feed_folders( $id );
-			}
-		} elseif ( is_object( $ids ) ) {
-			$children[ $ids->term_id ] = get_term_children( $ids->term_id, $this->tag_taxonomy );
-		} else {
-			return $ids;
-		}
-
-		return $children;
-	}
-
-	/**
-	 * Gets child folders of a folder.
-	 *
-	 * @param \WP_Term $folder Term object.
-	 * @return array
-	 */
-	public function get_child_folders( $folder ) {
-		$children = get_term_children( $folder->term_id, $this->tag_taxonomy );
-		$folders  = array();
-
-		foreach ( $children as $child ) {
-			$folders[ $child ] = $this->get_feed_folders( $child );
-		}
-
-		return $folders;
-	}
-
-	/**
-	 * Gets feed folders.
-	 *
-	 * @param int|array|object|bool $ids Single folder ID, or array/object of IDs.
-	 * @return array|false
-	 */
-	public function get_feed_folders( $ids = false ) {
-		$folder_set = array();
-		if ( ! $ids ) {
-			$top_folders = $this->get_top_feed_folders();
-			foreach ( $top_folders as $folder ) {
-
-				$folder_set[ $folder->term_id ] = array(
-					'term'     => $folder,
-					'term_id'  => $folder->term_id,
-					'children' => array(
-						'feeds'   => get_objects_in_term( $folder->term_id, $this->tag_taxonomy ),
-						'folders' => $this->get_child_folders( $folder ),
-					),
-				);
-			}
-		} elseif ( is_numeric( $ids ) ) {
-			$folder     = get_term( $ids, $this->tag_taxonomy );
-			$folder_set = array(
-				'term'     => $folder,
-				'term_id'  => $folder->term_id,
-				'children' => array(
-					'feeds'   => get_objects_in_term( $folder->term_id, $this->tag_taxonomy ),
-					'folders' => $this->get_child_folders( $folder ),
-				),
-			);
-		} elseif ( is_array( $ids ) ) {
-			foreach ( $ids as $id ) {
-				$folder_set[ $id ] = $this->get_feed_folders( $id );
-			}
-		} else {
-			return false;
-		}
-
-		return $folder_set;
-	}
-
-	/**
-	 * Gets a list of feeds without folders.
-	 *
-	 * @return array
-	 */
-	public function get_feeds_without_folders() {
-		$q = new \WP_Query(
-			array(
-				'post_type'   => $this->post_type,
-				'fields'      => 'ids',
-				'orderby'     => 'title',
-				'order'       => 'ASC',
-				'post_status' => array( 'pending', 'draft', 'future', 'publish', pressforward( 'library.alertbox' )->status() ),
-				'nopaging'    => true,
-				'tax_query'   => array(
-					array(
-						'taxonomy' => $this->tag_taxonomy,
-						'operator' => 'NOT EXISTS',
-					),
-				),
-			)
-		);
-
-		return $q->posts;
-	}
-
-	/**
-	 * Gets list of feeds without folders.
-	 */
-	public function the_feeds_without_folders() {
-		$the_other_feeds = $this->get_feeds_without_folders();
-		foreach ( $the_other_feeds as $a_feed_id ) {
-			$this->the_feed( $a_feed_id );
-		}
-	}
-
-	/**
-	 * Generates markup for feed folders.
-	 *
-	 * @param array|bool $obj Optional. Folder tree.
-	 */
-	public function the_feed_folders( $obj = false ) {
-		if ( ! $obj ) {
-			$obj = $this->get_feed_folders();
-		}
-
-		?>
-		<ul class="feed_folders">
-			<?php
-			foreach ( $obj as $folder ) {
-				?>
-				<li class="feed_folder" id="folder-<?php echo esc_attr( $folder['term_id'] ); ?>">
-					<?php $this->the_inside_of_folder( $folder ); ?>
-				</li>
-				<?php
-			}
-
-			$this->the_feeds_without_folders();
-			?>
-		</ul>
-		<?php
-	}
-
-	/**
-	 * Generates markup for the inside of a feed folder.
-	 *
-	 * @param array $folder  Term data.
-	 * @param bool  $wrapped Whether to have a 'feed_folder' wrapper div.
-	 */
-	public function the_inside_of_folder( $folder, $wrapped = false ) {
-		if ( $wrapped ) {
-			?>
-			<li class="feed_folder" id="folder-<?php echo esc_attr( $folder['term_id'] ); ?>">
-			<?php
-		}
-
-		$this->the_folder( $folder );
-
-		if ( ! empty( $folder['children']['folders'] ) ) {
-			foreach ( $folder['children']['folders'] as $subfolder ) {
-				?>
-				<ul class="feed_inner_folders">
-				<?php
-				$this->the_inside_of_folder( $subfolder, true );
-				?>
-				</ul>
-				<?php
-
-			}
-		}
-
-		if ( ! empty( $folder['children']['feeds'] ) ) {
-			?>
-			<ul class="feed_inner_feeds">
-			<?php
-			foreach ( $folder['children']['feeds'] as $feed ) {
-				?>
-				<?php
-				$this->the_feed( $feed );
-				?>
-				<?php
-			}
-			?>
-			</ul>
-			<?php
-		}
-
-		if ( $wrapped ) {
-			?>
-			</li>
-			<?php
-		}
-	}
-
-	/**
-	 * Generates markup for the folder name/link.
-	 *
-	 * @param array $folder  Term data.
-	 */
-	public function the_folder( $folder ) {
-		if ( is_array( $folder ) ) {
-			$term_obj = $folder['term'];
-		} else {
-			$term_obj = $folder;
-		}
-		?>
-
-		<?php
-			printf( '<a href="%s" class="folder" title="%s">%s</a>', esc_attr( $term_obj->term_id ), esc_attr( $term_obj->name ), esc_html( $term_obj->name ) );
-
-		?>
-
-		<?php
-	}
-
-	/**
-	 * Generates markup for the folder name/link.
-	 *
-	 * @param mixed $feed Feed ID or object.
-	 */
-	public function the_feed( $feed ) {
-		$feed_obj = get_post( $feed );
-		if ( empty( $feed_obj ) ) {
-			return;
-		}
-
-		if ( ( 'trash' === $feed_obj->post_status ) || ( 'removed_' . $this->post_type === $feed_obj->post_status ) || ( $this->post_type !== $feed_obj->post_type ) ) {
-			return;
-		}
-		?>
-		<li class="feed" id="feed-<?php echo esc_attr( $feed_obj->ID ); ?>">
-		<?php
-
-			printf( '<a href="%s" title="%s">%s</a>', esc_attr( $feed_obj->ID ), esc_attr( $feed_obj->post_title ), esc_html( $feed_obj->post_title ) );
-
-		?>
-		</li>
-		<?php
 	}
 
 	/**
@@ -965,7 +682,7 @@ class Feeds implements HasActions, HasFilters {
 		register_post_status(
 			'removed_' . $this->post_type,
 			array(
-				'label'                  => _x( 'Removed Feed', 'pf' ),
+				'label'                  => _x( 'Removed Feed', 'pf', 'pressforward' ),
 				'public'                 => false,
 				'exclude_from_search'    => true,
 				'show_in_admin_all_list' => false,
@@ -1218,7 +935,7 @@ class Feeds implements HasActions, HasFilters {
 					$the_feed = pf_fetch_feed( $feed_url );
 					if ( is_wp_error( $the_feed ) ) {
 						pf_log( 'The RSS feed failed 3rd verification' );
-						return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
+						return new \WP_Error( 'badfeed', __( 'The feed fails verification.', 'pressforward' ) );
 					} else {
 						$r['url']      = $feed_url;
 						$r['feed_url'] = $feed_url;
@@ -1469,7 +1186,7 @@ class Feeds implements HasActions, HasFilters {
 		if ( 'rss' === $r['type'] ) {
 			$the_feed = pf_fetch_feed( $feed_url );
 			if ( is_wp_error( $the_feed ) ) {
-				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
+				return new \WP_Error( 'badfeed', __( 'The feed fails verification.', 'pressforward' ) );
 			} else {
 				$r = $this->setup_rss_meta( $r, $the_feed );
 			}
@@ -1479,7 +1196,7 @@ class Feeds implements HasActions, HasFilters {
 			pf_log( 'Updating a rss-quick' );
 			$the_feed = pf_fetch_feed( $feed_url );
 			if ( is_wp_error( $the_feed ) ) {
-				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
+				return new \WP_Error( 'badfeed', __( 'The feed fails verification.', 'pressforward' ) );
 			} else {
 				$r = $this->setup_rss_meta( $r, $the_feed );
 			}
@@ -1535,7 +1252,7 @@ class Feeds implements HasActions, HasFilters {
 			pf_log( 'Updating a rss-quick' );
 			$the_feed = pf_fetch_feed( $feed_url );
 			if ( is_wp_error( $the_feed ) ) {
-				return new \WP_Error( 'badfeed', __( 'The feed fails verification.' ) );
+				return new \WP_Error( 'badfeed', __( 'The feed fails verification.', 'pressforward' ) );
 			} else {
 				$r = $this->setup_rss_meta( $r, $the_feed );
 			}
@@ -1638,47 +1355,6 @@ class Feeds implements HasActions, HasFilters {
 	}
 
 	/**
-	 * Enqueues Feed-related scripts in the admin.
-	 */
-	public function admin_enqueue_scripts() {
-		global $pagenow;
-
-		$hook = 0 !== func_num_args() ? func_get_arg( 0 ) : '';
-
-		if ( ! in_array( $pagenow, array( 'admin.php' ), true ) ) {
-			return;
-		}
-
-		if ( ! in_array( $hook, array( 'pressforward_page_pf-feeder' ), true ) ) {
-			return;
-		}
-
-		// phpcs:ignore
-		// wp_enqueue_script( 'feed_control_script', PF_URL . '/assets/js/feeds_control.js', array('jquery', PF_SLUG . '-twitter-bootstrap'), PF_VERSION );
-	}
-
-	/**
-	 * Enqueues Feed-related scripts in the edit.php Feed edit panel.
-	 */
-	public function admin_enqueue_edit_feed_scripts() {
-		global $pagenow;
-
-		$hook = 0 !== func_num_args() ? func_get_arg( 0 ) : '';
-
-		if ( in_array( $pagenow, array( 'edit.php' ), true ) ) {
-			wp_enqueue_script( 'feed_edit_manip', PF_URL . 'assets/js/subscribed-feeds-actions.js', array( 'jquery' ), PF_VERSION, true );
-		}
-
-		if ( ! in_array( $pagenow, array( 'post.php' ), true ) ) {
-			return;
-		}
-
-		if ( ! in_array( $hook, array( 'pf_feed' ), true ) ) {
-			wp_enqueue_script( 'feed_edit_manip', PF_URL . 'assets/js/subscribed-feeds-actions.js', array( 'jquery' ), PF_VERSION, true );
-		}
-	}
-
-	/**
 	 * Gets a message to display after feed save.
 	 *
 	 * @param array $messages Messages to be displayed.
@@ -1691,21 +1367,21 @@ class Feeds implements HasActions, HasFilters {
 
 		$messages[ $this->post_type ] = array(
 			0  => '', // Unused. Messages start at index 1.
-			1  => __( 'Feed updated.', 'pf' ),
-			2  => __( 'Custom field updated.', 'pf' ),
-			3  => __( 'Custom field deleted.', 'pf' ),
-			4  => __( 'Feed updated.', 'pf' ),
+			1  => __( 'Feed updated.', 'pressforward' ),
+			2  => __( 'Custom field updated.', 'pressforward' ),
+			3  => __( 'Custom field deleted.', 'pressforward' ),
+			4  => __( 'Feed updated.', 'pressforward' ),
 			/* translators: %s: date and time of the revision */
-			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Feed restored to revision from %s', 'pf' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6  => __( 'The feed was made successfully active.', 'pf' ),
-			7  => __( 'The feed was saved successfully.', 'pf' ),
-			8  => __( 'Feed submitted.', 'pf' ),
+			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Feed restored to revision from %s', 'pressforward' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6  => __( 'The feed was made successfully active.', 'pressforward' ),
+			7  => __( 'The feed was saved successfully.', 'pressforward' ),
+			8  => __( 'Feed submitted.', 'pressforward' ),
 			9  => sprintf(
 				// translators: Publish box date format, see http://php.net/date.
-				__( 'Feed scheduled for: <strong>%1$s</strong>.', 'pf' ),
-				date_i18n( __( 'M j, Y @ G:i', 'pf' ), strtotime( $post->post_date ) )
+				__( 'Feed scheduled for: <strong>%1$s</strong>.', 'pressforward' ),
+				date_i18n( __( 'M j, Y @ G:i', 'pressforward' ), strtotime( $post->post_date ) )
 			),
-			10 => __( 'Feed draft updated.', 'pf' ),
+			10 => __( 'Feed draft updated.', 'pressforward' ),
 		);
 
 		if ( $post_type_object->publicly_queryable ) {

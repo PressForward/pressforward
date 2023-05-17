@@ -64,17 +64,17 @@ class PF_JWT {
 				$value = random_bytes( $num );
 			} catch ( \TypeError $e ) {
 				// Well, it's an integer, so this IS unexpected.
-				die( esc_html__( 'An unexpected error has occurred when generating a cryptographic API key.', 'pf' ) );
+				die( esc_html__( 'An unexpected error has occurred when generating a cryptographic API key.', 'pressforward' ) );
 			} catch ( \Error $e ) {
 				// This is also unexpected because 32 is a reasonable integer.
-				die( esc_html__( 'An unexpected error has occurred when generating a cryptographic API key.', 'pf' ) );
+				die( esc_html__( 'An unexpected error has occurred when generating a cryptographic API key.', 'pressforward' ) );
 			} catch ( \Exception $e ) {
 				// If you get this message, the CSPRNG failed hard.
-				die( esc_html__( 'Could not generate a random string. Is our OS secure?', 'pf' ) );
+				die( esc_html__( 'Could not generate a random string. Is our OS secure?', 'pressforward' ) );
 			}
 			return bin2hex( $value );
 		} else {
-			throw new \Exception( __( 'PressForward cannot provide a cryptographically secure API key.', 'pf' ), 1 );
+			throw new \Exception( __( 'PressForward cannot provide a cryptographically secure API key.', 'pressforward' ), 1 );
 		}
 	}
 
@@ -111,12 +111,11 @@ class PF_JWT {
 	 *
 	 * @param string $token Token.
 	 * @param string $key   Key.
-	 * @param array  $alg   Algorithm.
 	 * @return bool|object
 	 */
-	public function decode_with_jwt( $token, $key, $alg = array( 'HS256' ) ) {
+	public function decode_with_jwt( $token, $key ) {
 		try {
-			$decode = $this->jwt->decode( $token, $key, $alg );
+			$decode = $this->jwt->decode( $token, $key );
 		} catch ( \Exception $e ) {
 			return false;
 		}

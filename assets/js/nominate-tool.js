@@ -92,7 +92,7 @@
 
 	function stylesAndScripts() {
 
-		var jsScript = scriptElement(window.pfSiteData.plugin_url + 'Libraries/tinymce/js/tinymce/tinymce.min.js');
+		var jsScript = scriptElement(window.pfSiteData.site_url + '/wp-includes/js/tinymce/tinymce.min.js');
 		jsScript.onload = function () { console.log("init nt wysiwyg"); window.initEditor(); };
 		var headTag = document.getElementsByTagName('head')[0];
 		headTag.prepend(jsScript);

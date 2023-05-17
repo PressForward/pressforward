@@ -65,12 +65,6 @@ class Menu implements HasActions, HasFilters {
 				'hook'   => 'admin_init',
 				'method' => 'pf_options_admin_page_save',
 			),
-			// Launch a batch delete process, if necessary.
-			array(
-				'hook'   => 'admin_init',
-				'method' => 'launch_batch_delete',
-			),
-
 		);
 	}
 
@@ -160,23 +154,15 @@ class Menu implements HasActions, HasFilters {
 	}
 
 	/**
-	 * Launch a batch delete, if one is queued.
-	 *
-	 * @since 3.6
-	 */
-	public function launch_batch_delete() {
-		if ( ! current_user_can( 'delete_posts' ) ) {
-			return;
-		}
-
-		pf_launch_batch_delete();
-	}
-
-
-	/**
 	 * Display function for the main All Content panel
 	 */
 	public function display_reader_builder() {
+		wp_enqueue_script( 'pf-views' );
+
+		if ( 'false' !== get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() ) ) {
+			wp_enqueue_script( 'pf-scroll' );
+		}
+
 		$user_obj = wp_get_current_user();
 		$user_id  = $user_obj->ID;
 
@@ -212,7 +198,7 @@ class Menu implements HasActions, HasFilters {
 						pressforward( 'controller.template_factory' )->the_page_headline();
 
 					?>
-					<button class="btn btn-small" id="fullscreenfeed"> <?php esc_html_e( 'Full Screen', 'pf' ); ?> </button>
+					<button class="btn btn-small" id="fullscreenfeed"> <?php esc_html_e( 'Full Screen', 'pressforward' ); ?> </button>
 				</div><!-- End title -->
 				<?php pressforward( 'admin.templates' )->search_template(); ?>
 
@@ -224,12 +210,12 @@ class Menu implements HasActions, HasFilters {
 				<?php pressforward( 'admin.templates' )->the_side_menu(); ?>
 				<?php pressforward( 'schema.folders' )->folderbox(); ?>
 				<div id="entries">
-					<?php echo '<img class="loading-top" src="' . esc_attr( PF_URL ) . 'assets/images/ajax-loader.gif" alt="' . esc_attr__( 'Loading...', 'pf' ) . '" style="display: none" />'; ?>
+					<?php echo '<img class="loading-top" src="' . esc_attr( PF_URL ) . 'assets/images/ajax-loader.gif" alt="' . esc_attr__( 'Loading...', 'pressforward' ) . '" style="display: none" />'; ?>
 
 					<div id="errors">
 					<?php
 					if ( 0 >= self::count_the_posts( 'pf_feed' ) ) {
-						echo '<p>' . esc_html__( 'You need to add feeds, there are none in the system.', 'pf' ) . '</p>';
+						echo '<p>' . esc_html__( 'You need to add feeds, there are none in the system.', 'pressforward' ) . '</p>';
 					}
 					?>
 					</div>
@@ -267,6 +253,26 @@ class Menu implements HasActions, HasFilters {
 				}
 
 				$archive_feed_args['count_total'] = true;
+
+				if ( isset( $_GET['sort-by'] ) ) {
+					$sort_by    = sanitize_text_field( wp_unslash( $_GET['sort-by'] ) );
+					$sort_order = isset( $_GET['sort-order'] ) && 'asc' === strtolower( sanitize_text_field( wp_unslash( $_GET['sort-order'] ) ) ) ? 'ASC' : 'DESC';
+
+					switch ( $sort_by ) {
+						case 'item-date':
+						default:
+							$archive_feed_args['orderby'] = [
+								'meta_value' => $sort_order,
+							];
+							break;
+
+						case 'feed-in-date':
+							$archive_feed_args['orderby'] = [
+								'date' => $sort_order,
+							];
+							break;
+					}
+				}
 
 				$items_to_display = pressforward( 'controller.loops' )->archive_feed_to_display( $archive_feed_args );
 				foreach ( $items_to_display['items'] as $item ) {
@@ -324,11 +330,11 @@ class Menu implements HasActions, HasFilters {
 			if ( $index >= $per_page ) {
 				echo '<div class="pf-navigation">';
 				if ( $previous_page > 0 ) {
-					echo '<span class="feedprev"><a class="prevnav" href="admin.php' . esc_attr( $page_prev ) . '">' . esc_html__( 'Previous Page', 'pf' ) . '</a></span> | ';
+					echo '<span class="feedprev"><a class="prevnav" href="admin.php' . esc_attr( $page_prev ) . '">' . esc_html__( 'Previous Page', 'pressforward' ) . '</a></span> | ';
 				}
 
 				if ( $next_page <= $items_to_display['max_num_pages'] ) {
-					echo '<span class="feednext"><a class="nextnav" href="admin.php' . esc_attr( $page_next ) . '">' . esc_html__( 'Next Page', 'pf' ) . '</a></span>';
+					echo '<span class="feednext"><a class="nextnav" href="admin.php' . esc_attr( $page_next ) . '">' . esc_html__( 'Next Page', 'pressforward' ) . '</a></span>';
 				}
 				echo '</div>';
 			}
@@ -454,31 +460,31 @@ class Menu implements HasActions, HasFilters {
 			$arrayed_admin_rights = array(
 				'pf_menu_group_access'          => array(
 					'default' => 'contributor',
-					'title'   => __( 'PressForward Menu Group', 'pf' ),
+					'title'   => __( 'PressForward Menu Group', 'pressforward' ),
 				),
 				'pf_menu_all_content_access'    => array(
 					'default' => 'contributor',
-					'title'   => __( 'All Content Menu', 'pf' ),
+					'title'   => __( 'All Content Menu', 'pressforward' ),
 				),
 				'pf_menu_under_review_access'   => array(
 					'default' => 'contributor',
-					'title'   => __( 'Nominated Menu', 'pf' ),
+					'title'   => __( 'Nominated Menu', 'pressforward' ),
 				),
 				'pf_menu_nominate_this_access'  => array(
 					'default' => pf_get_role_by_capability( get_option( 'pf_menu_all_content_access', 'edit_posts' ) ),
-					'title'   => __( 'Nominate This', 'pf' ),
+					'title'   => __( 'Nominate This', 'pressforward' ),
 				),
 				'pf_menu_preferences_access'    => array(
 					'default' => 'administrator',
-					'title'   => __( 'Preferences Menu', 'pf' ),
+					'title'   => __( 'Preferences Menu', 'pressforward' ),
 				),
 				'pf_menu_feeder_access'         => array(
 					'default' => 'editor',
-					'title'   => __( 'Add Feeds', 'pf' ),
+					'title'   => __( 'Add Feeds', 'pressforward' ),
 				),
 				'pf_menu_add_nomination_access' => array(
 					'default' => 'contributor',
-					'title'   => __( 'Add Nomination Menu', 'pf' ),
+					'title'   => __( 'Add Nomination Menu', 'pressforward' ),
 				),
 			);
 
@@ -632,7 +638,7 @@ class Menu implements HasActions, HasFilters {
 	 * @return string
 	 */
 	public function alert_check_message( $msg ) {
-		return __( 'Are you sure you want to delete all feeds with alerts?', 'pf' );
+		return __( 'Are you sure you want to delete all feeds with alerts?', 'pressforward' );
 	}
 
 	/**
@@ -642,7 +648,7 @@ class Menu implements HasActions, HasFilters {
 	 * @return string
 	 */
 	public function alert_delete_all_message( $msg ) {
-		return __( 'Delete all feeds with alerts', 'pf' );
+		return __( 'Delete all feeds with alerts', 'pressforward' );
 	}
 
 	/**
@@ -652,7 +658,7 @@ class Menu implements HasActions, HasFilters {
 	 * @return string
 	 */
 	public function alert_safe_filterer( $safe_msg ) {
-		return __( 'All feeds are ok!', 'pf' );
+		return __( 'All feeds are ok!', 'pressforward' );
 	}
 
 	/**

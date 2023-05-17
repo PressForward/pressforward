@@ -84,8 +84,8 @@ class AddFeeds implements HasActions, HasFilters {
 		// Feed-listing page is accessible only to Editors and above.
 		add_submenu_page(
 			PF_MENU_SLUG,
-			__( 'Add Feeds', 'pf' ),
-			__( 'Add Feeds', 'pf' ),
+			__( 'Add Feeds', 'pressforward' ),
+			__( 'Add Feeds', 'pressforward' ),
 			get_option( 'pf_menu_feeder_access', $this->user_interface->pf_get_defining_capability_by_role( 'editor' ) ),
 			PF_SLUG . '-feeder',
 			array( $this, 'display_feeder_builder' )
@@ -109,7 +109,7 @@ class AddFeeds implements HasActions, HasFilters {
 		$vars      = array(
 			'current'            => $tab,
 			'user_ID'            => $user_ID,
-			'page_title'         => __( 'PressForward: Add Feeds', 'pf' ),
+			'page_title'         => __( 'PressForward: Add Feeds', 'pressforward' ),
 			'page_slug'          => 'pf-add-feeds',
 			'no_save_button'     => true,
 			'form_head'          => $form_head,
@@ -129,7 +129,7 @@ class AddFeeds implements HasActions, HasFilters {
 	 */
 	public function set_permitted_tools_tabs( $permitted_tabs ) {
 		$permitted_tabs['primary_feed_type'] = array(
-			'title' => __( 'Subscribe to Feeds', 'pf' ),
+			'title' => __( 'Subscribe to Feeds', 'pressforward' ),
 			'cap'   => $this->user_interface->pf_get_defining_capability_by_role( 'contributor' ),
 		);
 		return $permitted_tabs;
@@ -143,7 +143,7 @@ class AddFeeds implements HasActions, HasFilters {
 	 */
 	public function set_permitted_tools_tabs_alerts( $permitted_tabs ) {
 		$permitted_tabs['alerts'] = array(
-			'title' => __( 'Alerts', 'pf' ),
+			'title' => __( 'Alerts', 'pressforward' ),
 			'cap'   => $this->user_interface->pf_get_defining_capability_by_role( 'administrator' ),
 		);
 		return $permitted_tabs;

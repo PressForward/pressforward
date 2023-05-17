@@ -9,8 +9,8 @@
 
 <?php if ( current_user_can( 'edit_posts' ) ) : ?>
 	<div class="alert-box postbox">
-		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'pf' ); ?>"><br></div>
-		<h3 class="hndle"><span><?php esc_html_e( 'Feed Problems', 'pf' ); ?></span></h3>
+		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'pressforward' ); ?>"><br></div>
+		<h3 class="hndle"><span><?php esc_html_e( 'Feed Problems', 'pressforward' ); ?></span></h3>
 		<div class="inside">
 			<?php
 			pressforward( 'admin.menu' )->pf_alert_displayer();

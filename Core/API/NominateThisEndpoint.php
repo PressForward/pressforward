@@ -117,7 +117,7 @@ class NominateThisEndpoint implements HasActions {
 					'args'                => array(
 						'context' => array(
 							// description should be a human readable description of the argument.
-							'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
+							'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pressforward' ),
 							// type specifies the type of data that the argument should be.
 							'type'        => 'string',
 							// Set the argument to be required for the endpoint.
@@ -147,7 +147,7 @@ class NominateThisEndpoint implements HasActions {
 					'args'                => array(
 						'context' => array(
 							// description should be a human readable description of the argument.
-							'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
+							'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pressforward' ),
 							// type specifies the type of data that the argument should be.
 							'type'        => 'string',
 							// Set the argument to be required for the endpoint.
@@ -156,7 +156,7 @@ class NominateThisEndpoint implements HasActions {
 						),
 						'u'       => array(
 							// description should be a human readable description of the argument.
-							'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
+							'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pressforward' ),
 							// type specifies the type of data that the argument should be.
 							'type'        => 'string',
 							// Set the argument to be required for the endpoint.
@@ -165,7 +165,7 @@ class NominateThisEndpoint implements HasActions {
 						),
 						's'       => array(
 							// description should be a human readable description of the argument.
-							'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
+							'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pressforward' ),
 							// type specifies the type of data that the argument should be.
 							'type'        => 'string',
 							// Set the argument to be required for the endpoint.
@@ -174,7 +174,7 @@ class NominateThisEndpoint implements HasActions {
 						),
 						'v'       => array(
 							// description should be a human readable description of the argument.
-							'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pf' ),
+							'description' => esc_html__( 'Supplies the Nominate This template for building the bookmarklet.', 'pressforward' ),
 							// type specifies the type of data that the argument should be.
 							'type'        => 'string',
 							// Set the argument to be required for the endpoint.
@@ -199,7 +199,7 @@ class NominateThisEndpoint implements HasActions {
 				'args'                => array(
 					'context' => array(
 						// description should be a human readable description of the argument.
-						'description' => esc_html__( 'Supplies the Nominate This js script for building the bookmarklet.', 'pf' ),
+						'description' => esc_html__( 'Supplies the Nominate This js script for building the bookmarklet.', 'pressforward' ),
 						// type specifies the type of data that the argument should be.
 						'type'        => 'string',
 						// Set the argument to be required for the endpoint.
@@ -208,7 +208,7 @@ class NominateThisEndpoint implements HasActions {
 					),
 					'k'       => array(
 						// description should be a human readable description of the argument.
-						'description' => esc_html__( 'Public Key.', 'pf' ),
+						'description' => esc_html__( 'Public Key.', 'pressforward' ),
 						// type specifies the type of data that the argument should be.
 						'type'        => 'string',
 						// Set the argument to be required for the endpoint.
@@ -222,18 +222,18 @@ class NominateThisEndpoint implements HasActions {
 						$raw_key = isset( $_GET['k'] ) ? sanitize_text_field( wp_unslash( $_GET['k'] ) ) : '';
 						$key = pressforward( 'controller.jwt' )->get_a_user_private_key_for_decrypt( hex2bin( $raw_key ) );
 						if ( ! $key ) {
-							$return_var = new WP_Error( 'auth_fail_id', __( 'Request was signed with incorrect key.', 'pf' ) );
+							$return_var = new WP_Error( 'auth_fail_id', __( 'Request was signed with incorrect key.', 'pressforward' ) );
 						}
 						return $return_var;
 					} catch ( \UnexpectedValueException $e ) {
-						$return_var = new WP_Error( 'auth_fail_format', __( 'Authentication key was not properly formated.', 'pf' ) );
+						$return_var = new WP_Error( 'auth_fail_format', __( 'Authentication key was not properly formated.', 'pressforward' ) );
 					} catch ( \InvalidArgumentException $e ) {
-						$return_var = new WP_Error( 'auth_fail_key', __( 'Authentication key was not properly supplied.', 'pf' ) );
+						$return_var = new WP_Error( 'auth_fail_key', __( 'Authentication key was not properly supplied.', 'pressforward' ) );
 					} catch ( \DomainException $e ) {
-						$return_var = new WP_Error( 'auth_fail_ssl', __( 'SSL cannot be applied to the key.', 'pf' ) );
+						$return_var = new WP_Error( 'auth_fail_ssl', __( 'SSL cannot be applied to the key.', 'pressforward' ) );
 					} catch ( \Exception $e ) {
 						if ( false === $return_var ) {
-							return new WP_Error( 'auth_fail_whoknows', __( 'Authentication failed for reasons unclear.', 'pf' ) );
+							return new WP_Error( 'auth_fail_whoknows', __( 'Authentication failed for reasons unclear.', 'pressforward' ) );
 						} else {
 							return $return_var;
 						}
@@ -252,7 +252,7 @@ class NominateThisEndpoint implements HasActions {
 				'args'                => array(
 					'context' => array(
 						// description should be a human readable description of the argument.
-						'description' => esc_html__( 'The endpoint to which the Nominate This bookmarklet submits to.', 'pf' ),
+						'description' => esc_html__( 'The endpoint to which the Nominate This bookmarklet submits to.', 'pressforward' ),
 						// type specifies the type of data that the argument should be.
 						'type'        => 'string',
 						// Set the argument to be required for the endpoint.
@@ -261,7 +261,7 @@ class NominateThisEndpoint implements HasActions {
 					),
 					'k'       => array(
 						// description should be a human readable description of the argument.
-						'description' => esc_html__( 'Public Key.', 'pf' ),
+						'description' => esc_html__( 'Public Key.', 'pressforward' ),
 						// type specifies the type of data that the argument should be.
 						'type'        => 'string',
 						// Set the argument to be required for the endpoint.
@@ -275,21 +275,21 @@ class NominateThisEndpoint implements HasActions {
 					try {
 						$key = pressforward( 'controller.jwt' )->get_a_user_private_key_for_decrypt( hex2bin( trim( $request_params['user_key'] ) ) );
 						if ( ! $key ) {
-							$return_var = new WP_Error( 'auth_fail_id', __( 'Request was signed with incorrect key.', 'pf' ) );
+							$return_var = new WP_Error( 'auth_fail_id', __( 'Request was signed with incorrect key.', 'pressforward' ) );
 						} else {
 							$return_var = true;
 						}
 						$return_var = false;
 						return $return_var;
 					} catch ( \UnexpectedValueException $e ) {
-						$return_var = new WP_Error( 'auth_fail_format', __( 'Authentication key was not properly formated.', 'pf' ), $request_params['user_key'] );
+						$return_var = new WP_Error( 'auth_fail_format', __( 'Authentication key was not properly formated.', 'pressforward' ), $request_params['user_key'] );
 					} catch ( \InvalidArgumentException $e ) {
-						$return_var = new WP_Error( 'auth_fail_key', __( 'Authentication key was not properly supplied.', 'pf' ) );
+						$return_var = new WP_Error( 'auth_fail_key', __( 'Authentication key was not properly supplied.', 'pressforward' ) );
 					} catch ( \DomainException $e ) {
-						$return_var = new WP_Error( 'auth_fail_ssl', __( 'SSL cannot be applied to the key.', 'pf' ) );
+						$return_var = new WP_Error( 'auth_fail_ssl', __( 'SSL cannot be applied to the key.', 'pressforward' ) );
 					} catch ( \Exception $e ) {
 						if ( false === $return_var ) {
-							return new WP_Error( 'auth_fail_whoknows', __( 'Authentication failed for reasons unclear.', 'pf' ) );
+							return new WP_Error( 'auth_fail_whoknows', __( 'Authentication failed for reasons unclear.', 'pressforward' ) );
 						} else {
 							return $return_var;
 						}
@@ -467,7 +467,6 @@ EOF;
 		// include_once $site_url . 'wp-includes/js/wp-sanitize.min.js';
 		include_once PF_ROOT . '/Libraries/MozillaReadability/Readability.js';
 		include_once PF_ROOT . '/Libraries/PFMetaDataParser.js';
-		// include_once PF_ROOT . '/Libraries/tinymce/js/tinymce/tinymce.min.js';
 		// include_once PF_ROOT . '/Libraries/SummerNote/summernote.js';
 		include_once PF_ROOT . '/assets/js/nominate-tool.js';
 		// phpcs:enable

@@ -45,7 +45,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	 */
 	public function set_permitted_tools_tabs( $permitted_tabs ) {
 		$permitted_tabs['opml'] = array(
-			'title' => __( 'OPML Link', 'pf' ),
+			'title' => __( 'OPML Link', 'pressforward' ),
 			'cap'   => pf_get_defining_capability_by_role( 'contributor' ),
 		);
 		return $permitted_tabs;
@@ -59,7 +59,7 @@ class PF_OPML_Subscribe extends PF_Module {
 	 */
 	public function set_permitted_feeds_tabs( $permitted_tabs ) {
 		$permitted_tabs['opml'] = array(
-			'title' => __( 'OPML as Feed', 'pf' ),
+			'title' => __( 'OPML as Feed', 'pressforward' ),
 			'cap'   => get_option( 'pf_menu_feeder_access', pf_get_defining_capability_by_role( 'editor' ) ),
 		);
 		return $permitted_tabs;
@@ -314,14 +314,14 @@ class PF_OPML_Subscribe extends PF_Module {
 		?>
 
 			<div class="opml-box">
-					<h3><span><?php esc_html_e( 'Subscribe to OPML as Feed', 'pf' ); ?></span></h3>
+					<h3><span><?php esc_html_e( 'Subscribe to OPML as Feed', 'pressforward' ); ?></span></h3>
 					<div>
-						<div><?php esc_html_e( 'Add OPML Subscription', 'pf' ); ?> (OPML or XML)</div>
+						<div><?php esc_html_e( 'Add OPML Subscription', 'pressforward' ); ?> (OPML or XML)</div>
 							<div class="pf_feeder_input_box">
 								<input id="<?php echo esc_attr( PF_SLUG ) . '_feedlist[opml_single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo esc_attr( PF_SLUG . '_feedlist[opml_single]' ); ?>" value="" />
-								<label class="description" for="<?php echo esc_attr( PF_SLUG . '_feedlist[opml_single]' ); ?>"><?php esc_html_e( '*Complete URL path', 'pf' ); ?></label>
+								<label class="description" for="<?php echo esc_attr( PF_SLUG . '_feedlist[opml_single]' ); ?>"><?php esc_html_e( '*Complete URL path', 'pressforward' ); ?></label>
 
-								<input type="submit" class="button-primary" value="<?php esc_attr_e( 'Submit', 'pf' ); ?>" />
+								<input type="submit" class="button-primary" value="<?php esc_attr_e( 'Submit', 'pressforward' ); ?>" />
 							</div>
 					</div>
 			</div>
@@ -361,9 +361,9 @@ class PF_OPML_Subscribe extends PF_Module {
 					$subscribe_string = 'It could not be created.';
 					if ( ! empty( $check ) ) {
 						$edit_link        = get_edit_post_link( $check );
-						$subscribe_string = " <a href=\"$edit_link\" target=\"_blank\">" . __( 'Edit.', 'pf' ) . '</a>';
+						$subscribe_string = " <a href=\"$edit_link\" target=\"_blank\">" . __( 'Edit.', 'pressforward' ) . '</a>';
 					}
-					add_settings_error( 'add_pf_feeds', 'pf_feeds_validation_response', __( 'You have submitted an OPML feed.', 'pf' ) . $subscribe_string, 'updated' );
+					add_settings_error( 'add_pf_feeds', 'pf_feeds_validation_response', __( 'You have submitted an OPML feed.', 'pressforward' ) . $subscribe_string, 'updated' );
 				}
 			} else {
 				wp_die( 'Bad feed input. Why are you trying to place an array?' );
@@ -495,7 +495,7 @@ class PF_OPML_Subscribe extends PF_Module {
 				<?php
 				printf(
 					// translators: link to PF OPML page.
-					esc_html__( 'You can share your subscription list as an OPML file by linking people to %s', 'pf' ),
+					esc_html__( 'You can share your subscription list as an OPML file by linking people to %s', 'pressforward' ),
 					sprintf(
 						'<a href="%s" target="_blank">%s</a>',
 						esc_attr( home_url( '/?pf=opml' ) ),

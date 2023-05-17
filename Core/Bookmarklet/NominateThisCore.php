@@ -18,7 +18,7 @@ use WP_Ajax_Response;
 /**
  * NominateThisCore class.
  */
-class NominateThisCore implements HasActions {
+class NominateThisCore implements HasActions, HasFilters {
 	/**
 	 * Basename.
 	 *
@@ -44,13 +44,28 @@ class NominateThisCore implements HasActions {
 			),
 		);
 	}
+
+	/**
+	 * Sets up filter hooks for registering meta boxes for the Nominate This interface.
+	 *
+	 * @return array
+	 */
+	public function filter_hooks() {
+		return [
+			[
+				'hook'   => 'ajax_query_attachments_args',
+				'method' => 'filter_media_library_query',
+			],
+		];
+	}
+
 	/**
 	 * Registers meta boxes for the Nominate This interface.
 	 */
 	public function add_meta_boxes() {
 		add_meta_box(
 			'pf-nomthis-submit',
-			__( 'Nominate This', 'pf' ),
+			__( 'Nominate This', 'pressforward' ),
 			array( $this, 'submit_meta_box' ),
 			'nomthis',
 			'side'
@@ -58,7 +73,7 @@ class NominateThisCore implements HasActions {
 
 		add_meta_box(
 			'pf-categorydiv',
-			__( 'Categories', 'pf' ),
+			__( 'Categories', 'pressforward' ),
 			'post_categories_meta_box',
 			'nomthis',
 			'side'
@@ -66,7 +81,7 @@ class NominateThisCore implements HasActions {
 
 		add_meta_box(
 			'pf-tagsdiv',
-			__( 'Tags', 'pf' ),
+			__( 'Tags', 'pressforward' ),
 			array( $this, 'tags_meta_box' ),
 			'nomthis',
 			'side'
@@ -87,7 +102,7 @@ class NominateThisCore implements HasActions {
 
 			$create_nom_post_cap_test = current_user_can( get_post_type_object( pressforward( 'schema.nominations' )->post_type )->cap->create_posts );
 
-			$pf_draft_post_type_value = get_option( PF_SLUG . '_draft_post_type', 'post' );
+			$pf_draft_post_type_value = pressforward_draft_post_type();
 
 			if ( 'draft' === $publish_type ) {
 				$cap = 'edit_posts';
@@ -98,15 +113,15 @@ class NominateThisCore implements HasActions {
 			$create_post_cap_test = current_user_can( get_post_type_object( $pf_draft_post_type_value )->cap->$cap );
 
 			if ( $create_nom_post_cap_test ) {
-				submit_button( __( 'Nominate', 'pf' ), 'button', 'draft', false, array( 'id' => 'save' ) );
+				submit_button( __( 'Nominate', 'pressforward' ), 'button', 'draft', false, array( 'id' => 'save' ) );
 			} else {
-				esc_html_e( 'You do not have the ability to create nominations.', 'pf' );
+				esc_html_e( 'You do not have the ability to create nominations.', 'pressforward' );
 			}
 
 			if ( $create_post_cap_test ) {
 				// @todo Fix i18n for this button text.
 				// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
-				submit_button( __( 'Send to ' . ucwords( $publish_type ) ), 'primary', 'publish', false );
+				submit_button( __( 'Send to ' . ucwords( $publish_type ), 'pressforward' ), 'primary', 'publish', false );
 			} else {
 				echo '<!-- User cannot ' . esc_html( $publish_type ) . ' posts -->';
 			}
@@ -117,11 +132,11 @@ class NominateThisCore implements HasActions {
 		</p>
 
 		<p>
-			<label for="item_author"><input type="text" id="item_author" name="item_author" value="" /><br />&nbsp;<?php echo esc_html( apply_filters( 'pf_author_nominate_this_prompt', __( 'Enter Authors', 'pf' ) ) ); ?></label>
+			<label for="item_author"><input type="text" id="item_author" name="item_author" value="" /><br />&nbsp;<?php echo esc_html( apply_filters( 'pf_author_nominate_this_prompt', __( 'Enter Authors', 'pressforward' ) ) ); ?></label>
 		</p>
 
 		<p>
-			<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php esc_html_e( 'Nominate feed associated with item.', 'pf' ); ?></label>
+			<label for="pf-feed-subscribe"><input type="checkbox" id="pf-feed-subscribe" name="pf-feed-subscribe" value="subscribe" />&nbsp;&nbsp;<?php esc_html_e( 'Nominate feed associated with item.', 'pressforward' ); ?></label>
 		</p>
 
 		<?php
@@ -143,10 +158,37 @@ class NominateThisCore implements HasActions {
 		?>
 		<div id="taxonomy-tags" class="tagdiv">
 			<p>
-				<label for="post_tags"><input type="text" id="post_tags" name="post_tags" value="" /><br />&nbsp;<?php echo esc_attr( apply_filters( 'pf_tags_prompt', __( 'Enter Tags', 'pf' ) ) ); ?></label>
+				<label for="post_tags"><input type="text" id="post_tags" name="post_tags" value="" /><br />&nbsp;<?php echo esc_attr( apply_filters( 'pf_tags_prompt', __( 'Enter Tags', 'pressforward' ) ) ); ?></label>
 			</p>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Ensures that Media Library tab on Nominate This includes only those images the current user should see.
+	 *
+	 * Authors and lower should not see media uploaded by others.
+	 *
+	 * @since 5.5.0
+	 *
+	 * @param array $query WP_Query arguments.
+	 * @return array
+	 */
+	public function filter_media_library_query( $query ) {
+		// Only modify requests that originate in Nominate This.
+		$referer = wp_get_referer();
+		if ( ! $referer || false === strpos( $referer, 'pf-nominate-this' ) ) {
+			return $query;
+		}
+
+		// Editors and up can see everything.
+		if ( current_user_can( 'edit_others_posts' ) ) {
+			return $query;
+		}
+
+		$query['author__in'] = [ get_current_user_id() ];
+
+		return $query;
 	}
 
 	/**
@@ -172,7 +214,7 @@ class NominateThisCore implements HasActions {
 		$post = array();
 		if ( $internal ) {
 			if ( ! current_user_can( get_option( 'pf_menu_nominate_this_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) ) ) ) {
-				wp_die( esc_html_e( 'You do not have access to the Nominate This bookmarklet.', 'pf' ) );
+				wp_die( esc_html_e( 'You do not have access to the Nominate This bookmarklet.', 'pressforward' ) );
 			}
 		}
 
@@ -211,26 +253,26 @@ class NominateThisCore implements HasActions {
 		if ( ! empty( $_POST['pf-feed-subscribe'] ) && ( 'subscribe' === sanitize_text_field( wp_unslash( $_POST['pf-feed-subscribe'] ) ) ) ) {
 			$url_array      = wp_parse_url( esc_url( $item_link ) );
 			$source_link    = 'http://' . $url_array['host'];
-			$create_started = __( 'Attempting to nominate a feed with the result of:', 'pf' ) . '<br />';
+			$create_started = __( 'Attempting to nominate a feed with the result of:', 'pressforward' ) . '<br />';
 			if ( current_user_can( 'edit_posts' ) ) {
 				$create = pressforward( 'schema.feeds' )->create( $source_link, array( 'post_status' => 'under_review' ) );
 				if ( is_numeric( $create ) ) {
 					$feed_nom['id'] = $create;
 
 					// translators: feed ID.
-					$create             = sprintf( __( 'Feed created with ID: %s', 'pf' ), $create );
-					$feed_nom['simple'] = __( 'The feed has been nominated successfully.', 'pf' );
+					$create             = sprintf( __( 'Feed created with ID: %s', 'pressforward' ), $create );
+					$feed_nom['simple'] = __( 'The feed has been nominated successfully.', 'pressforward' );
 					$error_check        = pressforward( 'controller.metas' )->get_post_pf_meta( $feed_nom['id'], 'ab_alert_msg', true );
 					if ( ! empty( $error_check ) ) {
 						// translators: Error text.
-						$create            .= ' ' . sprintf( __( 'But the following error occured: %s', 'pf' ), $error_check );
-						$feed_nom['simple'] = __( 'There is a problem with the feed associated with this post. The feed could not be verified.', 'pf' );
+						$create            .= ' ' . sprintf( __( 'But the following error occured: %s', 'pressforward' ), $error_check );
+						$feed_nom['simple'] = __( 'There is a problem with the feed associated with this post. The feed could not be verified.', 'pressforward' );
 					}
 					$feed_nom['error'] = $error_check;
 				} else {
 					$feed_nom['id']     = 0;
-					$feed_nom['simple'] = __( "PressForward was unable to identify a feed associated with this site. Please contact the site administrator or add the feed manually in the 'Add Feeds' panel.", 'pf' );
-					$message_one        = pf_message( __( 'An error occured when adding the feed: ', 'pf' ) );
+					$feed_nom['simple'] = __( "PressForward was unable to identify a feed associated with this site. Please contact the site administrator or add the feed manually in the 'Add Feeds' panel.", 'pressforward' );
+					$message_one        = pf_message( __( 'An error occured when adding the feed: ', 'pressforward' ) );
 					if ( is_wp_error( $create ) ) {
 						$create_wp_error   = $create->get_error_message();
 						$message_two       = pf_message( $create_wp_error );
@@ -241,7 +283,7 @@ class NominateThisCore implements HasActions {
 					$create = $message_one . $message_two;
 				}
 			} else {
-				$create             = __( 'User doesn\'t have permission to create feeds.', 'pf' );
+				$create             = __( 'User doesn\'t have permission to create feeds.', 'pressforward' );
 				$feed_nom['id']     = 0;
 				$feed_nom['error']  = $create;
 				$feed_nom['simple'] = $create;
@@ -253,8 +295,8 @@ class NominateThisCore implements HasActions {
 		} else {
 			$feed_nom = array(
 				'id'     => 0,
-				'msg'    => __( 'No feed was nominated.', 'pf' ),
-				'simple' => __( 'User hasn\'t nominated a feed.', 'pf' ),
+				'msg'    => __( 'No feed was nominated.', 'pressforward' ),
+				'simple' => __( 'User hasn\'t nominated a feed.', 'pressforward' ),
 			);
 			update_option( 'pf_last_nominated_feed', $feed_nom );
 		}
@@ -271,7 +313,7 @@ class NominateThisCore implements HasActions {
 
 		$_POST = array_merge( $_POST, $post );
 		// @todo Fix button text with i18n issue mentioned earlier in this file.
-		if ( isset( $_POST['publish'] ) && ( ( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) === __( 'Last Step', 'pf' ) ) || ( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) === 'Send to ' . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ) ) ) ) {
+		if ( isset( $_POST['publish'] ) && ( ( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) === __( 'Last Step', 'pressforward' ) ) || ( sanitize_text_field( wp_unslash( $_POST['publish'] ) ) === 'Send to ' . ucwords( get_option( PF_SLUG . '_draft_post_status', 'draft' ) ) ) ) ) {
 			$post['post_type'] = 'nomination';
 			$post_ID           = pressforward( 'utility.forward_tools' )->bookmarklet_to_last_step( '', $post );
 
@@ -338,13 +380,13 @@ class NominateThisCore implements HasActions {
 
 		$subject = sprintf(
 			// translators: Name of the site.
-			__( '[%s] You have successfully nominated an item', 'pf' ),
+			__( '[%s] You have successfully nominated an item', 'pressforward' ),
 			$site_name
 		);
 
 		$message = sprintf(
 			// translators: 1. Name of the site; 2. URL of the site.
-			__( 'You have successfully nominated an item on %1$s (%2$s).', 'pf' ),
+			__( 'You have successfully nominated an item on %1$s (%2$s).', 'pressforward' ),
 			$site_name,
 			get_bloginfo( 'url' )
 		);
@@ -353,7 +395,7 @@ class NominateThisCore implements HasActions {
 
 		$message .= sprintf(
 			// translators: 1. Title of the source item. 2. URL of the nomination source item.
-			__( 'Source item: %1$s (%2$s)', 'pf' ),
+			__( 'Source item: %1$s (%2$s)', 'pressforward' ),
 			get_the_title( $wp_post ),
 			pressforward( 'controller.metas' )->get_post_pf_meta( $wp_post_id, 'item_link' )
 		);
@@ -365,7 +407,7 @@ class NominateThisCore implements HasActions {
 
 			$message .= sprintf(
 				// translators: URL of the Nominations panel.
-				__( 'Manage nominations: %s', 'pf' ),
+				__( 'Manage nominations: %s', 'pressforward' ),
 				admin_url( 'admin.php?page=pf-review' )
 			);
 		}

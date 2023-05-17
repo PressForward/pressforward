@@ -10,7 +10,6 @@ if ( ! WP_DEBUG ) {
 	// phpcs:ignore
 	error_reporting( 0 );
 }
-set_transient( 'is_multi_author', true );
 
 set_current_screen();
 
@@ -64,319 +63,31 @@ if ( isset( $_REQUEST['action'] ) && 'post' === $_REQUEST['action'] ) {
 
 	$current_url = isset( $_SERVER['PHP_SELF'] ) ? sanitize_text_field( wp_unslash( $_SERVER['PHP_SELF'] ) ) : '';
 
-	if ( ! empty( $_REQUEST['ajax'] ) ) {
-		switch ( $_REQUEST['ajax'] ) {
-			case 'video':
-				?>
-				<script type="text/javascript">
-				/* <![CDATA[ */
-					jQuery('.select').click(function() {
-						append_editor(jQuery('#embed-code').val());
-						jQuery('#extra-fields').hide();
-						jQuery('#extra-fields').html('');
-					});
-					jQuery('.close').click(function() {
-						jQuery('#extra-fields').hide();
-						jQuery('#extra-fields').html('');
-					});
-				/* ]]> */
-				</script>
-				<div class="postbox">
-					<h2><label for="embed-code"><?php esc_html_e( 'Embed Code', 'pf' ); ?></label></h2>
-					<div class="inside">
-						<textarea name="embed-code" id="embed-code" rows="8" cols="40"><?php echo esc_textarea( $selection ); ?></textarea>
-						<p id="options"><a href="#" class="select button"><?php esc_html_e( 'Insert Video', 'pf' ); ?></a> <a href="#" class="close button"><?php esc_html_e( 'Cancel', 'pf' ); ?></a></p>
-					</div>
-				</div>
-				<?php
-				break;
-
-			case 'photo_thickbox':
-				?>
-				<script type="text/javascript">
-					/* <![CDATA[ */
-					jQuery('.cancel').click(function() {
-						tb_remove();
-					});
-					jQuery('.select').click(function() {
-						image_selector(this);
-					});
-					/* ]]> */
-				</script>
-				<h3 class="tb"><label for="tb_this_photo_description"><?php esc_html_e( 'Description', 'pf' ); ?></label></h3>
-				<div class="titlediv">
-					<div class="titlewrap">
-						<input id="tb_this_photo_description" name="photo_description" class="tb_this_photo_description tbtitle text" onkeypress="if(event.keyCode==13) image_selector(this);" value="<?php echo esc_attr( $the_title ); ?>"/>
-					</div>
-				</div>
-
-				<p class="centered">
-					<input type="hidden" name="this_photo" value="<?php echo esc_attr( $image ); ?>" id="tb_this_photo" class="tb_this_photo" />
-					<a href="#" class="select">
-						<img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( __( 'Click to insert.', 'pf' ) ); ?>" title="<?php echo esc_attr( __( 'Click to insert.', 'pf' ) ); ?>" />
-					</a>
-				</p>
-
-				<p id="options"><a href="#" class="select button"><?php esc_html_e( 'Insert Image', 'pf' ); ?></a> <a href="#" class="cancel button"><?php esc_html_e( 'Cancel', 'pf' ); ?></a></p>
-				<?php
-				break;
-			case 'photo_images':
-				/**
-				 * Retrieve all image URLs from given URI.
-				 *
-				 * @package WordPress
-				 * @subpackage Press_This
-				 * @since 2.6.0
-				 *
-				 * @param string $uri URI.
-				 * @return string
-				 */
-				function get_images_from_uri( $uri ) {
-					$uri = preg_replace( '/\/#.+?$/', '', $uri );
-					if ( preg_match( '/\.(jpe?g|jpe|gif|png)\b/i', $uri ) && ! strpos( $uri, 'blogger.com' ) ) {
-						return "'" . esc_attr( html_entity_decode( $uri ) ) . "'";
-					}
-
-					$content = wp_remote_fopen( $uri );
-					if ( false === $content ) {
-						return '';
-					}
-
-					$host    = wp_parse_url( $uri );
-					$pattern = '/<img ([^>]*)src=(\"|\')([^<>\'\"]+)(\2)([^>]*)\/*>/i';
-					$content = str_replace( array( "\n", "\t", "\r" ), '', $content );
-					preg_match_all( $pattern, $content, $matches );
-					if ( empty( $matches[0] ) ) {
-						return ''; }
-					$sources = array();
-					foreach ( $matches[3] as $src ) {
-						// if no http in url.
-						if ( strpos( $src, 'http' ) === false ) {
-							// if it doesn't have a relative uri.
-							if ( strpos( $src, '../' ) === false && strpos( $src, './' ) === false && strpos( $src, '/' ) === 0 ) {
-								$src = 'http://' . str_replace( '//', '/', $host['host'] . '/' . $src );
-							}
-						} else {
-							$src = 'http://' . str_replace( '//', '/', $host['host'] . '/' . dirname( $host['path'] ) . '/' . $src ); }
-						$sources[] = esc_url( $src );
-					}
-					return "'" . implode( "','", $sources ) . "'";
-				}
-				$url = wp_kses( urldecode( $url ), null );
-				echo 'new Array(' . esc_js( get_images_from_uri( $url ) ) . ')';
-				break;
-		}
-		die;
-	}
 }
-	wp_enqueue_style( 'colors' );
-	wp_enqueue_script( 'post' );
 
-	wp_enqueue_script( 'nominate-this' );
+wp_enqueue_style( 'colors' );
+wp_enqueue_script( 'post' );
 
-	_wp_admin_html_begin();
+wp_enqueue_script( 'pf-nominate-this' );
+wp_enqueue_style( 'pf-nominate-this' );
+
+_wp_admin_html_begin();
 ?>
-<title><?php esc_html_e( 'Nominate This', 'pf' ); ?></title>
-<script type="text/javascript">
-//<![CDATA[
-addLoadEvent = function(func){if(typeof jQuery!="undefined")jQuery(document).ready(func);else if(typeof wpOnload!='function'){wpOnload=func;}else{var oldonload=wpOnload;wpOnload=function(){oldonload();func();}}};
-var userSettings = {'url':'<?php echo esc_js( SITECOOKIEPATH ); ?>','uid':'<?php echo esc_js( get_current_user_id() ); ?>','time':'<?php echo esc_js( time() ); ?>'};
-var ajaxurl = '<?php echo esc_js( admin_url( 'admin-ajax.php', 'relative' ) ); ?>', pagenow = 'nominate-this', isRtl = <?php echo (int) is_rtl(); ?>;
-var photostorage = false;
-//]]>
-</script>
+
+<title><?php esc_html_e( 'Nominate This', 'pressforward' ); ?></title>
 
 <?php
-	do_action( 'admin_enqueue_scripts' );
-
-	do_action( 'admin_print_styles' );
-	do_action( 'admin_print_scripts' );
-	do_action( 'admin_head' );
+do_action( 'admin_enqueue_scripts' );
+do_action( 'admin_print_styles' );
+do_action( 'admin_print_scripts' );
+do_action( 'admin_head' );
 ?>
 
-	<style type="text/css">
-	.postbox{
-		padding: 0 5px;
-	}
-
-	.metabox-holder-advanced {
-		margin-top: 20px;
-	}
-
-	.nomthis-indicator {
-		align-items: center;
-		display: flex;
-		height: 0;
-		overflow: hidden;
-		transition: padding 1s, visibility 0s, opacity 1s, height 1s;
-		justify-content: center;
-		opacity: 0;
-		visibility: hidden;
-	}
-
-	.loading-indicator {
-		background: #fcf9e8;
-		gap: 10px;
-	}
-
-	body.is-loading .loading-indicator {
-		height: 40px;
-		padding: 10px 20px;
-		opacity: 1;
-		visibility: visible;
-	}
-
-	body.is-failed-request .failure-indicator {
-		background: #ffcccc;
-		height: 40px;
-		padding: 10px 20px;
-		opacity: 1;
-		visibility: visible;
-	}
-
-	@media screen and (min-width: 670px) {
-		#side-sortables {
-			float: right;
-			width: 22%;
-			margin-right: 16%;
-		}
-		.posting {
-			float: left;
-			width: 58%;
-			margin-left: 2%;
-		}
-	}
-	@media screen and (max-width: 660px) {
-		#side-sortables {
-			width: 90%;
-			margin: 0 auto;
-		}
-		.posting {
-			width: 90%;
-			margin: 0 auto;
-		}
-	}
-	</style>
-
-	<script type="text/javascript">
-	var wpActiveEditor = 'content';
-
-	function insert_plain_editor(text) {
-		if ( typeof(QTags) != 'undefined' )
-			QTags.insertContent(text);
-	}
-	function set_editor(text) {
-		if ( '' == text || '<p></p>' == text )
-			text = '<p><br /></p>';
-
-		if ( tinyMCE.activeEditor )
-			tinyMCE.execCommand('mceSetContent', false, text);
-	}
-	function insert_editor(text) {
-		if ( '' != text && tinyMCE.activeEditor && ! tinyMCE.activeEditor.isHidden()) {
-			tinyMCE.execCommand('mceInsertContent', false, '<p>' + decodeURI(tinymce.DOM.decode(text)) + '</p>', {format : 'raw'});
-		} else {
-			insert_plain_editor(decodeURI(text));
-		}
-	}
-	function append_editor(text) {
-		if ( '' != text && tinyMCE.activeEditor && ! tinyMCE.activeEditor.isHidden()) {
-			tinyMCE.execCommand('mceSetContent', false, tinyMCE.activeEditor.getContent({format : 'raw'}) + '<p>' + text + '</p>');
-		} else {
-			insert_plain_editor(text);
-		}
-	}
-
-	function show(tab_name) {
-		jQuery('#extra-fields').html('');
-		switch(tab_name) {
-			case 'video' :
-				jQuery('#extra-fields').load('<?php echo esc_url( $current_url ); ?>', { ajax: 'video', s: '<?php echo esc_attr( $selection ); ?>'}, function() {
-					<?php
-					$content = '';
-					if ( preg_match( '/youtube\.com\/watch/i', $url ) ) {
-						list( $the_domain, $video_id ) = explode( 'v=', $url );
-						$video_id                      = esc_attr( $video_id );
-						$content                       = '<object width="425" height="350"><param name="movie" value="http://www.youtube.com/v/' . $video_id . '"></param><param name="wmode" value="transparent"></param><embed src="http://www.youtube.com/v/' . $video_id . '" type="application/x-shockwave-flash" wmode="transparent" width="425" height="350"></embed></object>';
-
-					} elseif ( preg_match( '/vimeo\.com\/[0-9]+/i', $url ) ) {
-						list( $the_domain, $video_id ) = explode( '.com/', $url );
-						$video_id                      = esc_attr( $video_id );
-						$content                       = '<object width="400" height="225"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="http://www.vimeo.com/moogaloop.swf?clip_id=' . $video_id . '&amp;server=www.vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1" />	<embed src="http://www.vimeo.com/moogaloop.swf?clip_id=' . $video_id . '&amp;server=www.vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="400" height="225"></embed></object>';
-
-						if ( '' !== trim( $selection ) ) {
-							$selection = '<p><a href="http://www.vimeo.com/' . $video_id . '?pg=embed&sec=' . $video_id . '">' . esc_html( $the_title ) . '</a> on <a href="http://vimeo.com?pg=embed&sec=' . $video_id . '">Vimeo</a></p>'; }
-					} elseif ( strpos( $selection, '<object' ) !== false ) {
-						$content = $selection;
-					}
-					?>
-					<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-					jQuery('#embed-code').prepend('<?php echo htmlentities( $content ); ?>');
-				});
-				jQuery('#extra-fields').show();
-				return false;
-				break;
-			case 'photo' :
-				function setup_photo_actions() {
-					jQuery('.close').click(function() {
-						jQuery('#extra-fields').hide();
-						jQuery('#extra-fields').html('');
-					});
-					jQuery('.refresh').click(function() {
-						photostorage = false;
-						show('photo');
-					});
-					jQuery('#photo-add-url').click(function(){
-						var form = jQuery('#photo-add-url-div').clone();
-						jQuery('#img_container').empty().append( form.show() );
-					});
-					jQuery('#waiting').hide();
-					jQuery('#extra-fields').show();
-				}
-
-				jQuery('#waiting').show();
-				if(photostorage == false) {
-					jQuery.ajax({
-						type: "GET",
-						cache : false,
-						url: "<?php echo esc_js( $current_url ); ?>",
-						data: "ajax=photo_js&u=<?php echo esc_js( rawurlencode( $url ) ); ?>",
-						dataType : "script",
-						success : function(data) {
-							photostorage = jQuery('#extra-fields').html();
-							setup_photo_actions();
-						}
-					});
-				} else {
-					jQuery('#extra-fields').html(photostorage);
-					setup_photo_actions();
-				}
-				return false;
-				break;
-		}
-	}
-	jQuery(document).ready(function($) {
-		//resize screen
-		window.resizeTo(740,580);
-		// set button actions
-		jQuery('#photo_button').click(function() { show('photo'); return false; });
-		jQuery('#video_button').click(function() { show('video'); return false; });
-		// auto select
-		<?php if ( preg_match( '/youtube\.com\/watch/i', $url ) ) { ?>
-			show('video');
-		<?php } elseif ( preg_match( '/vimeo\.com\/[0-9]+/i', $url ) ) { ?>
-			show('video');
-		<?php } elseif ( preg_match( '/flickr\.com/i', $url ) ) { ?>
-			show('photo');
-		<?php } ?>
-		jQuery('#title').unbind();
-		jQuery('#publish, #save').click(function() { jQuery('.press-this #publishing-actions .spinner').css('display', 'inline-block'); });
-
-		$('#tagsdiv-post_tag, #categorydiv').children('h3, .handlediv').click(function(){
-			$(this).siblings('.inside').toggle();
-		});
-	});
+<script type="text/javascript">
+var ajaxurl = '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>';
+var pagenow = 'nominate-this';
 </script>
+
 </head>
 <?php
 $the_admin_body_class  = ( is_rtl() ) ? 'rtl' : '';
@@ -386,11 +97,11 @@ $the_admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_repla
 
 <div id="loading-indicator" class="loading-indicator nomthis-indicator">
 	<?php // translators: URL being loaded. ?>
-	<img src="<?php echo esc_url( admin_url( 'images/loading.gif' ) ); ?>" role="presentation" /> <span><?php printf( esc_html__( 'Loading content from %s.', 'pf' ), '<span id="loading-url"></span>' ); ?></span>
+	<img src="<?php echo esc_url( admin_url( 'images/loading.gif' ) ); ?>" role="presentation" /> <span><?php printf( esc_html__( 'Loading content from %s.', 'pressforward' ), '<span id="loading-url"></span>' ); ?></span>
 </div>
 
 <div id="failure-indicator" class="failure-indicator nomthis-indicator">
-	<?php esc_html_e( 'Could not fetch remote URL' ); ?>
+	<?php esc_html_e( 'Could not fetch remote URL', 'pressforward' ); ?>
 </div>
 
 <?php
@@ -451,18 +162,19 @@ if ( empty( $posted ) ) {
 			if ( 'nomination' === $pt ) {
 				?>
 				<div id="message" class="updated">
-				<p><strong><?php esc_html_e( 'Your nomination has been saved.', 'pf' ); ?></strong>
-					<a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pf' ); ?></a>
+				<p><strong><?php esc_html_e( 'Your nomination has been saved.', 'pressforward' ); ?></strong>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pf-review' ) ); ?>"><?php esc_html_e( 'See all nominations', 'pressforward' ); ?></a>
+				| <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pressforward' ); ?></a>
 					</p>
 				</div>
 				<?php
 			} else {
 				?>
 				<div id="message" class="updated">
-				<p><strong><?php esc_html_e( 'Your post has been saved.', 'pf' ); ?></strong>
-				<a onclick="window.opener.location.assign(this.href); window.close();" href="<?php echo esc_attr( get_permalink( $the_post_id ) ); ?>"><?php esc_html_e( 'View post', 'pf' ); ?></a>
-				| <a href="<?php echo esc_attr( get_edit_post_link( $the_post_id ) ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php esc_html_e( 'Edit Post', 'pf' ); ?></a>
-				| <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pf' ); ?></a></p>
+				<p><strong><?php esc_html_e( 'Your post has been saved.', 'pressforward' ); ?></strong>
+				<a onclick="window.opener.location.assign(this.href); window.close();" href="<?php echo esc_attr( get_permalink( $the_post_id ) ); ?>"><?php esc_html_e( 'View post', 'pressforward' ); ?></a>
+				| <a href="<?php echo esc_attr( get_edit_post_link( $the_post_id ) ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php esc_html_e( 'Edit Post', 'pressforward' ); ?></a>
+				| <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pressforward' ); ?></a></p>
 				</div>
 				<?php
 			}
@@ -489,11 +201,11 @@ if ( empty( $posted ) ) {
 					<?php
 					if ( 0 !== $feed_nom['id'] ) {
 						?>
-						<a href="<?php echo esc_attr( get_edit_post_link( $feed_nom['id'] ) ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php esc_html_e( 'Edit Feed', 'pf' ); ?></a>
+						<a href="<?php echo esc_attr( get_edit_post_link( $feed_nom['id'] ) ); ?>" onclick="window.opener.location.assign(this.href); window.close();"><?php esc_html_e( 'Edit Feed', 'pressforward' ); ?></a>
 						<?php
 					}
 					?>
-					| <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pf' ); ?></a></p>
+					| <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pressforward' ); ?></a></p>
 				</div>
 				<?php
 				update_option( 'pf_last_nominated_feed', array() );
@@ -508,7 +220,7 @@ if ( empty( $posted ) ) {
 			</div>
 		</div>
 
-		<div id="waiting" style="display: none"><span class="spinner"></span> <span><?php esc_html_e( 'Loading...' ); ?></span></div>
+		<div id="waiting" style="display: none"><span class="spinner"></span> <span><?php esc_html_e( 'Loading...', 'pressforward' ); ?></span></div>
 
 		<div id="extra-fields" style="display: none"></div>
 
@@ -517,32 +229,12 @@ if ( empty( $posted ) ) {
 
 		$editor_settings = array(
 			'teeny'         => true,
-			'textarea_rows' => '15',
+			'textarea_rows' => '18',
 		);
 
 		$content = '';
 		if ( $selection ) {
 			$content .= $selection;
-		}
-
-		remove_action( 'media_buttons', 'media_buttons' );
-		add_action( 'media_buttons', 'nominate_this_media_buttons' );
-
-		/**
-		 * Nominate This media buttons.
-		 */
-		function nominate_this_media_buttons() {
-			esc_html_e( 'Add:', 'pf' );
-
-			if ( current_user_can( 'upload_files' ) ) {
-				?>
-				<a id="photo_button" title="<?php esc_attr_e( 'Insert an Image' ); ?>" href="#">
-				<img alt="<?php esc_attr_e( 'Insert an Image' ); ?>" src="<?php echo esc_url( admin_url( 'images/media-button-image.gif?ver=20100531' ) ); ?>"/></a>
-				<?php
-			}
-			?>
-			<a id="video_button" title="<?php esc_attr_e( 'Embed a Video' ); ?>" href="#"><img alt="<?php esc_attr_e( 'Embed a Video' ); ?>" src="<?php echo esc_url( admin_url( 'images/media-button-video.gif?ver=20100531' ) ); ?>"/></a>
-			<?php
 		}
 
 		wp_editor( $content, 'content', $editor_settings );
@@ -555,18 +247,14 @@ if ( empty( $posted ) ) {
 		</div>
 	</div>
 </div>
+
+<?php
+// Needed for the closed-postboxes AJAX action.
+wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
+?>
+
 </form>
-<div id="photo-add-url-div" style="display:none;">
-	<table><tr>
-	<td><label for="this_photo"><?php esc_html_e( 'URL', 'pf' ); ?></label></td>
-	<td><input type="text" id="this_photo" name="this_photo" class="tb_this_photo text" onkeypress="if(event.keyCode==13) image_selector(this);" /></td>
-	</tr><tr>
-	<td><label for="this_photo_description"><?php esc_html_e( 'Description', 'pf' ); ?></label></td>
-	<td><input type="text" id="this_photo_description" name="photo_description" class="tb_this_photo_description text" onkeypress="if(event.keyCode==13) image_selector(this);" value="<?php echo esc_attr( $the_title ); ?>"/></td>
-	</tr><tr>
-	<td><input type="button" class="button" onclick="image_selector(this)" value="<?php esc_attr_e( 'Insert Image', 'pf' ); ?>" /></td>
-	</tr></table>
-</div>
+
 <?php
 do_action( 'admin_footer' );
 do_action( 'admin_print_footer_scripts' );

@@ -3,6 +3,11 @@
 class PF_UnitTest_Factory extends WP_UnitTest_Factory {
 	public $activity = null;
 
+	public $relationship;
+	public $feed;
+	public $feed_item;
+	public $nomination;
+
 	function __construct() {
 		parent::__construct();
 

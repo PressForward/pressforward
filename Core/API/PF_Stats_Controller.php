@@ -43,19 +43,19 @@ class PF_Stats_Controller extends WP_REST_Controller {
 		$data = array(
 			'available_stats' => array(
 				'overview'  => array(
-					'description' => __( 'Basic stats about PressForward on this site', 'pf' ),
+					'description' => __( 'Basic stats about PressForward on this site', 'pressforward' ),
 					'_links'      => array(
 						'self' => get_rest_url() . 'pf/v1/stats/overview',
 					),
 				),
 				'authors'   => array(
-					'description' => __( 'Statistics about authors', 'pf' ),
+					'description' => __( 'Statistics about authors', 'pressforward' ),
 					'_links'      => array(
 						'self' => get_rest_url() . 'pf/v1/stats/authors',
 					),
 				),
 				'pf_posted' => array(
-					'description' => __( 'The set of all posts published through PressForward with attached statistics.', 'pf' ),
+					'description' => __( 'The set of all posts published through PressForward with attached statistics.', 'pressforward' ),
 					'_links'      => array(
 						'self' => get_rest_url() . 'pf/v1/stats/pf_posted',
 					),

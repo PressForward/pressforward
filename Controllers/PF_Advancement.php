@@ -62,7 +62,7 @@ class PF_Advancement implements Advance_System, HasActions {
 	 * @return string
 	 */
 	public function last_step_post_type() {
-		return get_option( PF_SLUG . '_draft_post_type', 'post' );
+		return pressforward_draft_post_type();
 	}
 
 	/**
@@ -94,9 +94,9 @@ class PF_Advancement implements Advance_System, HasActions {
 				wp_mail(
 					trim( $email ),
 					/* translators: Site name */
-					sprintf( esc_html__( 'New nomination on %s', 'pf' ), esc_html( $blogname ) ),
+					sprintf( esc_html__( 'New nomination on %s', 'pressforward' ), esc_html( $blogname ) ),
 					/* translators: URL of Nominations panel */
-					sprintf( esc_html__( 'A new nomination has been created! Please check it online on %s.', 'pf' ), esc_html( $siteurl . '/wp-admin/admin.php?page=pf-review' ) )
+					sprintf( esc_html__( 'A new nomination has been created! Please check it online on %s.', 'pressforward' ), esc_html( $siteurl . '/wp-admin/admin.php?page=pf-review' ) )
 				);
 			}
 		}
@@ -277,7 +277,7 @@ class PF_Advancement implements Advance_System, HasActions {
 			'meta_key'   => $this->metas->get_key( 'item_id' ),
 			'meta_value' => $item_id,
 			// phpcs:enable WordPress.DB.SlowDBQuery
-			'post_type'  => array( 'post', pf_feed_item_post_type() ),
+			'post_type'  => array( pressforward_draft_post_type(), pf_feed_item_post_type() ),
 		);
 
 		if ( $ids_only ) {

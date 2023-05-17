@@ -2,7 +2,7 @@
     "name": "pressforward/pressforward",
     "type": "project",
     "license": "AGPLv3",
-	"repositories": [
+    "repositories": [
       {
         "type": "git",
         "url": "https://github.com/WordPress/WordPress-Coding-Standards"
@@ -14,12 +14,22 @@
         "phpcompatibility/phpcompatibility-wp": "*",
         "phpstan/phpstan": "^1.9",
         "szepeviktor/phpstan-wordpress": "^1.1",
-        "phpstan/extension-installer": "^1.2"
+        "phpstan/extension-installer": "^1.2",
+        "yoast/phpunit-polyfills": "^1.0"
     },
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "phpstan/extension-installer": true
         }
+    },
+    "require": {
+        "simplehtmldom/simplehtmldom": "^2.0-RC",
+        "firebase/php-jwt": "^6.4",
+        "paragonie/random_compat": "^9.99",
+        "davechild/textstatistics": "^1.0",
+        "mattwright/urlresolver": "^2.0",
+        "fivefilters/readability.php": "~3.0.0",
+        "psr/log": "^1.0"
     }
 }

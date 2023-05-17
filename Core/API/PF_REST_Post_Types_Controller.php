@@ -92,7 +92,7 @@ class PF_REST_Post_Types_Controller extends WP_REST_Post_Types_Controller {
 	public function get_item( $request ) {
 		$obj = get_post_type_object( $request['type'] );
 		if ( empty( $obj ) || ! in_array( $obj->name, $this->types, true ) ) {
-			return new WP_Error( 'rest_type_invalid', __( 'Invalid PF resource.', 'pf' ), array( 'status' => 404 ) );
+			return new WP_Error( 'rest_type_invalid', __( 'Invalid PF resource.', 'pressforward' ), array( 'status' => 404 ) );
 		} else {
 			return parent::get_item( $request );
 		}

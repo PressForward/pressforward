@@ -2,16 +2,12 @@
 /**
  * Plugin bootstrap.
  *
- * @package Pressforward
+ * @package PressForward
  */
 
 // Out-of-namespace dependencies.
+require 'vendor/autoload.php';
 require 'class-SplClassLoader.php';
-require 'Libraries/PFSimpleHtmlDom.php';
-require_once 'Libraries/random_compat/lib/random.php';
-require_once 'Libraries/php-jwt/src/JWT.php';
-require 'Libraries/URLResolver/URLResolver.php';
-require 'Libraries/FiveFiltersReadability/Readability.php';
 require 'Libraries/AlertBox/The_Alert_Box.php';
 require 'includes/opml/object.php';
 require 'includes/opml/reader.php';
@@ -26,11 +22,6 @@ require 'includes/template-tags.php';
 use Intraxia\Jaxion\Core\Config;
 use Intraxia\Jaxion\Core\ConfigType;
 use SplClassLoader as ClassLoader;
-
-// @todo This call to filterFinalPath is likely a bug.
-$ts_class_loader = new ClassLoader( 'DaveChild', 'Libraries/text-stats/src', false );
-$ts_class_loader->filterFinalPath( 'DaveChild/Libraries/text-stats/src', '' );
-$ts_class_loader->register();
 
 $class_loader = new ClassLoader( 'PressForward', __DIR__, false );
 $class_loader->filterFinalPath( 'PressForward' . DIRECTORY_SEPARATOR, '' );

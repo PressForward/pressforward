@@ -16,7 +16,6 @@
 	<exclude-pattern>/tests/</exclude-pattern>
 
 	<!-- Misc files that are not loaded in production -->
-	<exclude-pattern>Libraries/random_compat/other/build_phar.php</exclude-pattern>
 	<exclude-pattern>Libraries/FiveFiltersReadability/examples/</exclude-pattern>
 	<exclude-pattern>modules/foo</exclude-pattern>
 
@@ -41,7 +40,6 @@
 		<exclude name="WordPress.DB.SlowDBQuery.slow_db_query_meta_value" />
 
 		<exclude-pattern>class-SplClassLoader.php</exclude-pattern>
-		<exclude-pattern>Controllers/StatsShortcodes.php</exclude-pattern>
 
 		<!-- Third-party libraries don't need to be scanned for coding standards -->
 		<exclude-pattern>Libraries/</exclude-pattern>
@@ -69,14 +67,20 @@
 		</properties>
 	</rule>
 
+	<rule ref="WordPress.Utils.I18nTextDomainFixer">
+		<properties>
+			<property name="old_text_domain" type="array">
+				<element value="old-text-domain"/>
+				<element value="pf"/>
+			</property>
+			<property name="new_text_domain" value="pressforward" />
+		</properties>
+	</rule>
+
 	<rule ref="PEAR.NamingConventions.ValidClassName.Invalid">
 		<exclude-pattern>Controllers/PF_to_WP_Meta.php</exclude-pattern>
 		<exclude-pattern>Controllers/PF_to_WP_Posts.php</exclude-pattern>
 		<exclude-pattern>Controllers/PF_to_WP_System.php</exclude-pattern>
-	</rule>
-
-	<rule ref="PHPCompatibility.Keywords.ForbiddenNamesAsDeclared.resourceFound">
-		<exclude-pattern>Libraries/text-stats</exclude-pattern>
 	</rule>
 
 	<rule ref="Squiz.Commenting.FileComment.Missing">

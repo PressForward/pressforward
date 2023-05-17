@@ -29,8 +29,8 @@ class PF_Debugger extends PF_Module {
 		$admin_menus = array();
 
 		$admin_menus[] = array(
-			'page_title' => __( 'View Log', 'pf' ),
-			'menu_title' => __( 'View Log', 'pf' ),
+			'page_title' => __( 'View Log', 'pressforward' ),
+			'menu_title' => __( 'View Log', 'pressforward' ),
 			'cap'        => get_option( 'pf_menu_log_access', pf_get_defining_capability_by_role( 'administrator' ) ),
 			'slug'       => 'pf-debugger',
 			'callback'   => array( $this, 'admin_menu_callback' ),
@@ -46,7 +46,7 @@ class PF_Debugger extends PF_Module {
 		$enabled = 'no' === get_option( 'pf_debugger_enable' ) ? 'no' : 'yes';
 
 		$mod_settings = array(
-			'name'    => __( 'Debugger Log Viewing Module', 'pf' ),
+			'name'    => __( 'Debugger Log Viewing Module', 'pressforward' ),
 			'slug'    => 'debugger',
 			'options' => '',
 		);
@@ -57,9 +57,9 @@ class PF_Debugger extends PF_Module {
 	 */
 	public function module_setup() {
 		$mod_settings = array(
-			'name'        => __( 'Debugger Log Viewing Module', 'pf' ),
+			'name'        => __( 'Debugger Log Viewing Module', 'pressforward' ),
 			'slug'        => 'debugger',
-			'description' => __( 'This module provides a way to view the feed retrieval log within the dashboard.', 'pf' ),
+			'description' => __( 'This module provides a way to view the feed retrieval log within the dashboard.', 'pressforward' ),
 			'thumbnail'   => '',
 			'options'     => '',
 		);
@@ -173,9 +173,9 @@ class PF_Debugger extends PF_Module {
 
 		?>
 		<div class="wrap">
-			<h2><?php esc_html_e( 'Current Log', 'pf' ); ?></h2>
-			<p><?php esc_html_e( 'Does not update in real time.', 'pf' ); ?></p>
-			<p><?php esc_html_e( 'Total Current Feed Items', 'pf' ); ?>:
+			<h2><?php esc_html_e( 'Current Log', 'pressforward' ); ?></h2>
+			<p><?php esc_html_e( 'Does not update in real time.', 'pressforward' ); ?></p>
+			<p><?php esc_html_e( 'Total Current Feed Items', 'pressforward' ); ?>:
 			<?php
 				$feed_item = 'pf_feed_item';
 				echo esc_html( wp_count_posts( $feed_item )->publish );
@@ -187,7 +187,7 @@ class PF_Debugger extends PF_Module {
 				echo '<br />Last month Feed Items: ' . esc_html( $this->count_the_posts( $feed_item, -1 ) );
 			?>
 			</p>
-			<p><?php esc_html_e( 'Total Current Nominations:', 'pf' ); ?>
+			<p><?php esc_html_e( 'Total Current Nominations:', 'pressforward' ); ?>
 			<?php
 				echo esc_html( wp_count_posts( 'nomination' )->draft );
 				echo '<br />Month to date Nominations: ' . esc_html( $this->count_the_posts( 'nomination' ) );
@@ -195,27 +195,27 @@ class PF_Debugger extends PF_Module {
 
 			?>
 			</p>
-			<p><?php esc_html_e( 'Total Actions Taken:', 'pf' ); ?>
+			<p><?php esc_html_e( 'Total Actions Taken:', 'pressforward' ); ?>
 			<?php
 				echo esc_html( current( $action_count[0] ) );
 			?>
 			</p>
-			<p><?php esc_html_e( 'Total Nominations Published:', 'pf' ); ?>
+			<p><?php esc_html_e( 'Total Nominations Published:', 'pressforward' ); ?>
 			<?php
 				echo esc_html( $nomed_posts );
 			?>
 			</p>
-			<p><?php esc_html_e( 'Total Retrieval Chunks Begun This:', 'pf' ); ?>
+			<p><?php esc_html_e( 'Total Retrieval Chunks Begun This:', 'pressforward' ); ?>
 			<?php
 				pf_iterate_cycle_state( 'retrieval_chunks_begun', false, true );
 			?>
 			</p>
-			<p><?php esc_html_e( 'Total Retrieval Cycles Begun This:', 'pf' ); ?>
+			<p><?php esc_html_e( 'Total Retrieval Cycles Begun This:', 'pressforward' ); ?>
 			<?php
 				pf_iterate_cycle_state( 'retrieval_cycles_begun', false, true );
 			?>
 			</p>
-			<p><?php esc_html_e( 'Total Retrieval Cycles Ended This:', 'pf' ); ?>
+			<p><?php esc_html_e( 'Total Retrieval Cycles Ended This:', 'pressforward' ); ?>
 			<?php
 				pf_iterate_cycle_state( 'retrieval_cycles_ended', false, true );
 			?>
@@ -228,7 +228,7 @@ class PF_Debugger extends PF_Module {
 				echo file_get_contents( $log_path );
 				echo '</pre>';
 			} else {
-				esc_html_e( 'The log does not exist.', 'pf' );
+				esc_html_e( 'The log does not exist.', 'pressforward' );
 			}
 			?>
 		</div>
@@ -272,8 +272,8 @@ class PF_Debugger extends PF_Module {
 	public function control_menu_access( $admin_rights ) {
 		$admin_rights['pf_menu_log_access'] = array(
 			'default' => 'administrator',
-			'title'   => __( 'Debugging Log', 'pf' ),
-			'details' => __( 'Debugging sets the user role required to access the Debugging page from the PressForward menu when it is turned on.', 'pf' ),
+			'title'   => __( 'Debugging Log', 'pressforward' ),
+			'details' => __( 'Debugging sets the user role required to access the Debugging page from the PressForward menu when it is turned on.', 'pressforward' ),
 		);
 
 		return $admin_rights;
@@ -286,7 +286,7 @@ class PF_Debugger extends PF_Module {
 		if ( current_user_can( get_option( 'pf_menu_log_access', 'administrator' ) ) ) {
 			?>
 			<p>
-			<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="<?php esc_attr_e( 'Reset all Feed Retrieval Options', 'pf' ); ?>"><?php esc_html_e( 'Reset all Feed Retrieval Options', 'pf' ); ?></button>    <br />
+			<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="<?php esc_attr_e( 'Reset all Feed Retrieval Options', 'pressforward' ); ?>"><?php esc_html_e( 'Reset all Feed Retrieval Options', 'pressforward' ); ?></button>    <br />
 			<?php
 				$feed_go         = get_option( PF_SLUG . '_feeds_go_switch', 0 );
 				$feed_iteration  = get_option( PF_SLUG . '_feeds_iteration', 0 );
@@ -294,12 +294,12 @@ class PF_Debugger extends PF_Module {
 				$chunk_state     = get_option( PF_SLUG . '_ready_to_chunk', 1 );
 
 				// translators: 1. "Feeds Go" status; 2. "Feeds iteration" status; 3. "Going switch" status; 4. "Ready to chunk" status.
-				$retrieval_state = sprintf( __( 'Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d  Ready to chunk? %4$d', 'pf' ), $feed_go, $feed_iteration, $retrieval_state, $chunk_state );
+				$retrieval_state = sprintf( __( 'Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d  Ready to chunk? %4$d', 'pressforward' ), $feed_go, $feed_iteration, $retrieval_state, $chunk_state );
 				echo esc_html( $retrieval_state );
 
 			?>
 			<br />
-			<button type="button" class="redoFeeds btn btn-warning" id="resetFeedOps" value="<?php esc_attr_e( 'Switch feeds to new retrieval setup', 'pf' ); ?>"><?php esc_html_e( 'Switch feeds to new retrieval setup', 'pf' ); ?></button>    <br />
+			<button type="button" class="redoFeeds btn btn-warning" id="resetFeedOps" value="<?php esc_attr_e( 'Switch feeds to new retrieval setup', 'pressforward' ); ?>"><?php esc_html_e( 'Switch feeds to new retrieval setup', 'pressforward' ); ?></button>    <br />
 			</p>
 			<?php
 		}

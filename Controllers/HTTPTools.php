@@ -9,7 +9,7 @@ namespace PressForward\Controllers;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use PressForward\Interfaces\System;
-use URLResolver;
+use mattwright\URLResolver;
 
 /**
  * HTTP utilities.
@@ -19,7 +19,7 @@ class HTTPTools implements HasActions {
 	 * URLResolver object.
 	 *
 	 * @access public
-	 * @var URLResolver
+	 * @var \mattwright\URLResolver
 	 */
 	public $url_resolver;
 
@@ -42,7 +42,7 @@ class HTTPTools implements HasActions {
 	/**
 	 * Constructor.
 	 *
-	 * @param \URLResolver                    $resolver URLResolver object.
+	 * @param \mattwright\URLResolver         $resolver URLResolver object.
 	 * @param \PressForward\Interfaces\System $system   System object.
 	 * @param \PressForward\Controllers\Metas $meta     Metas object.
 	 */
