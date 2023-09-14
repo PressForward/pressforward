@@ -226,13 +226,13 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			if ( current_user_can( 'edit_posts' ) ) {
 				$q = $this->get_specimens( $page, $post_types );
 				if ( $q->have_posts() ) {
-					while ( $q->have_posts() ) : $q->the_post();
+					while ( $q->have_posts() ) : $q->the_post(); // @phpstan-ignore-line
 						self::dismiss_alert( get_the_ID() );
 					endwhile;
 				} else {
 					return false;
 				}
-				wp_reset_postdata();
+				wp_reset_postdata(); // @phpstan-ignore-line
 				return $q->post_count;
 			} else {
 				return false;
@@ -431,12 +431,12 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			if ( self::is_on() ) {
 				$q = $this->get_specimens();
 				if ( $q->have_posts() ) {
-					while ( $q->have_posts() ) : $q->the_post();
+					while ( $q->have_posts() ) : $q->the_post(); // @phpstan-ignore-line
 						echo '<p>';
 						the_alert_box()->the_alert();
 						echo '</p>';
 					endwhile;
-					wp_reset_postdata();
+					wp_reset_postdata(); // @phpstan-ignore-line
 					$alertCheck = self::alert_label( 'delete_all_check' );
 					if ( current_user_can( 'edit_others_posts' ) ) {
 						$editText = self::alert_label( 'dismiss_all' );
