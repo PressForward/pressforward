@@ -819,10 +819,8 @@ class Forward_Tools {
 
 		if ( isset( $_POST['post_category'] ) && ! empty( $_POST['post_category'] ) && ! is_array( $_POST['post_category'] ) ) {
 			$categories = explode( ',', sanitize_text_field( wp_unslash( $_POST['post_category'] ) ) );
-			if ( is_array( $categories ) && count( $categories ) > 0 ) {
-				wp_set_post_categories( $post_id, $categories, false );
-				wp_set_post_categories( $nomination_id, $categories, false );
-			}
+			wp_set_post_categories( $post_id, $categories, false );
+			wp_set_post_categories( $nomination_id, $categories, false );
 		}
 
 		return $post_id;
