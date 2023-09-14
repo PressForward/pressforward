@@ -748,8 +748,12 @@ class PFTemplater {
 					// translators: 1. Publication date; 2. Link to item author.
 					echo '<div class="item_meta item_meta_date">' . sprintf( esc_html__( 'Published on %1$s by %2$s.', 'pressforward' ), esc_html( $item['item_date'] ), '<span class="item-authorship">' . esc_html( $item['item_author'] ) . '</span>' ) . '</div>';
 
-					// translators: 1. Unix timestamp for item date; 2. Unix timestamp for date added to feed.
-					echo sprintf( esc_html__( 'Unix timestamp for item date: %1$s. Unix timestamp for date added to feed: %2$s', 'pressforward' ), '<span class="sortableitemdate">' . esc_html( strtotime( $item['item_date'] ) ) . '</span>', '<span class="sortablerssdate">' . esc_html( strtotime( $item['item_added_date'] ) ) . '</span>.' );
+					printf(
+						// translators: 1. Unix timestamp for item date; 2. Unix timestamp for date added to feed.
+						esc_html__( 'Unix timestamp for item date: %1$s. Unix timestamp for date added to feed: %2$s', 'pressforward' ),
+						'<span class="sortableitemdate">' . esc_html( strtotime( $item['item_date'] ) ) . '</span>',
+						'<span class="sortablerssdate">' . esc_html( strtotime( $item['item_added_date'] ) ) . '</span>.'
+					);
 				?>
 				</div>
 				<?php
