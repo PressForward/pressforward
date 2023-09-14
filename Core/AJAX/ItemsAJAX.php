@@ -136,7 +136,6 @@ class ItemsAJAX implements HasActions {
 			'action_taken' => 'Feed items being removed',
 		);
 		wp_send_json( $message );
-		die();
 	}
 
 	/**
@@ -169,8 +168,6 @@ class ItemsAJAX implements HasActions {
 
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-		ob_end_clean();
-		die();
 	}
 
 	/**

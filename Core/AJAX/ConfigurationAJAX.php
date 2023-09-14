@@ -129,8 +129,6 @@ class ConfigurationAJAX implements HasActions {
 
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-		ob_end_clean();
-		die();
 	}
 
 	/**
@@ -156,8 +154,6 @@ class ConfigurationAJAX implements HasActions {
 
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-		ob_end_clean();
-		die();
 	}
 
 	/**
@@ -192,8 +188,6 @@ class ConfigurationAJAX implements HasActions {
 		);
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-		ob_end_clean();
-		die();
 	}
 
 	/**

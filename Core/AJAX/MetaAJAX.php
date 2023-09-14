@@ -239,7 +239,5 @@ EOT;
 
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-
-		die();
 	}
 }
