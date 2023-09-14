@@ -284,5 +284,4 @@ class PF_JWT {
 		$user    = get_user_by( 'id', $user_id );
 		return $user;
 	}
-
 }

@@ -363,5 +363,4 @@ class Stats_Shortcodes {
 			return false;
 		}
 	}
-
 }

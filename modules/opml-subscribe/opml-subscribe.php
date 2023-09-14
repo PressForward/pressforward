@@ -506,7 +506,4 @@ class PF_OPML_Subscribe extends PF_Module {
 			</p>
 		<?php
 	}
-
-
-
 }

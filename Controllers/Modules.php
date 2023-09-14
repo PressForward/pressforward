@@ -84,5 +84,4 @@ class Modules {
 
 		do_action( 'pf_setup_modules', $this );
 	}
-
 }

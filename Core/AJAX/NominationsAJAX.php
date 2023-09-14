@@ -116,5 +116,4 @@ class NominationsAJAX implements HasActions {
 		pressforward( 'admin.nominated' )->simple_nom_to_draft();
 		die();
 	}
-
 }

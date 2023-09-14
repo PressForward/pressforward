@@ -306,6 +306,4 @@ class PF_Loops {
 
 		return $retval;
 	}
-
-
 }

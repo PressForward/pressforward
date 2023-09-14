@@ -148,5 +148,4 @@ class AddFeeds implements HasActions, HasFilters {
 		);
 		return $permitted_tabs;
 	}
-
 }
