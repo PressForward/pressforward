@@ -70,11 +70,11 @@ class PF_Debugger extends PF_Module {
 	/**
 	 * Counts the post in a post type.
 	 *
-	 * @param string   $post_type Post type.
-	 * @param int|bool $date_less Number of months.
+	 * @param string $post_type Post type.
+	 * @param int    $date_less Number of months.
 	 * @return int
 	 */
-	public function count_the_posts( $post_type, $date_less = false ) {
+	public function count_the_posts( $post_type, $date_less = 0 ) {
 		if ( ! $date_less ) {
 			$y = gmdate( 'Y' );
 			$m = gmdate( 'm' );
@@ -82,7 +82,8 @@ class PF_Debugger extends PF_Module {
 			$y = gmdate( 'Y' );
 			$m = gmdate( 'm' );
 			$m = (int) $m + (int) $date_less;
-		} elseif ( $date_less >= 12 ) {
+		} else {
+			// $date_less >= 12.
 			$y = gmdate( 'Y' );
 			$y = (int) $y - floor( $date_less / 12 );
 			$m = gmdate( 'm' );
