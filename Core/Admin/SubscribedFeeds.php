@@ -568,7 +568,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 		pf_log( 'On trash hook:' );
 
 		// Note: this will also remove feed items if a feed is deleted, is that something we want?
-		if ( $readability_status || $readability_status > 0 ) {
+		if ( $readability_status ) {
 			if ( 'feed_item' === $item_type ) {
 				$post_type = pf_feed_item_post_type();
 			} else {
