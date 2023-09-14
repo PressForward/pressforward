@@ -62,19 +62,13 @@ class PF_JWT {
 		if ( function_exists( 'random_bytes' ) ) {
 			try {
 				$value = random_bytes( $num );
-			} catch ( \TypeError $e ) {
-				// Well, it's an integer, so this IS unexpected.
-				die( esc_html__( 'An unexpected error has occurred when generating a cryptographic API key.', 'pressforward' ) );
-			} catch ( \Error $e ) {
-				// This is also unexpected because 32 is a reasonable integer.
-				die( esc_html__( 'An unexpected error has occurred when generating a cryptographic API key.', 'pressforward' ) );
 			} catch ( \Exception $e ) {
 				// If you get this message, the CSPRNG failed hard.
 				die( esc_html__( 'Could not generate a random string. Is our OS secure?', 'pressforward' ) );
 			}
 			return bin2hex( $value );
 		} else {
-			throw new \Exception( __( 'PressForward cannot provide a cryptographically secure API key.', 'pressforward' ), 1 );
+			throw new \Exception( esc_html__( 'PressForward cannot provide a cryptographically secure API key.', 'pressforward' ), 1 );
 		}
 	}
 
