@@ -394,7 +394,7 @@ class Retrieval {
 	public function get_the_feed_object( $module_to_use, $a_feed_obj ) {
 		$module   = pressforward( 'modules' )->modules[ $module_to_use ];
 		$feed_obj = $module->get_data_object( $a_feed_obj );
-		if ( empty( $feed_obj ) || ! $feed_obj ) {
+		if ( empty( $feed_obj ) ) {
 			return false;
 		} else {
 			$feed_obj['parent_feed_id'] = $a_feed_obj->ID;
