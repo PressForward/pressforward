@@ -1354,10 +1354,10 @@ function pf_process_delete_queue() {
 		delete_option( 'pf_delete_queue' );
 
 		$terms = get_terms(
-			pressforward( 'schema.feeds' )->tag_taxonomy,
-			array(
+			[
+				'taxonomy'   => pressforward( 'schema.feeds' )->tag_taxonomy,
 				'hide_empty' => false,
-			)
+			]
 		);
 
 		foreach ( $terms as $term ) {

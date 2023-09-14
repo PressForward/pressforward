@@ -172,12 +172,12 @@ class Folders implements HasActions, HasFilters {
 	public function get_top_feed_folders() {
 		$terms = array( $this->tag_taxonomy );
 		$cats  = get_terms(
-			$terms,
-			array(
+			[
+				'taxonomy'     => $terms,
 				'parent'       => 0,
 				'hide_empty'   => 0,
 				'hierarchical' => 1,
-			)
+			]
 		);
 		return $cats;
 	}
