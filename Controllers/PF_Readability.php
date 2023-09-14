@@ -63,7 +63,7 @@ class PF_Readability {
 						 */
 						// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 						$content_html = @get_meta_tags( $url );
-						if ( '' !== $content_html ) {
+						if ( $content_html ) {
 							// Try and get the HEAD > META DESCRIPTION tag.
 							$read_status     = 'failed_readability_og';
 							$item_read_ready = $content_html['description'];
