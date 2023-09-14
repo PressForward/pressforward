@@ -53,8 +53,8 @@ class PFTemplater {
 	/**
 	 * Get a given view (if it exists).
 	 *
-	 * @param string $view The slug of the view.
-	 * @param array  $vars Variables passed to template.
+	 * @param string|array $view The slug of the view.
+	 * @param array        $vars Variables passed to template.
 	 * @return string
 	 */
 	public function get_view( $view, $vars = array() ) {
@@ -241,9 +241,6 @@ class PFTemplater {
 	 * @param string $the_function See add_submenu_page().
 	 */
 	public function add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $the_function = '' ) {
-		if ( is_array( $capability ) ) {
-			$capability = $this->users->user_level( $capability[0], $capability[1] );
-		}
 		$this->factory->add_submenu_page(
 			$parent_slug,
 			$page_title,
@@ -266,10 +263,6 @@ class PFTemplater {
 	 * @param int    $position     See add_menu_page().
 	 */
 	public function add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $the_function = '', $icon_url = '', $position = null ) {
-		if ( is_array( $capability ) ) {
-			$capability = $this->users->user_level( $capability[0], $capability[1] );
-		}
-
 		$this->factory->add_menu_page(
 			$page_title,
 			$menu_title,
