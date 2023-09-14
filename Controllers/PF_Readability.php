@@ -234,10 +234,6 @@ class PF_Readability {
 
 		$request = pf_de_https( $url, 'wp_remote_get' );
 
-		if ( is_wp_error( $request ) ) {
-			$content = 'error-secured';
-			return $content;
-		}
 		if ( ! empty( $request['body'] ) ) {
 			$html = $request['body'];
 		} elseif ( ! empty( $request ) && ( ! is_array( $request ) ) ) {

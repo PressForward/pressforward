@@ -171,7 +171,7 @@ class HTTPTools implements HasActions {
 	 *
 	 * @param string $url        URL.
 	 * @param string $deprecated No longer used.
-	 * @return mixed
+	 * @return array
 	 */
 	public function get_url_content( $url, $deprecated = '' ) {
 		$url = str_replace( '&amp;', '&', $url );

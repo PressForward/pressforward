@@ -446,9 +446,9 @@ function pf_prep_item_for_submit( $item ) {
  *
  * @param string        $url      URL.
  * @param bool|callable $callback Function to call first to try and get the URL.
- * @return string|object $r Returns the string URL, converted, when no function is passed.
- *                          Otherwise returns the result of the function after being
- *                          checked for accessibility.
+ * @return string|array $r Returns the string URL, converted, when no function is passed.
+ *                         Otherwise returns the result of the function after being
+ *                         checked for accessibility.
  */
 function pf_de_https( $url, $callback = false ) {
 	$url_orig = $url;
