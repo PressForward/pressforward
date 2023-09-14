@@ -23,8 +23,8 @@ class ModelsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	public function register( Container $container ) {
 		$container->define(
 			'model.feed_item',
-			function( $container ) {
-				return ( function( $item_url, $item_title, $post_type = false ) {
+			function ( $container ) {
+				return ( function ( $item_url, $item_title, $post_type = false ) {
 					return new Feed_Item();
 				} );
 			}

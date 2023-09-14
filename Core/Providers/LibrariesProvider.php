@@ -26,29 +26,29 @@ class LibrariesProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	public function register( Container $container ) {
 		$container->define(
 			'library.url_resolver',
-			function( $container ) {
+			function ( $container ) {
 				return new URLResolver();
 			}
 		);
 
 		$container->share(
 			'library.htmlchecker',
-			function( $container ) {
+			function ( $container ) {
 				return new HTMLChecker();
 			}
 		);
 
 		$container->share(
 			'library.opengraph',
-			function( $container ) {
+			function ( $container ) {
 				return new PFOpenGraph();
 			}
 		);
 
 		$container->define(
 			'library.readability',
-			function( $container ) {
-				return ( function( $html, $url = null, $parser = 'libxml', $logger = 'pf_log' ) {
+			function ( $container ) {
+				return ( function ( $html, $url = null, $parser = 'libxml', $logger = 'pf_log' ) {
 					if ( ! class_exists( '\Readability' ) ) {
 						require_once PF_ROOT . '/Libraries/FiveFiltersReadability/Readability.php';
 					}
@@ -60,7 +60,7 @@ class LibrariesProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		$container->share(
 			'library.alertbox',
-			function( $container ) {
+			function ( $container ) {
 				return The_Alert_Box::init();
 			}
 		);

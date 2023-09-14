@@ -45,7 +45,7 @@ function pressforward_register_module( $args ) {
 
 	add_filter(
 		'pressforward_register_modules',
-		function( $modules ) use ( $r ) {
+		function ( $modules ) use ( $r ) {
 			return array_merge(
 				$modules,
 				[

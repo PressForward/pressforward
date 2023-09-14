@@ -26,7 +26,7 @@ class UtilityProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		$container->share(
 			'utility.forward_tools',
-			function( $container ) {
+			function ( $container ) {
 				return new Forward_Tools(
 					$container->fetch( 'controller.items' ),
 					$container->fetch( 'controller.advancement' ),
@@ -37,7 +37,7 @@ class UtilityProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		$container->share(
 			'utility.relate',
-			function( $container ) {
+			function ( $container ) {
 				return new Relate(
 					$container->fetch( 'controller.items' ),
 					$container->fetch( 'controller.advancement' ),
@@ -49,7 +49,7 @@ class UtilityProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		$container->share(
 			'utility.retrieval',
-			function( $container ) {
+			function ( $container ) {
 				return new Retrieval();
 			}
 		);

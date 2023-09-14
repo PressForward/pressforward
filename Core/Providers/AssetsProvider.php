@@ -45,7 +45,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_style(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) {
+				'condition' => function ( $hook ) {
 					return true;
 				},
 				'handle'    => $slug . '-alert-styles',
@@ -56,7 +56,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_style(
 			array(
 				'type'      => 'admin',
-				'condition' => ( function( $hook ) use ( $provider ) {
+				'condition' => ( function ( $hook ) use ( $provider ) {
 					$exclusions = array( 'pf-options' );
 					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				} ),
@@ -68,7 +68,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_style(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					$exclusions = array( 'pf-options' );
 					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				},
@@ -81,7 +81,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_style(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					$exclusions = array( 'pf-options' );
 					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				},
@@ -94,7 +94,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_style(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					$exclusions = array();
 					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				},
@@ -106,7 +106,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_style(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) {
+				'condition' => function ( $hook ) {
 					return pressforward( 'controller.template_factory' )->is_a_pf_page();
 				},
 				'handle'    => $slug . '-subscribed-styles',
@@ -119,7 +119,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					$inclusions = array( 'edit.php' );
 					return $provider->check_hook_for_pressforward_string( $hook, array(), $inclusions, true );
 				},
@@ -132,7 +132,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					$inclusions = array( 'edit.php' );
 					return $provider->check_hook_for_pressforward_string( $hook, array(), $inclusions, true );
 				},
@@ -145,7 +145,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					return $provider->check_hook_for_pressforward_string( $hook );
 				},
 				'handle'    => $slug . '-heartbeat',
@@ -157,7 +157,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					$exclusions = array( 'toplevel_page_pf-menu' );
 					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				},
@@ -170,7 +170,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					return $provider->check_hook_for_pressforward_string( $hook );
 				},
 				'handle'    => 'pf-popper',
@@ -182,7 +182,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					return $provider->check_hook_for_pressforward_string( $hook );
 				},
 				'handle'    => $slug . '-twitter-bootstrap',
@@ -194,7 +194,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					$exclusions = array( 'toplevel_page_pf-menu' );
 					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				},
@@ -207,7 +207,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					$exclusions = array( 'toplevel_page_pf-menu' );
 					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				},
@@ -220,7 +220,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					$exclusions = array( 'toplevel_page_pf-menu' );
 					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				},
@@ -233,7 +233,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					return $provider->check_hook_for_pressforward_string( $hook );
 				},
 				'handle'    => $slug . '-jq-fullscreen',
@@ -245,7 +245,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					return $provider->check_hook_for_pressforward_string( $hook );
 				},
 				'handle'    => $slug . '-sort-imp',
@@ -257,7 +257,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					return $provider->check_hook_for_pressforward_string( $hook );
 				},
 				'handle'    => $slug . '-readability-imp',
@@ -269,7 +269,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					return $provider->check_hook_for_pressforward_string( $hook );
 				},
 				'handle'    => $slug . '-nomination-imp',
@@ -281,7 +281,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					return $provider->check_hook_for_pressforward_string( $hook );
 				},
 				'handle'    => $slug . '-relationships',
@@ -293,7 +293,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					$exclusions = array( 'toplevel_page_pf-menu' );
 					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				},
@@ -306,7 +306,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					$exclusions = array( 'toplevel_page_pf-menu' );
 					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
 				},
@@ -319,7 +319,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					return $provider->check_hook_for_pressforward_string( $hook );
 				},
 				'handle'    => $slug . '-tools',
@@ -331,7 +331,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					$inclusions = array( 'pressforward_page_pf-review' );
 					return $provider->check_hook_for_pressforward_string( $hook, array(), $inclusions );
 				},
@@ -344,7 +344,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'      => 'admin',
-				'condition' => function( $hook ) use ( $provider ) {
+				'condition' => function ( $hook ) use ( $provider ) {
 					$inclusions = array( 'pressforward_page_pf-review' );
 					return $provider->check_hook_for_pressforward_string( $hook, array(), $inclusions );
 				},

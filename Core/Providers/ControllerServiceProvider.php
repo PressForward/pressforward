@@ -33,21 +33,21 @@ class ControllerServiceProvider extends \Intraxia\Jaxion\Assets\ServiceProvider 
 	public function register( Container $container ) {
 		$container->share(
 			'controller.meta_interface',
-			function() {
+			function () {
 				return new PF_to_WP_Meta();
 			}
 		);
 
 		$container->share(
 			'controller.system',
-			function() {
+			function () {
 				return new PF_to_WP_System();
 			}
 		);
 
 		$container->share(
 			'controller.metas',
-			function( $container ) {
+			function ( $container ) {
 				return new Metas(
 					$container->fetch( 'controller.meta_interface' ),
 					$container->fetch( 'controller.system' )
@@ -57,7 +57,7 @@ class ControllerServiceProvider extends \Intraxia\Jaxion\Assets\ServiceProvider 
 
 		$container->share(
 			'controller.http_tools',
-			function( $container ) {
+			function ( $container ) {
 				return new HTTPTools(
 					$container->fetch( 'library.url_resolver' ),
 					$container->fetch( 'controller.system' ),
@@ -68,56 +68,56 @@ class ControllerServiceProvider extends \Intraxia\Jaxion\Assets\ServiceProvider 
 
 		$container->share(
 			'controller.users',
-			function( $container ) {
+			function ( $container ) {
 				return new Users( $container->fetch( 'controller.metas' ) );
 			}
 		);
 
 		$container->share(
 			'controller.template_factory',
-			function() {
+			function () {
 				return new Template_Factory();
 			}
 		);
 
 		$container->share(
 			'controller.readability',
-			function() {
+			function () {
 				return new PF_Readability();
 			}
 		);
 
 		$container->share(
 			'controller.items',
-			function() {
+			function () {
 				return new PF_to_WP_Posts();
 			}
 		);
 
 		$container->share(
 			'controller.jwt',
-			function( $container ) {
+			function ( $container ) {
 				return new PF_JWT( $container->fetch( 'controller.users' ), $container->fetch( 'controller.system' ) );
 			}
 		);
 
 		$container->share(
 			'controller.advancement',
-			function( $container ) {
+			function ( $container ) {
 				return new PF_Advancement( $container->fetch( 'controller.metas' ) );
 			}
 		);
 
 		$container->share(
 			'controller.loops',
-			function( $container ) {
+			function ( $container ) {
 				return new PF_Loops();
 			}
 		);
 
 		$container->share(
 			'controller.stats',
-			function( $container ) {
+			function ( $container ) {
 				return new Stats( $container->fetch( 'controller.metas' ) );
 			}
 		);

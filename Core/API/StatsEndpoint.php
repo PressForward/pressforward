@@ -101,7 +101,7 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -114,7 +114,7 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -127,7 +127,7 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by day, use number of day.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -140,7 +140,7 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -153,7 +153,7 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -166,7 +166,7 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -196,7 +196,7 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							// Set the argument to be required for the endpoint.
 							'required'          => true,
 							'default'           => 1,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -209,7 +209,7 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -222,7 +222,7 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -235,7 +235,7 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by day, use number of day.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -248,7 +248,7 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -261,7 +261,7 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -274,7 +274,7 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -304,7 +304,7 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							// Set the argument to be required for the endpoint.
 							'required'          => true,
 							'default'           => 1,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
