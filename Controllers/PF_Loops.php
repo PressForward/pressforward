@@ -175,12 +175,8 @@ class PF_Loops {
 			}
 
 			if ( ! empty( $rel_not_items ) ) {
-				$posts_not_in = wp_list_pluck( $rel_not_items, 'item_id' );
-				if ( ! empty( $post_args['post__not_in'] ) ) {
-					$post_args['post__not_in'] = array_merge( $post_args['post__not_in'], $posts_not_in );
-				} else {
-					$post_args['post__not_in'] = $posts_not_in;
-				}
+				$posts_not_in              = wp_list_pluck( $rel_not_items, 'item_id' );
+				$post_args['post__not_in'] = $posts_not_in;
 			}
 
 			if ( isset( $drafted_items ) ) {
@@ -272,7 +268,7 @@ class PF_Loops {
 
 			$item_content = '';
 			$bodies       = $doc->getElementsByTagName( 'body' );
-			if ( $bodies && $bodies->length > 0 ) {
+			if ( $bodies->length > 0 ) {
 				foreach ( $bodies->item( 0 )->childNodes as $child ) {
 					$item_content .= $doc->saveHTML( $child );
 				}
