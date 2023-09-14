@@ -360,11 +360,12 @@ class Folders implements HasActions, HasFilters {
 	 * @param array $folder  Term data.
 	 */
 	public function the_folder( $folder ) {
-		if ( is_array( $folder ) ) {
-			$term_obj = $folder['term'];
-		} else {
-			$term_obj = $folder;
+		if ( empty( $folder['term'] ) ) {
+			return;
 		}
+
+		$term_obj = $folder['term'];
+
 		?>
 
 		<?php
