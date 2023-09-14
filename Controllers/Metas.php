@@ -1268,11 +1268,11 @@ class Metas implements HasFilters, HasActions {
 	/**
 	 * Applies PF-standardize postmeta.
 	 *
-	 * @param int|string $id         The post ID.
-	 * @param string     $field      The post_meta field slug.
-	 * @param string     $value      The post_meta value.
-	 * @param string     $state      Unique status of the postmeta.
-	 * @param string     $apply_type 'update' or 'add'.
+	 * @param int|string   $id         The post ID.
+	 * @param string|array $field      The post_meta field slug.
+	 * @param string       $value      The post_meta value.
+	 * @param string       $state      Unique status of the postmeta.
+	 * @param string       $apply_type 'update' or 'add'.
 	 */
 	public function apply_pf_meta( $id, $field, $value = '', $state = null, $apply_type = 'update' ) {
 		$serialized = false;
