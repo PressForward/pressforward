@@ -364,7 +364,7 @@ class Menu implements HasActions, HasFilters {
 				$y = (int) gmdate( 'Y' );
 				$m = (int) gmdate( 'm' );
 				$m = $m + $date_less;
-			} elseif ( $date_less >= 12 ) {
+			} else {
 				$y = (int) gmdate( 'Y' );
 				$y = $y - floor( $date_less / 12 );
 				$m = (int) gmdate( 'm' );
