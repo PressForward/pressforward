@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @group relationships
+ */
 class PF_Tests extends PF_UnitTestCase {
 
 	function test_pf_get_relationship_value_blank_string() {
@@ -14,7 +17,7 @@ class PF_Tests extends PF_UnitTestCase {
 		) );
 
 		$value = pf_get_relationship_value( $type, $item_id, $user_id );
-		$this->assertSame( '', $value );
+		$this->assertSame( 0, $value );
 	}
 
 	function test_pf_get_relationship_value_doesnt_exist() {
@@ -66,20 +69,21 @@ class PF_Tests extends PF_UnitTestCase {
 		$user_id = $this->factory->user->create();
 		$item_id = $this->factory->post->create();
 		$type = 'star';
+		$rel_value = 12345;
 		$relationship_id = $this->factory->relationship->create( array(
 			'user_id' => $user_id,
 			'item_id' => $item_id,
 			'type'    => $type,
-			'value'   => 'foo',
+			'value'   => $rel_value,
 		) );
 
 		$value = pf_get_relationship_value( $type, $item_id, $user_id );
-		$this->assertSame( 'foo', $value );
+		$this->assertSame( $rel_value, $value );
 
 		$num_queries = $wpdb->num_queries;
 
 		$value = pf_get_relationship_value( $type, $item_id, $user_id );
-		$this->assertSame( 'foo', $value );
+		$this->assertSame( $rel_value, $value );
 		$this->assertSame( $num_queries, $wpdb->num_queries );
 	}
 
@@ -87,19 +91,21 @@ class PF_Tests extends PF_UnitTestCase {
 		$user_id = $this->factory->user->create();
 		$item_id = $this->factory->post->create();
 		$type = 'star';
+		$rel_value = 12345;
 		$relationship_id = $this->factory->relationship->create( array(
 			'user_id' => $user_id,
 			'item_id' => $item_id,
 			'type'    => $type,
-			'value'   => 'foo',
+			'value'   => $rel_value,
 		) );
 
 		$value = pf_get_relationship_value( $type, $item_id, $user_id );
-		$this->assertSame( 'foo', $value );
+		$this->assertSame( $rel_value, $value );
 
-		$t = pf_set_relationship( $type, $item_id, $user_id, 'bar' );
+		$new_rel_value = 23456;
+		$t = pf_set_relationship( $type, $item_id, $user_id, $new_rel_value );
 
 		$value = pf_get_relationship_value( $type, $item_id, $user_id );
-		$this->assertSame( 'bar', $value );
+		$this->assertSame( $new_rel_value, $value );
 	}
 }
