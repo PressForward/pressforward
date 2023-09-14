@@ -1399,14 +1399,14 @@ function pf_function_auto_logger( $caller ) {
  * @return string.
  */
 function assure_log_string( $message ) {
-	if ( is_array( $message ) || is_object( $message ) ) {
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-		$message = print_r( $message, true );
-	}
-
 	// Make sure we've got a string to log.
 	if ( is_wp_error( $message ) ) {
 		$message = $message->get_error_message();
+	}
+
+	if ( is_array( $message ) || is_object( $message ) ) {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+		$message = print_r( $message, true );
 	}
 
 	if ( true === $message ) {
@@ -1434,11 +1434,11 @@ function assure_log_string( $message ) {
  *
  * @since 1.7
  *
- * @param string $message    The message to log.
- * @param bool   $display    Whether to echo the message. Default fals.
- * @param bool   $reset      Whether to delete the contents of the log before
+ * @param mixed $message    The message to log.
+ * @param bool  $display    Whether to echo the message. Default fals.
+ * @param bool  $reset      Whether to delete the contents of the log before
  *                           appending message. Default false.
- * @param bool   $do_return  Whether to return the message instead of logging it.
+ * @param bool  $do_return  Whether to return the message instead of logging it.
  *                           Default false.
  */
 function pf_log( $message = '', $display = false, $reset = false, $do_return = false ) {
