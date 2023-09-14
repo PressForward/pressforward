@@ -309,8 +309,6 @@ class Relate implements HasActions {
 
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-		ob_end_flush();
-		die();
 	}
 
 	/**
@@ -396,8 +394,6 @@ class Relate implements HasActions {
 
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-		ob_end_flush();
-		die();
 	}
 
 	/**
@@ -498,7 +494,5 @@ class Relate implements HasActions {
 
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-		ob_end_flush();
-		die();
 	}
 }

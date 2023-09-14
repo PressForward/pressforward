@@ -283,8 +283,6 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 				);
 				$xmlResponse = new WP_Ajax_Response( $response );
 				$xmlResponse->send();
-				ob_end_flush();
-				die();
 			}
 			if ( empty( $filtered_post_types ) ) {
 				$fpt_array = false;
@@ -328,8 +326,6 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			}
 			$xmlResponse = new WP_Ajax_Response( $response );
 			$xmlResponse->send();
-			ob_end_flush();
-			      die();
 		}
 
 		public function remove_alerted_posts() {
@@ -345,8 +341,6 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 				);
 				$xmlResponse = new WP_Ajax_Response( $response );
 				$xmlResponse->send();
-				ob_end_flush();
-				die();
 			}
 			if ( empty( $filtered_post_types ) ) {
 				$fpt_array = false;
@@ -398,8 +392,6 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			}
 			$xmlResponse = new WP_Ajax_Response( $response );
 			$xmlResponse->send();
-			ob_end_flush();
-			die();
 		}
 
 		public function the_alert() {
