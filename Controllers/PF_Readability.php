@@ -218,9 +218,6 @@ class PF_Readability {
 
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-		libxml_clear_errors();
-		ob_end_flush();
-		die();
 	}
 
 	/**
