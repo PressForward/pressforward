@@ -104,7 +104,7 @@ class PFOpenGraph implements Iterator {
 		libxml_use_internal_errors( $old_libxml_error );
 
 		$tags = $doc->getElementsByTagName( 'meta' );
-		if ( ! $tags || $tags->length === 0 ) {
+		if ( $tags->length === 0 ) {
 			return false;
 		}
 
