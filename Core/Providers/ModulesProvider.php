@@ -7,16 +7,13 @@
 
 namespace PressForward\Core\Providers;
 
-use Intraxia\Jaxion\Contract\Core\Container as Container;
-use Intraxia\Jaxion\Assets\Register as Assets;
-use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
-
+use Intraxia\Jaxion\Contract\Core\Container;
 use PressForward\Controllers\Modules;
 
 /**
  * ModulesProvider class.
  */
-class ModulesProvider extends ServiceProvider {
+class ModulesProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	/**
 	 * {@inheritDoc}
 	 *

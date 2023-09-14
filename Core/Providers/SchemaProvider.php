@@ -7,12 +7,9 @@
 
 namespace PressForward\Core\Providers;
 
-use PressForward\Core\Admin\Menu;
-use Intraxia\Jaxion\Contract\Core\Container as Container;
-use Intraxia\Jaxion\Assets\Register as Assets;
-use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
+use Intraxia\Jaxion\Contract\Core\Container;
 use PressForward\Core\Schema\Nominations;
-use PressForward\Core\Schema\Folders as Folders;
+use PressForward\Core\Schema\Folders;
 use PressForward\Core\Schema\Feed_Items;
 use PressForward\Core\Schema\Feeds;
 use PressForward\Core\Schema\Relationships;
@@ -20,11 +17,11 @@ use PressForward\Core\Schema\Relationships;
 /**
  * AssetsProvider class.
  */
-class SchemaProvider extends ServiceProvider {
+class SchemaProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @param Container $container Container.
+	 * @param \Intraxia\Jaxion\Contract\Core\Container $container Container object.
 	 */
 	public function register( Container $container ) {
 		$container->share(

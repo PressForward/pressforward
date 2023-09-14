@@ -8,8 +8,8 @@
 namespace PressForward\Core\Models;
 
 use PressForward\Core\Models\BasicModel;
-use PressForward\Interfaces\Items as Items;
-use PressForward\Controllers\Metas as Metas;
+use PressForward\Interfaces\Items;
+use PressForward\Controllers\Metas;
 
 /**
  * Feed_Item class.

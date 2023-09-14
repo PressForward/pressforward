@@ -10,11 +10,6 @@ namespace PressForward\Core\Bookmarklet;
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
 
-use PressForward\Controllers\Metas;
-use PressForward\Core\API\APIWithMetaEndpoints;
-
-use WP_Ajax_Response;
-
 /**
  * NominateThisCore class.
  */

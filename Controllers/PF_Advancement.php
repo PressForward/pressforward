@@ -7,14 +7,10 @@
 
 namespace PressForward\Controllers;
 
-use PressForward\Interfaces\Advance_System as Advance_System;
-
-use Intraxia\Jaxion\Contract\Core\HasActions as HasActions;
-
 /**
- * PressForward to WP post object lifecycle tools
+ * PressForward to WP post object lifecycle tools.
  */
-class PF_Advancement implements Advance_System, HasActions {
+class PF_Advancement implements \PressForward\Interfaces\Advance_System, \Intraxia\Jaxion\Contract\Core\HasActions {
 	/**
 	 * Metas object.
 	 *

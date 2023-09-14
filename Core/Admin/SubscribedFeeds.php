@@ -12,11 +12,8 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
 
 use PressForward\Controllers\PFtoWPUsers as Users;
 
-use PressForward\Core\Admin\PFTemplater as PFTemplater;
-use PressForward\Core\Utility\Forward_Tools as Forward_Tools;
-use PressForward\Core\Schema\Nominations as Nominations;
 use PressForward\Controllers\Metas;
-use AlertBox\The_Alert_Box as The_Alert_Box;
+use AlertBox\The_Alert_Box;
 
 /**
  * Subscribed Feeds admin panel.

@@ -7,9 +7,8 @@
 
 namespace PressForward\Core\Utility;
 
-use Intraxia\Jaxion\Contract\Core\HasActions;
-use PressForward\Interfaces\Items as Items;
-use PressForward\Interfaces\Advance_System as Advance_System;
+use PressForward\Interfaces\Items;
+use PressForward\Interfaces\Advance_System;
 use PressForward\Controllers\Metas;
 use PressForward\Core\Schema\Relationships;
 use WP_Query;
@@ -18,7 +17,7 @@ use WP_Ajax_Response;
 /**
  * PressForward relationships tools.
  */
-class Relate implements HasActions {
+class Relate implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	/**
 	 * Items object.
 	 *

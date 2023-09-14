@@ -7,12 +7,10 @@
 
 namespace PressForward\Controllers;
 
-use PressForward\Interfaces\SystemUsers as SystemUsers;
-
 /**
  * User utilities.
  */
-class PFtoWPUsers implements SystemUsers {
+class PFtoWPUsers implements \PressForward\Interfaces\SystemUsers {
 	/**
 	 * Metas object.
 	 *

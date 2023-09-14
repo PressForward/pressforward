@@ -7,11 +7,9 @@
 
 namespace PressForward\Core\Admin;
 
-use Intraxia\Jaxion\Contract\Core\HasActions;
-
-use PressForward\Core\Admin\PFTemplater as PFTemplater;
-use PressForward\Core\Utility\Forward_Tools as Forward_Tools;
-use PressForward\Core\Schema\Nominations as Nominations;
+use PressForward\Core\Admin\PFTemplater;
+use PressForward\Core\Utility\Forward_Tools;
+use PressForward\Core\Schema\Nominations;
 use PressForward\Controllers\Metas;
 use PressForward\Controllers\PFtoWPUsers;
 use WP_Ajax_Response;
@@ -20,7 +18,7 @@ use WP_Query;
 /**
  * Nominated functionality.
  */
-class Nominated implements HasActions {
+class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	/**
 	 * Metas object.
 	 *

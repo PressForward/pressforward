@@ -7,19 +7,16 @@
 
 namespace PressForward\Core\API;
 
-use Intraxia\Jaxion\Contract\Core\HasActions;
-
 use PressForward\Controllers\PF_Readability;
 use PressForward\Core\Utility\Forward_Tools;
 use PressForward\Libraries\HTMLChecker;
 
-use \WP_Ajax_Response;
-use \WP_Error;
+use WP_Error;
 
 /**
  * Readability endpoint.
  */
-class ReadabilityEndpoint implements HasActions {
+class ReadabilityEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 
 	/**
 	 * API base data.

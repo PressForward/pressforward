@@ -7,20 +7,17 @@
 
 namespace PressForward\Core\API;
 
-use Intraxia\Jaxion\Contract\Core\HasActions;
-
 use PressForward\Core\Admin\PFTemplater;
 use PressForward\Controllers\PF_JWT;
 use PFOpenGraph;
-use \mattwright\URLResolver;
+use mattwright\URLResolver;
 
-use \WP_Ajax_Response;
-use \WP_Error;
+use WP_Error;
 
 /**
  * MetaCheckEndpoint class.
  */
-class MetaCheckEndpoint implements HasActions {
+class MetaCheckEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	/**
 	 * API base.
 	 *

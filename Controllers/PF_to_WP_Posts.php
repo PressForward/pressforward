@@ -7,12 +7,10 @@
 
 namespace PressForward\Controllers;
 
-use PressForward\Interfaces\Items as Items;
-
 /**
  * Wrappers for WP post functions.
  */
-class PF_to_WP_Posts implements Items {
+class PF_to_WP_Posts implements \PressForward\Interfaces\Items {
 
 	/**
 	 * Creates a post.

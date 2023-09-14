@@ -7,9 +7,8 @@
 
 namespace PressForward\Core\Providers;
 
-use Intraxia\Jaxion\Contract\Core\Container as Container;
-use Intraxia\Jaxion\Assets\Register as Assets;
-use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
+use Intraxia\Jaxion\Contract\Core\Container;
+use Intraxia\Jaxion\Assets\ServiceProvider;
 
 use PressForward\Core\API\PostExtension;
 use PressForward\Core\API\FeedEndpoint;
@@ -27,7 +26,7 @@ class APIProvider extends ServiceProvider {
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param Container $container Container.
+	 * @param \Intraxia\Jaxion\Contract\Core\Container $container Container object.
 	 */
 	public function register( Container $container ) {
 

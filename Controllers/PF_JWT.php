@@ -9,7 +9,6 @@ namespace PressForward\Controllers;
 
 use PressForward\Interfaces\System;
 use PressForward\Interfaces\SystemUsers;
-use \Firebase\JWT\JWT as JWT;
 
 /**
  * JWT functionality.
@@ -48,7 +47,7 @@ class PF_JWT {
 	public function __construct( SystemUsers $users, System $system ) {
 		$this->system_users = $users;
 		$this->system       = $system;
-		$this->jwt          = new JWT();
+		$this->jwt          = new \Firebase\JWT\JWT();
 	}
 
 	/**

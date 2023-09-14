@@ -12,7 +12,6 @@ use WP_Ajax_Response;
 use WP_Error;
 use WP_Query;
 use PressForward\Controllers\Metas;
-use PressForward\Controllers\Stats_Shortcodes as Stats_Shortcodes;
 
 /**
  * Stats utilities.

@@ -7,8 +7,8 @@
 
 namespace PressForward\Core\Utility;
 
-use PressForward\Interfaces\Items as Items;
-use PressForward\Interfaces\Advance_System as Advance_System;
+use PressForward\Interfaces\Items;
+use PressForward\Interfaces\Advance_System;
 
 use PressForward\Controllers\Metas;
 

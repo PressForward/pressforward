@@ -7,23 +7,20 @@
 
 namespace PressForward\Core\API;
 
-use Intraxia\Jaxion\Contract\Core\HasActions;
-
 use PressForward\Controllers\Metas;
 use PressForward\Controllers\Stats;
 use PressForward\Core\Utility\Forward_Tools;
 use PressForward\Libraries\HTMLChecker;
 
 use DaveChild\TextStatistics as TS;
-use DaveChild\TextStatistics\Text as Text;
+use DaveChild\TextStatistics\Text;
 
-use WP_Ajax_Response;
 use WP_Error;
 
 /**
  * Stats endpoint.
  */
-class StatsEndpoint implements HasActions {
+class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 
 	/**
 	 * API base data.

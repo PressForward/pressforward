@@ -12,11 +12,6 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
 
 use PressForward\Controllers\PFtoWPUsers;
 
-use PressForward\Core\Admin\PFTemplater as PFTemplater;
-use PressForward\Core\Utility\Forward_Tools as Forward_Tools;
-use PressForward\Core\Schema\Nominations as Nominations;
-use PressForward\Controllers\Metas;
-
 /**
  * Add Feeds admin panel.
  */

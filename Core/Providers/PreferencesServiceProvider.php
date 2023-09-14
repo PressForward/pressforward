@@ -8,14 +8,12 @@
 namespace PressForward\Core\Providers;
 
 use PressForward\Core\Admin\Preferences;
-use Intraxia\Jaxion\Contract\Core\Container as Container;
-use Intraxia\Jaxion\Assets\Register as Assets;
-use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
+use Intraxia\Jaxion\Contract\Core\Container;
 
 /**
  * PreferencesServiceProvider class.
  */
-class PreferencesServiceProvider extends ServiceProvider {
+class PreferencesServiceProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	/**
 	 * {@inheritDoc}
 	 *

@@ -7,19 +7,18 @@
 
 namespace PressForward\Core\AJAX;
 
-use Intraxia\Jaxion\Contract\Core\HasActions;
 use PressForward\Controllers\Metas;
 use PressForward\Controllers\PF_to_WP_Posts;
 use PressForward\Core\Schema\Feed_Items;
-use PressForward\Interfaces\SystemUsers as SystemUsers;
-use PressForward\Controllers\PF_JWT as PF_JWT;
+use PressForward\Interfaces\SystemUsers;
+use PressForward\Controllers\PF_JWT;
 
 use WP_Ajax_Response;
 
 /**
  * AJAX callbacks for configuration panels.
  */
-class ConfigurationAJAX implements HasActions {
+class ConfigurationAJAX implements \Intraxia\Jaxion\Contract\Core\HasActions {
 
 	/**
 	 * Basename.

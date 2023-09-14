@@ -7,16 +7,13 @@
 
 namespace PressForward\Core\Providers;
 
-use PressForward\Core\Admin\Menu;
-use Intraxia\Jaxion\Contract\Core\Container as Container;
-use Intraxia\Jaxion\Assets\Register as Assets;
-use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
+use Intraxia\Jaxion\Contract\Core\Container;
 use PressForward\Controllers\PFtoWPTemplates as Template_Factory;
 use PressForward\Controllers\PFtoWPUsers as Users;
-use PressForward\Controllers\PF_to_WP_Meta as PF_to_WP_Meta;
-use PressForward\Controllers\PF_to_WP_Posts as PF_to_WP_Posts;
-use PressForward\Controllers\PF_to_WP_System as PF_to_WP_System;
-use PressForward\Controllers\PF_Advancement as PF_Advancement;
+use PressForward\Controllers\PF_to_WP_Meta;
+use PressForward\Controllers\PF_to_WP_Posts;
+use PressForward\Controllers\PF_to_WP_System;
+use PressForward\Controllers\PF_Advancement;
 use PressForward\Controllers\Metas;
 use PressForward\Controllers\PF_Loops;
 use PressForward\Controllers\PF_JWT;
@@ -27,11 +24,11 @@ use PressForward\Controllers\Stats;
 /**
  * ControllerServiceProvider class.
  */
-class ControllerServiceProvider extends ServiceProvider {
+class ControllerServiceProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @param Container $container Container.
+	 * @param \Intraxia\Jaxion\Contract\Core\Container $container Container.
 	 */
 	public function register( Container $container ) {
 		$container->share(

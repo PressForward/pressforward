@@ -7,7 +7,7 @@
 
 namespace PressForward\Core\Admin;
 
-use PressForward\Interfaces\Templates as Templates;
+use PressForward\Interfaces\Templates;
 use PressForward\Controllers\PFtoWPUsers as Users;
 
 /**

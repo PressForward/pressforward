@@ -7,12 +7,10 @@
 
 namespace PressForward\Controllers;
 
-use PressForward\Interfaces\System as System;
-
 /**
  * System utilities.
  */
-class PF_to_WP_System implements System {
+class PF_to_WP_System implements \PressForward\Interfaces\System {
 	/**
 	 * Wrapper for add_option().
 	 *

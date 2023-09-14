@@ -9,12 +9,10 @@ namespace PressForward\Core\Admin;
 
 use PressForward\Core\Admin\PFTemplater;
 
-use Intraxia\Jaxion\Contract\Core\HasActions as HasActions;
-
 /**
  * Preferences.
  */
-class Preferences implements HasActions {
+class Preferences implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	/**
 	 * Basename.
 	 *
