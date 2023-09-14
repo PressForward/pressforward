@@ -12,8 +12,8 @@
         "wp-coding-standards/wpcs": "dev-develop#2.3.0-fix-vsprintf",
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "phpcompatibility/phpcompatibility-wp": "*",
-        "phpstan/phpstan": "^1.9",
-        "szepeviktor/phpstan-wordpress": "^1.1",
+        "phpstan/phpstan": "^1.10",
+        "szepeviktor/phpstan-wordpress": "^1.3",
         "phpstan/extension-installer": "^1.2",
         "yoast/phpunit-polyfills": "^1.0"
     },
