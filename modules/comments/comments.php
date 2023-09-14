@@ -273,10 +273,7 @@ class PF_Comments extends PF_Module {
 			foreach ( $actions as $action => $link ) {
 				++$i;
 
-				// Reply and quickedit need a hide-if-no-js span.
-				if ( 'reply' === $action || 'quickedit' === $action ) {
-					$action .= ' hide-if-no-js';
-				}
+				$action .= ' hide-if-no-js';
 
 				$actions_string .= "<span class='$action'>$sep$link</span>";
 			}
