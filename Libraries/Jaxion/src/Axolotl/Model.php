@@ -518,7 +518,6 @@ abstract class Model implements Serializes {
 				break;
 			default:
 				throw new LogicException;
-				break;
 		}
 
 		$this->attributes[ self::OBJECT_KEY ] = $this->set_wp_object_constants( $object );
