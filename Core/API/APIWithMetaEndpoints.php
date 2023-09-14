@@ -167,7 +167,7 @@ class APIWithMetaEndpoints {
 			$term_found = false;
 			foreach ( $links[ $link ] as $key => $term_link ) {
 				$pos = strpos( $term_link['href'], 'wp/v2/' . $term );
-				if ( false !== $pos && 0 <= $pos ) {
+				if ( false !== $pos ) {
 					$term_found = true;
 					$data->remove_link( $link );
 					$term_link['href']      = str_replace( 'wp/v2/' . $term, 'pf/v1/' . $term, $term_link['href'] );
