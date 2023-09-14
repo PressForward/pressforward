@@ -176,9 +176,7 @@ class Stats {
 	 * @param \PressForward\Controllers\Stats_Shortcodes $shortcodes Shortcodes object.
 	 */
 	public function shortcodes( $shortcodes ) {
-		if ( empty( $this->shortcodes ) ) {
-			$this->shortcodes = $shortcodes;
-		}
+		$this->shortcodes = $shortcodes;
 	}
 
 	/**
