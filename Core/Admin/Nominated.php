@@ -421,7 +421,7 @@ class Nominated implements HasActions {
 						$metadata['nom_tags'] = $wp_nom_slugs;
 
 						$nom_tags_string    = is_array( $nom_tags ) ? implode( ',', $nom_tags ) : $nom_tags;
-						$wp_nom_tags_string = is_array( $wp_nom_tags ) ? implode( ',', $wp_nom_tags ) : $wp_nom_tags;
+						$wp_nom_tags_string = implode( ',', $wp_nom_tags );
 
 						$metadata['all_tags'] = $nom_tags_string . ',' . $nom_tags_string;
 
