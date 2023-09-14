@@ -38,14 +38,14 @@ class PF_to_WP_Posts implements Items {
 	/**
 	 * Updates a post.
 	 *
-	 * @param array $post  Update params. See wp_update_post().
-	 * @param bool  $error Whether to return a WP_Error object. Default fals.
+	 * @param array|\WP_Post $post  Update params. See wp_update_post().
+	 * @param bool           $error Whether to return a WP_Error object. Default false.
 	 * @return mixed
 	 */
 	public function update_post( $post, $error = false ) {
 		if ( ! is_object( $post ) && ( isset( $post['post_date'] ) && ! isset( $post['post_date_gmt'] ) ) ) {
 			$post['post_date_gmt'] = get_gmt_from_date( $post['post_date'] );
-		} elseif ( is_object( $post ) && isset( $post->post_date ) && ! isset( $post->post_date_gmt ) ) {
+		} elseif ( $post instanceof \WP_Post ) {
 			$post->post_date_gmt = get_gmt_from_date( $post->post_date );
 		}
 		return wp_update_post( $post, $error );
