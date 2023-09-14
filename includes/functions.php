@@ -256,10 +256,6 @@ function pf_sanitize( $raw_string, $force_lowercase = true, $strict = false ) {
 		'?',
 	);
 
-	if ( is_array( $raw_string ) ) {
-		$raw_string = implode( ' ', $raw_string );
-	}
-
 	$clean = trim( str_replace( $strip, '', wp_strip_all_tags( $raw_string ) ) );
 	$clean = preg_replace( '/\s+/', '-', $clean );
 
