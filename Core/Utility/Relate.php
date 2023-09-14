@@ -213,13 +213,13 @@ class Relate implements HasActions {
 	 * @param string $relationship_type Relationship type.
 	 * @param int    $item_id           Item ID.
 	 * @param int    $user_id           User ID.
-	 * @return string|bool The relationship value if it exists, false otherwise.
+	 * @return int|bool The relationship value if it exists, false otherwise.
 	 */
 	public function get_relationship_value( $relationship_type, $item_id, $user_id ) {
 		$r = pf_get_relationship( $relationship_type, $item_id, $user_id );
 
 		if ( ! is_bool( $r ) ) {
-			$retval = $r->value;
+			$retval = (int) $r->value;
 		} else {
 			$retval = false;
 		}

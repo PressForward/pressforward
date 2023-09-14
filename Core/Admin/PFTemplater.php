@@ -1001,7 +1001,7 @@ class PFTemplater {
 						}
 						echo '<a class="btn btn-small nom-to-archive schema-switchable schema-actor ' . esc_attr( $archive_status ) . '" pf-schema="archive" pf-schema-class="archived" pf-schema-class="btn-warning" data-toggle="tooltip" title="' . esc_attr__( 'Archive', 'pressforward' ) . '" form="' . esc_attr( $metadata['nom_id'] ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/archive.png" /></button></a>';
 						$draft_status = '';
-						if ( ( '1' === pf_get_relationship_value( 'draft', $metadata['nom_id'], $user_id ) ) || ( '1' === pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ) {
+						if ( ( 1 === pf_get_relationship_value( 'draft', $metadata['nom_id'], $user_id ) ) || ( 1 === pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ) {
 							$draft_status = 'btn-success';
 						}
 						echo '<a href="#nominate" class="btn btn-small nom-to-draft schema-actor ' . esc_attr( $draft_status ) . '" pf-schema="draft" pf-schema-class="btn-success" form="' . esc_attr( $metadata['item_id'] ) . '" data-original-title="' . esc_attr__( 'Draft', 'pressforward' ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/pressforward-licon.png" /></a>';

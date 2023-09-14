@@ -66,7 +66,7 @@ function pf_get_relationship( $relationship_type, $item_id, $user_id ) {
  * @param string $relationship_type Relationship type.
  * @param int    $item_id           Item ID.
  * @param int    $user_id           User ID.
- * @return string|bool The relationship value if it exists, false otherwise
+ * @return int|bool The relationship value if it exists, false otherwise
  */
 function pf_get_relationship_value( $relationship_type, $item_id, $user_id ) {
 	return pressforward( 'utility.relate' )->get_relationship_value( $relationship_type, $item_id, $user_id );
