@@ -233,14 +233,18 @@ class PFTemplater {
 	/**
 	 * Sets up the admin submenu page.
 	 *
-	 * @param string $parent_slug  See add_submenu_page().
-	 * @param string $page_title   See add_submenu_page().
-	 * @param string $menu_title   See add_submenu_page().
-	 * @param string $capability   See add_submenu_page().
-	 * @param string $menu_slug    See add_submenu_page().
-	 * @param string $the_function See add_submenu_page().
+	 * @param string       $parent_slug  See add_submenu_page().
+	 * @param string       $page_title   See add_submenu_page().
+	 * @param string       $menu_title   See add_submenu_page().
+	 * @param string|array $capability   See add_submenu_page().
+	 * @param string       $menu_slug    See add_submenu_page().
+	 * @param string       $the_function See add_submenu_page().
 	 */
 	public function add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $the_function = '' ) {
+		if ( is_array( $capability ) ) {
+			$capability = $this->users->user_level( $capability[0], $capability[1] );
+		}
+
 		$this->factory->add_submenu_page(
 			$parent_slug,
 			$page_title,
@@ -254,15 +258,19 @@ class PFTemplater {
 	/**
 	 * Sets up the admin menu page.
 	 *
-	 * @param string $page_title   See add_menu_page().
-	 * @param string $menu_title   See add_menu_page().
-	 * @param string $capability   See add_menu_page().
-	 * @param string $menu_slug    See add_menu_page().
-	 * @param string $the_function See add_menu_page().
-	 * @param string $icon_url     See add_menu_page().
-	 * @param int    $position     See add_menu_page().
+	 * @param string       $page_title   See add_menu_page().
+	 * @param string       $menu_title   See add_menu_page().
+	 * @param string|array $capability   See add_menu_page().
+	 * @param string       $menu_slug    See add_menu_page().
+	 * @param string       $the_function See add_menu_page().
+	 * @param string       $icon_url     See add_menu_page().
+	 * @param int          $position     See add_menu_page().
 	 */
 	public function add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $the_function = '', $icon_url = '', $position = null ) {
+		if ( is_array( $capability ) ) {
+			$capability = $this->users->user_level( $capability[0], $capability[1] );
+		}
+
 		$this->factory->add_menu_page(
 			$page_title,
 			$menu_title,
