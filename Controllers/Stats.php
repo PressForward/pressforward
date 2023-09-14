@@ -339,26 +339,6 @@ class Stats {
 	}
 
 	/**
-	 * Gets the leaderboard entry text for an author.
-	 *
-	 * @param array $author Author info.
-	 * @return string
-	 */
-	private function add_author_leaderboard_entry( $author ) {
-		if ( empty( $author ) ) {
-			$author          = array();
-			$author['count'] = 0;
-		}
-		if ( ( empty( $author['name'] ) ) ) {
-			$author['name'] = __( 'No author found.', 'pressforward' );
-		}
-		$s  = "\n<li>";
-		$s .= esc_html( $author['name'] ) . ' (' . esc_html( $author['count'] ) . ')';
-		$s .= '</li>';
-		return $s;
-	}
-
-	/**
 	 * Gets a set of stat counts.
 	 *
 	 * @param array $args       Arguments for WP_Query.
