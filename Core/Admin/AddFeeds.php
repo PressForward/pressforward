@@ -93,6 +93,11 @@ class AddFeeds implements HasActions, HasFilters {
 	 * @return string
 	 */
 	public function display_feeder_builder() {
+		wp_enqueue_style( 'pf-style' );
+		wp_enqueue_style( 'pf-settings-style' );
+
+		wp_enqueue_script( 'pf-settings-tools' );
+
 		if ( isset( $_GET['tab'] ) ) {
 			$tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
 		} else {

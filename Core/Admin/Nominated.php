@@ -119,7 +119,10 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	 * Builds the interface for the review tool.
 	 */
 	public function display_review_builder() {
+		wp_enqueue_script( 'pf' );
 		wp_enqueue_script( 'pf-views' );
+
+		wp_enqueue_style( 'pf-style' );
 
 		if ( 'false' !== get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() ) ) {
 			wp_enqueue_script( 'pf-scroll' );
