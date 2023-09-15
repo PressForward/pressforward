@@ -24,7 +24,13 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 			'assets'
 		);
 
-		$this->add_assets( $register );
+		add_action(
+			'admin_enqueue_scripts',
+			function () use ( $register ) {
+				$this->add_assets( $register );
+			},
+			0
+		);
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_styles' ] );
@@ -41,17 +47,6 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->set_debug( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG );
 
 		$provider = $this;
-
-		$assets->register_style(
-			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) {
-					return true;
-				},
-				'handle'    => $slug . '-alert-styles',
-				'src'       => 'assets/css/alert-styles',
-			)
-		);
 
 		$assets->register_style(
 			array(
@@ -87,7 +82,11 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				},
 				'handle'    => $slug . '-style',
 				'src'       => 'assets/css/pressforward',
-				'deps'      => array( 'thickbox', $slug . '-reset-style' ),
+				'deps'      => [
+					'thickbox',
+					$slug . '-reset-style',
+					$slug . '-bootstrap-style',
+				],
 			)
 		);
 
@@ -125,7 +124,15 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				},
 				'handle'    => 'pf',
 				'src'       => 'assets/js/pf',
-				'deps'      => array( 'jquery' ),
+				'deps'      => [
+					'jquery',
+					'pf-heartbeat',
+					'pf-popper',
+					'pf-readability-imp',
+					'pf-reader',
+					'pf-sort-imp',
+					'pf-twitter-bootstrap',
+				],
 			)
 		);
 
@@ -150,7 +157,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				},
 				'handle'    => $slug . '-heartbeat',
 				'src'       => 'assets/js/pf-heartbeat',
-				'deps'      => array( 'jquery', 'heartbeat', 'jquery-ui-progressbar', 'pf' ),
+				'deps'      => array( 'jquery', 'heartbeat', 'jquery-ui-progressbar' ),
 			)
 		);
 
@@ -187,7 +194,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				},
 				'handle'    => $slug . '-twitter-bootstrap',
 				'src'       => 'Libraries/twitter-bootstrap/js/bootstrap',
-				'deps'      => array( 'pf', 'pf-popper' ),
+				'deps'      => [],
 			)
 		);
 
@@ -238,7 +245,9 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				},
 				'handle'    => $slug . '-jq-fullscreen',
 				'src'       => 'Libraries/jquery-fullscreen/jquery.fullscreen',
-				'deps'      => array( 'pf' ),
+				'deps'      => [
+					'jquery',
+				],
 			)
 		);
 
@@ -250,7 +259,9 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				},
 				'handle'    => $slug . '-sort-imp',
 				'src'       => 'assets/js/sort-imp',
-				'deps'      => array( 'pf', $slug . '-twitter-bootstrap', $slug . '-jq-fullscreen' ),
+				'deps'      => [
+					$slug . '-jq-fullscreen',
+				],
 			)
 		);
 
@@ -262,7 +273,9 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				},
 				'handle'    => $slug . '-readability-imp',
 				'src'       => 'assets/js/readability-imp',
-				'deps'      => array( $slug . '-twitter-bootstrap', 'pf', 'pf-reader' ),
+				'deps'      => [
+					'jquery',
+				],
 			)
 		);
 
