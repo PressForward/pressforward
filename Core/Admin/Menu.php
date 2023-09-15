@@ -56,10 +56,6 @@ class Menu implements HasActions, HasFilters {
 				'hook'   => 'admin_notices',
 				'method' => 'admin_notices_action',
 			),
-			array(
-				'hook'   => 'admin_enqueue_scripts',
-				'method' => 'hook_default_scripts',
-			),
 			// Catch form submits.
 			array(
 				'hook'   => 'admin_init',
@@ -88,16 +84,6 @@ class Menu implements HasActions, HasFilters {
 				'method' => 'pf_ab_bug_status_args',
 			),
 		);
-	}
-
-	/**
-	 * Enqueues scripts on PF pages.
-	 */
-	public function hook_default_scripts() {
-		if ( false !== pressforward( 'controller.template_factory' )->is_a_pf_page() ) {
-			wp_enqueue_script( 'heartbeat' );
-			wp_enqueue_script( 'jquery-ui-progressbar' );
-		}
 	}
 
 	/**
