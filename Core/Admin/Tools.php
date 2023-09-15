@@ -93,6 +93,9 @@ class Tools implements HasActions, HasFilters {
 	 * Display callback for Tools admin panel.
 	 */
 	public function display_tools_builder() {
+		wp_enqueue_style( 'pf-settings-style' );
+		wp_enqueue_script( 'pf-settings-tools' );
+
 		if ( isset( $_GET['tab'] ) ) {
 			$tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
 		} else {

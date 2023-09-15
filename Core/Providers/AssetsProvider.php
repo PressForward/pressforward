@@ -99,6 +99,10 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				},
 				'handle'    => $slug . '-settings-style',
 				'src'       => 'assets/css/pf-settings',
+				'deps'      => [
+					$slug . '-reset-style',
+					$slug . '-bootstrap-style',
+				],
 			)
 		);
 
