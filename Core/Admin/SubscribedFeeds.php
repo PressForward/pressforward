@@ -114,6 +114,11 @@ class SubscribedFeeds implements HasActions, HasFilters {
 				'priority' => 10,
 				'args'     => 2,
 			),
+			[
+				'hook'     => 'admin_enqueue_scripts',
+				'method'   => 'enqueue_assets',
+				'priority' => 10,
+			],
 		);
 	}
 
@@ -140,12 +145,30 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	}
 
 	/**
+	 * Enqueues assets on Subscribed Feeds panel.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @param string $page_hook Page hook.
+	 * @return void
+	 */
+	public function enqueue_assets( $page_hook ) {
+		global $typenow;
+
+		if ( 'edit.php' !== $page_hook || 'pf_feed' !== $typenow ) {
+			return;
+		}
+
+		wp_enqueue_style( 'pf-subscribed-styles' );
+	}
+
+	/**
 	 * Adds admin menu for Subscribed Feeds.
 	 */
 	public function add_plugin_admin_menu() {
 		$alert_count = $this->alertbox->alert_count();
 		if ( $alert_count ) {
-			$alert_count_notice = '<span class="feed-alerts count-' . intval( $alert_count ) . '"><span class="alert-count">' . number_format_i18n( $alert_count ) . '</span></span>';
+			$alert_count_notice = '<span class="menu-counter feed-alerts count-' . intval( $alert_count ) . '"><span class="alert-count">' . number_format_i18n( $alert_count ) . '</span></span>';
 
 			// translators: element containing an alert count.
 			$subscribed_feeds_menu_text = sprintf( __( 'Subscribed Feeds %s', 'pressforward' ), $alert_count_notice );
