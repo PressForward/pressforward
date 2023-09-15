@@ -76,6 +76,9 @@ class PFTemplater {
 			return ' ';
 		}
 
+		wp_enqueue_style( 'pf-settings-style' );
+		wp_enqueue_script( 'pf-settings-tools' );
+
 		// phpcs:ignore WordPress.PHP.DontExtract.extract_extract
 		extract( $vars, EXTR_SKIP );
 		ob_start();
