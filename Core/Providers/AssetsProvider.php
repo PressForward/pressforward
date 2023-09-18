@@ -42,7 +42,6 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	 * @param \Intraxia\Jaxion\Assets\Register $assets Assets object.
 	 */
 	protected function add_assets( \Intraxia\Jaxion\Assets\Register $assets ) {
-		$slug = 'pf';
 		$url  = $this->container->fetch( 'url' );
 		$assets->set_debug( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG );
 
@@ -51,7 +50,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_style(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-reset-style',
+				'handle' => 'pf-reset-style',
 				'src'    => 'assets/css/reset',
 			)
 		);
@@ -59,7 +58,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_style(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-bootstrap-style',
+				'handle' => 'pf-bootstrap-style',
 				'src'    => 'Libraries/twitter-bootstrap/css/bootstrap',
 				'deps'   => array( $slug . '-reset-style' ),
 			)
@@ -68,7 +67,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_style(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-style',
+				'handle' => 'pf-style',
 				'src'    => 'assets/css/pressforward',
 				'deps'   => [
 					'thickbox',
@@ -81,7 +80,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_style(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-settings-style',
+				'handle' => 'pf-settings-style',
 				'src'    => 'assets/css/pf-settings',
 				'deps'   => [
 					$slug . '-reset-style',
@@ -93,7 +92,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_style(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-subscribed-styles',
+				'handle' => 'pf-subscribed-styles',
 				'src'    => 'assets/css/pf-subscribed',
 				'deps'   => [],
 			)
@@ -129,7 +128,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-heartbeat',
+				'handle' => 'pf-heartbeat',
 				'src'    => 'assets/js/pf-heartbeat',
 				'deps'   => array( 'jquery', 'heartbeat', 'jquery-ui-progressbar' ),
 			)
@@ -138,7 +137,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-settings-tools',
+				'handle' => 'pf-settings-tools',
 				'src'    => 'assets/js/settings-tools',
 				'deps'   => array( 'pf' ),
 			)
@@ -156,7 +155,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-twitter-bootstrap',
+				'handle' => 'pf-twitter-bootstrap',
 				'src'    => 'Libraries/twitter-bootstrap/js/bootstrap',
 				'deps'   => [],
 			)
@@ -165,7 +164,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-tools',
+				'handle' => 'pf-tools',
 				'src'    => 'assets/js/tools-imp',
 				'deps'   => array( 'pf', $slug . '-twitter-bootstrap' ),
 			)
@@ -174,7 +173,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-jws',
+				'handle' => 'pf-jws',
 				'src'    => 'assets/js/jws',
 				'deps'   => array( 'pf', $slug . '-twitter-bootstrap' ),
 			)
@@ -183,7 +182,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-jwt',
+				'handle' => 'pf-jwt',
 				'src'    => 'assets/js/jwt',
 				'deps'   => array( 'pf', $slug . '-twitter-bootstrap', $slug . '-jws' ),
 			)
@@ -192,7 +191,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-jq-fullscreen',
+				'handle' => 'pf-jq-fullscreen',
 				'src'    => 'Libraries/jquery-fullscreen/jquery.fullscreen',
 				'deps'   => [
 					'jquery',
@@ -203,7 +202,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-sort-imp',
+				'handle' => 'pf-sort-imp',
 				'src'    => 'assets/js/sort-imp',
 				'deps'   => [
 					$slug . '-jq-fullscreen',
@@ -214,7 +213,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-readability-imp',
+				'handle' => 'pf-readability-imp',
 				'src'    => 'assets/js/readability-imp',
 				'deps'   => [
 					'jquery',
@@ -225,7 +224,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-nomination-imp',
+				'handle' => 'pf-nomination-imp',
 				'src'    => 'assets/js/nomination-imp',
 				'deps'   => array( 'pf' ),
 			)
@@ -234,7 +233,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-relationships',
+				'handle' => 'pf-relationships',
 				'src'    => 'assets/js/relationships',
 				'deps'   => array( 'pf' ),
 			)
@@ -243,7 +242,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-settings-tools',
+				'handle' => 'pf-settings-tools',
 				'src'    => 'assets/js/settings-tools',
 				'deps'   => array( 'pf' ),
 			)
@@ -261,7 +260,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-tools',
+				'handle' => 'pf-tools',
 				'src'    => 'assets/js/tools-imp',
 				'deps'   => array( 'pf' ),
 			)
@@ -270,7 +269,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-send-to-draft-imp',
+				'handle' => 'pf-send-to-draft-imp',
 				'src'    => 'assets/js/send-to-draft-imp',
 				'deps'   => array( 'pf' ),
 			)
@@ -279,7 +278,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'   => 'admin',
-				'handle' => $slug . '-archive-nom-imp',
+				'handle' => 'pf-archive-nom-imp',
 				'src'    => 'assets/js/nom-archive-imp',
 				'deps'   => array( 'pf' ),
 			)
