@@ -59,21 +59,12 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_style(
 			array(
 				'type'   => 'admin',
-				'handle' => 'pf-bootstrap-style',
-				'src'    => 'Libraries/twitter-bootstrap/css/bootstrap',
-				'deps'   => array( 'pf-reset-style' ),
-			)
-		);
-
-		$assets->register_style(
-			array(
-				'type'   => 'admin',
 				'handle' => 'pf-style',
 				'src'    => 'assets/css/pressforward',
 				'deps'   => [
 					'thickbox',
-					'pf-reset-style',
-					'pf-bootstrap-style',
+					'pf-bootstrap',
+					'pf-reader',
 				],
 			)
 		);
@@ -84,8 +75,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'handle' => 'pf-settings-style',
 				'src'    => 'assets/css/pf-settings',
 				'deps'   => [
-					'pf-reset-style',
-					'pf-bootstrap-style',
+					'pf-bootstrap',
 				],
 			)
 		);
@@ -333,6 +323,8 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	 */
 	public function admin_enqueue_styles() {
 		$build_styles = [
+			'pf-bootstrap'     => 'bootstrap',
+			'pf-reader'        => 'reader',
 			'pf-nominate-this' => 'nominate-this',
 		];
 

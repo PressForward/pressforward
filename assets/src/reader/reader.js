@@ -9,6 +9,8 @@ import {
 	detect_view_change
 } from './util.js'
 
+import './reader.scss';
+
 /**
  * Display transform for pf
  **/

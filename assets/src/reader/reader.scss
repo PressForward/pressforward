@@ -1,0 +1,258 @@
+.pf_container {
+	position: relative;
+
+	#app-banner {
+		.title {
+			display: flex;
+			gap: 12px;
+
+			h1 {
+				font-size: 1.5rem;
+			}
+		}
+
+		form {
+			input[type="text"] {
+				font-size: 14px;
+				padding: 4px 8px;
+			}
+		}
+	}
+
+	.item_title {
+		margin-bottom: 3px;
+		line-height: 16px;
+		overflow: hidden;
+	}
+
+	#entries {
+		article.feed-item {
+			header {
+				h1 {
+					font-size: 14px;
+					line-height: 1.55556em;
+				}
+			}
+		}
+	}
+
+	.popover {
+		--bs-popover-bg: #fff;
+		--bs-popover-border-color: rgba(0, 0, 0, 0.175);
+		--bs-popover-border-radius: 0.5rem;
+		--bs-popover-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+		--bs-popover-header-bg: #f0f0f0;
+	}
+
+	.popover-body {
+		.feed-item-info-box {
+		  display: block;
+		  font-size: 11px;
+		  line-height: 1.5em;
+		  z-index: 99999;
+		}
+	}
+
+	.pf-btns .btn:hover {
+		border-color: #000;
+	}
+
+	.modal {
+		.original-link {
+			margin-top: 2px;
+		}
+
+		&.pfmodal {
+			z-index: 9998;
+		}
+	}
+
+	.pfmodal {
+		background-color: #f5f5f5;
+		font-size: 16px;
+		max-height: 100%;
+		position: fixed;
+		top: 32px;
+		right: 0;
+		bottom: 100%;
+		left: 0;
+		margin: 0;
+		width: 100%;
+		height: calc(100% - 32px);
+
+		.fade.in {
+			top: 0;
+		}
+
+		.modal-dialog {
+			display: flex;
+			flex-direction: column;
+			max-width: none;
+			max-height: 100%;
+			height: 100%;
+			margin: 0 auto;
+			position: relative;
+			pointer-events: auto;
+			justify-content: space-between;
+		}
+
+		.modal-header {
+			background-color: white;
+			border-bottom: 1px solid #eee;
+			flex: 0 0 content;
+		}
+
+		.modal_item_title {
+			font-weight: 700;
+		}
+
+		.modal-mobile-nav {
+			margin: 0 8px;
+		}
+
+		.modal-body-row {
+			background: white;
+			padding: 0 20px;
+			overflow-y: scroll;
+			flex: 1 1 80%;
+		}
+
+		.modal-body {
+			flex: 1;
+			overflow-y: auto;
+
+			&.single-item-modal-content {
+				margin-bottom: 0;
+				margin-top: 0;
+				max-height: 100%;
+				padding-bottom: 0;
+				padding-top: 0;
+			}
+		}
+
+		.pfmodal .modal-sidebar {
+			height: 100%;
+			margin: 0;
+		}
+
+		.modal-side-item {
+			border: 1px solid #eee;
+			border-right: transparent;
+			padding: 1%;
+			margin: 0;
+
+			h5 {
+				font-size: 14px;
+				font-weight: 700;
+				line-height: 20px;
+			}
+		}
+
+		.modal-comments {
+			border-bottom: 4px solid #eee;
+			border-top: 4px solid #eee;
+			overflow-y: auto;
+		}
+
+		.goPrev, .goNext {
+			height: 25%;
+			font-size: .7rem;
+			line-height: .7rem;
+			overflow: hidden;
+			text-align: right;
+
+			p {
+				margin-bottom: 8px;
+			}
+
+			h5 {
+				margin-bottom: 8px;
+			}
+		}
+
+		.modal-comments {
+			height: 50%;
+		}
+
+		.modal-footer {
+			flex: 0 0 content;
+			flex-direction: column;
+		}
+
+		.footer-top {
+			display: flex;
+			flex-direction: row;
+			width: 100%;
+
+			& > div {
+				flex: 1 0 50%;
+			}
+		}
+
+		.footer-bottom {
+			width: 100%;
+		}
+
+		.item-tags {
+			padding-bottom: 75px;
+		}
+
+		.footer-actions {
+			text-align: right;
+
+			.btn {
+				margin-right: 8px;
+			}
+		}
+
+		.modal-body,
+		.modal-body p,
+		.modal-body div {
+			margin: 1.5em 0;
+			font-size: 18px;
+			line-height: 1.7em;
+		}
+
+		.modal-body div.clear {
+			margin: 0;
+		}
+
+		.main-text {
+			margin: 1.5em 0;
+
+			img {
+				max-width: 100%;
+				height: auto;
+			}
+
+		}
+	}
+}
+
+.tooltip {
+	--bs-tooltip-bg: #000;
+	--bs-tooltip-color: #fff;
+	--bs-tooltip-max-width: 200px;
+	--bs-tooltip-padding-x: 0.5rem;
+	--bs-tooltip-padding-y: 0.25rem;
+	--bs-tooltip-border-radius: 0.25rem;
+	--bs-tooltip-arrow-width: 0.8rem;
+	--bs-tooltip-arrow-height: 0.4rem;
+	--bs-tooltip-arrow-color: #000;
+	--bs-tooltip-margin: 20px;
+
+	.tooltip-arrow {
+		display: block;
+		width: var(--bs-tooltip-arrow-width);
+		height: var(--bs-tooltip-arrow-height);
+	}
+
+	.tooltip-inner {
+		max-width: var(--bs-tooltip-max-width);
+		padding: var(--bs-tooltip-padding-y) var(--bs-tooltip-padding-x);
+		color: var(--bs-tooltip-color);
+		text-align: center;
+		background-color: var(--bs-tooltip-bg);
+		border-radius: var(--bs-tooltip-border-radius, 0);
+	}
+}
