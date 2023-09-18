@@ -50,39 +50,27 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		$assets->register_style(
 			array(
-				'type'      => 'admin',
-				'condition' => ( function ( $hook ) use ( $provider ) {
-					$exclusions = array( 'pf-options' );
-					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
-				} ),
-				'handle'    => $slug . '-reset-style',
-				'src'       => 'assets/css/reset',
+				'type'   => 'admin',
+				'handle' => $slug . '-reset-style',
+				'src'    => 'assets/css/reset',
 			)
 		);
 
 		$assets->register_style(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					$exclusions = array( 'pf-options' );
-					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
-				},
-				'handle'    => $slug . '-bootstrap-style',
-				'src'       => 'Libraries/twitter-bootstrap/css/bootstrap',
-				'deps'      => array( $slug . '-reset-style' ),
+				'type'   => 'admin',
+				'handle' => $slug . '-bootstrap-style',
+				'src'    => 'Libraries/twitter-bootstrap/css/bootstrap',
+				'deps'   => array( $slug . '-reset-style' ),
 			)
 		);
 
 		$assets->register_style(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					$exclusions = array( 'pf-options' );
-					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
-				},
-				'handle'    => $slug . '-style',
-				'src'       => 'assets/css/pressforward',
-				'deps'      => [
+				'type'   => 'admin',
+				'handle' => $slug . '-style',
+				'src'    => 'assets/css/pressforward',
+				'deps'   => [
 					'thickbox',
 					$slug . '-reset-style',
 					$slug . '-bootstrap-style',
@@ -92,14 +80,10 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		$assets->register_style(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					$exclusions = array();
-					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
-				},
-				'handle'    => $slug . '-settings-style',
-				'src'       => 'assets/css/pf-settings',
-				'deps'      => [
+				'type'   => 'admin',
+				'handle' => $slug . '-settings-style',
+				'src'    => 'assets/css/pf-settings',
+				'deps'   => [
 					$slug . '-reset-style',
 					$slug . '-bootstrap-style',
 				],
@@ -108,27 +92,20 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		$assets->register_style(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) {
-					return pressforward( 'controller.template_factory' )->is_a_pf_page();
-				},
-				'handle'    => $slug . '-subscribed-styles',
-				'src'       => 'assets/css/pf-subscribed',
-				'deps'      => [],
+				'type'   => 'admin',
+				'handle' => $slug . '-subscribed-styles',
+				'src'    => 'assets/css/pf-subscribed',
+				'deps'   => [],
 			)
 		);
 
 		// Scripts.
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					$inclusions = array( 'edit.php' );
-					return $provider->check_hook_for_pressforward_string( $hook, array(), $inclusions, true );
-				},
-				'handle'    => 'pf',
-				'src'       => 'assets/js/pf',
-				'deps'      => [
+				'type'   => 'admin',
+				'handle' => 'pf',
+				'src'    => 'assets/js/pf',
+				'deps'   => [
 					'jquery',
 					'pf-heartbeat',
 					'pf-popper',
@@ -142,114 +119,82 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					$inclusions = array( 'edit.php' );
-					return $provider->check_hook_for_pressforward_string( $hook, array(), $inclusions, true );
-				},
-				'handle'    => 'pf-api',
-				'src'       => 'assets/js/pf-api',
-				'deps'      => array( 'jquery', 'wp-api', 'pf' ),
+				'type'   => 'admin',
+				'handle' => 'pf-api',
+				'src'    => 'assets/js/pf-api',
+				'deps'   => array( 'jquery', 'wp-api', 'pf' ),
 			)
 		);
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					return $provider->check_hook_for_pressforward_string( $hook );
-				},
-				'handle'    => $slug . '-heartbeat',
-				'src'       => 'assets/js/pf-heartbeat',
-				'deps'      => array( 'jquery', 'heartbeat', 'jquery-ui-progressbar' ),
+				'type'   => 'admin',
+				'handle' => $slug . '-heartbeat',
+				'src'    => 'assets/js/pf-heartbeat',
+				'deps'   => array( 'jquery', 'heartbeat', 'jquery-ui-progressbar' ),
 			)
 		);
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					$exclusions = array( 'toplevel_page_pf-menu' );
-					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
-				},
-				'handle'    => $slug . '-settings-tools',
-				'src'       => 'assets/js/settings-tools',
-				'deps'      => array( 'pf' ),
+				'type'   => 'admin',
+				'handle' => $slug . '-settings-tools',
+				'src'    => 'assets/js/settings-tools',
+				'deps'   => array( 'pf' ),
 			)
 		);
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					return $provider->check_hook_for_pressforward_string( $hook );
-				},
-				'handle'    => 'pf-popper',
-				'src'       => 'Libraries/popper',
-				'deps'      => array(),
+				'type'   => 'admin',
+				'handle' => 'pf-popper',
+				'src'    => 'Libraries/popper',
+				'deps'   => array(),
 			)
 		);
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					return $provider->check_hook_for_pressforward_string( $hook );
-				},
-				'handle'    => $slug . '-twitter-bootstrap',
-				'src'       => 'Libraries/twitter-bootstrap/js/bootstrap',
-				'deps'      => [],
+				'type'   => 'admin',
+				'handle' => $slug . '-twitter-bootstrap',
+				'src'    => 'Libraries/twitter-bootstrap/js/bootstrap',
+				'deps'   => [],
 			)
 		);
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					$exclusions = array( 'toplevel_page_pf-menu' );
-					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
-				},
-				'handle'    => $slug . '-tools',
-				'src'       => 'assets/js/tools-imp',
-				'deps'      => array( 'pf', $slug . '-twitter-bootstrap' ),
+				'type'   => 'admin',
+				'handle' => $slug . '-tools',
+				'src'    => 'assets/js/tools-imp',
+				'deps'   => array( 'pf', $slug . '-twitter-bootstrap' ),
 			)
 		);
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					$exclusions = array( 'toplevel_page_pf-menu' );
-					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
-				},
-				'handle'    => $slug . '-jws',
-				'src'       => 'assets/js/jws',
-				'deps'      => array( 'pf', $slug . '-twitter-bootstrap' ),
+				'type'   => 'admin',
+				'handle' => $slug . '-jws',
+				'src'    => 'assets/js/jws',
+				'deps'   => array( 'pf', $slug . '-twitter-bootstrap' ),
 			)
 		);
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					$exclusions = array( 'toplevel_page_pf-menu' );
-					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
-				},
-				'handle'    => $slug . '-jwt',
-				'src'       => 'assets/js/jwt',
-				'deps'      => array( 'pf', $slug . '-twitter-bootstrap', $slug . '-jws' ),
+				'type'   => 'admin',
+				'handle' => $slug . '-jwt',
+				'src'    => 'assets/js/jwt',
+				'deps'   => array( 'pf', $slug . '-twitter-bootstrap', $slug . '-jws' ),
 			)
 		);
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					return $provider->check_hook_for_pressforward_string( $hook );
-				},
-				'handle'    => $slug . '-jq-fullscreen',
-				'src'       => 'Libraries/jquery-fullscreen/jquery.fullscreen',
-				'deps'      => [
+				'type'   => 'admin',
+				'handle' => $slug . '-jq-fullscreen',
+				'src'    => 'Libraries/jquery-fullscreen/jquery.fullscreen',
+				'deps'   => [
 					'jquery',
 				],
 			)
@@ -257,13 +202,10 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					return $provider->check_hook_for_pressforward_string( $hook );
-				},
-				'handle'    => $slug . '-sort-imp',
-				'src'       => 'assets/js/sort-imp',
-				'deps'      => [
+				'type'   => 'admin',
+				'handle' => $slug . '-sort-imp',
+				'src'    => 'assets/js/sort-imp',
+				'deps'   => [
 					$slug . '-jq-fullscreen',
 				],
 			)
@@ -271,13 +213,10 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					return $provider->check_hook_for_pressforward_string( $hook );
-				},
-				'handle'    => $slug . '-readability-imp',
-				'src'       => 'assets/js/readability-imp',
-				'deps'      => [
+				'type'   => 'admin',
+				'handle' => $slug . '-readability-imp',
+				'src'    => 'assets/js/readability-imp',
+				'deps'   => [
 					'jquery',
 				],
 			)
@@ -285,89 +224,64 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					return $provider->check_hook_for_pressforward_string( $hook );
-				},
-				'handle'    => $slug . '-nomination-imp',
-				'src'       => 'assets/js/nomination-imp',
-				'deps'      => array( 'pf' ),
+				'type'   => 'admin',
+				'handle' => $slug . '-nomination-imp',
+				'src'    => 'assets/js/nomination-imp',
+				'deps'   => array( 'pf' ),
 			)
 		);
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					return $provider->check_hook_for_pressforward_string( $hook );
-				},
-				'handle'    => $slug . '-relationships',
-				'src'       => 'assets/js/relationships',
-				'deps'      => array( 'pf' ),
+				'type'   => 'admin',
+				'handle' => $slug . '-relationships',
+				'src'    => 'assets/js/relationships',
+				'deps'   => array( 'pf' ),
 			)
 		);
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					$exclusions = array( 'toplevel_page_pf-menu' );
-					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
-				},
-				'handle'    => $slug . '-settings-tools',
-				'src'       => 'assets/js/settings-tools',
-				'deps'      => array( 'pf' ),
+				'type'   => 'admin',
+				'handle' => $slug . '-settings-tools',
+				'src'    => 'assets/js/settings-tools',
+				'deps'   => array( 'pf' ),
 			)
 		);
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					$exclusions = array( 'toplevel_page_pf-menu' );
-					return $provider->check_hook_for_pressforward_string( $hook, $exclusions );
-				},
-				'handle'    => 'feed_control_script',
-				'src'       => 'assets/js/feeds_control',
-				'deps'      => array( 'pf', $slug . '-settings-tools', $slug . '-twitter-bootstrap' ),
+				'type'   => 'admin',
+				'handle' => 'feed_control_script',
+				'src'    => 'assets/js/feeds_control',
+				'deps'   => array( 'pf', $slug . '-settings-tools', $slug . '-twitter-bootstrap' ),
 			)
 		);
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					return $provider->check_hook_for_pressforward_string( $hook );
-				},
-				'handle'    => $slug . '-tools',
-				'src'       => 'assets/js/tools-imp',
-				'deps'      => array( 'pf' ),
+				'type'   => 'admin',
+				'handle' => $slug . '-tools',
+				'src'    => 'assets/js/tools-imp',
+				'deps'   => array( 'pf' ),
 			)
 		);
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					$inclusions = array( 'pressforward_page_pf-review' );
-					return $provider->check_hook_for_pressforward_string( $hook, array(), $inclusions );
-				},
-				'handle'    => $slug . '-send-to-draft-imp',
-				'src'       => 'assets/js/send-to-draft-imp',
-				'deps'      => array( 'pf' ),
+				'type'   => 'admin',
+				'handle' => $slug . '-send-to-draft-imp',
+				'src'    => 'assets/js/send-to-draft-imp',
+				'deps'   => array( 'pf' ),
 			)
 		);
 
 		$assets->register_script(
 			array(
-				'type'      => 'admin',
-				'condition' => function ( $hook ) use ( $provider ) {
-					$inclusions = array( 'pressforward_page_pf-review' );
-					return $provider->check_hook_for_pressforward_string( $hook, array(), $inclusions );
-				},
-				'handle'    => $slug . '-archive-nom-imp',
-				'src'       => 'assets/js/nom-archive-imp',
-				'deps'      => array( 'pf' ),
+				'type'   => 'admin',
+				'handle' => $slug . '-archive-nom-imp',
+				'src'    => 'assets/js/nom-archive-imp',
+				'deps'   => array( 'pf' ),
 			)
 		);
 	}
