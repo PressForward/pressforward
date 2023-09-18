@@ -60,7 +60,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'type'   => 'admin',
 				'handle' => 'pf-bootstrap-style',
 				'src'    => 'Libraries/twitter-bootstrap/css/bootstrap',
-				'deps'   => array( $slug . '-reset-style' ),
+				'deps'   => array( 'pf-reset-style' ),
 			)
 		);
 
@@ -71,8 +71,8 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'src'    => 'assets/css/pressforward',
 				'deps'   => [
 					'thickbox',
-					$slug . '-reset-style',
-					$slug . '-bootstrap-style',
+					'pf-reset-style',
+					'pf-bootstrap-style',
 				],
 			)
 		);
@@ -83,8 +83,8 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'handle' => 'pf-settings-style',
 				'src'    => 'assets/css/pf-settings',
 				'deps'   => [
-					$slug . '-reset-style',
-					$slug . '-bootstrap-style',
+					'pf-reset-style',
+					'pf-bootstrap-style',
 				],
 			)
 		);
@@ -166,7 +166,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'type'   => 'admin',
 				'handle' => 'pf-tools',
 				'src'    => 'assets/js/tools-imp',
-				'deps'   => array( 'pf', $slug . '-twitter-bootstrap' ),
+				'deps'   => array( 'pf', 'pf-twitter-bootstrap' ),
 			)
 		);
 
@@ -175,7 +175,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'type'   => 'admin',
 				'handle' => 'pf-jws',
 				'src'    => 'assets/js/jws',
-				'deps'   => array( 'pf', $slug . '-twitter-bootstrap' ),
+				'deps'   => array( 'pf', 'pf-twitter-bootstrap' ),
 			)
 		);
 
@@ -184,7 +184,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'type'   => 'admin',
 				'handle' => 'pf-jwt',
 				'src'    => 'assets/js/jwt',
-				'deps'   => array( 'pf', $slug . '-twitter-bootstrap', $slug . '-jws' ),
+				'deps'   => array( 'pf', 'pf-twitter-bootstrap', 'pf-jws' ),
 			)
 		);
 
@@ -205,7 +205,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'handle' => 'pf-sort-imp',
 				'src'    => 'assets/js/sort-imp',
 				'deps'   => [
-					$slug . '-jq-fullscreen',
+					'pf-jq-fullscreen',
 				],
 			)
 		);
@@ -253,7 +253,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'type'   => 'admin',
 				'handle' => 'feed_control_script',
 				'src'    => 'assets/js/feeds_control',
-				'deps'   => array( 'pf', $slug . '-settings-tools', $slug . '-twitter-bootstrap' ),
+				'deps'   => array( 'pf', 'pf-settings-tools', 'pf-twitter-bootstrap' ),
 			)
 		);
 
