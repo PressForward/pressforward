@@ -23,7 +23,7 @@ $private_key = ( pressforward( 'controller.jwt' )->get_a_user_private_key() );
 		echo 'document.getElementById("pfnt__pfSiteData").value = JSON.stringify(window.pfSiteData)';
 	?>
 	</script>
-	<div class="metabox-holder" id="pf-settings-box">
+	<div class="metabox-holder pf_container" id="pf-settings-box">
 		<div class="meta-box-sortables ui-sortable">
 			<?php
 			if ( empty( $form_head ) ) {

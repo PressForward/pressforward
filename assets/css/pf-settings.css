@@ -11,6 +11,10 @@
 .pressforward_page_pf-feeder .pftab h2 {
   display: none; }
 
+.pf_container a.nav-tab {
+	text-decoration: none;
+}
+
 #responses {
   display: none;
   padding: 10px;
