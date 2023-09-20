@@ -8,6 +8,7 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.14.3",
+		"@babel/eslint-parser": "^7.22.15",
 		"@babel/preset-env": "^7.14.4",
 		"@selfisekai/gulp-sass": "^4.2.0",
 		"@wordpress/scripts": "^25.4.0",

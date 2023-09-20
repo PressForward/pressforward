@@ -1,3 +1,4 @@
+/* global jQuery */
 import { __ } from '@wordpress/i18n'
 
 import InfiniteScroll from 'infinite-scroll'
@@ -6,9 +7,7 @@ import {
 	reshowModal,
 	reviewModal,
 	hideModal,
-	commentPopModal,
-	PFBootstrapInits,
-	detect_view_change
+	PFBootstrapInits
 } from '../reader/util.js'
 
 jQuery(document).ready(function () {
