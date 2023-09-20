@@ -102,7 +102,6 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 					'pf-readability-imp',
 					'pf-reader',
 					'pf-sort-imp',
-					'pf-twitter-bootstrap',
 				],
 			)
 		);
@@ -146,18 +145,9 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$assets->register_script(
 			array(
 				'type'   => 'admin',
-				'handle' => 'pf-twitter-bootstrap',
-				'src'    => 'Libraries/twitter-bootstrap/js/bootstrap',
-				'deps'   => [],
-			)
-		);
-
-		$assets->register_script(
-			array(
-				'type'   => 'admin',
 				'handle' => 'pf-tools',
 				'src'    => 'assets/js/tools-imp',
-				'deps'   => array( 'pf', 'pf-twitter-bootstrap' ),
+				'deps'   => array( 'pf' ),
 			)
 		);
 
@@ -166,7 +156,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'type'   => 'admin',
 				'handle' => 'pf-jws',
 				'src'    => 'assets/js/jws',
-				'deps'   => array( 'pf', 'pf-twitter-bootstrap' ),
+				'deps'   => array( 'pf' ),
 			)
 		);
 
@@ -175,7 +165,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'type'   => 'admin',
 				'handle' => 'pf-jwt',
 				'src'    => 'assets/js/jwt',
-				'deps'   => array( 'pf', 'pf-twitter-bootstrap', 'pf-jws' ),
+				'deps'   => array( 'pf', 'pf-jws' ),
 			)
 		);
 
@@ -244,7 +234,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'type'   => 'admin',
 				'handle' => 'feed_control_script',
 				'src'    => 'assets/js/feeds_control',
-				'deps'   => array( 'pf', 'pf-settings-tools', 'pf-twitter-bootstrap' ),
+				'deps'   => array( 'pf', 'pf-settings-tools' ),
 			)
 		);
 
