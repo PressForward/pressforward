@@ -4,6 +4,8 @@ jQuery(window).load(function () {
 		return;
 	}
 
+	jQuery( '#pf-settings-box' ).show();
+
 	var firstTarget = firstTab.attr('data-tab-target');
 
 	function tabToTarget(target, tab) {
