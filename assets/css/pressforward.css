@@ -163,7 +163,7 @@ input[type="text"] {
 	margin-right: .3em;
 	line-height: 14px;
 	vertical-align: text-top;
-	background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings.png");
+	background-image: url("../images/glyphicons-halflings.png");
 	background-repeat: no-repeat;
 }
 
@@ -182,7 +182,7 @@ input[type="text"] {
 .dropdown-menu > li > a:hover > [class*=" icon-"],
 .dropdown-menu > .active > a > [class^="icon-"],
 .dropdown-menu > .active > a > [class*=" icon-"] {
-	background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings-white.png");
+	background-image: url("../images/glyphicons-halflings-white.png");
 }
 
 .icon-glass {
@@ -1390,7 +1390,7 @@ h3 {
   margin-top: -12px;
   display: block;
   cursor: pointer;
-  background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings-white.png");
+  background-image: url("../images/glyphicons-halflings-white.png");
   border-radius: 6px;
   position: absolute; }
 
@@ -1400,7 +1400,7 @@ h3 {
 
 .marked-read {
   background-color: none;
-  background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings.png"); }
+  background-image: url("../images/glyphicons-halflings.png"); }
 
 .schema-read:hover {
   background-color: lightGrey; }
@@ -1411,7 +1411,7 @@ h3 {
   margin-top: -12px;
   display: block;
   cursor: pointer;
-  background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings-white.png");
+  background-image: url("../images/glyphicons-halflings-white.png");
   background-color: lavender;
   border-radius: 6px;
   position: absolute; }
@@ -1432,7 +1432,7 @@ h3 {
   margin-top: -12px;
   display: block;
   cursor: pointer;
-  background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings-white.png");
+  background-image: url("../images/glyphicons-halflings-white.png");
   background-color: lavender;
   border-radius: 6px;
   position: absolute; }
@@ -1446,7 +1446,7 @@ h3 {
 
 .relationship-button-active {
   background-color: none;
-  background-image: url("../../Libraries/twitter-bootstrap/img/glyphicons-halflings.png"); }
+  background-image: url("../images/glyphicons-halflings.png"); }
 
 #infscr-loading {
   width: 100%;
