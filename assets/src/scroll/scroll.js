@@ -11,6 +11,12 @@ import {
 } from '../reader/util.js'
 
 jQuery(document).ready(function () {
+	const feedNextLink = document.querySelector( '.feednext a' );
+
+	if ( ! feedNextLink ) {
+		return;
+	}
+
 	const infScroll = new InfiniteScroll( document.getElementById( 'entries' ), {
 		path: '.feednext a',
 		hideNav: '.pf-navigation',    // selector for the paged navigation
