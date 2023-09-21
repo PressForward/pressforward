@@ -133,11 +133,6 @@ class Tools implements HasActions, HasFilters {
 			'cap'   => $this->templates->users->pf_get_defining_capability_by_role( 'administrator' ),
 		);
 
-		$permitted_tabs['retrieval-status'] = array(
-			'title' => __( 'Retrieval Status', 'pressforward' ),
-			'cap'   => $this->templates->users->pf_get_defining_capability_by_role( 'contributor' ),
-		);
-
 		$permitted_tabs['stats'] = array(
 			'title' => __( 'Statistics', 'pressforward' ),
 			'cap'   => $this->templates->users->pf_get_defining_capability_by_role( 'contributor' ),

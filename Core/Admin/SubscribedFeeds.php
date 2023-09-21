@@ -135,12 +135,6 @@ class SubscribedFeeds implements HasActions, HasFilters {
 				'hook'   => 'manage_pf_feed_posts_columns',
 				'method' => 'add_last_retrieved_date_column',
 			),
-			array(
-				'hook'     => 'heartbeat_received',
-				'method'   => 'hb_check_feed_retrieve_status',
-				'priority' => 10,
-				'args'     => 2,
-			),
 		);
 	}
 
@@ -535,42 +529,6 @@ class SubscribedFeeds implements HasActions, HasFilters {
 		$feed_url = sanitize_text_field( wp_unslash( $_POST['pf-quick-edit-feed-url'] ) );
 
 		$this->metas->update_pf_meta( $post_id, 'feedUrl', $feed_url );
-	}
-
-	/**
-	 * Heartbeat API callback for feed retrieval status.
-	 *
-	 * @param array  $response  Heartbeat response data.
-	 * @param array  $data      Item data.
-	 * @param string $screen_id Not used.
-	 * @return array
-	 */
-	public function hb_check_feed_retrieve_status( $response, $data, $screen_id = '' ) {
-		/**
-		 * $feed_hb_state = array(
-		 * 'feed_id'    =>  $aFeed->ID,
-		 * 'feed_title' => $aFeed->post_title,
-		 * 'last_key'   => $last_key,
-		 * 'feeds_iteration'    =>  $feeds_iteration,
-		 * 'total_feeds'    =>  count($feedlist)
-		 * );
-		*/
-		if ( ( array_key_exists( 'pf_heartbeat_request', $data ) ) && ( 'feed_state' === $data['pf_heartbeat_request'] ) ) {
-			$feed_hb_state = get_option( PF_SLUG . '_feeds_hb_state' );
-			foreach ( $feed_hb_state as $key => $state ) {
-				$response[ 'pf_' . $key ] = $state;
-			}
-
-			$response['pf_status_message'] = sprintf(
-				// translators: 1. feed title, 2. current index in feed iteration, 3. total number of feeds.
-				esc_html__( 'Retrieving feeds. Currently at %1$s feed number %2$s of %3$s', 'pressforward' ),
-				'<span id="rf-feed-title">' . esc_html( $feed_hb_state['feed_title'] ) . '</span>',
-				'<span id="rf-iteration">' . esc_html( $feed_hb_state['feeds_iteration'] + 1 ) . '</span>',
-				'<span id="rf-total-feeds">' . esc_html( $feed_hb_state['total_feeds'] ) . '</span>'
-			);
-		}
-
-		return $response;
 	}
 
 	/**

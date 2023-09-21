@@ -97,7 +97,6 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'src'    => 'assets/js/pf',
 				'deps'   => [
 					'jquery',
-					'pf-heartbeat',
 					'pf-popper',
 					'pf-readability-imp',
 					'pf-reader',
@@ -112,15 +111,6 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'handle' => 'pf-api',
 				'src'    => 'assets/js/pf-api',
 				'deps'   => array( 'jquery', 'wp-api', 'pf' ),
-			)
-		);
-
-		$assets->register_script(
-			array(
-				'type'   => 'admin',
-				'handle' => 'pf-heartbeat',
-				'src'    => 'assets/js/pf-heartbeat',
-				'deps'   => array( 'jquery', 'heartbeat', 'jquery-ui-progressbar' ),
 			)
 		);
 
