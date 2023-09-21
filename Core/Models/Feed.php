@@ -332,7 +332,7 @@ class Feed extends BasicModel {
 		$alert_box = pressforward( 'library.alertbox' );
 		if ( ! $feed_is_valid ) {
 			if ( $alert_box ) {
-				$alert_box->switch_post_type( $broken_id );
+				$alert_box->switch_post_type( $this->get( 'id' ) );
 				$alert_box->add_bug_type_to_post( $this->get( 'id' ), __( 'Broken RSS feed.', 'pressforward' ) );
 			}
 			return;
