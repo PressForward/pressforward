@@ -496,9 +496,8 @@ class PF_RSS_Import extends PF_Module {
 				$args['tags'][ $folder->slug ] = $folder->title;
 			}
 
-			// Adding this as a 'quick' type so that we can process the list quickly.
-			pf_log( 'Adding this as a quick type so that we can process the list quickly' );
-			$opml_array = pressforward( 'schema.feeds' )->progressive_feedlist_transformer( $opml_array, $feed_xml, $key, $args );
+			$created = pressforward( 'schema.feeds' )->create( $feed_xml, $args );
+
 			// @todo Tag based on folder structure.
 		}
 	}

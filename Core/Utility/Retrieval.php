@@ -33,6 +33,9 @@ class Retrieval {
 
 		add_action( 'pf_retrieve_feed', [ $this, 'retrieve_feed' ] );
 
+		// Health check cron job callback.
+		add_action( 'pf_feed_health_check', [ $this, 'trigger_feed_health_check' ], 10, 2 );
+
 		// Use the legacy pull_feed_in cron event to trigger the 5.6.0 migration.
 		add_action( 'pull_feed_in', [ $this, 'create_5_6_0_retrieval_events' ] );
 
@@ -75,6 +78,8 @@ class Retrieval {
 	/**
 	 * Retrieves a feed.
 	 *
+	 * @since 5.6.0
+	 *
 	 * @param int $feed_id Feed ID.
 	 * @return void
 	 */
@@ -85,6 +90,24 @@ class Retrieval {
 		}
 
 		$feed->retrieve();
+	}
+
+	/**
+	 * Triggers a health check for a feed.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @param int  $feed_id     Feed ID.
+	 * @param bool $is_new_feed Whether this is a new feed.
+	 * @return void
+	 */
+	public function trigger_feed_health_check( $feed_id, $is_new_feed = false ) {
+		$feed = Feed::get_instance_by_id( $feed_id );
+		if ( ! $feed ) {
+			return;
+		}
+
+		$feed->health_check( $is_new_feed );
 	}
 
 	/**

@@ -58,6 +58,8 @@ class Feed extends BasicModel {
 		$feed = new Feed();
 		$feed->set( 'id', $post->ID );
 		$feed->set( 'title', $post->post_title );
+		$feed->set( 'description', $post->post_content );
+		$feed->set( 'htmlUrl', get_post_meta( $post->ID, 'htmlUrl', true ) );
 
 		$feed_url = get_post_meta( $post->ID, 'feedUrl', true );
 		if ( ! $feed_url ) {
@@ -67,6 +69,39 @@ class Feed extends BasicModel {
 		$feed->set( 'remote_feed_url', $feed_url );
 
 		return $feed;
+	}
+
+	/**
+	 * Saves feed to the database.
+	 *
+	 * @return int|false Post ID on success, false on failure.
+	 */
+	public function save() {
+		$post_args = [
+			'post_type'    => 'pf_feed',
+			'post_status'  => 'publish',
+			'post_content' => $this->get( 'description' ),
+			'post_title'   => $this->get( 'title' ),
+		];
+
+		if ( $this->get( 'id' ) ) {
+			$post_args['ID'] = $this->get( 'id' );
+		}
+
+		$post_id = wp_insert_post( $post_args );
+
+		if ( ! $post_id ) {
+			return false;
+		}
+
+		$this->set( 'id', $post_id );
+
+		update_post_meta( $post_id, 'htmlUrl', $this->get( 'htmlUrl' ) );
+		update_post_meta( $post_id, 'feedUrl', $this->get( 'remote_feed_url' ) );
+		update_post_meta( $post_id, 'feed_url', $this->get( 'remote_feed_url' ) );
+		update_post_meta( $post_id, 'feed_author', $this->get( 'feed_author' ) );
+
+		return $post_id;
 	}
 
 	/**
@@ -148,6 +183,69 @@ class Feed extends BasicModel {
 	}
 
 	/**
+	 * Schedules a health check for this feed.
+	 *
+	 * @param array $args {
+	 *   Array of optional arguments.
+	 *   @type int  $nextrun     Unix timestamp. Default is a random time in the next 10 minutes.
+	 *   @type bool $is_new_feed Whether this is a new feed. Default is false.
+	 * }
+	 * @return true|\WP_Error True if scheduled, WP_Error if not. See wp_schedule_event().
+	 */
+	public function schedule_health_check( $args = [] ) {
+		$r = array_merge(
+			[
+				'nextrun'     => time() + ( wp_rand( 0, 5 ) * MINUTE_IN_SECONDS ),
+				'is_new_feed' => false,
+			],
+			$args
+		);
+
+		$job_args = [
+			'feed_id'     => $this->get( 'id' ),
+			'is_new_feed' => $r['is_new_feed'],
+		];
+
+		// Prevent duplicate schedules.
+		$next_health_check = wp_next_scheduled( 'pf_feed_health_check', $job_args );
+
+		if ( $next_health_check ) {
+			wp_unschedule_event( $next_health_check, 'pf_feed_health_check', $job_args );
+		}
+
+		$scheduled = wp_schedule_single_event( $r['nextrun'], 'pf_feed_health_check', $job_args, true );
+
+		return $scheduled;
+	}
+
+	/**
+	 * Unschedules a health check for this feed.
+	 *
+	 * @return int True if unscheduled, WP_Error if not. See wp_clear_scheduled_hook().
+	 */
+	public function unschedule_health_check() {
+		$unscheduled_new = wp_clear_scheduled_hook(
+			'pf_feed_health_check',
+			[
+				'feed_id'     => $this->get( 'id' ),
+				'is_new_feed' => true,
+			]
+		);
+
+		$unscheduled_old = wp_clear_scheduled_hook(
+			'pf_feed_health_check',
+			[
+				'feed_id'     => $this->get( 'id' ),
+				'is_new_feed' => true,
+			]
+		);
+
+		$unscheduled = (int) $unscheduled_new + (int) $unscheduled_old;
+
+		return $unscheduled;
+	}
+
+	/**
 	 * Retrieves the feed.
 	 *
 	 * @return void
@@ -203,5 +301,50 @@ class Feed extends BasicModel {
 		$feed_iteration  = update_option( PF_SLUG . '_feeds_iteration', 0 );
 		$retrieval_state = update_option( PF_SLUG . '_iterate_going_switch', 0 );
 		$chunk_state     = update_option( PF_SLUG . '_ready_to_chunk', 1 );
+	}
+
+	/**
+	 * Performs a health check on the feed.
+	 *
+	 * @param bool $is_new_feed Whether this is a new feed. If true, any missing
+	 *                          metadata about the feed (such as title) will be updated
+	 *                          based on what is fetched from the remote feed.
+	 * @return void
+	 */
+	public function health_check( $is_new_feed = false ) {
+		$feed_url = $this->get( 'remote_feed_url' );
+
+		$feed_urls_to_test = [
+			$feed_url,
+			trailingslashit( $feed_url ) . 'rss/',
+			trailingslashit( $feed_url ) . 'rss/index.xml',
+		];
+
+		$feed_is_valid = false;
+		while ( ! $feed_is_valid && ! empty( $feed_urls_to_test ) ) {
+			$feed_url = array_shift( $feed_urls_to_test );
+			$the_feed = pf_fetch_feed( $feed_url );
+			if ( ! is_wp_error( $the_feed ) ) {
+				$feed_is_valid = true;
+			}
+		}
+
+		$alert_box = pressforward( 'library.alertbox' );
+		if ( ! $feed_is_valid ) {
+			$alert_box->add_bug_type_to_post( $this->get( 'id' ), __( 'Broken RSS feed.', 'pressforward' ) );
+			return;
+		}
+
+		$alert_box->dismiss_alert( $this->get( 'id' ) );
+
+		if ( $is_new_feed ) {
+			$this->set( 'title', $the_feed->get_title() );
+			$this->set( 'description', $the_feed->get_description() );
+			$this->set( 'htmlUrl', $the_feed->get_link( 0 ) );
+			$this->set( 'feed_author', $the_feed->get_author() );
+			$this->set( 'thumbnail', $the_feed->get_image_url() );
+
+			$this->save();
+		}
 	}
 }
