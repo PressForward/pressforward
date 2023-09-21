@@ -82,6 +82,10 @@ class Feeds implements HasActions, HasFilters {
 				'hook'   => 'save_post',
 				'method' => 'set_up_feed_retrieval_cron_job',
 			],
+			[
+				'hook'   => 'before_delete_post',
+				'method' => 'delete_feed_retrieval_cron_job',
+			],
 			array(
 				'hook'   => 'pf_feed_post_type_registered',
 				'method' => 'under_review_post_status',
@@ -416,6 +420,23 @@ class Feeds implements HasActions, HasFilters {
 		}
 
 		$feed->schedule_retrieval();
+	}
+
+	/**
+	 * Deletes retrieval cron job on feed delete.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @param int $post_id ID of the post being deleted.
+	 * @return void
+	 */
+	public function delete_feed_retrieval_cron_job( $post_id ) {
+		$feed = Feed::get_instance_by_id( $post_id );
+		if ( ! $feed ) {
+			return;
+		}
+
+		$feed->unschedule_retrieval();
 	}
 
 	/**

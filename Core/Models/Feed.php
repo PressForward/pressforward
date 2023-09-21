@@ -128,6 +128,26 @@ class Feed extends BasicModel {
 	}
 
 	/**
+	 * Unschedules a feed retrieval.
+	 *
+	 * @return int|\WP_Error True if unscheduled, WP_Error if not. See wp_clear_scheduled_hook().
+	 */
+	public function unschedule_retrieval() {
+		$next_retrieval = $this->get_next_scheduled_retrieval();
+		if ( ! $next_retrieval ) {
+			return 0;
+		}
+
+		$unscheduled = wp_clear_scheduled_hook(
+			'pf_retrieve_feed',
+			[ 'feed_id' => $this->get( 'id' ) ],
+			true
+		);
+
+		return $unscheduled;
+	}
+
+	/**
 	 * Retrieves the feed.
 	 *
 	 * @return void
