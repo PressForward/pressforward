@@ -700,7 +700,7 @@ class Feeds implements HasActions, HasFilters {
 	 * @return array
 	 */
 	public function progressive_feedlist_transformer( $feedlist = array(), $xml_url = '', $key = '', $args = array() ) {
-		$post_args = array_merge( array( 'type' => 'rss-quick' ), $args );
+		$post_args = array_merge( array( 'type' => 'rss' ), $args );
 		$check     = $this->create( $xml_url, $post_args );
 		if ( is_numeric( $check ) && ( 0 < $check ) ) {
 			unset( $feedlist[ $key ] );
@@ -1246,21 +1246,6 @@ class Feeds implements HasActions, HasFilters {
 			}
 		}
 
-		if ( 'rss-quick' === $r['type'] ) {
-			pf_log( 'Updating a rss-quick' );
-			$the_feed = pf_fetch_feed( $feed_url );
-			if ( is_wp_error( $the_feed ) ) {
-				return new \WP_Error( 'badfeed', __( 'The feed fails verification.', 'pressforward' ) );
-			} else {
-				$r = $this->setup_rss_meta( $r, $the_feed );
-			}
-
-			$type_updated = $this->set_pf_feed_type( $r['ID'], 'rss' );
-			if ( $type_updated ) {
-				$r['type'] = 'rss';
-			}
-		}
-
 		$check = $this->feed_post_setup( $r, 'update' );
 		return $check;
 	}
@@ -1300,21 +1285,6 @@ class Feeds implements HasActions, HasFilters {
 			}
 		} else {
 			$feed_url = $r['url'];
-		}
-
-		if ( 'rss-quick' === $r['type'] ) {
-			pf_log( 'Updating a rss-quick' );
-			$the_feed = pf_fetch_feed( $feed_url );
-			if ( is_wp_error( $the_feed ) ) {
-				return new \WP_Error( 'badfeed', __( 'The feed fails verification.', 'pressforward' ) );
-			} else {
-				$r = $this->setup_rss_meta( $r, $the_feed );
-			}
-
-			$type_updated = $this->set_pf_feed_type( $r['ID'], 'rss' );
-			if ( $type_updated ) {
-				$r['type'] = 'rss';
-			}
 		}
 
 		$check = $this->feed_post_setup_inital( $r, 'update' );
