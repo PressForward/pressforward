@@ -31,7 +31,6 @@ class Retrieval {
 		add_action( 'init', array( $this, 'schedule_feed_out' ) );
 
 		add_action( 'take_feed_out', array( pressforward( 'schema.feed_item' ), 'disassemble_feed_items' ) );
-		add_action( 'pull_feed_in', array( $this, 'trigger_source_data' ) );
 
 		add_action( 'pf_retrieve_feed', [ $this, 'retrieve_feed' ] );
 
@@ -694,6 +693,8 @@ class Retrieval {
 
 	/**
 	 * Trigger source data.
+	 *
+	 * @deprecated 5.6.0 Feeds are now pulled in individually.
 	 *
 	 * @param bool $do_return For debugging only.
 	 */
