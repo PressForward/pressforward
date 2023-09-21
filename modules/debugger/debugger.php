@@ -15,7 +15,6 @@ class PF_Debugger extends PF_Module {
 	public function __construct() {
 		parent::start();
 		add_filter( 'pf_setup_admin_rights', array( $this, 'control_menu_access' ) );
-		add_action( 'pf_tools', array( $this, 'debug_the_slurp' ) );
 	}
 
 	/**
@@ -278,31 +277,5 @@ class PF_Debugger extends PF_Module {
 		);
 
 		return $admin_rights;
-	}
-
-	/**
-	 * Debugging tool for the retrieval process.
-	 */
-	public function debug_the_slurp() {
-		if ( current_user_can( get_option( 'pf_menu_log_access', 'administrator' ) ) ) {
-			?>
-			<p>
-			<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="<?php esc_attr_e( 'Reset all Feed Retrieval Options', 'pressforward' ); ?>"><?php esc_html_e( 'Reset all Feed Retrieval Options', 'pressforward' ); ?></button>    <br />
-			<?php
-				$feed_go         = get_option( PF_SLUG . '_feeds_go_switch', 0 );
-				$feed_iteration  = get_option( PF_SLUG . '_feeds_iteration', 0 );
-				$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0 );
-				$chunk_state     = get_option( PF_SLUG . '_ready_to_chunk', 1 );
-
-				// translators: 1. "Feeds Go" status; 2. "Feeds iteration" status; 3. "Going switch" status; 4. "Ready to chunk" status.
-				$retrieval_state = sprintf( __( 'Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d  Ready to chunk? %4$d', 'pressforward' ), $feed_go, $feed_iteration, $retrieval_state, $chunk_state );
-				echo esc_html( $retrieval_state );
-
-			?>
-			<br />
-			<button type="button" class="redoFeeds btn btn-warning" id="resetFeedOps" value="<?php esc_attr_e( 'Switch feeds to new retrieval setup', 'pressforward' ); ?>"><?php esc_html_e( 'Switch feeds to new retrieval setup', 'pressforward' ); ?></button>    <br />
-			</p>
-			<?php
-		}
 	}
 }
