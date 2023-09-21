@@ -181,6 +181,10 @@ class BasicModel {
 	 * @param object $meta_system Metas controller.
 	 */
 	public function set_up_metas( $set_metas, $meta_system ) {
+		if ( empty( $meta_system->structure ) ) {
+			return;
+		}
+
 		foreach ( $meta_system->structure as $meta_key => $meta_data ) {
 			if ( in_array( $this->type, $meta_data['level'], true ) ) {
 				if ( ( array_key_exists( $meta_key, $set_metas ) || empty( $set_metas[ $meta_key ] ) ) && ! empty( $meta_data['defaults'] ) ) {
