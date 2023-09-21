@@ -425,58 +425,21 @@ class Retrieval {
 	public function ajax_update_feed_handler() {
 		global $pf;
 		$post_id = isset( $_POST['feed_id'] ) ? intval( $_POST['feed_id'] ) : 0;
-		pf_log( 'Starting ajax_update_feed_handler with ID of ' . $post_id );
-		$obj = get_post( $post_id );
 
-		$feeds = pressforward( 'schema.feeds' );
-		$id    = $obj->ID;
-		pf_log( 'Feed ID ' . $id );
-		$type = $feeds->get_pf_feed_type( $id );
-		pf_log( 'Checking for feed type ' . $type );
-
-		$module_to_use = $this->does_type_exist( $type );
-		if ( ! $module_to_use ) {
-			// Be a better error.
-			pf_log( 'The feed type does not exist.' );
-			return false;
-		}
-
-		pf_log( 'Begin the process to retrieve the object full of feed items.' );
-
-		// Has this process already occurring?
-		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0 );
-
-		pf_log( 'The Feeds go switch has been updated?' );
-		pf_log( $feed_go );
-
-		$is_it_going = get_option( PF_SLUG . '_iterate_going_switch', 1 );
-		if ( $is_it_going ) {
-			if ( ! get_option( PF_SLUG . '_ready_to_chunk', 1 ) ) {
-				pf_log( 'The chunk is still open.' );
-			} elseif ( (int) get_option( '_feeds_iteration' ) === (int) $id || (int) get_option( '_prev_iteration' ) ) {
-				pf_log( 'We\'re doing this thing already in the data object.', true );
-			}
-
+		if ( ! $post_id ) {
+			pf_log( 'No feed ID was passed to the ajax handler.' );
 			die();
 		}
 
-		if ( 'rss-quick' === $type ) {
-			// Let's update the RSS-Quick so it has real data.
-			$rq_update = array(
-				'type' => 'rss-quick',
-				'ID'   => $id,
-				'url'  => $obj->guid,
-			);
-			$feeds->update_title( $id, $rq_update );
+		pf_log( 'Starting ajax_update_feed_handler with ID of ' . $post_id );
+
+		$feed = Feed::get_instance_by_id( $post_id );
+		if ( ! $feed ) {
+			pf_log( 'The feed object was not retrieved.' );
+			return;
 		}
 
-		// module function to return a set of standard pf feed_item object.
-		// Like get_items in SimplePie.
-		$feed_obj = $this->get_the_feed_object( $module_to_use, $obj );
-
-		pressforward( 'schema.feed_item' )->assemble_feed_for_pull( $feed_obj );
-		pressforward( 'schema.feeds' )->set_feed_last_checked( $id );
-		$this->feed_retrieval_reset();
+		$feed->retrieve();
 	}
 
 	/**
