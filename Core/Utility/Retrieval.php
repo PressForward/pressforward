@@ -404,6 +404,7 @@ class Retrieval {
 	 * @return string|bool id of matching module, false if no match.
 	 */
 	public function does_type_exist( $type ) {
+		// 'rss-quick' is a legacy type.
 		if ( 'rss-quick' === $type ) {
 			$type = 'rss';
 		}
@@ -516,6 +517,7 @@ class Retrieval {
 			die();
 		}
 
+		// Maintaining support for 'rss-quick' legacy feed type.
 		if ( ( 'rss-quick' === $type ) && ( 'publish' === $obj->post_status ) ) {
 			// Let's update the RSS-Quick so it has real data.
 			$rq_update = array(
