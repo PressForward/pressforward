@@ -331,11 +331,16 @@ class Feed extends BasicModel {
 
 		$alert_box = pressforward( 'library.alertbox' );
 		if ( ! $feed_is_valid ) {
-			$alert_box->add_bug_type_to_post( $this->get( 'id' ), __( 'Broken RSS feed.', 'pressforward' ) );
+			if ( $alert_box ) {
+				$alert_box->switch_post_type( $broken_id );
+				$alert_box->add_bug_type_to_post( $this->get( 'id' ), __( 'Broken RSS feed.', 'pressforward' ) );
+			}
 			return;
 		}
 
-		$alert_box->dismiss_alert( $this->get( 'id' ) );
+		if ( $alert_box ) {
+			$alert_box->dismiss_alert( $this->get( 'id' ) );
+		}
 
 		if ( $is_new_feed ) {
 			$this->set( 'title', $the_feed->get_title() );

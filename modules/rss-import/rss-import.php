@@ -377,46 +377,41 @@ class PF_RSS_Import extends PF_Module {
 		$feed_obj        = pressforward( 'schema.feeds' );
 		$subed           = array();
 		$something_broke = false;
+
 		if ( ! empty( $input['single'] ) ) {
-			if ( ! ( is_array( $input['single'] ) ) ) {
-				pf_log( 'The feed is not an array;' );
-				if ( ! $feed_obj->has_feed( $input['single'] ) ) {
-					pf_log( 'The feed does not already exist.' );
-					$check = $feed_obj->create(
+			if ( ! $feed_obj->has_feed( $input['single'] ) ) {
+				pf_log( 'The feed does not already exist.' );
+				$check = $feed_obj->create(
+					$input['single'],
+					array(
+						'type'         => 'rss',
+						'module_added' => get_class(),
+					)
+				);
+
+				if ( is_wp_error( $check ) || ! $check ) {
+					pf_log( 'The feed did not enter the database.' );
+					$something_broke = true;
+					$description     = 'Feed failed initial attempt to add to database | ' . $check->get_error_message();
+					$broken_id       = $feed_obj->create(
 						$input['single'],
 						array(
 							'type'         => 'rss',
-							'module_added' => get_class(),
+							'description'  => $description,
+							'module_added' => get_called_class(),
 						)
 					);
-
-					if ( is_wp_error( $check ) || ! $check ) {
-						pf_log( 'The feed did not enter the database.' );
-						$something_broke = true;
-						$description     = 'Feed failed initial attempt to add to database | ' . $check->get_error_message();
-						$broken_id       = $feed_obj->create(
-							$input['single'],
-							array(
-								'type'         => 'rss-quick',
-								'description'  => $description,
-								'module_added' => get_called_class(),
-							)
-						);
-						pressforward( 'library.alertbox' )->switch_post_type( $broken_id );
-						pressforward( 'library.alertbox' )->add_bug_type_to_post( $broken_id, 'Broken feed.' );
-					}
-				} else {
-					pf_log( 'The feed already exists, sending it to update.' );
-					$check = $feed_obj->update_url( $input['single'] );
-					pf_log( 'Our attempt to update resulted in:' );
-					pf_log( $check );
+					pressforward( 'library.alertbox' )->switch_post_type( $broken_id );
+					pressforward( 'library.alertbox' )->add_bug_type_to_post( $broken_id, 'Broken feed.' );
 				}
-
-				$subed[] = 'a feed.';
 			} else {
-				pf_log( 'The feed was an array, this does not work' );
-				wp_die( 'Bad feed input. Why are you trying to place an array?' );
+				pf_log( 'The feed already exists, sending it to update.' );
+				$check = $feed_obj->update_url( $input['single'] );
+				pf_log( 'Our attempt to update resulted in:' );
+				pf_log( $check );
 			}
+
+			$subed[] = 'a feed.';
 		}
 
 		if ( ! empty( $input['opml'] ) ) {
