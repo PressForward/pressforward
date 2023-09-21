@@ -177,7 +177,7 @@ class PF_OPML_Subscribe extends PF_Module {
 			'url'          => $feed_obj->feedUrl,
 			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			'htmlUrl'      => $feed_obj->htmlUrl,
-			'type'         => 'rss-quick',
+			'type'         => 'rss',
 			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			'feedUrl'      => $feed_obj->feedUrl,
 			'description'  => $feed_obj->text,
@@ -245,16 +245,8 @@ class PF_OPML_Subscribe extends PF_Module {
 
 			$rss_object[ 'opml_' . $c ] = get_transient( 'pf_opml_' . $id );
 			if ( false === $rss_object[ 'opml_' . $c ] ) {
-				// Adding this as a 'quick' type so that we can process the list quickly.
-				if ( empty( $feed_obj->title ) ) {
-					if ( ! empty( $feed_obj->type ) ) {
-						$feed_obj->type = $feed_obj->type . '-quick';
-					} else {
-						$feed_obj->type = 'rss-quick';
-					}
-				} else {
-					$feed_obj->type = 'rss';
-				}
+				$feed_obj->type = 'rss';
+
 				if ( ! empty( $feed_obj->text ) ) {
 					$content_obj    = pressforward( 'library.htmlchecker' );
 					$feed_obj->text = $content_obj->closetags( $feed_obj->text );
@@ -409,7 +401,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		$entry     = array(
 			'title'   => get_the_title( $post_id ),
 			'text'    => get_the_content( $post_id ),
-			'type'    => ( 'rss-quick' === $meta['feed_type'][0] ? 'rss' : $meta['feed_type'][0] ),
+			'type'    => $meta['feed_type'][0],
 			'feedUrl' => $meta['feedUrl'][0],
 			'xmlUrl'  => $meta['feedUrl'][0],
 			'htmlUrl' => $url_parts['scheme'] . '://' . $url_parts['host'],
