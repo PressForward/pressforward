@@ -94,8 +94,8 @@ class Feed extends BasicModel {
 	 *
 	 * @param array $args {
 	 *    Array of optional arguments.
-	 *    @type int $interval Interval in seconds.
-	 *    @type int $nextrun  Unix timestamp.
+	 *    @type int $interval Interval in seconds. Default is the 'pf_interval' of every 30 minutes.
+	 *    @type int $nextrun  Unix timestamp. Default is a random time in the next 30 minutes.
 	 * }
 	 * @return true|\WP_Error True if scheduled, WP_Error if not. See wp_schedule_event().
 	 */
@@ -103,7 +103,7 @@ class Feed extends BasicModel {
 		$r = array_merge(
 			[
 				'interval' => 'pf_interval',
-				'nextrun'  => time() + MINUTE_IN_SECONDS,
+				'nextrun'  => time() + ( wp_rand( 0, 30 ) * MINUTE_IN_SECONDS ),
 			],
 			$args
 		);
