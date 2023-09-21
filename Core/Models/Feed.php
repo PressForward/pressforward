@@ -152,6 +152,8 @@ class Feed extends BasicModel {
 
 		pressforward( 'schema.feed_item' )->assemble_feed_for_pull( $feed_data_object );
 		pressforward( 'schema.feeds' )->set_feed_last_checked( $feed_id );
+
+		$this->feed_retrieval_reset();
 	}
 
 	/**
@@ -171,5 +173,15 @@ class Feed extends BasicModel {
 		}
 
 		return $module;
+	}
+
+	/**
+	 * Resets feed retrieval status.
+	 */
+	public function feed_retrieval_reset() {
+		$feed_go         = update_option( PF_SLUG . '_feeds_go_switch', 0 );
+		$feed_iteration  = update_option( PF_SLUG . '_feeds_iteration', 0 );
+		$retrieval_state = update_option( PF_SLUG . '_iterate_going_switch', 0 );
+		$chunk_state     = update_option( PF_SLUG . '_ready_to_chunk', 1 );
 	}
 }
