@@ -7,6 +7,8 @@
 
 namespace PressForward\Core\Utility;
 
+use PressForward\Core\Models\Feed;
+
 /**
  * Feed 'slurping' class
  *
@@ -30,6 +32,8 @@ class Retrieval {
 
 		add_action( 'take_feed_out', array( pressforward( 'schema.feed_item' ), 'disassemble_feed_items' ) );
 		add_action( 'pull_feed_in', array( $this, 'trigger_source_data' ) );
+
+		add_action( 'pf_retrieve_feed', [ $this, 'retrieve_feed' ] );
 
 		// phpcs:ignore WordPress.WP.CronInterval.ChangeDetected
 		add_filter( 'cron_schedules', array( $this, 'cron_add_short' ) );
@@ -76,6 +80,20 @@ class Retrieval {
 		}
 	}
 
+	/**
+	 * Retrieves a feed.
+	 *
+	 * @param int $feed_id Feed ID.
+	 * @return void
+	 */
+	public function retrieve_feed( $feed_id ) {
+		$feed = Feed::get_instance_by_id( $feed_id );
+		if ( ! $feed ) {
+			return;
+		}
+
+		$feed->retrieve();
+	}
 
 	/**
 	 * Creates a custom nonce in order to secure feed retrieval requests.
