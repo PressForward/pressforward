@@ -27,12 +27,14 @@ class Retrieval {
 		add_action( 'init', array( $this, 'alter_for_retrieval' ), 999 );
 
 		// Schedule our cron actions for fetching feeds.
-		add_action( 'init', array( $this, 'schedule_feed_in' ) );
 		add_action( 'init', array( $this, 'schedule_feed_out' ) );
 
 		add_action( 'take_feed_out', array( pressforward( 'schema.feed_item' ), 'disassemble_feed_items' ) );
 
 		add_action( 'pf_retrieve_feed', [ $this, 'retrieve_feed' ] );
+
+		// Use the legacy pull_feed_in cron event to trigger the 5.6.0 migration.
+		add_action( 'pull_feed_in', [ $this, 'create_5_6_0_retrieval_events' ] );
 
 		// phpcs:ignore WordPress.WP.CronInterval.ChangeDetected
 		add_filter( 'cron_schedules', array( $this, 'cron_add_short' ) );
@@ -59,15 +61,6 @@ class Retrieval {
 			'display'  => __( 'PressForward Retrieval Interval', 'pressforward' ),
 		);
 		return $schedules;
-	}
-
-	/**
-	 * Schedules the half-hour wp-cron job.
-	 */
-	public function schedule_feed_in() {
-		if ( ! wp_next_scheduled( 'pull_feed_in' ) ) {
-			wp_schedule_event( time(), 'pf_interval', 'pull_feed_in' );
-		}
 	}
 
 	/**
@@ -762,5 +755,46 @@ class Retrieval {
 			}
 		}
 		return '';
+	}
+
+	/**
+	 * Create cron events for individual feeds.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @return void
+	 */
+	public function create_5_6_0_retrieval_events() {
+		$migration_complete = get_option( 'pf_retrieval_migration_5_6_0' );
+		if ( $migration_complete ) {
+			return;
+		}
+
+		$feedlist = $this->pf_feedlist();
+		foreach ( $feedlist as $feed_post ) {
+			$feed = Feed::get_instance_by_id( $feed_post->ID );
+			if ( ! $feed ) {
+				continue;
+			}
+
+			// If the retrieval is already scheduled, there's nothing more to do.
+			$next_scheduled = $feed->get_next_scheduled_retrieval();
+			if ( $next_scheduled ) {
+				continue;
+			}
+
+			// We don't want the retrieval for all items to happen simultaneously,
+			// so we set a random offset of up to 15 minutes.
+			$nextrun = time() + wp_rand( 0, 900 );
+			$feed->schedule_retrieval(
+				[
+					'nextrun' => $nextrun,
+				]
+			);
+		}
+
+		// No more need for the existing 'pull_feed_in' cron event.
+		wp_clear_scheduled_hook( 'pull_feed_in' );
+		update_option( 'pf_retrieval_migration_5_6_0', '1' );
 	}
 }
