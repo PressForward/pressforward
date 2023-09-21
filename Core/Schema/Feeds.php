@@ -11,6 +11,7 @@ use stdClass;
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
 use PressForward\Controllers\Metas;
+use PressForward\Core\Models\Feed;
 
 /**
  * Database class for manipulating feed.
@@ -77,6 +78,10 @@ class Feeds implements HasActions, HasFilters {
 				'hook'   => 'save_post',
 				'method' => 'save_submitbox_pf_actions',
 			),
+			[
+				'hook'   => 'save_post',
+				'method' => 'set_up_feed_retrieval_cron_job',
+			],
 			array(
 				'hook'   => 'pf_feed_post_type_registered',
 				'method' => 'under_review_post_status',
@@ -388,6 +393,29 @@ class Feeds implements HasActions, HasFilters {
 	         <span id="pf_no_feed_alert_single">'
 			. '<label><input type="checkbox"' . ( ! empty( $value ) ? ' checked="checked" ' : null ) . 'value="1" name="pf_no_feed_alert" /> ' . esc_html__( 'No alerts, never let feed go inactive.', 'pressforward' ) . '</label>'
 		. '</span></div>';
+	}
+
+	/**
+	 * Sets up retrieval cron job on feed save.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @param int $post_id ID of the post being saved.
+	 * @return void
+	 */
+	public function set_up_feed_retrieval_cron_job( $post_id ) {
+		$feed = Feed::get_instance_by_id( $post_id );
+		if ( ! $feed ) {
+			return;
+		}
+
+		// If the retrieval is already scheduled, there's nothing more to do.
+		$next_scheduled = $feed->get_next_scheduled_retrieval();
+		if ( $next_scheduled ) {
+			return;
+		}
+
+		$feed->schedule_retrieval();
 	}
 
 	/**
