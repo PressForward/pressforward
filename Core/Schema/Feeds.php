@@ -843,31 +843,9 @@ class Feeds implements HasActions, HasFilters {
 		if ( is_numeric( $post_id ) && ( 0 < $post_id ) ) {
 			pf_log( 'The post_id is numeric and greater than 0, complete the ' . $insert_type . ' process' );
 			$this->set_pf_feed_type( $post_id, $r['type'] );
-			pf_log( 'Tags found:' );
-			pf_log( $r['tags'] );
-			if ( array_key_exists( 'tags', $r ) && ! empty( $r['tags'] ) ) {
-				// @TODO make this a function of the PF_Folders class.
 
-				// @todo Instead of importing tags based on whether this is rss-quick,
-				// the OPML importer should pass 'folder' params.
-				foreach ( $r['tags'] as $slug => $tag ) {
-					// Assume that OPML files have folder structures that
-					// users would want to maintain.
-					if ( 'rss-quick' === $r['type'] ) {
-						$term = wp_insert_term( $tag, $this->tag_taxonomy );
-						if ( is_wp_error( $term ) ) {
-							$term_id = $term->error_data['term_exists'];
-						} elseif ( is_array( $term ) ) {
-							$term_id = $term['term_id'];
-						} else {
-							$term_id = false;
-						}
-						if ( false !== $term_id ) {
-							pf_log( 'Adding folder with ID of ' . $term_id );
-							wp_add_object_terms( $post_id, $term_id, $this->tag_taxonomy );
-						}
-					}
-				}
+			if ( null !== empty( $r['feed_folders'] ) ) {
+				$set = wp_set_object_terms( $post_id, $r['feed_folders'], $this->tag_taxonomy );
 			}
 
 			$unsetables = array( 'title', 'description', 'tags', 'type', 'url', 'post_status', 'ID', 'post_type', 'post_title', 'post_content', 'guid', 'post_parent', 'tax_input' );
@@ -961,6 +939,7 @@ class Feeds implements HasActions, HasFilters {
 				'description'  => false,
 				'feed_author'  => false,
 				'feed_icon'    => false,
+				'feed_folders' => null,
 				'copyright'    => false,
 				'thumbnail'    => false,
 				'user_added'   => false,

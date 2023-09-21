@@ -482,18 +482,18 @@ class PF_RSS_Import extends PF_Module {
 			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$feed_xml = $feed_obj->feedUrl;
 			$args     = array(
-				'title'       => $feed_obj->title,
-				'description' => $feed_obj->text,
-				'tags'        => array(),
+				'title'        => $feed_obj->title,
+				'description'  => $feed_obj->text,
+				'tags'         => array(),
+				'feed_folders' => null,
 			);
 
-			foreach ( $feed_obj->folder as $folder ) {
-				$args['tags'][ $folder->slug ] = $folder->title;
+			$folder_names = wp_list_pluck( $feed_obj->folder, 'title' );
+			if ( ! empty( $folder_names ) ) {
+				$args['feed_folders'] = $folder_names;
 			}
 
 			$created = pressforward( 'schema.feeds' )->create( $feed_xml, $args );
-
-			// @todo Tag based on folder structure.
 		}
 	}
 
