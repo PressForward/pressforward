@@ -107,31 +107,6 @@ class Retrieval {
 	}
 
 	/**
-	 * A function to make absolutely sure options update.
-	 *
-	 * @param string $option_name  Option name.
-	 * @param mixed  $option_value Option value.
-	 */
-	public function update_option_w_check( $option_name, $option_value ) {
-		pf_log( 'Did the ' . $option_name . ' option update?' );
-		$option_result = update_option( PF_SLUG . $option_name, $option_value );
-		pf_log( $option_result );
-
-		if ( ! $option_result ) {
-			// Occasionally WP refuses to set an option.
-			// In these situations we will take more drastic measures
-			// and attempt to set it again.
-			pf_log( 'For no apparent reason, the option did not update. Delete and try again.' );
-			pf_log( 'Did the option delete?' );
-			$delete_check = delete_option( PF_SLUG . $option_name );
-			pf_log( $delete_check );
-			$second_check = update_option( PF_SLUG . $option_name, $option_value );
-			pf_log( 'Did the new option setup work?' );
-			pf_log( $second_check );
-		}
-	}
-
-	/**
 	 * Where we store a list of feeds to check.
 	 *
 	 * We need this to handle some sort of subsets of feeds
