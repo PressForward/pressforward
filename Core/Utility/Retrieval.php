@@ -680,9 +680,8 @@ class Retrieval {
 		$message['go_switch']       = pf_message( 'Feeds go?: ' . $feed_go );
 		$message['iteration']       = pf_message( 'Feed iteration: ' . $feed_iteration );
 		$message['iterating_check'] = pf_message( 'Retrieval state: ' . $retrieval_state );
-		$message['chunk_ready']     = pf_message( 'Chunk state: ' . $chunk_state );
 
-		if ( 0 === (int) $feed_iteration && 0 === (int) $retrieval_state && 1 === (int) $chunk_state ) {
+		if ( 0 === (int) $feed_iteration && 0 === (int) $retrieval_state ) {
 			$status = update_option( PF_SLUG . '_iterate_going_switch', 1 );
 			// Echo to the user.
 
@@ -711,7 +710,6 @@ class Retrieval {
 					'feed_go'         => $feed_go,
 					'feed_iteration'  => $feed_iteration,
 					'retrieval_state' => $retrieval_state,
-					'chunk_state'     => $chunk_state,
 					'retrigger'       => time() + ( 2 * 60 * 60 ),
 				);
 
@@ -724,7 +722,7 @@ class Retrieval {
 
 			if ( $feeds_meta_state['retrigger'] > time() ) {
 				$message['action_taken'] = pf_message( __( 'The sources are already being retrieved.', 'pressforward' ), true );
-			} elseif ( ( (int) $feed_go === (int) $feeds_meta_state['feed_go'] ) && ( (int) $feed_iteration === (int) $feeds_meta_state['feed_iteration'] ) && ( (int) $retrieval_state === (int) $feeds_meta_state['retrieval_state'] ) && ( (int) $chunk_state === (int) $feeds_meta_state['chunk_state'] ) ) {
+			} elseif ( ( (int) $feed_go === (int) $feeds_meta_state['feed_go'] ) && ( (int) $feed_iteration === (int) $feeds_meta_state['feed_iteration'] ) && ( (int) $retrieval_state === (int) $feeds_meta_state['retrieval_state'] ) ) {
 				$message['action_taken'] = pf_message( __( 'The sources are stuck, clearing system to activate on next retrieve.', 'pressforward' ), true );
 
 				// Wipe the checking option for use next time.
@@ -744,7 +742,6 @@ class Retrieval {
 					'feed_go'         => 0,
 					'feed_iteration'  => 0,
 					'retrieval_state' => 0,
-					'chunk_state'     => 1,
 					'retrigger'       => $feeds_meta_state['retrigger'],
 				);
 				update_option( PF_SLUG . '_feeds_meta_state', $double_check );
@@ -754,7 +751,6 @@ class Retrieval {
 					'feed_go'         => $feeds_meta_state['feed_go'],
 					'feed_iteration'  => $feed_iteration,
 					'retrieval_state' => $feeds_meta_state['retrieval_state'],
-					'chunk_state'     => $feeds_meta_state['chunk_state'],
 					'retrigger'       => $feeds_meta_state['retrigger'],
 				);
 				update_option( PF_SLUG . '_feeds_meta_state', $double_check );
