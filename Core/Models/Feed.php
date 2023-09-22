@@ -261,6 +261,8 @@ class Feed extends BasicModel {
 
 		$feed_post = get_post( $feed_id );
 
+		pressforward( 'schema.feeds' )->set_feed_last_checked( $feed_id );
+
 		$feed_data_object = $module->get_data_object( $feed_post );
 		if ( ! $feed_data_object ) {
 			return;
@@ -269,7 +271,6 @@ class Feed extends BasicModel {
 		$feed_data_object['parent_feed_id'] = $feed_id;
 
 		pressforward( 'schema.feed_item' )->assemble_feed_for_pull( $feed_data_object );
-		pressforward( 'schema.feeds' )->set_feed_last_checked( $feed_id );
 	}
 
 	/**
