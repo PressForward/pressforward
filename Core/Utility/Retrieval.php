@@ -590,42 +590,6 @@ class Retrieval {
 	}
 
 	/**
-	 * Advances retrieval process to the next feed.
-	 */
-	public function advance_feeds() {
-		pf_log( 'Begin advance_feeds.' );
-
-		// Here: If feedlist_iteration is not == to feedlist_count, scheduale a cron and trigger it before returning.
-		$feedlist = self::pf_feedlist();
-
-		// The array keys start with zero, as does the iteration number. This will account for that.
-		if ( is_array( $feedlist ) ) {
-			$feedcount = count( $feedlist ) - 1;
-		} else {
-			$feedcount = 0;
-		}
-
-		// Get the iteration state. If this variable doesn't exist the planet will break in half.
-		$feeds_iteration = get_option( PF_SLUG . '_feeds_iteration' );
-
-		$feed_get_switch = get_option( PF_SLUG . '_feeds_go_switch' );
-		if ( $feed_get_switch ) {
-			pf_log( 'Feeds go switch is NOT set to 0.' );
-			pf_log( 'Getting import-cron.' );
-			$the_retrieval_loop        = add_query_arg( 'press', 'forward', site_url() );
-			$pfnonce                   = $this->get_chunk_nonce();
-			$the_retrieval_loop_nonced = add_query_arg( 'nonce', $pfnonce, $the_retrieval_loop );
-			pf_log( 'Checking remote get at ' . $the_retrieval_loop_nonced . ' : ' );
-
-			wp_remote_get( $the_retrieval_loop_nonced );
-
-			die();
-		} else {
-			pf_log( 'Feeds go switch is set to 0.' );
-		}
-	}
-
-	/**
 	 * Listens for ?press=forward request and initiates retrieval process.
 	 */
 	public function alter_for_retrieval() {

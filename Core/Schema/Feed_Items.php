@@ -662,7 +662,7 @@ class Feed_Items implements HasActions, HasFilters {
 	}
 
 	/**
-	 * Runs feed import process.
+	 * Takes the items from a fetched feed and converts them into PF Feed Items.
 	 *
 	 * @param array $feed_obj Feed object data.
 	 */
@@ -949,8 +949,6 @@ class Feed_Items implements HasActions, HasFilters {
 				pf_log( 'The post was a repeat, so we are not adding it.' );
 			}
 		}
-
-		pressforward( 'utility.retrieval' )->advance_feeds();
 	}
 
 	/**
