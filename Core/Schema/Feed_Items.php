@@ -642,9 +642,9 @@ class Feed_Items implements HasActions, HasFilters {
 	/**
 	 * Takes the items from a fetched feed and converts them into PF Feed Items.
 	 *
-	 * @param null $deprecated No longer used.
+	 * @param array $feed_obj Feed object data.
 	 */
-	public function assemble_feed_for_pull( $deprecated = null ) {
+	public function assemble_feed_for_pull( $feed_obj ) {
 		pf_log( 'Invoked: PF_Feed_Item::assemble_feed_for_pull()' );
 
 		ignore_user_abort( true );
