@@ -640,42 +640,15 @@ class Feed_Items implements HasActions, HasFilters {
 	}
 
 	/**
-	 * Gets the currently processed feed object.
-	 *
-	 * @return object
-	 */
-	public function get_the_feed_object() {
-		pf_log( 'Invoked: PF_Feed_Item::get_the_feed_object()' );
-		// $PF_Feed_Retrieve = new PF_Feed_Retrieve();
-		// This pulls the RSS feed into a set of predetermined objects.
-		// The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
-		$the_feed = pressforward( 'utility.retrieval' )->step_through_feedlist();
-		if ( ( ! $the_feed ) || is_wp_error( $the_feed ) ) {
-			pf_log( 'The feed is false, exit process. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]' );
-			pf_iterate_cycle_state( 'retrieval_cycles_ended', true );
-			// Wipe the checking option for use next time.
-			update_option( PF_SLUG . '_feeds_meta_state', array() );
-			exit;
-		}
-
-		return $the_feed;
-	}
-
-	/**
 	 * Takes the items from a fetched feed and converts them into PF Feed Items.
 	 *
-	 * @param array $feed_obj Feed object data.
+	 * @param null $deprecated No longer used.
 	 */
-	public function assemble_feed_for_pull( $feed_obj = [] ) {
+	public function assemble_feed_for_pull( $deprecated = null ) {
 		pf_log( 'Invoked: PF_Feed_Item::assemble_feed_for_pull()' );
 
 		ignore_user_abort( true );
 		set_time_limit( 0 );
-
-		if ( ! $feed_obj ) {
-			$the_feed = $this->get_the_feed_object();
-			$feed_obj = $the_feed;
-		}
 
 		// We need to init $source_repeat so it can be if 0 if nothing is happening.
 		$source_repeat = 0;
