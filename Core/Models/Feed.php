@@ -270,8 +270,6 @@ class Feed extends BasicModel {
 
 		pressforward( 'schema.feed_item' )->assemble_feed_for_pull( $feed_data_object );
 		pressforward( 'schema.feeds' )->set_feed_last_checked( $feed_id );
-
-		$this->feed_retrieval_reset();
 	}
 
 	/**
@@ -291,13 +289,6 @@ class Feed extends BasicModel {
 		}
 
 		return $module;
-	}
-
-	/**
-	 * Resets feed retrieval status.
-	 */
-	public function feed_retrieval_reset() {
-		$retrieval_state = update_option( PF_SLUG . '_iterate_going_switch', 0 );
 	}
 
 	/**
