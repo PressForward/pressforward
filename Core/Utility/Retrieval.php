@@ -24,8 +24,6 @@ class Retrieval {
 	 * Constructor
 	 */
 	public function __construct() {
-		add_action( 'init', array( $this, 'alter_for_retrieval' ), 999 );
-
 		// Schedule our cron actions for fetching feeds.
 		add_action( 'init', array( $this, 'schedule_feed_out' ) );
 
