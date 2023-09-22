@@ -655,7 +655,6 @@ class Feed_Items implements HasActions, HasFilters {
 			pf_iterate_cycle_state( 'retrieval_cycles_ended', true );
 			// Wipe the checking option for use next time.
 			update_option( PF_SLUG . '_feeds_meta_state', array() );
-			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 1 );
 			exit;
 		}
 
@@ -672,19 +671,6 @@ class Feed_Items implements HasActions, HasFilters {
 
 		ignore_user_abort( true );
 		set_time_limit( 0 );
-		// Chunking control, the goal here is to ensure that no feed assembly occurs while the feed assembly is already occuring.
-		// Option: If true (1), the system is ready to assemble a chunk. If false (0), the system is already assembling a chunk.
-		$ready_for_chunk_assembly = get_option( PF_SLUG . '_ready_to_chunk', 1 );
-
-		if ( ! $ready_for_chunk_assembly ) {
-			pf_log( 'Chunk already in progress.' );
-			return;
-		} else {
-			pf_log( 'Beginning next import chunk.' );
-			pf_log( 'The chunk state is set?' );
-			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 0 );
-			pf_log( $chunk_state );
-		}
 
 		if ( ! $feed_obj ) {
 			$the_feed = $this->get_the_feed_object();
@@ -964,7 +950,6 @@ class Feed_Items implements HasActions, HasFilters {
 			}
 		}
 
-		update_option( PF_SLUG . '_ready_to_chunk', 1 );
 		pressforward( 'utility.retrieval' )->advance_feeds();
 	}
 

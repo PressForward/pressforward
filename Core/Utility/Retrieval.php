@@ -505,15 +505,6 @@ class Retrieval {
 			update_option( PF_SLUG . '_feeds_iteration', 0 );
 			update_option( PF_SLUG . '_iterate_going_switch', 0 );
 
-			if ( ( get_option( PF_SLUG . '_ready_to_chunk', 1 ) ) === 0 ) {
-				pf_log( 'The chunk is still open because there are no more feeds. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]' );
-				// Wipe the checking option for use next time.
-				update_option( PF_SLUG . '_feeds_meta_state', array() );
-				update_option( PF_SLUG . '_ready_to_chunk', 1 );
-			} else {
-				pf_log( 'We\'re doing this thing already in the data object.', true );
-			}
-
 			die();
 		}
 
@@ -669,7 +660,6 @@ class Retrieval {
 		$feed_go         = update_option( PF_SLUG . '_feeds_go_switch', 0 );
 		$feed_iteration  = update_option( PF_SLUG . '_feeds_iteration', 0 );
 		$retrieval_state = update_option( PF_SLUG . '_iterate_going_switch', 0 );
-		$chunk_state     = update_option( PF_SLUG . '_ready_to_chunk', 1 );
 	}
 
 	/**
@@ -684,7 +674,6 @@ class Retrieval {
 		$feed_go         = get_option( PF_SLUG . '_feeds_go_switch', 0 );
 		$feed_iteration  = get_option( PF_SLUG . '_feeds_iteration', 0 );
 		$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0 );
-		$chunk_state     = get_option( PF_SLUG . '_ready_to_chunk', 1 );
 
 		pf_log( 'Invoked: PF_Feed_Retrieve::trigger_source_data()' );
 
@@ -740,7 +729,6 @@ class Retrieval {
 
 				// Wipe the checking option for use next time.
 				update_option( PF_SLUG . '_feeds_meta_state', array() );
-				update_option( PF_SLUG . '_ready_to_chunk', 1 );
 				update_option( PF_SLUG . '_iterate_going_switch', 1 );
 				pressforward( 'schema.feed_item' )->assemble_feed_for_pull();
 			} elseif ( $feeds_meta_state['retrigger'] < ( time() + 86400 ) ) {
@@ -749,7 +737,6 @@ class Retrieval {
 				// the meta state. If it is actually mid-process things should progress.
 				// Otherwise next meta-state check will iterate forward.
 				update_option( PF_SLUG . '_feeds_go_switch', 0 );
-				update_option( PF_SLUG . '_ready_to_chunk', 1 );
 				update_option( PF_SLUG . '_feeds_meta_state', array() );
 				update_option( PF_SLUG . '_iterate_going_switch', 0 );
 				update_option( PF_SLUG . '_feeds_iteration', 0 );
