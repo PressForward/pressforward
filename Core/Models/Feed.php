@@ -297,7 +297,6 @@ class Feed extends BasicModel {
 	 * Resets feed retrieval status.
 	 */
 	public function feed_retrieval_reset() {
-		$feed_go         = update_option( PF_SLUG . '_feeds_go_switch', 0 );
 		$feed_iteration  = update_option( PF_SLUG . '_feeds_iteration', 0 );
 		$retrieval_state = update_option( PF_SLUG . '_iterate_going_switch', 0 );
 	}

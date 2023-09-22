@@ -174,14 +174,6 @@ class Retrieval {
 		// Get the option that stores the current step of iteration.
 		$feeds_iteration = get_option( PF_SLUG . '_feeds_iteration' );
 
-		// We will now set the lock on the feed retrieval process.
-		// The logging here is to insure that lock is set.
-		// We begin the process of getting the next feed.
-		// If anything asks the system, from here until the end of the feed
-		// retrieval process, you DO NOT attempt to retrieve another feed.
-		// A check to see if the lock has been set.
-		$this->update_option_w_check( '_feeds_go_switch', 0 );
-
 		// We want to insure that we are neither skipping ahead or
 		// overlapping with a previous process. To do so we store two
 		// options. The first tells us the current state of iteration.
@@ -306,8 +298,6 @@ class Retrieval {
 				pf_log( 'The feed is either an empty entry or un-retrievable AND the iteration is greater than the last key.' );
 				$this->update_option_w_check( '_feeds_iteration', 0 );
 
-				$this->update_option_w_check( '_feeds_go_switch', 0 );
-
 				$this->update_option_w_check( '_iterate_going_switch', 0 );
 
 				pf_log( 'End of the update process. Return false.' );
@@ -339,8 +329,6 @@ class Retrieval {
 				pf_log( 'The feed is either an empty entry or un-retrievable AND the iteration is greater then the last key.' );
 				$this->update_option_w_check( '_feeds_iteration', 0 );
 
-				$this->update_option_w_check( '_feeds_go_switch', 0 );
-
 				$this->update_option_w_check( '_iterate_going_switch', 0 );
 
 				pf_log( 'End of the update process. Return false.' );
@@ -352,8 +340,6 @@ class Retrieval {
 			// An error state that should never, ever, ever, ever, ever happen.
 			pf_log( 'The iteration is now greater than the last key.' );
 			$this->update_option_w_check( '_feeds_iteration', 0 );
-
-			$this->update_option_w_check( '_feeds_go_switch', 0 );
 
 			$this->update_option_w_check( '_iterate_going_switch', 0 );
 			pf_log( 'End of the update process. Return false.' );
@@ -492,16 +478,9 @@ class Retrieval {
 
 		pf_log( 'Begin the process to retrieve the object full of feed items.' );
 
-		// Has this process already occurring?
-		$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 0 );
-
-		pf_log( 'The Feeds go switch has been updated?' );
-		pf_log( $feed_go );
-
 		$is_it_going = get_option( PF_SLUG . '_iterate_going_switch', 1 );
 		if ( ! $is_it_going ) {
 			// WE ARE? SHUT IT DOWN!!!
-			update_option( PF_SLUG . '_feeds_go_switch', 0 );
 			update_option( PF_SLUG . '_feeds_iteration', 0 );
 			update_option( PF_SLUG . '_iterate_going_switch', 0 );
 
@@ -531,10 +510,6 @@ class Retrieval {
 				return true;
 			}
 		} else {
-			// We've completed the feed retrieval, the system should know it is now ok to ask for another feed.
-			$feed_go = update_option( PF_SLUG . '_feeds_go_switch', 1 );
-			pf_log( 'The Feeds go switch has been updated to on?' );
-			pf_log( $feed_go );
 
 			$prev_iteration   = get_option( PF_SLUG . '_prev_iteration', 0 );
 			$iterate_op_check = get_option( PF_SLUG . '_feeds_iteration', 1 );
@@ -621,7 +596,6 @@ class Retrieval {
 	 * Resets feed retrieval status.
 	 */
 	public function feed_retrieval_reset() {
-		$feed_go         = update_option( PF_SLUG . '_feeds_go_switch', 0 );
 		$feed_iteration  = update_option( PF_SLUG . '_feeds_iteration', 0 );
 		$retrieval_state = update_option( PF_SLUG . '_iterate_going_switch', 0 );
 	}
@@ -635,13 +609,11 @@ class Retrieval {
 	 */
 	public function trigger_source_data( $do_return = false ) {
 		$message         = array();
-		$feed_go         = get_option( PF_SLUG . '_feeds_go_switch', 0 );
 		$feed_iteration  = get_option( PF_SLUG . '_feeds_iteration', 0 );
 		$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0 );
 
 		pf_log( 'Invoked: PF_Feed_Retrieve::trigger_source_data()' );
 
-		$message['go_switch']       = pf_message( 'Feeds go?: ' . $feed_go );
 		$message['iteration']       = pf_message( 'Feed iteration: ' . $feed_iteration );
 		$message['iterating_check'] = pf_message( 'Retrieval state: ' . $retrieval_state );
 
@@ -671,7 +643,6 @@ class Retrieval {
 			$feeds_meta_state = get_option( PF_SLUG . '_feeds_meta_state', array() );
 			if ( empty( $feeds_meta_state ) ) {
 				$feeds_meta_state = array(
-					'feed_go'         => $feed_go,
 					'feed_iteration'  => $feed_iteration,
 					'retrieval_state' => $retrieval_state,
 					'retrigger'       => time() + ( 2 * 60 * 60 ),
@@ -686,7 +657,7 @@ class Retrieval {
 
 			if ( $feeds_meta_state['retrigger'] > time() ) {
 				$message['action_taken'] = pf_message( __( 'The sources are already being retrieved.', 'pressforward' ), true );
-			} elseif ( ( (int) $feed_go === (int) $feeds_meta_state['feed_go'] ) && ( (int) $feed_iteration === (int) $feeds_meta_state['feed_iteration'] ) && ( (int) $retrieval_state === (int) $feeds_meta_state['retrieval_state'] ) ) {
+			} elseif ( ( (int) $feed_iteration === (int) $feeds_meta_state['feed_iteration'] ) && ( (int) $retrieval_state === (int) $feeds_meta_state['retrieval_state'] ) ) {
 				$message['action_taken'] = pf_message( __( 'The sources are stuck, clearing system to activate on next retrieve.', 'pressforward' ), true );
 
 				// Wipe the checking option for use next time.
@@ -698,12 +669,10 @@ class Retrieval {
 				// and the retrieval state hasn't been reset, reset the check values and reset
 				// the meta state. If it is actually mid-process things should progress.
 				// Otherwise next meta-state check will iterate forward.
-				update_option( PF_SLUG . '_feeds_go_switch', 0 );
 				update_option( PF_SLUG . '_feeds_meta_state', array() );
 				update_option( PF_SLUG . '_iterate_going_switch', 0 );
 				update_option( PF_SLUG . '_feeds_iteration', 0 );
 				$double_check = array(
-					'feed_go'         => 0,
 					'feed_iteration'  => 0,
 					'retrieval_state' => 0,
 					'retrigger'       => $feeds_meta_state['retrigger'],
@@ -712,7 +681,6 @@ class Retrieval {
 				$message['action_taken'] = pf_message( __( 'The meta-state is too old. It is now reset. Next time, we will start retrieval over.', 'pressforward' ), true );
 			} else {
 				$double_check = array(
-					'feed_go'         => $feeds_meta_state['feed_go'],
 					'feed_iteration'  => $feed_iteration,
 					'retrieval_state' => $feeds_meta_state['retrieval_state'],
 					'retrigger'       => $feeds_meta_state['retrigger'],
