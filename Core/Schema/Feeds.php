@@ -844,7 +844,7 @@ class Feeds implements HasActions, HasFilters {
 			pf_log( 'The post_id is numeric and greater than 0, complete the ' . $insert_type . ' process' );
 			$this->set_pf_feed_type( $post_id, $r['type'] );
 
-			if ( null !== empty( $r['feed_folders'] ) ) {
+			if ( isset( $r['feed_folders'] ) && null !== empty( $r['feed_folders'] ) ) {
 				$set = wp_set_object_terms( $post_id, $r['feed_folders'], $this->tag_taxonomy );
 			}
 
