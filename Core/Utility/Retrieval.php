@@ -107,18 +107,6 @@ class Retrieval {
 	}
 
 	/**
-	 * Creates a custom nonce in order to secure feed retrieval requests.
-	 *
-	 * @return string
-	 */
-	public function get_chunk_nonce() {
-		$nonce = wp_hash( time() );
-		pf_log( sprintf( 'Created and saved retrieval nonce: %s', $nonce ) );
-		update_option( 'chunk_nonce', $nonce );
-		return $nonce;
-	}
-
-	/**
 	 * A function to make absolutely sure options update.
 	 *
 	 * @param string $option_name  Option name.
