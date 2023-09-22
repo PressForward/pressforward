@@ -70,10 +70,6 @@ class SourceAJAX implements HasActions {
 				'hook'   => 'wp_ajax_make_it_readable',
 				'method' => 'make_it_readable',
 			),
-			array(
-				'hook'   => 'wp_ajax_assemble_feed_for_pull',
-				'method' => 'trigger_source_data',
-			),
 		);
 	}
 
@@ -83,17 +79,5 @@ class SourceAJAX implements HasActions {
 	public function make_it_readable() {
 		$this->readability->make_it_readable();
 		die();
-	}
-
-	/**
-	 * AJAX handler for 'wp_ajax_assemble_feed_for_pull'.
-	 */
-	public function trigger_source_data() {
-		ob_start();
-		$message           = $this->retrieval->trigger_source_data( true );
-		$buffer            = ob_get_contents();
-		$message['buffer'] = (string) $buffer;
-		ob_end_clean();
-		wp_send_json( $message );
 	}
 }
