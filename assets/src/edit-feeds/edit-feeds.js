@@ -1,29 +1,48 @@
+/* global ajaxurl, jQuery */
+
 import { __ } from '@wordpress/i18n'
 
 jQuery(window).load(function() {
-  pf_switch_status_look();
+	pfSwitchStatusLook();
 
-  jQuery('body.post-type-pf_feed').on('click', '.edit-post-status', function(){
-    pf_switch_status_look();
-  });
-  jQuery('body.post-type-pf_feed').on('click', '.save-post-status', function(){
-    pf_switch_status_look();
-  });
-  jQuery('body.post-type-pf_feed').on('click', ".refresh-feed", (function(evt){
-      evt.preventDefault();
-      var element			= jQuery(this);
-      var feed_id           = element.attr('data-pf-feed');
-      jQuery.post(ajaxurl, {
-              action: 'ajax_update_feed_handler',
-              feed_id: feed_id
-          },
-          function(response) {});
-      })
-  );
+	jQuery( 'body.post-type-pf_feed' ).on(
+		'click',
+		'.edit-post-status',
+		function() {
+			pfSwitchStatusLook();
+		}
+	);
 
+	jQuery( 'body.post-type-pf_feed' ).on(
+		'click',
+		'.save-post-status',
+		function() {
+			pfSwitchStatusLook();
+		}
+	);
+
+	jQuery( 'body.post-type-pf_feed' ).on(
+		'click',
+		'.refresh-feed',
+		function(evt){
+			evt.preventDefault();
+
+			const element	= jQuery(this);
+			const feedId = element.attr('data-pf-feed');
+
+			jQuery.post(
+				ajaxurl,
+				{
+					action: 'ajax_update_feed_handler',
+					feed_id: feedId // eslint-disable-line camelcase
+				},
+				function(response) {}
+			);
+		}
+	);
 });
 
-function pf_switch_status_look(){
+function pfSwitchStatusLook(){
   jQuery('body.post-type-pf_feed #submitdiv h3.hndle span').text( __( 'Activate', 'pressforward' ) );
   jQuery('body.post-type-pf_feed').find('#post_status option[value="draft"]').text( __( 'Inactive', 'pressforward' ) );
   jQuery('body.post-type-pf_feed').find('#post_status option[value="publish"]').text( __( 'Active', 'pressforward' ) );
