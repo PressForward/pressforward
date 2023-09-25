@@ -12,6 +12,8 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
 
 use PressForward\Controllers\PFtoWPUsers as Users;
 
+use PressForward\Core\Models\Feed;
+
 use PressForward\Controllers\Metas;
 use AlertBox\The_Alert_Box;
 
@@ -80,6 +82,12 @@ class SubscribedFeeds implements HasActions, HasFilters {
 				'priority' => 10,
 				'args'     => 2,
 			),
+			[
+				'hook'     => 'manage_pf_feed_posts_custom_column',
+				'method'   => 'next_retrieval_column_content',
+				'priority' => 10,
+				'args'     => 2,
+			],
 			array(
 				'hook'   => 'manage_edit-pf_feed_sortable_columns',
 				'method' => 'make_last_checked_column_sortable',
@@ -134,6 +142,10 @@ class SubscribedFeeds implements HasActions, HasFilters {
 			array(
 				'hook'   => 'manage_pf_feed_posts_columns',
 				'method' => 'add_last_retrieved_date_column',
+			),
+			array(
+				'hook'   => 'manage_pf_feed_posts_columns',
+				'method' => 'add_retrieval_check_date_column',
 			),
 		);
 	}
@@ -202,6 +214,19 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	 */
 	public function add_last_checked_date_column( $posts_columns ) {
 		$posts_columns['last_checked'] = __( 'Last Time Feed Checked', 'pressforward' );
+		return $posts_columns;
+	}
+
+	/**
+	 * Add a Next Retrieval column to the pf_feed list table.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @param array $posts_columns Column headers.
+	 * @return array
+	 */
+	public function add_retrieval_check_date_column( $posts_columns ) {
+		$posts_columns['next_retrieval'] = __( 'Next Retrieval', 'pressforward' );
 		return $posts_columns;
 	}
 
@@ -287,6 +312,47 @@ class SubscribedFeeds implements HasActions, HasFilters {
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $lr_text;
+	}
+
+	/**
+	 * Content of the Next Retrieval column.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @param string $column_name Column ID.
+	 * @param int    $post_id ID of the post for the current row in the table.
+	 */
+	public function next_retrieval_column_content( $column_name, $post_id ) {
+		if ( 'next_retrieval' !== $column_name ) {
+			return;
+		}
+
+		$feed_object = Feed::get_instance_by_id( $post_id );
+
+		$next_retrieval = $feed_object->get_next_scheduled_retrieval();
+
+		// Convert to WP timezone.
+		$next_retrieval = $next_retrieval - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
+
+		$retval = '';
+		if ( ! $next_retrieval ) {
+			$retval = '-';
+		} else {
+			$time_diff = $next_retrieval - time();
+
+			$time_formatted = gmdate( 'Y/m/d g:i:s A', $next_retrieval );
+
+			if ( $time_diff > 0 && $time_diff < DAY_IN_SECONDS ) {
+				// translators: Time difference.
+				$in_text = sprintf( __( 'In %s', 'pressforward' ), human_time_diff( $next_retrieval ) );
+			} else {
+				$in_text = $time_formatted;
+			}
+
+			$retval = '<abbr title="' . esc_attr( $time_formatted ) . '">' . esc_html( $in_text ) . '</abbr>';
+		}
+
+		echo $retval;
 	}
 
 	/**
