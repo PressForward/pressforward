@@ -986,11 +986,11 @@ class Feeds implements HasActions, HasFilters {
 		 * Health checks should come before the next scheduled retrieval.
 		 * If a retrieval is scheduled, we will reschedule it for after the health check.
 		 */
-		$health_check_timestamp = time() + ( wp_rand( 1, 5 ) * MINUTE_IN_SECONDS );
+		$health_check_timestamp = time() + MINUTE_IN_SECONDS;
 		$retrieval_timestamp    = $feed->get_next_scheduled_retrieval();
 
 		if ( $retrieval_timestamp && $retrieval_timestamp < $health_check_timestamp ) {
-			$new_retrieval_timestamp = $health_check_timestamp + ( wp_rand( 10, 30 ) * MINUTE_IN_SECONDS );
+			$new_retrieval_timestamp = $health_check_timestamp + ( wp_rand( 5, 30 ) * MINUTE_IN_SECONDS );
 			$feed->schedule_retrieval(
 				[
 					'nextrun' => $new_retrieval_timestamp,
