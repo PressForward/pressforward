@@ -282,6 +282,11 @@ class Feed extends BasicModel {
 		$feeds_schema = pressforward( 'schema.feeds' );
 		$feed_type    = $feeds_schema->get_pf_feed_type( $this->get( 'id' ) );
 
+		// Special case for legacy 'rss-quick'.
+		if ( 'rss-quick' === $feed_type ) {
+			$feed_type = 'rss';
+		}
+
 		$module = null;
 		foreach ( pressforward( 'modules' )->modules as $module ) {
 			if ( $feed_type === $module->feed_type ) {
