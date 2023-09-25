@@ -329,31 +329,8 @@ class SubscribedFeeds implements HasActions, HasFilters {
 
 		$feed_object = Feed::get_instance_by_id( $post_id );
 
-		$next_retrieval = $feed_object->get_next_scheduled_retrieval();
-
-		// Convert to WP timezone.
-		$next_retrieval = $next_retrieval - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
-
-		$retval = '';
-		if ( ! $next_retrieval ) {
-			$retval = '-';
-		} else {
-			$time_diff = $next_retrieval - time();
-
-			$time_formatted = gmdate( 'Y/m/d g:i:s A', $next_retrieval );
-
-			if ( $time_diff > 0 && $time_diff < DAY_IN_SECONDS ) {
-				// translators: Time difference.
-				$in_text = sprintf( __( 'In %s', 'pressforward' ), human_time_diff( $next_retrieval ) );
-			} else {
-				$in_text = $time_formatted;
-			}
-
-			$retval = '<abbr title="' . esc_attr( $time_formatted ) . '">' . esc_html( $in_text ) . '</abbr>';
-		}
-
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $retval;
+		echo $feed_object->get_next_scheduled_retrieval_el();
 	}
 
 	/**

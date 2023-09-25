@@ -643,6 +643,7 @@ class Feed_Items implements HasActions, HasFilters {
 	 * Takes the items from a fetched feed and converts them into PF Feed Items.
 	 *
 	 * @param array $feed_obj Feed object data.
+	 * @return array
 	 */
 	public function assemble_feed_for_pull( $feed_obj ) {
 		pf_log( 'Invoked: PF_Feed_Item::assemble_feed_for_pull()' );
@@ -661,6 +662,11 @@ class Feed_Items implements HasActions, HasFilters {
 		pf_log( 'Now beginning check and processing for entering items into the database.' );
 		$parent = $feed_obj['parent_feed_id'];
 		unset( $feed_obj['parent_feed_id'] );
+
+		$retval = [
+			'date_retrieved' => gmdate( 'Y-m-d H:i:s' ),
+			'items_added'    => 0,
+		];
 
 		foreach ( $feed_obj as $item ) {
 			$item['item_link'] = pressforward( 'controller.http_tools' )->resolve_a_url( $item['item_link'] );
@@ -862,6 +868,8 @@ class Feed_Items implements HasActions, HasFilters {
 
 				pf_log( 'End of wp_insert_post process.' );
 
+				++$retval['items_added'];
+
 				// Somewhere in the process links with complex queries at the end (joined by ampersands) are getting encoded.
 				// I don't want that, so I turn it back here.
 				// For some reason this is only happening to the ampersands, so that's the only thing I'm changing.
@@ -922,6 +930,8 @@ class Feed_Items implements HasActions, HasFilters {
 				pf_log( 'The post was a repeat, so we are not adding it.' );
 			}
 		}
+
+		return $retval;
 	}
 
 	/**

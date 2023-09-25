@@ -29,3 +29,25 @@
 .column-items_retrieved {
 	width: 55px;
 }
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Style for your link when it has the loading class */
+a.loading::after {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 3px solid #ccc;
+  border-radius: 50%;
+  border-top-color: #000;
+  animation: spin 1s linear infinite;
+  margin-left: 5px;
+}

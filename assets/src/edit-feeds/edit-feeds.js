@@ -1,6 +1,6 @@
 /* global ajaxurl, jQuery */
 
-import { __ } from '@wordpress/i18n'
+import { __, sprintf } from '@wordpress/i18n'
 
 jQuery(window).load(function() {
 	pfSwitchStatusLook();
@@ -27,8 +27,13 @@ jQuery(window).load(function() {
 		function(evt){
 			evt.preventDefault();
 
-			const element	= jQuery(this);
-			const feedId = element.attr('data-pf-feed');
+			evt.target.classList.add( 'loading' );
+
+			const element = jQuery(this);
+			const feedId  = element.attr('data-pf-feed');
+
+			// Remove all existing status rows.
+			jQuery( '.pf-feed-refresh-status' ).remove()
 
 			jQuery.post(
 				ajaxurl,
@@ -36,7 +41,60 @@ jQuery(window).load(function() {
 					action: 'ajax_update_feed_handler',
 					feed_id: feedId // eslint-disable-line camelcase
 				},
-				function(response) {}
+				( response ) => {
+					const { success, data } = response
+
+					const {
+						feedItemCount,
+						itemsAdded,
+						nextRetrievalDate,
+						nextRetrievalString,
+					} = data // eslint-disable-line camelcase
+
+					const feedRow = evt.target.closest( 'tr' )
+
+					const statusEl = document.createElement( 'div' )
+					statusEl.classList.add( 'notice' )
+					statusEl.classList.add( success ? 'notice-success' : 'notice-error' )
+
+					if ( success ) {
+						// translators: Number of feed items added.
+						statusEl.textContent = sprintf( __( 'Feed refreshed successfully. Created %s new feed items.', 'pressforward' ), itemsAdded )
+					} else {
+						statusEl.textContent = __( 'There was an error refreshing the feed.', 'pressforward' )
+					}
+
+					// Put the statusEl inside of a td and then a tr.
+					const statusElTd = document.createElement( 'td' )
+
+					// Give it a colspan equal to the number of columns in the table.
+					statusElTd.setAttribute( 'colspan', feedRow.children.length )
+
+					statusElTd.appendChild( statusEl )
+
+					const statusElTr = document.createElement( 'tr' ).appendChild( statusElTd )
+					statusElTr.classList.add( 'pf-feed-refresh-status' )
+
+					// Insert before the closest tr to statusEl.
+					feedRow.before( statusElTr )
+
+					// Replace updated row values.
+					if ( success ) {
+						if ( feedItemCount ) {
+							feedRow.querySelector( '.items_retrieved' ).textContent = feedItemCount
+						}
+
+						if ( nextRetrievalDate && nextRetrievalString ) {
+							const dateAbbr = feedRow.querySelector( '.last_retrieved abbr' )
+							if ( dateAbbr ) {
+								dateAbbr.setAttribute( 'title', nextRetrievalDate )
+								dateAbbr.textContent = nextRetrievalString
+							}
+						}
+					}
+
+					evt.target.classList.remove( 'loading' );
+				}
 			);
 		}
 	);

@@ -125,6 +125,77 @@ class Feed extends BasicModel {
 	}
 
 	/**
+	 * Gets an element describing the next scheduled retrieval, in human-readable form.
+	 *
+	 * This uses the <abbr> element that's expected by the WP_List_Table column.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @return string HTML.
+	 */
+	public function get_next_scheduled_retrieval_el() {
+		$formatted_date = $this->get_next_scheduled_retrieval_date();
+
+		$next_retrieval = $this->get_next_scheduled_retrieval();
+
+		// Convert to WP timezone.
+		$next_retrieval = $next_retrieval - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
+
+		$retval = '';
+		if ( ! $next_retrieval ) {
+			$retval = '-';
+		} else {
+			$time_diff = $next_retrieval - time();
+
+			if ( $time_diff > 0 && $time_diff < DAY_IN_SECONDS ) {
+				$in_text = $this->get_next_scheduled_retrieval_string();
+			} else {
+				$in_text = $formatted_date;
+			}
+
+			$retval = '<abbr title="' . esc_attr( $formatted_date ) . '">' . esc_html( $in_text ) . '</abbr>';
+		}
+
+		return $retval;
+	}
+
+	/**
+	 * Gets the next scheduled retrieval as a WP-formatted date.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @return string|false Formatted date, or false if not scheduled.
+	 */
+	public function get_next_scheduled_retrieval_date() {
+		$next_retrieval = $this->get_next_scheduled_retrieval();
+		if ( ! $next_retrieval ) {
+			return false;
+		}
+
+		// Convert to WP timezone.
+		$next_retrieval = $next_retrieval - ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
+
+		return gmdate( 'Y/m/d g:i:s A', $next_retrieval );
+	}
+
+	/**
+	 * Gets the next scheduled retrieval as a human-readable "In ..." string.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @return string|false Formatted date, or false if not scheduled.
+	 */
+	public function get_next_scheduled_retrieval_string() {
+		$next_retrieval = $this->get_next_scheduled_retrieval();
+		if ( ! $next_retrieval ) {
+			return false;
+		}
+
+		// translators: Time difference.
+		return sprintf( __( 'In %s', 'pressforward' ), human_time_diff( $next_retrieval ) );
+	}
+
+	/**
 	 * Schedules a feed retrieval.
 	 *
 	 * @param array $args {
@@ -248,13 +319,18 @@ class Feed extends BasicModel {
 	/**
 	 * Retrieves the feed.
 	 *
-	 * @return void
+	 * @return array See pressforward( 'schema.feed_item' )->assemble_feed_for_pull().
 	 */
 	public function retrieve() {
 		$module = $this->get_module();
 
+		$retval = [
+			'date_retrieved' => null,
+			'items_added'    => 0,
+		];
+
 		if ( ! $module ) {
-			return;
+			return $retval;
 		}
 
 		$feed_id = $this->get( 'id' );
@@ -264,13 +340,13 @@ class Feed extends BasicModel {
 		pressforward( 'schema.feeds' )->set_feed_last_checked( $feed_id );
 
 		$feed_data_object = $module->get_data_object( $feed_post );
-		if ( ! $feed_data_object ) {
-			return;
+		if ( ! is_array( $feed_data_object ) ) {
+			return $retval;
 		}
 
 		$feed_data_object['parent_feed_id'] = $feed_id;
 
-		pressforward( 'schema.feed_item' )->assemble_feed_for_pull( $feed_data_object );
+		return pressforward( 'schema.feed_item' )->assemble_feed_for_pull( $feed_data_object );
 	}
 
 	/**

@@ -198,7 +198,21 @@ class Retrieval {
 			return;
 		}
 
-		$feed->retrieve();
+		$retrieved_status = $feed->retrieve();
+
+		$retval = [
+			'dateRetrieved'       => $retrieved_status['date_retrieved'],
+			'itemsAdded'          => $retrieved_status['items_added'],
+			'nextRetrievalDate'   => $feed->get_next_scheduled_retrieval_date(),
+			'nextRetrievalString' => $feed->get_next_scheduled_retrieval_string(),
+			'feedItemCount'       => pressforward( 'schema.feeds' )->count_feed_items_collected( $post_id )->publish,
+		];
+
+		if ( ! empty( $retval['dateRetrieved'] ) ) {
+			wp_send_json_success( $retval );
+		} else {
+			wp_send_json_error( $retval );
+		}
 	}
 
 	/**
