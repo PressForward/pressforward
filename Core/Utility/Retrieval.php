@@ -183,7 +183,6 @@ class Retrieval {
 	 * AJAX handler for wp_ajax_ajax_update_feed_handler action.
 	 */
 	public function ajax_update_feed_handler() {
-		global $pf;
 		$post_id = isset( $_POST['feed_id'] ) ? intval( $_POST['feed_id'] ) : 0;
 
 		if ( ! $post_id ) {
