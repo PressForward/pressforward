@@ -352,6 +352,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 			$retval = '<abbr title="' . esc_attr( $time_formatted ) . '">' . esc_html( $in_text ) . '</abbr>';
 		}
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $retval;
 	}
 
