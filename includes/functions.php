@@ -536,7 +536,7 @@ function pf_nom_class_tagger( $the_array = array() ) {
 		} elseif ( is_array( $class_name ) ) {
 			foreach ( $class_name as $sub_class ) {
 				echo ' ';
-				echo esc_attr( pf_slugger( $class_name, true, false, true ) );
+				echo esc_attr( pf_slugger( $sub_class, true, false, true ) );
 			}
 		} else {
 			echo ' ';
@@ -565,7 +565,7 @@ function get_pf_nom_class_tags( $the_array = array() ) {
 
 			foreach ( $class_name as $sub_class ) {
 				$tags = ' ';
-				$tags = pf_slugger( $class_name, true, false, true );
+				$tags = pf_slugger( $sub_class, true, false, true );
 			}
 		} else {
 			$tags = ' ';
