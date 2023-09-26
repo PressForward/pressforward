@@ -422,7 +422,7 @@ function pf_prep_item_for_submit( $item ) {
 				break;
 
 			case 'nominators':
-				$item_part = wp_list_pluck( 'user_id', $item_part );
+				$item_part = wp_list_pluck( $item_part, 'user_id' );
 				break;
 		}
 
