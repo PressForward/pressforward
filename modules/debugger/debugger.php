@@ -207,17 +207,17 @@ class PF_Debugger extends PF_Module {
 			</p>
 			<p><?php esc_html_e( 'Total Retrieval Chunks Begun This:', 'pressforward' ); ?>
 			<?php
-				pf_iterate_cycle_state( 'retrieval_chunks_begun', false, true );
+				pf_iterate_cycle_state( 'retrieval_chunks_begun', '', true );
 			?>
 			</p>
 			<p><?php esc_html_e( 'Total Retrieval Cycles Begun This:', 'pressforward' ); ?>
 			<?php
-				pf_iterate_cycle_state( 'retrieval_cycles_begun', false, true );
+				pf_iterate_cycle_state( 'retrieval_cycles_begun', '', true );
 			?>
 			</p>
 			<p><?php esc_html_e( 'Total Retrieval Cycles Ended This:', 'pressforward' ); ?>
 			<?php
-				pf_iterate_cycle_state( 'retrieval_cycles_ended', false, true );
+				pf_iterate_cycle_state( 'retrieval_cycles_ended', '', true );
 			?>
 			</p>
 			<br /><br />
