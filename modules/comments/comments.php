@@ -30,18 +30,18 @@ class PF_Comments extends PF_Module {
 	}
 
 	/**
-	 * Sets up module.
+	 * Default settings for the module.
+	 *
+	 * @return array
 	 */
-	public function module_setup() {
-		$mod_settings = array(
+	public function get_default_settings() {
+		return array(
 			'name'        => __( 'Internal Commenting', 'pressforward' ),
 			'slug'        => 'comments',
 			'description' => __( 'This module provides a way for users to comment on posts throughout the editorial process. Internal commenting is only visible in the PressForward plugin and will not be publicly visible when published as a Post.', 'pressforward' ),
 			'thumbnail'   => '',
 			'options'     => '',
 		);
-
-		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 	}
 
 	/**

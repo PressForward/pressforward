@@ -42,9 +42,11 @@ class PF_Foo extends PF_Module {
 			$enabled = 'no';
 			update_option( PF_SLUG . '_' . $this->id . '_enable', $enabled );
 		}
-		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 
-		// return $test;
+		$settings = get_option( $this->get_option_name() );
+		if ( ! $settings ) {
+			update_option( $this->get_option_name(), $mod_settings );
+		}
 	}
 
 	function admin_menu_callback() {

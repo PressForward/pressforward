@@ -20,18 +20,18 @@ class PF_RSS_Import extends PF_Module {
 	}
 
 	/**
-	 * Module setup.
+	 * Default settings for RSS Import module.
+	 *
+	 * @return array
 	 */
-	public function module_setup() {
-		$mod_settings = array(
+	public function get_default_settings() {
+		return array(
 			'name'        => __( 'RSS Import Module', 'pressforward' ),
 			'slug'        => 'rss-import',
 			'description' => __( 'This module provides the core functionality to read RSS feeds and translate them into PressForward\'s system.', 'pressforward' ),
 			'thumbnail'   => '',
 			'options'     => '',
 		);
-
-		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 	}
 
 	/**

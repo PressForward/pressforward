@@ -121,11 +121,11 @@ class PF_Module {
 	}
 
 	/**
-	 * Sets up module for admin.
+	 * Returns default settings for the module.
 	 *
-	 * @todo This should not call update_option() on each pageload.
+	 * @return array
 	 */
-	public function module_setup() {
+	public function get_default_settings() {
 		$mod_settings = array(
 			'name'        => $this->id . ' Module',
 			'slug'        => $this->id,
@@ -134,7 +134,30 @@ class PF_Module {
 			'options'     => '',
 		);
 
-		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
+		return $mod_settings;
+	}
+
+	/**
+	 * Sets up module for admin.
+	 *
+	 * @return void
+	 */
+	public function module_setup() {
+		$settings = get_option( $this->get_option_name() );
+		if ( $settings ) {
+			return;
+		}
+
+		update_option( $this->get_option_name(), $this->get_default_settings() );
+	}
+
+	/**
+	 * Gets the option name for this module's settings.
+	 *
+	 * @return string
+	 */
+	public function get_option_name() {
+		return PF_SLUG . '_' . $this->id . '_settings';
 	}
 
 	/**

@@ -52,18 +52,18 @@ class PF_Debugger extends PF_Module {
 	}
 
 	/**
-	 * More module setup.
+	 * Default settings for the module.
+	 *
+	 * @return array
 	 */
-	public function module_setup() {
-		$mod_settings = array(
+	public function get_default_settings() {
+		return array(
 			'name'        => __( 'Debugger Log Viewing Module', 'pressforward' ),
 			'slug'        => 'debugger',
 			'description' => __( 'This module provides a way to view the feed retrieval log within the dashboard.', 'pressforward' ),
 			'thumbnail'   => '',
 			'options'     => '',
 		);
-
-		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 	}
 
 	/**
