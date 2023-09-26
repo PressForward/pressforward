@@ -169,7 +169,7 @@ class PF_Debugger extends PF_Module {
 
 		$nominated_to_posts = get_posts( $ntp_args );
 
-		$nomed_posts = count( $nominated_to_posts );
+		$nomed_posts = (string) count( $nominated_to_posts );
 
 		?>
 		<div class="wrap">
@@ -178,20 +178,20 @@ class PF_Debugger extends PF_Module {
 			<p><?php esc_html_e( 'Total Current Feed Items', 'pressforward' ); ?>:
 			<?php
 				$feed_item = 'pf_feed_item';
-				echo esc_html( wp_count_posts( $feed_item )->publish );
+				echo esc_html( (string) wp_count_posts( $feed_item )->publish );
 			?>
 			<br />
 			<?php
 				$feed_item = 'pf_feed_item';
-				echo 'Month to date Feed Items: ' . esc_html( $this->count_the_posts( $feed_item ) );
-				echo '<br />Last month Feed Items: ' . esc_html( $this->count_the_posts( $feed_item, -1 ) );
+				echo 'Month to date Feed Items: ' . esc_html( (string) $this->count_the_posts( $feed_item ) );
+				echo '<br />Last month Feed Items: ' . esc_html( (string) $this->count_the_posts( $feed_item, -1 ) );
 			?>
 			</p>
 			<p><?php esc_html_e( 'Total Current Nominations:', 'pressforward' ); ?>
 			<?php
 				echo esc_html( wp_count_posts( 'nomination' )->draft );
-				echo '<br />Month to date Nominations: ' . esc_html( $this->count_the_posts( 'nomination' ) );
-				echo '<br />Last month Nominations: ' . esc_html( $this->count_the_posts( 'nomination', -1 ) );
+				echo '<br />Month to date Nominations: ' . esc_html( (string) $this->count_the_posts( 'nomination' ) );
+				echo '<br />Last month Nominations: ' . esc_html( (string) $this->count_the_posts( 'nomination', -1 ) );
 
 			?>
 			</p>
