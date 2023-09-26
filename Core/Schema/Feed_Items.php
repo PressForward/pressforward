@@ -995,13 +995,7 @@ class Feed_Items implements HasActions, HasFilters {
 		$the_string = str_replace( $search, $replace, $the_string );
 		pf_log( 'String run through specified str_replace.' );
 
-		if ( version_compare( PHP_VERSION, 8.2, '>=' ) ) {
-			// phpcs:ignore Generic.PHP.DeprecatedFunctions.Deprecated
-			$the_string = utf8_encode( $the_string );
-			pf_log( 'String run through utf8_encode' );
-		}
-
-		pf_log( 'String returned.' );
+		$the_string = mb_convert_encoding( $the_string, 'UTF-8', mb_detect_encoding( $the_string, 'auto' ) );
 
 		if ( $severe ) {
 			/*
@@ -1042,11 +1036,6 @@ class Feed_Items implements HasActions, HasFilters {
 			);
 
 			$the_string = strtr( $the_string, $quotes );
-
-			if ( version_compare( PHP_VERSION, 8.2, '>=' ) ) {
-				// phpcs:ignore Generic.PHP.DeprecatedFunctions.Deprecated
-				$the_string = utf8_encode( $the_string );
-			}
 		}
 
 		return $the_string;
