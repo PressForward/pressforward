@@ -131,7 +131,7 @@ function pf_get_shortcut_link() {
 		'pfa=function(){pfw.open(pfu,"t","toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=620")||(pfl.href=pfu)};' .
 		'pfa();',
 		esc_url_raw( $url ),
-		esc_js( $version )
+		esc_js( (string) $version )
 	);
 
 	return apply_filters( 'shortcut_link', $link );
