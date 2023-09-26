@@ -397,10 +397,13 @@ class PF_OPML_Subscribe extends PF_Module {
 			return '';
 		}
 
+		$post         = get_post( $post_id );
+		$post_content = $post && $post instanceof \WP_Post ? $post->post_content : '';
+
 		$url_parts = wp_parse_url( $meta['feedUrl'][0] );
 		$entry     = array(
 			'title'   => get_the_title( $post_id ),
-			'text'    => get_the_content( $post_id ),
+			'text'    => $post_content,
 			'type'    => $meta['feed_type'][0],
 			'feedUrl' => $meta['feedUrl'][0],
 			'xmlUrl'  => $meta['feedUrl'][0],
