@@ -407,7 +407,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 
 			if ( current_user_can( 'edit_others_posts' ) ) {
 			  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo '| <a href="#" class="alert-dismisser" title="' . esc_attr__( 'Dismiss', 'pf' ) . '" data-alert-post-id="' . esc_attr( get_the_ID() ) . '" data-alert-dismiss-check="' . esc_attr( self::alert_label( 'dismiss_one_check' ) . ' ' . get_the_title() . '?' ) . '" ' . self::alert_box_type_data( get_post_type( get_the_ID() ) ) . ' >' . esc_html__( 'Dismiss', 'pf' ) . '</a>';
+				echo '| <a href="#" class="alert-dismisser" title="' . esc_attr__( 'Dismiss', 'pf' ) . '" data-alert-post-id="' . esc_attr( (string) get_the_ID() ) . '" data-alert-dismiss-check="' . esc_attr( self::alert_label( 'dismiss_one_check' ) . ' ' . get_the_title() . '?' ) . '" ' . self::alert_box_type_data( get_post_type( get_the_ID() ) ) . ' >' . esc_html__( 'Dismiss', 'pf' ) . '</a>';
 			}
 			echo ' ';
 			if ( current_user_can( 'delete_others_posts' ) ) {
