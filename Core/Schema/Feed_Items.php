@@ -857,7 +857,7 @@ class Feed_Items implements HasActions, HasFilters {
 					// It's the end of the world! Let's throw everything at this.
 					pf_log( 'Post will not go into the database. We will try again.' );
 					$item_content         = htmlentities( wp_strip_all_tags( $item_content ), ENT_QUOTES, 'UTF-8' );
-					$item_content         = wp_kses( stripslashes( $item_content ), array( 'p', 'a', 'b', 'em', 'strong' ) );
+					$item_content         = wp_kses( stripslashes( $item_content ), 'post' );
 					$item_content         = $this->extra_special_sanatize( $item_content, true );
 					$item_content         = wpautop( $item_content );
 					$item_title           = $this->extra_special_sanatize( $item_title, true );
