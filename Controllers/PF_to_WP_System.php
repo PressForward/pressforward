@@ -75,7 +75,7 @@ class PF_to_WP_System implements \PressForward\Interfaces\System {
 	/**
 	 * Wrapper for get_the_guid().
 	 *
-	 * @param string $id Item ID.
+	 * @param int $id Item ID.
 	 */
 	public function get_the_guid( $id ) {
 		return get_the_guid( $id );
