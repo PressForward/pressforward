@@ -361,7 +361,7 @@ class NominateThisCore implements HasActions, HasFilters {
 			return;
 		}
 
-		$post_author = $wp_post->post_author;
+		$post_author = (int) $wp_post->post_author;
 		if ( ! pressforward()->fetch( 'controller.users' )->get_user_setting( $post_author, 'nomination-success-email-toggle' ) ) {
 			return;
 		}
