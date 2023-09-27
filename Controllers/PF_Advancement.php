@@ -238,7 +238,7 @@ class PF_Advancement implements \PressForward\Interfaces\Advance_System, \Intrax
 			if ( current_theme_supports( 'post-formats', $post_format ) ) {
 				set_post_format( $post_id, $post_format );
 			} elseif ( '0' === $post_format ) {
-				set_post_format( $post_id, false );
+				set_post_format( $post_id, '' );
 			}
 		}
 
