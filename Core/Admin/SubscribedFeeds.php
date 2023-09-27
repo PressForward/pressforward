@@ -507,7 +507,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	public function pf_trash_children_of_feeds( $post_id ) {
 		if ( pressforward( 'schema.feeds' )->post_type === get_post_type( $post_id ) ) {
 			pf_log( 'Trash a feed and all its children.' );
-			$this->pf_thing_trasher( $post_id, true, pressforward( 'schema.feeds' )->post_type );
+			$this->pf_thing_trasher( $post_id, 1, pressforward( 'schema.feeds' )->post_type );
 		}
 	}
 
