@@ -580,7 +580,7 @@ class PFTemplater {
 		}
 
 		if ( 'nomination' === $format ) {
-			echo '<article class="feed-item entry nom-container ' . esc_attr( $archived_status_string ) . ' ' . esc_attr( get_pf_nom_class_tags( array( $metadata['submitters'], $metadata['nom_id'], $metadata['item_author'], $metadata['item_tags'], $metadata['item_id'] ) ) ) . ' ' . esc_attr( $read_class ) . '" id="' . esc_attr( $metadata['nom_id'] ) . '" style="' . esc_attr( $dependent_style ) . '" tabindex="' . esc_attr( $c ) . '" pf-post-id="' . esc_attr( $metadata['nom_id'] ) . '" pf-item-post-id="' . esc_attr( $id_for_comments ) . '" pf-feed-item-id="' . esc_attr( $metadata['item_id'] ) . '" pf-schema="read" pf-schema-class="article-read">';
+			echo '<article class="feed-item entry nom-container ' . esc_attr( $archived_status_string ) . ' ' . esc_attr( get_pf_nom_class_tags( array( $metadata['submitters'], $metadata['nom_id'], $metadata['item_author'], $metadata['item_tags'], $metadata['item_id'] ) ) ) . ' ' . esc_attr( $read_class ) . '" id="' . esc_attr( $metadata['nom_id'] ) . '" style="' . esc_attr( $dependent_style ) . '" tabindex="' . esc_attr( (string) $c ) . '" pf-post-id="' . esc_attr( $metadata['nom_id'] ) . '" pf-item-post-id="' . esc_attr( $id_for_comments ) . '" pf-feed-item-id="' . esc_attr( $metadata['item_id'] ) . '" pf-schema="read" pf-schema-class="article-read">';
 			?>
 			<a style="display:none;" name="modal-<?php echo esc_attr( $metadata['item_id'] ); ?>"></a>
 			<?php
@@ -593,7 +593,7 @@ class PFTemplater {
 				$read_class = 'article-read';
 			}
 
-			echo '<article class="feed-item entry ' . esc_attr( pf_slugger( get_the_source_title( $id_for_comments ), true, false, true ) ) . ' ' . esc_attr( $item_tag_classes_string ) . ' ' . esc_attr( $read_class ) . '" id="' . esc_attr( $item['item_id'] ) . '" tabindex="' . esc_attr( $c ) . '" pf-post-id="' . esc_attr( $item['post_id'] ) . '" pf-feed-item-id="' . esc_attr( $item['item_id'] ) . '" pf-item-post-id="' . esc_attr( $id_for_comments ) . '" style="' . esc_attr( $dependent_style ) . '" >';
+			echo '<article class="feed-item entry ' . esc_attr( pf_slugger( get_the_source_title( $id_for_comments ), true, false, true ) ) . ' ' . esc_attr( $item_tag_classes_string ) . ' ' . esc_attr( $read_class ) . '" id="' . esc_attr( $item['item_id'] ) . '" tabindex="' . esc_attr( (string) $c ) . '" pf-post-id="' . esc_attr( $item['post_id'] ) . '" pf-feed-item-id="' . esc_attr( $item['item_id'] ) . '" pf-item-post-id="' . esc_attr( $id_for_comments ) . '" style="' . esc_attr( $dependent_style ) . '" >';
 			?>
 			<a style="display:none;" name="modal-<?php echo esc_attr( $item['item_id'] ); ?>"></a>
 			<?php
@@ -754,14 +754,14 @@ class PFTemplater {
 					printf(
 						// translators: 1. Unix timestamp for item date; 2. Unix timestamp for date added to feed.
 						esc_html__( 'Unix timestamp for item date: %1$s. Unix timestamp for date added to feed: %2$s', 'pressforward' ),
-						'<span class="sortableitemdate">' . esc_html( strtotime( $item['item_date'] ) ) . '</span>',
-						'<span class="sortablerssdate">' . esc_html( strtotime( $item['item_added_date'] ) ) . '</span>.'
+						'<span class="sortableitemdate">' . esc_html( (string) strtotime( $item['item_date'] ) ) . '</span>',
+						'<span class="sortablerssdate">' . esc_html( (string) strtotime( $item['item_added_date'] ) ) . '</span>.'
 					);
 				?>
 				</div>
 				<?php
 
-				echo '<div class="item_excerpt" id="excerpt' . esc_attr( $c ) . '">';
+				echo '<div class="item_excerpt" id="excerpt' . esc_attr( (string) $c ) . '">';
 				if ( 'nomination' === $format ) {
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo '<p>' . pf_noms_excerpt( $item['item_content'] ) . '</p>';
@@ -944,15 +944,18 @@ class PFTemplater {
 			$item_id = $item['item_id'];
 		}
 
+		$pf_url = defined( 'PF_URL' ) ? (string) PF_URL : '';
+
+		$btns_classes = [ 'actions', 'pf-btns' ];
+
+		if ( $modal ) {
+			$btns_classes[] = 'modal-btns';
+		} else {
+			$btns_classes[] = 'article-btns';
+		}
+
 		?>
-				<div class="actions pf-btns
-				<?php
-				if ( $modal ) {
-					echo 'modal-btns ';
-				} else {
-					echo ' article-btns '; }
-				?>
-">
+				<div class="<?php echo esc_attr( implode( ' ', $btns_classes ) ); ?>">
 					<?php
 					$info_pop         = 'top';
 					$info_modal_class = ' modal-popover';
@@ -967,7 +970,7 @@ class PFTemplater {
 						} else {
 							echo '<form name="form-' . esc_attr( $item['item_id'] ) . '">'
 							. '<div class="nominate-result-' . esc_attr( $item['item_id'] ) . '">'
-							. '<img class="loading-' . esc_attr( $item['item_id'] ) . '" src="' . esc_attr( PF_URL ) . 'assets/images/ajax-loader.gif" alt="' . esc_attr__( 'Loading', 'pressforward' ) . '..." style="display: none" />'
+							. '<img class="loading-' . esc_attr( $item['item_id'] ) . '" src="' . esc_attr( $pf_url ) . 'assets/images/ajax-loader.gif" alt="' . esc_attr__( 'Loading', 'pressforward' ) . '..." style="display: none" />'
 							. '</div>';
 							pf_prep_item_for_submit( $item );
 							wp_nonce_field( 'nomination', PF_SLUG . '_nomination_nonce', false );
@@ -1007,22 +1010,22 @@ class PFTemplater {
 						if ( 1 === pressforward( 'controller.metas' )->get_post_pf_meta( $metadata['nom_id'], 'pf_archive', true ) ) {
 							$archive_status = 'btn-warning';
 						}
-						echo '<a class="btn btn-small nom-to-archive schema-switchable schema-actor ' . esc_attr( $archive_status ) . '" pf-schema="archive" pf-schema-class="archived" pf-schema-class="btn-warning" data-toggle="tooltip" title="' . esc_attr__( 'Archive', 'pressforward' ) . '" form="' . esc_attr( $metadata['nom_id'] ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/archive.png" /></button></a>';
+						echo '<a class="btn btn-small nom-to-archive schema-switchable schema-actor ' . esc_attr( $archive_status ) . '" pf-schema="archive" pf-schema-class="archived" pf-schema-class="btn-warning" data-toggle="tooltip" title="' . esc_attr__( 'Archive', 'pressforward' ) . '" form="' . esc_attr( $metadata['nom_id'] ) . '"><img src="' . esc_attr( $pf_url ) . 'assets/images/archive.png" /></button></a>';
 						$draft_status = '';
 						if ( ( 1 === pf_get_relationship_value( 'draft', $metadata['nom_id'], $user_id ) ) || ( 1 === pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ) {
 							$draft_status = 'btn-success';
 						}
-						echo '<a href="#nominate" class="btn btn-small nom-to-draft schema-actor ' . esc_attr( $draft_status ) . '" pf-schema="draft" pf-schema-class="btn-success" form="' . esc_attr( $metadata['item_id'] ) . '" data-original-title="' . esc_attr__( 'Draft', 'pressforward' ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/pressforward-licon.png" /></a>';
+						echo '<a href="#nominate" class="btn btn-small nom-to-draft schema-actor ' . esc_attr( $draft_status ) . '" pf-schema="draft" pf-schema-class="btn-success" form="' . esc_attr( $metadata['item_id'] ) . '" data-original-title="' . esc_attr__( 'Draft', 'pressforward' ) . '"><img src="' . esc_attr( $pf_url ) . 'assets/images/pressforward-licon.png" /></a>';
 						$meta_handling    = get_option( PF_SLUG . '_advanced_meta_handling', 'no' );
 						$user_level_check = current_user_can( pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'administrator' ) );
 						if ( 'yes' === $meta_handling && $user_level_check ) {
 							echo '<a role="button" class="btn btn-small meta_form_modal-button" data-toggle="modal" href="#meta_form_modal_' . esc_attr( $item['post_id'] ) . '" data-post-id="' . esc_attr( $item['post_id'] ) . '" id="meta_form_modal_expander-' . esc_attr( $item['post_id'] ) . '" data-original-title="' . esc_attr__( 'Edit Metadata', 'pressforward' ) . '"><i class="icon-meta-form"></i></a>';
 						}
 					} elseif ( ( 1 === pf_get_relationship_value( 'nominate', $id_for_comments, $user_id ) ) || ( 1 === pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ) {
-						echo '<button class="btn btn-small nominate-now btn-success schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominated', 'pressforward' ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/pressforward-single-licon.png" /></button>';
+						echo '<button class="btn btn-small nominate-now btn-success schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominated', 'pressforward' ) . '"><img src="' . esc_attr( $pf_url ) . 'assets/images/pressforward-single-licon.png" /></button>';
 						// Add option here for admin-level users to send items direct to draft.
 					} else {
-						echo '<button class="btn btn-small nominate-now schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominate', 'pressforward' ) . '"><img src="' . esc_attr( PF_URL ) . 'assets/images/pressforward-single-licon.png" /></button>';
+						echo '<button class="btn btn-small nominate-now schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominate', 'pressforward' ) . '"><img src="' . esc_attr( $pf_url ) . 'assets/images/pressforward-single-licon.png" /></button>';
 						// Add option here for admin-level users to send items direct to draft.
 					}
 
