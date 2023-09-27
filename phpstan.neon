@@ -12,9 +12,11 @@ parameters:
     - ./node_modules/
     - ./tests/
     - ./Libraries/FiveFiltersReadability
+    - ./Controllers/PF_JWT.php # Seems to have bugs in Firebase\JWT implementation.
 
   scanFiles:
     - ./Libraries/FiveFiltersReadability/Readability.php
+    - ./Controllers/PF_JWT.php
 
   ignoreErrors:
     - # Template files have variables included in function scope.
