@@ -29,7 +29,7 @@ class PF_REST_Taxonomies_Controller extends WP_REST_Taxonomies_Controller {
 		if ( ! empty( $request['type'] ) ) {
 			$taxonomies = get_object_taxonomies( $request['type'], 'objects' );
 		} else {
-			$taxonomies = get_taxonomies( '', 'objects' );
+			$taxonomies = get_taxonomies( [], 'objects' );
 		}
 		$data = array();
 		foreach ( $taxonomies as $tax_type => $value ) {
