@@ -818,7 +818,7 @@ class Forward_Tools {
 		$result       = pressforward( 'utility.relate' )->basic_relate( 'draft', $nomination_id, 'off', $user_id );
 
 		if ( isset( $_POST['post_category'] ) && ! empty( $_POST['post_category'] ) && ! is_array( $_POST['post_category'] ) ) {
-			$categories = explode( ',', sanitize_text_field( wp_unslash( $_POST['post_category'] ) ) );
+			$categories = array_map( 'intval', explode( ',', sanitize_text_field( wp_unslash( $_POST['post_category'] ) ) ) );
 			wp_set_post_categories( $post_id, $categories, false );
 			wp_set_post_categories( $nomination_id, $categories, false );
 		}
