@@ -381,10 +381,10 @@ class PFTemplater {
 							if ( isset( $_POST['search-terms'] ) || isset( $_GET['by'] ) || isset( $_GET['pf-see'] ) || isset( $_GET['reveal'] ) ) {
 								$this->dropdown_option( __( 'Reset filter', 'pressforward' ), 'showNormalNominations' );
 							}
-							$this->dropdown_option( __( 'My starred', 'pressforward' ), 'sortstarredonly', 'starredonly', null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=starred-only' ) );
-							$this->dropdown_option( __( 'Only archived', 'pressforward' ), 'showarchiveonly', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=archive-only' ) );
-							$this->dropdown_option( __( 'Unread', 'pressforward' ), 'showUnreadOnly', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=unread-only' ) );
-							$this->dropdown_option( __( 'Drafted', 'pressforward' ), 'showDrafted', null, null, null, null, get_admin_url( null, 'admin.php?page=pf-review&pf-see=drafted-only' ) );
+							$this->dropdown_option( __( 'My starred', 'pressforward' ), 'sortstarredonly', 'starredonly', '', '', '', get_admin_url( null, 'admin.php?page=pf-review&pf-see=starred-only' ) );
+							$this->dropdown_option( __( 'Only archived', 'pressforward' ), 'showarchiveonly', '', '', '', '', get_admin_url( null, 'admin.php?page=pf-review&pf-see=archive-only' ) );
+							$this->dropdown_option( __( 'Unread', 'pressforward' ), 'showUnreadOnly', '', '', '', '', get_admin_url( null, 'admin.php?page=pf-review&pf-see=unread-only' ) );
+							$this->dropdown_option( __( 'Drafted', 'pressforward' ), 'showDrafted', '', '', '', '', get_admin_url( null, 'admin.php?page=pf-review&pf-see=drafted-only' ) );
 
 						}
 						?>
@@ -405,13 +405,13 @@ class PFTemplater {
 								$sort_base_url = add_query_arg( 'pf-see', sanitize_text_field( wp_unslash( $_GET['pf-see'] ) ), $sort_base_url );
 							}
 
-							$this->dropdown_option( __( 'Reset', 'pressforward' ), 'sort-reset', null, null, null, null, $sort_base_url );
-							$this->dropdown_option( __( 'Date of item', 'pressforward' ), 'sortbyitemdate', null, null, null, null, add_query_arg( 'sort-by', 'item-date', $sort_base_url ) );
-							$this->dropdown_option( __( 'Date retrieved', 'pressforward' ), 'sortbyfeedindate', null, null, null, null, add_query_arg( 'sort-by', 'feed-in-date', $sort_base_url ) );
+							$this->dropdown_option( __( 'Reset', 'pressforward' ), 'sort-reset', '', '', '', '', $sort_base_url );
+							$this->dropdown_option( __( 'Date of item', 'pressforward' ), 'sortbyitemdate', '', '', '', '', add_query_arg( 'sort-by', 'item-date', $sort_base_url ) );
+							$this->dropdown_option( __( 'Date retrieved', 'pressforward' ), 'sortbyfeedindate', '', '', '', '', add_query_arg( 'sort-by', 'feed-in-date', $sort_base_url ) );
 
 							if ( 'pf-review' === $page ) {
-								$this->dropdown_option( __( 'Date nominated', 'pressforward' ), 'sortbynomdate', null, null, null, null, add_query_arg( 'sort-by', 'nom-date', $sort_base_url ) );
-								$this->dropdown_option( __( 'Nominations received', 'pressforward' ), 'sortbynomcount', null, null, null, null, add_query_arg( 'sort-by', 'nom-count', $sort_base_url ) );
+								$this->dropdown_option( __( 'Date nominated', 'pressforward' ), 'sortbynomdate', '', '', '', '', add_query_arg( 'sort-by', 'nom-date', $sort_base_url ) );
+								$this->dropdown_option( __( 'Nominations received', 'pressforward' ), 'sortbynomcount', '', '', '', '', add_query_arg( 'sort-by', 'nom-count', $sort_base_url ) );
 							}
 							?>
 						</ul>
