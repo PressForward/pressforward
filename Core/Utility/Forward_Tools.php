@@ -416,7 +416,7 @@ class Forward_Tools {
 		if ( 0 !== $final_step_parent && false !== $final_step_parent ) {
 			// The nomination has already been pushed to final step.
 			// Increment it as well.
-			$nominators = $this->apply_nomination_data( $final_step_parent, false, true );
+			$nominators = $this->apply_nomination_data( $final_step_parent, 0, true );
 			$this->metas->update_pf_meta( $final_step_parent, 'nominator_array', $nominators );
 		}
 		return $nominators;
