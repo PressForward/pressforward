@@ -233,9 +233,9 @@ class ConfigurationAJAX implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	 */
 	public function regenerate_user_keys() {
 		ob_start();
-		$user_public_key  = \bin2hex( $this->pf_jwt->get_a_user_public_key( false, true ) );
-		$user_private_key = $this->pf_jwt->get_a_user_private_key( false, true );
 		$the_user         = $this->user_interface->get_current_user();
+		$user_public_key  = \bin2hex( $this->pf_jwt->get_a_user_public_key( $the_user->ID, true ) );
+		$user_private_key = $this->pf_jwt->get_a_user_private_key( $the_user->ID, true );
 		$response         = array(
 			'what'         => 'pressforward',
 			'action'       => 'pf_ajax_regenerate_user_keys',
