@@ -452,9 +452,9 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 
 			$response = rest_ensure_response( $posts );
 
-			$response->header( 'X-PF-PageRequested', (int) $page );
-			$response->header( 'X-WP-Total', (int) $q->found_posts );
-			$response->header( 'X-WP-TotalPages', (int) $q->max_num_pages );
+			$response->header( 'X-PF-PageRequested', (string) $page );
+			$response->header( 'X-WP-Total', (string) $q->found_posts );
+			$response->header( 'X-WP-TotalPages', (string) $q->max_num_pages );
 			\ob_end_flush();
 			return $response;
 			// unencode via js with the html_entity_decode function we use elsewhere.
