@@ -722,46 +722,6 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	}
 
 	/**
-	 * Gets the first nomination for an item.
-	 *
-	 * @param int    $item_id   ID of the item.
-	 * @param string $post_type Post typue.
-	 */
-	public function get_first_nomination( $item_id, $post_type ) {
-		$q = pf_get_posts_by_id_for_check( $post_type, $item_id, true );
-		if ( 0 < $q->post_count ) {
-			$nom = $q->posts;
-			$r   = $nom[0];
-			return $r;
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Check whether an item is nominated.
-	 *
-	 * @param int          $item_id   ID of the item.
-	 * @param string|array $post_type Post type.
-	 * @param bool         $update    Not used.
-	 */
-	public function is_nominated( $item_id, $post_type = '', $update = false ) {
-		if ( ! $post_type ) {
-			$post_type = array( pressforward_draft_post_type(), 'nomination' );
-		}
-		$attempt = $this->get_first_nomination( $item_id, $post_type );
-		if ( ! empty( $attempt ) ) {
-			$r = $attempt;
-			pf_log( 'Existing post at ' . $r );
-		} else {
-			$r = false;
-		}
-		/* Restore original Post Data */
-		wp_reset_postdata();
-		return $r;
-	}
-
-	/**
 	 * Increments nomination count for an item.
 	 *
 	 * @param int  $id ID of the item.
