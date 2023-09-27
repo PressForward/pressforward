@@ -1189,7 +1189,7 @@ class Metas implements HasFilters, HasActions {
 	 *
 	 * @param int|string $id         The post ID.
 	 * @param string     $field      The post_meta field slug.
-	 * @param string     $value      The post_meta value.
+	 * @param mixed      $value      The post_meta value.
 	 * @param string     $prev_value The previous value to insure proper replacement.
 	 *
 	 * @return int the check value from update_post_meta
