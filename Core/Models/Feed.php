@@ -113,7 +113,7 @@ class Feed extends BasicModel {
 		$next_retrieval = wp_next_scheduled(
 			'pf_retrieve_feed',
 			[
-				'feed_id' => $this->get( 'id' ),
+				'feed_id' => (string) $this->get( 'id' ),
 			]
 		);
 
@@ -217,7 +217,7 @@ class Feed extends BasicModel {
 		// Prevent duplicate schedules.
 		$next_retrieval = $this->get_next_scheduled_retrieval();
 		if ( $next_retrieval ) {
-			wp_unschedule_event( $next_retrieval, 'pf_retrieve_feed', [ 'feed_id' => $this->get( 'id' ) ] );
+			wp_unschedule_event( $next_retrieval, 'pf_retrieve_feed', [ 'feed_id' => (string) $this->get( 'id' ) ] );
 		}
 
 		$scheduled = wp_schedule_event(
@@ -225,7 +225,7 @@ class Feed extends BasicModel {
 			$r['interval'],
 			'pf_retrieve_feed',
 			[
-				'feed_id' => $this->get( 'id' ),
+				'feed_id' => (string) $this->get( 'id' ),
 			],
 			true
 		);
@@ -246,7 +246,7 @@ class Feed extends BasicModel {
 
 		$unscheduled = wp_clear_scheduled_hook(
 			'pf_retrieve_feed',
-			[ 'feed_id' => $this->get( 'id' ) ],
+			[ 'feed_id' => (string) $this->get( 'id' ) ],
 			true
 		);
 
@@ -273,8 +273,8 @@ class Feed extends BasicModel {
 		);
 
 		$job_args = [
-			'feed_id'     => $this->get( 'id' ),
-			'is_new_feed' => $r['is_new_feed'],
+			'feed_id'     => (string) $this->get( 'id' ),
+			'is_new_feed' => $r['is_new_feed'] ? '1' : '0',
 		];
 
 		// Prevent duplicate schedules.
@@ -298,16 +298,16 @@ class Feed extends BasicModel {
 		$unscheduled_new = wp_clear_scheduled_hook(
 			'pf_feed_health_check',
 			[
-				'feed_id'     => $this->get( 'id' ),
-				'is_new_feed' => true,
+				'feed_id'     => (string) $this->get( 'id' ),
+				'is_new_feed' => '1',
 			]
 		);
 
 		$unscheduled_old = wp_clear_scheduled_hook(
 			'pf_feed_health_check',
 			[
-				'feed_id'     => $this->get( 'id' ),
-				'is_new_feed' => true,
+				'feed_id'     => (string) $this->get( 'id' ),
+				'is_new_feed' => '1',
 			]
 		);
 
