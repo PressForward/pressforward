@@ -1187,16 +1187,15 @@ class Metas implements HasFilters, HasActions {
 	/**
 	 * Update post_meta on a post using PressForward post_meta standardization.
 	 *
-	 * @param int|string $id         The post ID.
-	 * @param string     $field      The post_meta field slug.
-	 * @param mixed      $value      The post_meta value.
-	 * @param string     $prev_value The previous value to insure proper replacement.
+	 * @param int|string $id    The post ID.
+	 * @param string     $field The post_meta field slug.
+	 * @param mixed      $value The post_meta value.
 	 *
 	 * @return int the check value from update_post_meta
 	 */
-	public function update_pf_meta( $id, $field, $value = '', $prev_value = null ) {
+	public function update_pf_meta( $id, $field, $value = '' ) {
 		$field = $this->pass_meta( $field, $id, $value );
-		$check = $this->apply_pf_meta( $id, $field, $value, $prev_value );
+		$check = $this->apply_pf_meta( $id, $field, $value );
 
 		return $check;
 	}
@@ -1271,10 +1270,10 @@ class Metas implements HasFilters, HasActions {
 	 * @param int|string   $id         The post ID.
 	 * @param string|array $field      The post_meta field slug.
 	 * @param string       $value      The post_meta value.
-	 * @param string       $state      Unique status of the postmeta.
+	 * @param bool         $is_unique  Unique status of the postmeta.
 	 * @param string       $apply_type 'update' or 'add'.
 	 */
-	public function apply_pf_meta( $id, $field, $value = '', $state = null, $apply_type = 'update' ) {
+	public function apply_pf_meta( $id, $field, $value = '', $is_unique = false, $apply_type = 'update' ) {
 		$serialized = false;
 		if ( is_array( $field ) ) {
 			$key        = $field['field'];
@@ -1293,9 +1292,9 @@ class Metas implements HasFilters, HasActions {
 			case 'pf_feed_item_word_count':
 				$latest_count = $this->get_post_pf_meta( $id, 'pf_word_count' );
 				if ( ( $latest_count < $value ) ) {
-					$this->update_pf_meta( $id, 'pf_word_count', $value, $state );
+					$this->update_pf_meta( $id, 'pf_word_count', $value );
 				} elseif ( empty( $latest_count ) ) {
-					$this->add_pf_meta( $id, 'pf_word_count', $value, $state );
+					$this->add_pf_meta( $id, 'pf_word_count', $value, $is_unique );
 				}
 				break;
 			case 'item_author':
@@ -1310,10 +1309,9 @@ class Metas implements HasFilters, HasActions {
 			if ( empty( $master_meta ) ) {
 				$master_meta = array();
 				$apply_type  = 'add';
-				$state       = true;
+				$is_unique   = true;
 			} else {
 				$apply_type = 'update';
-				$state      = $master_meta;
 			}
 			$master_meta[ $key ] = $value;
 			$value               = $master_meta;
@@ -1324,12 +1322,12 @@ class Metas implements HasFilters, HasActions {
 			if ( $serialized ) {
 				$this->meta_interface->delete_meta( $id, $key, '' );
 			}
-			$check = $this->meta_interface->update_meta( $id, $field, $value, $state );
+			$check = $this->meta_interface->update_meta( $id, $field, $value, $is_unique );
 			if ( ! $check ) {
-				$check = $this->meta_interface->update_meta( $id, $field, $value, $state );
+				$check = $this->meta_interface->update_meta( $id, $field, $value, $is_unique );
 			}
 		} elseif ( 'add' === $apply_type ) {
-			$check = $this->meta_interface->add_meta( $id, $field, $value, $state );
+			$check = $this->meta_interface->add_meta( $id, $field, $value, $is_unique );
 		}
 
 		return $check;
