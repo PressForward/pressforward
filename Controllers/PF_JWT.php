@@ -179,7 +179,7 @@ class PF_JWT {
 	 */
 	public function make_a_jwt_private_key() {
 		$extra       = ord( $this->system->get_site_info( 'url' ) );
-		$key_seed    = sanitize_key( $extra );
+		$key_seed    = sanitize_key( (string) $extra );
 		$key_private = sanitize_key( $this->random_bytes( 64 ) );
 		$key         = $key_seed . $key_private;
 
