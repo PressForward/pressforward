@@ -821,7 +821,7 @@ class Feed_Items implements HasActions, HasFilters {
 
 				// Trying to prevent bad or malformed HTML from entering the database.
 				$item_title   = wp_strip_all_tags( $item_title );
-				$item_content = wp_strip_all_tags( $item_content, '<p> <strong> <bold> <i> <em> <emphasis> <del> <h1> <h2> <h3> <h4> <h5> <a> <img>' );
+				$item_content = strip_tags( $item_content, '<p> <strong> <bold> <i> <em> <emphasis> <del> <h1> <h2> <h3> <h4> <h5> <a> <img>' );
 
 				// Need to get rid of some weird characters that prevent inserting posts into the database.
 				// From: http://www.alexpoole.name/web-development/282/remove-smart-quotes-bullets-dashes-and-other-junky-characters-from-a-string-with-php
