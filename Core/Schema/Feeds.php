@@ -624,7 +624,7 @@ class Feeds implements HasActions, HasFilters {
 			return $actions;
 		}
 
-		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="' . esc_attr( $post->ID ) . '" title="' . esc_attr__( 'Refresh this feed', 'pressforward' ) . '">' . esc_html__( 'Refresh Feed Items', 'pressforward' ) . '</a> | ';
+		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="' . esc_attr( (string) $post->ID ) . '" title="' . esc_attr__( 'Refresh this feed', 'pressforward' ) . '">' . esc_html__( 'Refresh Feed Items', 'pressforward' ) . '</a> | ';
 
 		return $actions;
 	}
@@ -695,11 +695,11 @@ class Feeds implements HasActions, HasFilters {
 	 *
 	 * @param array  $feedlist Feed list.
 	 * @param string $xml_url  XML URL.
-	 * @param string $key      Key.
+	 * @param int    $key      Key.
 	 * @param array  $args     Arguments.
 	 * @return array
 	 */
-	public function progressive_feedlist_transformer( $feedlist = array(), $xml_url = '', $key = '', $args = array() ) {
+	public function progressive_feedlist_transformer( $feedlist = array(), $xml_url = '', $key = 0, $args = array() ) {
 		$post_args = array_merge( array( 'type' => 'rss' ), $args );
 		$check     = $this->create( $xml_url, $post_args );
 		if ( is_numeric( $check ) && ( 0 < $check ) ) {
