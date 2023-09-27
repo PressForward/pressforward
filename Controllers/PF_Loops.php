@@ -288,7 +288,7 @@ class PF_Loops {
 				// Manual ISO 8601 date for pre-PHP5 systems.
 				gmdate( 'o-m-d\TH:i:sO', strtotime( $post->post_date ) ),
 				$source_repeat,
-				$post_id,
+				(string) $post_id,
 				$readable_status
 			);
 
