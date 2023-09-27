@@ -14,12 +14,12 @@ interface Items {
 	/**
 	 * Creates a post.
 	 *
-	 * @param array $post    Update params. See wp_update_post().
-	 * @param bool  $error   Whether to return a WP_Error object. Default fals.
-	 * @param int   $item_id PF item id.
+	 * @param array  $post    Update params. See wp_update_post().
+	 * @param bool   $error   Whether to return a WP_Error object. Default fals.
+	 * @param string $item_id PF item id.
 	 * @return mixed
 	 */
-	public function insert_post( $post, $error = false, $item_id = 0 );
+	public function insert_post( $post, $error = false, $item_id = '' );
 
 	/**
 	 * Updates a post.

@@ -209,7 +209,7 @@ class PF_Advancement implements \PressForward\Interfaces\Advance_System, \Intrax
 	/**
 	 * Checks for the existence of posts in previous PF states.
 	 *
-	 * @param int    $item_id   ID of the item.
+	 * @param string $item_id   ID of the item.
 	 * @param string $post_type Post type.
 	 * @return int ID of the corresponding WP post, if found.
 	 */

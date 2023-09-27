@@ -71,7 +71,7 @@ interface Advance_System {
 	/**
 	 * Checks for the existence of posts in previous PF states.
 	 *
-	 * @param int    $item_id   ID of the item.
+	 * @param string $item_id   ID of the item.
 	 * @param string $post_type Post type.
 	 */
 	public function get_pf_type_by_id( $item_id, $post_type );
