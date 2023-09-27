@@ -175,8 +175,8 @@ class Folders implements HasActions, HasFilters {
 			[
 				'taxonomy'     => $terms,
 				'parent'       => 0,
-				'hide_empty'   => 0,
-				'hierarchical' => 1,
+				'hide_empty'   => false,
+				'hierarchical' => true,
 			]
 		);
 		return $cats;
