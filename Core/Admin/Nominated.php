@@ -762,33 +762,6 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	}
 
 	/**
-	 * Resolve nomination state for an item.
-	 *
-	 * @param int $item_id ID of the item.
-	 */
-	public function resolve_nomination_state( $item_id ) {
-		$pt = array( 'nomination' );
-		if ( $this->is_nominated( $item_id, $pt ) ) {
-			$attempt = $this->get_first_nomination( $item_id, $pt );
-			if ( ! empty( $attempt ) ) {
-				$nomination_id = $attempt;
-				$nominators    = $this->metas->retrieve_meta( $nomination_id, 'nominator_array' );
-				if ( empty( $nominators ) ) {
-					pf_log( 'There is no one left who nominated this item.' );
-					pf_log( 'This nomination has been taken back. We will now remove the item.' );
-					pf_delete_item_tree( $nomination_id );
-				} else {
-					pf_log( 'Though one user retracted their nomination, there are still others who have nominated this item.' );
-				}
-			} else {
-				pf_log( 'We could not find the nomination to resolve the state of.' );
-			}
-		} else {
-			pf_log( 'There is no nomination to resolve the state of.' );
-		}
-	}
-
-	/**
 	 * Increments nomination count for an item.
 	 *
 	 * @param int  $id ID of the item.
