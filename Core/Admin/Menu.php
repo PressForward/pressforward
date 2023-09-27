@@ -177,6 +177,8 @@ class Menu implements HasActions, HasFilters {
 		}
 		$extra_class = $extra_class . $view_state;
 
+		$pf_url = defined( 'PF_URL' ) ? PF_URL : '';
+
 		?>
 		<div class="pf-loader"></div>
 		<div class="pf_container pf-all-content full<?php echo esc_attr( $extra_class ); ?>">
@@ -199,7 +201,7 @@ class Menu implements HasActions, HasFilters {
 				<?php pressforward( 'admin.templates' )->the_side_menu(); ?>
 				<?php pressforward( 'schema.folders' )->folderbox(); ?>
 				<div id="entries">
-					<?php echo '<img class="loading-top" src="' . esc_attr( PF_URL ) . 'assets/images/ajax-loader.gif" alt="' . esc_attr__( 'Loading...', 'pressforward' ) . '" style="display: none" />'; ?>
+					<?php echo '<img class="loading-top" src="' . esc_attr( $pf_url ) . 'assets/images/ajax-loader.gif" alt="' . esc_attr__( 'Loading...', 'pressforward' ) . '" style="display: none" />'; ?>
 
 					<div id="errors">
 					<?php

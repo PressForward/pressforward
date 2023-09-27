@@ -151,6 +151,8 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 			$extra_class .= '';
 		}
 
+		$pf_url = defined( 'PF_URL' ) ? PF_URL : '';
+
 		?>
 		<div class="pf-loader"></div>
 
@@ -171,7 +173,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 				<?php pressforward( 'schema.folders' )->folderbox(); ?>
 
 				<div id="entries">
-					<?php echo '<img class="loading-top" src="' . esc_attr( PF_URL ) . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />'; ?>
+					<?php echo '<img class="loading-top" src="' . esc_attr( $pf_url ) . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />'; ?>
 					<div id="errors">
 						<div class="pressforward-alertbox" style="display:none;">
 							<div class="row-fluid">
@@ -198,7 +200,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 						$metadata['current_user_id'] = $current_user_id;
 						?>
 
-						<span id="current-user-id"><?php echo esc_html( $current_user_id ); ?></span>
+						<span id="current-user-id"><?php echo esc_html( (string) $current_user_id ); ?></span>
 					</div>
 
 					<?php
@@ -480,7 +482,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							$archived_status_string = '';
 						}
 
-						$item = pf_feed_object( get_the_title(), pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'source_title', true ), $date_posted, $item_authorship, get_the_content(), $nom_permalink, get_the_post_thumbnail( $nom_id /**, 'nom_thumb'*/ ), $rss_item_id, pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_wp_date', true ), $nom_tags, $date_nomed, $source_repeat, $nom_id, '1' );
+						$item = pf_feed_object( get_the_title(), pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'source_title', true ), $date_posted, $item_authorship, get_the_content(), $nom_permalink, get_the_post_thumbnail( $nom_id /**, 'nom_thumb'*/ ), $rss_item_id, pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_wp_date', true ), $nom_tags, $date_nomed, $source_repeat, (string) $nom_id, '1' );
 
 						pressforward( 'admin.templates' )->form_of_an_item( $item, $c, 'nomination', $metadata );
 						++$count;
@@ -689,7 +691,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 					esc_html( __( 'Source: ', 'pressforward' ) ),
 					esc_url( $args['item_url'] ),
 					esc_attr( $args['link_target'] ),
-					esc_attr( $nom_id ),
+					esc_attr( (string) $nom_id ),
 					esc_html( $args['item_title'] )
 				);
 			} else {
@@ -709,7 +711,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 				$statement = preg_replace( '|<a (href="[^"]+")|', '<a \1 ' . $target_attr, $statement );
 			}
 
-			$nom_id_attr = sprintf( 'pf-nom-item-id="%s"', esc_attr( $nom_id ) );
+			$nom_id_attr = sprintf( 'pf-nom-item-id="%s"', esc_attr( (string) $nom_id ) );
 			if ( false === strpos( $statement, $nom_id_attr ) ) {
 				$statement = preg_replace( '|<a (href="[^"]+")|', '<a \1 ' . $nom_id_attr, $statement );
 			}
