@@ -385,10 +385,10 @@ class Folders implements HasActions, HasFilters {
 	public function the_feed( $feed ) {
 		$feed_obj = get_post( $feed );
 		?>
-		<li class="feed" id="feed-<?php echo esc_attr( $feed_obj->ID ); ?>">
+		<li class="feed" id="feed-<?php echo esc_attr( (string) $feed_obj->ID ); ?>">
 		<?php
 
-			printf( '<a href="%s" title="%s">%s</a>', esc_attr( $feed_obj->ID ), esc_attr( $feed_obj->post_title ), esc_html( $feed_obj->post_title ) );
+			printf( '<a href="%s" title="%s">%s</a>', esc_attr( (string) $feed_obj->ID ), esc_attr( $feed_obj->post_title ), esc_html( $feed_obj->post_title ) );
 
 		?>
 		</li>
