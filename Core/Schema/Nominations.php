@@ -88,11 +88,12 @@ class Nominations implements HasActions, HasFilters {
 			'show_ui'              => true,
 			// But not the default UI, we want to attach it to the plugin menu.
 			'show_in_menu'         => false,
+			'show_in_rest'         => true,
 			// Linking in the metabox building function.
 			'register_meta_box_cb' => array( $this, 'nominations_meta_boxes' ),
 			'capability_type'      => 'post',
 			// The type of input (besides the metaboxes) that it supports.
-			'supports'             => array( 'title', 'editor', 'thumbnail' ),
+			'supports'             => array( 'title', 'editor', 'thumbnail', 'custom-fields' ),
 			// I think this is set to false by the public argument, but better safe.
 			'has_archive'          => false,
 			'taxonomies'           => array( 'category', 'post_tag' ),
