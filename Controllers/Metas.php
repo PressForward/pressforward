@@ -955,7 +955,6 @@ class Metas implements HasFilters, HasActions {
 			$metas[ $key ]['show_in_rest'] = true;
 			$metas[ $key ]['single']       = true;
 			$metas[ $key ]['type']         = 'string';
-			$metas[ $key ]['show_in_rest'] = false;
 			$metas[ $key ]['description']  = $meta['function'];
 			foreach ( $meta['level'] as $level ) {
 				switch ( $level ) {
