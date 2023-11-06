@@ -37,6 +37,10 @@ class NominateThisCore implements HasActions, HasFilters {
 				'hook'   => 'wp_ajax_pf_fetch_url_content',
 				'method' => 'fetch_url_content',
 			),
+			array(
+				'hook'   => 'rest_after_insert_nomination',
+				'method' => 'maybe_set_featured_image',
+			),
 		);
 	}
 
@@ -461,6 +465,34 @@ class NominateThisCore implements HasActions, HasFilters {
 		];
 
 		wp_send_json_success( $retval );
+	}
+
+	/**
+	 * Sets the featured image for a nomination, if one is not already set.
+	 *
+	 * This is hooked to the REST API-specific rest_after_insert_nomination_hook,
+	 * as it's meant to work specifically with the block editor nomination flow. See
+	 * `nominate_it()` for the corresponding logic for the Classic nomination flow.
+	 *
+	 * @param \WP_Post $post The newly created nomination.
+	 * @return void
+	 */
+	public function maybe_set_featured_image( $post ) {
+		if ( 'auto-draft' === $post->post_status ) {
+			return;
+		}
+
+		// If the post already has a thumbnail, don't do anything.
+		if ( has_post_thumbnail( $post->ID ) ) {
+			return;
+		}
+
+		$item_feat_img = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_feat_img', true );
+		if ( ! $item_feat_img ) {
+			return;
+		}
+
+		pressforward( 'schema.feed_item' )->set_ext_as_featured( $post->ID, sanitize_text_field( $item_feat_img ) );
 	}
 
 	/**
