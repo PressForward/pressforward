@@ -568,9 +568,9 @@ class Metas implements HasFilters, HasActions {
 				'definition' => __( 'Featured image from source', 'pressforward' ),
 				'function'   => __( 'A featured image associated with the item, when it is available', 'pressforward' ),
 				'type'       => array( 'struc' ),
-				'use'        => array(),
+				'use'        => array( 'api' ),
 				'level'      => array( 'item', 'nomination', 'post' ),
-				'serialize'  => true,
+				'serialize'  => false,
 			),
 			'item_wp_date'            => array(
 				'name'       => 'item_wp_date',
