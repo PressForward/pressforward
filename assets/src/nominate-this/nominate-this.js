@@ -318,6 +318,8 @@ import { __ } from '@wordpress/i18n'
 
 						appendBefore.insertAdjacentElement( 'beforebegin', newEmbedNode )
 					}
+
+					return embed;
 				}
 			)
 		}
