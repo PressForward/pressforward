@@ -836,7 +836,6 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 		return $custom_author_uri;
 	}
 }
-
 add_filter( 'author_link', 'pf_replace_author_uri_presentation' );
 
 /**
