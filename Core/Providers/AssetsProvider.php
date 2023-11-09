@@ -263,21 +263,32 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	 */
 	public function admin_enqueue_scripts() {
 		$build_scripts = [
-			'pf-add-feeds'     => 'add-feeds',
-			'pf-edit-feeds'    => 'edit-feeds',
-			'pf-nominate-this' => 'nominate-this',
-			'pf-quick-edit'    => 'quick-edit',
-			'pf-reader'        => 'reader',
-			'pf-scroll'        => 'scroll',
+			'pf-add-feeds'                  => 'add-feeds',
+			'pf-edit-feeds'                 => 'edit-feeds',
+			'pf-nominate-this'              => 'nominate-this',
+			'pf-nominate-this-block-editor' => 'nominate-this-block-editor',
+			'pf-quick-edit'                 => 'quick-edit',
+			'pf-reader'                     => 'reader',
+			'pf-scroll'                     => 'scroll',
+		];
+
+		// Some dependencies can't be detected by @wordpress/scripts.
+		$extra_dependencies = [
+			'pf-nominate-this' => [ 'wp-api' ],
 		];
 
 		foreach ( $build_scripts as $script_handle => $script_file ) {
 			$build_vars = require \PF_ROOT . '/build/' . $script_file . '.asset.php';
 
+			$dependencies = $build_vars['dependencies'];
+			if ( isset( $extra_dependencies[ $script_handle ] ) ) {
+				$dependencies = array_merge( $dependencies, $extra_dependencies[ $script_handle ] );
+			}
+
 			wp_register_script(
 				$script_handle,
 				\PF_URL . '/build/' . $script_file . '.js',
-				$build_vars['dependencies'],
+				$dependencies,
 				$build_vars['version'],
 				true
 			);
@@ -293,6 +304,11 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		if ( $screen && 'pf_feed' === $screen->id ) {
 			wp_enqueue_script( 'pf-edit-feeds' );
+		}
+
+		if ( $screen && 'nomination' === $screen->id ) {
+			wp_enqueue_script( 'pf-nominate-this' );
+			wp_enqueue_script( 'pf-nominate-this-block-editor' );
 		}
 	}
 
