@@ -1,3 +1,4 @@
+/* global ajaxurl, addEventListener, DOMParser, postboxes, tinymce */
 import { Readability } from '@mozilla/readability'
 import DOMPurify from 'dompurify'
 
@@ -150,7 +151,7 @@ import { __ } from '@wordpress/i18n'
 	/**
 	 * Sets or unsets the 'is-loading' body class.
 	 *
-	 * @param {bool} isLoading
+	 * @param {boolean} isLoading Whether the page is loading.
 	 */
 	const setIsLoading = ( isLoading ) => {
 		if ( isLoading ) {
@@ -166,7 +167,7 @@ import { __ } from '@wordpress/i18n'
 	 * As in the PFOpenGraph library,
 	 *
 	 * @param {HTMLDocument} domObject DOM object representing the source page.
-	 * @returns {array}
+	 * @returns {Array} Array of keywords.
 	 */
 	const getKeywords = ( domObject ) => {
 		let keywords = [ __( 'via bookmarklet', 'pf' ) ]
@@ -223,7 +224,7 @@ import { __ } from '@wordpress/i18n'
 	 * 4. First 'img' tag in the body text
 	 *
 	 * @param {HTMLDocument} domObject DOM object representing the source page.
-	 * @returns {array}
+	 * @returns {Array} Array of swappable embeds, as detected by the server.
 	 */
 	const getImageUrl = ( domObject ) => {
 		// Prefer linked data if available.
@@ -273,7 +274,7 @@ import { __ } from '@wordpress/i18n'
 	 *
 	 * @param {string} url  URL to check.
 	 * @param {string} base URL base.
-	 * @return {string}
+	 * @return {string} URL.
 	 */
 	const ensureAbsoluteUrl = ( url, base ) => {
 		if ( '/' !== url.substr( 0, 1 ) ) {
@@ -286,9 +287,9 @@ import { __ } from '@wordpress/i18n'
 	/**
 	 * Swaps embedded content with raw WP URLs.
 	 *
-	 * @param {string} body Readable text, as determined by Readability.
-	 * @param {array} embeds Array of swappable embeds, as detected by the server.
-	 * @return {array}
+	 * @param {string} body   Readable text, as determined by Readability.
+	 * @param {Array}  embeds Array of swappable embeds, as detected by the server.
+	 * @return {Array} Array of swappable embeds, as detected by the server.
 	 */
 	const processEmbeds = ( body, embeds ) => {
 		const bodyDom = new DOMParser().parseFromString( body, 'text/html' )
@@ -328,7 +329,7 @@ import { __ } from '@wordpress/i18n'
 	 * Swaps embedded content with raw WP URLs.
 	 *
 	 * @param {HTMLDocument} domObject DOM object representing the source page.
-	 * @return {object}
+	 * @return {Object|void} Linked data object.
 	 */
 	const getLDFromDomObject = ( domObject ) => {
 		const ldTag = domObject.querySelector( 'script[type="application/ld+json"]' )
@@ -343,7 +344,7 @@ import { __ } from '@wordpress/i18n'
 	 * Swaps embedded content with raw WP URLs.
 	 *
 	 * @param {HTMLDocument} domObject DOM object representing the source page.
-	 * @return {string}
+	 * @return {string} Author name.
 	 */
 	const getAuthorFromLD = ( domObject ) => {
 		const ld = getLDFromDomObject( domObject )
