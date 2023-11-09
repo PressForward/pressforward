@@ -7,11 +7,13 @@ import 'whatwg-fetch'
 
 import './nominate-this.scss'
 
-import { __ } from '@wordpress/i18n'
+import { __, sprintf } from '@wordpress/i18n'
 
 (function(){
 	const params = new URLSearchParams( document.location.search )
 	const hasSelection = !! params.get( 's' )
+
+	let sanitizedLoadingUrl
 
 	let requestIsPending = false
 
@@ -23,7 +25,12 @@ import { __ } from '@wordpress/i18n'
 			if ( url ) {
 				fetchUrlData( url )
 
-				document.getElementById( 'loading-url' ).innerHTML = DOMPurify.sanitize( url, { ALLOWED_TAGS: [] } )
+				sanitizedLoadingUrl = DOMPurify.sanitize( url, { ALLOWED_TAGS: [] } )
+
+				const loadingUrl = document.getElementById( 'loading-url' )
+				if ( loadingUrl ) {
+					document.getElementById( 'loading-url' ).innerHTML = sanitizedLoadingUrl
+				}
 			}
 
 			// Needed for the postbox toggles.
@@ -48,6 +55,21 @@ import { __ } from '@wordpress/i18n'
 			const newWindowHeight = maxWindowHeight > ( availHeight - 40 ) ? availHeight - 40 : maxWindowHeight
 
 			window.resizeTo( newWindowHeight, newWindowWidth );
+
+			wp.i18n.setLocaleData( {
+				'Publish': [
+					'Nominate',
+					'pressforward'
+				],
+				'Are you ready to publish?': [
+					'Are you ready to nominate?',
+					'pressforward'
+				],
+				'Double-check your settings before publishing.': [
+					'Double-check your settings before nominating.',
+					'pressforward'
+				],
+			} );
 		}
 	)
 
@@ -59,6 +81,9 @@ import { __ } from '@wordpress/i18n'
 	const fetchUrlData = ( url ) => {
 		const fetchUrl = ajaxurl + '?action=pf_fetch_url_content&url=' + encodeURIComponent( url )
 
+		// Determine whether this is a classic or block editor.
+		const isBlockEditor = document.getElementById( 'editor' ) ? true : false
+
 		// Only show the loading indicator if there's a delay of more than 2 seconds.
 		const requestStartTime = Date.now()
 		requestIsPending = true
@@ -68,7 +93,11 @@ import { __ } from '@wordpress/i18n'
 					return
 				}
 
-				setIsLoading( true )
+				if ( isBlockEditor ) {
+					setLoadingIndicator( true )
+				} else {
+					setIsLoading( true )
+				}
 			},
 			2000
 		)
@@ -81,11 +110,19 @@ import { __ } from '@wordpress/i18n'
 				// To avoid flashes, don't hide until at least five seconds has passed.
 				const timeElapsed = Date.now() - requestStartTime
 				if ( timeElapsed > 5000 ) {
-					setIsLoading( false )
+					if ( isBlockEditor ) {
+						setLoadingIndicator( false )
+					} else {
+						setIsLoading( false )
+					}
 				} else {
 					setTimeout(
 						() => {
-							setIsLoading( false )
+							if ( isBlockEditor ) {
+								setLoadingIndicator( false )
+							} else {
+								setIsLoading( false )
+							}
 						},
 						5000 - timeElapsed
 					)
@@ -94,6 +131,8 @@ import { __ } from '@wordpress/i18n'
 				if ( responseJSON.success ) {
 					// DOM object is necessary for Readability as well as other parsing.
 					const domObject = new DOMParser().parseFromString( responseJSON.data.body, 'text/html' )
+
+					const documentTitle = domObject.title
 
 					// Readability object will provide post content and author.
 					const readabilityObj = new Readability( domObject.cloneNode( true ) ).parse()
@@ -105,45 +144,88 @@ import { __ } from '@wordpress/i18n'
 					if ( ! hasSelection ) {
 						const cleanContent = DOMPurify.sanitize( processedReadableContent )
 
-						// "Visual" tab.
-						const contentEditor = tinymce.get( 'content' )
-						if ( contentEditor ) {
-							contentEditor.setContent( cleanContent )
-						}
+						if ( isBlockEditor ) {
+							const blockContent = wp.blocks.pasteHandler( { HTML: cleanContent} )
+							wp.data.dispatch( 'core/block-editor' ).insertBlocks( blockContent )
+							wp.data.dispatch( 'core/editor' ).editPost( { title: documentTitle } )
+						} else {
+							const contentEditor = tinymce.get( 'content' )
+							if ( contentEditor ) {
+								// "Visual" tab.
+								contentEditor.setContent( cleanContent )
 
-						// "Text" tab.
-						const contentTextarea = document.getElementById( 'content' )
-						if ( contentTextarea ) {
-							contentTextarea.innerHTML = cleanContent
+								// "Text" tab.
+								const contentTextarea = document.getElementById( 'content' )
+								if ( contentTextarea ) {
+									contentTextarea.innerHTML = cleanContent
+								}
+							}
 						}
 					}
 
 					// Post author.
-					const authorField = document.getElementById( 'item_author' )
-					if ( authorField ) {
-						const authorFromLD = getAuthorFromLD( domObject )
-
-						const authorValue = authorFromLD ?? readabilityObj.byline
-
-						authorField.value = DOMPurify.sanitize( authorValue, { ALLOWED_TAGS: [] } )
+					const authorFromLD = getAuthorFromLD( domObject )
+					const authorValue = authorFromLD ?? readabilityObj.byline
+					const authorValueSanitized = DOMPurify.sanitize( authorValue, { ALLOWED_TAGS: [] } )
+					if ( authorValueSanitized ) {
+						if ( isBlockEditor ) {
+							wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'item_author': authorValueSanitized } } )
+						} else {
+							const authorField = document.getElementById( 'item_author' )
+							if ( authorField ) {
+								authorField.value = authorValueSanitized
+							}
+						}
 					}
 
-					const tagsField = document.getElementById( 'post_tags' )
-					if ( tagsField ) {
-						const keywords = getKeywords( domObject )
-						tagsField.value = DOMPurify.sanitize( keywords.join( ', ' ), { ALLOWED_TAGS: [] } )
+					const keywords = getKeywords( domObject )
+					if ( keywords ) {
+						if ( isBlockEditor ) {
+							// @todo Tags must be created before they can be assigned.
+							// But this is likely disruptive, as it will clutter up
+							// the tags list. Perhaps we need a toggle for the auto-import
+							// of remote tags. In the meantime, we do need the
+							// 'via bookmarklet' tag.
+							assignTags( [ __( 'via bookmarklet', 'pressforward' ) ] )
+
+						} else {
+							const tagsFieldValue = DOMPurify.sanitize( keywords.join( ', ' ), { ALLOWED_TAGS: [] } )
+							const tagsField = document.getElementById( 'post_tags' )
+							if ( tagsField ) {
+								tagsField.value = tagsFieldValue
+							}
+						}
 					}
 
 					// Featured images.
-					const itemFeatImgField = document.getElementById( 'item_feat_img' )
-					if ( itemFeatImgField ) {
-						const sourceUrl = new URL( url )
-						const imageUrl = ensureAbsoluteUrl( getImageUrl( domObject ), sourceUrl.protocol + '//' + sourceUrl.hostname )
-						itemFeatImgField.value = DOMPurify.sanitize( imageUrl, { ALLOWED_TAGS: [] } )
+					const sourceUrl = new URL( url )
+					const imageUrl = ensureAbsoluteUrl( getImageUrl( domObject ), sourceUrl.protocol + '//' + sourceUrl.hostname )
+					const itemFeatImgValue = DOMPurify.sanitize( imageUrl, { ALLOWED_TAGS: [] } )
+
+					if ( itemFeatImgValue ) {
+						if ( isBlockEditor ) {
+							wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'item_feat_img': itemFeatImgValue } } )
+						} else {
+							const itemFeatImgField = document.getElementById( 'item_feat_img' )
+							if ( itemFeatImgField ) {
+								itemFeatImgField.value = itemFeatImgValue
+							}
+						}
 					}
+
+					// Switch to the Post tab so the user can see the Tags, Post Author, etc fields.
+					if ( isBlockEditor ) {
+						setTimeout( () => {
+						   wp.data.dispatch( 'core/edit-post' ).openGeneralSidebar( 'edit-post/document' );
+						}, 2000 )
+					}
+				} else if ( isBlockEditor ) {
+					wp.data.dispatch( 'core/notices' ).createErrorNotice(
+						__( 'Could not fetch remote URL', 'pressforward' ),
+						{ id: 'fetch-url-failed', isDismissible: false }
+					);
 				} else {
 					document.body.classList.add( 'is-failed-request' )
-
 				}
 			} )
 	}
@@ -162,15 +244,33 @@ import { __ } from '@wordpress/i18n'
 	}
 
 	/**
+	 * Configures the loading indicator notice.
+	 *
+	 * @param {boolean} isLoading Whether to turn on or off.
+	 * @return {void}
+	 */
+	const setLoadingIndicator = ( isLoading ) => {
+		if ( isLoading ) {
+			wp.data.dispatch( 'core/notices' ).createWarningNotice(
+				// translators: URL being loaded
+				sprintf( __( 'Loading content from %s.', 'pressforward' ), sanitizedLoadingUrl ),
+				{ id: 'loading-content', isDismissible: false }
+			);
+		} else {
+			wp.data.dispatch( 'core/notices' ).removeNotice( 'loading-content' )
+		}
+	}
+
+	/**
 	 * Gets keywords out of a DOM object.
 	 *
 	 * As in the PFOpenGraph library,
 	 *
 	 * @param {HTMLDocument} domObject DOM object representing the source page.
-	 * @returns {Array} Array of keywords.
+	 * @return {Array} Array of keywords.
 	 */
 	const getKeywords = ( domObject ) => {
-		let keywords = [ __( 'via bookmarklet', 'pf' ) ]
+		const keywords = [ __( 'via bookmarklet', 'pf' ) ]
 
 		// Prefer linked data if available.
 		const ld = getLDFromDomObject( domObject )
@@ -363,4 +463,55 @@ import { __ } from '@wordpress/i18n'
 
 		return authorStrings.join( ', ' )
 	}
+
+	const assignTags = async ( tagNames ) => {
+		try {
+			const tagMap = await ensureTagsExistAndGetIds( tagNames );
+			wp.data.dispatch( 'core/editor' ).editPost( { tags: Object.values( tagMap ) } );
+		} catch (error) {
+			console.error('Error creating tags:', error);
+		}
+	}
+
+	const ensureTagsExistAndGetIds = async (tagNames) => {
+		// Create a new collection instance for the tags
+		const Tags = wp.api.collections.Tags;
+
+		const tagPromises = tagNames.map((tagName) => {
+			// Create a new promise that wraps the jQuery promise
+			return new Promise((resolve, reject) => {
+				const tagsCollection = new Tags();
+				tagsCollection.fetch({ data: { search: tagName } })
+					.done((tags) => {
+						let tagData = {};
+
+						if ( ! tags.length ) {
+							// Create a new tag if one doesn't exist.
+							const newTag = new wp.api.models.Tag({ name: tagName });
+							newTag.save().done((tag) => {
+								tagData[tagName] = tag.id;
+								resolve(tagData);
+							});
+						} else {
+							// Resolve with an object mapping tag names to tag IDs
+							tagData = tags.reduce((acc, tag) => {
+								acc[tag.name] = tag.id;
+								return acc;
+							}, {});
+
+							resolve(tagData);
+						}
+					})
+					.fail((error) => {
+						console.error(`Failed to fetch tag for ${tagName}:`, error);
+						reject(error); // Reject the promise on failure
+					});
+			});
+		});
+
+		const tagResults = await Promise.all(tagPromises);
+		const tagMap = Object.assign({}, ...tagResults);
+
+		return tagMap;
+	};
 })()
