@@ -155,7 +155,7 @@ function start_pf_nom_this() {
  * @return string
  */
 function pf_get_shortcut_link() {
-	$url = wp_json_encode( admin_url( 'edit.php?pf-nominate-this=2' ) );
+	$url = wp_json_encode( admin_url( 'post-new.php?pf-nominate-this=2&post_type=nomination' ) );
 
 	$version = 5;
 
