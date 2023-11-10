@@ -89,15 +89,57 @@ function pf_shortcut_link() {
 
 /**
  * Catches pf-nominate-this requests.
+ *
+ * This function contains the logic for redirecting to the correct interface
+ * (Classic or Block), depending on the current URL and the site settings.
  */
 function start_pf_nom_this() {
 	global $pagenow;
-	if ( 'edit.php' === $pagenow && array_key_exists( 'pf-nominate-this', $_GET ) && 2 === (int) $_GET['pf-nominate-this'] ) {
+
+	if ( empty( $_GET['pf-nominate-this'] ) ) {
+		return;
+	}
+
+	$use_block = pressforward_use_block_nominate_this();
+	$redirect  = null;
+
+	// If this is a request for the Classic Nominate This interface, load and exit.
+	if ( ! $use_block && 'edit.php' === $pagenow ) {
 		include __DIR__ . '/nomthis/nominate-this.php';
 		die();
 	}
 
-	return '';
+	// Check if we need a redirect to the correct interface.
+	$redirect_query_arg_keys = [ 'u', 't', 's', 'v' ];
+	$redirect_query_args     = [];
+	foreach ( $redirect_query_arg_keys as $redirect_query_arg_key ) {
+		if ( isset( $_GET[ $redirect_query_arg_key ] ) ) {
+			$redirect_query_args[ $redirect_query_arg_key ] = sanitize_text_field( wp_unslash( $_GET[ $redirect_query_arg_key ] ) );
+		}
+	}
+
+	$redirect_query_args['pf-nominate-this'] = 2;
+
+	if ( $use_block && 'edit.php' === $pagenow ) {
+		$redirect_query_args['post_type'] = 'nomination';
+
+		$redirect = add_query_arg(
+			$redirect_query_args,
+			admin_url( 'post-new.php' )
+		);
+	} elseif ( ! $use_block && 'post-new.php' === $pagenow ) {
+		$redirect = add_query_arg(
+			$redirect_query_args,
+			admin_url( 'edit.php' )
+		);
+	}
+
+	if ( ! $redirect ) {
+		return;
+	}
+
+	wp_safe_redirect( $redirect );
+	die;
 }
 
 /**
