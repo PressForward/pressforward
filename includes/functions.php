@@ -138,6 +138,33 @@ function pf_get_shortcut_link() {
 }
 
 /**
+ * Determines whether to use the Block version of the Nominate This interface.
+ *
+ * If false, the Classic interface will be used.
+ *
+ * @since 5.6.0
+ *
+ * @return bool True if the Block version should be used, false otherwise.
+ */
+function pressforward_use_block_nominate_this() {
+	$use_block = get_option( 'pf_use_block_nominate_this', 'no' );
+
+	// Force to 'no' if the Classic Editor plugin is running.
+	if ( class_exists( 'Classic_Editor' ) ) {
+		$use_block = 'no';
+	}
+
+	/**
+	 * Filters whether to use the Block version of the Nominate This interface.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @param bool $use_block True if the Block version should be used, false otherwise.
+	 */
+	return apply_filters( 'pressforward_use_block_nominate_this', 'yes' === $use_block );
+}
+
+/**
  * Get the draft post type name.
  *
  * @since 5.5.0
