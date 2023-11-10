@@ -562,6 +562,9 @@ class Menu implements HasActions, HasFilters {
 				: 'draft';
 			update_option( PF_SLUG . '_draft_post_status', $pf_draft_post_status );
 
+			$pf_force_classic_nominate_this = ! empty( $_POST['pf_force_classic_nominate_this'] ) && 'yes' === sanitize_text_field( wp_unslash( $_POST['pf_force_classic_nominate_this'] ) ) ? 'yes' : 'no';
+			update_option( 'pf_force_classic_nominate_this', $pf_force_classic_nominate_this );
+
 			$notification_options = [
 				// PHPCS false positive.
 				// phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
