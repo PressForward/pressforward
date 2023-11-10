@@ -189,11 +189,27 @@ function pf_get_shortcut_link() {
  * @return bool True if the Block version should be used, false otherwise.
  */
 function pressforward_use_block_nominate_this() {
-	$use_block = get_option( 'pf_use_block_nominate_this', 'no' );
+	$use_classic_override = get_option( 'pf_force_classic_nominate_this', 'no' );
 
-	// Force to 'no' if the Classic Editor plugin is running.
-	if ( class_exists( 'Classic_Editor' ) ) {
-		$use_block = 'no';
+	if ( 'yes' === $use_classic_override ) {
+		$use_block = false;
+	} else {
+		/*
+		 * Mock a 'nomination' post so that we can use WP's core function.
+		 * Plugins like Classic Editor use those filters.
+		 */
+		$nomination_post            = new stdClass();
+		$nomination_post->post_type = 'nomination';
+		$nomination_post_obj        = new WP_Post( $nomination_post );
+
+		// Classic Editor plugin falls back on this value when UI is hidden.
+		$use_block_for_nomination_post_type = apply_filters( 'use_block_editor_for_post_type', true, 'nomination' );
+
+		// Classic Editor plugin uses this when UI is available to users.
+		$use_block_for_nomination_post = apply_filters( 'use_block_editor_for_post', true, $nomination_post_obj );
+
+		// Since both values default to true, we disable Block if either one returns false.
+		$use_block = $use_block_for_nomination_post_type && $use_block_for_nomination_post;
 	}
 
 	/**
@@ -203,7 +219,7 @@ function pressforward_use_block_nominate_this() {
 	 *
 	 * @param bool $use_block True if the Block version should be used, false otherwise.
 	 */
-	return apply_filters( 'pressforward_use_block_nominate_this', 'yes' === $use_block );
+	return apply_filters( 'pressforward_use_block_nominate_this', $use_block );
 }
 
 /**
