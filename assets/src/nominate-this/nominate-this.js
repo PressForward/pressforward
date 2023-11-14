@@ -493,6 +493,9 @@ import { __, sprintf } from '@wordpress/i18n'
 								resolve(tagData);
 							});
 						} else {
+							// Ensure that we are only matching exact tagName matches.
+							tags = tags.filter((tag) => tag.name === tagName);
+
 							// Resolve with an object mapping tag names to tag IDs
 							tagData = tags.reduce((acc, tag) => {
 								acc[tag.name] = tag.id;
