@@ -545,7 +545,7 @@ class Metas implements HasFilters, HasActions {
 				'name'       => 'item_link',
 				'title'      => __( 'Link to Source', 'pressforward' ),
 				'definition' => __( 'Source link', 'pressforward' ),
-				'function'   => __( 'Stores link to the origonal post.', 'pressforward' ),
+				'function'   => __( 'Stores link to the original post.', 'pressforward' ),
 				'type'       => array( 'struc' ),
 				'use'        => array( 'req', 'api' ),
 				'level'      => array( 'item', 'nomination', 'post' ),
