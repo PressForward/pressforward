@@ -145,7 +145,7 @@ import { __, sprintf } from '@wordpress/i18n'
 						const cleanContent = DOMPurify.sanitize( processedReadableContent )
 
 						if ( isBlockEditor ) {
-							const blockContent = wp.blocks.pasteHandler( { HTML: cleanContent} )
+							const blockContent = wp.blocks.pasteHandler( { HTML: cleanContent } )
 							wp.data.dispatch( 'core/block-editor' ).insertBlocks( blockContent )
 							wp.data.dispatch( 'core/editor' ).editPost( { title: documentTitle } )
 						} else {
