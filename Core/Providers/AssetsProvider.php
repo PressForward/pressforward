@@ -34,6 +34,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_styles' ] );
+		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_block_editor_assets' ] );
 	}
 
 	/**
@@ -263,13 +264,12 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	 */
 	public function admin_enqueue_scripts() {
 		$build_scripts = [
-			'pf-add-feeds'                  => 'add-feeds',
-			'pf-edit-feeds'                 => 'edit-feeds',
-			'pf-nominate-this'              => 'nominate-this',
-			'pf-nominate-this-block-editor' => 'nominate-this-block-editor',
-			'pf-quick-edit'                 => 'quick-edit',
-			'pf-reader'                     => 'reader',
-			'pf-scroll'                     => 'scroll',
+			'pf-add-feeds'     => 'add-feeds',
+			'pf-edit-feeds'    => 'edit-feeds',
+			'pf-nominate-this' => 'nominate-this',
+			'pf-quick-edit'    => 'quick-edit',
+			'pf-reader'        => 'reader',
+			'pf-scroll'        => 'scroll',
 		];
 
 		// Some dependencies can't be detected by @wordpress/scripts.
@@ -308,7 +308,6 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		if ( $screen && 'nomination' === $screen->id ) {
 			wp_enqueue_script( 'pf-nominate-this' );
-			wp_enqueue_script( 'pf-nominate-this-block-editor' );
 		}
 	}
 
@@ -328,6 +327,46 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 			$build_vars = require \PF_ROOT . '/build/' . $style_file . '.asset.php';
 
 			wp_register_style(
+				$style_handle,
+				\PF_URL . '/build/' . $style_file . '.css',
+				[],
+				$build_vars['version']
+			);
+		}
+	}
+
+	/**
+	 * Registers and enqueues assets specific to the block editor.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @return void
+	 */
+	public function enqueue_block_editor_assets() {
+		$scripts = [
+			'pf-nominate-this-block-editor' => 'nominate-this-block-editor',
+		];
+
+		foreach ( $scripts as $script_handle => $script_file ) {
+			$build_vars = require \PF_ROOT . '/build/' . $script_file . '.asset.php';
+
+			wp_enqueue_script(
+				$script_handle,
+				\PF_URL . '/build/' . $script_file . '.js',
+				$build_vars['dependencies'],
+				$build_vars['version'],
+				true
+			);
+		}
+
+		$styles = [
+			'pf-nominate-this-block-editor' => 'nominate-this-block-editor',
+		];
+
+		foreach ( $styles as $style_handle => $style_file ) {
+			$build_vars = require \PF_ROOT . '/build/' . $style_file . '.asset.php';
+
+			wp_enqueue_style(
 				$style_handle,
 				\PF_URL . '/build/' . $style_file . '.css',
 				[],
