@@ -948,32 +948,37 @@ class Metas implements HasFilters, HasActions {
 			if ( $meta['serialize'] ) {
 				continue;
 			}
+
 			if ( ! in_array( 'api', $meta['use'], true ) ) {
 				continue;
 			}
-			$metas[ $key ]                 = array();
-			$metas[ $key ]['show_in_rest'] = true;
-			$metas[ $key ]['single']       = true;
-			$metas[ $key ]['type']         = 'string';
-			$metas[ $key ]['description']  = $meta['function'];
+
+			$register_meta_args                 = [];
+			$register_meta_args['show_in_rest'] = true;
+			$register_meta_args['single']       = true;
+			$register_meta_args['type']         = 'string';
+			$register_meta_args['description']  = $meta['function'];
+
 			foreach ( $meta['level'] as $level ) {
 				switch ( $level ) {
 					case 'item':
-						register_meta( pressforward( 'schema.feed_item' )->post_type, $key, $metas[ $key ] );
+						$register_meta_args['object_subtype'] = pressforward( 'schema.feed_item' )->post_type;
 						break;
 					case 'nomination':
-						register_meta( pressforward( 'schema.nominations' )->post_type, $key, $metas[ $key ] );
+						$register_meta_args['object_subtype'] = pressforward( 'schema.nominations' )->post_type;
 						break;
 					case 'post':
-						register_meta( 'post', $key, $metas[ $key ] );
+						$register_meta_args['object_subtype'] = 'post';
 						break;
 					case 'feed':
-						register_meta( pressforward( 'schema.feeds' )->post_type, $key, $metas[ $key ] );
+						$register_meta_args['object_subtype'] = pressforward( 'schema.feeds' )->post_type;
 						break;
 					default:
 						// code...
 						break;
 				}
+
+				register_meta( 'post', $key, $register_meta_args );
 			}
 		}
 
