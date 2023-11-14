@@ -330,7 +330,7 @@ import { __, sprintf } from '@wordpress/i18n'
 	 * 4. First 'img' tag in the body text
 	 *
 	 * @param {HTMLDocument} domObject DOM object representing the source page.
-	 * @returns {Array} Array of swappable embeds, as detected by the server.
+	 * @return {Array} Array of swappable embeds, as detected by the server.
 	 */
 	const getImageUrl = ( domObject ) => {
 		// Prefer linked data if available.
@@ -475,6 +475,7 @@ import { __, sprintf } from '@wordpress/i18n'
 			const tagMap = await ensureTagsExistAndGetIds( tagNames );
 			wp.data.dispatch( 'core/editor' ).editPost( { tags: Object.values( tagMap ) } );
 		} catch (error) {
+			// eslint-disable-next-line no-console
 			console.error('Error creating tags:', error);
 		}
 	}
@@ -512,6 +513,7 @@ import { __, sprintf } from '@wordpress/i18n'
 						}
 					})
 					.fail((error) => {
+						// eslint-disable-next-line no-console
 						console.error(`Failed to fetch tag for ${tagName}:`, error);
 						reject(error); // Reject the promise on failure
 					});
