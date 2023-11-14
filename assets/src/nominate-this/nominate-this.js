@@ -178,6 +178,12 @@ import { __, sprintf } from '@wordpress/i18n'
 						}
 					}
 
+					// A number of items are only set in the block editor.
+					if ( isBlockEditor ) {
+						const itemLinkValue = DOMPurify.sanitize( url, { ALLOWED_TAGS: [] } )
+						wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'item_link': itemLinkValue } } )
+					}
+
 					const keywords = getKeywords( domObject )
 					if ( keywords ) {
 						if ( isBlockEditor ) {
