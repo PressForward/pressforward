@@ -47,6 +47,7 @@ const NominationSettingsControl = ( {} ) => {
 
 	return (
 		<PluginDocumentSettingPanel
+			icon="controls-forward"
 			name="pressforward-nomination-settings-control"
 			title={ __( 'Nomination Settings', 'pressforward' ) }
 		>
