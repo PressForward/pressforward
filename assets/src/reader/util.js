@@ -314,8 +314,8 @@ export function PFBootstrapInits() {
 			html: true,
 			title: '',
 			container: '.icon-info-sign',
-			content: function () {
-				var idCode = jQuery(this).attr('data-target');
+			content: function ( button ) {
+				var idCode = jQuery( button ).attr('data-target');
 				var contentOutput = '<div class="feed-item-info-box">';
 				contentOutput += jQuery('#info-box-' + idCode).html();
 				contentOutput += '</div>';
