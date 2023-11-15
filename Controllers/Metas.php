@@ -648,7 +648,7 @@ class Metas implements HasFilters, HasActions {
 				'definition' => __( 'Timestamp for the item', 'pressforward' ),
 				'function'   => __( 'A version of the item_date meta that\'s ready for sorting. Should be a Unix timestamp', 'pressforward' ),
 				'type'       => array( 'struc' ),
-				'use'        => array( 'req' ),
+				'use'        => array( 'req', 'api' ),
 				'level'      => array( 'item', 'nomination', 'post' ),
 				'serialize'  => false,
 			),

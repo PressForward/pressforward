@@ -182,6 +182,21 @@ import { __, sprintf } from '@wordpress/i18n'
 					if ( isBlockEditor ) {
 						const itemLinkValue = DOMPurify.sanitize( url, { ALLOWED_TAGS: [] } )
 						wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'item_link': itemLinkValue } } )
+
+						const itemDate = getTimestampFromLD( domObject )
+						if ( itemDate ) {
+							wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'item_date': itemDate } } )
+							wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'item_wp_date': itemDate } } )
+						}
+
+						// Format the current time as a MySQL timestamp.
+						const now = new Date()
+						const nowFormatted = formatISODateAsMysql( now.toISOString() )
+						wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'date_nominated': nowFormatted } } )
+
+						// Get the current date formated as a UNIX timestamp.
+						const nowUnix = Math.floor( now.getTime() / 1000 )
+						wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'sortable_item_date': nowUnix.toString() } } )
 					}
 
 					const keywords = getKeywords( domObject )
@@ -449,7 +464,7 @@ import { __, sprintf } from '@wordpress/i18n'
 	}
 
 	/**
-	 * Swaps embedded content with raw WP URLs.
+	 * Gets the author from an object's linked data, if available.
 	 *
 	 * @param {HTMLDocument} domObject DOM object representing the source page.
 	 * @return {string} Author name.
@@ -468,6 +483,21 @@ import { __, sprintf } from '@wordpress/i18n'
 		}
 
 		return authorStrings.join( ', ' )
+	}
+
+	/**
+	 * Gets an item's timestamp from its linked data, if available.
+	 *
+	 * @param {HTMLDocument} domObject DOM object representing the source page.
+	 * @return {string} Timestamp.
+	 */
+	const getTimestampFromLD = ( domObject ) => {
+		const ld = getLDFromDomObject( domObject )
+		if ( ! ld || ! ld.hasOwnProperty( 'datePublished' ) ) {
+			return ''
+		}
+
+		return formatISODateAsMysql( ld.datePublished )
 	}
 
 	const assignTags = async ( tagNames ) => {
@@ -525,4 +555,23 @@ import { __, sprintf } from '@wordpress/i18n'
 
 		return tagMap;
 	};
+
+	const formatISODateAsMysql = (isoDate) => {
+		// Parse the ISO 8601 timestamp
+		const date = new Date( isoDate );
+
+		// Pad the date/month/hour/minute/second with leading zero if necessary
+		const pad = (num) => (num < 10 ? '0' + num : num);
+
+		// Format the date
+		const year = date.getFullYear();
+		const month = pad(date.getMonth() + 1); // getMonth() returns 0-11
+		const day = pad(date.getDate());
+		const hour = pad(date.getHours());
+		const minute = pad(date.getMinutes());
+		const second = pad(date.getSeconds());
+
+		// Combine into final string
+		return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+	}
 })()
