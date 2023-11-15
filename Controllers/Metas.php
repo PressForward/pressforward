@@ -652,6 +652,16 @@ class Metas implements HasFilters, HasActions {
 				'level'      => array( 'item', 'nomination', 'post' ),
 				'serialize'  => false,
 			),
+			'send_to_draft'           => array(
+				'name'       => 'send_to_draft',
+				'title'      => __( 'Send to Draft', 'pressforward' ),
+				'definition' => __( 'Whether a nominated item should be promoted directly to Draft status after nomination', 'pressforward' ),
+				'function'   => __( 'Whether a nominated item should be promoted directly to Draft status after nomination', 'pressforward' ),
+				'type'       => array( 'struc' ),
+				'use'        => array( 'api' ),
+				'level'      => array( 'nomination' ),
+				'serialize'  => false,
+			),
 			'readable_status'         => array(
 				'name'       => 'readable_status',
 				'title'      => __( 'Is Readable?', 'pressforward' ),

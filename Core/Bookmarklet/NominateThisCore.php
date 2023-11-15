@@ -41,6 +41,11 @@ class NominateThisCore implements HasActions, HasFilters {
 				'hook'   => 'rest_after_insert_nomination',
 				'method' => 'maybe_set_featured_image',
 			),
+			array(
+				'hook'     => 'rest_after_insert_nomination',
+				'method'   => 'post_nomination_actions',
+				'priority' => 50,
+			),
 		);
 	}
 
@@ -493,6 +498,55 @@ class NominateThisCore implements HasActions, HasFilters {
 		}
 
 		pressforward( 'schema.feed_item' )->set_ext_as_featured( $post->ID, sanitize_text_field( $item_feat_img ) );
+	}
+
+	/**
+	 * Performs actions after a nomination is created.
+	 *
+	 * This includes promotion to Draft, if 'Send to Draft' is checked.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @param \WP_Post $post The newly created nomination.
+	 * @return void
+	 */
+	public function post_nomination_actions( $post ) {
+		if ( 'auto-draft' === $post->post_status ) {
+			return;
+		}
+
+
+		$item_link = get_post_meta( $post->ID, 'item_link', true );
+		$item_id   = pressforward_create_feed_item_id( $item_link, $post->post_title );
+
+		$nom_and_post_check = pressforward( 'utility.forward_tools' )->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
+
+		if ( ! $nom_and_post_check ) {
+			// Avoid duplicating a feed item.
+			$item_check = pressforward( 'utility.forward_tools' )->is_a_pf_type( $item_id, pressforward( 'schema.feed_item' )->post_type );
+			if ( $item_check ) {
+				$nomination_id = pressforward( 'utility.forward_tools' )->item_to_nomination( $item_id, $item_check );
+				pressforward( 'utility.relate' )->basic_relate( 'nominate', $item_check, 'on' );
+			}
+		}
+
+		// submitted_by.
+		$user_data   = pressforward( 'utility.forward_tools' )->find_nominating_user( $post->ID );
+		$user_id     = $user_data['user_id'];
+		$user_string = $user_data['user_string'];
+		pressforward( 'controller.metas' )->update_pf_meta( $post->ID, 'submitted_by', $user_string );
+
+		// item_id.
+		pressforward( 'controller.metas' )->update_pf_meta( $post->ID, 'item_id', $item_id );
+
+		// source_title.
+		pressforward( 'controller.metas' )->update_pf_meta( $post->ID, 'source_title', 'Bookmarklet' );
+
+		$send_to_draft = get_post_meta( $post->ID, 'send_to_draft', true );
+
+		if ( $send_to_draft ) {
+			$user_data = pressforward( 'utility.forward_tools' )->nomination_to_last_step( $item_id, $post->ID );
+		}
 	}
 
 	/**
