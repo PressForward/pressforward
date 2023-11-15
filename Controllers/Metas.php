@@ -598,9 +598,9 @@ class Metas implements HasFilters, HasActions {
 				'definition' => __( 'Tags associated with the item by source', 'pressforward' ),
 				'function'   => __( 'An array of tags associated with the item, as created in the feed', 'pressforward' ),
 				'type'       => array( 'desc', 'adm', 'aggr' ),
-				'use'        => array(),
+				'use'        => array( 'api' ),
 				'level'      => array( 'item', 'nomination', 'post' ),
-				'serialize'  => true,
+				'serialize'  => false,
 			),
 			'source_repeat'           => array(
 				'name'       => 'source_repeat',

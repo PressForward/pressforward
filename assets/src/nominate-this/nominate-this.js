@@ -200,21 +200,27 @@ import { __, sprintf } from '@wordpress/i18n'
 					}
 
 					const keywords = getKeywords( domObject )
-					if ( keywords ) {
-						if ( isBlockEditor ) {
-							// @todo Tags must be created before they can be assigned.
-							// But this is likely disruptive, as it will clutter up
-							// the tags list. Perhaps we need a toggle for the auto-import
-							// of remote tags. In the meantime, we do need the
-							// 'via bookmarklet' tag.
-							assignTags( [ __( 'via bookmarklet', 'pressforward' ) ] )
+					if ( isBlockEditor ) {
+						// @todo Tags must be created before they can be assigned.
+						// But this is likely disruptive, as it will clutter up
+						// the tags list. Perhaps we need a toggle for the auto-import
+						// of remote tags. In the meantime, we do need the
+						// 'via bookmarklet' tag.
+						assignTags( [ __( 'via bookmarklet', 'pressforward' ) ] )
 
-						} else {
-							const tagsFieldValue = DOMPurify.sanitize( keywords.join( ', ' ), { ALLOWED_TAGS: [] } )
-							const tagsField = document.getElementById( 'post_tags' )
-							if ( tagsField ) {
-								tagsField.value = tagsFieldValue
-							}
+						// A comma-separated list is stored in 'item_tags' postmeta.
+						const tagsFieldValue = DOMPurify.sanitize( keywords.join( ',' ), { ALLOWED_TAGS: [] } )
+						wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'item_tags': tagsFieldValue } } )
+
+					} else {
+
+						// Add 'via bookmarklet' tag to the list.
+						keywords.push( __( 'via bookmarklet', 'pressforward' ) )
+
+						const tagsFieldValue = DOMPurify.sanitize( keywords.join( ', ' ), { ALLOWED_TAGS: [] } )
+						const tagsField = document.getElementById( 'post_tags' )
+						if ( tagsField ) {
+							tagsField.value = tagsFieldValue
 						}
 					}
 
@@ -291,8 +297,6 @@ import { __, sprintf } from '@wordpress/i18n'
 	 * @return {Array} Array of keywords.
 	 */
 	const getKeywords = ( domObject ) => {
-		const keywords = [ __( 'via bookmarklet', 'pf' ) ]
-
 		// Prefer linked data if available.
 		const ld = getLDFromDomObject( domObject )
 		if ( ld && ld.hasOwnProperty( 'keywords' ) ) {
@@ -304,7 +308,7 @@ import { __, sprintf } from '@wordpress/i18n'
 				keywordArray = ld.keywords.split( ',' )
 			}
 
-			return [ ...keywords, keywordArray ]
+			return keywordArray
 		}
 
 		// Next, look at 'keyword' meta tags.
