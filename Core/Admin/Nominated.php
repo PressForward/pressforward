@@ -121,6 +121,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	public function display_review_builder() {
 		wp_enqueue_script( 'pf' );
 		wp_enqueue_script( 'pf-views' );
+		wp_enqueue_script( 'pf-send-to-draft-imp' );
 
 		wp_enqueue_style( 'pf-style' );
 
