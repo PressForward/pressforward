@@ -515,7 +515,6 @@ class NominateThisCore implements HasActions, HasFilters {
 			return;
 		}
 
-
 		$item_link = get_post_meta( $post->ID, 'item_link', true );
 		$item_id   = pressforward_create_feed_item_id( $item_link, $post->post_title );
 
