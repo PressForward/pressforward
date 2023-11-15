@@ -234,7 +234,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 
 					$nom_args = array(
 						'post_type'        => 'nomination',
-						'post_status'      => 'publish',
+						'post_status'      => [ 'publish', 'draft' ],
 						'orderby'          => 'date',
 						'order'            => 'DESC',
 						'posts_per_page'   => 20,
