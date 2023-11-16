@@ -73,6 +73,34 @@ class Forward_Tools {
 	}
 
 	/**
+	 * Adds a user to the list of stored nominators for an item.
+	 *
+	 * @param int $post_id ID of the nomination.
+	 * @param int $user_id ID of the user.
+	 * @return bool
+	 */
+	public function add_user_to_nominator_array( $post_id, $user_id ) {
+		$nominators = $this->metas->get_post_pf_meta( $post_id, 'nominator_array' );
+		if ( ! $nominators ) {
+			$nominators = [];
+		}
+
+		if ( isset( $nominators[ $user_id ] ) ) {
+			return false;
+		}
+
+		$nominators[ $user_id ] = [
+			'user_id'             => $user_id,
+			'nomination_datetime' => gmdate( 'Y-m-d H:i:s' ),
+			'nomination_unixtime' => time(),
+		];
+
+		$this->metas->update_pf_meta( $post_id, 'nominator_array', $nominators );
+
+		return true;
+	}
+
+	/**
 	 * Applies a nomination event.
 	 *
 	 * @param int $id      ID of the nomination.

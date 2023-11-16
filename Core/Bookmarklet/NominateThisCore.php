@@ -518,33 +518,43 @@ class NominateThisCore implements HasActions, HasFilters {
 		$item_link = get_post_meta( $post->ID, 'item_link', true );
 		$item_id   = pressforward_create_feed_item_id( $item_link, $post->post_title );
 
-		$nom_and_post_check = pressforward( 'utility.forward_tools' )->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
+		$nomination_post_id = $post->ID;
 
-		if ( ! $nom_and_post_check ) {
+		// Detect if there's an existing nomination for this item.
+		// If so, we must remove the one just created and increment the existing one.
+		$existing_nomination_post_id = pressforward( 'utility.forward_tools' )->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
+
+		if ( ! $existing_nomination_post_id ) {
 			// Avoid duplicating a feed item.
 			$item_check = pressforward( 'utility.forward_tools' )->is_a_pf_type( $item_id, pressforward( 'schema.feed_item' )->post_type );
 			if ( $item_check ) {
 				$nomination_id = pressforward( 'utility.forward_tools' )->item_to_nomination( $item_id, $item_check );
 				pressforward( 'utility.relate' )->basic_relate( 'nominate', $item_check, 'on' );
 			}
-		}
 
-		// submitted_by.
-		$user_data   = pressforward( 'utility.forward_tools' )->find_nominating_user( $post->ID );
-		$user_id     = $user_data['user_id'];
-		$user_string = $user_data['user_string'];
-		pressforward( 'controller.metas' )->update_pf_meta( $post->ID, 'submitted_by', $user_string );
+			// submitted_by.
+			$user_data   = pressforward( 'utility.forward_tools' )->find_nominating_user( $nomination_post_id );
+			$user_id     = $user_data['user_id'];
+			$user_string = $user_data['user_string'];
+			pressforward( 'controller.metas' )->update_pf_meta( $nomination_post_id, 'submitted_by', $user_string );
 
-		// item_id.
-		pressforward( 'controller.metas' )->update_pf_meta( $post->ID, 'item_id', $item_id );
+			// item_id.
+			pressforward( 'controller.metas' )->update_pf_meta( $nomination_post_id, 'item_id', $item_id );
 
-		// source_title.
-		pressforward( 'controller.metas' )->update_pf_meta( $post->ID, 'source_title', 'Bookmarklet' );
+			// source_title.
+			pressforward( 'controller.metas' )->update_pf_meta( $nomination_post_id, 'source_title', 'Bookmarklet' );
 
-		$send_to_draft = get_post_meta( $post->ID, 'send_to_draft', true );
+			$send_to_draft = get_post_meta( $nomination_post_id, 'send_to_draft', true );
 
-		if ( $send_to_draft ) {
-			$user_data = pressforward( 'utility.forward_tools' )->nomination_to_last_step( $item_id, $post->ID );
+			if ( $send_to_draft ) {
+				$user_data = pressforward( 'utility.forward_tools' )->nomination_to_last_step( $item_id, $nomination_post_id );
+			}
+		} else {
+			// Add the new nomination event to the existing nomination item.
+			pressforward( 'utility.forward_tools' )->add_user_to_nominator_array( $existing_nomination_post_id, $post->post_author );
+
+			// Remove the newly created nomination.
+			wp_delete_post( $nomination_post_id, true );
 		}
 	}
 
