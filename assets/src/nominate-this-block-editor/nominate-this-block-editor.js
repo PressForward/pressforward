@@ -1,3 +1,4 @@
+/* global pfNominateThisBlockEditor */
 import { registerPlugin } from '@wordpress/plugins'
 
 import {
@@ -153,3 +154,43 @@ const NominationPrePublishPanel = ( {} ) => {
 registerPlugin( 'pressforward-nomination-pre-publish-panel', {
 	render: NominationPrePublishPanel,
 } );
+
+/**
+ * Poor-man's redirect after publishing a nomination.
+ *
+ * PostPublishPanel doesn't appear properly after 'nomination' publication.
+ *
+ * @param {Object} wp
+ */
+( function( wp ) {
+	const select = wp.data.select;
+	const subscribe = wp.data.subscribe;
+	const params = new URLSearchParams( document.location.search )
+	const url = params.get( 'u' )
+
+	const checkIfSavedAndRedirect = () => {
+		const postType = select( 'core/editor' ).getEditedPostAttribute( 'type' );
+
+		if ( 'nomination' !== postType ) {
+			return;
+		}
+
+		const postStatus = select( 'core/editor' ).getEditedPostAttribute( 'status' );
+		if ( 'publish' !== postStatus ) {
+			return;
+		}
+
+		const isSaving = select( 'core/editor' ).isSavingPost();
+		const didSaveSucceed = select( 'core/editor' ).didPostSaveRequestSucceed();
+		const isAutoSaving = select( 'core/editor' ).isAutosavingPost();
+		const isNewPost = select( 'core/editor' ).isEditedPostNew();
+
+		if ( isSaving && ! isAutoSaving && didSaveSucceed && ! isNewPost ) {
+			setTimeout( () => {
+				window.location.href = `${ pfNominateThisBlockEditor.nominationSuccessUrl }&nominatedUrl=${ url }`;
+			}, 1000 );
+		}
+	}
+
+	subscribe( checkIfSavedAndRedirect );
+} )( window.wp );

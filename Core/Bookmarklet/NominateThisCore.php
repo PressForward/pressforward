@@ -46,6 +46,10 @@ class NominateThisCore implements HasActions, HasFilters {
 				'method'   => 'post_nomination_actions',
 				'priority' => 50,
 			),
+			array(
+				'hook'   => 'admin_menu',
+				'method' => 'register_nomination_success_panel',
+			),
 		);
 	}
 
@@ -605,5 +609,44 @@ class NominateThisCore implements HasActions, HasFilters {
 		}
 
 		return $embeds;
+	}
+
+	/**
+	 * Registers the Nomination Success panel.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @return void
+	 */
+	public function register_nomination_success_panel() {
+		add_submenu_page(
+			'',
+			__( 'Nomination Success', 'pressforward' ),
+			__( 'Nomination Success', 'pressforward' ),
+			'edit_posts',
+			'pf-nomination-success',
+			[ $this, 'nomination_success_panel' ]
+		);
+	}
+
+	/**
+	 * Renders the Nomination Success panel.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @return void
+	 */
+	public function nomination_success_panel() {
+		wp_enqueue_style( 'pf-nomination-success' );
+		?>
+
+		<div id="message" class="updated">
+			<p><strong><?php esc_html_e( 'Your nomination has been saved.', 'pressforward' ); ?></strong>
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=pf-review' ) ); ?>"><?php esc_html_e( 'See all nominations', 'pressforward' ); ?></a>
+			| <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pressforward' ); ?></a>
+			</p>
+		</div>
+
+		<?php
 	}
 }

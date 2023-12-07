@@ -90,6 +90,15 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 			)
 		);
 
+		$assets->register_style(
+			array(
+				'type'   => 'admin',
+				'handle' => 'pf-nomination-success',
+				'src'    => 'assets/css/nomination-success',
+				'deps'   => [],
+			)
+		);
+
 		// Scripts.
 		$assets->register_script(
 			array(
@@ -358,6 +367,16 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				true
 			);
 		}
+
+		wp_add_inline_script(
+			'pf-nominate-this-block-editor',
+			'window.pfNominateThisBlockEditor = ' . wp_json_encode(
+				[
+					'nominationSuccessUrl' => admin_url( 'admin.php?page=pf-nomination-success' ),
+				]
+			),
+			'before'
+		);
 
 		$styles = [
 			'pf-nominate-this-block-editor' => 'nominate-this-block-editor',
