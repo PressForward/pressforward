@@ -108,6 +108,11 @@ class Nominations implements HasActions, HasFilters {
 	 * @since 1.7
 	 */
 	public function nominations_meta_boxes() {
+		// Don't add in Nominate This.
+		if ( ! empty( $_GET['pf-nominate-this'] ) ) {
+			return;
+		}
+
 		add_meta_box(
 			'pf-nominations',
 			__( 'Nomination Data', 'pressforward' ),
