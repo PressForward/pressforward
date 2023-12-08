@@ -98,6 +98,12 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 				'hook'   => 'manage_nomination_posts_custom_column',
 				'method' => 'nomination_custom_columns',
 			),
+			array(
+				'hook'     => 'rest_pre_insert_nomination',
+				'method'   => 'prevent_auto_draft_from_converting_to_draft',
+				'priority' => 10,
+				'args'     => 2,
+			),
 		);
 	}
 
@@ -974,5 +980,32 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 			$xml_response  = new WP_Ajax_Response( $response );
 			$xml_response->send();
 		}
+	}
+
+	/**
+	 * Ensures that nomination auto-drafts are not converted to drafts during autosave.
+	 *
+	 * See https://github.com/WordPress/gutenberg/issues/56881 for background.
+	 *
+	 * @param \stdClass        $prepared_post Post object.
+	 * @param \WP_REST_Request $request       Request object.
+	 * @return \stdClass
+	 */
+	public function prevent_auto_draft_from_converting_to_draft( $prepared_post, $request ) {
+		if ( ! isset( $prepared_post->ID ) || ! isset( $prepared_post->post_status ) || 'draft' !== $prepared_post->post_status ) {
+			return $prepared_post;
+		}
+
+		if ( ! defined( 'DOING_AUTOSAVE' ) || ! DOING_AUTOSAVE ) {
+			return $prepared_post;
+		}
+
+		// Check the status of the post in the database.
+		$post = get_post( $prepared_post->ID );
+		if ( 'auto-draft' === $post->post_status ) {
+			$prepared_post->post_status = 'auto-draft';
+		}
+
+		return $prepared_post;
 	}
 }
