@@ -121,33 +121,55 @@ registerPlugin( 'pressforward-nomination-settings-control', {
 const NominationPrePublishPanel = ( {} ) => {
 	const { editPost } = useDispatch( 'core/editor' )
 
-	const { sendToDraft } = useSelect( ( select ) => {
+	const { sendToDraft, subscribeToFeed } = useSelect( ( select ) => {
 		const editedPostMeta = select( 'core/editor' ).getEditedPostAttribute( 'meta' )
 
 		const savedSendToDraft = editedPostMeta?.send_to_draft || false
+		const savedSubscribeToFeed = editedPostMeta?.subscribe_to_feed || false
 
 		return {
 			sendToDraft: savedSendToDraft,
+			subscribeToFeed: savedSubscribeToFeed,
 		}
 	} )
 
 	return (
-		<PluginPrePublishPanel
-			icon="controls-forward"
-			title={ __( 'Send to Draft', 'pressforward' ) }
-			initialOpen={ true }
-		>
-			<p>{ __( 'Typically, nominated items are sent to Dashboard > Nominations, where they must be promoted to Draft status. Check this box to send this nomination directly to Draft.', 'pressforward' ) }</p>
+		<>
+			<PluginPrePublishPanel
+				icon="controls-forward"
+				title={ __( 'Send to Draft', 'pressforward' ) }
+				initialOpen={ true }
+			>
+				<p>{ __( 'Typically, nominated items are sent to Dashboard > Nominations, where they must be promoted to Draft status. Check this box to send this nomination directly to Draft.', 'pressforward' ) }</p>
 
-			<CheckboxControl
-				label={ __( 'Send to Draft', 'pressforward' ) }
-				onChange={ ( newValue ) => {
-					const newValueString = newValue ? '1' : '0'
-					editPost( { meta: { 'send_to_draft': newValueString } } );
-				} }
-				checked={ sendToDraft }
-			/>
-		</PluginPrePublishPanel>
+				<CheckboxControl
+					label={ __( 'Send to Draft', 'pressforward' ) }
+					onChange={ ( newValue ) => {
+						const newValueString = newValue ? '1' : '0'
+						editPost( { meta: { 'send_to_draft': newValueString } } );
+					} }
+					checked={ sendToDraft }
+				/>
+			</PluginPrePublishPanel>
+
+			<PluginPrePublishPanel
+				icon="controls-forward"
+				title={ __( 'Subscribe to Feed', 'pressforward' ) }
+				initialOpen={ false }
+			>
+				<p>{ __( 'If PressForward can find a feed associated with this item, the feed will be added to your Subscribed Feeds list.', 'pressforward' ) }</p>
+
+				<CheckboxControl
+					label={ __( 'Subscribe to Feed', 'pressforward' ) }
+					onChange={ ( newValue ) => {
+						const newValueString = newValue ? '1' : '0'
+						editPost( { meta: { 'subscribe_to_feed': newValueString } } );
+					} }
+					checked={ subscribeToFeed }
+				/>
+
+			</PluginPrePublishPanel>
+		</>
 	)
 }
 

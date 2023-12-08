@@ -524,6 +524,59 @@ class NominateThisCore implements HasActions, HasFilters {
 
 		$nomination_post_id = $post->ID;
 
+		$subscribe_to_feed = get_post_meta( $nomination_post_id, 'subscribe_to_feed', true );
+
+		if ( $subscribe_to_feed ) {
+			$url_array      = wp_parse_url( esc_url( $item_link ) );
+			$source_link    = $url_array['scheme'] . '://' . $url_array['host'];
+			$create_started = __( 'Attempting to nominate a feed with the result of:', 'pressforward' ) . '<br />';
+			if ( current_user_can( 'edit_posts' ) ) {
+				$create = pressforward( 'schema.feeds' )->create( $source_link, array( 'post_status' => 'under_review' ) );
+				if ( is_numeric( $create ) ) {
+					$feed_nom['id'] = $create;
+
+					// translators: feed ID.
+					$create             = sprintf( __( 'Feed created with ID: %s', 'pressforward' ), $create );
+					$feed_nom['simple'] = __( 'The feed has been nominated successfully.', 'pressforward' );
+					$error_check        = pressforward( 'controller.metas' )->get_post_pf_meta( $feed_nom['id'], 'ab_alert_msg', true );
+					if ( ! empty( $error_check ) ) {
+						// translators: Error text.
+						$create            .= ' ' . sprintf( __( 'But the following error occured: %s', 'pressforward' ), $error_check );
+						$feed_nom['simple'] = __( 'There is a problem with the feed associated with this post. The feed could not be verified.', 'pressforward' );
+					}
+					$feed_nom['error'] = $error_check;
+				} else {
+					$feed_nom['id']     = 0;
+					$feed_nom['simple'] = __( "PressForward was unable to identify a feed associated with this site. Please contact the site administrator or add the feed manually in the 'Add Feeds' panel.", 'pressforward' );
+					$message_one        = pf_message( __( 'An error occured when adding the feed: ', 'pressforward' ) );
+					if ( is_wp_error( $create ) ) {
+						$create_wp_error   = $create->get_error_message();
+						$message_two       = pf_message( $create_wp_error );
+						$feed_nom['error'] = $message_two;
+					} else {
+						$message_two = pf_message( $create );
+					}
+					$create = $message_one . $message_two;
+				}
+			} else {
+				$create             = __( 'User doesn\'t have permission to create feeds.', 'pressforward' );
+				$feed_nom['id']     = 0;
+				$feed_nom['error']  = $create;
+				$feed_nom['simple'] = $create;
+			}
+			$feed_nom['msg'] = $create_started . $create;
+
+			update_option( 'pf_last_nominated_feed', $feed_nom );
+
+		} else {
+			$feed_nom = array(
+				'id'     => 0,
+				'msg'    => __( 'No feed was nominated.', 'pressforward' ),
+				'simple' => __( 'User hasn\'t nominated a feed.', 'pressforward' ),
+			);
+			update_option( 'pf_last_nominated_feed', $feed_nom );
+		}
+
 		// Detect if there's an existing nomination for this item.
 		// If so, we must remove the one just created and increment the existing one.
 		$existing_nomination_post_id = pressforward( 'utility.forward_tools' )->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );

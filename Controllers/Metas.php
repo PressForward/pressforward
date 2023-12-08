@@ -662,6 +662,16 @@ class Metas implements HasFilters, HasActions {
 				'level'      => array( 'nomination' ),
 				'serialize'  => false,
 			),
+			'subscribe_to_feed'       => array(
+				'name'       => 'subscribe_to_feed',
+				'title'      => __( 'Subscribe to Feed', 'pressforward' ),
+				'definition' => __( 'Whether to subscribe to the feed associated with an item directly after its nomination.', 'pressforward' ),
+				'function'   => __( 'Whether to subscribe to the feed associated with an item directly after its nomination.', 'pressforward' ),
+				'type'       => array( 'struc' ),
+				'use'        => array( 'api' ),
+				'level'      => array( 'nomination' ),
+				'serialize'  => false,
+			),
 			'readable_status'         => array(
 				'name'       => 'readable_status',
 				'title'      => __( 'Is Readable?', 'pressforward' ),
