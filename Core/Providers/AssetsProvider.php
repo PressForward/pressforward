@@ -353,6 +353,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	 */
 	public function enqueue_block_editor_assets() {
 		$scripts = [
+			'pf-blocks'                     => 'blocks',
 			'pf-nominate-this-block-editor' => 'nominate-this-block-editor',
 		];
 

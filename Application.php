@@ -40,6 +40,7 @@ class Application extends JaxionCore {
 		'PressForward\Core\Providers\AJAXServiceProvider',
 		'PressForward\Core\Providers\APIProvider',
 		'PressForward\Core\Providers\BookmarkletProvider',
+		'PressForward\Core\Providers\BlocksProvider',
 
 		// phpcs:disable
 	// 'PressForward\Core\Providers\CoreServiceProvider',
