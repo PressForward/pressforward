@@ -2,6 +2,7 @@
 import { registerPlugin } from '@wordpress/plugins'
 
 import {
+	Button,
 	CheckboxControl,
 	PanelRow,
 	TextControl
@@ -18,6 +19,8 @@ import { useDispatch, useSelect } from '@wordpress/data'
 
 import './nominate-this-block-editor.scss'
 
+import { assignTags } from '../util/tags'
+
 const NominationSettingsControl = ( {} ) => {
 	const { editPost } = useDispatch( 'core/editor' )
 
@@ -25,6 +28,7 @@ const NominationSettingsControl = ( {} ) => {
 		dateNominated,
 		itemAuthor,
 		itemLink,
+		keywords,
 		nominationCount,
 		postStatus,
 		postType
@@ -35,11 +39,13 @@ const NominationSettingsControl = ( {} ) => {
 		const savedItemAuthor = editedPostMeta?.item_author || ''
 		const savedItemLink = editedPostMeta?.item_link || ''
 		const savedNominationCount = editedPostMeta?.nomination_count || 0
+		const savedKeywords = editedPostMeta?.item_tags ? editedPostMeta.item_tags.split( ',' ) : []
 
 		return {
 			dateNominated: savedDateNominated,
 			itemAuthor: savedItemAuthor,
 			itemLink: savedItemLink,
+			keywords: savedKeywords,
 			nominationCount: savedNominationCount,
 			postStatus: select( 'core/editor' ).getEditedPostAttribute( 'status' ),
 			postType: select( 'core/editor' ).getEditedPostAttribute( 'type' ),
@@ -60,57 +66,91 @@ const NominationSettingsControl = ( {} ) => {
 	// translators: %s: nomination count
 	const nominationCountText = sprintf( __( 'Nomination Count: %s', 'pressforward' ), nominationCount )
 
+	const viaBookmarkletTags = [ 'via bookmarklet' ]
+	const allKeywords = [ ...keywords, ...viaBookmarkletTags ]
+
 	return (
-		<PluginDocumentSettingPanel
-			icon="controls-forward"
-			name="pressforward-nomination-settings-control"
-			title={ __( 'Nomination Settings', 'pressforward' ) }
-		>
-			<PanelRow>
-				<TextControl
-					label={ __( 'Author on Source', 'pressforward' ) }
-					onChange={ ( newItemAuthor ) => {
-						editPostMeta( { 'item_author': newItemAuthor } );
-					} }
-					value={ itemAuthor }
-				/>
-			</PanelRow>
-
-			{ itemLink && (
+		<>
+			<PluginDocumentSettingPanel
+				icon="controls-forward"
+				name="pressforward-nomination-settings-control"
+				title={ __( 'Nomination Settings', 'pressforward' ) }
+			>
 				<PanelRow>
-					<div className="panel-entry">
-						<div className="panel-entry-label">
-							<span className="components-base-control__label-text">{ __( 'Source Link', 'pressforward' ) }</span>
-						</div>
-
-						<div className="panel-entry-content">
-							<a href={ itemLink } target="_blank" rel="noopener noreferrer">{ itemLink }</a>
-						</div>
-					</div>
+					<TextControl
+						label={ __( 'Author on Source', 'pressforward' ) }
+						onChange={ ( newItemAuthor ) => {
+							editPostMeta( { 'item_author': newItemAuthor } );
+						} }
+						value={ itemAuthor }
+					/>
 				</PanelRow>
-			) }
 
-			{ isPublished && dateNominated && (
-				<PanelRow>
-					<div className="panel-entry">
-						<div className="panel-entry-label">
-							<span className="components-base-control__label-text">{ __( 'Date Nominated', 'pressforward' ) }</span>
-						</div>
-
-						<div className="panel-entry-content">
-							{ dateNominated }
-						</div>
-					</div>
-				</PanelRow>
-			) }
-
-			{ isPublished && (
+				{ itemLink && (
 					<PanelRow>
-						{ nominationCountText }
-					</PanelRow>
-			) }
+						<div className="panel-entry">
+							<div className="panel-entry-label">
+								<span className="components-base-control__label-text">{ __( 'Source Link', 'pressforward' ) }</span>
+							</div>
 
-		</PluginDocumentSettingPanel>
+							<div className="panel-entry-content">
+								<a href={ itemLink } target="_blank" rel="noopener noreferrer">{ itemLink }</a>
+							</div>
+						</div>
+					</PanelRow>
+				) }
+
+				{ isPublished && dateNominated && (
+					<PanelRow>
+						<div className="panel-entry">
+							<div className="panel-entry-label">
+								<span className="components-base-control__label-text">{ __( 'Date Nominated', 'pressforward' ) }</span>
+							</div>
+
+							<div className="panel-entry-content">
+								{ dateNominated }
+							</div>
+						</div>
+					</PanelRow>
+				) }
+
+				{ isPublished && (
+						<PanelRow>
+							{ nominationCountText }
+						</PanelRow>
+				) }
+			</PluginDocumentSettingPanel>
+
+			<PluginDocumentSettingPanel
+				icon="controls-forward"
+				name="pressforward-nomination-keywords-control"
+				title={ __( 'Keywords', 'pressforward' ) }
+			>
+				{ keywords && keywords.length > 0 && (
+					<>
+					<p>{ __( 'PressForward has identified the following keywords on the source item:', 'pressforward' ) }</p>
+
+					<p><strong>{ keywords.join( ', ' ) }</strong></p>
+
+					<p>{ __( 'Often, keywords on source content are not useful for the purposes of PressForward curation, so they are not added as nomination tags by default. You may convert the keywords to tags by clicking the button below.', 'pressforward' ) }</p>
+
+					<Button
+						isSecondary
+						onClick={ () => {
+							assignTags( allKeywords )
+						} }
+					>
+						{ __( 'Add Keywords as Tags', 'pressforward' ) }
+					</Button>
+
+					</>
+				) }
+
+				{ keywords.length === 0 && (
+					<p>{ __( 'PressForward was unable to identify any keywords on the source item. Use the "Tags" interface to add your own keywords.', 'pressforward' ) }</p>
+				) }
+			</PluginDocumentSettingPanel>
+		</>
 	)
 }
 
