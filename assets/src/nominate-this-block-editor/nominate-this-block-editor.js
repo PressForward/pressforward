@@ -161,17 +161,22 @@ registerPlugin( 'pressforward-nomination-settings-control', {
 const NominationPrePublishPanel = ( {} ) => {
 	const { editPost } = useDispatch( 'core/editor' )
 
-	const { sendToDraft, subscribeToFeed } = useSelect( ( select ) => {
+	const { postType, sendToDraft, subscribeToFeed } = useSelect( ( select ) => {
 		const editedPostMeta = select( 'core/editor' ).getEditedPostAttribute( 'meta' )
 
 		const savedSendToDraft = editedPostMeta?.send_to_draft || false
 		const savedSubscribeToFeed = editedPostMeta?.subscribe_to_feed || false
 
 		return {
+			postType: select( 'core/editor' ).getEditedPostAttribute( 'type' ),
 			sendToDraft: savedSendToDraft,
 			subscribeToFeed: savedSubscribeToFeed,
 		}
 	} )
+
+	if ( 'nomination' !== postType ) {
+		return;
+	}
 
 	return (
 		<>
