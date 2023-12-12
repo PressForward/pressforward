@@ -17,6 +17,7 @@ const Edit = () => {
 				</span>
 
 				<button className="nominate-this-js-toggle">
+					<span className="dashicons dashicons-clipboard"></span>
 					<span className="screen-reader-text">{ __( 'Show code', 'pressforward' ) }</span>
 				</button>
 			</div>
