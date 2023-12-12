@@ -24,13 +24,16 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 			'assets'
 		);
 
-		add_action(
-			'admin_enqueue_scripts',
-			function () use ( $register ) {
-				$this->add_assets( $register );
-			},
-			0
-		);
+		$enqueue_hooks = [ 'admin_enqueue_scripts', 'wp_enqueue_scripts' ];
+		foreach ( $enqueue_hooks as $enqueue_hook ) {
+			add_action(
+				$enqueue_hook,
+				function () use ( $register ) {
+					$this->add_assets( $register );
+				},
+				0
+			);
+		}
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_styles' ] );
@@ -95,6 +98,14 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'type'   => 'admin',
 				'handle' => 'pf-nomination-success',
 				'src'    => 'assets/css/nomination-success',
+				'deps'   => [],
+			)
+		);
+
+		$assets->register_style(
+			array(
+				'handle' => 'pf-blocks-frontend',
+				'src'    => 'build/blocks-frontend',
 				'deps'   => [],
 			)
 		);
@@ -264,6 +275,15 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'deps'   => array( 'pf' ),
 			)
 		);
+
+		$assets->register_script(
+			array(
+				'type'   => 'web',
+				'handle' => 'pf-blocks-frontend',
+				'src'    => 'build/blocks-frontend',
+				'deps'   => [],
+			)
+		);
 	}
 
 	/**
@@ -380,6 +400,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		);
 
 		$styles = [
+			'pf-blocks'                     => 'blocks',
 			'pf-nominate-this-block-editor' => 'nominate-this-block-editor',
 		];
 

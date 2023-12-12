@@ -23,8 +23,9 @@ class Blocks implements HasActions, HasFilters {
 	public function action_hooks() {
 		return [
 			[
-				'hook'   => 'plugins_loaded',
-				'method' => 'register_blocks',
+				'hook'     => 'init',
+				'method'   => 'register_blocks',
+				'priority' => 5,
 			],
 		];
 	}

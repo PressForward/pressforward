@@ -38,11 +38,11 @@ function register_block() {
  * @return string
  */
 function render_block() {
-	$bookmarklet_code = get_option( 'pf_bookmarklet_code' );
+	ob_start();
 
-	if ( ! $bookmarklet_code ) {
-		return '';
-	}
+	include PF_ROOT . '/parts/nominate-this-buttons.tpl.php';
+
+	$bookmarklet_code = ob_get_clean();
 
 	return $bookmarklet_code;
 }

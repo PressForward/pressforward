@@ -1,0 +1,76 @@
+.nominate-this-bookmarklet,
+.nominate-this-bookmarklet:hover,
+.nominate-this-bookmarklet:focus,
+.nominate-this-bookmarklet:active {
+	display: inline-block;
+	position: relative;
+	cursor: move;
+	color: #2c3338;
+	background: #dcdcde;
+	border-radius: 5px;
+	border: 1px solid #c3c4c7;
+	font-style: normal;
+	line-height: 16px;
+	font-size: 14px;
+	text-decoration: none;
+}
+
+.nominate-this-bookmarklet:active {
+	outline: none;
+}
+
+.nominate-this-bookmarklet span {
+	display: inline-block;
+	margin: 0;
+	padding: 0 12px 8px 9px;
+}
+
+.nominate-this-bookmarklet span:before {
+	color: #787c82;
+	font: normal 20px/1 dashicons;
+	content: "\f157";
+	position: relative;
+	display: inline-block;
+	top: 4px;
+	margin-right: 4px;
+}
+
+.nominate-this-bookmarklet-code {
+	.nominate-this-js-toggle,
+	.nominate-this-bookmarklet:hover,
+	.nominate-this-bookmarklet:focus,
+	.nominate-this-bookmarklet:active,
+	button {
+		display: inline-block;
+		position: relative;
+		color: #2c3338;
+		background: #dcdcde;
+		border-radius: 5px;
+		border: 1px solid #c3c4c7;
+		font-style: normal;
+		line-height: 16px;
+		font-size: 14px;
+		text-decoration: none;
+	}
+
+	.nominate-this-bookmarklet:hover,
+	.nominate-this-bookmarklet:focus,
+	.nominate-this-bookmarklet:active {
+		cursor: move;
+	}
+
+	button {
+		padding: 8px;
+		cursor: pointer;
+	}
+
+	.nominate-this-code-wrap {
+		display: none;
+	}
+
+	&.is-open {
+		.nominate-this-code-wrap {
+			display: block;
+		}
+	}
+}
