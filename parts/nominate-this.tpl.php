@@ -14,10 +14,6 @@
 		<p><?php esc_html_e( 'On a mobile device? Use the clipboard icon to copy the bookmarklet code and copy into the URL field of a manually-created bookmark.', 'pressforward' ); ?></p>
 
 		<?php require __DIR__ . '/nominate-this-buttons.tpl.php'; ?>
-
-		<?php wp_enqueue_script( 'pf-blocks-frontend' ); ?>
-		<?php wp_enqueue_style( 'pf-blocks-frontend' ); ?>
-
 	</div>
 
 <?php

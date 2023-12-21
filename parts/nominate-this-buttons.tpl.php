@@ -1,3 +1,16 @@
+<?php
+/**
+ * Template for the bookmarklet-code block.
+ *
+ * @package PressForward
+ * @since 5.6.0
+ */
+
+?>
+
+<?php wp_enqueue_script( 'pf-blocks-frontend' ); ?>
+<?php wp_enqueue_style( 'pf-blocks-frontend' ); ?>
+
 <div class="nominate-this-bookmarklet-code">
 	<p class="nominate-this-bookmarklet-wrapper">
 		<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
