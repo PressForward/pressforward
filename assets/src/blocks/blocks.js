@@ -37,6 +37,11 @@ const PostSettingsControl = ( {} ) => {
 		return null
 	}
 
+	// If there's no itemLink, this is probably not a PressForward item.
+	if ( ! itemLink ) {
+		return null
+	}
+
 	const editPostMeta = ( metaToUpdate ) => {
 		editPost( { meta: metaToUpdate } );
 	};
@@ -44,8 +49,6 @@ const PostSettingsControl = ( {} ) => {
 	const sourceLink = <a href={ itemLink } target="_blank" rel="noopener noreferrer">{ itemLink }</a>
 
 	const linkToSourceInt = parseInt( linkToSource )
-	console.log(linkToSourceInt)
-	console.log( 0 === linkToSourceInt )
 
 	return (
 		<>
@@ -79,11 +82,9 @@ const PostSettingsControl = ( {} ) => {
 					) }
 				</p>
 
-				{ itemLink && (
-					<PanelRow>
-						{ sourceLink }
-					</PanelRow>
-				) }
+				<PanelRow>
+					{ sourceLink }
+				</PanelRow>
 			</PluginDocumentSettingPanel>
 		</>
 	)
