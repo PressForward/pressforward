@@ -881,6 +881,12 @@ function pf_replace_author_presentation( $author ) {
 		return $author;
 	}
 
+	// If this doesn't look like a PF item, return the author.
+	$item_link = get_post_meta( $post->ID, 'item_link', true );
+	if ( ! $item_link ) {
+		return $author;
+	}
+
 	$custom_author = pressforward( 'controller.metas' )->retrieve_meta( $post->ID, 'item_author' );
 	if ( $custom_author ) {
 		return $custom_author;
@@ -911,6 +917,12 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 	}
 
 	if ( 'yes' !== get_option( 'pf_present_author_as_primary', 'yes' ) ) {
+		return $author_uri;
+	}
+
+	// If this doesn't look like a PF item, return the WP URI.
+	$item_link = get_post_meta( $id, 'item_link', true );
+	if ( ! $item_link ) {
 		return $author_uri;
 	}
 
