@@ -10,6 +10,7 @@ namespace PressForward\Core\Providers;
 use Intraxia\Jaxion\Contract\Core\Container;
 use Intraxia\Jaxion\Assets\ServiceProvider;
 
+use PressForward\Core\API\NominationExtension;
 use PressForward\Core\API\PostExtension;
 use PressForward\Core\API\FeedEndpoint;
 use PressForward\Core\API\ItemEndpoint;
@@ -48,6 +49,14 @@ class APIProvider extends ServiceProvider {
 				return new PostExtension( $container->fetch( 'controller.metas' ) );
 			}
 		);
+
+		$container->share(
+			'api.nomination_extension',
+			function ( $container ) {
+				return new NominationExtension( $container->fetch( 'controller.metas' ) );
+			}
+		);
+
 		$container->share(
 			'api.feed_endpoint',
 			function ( $container ) {
