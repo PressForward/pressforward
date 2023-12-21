@@ -399,6 +399,17 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 			'before'
 		);
 
+		wp_add_inline_script(
+			'pf-blocks',
+			'window.pfBlocks = ' . wp_json_encode(
+				[
+					'draftPostType' => pressforward_draft_post_type(),
+					'linkToSource'  => get_option( 'pf_link_to_source' ),
+				]
+			),
+			'before'
+		);
+
 		$styles = [
 			'pf-blocks'                     => 'blocks',
 			'pf-nominate-this-block-editor' => 'nominate-this-block-editor',

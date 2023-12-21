@@ -486,7 +486,7 @@ class Metas implements HasFilters, HasActions {
 				'type'       => array( 'adm', 'aggr' ),
 				'use'        => array( 'api' ),
 				'level'      => array( 'item', 'nomination', 'post' ),
-				'serialize'  => true,
+				'serialize'  => false,
 			),
 			'pf_feed_item_source'     => array(
 				'name'       => 'pf_feed_item_source',
