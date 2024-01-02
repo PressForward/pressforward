@@ -149,7 +149,8 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 			}
 		}
 
-		$nominator_array = $this->metas->get_post_pf_meta( $post->ID, 'nominator_array', true );
+		$nominator_array = pressforward( 'utility.forward_tools' )->get_post_nominator_array( $post->ID );
+
 		if ( $nominator_array ) {
 			$data->add_links(
 				[
@@ -183,7 +184,7 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 			'nominators',
 			array(
 				'get_callback' => function ( $post_array ) {
-					return $this->metas->get_post_pf_meta( $post_array['id'], 'nominator_array', true );
+					return pressforward( 'utility.forward_tools' )->get_post_nominator_array( $post_array['id'] );
 				},
 			)
 		);

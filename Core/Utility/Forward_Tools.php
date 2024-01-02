@@ -73,6 +73,53 @@ class Forward_Tools {
 	}
 
 	/**
+	 * Gets the nominator array for a nomination.
+	 *
+	 * @param int $nomination_id WP post ID of the nomination.
+	 * @return array
+	 */
+	public function get_nomination_nominator_array( $nomination_id ) {
+		$nominators = $this->metas->get_post_pf_meta( $nomination_id, 'nominator_array' );
+		if ( ! $nominators ) {
+			$nominators = [];
+		}
+
+		return $nominators;
+	}
+
+	/**
+	 * Gets the nominator array for a promoted item.
+	 *
+	 * Nominators are stored canonically on the nomination object.
+	 *
+	 * @param int $post_id WP post ID of the promoted item.
+	 * @return array
+	 */
+	public function get_post_nominator_array( $post_id ) {
+		$nomination_id = $this->get_post_nomination_id( $post_id );
+		if ( ! $nomination_id ) {
+			return [];
+		}
+
+		return $this->get_nomination_nominator_array( $nomination_id );
+	}
+
+	/**
+	 * Gets the nomination corresponding to a promoted item.
+	 *
+	 * @param int $post_id WP post ID of the promoted item.
+	 * @return int
+	 */
+	public function get_post_nomination_id( $post_id ) {
+		$nomination_id = $this->metas->get_post_pf_meta( $post_id, 'nom_id', true );
+		if ( ! $nomination_id ) {
+			return 0;
+		}
+
+		return (int) $nomination_id;
+	}
+
+	/**
 	 * Adds a user to the list of stored nominators for an item.
 	 *
 	 * @param int $post_id ID of the nomination.

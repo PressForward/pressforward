@@ -39,7 +39,16 @@ function register_block() {
  * @return string
  */
 function render_block( $attributes ) {
-	$nominators = pressforward( 'controller.metas' )->get_post_pf_meta( get_the_ID(), 'nominator_array', true );
+	$the_post = get_post();
+	if ( ! $the_post ) {
+		return '';
+	}
+
+	if ( pressforward( 'schema.nominations' )->post_type === $the_post->post_type ) {
+		$nominators = pressforward( 'utility.forward_tools' )->get_nomination_nominator_array( $the_post->ID );
+	} else {
+		$nominators = pressforward( 'utility.forward_tools' )->get_post_nominator_array( $the_post->ID );
+	}
 
 	$nominator_names = is_array( $nominators ) ? array_map(
 		function ( $nominator ) {
