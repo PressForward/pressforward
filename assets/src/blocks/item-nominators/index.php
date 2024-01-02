@@ -52,6 +52,7 @@ function render_block( $attributes, $content, $block ) {
 	) : [];
 
 	$nominator_names = array_filter( $nominator_names );
+	sort( $nominator_names );
 
 	if ( ! $nominator_names ) {
 		return '';
