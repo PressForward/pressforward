@@ -61,19 +61,19 @@ function render_block( $attributes, $content, $block ) {
 	// Assemble inline styles.
 	$inline_styles = [];
 	if ( isset( $attributes['style']['typography']['fontSize'] ) ) {
-		$inline_styles[] = 'font-size: ' . $attributes['style']['typography']['fontSize'];
+		$inline_styles[] = 'font-size: ' . process_var_style_property( $attributes['style']['typography']['fontSize'] );
 	}
 
 	if ( isset( $attributes['style']['typography']['lineHeight'] ) ) {
-		$inline_styles[] = 'line-height: ' . $attributes['style']['typography']['lineHeight'];
+		$inline_styles[] = 'line-height: ' . process_var_style_property( $attributes['style']['typography']['lineHeight'] );
 	}
 
 	if ( isset( $attributes['style']['color']['background'] ) ) {
-		$inline_styles[] = 'background-color: ' . $attributes['style']['color']['background'];
+		$inline_styles[] = 'background-color: ' . process_var_style_property( $attributes['style']['color']['background'] );
 	}
 
 	if ( isset( $attributes['style']['color']['text'] ) ) {
-		$inline_styles[] = 'color: ' . $attributes['style']['color']['text'];
+		$inline_styles[] = 'color: ' . process_var_style_property( $attributes['style']['color']['text'] );
 	}
 
 	$spacing_types = [ 'margin', 'padding' ];
@@ -83,20 +83,21 @@ function render_block( $attributes, $content, $block ) {
 		}
 
 		if ( is_scalar( $attributes['style']['spacing'][ $spacing_type ] ) ) {
-			$inline_styles[] = $spacing_type . ': ' . $attributes['style']['spacing'][ $spacing_type ];
+			$inline_styles[] = $spacing_type . ': ' . process_var_style_property( $attributes['style']['spacing'][ $spacing_type ] );
 			continue;
 		}
 
 		foreach ( [ 'top', 'right', 'bottom', 'left' ] as $spacing_direction ) {
 			if ( isset( $attributes['style']['spacing'][ $spacing_type ][ $spacing_direction ] ) ) {
-				$inline_styles[] = $spacing_type . '-' . $spacing_direction . ': ' . $attributes['style']['spacing'][ $spacing_type ][ $spacing_direction ];
+				$inline_styles[] = $spacing_type . '-' . $spacing_direction . ': ' . process_var_style_property( $attributes['style']['spacing'][ $spacing_type ][ $spacing_direction ] );
 			}
 		}
 	}
 
-	$extra_attributes = [
-		'style' => implode( ';', $inline_styles ),
-	];
+	$extra_attributes = [];
+	if ( $inline_styles ) {
+		$extra_attributes['style'] = implode( ';', $inline_styles ) . ';';
+	}
 
 	wp_enqueue_style( 'pf-blocks-frontend' );
 
@@ -118,4 +119,22 @@ function render_block( $attributes, $content, $block ) {
 	$block = ob_get_clean();
 
 	return $block;
+}
+
+/**
+ * Detects and processes style property that may be prefixed with 'var:'.
+ *
+ * @param string $style_property The style property to process.
+ * @return string
+ */
+function process_var_style_property( $style_property ) {
+	if ( 0 !== strpos( $style_property, 'var:' ) ) {
+		return $style_property;
+	}
+
+	$style_property = substr( $style_property, 4 );
+
+	$style_property = str_replace( '|', '--', $style_property );
+
+	return 'var(--' . $style_property . ')';
 }
