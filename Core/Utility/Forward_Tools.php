@@ -307,6 +307,7 @@ class Forward_Tools {
 			return false;
 		} else {
 			$this->advance_interface->transition( $nomination_id, $new_post_id );
+			$this->metas->update_pf_meta( $new_post_id, 'nom_id', $nomination_id );
 			return $new_post_id;
 		}
 	}
