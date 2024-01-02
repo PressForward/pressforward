@@ -38,7 +38,7 @@ function register_block() {
  * @param array $attributes The block attributes.
  * @return string
  */
-function render_block( $attributes, $content, $block ) {
+function render_block( $attributes ) {
 	$nominators = pressforward( 'controller.metas' )->get_post_pf_meta( get_the_ID(), 'nominator_array', true );
 
 	$nominator_names = is_array( $nominators ) ? array_map(
