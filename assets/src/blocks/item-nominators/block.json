@@ -1,0 +1,62 @@
+{
+	"$schema": "https://json.schemastore.org/block.json",
+	"apiVersion": 2,
+	"name": "pressforward/item-nominators",
+	"title": "Nominators",
+	"category": "pressforward",
+	"icon": "controls-forward",
+	"description": "Display a list of users who have nominated the current item.",
+	"textdomain": "pressforward",
+	"supports": {
+		"align": true,
+		"anchor": true,
+		"color": {
+			"background": true,
+			"text": true
+		},
+		"html": false,
+		"spacing": {
+			"padding": true,
+			"margin": true
+		},
+		"typography": {
+			"fontSize": true
+		}
+	},
+
+	"attributes": {
+		"backgroundColor": {
+			"type": "string",
+			"default": "#f5f5f5"
+		},
+		"fontSize": {
+			"type": "string",
+			"default": "0.9em"
+		},
+		"prefix": {
+			"type": "string",
+			"default": "Nominated by: "
+		},
+		"style": {
+			"type": "object",
+			"default": {
+				"color": {
+					"background": "#f5f5f5"
+				},
+				"typography": {
+					"fontSize": "0.9em"
+				},
+				"spacing": {
+					"padding": {
+						"left": "1em",
+						"right": "1em"
+					}
+				}
+			}
+		}
+	},
+	"styles": [
+		{ "name": "inline", "label": "Inline", "isDefault": true },
+		{ "name": "stacked", "label": "Stacked" }
+	]
+}

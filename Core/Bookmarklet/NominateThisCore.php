@@ -606,6 +606,9 @@ class NominateThisCore implements HasActions, HasFilters {
 			if ( $send_to_draft ) {
 				$user_data = pressforward( 'utility.forward_tools' )->nomination_to_last_step( $item_id, $nomination_post_id );
 			}
+
+			// Add the new nomination event to the existing nomination item.
+			pressforward( 'utility.forward_tools' )->add_user_to_nominator_array( $nomination_post_id, $post->post_author );
 		} else {
 			// Add the new nomination event to the existing nomination item.
 			pressforward( 'utility.forward_tools' )->add_user_to_nominator_array( $existing_nomination_post_id, $post->post_author );

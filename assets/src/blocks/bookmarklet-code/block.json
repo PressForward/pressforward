@@ -7,7 +7,6 @@
 	"icon": "controls-forward",
 	"description": "Display the code used to create the Nominate This bookmarklet.",
 	"textdomain": "pressforward",
-	"editorScript": "file:index.js",
 	"supports": {
 		"anchor": true,
 		"html": false

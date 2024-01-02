@@ -129,20 +129,15 @@ class NominationExtension extends APIWithMetaEndpoints implements HasActions, Ha
 		// Most REST fields are registered by the central meta schema.
 		$this->register_rest_post_read_meta_fields();
 
-		// 'nominator_array' is part of the serialized 'pf_meta', and must be separated
-		// out to be included in the REST API response.
-		$nominator_id_post_types = [ 'post', 'nomination' ];
-		foreach ( $nominator_id_post_types as $post_type ) {
-			register_rest_field(
-				$post_type,
-				'nominators',
-				array(
-					'get_callback' => function ( $post_array ) {
-						return $this->metas->get_post_pf_meta( $post_array['id'], 'nominator_array', true );
-					},
-				)
-			);
-		}
+		register_rest_field(
+			$this->post_type,
+			'nominators',
+			array(
+				'get_callback' => function ( $post_array ) {
+					return $this->metas->get_post_pf_meta( $post_array['id'], 'nominator_array', true );
+				},
+			)
+		);
 	}
 
 	/**

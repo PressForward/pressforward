@@ -8,6 +8,7 @@ import { PanelRow, SelectControl } from '@wordpress/components'
 
 // Load blocks.
 import './bookmarklet-code';
+import './item-nominators';
 
 // Other miscellaneous Block Editor-related modifications.
 const PostSettingsControl = ( {} ) => {
