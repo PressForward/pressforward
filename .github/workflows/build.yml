@@ -1,0 +1,50 @@
+name: Building a release zip
+
+on:
+  push:
+    branches:
+    - build-action # This will be updated to push: tags
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Build
+      run: |
+        npm install
+        npm run build
+
+    - name: Composer install
+      uses: "ramsey/composer-install@v2"
+      with:
+        composer-options: "--no-dev"
+
+	- name: Make POT file
+      run: |
+        npm run makepot
+
+    - name: Zip
+      uses: thedoctor0/zip-release@main
+      with:
+        type: 'zip'
+        filename: 'pressforward.zip'
+        exclusions: '*.git* /*node_modules/* composer.* package.json package-lock.json phpcs.xml.dist .distignore .travis.yml yarn.lock .svnignore Gulpfile.js CODE_OF_CONDUCT.md CONTRIBUTING.md'
+
+    - name: Upload Release
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "pressforward.zip"
+        token: ${{ secrets.GITHUB_TOKEN }}
+
