@@ -103,7 +103,6 @@ const NominationSettingsControl = ( {} ) => {
 		dateNominated,
 		itemAuthor,
 		itemLink,
-		keywords,
 		nominationCount,
 		postStatus,
 		postType
@@ -117,13 +116,11 @@ const NominationSettingsControl = ( {} ) => {
 		const savedItemAuthor = editedPostMeta?.item_author || ''
 		const savedItemLink = editedPostMeta?.item_link || ''
 		const savedNominationCount = Object.keys( savedNominators ).length
-		const savedKeywords = editedPostMeta?.item_tags ? editedPostMeta.item_tags.split( ',' ) : []
 
 		return {
 			dateNominated: savedDateNominated,
 			itemAuthor: savedItemAuthor,
 			itemLink: savedItemLink,
-			keywords: savedKeywords,
 			nominationCount: savedNominationCount,
 			postStatus: select( 'core/editor' ).getEditedPostAttribute( 'status' ),
 			postType: select( 'core/editor' ).getEditedPostAttribute( 'type' ),
@@ -145,9 +142,6 @@ const NominationSettingsControl = ( {} ) => {
 
 	// translators: %s: nomination count
 	const nominationCountText = sprintf( __( 'Nomination Count: %s', 'pressforward' ), nominationCount )
-
-	const viaBookmarkletTags = [ 'via bookmarklet' ]
-	const allKeywords = [ ...keywords, ...viaBookmarkletTags ]
 
 	return (
 		<>
