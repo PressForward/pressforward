@@ -633,7 +633,7 @@ class NominateThisCore implements HasActions, HasFilters {
 		$doc->loadHTML( '<?xml encoding="UTF-8">' . $body );
 
 		$embed_providers = [
-			'#https?://(www.)?youtube\.com/(?:v|embed)/([^/\?]+)(.*)#i' => function ( $matches, $url ) {
+			'#https?://(www.)?youtube\.com/(?:v|embed)/([^/\?]+)(.*)#i' => function ( $matches ) {
 				$retval = sprintf( 'https://youtube.com/watch?v=%s', rawurlencode( $matches[2] ) );
 
 				// If any query parameters were present, we re-add them.
@@ -658,7 +658,7 @@ class NominateThisCore implements HasActions, HasFilters {
 				if ( preg_match( $regex, $iframe_src, $matches ) ) {
 					$embeds[] = [
 						'embedSrc' => $iframe_src,
-						'embedUrl' => $callback( $matches, $iframe_src ),
+						'embedUrl' => $callback( $matches ),
 					];
 				}
 			}

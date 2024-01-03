@@ -28,7 +28,7 @@ class BookmarkletProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		$container->share(
 			'bookmarklet.core',
-			function ( $container ) {
+			function () {
 				return new NominateThisCore();
 			}
 		);
