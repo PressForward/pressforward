@@ -4,7 +4,7 @@ import { registerPlugin } from '@wordpress/plugins'
 import { useDispatch, useSelect } from '@wordpress/data'
 import { __, sprintf } from '@wordpress/i18n'
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post'
-import { PanelRow, SelectControl } from '@wordpress/components'
+import { PanelRow, SelectControl, TextControl } from '@wordpress/components'
 
 // Load blocks.
 import './bookmarklet-code';
@@ -95,3 +95,116 @@ registerPlugin(
 	'pressforward-post-settings-control',
 	{ render: PostSettingsControl }
 );
+
+const NominationSettingsControl = ( {} ) => {
+	const { editPost } = useDispatch( 'core/editor' )
+
+	const {
+		dateNominated,
+		itemAuthor,
+		itemLink,
+		keywords,
+		nominationCount,
+		postStatus,
+		postType
+	} = useSelect( ( select ) => {
+		const editedPostMeta = select( 'core/editor' ).getEditedPostAttribute( 'meta' )
+		const editedPost = select( 'core/editor' ).getCurrentPost()
+
+		const savedNominators = editedPost?.nominators ||  {}
+
+		const savedDateNominated = editedPostMeta?.date_nominated || ''
+		const savedItemAuthor = editedPostMeta?.item_author || ''
+		const savedItemLink = editedPostMeta?.item_link || ''
+		const savedNominationCount = Object.keys( savedNominators ).length
+		const savedKeywords = editedPostMeta?.item_tags ? editedPostMeta.item_tags.split( ',' ) : []
+
+		return {
+			dateNominated: savedDateNominated,
+			itemAuthor: savedItemAuthor,
+			itemLink: savedItemLink,
+			keywords: savedKeywords,
+			nominationCount: savedNominationCount,
+			postStatus: select( 'core/editor' ).getEditedPostAttribute( 'status' ),
+			postType: select( 'core/editor' ).getEditedPostAttribute( 'type' ),
+		}
+	} )
+
+	const { draftPostType, nominationPostType } = pfBlocks
+
+	// Only show on 'nomination' post type.
+	if ( nominationPostType !== postType && draftPostType !== postType ) {
+		return null
+	}
+
+	const isPublished = postStatus === 'publish'
+
+	const editPostMeta = ( metaToUpdate ) => {
+		editPost( { meta: metaToUpdate } );
+	};
+
+	// translators: %s: nomination count
+	const nominationCountText = sprintf( __( 'Nomination Count: %s', 'pressforward' ), nominationCount )
+
+	const viaBookmarkletTags = [ 'via bookmarklet' ]
+	const allKeywords = [ ...keywords, ...viaBookmarkletTags ]
+
+	return (
+		<>
+			<PluginDocumentSettingPanel
+				icon="controls-forward"
+				name="pressforward-nomination-settings-control"
+				title={ __( 'Nomination Info', 'pressforward' ) }
+			>
+				<PanelRow>
+					<TextControl
+						label={ __( 'Author on Source', 'pressforward' ) }
+						onChange={ ( newItemAuthor ) => {
+							editPostMeta( { 'item_author': newItemAuthor } );
+						} }
+						value={ itemAuthor }
+					/>
+				</PanelRow>
+
+				{ itemLink && (
+					<PanelRow>
+						<div className="panel-entry">
+							<div className="panel-entry-label">
+								<span className="components-base-control__label-text">{ __( 'Source Link', 'pressforward' ) }</span>
+							</div>
+
+							<div className="panel-entry-content">
+								<a href={ itemLink } target="_blank" rel="noopener noreferrer">{ itemLink }</a>
+							</div>
+						</div>
+					</PanelRow>
+				) }
+
+				{ isPublished && dateNominated && (
+					<PanelRow>
+						<div className="panel-entry">
+							<div className="panel-entry-label">
+								<span className="components-base-control__label-text">{ __( 'Date Nominated', 'pressforward' ) }</span>
+							</div>
+
+							<div className="panel-entry-content">
+								{ dateNominated }
+							</div>
+						</div>
+					</PanelRow>
+				) }
+
+				{ isPublished && (
+						<PanelRow>
+							{ nominationCountText }
+						</PanelRow>
+				) }
+			</PluginDocumentSettingPanel>
+		</>
+	)
+}
+
+registerPlugin( 'pressforward-nomination-settings-control', {
+	render: NominationSettingsControl,
+} );
+

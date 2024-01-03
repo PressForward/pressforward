@@ -394,8 +394,6 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 			'window.pfNominateThisBlockEditor = ' . wp_json_encode(
 				[
 					'nominationSuccessUrl' => admin_url( 'admin.php?page=pf-nomination-success' ),
-					'draftPostType'        => pressforward_draft_post_type(),
-					'nominationPostType'   => pressforward_nomination_post_type(),
 				]
 			),
 			'before'
@@ -405,8 +403,9 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 			'pf-blocks',
 			'window.pfBlocks = ' . wp_json_encode(
 				[
-					'draftPostType' => pressforward_draft_post_type(),
-					'linkToSource'  => get_option( 'pf_link_to_source' ),
+					'draftPostType'      => pressforward_draft_post_type(),
+					'linkToSource'       => get_option( 'pf_link_to_source' ),
+					'nominationPostType' => pressforward_nomination_post_type(),
 				]
 			),
 			'before'
