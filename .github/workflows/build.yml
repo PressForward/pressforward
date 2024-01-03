@@ -31,7 +31,7 @@ jobs:
       with:
         composer-options: "--no-dev"
 
-	- name: Make POT file
+    - name: Make POT file
       run: |
         npm run makepot
 
