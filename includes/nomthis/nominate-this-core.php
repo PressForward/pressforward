@@ -92,13 +92,15 @@ var pagenow = 'nominate-this';
 <?php
 $the_admin_body_class  = ( is_rtl() ) ? 'rtl' : '';
 $the_admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( '_', '-', get_locale() ) ) );
+
+// Translator comment is provided in another file.
+// phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
+$loading_content_message = sprintf( esc_html__( 'Loading content from %s.', 'pressforward' ), '<span id="loading-url"></span>' );
+
 ?>
 <body class="press-this wp-admin wp-core-ui nominate-this <?php echo esc_attr( $the_admin_body_class ); ?>">
 
 <div id="loading-indicator" class="loading-indicator nomthis-indicator">
-	<?php // translators: URL being loaded. ?>
-	<?php $loading_content_message = sprintf( esc_html__( 'Loading content from %s.', 'pressforward' ), '<span id="loading-url"></span>' ); ?>
-
 	<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 	<img src="<?php echo esc_url( admin_url( 'images/loading.gif' ) ); ?>" role="presentation" /> <span><?php echo $loading_content_message; ?></span>
 </div>
