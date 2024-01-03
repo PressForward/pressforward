@@ -34,11 +34,14 @@ const NominationSettingsControl = ( {} ) => {
 		postType
 	} = useSelect( ( select ) => {
 		const editedPostMeta = select( 'core/editor' ).getEditedPostAttribute( 'meta' )
+		const editedPost = select( 'core/editor' ).getCurrentPost()
+
+		const savedNominators = editedPost?.nominators ||  {}
 
 		const savedDateNominated = editedPostMeta?.date_nominated || ''
 		const savedItemAuthor = editedPostMeta?.item_author || ''
 		const savedItemLink = editedPostMeta?.item_link || ''
-		const savedNominationCount = editedPostMeta?.nomination_count || 0
+		const savedNominationCount = Object.keys( savedNominators ).length
 		const savedKeywords = editedPostMeta?.item_tags ? editedPostMeta.item_tags.split( ',' ) : []
 
 		return {
@@ -52,8 +55,10 @@ const NominationSettingsControl = ( {} ) => {
 		}
 	} )
 
+	const { draftPostType, nominationPostType } = pfNominateThisBlockEditor
+
 	// Only show on 'nomination' post type.
-	if ( postType !== 'nomination' ) {
+	if ( nominationPostType !== postType && draftPostType !== postType ) {
 		return null
 	}
 
@@ -74,7 +79,7 @@ const NominationSettingsControl = ( {} ) => {
 			<PluginDocumentSettingPanel
 				icon="controls-forward"
 				name="pressforward-nomination-settings-control"
-				title={ __( 'Nomination Settings', 'pressforward' ) }
+				title={ __( 'Nomination Info', 'pressforward' ) }
 			>
 				<PanelRow>
 					<TextControl

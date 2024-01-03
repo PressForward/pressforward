@@ -241,6 +241,17 @@ function pressforward_draft_post_type() {
 }
 
 /**
+ * Gets the post type name for nominations.
+ *
+ * @since 5.6.0
+ *
+ * @return string The name of the nomination post_type for PressForward.
+ */
+function pressforward_nomination_post_type() {
+	return pressforward( 'schema.nominations' )->post_type;
+}
+
+/**
  * Get the feed item post type name.
  *
  * @since 1.7

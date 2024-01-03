@@ -394,6 +394,8 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 			'window.pfNominateThisBlockEditor = ' . wp_json_encode(
 				[
 					'nominationSuccessUrl' => admin_url( 'admin.php?page=pf-nomination-success' ),
+					'draftPostType'        => pressforward_draft_post_type(),
+					'nominationPostType'   => pressforward_nomination_post_type(),
 				]
 			),
 			'before'
