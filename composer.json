@@ -35,7 +35,7 @@
     },
 	"scripts": {
 		"makepot-audit": [
-			"wp --allow-root i18n make-pot . languages/pressforward.pot --slug=pressforward --exclude=\".github,node_modules,vendor,build\""
+			"./vendor/bin/wp --allow-root i18n make-pot . languages/pressforward.pot --slug=pressforward --exclude=\".github,node_modules,vendor,build\""
 		],
         "makepot": [
 			"@makepot-audit --skip-audit"
