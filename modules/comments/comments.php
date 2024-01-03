@@ -219,7 +219,7 @@ class PF_Comments extends PF_Module {
 
 				<p id="ef-replysubmit">
 					<a class="ef-replysave button-primary alignright" href="#comments-form">
-						<span id="ef-replybtn"><?php esc_html_e( 'Submit Response', 'edit-flow' ); ?></span>
+						<span id="ef-replybtn"><?php esc_html_e( 'Submit Comment', 'pressforward' ); ?></span>
 					</a>
 					<a class="ef-replycancel button-secondary alignright" href="#comments-form"><?php esc_html_e( 'Cancel', 'pressforward' ); ?></a>
 					<img alt="<?php esc_attr_e( 'Sending comment...', 'pressforward' ); ?>" src="<?php echo esc_attr( admin_url( '/images/wpspin_light.gif' ) ); ?>" class="alignright" style="display: none;" id="ef-comment_loading" />
