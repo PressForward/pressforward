@@ -100,7 +100,7 @@ class NominationExtension extends APIWithMetaEndpoints implements HasActions, Ha
 	 * @return \WP_REST_Response
 	 */
 	public function add_rest_post_links( $data, $post, $request ) {
-		$nominator_array = pressforward( 'utility.forward_tools' )->get_post_nominator_array( $post->ID );
+		$nominator_array = pressforward( 'utility.forward_tools' )->get_nomination_nominator_array( $post->ID );
 		if ( $nominator_array ) {
 			$data->add_links(
 				[
@@ -134,7 +134,7 @@ class NominationExtension extends APIWithMetaEndpoints implements HasActions, Ha
 			'nominators',
 			array(
 				'get_callback' => function ( $post_array ) {
-					return pressforward( 'utility.forward_tools' )->get_post_nominator_array( $post_array['id'] );
+					return pressforward( 'utility.forward_tools' )->get_nomination_nominator_array( $post_array['id'] );
 				},
 			)
 		);
