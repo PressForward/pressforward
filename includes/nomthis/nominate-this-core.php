@@ -97,7 +97,10 @@ $the_admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_repla
 
 <div id="loading-indicator" class="loading-indicator nomthis-indicator">
 	<?php // translators: URL being loaded. ?>
-	<img src="<?php echo esc_url( admin_url( 'images/loading.gif' ) ); ?>" role="presentation" /> <span><?php printf( esc_html__( 'Loading content from %s.', 'pressforward' ), '<span id="loading-url"></span>' ); ?></span>
+	<?php $loading_content_message = sprintf( esc_html__( 'Loading content from %s.', 'pressforward' ), '<span id="loading-url"></span>' ); ?>
+
+	<?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+	<img src="<?php echo esc_url( admin_url( 'images/loading.gif' ) ); ?>" role="presentation" /> <span><?php echo $loading_content_message; ?></span>
 </div>
 
 <div id="failure-indicator" class="failure-indicator nomthis-indicator">
