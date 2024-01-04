@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-01-03T20:24:33-06:00\n"
+"POT-Creation-Date: 2024-01-03T21:08:20-06:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: pressforward\n"
@@ -314,6 +314,7 @@ msgstr ""
 #: Controllers/Metas.php:657
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:46
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:52
+#: build/nominate-this-block-editor.js:1
 msgid "Send to Draft"
 msgstr ""
 
@@ -325,6 +326,7 @@ msgstr ""
 #: Controllers/Metas.php:667
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:63
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:69
+#: build/nominate-this-block-editor.js:1
 msgid "Subscribe to Feed"
 msgstr ""
 
@@ -2762,37 +2764,45 @@ msgid "Make Active"
 msgstr ""
 
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:49
+#: build/nominate-this-block-editor.js:1
 msgid "Typically, nominated items are sent to Dashboard > Nominations, where they must be promoted to Draft status. Check this box to send this nomination directly to Draft."
 msgstr ""
 
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:66
+#: build/nominate-this-block-editor.js:1
 msgid "If PressForward can find a feed associated with this item, the feed will be added to your Subscribed Feeds list."
 msgstr ""
 
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:108
 #: assets/src/nominate-this/nominate-this.js:211
 #: assets/src/nominate-this/nominate-this.js:220
+#: build/nominate-this-block-editor.js:1
 #: build/nominate-this.js:1
 msgid "via bookmarklet"
 msgstr ""
 
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:115
+#: build/nominate-this-block-editor.js:1
 msgid "Keywords"
 msgstr ""
 
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:119
+#: build/nominate-this-block-editor.js:1
 msgid "PressForward has identified the following keywords on the source item:"
 msgstr ""
 
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:123
+#: build/nominate-this-block-editor.js:1
 msgid "Often, keywords on source content are not useful for the purposes of PressForward curation, so they are not added as nomination tags by default. You may convert the keywords to tags by clicking the button below."
 msgstr ""
 
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:131
+#: build/nominate-this-block-editor.js:1
 msgid "Add Keywords as Tags"
 msgstr ""
 
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:138
+#: build/nominate-this-block-editor.js:1
 msgid "PressForward was unable to identify any keywords on the source item. Use the \"Tags\" interface to add your own keywords."
 msgstr ""
 
