@@ -31,12 +31,15 @@ jobs:
 
     - name: Composer install
       uses: "ramsey/composer-install@v2"
-      with:
-        composer-options: "--no-dev"
 
     - name: Make POT file
       run: |
-        npm run makepot
+        ./vendor/bin/wp --allow-root --skip-audit --slug=pressforward i18n make-pot . languages/pressforward.pot --exclude ".github,node_modules,vendor,build"
+
+    - name: Composer install
+      uses: "ramsey/composer-install@v2"
+      with:
+        composer-options: "--no-dev"
 
     - name: Zip
       uses: thedoctor0/zip-release@main
