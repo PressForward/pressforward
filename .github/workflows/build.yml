@@ -21,20 +21,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Setup WP-CLI
-      uses: godaddy-wordpress/setup-wp-cli@1
-
     - name: NPM build
       run: |
         npm install
         npm run build
-
-    - name: Composer install
-      uses: "ramsey/composer-install@v2"
-
-    - name: Make POT file
-      run: |
-        ./vendor/bin/wp --allow-root --skip-audit --slug=pressforward i18n make-pot . languages/pressforward.pot --exclude ".github,node_modules,vendor,build"
 
     - name: Composer install
       uses: "ramsey/composer-install@v2"
