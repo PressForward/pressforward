@@ -7,23 +7,20 @@
 
 namespace PressForward\Core\API;
 
-use Intraxia\Jaxion\Contract\Core\HasActions;
-
 use PressForward\Controllers\Metas;
 use PressForward\Controllers\Stats;
 use PressForward\Core\Utility\Forward_Tools;
 use PressForward\Libraries\HTMLChecker;
 
 use DaveChild\TextStatistics as TS;
-use DaveChild\TextStatistics\Text as Text;
+use DaveChild\TextStatistics\Text;
 
-use WP_Ajax_Response;
 use WP_Error;
 
 /**
  * Stats endpoint.
  */
-class StatsEndpoint implements HasActions {
+class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 
 	/**
 	 * API base data.
@@ -104,7 +101,7 @@ class StatsEndpoint implements HasActions {
 							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -117,7 +114,7 @@ class StatsEndpoint implements HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -130,7 +127,7 @@ class StatsEndpoint implements HasActions {
 							'description'       => esc_html__( 'Limit query by day, use number of day.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -143,7 +140,7 @@ class StatsEndpoint implements HasActions {
 							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -156,7 +153,7 @@ class StatsEndpoint implements HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -169,7 +166,7 @@ class StatsEndpoint implements HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -199,7 +196,7 @@ class StatsEndpoint implements HasActions {
 							// Set the argument to be required for the endpoint.
 							'required'          => true,
 							'default'           => 1,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -212,7 +209,7 @@ class StatsEndpoint implements HasActions {
 							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -225,7 +222,7 @@ class StatsEndpoint implements HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -238,7 +235,7 @@ class StatsEndpoint implements HasActions {
 							'description'       => esc_html__( 'Limit query by day, use number of day.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -251,7 +248,7 @@ class StatsEndpoint implements HasActions {
 							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -264,7 +261,7 @@ class StatsEndpoint implements HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -277,7 +274,7 @@ class StatsEndpoint implements HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -307,7 +304,7 @@ class StatsEndpoint implements HasActions {
 							// Set the argument to be required for the endpoint.
 							'required'          => true,
 							'default'           => 1,
-							'validate_callback' => function( $page, $request_object ) {
+							'validate_callback' => function ( $page, $request_object ) {
 								if ( is_numeric( $page ) ) {
 									return true;
 								} else {
@@ -455,9 +452,9 @@ class StatsEndpoint implements HasActions {
 
 			$response = rest_ensure_response( $posts );
 
-			$response->header( 'X-PF-PageRequested', (int) $page );
-			$response->header( 'X-WP-Total', (int) $q->found_posts );
-			$response->header( 'X-WP-TotalPages', (int) $q->max_num_pages );
+			$response->header( 'X-PF-PageRequested', (string) $page );
+			$response->header( 'X-WP-Total', (string) $q->found_posts );
+			$response->header( 'X-WP-TotalPages', (string) $q->max_num_pages );
 			\ob_end_flush();
 			return $response;
 			// unencode via js with the html_entity_decode function we use elsewhere.

@@ -1,5 +1,5 @@
 parameters:
-  level: 3
+  level: 5
 
   bootstrapFiles:
     - constants.php
@@ -12,9 +12,11 @@ parameters:
     - ./node_modules/
     - ./tests/
     - ./Libraries/FiveFiltersReadability
+    - ./Controllers/PF_JWT.php # Seems to have bugs in Firebase\JWT implementation.
 
   scanFiles:
     - ./Libraries/FiveFiltersReadability/Readability.php
+    - ./Controllers/PF_JWT.php
 
   ignoreErrors:
     - # Template files have variables included in function scope.
@@ -50,3 +52,6 @@ parameters:
     - # Non-typed stdClass objects passed in an array aren't understood by PHPStan. Should be refactored.
       message: '#^Access to an undefined property object::\$[a-zA-Z]+\.$#'
       path: ./modules/opml-subscribe/opml-subscribe.php
+
+    - # False positive about the $args param for cron jobs.
+      message: '#^Parameter \#\d \$args of function (wp_clear_scheduled_hook|wp_next_scheduled|wp_schedule_event|wp_schedule_single_event|wp_unschedule_event) expects array<int, mixed>, array<string, string> given\.$#'

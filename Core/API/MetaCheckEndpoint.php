@@ -7,20 +7,17 @@
 
 namespace PressForward\Core\API;
 
-use Intraxia\Jaxion\Contract\Core\HasActions;
-
 use PressForward\Core\Admin\PFTemplater;
 use PressForward\Controllers\PF_JWT;
 use PFOpenGraph;
-use \mattwright\URLResolver;
+use mattwright\URLResolver;
 
-use \WP_Ajax_Response;
-use \WP_Error;
+use WP_Error;
 
 /**
  * MetaCheckEndpoint class.
  */
-class MetaCheckEndpoint implements HasActions {
+class MetaCheckEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	/**
 	 * API base.
 	 *
@@ -152,11 +149,7 @@ class MetaCheckEndpoint implements HasActions {
 						} catch ( \DomainException $e ) {
 							$return_var = new WP_Error( 'auth_fail_ssl', __( 'SSL cannot be applied to the key.', 'pressforward' ) );
 						} catch ( \Exception $e ) {
-							if ( false === $return_var ) {
-								return new WP_Error( 'auth_fail_whoknows', __( 'Authentication failed for reasons unclear.', 'pressforward' ) );
-							} else {
-								return $return_var;
-							}
+							return new WP_Error( 'auth_fail_whoknows', __( 'Authentication failed for reasons unclear.', 'pressforward' ) );
 						}
 					},
 					'priority'            => 10,

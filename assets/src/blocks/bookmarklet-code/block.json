@@ -1,0 +1,14 @@
+{
+	"$schema": "https://json.schemastore.org/block.json",
+	"apiVersion": 2,
+	"name": "pressforward/bookmarklet-code",
+	"title": "Nominate This Bookmarklet",
+	"category": "pressforward",
+	"icon": "controls-forward",
+	"description": "Display the code used to create the Nominate This bookmarklet.",
+	"textdomain": "pressforward",
+	"supports": {
+		"anchor": true,
+		"html": false
+	}
+}

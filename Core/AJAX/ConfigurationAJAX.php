@@ -7,19 +7,18 @@
 
 namespace PressForward\Core\AJAX;
 
-use Intraxia\Jaxion\Contract\Core\HasActions;
 use PressForward\Controllers\Metas;
 use PressForward\Controllers\PF_to_WP_Posts;
 use PressForward\Core\Schema\Feed_Items;
-use PressForward\Interfaces\SystemUsers as SystemUsers;
-use PressForward\Controllers\PF_JWT as PF_JWT;
+use PressForward\Interfaces\SystemUsers;
+use PressForward\Controllers\PF_JWT;
 
 use WP_Ajax_Response;
 
 /**
  * AJAX callbacks for configuration panels.
  */
-class ConfigurationAJAX implements HasActions {
+class ConfigurationAJAX implements \Intraxia\Jaxion\Contract\Core\HasActions {
 
 	/**
 	 * Basename.
@@ -129,8 +128,6 @@ class ConfigurationAJAX implements HasActions {
 
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-		ob_end_clean();
-		die();
 	}
 
 	/**
@@ -156,8 +153,6 @@ class ConfigurationAJAX implements HasActions {
 
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-		ob_end_clean();
-		die();
 	}
 
 	/**
@@ -192,8 +187,6 @@ class ConfigurationAJAX implements HasActions {
 		);
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-		ob_end_clean();
-		die();
 	}
 
 	/**
@@ -240,9 +233,9 @@ class ConfigurationAJAX implements HasActions {
 	 */
 	public function regenerate_user_keys() {
 		ob_start();
-		$user_public_key  = \bin2hex( $this->pf_jwt->get_a_user_public_key( false, true ) );
-		$user_private_key = $this->pf_jwt->get_a_user_private_key( false, true );
 		$the_user         = $this->user_interface->get_current_user();
+		$user_public_key  = \bin2hex( $this->pf_jwt->get_a_user_public_key( $the_user->ID, true ) );
+		$user_private_key = $this->pf_jwt->get_a_user_private_key( $the_user->ID, true );
 		$response         = array(
 			'what'         => 'pressforward',
 			'action'       => 'pf_ajax_regenerate_user_keys',

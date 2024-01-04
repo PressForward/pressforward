@@ -18,18 +18,18 @@ class PF_RSS_Out extends PF_Module {
 	}
 
 	/**
-	 * Module setup.
+	 * Default settings for the module.
+	 *
+	 * @return array
 	 */
-	public function module_setup() {
-		$mod_settings = array(
+	public function get_default_settings() {
+		return array(
 			'name'        => __( 'RSS Output Module', 'pressforward' ),
 			'slug'        => 'rss-out',
 			'description' => __( 'This module provides a way to output RSS Feeds from your subscribed items. An RSS Feed consisting of all your subscribed items will be available at your domain "/feedforward."', 'pressforward' ),
 			'thumbnail'   => '',
 			'options'     => '',
 		);
-
-		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 	}
 
 	/**

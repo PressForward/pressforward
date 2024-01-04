@@ -10,11 +10,6 @@ namespace PressForward\Core\Bookmarklet;
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
 
-use PressForward\Controllers\Metas;
-use PressForward\Core\API\APIWithMetaEndpoints;
-
-use WP_Ajax_Response;
-
 /**
  * NominateThisCore class.
  */
@@ -41,6 +36,19 @@ class NominateThisCore implements HasActions, HasFilters {
 			array(
 				'hook'   => 'wp_ajax_pf_fetch_url_content',
 				'method' => 'fetch_url_content',
+			),
+			array(
+				'hook'   => 'rest_after_insert_nomination',
+				'method' => 'maybe_set_featured_image',
+			),
+			array(
+				'hook'     => 'rest_after_insert_nomination',
+				'method'   => 'post_nomination_actions',
+				'priority' => 50,
+			),
+			array(
+				'hook'   => 'admin_menu',
+				'method' => 'register_nomination_success_panel',
 			),
 		);
 	}
@@ -366,7 +374,7 @@ class NominateThisCore implements HasActions, HasFilters {
 			return;
 		}
 
-		$post_author = $wp_post->post_author;
+		$post_author = (int) $wp_post->post_author;
 		if ( ! pressforward()->fetch( 'controller.users' )->get_user_setting( $post_author, 'nomination-success-email-toggle' ) ) {
 			return;
 		}
@@ -469,6 +477,148 @@ class NominateThisCore implements HasActions, HasFilters {
 	}
 
 	/**
+	 * Sets the featured image for a nomination, if one is not already set.
+	 *
+	 * This is hooked to the REST API-specific rest_after_insert_nomination_hook,
+	 * as it's meant to work specifically with the block editor nomination flow. See
+	 * `nominate_it()` for the corresponding logic for the Classic nomination flow.
+	 *
+	 * @param \WP_Post $post The newly created nomination.
+	 * @return void
+	 */
+	public function maybe_set_featured_image( $post ) {
+		if ( 'auto-draft' === $post->post_status ) {
+			return;
+		}
+
+		// If the post already has a thumbnail, don't do anything.
+		if ( has_post_thumbnail( $post->ID ) ) {
+			return;
+		}
+
+		$item_feat_img = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_feat_img', true );
+		if ( ! $item_feat_img ) {
+			return;
+		}
+
+		pressforward( 'schema.feed_item' )->set_ext_as_featured( $post->ID, sanitize_text_field( $item_feat_img ) );
+	}
+
+	/**
+	 * Performs actions after a nomination is created.
+	 *
+	 * This includes promotion to Draft, if 'Send to Draft' is checked.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @param \WP_Post $post The newly created nomination.
+	 * @return void
+	 */
+	public function post_nomination_actions( $post ) {
+		if ( 'auto-draft' === $post->post_status ) {
+			return;
+		}
+
+		$item_link = get_post_meta( $post->ID, 'item_link', true );
+		$item_id   = pressforward_create_feed_item_id( $item_link, $post->post_title );
+
+		$nomination_post_id = $post->ID;
+
+		$subscribe_to_feed = get_post_meta( $nomination_post_id, 'subscribe_to_feed', true );
+
+		if ( $subscribe_to_feed ) {
+			$url_array      = wp_parse_url( esc_url( $item_link ) );
+			$source_link    = $url_array['scheme'] . '://' . $url_array['host'];
+			$create_started = __( 'Attempting to nominate a feed with the result of:', 'pressforward' ) . '<br />';
+			if ( current_user_can( 'edit_posts' ) ) {
+				$create = pressforward( 'schema.feeds' )->create( $source_link, array( 'post_status' => 'under_review' ) );
+				if ( is_numeric( $create ) ) {
+					$feed_nom['id'] = $create;
+
+					// translators: feed ID.
+					$create             = sprintf( __( 'Feed created with ID: %s', 'pressforward' ), $create );
+					$feed_nom['simple'] = __( 'The feed has been nominated successfully.', 'pressforward' );
+					$error_check        = pressforward( 'controller.metas' )->get_post_pf_meta( $feed_nom['id'], 'ab_alert_msg', true );
+					if ( ! empty( $error_check ) ) {
+						// translators: Error text.
+						$create            .= ' ' . sprintf( __( 'But the following error occured: %s', 'pressforward' ), $error_check );
+						$feed_nom['simple'] = __( 'There is a problem with the feed associated with this post. The feed could not be verified.', 'pressforward' );
+					}
+					$feed_nom['error'] = $error_check;
+				} else {
+					$feed_nom['id']     = 0;
+					$feed_nom['simple'] = __( "PressForward was unable to identify a feed associated with this site. Please contact the site administrator or add the feed manually in the 'Add Feeds' panel.", 'pressforward' );
+					$message_one        = pf_message( __( 'An error occured when adding the feed: ', 'pressforward' ) );
+					if ( is_wp_error( $create ) ) {
+						$create_wp_error   = $create->get_error_message();
+						$message_two       = pf_message( $create_wp_error );
+						$feed_nom['error'] = $message_two;
+					} else {
+						$message_two = pf_message( $create );
+					}
+					$create = $message_one . $message_two;
+				}
+			} else {
+				$create             = __( 'User doesn\'t have permission to create feeds.', 'pressforward' );
+				$feed_nom['id']     = 0;
+				$feed_nom['error']  = $create;
+				$feed_nom['simple'] = $create;
+			}
+			$feed_nom['msg'] = $create_started . $create;
+
+			update_option( 'pf_last_nominated_feed', $feed_nom );
+
+		} else {
+			$feed_nom = array(
+				'id'     => 0,
+				'msg'    => __( 'No feed was nominated.', 'pressforward' ),
+				'simple' => __( 'User hasn\'t nominated a feed.', 'pressforward' ),
+			);
+			update_option( 'pf_last_nominated_feed', $feed_nom );
+		}
+
+		// Detect if there's an existing nomination for this item.
+		// If so, we must remove the one just created and increment the existing one.
+		$existing_nomination_post_id = pressforward( 'utility.forward_tools' )->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
+
+		if ( ! $existing_nomination_post_id ) {
+			// Avoid duplicating a feed item.
+			$item_check = pressforward( 'utility.forward_tools' )->is_a_pf_type( $item_id, pressforward( 'schema.feed_item' )->post_type );
+			if ( $item_check ) {
+				$nomination_id = pressforward( 'utility.forward_tools' )->item_to_nomination( $item_id, $item_check );
+				pressforward( 'utility.relate' )->basic_relate( 'nominate', $item_check, 'on' );
+			}
+
+			// submitted_by.
+			$user_data   = pressforward( 'utility.forward_tools' )->find_nominating_user( $nomination_post_id );
+			$user_id     = $user_data['user_id'];
+			$user_string = $user_data['user_string'];
+			pressforward( 'controller.metas' )->update_pf_meta( $nomination_post_id, 'submitted_by', $user_string );
+
+			// item_id.
+			pressforward( 'controller.metas' )->update_pf_meta( $nomination_post_id, 'item_id', $item_id );
+
+			// source_title.
+			pressforward( 'controller.metas' )->update_pf_meta( $nomination_post_id, 'source_title', 'Bookmarklet' );
+
+			$send_to_draft = get_post_meta( $nomination_post_id, 'send_to_draft', true );
+
+			if ( $send_to_draft ) {
+				$user_data = pressforward( 'utility.forward_tools' )->nomination_to_last_step( $item_id, $nomination_post_id );
+			}
+
+			// Add the new nomination event to the existing nomination item.
+			pressforward( 'utility.forward_tools' )->add_user_to_nominator_array( $nomination_post_id, $post->post_author );
+		} else {
+			// Add the new nomination event to the existing nomination item.
+			pressforward( 'utility.forward_tools' )->add_user_to_nominator_array( $existing_nomination_post_id, $post->post_author );
+
+			// Remove the newly created nomination.
+			wp_delete_post( $nomination_post_id, true );
+		}
+	}
+
+	/**
 	 * Detects embeds in an XML string and prepares a list of replacement URLs.
 	 *
 	 * @param string $body XML string fetched from remote URL.
@@ -483,7 +633,7 @@ class NominateThisCore implements HasActions, HasFilters {
 		$doc->loadHTML( '<?xml encoding="UTF-8">' . $body );
 
 		$embed_providers = [
-			'#https?://(www.)?youtube\.com/(?:v|embed)/([^/\?]+)(.*)#i' => function( $matches, $url ) {
+			'#https?://(www.)?youtube\.com/(?:v|embed)/([^/\?]+)(.*)#i' => function ( $matches, $url ) {
 				$retval = sprintf( 'https://youtube.com/watch?v=%s', rawurlencode( $matches[2] ) );
 
 				// If any query parameters were present, we re-add them.
@@ -515,5 +665,44 @@ class NominateThisCore implements HasActions, HasFilters {
 		}
 
 		return $embeds;
+	}
+
+	/**
+	 * Registers the Nomination Success panel.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @return void
+	 */
+	public function register_nomination_success_panel() {
+		add_submenu_page(
+			'',
+			__( 'Nomination Success', 'pressforward' ),
+			__( 'Nomination Success', 'pressforward' ),
+			'edit_posts',
+			'pf-nomination-success',
+			[ $this, 'nomination_success_panel' ]
+		);
+	}
+
+	/**
+	 * Renders the Nomination Success panel.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @return void
+	 */
+	public function nomination_success_panel() {
+		wp_enqueue_style( 'pf-nomination-success' );
+		?>
+
+		<div id="message" class="updated">
+			<p><strong><?php esc_html_e( 'Your nomination has been saved.', 'pressforward' ); ?></strong>
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=pf-review' ) ); ?>"><?php esc_html_e( 'See all nominations', 'pressforward' ); ?></a>
+			| <a href="#" onclick="window.close();"><?php esc_html_e( 'Close Window', 'pressforward' ); ?></a>
+			</p>
+		</div>
+
+		<?php
 	}
 }

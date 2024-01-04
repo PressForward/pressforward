@@ -7,21 +7,18 @@
 
 namespace PressForward\Core\Providers;
 
-use Intraxia\Jaxion\Contract\Core\Container as Container;
-use Intraxia\Jaxion\Assets\Register as Assets;
-use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
-
+use Intraxia\Jaxion\Contract\Core\Container;
 use PressForward\Core\Bookmarklet\NominateThisCore;
 
 /**
  * BookmarkletProvider class.
  */
-class BookmarkletProvider extends ServiceProvider {
+class BookmarkletProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @param Container $container Container.
+	 * @param \Intraxia\Jaxion\Contract\Core\Container $container Container.
 	 */
 	public function register( Container $container ) {
 		$api_base = array(
@@ -31,7 +28,7 @@ class BookmarkletProvider extends ServiceProvider {
 
 		$container->share(
 			'bookmarklet.core',
-			function( $container ) {
+			function ( $container ) {
 				return new NominateThisCore();
 			}
 		);

@@ -3,8 +3,8 @@ Contributors: PressForward, AramZS, boonebgorges, lmrhody, asmmap, regan008, joa
 Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 5.7
-Tested up to: 6.2
-Stable tag: 5.4.0
+Tested up to: 6.4
+Stable tag: 5.6.0
 License: AGPLv3
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -81,6 +81,18 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+
+= 5.6.0 =
+* Complete rebuild of the Nominate This bookmarklet tool, leveraging the Block Editor. Users who prefer the legacy version of Nominate This can use the 'Force Classic editor for Nominate This' toggle.
+* Refactoring of the RSS subscription internals, so that feeds are retrieved independently of one another. This improves performance and reliability.
+* A custom block for displaying an item's Nominators.
+* A custom block for displaying the Nominate This bookmarklet code on the front end.
+* Dynamic user-facing feedback when clicking the 'Refresh Feed Items' link in list of subscribed feeds.
+* Fixed behavior that caused PressForward to improperly filter author display names and URLs in certain cases.
+* Improved the internals responsible for enqueuing script and style assets, for improved performance.
+* Improved messaging in the OPML import module when the WP installation doesn't support OPML uploads.
+* Improvements to integration with WordPress Dashboard styles.
+* Improved support for latest versions of PHP.
 
 = 5.5.0 =
 * Bumped required PHP version to 7.3.0.

@@ -1,0 +1,17 @@
+.wp-block-pressforward-item-nominators {
+	display: flex;
+	gap: 8px;
+
+	&.is-style-stacked {
+		display: block;
+
+		p {
+			margin: 0;
+			padding-bottom: 1em;
+
+			&:first-child {
+				padding-top: 1em;
+			}
+		}
+	}
+}

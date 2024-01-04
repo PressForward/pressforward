@@ -7,11 +7,9 @@
 
 namespace PressForward\Core\Admin;
 
-use Intraxia\Jaxion\Contract\Core\HasActions;
-
-use PressForward\Core\Admin\PFTemplater as PFTemplater;
-use PressForward\Core\Utility\Forward_Tools as Forward_Tools;
-use PressForward\Core\Schema\Nominations as Nominations;
+use PressForward\Core\Admin\PFTemplater;
+use PressForward\Core\Utility\Forward_Tools;
+use PressForward\Core\Schema\Nominations;
 use PressForward\Controllers\Metas;
 use PressForward\Controllers\PFtoWPUsers;
 use WP_Ajax_Response;
@@ -20,7 +18,7 @@ use WP_Query;
 /**
  * Nominated functionality.
  */
-class Nominated implements HasActions {
+class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	/**
 	 * Metas object.
 	 *
@@ -100,6 +98,12 @@ class Nominated implements HasActions {
 				'hook'   => 'manage_nomination_posts_custom_column',
 				'method' => 'nomination_custom_columns',
 			),
+			array(
+				'hook'     => 'rest_pre_insert_nomination',
+				'method'   => 'prevent_auto_draft_from_converting_to_draft',
+				'priority' => 10,
+				'args'     => 2,
+			),
 		);
 	}
 
@@ -121,7 +125,11 @@ class Nominated implements HasActions {
 	 * Builds the interface for the review tool.
 	 */
 	public function display_review_builder() {
+		wp_enqueue_script( 'pf' );
 		wp_enqueue_script( 'pf-views' );
+		wp_enqueue_script( 'pf-send-to-draft-imp' );
+
+		wp_enqueue_style( 'pf-style' );
 
 		if ( 'false' !== get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() ) ) {
 			wp_enqueue_script( 'pf-scroll' );
@@ -150,6 +158,8 @@ class Nominated implements HasActions {
 			$extra_class .= '';
 		}
 
+		$pf_url = defined( 'PF_URL' ) ? PF_URL : '';
+
 		?>
 		<div class="pf-loader"></div>
 
@@ -170,7 +180,7 @@ class Nominated implements HasActions {
 				<?php pressforward( 'schema.folders' )->folderbox(); ?>
 
 				<div id="entries">
-					<?php echo '<img class="loading-top" src="' . esc_attr( PF_URL ) . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />'; ?>
+					<?php echo '<img class="loading-top" src="' . esc_attr( $pf_url ) . 'assets/images/ajax-loader.gif" alt="Loading..." style="display: none" />'; ?>
 					<div id="errors">
 						<div class="pressforward-alertbox" style="display:none;">
 							<div class="row-fluid">
@@ -197,7 +207,7 @@ class Nominated implements HasActions {
 						$metadata['current_user_id'] = $current_user_id;
 						?>
 
-						<span id="current-user-id"><?php echo esc_html( $current_user_id ); ?></span>
+						<span id="current-user-id"><?php echo esc_html( (string) $current_user_id ); ?></span>
 					</div>
 
 					<?php
@@ -230,6 +240,7 @@ class Nominated implements HasActions {
 
 					$nom_args = array(
 						'post_type'        => 'nomination',
+						'post_status'      => [ 'publish', 'draft' ],
 						'orderby'          => 'date',
 						'order'            => 'DESC',
 						'posts_per_page'   => 20,
@@ -421,7 +432,7 @@ class Nominated implements HasActions {
 						$metadata['nom_tags'] = $wp_nom_slugs;
 
 						$nom_tags_string    = is_array( $nom_tags ) ? implode( ',', $nom_tags ) : $nom_tags;
-						$wp_nom_tags_string = is_array( $wp_nom_tags ) ? implode( ',', $wp_nom_tags ) : $wp_nom_tags;
+						$wp_nom_tags_string = $wp_nom_tags;
 
 						$metadata['all_tags'] = $nom_tags_string . ',' . $nom_tags_string;
 
@@ -479,7 +490,7 @@ class Nominated implements HasActions {
 							$archived_status_string = '';
 						}
 
-						$item = pf_feed_object( get_the_title(), pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'source_title', true ), $date_posted, $item_authorship, get_the_content(), $nom_permalink, get_the_post_thumbnail( $nom_id /**, 'nom_thumb'*/ ), $rss_item_id, pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_wp_date', true ), $nom_tags, $date_nomed, $source_repeat, $nom_id, '1' );
+						$item = pf_feed_object( get_the_title(), pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'source_title', true ), $date_posted, $item_authorship, get_the_content(), $nom_permalink, get_the_post_thumbnail( $nom_id /**, 'nom_thumb'*/ ), $rss_item_id, pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_wp_date', true ), $nom_tags, $date_nomed, $source_repeat, (string) $nom_id, '1' );
 
 						pressforward( 'admin.templates' )->form_of_an_item( $item, $c, 'nomination', $metadata );
 						++$count;
@@ -688,7 +699,7 @@ class Nominated implements HasActions {
 					esc_html( __( 'Source: ', 'pressforward' ) ),
 					esc_url( $args['item_url'] ),
 					esc_attr( $args['link_target'] ),
-					esc_attr( $nom_id ),
+					esc_attr( (string) $nom_id ),
 					esc_html( $args['item_title'] )
 				);
 			} else {
@@ -708,7 +719,7 @@ class Nominated implements HasActions {
 				$statement = preg_replace( '|<a (href="[^"]+")|', '<a \1 ' . $target_attr, $statement );
 			}
 
-			$nom_id_attr = sprintf( 'pf-nom-item-id="%s"', esc_attr( $nom_id ) );
+			$nom_id_attr = sprintf( 'pf-nom-item-id="%s"', esc_attr( (string) $nom_id ) );
 			if ( false === strpos( $statement, $nom_id_attr ) ) {
 				$statement = preg_replace( '|<a (href="[^"]+")|', '<a \1 ' . $nom_id_attr, $statement );
 			}
@@ -718,73 +729,6 @@ class Nominated implements HasActions {
 			$statement = '';
 		}
 		return $statement;
-	}
-
-	/**
-	 * Gets the first nomination for an item.
-	 *
-	 * @param int    $item_id   ID of the item.
-	 * @param string $post_type Post typue.
-	 */
-	public function get_first_nomination( $item_id, $post_type ) {
-		$q = pf_get_posts_by_id_for_check( $post_type, $item_id, true );
-		if ( 0 < $q->post_count ) {
-			$nom = $q->posts;
-			$r   = $nom[0];
-			return $r;
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Check whether an item is nominated.
-	 *
-	 * @param int          $item_id   ID of the item.
-	 * @param string|array $post_type Post type.
-	 * @param bool         $update    Not used.
-	 */
-	public function is_nominated( $item_id, $post_type = '', $update = false ) {
-		if ( ! $post_type ) {
-			$post_type = array( pressforward_draft_post_type(), 'nomination' );
-		}
-		$attempt = $this->get_first_nomination( $item_id, $post_type );
-		if ( ! empty( $attempt ) ) {
-			$r = $attempt;
-			pf_log( 'Existing post at ' . $r );
-		} else {
-			$r = false;
-		}
-		/* Restore original Post Data */
-		wp_reset_postdata();
-		return $r;
-	}
-
-	/**
-	 * Resolve nomination state for an item.
-	 *
-	 * @param int $item_id ID of the item.
-	 */
-	public function resolve_nomination_state( $item_id ) {
-		$pt = array( 'nomination' );
-		if ( $this->is_nominated( $item_id, $pt ) ) {
-			$attempt = $this->get_first_nomination( $item_id, $pt );
-			if ( ! empty( $attempt ) ) {
-				$nomination_id = $attempt;
-				$nominators    = $this->metas->retrieve_meta( $nomination_id, 'nominator_array' );
-				if ( empty( $nominators ) ) {
-					pf_log( 'There is no one left who nominated this item.' );
-					pf_log( 'This nomination has been taken back. We will now remove the item.' );
-					pf_delete_item_tree( $nomination_id );
-				} else {
-					pf_log( 'Though one user retracted their nomination, there are still others who have nominated this item.' );
-				}
-			} else {
-				pf_log( 'We could not find the nomination to resolve the state of.' );
-			}
-		} else {
-			pf_log( 'There is no nomination to resolve the state of.' );
-		}
 	}
 
 	/**
@@ -955,8 +899,6 @@ class Nominated implements HasActions {
 
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-		ob_end_flush();
-		die();
 	}
 
 	/**
@@ -1006,8 +948,6 @@ class Nominated implements HasActions {
 
 			$xml_response = new WP_Ajax_Response( $response );
 			$xml_response->send();
-			ob_end_flush();
-			die();
 		}
 	}
 
@@ -1039,8 +979,33 @@ class Nominated implements HasActions {
 			);
 			$xml_response  = new WP_Ajax_Response( $response );
 			$xml_response->send();
-			ob_end_flush();
-			die();
 		}
+	}
+
+	/**
+	 * Ensures that nomination auto-drafts are not converted to drafts during autosave.
+	 *
+	 * See https://github.com/WordPress/gutenberg/issues/56881 for background.
+	 *
+	 * @param \stdClass        $prepared_post Post object.
+	 * @param \WP_REST_Request $request       Request object.
+	 * @return \stdClass
+	 */
+	public function prevent_auto_draft_from_converting_to_draft( $prepared_post, $request ) {
+		if ( ! isset( $prepared_post->ID ) || ! isset( $prepared_post->post_status ) || 'draft' !== $prepared_post->post_status ) {
+			return $prepared_post;
+		}
+
+		if ( ! defined( 'DOING_AUTOSAVE' ) || ! DOING_AUTOSAVE ) {
+			return $prepared_post;
+		}
+
+		// Check the status of the post in the database.
+		$post = get_post( $prepared_post->ID );
+		if ( 'auto-draft' === $post->post_status ) {
+			$prepared_post->post_status = 'auto-draft';
+		}
+
+		return $prepared_post;
 	}
 }

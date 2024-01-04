@@ -20,18 +20,18 @@ class PF_RSS_Import extends PF_Module {
 	}
 
 	/**
-	 * Module setup.
+	 * Default settings for RSS Import module.
+	 *
+	 * @return array
 	 */
-	public function module_setup() {
-		$mod_settings = array(
+	public function get_default_settings() {
+		return array(
 			'name'        => __( 'RSS Import Module', 'pressforward' ),
 			'slug'        => 'rss-import',
 			'description' => __( 'This module provides the core functionality to read RSS feeds and translate them into PressForward\'s system.', 'pressforward' ),
 			'thumbnail'   => '',
 			'options'     => '',
 		);
-
-		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 	}
 
 	/**
@@ -154,10 +154,10 @@ class PF_RSS_Import extends PF_Module {
 					$arr_it = new \RecursiveIteratorIterator( new \RecursiveArrayIterator( $guid[0] ) );
 					foreach ( $arr_it as $sub ) {
 						$sub_array = $arr_it->getSubIterator();
-						if ( is_array( $sub_array ) && array_key_exists( 'isPermaLink', $sub_array ) && isset( $sub_array['isPermaLink'] ) && 'false' === $sub_array['isPermaLink'] ) {
+						if ( isset( $sub_array['isPermaLink'] ) && 'false' === $sub_array['isPermaLink'] ) {
 							$is_permalink = false;
 							break;
-						} elseif ( is_array( $sub_array ) && array_key_exists( 'isPermaLink', $sub_array ) && isset( $sub_array['isPermaLink'] ) && $sub_array['isPermaLink'] && ( 'true' === $sub_array['isPermaLink'] ) ) {
+						} elseif ( isset( $sub_array['isPermaLink'] ) && $sub_array['isPermaLink'] && ( 'true' === $sub_array['isPermaLink'] ) ) {
 							$is_permalink = true;
 							break;
 						}
@@ -327,6 +327,17 @@ class PF_RSS_Import extends PF_Module {
 
 		$feedlist = get_option( PF_SLUG . '_feedlist' );
 
+		// Check to see whether OPML uploads are allowed.
+		$opml_is_allowed    = false;
+		$allowed_mime_types = get_allowed_mime_types();
+		foreach ( $allowed_mime_types as $ext => $mime ) {
+			$exts = explode( '|', $ext );
+			if ( in_array( 'opml', $exts, true ) ) {
+				$opml_is_allowed = true;
+				break;
+			}
+		}
+
 		?>
 		<div class="pf-opt-group">
 			<div class="rss-box ">
@@ -343,8 +354,11 @@ class PF_RSS_Import extends PF_Module {
 					<div><?php esc_html_e( 'Add OPML File', 'pressforward' ); ?></div>
 					<div class="pf_feeder_input_box">
 						<input id="<?php echo esc_attr( PF_SLUG ) . '_feedlist[opml]'; ?>" class="pf_opml_file_upload_field regular-text" type="text" name="<?php echo esc_attr( PF_SLUG ) . '_feedlist[opml]'; ?>" value="" />
-						<label class="description" for="<?php echo esc_attr( PF_SLUG ) . '_feedlist[opml]'; ?>"><?php esc_html_e( '*Drop link to OPML here. No HTTPS allowed.', 'pressforward' ); ?></label>
-						or <a class="button-primary pf_primary_media_opml_upload" ><?php esc_html_e( 'Upload OPML file', 'pressforward' ); ?></a>
+						<label class="description" for="<?php echo esc_attr( PF_SLUG ) . '_feedlist[opml]'; ?>"><?php esc_html_e( '*Drop link to OPML here.', 'pressforward' ); ?></label>
+
+						<?php if ( $opml_is_allowed ) : ?>
+							or <a class="button-primary pf_primary_media_opml_upload" ><?php esc_html_e( 'Upload OPML file', 'pressforward' ); ?></a>
+						<?php endif; ?>
 
 						<p>&nbsp;<?php esc_html_e( 'Adding large OPML files may take some time.', 'pressforward' ); ?></p>
 						<a href="http://en.wikipedia.org/wiki/Opml"><?php esc_html_e( 'What is an OPML file?', 'pressforward' ); ?></a>
@@ -377,46 +391,41 @@ class PF_RSS_Import extends PF_Module {
 		$feed_obj        = pressforward( 'schema.feeds' );
 		$subed           = array();
 		$something_broke = false;
+
 		if ( ! empty( $input['single'] ) ) {
-			if ( ! ( is_array( $input['single'] ) ) ) {
-				pf_log( 'The feed is not an array;' );
-				if ( ! $feed_obj->has_feed( $input['single'] ) ) {
-					pf_log( 'The feed does not already exist.' );
-					$check = $feed_obj->create(
+			if ( ! $feed_obj->has_feed( $input['single'] ) ) {
+				pf_log( 'The feed does not already exist.' );
+				$check = $feed_obj->create(
+					$input['single'],
+					array(
+						'type'         => 'rss',
+						'module_added' => get_class(),
+					)
+				);
+
+				if ( is_wp_error( $check ) || ! $check ) {
+					pf_log( 'The feed did not enter the database.' );
+					$something_broke = true;
+					$description     = 'Feed failed initial attempt to add to database | ' . $check->get_error_message();
+					$broken_id       = $feed_obj->create(
 						$input['single'],
 						array(
 							'type'         => 'rss',
-							'module_added' => get_class(),
+							'description'  => $description,
+							'module_added' => get_called_class(),
 						)
 					);
-
-					if ( is_wp_error( $check ) || ! $check ) {
-						pf_log( 'The feed did not enter the database.' );
-						$something_broke = true;
-						$description     = 'Feed failed initial attempt to add to database | ' . $check->get_error_message();
-						$broken_id       = $feed_obj->create(
-							$input['single'],
-							array(
-								'type'         => 'rss-quick',
-								'description'  => $description,
-								'module_added' => get_called_class(),
-							)
-						);
-						pressforward( 'library.alertbox' )->switch_post_type( $broken_id );
-						pressforward( 'library.alertbox' )->add_bug_type_to_post( $broken_id, 'Broken feed.' );
-					}
-				} else {
-					pf_log( 'The feed already exists, sending it to update.' );
-					$check = $feed_obj->update_url( $input['single'] );
-					pf_log( 'Our attempt to update resulted in:' );
-					pf_log( $check );
+					pressforward( 'library.alertbox' )->switch_post_type( $broken_id );
+					pressforward( 'library.alertbox' )->add_bug_type_to_post( $broken_id, 'Broken feed.' );
 				}
-
-				$subed[] = 'a feed.';
 			} else {
-				pf_log( 'The feed was an array, this does not work' );
-				wp_die( 'Bad feed input. Why are you trying to place an array?' );
+				pf_log( 'The feed already exists, sending it to update.' );
+				$check = $feed_obj->update_url( $input['single'] );
+				pf_log( 'Our attempt to update resulted in:' );
+				pf_log( $check );
 			}
+
+			$subed[] = 'a feed.';
 		}
 
 		if ( ! empty( $input['opml'] ) ) {
@@ -487,19 +496,18 @@ class PF_RSS_Import extends PF_Module {
 			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$feed_xml = $feed_obj->feedUrl;
 			$args     = array(
-				'title'       => $feed_obj->title,
-				'description' => $feed_obj->text,
-				'tags'        => array(),
+				'title'        => $feed_obj->title,
+				'description'  => $feed_obj->text,
+				'tags'         => array(),
+				'feed_folders' => null,
 			);
 
-			foreach ( $feed_obj->folder as $folder ) {
-				$args['tags'][ $folder->slug ] = $folder->title;
+			$folder_names = wp_list_pluck( $feed_obj->folder, 'title' );
+			if ( ! empty( $folder_names ) ) {
+				$args['feed_folders'] = $folder_names;
 			}
 
-			// Adding this as a 'quick' type so that we can process the list quickly.
-			pf_log( 'Adding this as a quick type so that we can process the list quickly' );
-			$opml_array = pressforward( 'schema.feeds' )->progressive_feedlist_transformer( $opml_array, $feed_xml, $key, $args );
-			// @todo Tag based on folder structure.
+			$created = pressforward( 'schema.feeds' )->create( $feed_xml, $args );
 		}
 	}
 

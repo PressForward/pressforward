@@ -45,7 +45,7 @@ function pressforward_register_module( $args ) {
 
 	add_filter(
 		'pressforward_register_modules',
-		function( $modules ) use ( $r ) {
+		function ( $modules ) use ( $r ) {
 			return array_merge(
 				$modules,
 				[
@@ -89,15 +89,57 @@ function pf_shortcut_link() {
 
 /**
  * Catches pf-nominate-this requests.
+ *
+ * This function contains the logic for redirecting to the correct interface
+ * (Classic or Block), depending on the current URL and the site settings.
  */
 function start_pf_nom_this() {
 	global $pagenow;
-	if ( 'edit.php' === $pagenow && array_key_exists( 'pf-nominate-this', $_GET ) && 2 === (int) $_GET['pf-nominate-this'] ) {
+
+	if ( empty( $_GET['pf-nominate-this'] ) ) {
+		return;
+	}
+
+	$use_block = pressforward_use_block_nominate_this();
+	$redirect  = null;
+
+	// If this is a request for the Classic Nominate This interface, load and exit.
+	if ( ! $use_block && 'edit.php' === $pagenow ) {
 		include __DIR__ . '/nomthis/nominate-this.php';
 		die();
 	}
 
-	return '';
+	// Check if we need a redirect to the correct interface.
+	$redirect_query_arg_keys = [ 'u', 't', 's', 'v' ];
+	$redirect_query_args     = [];
+	foreach ( $redirect_query_arg_keys as $redirect_query_arg_key ) {
+		if ( isset( $_GET[ $redirect_query_arg_key ] ) ) {
+			$redirect_query_args[ $redirect_query_arg_key ] = sanitize_text_field( wp_unslash( $_GET[ $redirect_query_arg_key ] ) );
+		}
+	}
+
+	$redirect_query_args['pf-nominate-this'] = 2;
+
+	if ( $use_block && 'edit.php' === $pagenow ) {
+		$redirect_query_args['post_type'] = 'nomination';
+
+		$redirect = add_query_arg(
+			$redirect_query_args,
+			admin_url( 'post-new.php' )
+		);
+	} elseif ( ! $use_block && 'post-new.php' === $pagenow ) {
+		$redirect = add_query_arg(
+			$redirect_query_args,
+			admin_url( 'edit.php' )
+		);
+	}
+
+	if ( ! $redirect ) {
+		return;
+	}
+
+	wp_safe_redirect( $redirect );
+	die;
 }
 
 /**
@@ -113,7 +155,7 @@ function start_pf_nom_this() {
  * @return string
  */
 function pf_get_shortcut_link() {
-	$url = wp_json_encode( admin_url( 'edit.php?pf-nominate-this=2' ) );
+	$url = wp_json_encode( admin_url( 'post-new.php?pf-nominate-this=2&post_type=nomination' ) );
 
 	$version = 5;
 
@@ -131,10 +173,53 @@ function pf_get_shortcut_link() {
 		'pfa=function(){pfw.open(pfu,"t","toolbar=0,resizable=1,scrollbars=1,status=1,width=720,height=620")||(pfl.href=pfu)};' .
 		'pfa();',
 		esc_url_raw( $url ),
-		esc_js( $version )
+		esc_js( (string) $version )
 	);
 
 	return apply_filters( 'shortcut_link', $link );
+}
+
+/**
+ * Determines whether to use the Block version of the Nominate This interface.
+ *
+ * If false, the Classic interface will be used.
+ *
+ * @since 5.6.0
+ *
+ * @return bool True if the Block version should be used, false otherwise.
+ */
+function pressforward_use_block_nominate_this() {
+	$use_classic_override = get_option( 'pf_force_classic_nominate_this', 'no' );
+
+	if ( 'yes' === $use_classic_override ) {
+		$use_block = false;
+	} else {
+		/*
+		 * Mock a 'nomination' post so that we can use WP's core function.
+		 * Plugins like Classic Editor use those filters.
+		 */
+		$nomination_post            = new stdClass();
+		$nomination_post->post_type = 'nomination';
+		$nomination_post_obj        = new WP_Post( $nomination_post );
+
+		// Classic Editor plugin falls back on this value when UI is hidden.
+		$use_block_for_nomination_post_type = apply_filters( 'use_block_editor_for_post_type', true, 'nomination' );
+
+		// Classic Editor plugin uses this when UI is available to users.
+		$use_block_for_nomination_post = apply_filters( 'use_block_editor_for_post', true, $nomination_post_obj );
+
+		// Since both values default to true, we disable Block if either one returns false.
+		$use_block = $use_block_for_nomination_post_type && $use_block_for_nomination_post;
+	}
+
+	/**
+	 * Filters whether to use the Block version of the Nominate This interface.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @param bool $use_block True if the Block version should be used, false otherwise.
+	 */
+	return apply_filters( 'pressforward_use_block_nominate_this', $use_block );
 }
 
 /**
@@ -153,6 +238,17 @@ function pressforward_draft_post_type() {
 	 * @param string $post_type Defaults to 'post'.
 	 */
 	return apply_filters( 'pressforward_draft_post_type', $post_type );
+}
+
+/**
+ * Gets the post type name for nominations.
+ *
+ * @since 5.6.0
+ *
+ * @return string The name of the nomination post_type for PressForward.
+ */
+function pressforward_nomination_post_type() {
+	return pressforward( 'schema.nominations' )->post_type;
 }
 
 /**
@@ -255,10 +351,6 @@ function pf_sanitize( $raw_string, $force_lowercase = true, $strict = false ) {
 		'/',
 		'?',
 	);
-
-	if ( is_array( $raw_string ) ) {
-		$raw_string = implode( ' ', $raw_string );
-	}
 
 	$clean = trim( str_replace( $strip, '', wp_strip_all_tags( $raw_string ) ) );
 	$clean = preg_replace( '/\s+/', '-', $clean );
@@ -426,7 +518,7 @@ function pf_prep_item_for_submit( $item ) {
 				break;
 
 			case 'nominators':
-				$item_part = wp_list_pluck( 'user_id', $item_part );
+				$item_part = wp_list_pluck( $item_part, 'user_id' );
 				break;
 		}
 
@@ -450,9 +542,9 @@ function pf_prep_item_for_submit( $item ) {
  *
  * @param string        $url      URL.
  * @param bool|callable $callback Function to call first to try and get the URL.
- * @return string|object $r Returns the string URL, converted, when no function is passed.
- *                          Otherwise returns the result of the function after being
- *                          checked for accessibility.
+ * @return string|array $r Returns the string URL, converted, when no function is passed.
+ *                         Otherwise returns the result of the function after being
+ *                         checked for accessibility.
  */
 function pf_de_https( $url, $callback = false ) {
 	$url_orig = $url;
@@ -540,7 +632,7 @@ function pf_nom_class_tagger( $the_array = array() ) {
 		} elseif ( is_array( $class_name ) ) {
 			foreach ( $class_name as $sub_class ) {
 				echo ' ';
-				echo esc_attr( pf_slugger( $class_name, true, false, true ) );
+				echo esc_attr( pf_slugger( $sub_class, true, false, true ) );
 			}
 		} else {
 			echo ' ';
@@ -569,7 +661,7 @@ function get_pf_nom_class_tags( $the_array = array() ) {
 
 			foreach ( $class_name as $sub_class ) {
 				$tags = ' ';
-				$tags = pf_slugger( $class_name, true, false, true );
+				$tags = pf_slugger( $sub_class, true, false, true );
 			}
 		} else {
 			$tags = ' ';
@@ -800,6 +892,12 @@ function pf_replace_author_presentation( $author ) {
 		return $author;
 	}
 
+	// If this doesn't look like a PF item, return the author.
+	$item_link = get_post_meta( $post->ID, 'item_link', true );
+	if ( ! $item_link ) {
+		return $author;
+	}
+
 	$custom_author = pressforward( 'controller.metas' )->retrieve_meta( $post->ID, 'item_author' );
 	if ( $custom_author ) {
 		return $custom_author;
@@ -833,6 +931,12 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 		return $author_uri;
 	}
 
+	// If this doesn't look like a PF item, return the WP URI.
+	$item_link = get_post_meta( $id, 'item_link', true );
+	if ( ! $item_link ) {
+		return $author_uri;
+	}
+
 	$custom_author_uri = pressforward( 'controller.metas' )->retrieve_meta( $id, 'item_link' );
 	if ( empty( $custom_author_uri ) ) {
 		return $author_uri;
@@ -840,7 +944,6 @@ function pf_replace_author_uri_presentation( $author_uri ) {
 		return $custom_author_uri;
 	}
 }
-
 add_filter( 'author_link', 'pf_replace_author_uri_presentation' );
 
 /**
@@ -1358,10 +1461,10 @@ function pf_process_delete_queue() {
 		delete_option( 'pf_delete_queue' );
 
 		$terms = get_terms(
-			pressforward( 'schema.feeds' )->tag_taxonomy,
-			array(
+			[
+				'taxonomy'   => pressforward( 'schema.feeds' )->tag_taxonomy,
 				'hide_empty' => false,
-			)
+			]
 		);
 
 		foreach ( $terms as $term ) {
@@ -1399,14 +1502,14 @@ function pf_function_auto_logger( $caller ) {
  * @return string.
  */
 function assure_log_string( $message ) {
-	if ( is_array( $message ) || is_object( $message ) ) {
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
-		$message = print_r( $message, true );
-	}
-
 	// Make sure we've got a string to log.
 	if ( is_wp_error( $message ) ) {
 		$message = $message->get_error_message();
+	}
+
+	if ( is_array( $message ) || is_object( $message ) ) {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
+		$message = print_r( $message, true );
 	}
 
 	if ( true === $message ) {
@@ -1434,11 +1537,11 @@ function assure_log_string( $message ) {
  *
  * @since 1.7
  *
- * @param string $message    The message to log.
- * @param bool   $display    Whether to echo the message. Default fals.
- * @param bool   $reset      Whether to delete the contents of the log before
+ * @param mixed $message    The message to log.
+ * @param bool  $display    Whether to echo the message. Default fals.
+ * @param bool  $reset      Whether to delete the contents of the log before
  *                           appending message. Default false.
- * @param bool   $do_return  Whether to return the message instead of logging it.
+ * @param bool  $do_return  Whether to return the message instead of logging it.
  *                           Default false.
  */
 function pf_log( $message = '', $display = false, $reset = false, $do_return = false ) {

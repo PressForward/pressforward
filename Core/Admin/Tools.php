@@ -93,6 +93,9 @@ class Tools implements HasActions, HasFilters {
 	 * Display callback for Tools admin panel.
 	 */
 	public function display_tools_builder() {
+		wp_enqueue_style( 'pf-settings-style' );
+		wp_enqueue_script( 'pf-settings-tools' );
+
 		if ( isset( $_GET['tab'] ) ) {
 			$tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
 		} else {
@@ -128,11 +131,6 @@ class Tools implements HasActions, HasFilters {
 		$permitted_tabs['reset-refresh'] = array(
 			'title' => __( 'Debug and Refresh', 'pressforward' ),
 			'cap'   => $this->templates->users->pf_get_defining_capability_by_role( 'administrator' ),
-		);
-
-		$permitted_tabs['retrieval-status'] = array(
-			'title' => __( 'Retrieval Status', 'pressforward' ),
-			'cap'   => $this->templates->users->pf_get_defining_capability_by_role( 'contributor' ),
 		);
 
 		$permitted_tabs['stats'] = array(

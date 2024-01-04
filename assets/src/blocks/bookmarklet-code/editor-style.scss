@@ -1,0 +1,11 @@
+@import './block.scss';
+
+.wp-block-pressforward-bookmarklet-code {
+	.pressthis-bookmarklet {
+		pointer-events: none;
+	}
+
+	.nominate-this-bookmarklet {
+		margin-right: 8px;
+	}
+}

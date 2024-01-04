@@ -171,14 +171,17 @@ class HTTPTools implements HasActions {
 	 *
 	 * @param string $url        URL.
 	 * @param string $deprecated No longer used.
-	 * @return mixed
+	 * @return array
 	 */
 	public function get_url_content( $url, $deprecated = '' ) {
 		$url = str_replace( '&amp;', '&', $url );
 
 		$cached = wp_cache_get( $url, 'pressforward_external_pages' );
 		if ( false !== $cached ) {
-			return $cached;
+			return [
+				'body'          => $cached,
+				'response_code' => 200,
+			];
 		}
 
 		// @todo Allow some overrides, via an `$args` param and/or a filter.

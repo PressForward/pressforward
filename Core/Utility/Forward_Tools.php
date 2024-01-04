@@ -7,8 +7,8 @@
 
 namespace PressForward\Core\Utility;
 
-use PressForward\Interfaces\Items as Items;
-use PressForward\Interfaces\Advance_System as Advance_System;
+use PressForward\Interfaces\Items;
+use PressForward\Interfaces\Advance_System;
 
 use PressForward\Controllers\Metas;
 
@@ -70,6 +70,81 @@ class Forward_Tools {
 
 		pf_log( 'by ' . $user_id );
 		return $user_id;
+	}
+
+	/**
+	 * Gets the nominator array for a nomination.
+	 *
+	 * @param int $nomination_id WP post ID of the nomination.
+	 * @return array
+	 */
+	public function get_nomination_nominator_array( $nomination_id ) {
+		$nominators = $this->metas->get_post_pf_meta( $nomination_id, 'nominator_array' );
+		if ( ! $nominators ) {
+			$nominators = [];
+		}
+
+		return $nominators;
+	}
+
+	/**
+	 * Gets the nominator array for a promoted item.
+	 *
+	 * Nominators are stored canonically on the nomination object.
+	 *
+	 * @param int $post_id WP post ID of the promoted item.
+	 * @return array
+	 */
+	public function get_post_nominator_array( $post_id ) {
+		$nomination_id = $this->get_post_nomination_id( $post_id );
+		if ( ! $nomination_id ) {
+			return [];
+		}
+
+		return $this->get_nomination_nominator_array( $nomination_id );
+	}
+
+	/**
+	 * Gets the nomination corresponding to a promoted item.
+	 *
+	 * @param int $post_id WP post ID of the promoted item.
+	 * @return int
+	 */
+	public function get_post_nomination_id( $post_id ) {
+		$nomination_id = $this->metas->get_post_pf_meta( $post_id, 'nom_id', true );
+		if ( ! $nomination_id ) {
+			return 0;
+		}
+
+		return (int) $nomination_id;
+	}
+
+	/**
+	 * Adds a user to the list of stored nominators for an item.
+	 *
+	 * @param int $post_id ID of the nomination.
+	 * @param int $user_id ID of the user.
+	 * @return bool
+	 */
+	public function add_user_to_nominator_array( $post_id, $user_id ) {
+		$nominators = $this->metas->get_post_pf_meta( $post_id, 'nominator_array' );
+		if ( ! $nominators ) {
+			$nominators = [];
+		}
+
+		if ( isset( $nominators[ $user_id ] ) ) {
+			return false;
+		}
+
+		$nominators[ $user_id ] = [
+			'user_id'             => $user_id,
+			'nomination_datetime' => gmdate( 'Y-m-d H:i:s' ),
+			'nomination_unixtime' => time(),
+		];
+
+		$this->metas->update_pf_meta( $post_id, 'nominator_array', $nominators );
+
+		return true;
 	}
 
 	/**
@@ -279,6 +354,7 @@ class Forward_Tools {
 			return false;
 		} else {
 			$this->advance_interface->transition( $nomination_id, $new_post_id );
+			$this->metas->update_pf_meta( $new_post_id, 'nom_id', $nomination_id );
 			return $new_post_id;
 		}
 	}
@@ -416,7 +492,7 @@ class Forward_Tools {
 		if ( 0 !== $final_step_parent && false !== $final_step_parent ) {
 			// The nomination has already been pushed to final step.
 			// Increment it as well.
-			$nominators = $this->apply_nomination_data( $final_step_parent, false, true );
+			$nominators = $this->apply_nomination_data( $final_step_parent, 0, true );
 			$this->metas->update_pf_meta( $final_step_parent, 'nominator_array', $nominators );
 		}
 		return $nominators;
@@ -818,11 +894,9 @@ class Forward_Tools {
 		$result       = pressforward( 'utility.relate' )->basic_relate( 'draft', $nomination_id, 'off', $user_id );
 
 		if ( isset( $_POST['post_category'] ) && ! empty( $_POST['post_category'] ) && ! is_array( $_POST['post_category'] ) ) {
-			$categories = explode( ',', sanitize_text_field( wp_unslash( $_POST['post_category'] ) ) );
-			if ( is_array( $categories ) && count( $categories ) > 0 ) {
-				wp_set_post_categories( $post_id, $categories, false );
-				wp_set_post_categories( $nomination_id, $categories, false );
-			}
+			$categories = array_map( 'intval', explode( ',', sanitize_text_field( wp_unslash( $_POST['post_category'] ) ) ) );
+			wp_set_post_categories( $post_id, $categories, false );
+			wp_set_post_categories( $nomination_id, $categories, false );
 		}
 
 		return $post_id;

@@ -1,4 +1,6 @@
-import { __ } from '@wordpress/i18n'
+/* global ajaxurl, jQuery, editorialCommentReply */
+
+import { __, sprintf } from '@wordpress/i18n'
 
 export function pf_make_url_hashed(hashed) {
 	//via http://stackoverflow.com/questions/1844491/intercepting-call-to-the-back-button-in-my-ajax-application-i-dont-want-it-to
@@ -312,8 +314,8 @@ export function PFBootstrapInits() {
 			html: true,
 			title: '',
 			container: '.icon-info-sign',
-			content: function () {
-				var idCode = jQuery(this).attr('data-target');
+			content: function ( button ) {
+				var idCode = jQuery( button ).attr('data-target');
 				var contentOutput = '<div class="feed-item-info-box">';
 				contentOutput += jQuery('#info-box-' + idCode).html();
 				contentOutput += '</div>';
@@ -439,22 +441,6 @@ export function detect_view_change() {
 		}
 	});
 
-	jQuery('.pressforward #wpbody').on('click', '.list div:not(.amplify-group.open)', function (evt) {
-		var element_p = jQuery('.amplify-group.open');
-		return;
-		//console.log(element_p);
-		if (is_pf_open) {
-			//console.log(element_p.length);
-			var element = element_p.find('.pf-amplify');
-			var parent_e = element.parents('article');
-			var parent_h = parent_e.height();
-			//console.log(parent_h);
-			element.removeClass('amplify-down');
-			jQuery(parent_e).removeClass('show-overflow');
-			jQuery(parent_e).css('height', '');
-		}
-	});
-
 	jQuery('.pressforward #wpbody').on('click', '.grid .amplify-group .pf-amplify', function (evt) {
 		var element = jQuery(this);
 		//console.log(element);
@@ -472,21 +458,6 @@ export function detect_view_change() {
 			is_pf_open = true;
 		}
 	});
-
-	jQuery('.pressforward #wpbody').on('click', '.grid div:not(.amplify-group.open)', function (evt) {
-		return;
-		var element_p = jQuery('.amplify-group.open');
-		//console.log(element_p);
-		if (is_pf_open) {
-			//console.log(element_p.length);
-			var element = element_p.find('.pf-amplify');
-			var parent_e = element.parents('article');
-			var parent_h = parent_e.height();
-			//console.log(parent_h);
-			parent_e.removeClass('amplify-down');
-		}
-	});
-
 }
 
 // Via http://stackoverflow.com/a/1634841/2522464

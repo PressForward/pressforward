@@ -7,12 +7,10 @@
 
 namespace PressForward\Controllers;
 
-use PressForward\Interfaces\System as System;
-
 /**
  * System utilities.
  */
-class PF_to_WP_System implements System {
+class PF_to_WP_System implements \PressForward\Interfaces\System {
 	/**
 	 * Wrapper for add_option().
 	 *
@@ -77,7 +75,7 @@ class PF_to_WP_System implements System {
 	/**
 	 * Wrapper for get_the_guid().
 	 *
-	 * @param string $id Item ID.
+	 * @param int $id Item ID.
 	 */
 	public function get_the_guid( $id ) {
 		return get_the_guid( $id );

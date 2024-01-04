@@ -7,9 +7,7 @@
 
 namespace PressForward\Core\Providers;
 
-use Intraxia\Jaxion\Contract\Core\Container as Container;
-use Intraxia\Jaxion\Assets\Register as Assets;
-use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
+use Intraxia\Jaxion\Contract\Core\Container;
 
 use PressForward\Core\AJAX\ConfigurationAJAX;
 use PressForward\Core\AJAX\ItemsAJAX;
@@ -20,7 +18,7 @@ use PressForward\Core\AJAX\MetaAJAX;
 /**
  * AJAXServiceProvider class.
  */
-class AJAXServiceProvider extends ServiceProvider {
+class AJAXServiceProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	/**
 	 * {@inheritdoc}
 	 *
@@ -29,35 +27,35 @@ class AJAXServiceProvider extends ServiceProvider {
 	public function register( Container $container ) {
 		$container->share(
 			'ajax.configuration',
-			function( $container ) {
+			function ( $container ) {
 				return new ConfigurationAJAX( $container->fetch( 'controller.metas' ), $container->fetch( 'controller.items' ), $container->fetch( 'schema.feed_item' ), $container->fetch( 'controller.users' ), $container->fetch( 'controller.jwt' ) );
 			}
 		);
 
 		$container->share(
 			'ajax.items',
-			function( $container ) {
+			function ( $container ) {
 				return new ItemsAJAX( $container->fetch( 'controller.metas' ), $container->fetch( 'controller.items' ), $container->fetch( 'schema.feed_item' ) );
 			}
 		);
 
 		$container->share(
 			'ajax.source',
-			function( $container ) {
+			function ( $container ) {
 				return new SourceAJAX( $container->fetch( 'controller.readability' ), $container->fetch( 'utility.retrieval' ), $container->fetch( 'schema.feed_item' ) );
 			}
 		);
 
 		$container->share(
 			'ajax.nominations',
-			function( $container ) {
+			function ( $container ) {
 				return new NominationsAJAX( $container->fetch( 'controller.metas' ), $container->fetch( 'controller.items' ), $container->fetch( 'schema.feed_item' ) );
 			}
 		);
 
 		$container->share(
 			'ajax.meta',
-			function( $container ) {
+			function ( $container ) {
 				return new MetaAJAX( $container->fetch( 'controller.metas' ), $container->fetch( 'controller.items' ), $container->fetch( 'schema.feed_item' ) );
 			}
 		);

@@ -172,12 +172,12 @@ class Folders implements HasActions, HasFilters {
 	public function get_top_feed_folders() {
 		$terms = array( $this->tag_taxonomy );
 		$cats  = get_terms(
-			$terms,
-			array(
+			[
+				'taxonomy'     => $terms,
 				'parent'       => 0,
-				'hide_empty'   => 0,
-				'hierarchical' => 1,
-			)
+				'hide_empty'   => false,
+				'hierarchical' => true,
+			]
 		);
 		return $cats;
 	}
@@ -360,11 +360,12 @@ class Folders implements HasActions, HasFilters {
 	 * @param array $folder  Term data.
 	 */
 	public function the_folder( $folder ) {
-		if ( is_array( $folder ) ) {
-			$term_obj = $folder['term'];
-		} else {
-			$term_obj = $folder;
+		if ( empty( $folder['term'] ) ) {
+			return;
 		}
+
+		$term_obj = $folder['term'];
+
 		?>
 
 		<?php
@@ -384,10 +385,10 @@ class Folders implements HasActions, HasFilters {
 	public function the_feed( $feed ) {
 		$feed_obj = get_post( $feed );
 		?>
-		<li class="feed" id="feed-<?php echo esc_attr( $feed_obj->ID ); ?>">
+		<li class="feed" id="feed-<?php echo esc_attr( (string) $feed_obj->ID ); ?>">
 		<?php
 
-			printf( '<a href="%s" title="%s">%s</a>', esc_attr( $feed_obj->ID ), esc_attr( $feed_obj->post_title ), esc_html( $feed_obj->post_title ) );
+			printf( '<a href="%s" title="%s">%s</a>', esc_attr( (string) $feed_obj->ID ), esc_attr( $feed_obj->post_title ), esc_html( $feed_obj->post_title ) );
 
 		?>
 		</li>

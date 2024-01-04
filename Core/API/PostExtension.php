@@ -13,8 +13,6 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
 use PressForward\Controllers\Metas;
 use PressForward\Core\API\APIWithMetaEndpoints;
 
-use \WP_Ajax_Response;
-
 /**
  * PostExtension class.
  */
@@ -70,7 +68,7 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 		$actions = array(
 			array(
 				'hook'   => 'rest_api_init',
-				'method' => 'register_rest_post_read_meta_fields',
+				'method' => 'register_rest_fields',
 			),
 		);
 		return $actions;
@@ -119,7 +117,7 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 	public function rest_api_init_extension_hook_read_only( $action ) {
 		return array(
 			'hook'   => 'rest_api_init',
-			'method' => function() use ( $action ) {
+			'method' => function () use ( $action ) {
 				$this->register_rest_post_read_field( $action, true );
 			},
 		);
@@ -150,7 +148,46 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 				);
 			}
 		}
+
+		$nominator_array = pressforward( 'utility.forward_tools' )->get_post_nominator_array( $post->ID );
+
+		if ( $nominator_array ) {
+			$data->add_links(
+				[
+					'nominator' => array_map(
+						function ( $nominator ) {
+							return array(
+								'href'       => rest_url( '/wp/v2/user/' . $nominator['user_id'] ),
+								'embeddable' => false,
+							);
+						},
+						$nominator_array
+					),
+				]
+			);
+		}
+
 		return $data;
+	}
+
+	/**
+	 * Registers meta fields for post endpoint.
+	 *
+	 * @return void
+	 */
+	public function register_rest_fields() {
+		// Most REST fields are registered by the central meta schema.
+		$this->register_rest_post_read_meta_fields();
+
+		register_rest_field(
+			$this->post_type,
+			'nominators',
+			array(
+				'get_callback' => function ( $post_array ) {
+					return pressforward( 'utility.forward_tools' )->get_post_nominator_array( $post_array['id'] );
+				},
+			)
+		);
 	}
 
 	/**

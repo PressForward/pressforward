@@ -1,6 +1,6 @@
 {
 	"name": "pressforward",
-	"version": "5.5.0",
+	"version": "5.6.0",
 	"description": "PressForward is a free plugin that provides an editorial workflow for content aggregation and curation within the WordPress dashboard. It is designed for bloggers and editorial teams who wish to collect, discuss, and share content from a variety of sources on the open web. ",
 	"main": "assets/js/pf.js",
 	"directories": {
@@ -8,6 +8,7 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.14.3",
+		"@babel/eslint-parser": "^7.22.15",
 		"@babel/preset-env": "^7.14.4",
 		"@selfisekai/gulp-sass": "^4.2.0",
 		"@wordpress/scripts": "^25.4.0",
@@ -18,7 +19,8 @@
 		"gulp-sourcemaps": "^3.0.0",
 		"gulp-uglify": "^3.0.2",
 		"node-gyp": "^7.1.2",
-		"sass": "^1.25.0"
+		"sass": "^1.25.0",
+		"style-loader": "^3.3.3"
 	},
 	"scripts": {
 		"test": "test",
@@ -28,8 +30,8 @@
 		"lint": "run-p lint:js",
 		"lint:eslint": "eslint --ignore-path .gitignore",
 		"lint:js": "npm run lint:eslint -- .",
-		"start": "wp-scripts start assets/src/add-feeds/add-feeds.js assets/src/edit-feeds/edit-feeds.js assets/src/nominate-this/nominate-this.js assets/src/quick-edit/quick-edit.js assets/src/reader/reader.js assets/src/scroll/scroll.js",
-		"build": "wp-scripts build assets/src/add-feeds/add-feeds.js assets/src/edit-feeds/edit-feeds.js assets/src/nominate-this/nominate-this.js assets/src/quick-edit/quick-edit.js assets/src/reader/reader.js assets/src/scroll/scroll.js"
+		"start": "wp-scripts start assets/src/add-feeds/add-feeds.js assets/src/blocks/blocks.js assets/src/blocks/blocks-frontend.js assets/src/bootstrap/bootstrap.js assets/src/edit-feeds/edit-feeds.js assets/src/nominate-this/nominate-this.js assets/src/nominate-this-block-editor/nominate-this-block-editor.js assets/src/quick-edit/quick-edit.js assets/src/reader/reader.js assets/src/scroll/scroll.js",
+		"build": "wp-scripts build assets/src/add-feeds/add-feeds.js assets/src/blocks/blocks.js assets/src/blocks/blocks-frontend.js assets/src/bootstrap/bootstrap.js assets/src/edit-feeds/edit-feeds.js assets/src/nominate-this/nominate-this.js assets/src/nominate-this-block-editor/nominate-this-block-editor.js assets/src/quick-edit/quick-edit.js assets/src/reader/reader.js assets/src/scroll/scroll.js"
 	},
 	"repository": {
 		"type": "git",
@@ -57,9 +59,9 @@
 	"homepage": "https://github.com/PressForward/pressforward",
 	"dependencies": {
 		"@mozilla/readability": "^0.4.2",
+		"bootstrap": "^5.3.2",
 		"dompurify": "^3.0.0",
 		"infinite-scroll": "^4.0.1",
-		"postcss": "^8.4.23",
 		"url-search-params-polyfill": "^8.1.1",
 		"whatwg-fetch": "^3.6.2"
 	}

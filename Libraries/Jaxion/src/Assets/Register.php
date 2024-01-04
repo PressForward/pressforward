@@ -83,7 +83,13 @@ class Register implements RegisterContract {
 	 * @param array $script
 	 */
 	public function register_script( $script ) {
-		$this->scripts[] = $script;
+		wp_register_script(
+			$script['handle'],
+			$this->url . $script['src'] . $this->min . '.js',
+			isset( $script['deps'] ) ? $script['deps'] : [],
+			$this->version,
+			! isset( $script['footer'] ) || $script['footer'] ? true : false
+		);
 	}
 
 	/**
@@ -92,7 +98,13 @@ class Register implements RegisterContract {
 	 * @param array $style
 	 */
 	public function register_style( $style ) {
-		$this->styles[] = $style;
+		wp_register_style(
+			$style['handle'],
+			$this->url . $style['src'] . $this->min . '.css',
+			isset( $style['deps'] ) ? $style['deps'] : [],
+			$this->version,
+			isset( $style['media'] ) ? $style['media'] : 'all'
+		);
 	}
 
 	/**

@@ -7,26 +7,24 @@
 
 namespace PressForward\Controllers;
 
-use PressForward\Interfaces\Items as Items;
-
 /**
  * Wrappers for WP post functions.
  */
-class PF_to_WP_Posts implements Items {
+class PF_to_WP_Posts implements \PressForward\Interfaces\Items {
 
 	/**
 	 * Creates a post.
 	 *
-	 * @param array    $post    Update params. See wp_update_post().
-	 * @param bool     $error   Whether to return a WP_Error object. Default fals.
-	 * @param int|bool $item_id PF item id.
+	 * @param array       $post    Update params. See wp_update_post().
+	 * @param bool        $error   Whether to return a WP_Error object. Default fals.
+	 * @param string|null $item_id PF item id.
 	 * @return mixed
 	 */
-	public function insert_post( $post, $error = false, $item_id = false ) {
+	public function insert_post( $post, $error = false, $item_id = null ) {
 		if ( isset( $post['post_date'] ) && ! isset( $post['post_date_gmt'] ) ) {
 			$post['post_date_gmt'] = get_gmt_from_date( $post['post_date'] );
 		}
-		if ( ( false !== $item_id ) && in_array( $post['post_type'], array( pressforward_draft_post_type(), 'pf_feed_item', 'nomination' ), true ) ) {
+		if ( ( null !== $item_id ) && in_array( $post['post_type'], array( pressforward_draft_post_type(), 'pf_feed_item', 'nomination' ), true ) ) {
 			$check = $this->check_not_existing( $item_id, $post['post_type'] );
 			if ( true !== $check ) {
 				return $check;
@@ -38,14 +36,14 @@ class PF_to_WP_Posts implements Items {
 	/**
 	 * Updates a post.
 	 *
-	 * @param array $post  Update params. See wp_update_post().
-	 * @param bool  $error Whether to return a WP_Error object. Default fals.
+	 * @param array|\WP_Post $post  Update params. See wp_update_post().
+	 * @param bool           $error Whether to return a WP_Error object. Default false.
 	 * @return mixed
 	 */
 	public function update_post( $post, $error = false ) {
 		if ( ! is_object( $post ) && ( isset( $post['post_date'] ) && ! isset( $post['post_date_gmt'] ) ) ) {
 			$post['post_date_gmt'] = get_gmt_from_date( $post['post_date'] );
-		} elseif ( is_object( $post ) && isset( $post->post_date ) && ! isset( $post->post_date_gmt ) ) {
+		} elseif ( $post instanceof \WP_Post ) {
 			$post->post_date_gmt = get_gmt_from_date( $post->post_date );
 		}
 		return wp_update_post( $post, $error );
@@ -97,8 +95,8 @@ class PF_to_WP_Posts implements Items {
 	/**
 	 * Checks to see whether an item exists with this PF item ID.
 	 *
-	 * @param int $item_id   PF item ID.
-	 * @param int $post_type Post type.
+	 * @param string $item_id   PF item ID.
+	 * @param string $post_type Post type.
 	 * @return int|bool
 	 */
 	public function check_not_existing( $item_id, $post_type ) {

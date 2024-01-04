@@ -251,9 +251,9 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 	 */
 	public function get_the_folder_view_title() {
 		if ( isset( $_GET['feed'] ) ) {
-			$title = get_the_title( sanitize_text_field( wp_unslash( $_GET['feed'] ) ) );
+			$title = get_the_title( (int) sanitize_text_field( wp_unslash( $_GET['feed'] ) ) );
 		} elseif ( isset( $_GET['folder'] ) ) {
-			$term  = get_term( sanitize_text_field( wp_unslash( $_GET['folder'] ) ), pressforward( 'schema.feeds' )->tag_taxonomy );
+			$term  = get_term( (int) sanitize_text_field( wp_unslash( $_GET['folder'] ) ), pressforward( 'schema.feeds' )->tag_taxonomy );
 			$title = $term->name;
 		} else {
 			$title = '';

@@ -64,7 +64,7 @@ interface System {
 	/**
 	 * Gets a GUID for a given item ID.
 	 *
-	 * @param string $id Item ID.
+	 * @param int $id Item ID.
 	 */
 	public function get_the_guid( $id );
 

@@ -12,7 +12,6 @@ use WP_Ajax_Response;
 use WP_Error;
 use WP_Query;
 use PressForward\Controllers\Metas;
-use PressForward\Controllers\Stats_Shortcodes as Stats_Shortcodes;
 
 /**
  * Stats utilities.
@@ -176,9 +175,7 @@ class Stats {
 	 * @param \PressForward\Controllers\Stats_Shortcodes $shortcodes Shortcodes object.
 	 */
 	public function shortcodes( $shortcodes ) {
-		if ( empty( $this->shortcodes ) ) {
-			$this->shortcodes = $shortcodes;
-		}
+		$this->shortcodes = $shortcodes;
 	}
 
 	/**
@@ -336,26 +333,6 @@ class Stats {
 		);
 
 		return $authors;
-	}
-
-	/**
-	 * Gets the leaderboard entry text for an author.
-	 *
-	 * @param array $author Author info.
-	 * @return string
-	 */
-	private function add_author_leaderboard_entry( $author ) {
-		if ( empty( $author ) ) {
-			$author          = array();
-			$author['count'] = 0;
-		}
-		if ( ( empty( $author['name'] ) ) ) {
-			$author['name'] = __( 'No author found.', 'pressforward' );
-		}
-		$s  = "\n<li>";
-		$s .= esc_html( $author['name'] ) . ' (' . esc_html( $author['count'] ) . ')';
-		$s .= '</li>';
-		return $s;
 	}
 
 	/**

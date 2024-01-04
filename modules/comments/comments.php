@@ -30,18 +30,18 @@ class PF_Comments extends PF_Module {
 	}
 
 	/**
-	 * Sets up module.
+	 * Default settings for the module.
+	 *
+	 * @return array
 	 */
-	public function module_setup() {
-		$mod_settings = array(
+	public function get_default_settings() {
+		return array(
 			'name'        => __( 'Internal Commenting', 'pressforward' ),
 			'slug'        => 'comments',
 			'description' => __( 'This module provides a way for users to comment on posts throughout the editorial process. Internal commenting is only visible in the PressForward plugin and will not be publicly visible when published as a Post.', 'pressforward' ),
 			'thumbnail'   => '',
 			'options'     => '',
 		);
-
-		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 	}
 
 	/**
@@ -85,10 +85,10 @@ class PF_Comments extends PF_Module {
 
 		if ( ! $comment_set['modal_state'] ) {
 
-			echo '<a role="button" class="btn ' . esc_attr( $btnstate ) . ' itemCommentModal comments-expander" title="' . esc_attr__( 'Comment', 'pressforward' ) . '" data-toggle="modal" href="#comment_modal_' . esc_attr( $comment_set['id'] ) . '" id="comments-expander-' . esc_attr( $comment_set['id'] ) . '" ><span class="comments-expander-count">' . esc_html( $count ) . '</span><i class="' . esc_attr( $iconstate ) . '"></i></a>';
+			echo '<a role="button" class="btn ' . esc_attr( $btnstate ) . ' itemCommentModal comments-expander" title="' . esc_attr__( 'Comment', 'pressforward' ) . '" data-toggle="modal" href="#comment_modal_' . esc_attr( $comment_set['id'] ) . '" id="comments-expander-' . esc_attr( $comment_set['id'] ) . '" ><span class="comments-expander-count">' . esc_html( (string) $count ) . '</span><i class="' . esc_attr( $iconstate ) . '"></i></a>';
 
 		} else {
-			echo '<a role="button" class="btn ' . esc_attr( $btnstate ) . ' btn-small itemCommentModal comments-expander active" ><span class="comments-expander-count">' . esc_html( $count ) . '</span><i class="' . esc_attr( $iconstate ) . '"></i></a>';
+			echo '<a role="button" class="btn ' . esc_attr( $btnstate ) . ' btn-small itemCommentModal comments-expander active" ><span class="comments-expander-count">' . esc_html( (string) $count ) . '</span><i class="' . esc_attr( $iconstate ) . '"></i></a>';
 		}
 	}
 
@@ -219,7 +219,7 @@ class PF_Comments extends PF_Module {
 
 				<p id="ef-replysubmit">
 					<a class="ef-replysave button-primary alignright" href="#comments-form">
-						<span id="ef-replybtn"><?php esc_html_e( 'Submit Response', 'edit-flow' ); ?></span>
+						<span id="ef-replybtn"><?php esc_html_e( 'Submit Comment', 'pressforward' ); ?></span>
 					</a>
 					<a class="ef-replycancel button-secondary alignright" href="#comments-form"><?php esc_html_e( 'Cancel', 'pressforward' ); ?></a>
 					<img alt="<?php esc_attr_e( 'Sending comment...', 'pressforward' ); ?>" src="<?php echo esc_attr( admin_url( '/images/wpspin_light.gif' ) ); ?>" class="alignright" style="display: none;" id="ef-comment_loading" />
@@ -228,7 +228,7 @@ class PF_Comments extends PF_Module {
 				</p>
 
 				<input type="hidden" value="" id="ef-comment_parent" name="ef-comment_parent" />
-				<input type="hidden" name="ef-post_id" id="ef-post_id" value="<?php echo esc_attr( $id_for_comments ); ?>" />
+				<input type="hidden" name="ef-post_id" id="ef-post_id" value="<?php echo esc_attr( (string) $id_for_comments ); ?>" />
 
 				<?php wp_nonce_field( 'comment', 'ef_comment_nonce', false ); ?>
 
@@ -273,10 +273,7 @@ class PF_Comments extends PF_Module {
 			foreach ( $actions as $action => $link ) {
 				++$i;
 
-				// Reply and quickedit need a hide-if-no-js span.
-				if ( 'reply' === $action || 'quickedit' === $action ) {
-					$action .= ' hide-if-no-js';
-				}
+				$action .= ' hide-if-no-js';
 
 				$actions_string .= "<span class='$action'>$sep$link</span>";
 			}
@@ -284,7 +281,7 @@ class PF_Comments extends PF_Module {
 
 		?>
 
-		<li id="comment-<?php echo esc_attr( $comment->comment_ID ); ?>" <?php comment_class( array( 'comment-item', wp_get_comment_status( $comment->comment_ID ) ) ); ?>>
+		<li id="comment-<?php echo esc_attr( $comment->comment_ID ); ?>" <?php comment_class( array( 'comment-item', wp_get_comment_status( (int) $comment->comment_ID ) ) ); ?>>
 
 			<?php // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<?php echo get_avatar( $comment->comment_author_email, 50 ); ?>
@@ -402,7 +399,7 @@ class PF_Comments extends PF_Module {
 			$response = new WP_Ajax_Response();
 
 			ob_start();
-			$this->the_comment( $comment, '', '' );
+			$this->the_comment( $comment, [], 0 );
 			$comment_list_item = ob_get_contents();
 			ob_end_clean();
 
@@ -458,7 +455,8 @@ class PF_Comments extends PF_Module {
 
 		wp_enqueue_script( 'pressforward-internal-comments', PF_URL . 'modules/comments/assets/js/editorial-comments.js', array( 'jquery', 'post' ), PF_VERSION, true );
 
-		$thread_comments = (int) get_option( 'thread_comments' );
+		// Enforce that it's numeric, but then convert back to string for echoing.
+		$thread_comments = (string) intval( get_option( 'thread_comments' ) );
 
 		?>
 		<script type="text/javascript">

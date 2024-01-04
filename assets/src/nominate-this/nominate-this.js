@@ -1,3 +1,4 @@
+/* global ajaxurl, addEventListener, DOMParser, postboxes, tinymce */
 import { Readability } from '@mozilla/readability'
 import DOMPurify from 'dompurify'
 
@@ -6,11 +7,15 @@ import 'whatwg-fetch'
 
 import './nominate-this.scss'
 
-import { __ } from '@wordpress/i18n'
+import { assignTags } from '../util/tags'
+
+import { __, sprintf } from '@wordpress/i18n'
 
 (function(){
 	const params = new URLSearchParams( document.location.search )
 	const hasSelection = !! params.get( 's' )
+
+	let sanitizedLoadingUrl
 
 	let requestIsPending = false
 
@@ -22,7 +27,12 @@ import { __ } from '@wordpress/i18n'
 			if ( url ) {
 				fetchUrlData( url )
 
-				document.getElementById( 'loading-url' ).innerHTML = DOMPurify.sanitize( url, { ALLOWED_TAGS: [] } )
+				sanitizedLoadingUrl = DOMPurify.sanitize( url, { ALLOWED_TAGS: [] } )
+
+				const loadingUrl = document.getElementById( 'loading-url' )
+				if ( loadingUrl ) {
+					document.getElementById( 'loading-url' ).innerHTML = sanitizedLoadingUrl
+				}
 			}
 
 			// Needed for the postbox toggles.
@@ -47,6 +57,21 @@ import { __ } from '@wordpress/i18n'
 			const newWindowHeight = maxWindowHeight > ( availHeight - 40 ) ? availHeight - 40 : maxWindowHeight
 
 			window.resizeTo( newWindowHeight, newWindowWidth );
+
+			wp.i18n.setLocaleData( {
+				'Publish': [
+					'Nominate',
+					'pressforward'
+				],
+				'Are you ready to publish?': [
+					'Are you ready to nominate?',
+					'pressforward'
+				],
+				'Double-check your settings before publishing.': [
+					'Double-check your settings before nominating.',
+					'pressforward'
+				],
+			} );
 		}
 	)
 
@@ -58,6 +83,9 @@ import { __ } from '@wordpress/i18n'
 	const fetchUrlData = ( url ) => {
 		const fetchUrl = ajaxurl + '?action=pf_fetch_url_content&url=' + encodeURIComponent( url )
 
+		// Determine whether this is a classic or block editor.
+		const isBlockEditor = document.getElementById( 'editor' ) ? true : false
+
 		// Only show the loading indicator if there's a delay of more than 2 seconds.
 		const requestStartTime = Date.now()
 		requestIsPending = true
@@ -67,7 +95,11 @@ import { __ } from '@wordpress/i18n'
 					return
 				}
 
-				setIsLoading( true )
+				if ( isBlockEditor ) {
+					setLoadingIndicator( true )
+				} else {
+					setIsLoading( true )
+				}
 			},
 			2000
 		)
@@ -80,11 +112,19 @@ import { __ } from '@wordpress/i18n'
 				// To avoid flashes, don't hide until at least five seconds has passed.
 				const timeElapsed = Date.now() - requestStartTime
 				if ( timeElapsed > 5000 ) {
-					setIsLoading( false )
+					if ( isBlockEditor ) {
+						setLoadingIndicator( false )
+					} else {
+						setIsLoading( false )
+					}
 				} else {
 					setTimeout(
 						() => {
-							setIsLoading( false )
+							if ( isBlockEditor ) {
+								setLoadingIndicator( false )
+							} else {
+								setIsLoading( false )
+							}
 						},
 						5000 - timeElapsed
 					)
@@ -93,6 +133,8 @@ import { __ } from '@wordpress/i18n'
 				if ( responseJSON.success ) {
 					// DOM object is necessary for Readability as well as other parsing.
 					const domObject = new DOMParser().parseFromString( responseJSON.data.body, 'text/html' )
+
+					const documentTitle = domObject.title
 
 					// Readability object will provide post content and author.
 					const readabilityObj = new Readability( domObject.cloneNode( true ) ).parse()
@@ -104,45 +146,115 @@ import { __ } from '@wordpress/i18n'
 					if ( ! hasSelection ) {
 						const cleanContent = DOMPurify.sanitize( processedReadableContent )
 
-						// "Visual" tab.
-						const contentEditor = tinymce.get( 'content' )
-						if ( contentEditor ) {
-							contentEditor.setContent( cleanContent )
-						}
+						if ( isBlockEditor ) {
+							const blockContent = wp.blocks.pasteHandler( { HTML: cleanContent } )
+							wp.data.dispatch( 'core/block-editor' ).insertBlocks( blockContent )
+							wp.data.dispatch( 'core/editor' ).editPost( { title: documentTitle } )
+						} else {
+							const contentEditor = tinymce.get( 'content' )
+							if ( contentEditor ) {
+								// "Visual" tab.
+								contentEditor.setContent( cleanContent )
 
-						// "Text" tab.
-						const contentTextarea = document.getElementById( 'content' )
-						if ( contentTextarea ) {
-							contentTextarea.innerHTML = cleanContent
+								// "Text" tab.
+								const contentTextarea = document.getElementById( 'content' )
+								if ( contentTextarea ) {
+									contentTextarea.innerHTML = cleanContent
+								}
+							}
 						}
 					}
 
 					// Post author.
-					const authorField = document.getElementById( 'item_author' )
-					if ( authorField ) {
-						const authorFromLD = getAuthorFromLD( domObject )
-
-						const authorValue = authorFromLD ?? readabilityObj.byline
-
-						authorField.value = DOMPurify.sanitize( authorValue, { ALLOWED_TAGS: [] } )
+					const authorFromLD = getAuthorFromLD( domObject )
+					const authorValue = authorFromLD ?? readabilityObj.byline
+					const authorValueSanitized = DOMPurify.sanitize( authorValue, { ALLOWED_TAGS: [] } )
+					if ( authorValueSanitized ) {
+						if ( isBlockEditor ) {
+							wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'item_author': authorValueSanitized } } )
+						} else {
+							const authorField = document.getElementById( 'item_author' )
+							if ( authorField ) {
+								authorField.value = authorValueSanitized
+							}
+						}
 					}
 
-					const tagsField = document.getElementById( 'post_tags' )
-					if ( tagsField ) {
-						const keywords = getKeywords( domObject )
-						tagsField.value = DOMPurify.sanitize( keywords.join( ', ' ), { ALLOWED_TAGS: [] } )
+					// A number of items are only set in the block editor.
+					if ( isBlockEditor ) {
+						const itemLinkValue = DOMPurify.sanitize( url, { ALLOWED_TAGS: [] } )
+						wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'item_link': itemLinkValue } } )
+
+						const itemDate = getTimestampFromLD( domObject )
+						if ( itemDate ) {
+							wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'item_date': itemDate } } )
+							wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'item_wp_date': itemDate } } )
+						}
+
+						// Format the current time as a MySQL timestamp.
+						const now = new Date()
+						const nowFormatted = formatISODateAsMysql( now.toISOString() )
+						wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'date_nominated': nowFormatted } } )
+
+						// Get the current date formated as a UNIX timestamp.
+						const nowUnix = Math.floor( now.getTime() / 1000 )
+						wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'sortable_item_date': nowUnix.toString() } } )
+					}
+
+					const keywords = getKeywords( domObject )
+					if ( isBlockEditor ) {
+						// @todo Tags must be created before they can be assigned.
+						// But this is likely disruptive, as it will clutter up
+						// the tags list. Perhaps we need a toggle for the auto-import
+						// of remote tags. In the meantime, we do need the
+						// 'via bookmarklet' tag.
+						assignTags( [ __( 'via bookmarklet', 'pressforward' ) ] )
+
+						// A comma-separated list is stored in 'item_tags' postmeta.
+						const tagsFieldValue = DOMPurify.sanitize( keywords.join( ',' ), { ALLOWED_TAGS: [] } )
+						wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'item_tags': tagsFieldValue } } )
+
+					} else {
+
+						// Add 'via bookmarklet' tag to the list.
+						keywords.push( __( 'via bookmarklet', 'pressforward' ) )
+
+						const tagsFieldValue = DOMPurify.sanitize( keywords.join( ', ' ), { ALLOWED_TAGS: [] } )
+						const tagsField = document.getElementById( 'post_tags' )
+						if ( tagsField ) {
+							tagsField.value = tagsFieldValue
+						}
 					}
 
 					// Featured images.
-					const itemFeatImgField = document.getElementById( 'item_feat_img' )
-					if ( itemFeatImgField ) {
-						const sourceUrl = new URL( url )
-						const imageUrl = ensureAbsoluteUrl( getImageUrl( domObject ), sourceUrl.protocol + '//' + sourceUrl.hostname )
-						itemFeatImgField.value = DOMPurify.sanitize( imageUrl, { ALLOWED_TAGS: [] } )
+					const sourceUrl = new URL( url )
+					const imageUrl = ensureAbsoluteUrl( getImageUrl( domObject ), sourceUrl.protocol + '//' + sourceUrl.hostname )
+					const itemFeatImgValue = DOMPurify.sanitize( imageUrl, { ALLOWED_TAGS: [] } )
+
+					if ( itemFeatImgValue ) {
+						if ( isBlockEditor ) {
+							wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'item_feat_img': itemFeatImgValue } } )
+						} else {
+							const itemFeatImgField = document.getElementById( 'item_feat_img' )
+							if ( itemFeatImgField ) {
+								itemFeatImgField.value = itemFeatImgValue
+							}
+						}
 					}
+
+					// Switch to the Post tab so the user can see the Tags, Post Author, etc fields.
+					if ( isBlockEditor ) {
+						setTimeout( () => {
+						   wp.data.dispatch( 'core/edit-post' ).openGeneralSidebar( 'edit-post/document' );
+						}, 2000 )
+					}
+				} else if ( isBlockEditor ) {
+					wp.data.dispatch( 'core/notices' ).createErrorNotice(
+						__( 'Could not fetch remote URL', 'pressforward' ),
+						{ id: 'fetch-url-failed', isDismissible: false }
+					);
 				} else {
 					document.body.classList.add( 'is-failed-request' )
-
 				}
 			} )
 	}
@@ -150,7 +262,7 @@ import { __ } from '@wordpress/i18n'
 	/**
 	 * Sets or unsets the 'is-loading' body class.
 	 *
-	 * @param {bool} isLoading
+	 * @param {boolean} isLoading Whether the page is loading.
 	 */
 	const setIsLoading = ( isLoading ) => {
 		if ( isLoading ) {
@@ -161,15 +273,33 @@ import { __ } from '@wordpress/i18n'
 	}
 
 	/**
+	 * Configures the loading indicator notice.
+	 *
+	 * @param {boolean} isLoading Whether to turn on or off.
+	 * @return {void}
+	 */
+	const setLoadingIndicator = ( isLoading ) => {
+		if ( isLoading ) {
+			wp.data.dispatch( 'core/notices' ).createWarningNotice(
+				// translators: URL being loaded
+				sprintf( __( 'Loading content from %s.', 'pressforward' ), sanitizedLoadingUrl ),
+				{ id: 'loading-content', isDismissible: false }
+			);
+		} else {
+			wp.data.dispatch( 'core/notices' ).removeNotice( 'loading-content' )
+		}
+	}
+
+	/**
 	 * Gets keywords out of a DOM object.
 	 *
 	 * As in the PFOpenGraph library,
 	 *
 	 * @param {HTMLDocument} domObject DOM object representing the source page.
-	 * @returns {array}
+	 * @return {Array} Array of keywords.
 	 */
 	const getKeywords = ( domObject ) => {
-		let keywords = [ __( 'via bookmarklet', 'pf' ) ]
+		const keywords = []
 
 		// Prefer linked data if available.
 		const ld = getLDFromDomObject( domObject )
@@ -182,7 +312,7 @@ import { __ } from '@wordpress/i18n'
 				keywordArray = ld.keywords.split( ',' )
 			}
 
-			return [ ...keywords, keywordArray ]
+			return keywordArray
 		}
 
 		// Next, look at 'keyword' meta tags.
@@ -223,7 +353,7 @@ import { __ } from '@wordpress/i18n'
 	 * 4. First 'img' tag in the body text
 	 *
 	 * @param {HTMLDocument} domObject DOM object representing the source page.
-	 * @returns {array}
+	 * @return {Array} Array of swappable embeds, as detected by the server.
 	 */
 	const getImageUrl = ( domObject ) => {
 		// Prefer linked data if available.
@@ -273,7 +403,7 @@ import { __ } from '@wordpress/i18n'
 	 *
 	 * @param {string} url  URL to check.
 	 * @param {string} base URL base.
-	 * @return {string}
+	 * @return {string} URL.
 	 */
 	const ensureAbsoluteUrl = ( url, base ) => {
 		if ( '/' !== url.substr( 0, 1 ) ) {
@@ -286,9 +416,9 @@ import { __ } from '@wordpress/i18n'
 	/**
 	 * Swaps embedded content with raw WP URLs.
 	 *
-	 * @param {string} body Readable text, as determined by Readability.
-	 * @param {array} embeds Array of swappable embeds, as detected by the server.
-	 * @return {array}
+	 * @param {string} body   Readable text, as determined by Readability.
+	 * @param {Array}  embeds Array of swappable embeds, as detected by the server.
+	 * @return {Array} Array of swappable embeds, as detected by the server.
 	 */
 	const processEmbeds = ( body, embeds ) => {
 		const bodyDom = new DOMParser().parseFromString( body, 'text/html' )
@@ -317,6 +447,8 @@ import { __ } from '@wordpress/i18n'
 
 						appendBefore.insertAdjacentElement( 'beforebegin', newEmbedNode )
 					}
+
+					return embed;
 				}
 			)
 		}
@@ -328,7 +460,7 @@ import { __ } from '@wordpress/i18n'
 	 * Swaps embedded content with raw WP URLs.
 	 *
 	 * @param {HTMLDocument} domObject DOM object representing the source page.
-	 * @return {object}
+	 * @return {Object|void} Linked data object.
 	 */
 	const getLDFromDomObject = ( domObject ) => {
 		const ldTag = domObject.querySelector( 'script[type="application/ld+json"]' )
@@ -340,10 +472,10 @@ import { __ } from '@wordpress/i18n'
 	}
 
 	/**
-	 * Swaps embedded content with raw WP URLs.
+	 * Gets the author from an object's linked data, if available.
 	 *
 	 * @param {HTMLDocument} domObject DOM object representing the source page.
-	 * @return {string}
+	 * @return {string} Author name.
 	 */
 	const getAuthorFromLD = ( domObject ) => {
 		const ld = getLDFromDomObject( domObject )
@@ -359,5 +491,39 @@ import { __ } from '@wordpress/i18n'
 		}
 
 		return authorStrings.join( ', ' )
+	}
+
+	/**
+	 * Gets an item's timestamp from its linked data, if available.
+	 *
+	 * @param {HTMLDocument} domObject DOM object representing the source page.
+	 * @return {string} Timestamp.
+	 */
+	const getTimestampFromLD = ( domObject ) => {
+		const ld = getLDFromDomObject( domObject )
+		if ( ! ld || ! ld.hasOwnProperty( 'datePublished' ) ) {
+			return ''
+		}
+
+		return formatISODateAsMysql( ld.datePublished )
+	}
+
+	const formatISODateAsMysql = (isoDate) => {
+		// Parse the ISO 8601 timestamp
+		const date = new Date( isoDate );
+
+		// Pad the date/month/hour/minute/second with leading zero if necessary
+		const pad = (num) => (num < 10 ? '0' + num : num);
+
+		// Format the date
+		const year = date.getFullYear();
+		const month = pad(date.getMonth() + 1); // getMonth() returns 0-11
+		const day = pad(date.getDate());
+		const hour = pad(date.getHours());
+		const minute = pad(date.getMinutes());
+		const second = pad(date.getSeconds());
+
+		// Combine into final string
+		return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
 	}
 })()

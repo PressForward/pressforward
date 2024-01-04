@@ -29,7 +29,7 @@ class PF_REST_Taxonomies_Controller extends WP_REST_Taxonomies_Controller {
 		if ( ! empty( $request['type'] ) ) {
 			$taxonomies = get_object_taxonomies( $request['type'], 'objects' );
 		} else {
-			$taxonomies = get_taxonomies( '', 'objects' );
+			$taxonomies = get_taxonomies( [], 'objects' );
 		}
 		$data = array();
 		foreach ( $taxonomies as $tax_type => $value ) {
@@ -74,7 +74,7 @@ class PF_REST_Taxonomies_Controller extends WP_REST_Taxonomies_Controller {
 		if ( isset( $links['https://api.w.org/items'] ) ) {
 			$data->remove_link( 'https://api.w.org/items' );
 			foreach ( $links['https://api.w.org/items'] as $key => $term_link ) {
-				if ( 0 <= strpos( $term_link['href'], 'wp/v2/folders' ) ) {
+				if ( false === strpos( $term_link['href'], 'wp/v2/folders' ) ) {
 					$term_link['href']                        = str_replace( 'wp/v2/folders', 'pf/v1/folders', $term_link['href'] );
 					$links['https://api.w.org/items'][ $key ] = $term_link;
 				}

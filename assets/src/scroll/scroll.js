@@ -1,3 +1,4 @@
+/* global jQuery */
 import { __ } from '@wordpress/i18n'
 
 import InfiniteScroll from 'infinite-scroll'
@@ -6,12 +7,16 @@ import {
 	reshowModal,
 	reviewModal,
 	hideModal,
-	commentPopModal,
-	PFBootstrapInits,
-	detect_view_change
+	PFBootstrapInits
 } from '../reader/util.js'
 
 jQuery(document).ready(function () {
+	const feedNextLink = document.querySelector( '.feednext a' );
+
+	if ( ! feedNextLink ) {
+		return;
+	}
+
 	const infScroll = new InfiniteScroll( document.getElementById( 'entries' ), {
 		path: '.feednext a',
 		hideNav: '.pf-navigation',    // selector for the paged navigation

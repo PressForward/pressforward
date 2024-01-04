@@ -15,7 +15,6 @@ class PF_Debugger extends PF_Module {
 	public function __construct() {
 		parent::start();
 		add_filter( 'pf_setup_admin_rights', array( $this, 'control_menu_access' ) );
-		add_action( 'pf_tools', array( $this, 'debug_the_slurp' ) );
 	}
 
 	/**
@@ -53,28 +52,28 @@ class PF_Debugger extends PF_Module {
 	}
 
 	/**
-	 * More module setup.
+	 * Default settings for the module.
+	 *
+	 * @return array
 	 */
-	public function module_setup() {
-		$mod_settings = array(
+	public function get_default_settings() {
+		return array(
 			'name'        => __( 'Debugger Log Viewing Module', 'pressforward' ),
 			'slug'        => 'debugger',
 			'description' => __( 'This module provides a way to view the feed retrieval log within the dashboard.', 'pressforward' ),
 			'thumbnail'   => '',
 			'options'     => '',
 		);
-
-		update_option( PF_SLUG . '_' . $this->id . '_settings', $mod_settings );
 	}
 
 	/**
 	 * Counts the post in a post type.
 	 *
-	 * @param string   $post_type Post type.
-	 * @param int|bool $date_less Number of months.
+	 * @param string $post_type Post type.
+	 * @param int    $date_less Number of months.
 	 * @return int
 	 */
-	public function count_the_posts( $post_type, $date_less = false ) {
+	public function count_the_posts( $post_type, $date_less = 0 ) {
 		if ( ! $date_less ) {
 			$y = gmdate( 'Y' );
 			$m = gmdate( 'm' );
@@ -82,7 +81,8 @@ class PF_Debugger extends PF_Module {
 			$y = gmdate( 'Y' );
 			$m = gmdate( 'm' );
 			$m = (int) $m + (int) $date_less;
-		} elseif ( $date_less >= 12 ) {
+		} else {
+			// $date_less >= 12.
 			$y = gmdate( 'Y' );
 			$y = (int) $y - floor( $date_less / 12 );
 			$m = gmdate( 'm' );
@@ -169,7 +169,7 @@ class PF_Debugger extends PF_Module {
 
 		$nominated_to_posts = get_posts( $ntp_args );
 
-		$nomed_posts = count( $nominated_to_posts );
+		$nomed_posts = (string) count( $nominated_to_posts );
 
 		?>
 		<div class="wrap">
@@ -178,20 +178,20 @@ class PF_Debugger extends PF_Module {
 			<p><?php esc_html_e( 'Total Current Feed Items', 'pressforward' ); ?>:
 			<?php
 				$feed_item = 'pf_feed_item';
-				echo esc_html( wp_count_posts( $feed_item )->publish );
+				echo esc_html( (string) wp_count_posts( $feed_item )->publish );
 			?>
 			<br />
 			<?php
 				$feed_item = 'pf_feed_item';
-				echo 'Month to date Feed Items: ' . esc_html( $this->count_the_posts( $feed_item ) );
-				echo '<br />Last month Feed Items: ' . esc_html( $this->count_the_posts( $feed_item, -1 ) );
+				echo 'Month to date Feed Items: ' . esc_html( (string) $this->count_the_posts( $feed_item ) );
+				echo '<br />Last month Feed Items: ' . esc_html( (string) $this->count_the_posts( $feed_item, -1 ) );
 			?>
 			</p>
 			<p><?php esc_html_e( 'Total Current Nominations:', 'pressforward' ); ?>
 			<?php
 				echo esc_html( wp_count_posts( 'nomination' )->draft );
-				echo '<br />Month to date Nominations: ' . esc_html( $this->count_the_posts( 'nomination' ) );
-				echo '<br />Last month Nominations: ' . esc_html( $this->count_the_posts( 'nomination', -1 ) );
+				echo '<br />Month to date Nominations: ' . esc_html( (string) $this->count_the_posts( 'nomination' ) );
+				echo '<br />Last month Nominations: ' . esc_html( (string) $this->count_the_posts( 'nomination', -1 ) );
 
 			?>
 			</p>
@@ -207,17 +207,17 @@ class PF_Debugger extends PF_Module {
 			</p>
 			<p><?php esc_html_e( 'Total Retrieval Chunks Begun This:', 'pressforward' ); ?>
 			<?php
-				pf_iterate_cycle_state( 'retrieval_chunks_begun', false, true );
+				pf_iterate_cycle_state( 'retrieval_chunks_begun', '', true );
 			?>
 			</p>
 			<p><?php esc_html_e( 'Total Retrieval Cycles Begun This:', 'pressforward' ); ?>
 			<?php
-				pf_iterate_cycle_state( 'retrieval_cycles_begun', false, true );
+				pf_iterate_cycle_state( 'retrieval_cycles_begun', '', true );
 			?>
 			</p>
 			<p><?php esc_html_e( 'Total Retrieval Cycles Ended This:', 'pressforward' ); ?>
 			<?php
-				pf_iterate_cycle_state( 'retrieval_cycles_ended', false, true );
+				pf_iterate_cycle_state( 'retrieval_cycles_ended', '', true );
 			?>
 			</p>
 			<br /><br />
@@ -277,31 +277,5 @@ class PF_Debugger extends PF_Module {
 		);
 
 		return $admin_rights;
-	}
-
-	/**
-	 * Debugging tool for the retrieval process.
-	 */
-	public function debug_the_slurp() {
-		if ( current_user_can( get_option( 'pf_menu_log_access', 'administrator' ) ) ) {
-			?>
-			<p>
-			<button type="button" class="resetFeedOps btn btn-warning" id="resetFeedOps" value="<?php esc_attr_e( 'Reset all Feed Retrieval Options', 'pressforward' ); ?>"><?php esc_html_e( 'Reset all Feed Retrieval Options', 'pressforward' ); ?></button>    <br />
-			<?php
-				$feed_go         = get_option( PF_SLUG . '_feeds_go_switch', 0 );
-				$feed_iteration  = get_option( PF_SLUG . '_feeds_iteration', 0 );
-				$retrieval_state = get_option( PF_SLUG . '_iterate_going_switch', 0 );
-				$chunk_state     = get_option( PF_SLUG . '_ready_to_chunk', 1 );
-
-				// translators: 1. "Feeds Go" status; 2. "Feeds iteration" status; 3. "Going switch" status; 4. "Ready to chunk" status.
-				$retrieval_state = sprintf( __( 'Feeds Go? %1$d  Feeds iteration? %2$d  Going switch? %3$d  Ready to chunk? %4$d', 'pressforward' ), $feed_go, $feed_iteration, $retrieval_state, $chunk_state );
-				echo esc_html( $retrieval_state );
-
-			?>
-			<br />
-			<button type="button" class="redoFeeds btn btn-warning" id="resetFeedOps" value="<?php esc_attr_e( 'Switch feeds to new retrieval setup', 'pressforward' ); ?>"><?php esc_html_e( 'Switch feeds to new retrieval setup', 'pressforward' ); ?></button>    <br />
-			</p>
-			<?php
-		}
 	}
 }

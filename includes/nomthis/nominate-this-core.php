@@ -156,7 +156,7 @@ if ( empty( $posted ) ) {
 		</div>
 
 		<?php
-		if ( ! empty( $posted ) && intval( $posted ) ) {
+		if ( ! empty( $posted ) ) {
 			$the_post_id = intval( $posted );
 			$pt          = get_post_type( $the_post_id );
 			if ( 'nomination' === $pt ) {
@@ -229,7 +229,7 @@ if ( empty( $posted ) ) {
 
 		$editor_settings = array(
 			'teeny'         => true,
-			'textarea_rows' => '18',
+			'textarea_rows' => 18,
 		);
 
 		$content = '';

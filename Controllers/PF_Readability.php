@@ -53,17 +53,9 @@ class PF_Readability {
 
 					$url = str_replace( '&amp;', '&', $url );
 					// Try and get the OpenGraph description.
-					if ( pressforward( 'library.opengraph' )->fetch( $url ) ) {
-						$node = pressforward( 'library.opengraph' )->fetch( $url );
-						if ( false !== $node ) {
-							$item_read_ready = $node->description;
-						} else {
-							// Ugh... we can't get anything huh?
-							$read_status = 'failed_readability_og_meta';
-							// $item_read_ready .= '<br />';
-							// We'll want to return a false to loop with.
-							$item_read_ready = $descrip;
-						}
+					$node = pressforward( 'library.opengraph' )->fetch( $url );
+					if ( $node ) {
+						$item_read_ready = $node->description;
 					} else {
 						/*
 						 * Note the @ below. This is because get_meta_tags doesn't have a
@@ -71,7 +63,7 @@ class PF_Readability {
 						 */
 						// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 						$content_html = @get_meta_tags( $url );
-						if ( '' !== $content_html ) {
+						if ( $content_html ) {
 							// Try and get the HEAD > META DESCRIPTION tag.
 							$read_status     = 'failed_readability_og';
 							$item_read_ready = $content_html['description'];
@@ -218,9 +210,6 @@ class PF_Readability {
 
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-		libxml_clear_errors();
-		ob_end_flush();
-		die();
 	}
 
 	/**
@@ -237,10 +226,6 @@ class PF_Readability {
 
 		$request = pf_de_https( $url, 'wp_remote_get' );
 
-		if ( is_wp_error( $request ) ) {
-			$content = 'error-secured';
-			return $content;
-		}
 		if ( ! empty( $request['body'] ) ) {
 			$html = $request['body'];
 		} elseif ( ! empty( $request ) && ( ! is_array( $request ) ) ) {

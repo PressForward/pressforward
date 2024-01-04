@@ -12,11 +12,6 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
 
 use PressForward\Controllers\PFtoWPUsers;
 
-use PressForward\Core\Admin\PFTemplater as PFTemplater;
-use PressForward\Core\Utility\Forward_Tools as Forward_Tools;
-use PressForward\Core\Schema\Nominations as Nominations;
-use PressForward\Controllers\Metas;
-
 /**
  * Add Feeds admin panel.
  */
@@ -98,6 +93,11 @@ class AddFeeds implements HasActions, HasFilters {
 	 * @return string
 	 */
 	public function display_feeder_builder() {
+		wp_enqueue_style( 'pf-style' );
+		wp_enqueue_style( 'pf-settings-style' );
+
+		wp_enqueue_script( 'pf-settings-tools' );
+
 		if ( isset( $_GET['tab'] ) ) {
 			$tab = sanitize_text_field( wp_unslash( $_GET['tab'] ) );
 		} else {
@@ -148,5 +148,4 @@ class AddFeeds implements HasActions, HasFilters {
 		);
 		return $permitted_tabs;
 	}
-
 }

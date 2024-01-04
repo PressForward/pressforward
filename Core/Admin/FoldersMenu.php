@@ -7,19 +7,12 @@
 
 namespace PressForward\Core\Admin;
 
-use Intraxia\Jaxion\Contract\Core\HasActions;
-
 use PressForward\Controllers\PFtoWPUsers;
-
-use PressForward\Core\Admin\PFTemplater as PFTemplater;
-use PressForward\Core\Utility\Forward_Tools as Forward_Tools;
-use PressForward\Core\Schema\Nominations as Nominations;
-use PressForward\Controllers\Metas;
 
 /**
  * Folders admin panel.
  */
-class FoldersMenu implements HasActions {
+class FoldersMenu implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	/**
 	 * SystemUsers interface.
 	 *
@@ -59,8 +52,7 @@ class FoldersMenu implements HasActions {
 			__( 'Folders', 'pressforward' ),
 			__( 'Folders', 'pressforward' ),
 			get_option( 'pf_menu_feeder_access', $this->user_interface->pf_get_defining_capability_by_role( 'editor' ) ),
-			'edit-tags.php?taxonomy=' . pressforward( 'schema.folders' )->tag_taxonomy,
-			''
+			'edit-tags.php?taxonomy=' . pressforward( 'schema.folders' )->tag_taxonomy
 		);
 	}
 }

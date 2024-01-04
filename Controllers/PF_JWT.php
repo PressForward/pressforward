@@ -9,7 +9,6 @@ namespace PressForward\Controllers;
 
 use PressForward\Interfaces\System;
 use PressForward\Interfaces\SystemUsers;
-use \Firebase\JWT\JWT as JWT;
 
 /**
  * JWT functionality.
@@ -48,7 +47,7 @@ class PF_JWT {
 	public function __construct( SystemUsers $users, System $system ) {
 		$this->system_users = $users;
 		$this->system       = $system;
-		$this->jwt          = new JWT();
+		$this->jwt          = new \Firebase\JWT\JWT();
 	}
 
 	/**
@@ -62,19 +61,13 @@ class PF_JWT {
 		if ( function_exists( 'random_bytes' ) ) {
 			try {
 				$value = random_bytes( $num );
-			} catch ( \TypeError $e ) {
-				// Well, it's an integer, so this IS unexpected.
-				die( esc_html__( 'An unexpected error has occurred when generating a cryptographic API key.', 'pressforward' ) );
-			} catch ( \Error $e ) {
-				// This is also unexpected because 32 is a reasonable integer.
-				die( esc_html__( 'An unexpected error has occurred when generating a cryptographic API key.', 'pressforward' ) );
 			} catch ( \Exception $e ) {
 				// If you get this message, the CSPRNG failed hard.
 				die( esc_html__( 'Could not generate a random string. Is our OS secure?', 'pressforward' ) );
 			}
 			return bin2hex( $value );
 		} else {
-			throw new \Exception( __( 'PressForward cannot provide a cryptographically secure API key.', 'pressforward' ), 1 );
+			throw new \Exception( esc_html__( 'PressForward cannot provide a cryptographically secure API key.', 'pressforward' ), 1 );
 		}
 	}
 
@@ -186,7 +179,7 @@ class PF_JWT {
 	 */
 	public function make_a_jwt_private_key() {
 		$extra       = ord( $this->system->get_site_info( 'url' ) );
-		$key_seed    = sanitize_key( $extra );
+		$key_seed    = sanitize_key( (string) $extra );
 		$key_private = sanitize_key( $this->random_bytes( 64 ) );
 		$key         = $key_seed . $key_private;
 
@@ -290,5 +283,4 @@ class PF_JWT {
 		$user    = get_user_by( 'id', $user_id );
 		return $user;
 	}
-
 }

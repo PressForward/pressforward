@@ -486,7 +486,7 @@ class Metas implements HasFilters, HasActions {
 				'type'       => array( 'adm', 'aggr' ),
 				'use'        => array( 'api' ),
 				'level'      => array( 'item', 'nomination', 'post' ),
-				'serialize'  => true,
+				'serialize'  => false,
 			),
 			'pf_feed_item_source'     => array(
 				'name'       => 'pf_feed_item_source',
@@ -545,7 +545,7 @@ class Metas implements HasFilters, HasActions {
 				'name'       => 'item_link',
 				'title'      => __( 'Link to Source', 'pressforward' ),
 				'definition' => __( 'Source link', 'pressforward' ),
-				'function'   => __( 'Stores link to the origonal post.', 'pressforward' ),
+				'function'   => __( 'Stores link to the original post.', 'pressforward' ),
 				'type'       => array( 'struc' ),
 				'use'        => array( 'req', 'api' ),
 				'level'      => array( 'item', 'nomination', 'post' ),
@@ -568,9 +568,9 @@ class Metas implements HasFilters, HasActions {
 				'definition' => __( 'Featured image from source', 'pressforward' ),
 				'function'   => __( 'A featured image associated with the item, when it is available', 'pressforward' ),
 				'type'       => array( 'struc' ),
-				'use'        => array(),
+				'use'        => array( 'api' ),
 				'level'      => array( 'item', 'nomination', 'post' ),
-				'serialize'  => true,
+				'serialize'  => false,
 			),
 			'item_wp_date'            => array(
 				'name'       => 'item_wp_date',
@@ -598,9 +598,9 @@ class Metas implements HasFilters, HasActions {
 				'definition' => __( 'Tags associated with the item by source', 'pressforward' ),
 				'function'   => __( 'An array of tags associated with the item, as created in the feed', 'pressforward' ),
 				'type'       => array( 'desc', 'adm', 'aggr' ),
-				'use'        => array(),
+				'use'        => array( 'api' ),
 				'level'      => array( 'item', 'nomination', 'post' ),
-				'serialize'  => true,
+				'serialize'  => false,
 			),
 			'source_repeat'           => array(
 				'name'       => 'source_repeat',
@@ -648,8 +648,28 @@ class Metas implements HasFilters, HasActions {
 				'definition' => __( 'Timestamp for the item', 'pressforward' ),
 				'function'   => __( 'A version of the item_date meta that\'s ready for sorting. Should be a Unix timestamp', 'pressforward' ),
 				'type'       => array( 'struc' ),
-				'use'        => array( 'req' ),
+				'use'        => array( 'req', 'api' ),
 				'level'      => array( 'item', 'nomination', 'post' ),
+				'serialize'  => false,
+			),
+			'send_to_draft'           => array(
+				'name'       => 'send_to_draft',
+				'title'      => __( 'Send to Draft', 'pressforward' ),
+				'definition' => __( 'Whether a nominated item should be promoted directly to Draft status after nomination', 'pressforward' ),
+				'function'   => __( 'Whether a nominated item should be promoted directly to Draft status after nomination', 'pressforward' ),
+				'type'       => array( 'struc' ),
+				'use'        => array( 'api' ),
+				'level'      => array( 'nomination' ),
+				'serialize'  => false,
+			),
+			'subscribe_to_feed'       => array(
+				'name'       => 'subscribe_to_feed',
+				'title'      => __( 'Subscribe to Feed', 'pressforward' ),
+				'definition' => __( 'Whether to subscribe to the feed associated with an item directly after its nomination.', 'pressforward' ),
+				'function'   => __( 'Whether to subscribe to the feed associated with an item directly after its nomination.', 'pressforward' ),
+				'type'       => array( 'struc' ),
+				'use'        => array( 'api' ),
+				'level'      => array( 'nomination' ),
 				'serialize'  => false,
 			),
 			'readable_status'         => array(
@@ -948,33 +968,37 @@ class Metas implements HasFilters, HasActions {
 			if ( $meta['serialize'] ) {
 				continue;
 			}
+
 			if ( ! in_array( 'api', $meta['use'], true ) ) {
 				continue;
 			}
-			$metas[ $key ]                 = array();
-			$metas[ $key ]['show_in_rest'] = true;
-			$metas[ $key ]['single']       = true;
-			$metas[ $key ]['type']         = 'string';
-			$metas[ $key ]['show_in_rest'] = false;
-			$metas[ $key ]['description']  = $meta['function'];
+
+			$register_meta_args                 = [];
+			$register_meta_args['show_in_rest'] = true;
+			$register_meta_args['single']       = true;
+			$register_meta_args['type']         = 'string';
+			$register_meta_args['description']  = $meta['function'];
+
 			foreach ( $meta['level'] as $level ) {
 				switch ( $level ) {
 					case 'item':
-						register_meta( pressforward( 'schema.feed_item' )->post_type, $key, $metas[ $key ] );
+						$register_meta_args['object_subtype'] = pressforward( 'schema.feed_item' )->post_type;
 						break;
 					case 'nomination':
-						register_meta( pressforward( 'schema.nominations' )->post_type, $key, $metas[ $key ] );
+						$register_meta_args['object_subtype'] = pressforward( 'schema.nominations' )->post_type;
 						break;
 					case 'post':
-						register_meta( 'post', $key, $metas[ $key ] );
+						$register_meta_args['object_subtype'] = 'post';
 						break;
 					case 'feed':
-						register_meta( pressforward( 'schema.feeds' )->post_type, $key, $metas[ $key ] );
+						$register_meta_args['object_subtype'] = pressforward( 'schema.feeds' )->post_type;
 						break;
 					default:
 						// code...
 						break;
 				}
+
+				register_meta( 'post', $key, $register_meta_args );
 			}
 		}
 
@@ -1187,16 +1211,15 @@ class Metas implements HasFilters, HasActions {
 	/**
 	 * Update post_meta on a post using PressForward post_meta standardization.
 	 *
-	 * @param int|string $id         The post ID.
-	 * @param string     $field      The post_meta field slug.
-	 * @param string     $value      The post_meta value.
-	 * @param string     $prev_value The previous value to insure proper replacement.
+	 * @param int|string $id    The post ID.
+	 * @param string     $field The post_meta field slug.
+	 * @param mixed      $value The post_meta value.
 	 *
 	 * @return int the check value from update_post_meta
 	 */
-	public function update_pf_meta( $id, $field, $value = '', $prev_value = null ) {
+	public function update_pf_meta( $id, $field, $value = '' ) {
 		$field = $this->pass_meta( $field, $id, $value );
-		$check = $this->apply_pf_meta( $id, $field, $value, $prev_value );
+		$check = $this->apply_pf_meta( $id, $field, $value );
 
 		return $check;
 	}
@@ -1268,13 +1291,13 @@ class Metas implements HasFilters, HasActions {
 	/**
 	 * Applies PF-standardize postmeta.
 	 *
-	 * @param int|string $id         The post ID.
-	 * @param string     $field      The post_meta field slug.
-	 * @param string     $value      The post_meta value.
-	 * @param string     $state      Unique status of the postmeta.
-	 * @param string     $apply_type 'update' or 'add'.
+	 * @param int|string   $id         The post ID.
+	 * @param string|array $field      The post_meta field slug.
+	 * @param string       $value      The post_meta value.
+	 * @param bool         $is_unique  Unique status of the postmeta.
+	 * @param string       $apply_type 'update' or 'add'.
 	 */
-	public function apply_pf_meta( $id, $field, $value = '', $state = null, $apply_type = 'update' ) {
+	public function apply_pf_meta( $id, $field, $value = '', $is_unique = false, $apply_type = 'update' ) {
 		$serialized = false;
 		if ( is_array( $field ) ) {
 			$key        = $field['field'];
@@ -1293,9 +1316,9 @@ class Metas implements HasFilters, HasActions {
 			case 'pf_feed_item_word_count':
 				$latest_count = $this->get_post_pf_meta( $id, 'pf_word_count' );
 				if ( ( $latest_count < $value ) ) {
-					$this->update_pf_meta( $id, 'pf_word_count', $value, $state );
+					$this->update_pf_meta( $id, 'pf_word_count', $value );
 				} elseif ( empty( $latest_count ) ) {
-					$this->add_pf_meta( $id, 'pf_word_count', $value, $state );
+					$this->add_pf_meta( $id, 'pf_word_count', $value, $is_unique );
 				}
 				break;
 			case 'item_author':
@@ -1310,10 +1333,9 @@ class Metas implements HasFilters, HasActions {
 			if ( empty( $master_meta ) ) {
 				$master_meta = array();
 				$apply_type  = 'add';
-				$state       = true;
+				$is_unique   = true;
 			} else {
 				$apply_type = 'update';
-				$state      = $master_meta;
 			}
 			$master_meta[ $key ] = $value;
 			$value               = $master_meta;
@@ -1324,12 +1346,12 @@ class Metas implements HasFilters, HasActions {
 			if ( $serialized ) {
 				$this->meta_interface->delete_meta( $id, $key, '' );
 			}
-			$check = $this->meta_interface->update_meta( $id, $field, $value, $state );
+			$check = $this->meta_interface->update_meta( $id, $field, $value, $is_unique );
 			if ( ! $check ) {
-				$check = $this->meta_interface->update_meta( $id, $field, $value, $state );
+				$check = $this->meta_interface->update_meta( $id, $field, $value, $is_unique );
 			}
 		} elseif ( 'add' === $apply_type ) {
-			$check = $this->meta_interface->add_meta( $id, $field, $value, $state );
+			$check = $this->meta_interface->add_meta( $id, $field, $value, $is_unique );
 		}
 
 		return $check;

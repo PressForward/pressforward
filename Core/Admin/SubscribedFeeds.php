@@ -12,11 +12,10 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
 
 use PressForward\Controllers\PFtoWPUsers as Users;
 
-use PressForward\Core\Admin\PFTemplater as PFTemplater;
-use PressForward\Core\Utility\Forward_Tools as Forward_Tools;
-use PressForward\Core\Schema\Nominations as Nominations;
+use PressForward\Core\Models\Feed;
+
 use PressForward\Controllers\Metas;
-use AlertBox\The_Alert_Box as The_Alert_Box;
+use AlertBox\The_Alert_Box;
 
 /**
  * Subscribed Feeds admin panel.
@@ -83,6 +82,12 @@ class SubscribedFeeds implements HasActions, HasFilters {
 				'priority' => 10,
 				'args'     => 2,
 			),
+			[
+				'hook'     => 'manage_pf_feed_posts_custom_column',
+				'method'   => 'next_retrieval_column_content',
+				'priority' => 10,
+				'args'     => 2,
+			],
 			array(
 				'hook'   => 'manage_edit-pf_feed_sortable_columns',
 				'method' => 'make_last_checked_column_sortable',
@@ -117,6 +122,11 @@ class SubscribedFeeds implements HasActions, HasFilters {
 				'priority' => 10,
 				'args'     => 2,
 			),
+			[
+				'hook'     => 'admin_enqueue_scripts',
+				'method'   => 'enqueue_assets',
+				'priority' => 10,
+			],
 		);
 	}
 
@@ -134,12 +144,28 @@ class SubscribedFeeds implements HasActions, HasFilters {
 				'method' => 'add_last_retrieved_date_column',
 			),
 			array(
-				'hook'     => 'heartbeat_received',
-				'method'   => 'hb_check_feed_retrieve_status',
-				'priority' => 10,
-				'args'     => 2,
+				'hook'   => 'manage_pf_feed_posts_columns',
+				'method' => 'add_retrieval_check_date_column',
 			),
 		);
+	}
+
+	/**
+	 * Enqueues assets on Subscribed Feeds panel.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @param string $page_hook Page hook.
+	 * @return void
+	 */
+	public function enqueue_assets( $page_hook ) {
+		global $typenow;
+
+		if ( 'edit.php' !== $page_hook || 'pf_feed' !== $typenow ) {
+			return;
+		}
+
+		wp_enqueue_style( 'pf-subscribed-styles' );
 	}
 
 	/**
@@ -148,7 +174,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	public function add_plugin_admin_menu() {
 		$alert_count = $this->alertbox->alert_count();
 		if ( $alert_count ) {
-			$alert_count_notice = '<span class="feed-alerts count-' . intval( $alert_count ) . '"><span class="alert-count">' . number_format_i18n( $alert_count ) . '</span></span>';
+			$alert_count_notice = '<span class="menu-counter feed-alerts count-' . intval( $alert_count ) . '"><span class="alert-count">' . number_format_i18n( $alert_count ) . '</span></span>';
 
 			// translators: element containing an alert count.
 			$subscribed_feeds_menu_text = sprintf( __( 'Subscribed Feeds %s', 'pressforward' ), $alert_count_notice );
@@ -188,6 +214,19 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	 */
 	public function add_last_checked_date_column( $posts_columns ) {
 		$posts_columns['last_checked'] = __( 'Last Time Feed Checked', 'pressforward' );
+		return $posts_columns;
+	}
+
+	/**
+	 * Add a Next Retrieval column to the pf_feed list table.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @param array $posts_columns Column headers.
+	 * @return array
+	 */
+	public function add_retrieval_check_date_column( $posts_columns ) {
+		$posts_columns['next_retrieval'] = __( 'Next Retrieval', 'pressforward' );
 		return $posts_columns;
 	}
 
@@ -273,6 +312,25 @@ class SubscribedFeeds implements HasActions, HasFilters {
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $lr_text;
+	}
+
+	/**
+	 * Content of the Next Retrieval column.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @param string $column_name Column ID.
+	 * @param int    $post_id ID of the post for the current row in the table.
+	 */
+	public function next_retrieval_column_content( $column_name, $post_id ) {
+		if ( 'next_retrieval' !== $column_name ) {
+			return;
+		}
+
+		$feed_object = Feed::get_instance_by_id( $post_id );
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $feed_object->get_next_scheduled_retrieval_el();
 	}
 
 	/**
@@ -449,7 +507,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	public function pf_trash_children_of_feeds( $post_id ) {
 		if ( pressforward( 'schema.feeds' )->post_type === get_post_type( $post_id ) ) {
 			pf_log( 'Trash a feed and all its children.' );
-			$this->pf_thing_trasher( $post_id, true, pressforward( 'schema.feeds' )->post_type );
+			$this->pf_thing_trasher( $post_id, 1, pressforward( 'schema.feeds' )->post_type );
 		}
 	}
 
@@ -518,42 +576,6 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	}
 
 	/**
-	 * Heartbeat API callback for feed retrieval status.
-	 *
-	 * @param array  $response  Heartbeat response data.
-	 * @param array  $data      Item data.
-	 * @param string $screen_id Not used.
-	 * @return array
-	 */
-	public function hb_check_feed_retrieve_status( $response, $data, $screen_id = '' ) {
-		/**
-		 * $feed_hb_state = array(
-		 * 'feed_id'    =>  $aFeed->ID,
-		 * 'feed_title' => $aFeed->post_title,
-		 * 'last_key'   => $last_key,
-		 * 'feeds_iteration'    =>  $feeds_iteration,
-		 * 'total_feeds'    =>  count($feedlist)
-		 * );
-		*/
-		if ( ( array_key_exists( 'pf_heartbeat_request', $data ) ) && ( 'feed_state' === $data['pf_heartbeat_request'] ) ) {
-			$feed_hb_state = get_option( PF_SLUG . '_feeds_hb_state' );
-			foreach ( $feed_hb_state as $key => $state ) {
-				$response[ 'pf_' . $key ] = $state;
-			}
-
-			$response['pf_status_message'] = sprintf(
-				// translators: 1. feed title, 2. current index in feed iteration, 3. total number of feeds.
-				esc_html__( 'Retrieving feeds. Currently at %1$s feed number %2$s of %3$s', 'pressforward' ),
-				'<span id="rf-feed-title">' . esc_html( $feed_hb_state['feed_title'] ) . '</span>',
-				'<span id="rf-iteration">' . esc_html( $feed_hb_state['feeds_iteration'] + 1 ) . '</span>',
-				'<span id="rf-total-feeds">' . esc_html( $feed_hb_state['total_feeds'] ) . '</span>'
-			);
-		}
-
-		return $response;
-	}
-
-	/**
 	 * Delete callback for PF items.
 	 *
 	 * @param int    $id                 ID of the deleted item.
@@ -568,7 +590,7 @@ class SubscribedFeeds implements HasActions, HasFilters {
 		pf_log( 'On trash hook:' );
 
 		// Note: this will also remove feed items if a feed is deleted, is that something we want?
-		if ( $readability_status || $readability_status > 0 ) {
+		if ( $readability_status ) {
 			if ( 'feed_item' === $item_type ) {
 				$post_type = pf_feed_item_post_type();
 			} else {

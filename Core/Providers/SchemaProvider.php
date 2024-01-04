@@ -7,12 +7,9 @@
 
 namespace PressForward\Core\Providers;
 
-use PressForward\Core\Admin\Menu;
-use Intraxia\Jaxion\Contract\Core\Container as Container;
-use Intraxia\Jaxion\Assets\Register as Assets;
-use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
+use Intraxia\Jaxion\Contract\Core\Container;
 use PressForward\Core\Schema\Nominations;
-use PressForward\Core\Schema\Folders as Folders;
+use PressForward\Core\Schema\Folders;
 use PressForward\Core\Schema\Feed_Items;
 use PressForward\Core\Schema\Feeds;
 use PressForward\Core\Schema\Relationships;
@@ -20,44 +17,44 @@ use PressForward\Core\Schema\Relationships;
 /**
  * AssetsProvider class.
  */
-class SchemaProvider extends ServiceProvider {
+class SchemaProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @param Container $container Container.
+	 * @param \Intraxia\Jaxion\Contract\Core\Container $container Container object.
 	 */
 	public function register( Container $container ) {
 		$container->share(
 			'schema.relationships',
-			function() {
+			function () {
 				return new Relationships();
 			}
 		);
 
 		$container->share(
 			'schema.feeds',
-			function( $container ) {
+			function ( $container ) {
 				return new Feeds( $container->fetch( 'controller.metas' ) );
 			}
 		);
 
 		$container->share(
 			'schema.feed_item',
-			function() {
+			function () {
 				return new Feed_Items( pressforward( 'controller.items' ), pressforward( 'controller.metas' ) );
 			}
 		);
 
 		$container->share(
 			'schema.folders',
-			function() {
+			function () {
 				return new Folders();
 			}
 		);
 
 		$container->share(
 			'schema.nominations',
-			function() {
+			function () {
 				return new Nominations();
 			}
 		);

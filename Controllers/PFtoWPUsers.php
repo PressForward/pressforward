@@ -7,12 +7,10 @@
 
 namespace PressForward\Controllers;
 
-use PressForward\Interfaces\SystemUsers as SystemUsers;
-
 /**
  * User utilities.
  */
-class PFtoWPUsers implements SystemUsers {
+class PFtoWPUsers implements \PressForward\Interfaces\SystemUsers {
 	/**
 	 * Metas object.
 	 *
@@ -163,8 +161,7 @@ class PFtoWPUsers implements SystemUsers {
 	 *
 	 * @since 3.x
 	 *
-	 * @param string $role_slug The slug for the role being checked against.
-	 *
+	 * @param string|array $role_slug The slug for the role being checked against.
 	 * @return string The slug for the defining capability of the given role.
 	 */
 	public function pf_get_defining_capability_by_role( $role_slug ) {

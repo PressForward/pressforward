@@ -7,10 +7,10 @@
 
 namespace PressForward\Core\Providers;
 
-use Intraxia\Jaxion\Contract\Core\Container as Container;
-use Intraxia\Jaxion\Assets\Register as Assets;
-use Intraxia\Jaxion\Assets\ServiceProvider as ServiceProvider;
+use Intraxia\Jaxion\Contract\Core\Container;
+use Intraxia\Jaxion\Assets\ServiceProvider;
 
+use PressForward\Core\API\NominationExtension;
 use PressForward\Core\API\PostExtension;
 use PressForward\Core\API\FeedEndpoint;
 use PressForward\Core\API\ItemEndpoint;
@@ -27,7 +27,7 @@ class APIProvider extends ServiceProvider {
 	/**
 	 * {@inheritdoc}
 	 *
-	 * @param Container $container Container.
+	 * @param \Intraxia\Jaxion\Contract\Core\Container $container Container object.
 	 */
 	public function register( Container $container ) {
 
@@ -38,53 +38,61 @@ class APIProvider extends ServiceProvider {
 
 		$container->share(
 			'api.pf_endpoint',
-			function( $container ) {
+			function ( $container ) {
 				return new PFEndpoint( $container->fetch( 'controller.metas' ) );
 			}
 		);
 
 		$container->share(
 			'api.post_extension',
-			function( $container ) {
+			function ( $container ) {
 				return new PostExtension( $container->fetch( 'controller.metas' ) );
 			}
 		);
+
+		$container->share(
+			'api.nomination_extension',
+			function ( $container ) {
+				return new NominationExtension( $container->fetch( 'controller.metas' ) );
+			}
+		);
+
 		$container->share(
 			'api.feed_endpoint',
-			function( $container ) {
+			function ( $container ) {
 				return new FeedEndpoint( $container->fetch( 'controller.metas' ) );
 			}
 		);
 		$container->share(
 			'api.item_endpoint',
-			function( $container ) {
+			function ( $container ) {
 				return new ItemEndpoint( $container->fetch( 'controller.metas' ) );
 			}
 		);
 		$container->share(
 			'api.folder_extension',
-			function( $container ) {
+			function ( $container ) {
 				return new FolderExtension( $container->fetch( 'controller.metas' ) );
 			}
 		);
 
 		$container->share(
 			'api.readability',
-			function( $container ) use ( $api_base ) {
+			function ( $container ) use ( $api_base ) {
 				return new ReadabilityEndpoint( $api_base, $container->fetch( 'controller.readability' ), $container->fetch( 'utility.forward_tools' ), $container->fetch( 'library.htmlchecker' ) );
 			}
 		);
 
 		$container->share(
 			'api.nominatethis',
-			function( $container ) use ( $api_base ) {
+			function ( $container ) use ( $api_base ) {
 				return new NominateThisEndpoint( $api_base, $container->fetch( 'admin.templates' ) );
 			}
 		);
 
 		$container->share(
 			'api.stats',
-			function( $container ) use ( $api_base ) {
+			function ( $container ) use ( $api_base ) {
 				return new StatsEndpoint( $api_base, $container->fetch( 'controller.metas' ), $container->fetch( 'controller.stats' ) );
 			}
 		);

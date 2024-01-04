@@ -7,12 +7,10 @@
 
 namespace PressForward\Controllers;
 
-use PressForward\Interfaces\SystemMeta as SystemMeta;
-
 /**
  * Metadata wrappers.
  */
-class PF_to_WP_Meta implements SystemMeta {
+class PF_to_WP_Meta implements \PressForward\Interfaces\SystemMeta {
 
 	/**
 	 * Adds metadata for a post.

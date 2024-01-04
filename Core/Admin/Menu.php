@@ -56,10 +56,6 @@ class Menu implements HasActions, HasFilters {
 				'hook'   => 'admin_notices',
 				'method' => 'admin_notices_action',
 			),
-			array(
-				'hook'   => 'admin_enqueue_scripts',
-				'method' => 'hook_default_scripts',
-			),
 			// Catch form submits.
 			array(
 				'hook'   => 'admin_init',
@@ -88,16 +84,6 @@ class Menu implements HasActions, HasFilters {
 				'method' => 'pf_ab_bug_status_args',
 			),
 		);
-	}
-
-	/**
-	 * Enqueues scripts on PF pages.
-	 */
-	public function hook_default_scripts() {
-		if ( false !== pressforward( 'controller.template_factory' )->is_a_pf_page() ) {
-			wp_enqueue_script( 'heartbeat' );
-			wp_enqueue_script( 'jquery-ui-progressbar' );
-		}
 	}
 
 	/**
@@ -157,7 +143,10 @@ class Menu implements HasActions, HasFilters {
 	 * Display function for the main All Content panel
 	 */
 	public function display_reader_builder() {
+		wp_enqueue_script( 'pf' );
 		wp_enqueue_script( 'pf-views' );
+
+		wp_enqueue_style( 'pf-style' );
 
 		if ( 'false' !== get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() ) ) {
 			wp_enqueue_script( 'pf-scroll' );
@@ -188,6 +177,8 @@ class Menu implements HasActions, HasFilters {
 		}
 		$extra_class = $extra_class . $view_state;
 
+		$pf_url = defined( 'PF_URL' ) ? PF_URL : '';
+
 		?>
 		<div class="pf-loader"></div>
 		<div class="pf_container pf-all-content full<?php echo esc_attr( $extra_class ); ?>">
@@ -210,7 +201,7 @@ class Menu implements HasActions, HasFilters {
 				<?php pressforward( 'admin.templates' )->the_side_menu(); ?>
 				<?php pressforward( 'schema.folders' )->folderbox(); ?>
 				<div id="entries">
-					<?php echo '<img class="loading-top" src="' . esc_attr( PF_URL ) . 'assets/images/ajax-loader.gif" alt="' . esc_attr__( 'Loading...', 'pressforward' ) . '" style="display: none" />'; ?>
+					<?php echo '<img class="loading-top" src="' . esc_attr( $pf_url ) . 'assets/images/ajax-loader.gif" alt="' . esc_attr__( 'Loading...', 'pressforward' ) . '" style="display: none" />'; ?>
 
 					<div id="errors">
 					<?php
@@ -364,7 +355,7 @@ class Menu implements HasActions, HasFilters {
 				$y = (int) gmdate( 'Y' );
 				$m = (int) gmdate( 'm' );
 				$m = $m + $date_less;
-			} elseif ( $date_less >= 12 ) {
+			} else {
 				$y = (int) gmdate( 'Y' );
 				$y = $y - floor( $date_less / 12 );
 				$m = (int) gmdate( 'm' );
@@ -570,6 +561,9 @@ class Menu implements HasActions, HasFilters {
 				? sanitize_text_field( wp_unslash( $_POST[ PF_SLUG . '_draft_post_status' ] ) )
 				: 'draft';
 			update_option( PF_SLUG . '_draft_post_status', $pf_draft_post_status );
+
+			$pf_force_classic_nominate_this = ! empty( $_POST['pf_force_classic_nominate_this'] ) && 'yes' === sanitize_text_field( wp_unslash( $_POST['pf_force_classic_nominate_this'] ) ) ? 'yes' : 'no';
+			update_option( 'pf_force_classic_nominate_this', $pf_force_classic_nominate_this );
 
 			$notification_options = [
 				// PHPCS false positive.

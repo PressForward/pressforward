@@ -38,14 +38,14 @@ class Endpoint {
 	/**
 	 * Endpoint's permission guard.
 	 *
-	 * @var GuardContract
+	 * @var null|GuardContract
 	 */
 	protected $guard;
 
 	/**
 	 * Endpoint's arguments filter.
 	 *
-	 * @var FilterContract
+	 * @var null|FilterContract
 	 */
 	protected $filter;
 

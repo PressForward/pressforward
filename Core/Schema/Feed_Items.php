@@ -592,7 +592,7 @@ class Feed_Items implements HasActions, HasFilters {
 		 * @param array $post_ids   IDs of feed items older than the specified date.
 		 */
 		$pre_delete = apply_filters( 'pressforward_pre_delete_expired_feed_items', null, $query_for_del->posts );
-		if ( null !== $pre_delete ) {
+		if ( null !== $pre_delete ) { // @phpstan-ignore-line
 			return true;
 		}
 
@@ -640,56 +640,16 @@ class Feed_Items implements HasActions, HasFilters {
 	}
 
 	/**
-	 * Gets the currently processed feed object.
-	 *
-	 * @return object
-	 */
-	public function get_the_feed_object() {
-		pf_log( 'Invoked: PF_Feed_Item::get_the_feed_object()' );
-		// $PF_Feed_Retrieve = new PF_Feed_Retrieve();
-		// This pulls the RSS feed into a set of predetermined objects.
-		// The rss_object function takes care of all the feed pulling and item arraying so we can just do stuff with the feed output.
-		$the_feed = pressforward( 'utility.retrieval' )->step_through_feedlist();
-		if ( ( ! $the_feed ) || is_wp_error( $the_feed ) ) {
-			pf_log( 'The feed is false, exit process. [THIS SHOULD NOT OCCUR except at the conclusion of feeds retrieval.]' );
-			pf_iterate_cycle_state( 'retrieval_cycles_ended', true );
-			// Wipe the checking option for use next time.
-			update_option( PF_SLUG . '_feeds_meta_state', array() );
-			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 1 );
-			exit;
-		}
-
-		return $the_feed;
-	}
-
-	/**
-	 * Runs feed import process.
+	 * Takes the items from a fetched feed and converts them into PF Feed Items.
 	 *
 	 * @param array $feed_obj Feed object data.
+	 * @return array
 	 */
-	public function assemble_feed_for_pull( $feed_obj = [] ) {
+	public function assemble_feed_for_pull( $feed_obj ) {
 		pf_log( 'Invoked: PF_Feed_Item::assemble_feed_for_pull()' );
 
 		ignore_user_abort( true );
 		set_time_limit( 0 );
-		// Chunking control, the goal here is to ensure that no feed assembly occurs while the feed assembly is already occuring.
-		// Option: If true (1), the system is ready to assemble a chunk. If false (0), the system is already assembling a chunk.
-		$ready_for_chunk_assembly = get_option( PF_SLUG . '_ready_to_chunk', 1 );
-
-		if ( ! $ready_for_chunk_assembly ) {
-			pf_log( 'Chunk already in progress.' );
-			return;
-		} else {
-			pf_log( 'Beginning next import chunk.' );
-			pf_log( 'The chunk state is set?' );
-			$chunk_state = update_option( PF_SLUG . '_ready_to_chunk', 0 );
-			pf_log( $chunk_state );
-		}
-
-		if ( ! $feed_obj ) {
-			$the_feed = $this->get_the_feed_object();
-			$feed_obj = $the_feed;
-		}
 
 		// We need to init $source_repeat so it can be if 0 if nothing is happening.
 		$source_repeat = 0;
@@ -702,6 +662,11 @@ class Feed_Items implements HasActions, HasFilters {
 		pf_log( 'Now beginning check and processing for entering items into the database.' );
 		$parent = $feed_obj['parent_feed_id'];
 		unset( $feed_obj['parent_feed_id'] );
+
+		$retval = [
+			'date_retrieved' => gmdate( 'Y-m-d H:i:s' ),
+			'items_added'    => 0,
+		];
 
 		foreach ( $feed_obj as $item ) {
 			$item['item_link'] = pressforward( 'controller.http_tools' )->resolve_a_url( $item['item_link'] );
@@ -856,7 +821,7 @@ class Feed_Items implements HasActions, HasFilters {
 
 				// Trying to prevent bad or malformed HTML from entering the database.
 				$item_title   = wp_strip_all_tags( $item_title );
-				$item_content = wp_strip_all_tags( $item_content, '<p> <strong> <bold> <i> <em> <emphasis> <del> <h1> <h2> <h3> <h4> <h5> <a> <img>' );
+				$item_content = strip_tags( $item_content, '<p> <strong> <bold> <i> <em> <emphasis> <del> <h1> <h2> <h3> <h4> <h5> <a> <img>' );
 
 				// Need to get rid of some weird characters that prevent inserting posts into the database.
 				// From: http://www.alexpoole.name/web-development/282/remove-smart-quotes-bullets-dashes-and-other-junky-characters-from-a-string-with-php
@@ -892,7 +857,7 @@ class Feed_Items implements HasActions, HasFilters {
 					// It's the end of the world! Let's throw everything at this.
 					pf_log( 'Post will not go into the database. We will try again.' );
 					$item_content         = htmlentities( wp_strip_all_tags( $item_content ), ENT_QUOTES, 'UTF-8' );
-					$item_content         = wp_kses( stripslashes( $item_content ), array( 'p', 'a', 'b', 'em', 'strong' ) );
+					$item_content         = wp_kses( stripslashes( $item_content ), 'post' );
 					$item_content         = $this->extra_special_sanatize( $item_content, true );
 					$item_content         = wpautop( $item_content );
 					$item_title           = $this->extra_special_sanatize( $item_title, true );
@@ -902,6 +867,8 @@ class Feed_Items implements HasActions, HasFilters {
 				}
 
 				pf_log( 'End of wp_insert_post process.' );
+
+				++$retval['items_added'];
 
 				// Somewhere in the process links with complex queries at the end (joined by ampersands) are getting encoded.
 				// I don't want that, so I turn it back here.
@@ -964,8 +931,7 @@ class Feed_Items implements HasActions, HasFilters {
 			}
 		}
 
-		update_option( PF_SLUG . '_ready_to_chunk', 1 );
-		pressforward( 'utility.retrieval' )->advance_feeds();
+		return $retval;
 	}
 
 	/**
@@ -1029,13 +995,7 @@ class Feed_Items implements HasActions, HasFilters {
 		$the_string = str_replace( $search, $replace, $the_string );
 		pf_log( 'String run through specified str_replace.' );
 
-		if ( version_compare( PHP_VERSION, 8.2, '>=' ) ) {
-			// phpcs:ignore Generic.PHP.DeprecatedFunctions.Deprecated
-			$the_string = utf8_encode( $the_string );
-			pf_log( 'String run through utf8_encode' );
-		}
-
-		pf_log( 'String returned.' );
+		$the_string = mb_convert_encoding( $the_string, 'UTF-8', mb_detect_encoding( $the_string, 'auto' ) );
 
 		if ( $severe ) {
 			/*
@@ -1076,11 +1036,6 @@ class Feed_Items implements HasActions, HasFilters {
 			);
 
 			$the_string = strtr( $the_string, $quotes );
-
-			if ( version_compare( PHP_VERSION, 8.2, '>=' ) ) {
-				// phpcs:ignore Generic.PHP.DeprecatedFunctions.Deprecated
-				$the_string = utf8_encode( $the_string );
-			}
 		}
 
 		return $the_string;
@@ -1214,6 +1169,7 @@ class Feed_Items implements HasActions, HasFilters {
 		$img_ext          = $img_parts['extension'];
 		$img_title        = $img_parts['filename'];
 		$resolved_img_ext = pressforward( 'schema.feed_item' )->resolve_image_type( $og_image );
+		$resolved_img_ext = strtolower( $resolved_img_ext );
 
 		if ( ! in_array( $resolved_img_ext, array( 'jpg', 'png', 'jrpg', 'bmp', 'gif', 'jpeg' ), true ) && ! in_array( $img_ext, array( 'jpg', 'png', 'jrpg', 'bmp', 'gif', 'jpeg' ), true ) ) {
 			return;

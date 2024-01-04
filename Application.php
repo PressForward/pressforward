@@ -40,6 +40,7 @@ class Application extends JaxionCore {
 		'PressForward\Core\Providers\AJAXServiceProvider',
 		'PressForward\Core\Providers\APIProvider',
 		'PressForward\Core\Providers\BookmarkletProvider',
+		'PressForward\Core\Providers\BlocksProvider',
 
 		// phpcs:disable
 	// 'PressForward\Core\Providers\CoreServiceProvider',
@@ -86,7 +87,6 @@ class Application extends JaxionCore {
 		// Update the version number stored in the db (so this does not run again).
 		update_option( 'pf_version', PF_VERSION );
 	}
-
 }
 // phpcs:ignore
 // call_user_func(array(new Application(__FILE__), 'boot'));

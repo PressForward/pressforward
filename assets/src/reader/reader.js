@@ -9,6 +9,12 @@ import {
 	detect_view_change
 } from './util.js'
 
+import {
+	Modal
+} from 'bootstrap';
+
+import './reader.scss';
+
 /**
  * Display transform for pf
  **/
@@ -27,7 +33,7 @@ jQuery(window).on('load', function () {
 			$modalEl = jQuery(hash);
 			if ( 0 !== $modalEl.length && !jQuery(hash).hasClass('in')) {
 				$closeEl = $modalEl.find( '.close' );
-				theModal = new bootstrap.Modal( $modalEl );
+				theModal = new Modal( $modalEl );
 				theModal.show( $closeEl );
 			} else {
 				window.location.hash = '#ready';
@@ -43,11 +49,11 @@ jQuery(window).on('load', function () {
 				if (!jQuery(hash).hasClass('in')) {
 					$modalEl = jQuery(hash);
 					$closeEl = $modalEl.find( '.close' );
-					theModal = new bootstrap.Modal( $modalEl );
+					theModal = new Modal( $modalEl );
 					theModal.show( $closeEl );
 
 					$allModals.each(function(){
-						var $modalToClose = bootstrap.Modal.getInstance( this );
+						var $modalToClose = Modal.getInstance( this );
 						if ( $modalToClose ) {
 							$modalToClose.hide();
 						}

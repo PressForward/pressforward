@@ -167,7 +167,7 @@ class APIWithMetaEndpoints {
 			$term_found = false;
 			foreach ( $links[ $link ] as $key => $term_link ) {
 				$pos = strpos( $term_link['href'], 'wp/v2/' . $term );
-				if ( false !== $pos && 0 <= $pos ) {
+				if ( false !== $pos ) {
 					$term_found = true;
 					$data->remove_link( $link );
 					$term_link['href']      = str_replace( 'wp/v2/' . $term, 'pf/v1/' . $term, $term_link['href'] );
@@ -202,7 +202,7 @@ class APIWithMetaEndpoints {
 		if ( isset( $links['https://api.w.org/term'] ) ) {
 			$data->remove_link( 'https://api.w.org/term' );
 			foreach ( $links['https://api.w.org/term'] as $key => $term_link ) {
-				if ( 0 <= strpos( $term_link['href'], 'wp/v2/folders' ) ) {
+				if ( false === strpos( $term_link['href'], 'wp/v2/folders' ) ) {
 					$term_link['href']                       = str_replace( 'wp/v2/folders', 'pf/v1/folders', $term_link['href'] );
 					$links['https://api.w.org/term'][ $key ] = $term_link;
 				}
@@ -216,7 +216,7 @@ class APIWithMetaEndpoints {
 		if ( isset( $links['https://api.w.org/post_type'] ) ) {
 			$data->remove_link( 'https://api.w.org/post_type' );
 			foreach ( $links['https://api.w.org/post_type'] as $key => $term_link ) {
-				if ( 0 <= strpos( $term_link['href'], 'wp/v2/feeds' ) ) {
+				if ( false === strpos( $term_link['href'], 'wp/v2/feeds' ) ) {
 					$term_link['href']                            = str_replace( 'wp/v2/feeds', 'pf/v1/feeds', $term_link['href'] );
 					$links['https://api.w.org/post_type'][ $key ] = $term_link;
 				}
@@ -231,7 +231,7 @@ class APIWithMetaEndpoints {
 		if ( isset( $links['https://api.w.org/items'] ) ) {
 			$data->remove_link( 'https://api.w.org/items' );
 			foreach ( $links['https://api.w.org/items'] as $key => $term_link ) {
-				if ( 0 <= strpos( $term_link['href'], 'wp/v2/folders' ) ) {
+				if ( false === strpos( $term_link['href'], 'wp/v2/folders' ) ) {
 					$term_link['href']                        = str_replace( 'wp/v2/folders', 'pf/v1/folders', $term_link['href'] );
 					$links['https://api.w.org/items'][ $key ] = $term_link;
 				}

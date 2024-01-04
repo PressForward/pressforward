@@ -181,6 +181,22 @@
 
 <hr />
 
+<p>
+	<?php
+	$use_classic_override = get_option( 'pf_force_classic_nominate_this', 'no' );
+	?>
+	<select name="pf_force_classic_nominate_this" id="pf_force_classic_nominate_this">
+		<option value="no" <?php selected( $use_classic_override, 'no' ); ?>><?php esc_html_e( 'No', 'pressforward' ); ?></option>
+		<option value="yes" <?php selected( $use_classic_override, 'yes' ); ?>><?php esc_html_e( 'Yes', 'pressforward' ); ?></option>
+	</select>
+
+	<label class="description" for="pf_force_classic_nominate_this"><?php esc_html_e( 'Force Classic editor for Nominate This?', 'pressforward' ); ?></label>
+
+	<p><?php esc_html_e( 'By default, Nominate This will use the Block Editor, unless you are using a plugin like Classic Editor that allows the site admin or individual users to default to the Classic Editor. If you would like to force Nominate This to use the Classic Editor, regardless of plugins or user settings, select Yes.', 'pressforward' ); ?></p>
+</p>
+
+<hr />
+
 <?php
 $nomination_success_default  = get_option( 'pf_user_nomination_success_email_default', 'off' );
 $nomination_promoted_default = get_option( 'pf_user_nomination_promoted_email_default', 'on' );

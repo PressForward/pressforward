@@ -7,14 +7,10 @@
 
 namespace PressForward\Controllers;
 
-use PressForward\Interfaces\Advance_System as Advance_System;
-
-use Intraxia\Jaxion\Contract\Core\HasActions as HasActions;
-
 /**
- * PressForward to WP post object lifecycle tools
+ * PressForward to WP post object lifecycle tools.
  */
-class PF_Advancement implements Advance_System, HasActions {
+class PF_Advancement implements \PressForward\Interfaces\Advance_System, \Intraxia\Jaxion\Contract\Core\HasActions {
 	/**
 	 * Metas object.
 	 *
@@ -213,7 +209,7 @@ class PF_Advancement implements Advance_System, HasActions {
 	/**
 	 * Checks for the existence of posts in previous PF states.
 	 *
-	 * @param int    $item_id   ID of the item.
+	 * @param string $item_id   ID of the item.
 	 * @param string $post_type Post type.
 	 * @return int ID of the corresponding WP post, if found.
 	 */
@@ -242,7 +238,7 @@ class PF_Advancement implements Advance_System, HasActions {
 			if ( current_theme_supports( 'post-formats', $post_format ) ) {
 				set_post_format( $post_id, $post_format );
 			} elseif ( '0' === $post_format ) {
-				set_post_format( $post_id, false );
+				set_post_format( $post_id, '' );
 			}
 		}
 

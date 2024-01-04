@@ -1,0 +1,12 @@
+body.admin_page_pf-nomination-success #adminmenumain {
+	display: none;
+}
+
+body.admin_page_pf-nomination-success #wpfooter {
+	display: none;
+}
+
+body.admin_page_pf-nomination-success #wpcontent {
+	margin-left: 0;
+	padding-top: 20px;
+}

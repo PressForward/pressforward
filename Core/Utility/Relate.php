@@ -7,9 +7,8 @@
 
 namespace PressForward\Core\Utility;
 
-use Intraxia\Jaxion\Contract\Core\HasActions;
-use PressForward\Interfaces\Items as Items;
-use PressForward\Interfaces\Advance_System as Advance_System;
+use PressForward\Interfaces\Items;
+use PressForward\Interfaces\Advance_System;
 use PressForward\Controllers\Metas;
 use PressForward\Core\Schema\Relationships;
 use WP_Query;
@@ -18,7 +17,7 @@ use WP_Ajax_Response;
 /**
  * PressForward relationships tools.
  */
-class Relate implements HasActions {
+class Relate implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	/**
 	 * Items object.
 	 *
@@ -213,13 +212,13 @@ class Relate implements HasActions {
 	 * @param string $relationship_type Relationship type.
 	 * @param int    $item_id           Item ID.
 	 * @param int    $user_id           User ID.
-	 * @return string|bool The relationship value if it exists, false otherwise.
+	 * @return int|bool The relationship value if it exists, false otherwise.
 	 */
 	public function get_relationship_value( $relationship_type, $item_id, $user_id ) {
 		$r = pf_get_relationship( $relationship_type, $item_id, $user_id );
 
 		if ( ! is_bool( $r ) ) {
-			$retval = $r->value;
+			$retval = (int) $r->value;
 		} else {
 			$retval = false;
 		}
@@ -309,8 +308,6 @@ class Relate implements HasActions {
 
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-		ob_end_flush();
-		die();
 	}
 
 	/**
@@ -396,8 +393,6 @@ class Relate implements HasActions {
 
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-		ob_end_flush();
-		die();
 	}
 
 	/**
@@ -498,7 +493,5 @@ class Relate implements HasActions {
 
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-		ob_end_flush();
-		die();
 	}
 }

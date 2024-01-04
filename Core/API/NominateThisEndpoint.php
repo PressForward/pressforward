@@ -7,17 +7,13 @@
 
 namespace PressForward\Core\API;
 
-use Intraxia\Jaxion\Contract\Core\HasActions;
-
 use PressForward\Core\Admin\PFTemplater;
-
-use \WP_Ajax_Response;
-use \WP_Error;
+use WP_Error;
 
 /**
  * Nominate This endpoint.
  */
-class NominateThisEndpoint implements HasActions {
+class NominateThisEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 
 	/**
 	 * API base.
@@ -232,11 +228,7 @@ class NominateThisEndpoint implements HasActions {
 					} catch ( \DomainException $e ) {
 						$return_var = new WP_Error( 'auth_fail_ssl', __( 'SSL cannot be applied to the key.', 'pressforward' ) );
 					} catch ( \Exception $e ) {
-						if ( false === $return_var ) {
-							return new WP_Error( 'auth_fail_whoknows', __( 'Authentication failed for reasons unclear.', 'pressforward' ) );
-						} else {
-							return $return_var;
-						}
+						return new WP_Error( 'auth_fail_whoknows', __( 'Authentication failed for reasons unclear.', 'pressforward' ) );
 					}
 				},
 				'priority'            => 10,
@@ -288,11 +280,7 @@ class NominateThisEndpoint implements HasActions {
 					} catch ( \DomainException $e ) {
 						$return_var = new WP_Error( 'auth_fail_ssl', __( 'SSL cannot be applied to the key.', 'pressforward' ) );
 					} catch ( \Exception $e ) {
-						if ( false === $return_var ) {
-							return new WP_Error( 'auth_fail_whoknows', __( 'Authentication failed for reasons unclear.', 'pressforward' ) );
-						} else {
-							return $return_var;
-						}
+						return new WP_Error( 'auth_fail_whoknows', __( 'Authentication failed for reasons unclear.', 'pressforward' ) );
 					}
 					return $return_var;
 				},

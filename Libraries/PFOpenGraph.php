@@ -45,7 +45,7 @@ class PFOpenGraph implements Iterator {
 	 * false on error.
 	 *
 	 * @param $URI URI to page to parse for Open Graph data
-	 * @return PFOpenGraph|bool
+	 * @return PFOpenGraph|false
 	 */
 	public static function fetch( $URI ) {
 		$cache_key = 'wp_remote_get_' . $URI;
@@ -55,10 +55,10 @@ class PFOpenGraph implements Iterator {
 			$response_body = $cached;
 		} else {
 			$response = pf_de_https( $URI, 'wp_remote_get' );
-			if ( $response && ! is_wp_error( $response ) ) {
-				$response_body = wp_remote_retrieve_body( $response );
+			if ( $response ) {
+				$response_body = $response['body'];
+				wp_cache_set( $cache_key, $response_body, 'pressforward_external_pages' );
 			}
-			wp_cache_set( $cache_key, $response_body, 'pressforward_external_pages' );
 		}
 
 		if ( ! $response_body ) {
@@ -104,7 +104,7 @@ class PFOpenGraph implements Iterator {
 		libxml_use_internal_errors( $old_libxml_error );
 
 		$tags = $doc->getElementsByTagName( 'meta' );
-		if ( ! $tags || $tags->length === 0 ) {
+		if ( $tags->length === 0 ) {
 			return false;
 		}
 

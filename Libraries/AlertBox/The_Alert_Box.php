@@ -226,13 +226,13 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			if ( current_user_can( 'edit_posts' ) ) {
 				$q = $this->get_specimens( $page, $post_types );
 				if ( $q->have_posts() ) {
-					while ( $q->have_posts() ) : $q->the_post();
+					while ( $q->have_posts() ) : $q->the_post(); // @phpstan-ignore-line
 						self::dismiss_alert( get_the_ID() );
 					endwhile;
 				} else {
 					return false;
 				}
-				wp_reset_postdata();
+				wp_reset_postdata(); // @phpstan-ignore-line
 				return $q->post_count;
 			} else {
 				return false;
@@ -283,8 +283,6 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 				);
 				$xmlResponse = new WP_Ajax_Response( $response );
 				$xmlResponse->send();
-				ob_end_flush();
-				die();
 			}
 			if ( empty( $filtered_post_types ) ) {
 				$fpt_array = false;
@@ -328,8 +326,6 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			}
 			$xmlResponse = new WP_Ajax_Response( $response );
 			$xmlResponse->send();
-			ob_end_flush();
-			      die();
 		}
 
 		public function remove_alerted_posts() {
@@ -345,8 +341,6 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 				);
 				$xmlResponse = new WP_Ajax_Response( $response );
 				$xmlResponse->send();
-				ob_end_flush();
-				die();
 			}
 			if ( empty( $filtered_post_types ) ) {
 				$fpt_array = false;
@@ -398,8 +392,6 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			}
 			$xmlResponse = new WP_Ajax_Response( $response );
 			$xmlResponse->send();
-			ob_end_flush();
-			die();
 		}
 
 		public function the_alert() {
@@ -415,7 +407,7 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 
 			if ( current_user_can( 'edit_others_posts' ) ) {
 			  // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo '| <a href="#" class="alert-dismisser" title="' . esc_attr__( 'Dismiss', 'pf' ) . '" data-alert-post-id="' . esc_attr( get_the_ID() ) . '" data-alert-dismiss-check="' . esc_attr( self::alert_label( 'dismiss_one_check' ) . ' ' . get_the_title() . '?' ) . '" ' . self::alert_box_type_data( get_post_type( get_the_ID() ) ) . ' >' . esc_html__( 'Dismiss', 'pf' ) . '</a>';
+				echo '| <a href="#" class="alert-dismisser" title="' . esc_attr__( 'Dismiss', 'pf' ) . '" data-alert-post-id="' . esc_attr( (string) get_the_ID() ) . '" data-alert-dismiss-check="' . esc_attr( self::alert_label( 'dismiss_one_check' ) . ' ' . get_the_title() . '?' ) . '" ' . self::alert_box_type_data( get_post_type( get_the_ID() ) ) . ' >' . esc_html__( 'Dismiss', 'pf' ) . '</a>';
 			}
 			echo ' ';
 			if ( current_user_can( 'delete_others_posts' ) ) {
@@ -439,12 +431,12 @@ if ( ! class_exists( 'The_Alert_Box' ) ) {
 			if ( self::is_on() ) {
 				$q = $this->get_specimens();
 				if ( $q->have_posts() ) {
-					while ( $q->have_posts() ) : $q->the_post();
+					while ( $q->have_posts() ) : $q->the_post(); // @phpstan-ignore-line
 						echo '<p>';
 						the_alert_box()->the_alert();
 						echo '</p>';
 					endwhile;
-					wp_reset_postdata();
+					wp_reset_postdata(); // @phpstan-ignore-line
 					$alertCheck = self::alert_label( 'delete_all_check' );
 					if ( current_user_can( 'edit_others_posts' ) ) {
 						$editText = self::alert_label( 'dismiss_all' );

@@ -88,11 +88,12 @@ class Nominations implements HasActions, HasFilters {
 			'show_ui'              => true,
 			// But not the default UI, we want to attach it to the plugin menu.
 			'show_in_menu'         => false,
+			'show_in_rest'         => true,
 			// Linking in the metabox building function.
 			'register_meta_box_cb' => array( $this, 'nominations_meta_boxes' ),
 			'capability_type'      => 'post',
 			// The type of input (besides the metaboxes) that it supports.
-			'supports'             => array( 'title', 'editor', 'thumbnail' ),
+			'supports'             => array( 'title', 'editor', 'thumbnail', 'custom-fields', 'revisions' ),
 			// I think this is set to false by the public argument, but better safe.
 			'has_archive'          => false,
 			'taxonomies'           => array( 'category', 'post_tag' ),
@@ -107,6 +108,11 @@ class Nominations implements HasActions, HasFilters {
 	 * @since 1.7
 	 */
 	public function nominations_meta_boxes() {
+		// Don't add in Nominate This.
+		if ( ! empty( $_GET['pf-nominate-this'] ) ) {
+			return;
+		}
+
 		add_meta_box(
 			'pf-nominations',
 			__( 'Nomination Data', 'pressforward' ),

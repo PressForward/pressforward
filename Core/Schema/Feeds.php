@@ -11,6 +11,7 @@ use stdClass;
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
 use PressForward\Controllers\Metas;
+use PressForward\Core\Models\Feed;
 
 /**
  * Database class for manipulating feed.
@@ -77,6 +78,14 @@ class Feeds implements HasActions, HasFilters {
 				'hook'   => 'save_post',
 				'method' => 'save_submitbox_pf_actions',
 			),
+			[
+				'hook'   => 'save_post',
+				'method' => 'set_up_feed_retrieval_cron_job',
+			],
+			[
+				'hook'   => 'before_delete_post',
+				'method' => 'delete_feed_cron_jobs',
+			],
 			array(
 				'hook'   => 'pf_feed_post_type_registered',
 				'method' => 'under_review_post_status',
@@ -391,6 +400,47 @@ class Feeds implements HasActions, HasFilters {
 	}
 
 	/**
+	 * Sets up retrieval cron job on feed save.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @param int $post_id ID of the post being saved.
+	 * @return void
+	 */
+	public function set_up_feed_retrieval_cron_job( $post_id ) {
+		$feed = Feed::get_instance_by_id( $post_id );
+		if ( ! $feed ) {
+			return;
+		}
+
+		// If the retrieval is already scheduled, there's nothing more to do.
+		$next_scheduled = $feed->get_next_scheduled_retrieval();
+		if ( $next_scheduled ) {
+			return;
+		}
+
+		$feed->schedule_retrieval();
+	}
+
+	/**
+	 * Deletes cron jobs on feed delete.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @param int $post_id ID of the post being deleted.
+	 * @return void
+	 */
+	public function delete_feed_cron_jobs( $post_id ) {
+		$feed = Feed::get_instance_by_id( $post_id );
+		if ( ! $feed ) {
+			return;
+		}
+
+		$feed->unschedule_retrieval();
+		$feed->unschedule_health_check();
+	}
+
+	/**
 	 * Handles submitbox actions on save.
 	 *
 	 * @param int $post_id ID of the post being saved.
@@ -574,7 +624,7 @@ class Feeds implements HasActions, HasFilters {
 			return $actions;
 		}
 
-		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="' . esc_attr( $post->ID ) . '" title="' . esc_attr__( 'Refresh this feed', 'pressforward' ) . '">' . esc_html__( 'Refresh Feed Items', 'pressforward' ) . '</a> | ';
+		$actions['refresh_feed'] = '<span class="inline hide-if-no-js pf-refresh"><a href="#" class="refresh-feed" data-pf-feed="' . esc_attr( (string) $post->ID ) . '" title="' . esc_attr__( 'Refresh this feed', 'pressforward' ) . '">' . esc_html__( 'Refresh Feed Items', 'pressforward' ) . '</a> | ';
 
 		return $actions;
 	}
@@ -645,12 +695,12 @@ class Feeds implements HasActions, HasFilters {
 	 *
 	 * @param array  $feedlist Feed list.
 	 * @param string $xml_url  XML URL.
-	 * @param string $key      Key.
+	 * @param int    $key      Key.
 	 * @param array  $args     Arguments.
 	 * @return array
 	 */
-	public function progressive_feedlist_transformer( $feedlist = array(), $xml_url = '', $key = '', $args = array() ) {
-		$post_args = array_merge( array( 'type' => 'rss-quick' ), $args );
+	public function progressive_feedlist_transformer( $feedlist = array(), $xml_url = '', $key = 0, $args = array() ) {
+		$post_args = array_merge( array( 'type' => 'rss' ), $args );
 		$check     = $this->create( $xml_url, $post_args );
 		if ( is_numeric( $check ) && ( 0 < $check ) ) {
 			unset( $feedlist[ $key ] );
@@ -793,28 +843,9 @@ class Feeds implements HasActions, HasFilters {
 		if ( is_numeric( $post_id ) && ( 0 < $post_id ) ) {
 			pf_log( 'The post_id is numeric and greater than 0, complete the ' . $insert_type . ' process' );
 			$this->set_pf_feed_type( $post_id, $r['type'] );
-			pf_log( 'Tags found:' );
-			pf_log( $r['tags'] );
-			if ( array_key_exists( 'tags', $r ) && ! empty( $r['tags'] ) ) {
-				// @TODO make this a function of the PF_Folders class.
-				foreach ( $r['tags'] as $slug => $tag ) {
-					// Assume that OPML files have folder structures that
-					// users would want to maintain.
-					if ( 'rss-quick' === $r['type'] ) {
-						$term = wp_insert_term( $tag, $this->tag_taxonomy );
-						if ( is_wp_error( $term ) ) {
-							$term_id = $term->error_data['term_exists'];
-						} elseif ( is_array( $term ) ) {
-							$term_id = $term['term_id'];
-						} else {
-							$term_id = false;
-						}
-						if ( false !== $term_id ) {
-							pf_log( 'Adding folder with ID of ' . $term_id );
-							wp_add_object_terms( $post_id, $term_id, $this->tag_taxonomy );
-						}
-					}
-				}
+
+			if ( isset( $r['feed_folders'] ) && null !== empty( $r['feed_folders'] ) ) {
+				$set = wp_set_object_terms( $post_id, $r['feed_folders'], $this->tag_taxonomy );
 			}
 
 			$unsetables = array( 'title', 'description', 'tags', 'type', 'url', 'post_status', 'ID', 'post_type', 'post_title', 'post_content', 'guid', 'post_parent', 'tax_input' );
@@ -900,7 +931,7 @@ class Feeds implements HasActions, HasFilters {
 		$r = wp_parse_args(
 			$args,
 			array(
-				'title'        => false,
+				'title'        => $feed_url,
 				'url'          => $feed_url,
 				'htmlUrl'      => false,
 				'type'         => 'rss',
@@ -908,6 +939,7 @@ class Feeds implements HasActions, HasFilters {
 				'description'  => false,
 				'feed_author'  => false,
 				'feed_icon'    => false,
+				'feed_folders' => null,
 				'copyright'    => false,
 				'thumbnail'    => false,
 				'user_added'   => false,
@@ -917,67 +949,68 @@ class Feeds implements HasActions, HasFilters {
 				'tags'         => array(),
 			)
 		);
-		pf_log( 'Received a create command with the following arguments:' );
+
+		pf_log( 'Creating a feed with the following parameters:' );
 		pf_log( $r );
-		if ( 'rss' === $r['type'] ) {
-			pf_log( 'We are creating an RSS feed' );
-			$the_feed = pf_fetch_feed( $feed_url );
-			if ( is_wp_error( $the_feed ) ) {
-				$orig_feed_url = trailingslashit( $feed_url );
-				pf_log( 'The RSS feed failed verification' );
-				$feed_url = $orig_feed_url . 'rss/';
-				pf_log( 'Trying ' . $feed_url );
-				$the_feed = pf_fetch_feed( $feed_url );
-				if ( is_wp_error( $the_feed ) ) {
-					pf_log( 'The RSS feed failed 2nd verification' );
-					$feed_url = $orig_feed_url . 'rss/index.xml';
-					pf_log( 'Trying ' . $feed_url );
-					$the_feed = pf_fetch_feed( $feed_url );
-					if ( is_wp_error( $the_feed ) ) {
-						pf_log( 'The RSS feed failed 3rd verification' );
-						return new \WP_Error( 'badfeed', __( 'The feed fails verification.', 'pressforward' ) );
-					} else {
-						$r['url']      = $feed_url;
-						$r['feed_url'] = $feed_url;
-					}
-				} else {
-					$r['url']      = $feed_url;
-					$r['feed_url'] = $feed_url;
-				}
-			} else {
-				pf_log( 'The RSS feed was verified, setting up meta' );
-				$r = $this->setup_rss_meta( $r, $the_feed );
-			}
-		}
 
 		if ( ! $r['user_added'] ) {
 			$current_user    = wp_get_current_user();
 			$r['user_added'] = $current_user->user_login;
 		}
 
-		if ( 'rss-quick' === $r['type'] && ! isset( $r['title'] ) ) {
-			pf_log( 'The feed was added with the RSS-Quick type, normalizing by setting the title to the URL.' );
-			$r['title'] = $r['url'];
-		}
-
+		$existing = false;
 		if ( $this->has_feed( $feed_url ) ) {
-			pf_log( 'We checked for this feed and found it.' );
-			pf_log( 'Doing the feed_post_setup process as an update.' );
-			$check = $this->feed_post_setup( $r, 'update' );
+			pf_log( 'This is an existing feed, and will be updated.' );
+			$check    = $this->feed_post_setup( $r, 'update' );
+			$existing = true;
 		} else {
-			pf_log( 'We checked for this feed and did not find it.' );
-			pf_log( 'Doing the feed_post_setup process as a new post' );
+			pf_log( 'This is a new feed.' );
 			$check = $this->feed_post_setup( $r );
 		}
 
-		pf_log( 'Attempt to create or update the post has resulted in a post_id or false:' );
+		pf_log( 'Feed creation result:' );
 		pf_log( $check );
 
 		if ( ! $check ) {
 			return false;
-		} else {
-			do_action( 'pf_feed_inserted', $check );
 		}
+
+		$feed = Feed::get_instance_by_id( $check );
+		if ( ! $feed ) {
+			return false;
+		}
+
+		/*
+		 * Schedule an initial health check for the feed.
+		 *
+		 * Health checks should come before the next scheduled retrieval.
+		 * If a retrieval is scheduled, we will reschedule it for after the health check.
+		 */
+		$health_check_timestamp = time() + MINUTE_IN_SECONDS;
+		$retrieval_timestamp    = $feed->get_next_scheduled_retrieval();
+
+		if ( $retrieval_timestamp && $retrieval_timestamp < $health_check_timestamp ) {
+			$new_retrieval_timestamp = $health_check_timestamp + ( wp_rand( 5, 30 ) * MINUTE_IN_SECONDS );
+			$feed->schedule_retrieval(
+				[
+					'nextrun' => $new_retrieval_timestamp,
+				]
+			);
+		}
+
+		$feed->schedule_health_check(
+			[
+				'nextrun'     => $health_check_timestamp,
+				'is_new_feed' => ! $existing,
+			]
+		);
+
+		/**
+		 * Fires after a feed is inserted into the database.
+		 *
+		 * @param int $check Feed ID.
+		 */
+		do_action( 'pf_feed_inserted', $check );
 
 		return $check;
 	}
@@ -1192,21 +1225,6 @@ class Feeds implements HasActions, HasFilters {
 			}
 		}
 
-		if ( 'rss-quick' === $r['type'] ) {
-			pf_log( 'Updating a rss-quick' );
-			$the_feed = pf_fetch_feed( $feed_url );
-			if ( is_wp_error( $the_feed ) ) {
-				return new \WP_Error( 'badfeed', __( 'The feed fails verification.', 'pressforward' ) );
-			} else {
-				$r = $this->setup_rss_meta( $r, $the_feed );
-			}
-
-			$type_updated = $this->set_pf_feed_type( $r['ID'], 'rss' );
-			if ( $type_updated ) {
-				$r['type'] = 'rss';
-			}
-		}
-
 		$check = $this->feed_post_setup( $r, 'update' );
 		return $check;
 	}
@@ -1246,21 +1264,6 @@ class Feeds implements HasActions, HasFilters {
 			}
 		} else {
 			$feed_url = $r['url'];
-		}
-
-		if ( 'rss-quick' === $r['type'] ) {
-			pf_log( 'Updating a rss-quick' );
-			$the_feed = pf_fetch_feed( $feed_url );
-			if ( is_wp_error( $the_feed ) ) {
-				return new \WP_Error( 'badfeed', __( 'The feed fails verification.', 'pressforward' ) );
-			} else {
-				$r = $this->setup_rss_meta( $r, $the_feed );
-			}
-
-			$type_updated = $this->set_pf_feed_type( $r['ID'], 'rss' );
-			if ( $type_updated ) {
-				$r['type'] = 'rss';
-			}
 		}
 
 		$check = $this->feed_post_setup_inital( $r, 'update' );

@@ -1,6 +1,8 @@
 .pftab {
-  margin-left: 22px;
-  display: none; }
+  display: none;
+  padding-left: 8px;
+  padding-top: 20px;
+}
 
 .pftab.active {
   display: block; }
@@ -10,6 +12,18 @@
 
 .pressforward_page_pf-feeder .pftab h2 {
   display: none; }
+
+.pf_container a.nav-tab {
+	text-decoration: none;
+}
+
+.pf_container select {
+	line-height: 30px;
+}
+
+.pf_container .tabwrappper label {
+	margin-left: 8px;
+}
 
 #responses {
   display: none;

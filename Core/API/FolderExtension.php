@@ -7,13 +7,10 @@
 
 namespace PressForward\Core\API;
 
-use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
 
 use PressForward\Controllers\Metas;
 use PressForward\Core\API\APIWithMetaEndpoints;
-
-use \WP_Ajax_Response;
 
 /**
  * Folder extensions for REST API.

@@ -213,7 +213,7 @@ EOT;
 						$this->metas->update_pf_meta( $id, $key, $value );
 						$d = \DateTime::createFromFormat( 'Y-m-d H:i:s', trim( $value ) );
 						if ( ! $d ) {
-							$d = strtotime( trim( $value ) );
+							$d = (string) strtotime( trim( $value ) );
 							$d = \DateTime::createFromFormat( 'U', $d );
 						}
 						if ( ! $d ) {
@@ -239,7 +239,5 @@ EOT;
 
 		$xml_response = new WP_Ajax_Response( $response );
 		$xml_response->send();
-
-		die();
 	}
 }
