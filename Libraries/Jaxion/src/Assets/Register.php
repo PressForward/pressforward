@@ -83,9 +83,17 @@ class Register implements RegisterContract {
 	 * @param array $script
 	 */
 	public function register_script( $script ) {
+		$has_minimized = 0 === strpos( $script['src'], 'assets/js/' );
+
+		if ( $has_minimized ) {
+			$script_url = $this->url . $script['src'] . $this->min . '.js';
+		} else {
+			$script_url = $this->url . $script['src'] . '.js';
+		}
+
 		wp_register_script(
 			$script['handle'],
-			$this->url . $script['src'] . $this->min . '.js',
+			$script_url,
 			isset( $script['deps'] ) ? $script['deps'] : [],
 			$this->version,
 			! isset( $script['footer'] ) || $script['footer'] ? true : false
@@ -98,9 +106,17 @@ class Register implements RegisterContract {
 	 * @param array $style
 	 */
 	public function register_style( $style ) {
+		$has_minimized = 0 === strpos( $script['src'], 'assets/css/' );
+
+		if ( $has_minimized ) {
+			$style_url = $this->url . $style['src'] . $this->min . '.css';
+		} else {
+			$style_url = $this->url . $style['src'] . '.css';
+		}
+
 		wp_register_style(
 			$style['handle'],
-			$this->url . $style['src'] . $this->min . '.css',
+			$style_url,
 			isset( $style['deps'] ) ? $style['deps'] : [],
 			$this->version,
 			isset( $style['media'] ) ? $style['media'] : 'all'
