@@ -106,7 +106,7 @@ class Register implements RegisterContract {
 	 * @param array $style
 	 */
 	public function register_style( $style ) {
-		$has_minimized = 0 === strpos( $script['src'], 'assets/css/' );
+		$has_minimized = 0 === strpos( $style['src'], 'assets/css/' );
 
 		if ( $has_minimized ) {
 			$style_url = $this->url . $style['src'] . $this->min . '.css';

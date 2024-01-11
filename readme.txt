@@ -4,7 +4,7 @@ Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 5.7
 Tested up to: 6.4
-Stable tag: 5.6.0
+Stable tag: 5.6.1
 License: AGPLv3
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+
+= 5.6.1 =
+* Fixed bug in the way that new JavaScript introduced in 5.6.0 is loaded.
 
 = 5.6.0 =
 * Complete rebuild of the Nominate This bookmarklet tool, leveraging the Block Editor. Users who prefer the legacy version of Nominate This can use the 'Force Classic editor for Nominate This' toggle.
