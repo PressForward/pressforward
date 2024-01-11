@@ -1,6 +1,6 @@
 {
 	"name": "pressforward",
-	"version": "5.6.0",
+	"version": "5.6.1",
 	"description": "PressForward is a free plugin that provides an editorial workflow for content aggregation and curation within the WordPress dashboard. It is designed for bloggers and editorial teams who wish to collect, discuss, and share content from a variety of sources on the open web. ",
 	"main": "assets/js/pf.js",
 	"directories": {
