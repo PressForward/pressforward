@@ -82,6 +82,9 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 
 == Changelog ==
 
+= 5.6.1 =
+* Fixed bug in the way that new JavaScript introduced in 5.6.0 is loaded.
+
 = 5.6.0 =
 * Complete rebuild of the Nominate This bookmarklet tool, leveraging the Block Editor. Users who prefer the legacy version of Nominate This can use the 'Force Classic editor for Nominate This' toggle.
 * Refactoring of the RSS subscription internals, so that feeds are retrieved independently of one another. This improves performance and reliability.
