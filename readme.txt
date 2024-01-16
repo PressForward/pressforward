@@ -82,6 +82,9 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 
 == Changelog ==
 
+= 5.6.2 =
+* Fixed bug in the way that dependent scripts are loaded on Reader interface.
+
 = 5.6.1 =
 * Fixed bug in the way that new JavaScript introduced in 5.6.0 is loaded.
 
