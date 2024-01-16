@@ -218,7 +218,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				'type'   => 'admin',
 				'handle' => 'pf-nomination-imp',
 				'src'    => 'assets/js/nomination-imp',
-				'deps'   => array( 'pf' ),
+				'deps'   => [ 'jquery' ],
 			)
 		);
 
@@ -304,6 +304,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		// Some dependencies can't be detected by @wordpress/scripts.
 		$extra_dependencies = [
 			'pf-nominate-this' => [ 'wp-api' ],
+			'pf-reader'        => [ 'pf-nomination-imp' ],
 		];
 
 		foreach ( $build_scripts as $script_handle => $script_file ) {
