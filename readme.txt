@@ -46,7 +46,7 @@ Instructions for use are found in our [User Manual](https://pressforwardadmin.gi
 
 [See how we compare to other WordPress plugins](https://www.gitbook.com/book/pressforwardadmin/pressforward-documentation/edit#/edit/changes/1/faq.md?_k=jn4jbu).
 
-The PressForward Plugin is developed and maintained by the [Roy Rosenzweig Center for History and New Media](http://chnm.gmu.edu) at [George Mason University](http://gmu.edu) as part of the [PressForward Project](http://pressforward.org), generously funded by the Alfred P. Sloan Foundation. Our developers include [Aram Zucker-Scharff](http://aramzs.me), [Boone B. Gorges](http://boone.gorg.es), and [Jeremy Boggs](http://clioweb.org). PressForward is free to use and modify under a [GNU GPL2 license](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
+The PressForward Plugin has been developed and maintained by [Digital Scholar](https://digitalscholar.org) since 2019. [Boone B. Gorges](https://boone.gorg.es) is the lead developer. The plugin was originally developed by the [Roy Rosenzweig Center for History and New Media](https://chnm.gmu.edu) at [George Mason University](https://gmu.edu) as part of the [PressForward Project](https://pressforward.org), generously funded by the Alfred P. Sloan Foundation. Previous developers include [Aram Zucker-Scharff](http://aramzs.me/), and Jeremy Boggs. PressForward is free to use and modify under a [GNU GPL3 license](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
 [Detailed information about our code](https://github.com/PressForward/pressforward/wiki/Devbook) can be found on our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki/).
 
