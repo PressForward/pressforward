@@ -21,8 +21,8 @@
 	line-height: 30px;
 }
 
-.pf_container .tabwrappper label {
-	margin-left: 8px;
+.tabwrappper input[type="checkbox"] {
+	margin-right: 5px;
 }
 
 #responses {
