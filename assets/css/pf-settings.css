@@ -21,8 +21,23 @@
 	line-height: 30px;
 }
 
-.tabwrappper input[type="checkbox"] {
+.tabwrappper label select,
+.tabwrappper label input {
 	margin-right: 5px;
+}
+
+.tabwrappper label.label-left {
+	display: inline-block;
+	padding-right: 10px;
+	width: 80px;
+}
+
+.promoted-item-settings select {
+	margin-bottom: 10px;
+}
+
+.tabwrappper h3 {
+	margin-top: 2em;
 }
 
 #responses {
