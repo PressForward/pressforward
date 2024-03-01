@@ -37,6 +37,7 @@
 
 <p><?php esc_html_e( 'Use the following settings to control which users can access PressForward functionality', 'pressforward' ); ?></p>
 
+<?php // translators: %s is a link to the WordPress.org documentation page on Roles and Capabilities. ?>
 <p class="description"><?php echo wp_kses_post( sprintf( __( 'For reference, WordPress\'s default user roles are, in order of most to least powerful: Administrator, Editor, Author, Contributor, and Subscriber. For more information, visit <a href="%s">the wordpress.org documentation page on Roles and Capabilities</a>.', 'pressforward' ), 'https://wordpress.org/documentation/article/roles-and-capabilities/' ) ); ?></p>
 
 <?php
