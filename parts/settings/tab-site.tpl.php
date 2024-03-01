@@ -86,29 +86,6 @@
 				</p>
 			</td>
 		</tr>
-
-		<tr>
-			<th scope="row">
-				<?php esc_html_e( 'Advanced user roles', 'pressforward' ); ?>
-			</th>
-
-			<td>
-				<label for="pf_use_advanced_user_roles">
-					<select id="pf_use_advanced_user_roles" name="pf_use_advanced_user_roles">
-						<option value="yes" <?php selected( get_option( 'pf_use_advanced_user_roles', 'no' ), 'yes' ); ?>><?php esc_html_e( 'Yes', 'pressforward' ); ?></option>
-						<option value="no" <?php selected( get_option( 'pf_use_advanced_user_roles', 'no' ), 'no' ); ?>><?php esc_html_e( 'No', 'pressforward' ); ?></option>
-					</select>
-					<?php esc_html_e( 'Use advanced user role management?', 'pressforward' ); ?>
-				</label>
-
-				<p class="description">
-					<?php esc_html_e( 'Enable advanced user role management if you use a plugin that customizes user roles or capabilities.', 'pressforward' ); ?>
-				</p>
-			</td>
-
-		</tr>
-
-
 	</tbody>
 </table>
 

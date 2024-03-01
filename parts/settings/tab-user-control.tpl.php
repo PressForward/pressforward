@@ -7,12 +7,37 @@
 
 ?>
 
-<p>
-	<?php // phpcs:ignore WordPress.Security.EscapeOutput ?>
-	<?php _e( 'The default WordPress settings for drafting, editing, and publishing a post remain the same regardless of other PressForward Settings. For more details visit <a href="https://codex.wordpress.org/Roles_and_Capabilities">Roles and Capabilities</a>. To change the default roles for new users visit <a href="/wp-admin/options-general.php">Admin &#187; Settings &#187; General Settings</a>. To change user roles and capabilities, edit them at <a href="/wp-admin/users.php">Admin &#187; Users</a>.<br /><br />The additional preferences below determine the type of access granted to each user role within the PressForward plugin. The user roles allowed by PressForward in order of most restrictive to least restrictive include: Administrator, Editor, Contributor, and Subscriber.', 'pressforward' ); ?>
-</p>
+<p><?php esc_html_e( 'The settings on this page control how user roles interact with PressForward.', 'pressforward' ); ?></p>
 
-<hr />
+<table class="form-table">
+	<tbody>
+		<tr>
+			<th scope="row">
+				<?php esc_html_e( 'Advanced user roles', 'pressforward' ); ?>
+			</th>
+
+			<td>
+				<label for="pf_use_advanced_user_roles">
+					<select id="pf_use_advanced_user_roles" name="pf_use_advanced_user_roles">
+						<option value="yes" <?php selected( get_option( 'pf_use_advanced_user_roles', 'no' ), 'yes' ); ?>><?php esc_html_e( 'Yes', 'pressforward' ); ?></option>
+						<option value="no" <?php selected( get_option( 'pf_use_advanced_user_roles', 'no' ), 'no' ); ?>><?php esc_html_e( 'No', 'pressforward' ); ?></option>
+					</select>
+					<?php esc_html_e( 'Use advanced user role management?', 'pressforward' ); ?>
+				</label>
+
+				<p class="description">
+					<?php esc_html_e( 'Enable advanced user role management if you use a plugin that customizes user roles or capabilities.', 'pressforward' ); ?>
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<h3 class="title"><?php esc_html_e( 'Access by Role', 'pressforward' ); ?></h3>
+
+<p><?php esc_html_e( 'Use the following settings to control which users can access PressForward functionality', 'pressforward' ); ?></p>
+
+<p class="description"><?php echo wp_kses_post( sprintf( __( 'For reference, WordPress\'s default user roles are, in order of most to least powerful: Administrator, Editor, Author, Contributor, and Subscriber. For more information, visit <a href="%s">the wordpress.org documentation page on Roles and Capabilities</a>.', 'pressforward' ), 'https://wordpress.org/documentation/article/roles-and-capabilities/' ) ); ?></p>
 
 <?php
 
@@ -52,38 +77,30 @@ $admin_rights = array(
 
 $admin_rights = apply_filters( 'pf_setup_admin_rights', $admin_rights );
 
-foreach ( $admin_rights as $right => $parts ) {
+?>
 
-	?>
+<table class="form-table">
+	<tbody>
+		<?php foreach ( $admin_rights as $right => $parts ) : ?>
+			<tr>
+				<th scope="row">
+					<label for="<?php echo esc_attr( $right ); ?>-enable"><?php echo esc_attr( $parts['title'] ); ?></label>
+				</th>
 
-	<table class="form-table">
-		<tr>
-			<th scope="row">
-				<label for="<?php echo esc_attr( $right ); ?>-enable"><?php echo esc_attr( $parts['title'] ); ?></label>
-			</th>
+				<td>
+					<select id="<?php echo esc_attr( $right ); ?>" name="<?php echo esc_attr( $right ); ?>">
+						<?php pressforward( 'admin.settings' )->pf_get_user_role_select( $right, pressforward( 'controller.users' )->pf_get_defining_capability_by_role( $parts['default'] ) ); ?>
+					</select>
 
-			<td>
-				<select id="<?php echo esc_attr( $right ); ?>" name="<?php echo esc_attr( $right ); ?>">
-					<?php pressforward( 'admin.settings' )->pf_get_user_role_select( $right, pressforward( 'controller.users' )->pf_get_defining_capability_by_role( $parts['default'] ) ); ?>
-				</select>
-			</td>
-		</tr>
-	</table>
+					<?php if ( ! empty( $parts['details'] ) ) : ?>
+						<p class="description"><?php echo esc_html( $parts['details'] ); ?></p>
+					<?php endif; ?>
+				</td>
+			</tr>
+		<?php endforeach; ?>
+	</tbody>
+</table>
 
-	<p>
-		<?php
-		if ( ! empty( $parts['details'] ) ) {
-			echo esc_html( $parts['details'] );
-		}
-
-		?>
-	</p>
-
-	<br />
-	<hr />
-
-	<?php
-
-}
+<?php
 
 do_action( 'pf_admin_user_settings' );
