@@ -195,7 +195,7 @@ class PFTemplater {
 					$class_name = 'pftab tab'; }
 				?>
 				<div id="<?php echo esc_attr( $tab ); ?>" class="<?php echo esc_attr( $class_name ); ?>">
-				<h2><?php echo esc_html( $tab_meta['title'] ); ?></h2>
+				<h2 class="title"><?php echo esc_html( $tab_meta['title'] ); ?></h2>
 					<?php
 						// like: pf_do_pf-add-feeds_tab_primary_feed_type.
 					if ( has_action( 'pf_do_' . $page_slug . '_tab_' . $tab ) || ! array_key_exists( $tab, $tabs ) ) {
