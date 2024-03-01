@@ -38,7 +38,7 @@ $private_key = ( pressforward( 'controller.jwt' )->get_a_user_private_key() );
 				settings_fields( $settings_field );
 			}
 			?>
-				<h2 class="nav-tab-wrapper" id="pf-settings-tabs">
+				<nav class="nav-tab-wrapper" id="pf-settings-tabs">
 				<?php
 				$the_tabs = pressforward( 'admin.templates' )->permitted_tabs( $page_slug );
 
@@ -57,7 +57,7 @@ $private_key = ( pressforward( 'controller.jwt' )->get_a_user_private_key() );
 					}
 				}
 				?>
-				</h2>
+				</nav>
 
 				<div class="tabwrappper">
 					<?php
