@@ -31,6 +31,10 @@ jQuery(window).load(function () {
 
 		// Reset scroll location.
 		jQuery(window).scrollTop(scrollLocation);
+
+		// Update the 'action' attribute of the form to reflect the current tab.
+		const form = tab.closest( 'form' );
+		form.action = form.action.replace(/#.*$/, '') + target;
 	}
 
 	jQuery('.pressforward #pf-settings-tabs').on('click', '.nav-tab', function (evt) {
