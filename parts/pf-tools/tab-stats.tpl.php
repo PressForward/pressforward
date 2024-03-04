@@ -5,6 +5,8 @@
  * @package PressForward
  */
 
+wp_enqueue_script( 'pf-api' );
+
 ?>
 <div id="stats">
 	<div style="width: 100%">
