@@ -80,8 +80,11 @@ p {
 .accordion-heading {
   margin: 8px auto; }
 
-.toplevel_page_pf-menu #wpcontent, .pressforward_page_pf-review #wpcontent, .pressforward_page_pf-feeder #wpcontent {
-  background-color: #ecf3f9; }
+.pressforward_page_pf-all-content #wpcontent,
+.pressforward_page_pf-review #wpcontent,
+.pressforward_page_pf-feeder #wpcontent {
+	background-color: #ecf3f9;
+}
 
 .search-in-bar {
   margin: 14px 14px 0 0;

@@ -155,7 +155,7 @@ jQuery(window).on('load', function () {
 		evt.preventDefault();
 		var obj = jQuery(this);
 		var id = obj.attr('href');
-		var url = window.location.href; //window.location.origin+window.location.pathname+'?page=pf-menu';
+		var url = window.location.href;
 		url = url.replace('#', '&');
 		url = removeURLParameter(url, 'folder');
 		url = removeURLParameter(url, 'feed');
@@ -172,7 +172,7 @@ jQuery(window).on('load', function () {
 		evt.preventDefault();
 		var obj = jQuery(this);
 		var id = obj.children('a').attr('href');
-		var url = window.location.href; //window.location.origin+window.location.pathname+'?page=pf-menu';
+		var url = window.location.href;
 		url = url.replace('#', '&');
 		url = removeURLParameter(url, 'folder');
 		url = removeURLParameter(url, 'feed');
@@ -234,27 +234,27 @@ jQuery(window).on('load', function () {
 
 	jQuery('.pf_container').on('click', '#showMyNominations', function (evt) {
 		evt.preventDefault();
-		window.open("?page=pf-menu&by=nominated", "_self")
+		window.open("?page=pf-all-content&by=nominated", "_self")
 	});
 	jQuery('.pf_container').on('click', '#showMyHidden', function (evt) {
 		evt.preventDefault();
-		window.open("?page=pf-menu&reveal=no_hidden", "_self")
+		window.open("?page=pf-all-content&reveal=no_hidden", "_self")
 	});
 	jQuery('.pf_container').on('click', '#showUnread', function (evt) {
 		evt.preventDefault();
-		window.open("?page=pf-menu&reveal=unread", "_self")
+		window.open("?page=pf-all-content&reveal=unread", "_self")
 	});
 	jQuery('.pf_container.pf-all-content').on('click', '#showDrafted', function (evt) {
 		evt.preventDefault();
-		window.open("?page=pf-menu&reveal=drafted", "_self")
+		window.open("?page=pf-all-content&reveal=drafted", "_self")
 	});
 	jQuery('.pf_container').on('click', '#showMyStarred', function (evt) {
 		evt.preventDefault();
-		window.open("?page=pf-menu&by=starred", "_self")
+		window.open("?page=pf-all-content&by=starred", "_self")
 	});
 	jQuery('.pf_container').on('click', '#showNormal', function (evt) {
 		evt.preventDefault();
-		window.open("?page=pf-menu", "_self")
+		window.open("?page=pf-all-content", "_self")
 	});
 	jQuery('.pf_container').on('click', '#showNormalNominations', function (evt) {
 		evt.preventDefault();
