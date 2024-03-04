@@ -1353,34 +1353,6 @@ function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 }
 
 /**
- * Prevent items waiting to be queued from appearing in any query results.
- *
- * This is primarily meant to hide from the Trash screen, where the deletion
- * of a queued item could result in various weirdnesses.
- *
- * @since 3.6
- *
- * @param WP_Query $query Query object.
- */
-function pf_exclude_queued_items_from_queries( $query ) {
-	$queued = get_option( 'pf_delete_queue' );
-	if ( ! $queued || ! is_array( $queued ) ) {
-		return $query;
-	}
-
-	$type = $query->get( 'post_type' );
-	if ( ( empty( $type ) ) || ( pressforward_draft_post_type() !== $type ) ) {
-		if ( 300 <= count( $queued ) ) {
-			$queued_chunk = array_chunk( $queued, 100 );
-			$queued       = $queued_chunk[0];
-		}
-		$post__not_in = $query->get( 'post__not_in' );
-		$post__not_in = array_merge( $post__not_in, $queued );
-		$query->set( 'post__not_in', $post__not_in );
-	}
-}
-
-/**
  * Filters post results instead of manipulating the query.
  *
  * @param array    $posts Post array.
