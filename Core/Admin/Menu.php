@@ -61,6 +61,10 @@ class Menu implements HasActions, HasFilters {
 				'hook'   => 'admin_init',
 				'method' => 'pf_options_admin_page_save',
 			),
+			[
+				'hook'   => 'admin_init',
+				'method' => 'register_welcome_meta_boxes',
+			],
 		);
 	}
 
@@ -155,8 +159,58 @@ class Menu implements HasActions, HasFilters {
 	 * @return void
 	 */
 	public function display_welcome_page() {
-		echo 'Test content';
+		pressforward( 'admin.templates' )->the_view_for( 'welcome' );
 	}
+
+	/**
+	 * Registers meta boxes for the welcome page.
+	 *
+	 * @since 5.7.0
+	 *
+	 * @return void
+	 */
+	public function register_welcome_meta_boxes() {
+		add_meta_box(
+			'pf-welcome-getting-started',
+			__( 'Getting Started', 'pressforward' ),
+			[ $this, 'display_getting_started_meta_box' ],
+			'toplevel_page_pf-menu',
+			'normal',
+			'high'
+		);
+
+		add_meta_box(
+			'pf-welcome-curation',
+			__( 'Content Awaiting Review', 'pressforward' ),
+			[ $this, 'display_curation_meta_box' ],
+			'toplevel_page_pf-menu',
+			'normal',
+			'high'
+		);
+	}
+
+	/**
+	 * Display function for the Getting Started meta box.
+	 *
+	 * @since 5.7.0
+	 *
+	 * @return void
+	 */
+	public function display_getting_started_meta_box() {
+		echo 'Getting started';
+	}
+
+	/**
+	 * Display function for the Curation meta box.
+	 *
+	 * @since 5.7.0
+	 *
+	 * @return void
+	 */
+	public function display_curation_meta_box() {
+		echo 'Curation';
+	}
+
 
 	/**
 	 * Save routine for the PF options page.

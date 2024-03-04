@@ -65,3 +65,14 @@
 	font-weight: 700;
 }
 
+.pf-welcome h1.title {
+	background-image: url(../images/icon.png);
+	background-position: top 10px left 0;
+	background-repeat: no-repeat;
+	background-size: 64px 64px;
+	font-size: 36px;
+	height: 64px;
+	line-height: 64px;
+	padding-left: 80px;
+}
+
