@@ -135,7 +135,7 @@ class Tools implements HasActions, HasFilters {
 
 		$permitted_tabs['stats'] = array(
 			'title' => __( 'Statistics', 'pressforward' ),
-			'cap'   => $this->templates->users->pf_get_defining_capability_by_role( 'contributor' ),
+			'cap'   => get_option( 'pf_menu_stats_access', $this->templates->users->pf_get_defining_capability_by_role( 'editor' ) ),
 		);
 
 		return $permitted_tabs;

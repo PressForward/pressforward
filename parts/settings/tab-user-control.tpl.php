@@ -74,6 +74,11 @@ $admin_rights = array(
 		'title'   => __( 'Feeder Menu', 'pressforward' ),
 		'details' => __( 'Feeder Menu sets the user role required to access the Add Feeds and Subscribed Feeds pages.', 'pressforward' ),
 	),
+	'pf_menu_stats_access'         => array(
+		'default' => 'editor',
+		'title'   => __( 'Stats Panel', 'pressforward' ),
+		'details' => __( 'The user role required to access the Stats panel under PressForward > Tools.', 'pressforward' ),
+	),
 );
 
 $admin_rights = apply_filters( 'pf_setup_admin_rights', $admin_rights );

@@ -473,6 +473,10 @@ class Menu implements HasActions, HasFilters {
 					'default' => 'editor',
 					'title'   => __( 'Add Feeds', 'pressforward' ),
 				),
+				'pf_menu_stats_access'          => array(
+					'default' => 'editor',
+					'title'   => __( 'Access Stats', 'pressforward' ),
+				),
 				'pf_menu_add_nomination_access' => array(
 					'default' => 'contributor',
 					'title'   => __( 'Add Nomination Menu', 'pressforward' ),
