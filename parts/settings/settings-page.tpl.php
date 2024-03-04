@@ -7,6 +7,11 @@
 
 $public_key  = bin2hex( pressforward( 'controller.jwt' )->get_a_user_public_key() );
 $private_key = ( pressforward( 'controller.jwt' )->get_a_user_private_key() );
+
+$current_page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+
+$form_action = 'pf-tools' === $current_page ? pressforward( 'admin.tools' )->get_admin_url() : pressforward( 'admin.settings' )->pf_get_admin_url();
+
 ?>
 <div class="wrap">
 	<h1><?php echo esc_html( $page_title ); ?></h1>
@@ -28,7 +33,7 @@ $private_key = ( pressforward( 'controller.jwt' )->get_a_user_private_key() );
 			<?php
 			if ( empty( $form_head ) ) {
 				?>
-			<form action="<?php pressforward( 'admin.settings' )->pf_admin_url(); ?>" method="post">
+			<form action="<?php echo esc_attr( $form_action ); ?>" method="post">
 
 				<?php
 					wp_nonce_field( 'pf_settings' );
