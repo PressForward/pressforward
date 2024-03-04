@@ -165,6 +165,7 @@ class PF_Debugger extends PF_Module {
 		$ntp_args = array(
 			'posts_per_page' => -1,
 			'meta_key'       => 'item_link',
+			'fields'         => 'ids',
 		);
 
 		$nominated_to_posts = get_posts( $ntp_args );
