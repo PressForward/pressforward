@@ -110,6 +110,14 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 			)
 		);
 
+		$assets->register_style(
+			[
+				'handle' => 'pf-welcome',
+				'src'    => 'build/welcome',
+				'deps'   => [],
+			]
+		);
+
 		// Scripts.
 		$assets->register_script(
 			array(

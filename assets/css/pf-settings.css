@@ -65,6 +65,24 @@
 	font-weight: 700;
 }
 
+.pf-welcome {
+	max-width: 1400px;
+}
+
+.pf-welcome-header {
+	align-items: center;
+	display: flex;
+	justify-content: space-between;
+	max-width: 1000px;
+	gap: 50px;
+}
+
+.pf-welcome-header .pf-version {
+	font-size: 1.2em;
+	font-style: italic;
+	text-align: right;
+}
+
 .pf-welcome h1.title {
 	background-image: url(../images/icon.png);
 	background-position: top 10px left 0;
@@ -76,3 +94,7 @@
 	padding-left: 80px;
 }
 
+.pf-welcome-intro {
+	font-size: 1.2em;
+	max-width: 1000px;
+}

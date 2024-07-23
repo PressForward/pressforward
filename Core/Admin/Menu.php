@@ -180,9 +180,18 @@ class Menu implements HasActions, HasFilters {
 		);
 
 		add_meta_box(
-			'pf-welcome-curation',
-			__( 'Content Awaiting Review', 'pressforward' ),
-			[ $this, 'display_curation_meta_box' ],
+			'pf-welcome-nominated',
+			__( 'Nominations', 'pressforward' ),
+			[ $this, 'display_nominations_meta_box' ],
+			'toplevel_page_pf-menu',
+			'normal',
+			'high'
+		);
+
+		add_meta_box(
+			'pf-welcome-feeds',
+			__( 'Feeds', 'pressforward' ),
+			[ $this, 'display_feeds_meta_box' ],
 			'toplevel_page_pf-menu',
 			'normal',
 			'high'
@@ -197,20 +206,33 @@ class Menu implements HasActions, HasFilters {
 	 * @return void
 	 */
 	public function display_getting_started_meta_box() {
-		echo 'Getting started';
+		wp_enqueue_style( 'pf-welcome' );
+		require_once PF_ROOT . '/parts/welcome/getting-started.php';
 	}
 
 	/**
-	 * Display function for the Curation meta box.
+	 * Display function for the Nominations meta box.
 	 *
 	 * @since 5.7.0
 	 *
 	 * @return void
 	 */
-	public function display_curation_meta_box() {
-		echo 'Curation';
+	public function display_nominations_meta_box() {
+		wp_enqueue_style( 'pf-welcome' );
+		require_once PF_ROOT . '/parts/welcome/nominations.php';
 	}
 
+	/**
+	 * Display function for the Feeds meta box.
+	 *
+	 * @since 5.7.0
+	 *
+	 * @return void
+	 */
+	public function display_feeds_meta_box() {
+		wp_enqueue_style( 'pf-welcome' );
+		require_once PF_ROOT . '/parts/welcome/feeds.php';
+	}
 
 	/**
 	 * Save routine for the PF options page.
