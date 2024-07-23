@@ -43,7 +43,7 @@ class HTMLChecker {
 		preg_match_all( '#</([a-z]+)>#iU', $html, $result );
 
 		$closedtags = $result[1];
-		if ( is_array( $openedtags ) ){
+		if ( ! empty( $openedtags ) && is_array( $openedtags ) ) {
 			$len_opened = count( $openedtags );
 		} else {
 			$len_opened = 0;
