@@ -1,0 +1,17 @@
+@import './block.scss';
+
+.wp-block-pressforward-item-credits {
+	.pf-credits-prefix {
+		flex: 0 0 150px;
+	}
+
+	&.is-style-stacked {
+		.pf-credits-prefix {
+			flex: 1;
+		}
+	}
+
+	a {
+		pointer-events: none;
+	}
+}
