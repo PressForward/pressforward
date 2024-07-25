@@ -10,14 +10,12 @@ import metadata from './block.json';
 import './editor-style.scss';
 
 const Edit = ( { attributes, setAttributes } ) => {
-	const { prefix } = attributes;
+	const { backgroundColor, prefix } = attributes;
 
 	const { nominators } = useSelect( ( select ) => {
 		const editedPost = select( 'core/editor' ).getCurrentPost()
 
 		const savedNominators = editedPost.nominators ? editedPost.nominators : {}
-
-//		const editorSettings = select( 'core/block-editor' ).getSettings()
 
 		// Loop through the savedNominators object and fetch the user objects.
 		const nominatorUsers = []
@@ -25,7 +23,6 @@ const Edit = ( { attributes, setAttributes } ) => {
 			const nominatorUser = select( 'core' ).getEntityRecord( 'root', 'user', savedNominators[ index ].user_id )
 			nominatorUsers.push( nominatorUser )
 		}
-
 
 		return {
 			nominators: nominatorUsers,
@@ -54,8 +51,14 @@ const Edit = ( { attributes, setAttributes } ) => {
 		return nominatorNames.join( ', ' )
 	}
 
+	const blockProps = useBlockProps({
+		style: {
+			backgroundColor
+		},
+	});
+
 	return (
-		<div { ...useBlockProps() }>
+		<div { ...blockProps }>
 			<RichText
 				className="pf-nominators-prefix"
 				tagName="p"
