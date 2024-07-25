@@ -8,6 +8,7 @@
  */
 
 $total_unpromoted_items = pressforward( 'utility.forward_tools' )->get_nominated_count( true );
+$total_since_last_visit = pressforward( 'utility.forward_tools' )->get_nominated_count( true, pressforward( 'admin.menu' )->get_welcome_panel_last_visit_time() );
 
 $last_24_hours = pressforward( 'utility.forward_tools' )->get_nominated_count( false, time() - DAY_IN_SECONDS );
 $last_7_days   = pressforward( 'utility.forward_tools' )->get_nominated_count( false, time() - ( 7 * DAY_IN_SECONDS ) );
@@ -85,5 +86,15 @@ $single_pf_svg = '<svg width="100" height="100" viewBox="0 0 100 100" xmlns="htt
 				?>
 			</li>
 		</ul>
+
+		<p>
+			<?php
+			printf(
+				// translators: %s: number of items.
+				esc_html( _n( 'Since your last visit to this Welcome panel, %s new item has been nominated', 'Since your last visit to this Welcome panel, %s new items have been nominated.', $total_since_last_visit, 'pressforward' ) ),
+				'<span class="pf-welcome-block-number">' . esc_html( number_format_i18n( $total_since_last_visit ) ) . '</span>'
+			);
+			?>
+		</p>
 	</div>
 </div>

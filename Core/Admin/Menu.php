@@ -160,6 +160,13 @@ class Menu implements HasActions, HasFilters {
 	 */
 	public function display_welcome_page() {
 		pressforward( 'admin.templates' )->the_view_for( 'welcome' );
+
+		add_action(
+			'shutdown',
+			function () {
+				$this->update_welcome_panel_last_visit_time();
+			}
+		);
 	}
 
 	/**
@@ -534,5 +541,33 @@ class Menu implements HasActions, HasFilters {
 		$args['public'] = true;
 
 		return $args;
+	}
+
+	/**
+	 * Gets the timestame for the user's last visit to the Welcome panel.
+	 *
+	 * @return int
+	 */
+	public function get_welcome_panel_last_visit_time() {
+		$user_id         = get_current_user_id();
+		$last_visit_time = get_user_option( 'pf_welcome_panel_last_visit_time', $user_id );
+
+		return $last_visit_time;
+	}
+
+	/**
+	 * Updates the timestamp for the user's last visit to the Welcome panel.
+	 *
+	 * @return void
+	 */
+	public function update_welcome_panel_last_visit_time() {
+		// Don't more than once every 5 minutes.
+		$last_visit_time = $this->get_welcome_panel_last_visit_time();
+		if ( time() - $last_visit_time < ( 5 * MINUTE_IN_SECONDS ) ) {
+			return;
+		}
+
+		$user_id = get_current_user_id();
+		update_user_option( $user_id, 'pf_welcome_panel_last_visit_time', time() );
 	}
 }
