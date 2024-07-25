@@ -8,6 +8,7 @@ import { PanelRow, SelectControl, TextControl } from '@wordpress/components'
 
 // Load blocks.
 import './bookmarklet-code';
+import './item-credits';
 import './item-nominators';
 
 // Other miscellaneous Block Editor-related modifications.
