@@ -543,6 +543,8 @@ class PFTemplater {
 			$item_tag_classes_string .= ' ';
 		}
 
+		$modal_hash = $this->get_modal_hash( $item['item_id'] );
+
 		$read_class = '';
 		if ( 'nomination' === $format ) {
 			$feed_item_id    = $metadata['item_id'];
@@ -582,7 +584,7 @@ class PFTemplater {
 		if ( 'nomination' === $format ) {
 			echo '<article class="feed-item entry nom-container ' . esc_attr( $archived_status_string ) . ' ' . esc_attr( get_pf_nom_class_tags( array( $metadata['submitters'], $metadata['nom_id'], $metadata['item_author'], $metadata['item_tags'], $metadata['item_id'] ) ) ) . ' ' . esc_attr( $read_class ) . '" id="' . esc_attr( $metadata['nom_id'] ) . '" style="' . esc_attr( $dependent_style ) . '" tabindex="' . esc_attr( (string) $c ) . '" pf-post-id="' . esc_attr( $metadata['nom_id'] ) . '" pf-item-post-id="' . esc_attr( $id_for_comments ) . '" pf-feed-item-id="' . esc_attr( $metadata['item_id'] ) . '" pf-schema="read" pf-schema-class="article-read">';
 			?>
-			<a style="display:none;" name="modal-<?php echo esc_attr( $metadata['item_id'] ); ?>"></a>
+			<a style="display:none;" name="<?php echo esc_attr( $modal_hash ); ?>"></a>
 			<?php
 		} else {
 			$id_for_comments = $item['post_id'];
@@ -595,7 +597,7 @@ class PFTemplater {
 
 			echo '<article class="feed-item entry ' . esc_attr( pf_slugger( get_the_source_title( $id_for_comments ), true, false, true ) ) . ' ' . esc_attr( $item_tag_classes_string ) . ' ' . esc_attr( $read_class ) . '" id="' . esc_attr( $item['item_id'] ) . '" tabindex="' . esc_attr( (string) $c ) . '" pf-post-id="' . esc_attr( $item['post_id'] ) . '" pf-feed-item-id="' . esc_attr( $item['item_id'] ) . '" pf-item-post-id="' . esc_attr( $id_for_comments ) . '" style="' . esc_attr( $dependent_style ) . '" >';
 			?>
-			<a style="display:none;" name="modal-<?php echo esc_attr( $item['item_id'] ); ?>"></a>
+			<a style="display:none;" name="<?php echo esc_attr( $modal_hash ); ?>"></a>
 			<?php
 		}
 
@@ -638,7 +640,7 @@ class PFTemplater {
 
 			<header>
 				<?php
-				echo '<h1 class="item_title"><a href="#modal-' . esc_attr( $item['item_id'] ) . '" class="item-expander schema-actor" role="button" data-bs-target="#modal-' . esc_attr( $item['item_id'] ) . '" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . esc_html( self::display_a( $item['item_title'], 'title' ) ) . '</a></h1>';
+				echo '<h1 class="item_title"><a href="#' . esc_attr( $modal_hash ) . '" class="item-expander schema-actor" role="button" data-bs-target="#' . esc_attr( $modal_hash ) . '" data-toggle="modal" data-backdrop="false" pf-schema="read" pf-schema-targets="schema-read">' . esc_html( self::display_a( $item['item_title'], 'title' ) ) . '</a></h1>';
 				echo '<p class="source_title">' . esc_html( self::display_a( get_the_source_title( $id_for_comments ), 'source' ) ) . '</p>';
 				if ( 'nomination' === $format ) {
 					?>
@@ -784,7 +786,7 @@ class PFTemplater {
 			} else {
 				?>
 			<!-- Begin Modal -->
-			<div id="modal-<?php echo esc_attr( $item['item_id'] ); ?>" class="modal hide fade pfmodal" tabindex="-1" role="dialog" aria-labelledby="modal-<?php echo esc_attr( $item['item_id'] ); ?>-label" aria-hidden="true" pf-item-id="<?php echo esc_attr( $item['item_id'] ); ?>" pf-post-id="<?php echo esc_attr( $item['post_id'] ); ?>" pf-readability-status="<?php echo esc_attr( $item['readable_status'] ); ?>">
+			<div id="<?php echo esc_attr( $modal_hash ); ?>" class="modal hide fade pfmodal" tabindex="-1" role="dialog" aria-labelledby="<?php echo esc_attr( $modal_hash ); ?>-label" aria-hidden="true" pf-item-id="<?php echo esc_attr( $item['item_id'] ); ?>" pf-post-id="<?php echo esc_attr( $item['post_id'] ); ?>" pf-readability-status="<?php echo esc_attr( $item['readable_status'] ); ?>">
 				<div class="modal-dialog">
 					<div class="modal-header">
 						<div class="modal-header-left">
@@ -793,7 +795,7 @@ class PFTemplater {
 								<div class="mobile-goNext float-right"></div>
 							</div>
 
-							<h3 id="modal-<?php echo esc_html( $item['item_id'] ); ?>-label" class="modal_item_title"><?php echo esc_html( $item['item_title'] ); ?></h3>
+							<h3 id="<?php echo esc_html( $modal_hash ); ?>-label" class="modal_item_title"><?php echo esc_html( $item['item_title'] ); ?></h3>
 							<?php
 								echo '<em>' . esc_html__( 'Source', 'pressforward' ) . ': ' . esc_html( get_the_source_title( $id_for_comments ) ) . '</em> | ';
 								echo esc_html__( 'Author', 'pressforward' ) . ': ' . esc_html( get_the_item_author( $id_for_comments ) );
@@ -833,7 +835,7 @@ class PFTemplater {
 					<div class="modal-footer">
 						<div class="footer-top">
 							<div class="original-link">
-								<a target="_blank" href="<?php echo esc_attr( $item['item_link'] ); ?>"><?php esc_html_e( 'Read Original', 'pressforward' ); ?></a> | <a class="modal-readability-reset" target="#readable" href="<?php echo esc_attr( $item['item_link'] ); ?>" pf-item-id="<?php echo esc_attr( $item['item_id'] ); ?>" pf-post-id="<?php echo esc_attr( $item['post_id'] ); ?>" pf-modal-id="#modal-<?php echo esc_attr( $item['item_id'] ); ?>"><?php esc_html_e( 'Reset Readability', 'pressforward' ); ?></a>
+								<a target="_blank" href="<?php echo esc_attr( $item['item_link'] ); ?>"><?php esc_html_e( 'Read Original', 'pressforward' ); ?></a> | <a class="modal-readability-reset" target="#readable" href="<?php echo esc_attr( $item['item_link'] ); ?>" pf-item-id="<?php echo esc_attr( $item['item_id'] ); ?>" pf-post-id="<?php echo esc_attr( $item['post_id'] ); ?>" pf-modal-id="#<?php echo esc_attr( $modal_hash ); ?>"><?php esc_html_e( 'Reset Readability', 'pressforward' ); ?></a>
 							</div>
 
 							<div class="footer-actions">
@@ -1091,5 +1093,31 @@ class PFTemplater {
 	public function show_embed( $id_for_comments ) {
 		$item_link = pressforward( 'controller.metas' )->get_post_pf_meta( $id_for_comments, 'item_link' );
 		return pressforward( 'controller.readability' )->get_embed( $item_link );
+	}
+
+	/**
+	 * Gets the modal URL for nomination or feed item.
+	 *
+	 * @param string $pf_item_id PF item ID.
+	 * @return string
+	 */
+	public function get_modal_url( $pf_item_id ) {
+		$base = add_query_arg(
+			'page',
+			'pf-review',
+			admin_url( 'admin.php' )
+		);
+
+		return $base . '#' . $this->get_modal_hash( $pf_item_id );
+	}
+
+	/**
+	 * Gets the hash value for a nomination or feed item modal URL.
+	 *
+	 * @param string $pf_item_id PF item ID.
+	 * @return string
+	 */
+	public function get_modal_hash( $pf_item_id ) {
+		return 'modal-' . $pf_item_id;
 	}
 }
