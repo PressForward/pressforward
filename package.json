@@ -18,7 +18,7 @@
 		"gulp-ext-replace": "^0.3.0",
 		"gulp-sourcemaps": "^3.0.0",
 		"gulp-uglify": "^3.0.2",
-		"node-gyp": "^7.1.2",
+		"node-gyp": "^10.2.0",
 		"sass": "^1.25.0",
 		"style-loader": "^3.3.3"
 	},
