@@ -490,7 +490,22 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							$archived_status_string = '';
 						}
 
-						$item = pf_feed_object( get_the_title(), pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'source_title', true ), $date_posted, $item_authorship, get_the_content(), $nom_permalink, get_the_post_thumbnail( $nom_id /**, 'nom_thumb'*/ ), $rss_item_id, pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_wp_date', true ), $nom_tags, $date_nomed, $source_repeat, (string) $nom_id, '1' );
+						$item = pf_feed_object(
+							get_the_title(),
+							pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'source_title', true ),
+							$date_posted,
+							$item_authorship,
+							get_the_content(),
+							$nom_permalink,
+							get_the_post_thumbnail( $nom_id /**, 'nom_thumb'*/ ),
+							$rss_item_id,
+							pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_wp_date', true ),
+							$nom_tags,
+							$date_nomed,
+							$source_repeat,
+							(string) $nom_id,
+							'1'
+						);
 
 						pressforward( 'admin.templates' )->form_of_an_item( $item, $c, 'nomination', $metadata );
 						++$count;
