@@ -65,3 +65,7 @@
 	font-weight: 700;
 }
 
+.checkbox-description {
+	color: #646970;
+	font-style: italic;
+}

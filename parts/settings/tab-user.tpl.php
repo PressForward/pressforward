@@ -108,6 +108,8 @@ $current_user_id = get_current_user_id();
 
 					<input id="pf-user-nomination-success-email-toggle" type="checkbox" name="pf-user-nomination-success-email-toggle" value="1" <?php checked( pressforward()->fetch( 'controller.users' )->get_user_setting( get_current_user_id(), 'nomination-success-email-toggle' ) ); ?> /> <label for="pf-user-nomination-success-email-toggle"><?php esc_html_e( "I've successfully nominated an item", 'pressforward' ); ?></label><br />
 					<input id="pf-user-nomination-promoted-email-toggle" type="checkbox" name="pf-user-nomination-promoted-email-toggle" value="1" <?php checked( pressforward()->fetch( 'controller.users' )->get_user_setting( get_current_user_id(), 'nomination-promoted-email-toggle' ) ); ?> /> <label for="pf-user-nomination-promoted-email-toggle"><?php esc_html_e( "An item that I've nominated is promoted", 'pressforward' ); ?></label><br />
+					<input id="pf-user-item-comment-email-toggle" type="checkbox" name="pf-user-item-comment-email-toggle" value="1" <?php checked( pressforward()->fetch( 'controller.users' )->get_user_setting( get_current_user_id(), 'item-comment-email-toggle' ) ); ?> /> <label for="pf-user-item-comment-email-toggle"><?php esc_html_e( "A comment is posted on an item I've interacted with", 'pressforward' ); ?></label> <span class="checkbox-description"><?php esc_html_e( '(Includes items I\'ve nominated, commented on, or promoted)', 'pressforward' ); ?></span><br />
+					<br />
 				</fieldset>
 			</td>
 		</tr>

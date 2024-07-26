@@ -255,6 +255,14 @@ class PFtoWPUsers implements \PressForward\Interfaces\SystemUsers {
 				}
 
 				return 'on' === $saved;
+
+			case 'item-comment-email-toggle':
+				$saved = get_user_option( 'pf_item_comment_email_toggle', $user_id );
+				if ( false === $saved ) {
+					$saved = get_option( 'pf_user_item_comment_email_default', 'off' );
+				}
+
+				return 'on' === $saved;
 		}
 	}
 

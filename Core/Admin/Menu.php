@@ -431,6 +431,12 @@ class Menu implements HasActions, HasFilters {
 				update_user_option( $user_ID, 'pf_nomination_promoted_email_toggle', 'off' );
 			}
 
+			if ( ! empty( $_POST['pf-user-item-comment-email-toggle'] ) ) {
+				update_user_option( $user_ID, 'pf_item_comment_email_toggle', 'on' );
+			} else {
+				update_user_option( $user_ID, 'pf_item_comment_email_toggle', 'off' );
+			}
+
 			if ( ! empty( $_POST['pf-user-nomination-duplicate-email-toggle'] ) ) {
 				update_user_option( $user_ID, 'pf_nomination_duplicate_email_toggle', 'on' );
 			} else {
@@ -571,9 +577,11 @@ class Menu implements HasActions, HasFilters {
 
 			$notification_options = [
 				// PHPCS false positive.
-				// phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
-				'pf-user-nomination-success-email-default'  => 'pf_user_nomination_success_email_default',
+				// phpcs:disable WordPress.Arrays.MultipleStatementAlignment
 				'pf-user-nomination-promoted-email-default' => 'pf_user_nomination_promoted_email_default',
+				'pf-user-nomination-success-email-default'  => 'pf_user_nomination_success_email_default',
+				'pf-user-item-comment-email-default'        => 'pf_user_item_comment_email_default',
+				// phpcs:enable WordPress.Arrays.MultipleStatementAlignment
 			];
 
 			foreach ( $notification_options as $nopt_post_key => $nopt_option_name ) {

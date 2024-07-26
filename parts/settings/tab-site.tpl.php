@@ -128,6 +128,7 @@
 				<?php
 				$nomination_success_default  = get_option( 'pf_user_nomination_success_email_default', 'off' );
 				$nomination_promoted_default = get_option( 'pf_user_nomination_promoted_email_default', 'on' );
+				$item_comment_default        = get_option( 'pf_user_item_comment_email_default', 'off' );
 				?>
 
 				<fieldset role="group" aria-labelledby="email-notifications-legend">
@@ -158,6 +159,16 @@
 							<?php esc_html_e( 'An item that the user has nominated is promoted', 'pressforward' ); ?>
 						</label>
 					</p>
+
+					<p>
+						<label for="pf-user-item-comment-email-default">
+							<select id="pf-user-item-comment-email-default" name="pf-user-item-comment-email-default">
+								<option value="on" <?php selected( 'on' === $item_comment_default ); ?>><?php esc_html_e( 'Enabled', 'pressforward' ); ?></option>
+								<option value="off" <?php selected( 'on' !== $item_comment_default ); ?>><?php esc_html_e( 'Disabled', 'pressforward' ); ?></option>
+							</select>
+
+							<?php esc_html_e( 'A comment is posted on an item the user has interacted with', 'pressforward' ); ?>
+						</label>
 				</fieldset>
 			</td>
 		</tr>
