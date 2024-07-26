@@ -7,11 +7,11 @@
 		"test": "tests"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.14.3",
-		"@babel/eslint-parser": "^7.22.15",
-		"@babel/preset-env": "^7.14.4",
+		"@babel/core": "^7.24.9",
+		"@babel/eslint-parser": "^7.24.8",
+		"@babel/preset-env": "^7.24.8",
 		"@selfisekai/gulp-sass": "^4.2.0",
-		"@wordpress/scripts": "^25.4.0",
+		"@wordpress/scripts": "^28.4.0",
 		"gulp": "^4.0.2",
 		"gulp-babel": "^8.0.0",
 		"gulp-clean-css": "^4.3.0",
