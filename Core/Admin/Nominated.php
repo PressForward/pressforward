@@ -719,6 +719,11 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 		);
 
 		if ( $publication_name ) {
+			// Empty format means no source statement.
+			if ( empty( $formats['with_publication'] ) ) {
+				return '';
+			}
+
 			if ( $publication_url ) {
 				$publication_link = sprintf( '<a href="%s" target="_blank">%s</a>', esc_url( $publication_url ), esc_html( $publication_name ) );
 			} else {
@@ -737,6 +742,11 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 				$formats['with_publication']
 			);
 		} else {
+			// Empty format means no source statement.
+			if ( empty( $formats['without_publication'] ) ) {
+				return '';
+			}
+
 			$statement = str_replace(
 				'{{item}}',
 				$item_link,
