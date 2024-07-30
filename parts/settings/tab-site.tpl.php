@@ -64,7 +64,9 @@
 
 		<tr>
 			<th scope="row">
-				<?php esc_html_e( 'Source statement', 'pressforward' ); ?>
+				<label for="pf_source_statement_position">
+					<?php esc_html_e( 'Source statement position', 'pressforward' ); ?>
+				</label>
 			</th>
 
 			<td>
@@ -72,18 +74,50 @@
 				$pf_source_statement_position = get_option( 'pf_source_statement_position', 'bottom' );
 				?>
 
-				<label for="pf_source_statement_position">
-					<select id="pf_source_statement_position" name="pf_source_statement_position">
-						<option value="top" <?php selected( $pf_source_statement_position, 'top' ); ?>><?php esc_html_e( 'Top', 'pressforward' ); ?></option>
-						<option value="bottom" <?php selected( $pf_source_statement_position, 'bottom' ); ?>><?php esc_html_e( 'Bottom', 'pressforward' ); ?></option>
-					</select>
-
-					<?php esc_html_e( 'Source statement position', 'pressforward' ); ?>
-				</label>
+				<select id="pf_source_statement_position" name="pf_source_statement_position">
+					<option value="top" <?php selected( $pf_source_statement_position, 'top' ); ?>><?php esc_html_e( 'Top', 'pressforward' ); ?></option>
+					<option value="bottom" <?php selected( $pf_source_statement_position, 'bottom' ); ?>><?php esc_html_e( 'Bottom', 'pressforward' ); ?></option>
+				</select>
 
 				<p>
 					<?php esc_html_e( 'Controls where the link to the source will be positioned on published content.', 'pressforward' ); ?>
 				</p>
+			</td>
+		</tr>
+
+		<tr class="pf-source-statement-format-fields">
+			<th scope="row">
+				<?php esc_html_e( 'Source statement format', 'pressforward' ); ?>
+			</th>
+
+			<td>
+				<?php
+				$source_formats = pressforward_source_statement_formats();
+				?>
+
+				<p>
+					<label for="pf_source_format_with_publication">
+						<input type="text" name="pf_source_format_with_publication" id="pf_source_format_with_publication" value="<?php echo esc_attr( $source_formats['with_publication'] ); ?>" />
+					</label>
+
+					<?php esc_html_e( 'Format with publication', 'pressforward' ); ?>
+				</p>
+
+				<p>
+					<label for="pf_source_format_without_publication">
+						<input type="text" name="pf_source_format_without_publication" id="pf_source_format_without_publication" value="<?php echo esc_attr( $source_formats['without_publication'] ); ?>" />
+					</label>
+
+					<?php esc_html_e( 'Format without publication', 'pressforward' ); ?>
+				</p>
+
+				<p><?php esc_html_e( 'Defines the format of the source statement added to PressForward items.', 'pressforward' ); ?></p>
+
+				<p><?php echo wp_kses_post( __( 'Use the <code>{{item}}</code> and <code>{{publisher}}</code> placeholders.', 'pressforward' ) ); ?></p>
+
+				<p><?php esc_html_e( '"Format without publication" will be used when no publication name can be detected automatically.', 'pressforward' ); ?></p>
+
+				<p><?php esc_html_e( 'Leave both fields empty to disable the source statement.', 'pressforward' ); ?></p>
 			</td>
 		</tr>
 	</tbody>

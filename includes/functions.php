@@ -252,6 +252,26 @@ function pressforward_nomination_post_type() {
 }
 
 /**
+ * Gets the formats used to build source statements.
+ *
+ * @since 5.7.0
+ *
+ * @return string[]
+ */
+function pressforward_source_statement_formats() {
+	$defaults = [
+		// translators: Do not translate items in curly brackets.
+		'with_publication'    => __( 'Source: {{item}} via {{publication}}', 'pressforward' ),
+		// translators: Do not translate items in curly brackets.
+		'without_publication' => __( 'Source: {{item}}', 'pressforward' ),
+	];
+
+	$saved = get_option( 'pf_source_statement_formats', [] );
+
+	return array_merge( $defaults, $saved );
+}
+
+/**
  * Get the feed item post type name.
  *
  * @since 1.7

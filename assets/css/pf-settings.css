@@ -69,3 +69,7 @@
 	color: #646970;
 	font-style: italic;
 }
+
+.pf-source-statement-format-fields input[type="text"] {
+	width: 300px;
+}

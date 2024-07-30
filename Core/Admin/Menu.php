@@ -562,6 +562,15 @@ class Menu implements HasActions, HasFilters {
 				update_option( 'pf_source_statement_position', 'no' );
 			}
 
+			foreach ( [ 'pf_source_format_with_publication', 'pf_source_format_without_publication' ] as $format_var ) {
+				if ( isset( $_POST[ $format_var ] ) ) {
+					$format_value_submitted = sanitize_text_field( wp_unslash( $_POST[ $format_var ] ) );
+					update_option( $format_var, $format_value_submitted );
+				} else {
+					update_option( $format_var, '' );
+				}
+			}
+
 			$pf_draft_post_type = ( ! empty( $_POST[ PF_SLUG . '_draft_post_type' ] ) )
 				? sanitize_text_field( wp_unslash( $_POST[ PF_SLUG . '_draft_post_type' ] ) )
 				: 'post';

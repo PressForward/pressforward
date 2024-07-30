@@ -685,13 +685,81 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	 * Builds the source statement for an item.
 	 *
 	 * @since 5.4.0 Introduced the $args parameter.
+	 * @since 5.7.0 Introduced the pressforward_source_statement_formats() method and
+	 *              associated Settings UI. For backward compatibility, we use the legacy
+	 *              method of building the markup if the 'pf_source_statement' filter
+	 *              is in use.
 	 *
 	 * @param int   $nom_id ID of the item.
-	 * @param array $args   Optional. An array of arguments used to build the markup.
-	 *                      Will override the corresponding options in the $_args array below.
+	 * @param array $args   Deprecated.
 	 * @return string
 	 */
 	public function get_the_source_statement( $nom_id, $args = array() ) {
+		if ( ! empty( $args ) ) {
+			_deprecated_argument( __METHOD__, '5.7.0', 'The $args parameter is deprecated. Use the pressforward_source_statement_formats() method and associated Settings UI instead.' );
+		}
+
+		if ( has_filter( 'pf_source_statement' ) ) {
+			return $this->get_the_source_statement_legacy( $nom_id, $args );
+		}
+
+		$formats = pressforward_source_statement_formats();
+
+		$item_title = get_the_title( $nom_id );
+		$item_url   = $this->metas->get_post_pf_meta( $nom_id, 'item_link', true );
+
+		$publication_name = $this->metas->get_post_pf_meta( $nom_id, 'source_publication_name', true );
+		$publication_url  = $this->metas->get_post_pf_meta( $nom_id, 'source_publication_url', true );
+
+		$item_link = sprintf(
+			'<a pf-nom-item-id="%s" href="%s" target="_blank">%s</a>',
+			esc_attr( (string) $nom_id ),
+			esc_url( $item_url ),
+			esc_html( $item_title )
+		);
+
+		if ( $publication_name ) {
+			if ( $publication_url ) {
+				$publication_link = sprintf( '<a href="%s" target="_blank">%s</a>', esc_url( $publication_url ), esc_html( $publication_name ) );
+			} else {
+				$publication_link = esc_html( $publication_name );
+			}
+
+			$statement = str_replace(
+				[
+					'{{item}}',
+					'{{publication}}',
+				],
+				[
+					$item_link,
+					$publication_link,
+				],
+				$formats['with_publication']
+			);
+		} else {
+			$statement = str_replace(
+				'{{item}}',
+				$item_link,
+				$formats['without_publication']
+			);
+		}
+
+		return sprintf(
+			'<!-- wp:paragraph --><p class="pf-source-statement">%s</p><!-- /wp:paragraph -->',
+			$statement
+		);
+	}
+
+	/**
+	 * Builds the source statement for an item using the legacy method.
+	 *
+	 * @since 5.7.0
+	 *
+	 * @param int   $nom_id ID of the item.
+	 * @param array $args   An array of arguments used to build the markup.
+	 * @return string
+	 */
+	protected function get_the_source_statement_legacy( $nom_id, $args ) {
 		$title_of_item = get_the_title( $nom_id );
 		$link_to_item  = $this->metas->get_post_pf_meta( $nom_id, 'item_link', true );
 		$default_args  = array(
