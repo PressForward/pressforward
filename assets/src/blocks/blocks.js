@@ -106,7 +106,9 @@ const NominationSettingsControl = ( {} ) => {
 		itemLink,
 		nominationCount,
 		postStatus,
-		postType
+		postType,
+		sourcePublisherName,
+		sourcePublisherUrl
 	} = useSelect( ( select ) => {
 		const editedPostMeta = select( 'core/editor' ).getEditedPostAttribute( 'meta' )
 		const editedPost = select( 'core/editor' ).getCurrentPost()
@@ -118,6 +120,9 @@ const NominationSettingsControl = ( {} ) => {
 		const savedItemLink = editedPostMeta?.item_link || ''
 		const savedNominationCount = Object.keys( savedNominators ).length
 
+		const savedSourcePublisherName = editedPostMeta?.source_publisher_name || ''
+		const savedSourcePublisherUrl = editedPostMeta?.source_publisher_url || ''
+
 		return {
 			dateNominated: savedDateNominated,
 			itemAuthor: savedItemAuthor,
@@ -125,6 +130,8 @@ const NominationSettingsControl = ( {} ) => {
 			nominationCount: savedNominationCount,
 			postStatus: select( 'core/editor' ).getEditedPostAttribute( 'status' ),
 			postType: select( 'core/editor' ).getEditedPostAttribute( 'type' ),
+			sourcePublisherName: savedSourcePublisherName,
+			sourcePublisherUrl: savedSourcePublisherUrl
 		}
 	} )
 
@@ -170,6 +177,24 @@ const NominationSettingsControl = ( {} ) => {
 
 							<div className="panel-entry-content">
 								<a href={ itemLink } target="_blank" rel="noopener noreferrer">{ itemLink }</a>
+							</div>
+						</div>
+					</PanelRow>
+				) }
+
+				{ sourcePublisherName && (
+					<PanelRow>
+						<div className="panel-entry">
+							<div className="panel-entry-label">
+								<span className="components-base-control__label-text">{ __( 'Source Publisher', 'pressforward' ) }</span>
+							</div>
+
+							<div className="panel-entry-content">
+								{ sourcePublisherUrl ? (
+									<a href={ sourcePublisherUrl } target="_blank" rel="noopener noreferrer">{ sourcePublisherName }</a>
+								) : (
+									sourcePublisherName
+								) }
 							</div>
 						</div>
 					</PanelRow>

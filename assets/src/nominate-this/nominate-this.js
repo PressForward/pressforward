@@ -185,6 +185,19 @@ import { __, sprintf } from '@wordpress/i18n'
 						const itemLinkValue = DOMPurify.sanitize( url, { ALLOWED_TAGS: [] } )
 						wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'item_link': itemLinkValue } } )
 
+						const sourcePublisher = getLDFromDomObject( domObject )?.publisher
+						if ( sourcePublisher ) {
+							const sourcePublisherName = sourcePublisher?.name
+							if ( sourcePublisherName ) {
+								wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'source_publisher_name': sourcePublisherName } } )
+							}
+
+							const sourcePublisherUrl = sourcePublisher?.url
+							if ( sourcePublisherUrl ) {
+								wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'source_publisher_url': sourcePublisherUrl } } )
+							}
+						}
+
 						const itemDate = getTimestampFromLD( domObject )
 						if ( itemDate ) {
 							wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'item_date': itemDate } } )
