@@ -666,7 +666,7 @@ class PF_Comments extends PF_Module {
 
 			default:
 				$intro_text = __( 'A new comment has been posted on an item you have interacted with.', 'pressforward' );
-				$view_url   = get_edit_post_link( $post_id );
+				$view_url   = get_edit_post_link( (int) $post_id );
 				break;
 		}
 
