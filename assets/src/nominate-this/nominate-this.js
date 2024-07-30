@@ -189,12 +189,12 @@ import { __, sprintf } from '@wordpress/i18n'
 						if ( sourcePublisher ) {
 							const sourcePublisherName = sourcePublisher?.name
 							if ( sourcePublisherName ) {
-								wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'source_publisher_name': sourcePublisherName } } )
+								wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'source_publication_name': sourcePublisherName } } )
 							}
 
 							const sourcePublisherUrl = sourcePublisher?.url
 							if ( sourcePublisherUrl ) {
-								wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'source_publisher_url': sourcePublisherUrl } } )
+								wp.data.dispatch( 'core/editor' ).editPost( { meta: { 'source_publication_url': sourcePublisherUrl } } )
 							}
 						}
 

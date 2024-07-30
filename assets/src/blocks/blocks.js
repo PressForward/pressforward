@@ -107,8 +107,8 @@ const NominationSettingsControl = ( {} ) => {
 		nominationCount,
 		postStatus,
 		postType,
-		sourcePublisherName,
-		sourcePublisherUrl
+		sourcePublicationName,
+		sourcePublicationUrl
 	} = useSelect( ( select ) => {
 		const editedPostMeta = select( 'core/editor' ).getEditedPostAttribute( 'meta' )
 		const editedPost = select( 'core/editor' ).getCurrentPost()
@@ -120,8 +120,8 @@ const NominationSettingsControl = ( {} ) => {
 		const savedItemLink = editedPostMeta?.item_link || ''
 		const savedNominationCount = Object.keys( savedNominators ).length
 
-		const savedSourcePublisherName = editedPostMeta?.source_publisher_name || ''
-		const savedSourcePublisherUrl = editedPostMeta?.source_publisher_url || ''
+		const savedSourcePublicationName = editedPostMeta?.source_publication_name || ''
+		const savedSourcePublicationUrl = editedPostMeta?.source_publication_url || ''
 
 		return {
 			dateNominated: savedDateNominated,
@@ -130,8 +130,8 @@ const NominationSettingsControl = ( {} ) => {
 			nominationCount: savedNominationCount,
 			postStatus: select( 'core/editor' ).getEditedPostAttribute( 'status' ),
 			postType: select( 'core/editor' ).getEditedPostAttribute( 'type' ),
-			sourcePublisherName: savedSourcePublisherName,
-			sourcePublisherUrl: savedSourcePublisherUrl
+			sourcePublicationName: savedSourcePublicationName,
+			sourcePublicationUrl: savedSourcePublicationUrl
 		}
 	} )
 
@@ -182,18 +182,18 @@ const NominationSettingsControl = ( {} ) => {
 					</PanelRow>
 				) }
 
-				{ sourcePublisherName && (
+				{ sourcePublicationName && (
 					<PanelRow>
 						<div className="panel-entry">
 							<div className="panel-entry-label">
-								<span className="components-base-control__label-text">{ __( 'Source Publisher', 'pressforward' ) }</span>
+								<span className="components-base-control__label-text">{ __( 'Source Publication', 'pressforward' ) }</span>
 							</div>
 
 							<div className="panel-entry-content">
-								{ sourcePublisherUrl ? (
-									<a href={ sourcePublisherUrl } target="_blank" rel="noopener noreferrer">{ sourcePublisherName }</a>
+								{ sourcePublicationUrl ? (
+									<a href={ sourcePublicationUrl } target="_blank" rel="noopener noreferrer">{ sourcePublicationName }</a>
 								) : (
-									sourcePublisherName
+									sourcePublicationName
 								) }
 							</div>
 						</div>
