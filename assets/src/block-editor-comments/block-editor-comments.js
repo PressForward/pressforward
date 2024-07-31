@@ -47,6 +47,11 @@ const BlockEditorCommentsControl = ( {} ) => {
 
 	const isNominateThis = nominationPostType === postType && 'publish' !== postStatus
 
+	// For now, show only on Nominate This.
+	if ( ! isNominateThis ) {
+		return null
+	}
+
 	return (
 		<PluginDocumentSettingPanel
 			icon="controls-forward"
