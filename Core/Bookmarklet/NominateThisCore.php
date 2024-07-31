@@ -582,6 +582,8 @@ class NominateThisCore implements HasActions, HasFilters {
 		$existing_nomination_post_id = pressforward( 'utility.forward_tools' )->is_a_pf_type( $item_id, pressforward( 'schema.nominations' )->post_type );
 
 		if ( ! $existing_nomination_post_id ) {
+			$canonical_nomination_post_id = $nomination_post_id;
+
 			// Avoid duplicating a feed item.
 			$item_check = pressforward( 'utility.forward_tools' )->is_a_pf_type( $item_id, pressforward( 'schema.feed_item' )->post_type );
 			if ( $item_check ) {
@@ -610,11 +612,30 @@ class NominateThisCore implements HasActions, HasFilters {
 			// Add the new nomination event to the existing nomination item.
 			pressforward( 'utility.forward_tools' )->add_user_to_nominator_array( $nomination_post_id, $post->post_author );
 		} else {
+			$canonical_nomination_post_id = $existing_nomination_post_id;
+
 			// Add the new nomination event to the existing nomination item.
 			pressforward( 'utility.forward_tools' )->add_user_to_nominator_array( $existing_nomination_post_id, $post->post_author );
 
 			// Remove the newly created nomination.
 			wp_delete_post( $nomination_post_id, true );
+		}
+
+		// If comment text was submitted, create a post comment.
+		$nomthis_comment = get_post_meta( $nomination_post_id, 'pf_nomthis_comment', true );
+		if ( $nomthis_comment ) {
+			$commentdata = array(
+				'comment_post_ID'      => $canonical_nomination_post_id,
+				'comment_author'       => get_the_author_meta( 'display_name', (int) $post->post_author ),
+				'comment_author_email' => get_the_author_meta( 'user_email', (int) $post->post_author ),
+				'comment_author_url'   => get_the_author_meta( 'user_url', (int) $post->post_author ),
+				'comment_content'      => $nomthis_comment,
+				'comment_type'         => 'pressforward-comment',
+				'comment_approved'     => 'pressforward-comment',
+				'user_id'              => (int) $post->post_author,
+			);
+
+			$comment_id = wp_insert_comment( $commentdata );
 		}
 	}
 

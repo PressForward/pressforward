@@ -912,6 +912,16 @@ class Metas implements HasFilters, HasActions {
 				'level'      => array( 'feed', 'item', 'nomination', 'post' ),
 				'serialize'  => false,
 			),
+			'pf_nomthis_comment'      => [
+				'name'       => 'pf_nomthis_comment',
+				'title'      => __( 'Nomination Comment', 'pressforward' ),
+				'definition' => __( 'Comment text left during the nomination process, which will be posted as the first editorial comment after nomination.', 'pressforward' ),
+				'function'   => __( 'Stores the comment left by the user during the nomination process.', 'pressforward' ),
+				'type'       => [ 'adm' ],
+				'use'        => [ 'api' ],
+				'level'      => [ 'nomination' ],
+				'serialize'  => false,
+			],
 		);
 
 		$metas = apply_filters( 'pf_meta_terms', $metas );
