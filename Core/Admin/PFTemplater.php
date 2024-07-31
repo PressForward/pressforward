@@ -324,7 +324,7 @@ class PFTemplater {
 	 *
 	 * @param string $page Page name.
 	 */
-	public function nav_bar( $page = 'pf-menu' ) {
+	public function nav_bar( $page = 'pf-all-content' ) {
 		?>
 		<div class="display">
 			<div class="pf-btns btn-toolbar">

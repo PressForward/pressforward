@@ -94,10 +94,10 @@ visibility:hidden;
 	margin: 8px auto;
 }
 
-.toplevel_page_pf-menu #wpcontent, .pressforward_page_pf-review #wpcontent, .pressforward_page_pf-feeder #wpcontent {
-
+.pressforward_page_pf-all-content #wpcontent,
+.pressforward_page_pf-review #wpcontent,
+.pressforward_page_pf-feeder #wpcontent {
 	background-color: #ecf3f9;
-
 }
 
 .search-in-bar{

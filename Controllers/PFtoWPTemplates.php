@@ -179,6 +179,7 @@ class PFtoWPTemplates implements Template_Interface, HasActions {
 	public function valid_pf_page_ids( $page_id = false ) {
 		$valid = array(
 			'toplevel_page_pf-menu',
+			'pressforward_page_pf-all-content',
 			'pressforward_page_pf-review',
 			'pressforward_page_pf-feeder',
 			'edit-pf_feed',

@@ -246,6 +246,41 @@ class Forward_Tools {
 	}
 
 	/**
+	 * Gets the count of nominated items.
+	 *
+	 * @param bool $exclude_promoted Whether to exclude promoted items. Default false.
+	 * @param int  $since            Unix timestamp.
+	 * @return int
+	 */
+	public function get_nominated_count( $exclude_promoted = false, $since = null ) {
+		$args = array(
+			'post_type'      => pressforward( 'schema.nominations' )->post_type,
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+		);
+
+		if ( $exclude_promoted ) {
+			$args['meta_query'] = array(
+				array(
+					'key'     => 'pf_final_step_id',
+					'compare' => 'NOT EXISTS',
+				),
+			);
+		}
+
+		if ( $since ) {
+			$args['date_query'] = array(
+				array(
+					'after' => gmdate( 'Y-m-d H:i:s', $since ),
+				),
+			);
+		}
+
+		$query = new \WP_Query( $args );
+		return $query->found_posts;
+	}
+
+	/**
 	 * Adjusts user data on nomination event.
 	 *
 	 * @param int $id      ID of the nomination.
