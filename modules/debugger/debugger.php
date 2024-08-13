@@ -165,6 +165,7 @@ class PF_Debugger extends PF_Module {
 		$ntp_args = array(
 			'posts_per_page' => -1,
 			'meta_key'       => 'item_link',
+			'fields'         => 'ids',
 		);
 
 		$nominated_to_posts = get_posts( $ntp_args );
@@ -222,17 +223,60 @@ class PF_Debugger extends PF_Module {
 			</p>
 			<br /><br />
 			<?php
+
 			if ( file_exists( $log_path ) ) {
-				echo '<pre>';
-				// phpcs:ignore
-				echo file_get_contents( $log_path );
-				echo '</pre>';
-			} else {
-				esc_html_e( 'The log does not exist.', 'pressforward' );
+
+				// If the log file is larger than 5MB, we will only grab the last 100,000 characters.
+				$log_file_size = filesize( $log_path );
+				$log_file_note = '';
+				if ( $log_file_size > 5000000 ) {
+					$log_content   = $this->fetch_last_characters( $log_path, 100000 );
+					$log_file_note = __( 'Log file is larger than 5MB. Only the last 100,000 characters are shown. Use SSH or SFTP to access the entire log file.', 'pressforward' );
+				} else {
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+					$log_content = file_get_contents( $log_path );
+				}
+
+				if ( $log_file_note ) {
+					echo '<p class="description">' . esc_html( $log_file_note ) . '</p>';
+				}
+
+				// Place inside a scrollable window.
+				echo '<div style="overflow: auto; height: 500px; border: 2px solid #aaa; padding: 8px;">';
+				echo '<pre>' . esc_html( $log_content ) . '</pre>';
+				echo '</div>';
 			}
 			?>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Fetches the last characters of a file.
+	 *
+	 * @param string $filepath File path.
+	 * @param int    $number_of_characters Number of characters.
+	 * @return string
+	 */
+	protected function fetch_last_characters( $filepath, $number_of_characters = 10000 ) {
+		// phpcs:disable WordPress.WP.AlternativeFunctions
+
+		// Open the file.
+		$f = fopen( $filepath, 'rb' );
+		if ( false === $f ) {
+			return '';
+		}
+
+		// Move to the desired position in the file, based on $number_of_characters.
+		fseek( $f, -$number_of_characters, SEEK_END );
+
+		// Read the desired number of characters from the current position till the end of the file.
+		$output = fread( $f, $number_of_characters );
+
+		// Close file and return.
+		fclose( $f );
+		return $output;
+		// phpcs:enable WordPress.WP.AlternativeFunctions
 	}
 
 	/**

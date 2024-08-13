@@ -7,9 +7,14 @@
 
 $public_key  = bin2hex( pressforward( 'controller.jwt' )->get_a_user_public_key() );
 $private_key = ( pressforward( 'controller.jwt' )->get_a_user_private_key() );
+
+$current_page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+
+$form_action = 'pf-tools' === $current_page ? pressforward( 'admin.tools' )->get_admin_url() : pressforward( 'admin.settings' )->pf_get_admin_url();
+
 ?>
 <div class="wrap">
-	<h2><?php echo esc_html( $page_title ); ?></h2>
+	<h1><?php echo esc_html( $page_title ); ?></h1>
 	<input type="hidden" id="pfnt__pfSiteData" name="pfnt__pfSiteData">
 	<script>
 	<?php
@@ -23,12 +28,12 @@ $private_key = ( pressforward( 'controller.jwt' )->get_a_user_private_key() );
 		echo 'document.getElementById("pfnt__pfSiteData").value = JSON.stringify(window.pfSiteData)';
 	?>
 	</script>
-	<div class="metabox-holder pf_container" id="pf-settings-box">
+	<div class="metabox-holder" id="pf-settings-box">
 		<div class="meta-box-sortables ui-sortable">
 			<?php
 			if ( empty( $form_head ) ) {
 				?>
-			<form action="<?php pressforward( 'admin.settings' )->pf_admin_url(); ?>" method="post">
+			<form action="<?php echo esc_attr( $form_action ); ?>" method="post">
 
 				<?php
 					wp_nonce_field( 'pf_settings' );
@@ -38,7 +43,7 @@ $private_key = ( pressforward( 'controller.jwt' )->get_a_user_private_key() );
 				settings_fields( $settings_field );
 			}
 			?>
-				<h2 class="nav-tab-wrapper" id="pf-settings-tabs">
+				<nav class="nav-tab-wrapper" id="pf-settings-tabs">
 				<?php
 				$the_tabs = pressforward( 'admin.templates' )->permitted_tabs( $page_slug );
 
@@ -57,7 +62,7 @@ $private_key = ( pressforward( 'controller.jwt' )->get_a_user_private_key() );
 					}
 				}
 				?>
-				</h2>
+				</nav>
 
 				<div class="tabwrappper">
 					<?php

@@ -61,6 +61,10 @@ class Menu implements HasActions, HasFilters {
 				'hook'   => 'admin_init',
 				'method' => 'pf_options_admin_page_save',
 			),
+			[
+				'hook'   => 'admin_init',
+				'method' => 'register_welcome_meta_boxes',
+			],
 		);
 	}
 
@@ -105,9 +109,19 @@ class Menu implements HasActions, HasFilters {
 			PF_TITLE, // menu title.
 			get_option( 'pf_menu_group_access', $this->user_interface->pf_get_defining_capability_by_role( 'contributor' ) ), // cap required.
 			PF_MENU_SLUG, // slug.
-			array( $this, 'display_reader_builder' ), // callback.
+			[ $this, 'display_welcome_page' ], // callback.
 			PF_URL . 'pressforward-16.png', // icon URL.
 			24 // Position (just above comments - 25).
+		);
+
+		// Welcome page is the first item in the menu.
+		add_submenu_page(
+			PF_MENU_SLUG,
+			__( 'Welcome', 'pressforward' ),
+			__( 'Welcome', 'pressforward' ),
+			get_option( 'pf_menu_group_access', $this->user_interface->pf_get_defining_capability_by_role( 'contributor' ) ),
+			PF_MENU_SLUG,
+			[ $this, 'display_welcome_page' ]
 		);
 
 		remove_submenu_page( PF_MENU_SLUG, 'edit.php?post_type=pf_feed' );
@@ -140,240 +154,91 @@ class Menu implements HasActions, HasFilters {
 	}
 
 	/**
-	 * Display function for the main All Content panel
+	 * Display function for the Welcome panel.
+	 *
+	 * @return void
 	 */
-	public function display_reader_builder() {
-		wp_enqueue_script( 'pf' );
-		wp_enqueue_script( 'pf-views' );
+	public function display_welcome_page() {
+		pressforward( 'admin.templates' )->the_view_for( 'welcome' );
 
-		wp_enqueue_style( 'pf-style' );
-
-		if ( 'false' !== get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() ) ) {
-			wp_enqueue_script( 'pf-scroll' );
-		}
-
-		$user_obj = wp_get_current_user();
-		$user_id  = $user_obj->ID;
-
-		$per_page = 20;
-
-		// Calling the feedlist within the pf class.
-		if ( isset( $_GET['pc'] ) ) {
-			$current_page = intval( $_GET['pc'] );
-		} else {
-			$current_page = 1;
-		}
-
-		$current_start = ( ( $current_page - 1 ) * $per_page ) + 1;
-
-		$extra_class = '';
-		if ( isset( $_GET['reveal'] ) && ( 'no_hidden' === $_GET['reveal'] ) ) {
-			$extra_class .= ' archived_visible';
-		}
-		$view_state = ' grid';
-		$view_check = get_user_meta( $user_id, 'pf_user_read_state', true );
-		if ( 'golist' === $view_check ) {
-			$view_state = ' list';
-		}
-		$extra_class = $extra_class . $view_state;
-
-		$pf_url = defined( 'PF_URL' ) ? PF_URL : '';
-
-		?>
-		<div class="pf-loader"></div>
-		<div class="pf_container pf-all-content full<?php echo esc_attr( $extra_class ); ?>">
-			<header id="app-banner">
-				<div class="title-span title">
-					<?php
-
-						pressforward( 'controller.template_factory' )->the_page_headline();
-
-					?>
-					<button class="btn btn-small" id="fullscreenfeed"> <?php esc_html_e( 'Full Screen', 'pressforward' ); ?> </button>
-				</div><!-- End title -->
-				<?php pressforward( 'admin.templates' )->search_template(); ?>
-
-			</header><!-- End Header -->
-			<?php
-				pressforward( 'admin.templates' )->nav_bar();
-			?>
-			<div role="main">
-				<?php pressforward( 'admin.templates' )->the_side_menu(); ?>
-				<?php pressforward( 'schema.folders' )->folderbox(); ?>
-				<div id="entries">
-					<?php echo '<img class="loading-top" src="' . esc_attr( $pf_url ) . 'assets/images/ajax-loader.gif" alt="' . esc_attr__( 'Loading...', 'pressforward' ) . '" style="display: none" />'; ?>
-
-					<div id="errors">
-					<?php
-					if ( 0 >= self::count_the_posts( 'pf_feed' ) ) {
-						echo '<p>' . esc_html__( 'You need to add feeds, there are none in the system.', 'pressforward' ) . '</p>';
-					}
-					?>
-					</div>
-
-				<?php
-				pressforward( 'admin.templates' )->nominate_this( 'as_feed_item' );
-
-				// Use this foreach loop to go through the overall feedlist, select each individual feed item (post) and do stuff with it.
-				$index = $current_start;
-
-				if ( isset( $_GET['by'] ) ) {
-					$limit = sanitize_text_field( wp_unslash( $_GET['by'] ) );
-				} else {
-					$limit = false;
-				}
-
-				$archive_feed_args = array(
-					'start'          => $current_start,
-					// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-					'posts_per_page' => false,
-					'relationship'   => $limit,
-				);
-
-				if ( isset( $_POST['search-terms'] ) ) {
-					$archive_feed_args['search_terms']     = sanitize_text_field( wp_unslash( $_POST['search-terms'] ) );
-					$archive_feed_args['exclude_archived'] = true;
-				}
-
-				if ( ! isset( $_GET['reveal'] ) ) {
-					$archive_feed_args['exclude_archived'] = true;
-				}
-
-				if ( isset( $_GET['reveal'] ) ) {
-					$archive_feed_args['reveal'] = sanitize_text_field( wp_unslash( $_GET['reveal'] ) );
-				}
-
-				$archive_feed_args['count_total'] = true;
-
-				if ( isset( $_GET['sort-by'] ) ) {
-					$sort_by    = sanitize_text_field( wp_unslash( $_GET['sort-by'] ) );
-					$sort_order = isset( $_GET['sort-order'] ) && 'asc' === strtolower( sanitize_text_field( wp_unslash( $_GET['sort-order'] ) ) ) ? 'ASC' : 'DESC';
-
-					switch ( $sort_by ) {
-						case 'item-date':
-						default:
-							$archive_feed_args['orderby'] = [
-								'meta_value' => $sort_order,
-							];
-							break;
-
-						case 'feed-in-date':
-							$archive_feed_args['orderby'] = [
-								'date' => $sort_order,
-							];
-							break;
-					}
-				}
-
-				$items_to_display = pressforward( 'controller.loops' )->archive_feed_to_display( $archive_feed_args );
-				foreach ( $items_to_display['items'] as $item ) {
-					pressforward( 'admin.templates' )->form_of_an_item( $item, $index );
-
-					++$index;
-
-					/*
-					 * Check out the built comment form from EditFlow at https://github.com/danielbachhuber/Edit-Flow/blob/master/modules/editorial-comments/editorial-comments.php.
-					 * So, we're going to need some AJAXery method of sending RSS data to a nominations post.
-					 * Best example I can think of? The editorial comments from EditFlow, see edit-flow/modules/editorial-comments/editorial-comments.php, esp ln 284.
-					 * But lets start simple and get the hang of AJAX in WP first. http://wp.tutsplus.com/articles/getting-started-with-ajax-wordpress-pagination/.
-					 * Eventually should use http://wpseek.com/wp_insert_post/ I think....
-					 * So what to submit? I could store all the post data in hidden fields and submit it within seperate form docs, but that's a lot of data.
-					 * Perhaps just an md5 hash of the ID of the post? Then use the retrieval function to find the matching post and submit it properly? Something to experement with...
-					 */
-				} // End foreach.
-
-				?>
-
-			<div class="clear"></div>
-			<?php
-			echo '</div><!-- End entries -->';
-			?>
-			<div class="clear"></div>
-			<?php
-			echo '</div><!-- End main -->';
-
-			$previous_page = $current_page - 1;
-			$next_page     = $current_page + 1;
-
-			if ( ! empty( $_GET['by'] ) ) {
-				$limit_q = '&by=' . $limit;
-			} else {
-				$limit_q = '';
+		add_action(
+			'shutdown',
+			function () {
+				$this->update_welcome_panel_last_visit_time();
 			}
-
-			$page_prev = '?page=pf-menu' . $limit_q . '&pc=' . $previous_page;
-			$page_next = '?page=pf-menu' . $limit_q . '&pc=' . $next_page;
-			if ( isset( $_GET['folder'] ) ) {
-				$page_q     = sanitize_text_field( wp_unslash( $_GET['folder'] ) );
-				$page_qed   = '&folder=' . $page_q;
-				$page_next .= $page_qed;
-				$page_prev .= $page_qed;
-
-			}
-
-			if ( isset( $_GET['feed'] ) ) {
-				$page_q     = sanitize_text_field( wp_unslash( $_GET['feed'] ) );
-				$page_qed   = '&feed=' . $page_q;
-				$page_next .= $page_qed;
-				$page_prev .= $page_qed;
-			}
-
-			if ( $index >= $per_page ) {
-				echo '<div class="pf-navigation">';
-				if ( $previous_page > 0 ) {
-					echo '<span class="feedprev"><a class="prevnav" href="admin.php' . esc_attr( $page_prev ) . '">' . esc_html__( 'Previous Page', 'pressforward' ) . '</a></span> | ';
-				}
-
-				if ( $next_page <= $items_to_display['max_num_pages'] ) {
-					echo '<span class="feednext"><a class="nextnav" href="admin.php' . esc_attr( $page_next ) . '">' . esc_html__( 'Next Page', 'pressforward' ) . '</a></span>';
-				}
-				echo '</div>';
-			}
-
-			?>
-		<div class="clear"></div>
-		<?php
-		echo '</div><!-- End container-fluid -->';
+		);
 	}
 
 	/**
-	 * Generates a post count for a post type and optional date limits.
+	 * Registers meta boxes for the welcome page.
 	 *
-	 * @param string $post_type Post type.
-	 * @param int    $date_less Number of months.
-	 * @return int
+	 * @since 5.7.0
+	 *
+	 * @return void
 	 */
-	public function count_the_posts( $post_type, $date_less = 0 ) {
+	public function register_welcome_meta_boxes() {
+		add_meta_box(
+			'pf-welcome-getting-started',
+			__( 'Getting Started', 'pressforward' ),
+			[ $this, 'display_getting_started_meta_box' ],
+			'toplevel_page_pf-menu',
+			'normal',
+			'high'
+		);
 
-		if ( ! $date_less ) {
-			$query_arg = array(
-				'post_type'      => $post_type,
-				'posts_per_page' => -1,
-			);
-		} else {
-			if ( $date_less < 12 ) {
-				$y = (int) gmdate( 'Y' );
-				$m = (int) gmdate( 'm' );
-				$m = $m + $date_less;
-			} else {
-				$y = (int) gmdate( 'Y' );
-				$y = $y - floor( $date_less / 12 );
-				$m = (int) gmdate( 'm' );
-				$m = $m - ( abs( $date_less ) - ( 12 * floor( $date_less / 12 ) ) );
-			}
-			$query_arg = array(
-				'post_type'      => $post_type,
-				'year'           => $y,
-				'monthnum'       => $m,
-				'posts_per_page' => -1,
-			);
-		}
+		add_meta_box(
+			'pf-welcome-nominated',
+			__( 'Nominations', 'pressforward' ),
+			[ $this, 'display_nominations_meta_box' ],
+			'toplevel_page_pf-menu',
+			'normal',
+			'high'
+		);
 
-		$query      = new \WP_Query( $query_arg );
-		$post_count = $query->post_count;
-		wp_reset_postdata();
+		add_meta_box(
+			'pf-welcome-feeds',
+			__( 'Feeds', 'pressforward' ),
+			[ $this, 'display_feeds_meta_box' ],
+			'toplevel_page_pf-menu',
+			'normal',
+			'high'
+		);
+	}
 
-		return $post_count;
+	/**
+	 * Display function for the Getting Started meta box.
+	 *
+	 * @since 5.7.0
+	 *
+	 * @return void
+	 */
+	public function display_getting_started_meta_box() {
+		wp_enqueue_style( 'pf-welcome' );
+		require_once PF_ROOT . '/parts/welcome/getting-started.php';
+	}
+
+	/**
+	 * Display function for the Nominations meta box.
+	 *
+	 * @since 5.7.0
+	 *
+	 * @return void
+	 */
+	public function display_nominations_meta_box() {
+		wp_enqueue_style( 'pf-welcome' );
+		require_once PF_ROOT . '/parts/welcome/nominations.php';
+	}
+
+	/**
+	 * Display function for the Feeds meta box.
+	 *
+	 * @since 5.7.0
+	 *
+	 * @return void
+	 */
+	public function display_feeds_meta_box() {
+		wp_enqueue_style( 'pf-welcome' );
+		require_once PF_ROOT . '/parts/welcome/feeds.php';
 	}
 
 	/**
@@ -431,6 +296,12 @@ class Menu implements HasActions, HasFilters {
 				update_user_option( $user_ID, 'pf_nomination_promoted_email_toggle', 'off' );
 			}
 
+			if ( ! empty( $_POST['pf-user-item-comment-email-toggle'] ) ) {
+				update_user_option( $user_ID, 'pf_item_comment_email_toggle', 'on' );
+			} else {
+				update_user_option( $user_ID, 'pf_item_comment_email_toggle', 'off' );
+			}
+
 			if ( ! empty( $_POST['pf-user-nomination-duplicate-email-toggle'] ) ) {
 				update_user_option( $user_ID, 'pf_nomination_duplicate_email_toggle', 'on' );
 			} else {
@@ -472,6 +343,10 @@ class Menu implements HasActions, HasFilters {
 				'pf_menu_feeder_access'         => array(
 					'default' => 'editor',
 					'title'   => __( 'Add Feeds', 'pressforward' ),
+				),
+				'pf_menu_stats_access'          => array(
+					'default' => 'editor',
+					'title'   => __( 'Access Stats', 'pressforward' ),
 				),
 				'pf_menu_add_nomination_access' => array(
 					'default' => 'contributor',
@@ -552,6 +427,15 @@ class Menu implements HasActions, HasFilters {
 				update_option( 'pf_source_statement_position', 'no' );
 			}
 
+			foreach ( [ 'pf_source_format_with_publication', 'pf_source_format_without_publication' ] as $format_var ) {
+				if ( isset( $_POST[ $format_var ] ) ) {
+					$format_value_submitted = sanitize_text_field( wp_unslash( $_POST[ $format_var ] ) );
+					update_option( $format_var, $format_value_submitted );
+				} else {
+					update_option( $format_var, '' );
+				}
+			}
+
 			$pf_draft_post_type = ( ! empty( $_POST[ PF_SLUG . '_draft_post_type' ] ) )
 				? sanitize_text_field( wp_unslash( $_POST[ PF_SLUG . '_draft_post_type' ] ) )
 				: 'post';
@@ -567,9 +451,11 @@ class Menu implements HasActions, HasFilters {
 
 			$notification_options = [
 				// PHPCS false positive.
-				// phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
-				'pf-user-nomination-success-email-default'  => 'pf_user_nomination_success_email_default',
+				// phpcs:disable WordPress.Arrays.MultipleStatementAlignment
 				'pf-user-nomination-promoted-email-default' => 'pf_user_nomination_promoted_email_default',
+				'pf-user-nomination-success-email-default'  => 'pf_user_nomination_success_email_default',
+				'pf-user-item-comment-email-default'        => 'pf_user_item_comment_email_default',
+				// phpcs:enable WordPress.Arrays.MultipleStatementAlignment
 			];
 
 			foreach ( $notification_options as $nopt_post_key => $nopt_option_name ) {
@@ -672,5 +558,33 @@ class Menu implements HasActions, HasFilters {
 		$args['public'] = true;
 
 		return $args;
+	}
+
+	/**
+	 * Gets the timestame for the user's last visit to the Welcome panel.
+	 *
+	 * @return int
+	 */
+	public function get_welcome_panel_last_visit_time() {
+		$user_id         = get_current_user_id();
+		$last_visit_time = get_user_option( 'pf_welcome_panel_last_visit_time', $user_id );
+
+		return $last_visit_time;
+	}
+
+	/**
+	 * Updates the timestamp for the user's last visit to the Welcome panel.
+	 *
+	 * @return void
+	 */
+	public function update_welcome_panel_last_visit_time() {
+		// Don't more than once every 5 minutes.
+		$last_visit_time = $this->get_welcome_panel_last_visit_time();
+		if ( time() - $last_visit_time < ( 5 * MINUTE_IN_SECONDS ) ) {
+			return;
+		}
+
+		$user_id = get_current_user_id();
+		update_user_option( $user_id, 'pf_welcome_panel_last_visit_time', time() );
 	}
 }

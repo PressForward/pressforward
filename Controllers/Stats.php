@@ -198,13 +198,7 @@ class Stats {
 	 * @return string
 	 */
 	private function post_status_query_args() {
-		$status = get_option( PF_SLUG . '_draft_post_status', 'draft' );
-		if ( 'draft' !== $status ) {
-			$status_check = $status;
-		} else {
-			$status_check = 'publish';
-		}
-		return $status_check;
+		return 'publish';
 	}
 
 	/**

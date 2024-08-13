@@ -110,6 +110,14 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 			)
 		);
 
+		$assets->register_style(
+			[
+				'handle' => 'pf-welcome',
+				'src'    => 'build/welcome',
+				'deps'   => [],
+			]
+		);
+
 		// Scripts.
 		$assets->register_script(
 			array(
@@ -374,6 +382,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	 */
 	public function enqueue_block_editor_assets() {
 		$scripts = [
+			'pf-block-editor-comments'      => 'block-editor-comments',
 			'pf-blocks'                     => 'blocks',
 			'pf-nominate-this-block-editor' => 'nominate-this-block-editor',
 		];
@@ -412,7 +421,18 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 			'before'
 		);
 
+		wp_add_inline_script(
+			'pf-block-editor-comments',
+			'window.pfBlockEditorComments = ' . wp_json_encode(
+				[
+					'apiBaseUrl'         => get_rest_url(),
+					'nominationPostType' => pressforward_nomination_post_type(),
+				]
+			),
+		);
+
 		$styles = [
+			'pf-block-editor-comments'      => 'block-editor-comments',
 			'pf-blocks'                     => 'blocks',
 			'pf-nominate-this-block-editor' => 'nominate-this-block-editor',
 		];

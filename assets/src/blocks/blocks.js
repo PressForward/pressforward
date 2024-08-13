@@ -8,6 +8,7 @@ import { PanelRow, SelectControl, TextControl } from '@wordpress/components'
 
 // Load blocks.
 import './bookmarklet-code';
+import './item-credits';
 import './item-nominators';
 
 // Other miscellaneous Block Editor-related modifications.
@@ -105,7 +106,9 @@ const NominationSettingsControl = ( {} ) => {
 		itemLink,
 		nominationCount,
 		postStatus,
-		postType
+		postType,
+		sourcePublicationName,
+		sourcePublicationUrl
 	} = useSelect( ( select ) => {
 		const editedPostMeta = select( 'core/editor' ).getEditedPostAttribute( 'meta' )
 		const editedPost = select( 'core/editor' ).getCurrentPost()
@@ -117,6 +120,9 @@ const NominationSettingsControl = ( {} ) => {
 		const savedItemLink = editedPostMeta?.item_link || ''
 		const savedNominationCount = Object.keys( savedNominators ).length
 
+		const savedSourcePublicationName = editedPostMeta?.source_publication_name || ''
+		const savedSourcePublicationUrl = editedPostMeta?.source_publication_url || ''
+
 		return {
 			dateNominated: savedDateNominated,
 			itemAuthor: savedItemAuthor,
@@ -124,6 +130,8 @@ const NominationSettingsControl = ( {} ) => {
 			nominationCount: savedNominationCount,
 			postStatus: select( 'core/editor' ).getEditedPostAttribute( 'status' ),
 			postType: select( 'core/editor' ).getEditedPostAttribute( 'type' ),
+			sourcePublicationName: savedSourcePublicationName,
+			sourcePublicationUrl: savedSourcePublicationUrl
 		}
 	} )
 
@@ -169,6 +177,24 @@ const NominationSettingsControl = ( {} ) => {
 
 							<div className="panel-entry-content">
 								<a href={ itemLink } target="_blank" rel="noopener noreferrer">{ itemLink }</a>
+							</div>
+						</div>
+					</PanelRow>
+				) }
+
+				{ sourcePublicationName && (
+					<PanelRow>
+						<div className="panel-entry">
+							<div className="panel-entry-label">
+								<span className="components-base-control__label-text">{ __( 'Source Publication', 'pressforward' ) }</span>
+							</div>
+
+							<div className="panel-entry-content">
+								{ sourcePublicationUrl ? (
+									<a href={ sourcePublicationUrl } target="_blank" rel="noopener noreferrer">{ sourcePublicationName }</a>
+								) : (
+									sourcePublicationName
+								) }
 							</div>
 						</div>
 					</PanelRow>

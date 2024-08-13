@@ -1,0 +1,93 @@
+.pf-welcome-dashboard-widgets {
+	p {
+		font-size: 1rem;
+	}
+}
+
+.pf-welcome-block-header {
+	display: flex;
+	gap: 20px;
+	justify-content: flex-start;
+	margin: 20px 10px;
+
+	h3 {
+		margin: 0;
+	}
+
+	p {
+		margin-top: .5em;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+
+	}
+}
+
+.pf-welcome-blocks {
+	display: flex;
+	gap: 20px;
+
+	@media screen and ( max-width: 768px ) {
+		flex-direction: column;
+	}
+
+	h3 {
+		font-size: 1em;
+		font-weight: 700;
+		margin-top: 0;
+	}
+}
+
+.pf-welcome-block {
+	background: #f3f3f3;
+	border-radius: 10px;
+	flex: 1;
+	font-size: 1rem;
+	padding: 20px;
+}
+
+.pf-welcome-block-row {
+	display: flex;
+	gap: 20px;
+}
+
+.pf-welcome-block-icon {
+	align-items: center;
+	display: flex;
+	flex: 0 0 50px;
+	padding: 0;
+	svg {
+		height: 50px;
+		width: 50px;
+		fill: #5C5CE6;
+	}
+}
+
+.pf-welcome-block-number {
+	font-weight: 700;
+}
+
+.pf-welcome-block-total-nominations .pf-welcome-block-row {
+	align-items: center;
+
+	.pf-welcome-block-number {
+		display: block;
+		font-size: 4rem;
+	}
+}
+
+.pf-welcome-block-action-links {
+	display: flex;
+	gap: 15px;
+	font-size: 1rem;
+	font-weight: 700;
+	justify-content: flex-start;
+	margin-top: 30px;
+}
+
+.pf-welcome-block-recent-feed-items {
+	.pf-welcome-block-row {
+		align-items: center;
+	}
+}

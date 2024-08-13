@@ -612,6 +612,26 @@ class Metas implements HasFilters, HasActions {
 				'level'      => array( 'item', 'nomination', 'post' ),
 				'serialize'  => true,
 			),
+			'source_publication_name' => [
+				'name'       => 'source_publication_name',
+				'title'      => __( 'Publication Name', 'pressforward' ),
+				'definition' => __( 'Name of the publication', 'pressforward' ),
+				'function'   => __( 'Stores the name of the publication from which the item originated', 'pressforward' ),
+				'type'       => [ 'struc' ],
+				'use'        => [ 'api' ],
+				'level'      => [ 'item', 'nomination', 'post' ],
+				'serialize'  => false,
+			],
+			'source_publication_url'  => [
+				'name'       => 'source_publication_url',
+				'title'      => __( 'Publication URL', 'pressforward' ),
+				'definition' => __( 'URL of the publication', 'pressforward' ),
+				'function'   => __( 'Stores the URL of the publication from which the item originated', 'pressforward' ),
+				'type'       => [ 'struc' ],
+				'use'        => [ 'api' ],
+				'level'      => [ 'item', 'nomination', 'post' ],
+				'serialize'  => false,
+			],
 			'nomination_count'        => array(
 				'name'       => 'nomination_count',
 				'title'      => __( 'Times Nominated', 'pressforward' ),
@@ -892,6 +912,16 @@ class Metas implements HasFilters, HasActions {
 				'level'      => array( 'feed', 'item', 'nomination', 'post' ),
 				'serialize'  => false,
 			),
+			'pf_nomthis_comment'      => [
+				'name'       => 'pf_nomthis_comment',
+				'title'      => __( 'Nomination Comment', 'pressforward' ),
+				'definition' => __( 'Comment text left during the nomination process, which will be posted as the first editorial comment after nomination.', 'pressforward' ),
+				'function'   => __( 'Stores the comment left by the user during the nomination process.', 'pressforward' ),
+				'type'       => [ 'adm' ],
+				'use'        => [ 'api' ],
+				'level'      => [ 'nomination' ],
+				'serialize'  => false,
+			],
 		);
 
 		$metas = apply_filters( 'pf_meta_terms', $metas );

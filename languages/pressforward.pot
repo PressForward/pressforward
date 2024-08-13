@@ -1,22 +1,22 @@
-# Copyright (C) 2024 Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs
+# Copyright (C) 2024 Boone Gorges, Aram Zucker-Scharff, Jeremy Boggs
 # This file is distributed under the GPL2.
 msgid ""
 msgstr ""
-"Project-Id-Version: PressForward 5.6.2\n"
+"Project-Id-Version: PressForward 5.7.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pressforward\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-01-16T16:23:13-06:00\n"
+"POT-Creation-Date: 2024-08-13T11:41:30-05:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: pressforward\n"
 
 #. Plugin Name of the plugin
 #: Core/Blocks/Blocks.php:74
-#: assets/src/blocks/blocks.js:59
+#: assets/src/blocks/blocks.js:60
 #: build/blocks.js:1
 msgid "PressForward"
 msgstr ""
@@ -30,7 +30,7 @@ msgid "The PressForward Plugin is a tool by the Roy Rosenzweig Center for Histor
 msgstr ""
 
 #. Author of the plugin
-msgid "Aram Zucker-Scharff, Boone B Gorges, Jeremy Boggs"
+msgid "Boone Gorges, Aram Zucker-Scharff, Jeremy Boggs"
 msgstr ""
 
 #. Author URI of the plugin
@@ -261,339 +261,377 @@ msgid "Counts number of times the item has been collected from the multiple feed
 msgstr ""
 
 #: Controllers/Metas.php:617
-msgid "Times Nominated"
+msgid "Publication Name"
 msgstr ""
 
 #: Controllers/Metas.php:618
-#: Core/Schema/Nominations.php:73
-#: Core/Schema/Nominations.php:139
-msgid "Nominations"
+msgid "Name of the publication"
 msgstr ""
 
 #: Controllers/Metas.php:619
-msgid "Counts number of times users have nominated an item"
+msgid "Stores the name of the publication from which the item originated"
 msgstr ""
 
 #: Controllers/Metas.php:627
-#: Core/Admin/Nominated.php:649
-msgid "Submitted By"
+msgid "Publication URL"
 msgstr ""
 
 #: Controllers/Metas.php:628
-msgid "The user who submitted the nomination"
+msgid "URL of the publication"
 msgstr ""
 
 #: Controllers/Metas.php:629
-msgid "The first user who submitted the nomination (if it has been nominated). User ID number"
+msgid "Stores the URL of the publication from which the item originated"
 msgstr ""
 
 #: Controllers/Metas.php:637
-msgid "Nominators"
+msgid "Times Nominated"
 msgstr ""
 
 #: Controllers/Metas.php:638
-msgid "Users who nominated this item"
+#: Core/Admin/Menu.php:191
+#: Core/Schema/Nominations.php:73
+#: Core/Schema/Nominations.php:139
+#: parts/welcome/nominations.php:29
+msgid "Nominations"
 msgstr ""
 
 #: Controllers/Metas.php:639
-msgid "Stores and array of all userIDs that nominated the item in an array"
+msgid "Counts number of times users have nominated an item"
 msgstr ""
 
 #: Controllers/Metas.php:647
-msgid "Timestamp of Item Date"
+#: Core/Admin/Nominated.php:664
+msgid "Submitted By"
 msgstr ""
 
 #: Controllers/Metas.php:648
-msgid "Timestamp for the item"
+msgid "The user who submitted the nomination"
 msgstr ""
 
 #: Controllers/Metas.php:649
-msgid "A version of the item_date meta that's ready for sorting. Should be a Unix timestamp"
+msgid "The first user who submitted the nomination (if it has been nominated). User ID number"
 msgstr ""
 
 #: Controllers/Metas.php:657
+msgid "Nominators"
+msgstr ""
+
+#: Controllers/Metas.php:658
+msgid "Users who nominated this item"
+msgstr ""
+
+#: Controllers/Metas.php:659
+msgid "Stores and array of all userIDs that nominated the item in an array"
+msgstr ""
+
+#: Controllers/Metas.php:667
+msgid "Timestamp of Item Date"
+msgstr ""
+
+#: Controllers/Metas.php:668
+msgid "Timestamp for the item"
+msgstr ""
+
+#: Controllers/Metas.php:669
+msgid "A version of the item_date meta that's ready for sorting. Should be a Unix timestamp"
+msgstr ""
+
+#: Controllers/Metas.php:677
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:46
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:52
 #: build/nominate-this-block-editor.js:1
 msgid "Send to Draft"
 msgstr ""
 
-#: Controllers/Metas.php:658
-#: Controllers/Metas.php:659
+#: Controllers/Metas.php:678
+#: Controllers/Metas.php:679
 msgid "Whether a nominated item should be promoted directly to Draft status after nomination"
 msgstr ""
 
-#: Controllers/Metas.php:667
+#: Controllers/Metas.php:687
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:63
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:69
 #: build/nominate-this-block-editor.js:1
 msgid "Subscribe to Feed"
 msgstr ""
 
-#: Controllers/Metas.php:668
-#: Controllers/Metas.php:669
+#: Controllers/Metas.php:688
+#: Controllers/Metas.php:689
 msgid "Whether to subscribe to the feed associated with an item directly after its nomination."
 msgstr ""
 
-#: Controllers/Metas.php:677
+#: Controllers/Metas.php:697
 msgid "Is Readable?"
 msgstr ""
 
-#: Controllers/Metas.php:678
+#: Controllers/Metas.php:698
 msgid "If the content is readable"
 msgstr ""
 
-#: Controllers/Metas.php:679
+#: Controllers/Metas.php:699
 msgid "A check to determine if the content of the item has been made readable"
 msgstr ""
 
-#: Controllers/Metas.php:687
+#: Controllers/Metas.php:707
 msgid "Original Text"
 msgstr ""
 
-#: Controllers/Metas.php:688
+#: Controllers/Metas.php:708
 msgid "The originally retrieved description"
 msgstr ""
 
-#: Controllers/Metas.php:689
+#: Controllers/Metas.php:709
 msgid "The original description, excerpt or content text given by the feed"
 msgstr ""
 
-#: Controllers/Metas.php:697
+#: Controllers/Metas.php:717
 msgid "Original Wordcount"
 msgstr ""
 
-#: Controllers/Metas.php:698
+#: Controllers/Metas.php:718
 msgid "Word count of original item text"
 msgstr ""
 
-#: Controllers/Metas.php:699
+#: Controllers/Metas.php:719
 msgid "Stores the count of the original words retrieved with the feed item"
 msgstr ""
 
-#: Controllers/Metas.php:707
+#: Controllers/Metas.php:727
 msgid "Most Recent Wordcount"
 msgstr ""
 
-#: Controllers/Metas.php:708
+#: Controllers/Metas.php:728
 msgid "Word count of text"
 msgstr ""
 
-#: Controllers/Metas.php:709
+#: Controllers/Metas.php:729
 msgid "Stores the count of the words on the last save managed by PF."
 msgstr ""
 
-#: Controllers/Metas.php:717
+#: Controllers/Metas.php:737
 msgid "Archived"
 msgstr ""
 
-#: Controllers/Metas.php:718
+#: Controllers/Metas.php:738
 msgid "Archive state of the item"
 msgstr ""
 
-#: Controllers/Metas.php:719
+#: Controllers/Metas.php:739
 msgid "Stores if the item has been archived"
 msgstr ""
 
-#: Controllers/Metas.php:727
+#: Controllers/Metas.php:747
 msgid "Thumbnail ID"
 msgstr ""
 
-#: Controllers/Metas.php:728
+#: Controllers/Metas.php:748
 msgid "Thumbnail id"
 msgstr ""
 
-#: Controllers/Metas.php:729
+#: Controllers/Metas.php:749
 msgid "The ID of the featured item"
 msgstr ""
 
-#: Controllers/Metas.php:737
+#: Controllers/Metas.php:757
 msgid "Users Archived"
 msgstr ""
 
-#: Controllers/Metas.php:738
+#: Controllers/Metas.php:758
 msgid "Users who have archived"
 msgstr ""
 
-#: Controllers/Metas.php:739
+#: Controllers/Metas.php:759
 msgid "Stores users who have archived."
 msgstr ""
 
-#: Controllers/Metas.php:747
+#: Controllers/Metas.php:767
 msgid "Feed Errors"
 msgstr ""
 
-#: Controllers/Metas.php:748
+#: Controllers/Metas.php:768
 msgid "Count of feed errors"
 msgstr ""
 
-#: Controllers/Metas.php:749
+#: Controllers/Metas.php:769
 msgid "Stores a count of the number of errors a feed has experianced"
 msgstr ""
 
-#: Controllers/Metas.php:757
+#: Controllers/Metas.php:777
 msgid "Forward to origin"
 msgstr ""
 
-#: Controllers/Metas.php:758
+#: Controllers/Metas.php:778
 msgid "User override for forwarding to origin of link"
 msgstr ""
 
-#: Controllers/Metas.php:759
+#: Controllers/Metas.php:779
 msgid "Stores forwarding override for posts"
 msgstr ""
 
-#: Controllers/Metas.php:767
+#: Controllers/Metas.php:787
 msgid "Last time feed retrieved"
 msgstr ""
 
-#: Controllers/Metas.php:768
+#: Controllers/Metas.php:788
 msgid "Last time feed was retrieved"
 msgstr ""
 
-#: Controllers/Metas.php:769
+#: Controllers/Metas.php:789
 msgid "Stores last timestamp feed was retrieved."
 msgstr ""
 
-#: Controllers/Metas.php:777
+#: Controllers/Metas.php:797
 msgid "Nominations received by feed"
 msgstr ""
 
-#: Controllers/Metas.php:778
+#: Controllers/Metas.php:798
 msgid "Nominations received by items supplied by this feed"
 msgstr ""
 
-#: Controllers/Metas.php:779
+#: Controllers/Metas.php:799
 msgid "Number of nominations for this feed"
 msgstr ""
 
-#: Controllers/Metas.php:787
+#: Controllers/Metas.php:807
 msgid "Default Feed Author"
 msgstr ""
 
-#: Controllers/Metas.php:788
+#: Controllers/Metas.php:808
 msgid "The default author set for items in the feed"
 msgstr ""
 
-#: Controllers/Metas.php:789
+#: Controllers/Metas.php:809
 msgid "Stores the default author that is used when no author is available in the feed."
 msgstr ""
 
-#: Controllers/Metas.php:797
+#: Controllers/Metas.php:817
 #: Core/Admin/SubscribedFeeds.php:533
 msgid "Feed URL"
 msgstr ""
 
-#: Controllers/Metas.php:798
+#: Controllers/Metas.php:818
 msgid "URL for a feed"
 msgstr ""
 
-#: Controllers/Metas.php:799
+#: Controllers/Metas.php:819
 msgid "Stores location online for feed."
 msgstr ""
 
-#: Controllers/Metas.php:807
+#: Controllers/Metas.php:827
 msgid "Last time feed checked"
 msgstr ""
 
-#: Controllers/Metas.php:808
+#: Controllers/Metas.php:828
 msgid "Last time feed was checked"
 msgstr ""
 
-#: Controllers/Metas.php:809
+#: Controllers/Metas.php:829
 msgid "Stores last timestamp feed was checked."
 msgstr ""
 
-#: Controllers/Metas.php:817
+#: Controllers/Metas.php:837
 msgid "Feed alert status"
 msgstr ""
 
-#: Controllers/Metas.php:818
+#: Controllers/Metas.php:838
 msgid "Feed Alert Status"
 msgstr ""
 
-#: Controllers/Metas.php:819
+#: Controllers/Metas.php:839
 msgid "A check to see if an alert is on the feed."
 msgstr ""
 
-#: Controllers/Metas.php:827
+#: Controllers/Metas.php:847
 msgid "Feed type"
 msgstr ""
 
-#: Controllers/Metas.php:828
+#: Controllers/Metas.php:848
 msgid "Type of feed"
 msgstr ""
 
-#: Controllers/Metas.php:829
+#: Controllers/Metas.php:849
 msgid "Field stores the type of feed (like RSS or OPML) the object holds."
 msgstr ""
 
-#: Controllers/Metas.php:837
+#: Controllers/Metas.php:857
 msgid "Site URL"
 msgstr ""
 
-#: Controllers/Metas.php:838
+#: Controllers/Metas.php:858
 msgid "Site URL of a feed."
 msgstr ""
 
-#: Controllers/Metas.php:839
+#: Controllers/Metas.php:859
 msgid "The home URL of a feed."
 msgstr ""
 
-#: Controllers/Metas.php:847
+#: Controllers/Metas.php:867
 msgid "User who added feed"
 msgstr ""
 
-#: Controllers/Metas.php:848
+#: Controllers/Metas.php:868
 msgid "User who added a feed."
 msgstr ""
 
-#: Controllers/Metas.php:849
+#: Controllers/Metas.php:869
 msgid "Track who added a subscribed or under review feed."
 msgstr ""
 
-#: Controllers/Metas.php:857
+#: Controllers/Metas.php:877
 msgid "Handling Module"
 msgstr ""
 
-#: Controllers/Metas.php:858
+#: Controllers/Metas.php:878
 msgid "Module to process a feed."
 msgstr ""
 
-#: Controllers/Metas.php:859
+#: Controllers/Metas.php:879
 msgid "The feed should be processed with this module."
 msgstr ""
 
-#: Controllers/Metas.php:867
+#: Controllers/Metas.php:887
 msgid "Alert Message"
 msgstr ""
 
-#: Controllers/Metas.php:868
+#: Controllers/Metas.php:888
 msgid "Alert Message processing and storage."
 msgstr ""
 
-#: Controllers/Metas.php:869
+#: Controllers/Metas.php:889
 msgid "Stores a feed alert to be processed."
 msgstr ""
 
-#: Controllers/Metas.php:877
+#: Controllers/Metas.php:897
 msgid "Metadata checked?"
 msgstr ""
 
-#: Controllers/Metas.php:878
+#: Controllers/Metas.php:898
 msgid "Has metadata been compleatly added to a feed?"
 msgstr ""
 
-#: Controllers/Metas.php:879
+#: Controllers/Metas.php:899
 msgid "Store a value to indicate the meta-processing of a feed has completed."
 msgstr ""
 
-#: Controllers/Metas.php:887
+#: Controllers/Metas.php:907
 msgid "Source statement string"
 msgstr ""
 
-#: Controllers/Metas.php:888
+#: Controllers/Metas.php:908
 msgid "The string containing the \"Source\" statement appended to an item."
+msgstr ""
+
+#: Controllers/Metas.php:917
+msgid "Nomination Comment"
+msgstr ""
+
+#: Controllers/Metas.php:918
+msgid "Comment text left during the nomination process, which will be posted as the first editorial comment after nomination."
+msgstr ""
+
+#: Controllers/Metas.php:919
+msgid "Stores the comment left by the user during the nomination process."
 msgstr ""
 
 #: Controllers/PFtoWPTemplates.php:141
@@ -670,12 +708,12 @@ msgid "Dismiss all alerts"
 msgstr ""
 
 #: Controllers/PFtoWPTemplates.php:158
-#: Core/Admin/Menu.php:635
+#: Core/Admin/Menu.php:521
 msgid "Are you sure you want to delete all feeds with alerts?"
 msgstr ""
 
 #: Controllers/PFtoWPTemplates.php:159
-#: Core/Admin/Menu.php:645
+#: Core/Admin/Menu.php:531
 msgid "Delete all feeds with alerts"
 msgstr ""
 
@@ -704,73 +742,73 @@ msgstr ""
 msgid "Feed alert boxes not active."
 msgstr ""
 
-#: Controllers/PFtoWPTemplates.php:275
+#: Controllers/PFtoWPTemplates.php:276
 msgid "Showing"
 msgstr ""
 
-#: Controllers/PFtoWPTemplates.php:283
+#: Controllers/PFtoWPTemplates.php:284
 msgid "Search for:"
 msgstr ""
 
 #. translators: Page number
-#: Controllers/PFtoWPTemplates.php:297
+#: Controllers/PFtoWPTemplates.php:298
 msgid "Page %1$d"
 msgstr ""
 
-#: Controllers/PFtoWPTemplates.php:308
+#: Controllers/PFtoWPTemplates.php:309
 msgid "hidden"
 msgstr ""
 
-#: Controllers/PFtoWPTemplates.php:322
+#: Controllers/PFtoWPTemplates.php:323
 msgid "archived"
 msgstr ""
 
-#: Controllers/PFtoWPTemplates.php:326
+#: Controllers/PFtoWPTemplates.php:327
 msgid "starred"
 msgstr ""
 
-#: Controllers/PFtoWPTemplates.php:329
+#: Controllers/PFtoWPTemplates.php:330
 msgid "unread"
 msgstr ""
 
-#: Controllers/PFtoWPTemplates.php:332
+#: Controllers/PFtoWPTemplates.php:333
 msgid "drafted"
 msgstr ""
 
-#: Controllers/PFtoWPTemplates.php:344
+#: Controllers/PFtoWPTemplates.php:345
 msgid "Sorted by item date, ascending"
 msgstr ""
 
-#: Controllers/PFtoWPTemplates.php:344
+#: Controllers/PFtoWPTemplates.php:345
 msgid "Sorted by item date, descending"
 msgstr ""
 
-#: Controllers/PFtoWPTemplates.php:348
+#: Controllers/PFtoWPTemplates.php:349
 msgid "Sorted by time retrieved, ascending"
 msgstr ""
 
-#: Controllers/PFtoWPTemplates.php:348
+#: Controllers/PFtoWPTemplates.php:349
 msgid "Sorted by time retrieved, descending"
 msgstr ""
 
-#: Controllers/PFtoWPTemplates.php:352
+#: Controllers/PFtoWPTemplates.php:353
 msgid "Sorted by time nominated, ascending"
 msgstr ""
 
-#: Controllers/PFtoWPTemplates.php:352
+#: Controllers/PFtoWPTemplates.php:353
 msgid "Sorted by time nominated, descending"
 msgstr ""
 
-#: Controllers/PFtoWPTemplates.php:356
+#: Controllers/PFtoWPTemplates.php:357
 msgid "Sorted by nominations, ascending"
 msgstr ""
 
-#: Controllers/PFtoWPTemplates.php:356
+#: Controllers/PFtoWPTemplates.php:357
 msgid "Sorted by nominations, descending"
 msgstr ""
 
 #. translators: 1. Site name. 2. Settings URL.
-#: Controllers/PFtoWPUsers.php:339
+#: Controllers/PFtoWPUsers.php:347
 msgid ""
 "---\n"
 "\n"
@@ -800,7 +838,7 @@ msgid " This content failed Readability."
 msgstr ""
 
 #: Controllers/PF_Readability.php:116
-#: Core/Admin/Nominated.php:831
+#: Core/Admin/Nominated.php:924
 msgid "Nonce check failed. Please ensure you're supposed to be nominating stories."
 msgstr ""
 
@@ -825,7 +863,7 @@ msgstr ""
 
 #: Core/Admin/AddFeeds.php:82
 #: Core/Admin/AddFeeds.php:83
-#: Core/Admin/Menu.php:474
+#: Core/Admin/Menu.php:345
 msgid "Add Feeds"
 msgstr ""
 
@@ -849,7 +887,34 @@ msgstr ""
 
 #: Core/Admin/AllContent.php:54
 #: Core/Admin/AllContent.php:55
+#: Core/Admin/AllContent.php:107
 msgid "All Content"
+msgstr ""
+
+#: Core/Admin/AllContent.php:108
+#: Core/Admin/Nominated.php:170
+msgid "Full Screen"
+msgstr ""
+
+#: Core/Admin/AllContent.php:120
+#: includes/nomthis/nominate-this-core.php:223
+msgid "Loading..."
+msgstr ""
+
+#: Core/Admin/AllContent.php:125
+msgid "You need to add feeds, there are none in the system."
+msgstr ""
+
+#: Core/Admin/AllContent.php:240
+#: Core/Admin/Nominated.php:564
+#: Core/Admin/Nominated.php:566
+msgid "Previous Page"
+msgstr ""
+
+#: Core/Admin/AllContent.php:244
+#: Core/Admin/Nominated.php:569
+#: Core/Admin/Nominated.php:571
+msgid "Next Page"
 msgstr ""
 
 #: Core/Admin/EditPost.php:84
@@ -861,19 +926,19 @@ msgid "Enter default author for this feed."
 msgstr ""
 
 #: Core/Admin/EditPost.php:135
-#: assets/src/blocks/blocks.js:62
+#: assets/src/blocks/blocks.js:63
 #: build/blocks.js:1
 msgid "Forward to item's original URL?"
 msgstr ""
 
 #: Core/Admin/EditPost.php:137
-#: assets/src/blocks/blocks.js:70
+#: assets/src/blocks/blocks.js:71
 #: build/blocks.js:1
 msgid "Forward"
 msgstr ""
 
 #: Core/Admin/EditPost.php:138
-#: assets/src/blocks/blocks.js:69
+#: assets/src/blocks/blocks.js:70
 #: build/blocks.js:1
 msgid "Don't Forward"
 msgstr ""
@@ -886,162 +951,157 @@ msgstr ""
 msgid "Folders"
 msgstr ""
 
-#: Core/Admin/Menu.php:192
-#: Core/Admin/Nominated.php:170
-msgid "Full Screen"
+#: Core/Admin/Menu.php:120
+#: Core/Admin/Menu.php:121
+msgid "Welcome"
 msgstr ""
 
-#: Core/Admin/Menu.php:204
-#: includes/nomthis/nominate-this-core.php:223
-msgid "Loading..."
+#: Core/Admin/Menu.php:182
+msgid "Getting Started"
 msgstr ""
 
-#: Core/Admin/Menu.php:209
-msgid "You need to add feeds, there are none in the system."
+#: Core/Admin/Menu.php:200
+#: parts/welcome/feeds.php:27
+msgid "Feeds"
 msgstr ""
 
-#: Core/Admin/Menu.php:324
-#: Core/Admin/Nominated.php:549
-#: Core/Admin/Nominated.php:551
-msgid "Previous Page"
-msgstr ""
-
-#: Core/Admin/Menu.php:328
-#: Core/Admin/Nominated.php:554
-#: Core/Admin/Nominated.php:556
-msgid "Next Page"
-msgstr ""
-
-#: Core/Admin/Menu.php:454
-#: parts/settings/tab-user-control.tpl.php:22
+#: Core/Admin/Menu.php:325
+#: parts/settings/tab-user-control.tpl.php:48
 msgid "PressForward Menu Group"
 msgstr ""
 
-#: Core/Admin/Menu.php:458
-#: parts/settings/tab-user-control.tpl.php:27
+#: Core/Admin/Menu.php:329
+#: parts/settings/tab-user-control.tpl.php:53
 msgid "All Content Menu"
 msgstr ""
 
-#: Core/Admin/Menu.php:462
-#: parts/settings/tab-user-control.tpl.php:32
+#: Core/Admin/Menu.php:333
+#: parts/settings/tab-user-control.tpl.php:58
 msgid "Nominated Menu"
 msgstr ""
 
-#: Core/Admin/Menu.php:466
+#: Core/Admin/Menu.php:337
 #: Core/Bookmarklet/NominateThisCore.php:76
 #: includes/nomthis/nominate-this-core.php:77
 #: parts/nominate-this-buttons.tpl.php:17
 #: parts/nominate-this.tpl.php:10
-#: parts/settings/tab-user-control.tpl.php:38
+#: parts/settings/tab-site.tpl.php:338
+#: parts/settings/tab-user-control.tpl.php:64
 #: assets/src/blocks/bookmarklet-code/index.js:16
 #: build/blocks.js:1
 msgid "Nominate This"
 msgstr ""
 
-#: Core/Admin/Menu.php:470
+#: Core/Admin/Menu.php:341
 msgid "Preferences Menu"
 msgstr ""
 
-#: Core/Admin/Menu.php:478
+#: Core/Admin/Menu.php:349
+msgid "Access Stats"
+msgstr ""
+
+#: Core/Admin/Menu.php:353
 msgid "Add Nomination Menu"
 msgstr ""
 
-#: Core/Admin/Menu.php:655
+#: Core/Admin/Menu.php:541
 msgid "All feeds are ok!"
 msgstr ""
 
 #: Core/Admin/Nominated.php:116
 #: Core/Admin/Nominated.php:117
-#: Core/Admin/PFTemplater.php:1025
+#: Core/Admin/PFTemplater.php:1027
 msgid "Nominated"
 msgstr ""
 
 #: Core/Admin/Nominated.php:191
-#: Core/Admin/PFTemplater.php:803
-#: Core/Admin/PFTemplater.php:1067
+#: Core/Admin/PFTemplater.php:805
+#: Core/Admin/PFTemplater.php:1069
 #: Core/AJAX/MetaAJAX.php:183
-#: modules/comments/comments.php:125
-#: modules/comments/comments.php:133
+#: modules/comments/comments.php:127
+#: modules/comments/comments.php:135
 msgid "Close"
 msgstr ""
 
-#: Core/Admin/Nominated.php:642
+#: Core/Admin/Nominated.php:657
 msgid "Item ID"
 msgstr ""
 
-#: Core/Admin/Nominated.php:646
-#: Core/Admin/PFTemplater.php:1008
+#: Core/Admin/Nominated.php:661
+#: Core/Admin/PFTemplater.php:1010
 #: assets/src/reader/util.js:301
 #: build/reader.js:5
 #: build/scroll.js:5
 msgid "Nomination Count"
 msgstr ""
 
-#: Core/Admin/Nominated.php:651
+#: Core/Admin/Nominated.php:666
 msgid "Feed Title"
 msgstr ""
 
-#: Core/Admin/Nominated.php:654
+#: Core/Admin/Nominated.php:669
 msgid "Posted by source on"
 msgstr ""
 
-#: Core/Admin/Nominated.php:656
+#: Core/Admin/Nominated.php:671
 msgid "Source Posted"
 msgstr ""
 
-#: Core/Admin/Nominated.php:658
+#: Core/Admin/Nominated.php:673
 msgid "Source Authors"
 msgstr ""
 
-#: Core/Admin/Nominated.php:659
-#: assets/src/blocks/blocks.js:167
+#: Core/Admin/Nominated.php:674
+#: assets/src/blocks/blocks.js:175
 #: build/blocks.js:1
 msgid "Source Link"
 msgstr ""
 
-#: Core/Admin/Nominated.php:659
+#: Core/Admin/Nominated.php:674
 msgid "Original Post"
 msgstr ""
 
-#: Core/Admin/Nominated.php:660
-#: Core/Admin/PFTemplater.php:849
+#: Core/Admin/Nominated.php:675
+#: Core/Admin/PFTemplater.php:851
 msgid "Item Tags"
 msgstr ""
 
-#: Core/Admin/Nominated.php:663
+#: Core/Admin/Nominated.php:678
 #: Core/Schema/Nominations.php:142
-#: assets/src/blocks/blocks.js:181
+#: assets/src/blocks/blocks.js:207
 #: build/blocks.js:1
 msgid "Date Nominated"
 msgstr ""
 
-#: Core/Admin/Nominated.php:665
+#: Core/Admin/Nominated.php:680
 msgid "Repeated in Feed"
 msgstr ""
 
 #. translators: Link to item source URL.
-#: Core/Admin/Nominated.php:685
+#: Core/Admin/Nominated.php:778
 msgid "Source: %s"
 msgstr ""
 
-#: Core/Admin/Nominated.php:699
+#: Core/Admin/Nominated.php:792
+#: assets/src/blocks/item-credits/index.js:65
+#: build/blocks.js:1
 msgid "Source: "
 msgstr ""
 
-#: Core/Admin/Nominated.php:784
+#: Core/Admin/Nominated.php:877
 msgid "Nonce not recieved. Are you sure you should be archiving?"
 msgstr ""
 
-#: Core/Admin/Nominated.php:790
+#: Core/Admin/Nominated.php:883
 msgid "Archived."
 msgstr ""
 
-#: Core/Admin/Nominated.php:810
+#: Core/Admin/Nominated.php:903
 msgid "Link"
 msgstr ""
 
-#: Core/Admin/Nominated.php:912
-#: Core/Admin/Nominated.php:962
+#: Core/Admin/Nominated.php:1005
+#: Core/Admin/Nominated.php:1055
 msgid "Nonce not recieved. Are you sure you should be drafting?"
 msgstr ""
 
@@ -1170,165 +1230,165 @@ msgstr ""
 msgid "Menu"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:610
 #: Core/Admin/PFTemplater.php:612
+#: Core/Admin/PFTemplater.php:614
 msgid "Delete"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:624
+#: Core/Admin/PFTemplater.php:626
 msgid "Hide"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:633
+#: Core/Admin/PFTemplater.php:635
 msgid "Mark as Read"
 msgstr ""
 
 #. translators: Unix timestamp from the item's source RSS feed.
-#: Core/Admin/PFTemplater.php:648
+#: Core/Admin/PFTemplater.php:650
 msgid "UNIX timestamp from source RSS: %s"
 msgstr ""
 
 #. translators: Unix timestamp for the last modified date.
-#: Core/Admin/PFTemplater.php:651
+#: Core/Admin/PFTemplater.php:653
 msgid "UNIX timestamp last modified: %s"
 msgstr ""
 
 #. translators: Unix timestamp for the date nominated.
-#: Core/Admin/PFTemplater.php:654
+#: Core/Admin/PFTemplater.php:656
 msgid "UNIX timestamp date nominated: %s"
 msgstr ""
 
 #. translators: Slug for the origin site.
-#: Core/Admin/PFTemplater.php:657
+#: Core/Admin/PFTemplater.php:659
 msgid "Slug for origin site: %s"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:674
+#: Core/Admin/PFTemplater.php:676
 msgid "Source URL not found."
 msgstr ""
 
 #. translators: Feed name.
-#: Core/Admin/PFTemplater.php:685
+#: Core/Admin/PFTemplater.php:687
 msgid "Feed: %s"
 msgstr ""
 
 #. translators: Posted date.
-#: Core/Admin/PFTemplater.php:688
+#: Core/Admin/PFTemplater.php:690
 msgid "Posted: %s"
 msgstr ""
 
 #. translators: Date retrieved.
-#: Core/Admin/PFTemplater.php:691
+#: Core/Admin/PFTemplater.php:693
 msgid "Retrieved: %s"
 msgstr ""
 
 #. translators: Author names.
-#: Core/Admin/PFTemplater.php:694
+#: Core/Admin/PFTemplater.php:696
 msgid "Authors: %s"
 msgstr ""
 
 #. translators: Link to source publication.
-#: Core/Admin/PFTemplater.php:697
+#: Core/Admin/PFTemplater.php:699
 msgid "Origin: %s"
 msgstr ""
 
 #. translators: Link to original item.
-#: Core/Admin/PFTemplater.php:700
+#: Core/Admin/PFTemplater.php:702
 msgid "Original Item: %s"
 msgstr ""
 
 #. translators: Source item tags.
-#: Core/Admin/PFTemplater.php:703
+#: Core/Admin/PFTemplater.php:705
 msgid "Tags: %s"
 msgstr ""
 
 #. translators: Number of times repeated in source.
-#: Core/Admin/PFTemplater.php:706
+#: Core/Admin/PFTemplater.php:708
 msgid "Times repeated in source: %s"
 msgstr ""
 
 #. translators: Nominator count.
-#: Core/Admin/PFTemplater.php:710
+#: Core/Admin/PFTemplater.php:712
 msgid "Number of nominations received: %s"
 msgstr ""
 
 #. translators: Name of first nominator.
-#: Core/Admin/PFTemplater.php:712
+#: Core/Admin/PFTemplater.php:714
 msgid "First submitted by: %s"
 msgstr ""
 
 #. translators: Date and time of nomination.
-#: Core/Admin/PFTemplater.php:715
+#: Core/Admin/PFTemplater.php:717
 msgid "Nominated on: %s"
 msgstr ""
 
 #. translators: names of nominating users.
-#: Core/Admin/PFTemplater.php:718
+#: Core/Admin/PFTemplater.php:720
 msgid "Nominated by: %s"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:725
+#: Core/Admin/PFTemplater.php:727
 msgid "Edit the draft based on this post."
 msgstr ""
 
 #. translators: 1. Publication date; 2. Link to item author.
-#: Core/Admin/PFTemplater.php:752
+#: Core/Admin/PFTemplater.php:754
 msgid "Published on %1$s by %2$s."
 msgstr ""
 
 #. translators: 1. Unix timestamp for item date; 2. Unix timestamp for date added to feed.
-#: Core/Admin/PFTemplater.php:756
+#: Core/Admin/PFTemplater.php:758
 msgid "Unix timestamp for item date: %1$s. Unix timestamp for date added to feed: %2$s"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:798
+#: Core/Admin/PFTemplater.php:800
 msgid "Source"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:799
+#: Core/Admin/PFTemplater.php:801
 msgid "Author"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:836
+#: Core/Admin/PFTemplater.php:838
 msgid "Read Original"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:836
+#: Core/Admin/PFTemplater.php:838
 msgid "Reset Readability"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:973
+#: Core/Admin/PFTemplater.php:975
 msgid "Loading"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:982
+#: Core/Admin/PFTemplater.php:984
 msgid "Info"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:986
 #: Core/Admin/PFTemplater.php:988
+#: Core/Admin/PFTemplater.php:990
 #: assets/src/reader/util.js:290
 #: build/reader.js:5
 #: build/scroll.js:5
 msgid "Star"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:1013
+#: Core/Admin/PFTemplater.php:1015
 msgid "Archive"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:1018
+#: Core/Admin/PFTemplater.php:1020
 msgid "Draft"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:1022
+#: Core/Admin/PFTemplater.php:1024
 #: assets/src/reader/util.js:311
 #: build/reader.js:5
 #: build/scroll.js:5
 msgid "Edit Metadata"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:1028
+#: Core/Admin/PFTemplater.php:1030
 #: Core/Bookmarklet/NominateThisCore.php:124
 #: Core/Schema/Nominations.php:75
 #: assets/src/reader/util.js:284
@@ -1337,12 +1397,12 @@ msgstr ""
 msgid "Nominate"
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:1051
+#: Core/Admin/PFTemplater.php:1053
 #: Core/Bookmarklet/NominateThisCore.php:132
 msgid "Send to "
 msgstr ""
 
-#: Core/Admin/PFTemplater.php:1058
+#: Core/Admin/PFTemplater.php:1060
 msgid "Tweet"
 msgstr ""
 
@@ -1359,6 +1419,7 @@ msgstr ""
 #: Core/Admin/SubscribedFeeds.php:182
 #: Core/Admin/SubscribedFeeds.php:187
 #: Core/Schema/Feeds.php:189
+#: parts/welcome/feeds.php:78
 msgid "Subscribed Feeds"
 msgstr ""
 
@@ -1394,20 +1455,20 @@ msgstr ""
 msgid "Tools"
 msgstr ""
 
-#: Core/Admin/Tools.php:108
+#: Core/Admin/Tools.php:119
 msgid "PressForward Tools"
 msgstr ""
 
-#: Core/Admin/Tools.php:127
+#: Core/Admin/Tools.php:138
 #: includes/template-tags.php:28
 msgid "Bookmarklet"
 msgstr ""
 
-#: Core/Admin/Tools.php:132
+#: Core/Admin/Tools.php:143
 msgid "Debug and Refresh"
 msgstr ""
 
-#: Core/Admin/Tools.php:137
+#: Core/Admin/Tools.php:148
 msgid "Statistics"
 msgstr ""
 
@@ -1555,11 +1616,11 @@ msgid "Page of posts created by PressForward."
 msgstr ""
 
 #: Core/API/StatsEndpoint.php:379
-#: Core/API/StatsEndpoint.php:462
+#: Core/API/StatsEndpoint.php:465
 msgid "The page parameter is required."
 msgstr ""
 
-#: Core/API/StatsEndpoint.php:447
+#: Core/API/StatsEndpoint.php:450
 msgid "No Source Found"
 msgstr ""
 
@@ -1663,22 +1724,22 @@ msgstr ""
 msgid "Manage nominations: %s"
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:680
-#: Core/Bookmarklet/NominateThisCore.php:681
+#: Core/Bookmarklet/NominateThisCore.php:701
+#: Core/Bookmarklet/NominateThisCore.php:702
 msgid "Nomination Success"
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:700
+#: Core/Bookmarklet/NominateThisCore.php:721
 #: includes/nomthis/nominate-this-core.php:165
 msgid "Your nomination has been saved."
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:701
+#: Core/Bookmarklet/NominateThisCore.php:722
 #: includes/nomthis/nominate-this-core.php:166
 msgid "See all nominations"
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:702
+#: Core/Bookmarklet/NominateThisCore.php:723
 #: includes/nomthis/nominate-this-core.php:167
 #: includes/nomthis/nominate-this-core.php:177
 #: includes/nomthis/nominate-this-core.php:208
@@ -1704,6 +1765,7 @@ msgid "All Feeds"
 msgstr ""
 
 #: Core/Schema/Feeds.php:193
+#: parts/welcome/feeds.php:105
 msgid "Add New Feed"
 msgstr ""
 
@@ -1904,14 +1966,13 @@ msgstr ""
 msgid "Date should be in UNIX format"
 msgstr ""
 
-#: Core/Schema/Feed_Items.php:1312
-#: Core/Schema/Feed_Items.php:1325
+#: Core/Schema/Feed_Items.php:1310
 msgctxt "pf"
 msgid "Removed Feed Item"
 msgstr ""
 
 #. translators: Removed feed item count.
-#: Core/Schema/Feed_Items.php:1332
+#: Core/Schema/Feed_Items.php:1317
 msgid "Removed <span class=\"count\">(%s)</span>"
 msgid_plural "Removed <span class=\"count\">(%s)</span>"
 msgstr[0] ""
@@ -2016,7 +2077,7 @@ msgstr ""
 msgid "URL: %s"
 msgstr ""
 
-#: Core/Utility/Forward_Tools.php:569
+#: Core/Utility/Forward_Tools.php:604
 msgid "External User"
 msgstr ""
 
@@ -2024,30 +2085,40 @@ msgstr ""
 msgid "PressForward Retrieval Interval"
 msgstr ""
 
+#. translators: Do not translate items in curly brackets.
+#: includes/functions.php:264
+msgid "Source: {{item}} via {{publication}}"
+msgstr ""
+
+#. translators: Do not translate items in curly brackets.
+#: includes/functions.php:266
+msgid "Source: {{item}}"
+msgstr ""
+
 #. translators: Day count.
-#: includes/functions.php:1194
+#: includes/functions.php:1214
 msgid "Day: %s"
 msgstr ""
 
 #. translators: Week count.
-#: includes/functions.php:1196
+#: includes/functions.php:1216
 msgid "Week: %s"
 msgstr ""
 
 #. translators: Month count.
-#: includes/functions.php:1198
+#: includes/functions.php:1218
 msgid "Month: %s"
 msgstr ""
 
-#: includes/functions.php:1238
+#: includes/functions.php:1258
 msgid "Post Not Found."
 msgstr ""
 
-#: includes/functions.php:1250
+#: includes/functions.php:1270
 msgid "Post Type Not Matched"
 msgstr ""
 
-#: includes/functions.php:1260
+#: includes/functions.php:1280
 msgid "Post Type Already Queued"
 msgstr ""
 
@@ -2061,16 +2132,16 @@ msgid "Enable %s"
 msgstr ""
 
 #: includes/module-base.php:185
-#: parts/settings/tab-site.tpl.php:29
-#: parts/settings/tab-site.tpl.php:55
-#: parts/settings/tab-site.tpl.php:190
+#: parts/settings/tab-site.tpl.php:52
+#: parts/settings/tab-site.tpl.php:349
+#: parts/settings/tab-user-control.tpl.php:22
 msgid "Yes"
 msgstr ""
 
 #: includes/module-base.php:186
-#: parts/settings/tab-site.tpl.php:30
-#: parts/settings/tab-site.tpl.php:56
-#: parts/settings/tab-site.tpl.php:189
+#: parts/settings/tab-site.tpl.php:53
+#: parts/settings/tab-site.tpl.php:348
+#: parts/settings/tab-user-control.tpl.php:23
 msgid "No"
 msgstr ""
 
@@ -2095,16 +2166,15 @@ msgstr ""
 msgid "If your bookmarks toolbar is hidden: copy the code below, open your Bookmarks manager, create new bookmark, type Press This into the name field and paste the code into the URL field."
 msgstr ""
 
-#. translators: URL being loaded.
 #. translators: URL being loaded
 #: includes/nomthis/nominate-this-core.php:100
-#: assets/src/nominate-this/nominate-this.js:285
+#: assets/src/nominate-this/nominate-this.js:298
 #: build/nominate-this.js:4
 msgid "Loading content from %s."
 msgstr ""
 
 #: includes/nomthis/nominate-this-core.php:104
-#: assets/src/nominate-this/nominate-this.js:253
+#: assets/src/nominate-this/nominate-this.js:266
 #: build/nominate-this.js:1
 msgid "Could not fetch remote URL"
 msgstr ""
@@ -2129,92 +2199,126 @@ msgstr ""
 msgid "Unknown Feed"
 msgstr ""
 
-#: modules/comments/comments.php:39
+#: modules/comments/comments.php:41
 msgid "Internal Commenting"
 msgstr ""
 
-#: modules/comments/comments.php:41
+#: modules/comments/comments.php:43
 msgid "This module provides a way for users to comment on posts throughout the editorial process. Internal commenting is only visible in the PressForward plugin and will not be publicly visible when published as a Post."
 msgstr ""
 
-#: modules/comments/comments.php:88
+#: modules/comments/comments.php:90
 #: assets/src/reader/util.js:296
 #: build/reader.js:5
 #: build/scroll.js:5
 msgid "Comment"
 msgstr ""
 
-#: modules/comments/comments.php:104
+#: modules/comments/comments.php:106
 msgid "Internal Commenting Feature"
 msgstr ""
 
-#: modules/comments/comments.php:105
+#: modules/comments/comments.php:107
 msgid "This module provides a text box for users to comment on posts throughout the editorial process. Comments are not publicly visible when the post is published."
 msgstr ""
 
-#: modules/comments/comments.php:124
+#: modules/comments/comments.php:126
+#: assets/src/block-editor-comments/block-editor-comments.js:59
+#: build/block-editor-comments.js:1
 msgid "Comments"
 msgstr ""
 
-#: modules/comments/comments.php:129
+#: modules/comments/comments.php:131
 msgid "Loading comments..."
 msgstr ""
 
-#: modules/comments/comments.php:156
+#: modules/comments/comments.php:158
 msgid "You do not have permission to access this area."
 msgstr ""
 
-#: modules/comments/comments.php:212
+#: modules/comments/comments.php:214
 msgid "Respond to this post"
 msgstr ""
 
-#: modules/comments/comments.php:212
+#: modules/comments/comments.php:214
 msgid "Add Comment"
 msgstr ""
 
-#: modules/comments/comments.php:222
+#: modules/comments/comments.php:224
 msgid "Submit Comment"
 msgstr ""
 
-#: modules/comments/comments.php:224
+#: modules/comments/comments.php:226
 msgid "Cancel"
 msgstr ""
 
-#: modules/comments/comments.php:225
+#: modules/comments/comments.php:227
 msgid "Sending comment..."
 msgstr ""
 
-#: modules/comments/comments.php:269
+#: modules/comments/comments.php:271
 msgid "Reply to this comment"
 msgstr ""
 
-#: modules/comments/comments.php:269
+#: modules/comments/comments.php:271
 msgid "Reply"
 msgstr ""
 
 #. translators: 1. Comment author name; 2. Comment date; 3. Comment time.
-#: modules/comments/comments.php:295
+#: modules/comments/comments.php:297
 msgid "<span class=\"comment-author\">%1$s</span><span class=\"meta\"> said on %2$s at %3$s</span>"
 msgstr ""
 
-#: modules/comments/comments.php:320
+#: modules/comments/comments.php:322
 msgid "Nonce check failed. Please ensure you're supposed to be adding editorial comments."
 msgstr ""
 
-#: modules/comments/comments.php:334
+#: modules/comments/comments.php:336
 msgid "Sorry, you don't have the privileges to add editorial comments. Please talk to your Administrator."
 msgstr ""
 
-#: modules/comments/comments.php:340
+#: modules/comments/comments.php:342
 msgid "Please enter a comment."
 msgstr ""
 
-#: modules/comments/comments.php:424
+#: modules/comments/comments.php:426
 msgid "There was a problem of some sort. Try again or contact your administrator."
 msgstr ""
 
-#: modules/comments/comments.php:434
+#: modules/comments/comments.php:436
 msgid "Internal Commenting Options"
+msgstr ""
+
+#: modules/comments/comments.php:658
+msgid "A new comment has been posted on a nomination you have interacted with."
+msgstr ""
+
+#: modules/comments/comments.php:663
+msgid "A new comment has been posted on a feed item you have interacted with."
+msgstr ""
+
+#: modules/comments/comments.php:668
+msgid "A new comment has been posted on an item you have interacted with."
+msgstr ""
+
+#. translators: 1. Site name; 2. Post title.
+#: modules/comments/comments.php:684
+msgid "[%1$s] New comment on \"%2$s\""
+msgstr ""
+
+#. translators: 1. Introductory text; 2. Post title; 3. Comment author; 4. Comment content; 5. View URL.
+#: modules/comments/comments.php:691
+msgid ""
+"%1$s\n"
+"\n"
+"Post: %2$s\n"
+"\n"
+"Comment by: %3$s\n"
+"\n"
+"%4$s\n"
+"\n"
+"View and reply to the comment:\n"
+"%5$s"
 msgstr ""
 
 #: modules/debugger/debugger.php:31
@@ -2231,51 +2335,51 @@ msgstr ""
 msgid "This module provides a way to view the feed retrieval log within the dashboard."
 msgstr ""
 
-#: modules/debugger/debugger.php:176
+#: modules/debugger/debugger.php:177
 msgid "Current Log"
 msgstr ""
 
-#: modules/debugger/debugger.php:177
+#: modules/debugger/debugger.php:178
 msgid "Does not update in real time."
 msgstr ""
 
-#: modules/debugger/debugger.php:178
+#: modules/debugger/debugger.php:179
 msgid "Total Current Feed Items"
 msgstr ""
 
-#: modules/debugger/debugger.php:190
+#: modules/debugger/debugger.php:191
 msgid "Total Current Nominations:"
 msgstr ""
 
-#: modules/debugger/debugger.php:198
+#: modules/debugger/debugger.php:199
 msgid "Total Actions Taken:"
 msgstr ""
 
-#: modules/debugger/debugger.php:203
+#: modules/debugger/debugger.php:204
 msgid "Total Nominations Published:"
 msgstr ""
 
-#: modules/debugger/debugger.php:208
+#: modules/debugger/debugger.php:209
 msgid "Total Retrieval Chunks Begun This:"
 msgstr ""
 
-#: modules/debugger/debugger.php:213
+#: modules/debugger/debugger.php:214
 msgid "Total Retrieval Cycles Begun This:"
 msgstr ""
 
-#: modules/debugger/debugger.php:218
+#: modules/debugger/debugger.php:219
 msgid "Total Retrieval Cycles Ended This:"
 msgstr ""
 
-#: modules/debugger/debugger.php:231
-msgid "The log does not exist."
+#: modules/debugger/debugger.php:234
+msgid "Log file is larger than 5MB. Only the last 100,000 characters are shown. Use SSH or SFTP to access the entire log file."
 msgstr ""
 
-#: modules/debugger/debugger.php:275
+#: modules/debugger/debugger.php:319
 msgid "Debugging Log"
 msgstr ""
 
-#: modules/debugger/debugger.php:276
+#: modules/debugger/debugger.php:320
 msgid "Debugging sets the user role required to access the Debugging page from the PressForward menu when it is turned on."
 msgstr ""
 
@@ -2302,7 +2406,7 @@ msgstr ""
 
 #: modules/opml-subscribe/opml-subscribe.php:316
 #: modules/rss-import/rss-import.php:367
-#: parts/settings/settings-page.tpl.php:75
+#: parts/settings/settings-page.tpl.php:80
 msgid "Submit"
 msgstr ""
 
@@ -2415,30 +2519,26 @@ msgid "Feed Problems"
 msgstr ""
 
 #: parts/pf-tools/tab-reset-refresh.tpl.php:12
-msgid "The following options are advanced tools for admins attempting to test, debug, or execute advanced functionality. They are capable of breaking your retrieval process."
+msgid "Use the button below to clean up feed items. Pressing the button will initiate the process of selecting feed items more than two months old. There is a chance of initiating this process simultaneously with a process triggered automatically every 30 minutes. If this occurs, error messages will likely appear in your server logs."
 msgstr ""
 
-#: parts/pf-tools/tab-reset-refresh.tpl.php:19
+#: parts/pf-tools/tab-reset-refresh.tpl.php:15
 msgid "Clean Up"
 msgstr ""
 
-#: parts/pf-tools/tab-reset-refresh.tpl.php:21
-msgid " the feed items. You can press this button to manually initiate the process of selecting feed items more than 2 months old. There is a chance of initiating this process simultaneously with a process triggered automatically every 30 minutes. If this occurs, error messages will likely appear in your server logs."
-msgstr ""
-
-#: parts/pf-tools/tab-stats.tpl.php:11
+#: parts/pf-tools/tab-stats.tpl.php:13
 msgid "About your PressForward Install (Requires the WordPress REST API.)"
 msgstr ""
 
-#: parts/pf-tools/tab-stats.tpl.php:13
+#: parts/pf-tools/tab-stats.tpl.php:15
 msgid "Assemble Author Stats"
 msgstr ""
 
-#: parts/pf-tools/tab-stats.tpl.php:14
+#: parts/pf-tools/tab-stats.tpl.php:16
 msgid "Assemble Valid Posts for Stats"
 msgstr ""
 
-#: parts/settings/tab-modules.tpl.php:12
+#: parts/settings/tab-modules.tpl.php:11
 msgid "<strong>PressForward Modules</strong> are addons to alter or improve the functionality of the plugin."
 msgstr ""
 
@@ -2446,207 +2546,358 @@ msgstr ""
 msgid "These preferences are available only to users with an Administrator role in PressForward. Options set on this page will determine behavior across the site as a whole."
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:18
-msgid "Seconds to redirect user to source. (0 means no redirect)"
+#: parts/settings/tab-site.tpl.php:13
+msgid "Source Options"
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:22
+#: parts/settings/tab-site.tpl.php:15
+msgid "These settings control the way that each piece PressForward content relates to its \"source\" - that is, the original content from which it was copied."
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:21
+msgid "Redirect to source"
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:27
+msgid "Seconds before redirectng user to source"
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:31
 msgid "PressForward makes use of canonical URLs. If you would like to redirect your readers automatically to the items aggregated by the feed reader and published to your site, this setting will determine how long to wait before redirecting."
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:32
-msgid "Use advanced user role management? (May be needed if you customize user roles or capabilities)."
-msgstr ""
-
 #: parts/settings/tab-site.tpl.php:35
-msgid "For sites that manage multiple users using special plugins, administrators can use this option to insure PressForward respects customized user roles and capacities."
+msgid "Set to 0 to disable this feature."
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:43
-msgid "Email notifications for nominations."
+#: parts/settings/tab-site.tpl.php:42
+msgid "Source author"
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:47
-msgid "To receive an email notification when there is a new nomination, enter a comma separated list of email notification recipients. If left blank, no notifications will be sent."
+#: parts/settings/tab-site.tpl.php:56
+msgid "Use source author for bylines"
 msgstr ""
 
 #: parts/settings/tab-site.tpl.php:60
-msgid "Show item_author as source."
+msgid "When set to \"Yes\", the name of the author pulled from the source item will be used in place of the WordPress user's name when displaying the item around the site."
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:64
-msgid "When this preference is on, the name of the author in a PressFoward item will appear in the item_author custom field when the item is sent to Draft. This author will overwrite the creator of the post."
+#: parts/settings/tab-site.tpl.php:68
+msgid "Source statement position"
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:74
+#: parts/settings/tab-site.tpl.php:78
 msgid "Top"
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:75
+#: parts/settings/tab-site.tpl.php:79
 msgid "Bottom"
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:79
-msgid "Source statement position."
-msgstr ""
-
 #: parts/settings/tab-site.tpl.php:83
-msgid "Choose the position for source title and link on published content."
+msgid "Controls where the link to the source will be positioned on published content."
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:105
-msgid "When alerts are on, feeds that continually return errors display as alerted. You can dismiss alerts in the Subscribed Feeds page."
+#: parts/settings/tab-site.tpl.php:90
+msgid "Source statement format"
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:115
-msgid "Months to retrieve and retain feed items."
+#: parts/settings/tab-site.tpl.php:103
+msgid "Format with publication"
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:119
-msgid "This number determines the number of previous months that PressForward will retrieve items for All Content from subscribed feeds and the number of months that items will remain in PressForward. Set to \"0\" to disable automatic cleanup; feed items will remain in the database until manually deleted."
+#: parts/settings/tab-site.tpl.php:111
+msgid "Format without publication"
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:127
-msgid "Number of errors before a feed is marked as malfunctioning."
+#: parts/settings/tab-site.tpl.php:114
+msgid "Defines the format of the source statement added to PressForward items."
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:131
-msgid "Feeds sometimes respond slowly or have errors that cause them to be unreadable. This setting determines the number of consecutive errors PressForward will allow from a feed before creating an alert and disabling it."
+#: parts/settings/tab-site.tpl.php:116
+msgid "Use the <code>{{item}}</code> and <code>{{publisher}}</code> placeholders."
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:139
-msgid "Minutes between feed retrieval cycles."
+#: parts/settings/tab-site.tpl.php:118
+msgid "\"Format without publication\" will be used when no publication name can be detected automatically."
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:143
-msgid "This setting is the frequency at which PressForward will attempt to start the process of retrieving all the feeds in your list. Warning: if you have a large number of feeds this setting should not go below 30 minutes."
+#: parts/settings/tab-site.tpl.php:120
+msgid "Leave both fields empty to disable the source statement."
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:126
+msgid "Email Options"
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:128
+msgid "These settings relate to how PressForward generates email notifications."
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:134
+msgid "Nomination emails"
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:141
+msgid "Addresses to receive notifications about new nominations"
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:146
+msgid "Separate with commas. If left blank, no notifications will be sent."
 msgstr ""
 
 #: parts/settings/tab-site.tpl.php:158
-msgid "Post status for new content."
+msgid "User defaults"
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:161
-msgid "This setting allows you to set a default post status that gets set when you send nominations to become posts."
-msgstr ""
-
-#: parts/settings/tab-site.tpl.php:175
-msgid "Post type for new content."
-msgstr ""
-
-#: parts/settings/tab-site.tpl.php:179
-msgid "Your WordPress site may have more than one Post Type installed, this setting will allow you to send nominations to the post type of your choice."
-msgstr ""
-
-#: parts/settings/tab-site.tpl.php:193
-msgid "Force Classic editor for Nominate This?"
-msgstr ""
-
-#: parts/settings/tab-site.tpl.php:195
-msgid "By default, Nominate This will use the Block Editor, unless you are using a plugin like Classic Editor that allows the site admin or individual users to default to the Classic Editor. If you would like to force Nominate This to use the Classic Editor, regardless of plugins or user settings, select Yes."
-msgstr ""
-
-#: parts/settings/tab-site.tpl.php:206
-#: parts/settings/tab-user.tpl.php:76
+#: parts/settings/tab-site.tpl.php:169
+#: parts/settings/tab-user.tpl.php:104
 msgid "Email Notifications"
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:208
+#: parts/settings/tab-site.tpl.php:171
 msgid "Configure the default user preferences for email notifications. Note that individual users can override these preferences on the User Options panel."
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:213
-#: parts/settings/tab-site.tpl.php:224
+#: parts/settings/tab-site.tpl.php:178
+#: parts/settings/tab-site.tpl.php:189
+#: parts/settings/tab-site.tpl.php:200
 msgid "Enabled"
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:214
-#: parts/settings/tab-site.tpl.php:225
+#: parts/settings/tab-site.tpl.php:179
+#: parts/settings/tab-site.tpl.php:190
+#: parts/settings/tab-site.tpl.php:201
 msgid "Disabled"
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:217
+#: parts/settings/tab-site.tpl.php:182
 msgid "User has successfully nominated an item"
 msgstr ""
 
-#: parts/settings/tab-site.tpl.php:228
+#: parts/settings/tab-site.tpl.php:193
 msgid "An item that the user has nominated is promoted"
 msgstr ""
 
-#: parts/settings/tab-user-control.tpl.php:12
-msgid "The default WordPress settings for drafting, editing, and publishing a post remain the same regardless of other PressForward Settings. For more details visit <a href=\"https://codex.wordpress.org/Roles_and_Capabilities\">Roles and Capabilities</a>. To change the default roles for new users visit <a href=\"/wp-admin/options-general.php\">Admin &#187; Settings &#187; General Settings</a>. To change user roles and capabilities, edit them at <a href=\"/wp-admin/users.php\">Admin &#187; Users</a>.<br /><br />The additional preferences below determine the type of access granted to each user role within the PressForward plugin. The user roles allowed by PressForward in order of most restrictive to least restrictive include: Administrator, Editor, Contributor, and Subscriber."
+#: parts/settings/tab-site.tpl.php:204
+msgid "A comment is posted on an item the user has interacted with"
 msgstr ""
 
-#: parts/settings/tab-user-control.tpl.php:23
-msgid "PressForward Menu Group sets the user role required in order to access the PressForward plugin from the WordPress dashboard."
+#: parts/settings/tab-site.tpl.php:212
+msgid "Feed Options"
 msgstr ""
 
-#: parts/settings/tab-user-control.tpl.php:28
-msgid "All Content Menu sets the user role required to see items in All Content."
+#: parts/settings/tab-site.tpl.php:214
+msgid "Control how RSS feeds are fetched and retained."
 msgstr ""
 
-#: parts/settings/tab-user-control.tpl.php:33
-msgid "Nominated Menu sets the user role required to see items in Nominated."
+#: parts/settings/tab-site.tpl.php:220
+msgid "Time to retain feed items"
 msgstr ""
 
-#: parts/settings/tab-user-control.tpl.php:39
-msgid "Access to the Nominate This bookmarklet. Note, ability to use different features of the Nominate This bookmarklet will be set by user permissions on feed item and post post types."
+#: parts/settings/tab-site.tpl.php:230
+msgid "Months to retain feed items"
 msgstr ""
 
-#: parts/settings/tab-user-control.tpl.php:43
-msgid "Non-User Preferences Tabs"
+#: parts/settings/tab-site.tpl.php:234
+msgid "Set to \"0\" to disable automatic cleanup. (Feed items will remain in the database until manually deleted.)"
 msgstr ""
 
-#: parts/settings/tab-user-control.tpl.php:44
-msgid "Side-wide Preferences sets the user role required to access the preferences on this page."
+#: parts/settings/tab-site.tpl.php:241
+msgid "Error limit"
 msgstr ""
 
-#: parts/settings/tab-user-control.tpl.php:48
-msgid "Feeder Menu"
+#: parts/settings/tab-site.tpl.php:251
+msgid "Number of errors before a feed is marked as malfunctioning"
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:255
+msgid "Feeds sometimes respond slowly or have errors that cause them to be unreadable. This setting determines the number of consecutive errors PressForward will allow from a feed before creating an alert and disabling it."
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:262
+msgid "Retrieval frequency"
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:272
+msgid "Minutes between feed retrieval cycles."
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:279
+msgid "Nomination and Promotion Options"
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:281
+msgid "The following settings relate to the nomination process, as well as the process of promoting feed items or nominated items."
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:287
+msgid "Promoted item behavior"
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:292
+msgid "Promoted Item Behavior"
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:294
+msgid "Control the behavior of the PressForward items created when promoting nominated items or feed items."
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:305
+msgid "Post type"
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:322
+msgid "Post status"
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:352
+msgid "Force Classic editor for Nominate This?"
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:355
+msgid "By default, Nominate This will use the Block Editor, unless you are using a plugin like Classic Editor that allows the site admin or individual users to default to the Classic Editor. If you would like to force Nominate This to use the Classic Editor, regardless of plugins or user settings, select Yes."
+msgstr ""
+
+#: parts/settings/tab-site.tpl.php:379
+msgid "When alerts are on, feeds that continually return errors display as alerted. You can dismiss alerts in the Subscribed Feeds page."
+msgstr ""
+
+#: parts/settings/tab-user-control.tpl.php:10
+msgid "The settings on this page control how user roles interact with PressForward."
+msgstr ""
+
+#: parts/settings/tab-user-control.tpl.php:16
+msgid "Advanced user roles"
+msgstr ""
+
+#: parts/settings/tab-user-control.tpl.php:25
+msgid "Use advanced user role management?"
+msgstr ""
+
+#: parts/settings/tab-user-control.tpl.php:29
+msgid "Enable advanced user role management if you use a plugin that customizes user roles or capabilities."
+msgstr ""
+
+#: parts/settings/tab-user-control.tpl.php:36
+msgid "Access by Role"
+msgstr ""
+
+#: parts/settings/tab-user-control.tpl.php:38
+msgid "Use the following settings to control which users can access PressForward functionality"
+msgstr ""
+
+#. translators: %s is a link to the WordPress.org documentation page on Roles and Capabilities.
+#: parts/settings/tab-user-control.tpl.php:41
+msgid "For reference, WordPress's default user roles are, in order of most to least powerful: Administrator, Editor, Author, Contributor, and Subscriber. For more information, visit <a href=\"%s\">the wordpress.org documentation page on Roles and Capabilities</a>."
 msgstr ""
 
 #: parts/settings/tab-user-control.tpl.php:49
+msgid "PressForward Menu Group sets the user role required in order to access the PressForward plugin from the WordPress dashboard."
+msgstr ""
+
+#: parts/settings/tab-user-control.tpl.php:54
+msgid "All Content Menu sets the user role required to see items in All Content."
+msgstr ""
+
+#: parts/settings/tab-user-control.tpl.php:59
+msgid "Nominated Menu sets the user role required to see items in Nominated."
+msgstr ""
+
+#: parts/settings/tab-user-control.tpl.php:65
+msgid "Access to the Nominate This bookmarklet. Note, ability to use different features of the Nominate This bookmarklet will be set by user permissions on feed item and post post types."
+msgstr ""
+
+#: parts/settings/tab-user-control.tpl.php:69
+msgid "Non-User Preferences Tabs"
+msgstr ""
+
+#: parts/settings/tab-user-control.tpl.php:70
+msgid "Side-wide Preferences sets the user role required to access the preferences on this page."
+msgstr ""
+
+#: parts/settings/tab-user-control.tpl.php:74
+msgid "Feeder Menu"
+msgstr ""
+
+#: parts/settings/tab-user-control.tpl.php:75
 msgid "Feeder Menu sets the user role required to access the Add Feeds and Subscribed Feeds pages."
+msgstr ""
+
+#: parts/settings/tab-user-control.tpl.php:79
+msgid "Stats Panel"
+msgstr ""
+
+#: parts/settings/tab-user-control.tpl.php:80
+msgid "The user role required to access the Stats panel under PressForward > Tools."
 msgstr ""
 
 #: parts/settings/tab-user.tpl.php:13
 msgid "Users can control aspects of the content display in the All Content and Nominated pages by setting preferences here."
 msgstr ""
 
-#: parts/settings/tab-user.tpl.php:30
+#: parts/settings/tab-user.tpl.php:20
+msgid "Infinite scroll"
+msgstr ""
+
+#: parts/settings/tab-user.tpl.php:27
+msgid "Infinite Scroll"
+msgstr ""
+
+#: parts/settings/tab-user.tpl.php:32
 msgid "Infinite Scroll Active"
 msgstr ""
 
-#: parts/settings/tab-user.tpl.php:35
+#: parts/settings/tab-user.tpl.php:36
 msgid "When this box is checked, users can scroll through content continuously."
 msgstr ""
 
-#: parts/settings/tab-user.tpl.php:49
+#: parts/settings/tab-user.tpl.php:44
+msgid "Side menu"
+msgstr ""
+
+#: parts/settings/tab-user.tpl.php:51
+msgid "Side Menu"
+msgstr ""
+
+#: parts/settings/tab-user.tpl.php:56
 msgid "Show side menu"
 msgstr ""
 
-#: parts/settings/tab-user.tpl.php:52
+#: parts/settings/tab-user.tpl.php:60
 msgid "When this box is checked, a menu that includes a list of feeds with alerts displays on the right side of the All Content and Nominated pages."
 msgstr ""
 
-#: parts/settings/tab-user.tpl.php:65
-msgid "Number of feed items per page."
+#: parts/settings/tab-user.tpl.php:69
+msgid "Number of feed items per page"
 msgstr ""
 
-#: parts/settings/tab-user.tpl.php:70
+#: parts/settings/tab-user.tpl.php:84
 msgid "Setting this number determines how many items will appear on the All Content and Nominated pages when infinite scroll is turned off."
 msgstr ""
 
-#: parts/settings/tab-user.tpl.php:78
+#: parts/settings/tab-user.tpl.php:91
+msgid "Email notifications"
+msgstr ""
+
+#: parts/settings/tab-user.tpl.php:107
 msgid "Send me an email notification when:"
 msgstr ""
 
-#: parts/settings/tab-user.tpl.php:80
+#: parts/settings/tab-user.tpl.php:109
 msgid "I've successfully nominated an item"
 msgstr ""
 
-#: parts/settings/tab-user.tpl.php:81
+#: parts/settings/tab-user.tpl.php:110
 msgid "An item that I've nominated is promoted"
+msgstr ""
+
+#: parts/settings/tab-user.tpl.php:111
+msgid "A comment is posted on an item I've interacted with"
+msgstr ""
+
+#: parts/settings/tab-user.tpl.php:111
+msgid "(Includes items I've nominated, commented on, or promoted)"
 msgstr ""
 
 #: parts/side-menu.tpl.php:15
@@ -2673,6 +2924,101 @@ msgstr ""
 msgid "Delete all items"
 msgstr ""
 
+#: parts/welcome.tpl.php:14
+msgid "Welcome to PressForward"
+msgstr ""
+
+#. translators: %s: PressForward version number
+#: parts/welcome.tpl.php:20
+msgid "Version %s"
+msgstr ""
+
+#: parts/welcome/feeds.php:28
+msgid "PressForward regularly collects items from your subscribed feeds. Review incoming feed items to select items for promotion."
+msgstr ""
+
+#: parts/welcome/feeds.php:36
+msgid "New incoming feed items in the last&hellip;"
+msgstr ""
+
+#. translators: %s: number of items.
+#: parts/welcome/feeds.php:43
+#: parts/welcome/nominations.php:63
+msgid "24 hours: %s"
+msgstr ""
+
+#. translators: %s: number of items.
+#: parts/welcome/feeds.php:53
+#: parts/welcome/nominations.php:73
+msgid "7 days: %s"
+msgstr ""
+
+#. translators: %s: number of items.
+#: parts/welcome/feeds.php:63
+#: parts/welcome/nominations.php:83
+msgid "30 days: %s"
+msgstr ""
+
+#: parts/welcome/feeds.php:71
+msgid "All Incoming Feed Items"
+msgstr ""
+
+#. translators: %s: number of feeds.
+#: parts/welcome/feeds.php:84
+msgid "You are subscribed to %s feed."
+msgid_plural "You are subscribed to %s feeds."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %s: number of alerts.
+#: parts/welcome/feeds.php:94
+msgid "%s feed has an alert and may need your attention"
+msgid_plural "%s feeds have alerts and may need your attention."
+msgstr[0] ""
+msgstr[1] ""
+
+#: parts/welcome/feeds.php:101
+msgid "Manage Feeds"
+msgstr ""
+
+#: parts/welcome/feeds.php:103
+msgid "Feeds with Alerts"
+msgstr ""
+
+#: parts/welcome/getting-started.php:12
+msgid "PressForward provides an editorial workflow for content aggregation and curation within the WordPress dashboard. It is designed for bloggers and editorial teams who wish to collect, discuss, and share content from a variety of sources on the open web."
+msgstr ""
+
+#: parts/welcome/getting-started.php:15
+msgid "Read our Documentation"
+msgstr ""
+
+#: parts/welcome/nominations.php:30
+msgid "Nominated items come either through the \"Nominate This\" bookmarklet, or are selected by your editorial team from incoming feed items. Review your pending nominations and select items to promote."
+msgstr ""
+
+#. translators: %s: number of nominations.
+#: parts/welcome/nominations.php:42
+msgid "%s nomination is awaiting review"
+msgid_plural "%s nominations are awaiting review"
+msgstr[0] ""
+msgstr[1] ""
+
+#: parts/welcome/nominations.php:49
+msgid "Review Nominations"
+msgstr ""
+
+#: parts/welcome/nominations.php:56
+msgid "New nominations in the last&hellip;"
+msgstr ""
+
+#. translators: %s: number of items.
+#: parts/welcome/nominations.php:94
+msgid "Since your last visit to this Welcome panel, %s new item has been nominated"
+msgid_plural "Since your last visit to this Welcome panel, %s new items have been nominated."
+msgstr[0] ""
+msgstr[1] ""
+
 #: pressforward.php:30
 msgid "PressForward requires PHP 7.3 or greater."
 msgstr ""
@@ -2687,35 +3033,50 @@ msgstr ""
 msgid "Add to Subscription list"
 msgstr ""
 
-#: assets/src/blocks/blocks.js:63
+#: assets/src/block-editor-comments/block-editor-comments.js:64
+#: build/block-editor-comments.js:1
+msgid "Start the Conversation"
+msgstr ""
+
+#: assets/src/block-editor-comments/block-editor-comments.js:69
+#: build/block-editor-comments.js:1
+msgid "Text entered here will be added as the first editorial comment on your nomination."
+msgstr ""
+
+#: assets/src/blocks/blocks.js:64
 #: build/blocks.js:1
 msgid "If you want to forward this nomination to the original URL, select 'Forward'."
 msgstr ""
 
-#: assets/src/blocks/blocks.js:75
+#: assets/src/blocks/blocks.js:76
 #: build/blocks.js:1
 msgid "If set to \"Forward\", visitors to this item will be forwarded to the source item URL."
 msgstr ""
 
-#: assets/src/blocks/blocks.js:80
+#: assets/src/blocks/blocks.js:81
 #: build/blocks.js:1
 msgid "Note that the redirect-to-source feature is currently disabled at the site level. To enable, visit Dashboard > Preferences > Site Options and increase \"Seconds to redirect…\" to a value greater than 0."
 msgstr ""
 
 #. translators: %s: nomination count
-#: assets/src/blocks/blocks.js:144
+#: assets/src/blocks/blocks.js:152
 #: build/blocks.js:1
 msgid "Nomination Count: %s"
 msgstr ""
 
-#: assets/src/blocks/blocks.js:151
+#: assets/src/blocks/blocks.js:159
 #: build/blocks.js:1
 msgid "Nomination Info"
 msgstr ""
 
-#: assets/src/blocks/blocks.js:155
+#: assets/src/blocks/blocks.js:163
 #: build/blocks.js:1
 msgid "Author on Source"
+msgstr ""
+
+#: assets/src/blocks/blocks.js:189
+#: build/blocks.js:1
+msgid "Source Publication"
 msgstr ""
 
 #: assets/src/blocks/bookmarklet-code/index.js:21
@@ -2723,7 +3084,32 @@ msgstr ""
 msgid "Show code"
 msgstr ""
 
-#: assets/src/blocks/item-nominators/index.js:64
+#: assets/src/blocks/item-credits/index.js:49
+#: build/blocks.js:1
+msgid "Author: "
+msgstr ""
+
+#: assets/src/blocks/item-credits/index.js:75
+#: build/blocks.js:1
+msgid "PressForward Credits"
+msgstr ""
+
+#: assets/src/blocks/item-credits/index.js:76
+#: build/blocks.js:1
+msgid "Settings"
+msgstr ""
+
+#: assets/src/blocks/item-credits/index.js:79
+#: build/blocks.js:1
+msgid "Show Author Name"
+msgstr ""
+
+#: assets/src/blocks/item-credits/index.js:87
+#: build/blocks.js:1
+msgid "Show Source Link"
+msgstr ""
+
+#: assets/src/blocks/item-nominators/index.js:67
 #: build/blocks.js:1
 msgid "Nominated by: "
 msgstr ""
@@ -2774,8 +3160,8 @@ msgid "If PressForward can find a feed associated with this item, the feed will 
 msgstr ""
 
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:108
-#: assets/src/nominate-this/nominate-this.js:211
-#: assets/src/nominate-this/nominate-this.js:220
+#: assets/src/nominate-this/nominate-this.js:224
+#: assets/src/nominate-this/nominate-this.js:233
 #: build/nominate-this-block-editor.js:1
 #: build/nominate-this.js:1
 msgid "via bookmarklet"
@@ -2860,6 +3246,28 @@ msgctxt "block description"
 msgid "Display the code used to create the Nominate This bookmarklet."
 msgstr ""
 
+#: assets/src/blocks/item-credits/block.json
+msgctxt "block title"
+msgid "Credits"
+msgstr ""
+
+#: assets/src/blocks/item-credits/block.json
+msgctxt "block description"
+msgid "Display credits for the current item."
+msgstr ""
+
+#: assets/src/blocks/item-credits/block.json
+#: assets/src/blocks/item-nominators/block.json
+msgctxt "block style label"
+msgid "Inline"
+msgstr ""
+
+#: assets/src/blocks/item-credits/block.json
+#: assets/src/blocks/item-nominators/block.json
+msgctxt "block style label"
+msgid "Stacked"
+msgstr ""
+
 #: assets/src/blocks/item-nominators/block.json
 msgctxt "block title"
 msgid "Nominators"
@@ -2868,14 +3276,4 @@ msgstr ""
 #: assets/src/blocks/item-nominators/block.json
 msgctxt "block description"
 msgid "Display a list of users who have nominated the current item."
-msgstr ""
-
-#: assets/src/blocks/item-nominators/block.json
-msgctxt "block style label"
-msgid "Inline"
-msgstr ""
-
-#: assets/src/blocks/item-nominators/block.json
-msgctxt "block style label"
-msgid "Stacked"
 msgstr ""

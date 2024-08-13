@@ -1,0 +1,24 @@
+.wp-block-pressforward-item-credits {
+	.pf-credits-line {
+		justify-content: flex-start;
+		display: flex;
+		gap: 20px;
+		margin-bottom: .5em;
+	}
+
+	&.is-style-stacked {
+		.pf-credits-line {
+			flex-direction: column;
+			gap: 0;
+
+			p {
+				margin: 0;
+				padding-bottom: 1em;
+
+				&:first-child {
+					padding-top: 1em;
+				}
+			}
+		}
+	}
+}

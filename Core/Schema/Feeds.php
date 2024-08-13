@@ -657,7 +657,7 @@ class Feeds implements HasActions, HasFilters {
 		$all_feeds_array = apply_filters( 'imported_rss_feeds', $feedlist );
 		pf_log( 'Preparing to transform feedlist into a list of feed posts.' );
 		$ordered_all_feeds_array = array_values( $all_feeds_array );
-		$tidy_all_feeds_array    = array_filter( $ordered_all_feeds_array, 'strlen' );
+		$tidy_all_feeds_array    = array_filter( $ordered_all_feeds_array );
 		foreach ( $tidy_all_feeds_array as $key => $feed ) {
 			$feedlist = $this->progressive_feedlist_transformer( $tidy_all_feeds_array, $feed, $key );
 		}

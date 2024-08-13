@@ -1,12 +1,21 @@
+/* global jQuery */
 jQuery(window).load(function () {
+
 	var firstTab = jQuery('.pressforward #pf-settings-tabs .nav-tab').first();
 	if ( firstTab.length === 0 ) {
 		return;
 	}
 
-	jQuery( '#pf-settings-box' ).show();
+	// Ensure we're scrolled to the top on page load.
+	const currentTab = window.location.hash;
+	if ( currentTab ) {
+		// Wait for the browser to scroll to the anchor.
+		setTimeout(function() {
+			jQuery(window).scrollTop(0);
+		}, 0);
+	}
 
-	var firstTarget = firstTab.attr('data-tab-target');
+	jQuery( '#pf-settings-box' ).show();
 
 	function tabToTarget(target, tab) {
 		jQuery('.pftab').removeClass('active');
@@ -14,10 +23,19 @@ jQuery(window).load(function () {
 
 		jQuery('.nav-tab').removeClass('nav-tab-active');
 		jQuery(tab).addClass('nav-tab-active');
-		window.location.hash = '#top' + target;
-	}
 
-	tabToTarget(firstTarget, firstTab);
+		// Note current scroll location.
+		var scrollLocation = jQuery(window).scrollTop();
+
+		window.location.hash = target;
+
+		// Reset scroll location.
+		jQuery(window).scrollTop(scrollLocation);
+
+		// Update the 'action' attribute of the form to reflect the current tab.
+		const form = tab.closest( 'form' );
+		form.action = form.action.replace(/#.*$/, '') + target;
+	}
 
 	jQuery('.pressforward #pf-settings-tabs').on('click', '.nav-tab', function (evt) {
 		evt.preventDefault();
@@ -27,20 +45,16 @@ jQuery(window).load(function () {
 		return false;
 	});
 
-
 	if (window.location.hash.indexOf("#") < 0) {
-		window.location.hash = '#ready#top';
-		var theHash = jQuery(jQuery('.nav-tab')[0]).attr('data-tab-target');
-		window.location.hash = '#ready#top' + theHash;
-		var tab = theHash + '-tab';
+		const firstTabHash = firstTab.attr('data-tab-target');
+		window.location.hash = firstTabHash;
+		var tab = firstTabHash + '-tab';
 		jQuery('.pftab').removeClass('active');
-		jQuery(theHash).addClass('active');
+		jQuery(firstTabHash).addClass('active');
 		jQuery('.nav-tab').removeClass('nav-tab-active');
 		jQuery(tab).addClass('nav-tab-active');
 	} else {
-		var theHash = window.location.hash;
-		theHash = theHash.replace(/#top/, '');
-		theHash = theHash.replace(/#/g, '');
+		theHash = currentTab.replace(/#/g, '');
 		theHash = '#' + theHash;
 		var tab = theHash + '-tab';
 		jQuery('.pftab').removeClass('active');
@@ -48,5 +62,4 @@ jQuery(window).load(function () {
 		jQuery('.nav-tab').removeClass('nav-tab-active');
 		jQuery(tab).addClass('nav-tab-active');
 	}
-
 });

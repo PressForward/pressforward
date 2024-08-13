@@ -252,6 +252,26 @@ function pressforward_nomination_post_type() {
 }
 
 /**
+ * Gets the formats used to build source statements.
+ *
+ * @since 5.7.0
+ *
+ * @return string[]
+ */
+function pressforward_source_statement_formats() {
+	$defaults = [
+		// translators: Do not translate items in curly brackets.
+		'with_publication'    => __( 'Source: {{item}} via {{publication}}', 'pressforward' ),
+		// translators: Do not translate items in curly brackets.
+		'without_publication' => __( 'Source: {{item}}', 'pressforward' ),
+	];
+
+	$saved = get_option( 'pf_source_statement_formats', [] );
+
+	return array_merge( $defaults, $saved );
+}
+
+/**
  * Get the feed item post type name.
  *
  * @since 1.7
@@ -1350,34 +1370,6 @@ function pf_delete_item_tree( $item, $fake_delete = false, $msg = false ) {
 	$queued = get_option( 'pf_delete_queue', array() );
 
 	return $queued;
-}
-
-/**
- * Prevent items waiting to be queued from appearing in any query results.
- *
- * This is primarily meant to hide from the Trash screen, where the deletion
- * of a queued item could result in various weirdnesses.
- *
- * @since 3.6
- *
- * @param WP_Query $query Query object.
- */
-function pf_exclude_queued_items_from_queries( $query ) {
-	$queued = get_option( 'pf_delete_queue' );
-	if ( ! $queued || ! is_array( $queued ) ) {
-		return $query;
-	}
-
-	$type = $query->get( 'post_type' );
-	if ( ( empty( $type ) ) || ( pressforward_draft_post_type() !== $type ) ) {
-		if ( 300 <= count( $queued ) ) {
-			$queued_chunk = array_chunk( $queued, 100 );
-			$queued       = $queued_chunk[0];
-		}
-		$post__not_in = $query->get( 'post__not_in' );
-		$post__not_in = array_merge( $post__not_in, $queued );
-		$query->set( 'post__not_in', $post__not_in );
-	}
 }
 
 /**

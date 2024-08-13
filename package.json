@@ -1,24 +1,24 @@
 {
 	"name": "pressforward",
-	"version": "5.6.2",
+	"version": "5.7.0",
 	"description": "PressForward is a free plugin that provides an editorial workflow for content aggregation and curation within the WordPress dashboard. It is designed for bloggers and editorial teams who wish to collect, discuss, and share content from a variety of sources on the open web. ",
 	"main": "assets/js/pf.js",
 	"directories": {
 		"test": "tests"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.14.3",
-		"@babel/eslint-parser": "^7.22.15",
-		"@babel/preset-env": "^7.14.4",
+		"@babel/core": "^7.24.9",
+		"@babel/eslint-parser": "^7.24.8",
+		"@babel/preset-env": "^7.24.8",
 		"@selfisekai/gulp-sass": "^4.2.0",
-		"@wordpress/scripts": "^25.4.0",
+		"@wordpress/scripts": "^28.4.0",
 		"gulp": "^4.0.2",
 		"gulp-babel": "^8.0.0",
 		"gulp-clean-css": "^4.3.0",
 		"gulp-ext-replace": "^0.3.0",
 		"gulp-sourcemaps": "^3.0.0",
 		"gulp-uglify": "^3.0.2",
-		"node-gyp": "^7.1.2",
+		"node-gyp": "^10.2.0",
 		"sass": "^1.25.0",
 		"style-loader": "^3.3.3"
 	},
@@ -30,8 +30,8 @@
 		"lint": "run-p lint:js",
 		"lint:eslint": "eslint --ignore-path .gitignore",
 		"lint:js": "npm run lint:eslint -- .",
-		"start": "wp-scripts start assets/src/add-feeds/add-feeds.js assets/src/blocks/blocks.js assets/src/blocks/blocks-frontend.js assets/src/bootstrap/bootstrap.js assets/src/edit-feeds/edit-feeds.js assets/src/nominate-this/nominate-this.js assets/src/nominate-this-block-editor/nominate-this-block-editor.js assets/src/quick-edit/quick-edit.js assets/src/reader/reader.js assets/src/scroll/scroll.js",
-		"build": "wp-scripts build assets/src/add-feeds/add-feeds.js assets/src/blocks/blocks.js assets/src/blocks/blocks-frontend.js assets/src/bootstrap/bootstrap.js assets/src/edit-feeds/edit-feeds.js assets/src/nominate-this/nominate-this.js assets/src/nominate-this-block-editor/nominate-this-block-editor.js assets/src/quick-edit/quick-edit.js assets/src/reader/reader.js assets/src/scroll/scroll.js"
+		"start": "wp-scripts start assets/src/add-feeds/add-feeds.js assets/src/block-editor-comments/block-editor-comments.js assets/src/blocks/blocks.js assets/src/blocks/blocks-frontend.js assets/src/bootstrap/bootstrap.js assets/src/edit-feeds/edit-feeds.js assets/src/nominate-this/nominate-this.js assets/src/nominate-this-block-editor/nominate-this-block-editor.js assets/src/quick-edit/quick-edit.js assets/src/reader/reader.js assets/src/scroll/scroll.js assets/src/welcome/welcome.js",
+		"build": "wp-scripts build assets/src/add-feeds/add-feeds.js assets/src/block-editor-comments/block-editor-comments.js assets/src/blocks/blocks.js assets/src/blocks/blocks-frontend.js assets/src/bootstrap/bootstrap.js assets/src/edit-feeds/edit-feeds.js assets/src/nominate-this/nominate-this.js assets/src/nominate-this-block-editor/nominate-this-block-editor.js assets/src/quick-edit/quick-edit.js assets/src/reader/reader.js assets/src/scroll/scroll.js assets/src/welcome/welcome.js"
 	},
 	"repository": {
 		"type": "git",

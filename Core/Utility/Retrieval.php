@@ -255,4 +255,58 @@ class Retrieval {
 		wp_clear_scheduled_hook( 'pull_feed_in' );
 		update_option( 'pf_retrieval_migration_5_6_0', '1' );
 	}
+
+	/**
+	 * Gets a count of feeds.
+	 *
+	 * @since 5.7.0
+	 *
+	 * @return int
+	 */
+	public function get_feed_count() {
+		$args = array(
+			'post_type'      => 'pf_feed',
+			'posts_per_page' => -1,
+			'post_status'    => 'publish',
+			'fields'         => 'ids',
+		);
+
+		$feeds = pressforward( 'schema.feeds' )->get( $args );
+
+		return count( $feeds );
+	}
+
+	/**
+	 * Gets a count of feed items.
+	 *
+	 * @since 5.7.0
+	 *
+	 * @param bool $exclude_promoted Whether to exclude promoted items.
+	 * @param int  $since            Unix timestamp.
+	 * @return int
+	 */
+	public function get_feed_item_count( $exclude_promoted = false, $since = 0 ) {
+		$args = array(
+			'post_type'      => 'pf_feed_item',
+			'posts_per_page' => -1,
+			'post_status'    => 'publish',
+			'date_query'     => array(
+				'after' => gmdate( 'Y-m-d H:i:s', $since ),
+			),
+		);
+
+		if ( $exclude_promoted ) {
+			$args['meta_query'] = array(
+				array(
+					'key'     => 'pf_is_promoted',
+					'value'   => '1',
+					'compare' => '!=',
+				),
+			);
+		}
+
+		$feed_items = pressforward( 'schema.feed_item' )->get( $args );
+
+		return count( $feed_items );
+	}
 }

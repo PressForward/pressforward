@@ -3,7 +3,7 @@ Contributors: PressForward, AramZS, boonebgorges, lmrhody, asmmap, regan008, joa
 Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 5.7
-Tested up to: 6.4
+Tested up to: 6.6
 Stable tag: 5.6.2
 License: AGPLv3
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -46,7 +46,7 @@ Instructions for use are found in our [User Manual](https://pressforwardadmin.gi
 
 [See how we compare to other WordPress plugins](https://www.gitbook.com/book/pressforwardadmin/pressforward-documentation/edit#/edit/changes/1/faq.md?_k=jn4jbu).
 
-The PressForward Plugin is developed and maintained by the [Roy Rosenzweig Center for History and New Media](http://chnm.gmu.edu) at [George Mason University](http://gmu.edu) as part of the [PressForward Project](http://pressforward.org), generously funded by the Alfred P. Sloan Foundation. Our developers include [Aram Zucker-Scharff](http://aramzs.me), [Boone B. Gorges](http://boone.gorg.es), and [Jeremy Boggs](http://clioweb.org). PressForward is free to use and modify under a [GNU GPL2 license](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
+The PressForward Plugin has been developed and maintained by [Digital Scholar](https://digitalscholar.org) since 2019. [Boone B. Gorges](https://boone.gorg.es) is the lead developer. The plugin was originally developed by the [Roy Rosenzweig Center for History and New Media](https://chnm.gmu.edu) at [George Mason University](https://gmu.edu) as part of the [PressForward Project](https://pressforward.org), generously funded by the Alfred P. Sloan Foundation. Previous developers include [Aram Zucker-Scharff](http://aramzs.me/), and Jeremy Boggs. PressForward is free to use and modify under a [GNU GPL3 license](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
 [Detailed information about our code](https://github.com/PressForward/pressforward/wiki/Devbook) can be found on our [GitHub Wiki](https://github.com/PressForward/pressforward/wiki/).
 
@@ -81,6 +81,17 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+
+= 5.7.0 =
+* New "Welcome" panel provides an easy-to-use path into PressForward content for both new and existing users.
+* Added the ability to add a comment when nominating an item.
+* Added a feature that allows admins to customize the format the 'Source' statement appended to incoming items.
+* Added configurable email notifications when an item you've nominated or commented on receives a new editorial comment.
+* Improved consistency in appearance and markup in various admin panels.
+* Introduced a block to display the "credits" for an item, including the author and source publication.
+* Improved performance on the debugger panel.
+* Improvements to Stats panel, including admin-configurable access control for Stats.
+* Fixed a number of bugs in the way that some admin panel subnavigation links are built, allowing for better deep linking within these panels.
 
 = 5.6.2 =
 * Fixed bug in the way that dependent scripts are loaded on Reader interface.

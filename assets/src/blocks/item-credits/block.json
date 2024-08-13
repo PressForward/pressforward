@@ -1,0 +1,74 @@
+{
+	"$schema": "https://json.schemastore.org/block.json",
+	"apiVersion": 2,
+	"name": "pressforward/item-credits",
+	"title": "Credits",
+	"category": "pressforward",
+	"icon": "controls-forward",
+	"description": "Display credits for the current item.",
+	"textdomain": "pressforward",
+	"supports": {
+		"align": true,
+		"anchor": true,
+		"color": {
+			"background": true,
+			"text": true
+		},
+		"html": false,
+		"spacing": {
+			"padding": true,
+			"margin": true
+		},
+		"typography": {
+			"fontSize": true
+		}
+	},
+
+	"attributes": {
+		"backgroundColor": {
+			"type": "string",
+			"default": "#f5f5f5"
+		},
+		"fontSize": {
+			"type": "string",
+			"default": "0.9em"
+		},
+		"prefixAuthorName": {
+			"type": "string",
+			"default": "Author: "
+		},
+		"prefixSourceLink": {
+			"type": "string",
+			"default": "Source: "
+		},
+		"showAuthorName": {
+			"type": "boolean",
+			"default": true
+		},
+		"showSourceLink": {
+			"type": "boolean",
+			"default": true
+		},
+		"style": {
+			"type": "object",
+			"default": {
+				"color": {
+					"background": "#f5f5f5"
+				},
+				"typography": {
+					"fontSize": "0.9em"
+				},
+				"spacing": {
+					"padding": {
+						"left": "1em",
+						"right": "1em"
+					}
+				}
+			}
+		}
+	},
+	"styles": [
+		{ "name": "inline", "label": "Inline", "isDefault": true },
+		{ "name": "stacked", "label": "Stacked" }
+	]
+}

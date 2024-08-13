@@ -387,9 +387,12 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	 */
 	public function pf_posted( $request ) {
 		\ob_start();
-		if ( isset( $request['page'] ) ) {
-			$args = array();
-			if ( isset( $request['per_page'] ) && is_numeric( $request['per_page'] ) ) {
+
+		$page = $request->get_param( 'page' );
+		if ( $page ) {
+			$args     = array();
+			$per_page = $request->get_param( 'per_page' );
+			if ( is_numeric( $per_page ) ) {
 				$per_page = intval( $request['per_page'] );
 				if ( $per_page > 100 ) {
 					$per_page = 100;

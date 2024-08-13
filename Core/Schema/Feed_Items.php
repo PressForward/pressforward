@@ -1305,21 +1305,6 @@ class Feed_Items implements HasActions, HasFilters {
 	/**
 	 * Register "Removed feed item" post status.
 	 */
-	public function dead_post_status() {
-		register_post_status(
-			'removed_feed_item',
-			array(
-				'label'                  => _x( 'Removed Feed Item', 'pf', 'pressforward' ),
-				'public'                 => false,
-				'exclude_from_search'    => true,
-				'show_in_admin_all_list' => false,
-			)
-		);
-	}
-
-	/**
-	 * Register "Removed feed item" post status.
-	 */
 	public function register_feed_item_removed_status() {
 		$args = array(
 			'label'                     => _x( 'Removed Feed Item', 'pf', 'pressforward' ),

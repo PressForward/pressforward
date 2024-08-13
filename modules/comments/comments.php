@@ -27,6 +27,8 @@ class PF_Comments extends PF_Module {
 		add_action( 'pf_comment_action_button', array( $this, 'show_comment_count_button' ) );
 		add_action( 'pf_comment_action_modal', array( $this, 'show_comment_modal' ) );
 		add_filter( 'pf_setup_admin_rights', array( $this, 'control_menu_access' ) );
+
+		add_action( 'ef_post_insert_editorial_comment', array( $this, 'maybe_send_comment_notifications' ) );
 	}
 
 	/**
@@ -605,5 +607,96 @@ class PF_Comments extends PF_Module {
 		wp_cache_add( $cache_key, $comments, 'comment' );
 
 		return $comments;
+	}
+
+	/**
+	 * Sends email notifications after a comment has been posted.
+	 *
+	 * Sends to the following, as long as their user preferences allow:
+	 * - The creator of the post or nomination being commented on.
+	 * - Any other users who have commented on the post or nomination.
+	 *
+	 * @param WP_Comment $comment Comment object.
+	 * @return void
+	 */
+	public function maybe_send_comment_notifications( $comment ) {
+		$recipient_ids = [];
+
+		// Get the author of the post or nomination.
+		$post_id         = $comment->comment_post_ID;
+		$post            = get_post( (int) $post_id );
+		$recipient_ids[] = $post->post_author;
+
+		// Get all other users who have commented on the post or nomination.
+		$comments = $this->ef_get_comments_plus(
+			array(
+				'post_id' => $post_id,
+				'type'    => self::COMMENT_TYPE,
+			)
+		);
+
+		foreach ( $comments as $comment ) {
+			$recipient_ids[] = $comment->user_id;
+		}
+
+		// Remove duplicates.
+		$recipient_ids = array_unique( $recipient_ids );
+
+		// Remove users who have disabled comment notifications.
+		$recipient_ids = array_filter(
+			$recipient_ids,
+			function ( $user_id ) {
+				return pressforward()->fetch( 'controller.users' )->get_user_setting( $user_id, 'item-comment-email-toggle' );
+			}
+		);
+
+		$item_pf_uid = pressforward( 'controller.metas' )->get_post_pf_meta( $post_id, 'item_id', true );
+
+		// Nominations and feed items have different URLs.
+		switch ( $post->post_type ) {
+			case pressforward_nomination_post_type():
+				$intro_text = __( 'A new comment has been posted on a nomination you have interacted with.', 'pressforward' );
+				$view_url   = pressforward( 'admin.templates' )->get_modal_url( $item_pf_uid );
+				break;
+
+			case pf_feed_item_post_type():
+				$intro_text = __( 'A new comment has been posted on a feed item you have interacted with.', 'pressforward' );
+				$view_url   = pressforward( 'admin.templates' )->get_modal_url( $item_pf_uid );
+				break;
+
+			default:
+				$intro_text = __( 'A new comment has been posted on an item you have interacted with.', 'pressforward' );
+				$view_url   = get_edit_post_link( (int) $post_id );
+				break;
+		}
+
+		// Send the email.
+		foreach ( $recipient_ids as $recipient_id ) {
+			$user = get_userdata( $recipient_id );
+			if ( ! $user ) {
+				continue;
+			}
+
+			$site_name = get_bloginfo( 'name' );
+
+			$subject = sprintf(
+				// translators: 1. Site name; 2. Post title.
+				__( '[%1$s] New comment on "%2$s"', 'pressforward' ),
+				$site_name,
+				$post->post_title
+			);
+
+			$message = sprintf(
+				// translators: 1. Introductory text; 2. Post title; 3. Comment author; 4. Comment content; 5. View URL.
+				__( "%1\$s\n\nPost: %2\$s\n\nComment by: %3\$s\n\n%4\$s\n\nView and reply to the comment:\n%5\$s", 'pressforward' ),
+				$intro_text,
+				$post->post_title,
+				$comment->comment_author,
+				$comment->comment_content,
+				$view_url
+			);
+
+			wp_mail( $user->user_email, $subject, $message );
+		}
 	}
 }
