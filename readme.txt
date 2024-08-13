@@ -82,6 +82,17 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 
 == Changelog ==
 
+= 5.7.0 =
+* New "Welcome" panel provides an easy-to-use path into PressForward content for both new and existing users.
+* Added the ability to add a comment when nominating an item.
+* Added a feature that allows admins to customize the format the 'Source' statement appended to incoming items.
+* Added configurable email notifications when an item you've nominated or commented on receives a new editorial comment.
+* Improved consistency in appearance and markup in various admin panels.
+* Introduced a block to display the "credits" for an item, including the author and source publication.
+* Improved performance on the debugger panel.
+* Improvements to Stats panel, including admin-configurable access control for Stats.
+* Fixed a number of bugs in the way that some admin panel subnavigation links are built, allowing for better deep linking within these panels.
+
 = 5.6.2 =
 * Fixed bug in the way that dependent scripts are loaded on Reader interface.
 
