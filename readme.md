@@ -10,11 +10,20 @@
 
   Funded and Maintained by Digital Scholar. Initially developed for the Roy Rosenzweig Center for History and New Media at George Mason University, with funding from the Alfred P. Sloan Foundation.
 
-### Important Note
+## Building this plugin
+
+PressForward uses a number of build steps to create a usable plugin. When building the plugin from the source, you will need to run the following commands:
+
+1. `npm install` to install the necessary dependencies.
+2. `npm run build` to build NPM-controlled assets, including much of the JavaScript in the plugin. If you are developing, you can use `npm run start` to watch for changes.
+3. `composer install --no-dev` to install the necessary runtime PHP dependencies. For development, you can use `composer install`, which includes dependencies required for testing and development.
+4. If you are not running the `SCRIPT_DEBUG` WordPress constant, you may need to run `gulp minify-core-js && gulp minify-core-css` to generate minified versions of some of PF's assets, in order to see your changes to certain legacy files not controlled by NPM.
+
+## Important Note
 
 If you were running this plugin pre-2.3 and have upgraded, you need to go into the Feeder menu and click the `Switch feeds to new retrieval setup` button.
 
-#### Project goals:
+## Project goals:
 
 -	Retrieve items within the WordPress dashboard as an independent process (no required attachment to external servers)
 
