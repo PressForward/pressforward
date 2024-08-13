@@ -96,7 +96,7 @@ $the_admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_repla
 <body class="press-this wp-admin wp-core-ui nominate-this <?php echo esc_attr( $the_admin_body_class ); ?>">
 
 <div id="loading-indicator" class="loading-indicator nomthis-indicator">
-	<?php // translators: URL being loaded ?>
+	<?php // translators: URL being loaded. ?>
 	<img src="<?php echo esc_url( admin_url( 'images/loading.gif' ) ); ?>" role="presentation" /> <span><?php printf( esc_html__( 'Loading content from %s.', 'pressforward' ), '<span id="loading-url"></span>' ); ?></span>
 </div>
 
