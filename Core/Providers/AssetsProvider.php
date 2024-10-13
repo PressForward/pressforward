@@ -390,13 +390,17 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		foreach ( $scripts as $script_handle => $script_file ) {
 			$build_vars = require \PF_ROOT . '/build/' . $script_file . '.asset.php';
 
-			wp_enqueue_script(
-				$script_handle,
-				\PF_URL . '/build/' . $script_file . '.js',
-				$build_vars['dependencies'],
-				$build_vars['version'],
-				true
-			);
+			// Avoid enqueuing scripts/styles on the widgets page.
+			$current_screen = get_current_screen();
+			if ( $current_screen->id !== 'widgets' ) {
+				wp_enqueue_script(
+					$script_handle,
+					\PF_URL . '/build/' . $script_file . '.js',
+					$build_vars['dependencies'],
+					$build_vars['version'],
+					true
+				);
+			}
 		}
 
 		wp_add_inline_script(
