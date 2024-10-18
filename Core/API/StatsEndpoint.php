@@ -471,7 +471,7 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	 * The parameter is already sanitized by this point so we can use it without any worries.
 	 *
 	 * @param \WP_REST_Request $request Request object.
-	 * @return \WP_REST_Request|\WP_Error
+	 * @return \WP_REST_Response
 	 */
 	public function overview( $request ) {
 		$args = array(
