@@ -41,10 +41,6 @@ parameters:
       message: '#^Cannot access property \$[a-zA-Z0-9_]+ on int\|WP_Post\.$#'
       path: ./Core/API/StatsEndpoint.php
 
-    - # get_taxonomies() is returning objects here, not strings.
-      message: '#Cannot access property \$rest_controller_class on string\.$#'
-      path: ./Core/API/PFEndpoint.php
-
     - # Non-typed stdClass objects passed in an array aren't understood by PHPStan. Should be refactored.
       message: '#^Access to an undefined property object::\$[a-zA-Z]+\.$#'
       path: ./modules/opml-subscribe/opml-subscribe.php
