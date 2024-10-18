@@ -217,7 +217,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		pf_log( 'Invoked: PF_OPML_Subscribe::get_data_object()' );
 		$a_opml_id  = $a_opml->ID;
 		$a_opml_url = pressforward( 'controller.metas' )->get_post_pf_meta( $a_opml_id, 'feedUrl', true );
-		if ( empty( $a_opml_url ) || is_wp_error( $a_opml_url ) || ! $a_opml_url ) {
+		if ( empty( $a_opml_url ) || is_wp_error( $a_opml_url ) ) {
 			$a_opml_url = $a_opml->post_title;
 			pressforward( 'controller.metas' )->update_pf_meta( $a_opml_id, 'feedUrl', $a_opml_url );
 		}
