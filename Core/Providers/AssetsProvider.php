@@ -475,7 +475,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 			}
 		}
 
-		if ( $all && ( false !== $position_test_one ) || ( false !== $position_test_two ) ) {
+		if ( $all && ( ( false !== $position_test_one ) || ( false !== $position_test_two ) ) ) {
 			return true;
 		}
 
