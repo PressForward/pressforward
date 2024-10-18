@@ -762,6 +762,16 @@ class Metas implements HasFilters, HasActions {
 				'level'      => array( 'item', 'nomination' ),
 				'serialize'  => true,
 			),
+			'feed_url'                => [
+				'name'       => 'feed_url',
+				'title'      => __( 'Feed URL', 'pressforward' ),
+				'definition' => __( 'URL of the feed', 'pressforward' ),
+				'function'   => __( 'Stores the URL of the feed', 'pressforward' ),
+				'type'       => [ 'struc' ],
+				'use'        => [ 'api' ],
+				'level'      => [ 'feed' ],
+				'serialize'  => false,
+			],
 			'pf_feed_error_count'     => array(
 				'name'       => 'pf_feed_error_count',
 				'title'      => __( 'Feed Errors', 'pressforward' ),

@@ -383,6 +383,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	public function enqueue_block_editor_assets() {
 		$scripts = [
 			'pf-block-editor-comments'      => 'block-editor-comments',
+			'pf-block-editor-feeds'         => 'block-editor-feeds',
 			'pf-blocks'                     => 'blocks',
 			'pf-nominate-this-block-editor' => 'nominate-this-block-editor',
 		];
@@ -427,6 +428,15 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 				[
 					'apiBaseUrl'         => get_rest_url(),
 					'nominationPostType' => pressforward_nomination_post_type(),
+				]
+			),
+		);
+
+		wp_add_inline_script(
+			'pf-block-editor-feeds',
+			'window.pfBlockEditorFeeds = ' . wp_json_encode(
+				[
+					'feedPostType' => pressforward( 'schema.feeds' )->post_type,
 				]
 			),
 		);
