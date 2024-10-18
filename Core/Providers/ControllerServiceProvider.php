@@ -110,7 +110,7 @@ class ControllerServiceProvider extends \Intraxia\Jaxion\Assets\ServiceProvider 
 
 		$container->share(
 			'controller.loops',
-			function ( $container ) {
+			function () {
 				return new PF_Loops();
 			}
 		);

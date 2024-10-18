@@ -44,7 +44,7 @@ class AdminAreaServiceProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		);
 		$container->share(
 			'admin.edit_post',
-			function ( $container ) {
+			function () {
 				return new EditPost();
 			}
 		);

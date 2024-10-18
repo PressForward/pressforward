@@ -49,7 +49,7 @@ class UtilityProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		$container->share(
 			'utility.retrieval',
-			function ( $container ) {
+			function () {
 				return new Retrieval();
 			}
 		);
