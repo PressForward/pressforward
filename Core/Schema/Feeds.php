@@ -210,7 +210,6 @@ class Feeds implements HasActions, HasFilters {
 					'public'                => false,
 					'hierarchical'          => true,
 					'supports'              => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields', 'page-attributes' ),
-					'taxonomies'            => array( 'post_tag' ),
 					'show_in_menu'          => PF_MENU_SLUG,
 					'show_in_admin_bar'     => true,
 					'show_in_rest'          => true,
