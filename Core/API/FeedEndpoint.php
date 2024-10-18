@@ -13,6 +13,8 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
 use PressForward\Controllers\Metas;
 use PressForward\Core\API\APIWithMetaEndpoints;
 
+use PressForward\Core\Models\Feed;
+
 /**
  * Feed REST API utilities.
  */
@@ -64,12 +66,12 @@ class FeedEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 	 * {@inheritdoc}
 	 */
 	public function action_hooks() {
-		$actions = array(
-			array(
+		$actions = [
+			[
 				'hook'   => 'rest_api_init',
-				'method' => 'register_rest_post_read_meta_fields',
-			),
-		);
+				'method' => 'register_rest_fields',
+			],
+		];
 
 		return $actions;
 	}
@@ -98,5 +100,108 @@ class FeedEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 	 */
 	public function filter_in_nomination_count( $data, $post, $request ) {
 		return $data;
+	}
+
+	/**
+	 * Registers meta fields for the feed endpoint.
+	 *
+	 * @return void
+	 */
+	public function register_rest_fields() {
+		// Most REST fields are registered by the central meta schema.
+		$this->register_rest_post_read_meta_fields();
+
+		register_rest_field(
+			$this->post_type,
+			'last_checked',
+			[
+				'get_callback'    => function ( $post_object ) {
+					$last = $this->metas->get_post_pf_meta( $post_object['id'], 'pf_feed_last_checked', true );
+					return $this->format_time( $last );
+				},
+
+				'update_callback' => null,
+				'schema'          => [
+					'description' => __( 'The last time the feed was checked for new items', 'pressforward' ),
+					'type'        => 'string',
+					'context'     => [ 'view', 'edit' ],
+				],
+			]
+		);
+
+		register_rest_field(
+			$this->post_type,
+			'last_retrieved',
+			[
+				'get_callback'    => function ( $post_object ) {
+					$last = $this->metas->get_post_pf_meta( $post_object['id'], 'pf_feed_last_retrieved', true );
+					return $this->format_time( $last );
+				},
+
+				'update_callback' => null,
+				'schema'          => [
+					'description' => __( 'The last time an item was fetched from the feed', 'pressforward' ),
+					'type'        => 'string',
+					'context'     => [ 'view', 'edit' ],
+				],
+			]
+		);
+
+		register_rest_field(
+			$this->post_type,
+			'next_check',
+			[
+				'get_callback'    => function ( $post_object ) {
+					$feed_object = Feed::get_instance_by_id( $post_object['id'] );
+					$next        = $feed_object->get_next_scheduled_retrieval();
+
+					return $this->format_time( gmdate( 'Y-m-d H:i:s', $next ) );
+				},
+
+				'update_callback' => null,
+				'schema'          => [
+					'description' => __( 'The next scheduled check for new feed items', 'pressforward' ),
+					'type'        => 'string',
+					'context'     => [ 'view', 'edit' ],
+				],
+			]
+		);
+	}
+
+	/**
+	 * Formats a saved timestamp into a human-readable string.
+	 *
+	 * @param string $timestamp The timestamp to format.
+	 * @return string
+	 */
+	protected function format_time( $timestamp ) {
+		if ( empty( $timestamp ) ) {
+			return '';
+		}
+
+		$unix = strtotime( $timestamp . ' UTC' );
+
+		$human_time_diff = human_time_diff( $unix );
+
+		if ( $unix > time() ) {
+			$relative = sprintf(
+				// translators: %s is a human-readable time difference.
+				__( 'in %s', 'pressforward' ),
+				$human_time_diff
+			);
+		} else {
+			$relative = sprintf(
+				// translators: %s is a human-readable time difference.
+				__( '%s ago', 'pressforward' ),
+				$human_time_diff
+			);
+		}
+
+		return sprintf(
+			// translators: %1$s is a human-readable time difference, %2$s is a formatted date.
+			__( '%1$s (%2$s)', 'pressforward' ),
+			date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $unix ),
+			$relative
+		);
 	}
 }
