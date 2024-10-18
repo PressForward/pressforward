@@ -45,10 +45,6 @@ parameters:
       message: '#Cannot access property \$rest_controller_class on string\.$#'
       path: ./Core/API/PFEndpoint.php
 
-    - # False positive about property of a tidy object.
-      message: '#^Access to an undefined property tidy::\$value\.$#'
-      path: ./Controllers/PF_Readability.php
-
     - # Non-typed stdClass objects passed in an array aren't understood by PHPStan. Should be refactored.
       message: '#^Access to an undefined property object::\$[a-zA-Z]+\.$#'
       path: ./modules/opml-subscribe/opml-subscribe.php
