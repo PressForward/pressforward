@@ -986,7 +986,7 @@ class Metas implements HasFilters, HasActions {
 							}
 						}
 					} elseif ( ! isset( $post_object->$key ) ) {
-							$post_object->$key = $this->get_post_pf_meta( $post_id, $meta['name'] );
+						$post_object->$key = $this->get_post_pf_meta( $post_id, $meta['name'] );
 					}
 				}
 			}
