@@ -19,7 +19,7 @@ class PF_to_WP_System implements \PressForward\Interfaces\System {
 	 * @param string $autoload Whether option should be autoloaded.
 	 */
 	public function add_option( $option, $value = '', $autoload = 'yes' ) {
-		return add_option( $option, $value, '', $autoload );
+		return add_option( $option, $value, null, 'yes' === $autoload );
 	}
 
 	/**
@@ -49,7 +49,7 @@ class PF_to_WP_System implements \PressForward\Interfaces\System {
 	 * @param string $autoload Whether option should be autoloaded.
 	 */
 	public function update_option( $option, $value = '', $autoload = 'yes' ) {
-		return update_option( $option, $value, $autoload );
+		return update_option( $option, $value, 'yes' === $autoload );
 	}
 
 	/**
