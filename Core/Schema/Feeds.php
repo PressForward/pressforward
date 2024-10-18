@@ -209,7 +209,7 @@ class Feeds implements HasActions, HasFilters {
 					'description'           => __( 'Feeds imported by PressForward&#8217;s Feed Importer', 'pressforward' ),
 					'public'                => false,
 					'hierarchical'          => true,
-					'supports'              => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields', 'page-attributes' ),
+					'supports'              => array( 'title', 'editor', 'author', 'thumbnail', 'custom-fields' ),
 					'show_in_menu'          => PF_MENU_SLUG,
 					'show_in_admin_bar'     => true,
 					'show_in_rest'          => true,
