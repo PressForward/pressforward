@@ -443,6 +443,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		$styles = [
 			'pf-block-editor-comments'      => 'block-editor-comments',
+			'pf-block-editor-feeds'         => 'block-editor-feeds',
 			'pf-blocks'                     => 'blocks',
 			'pf-nominate-this-block-editor' => 'nominate-this-block-editor',
 		];
