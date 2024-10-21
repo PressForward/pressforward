@@ -6,7 +6,7 @@ import { registerPlugin } from '@wordpress/plugins'
 import { useState } from '@wordpress/element'
 import { useDispatch, useSelect } from '@wordpress/data'
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post'
-import { __ } from '@wordpress/i18n'
+import { __, sprintf } from '@wordpress/i18n'
 import { Button, Spinner, TextControl } from '@wordpress/components'
 
 const BlockEditorFeedsInfobox = ( {} ) => {
@@ -15,13 +15,16 @@ const BlockEditorFeedsInfobox = ( {} ) => {
 	const { feedPostType } = pfBlockEditorFeeds
 
 	const {
+		errorMessage,
 		feedUrl,
 		postType
 	} = useSelect( ( select ) => {
 		const editedPostId = select( 'core/editor' ).getCurrentPostId()
 		const editedPostMeta = select( 'core/editor' ).getEditedPostAttribute( 'meta' )
+		const editedErrorMessage = select( 'core/editor' ).getEditedPostAttribute( 'alert_message' )
 
 		return {
+			errorMessage: editedErrorMessage,
 			feedUrl: editedPostMeta?.feed_url || '',
 			postId: editedPostId,
 			postType: select( 'core/editor' ).getEditedPostAttribute( 'type' ),
@@ -48,6 +51,14 @@ const BlockEditorFeedsInfobox = ( {} ) => {
 					editPost( { meta: { 'feed_url': newValue } } )
 				} }
 			/>
+
+			{ errorMessage && (
+				<p className="pf-error-message">
+					<strong>
+						{ sprintf( 'Error: %s', errorMessage ) }
+					</strong>
+				</p>
+			) }
 		</PluginDocumentSettingPanel>
 	)
 }

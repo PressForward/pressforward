@@ -166,6 +166,23 @@ class FeedEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 				],
 			]
 		);
+
+		register_rest_field(
+			$this->post_type,
+			'alert_message',
+			[
+				'get_callback'    => function ( $post_object ) {
+					return pressforward( 'library.alertbox' )->get_bug_type( $post_object['id'] );
+				},
+
+				'update_callback' => null,
+				'schema'          => [
+					'description' => __( 'The error message for the feed', 'pressforward' ),
+					'type'        => 'string',
+					'context'     => [ 'view', 'edit' ],
+				],
+			]
+		);
 	}
 
 	/**
