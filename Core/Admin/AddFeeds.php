@@ -129,9 +129,15 @@ class AddFeeds implements HasActions, HasFilters {
 	 */
 	public function set_permitted_tools_tabs( $permitted_tabs ) {
 		$permitted_tabs['primary_feed_type'] = array(
-			'title' => __( 'Subscribe to Feeds', 'pressforward' ),
+			'title' => __( 'Subscribe to Feed', 'pressforward' ),
 			'cap'   => $this->user_interface->pf_get_defining_capability_by_role( 'contributor' ),
 		);
+
+		$permitted_tabs['opml_import'] = array(
+			'title' => __( 'Import OPML', 'pressforward' ),
+			'cap'   => $this->user_interface->pf_get_defining_capability_by_role( 'contributor' ),
+		);
+
 		return $permitted_tabs;
 	}
 

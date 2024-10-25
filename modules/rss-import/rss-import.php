@@ -315,6 +315,12 @@ class PF_RSS_Import extends PF_Module {
 			'title' => __( 'Subscribe to Feeds', 'pressforward' ),
 			'cap'   => get_option( 'pf_menu_feeder_access', pf_get_defining_capability_by_role( 'editor' ) ),
 		);
+
+		$permitted_tabs['opml_import'] = array(
+			'title' => __( 'Import OPML', 'pressforward' ),
+			'cap'   => get_option( 'pf_menu_feeder_access', pf_get_defining_capability_by_role( 'editor' ) ),
+		);
+
 		return $permitted_tabs;
 	}
 
@@ -327,17 +333,6 @@ class PF_RSS_Import extends PF_Module {
 
 		$feedlist = get_option( PF_SLUG . '_feedlist' );
 
-		// Check to see whether OPML uploads are allowed.
-		$opml_is_allowed    = false;
-		$allowed_mime_types = get_allowed_mime_types();
-		foreach ( $allowed_mime_types as $ext => $mime ) {
-			$exts = explode( '|', $ext );
-			if ( in_array( 'opml', $exts, true ) ) {
-				$opml_is_allowed = true;
-				break;
-			}
-		}
-
 		?>
 		<div class="pf-opt-group">
 			<div class="rss-box ">
@@ -349,19 +344,6 @@ class PF_RSS_Import extends PF_Module {
 						<input id="<?php echo esc_attr( PF_SLUG ) . '_feedlist[single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo esc_attr( PF_SLUG ) . '_feedlist[single]'; ?>" value="" />
 						<label class="description" for="<?php echo esc_attr( PF_SLUG ) . '_feedlist[single]'; ?>"><?php esc_html_e( '*Complete URL path', 'pressforward' ); ?></label>
 						<a href="http://en.wikipedia.org/wiki/RSS"><?php esc_html_e( 'What is an RSS Feed?', 'pressforward' ); ?></a>
-					</div>
-
-					<div><?php esc_html_e( 'Add OPML File', 'pressforward' ); ?></div>
-					<div class="pf_feeder_input_box">
-						<input id="<?php echo esc_attr( PF_SLUG ) . '_feedlist[opml]'; ?>" class="pf_opml_file_upload_field regular-text" type="text" name="<?php echo esc_attr( PF_SLUG ) . '_feedlist[opml]'; ?>" value="" />
-						<label class="description" for="<?php echo esc_attr( PF_SLUG ) . '_feedlist[opml]'; ?>"><?php esc_html_e( '*Drop link to OPML here.', 'pressforward' ); ?></label>
-
-						<?php if ( $opml_is_allowed ) : ?>
-							or <a class="button-primary pf_primary_media_opml_upload" ><?php esc_html_e( 'Upload OPML file', 'pressforward' ); ?></a>
-						<?php endif; ?>
-
-						<p>&nbsp;<?php esc_html_e( 'Adding large OPML files may take some time.', 'pressforward' ); ?></p>
-						<a href="http://en.wikipedia.org/wiki/Opml"><?php esc_html_e( 'What is an OPML file?', 'pressforward' ); ?></a>
 					</div>
 
 					<input type="submit" class="button-primary" value="<?php esc_attr_e( 'Submit', 'pressforward' ); ?>" />
@@ -379,6 +361,23 @@ class PF_RSS_Import extends PF_Module {
 	public static function pf_feedlist_validate( $input ) {
 		set_time_limit( 0 );
 
+		$something_broke = false;
+		$settings_error  = '';
+
+		// Special case: an OPML file is being uploaded.
+		// Cannot be handled natively by the Settings API.
+		if ( ! empty( $_FILES['opml-upload']['name'] ) ) {
+			// Process and save the OPML file, then pass the URL as $input['opml'].
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			$opml_url = self::process_opml_upload( $_FILES['opml-upload'] );
+			if ( $opml_url ) {
+				$input['opml'] = $opml_url;
+			} else {
+				$something_broke = true;
+				$settings_error  = __( 'You have provided an invalid OPML file.', 'pressforward' );
+			}
+		}
+
 		pf_log( 'Add Feed Process Invoked: PF_RSS_IMPORT::pf_feedlist_validate' );
 		pf_log( $input );
 
@@ -388,9 +387,8 @@ class PF_RSS_Import extends PF_Module {
 			pf_log( 'No, the current user can not edit posts.' );
 		}
 
-		$feed_obj        = pressforward( 'schema.feeds' );
-		$subed           = array();
-		$something_broke = false;
+		$feed_obj = pressforward( 'schema.feeds' );
+		$subed    = array();
 
 		if ( ! empty( $input['single'] ) ) {
 			if ( ! $feed_obj->has_feed( $input['single'] ) ) {
@@ -473,8 +471,22 @@ class PF_RSS_Import extends PF_Module {
 		foreach ( $subed as $sub ) {
 			$subscribe_string .= $sub;
 		}
+
 		if ( $something_broke ) {
-			add_settings_error( 'add_pf_feeds', 'pf_feeds_validation_response', __( 'You have submitted ', 'pressforward' ) . $subscribe_string . ' ' . __( 'The feed was not found.', 'pressforward' ), 'updated' );
+			if ( empty( $settings_error ) ) {
+				$settings_error = sprintf(
+					// translators: %s is the name of feed that failed to add.
+					__( 'An error occurred while trying to add %s', 'pressforward' ),
+					$subscribe_string
+				);
+			}
+
+			add_settings_error(
+				'add_pf_feeds',
+				'pf_feeds_validation_response',
+				$settings_error,
+				'error'
+			);
 		} elseif ( ! empty( $subscribe_string ) ) {
 			add_settings_error( 'add_pf_feeds', 'pf_feeds_validation_response', __( 'You have submitted ', 'pressforward' ) . $subscribe_string, 'updated' );
 		}
@@ -512,10 +524,36 @@ class PF_RSS_Import extends PF_Module {
 	}
 
 	/**
+	 * Processes an OPML upload.
+	 *
+	 * @param array $file File array.
+	 * @return string
+	 */
+	public static function process_opml_upload( $file ) {
+		$override = array( 'test_form' => false );
+		$file     = wp_handle_upload( $file, $override );
+
+		// Verify that it's an OPML file.
+		$opml_reader   = new OPML_reader();
+		$opml_contents = file_get_contents( $file['file'] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		$opml_reader->build_from_string( $opml_contents );
+
+		if ( ! empty( $opml_reader->opml_file ) ) {
+			return $file['url'];
+		}
+
+		return '';
+	}
+
+	/**
 	 * Registers RSS Import settings with WP Settings API.
 	 */
 	public function register_settings() {
-		register_setting( PF_SLUG . '_feedlist_group', PF_SLUG . '_feedlist', array( 'PF_RSS_Import', 'pf_feedlist_validate' ) );
+		register_setting(
+			'pf_feedlist_group',
+			'pf_feedlist',
+			[ 'PF_RSS_Import', 'pf_feedlist_validate' ],
+		);
 	}
 
 	/**

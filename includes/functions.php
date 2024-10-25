@@ -1187,6 +1187,44 @@ function pf_custom_upload_opml( $existing_mimes = array() ) {
 add_filter( 'upload_mimes', 'pf_custom_upload_opml' );
 
 /**
+ * Defines additional mime types for known file extensions.
+ *
+ * @param array  $checked  Checked file data.
+ * @param string $file     File path.
+ * @param string $filename File name.
+ * @return array
+ */
+function pf_allow_additional_mime_types( $checked, $file, $filename ) {
+	if ( ! empty( $checked['type'] ) ) {
+		return $checked;
+	}
+
+	$file_ext = pathinfo( $filename, PATHINFO_EXTENSION );
+
+	$real_mime = '';
+	if ( function_exists( 'finfo_open' ) ) {
+		$finfo     = finfo_open( FILEINFO_MIME_TYPE );
+		$real_mime = finfo_file( $finfo, $file );
+		finfo_close( $finfo );
+	}
+
+	$mime_types = [
+		'opml' => [ 'text/xml' ],
+	];
+
+	if ( array_key_exists( $file_ext, $mime_types ) ) {
+		if ( in_array( $real_mime, $mime_types[ $file_ext ], true ) ) {
+			$checked['ext']             = $file_ext;
+			$checked['type']            = $real_mime;
+			$checked['proper_filename'] = $filename;
+		}
+	}
+
+	return $checked;
+}
+add_filter( 'wp_check_filetype_and_ext', 'pf_allow_additional_mime_types', 10, 3 );
+
+/**
  * Iterates cycle state.
  *
  * @param string $option_name  Option name.
