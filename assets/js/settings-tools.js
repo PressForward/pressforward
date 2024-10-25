@@ -12,6 +12,12 @@ jQuery(window).load(function () {
 		// Wait for the browser to scroll to the anchor.
 		setTimeout(function() {
 			jQuery(window).scrollTop(0);
+
+			// On initial load, set the tab to the hash.
+			const initialTab = document.getElementById( currentTab.replace(/#/g, '') + '-tab' );
+			const initialTabTarget = jQuery(initialTab).attr('data-tab-target');
+
+			tabToTarget( initialTabTarget, initialTab );
 		}, 0);
 	}
 
@@ -34,7 +40,8 @@ jQuery(window).load(function () {
 
 		// Update the 'action' attribute of the form to reflect the current tab.
 		const form = tab.closest( 'form' );
-		form.action = form.action.replace(/#.*$/, '') + target;
+		const formAction = form.getAttribute('action');
+		form.setAttribute('action', formAction.replace(/#.*$/, '') + target);
 	}
 
 	jQuery('.pressforward #pf-settings-tabs').on('click', '.nav-tab', function (evt) {
