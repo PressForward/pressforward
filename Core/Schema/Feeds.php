@@ -105,6 +105,10 @@ class Feeds implements HasActions, HasFilters {
 					'method' => 'deal_with_old_feedlists',
 				),
 				array(
+					'hook'   => 'wp_ajax_pf_validate_feed',
+					'method' => 'validate_feed_cb',
+				),
+				array(
 					'hook'   => 'post_submitbox_misc_actions',
 					'method' => 'feed_submitbox_pf_actions',
 				),
@@ -664,6 +668,90 @@ class Feeds implements HasActions, HasFilters {
 		if ( ! $check_up ) {
 			wp_die( 'Unable to update feedlist option with new smaller feedlist.' );
 		}
+	}
+
+	/**
+	 * AJAX callback for feed validation.
+	 *
+	 * @return void
+	 */
+	public function validate_feed_cb() {
+		$success = false;
+
+		$retval = [
+			'message' => __( 'Not a valid feed URL.', 'pressforward' ),
+			'feedUrl' => '',
+		];
+
+		$url = isset( $_POST['feedUrl'] ) ? sanitize_text_field( wp_unslash( $_POST['feedUrl'] ) ) : '';
+
+		if ( ! $url ) {
+			wp_send_json_error( $retval );
+		}
+
+		$retval['url'] = $url;
+
+		$validated = self::validate_feed( $url );
+
+		if ( $validated['success'] ) {
+			$validated_feed_url = $validated['feedUrl'];
+
+			if ( $validated_feed_url === $url ) {
+				$retval['message'] = __( 'Valid feed URL.', 'pressforward' );
+			} else {
+				$retval['message'] = sprintf(
+					// translators: 1: URL provided, 2: Validated feed URL.
+					__( 'You provided the URL %1$s, which is not a valid feed URL. We detected a related feed URL at %2$s.', 'pressforward' ),
+					'<code>' . $url . '</code>',
+					'<code>' . $validated_feed_url . '</code>'
+				);
+			}
+
+			$retval['feedUrl'] = $validated['feedUrl'];
+			wp_send_json_success( $retval );
+		}
+
+		wp_send_json_error( $retval );
+	}
+
+	/**
+	 * Validates that a URL corresponds to an RSS feed.
+	 *
+	 * @param string $url URL to validate.
+	 * @return array
+	 */
+	public static function validate_feed( $url ) {
+		$retval = [
+			'success' => false,
+			'feedUrl' => $url,
+			'message' => '',
+		];
+
+		$is_url = false;
+
+		if ( filter_var( $url, FILTER_VALIDATE_URL ) ) {
+			$is_url = true;
+		} elseif ( preg_match( '/^[\w.-]+\.[a-z]{2,}(\/\S*)?$/i', $url ) ) {
+			$url = esc_url( 'https://' . $url );
+		}
+
+		$retval['url'] = $url;
+
+		if ( ! $url ) {
+			$message = __( 'Not a valid URL.', 'pressforward' );
+			return $retval;
+		}
+
+		$feed = fetch_feed( $url );
+		if ( is_wp_error( $feed ) ) {
+			$message = $feed->get_error_message();
+			return $retval;
+		}
+
+		$retval['success'] = true;
+		$retval['feedUrl'] = $feed->feed_url;
+
+		return $retval;
 	}
 
 	/**

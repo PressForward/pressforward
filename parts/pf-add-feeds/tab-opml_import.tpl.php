@@ -25,8 +25,6 @@ foreach ( $allowed_mime_types as $ext => $mime ) {
 	<?php esc_html_e( 'Use this tool to import an OPML file from a URL or upload an OPML file from your computer. Please note that large OPML files may take some time to process', 'pressforward' ); ?>
 </p>
 
-<form method="post" action="options.php" enctype="multipart/form-data">
-
 <div class="pf_feeder_input_box">
 	<table class="form-table" role="presentation">
 		<tr>
@@ -59,4 +57,3 @@ foreach ( $allowed_mime_types as $ext => $mime ) {
 </div>
 
 <?php settings_fields( 'pf_feedlist_group' ); ?>
-</form>

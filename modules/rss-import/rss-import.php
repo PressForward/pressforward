@@ -330,25 +330,37 @@ class PF_RSS_Import extends PF_Module {
 	public function add_to_feeder() {
 		wp_enqueue_media();
 		wp_enqueue_script( 'pf-add-feeds' );
+		wp_enqueue_style( 'pf-add-feeds' );
 
 		$feedlist = get_option( PF_SLUG . '_feedlist' );
 
 		?>
-		<div class="pf-opt-group">
-			<div class="rss-box ">
-				<h3 class="hndle"><span><?php esc_html_e( 'Subscribe to Feeds', 'pressforward' ); ?></span></h3>
-				<div class="inside">
-					<div><?php esc_html_e( 'Add Single Feed', 'pressforward' ); ?> <?php esc_html_e( '(RSS or Atom)', 'pressforward' ); ?></div>
+		<p>
+			<?php esc_html_e( 'Enter the URL of an RSS feed. PressForward will watch this feed for updates, and will automatically import newly published items into the All Content tool.', 'pressforward' ); ?>
+		</p>
 
-					<div class="pf_feeder_input_box">
-						<input id="<?php echo esc_attr( PF_SLUG ) . '_feedlist[single]'; ?>" class="regular-text pf_primary_media_opml_url" type="text" name="<?php echo esc_attr( PF_SLUG ) . '_feedlist[single]'; ?>" value="" />
-						<label class="description" for="<?php echo esc_attr( PF_SLUG ) . '_feedlist[single]'; ?>"><?php esc_html_e( '*Complete URL path', 'pressforward' ); ?></label>
-						<a href="http://en.wikipedia.org/wiki/RSS"><?php esc_html_e( 'What is an RSS Feed?', 'pressforward' ); ?></a>
-					</div>
+		<p>
+			<?php echo wp_kses_post( '<a href="https://en.wikipedia.org/wiki/RSS">Learn more about RSS</a>.' ); ?>
+		</p>
 
-					<input type="submit" class="button-primary" value="<?php esc_attr_e( 'Submit', 'pressforward' ); ?>" />
-				</div>
-			</div>
+		<div class="pf_feeder_input_box">
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row">
+						<label for="pf_feedlist-single"><?php esc_html_e( 'Feed URL', 'pressforward' ); ?></label>
+					</th>
+
+					<td>
+						<input id="pf_feedlist-single" class="regular-text pf_primary_media_opml_url" type="text" name="pf_feedlist[single]" value="" />
+
+						<input id="rss-submit-button" type="submit" class="button-secondary" value="<?php esc_attr_e( 'Submit', 'pressforward' ); ?>" />
+
+						<div class="feed-validation-message" id="feed-validation-message"></div>
+
+						<input type="submit" id="rss-submit-button-js" class="rss-submit-button-js button-primary" value="<?php esc_attr_e( 'Subscribe to Feed', 'pressforward' ); ?>" />
+					</td>
+				</tr>
+			</table>
 		</div>
 		<?php
 	}

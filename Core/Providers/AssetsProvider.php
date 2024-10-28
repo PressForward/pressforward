@@ -356,6 +356,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	 */
 	public function admin_enqueue_styles() {
 		$build_styles = [
+			'pf-add-feeds'     => 'add-feeds',
 			'pf-bootstrap'     => 'bootstrap',
 			'pf-reader'        => 'reader',
 			'pf-nominate-this' => 'nominate-this',
