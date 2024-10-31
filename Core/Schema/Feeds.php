@@ -208,17 +208,17 @@ class Feeds implements HasActions, HasFilters {
 			apply_filters(
 				'pf_register_feed_post_type_args',
 				array(
-					'label'                 => $labels['name'],
+					'label'                 => __( 'Feeds', 'pressforward' ),
 					'labels'                => $labels,
 					'description'           => __( 'Feeds imported by PressForward&#8217;s Feed Importer', 'pressforward' ),
 					'public'                => false,
 					'hierarchical'          => true,
 					'supports'              => array( 'title', 'editor', 'author', 'thumbnail', 'custom-fields' ),
-					'show_in_menu'          => PF_MENU_SLUG,
 					'show_in_admin_bar'     => true,
 					'show_in_rest'          => true,
 					'rest_namespace'        => 'pf/v1',
 					'rest_base'             => 'feeds',
+					'menu_icon'             => PF_URL . 'pressforward-16.png', // icon URL.
 					'rest_controller_class' => 'PF_REST_Posts_Controller',
 					'show_ui'               => true, // for testing only.
 					'capability_type'       => $this->post_type,

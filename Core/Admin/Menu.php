@@ -111,7 +111,7 @@ class Menu implements HasActions, HasFilters {
 			PF_MENU_SLUG, // slug.
 			[ $this, 'display_welcome_page' ], // callback.
 			PF_URL . 'pressforward-16.png', // icon URL.
-			24 // Position (just above comments - 25).
+			25 // Position (just above comments - 25).
 		);
 
 		// Welcome page is the first item in the menu.
@@ -123,8 +123,6 @@ class Menu implements HasActions, HasFilters {
 			PF_MENU_SLUG,
 			[ $this, 'display_welcome_page' ]
 		);
-
-		remove_submenu_page( PF_MENU_SLUG, 'edit.php?post_type=pf_feed' );
 	}
 
 

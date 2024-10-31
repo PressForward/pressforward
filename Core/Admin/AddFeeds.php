@@ -76,14 +76,18 @@ class AddFeeds implements HasActions, HasFilters {
 	 * @return void
 	 */
 	public function add_plugin_admin_menu() {
+		// Remove the default 'Add New' page for feeds.
+		remove_submenu_page( 'edit.php?post_type=pf_feed', 'post-new.php?post_type=pf_feed' );
+
 		// Feed-listing page is accessible only to Editors and above.
 		add_submenu_page(
-			PF_MENU_SLUG,
+			'edit.php?post_type=pf_feed',
 			__( 'Add Feeds', 'pressforward' ),
 			__( 'Add Feeds', 'pressforward' ),
 			get_option( 'pf_menu_feeder_access', $this->user_interface->pf_get_defining_capability_by_role( 'editor' ) ),
 			PF_SLUG . '-feeder',
-			array( $this, 'display_feeder_builder' )
+			array( $this, 'display_feeder_builder' ),
+			1
 		);
 	}
 
