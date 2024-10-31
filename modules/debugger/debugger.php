@@ -14,28 +14,24 @@ class PF_Debugger extends PF_Module {
 	 */
 	public function __construct() {
 		parent::start();
+		add_filter( 'pf_tabs_pf-tools', array( $this, 'set_permitted_tools_tabs' ), 100 );
+		add_action( 'pf_do_pf-tools_tab_debug-log', [ $this, 'tab_callback' ] );
 		add_filter( 'pf_setup_admin_rights', array( $this, 'control_menu_access' ) );
 	}
 
 	/**
-	 * Register the admin menu items.
+	 * Register the Tools tab for Debug Log.
 	 *
-	 * The parent class will take care of registering them.
-	 *
-	 * @param array $admin_menus Admin menus.
+	 * @param array $tabs Tabs.
+	 * @return array
 	 */
-	public function setup_admin_menus( $admin_menus ) {
-		$admin_menus = array();
-
-		$admin_menus[] = array(
-			'page_title' => __( 'View Log', 'pressforward' ),
-			'menu_title' => __( 'View Log', 'pressforward' ),
-			'cap'        => get_option( 'pf_menu_log_access', pf_get_defining_capability_by_role( 'administrator' ) ),
-			'slug'       => 'pf-debugger',
-			'callback'   => array( $this, 'admin_menu_callback' ),
+	public function set_permitted_tools_tabs( $tabs ) {
+		$tabs['debug-log'] = array(
+			'title' => __( 'Debug Log', 'pressforward' ),
+			'cap'   => get_option( 'pf_menu_log_access', pf_get_defining_capability_by_role( 'administrator' ) ),
 		);
 
-		parent::setup_admin_menus( $admin_menus );
+		return $tabs;
 	}
 
 	/**
@@ -148,7 +144,7 @@ class PF_Debugger extends PF_Module {
 	/**
 	 * Admin menu callback.
 	 */
-	public function admin_menu_callback() {
+	public function tab_callback() {
 		global $wpdb;
 
 		// Default log location is in the uploads directory.
@@ -174,7 +170,6 @@ class PF_Debugger extends PF_Module {
 
 		?>
 		<div class="wrap">
-			<h2><?php esc_html_e( 'Current Log', 'pressforward' ); ?></h2>
 			<p><?php esc_html_e( 'Does not update in real time.', 'pressforward' ); ?></p>
 			<p><?php esc_html_e( 'Total Current Feed Items', 'pressforward' ); ?>:
 			<?php
