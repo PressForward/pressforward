@@ -108,13 +108,13 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	}
 
 	/**
-	 * Adds the 'Nominated' admin panel.
+	 * Adds the 'Nominated Items' admin panel.
 	 */
 	public function add_plugin_admin_menu() {
 		add_submenu_page(
 			PF_MENU_SLUG,
-			__( 'Nominated', 'pressforward' ),
-			__( 'Nominated', 'pressforward' ),
+			__( 'Nominated Items', 'pressforward' ),
+			__( 'Nominated Items', 'pressforward' ),
 			get_option( 'pf_menu_under_review_access', $this->user_interface->pf_get_defining_capability_by_role( 'contributor' ) ),
 			PF_SLUG . '-review',
 			array( $this, 'display_review_builder' )
@@ -166,7 +166,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 		<div class="list pf_container pf-nominated full<?php echo esc_attr( $extra_class ); ?>">
 			<header id="app-banner">
 				<div class="title-span title">
-					<?php pressforward( 'controller.template_factory' )->the_page_headline( 'Nominated' ); ?>
+					<?php pressforward( 'controller.template_factory' )->the_page_headline( 'Nominated Items' ); ?>
 					<button class="btn btn-small" id="fullscreenfeed"> <?php esc_html_e( 'Full Screen', 'pressforward' ); ?> </button>
 				</div><!-- End title -->
 

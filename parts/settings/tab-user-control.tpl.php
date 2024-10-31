@@ -55,8 +55,8 @@ $admin_rights = array(
 	),
 	'pf_menu_under_review_access'  => array(
 		'default' => 'contributor',
-		'title'   => __( 'Nominated Menu', 'pressforward' ),
-		'details' => __( 'Nominated Menu sets the user role required to see items in Nominated.', 'pressforward' ),
+		'title'   => __( 'Nominated Items Menu', 'pressforward' ),
+		'details' => __( 'Nominated Items Menu sets the user role required to see items in Nominated Items.', 'pressforward' ),
 	),
 	'pf_menu_nominate_this_access' => array(
 		// Default to the Feed Items access permissions.
