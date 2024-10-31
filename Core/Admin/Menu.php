@@ -324,7 +324,7 @@ class Menu implements HasActions, HasFilters {
 				),
 				'pf_menu_all_content_access'    => array(
 					'default' => 'contributor',
-					'title'   => __( 'All Content Menu', 'pressforward' ),
+					'title'   => __( 'Feed Items Menu', 'pressforward' ),
 				),
 				'pf_menu_under_review_access'   => array(
 					'default' => 'contributor',

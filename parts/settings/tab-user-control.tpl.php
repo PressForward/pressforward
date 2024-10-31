@@ -50,8 +50,8 @@ $admin_rights = array(
 	),
 	'pf_menu_all_content_access'   => array(
 		'default' => 'contributor',
-		'title'   => __( 'All Content Menu', 'pressforward' ),
-		'details' => __( 'All Content Menu sets the user role required to see items in All Content.', 'pressforward' ),
+		'title'   => __( 'Feed Items Menu', 'pressforward' ),
+		'details' => __( 'Feed Items Menu sets the user role required to see items in Feed Items.', 'pressforward' ),
 	),
 	'pf_menu_under_review_access'  => array(
 		'default' => 'contributor',
@@ -59,7 +59,7 @@ $admin_rights = array(
 		'details' => __( 'Nominated Menu sets the user role required to see items in Nominated.', 'pressforward' ),
 	),
 	'pf_menu_nominate_this_access' => array(
-		// Default to the All Content access permissions.
+		// Default to the Feed Items access permissions.
 		'default' => pf_get_role_by_capability( get_option( 'pf_menu_all_content_access', 'edit_posts' ) ),
 		'title'   => __( 'Nominate This', 'pressforward' ),
 		'details' => __( 'Access to the Nominate This bookmarklet. Note, ability to use different features of the Nominate This bookmarklet will be set by user permissions on feed item and post post types.', 'pressforward' ),

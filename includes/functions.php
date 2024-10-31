@@ -520,7 +520,7 @@ function pf_get_posts_by_id_for_check( $post_type = null, $item_id = null, $ids_
 }
 
 /**
- * Creates the hidden inputs used when nominating a post from All Content.
+ * Creates the hidden inputs used when nominating a post from Feed Items panel.
  *
  * @since 1.7
  *

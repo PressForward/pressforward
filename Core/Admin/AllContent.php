@@ -1,6 +1,8 @@
 <?php
 /**
- * 'All Content' admin panel.
+ * 'Feed Items' admin panel.
+ *
+ * Called 'All Content' for legacy reasons.
  *
  * @package PressForward
  */
@@ -12,7 +14,7 @@ use Intraxia\Jaxion\Contract\Core\HasActions;
 use PressForward\Controllers\PFtoWPUsers;
 
 /**
- * 'All Content' admin panel.
+ * 'Feed Items' admin panel.
  */
 class AllContent implements HasActions {
 	/**
@@ -46,13 +48,13 @@ class AllContent implements HasActions {
 	}
 
 	/**
-	 * Adds 'All Content' admin menu item.
+	 * Adds 'Feed Items' admin menu item.
 	 */
 	public function add_plugin_admin_menu() {
 		add_submenu_page(
 			PF_MENU_SLUG,
-			__( 'All Content', 'pressforward' ),
-			__( 'All Content', 'pressforward' ),
+			__( 'Feed Items', 'pressforward' ),
+			__( 'Feed Items', 'pressforward' ),
 			get_option( 'pf_menu_all_content_access', $this->user_interface->pf_get_defining_capability_by_role( 'contributor' ) ),
 			'pf-all-content',
 			array( $this, 'display_reader_builder' )
@@ -60,7 +62,7 @@ class AllContent implements HasActions {
 	}
 
 	/**
-	 * Displays All Content admin panel.
+	 * Displays Feed Items admin panel.
 	 */
 	public function display_reader_builder() {
 		wp_enqueue_script( 'pf' );
@@ -104,7 +106,7 @@ class AllContent implements HasActions {
 		<div class="pf_container pf-all-content full<?php echo esc_attr( $extra_class ); ?>">
 			<header id="app-banner">
 				<div class="title-span title">
-					<?php pressforward( 'controller.template_factory' )->the_page_headline( __( 'All Content', 'pressforward' ) ); ?>
+					<?php pressforward( 'controller.template_factory' )->the_page_headline( __( 'Feed Items', 'pressforward' ) ); ?>
 					<button class="btn btn-small" id="fullscreenfeed"> <?php esc_html_e( 'Full Screen', 'pressforward' ); ?> </button>
 				</div><!-- End title -->
 				<?php pressforward( 'admin.templates' )->search_template(); ?>

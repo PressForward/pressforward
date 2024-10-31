@@ -336,7 +336,7 @@ class PF_RSS_Import extends PF_Module {
 
 		?>
 		<p>
-			<?php esc_html_e( 'Enter the URL of an RSS feed. PressForward will watch this feed for updates, and will automatically import newly published items into the All Content tool.', 'pressforward' ); ?>
+			<?php esc_html_e( 'Enter the URL of an RSS feed. PressForward will watch this feed for updates, and will automatically import newly published items into the Feed Items tool.', 'pressforward' ); ?>
 		</p>
 
 		<p>
