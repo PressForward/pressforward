@@ -1,7 +1,7 @@
 /* global jQuery */
 jQuery(window).load(function () {
 
-	var firstTab = jQuery('.pressforward #pf-settings-tabs .nav-tab').first();
+	var firstTab = jQuery( '#pf-settings-tabs .nav-tab' ).first();
 	if ( firstTab.length === 0 ) {
 		return;
 	}
@@ -44,7 +44,7 @@ jQuery(window).load(function () {
 		form.setAttribute('action', formAction.replace(/#.*$/, '') + target);
 	}
 
-	jQuery('.pressforward #pf-settings-tabs').on('click', '.nav-tab', function (evt) {
+	jQuery('#pf-settings-tabs').on('click', '.nav-tab', function (evt) {
 		evt.preventDefault();
 		var tab = this;
 		var target = jQuery(tab).attr('data-tab-target');
