@@ -350,6 +350,23 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 						$nom_args['post_parent__in'] = $parents_in_folder->posts;
 					}
 
+					$date_range_start = isset( $_GET['date-range-start'] ) ? sanitize_text_field( wp_unslash( $_GET['date-range-start'] ) ) : '';
+					$date_range_end   = isset( $_GET['date-range-end'] ) ? sanitize_text_field( wp_unslash( $_GET['date-range-end'] ) ) : '';
+
+					if ( $date_range_start || $date_range_end ) {
+						$date_query = [];
+
+						if ( $date_range_start ) {
+							$date_query['after'] = $date_range_start;
+						}
+
+						if ( $date_range_end ) {
+							$date_query['before'] = $date_range_end;
+						}
+
+						$nom_args['date_query'] = $date_query;
+					}
+
 					$nom_query = new WP_Query( $nom_args );
 
 					$count        = 0;

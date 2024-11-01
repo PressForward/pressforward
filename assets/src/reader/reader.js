@@ -1,6 +1,6 @@
 /* global ajaxurl, jQuery, pf */
 
-import { __ } from '@wordpress/i18n'
+import { __, sprintf } from '@wordpress/i18n'
 
 import {
 	removeURLParameter,
@@ -261,6 +261,57 @@ jQuery(window).on('load', function () {
 		evt.preventDefault();
 		window.open("?page=pf-review", "_self")
 	});
+
+	jQuery( '.pf_container' ).on( 'click', '#date-range-button', function( evt ) {
+		evt.preventDefault();
+		jQuery( '#date-range-options' ).toggleClass( 'show' );
+	} );
+
+	jQuery( '.pf_container' ).on( 'click', '.date-range-submit', function( evt ) {
+		evt.preventDefault();
+
+		setDateRangeButtonText();
+
+		document.getElementById( 'date-range-options' ).classList.remove( 'show' );
+
+		const start = jQuery( '#date-range-start' ).val();
+		const end = jQuery( '#date-range-end' ).val();
+
+		const currentPageType = new URLSearchParams( window.location.search ).get( 'page' );
+
+		window.open( "?page=" + currentPageType + "&date-range-start=" + start + "&date-range-end=" + end, "_self" );
+	} );
+
+	const setDateRangeButtonText = () => {
+		const start = jQuery( '#date-range-start' ).val();
+		const end = jQuery( '#date-range-end' ).val();
+
+		const dateRangeButton = document.getElementById( 'date-range-button' );
+
+		if ( dateRangeButton ) {
+			const generateNewButtonText = ( startDate, endDate ) => {
+				if ( startDate && endDate ) {
+					// translators: %1$s is the start date, %2$s is the end date
+					return sprintf( __( '%1$s to %2$s', 'pressforward' ), startDate, endDate );
+				}
+
+				if ( startDate ) {
+					// translators: %1$s is the start date
+					return sprintf( __( 'Newer than %1$s', 'pressforward' ), startDate );
+				}
+
+				if ( endDate ) {
+					// translators: %1$s is the end date
+					return sprintf( __( 'Older than %1$s', 'pressforward' ), endDate );
+				}
+
+				return __( 'All Dates', 'pressforward' );
+			}
+
+			dateRangeButton.querySelector( '.date-range-text' ).textContent = generateNewButtonText( start, end );
+		}
+	}
+	setDateRangeButtonText();
 
 	jQuery('.pf_container').on('click', '.remove-nom-this-prompt', function (evt) {
 		evt.preventDefault();

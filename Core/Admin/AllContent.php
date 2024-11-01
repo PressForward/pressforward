@@ -183,6 +183,23 @@ class AllContent implements HasActions {
 					}
 				}
 
+				$date_range_start = isset( $_GET['date-range-start'] ) ? sanitize_text_field( wp_unslash( $_GET['date-range-start'] ) ) : '';
+				$date_range_end   = isset( $_GET['date-range-end'] ) ? sanitize_text_field( wp_unslash( $_GET['date-range-end'] ) ) : '';
+
+				if ( $date_range_start || $date_range_end ) {
+					$date_query = [];
+
+					if ( $date_range_start ) {
+						$date_query['after'] = $date_range_start;
+					}
+
+					if ( $date_range_end ) {
+						$date_query['before'] = $date_range_end;
+					}
+
+					$archive_feed_args['date_query'] = $date_query;
+				}
+
 				$items_to_display = pressforward( 'controller.loops' )->archive_feed_to_display( $archive_feed_args );
 				foreach ( $items_to_display['items'] as $item ) {
 					pressforward( 'admin.templates' )->form_of_an_item( $item, $index );

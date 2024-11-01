@@ -82,6 +82,7 @@ class PF_Loops {
 				'exclude_archived' => false,
 				'count_total'      => false,
 				'orderby'          => '',
+				'date_query'       => null,
 			),
 			$args
 		);
@@ -122,6 +123,10 @@ class PF_Loops {
 			'posts_per_page' => $r['posts_per_page'],
 			'offset'         => $r['start'],
 		);
+
+		if ( $r['date_query'] ) {
+			$post_args['date_query'] = $r['date_query'];
+		}
 
 		if ( empty( $post_args['orderby'] ) ) {
 			$post_args['orderby'] = [ 'meta_value' => 'DESC' ];

@@ -325,6 +325,9 @@ class PFTemplater {
 	 * @param string $page Page name.
 	 */
 	public function nav_bar( $page = 'pf-all-content' ) {
+		$date_range_start = isset( $_GET['date-range-start'] ) ? sanitize_text_field( wp_unslash( $_GET['date-range-start'] ) ) : '';
+		$date_range_end   = isset( $_GET['date-range-end'] ) ? sanitize_text_field( wp_unslash( $_GET['date-range-end'] ) ) : '';
+
 		?>
 		<div class="display">
 			<div class="pf-btns btn-toolbar">
@@ -377,6 +380,7 @@ class PFTemplater {
 							$this->dropdown_option( __( 'My nominations', 'pressforward' ), 'showMyNominations' );
 							$this->dropdown_option( __( 'Unread', 'pressforward' ), 'showUnread' );
 							$this->dropdown_option( __( 'Drafted', 'pressforward' ), 'showDrafted' );
+							$this->dropdown_option( __( 'Date', 'pressforward' ), 'showDate' );
 						} else {
 							if ( isset( $_POST['search-terms'] ) || isset( $_GET['by'] ) || isset( $_GET['pf-see'] ) || isset( $_GET['reveal'] ) ) {
 								$this->dropdown_option( __( 'Reset filter', 'pressforward' ), 'showNormalNominations' );
@@ -415,6 +419,21 @@ class PFTemplater {
 							}
 							?>
 						</ul>
+					</div>
+
+					<div class="pf-daterange-selector btn-group" role="group">
+						<button id="date-range-button" class="btn btn-small" aria-label="<?php esc_attr_e( 'Click to select date range', 'pressforward' ); ?>">
+							<i class="dashicons dashicons-calendar"></i>
+							<span class="date-range-text"><?php esc_html_e( 'All Dates', 'pressforward' ); ?></span>
+						</button>
+
+						<div id="date-range-options" class="date-range-options">
+							<label for="date-range-start"><?php esc_html_e( 'Start', 'pressforward' ); ?></label> <input type="date" id="date-range-start" class="date-range-start" name="date-range-start" value="<?php echo esc_attr( $date_range_start ); ?>" />
+
+							<label for="date-range-end"><?php esc_html_e( 'End', 'pressforward' ); ?></label> <input type="date" id="date-range-end" class="date-range-end" name="date-range-end" value="<?php echo esc_attr( $date_range_end ); ?>" />
+
+							<input type="button" class="btn btn-small date-range-submit" id="date-range-submit" class="btn btn-small" value="<?php esc_attr_e( 'Submit', 'pressforward' ); ?>" />
+						</div>
 					</div>
 
 					<div class="btn-group" role="group">

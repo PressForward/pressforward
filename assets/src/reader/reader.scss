@@ -227,6 +227,57 @@
 
 		}
 	}
+
+	.pf-daterange-selector {
+		position: relative;
+
+		button {
+			padding-left: 24px;
+			position: relative;
+
+			.dashicons.dashicons-calendar {
+				position: absolute;
+				font-size: 14px;
+				left: 2px;
+				top: 4px;
+			}
+		}
+	}
+
+	.date-range-options {
+		display: none;
+		background-color: #fff;
+		border: 1px solid rgba(0, 0, 0, 0.2);
+		border-radius: 6px;
+		box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+		font-size: 14px;
+		padding: 8px;
+		position: absolute;
+		top: calc(100% + 2px);
+		left: 0;
+		width: 200px;
+		align-items: center;
+		grid-template-columns: auto 1fr;
+		gap: 8px;
+		z-index: 9999;
+
+		&.show {
+			display: grid;
+		}
+
+		label {
+			justify-self: end;
+		}
+
+		input[type="date"] {
+			width: 100%;
+		}
+
+		input.date-range-submit {
+			grid-column: span 2;
+			justify-self: start;
+		}
+	}
 }
 
 .tooltip {
