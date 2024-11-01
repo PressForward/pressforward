@@ -1,12 +1,15 @@
-import { __, sprintf } from '@wordpress/i18n'
+/* global ajaxurl, jQuery, pf */
+
+import { __ } from '@wordpress/i18n'
 
 import {
+	removeURLParameter,
 	reshowModal,
 	reviewModal,
 	hideModal,
 	commentPopModal,
 	PFBootstrapInits,
-	detect_view_change
+	detect_view_change // eslint-disable-line camelcase
 } from './util.js'
 
 import {
@@ -17,7 +20,7 @@ import './reader.scss';
 
 /**
  * Display transform for pf
- **/
+ */
 jQuery(window).on('load', function () {
 	// executes when complete page is fully loaded, including all frames, objects and images
 
@@ -41,7 +44,7 @@ jQuery(window).on('load', function () {
 		}
 
 		jQuery(window).on('hashchange', function () {
-			if (window.location.hash == '#ready') {
+			if (window.location.hash === '#ready') {
 				jQuery('.modal').modal('hide');
 			}
 			if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
@@ -73,7 +76,7 @@ jQuery(window).on('load', function () {
 		jQuery("div.pf_container").removeClass('list').addClass('grid');
 		jQuery('#gogrid').addClass('unset');
 		jQuery('#golist').removeClass('unset');
-		jQuery('.feed-item').each(function (index) {
+		jQuery('.feed-item').each(function () {
 			var element = jQuery(this);
 			var itemID = element.attr('id');
 			jQuery('#' + itemID + ' footer .actions').appendTo('#' + itemID + ' header');
@@ -85,7 +88,7 @@ jQuery(window).on('load', function () {
 		jQuery("div.pf_container").removeClass('grid').addClass('list');
 		jQuery('#golist').addClass('unset');
 		jQuery('#gogrid').removeClass('unset');
-		jQuery('.feed-item').each(function (index) {
+		jQuery('.feed-item').each(function () {
 			var element = jQuery(this);
 			var itemID = element.attr('id');
 			jQuery('#' + itemID + ' header .actions').appendTo('#' + itemID + ' footer');
@@ -101,7 +104,7 @@ jQuery(window).on('load', function () {
 	});
 
 	jQuery('#gomenu').on( 'click', function (evt) {
-		pf.toggler(evt, this, function (evt) {
+		pf.toggler(evt, this, function () {
 			var toolswin = jQuery('#tools');
 			jQuery("div.pf_container").removeClass('full');
 			jQuery('#feed-folders').hide('slide', {
@@ -130,7 +133,7 @@ jQuery(window).on('load', function () {
 		}, 150);
 	});
 	jQuery('#gofolders').on( 'click', function (evt) {
-		pf.toggler(evt, this, function (evt) {
+		pf.toggler(evt, this, function () {
 			var folderswin = jQuery('#feed-folders');
 			jQuery("div.pf_container").removeClass('full');
 
@@ -148,8 +151,6 @@ jQuery(window).on('load', function () {
 			jQuery("div.pf_container").addClass('full');
 		});
 	});
-
-
 
 	jQuery('#feed-folders .folder').on( 'click', function (evt) {
 		evt.preventDefault();
@@ -188,24 +189,25 @@ jQuery(window).on('load', function () {
 	jQuery('.scroll-toggler').on('click', function (evt) {
 		evt.preventDefault();
 		var element = jQuery(this);
-		var go_scroll_id = element.attr('id');
-		var scroll_setting = 'true';
+		var goScrollId = element.attr('id');
+		var scrollSetting = 'true';
 
-		if ('gopaged' == go_scroll_id) {
-			scroll_setting = 'false';
+		if ('gopaged' === goScrollId) {
+			scrollSetting = 'false';
 		}
+
 		jQuery.post(ajaxurl, {
 				action: 'pf_ajax_user_setting',
 				pf_user_setting: 'pf_user_scroll_switch',
-				setting: scroll_setting
+				setting: scrollSetting
 
 			},
 			function (response) {
-				var check_set = html_entity_decode(jQuery(response).find("response_data").text());
-				if ('1' != check_set) {
+				var checkSet = html_entity_decode(jQuery(response).find("response_data").text());
+				if ('1' != checkSet) {
 					alert( __( 'PressForward has lost its connection to your server. Reload page and try again.', 'pressforward' ) );
 				} else {
-					location.reload();
+					window.location.reload();
 				}
 			});
 
@@ -223,13 +225,12 @@ jQuery(window).on('load', function () {
 			});
 	});
 
-	if (jQuery('.list').length != 0) {
+	if (jQuery('.list').length !== 0) {
 		var actionButtons = jQuery('.list article');
-		jQuery.each(actionButtons, function (index, value) {
+		jQuery.each(actionButtons, function () {
 			var tID = jQuery(this).attr('id');
 			jQuery('#' + tID + ' header .actions').appendTo('#' + tID + ' footer');
 		});
-		//console.log('Item Actions in foot.');
 	}
 
 	jQuery('.pf_container').on('click', '#showMyNominations', function (evt) {
@@ -261,7 +262,6 @@ jQuery(window).on('load', function () {
 		window.open("?page=pf-review", "_self")
 	});
 
-	//update_user_option(pressforward()->form_of->user_id(), 'have_you_seen_nominate_this', false);
 	jQuery('.pf_container').on('click', '.remove-nom-this-prompt', function (evt) {
 		evt.preventDefault();
 		jQuery('article.nominate-this-preview').remove();
@@ -272,7 +272,7 @@ jQuery(window).on('load', function () {
 
 			},
 			function (response) {
-				var check_set = html_entity_decode(jQuery(response).find("response_data").text());
+//				var checkSet = html_entity_decode(jQuery(response).find("response_data").text());
 			});
 		if (jQuery(this).is('[href]')) {
 			window.open("?page=pf-tools", "_self");
