@@ -236,8 +236,8 @@ class AllContent implements HasActions {
 				$limit_q = '';
 			}
 
-			$page_prev = '?page=pf-menu' . $limit_q . '&pc=' . $previous_page;
-			$page_next = '?page=pf-menu' . $limit_q . '&pc=' . $next_page;
+			$page_prev = '?page=pf-all-content' . $limit_q . '&pc=' . $previous_page;
+			$page_next = '?page=pf-all-content' . $limit_q . '&pc=' . $next_page;
 			if ( isset( $_GET['folder'] ) ) {
 				$page_q     = sanitize_text_field( wp_unslash( $_GET['folder'] ) );
 				$page_qed   = '&folder=' . $page_q;
