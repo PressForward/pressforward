@@ -143,8 +143,7 @@ class AllContent implements HasActions {
 
 				$archive_feed_args = array(
 					'start'          => $current_start,
-					// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-					'posts_per_page' => false,
+					'posts_per_page' => 24,
 					'relationship'   => $limit,
 				);
 
