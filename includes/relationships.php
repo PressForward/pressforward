@@ -157,3 +157,53 @@ function pf_get_read_items_for_user( $user_id, $format = 'raw' ) {
 
 	return $rs;
 }
+
+/**
+ * Primes relationship caches for a user and a set of items.
+ *
+ * @param int[] $item_ids Items to prime caches for.
+ * @param int   $user_id  User ID.
+ * @return void
+ */
+function pf_prime_relationship_caches( $item_ids, $user_id ) {
+	$relationships = pressforward( 'schema.relationships' )->get(
+		[
+			'user_id' => $user_id,
+			'item_id' => $item_ids,
+		]
+	);
+
+	$relationship_types = pressforward( 'utility.relate' )->get_relationship_types();
+
+	$last_changed = wp_cache_get( 'last_changed', 'pf_relationships' );
+	if ( ! $last_changed ) {
+		$last_changed = microtime();
+		wp_cache_set( 'last_changed', $last_changed, 'pf_relationships' );
+	}
+
+	foreach ( $item_ids as $item_id ) {
+		foreach ( array_keys( $relationship_types ) as $relationship_type ) {
+
+			$args = [
+				'id'                => null,
+				'user_id'           => $user_id,
+				'item_id'           => $item_id,
+				'relationship_type' => $relationship_type,
+			];
+
+			$cache_value = [];
+			foreach ( $relationships as $relationship ) {
+//				_b( $relationship->item_id === $item_id  );
+				if ( (int) $relationship->item_id === (int) $item_id && (int) $relationship->relationship_type === (int) $relationship_type ) {
+					$cache_value[] = $relationship;
+					break;
+				}
+			}
+
+			// Mimic the cache structure from Relationships::get().
+			$cache_key = md5( wp_json_encode( $args ) ) . '_' . $last_changed;
+
+			wp_cache_set( $cache_key, $cache_value, 'pf_relationships' );
+		}
+	}
+}
