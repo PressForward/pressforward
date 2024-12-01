@@ -97,57 +97,64 @@ jQuery(window).on('load', function () {
 
 	jQuery('#gomenu').on( 'click', function (evt) {
 		evt.preventDefault();
-		jQuery('#feed-folders').hide('slide', {
+		jQuery('#feed-folders').hide( {
 			direction: 'right',
+			duration: 150,
 			easing: 'linear'
-		}, 150);
+		} );
 	});
 
 	jQuery('#gomenu').on( 'click', function (evt) {
 		pf.toggler(evt, this, function () {
 			var toolswin = jQuery('#tools');
 			jQuery("div.pf_container").removeClass('full');
-			jQuery('#feed-folders').hide('slide', {
+			jQuery('#feed-folders').hide( {
 				direction: 'right',
+				duration: 150,
 				easing: 'linear'
-			}, 150);
-			jQuery(toolswin).show('slide', {
+			} );
+			jQuery(toolswin).show( {
 				direction: 'right',
+				duration: 150,
 				easing: 'linear'
-			}, 150);
+			} );
 		}, function () {
 			var toolswin = jQuery('#tools');
 			//jQuery('#feed-folders').hide('slide',{direction:'right', easing:'linear'},150);
-			jQuery(toolswin).hide('slide', {
+			jQuery(toolswin).hide( {
 				direction: 'right',
+				duration: 150,
 				easing: 'linear'
-			}, 150);
+			} );
 			jQuery("div.pf_container").addClass('full');
 		});
 	});
 	jQuery('#gofolders').on( 'click', function (evt) {
 		evt.preventDefault();
-		jQuery('#tools').hide('slide', {
+		jQuery('#tools').hide( {
 			direction: 'right',
+			duration: 150,
 			easing: 'linear'
-		}, 150);
+		} );
 	});
 	jQuery('#gofolders').on( 'click', function (evt) {
 		pf.toggler(evt, this, function () {
 			var folderswin = jQuery('#feed-folders');
 			jQuery("div.pf_container").removeClass('full');
 
-			jQuery(folderswin).show('slide', {
+			jQuery(folderswin).show( {
 				direction: 'right',
+				duration: 150,
 				easing: 'linear'
-			}, 150);
+			} );
 		}, function () {
 			var folderswin = jQuery('#feed-folders');
 			//jQuery('#tools').hide('slide',{direction:'right', easing:'linear'},150);
-			jQuery(folderswin).hide('slide', {
+			jQuery(folderswin).hide( {
 				direction: 'right',
+				duration: 150,
 				easing: 'linear'
-			}, 150);
+			} );
 			jQuery("div.pf_container").addClass('full');
 		});
 	});
