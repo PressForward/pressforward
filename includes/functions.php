@@ -1074,21 +1074,29 @@ function pf_debug_ipads() {
  * @return bool|int
  */
 function pf_is_drafted( $item_id ) {
-	$a = array(
-		'no_found_rows' => true,
-		'fields'        => 'ids',
-		'meta_key'      => pressforward( 'controller.metas' )->get_key( 'item_id' ),
-		'meta_value'    => $item_id,
-		'post_type'     => pressforward_draft_post_type(),
-	);
-	$q = new WP_Query( $a );
+	$cache_key = $item_id . '_' . wp_cache_get_last_changed( 'posts' );
 
-	if ( 0 < $q->post_count ) {
-		$draft = $q->posts;
-		return $draft[0];
-	} else {
-		return false;
+	$cached = wp_cache_get( $cache_key, 'pf_is_drafted' );
+	if ( false === $cached ) {
+		$a = array(
+			'no_found_rows' => true,
+			'fields'        => 'ids',
+			'meta_key'      => pressforward( 'controller.metas' )->get_key( 'item_id' ),
+			'meta_value'    => $item_id,
+			'post_type'     => pressforward_draft_post_type(),
+		);
+		$q = new WP_Query( $a );
+
+		if ( 0 < $q->post_count ) {
+			$cache_value = $q->posts[0];
+		} else {
+			$cache_value = false;
+		}
+
+		wp_cache_set( $cache_key, $cache_value, 'pf_is_drafted' );
 	}
+
+	return $cached;
 }
 
 /**
