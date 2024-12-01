@@ -203,6 +203,7 @@ class AllContent implements HasActions {
 				$items_to_display = pressforward( 'controller.loops' )->archive_feed_to_display( $archive_feed_args );
 
 				$this->prime_relationship_caches( $items_to_display['items'] );
+				$this->prime_draft_caches( $items_to_display['items'] );
 
 				foreach ( $items_to_display['items'] as $item ) {
 					pressforward( 'admin.templates' )->form_of_an_item( $item, $index );
@@ -288,6 +289,15 @@ class AllContent implements HasActions {
 	 */
 	public function prime_relationship_caches( $items ) {
 		pf_prime_relationship_caches( wp_list_pluck( $items, 'post_id' ), get_current_user_id() );
+	}
+
+	/**
+	 * Primes is_drafted caches for a set of items.
+	 *
+	 * @param array $items Items to prime caches for.
+	 */
+	public function prime_draft_caches( $items ) {
+		pf_prime_is_drafted_caches( wp_list_pluck( $items, 'item_id' ) );
 	}
 
 	/**

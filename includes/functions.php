@@ -1100,6 +1100,40 @@ function pf_is_drafted( $item_id ) {
 }
 
 /**
+ * Primes is_drafted cache for one or more items.
+ *
+ * @param int[] $item_ids PF item IDs.
+ */
+function pf_prime_is_drafted_caches( $item_ids ) {
+	$query_args = array(
+		'no_found_rows' => true,
+		'post_type'     => pressforward_draft_post_type(),
+		'meta_query'    => array(
+			array(
+				'key'     => pressforward( 'controller.metas' )->get_key( 'item_id' ),
+				'value'   => $item_ids,
+				'compare' => 'IN',
+			),
+		),
+	);
+
+	$query = new WP_Query( $query_args );
+
+	// Key results by item_id.
+	$found = [];
+	foreach ( $query->posts as $post ) {
+		$found[ pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_id', true ) ] = $post->ID;
+	}
+
+	$last_changed = wp_cache_get_last_changed( 'posts' );
+
+	foreach ( $item_ids as $item_id ) {
+		$cache_value = isset( $found[ $item_id ] ) ? $found[ $item_id ] : 0;
+		wp_cache_set( $item_id . '_' . $last_changed, $cache_value, 'pf_is_drafted' );
+	}
+}
+
+/**
  * Get a list of all drafted items.
  *
  * @param string $post_type Post type. Defaults to 'pf_feed_item'.
