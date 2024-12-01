@@ -299,7 +299,15 @@ function pf_feed_item_tag_taxonomy() {
  * @param string $text Text to excerpt.
  */
 function pf_feed_excerpt( $text ) {
+	global $wp_embed;
+
+	// We don't need embeds for excerpts.
+	if ( ! empty( $wp_embed ) && is_object( $wp_embed ) && method_exists( $wp_embed, 'autoembed' ) ) {
+		remove_filter( 'the_content', array( $wp_embed, 'autoembed' ), 8 );
+	}
+
 	$text = apply_filters( 'the_content', $text );
+
 	$text = str_replace( '\]\]\>', ']]&gt;', $text );
 	$text = preg_replace( '@<script[^>]*?>.*?</script>@si', '', $text );
 	$text = wp_strip_all_tags( $text );
