@@ -67,6 +67,7 @@ class AllContent implements HasActions {
 	public function display_reader_builder() {
 		wp_enqueue_script( 'pf' );
 		wp_enqueue_script( 'pf-views' );
+		wp_enqueue_script( 'pf-relationships' );
 
 		wp_enqueue_style( 'pf-style' );
 
