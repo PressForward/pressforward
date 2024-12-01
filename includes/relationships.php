@@ -193,7 +193,6 @@ function pf_prime_relationship_caches( $item_ids, $user_id ) {
 
 			$cache_value = [];
 			foreach ( $relationships as $relationship ) {
-//				_b( $relationship->item_id === $item_id  );
 				if ( (int) $relationship->item_id === (int) $item_id && (int) $relationship->relationship_type === (int) $relationship_type ) {
 					$cache_value[] = $relationship;
 					break;
