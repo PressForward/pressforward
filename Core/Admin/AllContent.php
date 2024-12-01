@@ -253,14 +253,21 @@ class AllContent implements HasActions {
 			}
 
 			if ( $index >= $per_page ) {
+				$pagination_links = [];
+
 				echo '<div class="pf-navigation">';
+
 				if ( $previous_page > 0 ) {
-					echo '<span class="feedprev"><a class="prevnav" href="admin.php' . esc_attr( $page_prev ) . '">' . esc_html__( 'Previous Page', 'pressforward' ) . '</a></span> | ';
+					$pagination_links[] = '<span class="feedprev"><a class="prevnav" href="admin.php' . esc_attr( $page_prev ) . '">' . esc_html__( 'Previous Page', 'pressforward' ) . '</a></span>';
 				}
 
 				if ( $next_page <= $items_to_display['max_num_pages'] ) {
-					echo '<span class="feednext"><a class="nextnav" href="admin.php' . esc_attr( $page_next ) . '">' . esc_html__( 'Next Page', 'pressforward' ) . '</a></span>';
+					$pagination_links[] = '<span class="feednext"><a class="nextnav" href="admin.php' . esc_attr( $page_next ) . '">' . esc_html__( 'Next Page', 'pressforward' ) . '</a></span>';
 				}
+
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo implode( ' | ', $pagination_links );
+
 				echo '</div>';
 			}
 
