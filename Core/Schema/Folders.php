@@ -292,7 +292,7 @@ class Folders implements HasActions, HasFilters {
 			$feed_ids = array_merge( $feed_ids, $folder['children']['feeds'] );
 		}
 
-		_prime_post_caches( $feed_ids );
+		_prime_post_caches( $feed_ids, false, false );
 
 		?>
 		<ul class="feed_folders">
