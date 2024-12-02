@@ -576,8 +576,20 @@ class PFTemplater {
 
 			if ( ! isset( $metadata['nom_id'] ) || empty( $metadata['nom_id'] ) ) {
 				$metadata['nom_id'] = md5( $item['item_title'] ); }
+
+			// Verify that comment post exists.
+			if ( $id_for_comments ) {
+				$comment_post = get_post( $id_for_comments );
+				if ( ! $comment_post ) {
+					$id_for_comments = null;
+				}
+			}
+
+			// Fallback value.
 			if ( empty( $id_for_comments ) ) {
-				$id_for_comments = $metadata['nom_id']; }
+				$id_for_comments = $metadata['nom_id'];
+			}
+
 			if ( empty( $metadata['item_id'] ) ) {
 				$metadata['item_id'] = md5( $item['item_title'] ); }
 		} else {
