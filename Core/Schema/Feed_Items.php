@@ -337,7 +337,7 @@ class Feed_Items implements HasActions, HasFilters {
 		if ( ! empty( $posts ) ) {
 			foreach ( $posts as &$post ) {
 				// In case of fields=>ids.
-				if ( ! $post instanceof \WP_Post ) {
+				if ( is_numeric( $post ) ) {
 					continue;
 				}
 
