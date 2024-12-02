@@ -374,6 +374,8 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 					$count_qt     = $nom_query->found_posts;
 					$max_nb_pages = $nom_query->max_num_pages;
 
+					$this->prime_relationship_caches( $nom_query->posts );
+
 					while ( $nom_query->have_posts() ) :
 						$nom_query->the_post();
 
@@ -596,6 +598,15 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 			<div class="clear"></div>
 			<?php
 			echo '</div><!-- End container-fluid -->';
+	}
+
+	/**
+	 * Primes relationship caches for a set of items for the current user.
+	 *
+	 * @param array $items Items to prime caches for.
+	 */
+	public function prime_relationship_caches( $items ) {
+		pf_prime_relationship_caches( wp_list_pluck( $items, 'ID' ), get_current_user_id() );
 	}
 
 	/**
