@@ -336,6 +336,11 @@ class Feed_Items implements HasActions, HasFilters {
 		// Fetch some handy pf-specific data.
 		if ( ! empty( $posts ) ) {
 			foreach ( $posts as &$post ) {
+				// In case of fields=>ids.
+				if ( ! $post instanceof \WP_Post ) {
+					continue;
+				}
+
 				$post->word_count = $this->metas->get_post_pf_meta( $post->ID, 'pf_feed_item_word_count', true );
 				$post->source     = $this->metas->get_post_pf_meta( $post->ID, 'source_title', true );
 				$post->tags       = wp_get_post_terms( $post->ID, pf_feed_item_tag_taxonomy() );
