@@ -603,6 +603,8 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	/**
 	 * Primes relationship caches for a set of items for the current user.
 	 *
+	 * @since 5.8.0
+	 *
 	 * @param array $items Items to prime caches for.
 	 */
 	public function prime_relationship_caches( $items ) {

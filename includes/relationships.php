@@ -161,6 +161,8 @@ function pf_get_read_items_for_user( $user_id, $format = 'raw' ) {
 /**
  * Primes relationship caches for a user and a set of items.
  *
+ * @since 5.8.0
+ *
  * @param int[] $item_ids Items to prime caches for.
  * @param int   $user_id  User ID.
  * @return void
