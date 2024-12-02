@@ -375,6 +375,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 					$max_nb_pages = $nom_query->max_num_pages;
 
 					$this->prime_relationship_caches( $nom_query->posts );
+					$this->prime_draft_caches( $nom_query->posts );
 
 					while ( $nom_query->have_posts() ) :
 						$nom_query->the_post();
@@ -610,6 +611,25 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	public function prime_relationship_caches( $items ) {
 		pf_prime_relationship_caches( wp_list_pluck( $items, 'ID' ), get_current_user_id() );
 	}
+
+	/**
+	 * Primes is_drafted caches for a set of items.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @param array $items Items to prime caches for.
+	 */
+	public function prime_draft_caches( $items ) {
+		$item_ids = array_map(
+			function ( $item ) {
+				return pressforward( 'controller.metas' )->get_post_pf_meta( $item->ID, 'item_id', true );
+			},
+			$items
+		);
+
+		pf_prime_is_drafted_caches( $item_ids );
+	}
+
 
 	/**
 	 * Sends a nomination for publishing.
