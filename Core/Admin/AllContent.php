@@ -71,7 +71,9 @@ class AllContent implements HasActions {
 
 		wp_enqueue_style( 'pf-style' );
 
-		if ( 'false' !== get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() ) ) {
+		$do_infinite_scroll = 'false' !== get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() );
+
+		if ( $do_infinite_scroll ) {
 			wp_enqueue_script( 'pf-scroll' );
 		}
 
@@ -89,22 +91,32 @@ class AllContent implements HasActions {
 
 		$current_start = ( ( $current_page - 1 ) * $per_page ) + 1;
 
-		$extra_class = '';
+		$container_classes = [
+			'pf_container',
+			'pf-all-content',
+			'full',
+		];
+
 		if ( isset( $_GET['reveal'] ) && ( 'no_hidden' === $_GET['reveal'] ) ) {
-			$extra_class .= ' archived_visible';
+			$container_classes[] = 'archived_visible';
 		}
-		$view_state = ' grid';
+
 		$view_check = get_user_meta( $user_id, 'pf_user_read_state', true );
 		if ( 'golist' === $view_check ) {
-			$view_state = ' list';
+			$container_classes[] = 'list';
+		} else {
+			$container_classes[] = 'grid';
 		}
-		$extra_class = $extra_class . $view_state;
+
+		if ( $do_infinite_scroll ) {
+			$container_classes[] = 'infinite-scroll';
+		}
 
 		$pf_url = defined( 'PF_URL' ) ? PF_URL : '';
 
 		?>
 		<div class="pf-loader"></div>
-		<div class="pf_container pf-all-content full<?php echo esc_attr( $extra_class ); ?>">
+		<div class="<?php echo esc_attr( implode( ' ', $container_classes ) ); ?>">
 			<header id="app-banner">
 				<div class="title-span title">
 					<?php pressforward( 'controller.template_factory' )->the_page_headline( __( 'Feed Items', 'pressforward' ) ); ?>
@@ -277,9 +289,14 @@ class AllContent implements HasActions {
 			}
 
 			?>
+
 		<div class="clear"></div>
 		<?php
 		echo '</div><!-- End container-fluid -->';
+
+		if ( $do_infinite_scroll ) {
+			pressforward( 'admin.templates' )->infinite_scroll_status_markup();
+		}
 	}
 
 	/**

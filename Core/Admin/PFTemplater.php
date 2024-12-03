@@ -1151,4 +1151,23 @@ class PFTemplater {
 	public function get_modal_hash( $pf_item_id ) {
 		return 'modal-' . $pf_item_id;
 	}
+
+	/**
+	 * Outputs the .page-load-status div used by InfiniteScroll.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @return void
+	 */
+	public function infinite_scroll_status_markup() {
+		?>
+
+		<div class="page-load-status">
+			<p class="infinite-scroll-request"><?php esc_html_e( 'Loading more items...', 'pressforward' ); ?></p>
+			<p class="infinite-scroll-last"></p>
+			<p class="infinite-scroll-error"></p>
+		</div>
+
+		<?php
+	}
 }

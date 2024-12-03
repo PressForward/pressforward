@@ -131,7 +131,9 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 
 		wp_enqueue_style( 'pf-style' );
 
-		if ( 'false' !== get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() ) ) {
+		$do_infinite_scroll = 'false' !== get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() );
+
+		if ( $do_infinite_scroll ) {
 			wp_enqueue_script( 'pf-scroll' );
 		}
 
@@ -152,10 +154,14 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 		$count_q     = 0;
 		$extra_class = '';
 
+		$container_classes = [ 'list', 'pf_container', 'pf-nominated', 'full' ];
+
 		if ( isset( $_GET['reveal'] ) && ( 'no_hidden' === sanitize_text_field( wp_unslash( $_GET['reveal'] ) ) ) ) {
-			$extra_class .= ' archived_visible';
-		} else {
-			$extra_class .= '';
+			$container_classes[] = 'archived_visible';
+		}
+
+		if ( $do_infinite_scroll ) {
+			$container_classes[] = 'infinite-scroll';
 		}
 
 		$pf_url = defined( 'PF_URL' ) ? PF_URL : '';
@@ -163,7 +169,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 		?>
 		<div class="pf-loader"></div>
 
-		<div class="list pf_container pf-nominated full<?php echo esc_attr( $extra_class ); ?>">
+		<div class="<?php echo esc_attr( implode( ' ', $container_classes ) ); ?>">
 			<header id="app-banner">
 				<div class="title-span title">
 					<?php pressforward( 'controller.template_factory' )->the_page_headline( 'Nominated Items' ); ?>
@@ -596,9 +602,14 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 						echo '</div>';
 					}
 					?>
+
 			<div class="clear"></div>
 			<?php
 			echo '</div><!-- End container-fluid -->';
+
+			if ( $do_infinite_scroll ) {
+				pressforward( 'admin.templates' )->infinite_scroll_status_markup();
+			}
 	}
 
 	/**
