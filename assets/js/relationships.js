@@ -12,6 +12,12 @@ jQuery( window ).load(function() {
 			otherstar = item.find( '.modal .star-item' );
 		}
 		dostarstuff( obj, item, id, parent, otherstar );
+
+		const actionContainer = evt.target.closest( '.action-container' );
+		if ( actionContainer ) {
+			window.pf.LoadingEffect.start( actionContainer );
+		}
+
 		jQuery.post(ajaxurl, {
 			action: 'pf_ajax_star',
 				// We'll feed it the ID so it can cache in a transient with the ID and find to retrieve later.
@@ -23,6 +29,10 @@ jQuery( window ).load(function() {
 					// alert(otherstar);
 				} else {
 					alert( 'PressForward was unable to access the relationships database.' );
+				}
+
+				if ( actionContainer ) {
+					window.pf.LoadingEffect.stop( actionContainer );
 				}
 			});
 

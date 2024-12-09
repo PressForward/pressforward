@@ -307,3 +307,17 @@
 		border-radius: var(--bs-tooltip-border-radius, 0);
 	}
 }
+
+.action-container {
+	.actions {
+		transition: opacity 0.5s;
+	}
+	&.request-in-progress {
+		.actions {
+			opacity: 0.5;
+			a {
+				pointer-events: none;
+			}
+		}
+	}
+}
