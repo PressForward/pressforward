@@ -68,6 +68,7 @@ class AllContent implements HasActions {
 		wp_enqueue_script( 'pf' );
 		wp_enqueue_script( 'pf-views' );
 		wp_enqueue_script( 'pf-relationships' );
+		wp_enqueue_script( 'pf-archive-nom-imp' );
 
 		wp_enqueue_style( 'pf-style' );
 
