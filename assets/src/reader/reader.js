@@ -29,6 +29,7 @@ jQuery(window).on('load', function () {
 	jQuery('.pf-loader').delay(300).fadeOut("slow", function () {
 		var theModal, $closeEl, $modalEl;
 		jQuery('.pf_container').fadeIn("slow");
+		jQuery( '.page-load-status' ).show();
 		if (window.location.hash.indexOf("#") < 0) {
 			window.location.hash = '#ready';
 		} else if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
