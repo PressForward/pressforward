@@ -128,6 +128,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 		wp_enqueue_script( 'pf' );
 		wp_enqueue_script( 'pf-views' );
 		wp_enqueue_script( 'pf-send-to-draft-imp' );
+		wp_enqueue_script( 'pf-relationships' );
 
 		wp_enqueue_style( 'pf-style' );
 
