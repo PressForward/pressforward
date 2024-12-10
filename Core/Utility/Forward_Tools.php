@@ -94,7 +94,7 @@ class Forward_Tools {
 	 * @return int
 	 */
 	public function get_post_nomination_count( $post_id ) {
-		$nominators_array = $this->get_nomination_nominator_array( $nomination_id );
+		$nominators_array = $this->get_nomination_nominator_array( $post_id );
 		return count( $nominators_array );
 	}
 
