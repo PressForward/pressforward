@@ -228,10 +228,8 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$this->assertTrue( $nominators['applied'] );
 		if ( $nominators['applied'] ){
 			$check_u_count = pressforward('utility.forward_tools')->apply_nomination_user_data( $nomination, $user_id_2 );
-			$check_nom_count = pressforward('utility.forward_tools')->apply_nomination_count( $nomination, $user_id_2 );
 		} else {
 			pressforward('utility.forward_tools')->revoke_nomination_user_data( $nomination, $user_id_2 );
-			pressforward('utility.forward_tools')->revoke_nomination_count( $nomination, $user_id_2 );
 		}
 		//$nominators = pressforward('utility.forward_tools')->apply_nomination_data($nomination, $user_id_2);
 		pressforward('controller.metas')->update_pf_meta( $nomination, 'nominator_array', $nominators['nominators'] );
@@ -290,10 +288,8 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$this->assertFalse( $nominators['applied'] );
 		if ( $nominators['applied'] ){
 			pressforward('utility.forward_tools')->apply_nomination_user_data( $nomination, $user_id_2 );
-			pressforward('utility.forward_tools')->apply_nomination_count( $nomination, $user_id_2 );
 		} else {
 			$check_u_count = pressforward('utility.forward_tools')->revoke_nomination_user_data( $nomination, $user_id_2 );
-			$check_nom_count = pressforward('utility.forward_tools')->revoke_nomination_count( $nomination, $user_id_2 );
 		}
 		//$nominators = pressforward('utility.forward_tools')->apply_nomination_data($nomination, $user_id_2);
 		$this->check_standard_user_metrics($nomination, $user_id_2, 0, true);

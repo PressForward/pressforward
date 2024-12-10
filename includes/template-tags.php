@@ -161,8 +161,7 @@ function the_item_repeats() {
  * @return string
  */
 function get_the_nomination_count() {
-	$m = pressforward( 'controller.metas' )->get_post_pf_meta( get_the_ID(), 'nomination_count' );
-	return $m;
+	return pressforward( 'utility.forward_tools' )->get_post_nomination_count( get_the_ID() );
 }
 
 /**

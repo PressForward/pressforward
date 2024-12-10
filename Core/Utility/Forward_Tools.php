@@ -88,6 +88,17 @@ class Forward_Tools {
 	}
 
 	/**
+	 * Gets a count of nominations for a promoted item.
+	 *
+	 * @param int $post_id WP post ID of the promoted item.
+	 * @return int
+	 */
+	public function get_post_nomination_count( $post_id ) {
+		$nominators_array = $this->get_nomination_nominator_array( $nomination_id );
+		return count( $nominators_array );
+	}
+
+	/**
 	 * Gets the nominator array for a promoted item.
 	 *
 	 * Nominators are stored canonically on the nomination object.
@@ -188,61 +199,16 @@ class Forward_Tools {
 	}
 
 	/**
-	 * Increments counts when a nomination is created.
+	 * Refreshes the nomination count for an item.
 	 *
-	 * @param int  $id      ID of the nomination.
-	 * @param int  $user_id ID of the user.
-	 * @param bool $is_post Whether this is a post. Default false.
-	 * @return int
-	 */
-	public function apply_nomination_count( $id, $user_id = 0, $is_post = false ) {
-		$nom_count = $this->metas->get_post_pf_meta( $id, 'nomination_count', true );
-		if ( empty( $nom_count ) ) {
-			$nom_count = 0;
-		}
-		$parent_id = wp_get_post_parent_id( $id );
-		if ( false !== $parent_id && ! $is_post ) {
-			$feed_nom_count = $this->metas->get_post_pf_meta( $parent_id, 'pf_nominations_in_feed', true );
-			if ( empty( $feed_nom_count ) ) {
-				$feed_nom_count = 0;
-			}
-			$check_meta = $this->metas->update_pf_meta( $parent_id, 'pf_nominations_in_feed', ++$feed_nom_count );
-		}
-
-		$check_meta = $this->metas->update_pf_meta( $id, 'nomination_count', ++$nom_count );
-		pf_log( 'Attempt to update the meta for nomination_count resulted in: ' );
-		pf_log( $check_meta );
-		return $nom_count;
-	}
-
-	/**
-	 * Decrements counts when a nomination is revoked.
+	 * This is a count of the number of nominators for an item. Stored in postmeta
+	 * for the purposes of sorting.
 	 *
-	 * @param int  $id      ID of the nomination.
-	 * @param int  $user_id ID of the user.
-	 * @param bool $is_post Whether this is a post. Default false.
-	 * @return int
+	 * @param int $id ID of the nomination.
 	 */
-	public function revoke_nomination_count( $id, $user_id = 0, $is_post = false ) {
-		$nom_count = $this->metas->get_post_pf_meta( $id, 'nomination_count', true );
-		if ( empty( $nom_count ) ) {
-			$nom_count = 0;
-		}
-
-		$parent_id = wp_get_post_parent_id( $id );
-		if ( false !== $parent_id && ! $is_post ) {
-			$feed_nom_count = $this->metas->get_post_pf_meta( $parent_id, 'pf_nominations_in_feed', true );
-			if ( empty( $feed_nom_count ) ) {
-				$feed_nom_count = 0;
-			}
-
-			$check_meta = $this->metas->update_pf_meta( $parent_id, 'pf_nominations_in_feed', max( 0, --$feed_nom_count ) );
-		}
-
-		$check_meta = $this->metas->update_pf_meta( $id, 'nomination_count', max( 0, --$nom_count ) );
-		pf_log( 'Attempt to update the meta for nomination_count resulted in: ' );
-		pf_log( $check_meta );
-		return $nom_count;
+	public function refresh_nomination_count( $id ) {
+		$nom_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $id );
+		$this->metas->update_pf_meta( $id, 'nomination_count', $nom_count );
 	}
 
 	/**
@@ -351,13 +317,11 @@ class Forward_Tools {
 		$nominators = $this->apply_nomination_array( $id, $user_id );
 		if ( $nominators['applied'] && ! $is_post ) {
 			$this->apply_nomination_user_data( $id, $user_id );
-			$this->apply_nomination_count( $id, $user_id );
 		} elseif ( ! $is_post ) {
 			$this->revoke_nomination_user_data( $id, $user_id );
-			$this->revoke_nomination_count( $id, $user_id );
-		} elseif ( $nominators['applied'] && $is_post ) {
-			$this->apply_nomination_count( $id, $user_id, true );
 		}
+
+		$this->refresh_nomination_count( $id );
 
 		return $nominators['nominators'];
 	}
