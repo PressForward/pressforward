@@ -888,25 +888,6 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	}
 
 	/**
-	 * Increments nomination count for an item.
-	 *
-	 * @param int  $id ID of the item.
-	 * @param bool $up True for increment, false for decrement.
-	 * @return bool
-	 */
-	public function change_nomination_count( $id, $up = true ) {
-		$nom_count = $this->metas->retrieve_meta( $id, 'nomination_count' );
-		if ( $up ) {
-			++$nom_count;
-		} else {
-			--$nom_count;
-		}
-		$check = $this->metas->update_pf_meta( $id, 'nomination_count', $nom_count );
-		pf_log( 'Nomination now has a nomination count of ' . $nom_count . ' applied to post_meta with the result of ' . $check );
-		return $check;
-	}
-
-	/**
 	 * Checks whether a user nominated an item.
 	 *
 	 * @param int $id      ID of the item.
