@@ -209,6 +209,17 @@ class Forward_Tools {
 	public function refresh_nomination_count( $id ) {
 		$nom_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $id );
 		$this->metas->update_pf_meta( $id, 'nomination_count', $nom_count );
+
+		// Count for feed.
+		$parent_id = wp_get_post_parent_id( $id );
+		if ( false !== $parent_id ) {
+			$feed_nom_count = $this->metas->get_post_pf_meta( $parent_id, 'pf_nominations_in_feed', true );
+			if ( ! $feed_nom_count ) {
+				$feed_nom_count = 0;
+			}
+			++$feed_nom_count;
+			$this->metas->update_pf_meta( $parent_id, 'pf_nominations_in_feed', $feed_nom_count );
+		}
 	}
 
 	/**
