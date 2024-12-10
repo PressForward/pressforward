@@ -1032,6 +1032,13 @@ function pf_forward_unto_source() {
 	$obj     = get_queried_object();
 	$post_id = $obj->ID;
 
+	// If the link is the same as the post URL, don't forward.
+	// This can happen when PF provides a fallback for item_link during Classic Editor creation.
+	$guid = pressforward( 'controller.system' )->get_the_guid( $post_id );
+	if ( get_permalink() === $link || $guid === $link ) {
+		return;
+	}
+
 	if ( ! has_action( 'wpseo_head' ) ) {
 		echo '<link rel="canonical" href="' . esc_attr( $link ) . '" />';
 		echo '<meta property="og:url" content="' . esc_attr( $link ) . '" />';
