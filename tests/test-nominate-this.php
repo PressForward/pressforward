@@ -69,7 +69,8 @@ class PF_Tests_Nominate_This_Process extends PF_UnitTestCase {
 		} else {
 			$this->assertTrue( $exists );
 		}
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nominate_id, 'nomination_count' );
+
+		$nomination_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $nominate_id );
 		$this->assertEquals($nomination_count, $count);
 	}
 
