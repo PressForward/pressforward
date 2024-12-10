@@ -402,8 +402,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 						$metadata['pf_item_post_id'] = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'pf_item_post_id', true );
 
 						// Number of Nominations recieved.
-						$nom_count             = pressforward( 'controller.metas' )->retrieve_meta( $nom_id, 'nomination_count' );
-						$metadata['nom_count'] = $nom_count;
+						$metadata['nom_count'] = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $nom_id );
 
 						// Permalink to orig content.
 						$nom_permalink         = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_link', true );
@@ -678,7 +677,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 
 		switch ( $column ) {
 			case 'nomcount':
-				echo esc_html( $this->metas->get_post_pf_meta( $post->ID, 'nomination_count', true ) );
+				echo esc_html( number_format_i18n( pressforward( 'utility.forward_tools' )->get_post_nomination_count( $post->ID ) ) );
 				break;
 			case 'nominatedby':
 				$nominator_id = $this->metas->get_post_pf_meta( $post->ID, 'submitted_by', true );
@@ -706,7 +705,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 		global $post;
 
 		$origin_item_id   = $this->metas->get_post_pf_meta( $post->ID, 'item_id', true );
-		$nomination_count = $this->metas->get_post_pf_meta( $post->ID, 'nomination_count', true );
+		$nomination_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $post->ID );
 		$submitted_by     = $this->metas->get_post_pf_meta( $post->ID, 'submitted_by', true );
 		$source_title     = $this->metas->get_post_pf_meta( $post->ID, 'source_title', true );
 		$posted_date      = $this->metas->get_post_pf_meta( $post->ID, 'item_date', true );
