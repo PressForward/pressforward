@@ -1048,10 +1048,10 @@ class PFTemplater {
 							echo '<a role="button" class="btn btn-small meta_form_modal-button" data-toggle="modal" href="#meta_form_modal_' . esc_attr( $item['post_id'] ) . '" data-post-id="' . esc_attr( $item['post_id'] ) . '" id="meta_form_modal_expander-' . esc_attr( $item['post_id'] ) . '" data-original-title="' . esc_attr__( 'Edit Metadata', 'pressforward' ) . '"><i class="icon-meta-form"></i></a>';
 						}
 					} elseif ( ( 1 === pf_get_relationship_value( 'nominate', $id_for_comments, $user_id ) ) || ( 1 === pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ) {
-						echo '<button class="btn btn-small nominate-now btn-success schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominated', 'pressforward' ) . '"><img src="' . esc_attr( $pf_url ) . 'assets/images/pressforward-single-licon.png" /></button>';
+						echo '<button class="btn btn-small nominate-now user-has-nominated btn-success" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'You have nominated this item', 'pressforward' ) . '"><img src="' . esc_attr( $pf_url ) . 'assets/images/pressforward-single-licon.png" /></button>';
 						// Add option here for admin-level users to send items direct to draft.
 					} else {
-						echo '<button class="btn btn-small nominate-now schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominate', 'pressforward' ) . '"><img src="' . esc_attr( $pf_url ) . 'assets/images/pressforward-single-licon.png" /></button>';
+						echo '<button class="btn btn-small nominate-now user-has-not-nominated schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominate', 'pressforward' ) . '"><img src="' . esc_attr( $pf_url ) . 'assets/images/pressforward-single-licon.png" /></button>';
 						// Add option here for admin-level users to send items direct to draft.
 					}
 

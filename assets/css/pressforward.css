@@ -132,6 +132,10 @@ input[type="text"] {
 	line-height: 18px;
 }
 
+button.btn.user-has-nominated {
+	cursor: default;
+}
+
 .pf_container .btn-info {
 	color: #fff;
 	text-shadow: 0 -1px 0 rgba(0,0,0,.25);

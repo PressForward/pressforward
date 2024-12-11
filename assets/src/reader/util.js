@@ -278,10 +278,16 @@ export function PFBootstrapInits() {
 		title: __( 'Send to Draft', 'pressforward' )
 
 	});
-	jQuery('.nominate-now').tooltip({
+	jQuery('.user-has-not-nominated').tooltip({
 		placement: 'top',
 		trigger: 'hover',
 		title: __( 'Nominate', 'pressforward' )
+
+	});
+	jQuery('.user-has-nominated').tooltip({
+		placement: 'top',
+		trigger: 'hover',
+		title: __( 'You have nominated this item', 'pressforward' )
 
 	});
 	jQuery('.star-item').tooltip({
