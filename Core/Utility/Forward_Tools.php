@@ -388,11 +388,10 @@ class Forward_Tools {
 	/**
 	 * Transitions an item to a nomination.
 	 *
-	 * @param int  $item_post_id         Item post ID.
-	 * @param bool $from_meta_added_item From meta added item.
+	 * @param int  $item_post_id Item post ID.
 	 * @return int|bool
 	 */
-	public function transition_to_nomination( $item_post_id, $from_meta_added_item = false ) {
+	public function transition_to_nomination( $item_post_id ) {
 		// Create.
 		$post          = $this->item_interface->get_post( $item_post_id, ARRAY_A );
 		$nomination_id = $this->advance_interface->to_nomination( $post );
