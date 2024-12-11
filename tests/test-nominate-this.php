@@ -61,7 +61,7 @@ class PF_Tests_Nominate_This_Process extends PF_UnitTestCase {
 	}
 
 	public function check_standard_nomination_metrics($nominate_id, $user_id, $count = 1, $denominate = false){
-		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nominate_id, 'nominator_array' );
+		$nominators = pressforward( 'controller.metas')->get_post_pf_meta( $nominate_id, 'nominator_array' );
 
 		$exists = array_key_exists($user_id, $nominators);
 		if ($denominate){
@@ -153,7 +153,6 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		return $postsAfter;
 	}
 
-
 	public function test_nominate_this_to_feed_item_create() {
 		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'bookmarklet_feed_item_to_nomination_this' ) );
 		wp_set_current_user( $user_id );
@@ -186,6 +185,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		wp_set_current_user( $user_id_2 );
 
 		$nomination_id_two = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $feed_item_id );
+
 		$this->assertEquals($nomination_id, $nomination_id_two);
 
 		$this->check_standard_metrics($feed_item_id, $nomination_id_two, $title);
@@ -197,7 +197,9 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$user_id_3 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'next_nomination_by_type3' ) );
 		wp_set_current_user( $user_id_3 );
 
-		$post['post_title'] = $post['post_title'].' | Test Case';
+		// Ensure uniqueness.
+		$post['post_title'] = 'Nomination Three';
+
 		$nomination_id_three = pressforward('utility.forward_tools')->bookmarklet_to_nomination(false, $post);
 		$this->assertEquals($nomination_id, $nomination_id_three);
 
@@ -252,6 +254,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		wp_set_current_user( $user_id_2 );
 
 		$nomination_id_two = pressforward('bookmarklet.core')->nominate_it();
+		$nominators = pressforward( 'controller.metas')->get_post_pf_meta( $nomination_id, 'nominator_array' );
 		$this->assertEquals($nomination_id, $nomination_id_two);
 
 		$this->check_standard_metrics($feed_item_id, $nomination_id_two, $title);

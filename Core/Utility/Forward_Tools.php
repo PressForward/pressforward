@@ -12,6 +12,8 @@ use PressForward\Interfaces\Advance_System;
 
 use PressForward\Controllers\Metas;
 
+use PressForward\Core\Models\Feed;
+
 /**
  * PressForward object lifecycle tools
  * was once form_of
@@ -88,6 +90,18 @@ class Forward_Tools {
 	}
 
 	/**
+	 * Sets the nominator array for an item.
+	 *
+	 * @param int   $post_id    WP post ID of the item.
+	 * @param array $nominators Nominators.
+	 * @return void
+	 */
+	public function set_post_nominator_array( $post_id, $nominators ) {
+		$this->metas->update_pf_meta( $post_id, 'nominator_array', $nominators );
+		$this->refresh_nomination_count( $post_id );
+	}
+
+	/**
 	 * Gets a count of nominations for a promoted item.
 	 *
 	 * @param int $post_id WP post ID of the promoted item.
@@ -135,27 +149,31 @@ class Forward_Tools {
 	 *
 	 * @param int $post_id ID of the nomination.
 	 * @param int $user_id ID of the user.
-	 * @return bool
+	 * @return array Array of nominators.
 	 */
-	public function add_user_to_nominator_array( $post_id, $user_id ) {
+	public function add_user_to_nominators( $post_id, $user_id ) {
 		$nominators = $this->metas->get_post_pf_meta( $post_id, 'nominator_array' );
-		if ( ! $nominators ) {
-			$nominators = [];
-		}
 
-		if ( isset( $nominators[ $user_id ] ) ) {
-			return false;
-		}
-
-		$nominators[ $user_id ] = [
+		$value_array = array(
 			'user_id'             => $user_id,
 			'nomination_datetime' => gmdate( 'Y-m-d H:i:s' ),
 			'nomination_unixtime' => time(),
-		];
+		);
+
+		if ( empty( $nominators ) ) {
+			$nominators = array();
+		} elseif ( ! is_array( $nominators ) ) {
+			$nominators = array( $nominators );
+		}
+
+		$nominators[ $user_id ] = $value_array;
 
 		$this->metas->update_pf_meta( $post_id, 'nominator_array', $nominators );
+		$this->refresh_nomination_count( $post_id );
 
-		return true;
+		$this->apply_nomination_user_data( $post_id, $user_id );
+
+		return $nominators;
 	}
 
 	/**
@@ -189,7 +207,6 @@ class Forward_Tools {
 		} else {
 			$nominators[ $user_id ] = $value_array;
 			$applied                = true;
-
 		}
 
 		return array(
@@ -211,14 +228,13 @@ class Forward_Tools {
 		$this->metas->update_pf_meta( $id, 'nomination_count', $nom_count );
 
 		// Count for feed.
-		$parent_id = wp_get_post_parent_id( $id );
-		if ( false !== $parent_id ) {
-			$feed_nom_count = $this->metas->get_post_pf_meta( $parent_id, 'pf_nominations_in_feed', true );
-			if ( ! $feed_nom_count ) {
-				$feed_nom_count = 0;
+		$feed_id = wp_get_post_parent_id( $id );
+		if ( false !== $feed_id ) {
+			$feed = Feed::get_instance_by_id( $feed_id );
+			if ( $feed ) {
+				// $force_refresh will update the cached value.
+				$feed_nom_count = $feed->get_nomination_count( true );
 			}
-			++$feed_nom_count;
-			$this->metas->update_pf_meta( $parent_id, 'pf_nominations_in_feed', $feed_nom_count );
 		}
 	}
 
@@ -316,7 +332,9 @@ class Forward_Tools {
 	}
 
 	/**
-	 * Increments metadata on nomination.
+	 * Increments/decrements metadata on nomination.
+	 *
+	 * @deprecated 5.8.0
 	 *
 	 * @param int  $id      WP post ID of the nomination.
 	 * @param int  $user_id ID of the user.
@@ -331,8 +349,6 @@ class Forward_Tools {
 		} elseif ( ! $is_post ) {
 			$this->revoke_nomination_user_data( $id, $user_id );
 		}
-
-		$this->refresh_nomination_count( $id );
 
 		return $nominators['nominators'];
 	}
@@ -386,10 +402,9 @@ class Forward_Tools {
 			return false;
 		} else {
 			$this->advance_interface->transition( $item_post_id, $nomination_id );
-			if ( ! $from_meta_added_item ) {
-				$nominators = pressforward( 'utility.forward_tools' )->apply_nomination_data( $nomination_id );
-				pressforward( 'controller.metas' )->update_pf_meta( $nomination_id, 'nominator_array', $nominators );
-			}
+
+			$this->add_user_to_nominators( $nomination_id, get_current_user_id() );
+
 			return $nomination_id;
 		}
 	}
@@ -497,15 +512,17 @@ class Forward_Tools {
 	 * @return array
 	 */
 	public function nomination_user_transition_check( $id, $item_id, $can_delete = false ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
-		$nominators = $this->apply_nomination_data( $id );
-		$this->metas->update_pf_meta( $id, 'nominator_array', $nominators );
+		$existing_nominators = $this->get_nomination_nominator_array( $id );
+
+		$nominators = $this->add_user_to_nominators( $id, get_current_user_id() );
+
 		$final_step_parent = $this->metas->get_post_pf_meta( $id, 'pf_final_step_id' );
-		if ( 0 !== $final_step_parent && false !== $final_step_parent ) {
+		if ( $final_step_parent ) {
 			// The nomination has already been pushed to final step.
 			// Increment it as well.
-			$nominators = $this->apply_nomination_data( $final_step_parent, 0, true );
-			$this->metas->update_pf_meta( $final_step_parent, 'nominator_array', $nominators );
+			$this->add_user_to_nominators( $final_step_parent, get_current_user_id() );
 		}
+
 		return $nominators;
 	}
 
@@ -606,8 +623,8 @@ class Forward_Tools {
 		pf_log( $nomination_and_post_check );
 
 		if ( ! $nomination_and_post_check ) {
-			$nominators = $this->apply_nomination_data( $item_post_id );
-			$this->metas->update_pf_meta( $item_post_id, 'nominator_array', $nominators );
+			$this->add_user_to_nominators( $item_post_id, get_current_user_id() );
+
 			$this->metas->update_pf_meta( $item_post_id, 'date_nominated', current_time( 'mysql' ) );
 			$this->metas->update_pf_meta( $item_post_id, 'item_id', $item_id );
 			$this->metas->update_pf_meta( $item_post_id, 'pf_item_post_id', $item_post_id );
@@ -645,6 +662,7 @@ class Forward_Tools {
 			// If they are in the nominator array and someone else is, un-relate
 			// them to that nomination.
 			$this->nomination_user_transition_check( $nomination_and_post_check, $item_id, true );
+
 			return $nomination_and_post_check;
 		}
 	}
@@ -848,8 +866,8 @@ class Forward_Tools {
 			$this->metas->establish_post( $post_ID, $pf_meta_args );
 			pf_log( $pf_meta_args );
 			$this->metas->update_pf_meta( $post_ID, 'nom_id', $post_ID );
-			$nominators = $this->apply_nomination_data( $post_ID );
-			$this->metas->update_pf_meta( $post_ID, 'nominator_array', $nominators );
+
+			$this->add_user_to_nominators( $post_ID, get_current_user_id() );
 
 			// When sorting by Nomination Date, we are only interested in the date of the first nomination.
 			$this->metas->update_pf_meta( $post_ID, 'sortable_nom_date', current_time( 'mysql' ) );

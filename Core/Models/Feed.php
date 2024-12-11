@@ -422,4 +422,65 @@ class Feed extends BasicModel {
 			$this->save();
 		}
 	}
+
+	/**
+	 * Gets a count of nominations associated with items belonging to this feed.
+	 *
+	 * @param bool $force_refresh Whether to force a refresh of the count.
+	 * @return int
+	 */
+	public function get_nomination_count( $force_refresh = false ) {
+		if ( $force_refresh ) {
+			$nomination_count = 0;
+
+			$items_belonging_to_feed = get_posts(
+				[
+					'post_type'              => [ 'nomination', 'pf_feed_item' ],
+					'posts_per_page'         => -1,
+					'post_parent'            => $this->get( 'id' ),
+					'update_meta_cache'      => true,
+					'update_post_term_cache' => false,
+					'post_status'            => 'any',
+				]
+			);
+
+			$nominators_of_feed_items = [];
+
+			$nomination_count = 0;
+
+			/*
+			 * An item may be nominated by a user at different points in its
+			 * lifecycle. Don't double-count a given user's nomination for an item.
+			 */
+			foreach ( $items_belonging_to_feed as $item_belonging_to_feed ) {
+				$item_nominators = pressforward( 'utility.forward_tools' )->get_nomination_nominator_array( $item_belonging_to_feed->ID );
+
+				$pf_item_id = get_post_meta( $item_belonging_to_feed->ID, 'item_id', true );
+
+				if ( ! $pf_item_id ) {
+					continue;
+				}
+
+				if ( ! isset( $nominators_of_feed_items[ $pf_item_id ] ) ) {
+					$nominators_of_feed_items[ $pf_item_id ] = [];
+				}
+
+				foreach ( $item_nominators as $nominator ) {
+					$nom_user_id = $nominator['user_id'];
+
+					// Keying ensures uniqueness.
+					$nominators_of_feed_items[ $pf_item_id ][ $nom_user_id ] = $nom_user_id;
+				}
+			}
+
+			foreach ( $nominators_of_feed_items as $nominators ) {
+				$nomination_count += count( $nominators );
+			}
+
+			update_post_meta( $this->get( 'id' ), 'pf_nominations_in_feed', $nomination_count );
+		}
+
+		$cached = get_post_meta( $this->get( 'id' ), 'pf_nominations_in_feed', true );
+		return (int) $cached;
+	}
 }
