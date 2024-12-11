@@ -1032,13 +1032,6 @@ class PFTemplater {
 					}
 
 					if ( 'nomination' === $format ) {
-						$nom_count_classes     = 'btn btn-small nom-count';
-						$metadata['nom_count'] = get_the_nomination_count();
-						if ( $metadata['nom_count'] > 0 ) {
-							$nom_count_classes .= ' btn-info';
-						}
-
-						echo '<a class="' . esc_attr( $nom_count_classes ) . '" data-toggle="tooltip" title="' . esc_attr__( 'Nomination Count', 'pressforward' ) . '" form="' . esc_attr( $metadata['nom_id'] ) . '">' . esc_html( $metadata['nom_count'] ) . '<i class="icon-play"></i></button></a>';
 						$archive_status = '';
 						if ( 1 === pressforward( 'controller.metas' )->get_post_pf_meta( $metadata['nom_id'], 'pf_archive', true ) ) {
 							$archive_status = 'btn-warning';
