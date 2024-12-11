@@ -120,6 +120,31 @@
 				<p><?php esc_html_e( 'Leave both fields empty to disable the source statement.', 'pressforward' ); ?></p>
 			</td>
 		</tr>
+
+		<tr>
+			<th scope="row">
+				<label for="pf-archive-org-enabled">
+					<?php esc_html_e( 'Archive.org integration', 'pressforward' ); ?>
+				</label>
+			</th>
+
+			<td>
+				<?php
+				$archive_org_enabled = pressforward( 'utility.archive_org' )->is_enabled();
+				?>
+
+				<p>
+					<select id="pf-archive-org-enabled" name="pf-archive-org-enabled">
+						<option value="on" <?php selected( $archive_org_enabled ); ?>><?php esc_html_e( 'Enabled', 'pressforward' ); ?></option>
+						<option value="off" <?php selected( ! $archive_org_enabled ); ?>><?php esc_html_e( 'Disabled', 'pressforward' ); ?></option>
+					</select>
+				</p>
+
+				<p>
+					<?php esc_html_e( 'When enabled, PressForward will submit items to archive.org when they are promoted to Draft status.', 'pressforward' ); ?>
+				</p>
+			</td>
+		</tr>
 	</tbody>
 </table>
 

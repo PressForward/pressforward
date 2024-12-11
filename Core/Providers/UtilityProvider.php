@@ -9,6 +9,7 @@ namespace PressForward\Core\Providers;
 
 use Intraxia\Jaxion\Contract\Core\Container;
 
+use PressForward\Core\Utility\ArchiveOrg;
 use PressForward\Core\Utility\Forward_Tools;
 use PressForward\Core\Utility\Relate;
 use PressForward\Core\Utility\Retrieval;
@@ -23,6 +24,12 @@ class UtilityProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	 * @param \Intraxia\Jaxion\Contract\Core\Container $container Container object.
 	 */
 	public function register( Container $container ) {
+		$container->share(
+			'utility.archive_org',
+			function () {
+				return new ArchiveOrg();
+			}
+		);
 
 		$container->share(
 			'utility.forward_tools',

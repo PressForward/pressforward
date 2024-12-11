@@ -434,6 +434,9 @@ class Menu implements HasActions, HasFilters {
 				}
 			}
 
+			$pf_archive_org_enabled = ! empty( $_POST['pf-archive-org-enabled'] ) && 'on' === sanitize_text_field( wp_unslash( $_POST['pf-archive-org-enabled'] ) ) ? 'on' : 'off';
+			update_option( 'pressforward_archive_org_enabled', $pf_archive_org_enabled );
+
 			$pf_draft_post_type = ( ! empty( $_POST[ PF_SLUG . '_draft_post_type' ] ) )
 				? sanitize_text_field( wp_unslash( $_POST[ PF_SLUG . '_draft_post_type' ] ) )
 				: 'post';
