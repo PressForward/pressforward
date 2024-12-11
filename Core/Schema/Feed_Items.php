@@ -659,9 +659,6 @@ class Feed_Items implements HasActions, HasFilters {
 		// We need to init $source_repeat so it can be if 0 if nothing is happening.
 		$source_repeat = 0;
 
-		// We'll need this for our fancy query.
-		global $wpdb;
-
 		// Since rss_object places all the feed items into an array of arrays whose structure is standardized throughout,
 		// We can do stuff with it, using the same structure of items as we do everywhere else.
 		pf_log( 'Now beginning check and processing for entering items into the database.' );
