@@ -613,8 +613,6 @@ class Feed_Items implements HasActions, HasFilters {
 	 * Method to manually delete rssarchival entries on user action.
 	 */
 	public function reset_feed() {
-		global $wpdb, $post;
-
 		$count     = wp_count_posts( pf_feed_item_post_type() );
 		$pub_count = $count->publish;
 		$pages     = $pub_count / 100;

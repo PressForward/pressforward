@@ -126,7 +126,6 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 	}
 
 	public function query_check( $item_id, $post_type = false, $ids_only = false ){
-		global $wpdb;
 		// If the item is less than 24 hours old on nomination, check the whole database.
 		// $theDate = getdate();
 		// $w = date('W');

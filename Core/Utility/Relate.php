@@ -412,7 +412,7 @@ class Relate implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	 * @param bool $limit Limit.
 	 */
 	public function archive_nominations( $limit = false ) {
-		global $wpdb, $post;
+		global $post;
 
 		$args = array(
 			'post_type'      => 'nomination',

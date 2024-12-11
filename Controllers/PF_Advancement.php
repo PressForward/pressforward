@@ -265,8 +265,6 @@ class PF_Advancement implements \PressForward\Interfaces\Advance_System, \Intrax
 	 * @return \WP_Query
 	 */
 	public function pf_get_posts_by_id_for_check( $post_type = false, $item_id = null, $ids_only = false ) {
-		global $wpdb;
-
 		// If the item is less than 24 hours old on nomination, check the whole database.
 		$r = array(
 			// phpcs:disable WordPress.DB.SlowDBQuery

@@ -100,7 +100,6 @@ class PF_to_WP_Posts implements \PressForward\Interfaces\Items {
 	 * @return int|bool
 	 */
 	public function check_not_existing( $item_id, $post_type ) {
-		global $wpdb;
 		$item_id_key = pressforward( 'controller.metas' )->get_key( 'item_id' );
 
 		// WP_Query arguments.
