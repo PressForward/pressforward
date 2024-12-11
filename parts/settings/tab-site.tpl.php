@@ -141,7 +141,7 @@
 				</p>
 
 				<p>
-					<?php esc_html_e( 'When enabled, PressForward will submit items to archive.org when they are promoted to Draft status.', 'pressforward' ); ?>
+					<?php echo wp_kses_post( __( 'When enabled, PressForward will submit items to the Internet Archive (archive.org) when they are promoted to Draft status. <a href="https://archive.org/about/">Read more about the Internet Archive.</a>', 'pressforward' ) ); ?>
 				</p>
 			</td>
 		</tr>
