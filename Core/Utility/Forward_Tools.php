@@ -388,7 +388,7 @@ class Forward_Tools {
 	/**
 	 * Transitions an item to a nomination.
 	 *
-	 * @param int  $item_post_id Item post ID.
+	 * @param int $item_post_id Item post ID.
 	 * @return int|bool
 	 */
 	public function transition_to_nomination( $item_post_id ) {
