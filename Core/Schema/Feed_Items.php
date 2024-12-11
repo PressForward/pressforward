@@ -685,26 +685,10 @@ class Feed_Items implements HasActions, HasFilters {
 			// But it occured to me that, since I'm doing a custom query anyway, I could just query for items with the ID I want.
 			// Less query results, less time.
 			// Perhaps I should do this outside of the foreach? One query and search it for each item_id and then return those not in?
-			$item_id_key = pressforward( 'controller.metas' )->get_key( 'item_id' );
-			$querystr    = $wpdb->prepare(
-				"
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-				AND {$wpdb->postmeta}.meta_key = %s
-				AND {$wpdb->postmeta}.meta_value = %s
-				AND {$wpdb->posts}.post_type = %s
-				ORDER BY {$wpdb->posts}.post_date DESC
-			 ",
-				$item_id_key,
-				$item_id,
-				pf_feed_item_post_type()
-			);
 
 			// Since I've altered the query, I could change this to just see if there are any items in the query results
 			// and check based on that. But I haven't yet.
-			// phpcs:ignore WordPress.DB
-			$checkposts = $wpdb->get_results( $querystr, OBJECT );
+			$checkposts = self::get_existing_items_matching_item_id( $item_id );
 			if ( $checkposts ) {
 				foreach ( $checkposts as $check_post ) {
 					setup_postdata( $check_post );
@@ -727,22 +711,7 @@ class Feed_Items implements HasActions, HasFilters {
 			wp_reset_postdata();
 
 			if ( 0 === $thepostscheck ) {
-				$query_more_str = $wpdb->prepare(
-					"
-						SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-						FROM {$wpdb->posts}, {$wpdb->postmeta}
-						WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-						AND {$wpdb->postmeta}.meta_key = 'item_link'
-						AND {$wpdb->postmeta}.meta_value = %s
-						AND {$wpdb->posts}.post_type = %s
-						ORDER BY {$wpdb->posts}.post_date DESC
-					 ",
-					$item['item_link'],
-					pf_feed_item_post_type()
-				);
-
-				// phpcs:ignore WordPress.DB
-				$checkpoststwo = $wpdb->get_results( $query_more_str, OBJECT );
+				$checkpoststwo = self::get_existing_items_matching_item_link( $item_id );
 
 				if ( $checkpoststwo ) {
 					pf_log( 'Check for posts with the same link.' );
@@ -937,6 +906,67 @@ class Feed_Items implements HasActions, HasFilters {
 		}
 
 		return $retval;
+	}
+
+	/**
+	 * Gets existing feed items matching an item ID.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @param string $item_id Item ID.
+	 * @return array
+	 */
+	public static function get_existing_items_matching_item_id( $item_id ) {
+		global $wpdb;
+
+		$item_id_key = pressforward( 'controller.metas' )->get_key( 'item_id' );
+
+		$querystr = $wpdb->prepare(
+			"
+			SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
+			FROM {$wpdb->posts}, {$wpdb->postmeta}
+			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+			AND {$wpdb->postmeta}.meta_key = %s
+			AND {$wpdb->postmeta}.meta_value = %s
+			AND {$wpdb->posts}.post_type = %s
+			ORDER BY {$wpdb->posts}.post_date DESC
+		 ",
+			$item_id_key,
+			$item_id,
+			pf_feed_item_post_type()
+		);
+
+		// phpcs:ignore WordPress.DB
+		return $wpdb->get_results( $querystr, OBJECT );
+	}
+
+	/**
+	 * Gets existing feed items matching an item link.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @param string $item_link Item link.
+	 * @return array
+	 */
+	public static function get_existing_items_matching_item_link( $item_link ) {
+		global $wpdb;
+
+		$query_more_str = $wpdb->prepare(
+			"
+				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
+				FROM {$wpdb->posts}, {$wpdb->postmeta}
+				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
+				AND {$wpdb->postmeta}.meta_key = 'item_link'
+				AND {$wpdb->postmeta}.meta_value = %s
+				AND {$wpdb->posts}.post_type = %s
+				ORDER BY {$wpdb->posts}.post_date DESC
+			 ",
+			$item_link,
+			pf_feed_item_post_type()
+		);
+
+		// phpcs:ignore WordPress.DB
+		return $wpdb->get_results( $query_more_str, OBJECT );
 	}
 
 	/**
