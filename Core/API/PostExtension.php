@@ -188,6 +188,51 @@ class PostExtension extends APIWithMetaEndpoints implements HasActions, HasFilte
 				},
 			)
 		);
+
+		register_rest_field(
+			$this->post_type,
+			'archiveOrgStatus',
+			[
+				'get_callback' => function ( $post_array ) {
+					$status = pressforward( 'utility.archive_org' )::get_post_status( $post_array['id'] );
+					if ( empty( $status['status'] ) ) {
+						return '';
+					}
+
+					$submitted_date = date_i18n( get_option( 'date_format' ), $status['timestamp'] );
+					$submitted_time = date_i18n( get_option( 'time_format' ), $status['timestamp'] );
+
+					switch ( $status['status'] ) {
+						case 'success':
+							return sprintf(
+								// translators: %1$s is the date, %2$s is the time.
+								__( 'This item was successfully submitted to Archive.org on %1$s at %2$s.', 'pressforward' ),
+								$submitted_date,
+								$submitted_time
+							);
+
+						case 'pending_send':
+						case 'pending_response':
+							return sprintf(
+								// translators: %1$s is the date, %2$s is the time.
+								__( 'This item was submitted to Archive.org on %1$s at %2$s and is pending.', 'pressforward' ),
+								$submitted_date,
+								$submitted_time
+							);
+
+						case 'error':
+							return sprintf(
+								// translators: %1$s is the date, %2$s is the time.
+								__( 'This item was submitted to Archive.org on %1$s at %2$s, but there was an error.', 'pressforward' ),
+								$submitted_date,
+								$submitted_time
+							);
+					}
+
+					return '';
+				},
+			],
+		);
 	}
 
 	/**

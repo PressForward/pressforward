@@ -18,6 +18,7 @@ const PostSettingsControl = ( {} ) => {
 	const { draftPostType, linkToSource } = pfBlocks
 
 	const {
+		archiveOrgStatus,
 		forwardToOrigin,
 		itemLink,
 		postType
@@ -27,7 +28,10 @@ const PostSettingsControl = ( {} ) => {
 		const savedForwardToOrigin = editedPostMeta?.pf_forward_to_origin ? editedPostMeta.pf_forward_to_origin : []
 		const savedItemLink = editedPostMeta?.item_link ? editedPostMeta.item_link : ''
 
+		const savedArchiveOrgStatus = select( 'core/editor' ).getEditedPostAttribute( 'archiveOrgStatus' ) ?? ''
+
 		return {
+			archiveOrgStatus: savedArchiveOrgStatus,
 			forwardToOrigin: savedForwardToOrigin,
 			itemLink: savedItemLink,
 			postType: select( 'core/editor' ).getEditedPostAttribute( 'type' ),
@@ -87,6 +91,20 @@ const PostSettingsControl = ( {} ) => {
 				<PanelRow>
 					{ sourceLink }
 				</PanelRow>
+
+				{ archiveOrgStatus && (
+					<PanelRow>
+						<div className="panel-entry">
+							<div className="panel-entry-label">
+								<span className="components-base-control__label-text">{ __( 'Archive.org', 'pressforward' ) }</span>
+							</div>
+
+							<div className="panel-entry-content">
+								{ archiveOrgStatus }
+							</div>
+						</div>
+					</PanelRow>
+				) }
 			</PluginDocumentSettingPanel>
 		</>
 	)
