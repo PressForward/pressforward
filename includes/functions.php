@@ -501,8 +501,6 @@ function pressforward_create_feed_item_id( $url, $title ) { // phpcs:ignore Gene
  * @return object A standard WP_Query object.
  */
 function pf_get_posts_by_id_for_check( $post_type = null, $item_id = null, $ids_only = false ) {
-	global $wpdb;
-
 	// If the item is less than 24 hours old on nomination, check the whole database.
 	$r = array(
 		'meta_key'   => pressforward( 'controller.metas' )->get_key( 'item_id' ),
