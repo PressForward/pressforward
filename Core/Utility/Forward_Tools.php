@@ -436,7 +436,8 @@ class Forward_Tools {
 		);
 
 		$item_content_obj = pressforward( 'controller.readability' )->get_readable_text( $read_args );
-		$item_content     = htmlspecialchars_decode( $item_content_obj['readable'] );
+		$readable_content = isset( $item_content_obj['readable'] ) ? $item_content_obj['readable'] : '';
+		$item_content     = htmlspecialchars_decode( $readable_content );
 		$word_count       = str_word_count( $item_content );
 
 		$saved_post = $_POST;
