@@ -103,38 +103,6 @@ class PF_to_WP_Posts implements \PressForward\Interfaces\Items {
 		global $wpdb;
 		$item_id_key = pressforward( 'controller.metas' )->get_key( 'item_id' );
 
-		// Ignoring until we remove.
-		// phpcs:disable
-		if ( 3.2 >= get_bloginfo( 'version' ) ) {
-			$querystr = $wpdb->prepare(
-				"
-			   SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-			   FROM {$wpdb->posts}, {$wpdb->postmeta}
-			   WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-			   AND {$wpdb->postmeta}.meta_key = %s
-			   AND {$wpdb->postmeta}.meta_value = %s
-			   AND {$wpdb->posts}.post_type = %s
-			   ORDER BY {$wpdb->posts}.post_date DESC
-			",
-				$item_id_key,
-				$item_id,
-				$post_type
-			);
-			// AND $wpdb->posts.post_date < NOW() <- perhaps by removing we can better prevent simultaneous duplications?
-			// Since I've altered the query, I could change this to just see if there are any items in the query results
-			// and check based on that. But I haven't yet.
-			$checkposts = $wpdb->get_results( $querystr, OBJECT );
-			if ( empty( $checkposts ) ) {
-				return true;
-			} else {
-				pf_log( 'Checked with pre 3.2 method. Post already exists.' );
-				return $checkposts[0]->ID;
-			}
-		}
-		// phpcs:enable
-
-		pf_log( 'Checking with post 3.2 method.' );
-
 		// WP_Query arguments.
 		$args = array(
 			'post_type'  => $post_type,
