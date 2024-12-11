@@ -691,9 +691,12 @@ class Feeds implements HasActions, HasFilters {
 
 		$retval['url'] = $url;
 
-		$validated = self::validate_feed( $url );
+		$already_subscribed = self::is_feed_subscribed( $url );
+		$validated          = self::validate_feed( $url );
 
-		if ( $validated['success'] ) {
+		if ( $already_subscribed ) {
+			$retval['message'] = __( 'You are already subscribed to this feed.', 'pressforward' );
+		} elseif ( $validated['success'] ) {
 			$validated_feed_url = $validated['feedUrl'];
 
 			if ( $validated_feed_url === $url ) {
@@ -752,6 +755,41 @@ class Feeds implements HasActions, HasFilters {
 		$retval['feedUrl'] = $feed->feed_url;
 
 		return $retval;
+	}
+
+	/**
+	 * Checks if a feed is already subscribed.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @param string $url URL to check.
+	 * @return bool
+	 */
+	public static function is_feed_subscribed( $url ) {
+		// Try both trailingslashed and untrailingslashed versions.
+		$untrailingslashed = untrailingslashit( $url );
+
+		$values = [
+			trailingslashit( $url ),
+			$untrailingslashed,
+		];
+
+		$found = get_posts(
+			[
+				'post_type'   => 'pf_feed',
+				'post_status' => 'any',
+				'fields'      => 'ids',
+				'meta_query'  => [
+					[
+						'key'     => 'feed_url',
+						'value'   => $values,
+						'compare' => 'IN',
+					],
+				],
+			]
+		);
+
+		return ! empty( $found );
 	}
 
 	/**
