@@ -610,12 +610,12 @@ class NominateThisCore implements HasActions, HasFilters {
 			}
 
 			// Add the new nomination event to the existing nomination item.
-			pressforward( 'utility.forward_tools' )->add_user_to_nominator_array( $nomination_post_id, $post->post_author );
+			pressforward( 'utility.forward_tools' )->add_user_to_nominators( $nomination_post_id, $post->post_author );
 		} else {
 			$canonical_nomination_post_id = $existing_nomination_post_id;
 
 			// Add the new nomination event to the existing nomination item.
-			pressforward( 'utility.forward_tools' )->add_user_to_nominator_array( $existing_nomination_post_id, $post->post_author );
+			pressforward( 'utility.forward_tools' )->add_user_to_nominators( $existing_nomination_post_id, $post->post_author );
 
 			// Remove the newly created nomination.
 			wp_delete_post( $nomination_post_id, true );
