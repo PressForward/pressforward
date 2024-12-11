@@ -649,7 +649,7 @@ class Forward_Tools {
 			$this->metas->update_pf_meta( $item_post_id, 'submitted_by', $user_string );
 
 			$this->transition_to_readable_text( $item_post_id, true );
-			$nomination_id = $this->transition_to_nomination( $item_post_id, true );
+			$nomination_id = $this->transition_to_nomination( $item_post_id );
 			$this->metas->update_pf_meta( $item_post_id, 'nom_id', $nomination_id );
 			$this->metas->update_pf_meta( $nomination_id, 'nom_id', $nomination_id );
 
