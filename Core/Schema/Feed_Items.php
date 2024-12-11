@@ -917,27 +917,20 @@ class Feed_Items implements HasActions, HasFilters {
 	 * @return array
 	 */
 	public static function get_existing_items_matching_item_id( $item_id ) {
-		global $wpdb;
-
-		$item_id_key = pressforward( 'controller.metas' )->get_key( 'item_id' );
-
-		$querystr = $wpdb->prepare(
-			"
-			SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-			FROM {$wpdb->posts}, {$wpdb->postmeta}
-			WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-			AND {$wpdb->postmeta}.meta_key = %s
-			AND {$wpdb->postmeta}.meta_value = %s
-			AND {$wpdb->posts}.post_type = %s
-			ORDER BY {$wpdb->posts}.post_date DESC
-		 ",
-			$item_id_key,
-			$item_id,
-			pf_feed_item_post_type()
+		return get_posts(
+			[
+				'post_type'      => pf_feed_item_post_type(),
+				'post_status'    => 'any',
+				'meta_query'     => [
+					[
+						'key'   => pressforward( 'controller.metas' )->get_key( 'item_id' ),
+						'value' => $item_id,
+					],
+				],
+				'orderby'        => [ 'post_date' => 'DESC' ],
+				'posts_per_page' => -1,
+			]
 		);
-
-		// phpcs:ignore WordPress.DB
-		return $wpdb->get_results( $querystr, OBJECT );
 	}
 
 	/**
@@ -949,24 +942,20 @@ class Feed_Items implements HasActions, HasFilters {
 	 * @return array
 	 */
 	public static function get_existing_items_matching_item_link( $item_link ) {
-		global $wpdb;
-
-		$query_more_str = $wpdb->prepare(
-			"
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-				AND {$wpdb->postmeta}.meta_key = 'item_link'
-				AND {$wpdb->postmeta}.meta_value = %s
-				AND {$wpdb->posts}.post_type = %s
-				ORDER BY {$wpdb->posts}.post_date DESC
-			 ",
-			$item_link,
-			pf_feed_item_post_type()
+		return get_posts(
+			[
+				'post_type'      => pf_feed_item_post_type(),
+				'post_status'    => 'any',
+				'meta_query'     => [
+					[
+						'key'   => 'item_link',
+						'value' => $item_link,
+					],
+				],
+				'orderby'        => [ 'post_date' => 'DESC' ],
+				'posts_per_page' => -1,
+			]
 		);
-
-		// phpcs:ignore WordPress.DB
-		return $wpdb->get_results( $query_more_str, OBJECT );
 	}
 
 	/**
