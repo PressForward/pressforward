@@ -3,8 +3,8 @@ Contributors: PressForward, AramZS, boonebgorges, lmrhody, asmmap, regan008, joa
 Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 5.7
-Tested up to: 6.6
-Stable tag: 5.6.2
+Tested up to: 6.7
+Stable tag: 5.7.0
 License: AGPLv3
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -81,6 +81,19 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+
+= 5.8.0 =
+* Overhaul of Feed management panel, including a switch to the Block Editor, fields for editing a feed URL, and tools for manually triggering retrieval.
+* Overhaul of Add Feed tools, including improved validation for URLs, duplicate detection, and better auto-detection of feed URLs based on site URLs.
+* Overhaul of PressForward Dashboard menu structure. Feeds are now handled in a separate top-level menu item, while 'All Content' is renamed to 'Feed Items' and 'Nominated' is renamed to 'Nominated Items'.
+* Add support for feed authors, which are pulled from the feed, are editable by the admin, and are used as a fallback value for feed item authors when a given feed item has no specific author data.
+* New opt-in feature submits a source URL to the Internet Archive (archive.org) when an item is promoted to draft.
+* Performance improvements to the Reader interfaces.
+* Standardize behavior of the Nominate/Nominate Count interfaces in Reader.
+* New tool allows filtering by date in Reader interfaces.
+* Internal improvements for increased compatibility with WP_Query caching.
+* Fixed a bug that caused infinite redirect loops in certain configuration of 'Forward to Source' feature.
+* Fixed a bug that caused JavaScript console errors when opening the Folders pane in the Reader views.
 
 = 5.7.0 =
 * New "Welcome" panel provides an easy-to-use path into PressForward content for both new and existing users.
