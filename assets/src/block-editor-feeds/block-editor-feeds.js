@@ -16,15 +16,18 @@ const BlockEditorFeedsInfobox = ( {} ) => {
 
 	const {
 		errorMessage,
+		feedAuthor,
 		feedUrl,
 		postType
 	} = useSelect( ( select ) => {
 		const editedPostId = select( 'core/editor' ).getCurrentPostId()
 		const editedPostMeta = select( 'core/editor' ).getEditedPostAttribute( 'meta' )
 		const editedErrorMessage = select( 'core/editor' ).getEditedPostAttribute( 'alert_message' )
+		const editedFeedAuthor = select( 'core/editor' ).getEditedPostAttribute( 'feed_author' )
 
 		return {
 			errorMessage: editedErrorMessage,
+			feedAuthor: editedFeedAuthor,
 			feedUrl: editedPostMeta?.feed_url || '',
 			postId: editedPostId,
 			postType: select( 'core/editor' ).getEditedPostAttribute( 'type' ),
@@ -50,6 +53,15 @@ const BlockEditorFeedsInfobox = ( {} ) => {
 				onChange={ ( newValue ) => {
 					editPost( { meta: { 'feed_url': newValue } } )
 				} }
+			/>
+
+			<TextControl
+				label={ __( 'Feed Author', 'pressforward' ) }
+				value={ feedAuthor }
+				onChange={ ( newValue ) => {
+					editPost( { 'feed_author': newValue } )
+				} }
+				help={ __( 'Incoming items without an author name will use this value.', 'pressforward' ) }
 			/>
 
 			{ errorMessage && (

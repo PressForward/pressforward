@@ -212,6 +212,15 @@ class PF_RSS_Import extends PF_Module {
 
 				if ( ! $ag_status ) {
 					$authors = $this->get_rss_authors( $item );
+
+					if ( __( 'No author.', 'pressforward' ) === $authors ) {
+						// See if the parent feed has an author.
+						$parent_feed_obj    = pressforward( 'schema.feeds' )->get_instance_by_id( $a_feed->ID );
+						$parent_feed_author = $parent_feed_obj->get_feed_author();
+						if ( ! empty( $parent_feed_author ) ) {
+							$authors = $parent_feed_author;
+						}
+					}
 				} else {
 					$parent_value = pressforward( 'controller.metas' )->get_post_pf_meta( $a_feed->ID, 'pf_feed_default_author', true );
 					if ( ! empty( $parent_value ) ) {

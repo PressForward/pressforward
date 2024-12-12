@@ -183,6 +183,26 @@ class FeedEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 				],
 			]
 		);
+
+		register_rest_field(
+			$this->post_type,
+			'feed_author',
+			[
+				'get_callback'    => function ( $post_object ) {
+					$feed_object = Feed::get_instance_by_id( $post_object['id'] );
+					return $feed_object->get_feed_author();
+				},
+				'update_callback' => function ( $value, $post ) {
+					$feed_object = Feed::get_instance_by_id( $post->ID );
+					$feed_object->set_feed_author( $value );
+				},
+				'schema'          => [
+					'description' => __( 'The author of the feed', 'pressforward' ),
+					'type'        => 'string',
+					'context'     => [ 'view', 'edit' ],
+				],
+			]
+		);
 	}
 
 	/**

@@ -350,6 +350,45 @@ class Feed extends BasicModel {
 	}
 
 	/**
+	 * Gets the feed author for the feed.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @return string
+	 */
+	public function get_feed_author() {
+		$feed_author_meta = get_post_meta( $this->get( 'id' ), 'feed_author', true );
+
+		if ( is_string( $feed_author_meta ) ) {
+			return $feed_author_meta;
+		}
+
+		// Legacy items have feed_author saved as a SimplePie Author object.
+		if ( is_object( $feed_author_meta ) ) {
+			// May be an incomplete class.
+			$feed_author_meta = (array) $feed_author_meta;
+			if ( isset( $feed_author_meta['name'] ) ) {
+				update_post_meta( $this->get( 'id' ), 'feed_author', $feed_author_meta['name'] );
+				return $feed_author_meta['name'];
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Sets the feed author for the feed.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @param string $author Author name.
+	 * @return void
+	 */
+	public function set_feed_author( $author ) {
+		update_post_meta( $this->get( 'id' ), 'feed_author', $author );
+	}
+
+	/**
 	 * Gets the module to be used for this feed.
 	 *
 	 * @return \PF_Module|null Module object or null.
@@ -416,7 +455,11 @@ class Feed extends BasicModel {
 			$this->set( 'title', $the_feed->get_title() );
 			$this->set( 'description', $the_feed->get_description() );
 			$this->set( 'htmlUrl', $the_feed->get_link( 0 ) );
-			$this->set( 'feed_author', $the_feed->get_author() );
+
+			$author      = $the_feed->get_author();
+			$author_name = method_exists( $author, 'get_name' ) ? $author->get_name() : '';
+			$this->set( 'feed_author', $author_name );
+
 			$this->set( 'thumbnail', $the_feed->get_image_url() );
 
 			$this->save();
