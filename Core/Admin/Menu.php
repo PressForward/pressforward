@@ -425,14 +425,18 @@ class Menu implements HasActions, HasFilters {
 				update_option( 'pf_source_statement_position', 'no' );
 			}
 
-			foreach ( [ 'pf_source_format_with_publication', 'pf_source_format_without_publication' ] as $format_var ) {
-				if ( isset( $_POST[ $format_var ] ) ) {
-					$format_value_submitted = sanitize_text_field( wp_unslash( $_POST[ $format_var ] ) );
-					update_option( $format_var, $format_value_submitted );
-				} else {
-					update_option( $format_var, '' );
-				}
+			// 'Source' statement formats.
+			$formats = pressforward_source_statement_formats();
+
+			if ( isset( $_POST['pf_source_format_with_publication'] ) ) {
+				$formats['with_publication'] = sanitize_text_field( wp_unslash( $_POST['pf_source_format_with_publication'] ) );
 			}
+
+			if ( isset( $_POST['pf_source_format_without_publication'] ) ) {
+				$formats['without_publication'] = sanitize_text_field( wp_unslash( $_POST['pf_source_format_without_publication'] ) );
+			}
+
+			update_option( 'pf_source_statement_formats', $formats );
 
 			$pf_archive_org_enabled = ! empty( $_POST['pf-archive-org-enabled'] ) && 'on' === sanitize_text_field( wp_unslash( $_POST['pf-archive-org-enabled'] ) ) ? 'on' : 'off';
 			update_option( 'pressforward_archive_org_enabled', $pf_archive_org_enabled );
