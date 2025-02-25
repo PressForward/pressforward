@@ -1,14 +1,14 @@
 ## Plugin Name: PressForward
 - Plugin URI: http://pressforward.org/
 - Description: PressForward is a WordPress plugin built to process feeds as a feed reader, allow groups to share and discuss the items that come in and then blog about them as an integrated editorial process.
-- Version: 5.6
+- Version: 5.8
 - Author: Boone B Gorges, Aram Zucker-Scharff, Jeremy Boggs
 - Author URI: http://pressforward.org/
 - License: AGPLv3
 - Authors' Sites: http://boone.gorg.es/, http://aramzs.me, http://jeremyboggs.net/
 
 
-  Funded and Maintained by Digital Scholar. Initially developed for the Roy Rosenzweig Center for History and New Media at George Mason University, with funding from the Alfred P. Sloan Foundation.
+  Funded and maintained by Digital Scholar. Initially developed for the Roy Rosenzweig Center for History and New Media at George Mason University, with funding from the Alfred P. Sloan Foundation.
 
 ## Building this plugin
 
