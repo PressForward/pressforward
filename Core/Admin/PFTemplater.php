@@ -974,6 +974,24 @@ class PFTemplater {
 	}
 
 	/**
+	 * Gets the URL for a Threads intent link.
+	 *
+	 * @param int $id ID of the local item.
+	 * @return string
+	 */
+	public function threads_intent( $id ) {
+		$url = add_query_arg(
+			[
+				'text' => get_the_title( $id ),
+				'url'  => get_the_item_link( $id ),
+			],
+			'https://www.threads.net/intent/post'
+		);
+
+		return $url;
+	}
+
+	/**
 	 * Generates markup for action buttons.
 	 *
 	 * @param array  $item            Item data.
@@ -1103,6 +1121,9 @@ class PFTemplater {
 
 							$bluesky_intent = self::bluesky_intent( $id_for_comments );
 							self::dropdown_option( __( 'Bluesky', 'pressforward' ), 'amplify-bluesky-' . $item['item_id'], 'amplify-option', $item['item_id'], '', '', $bluesky_intent, '_blank' );
+
+							$threads_intent = self::threads_intent( $id_for_comments );
+							self::dropdown_option( __( 'Threads', 'pressforward' ), 'amplify-threads-' . $item['item_id'], 'amplify-option', $item['item_id'], '', '', $threads_intent, '_blank' );
 
 							do_action( 'pf_amplify_buttons' );
 							?>
