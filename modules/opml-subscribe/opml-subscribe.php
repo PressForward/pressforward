@@ -282,7 +282,7 @@ class PF_OPML_Subscribe extends PF_Module {
 						'item_tags'       => 'opml-feed',
 						'added_date'      => '',
 						'source_repeat'   => '',
-						'postid'          => '',
+						'post_id'         => '',
 						'readable_status' => 'made_readable',
 						'obj'             => $feed_obj,
 					]

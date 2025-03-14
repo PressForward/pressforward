@@ -447,7 +447,7 @@ function pf_slugger( $raw_string, $force_lowercase = false, $strict = true, $spa
  *     @type string $item_tags       Item tags.
  *     @type string $added_date      Added date.
  *     @type string $source_repeat   Source repeat.
- *     @type string $postid          Post ID.
+ *     @type string $post_id         Post ID.
  *     @type string $readable_status Readable status.
  *     @type array  $obj             Data array.
  * }
@@ -468,7 +468,7 @@ function pf_feed_object( $args = array() ) {
 		'item_tags'       => '',
 		'added_date'      => '',
 		'source_repeat'   => '',
-		'postid'          => '',
+		'post_id'         => '',
 		'readable_status' => '',
 		'obj'             => [],
 	);
@@ -491,7 +491,7 @@ function pf_feed_object( $args = array() ) {
 			'item_tags'       => $all_args[9] ?? $defaults['item_tags'],
 			'added_date'      => $all_args[10] ?? $defaults['added_date'],
 			'source_repeat'   => $all_args[11] ?? $defaults['source_repeat'],
-			'postid'          => $all_args[12] ?? $defaults['postid'],
+			'post_id'         => $all_args[12] ?? $defaults['post_id'],
 			'readable_status' => $all_args[13] ?? $defaults['readable_status'],
 			'obj'             => $all_args[14] ?? $defaults['obj'],
 		];

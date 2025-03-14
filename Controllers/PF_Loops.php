@@ -293,7 +293,7 @@ class PF_Loops {
 					'item_tags'       => $item_tags,
 					'added_date'      => gmdate( 'o-m-d\TH:i:sO', strtotime( $post->post_date ) ), // Manual ISO 8601 date for pre-PHP5 systems.
 					'source_repeat'   => $source_repeat,
-					'postid'          => (string) $post_id,
+					'post_id'         => (string) $post_id,
 					'readable_status' => $readable_status,
 				]
 			);

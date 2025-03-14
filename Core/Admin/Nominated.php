@@ -531,7 +531,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 								'item_tags'       => $nom_tags,
 								'added_date'      => $date_nomed,
 								'source_repeat'   => $source_repeat,
-								'postid'          => (string) $nom_id,
+								'post_id'         => (string) $nom_id,
 								'readable_status' => '1',
 							]
 						);
