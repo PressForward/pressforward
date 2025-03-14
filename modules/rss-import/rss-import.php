@@ -265,6 +265,7 @@ class PF_RSS_Import extends PF_Module {
 						'item_uid'     => $id,
 						'item_wp_date' => $ymd_item_date,
 						'item_tags'    => $item_categories_string,
+						'description'  => $item->get_description(),
 					]
 				);
 

@@ -449,6 +449,7 @@ function pf_slugger( $raw_string, $force_lowercase = false, $strict = true, $spa
  *     @type string $source_repeat   Source repeat.
  *     @type string $post_id         Post ID.
  *     @type string $readable_status Readable status.
+ *     @type string $description     Description.
  *     @type array  $obj             Data array.
  * }
  * @return array $item_array Standardized item format.
@@ -470,6 +471,7 @@ function pf_feed_object( $args = array() ) {
 		'source_repeat'   => '',
 		'post_id'         => '',
 		'readable_status' => '',
+		'description'     => '',
 		'obj'             => [],
 	);
 

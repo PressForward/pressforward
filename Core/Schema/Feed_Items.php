@@ -890,8 +890,9 @@ class Feed_Items implements HasActions, HasFilters {
 					pressforward( 'controller.metas' )->meta_for_entry( 'item_tags', $item_tags ),
 					pressforward( 'controller.metas' )->meta_for_entry( 'source_repeat', $source_repeat ),
 					pressforward( 'controller.metas' )->meta_for_entry( 'revertible_feed_text', $item_content ),
-
+					pressforward( 'controller.metas' )->meta_for_entry( 'item_description', $item['description'] ),
 				);
+
 				pressforward( 'controller.metas' )->establish_post( $new_nom_id, $pf_meta_args );
 				$parent_id = $feed_obj_id;
 				do_action( 'pf_post_established', $new_nom_id, $item_id, $parent_id );

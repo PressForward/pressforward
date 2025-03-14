@@ -712,6 +712,16 @@ class Metas implements HasFilters, HasActions {
 				'level'      => array( 'item', 'nomination', 'post' ),
 				'serialize'  => true,
 			),
+			'item_description'        => array(
+				'name'       => 'item_description',
+				'title'      => __( 'Description', 'pressforward' ),
+				'definition' => __( 'Description of the item', 'pressforward' ),
+				'function'   => __( 'Stores the description of the item', 'pressforward' ),
+				'type'       => array( 'struc' ),
+				'use'        => array( 'api' ),
+				'level'      => array( 'item', 'nomination', 'post' ),
+				'serialize'  => false,
+			),
 			'pf_feed_item_word_count' => array(
 				'name'       => 'pf_feed_item_word_count',
 				'title'      => __( 'Original Wordcount', 'pressforward' ),
