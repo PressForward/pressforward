@@ -957,6 +957,23 @@ class PFTemplater {
 	}
 
 	/**
+	 * Gets the URL for a Bluesky intent link.
+	 *
+	 * @param int $id ID of the local item.
+	 * @return string
+	 */
+	public function bluesky_intent( $id ) {
+		$url = add_query_arg(
+			'text',
+			// translators: 1. Title of the item; 2. Link to the item.
+			rawurlencode( sprintf( __( '%1$s %2$s', 'pressforward' ), get_the_title( $id ), get_the_item_link( $id ) ) ),
+			'https://bsky.app/intent/compose',
+		);
+
+		return $url;
+	}
+
+	/**
 	 * Generates markup for action buttons.
 	 *
 	 * @param array  $item            Item data.
@@ -1080,9 +1097,14 @@ class PFTemplater {
 								<li class="divider"></li>
 								<?php
 							}
-								$tweet_intent = self::tweet_intent( $id_for_comments );
-								self::dropdown_option( __( 'Tweet', 'pressforward' ), 'amplify-tweet-' . $item['item_id'], 'amplify-option', $item['item_id'], '', '', $tweet_intent, '_blank' );
-								do_action( 'pf_amplify_buttons' );
+
+							$tweet_intent = self::tweet_intent( $id_for_comments );
+							self::dropdown_option( __( 'Tweet', 'pressforward' ), 'amplify-tweet-' . $item['item_id'], 'amplify-option', $item['item_id'], '', '', $tweet_intent, '_blank' );
+
+							$bluesky_intent = self::bluesky_intent( $id_for_comments );
+							self::dropdown_option( __( 'Bluesky', 'pressforward' ), 'amplify-bluesky-' . $item['item_id'], 'amplify-option', $item['item_id'], '', '', $bluesky_intent, '_blank' );
+
+							do_action( 'pf_amplify_buttons' );
 							?>
 						</ul>
 					</div>
