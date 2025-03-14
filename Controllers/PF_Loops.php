@@ -288,10 +288,10 @@ class PF_Loops {
 					'item_content'    => $item_content,
 					'item_link'       => $item_link,
 					'item_feat_img'   => $item_feat_img,
-					'item_uid'        => $item_id,
+					'item_id'         => $item_id,
 					'item_wp_date'    => $item_wp_date,
 					'item_tags'       => $item_tags,
-					'added_date'      => gmdate( 'o-m-d\TH:i:sO', strtotime( $post->post_date ) ), // Manual ISO 8601 date for pre-PHP5 systems.
+					'item_added_date' => gmdate( 'o-m-d\TH:i:sO', strtotime( $post->post_date ) ), // Manual ISO 8601 date for pre-PHP5 systems.
 					'source_repeat'   => $source_repeat,
 					'post_id'         => (string) $post_id,
 					'readable_status' => $readable_status,
