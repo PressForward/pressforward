@@ -92,7 +92,7 @@ class Folders implements HasActions, HasFilters {
 
 		register_taxonomy(
 			$this->tag_taxonomy,
-			'',
+			[ $this->post_type ],
 			apply_filters(
 				'pf_register_feed_tag_taxonomy_args',
 				array(
