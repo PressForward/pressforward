@@ -280,21 +280,22 @@ class PF_Loops {
 			}
 
 			$feed_object[ 'rss_archive_' . $c ] = pf_feed_object(
-				$post->post_title,
-				$source_title,
-				$item_date,
-				$item_author,
-				$item_content,
-				$item_link,
-				$item_feat_img,
-				$item_id,
-				$item_wp_date,
-				$item_tags,
-				// Manual ISO 8601 date for pre-PHP5 systems.
-				gmdate( 'o-m-d\TH:i:sO', strtotime( $post->post_date ) ),
-				$source_repeat,
-				(string) $post_id,
-				$readable_status
+				[
+					'item_title'      => $post->post_title,
+					'source_title'    => $source_title,
+					'item_date'       => $item_date,
+					'item_author'     => $item_author,
+					'item_content'    => $item_content,
+					'item_link'       => $item_link,
+					'item_feat_img'   => $item_feat_img,
+					'item_uid'        => $item_id,
+					'item_wp_date'    => $item_wp_date,
+					'item_tags'       => $item_tags,
+					'added_date'      => gmdate( 'o-m-d\TH:i:sO', strtotime( $post->post_date ) ), // Manual ISO 8601 date for pre-PHP5 systems.
+					'source_repeat'   => $source_repeat,
+					'postid'          => (string) $post_id,
+					'readable_status' => $readable_status,
+				]
 			);
 
 			++$c;

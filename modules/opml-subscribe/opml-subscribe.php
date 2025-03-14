@@ -270,22 +270,22 @@ class PF_OPML_Subscribe extends PF_Module {
 				$content = 'Subscribed: ' . $feed_obj->title . ' - ' . $feed_obj->type . ' - ' . $feed_obj->feedUrl . ' on ' . gmdate( 'r' );
 
 				$opml_array[ 'opml_' . $c ] = pf_feed_object(
-					$feed_obj->title,
-					'OPML Subscription from ' . $opml_object->get_title(),
-					gmdate( 'r' ),
-					'OPML Subscription ' . $opml_object->get_title(),
-					$content,
-					// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-					$feed_obj->feedUrl,
-					'',
-					$id,
-					gmdate( 'r' ),
-					'opml-feed', // tags.
-					'', // added.
-					'', // repeat.
-					'',
-					'made_readable',
-					$feed_obj
+					[
+						'item_title'      => $feed_obj->title,
+						'source_title'    => 'OPML Subscription from ' . $opml_object->get_title(),
+						'item_date'       => gmdate( 'r' ),
+						'item_author'     => 'OPML Subscription ' . $opml_object->get_title(),
+						'item_content'    => $content,
+						'item_link'       => $feed_obj->feedUrl, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+						'item_uid'        => $id,
+						'item_wp_date'    => gmdate( 'r' ),
+						'item_tags'       => 'opml-feed',
+						'added_date'      => '',
+						'source_repeat'   => '',
+						'postid'          => '',
+						'readable_status' => 'made_readable',
+						'obj'             => $feed_obj,
+					]
 				);
 
 				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase

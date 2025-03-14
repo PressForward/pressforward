@@ -255,17 +255,19 @@ class PF_RSS_Import extends PF_Module {
 				pf_log( $item->get_id() );
 
 				$rss_object[ 'rss_' . $c ] = pf_feed_object(
-					$item->get_title(),
-					$i_feed->get_title(),
-					$r_item_date,
-					$authors,
-					$item_content,
-					$item_link, // New proper link (hopefully).
-					'',
-					$id,
-					$ymd_item_date,
-					$item_categories_string
+					[
+						'item_title'   => $item->get_title(),
+						'source_title' => $i_feed->get_title(),
+						'item_date'    => $r_item_date,
+						'item_author'  => $authors,
+						'item_content' => $item_content,
+						'item_link'    => $item_link, // New proper link (hopefully).
+						'item_uid'     => $id,
+						'item_wp_date' => $ymd_item_date,
+						'item_tags'    => $item_categories_string,
+					]
 				);
+
 				pf_log( 'Setting new object for ' . $item->get_title() . ' of ' . $i_feed->get_title() . '.' );
 
 			}

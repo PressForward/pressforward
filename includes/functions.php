@@ -430,45 +430,75 @@ function pf_slugger( $raw_string, $force_lowercase = false, $strict = true, $spa
  * Convert data to the standardized item format expected by PF.
  *
  * @since 1.7
- * @todo Take params as an array and use wp_parse_args().
+ * @since 5.9.0 Updated to accept params as an array using wp_parse_args().
  *
- * @param string $item_title      Item title.
- * @param string $source_title    Source title.
- * @param string $item_date       Item date.
- * @param string $item_author     Item author.
- * @param string $item_content    Item content.
- * @param string $item_link       Item link.
- * @param string $item_feat_img   Item featured image URL.
- * @param string $item_uid        Item UID.
- * @param string $item_wp_date    Item date for WP.
- * @param string $item_tags       Item tags.
- * @param string $added_date      Added date.
- * @param string $source_repeat   Source repeat.
- * @param string $postid          Post ID.
- * @param string $readable_status Readable status.
- * @param array  $obj             Data array.
- * @return array $item_array
+ * @param array|string $args {
+ *     Optional. An array of item data or individual parameters for backward compatibility.
+ *
+ *     @type string $item_title      Item title.
+ *     @type string $source_title    Source title.
+ *     @type string $item_date       Item date.
+ *     @type string $item_author     Item author.
+ *     @type string $item_content    Item content.
+ *     @type string $item_link       Item link.
+ *     @type string $item_feat_img   Item featured image URL.
+ *     @type string $item_uid        Item UID.
+ *     @type string $item_wp_date    Item date for WP.
+ *     @type string $item_tags       Item tags.
+ *     @type string $added_date      Added date.
+ *     @type string $source_repeat   Source repeat.
+ *     @type string $postid          Post ID.
+ *     @type string $readable_status Readable status.
+ *     @type array  $obj             Data array.
+ * }
+ * @return array $item_array Standardized item format.
  */
-function pf_feed_object( $item_title = '', $source_title = '', $item_date = '', $item_author = '', $item_content = '', $item_link = '', $item_feat_img = '', $item_uid = '', $item_wp_date = '', $item_tags = '', $added_date = '', $source_repeat = '', $postid = '', $readable_status = '', $obj = array() ) {
-
-	// Assemble all the needed variables into our fancy object!
-	$item_array = array(
-		'item_title'      => $item_title,
-		'source_title'    => $source_title,
-		'item_date'       => $item_date,
-		'item_author'     => $item_author,
-		'item_content'    => $item_content,
-		'item_link'       => $item_link,
-		'item_feat_img'   => $item_feat_img,
-		'item_id'         => $item_uid,
-		'item_wp_date'    => $item_wp_date,
-		'item_tags'       => $item_tags,
-		'item_added_date' => $added_date,
-		'source_repeat'   => $source_repeat,
-		'post_id'         => $postid,
-		'readable_status' => $readable_status,
-		'obj'             => $obj,
+function pf_feed_object( $args = array() ) {
+	// Default values for the item array.
+	$defaults = array(
+		'item_title'      => '',
+		'source_title'    => '',
+		'item_date'       => '',
+		'item_author'     => '',
+		'item_content'    => '',
+		'item_link'       => '',
+		'item_feat_img'   => '',
+		'item_uid'        => '',
+		'item_wp_date'    => '',
+		'item_tags'       => '',
+		'added_date'      => '',
+		'source_repeat'   => '',
+		'postid'          => '',
+		'readable_status' => '',
+		'obj'             => [],
 	);
+
+	// Capture all passed arguments for backward compatibility.
+	$all_args = func_get_args();
+
+	// Backward compatibility: Detect legacy parameters.
+	if ( ! is_array( $args ) || count( $all_args ) > 1 ) {
+		$args = [
+			'item_title'      => $all_args[0] ?? $defaults['item_title'],
+			'source_title'    => $all_args[1] ?? $defaults['source_title'],
+			'item_date'       => $all_args[2] ?? $defaults['item_date'],
+			'item_author'     => $all_args[3] ?? $defaults['item_author'],
+			'item_content'    => $all_args[4] ?? $defaults['item_content'],
+			'item_link'       => $all_args[5] ?? $defaults['item_link'],
+			'item_feat_img'   => $all_args[6] ?? $defaults['item_feat_img'],
+			'item_uid'        => $all_args[7] ?? $defaults['item_uid'],
+			'item_wp_date'    => $all_args[8] ?? $defaults['item_wp_date'],
+			'item_tags'       => $all_args[9] ?? $defaults['item_tags'],
+			'added_date'      => $all_args[10] ?? $defaults['added_date'],
+			'source_repeat'   => $all_args[11] ?? $defaults['source_repeat'],
+			'postid'          => $all_args[12] ?? $defaults['postid'],
+			'readable_status' => $all_args[13] ?? $defaults['readable_status'],
+			'obj'             => $all_args[14] ?? $defaults['obj'],
+		];
+	}
+
+	// Merge passed values with defaults.
+	$item_array = wp_parse_args( $args, $defaults );
 
 	return $item_array;
 }

@@ -518,20 +518,22 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 						}
 
 						$item = pf_feed_object(
-							get_the_title(),
-							pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'source_title', true ),
-							$date_posted,
-							$item_authorship,
-							get_the_content(),
-							$nom_permalink,
-							get_the_post_thumbnail( $nom_id /**, 'nom_thumb'*/ ),
-							$rss_item_id,
-							pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_wp_date', true ),
-							$nom_tags,
-							$date_nomed,
-							$source_repeat,
-							(string) $nom_id,
-							'1'
+							[
+								'item_title'      => get_the_title(),
+								'source_title'    => pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'source_title', true ),
+								'item_date'       => $date_posted,
+								'item_author'     => $item_authorship,
+								'item_content'    => get_the_content(),
+								'item_link'       => $nom_permalink,
+								'item_feat_img'   => get_the_post_thumbnail( $nom_id /**, 'nom_thumb'*/ ),
+								'item_uid'        => $rss_item_id,
+								'item_wp_date'    => pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_wp_date', true ),
+								'item_tags'       => $nom_tags,
+								'added_date'      => $date_nomed,
+								'source_repeat'   => $source_repeat,
+								'postid'          => (string) $nom_id,
+								'readable_status' => '1',
+							]
 						);
 
 						pressforward( 'admin.templates' )->form_of_an_item( $item, $c, 'nomination', $metadata );
