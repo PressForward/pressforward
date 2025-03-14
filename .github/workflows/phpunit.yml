@@ -18,6 +18,11 @@ jobs:
         sudo /etc/init.d/mysql start
         mysql -e 'CREATE DATABASE wordpress_test' -uroot -proot
 
+    - name: Install Subversion
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y subversion
+
     - name: Set up WP and its test suite, and run phpunit
       run: |
         bash tests/install-wp-tests.sh wordpress_test root root localhost latest true $RUNNER_TEMP
