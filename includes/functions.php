@@ -297,7 +297,7 @@ function pf_feed_item_tag_taxonomy() {
 	 *
 	 * @param string $tag_taxonomy The tag taxonomy for feed items.
 	 */
-	return apply_filters( 'pressforward_feed_item_tag_taxonomy', 'feed_item_tag' );
+	return apply_filters( 'pressforward_feed_item_tag_taxonomy', 'pf_feed_item_tag' );
 }
 
 /**
