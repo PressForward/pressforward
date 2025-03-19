@@ -290,7 +290,14 @@ function pf_feed_item_post_type() {
  * @return string The slug for the taxonomy used by feed items.
  */
 function pf_feed_item_tag_taxonomy() {
-	return pressforward( 'schema.feed_item' )->tag_taxonomy;
+	/**
+	 * Filters the tag taxonomy for feed items.
+	 *
+	 * @since 5.9.0
+	 *
+	 * @param string $tag_taxonomy The tag taxonomy for feed items.
+	 */
+	return apply_filters( 'pressforward_feed_item_tag_taxonomy', 'feed_item_tag' );
 }
 
 /**

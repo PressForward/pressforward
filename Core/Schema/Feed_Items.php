@@ -64,19 +64,10 @@ class Feed_Items implements HasActions, HasFilters {
 	 * @param \PressForward\Controllers\Metas          $metas Metas object.
 	 */
 	public function __construct( PF_to_WP_Posts $items, Metas $metas ) {
-		$this->post_type = 'pf_feed_item';
-
-		/**
-		 * Filters the tag taxonomy for feed items.
-		 *
-		 * @since 5.9.0
-		 *
-		 * @param string $tag_taxonomy Tag taxonomy for feed items.
-		 */
-		$this->tag_taxonomy = apply_filters( 'pressforward_feed_item_tag_taxonomy', 'pf_feed_item_tag' );
-
-		$this->items = $items;
-		$this->metas = $metas;
+		$this->post_type    = 'pf_feed_item';
+		$this->tag_taxonomy = 'pf_feed_item_tag';
+		$this->items        = $items;
+		$this->metas        = $metas;
 	}
 
 	/**
