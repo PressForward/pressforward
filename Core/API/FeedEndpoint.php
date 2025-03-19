@@ -203,6 +203,26 @@ class FeedEndpoint extends APIWithMetaEndpoints implements HasActions, HasFilter
 				],
 			]
 		);
+
+		register_rest_field(
+			$this->post_type,
+			'do_import_tags',
+			[
+				'get_callback'    => function ( $post_object ) {
+					$feed_object = Feed::get_instance_by_id( $post_object['id'] );
+					return $feed_object->get_do_import_tags();
+				},
+				'update_callback' => function ( $value, $post ) {
+					$feed_object = Feed::get_instance_by_id( $post->ID );
+					$feed_object->set_do_import_tags( $value );
+				},
+				'schema'          => [
+					'description' => __( 'Whether to import tags from the feed', 'pressforward' ),
+					'type'        => 'boolean',
+					'context'     => [ 'view', 'edit' ],
+				],
+			]
+		);
 	}
 
 	/**

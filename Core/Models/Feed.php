@@ -526,4 +526,39 @@ class Feed extends BasicModel {
 		$cached = get_post_meta( $this->get( 'id' ), 'pf_nominations_in_feed', true );
 		return (int) $cached;
 	}
+
+	/**
+	 * Gets whether the 'do_import_tags' flag is set for this feed.
+	 *
+	 * Defaults to true when no meta value is present.
+	 *
+	 * @since 5.9.0
+	 *
+	 * @return bool
+	 */
+	public function get_do_import_tags() {
+		$do_import_tags = get_post_meta( $this->get( 'id' ), 'do_import_tags', true );
+
+		if ( '' === $do_import_tags ) {
+			return true;
+		}
+
+		return (bool) $do_import_tags;
+	}
+
+	/**
+	 * Sets the 'do_import_tags' flag for this feed.
+	 *
+	 * @since 5.9.0
+	 *
+	 * @param bool $do_import_tags Whether to import tags.
+	 * @return void
+	 */
+	public function set_do_import_tags( $do_import_tags ) {
+		if ( $do_import_tags ) {
+			update_post_meta( $this->get( 'id' ), 'do_import_tags', '1' );
+		} else {
+			update_post_meta( $this->get( 'id' ), 'do_import_tags', '0' );
+		}
+	}
 }

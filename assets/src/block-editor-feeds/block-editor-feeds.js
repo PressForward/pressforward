@@ -7,7 +7,7 @@ import { useState } from '@wordpress/element'
 import { useDispatch, useSelect } from '@wordpress/data'
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post'
 import { __, sprintf } from '@wordpress/i18n'
-import { Button, Spinner, TextControl } from '@wordpress/components'
+import { Button, Spinner, TextControl, ToggleControl } from '@wordpress/components'
 
 const BlockEditorFeedsInfobox = ( {} ) => {
 	const { editPost } = useDispatch( 'core/editor' )
@@ -15,6 +15,7 @@ const BlockEditorFeedsInfobox = ( {} ) => {
 	const { feedPostType } = pfBlockEditorFeeds
 
 	const {
+		doImportTags,
 		errorMessage,
 		feedAuthor,
 		feedUrl,
@@ -26,6 +27,7 @@ const BlockEditorFeedsInfobox = ( {} ) => {
 		const editedFeedAuthor = select( 'core/editor' ).getEditedPostAttribute( 'feed_author' )
 
 		return {
+			doImportTags: select( 'core/editor' ).getEditedPostAttribute( 'do_import_tags' ),
 			errorMessage: editedErrorMessage,
 			feedAuthor: editedFeedAuthor,
 			feedUrl: editedPostMeta?.feed_url || '',
@@ -62,6 +64,17 @@ const BlockEditorFeedsInfobox = ( {} ) => {
 					editPost( { 'feed_author': newValue } )
 				} }
 				help={ __( 'Incoming items without an author name will use this value.', 'pressforward' ) }
+			/>
+
+			<hr />
+
+			<ToggleControl
+				label={ __( 'Import Tags', 'pressforward' ) }
+				checked={ doImportTags }
+				onChange={ ( newValue ) => {
+					editPost( { 'do_import_tags': newValue } )
+				} }
+				help={ __( 'Import source tags with feed items?', 'pressforward' ) }
 			/>
 
 			{ errorMessage && (

@@ -210,12 +210,13 @@ class PF_RSS_Import extends PF_Module {
 
 				$i_feed = $item->get_feed();
 
+				$parent_feed_obj = \PressForward\Core\Models\Feed::get_instance_by_id( $a_feed->ID );
+
 				if ( ! $ag_status ) {
 					$authors = $this->get_rss_authors( $item );
 
 					if ( __( 'No author.', 'pressforward' ) === $authors ) {
 						// See if the parent feed has an author.
-						$parent_feed_obj    = pressforward( 'schema.feeds' )->get_instance_by_id( $a_feed->ID );
 						$parent_feed_author = $parent_feed_obj->get_feed_author();
 						if ( ! empty( $parent_feed_author ) ) {
 							$authors = $parent_feed_author;
@@ -230,9 +231,14 @@ class PF_RSS_Import extends PF_Module {
 					}
 				}
 
-				$item_categories = array();
-				$item_categories = $item->get_categories();
-				$item_terms      = array();
+				$import_item_categories = $parent_feed_obj->get_do_import_tags();
+
+				$item_categories = [];
+				if ( $import_item_categories ) {
+					$item_categories = $item->get_categories();
+				}
+
+				$item_terms = array();
 
 				if ( ! empty( $item_categories ) ) {
 					foreach ( $item_categories as $item_category ) {
