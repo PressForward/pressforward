@@ -12,7 +12,7 @@
 		"@babel/preset-env": "^7.24.8",
 		"@selfisekai/gulp-sass": "^4.2.0",
 		"@wordpress/scripts": "^30.13.0",
-		"gulp": "^4.0.2",
+		"gulp": "^5.0.0",
 		"gulp-babel": "^8.0.0",
 		"gulp-clean-css": "^4.3.0",
 		"gulp-ext-replace": "^0.3.0",
