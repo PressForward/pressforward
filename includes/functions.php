@@ -449,7 +449,7 @@ function pf_slugger( $raw_string, $force_lowercase = false, $strict = true, $spa
  *     @type string $item_content    Item content.
  *     @type string $item_link       Item link.
  *     @type string $item_feat_img   Item featured image URL.
- *     @type string $item_uid        Item UID.
+ *     @type string $item_id         Item UID.
  *     @type string $item_wp_date    Item date for WP.
  *     @type string $item_tags       Item tags.
  *     @type string $added_date      Added date.
@@ -471,7 +471,7 @@ function pf_feed_object( $args = array() ) {
 		'item_content'    => '',
 		'item_link'       => '',
 		'item_feat_img'   => '',
-		'item_uid'        => '',
+		'item_id'         => '',
 		'item_wp_date'    => '',
 		'item_tags'       => '',
 		'added_date'      => '',
@@ -495,7 +495,7 @@ function pf_feed_object( $args = array() ) {
 			'item_content'    => $all_args[4] ?? $defaults['item_content'],
 			'item_link'       => $all_args[5] ?? $defaults['item_link'],
 			'item_feat_img'   => $all_args[6] ?? $defaults['item_feat_img'],
-			'item_uid'        => $all_args[7] ?? $defaults['item_uid'],
+			'item_id'         => $all_args[7] ?? $defaults['item_id'],
 			'item_wp_date'    => $all_args[8] ?? $defaults['item_wp_date'],
 			'item_tags'       => $all_args[9] ?? $defaults['item_tags'],
 			'added_date'      => $all_args[10] ?? $defaults['added_date'],

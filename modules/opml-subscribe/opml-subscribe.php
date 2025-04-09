@@ -277,7 +277,7 @@ class PF_OPML_Subscribe extends PF_Module {
 						'item_author'     => 'OPML Subscription ' . $opml_object->get_title(),
 						'item_content'    => $content,
 						'item_link'       => $feed_obj->feedUrl, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-						'item_uid'        => $id,
+						'item_id'         => $id,
 						'item_wp_date'    => gmdate( 'r' ),
 						'item_tags'       => 'opml-feed',
 						'added_date'      => '',
