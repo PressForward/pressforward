@@ -638,11 +638,6 @@ function pf_fetch_feed( $url ) {
 			require_once ABSPATH . WPINC . '/class-simplepie.php';
 		}
 
-		require_once ABSPATH . WPINC . '/class-wp-feed-cache.php';
-		require_once ABSPATH . WPINC . '/class-wp-feed-cache-transient.php';
-		require_once ABSPATH . WPINC . '/class-wp-simplepie-file.php';
-		require_once ABSPATH . WPINC . '/class-wp-simplepie-sanitize-kses.php';
-
 		$feed = new SimplePie();
 
 		$feed->set_sanitize_class( 'WP_SimplePie_Sanitize_KSES' );
@@ -666,7 +661,6 @@ function pf_fetch_feed( $url ) {
 		 * @param object $feed SimplePie feed object (passed by reference).
 		 * @param mixed  $url  URL of feed to retrieve. If an array of URLs, the feeds are merged.
 		 */
-
 		do_action_ref_array( 'wp_feed_options', array( &$feed, $url ) );
 
 		$feed->init();
