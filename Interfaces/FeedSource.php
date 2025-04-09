@@ -1,0 +1,41 @@
+<?php
+/**
+ * FeedSource interface.
+ *
+ * @since 5.9.0
+ *
+ * @package PressForward
+ */
+
+namespace PressForward\Interfaces;
+
+/**
+ * Interface FeedSource
+ *
+ * @package PressForward\Interfaces
+ */
+interface FeedSource {
+	/**
+	 * Gets feed items.
+	 *
+	 * @param \PressForward\Core\Models\Feed $feed Feed object.
+	 * @return array
+	 */
+	public function get_feed_items( \PressForward\Core\Models\Feed $feed );
+
+	/**
+	 * Fetches data from URL.
+	 *
+	 * @param \PressForward\Core\Models\Feed $feed Feed object.
+	 * @return array|\WP_Error
+	 */
+	public function fetch( $feed );
+
+	/**
+	 * Performs a health check on the feed.
+	 *
+	 * @param string $url         URL to fetch data from.
+	 * @param bool   $is_new_feed Whether the feed is new.
+	 */
+	public function health_check( string $url, $is_new_feed = false );
+}
