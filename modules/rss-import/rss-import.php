@@ -454,11 +454,15 @@ class PF_RSS_Import extends PF_Module implements FeedSource {
 
 		?>
 		<p>
-			<?php esc_html_e( 'Enter the URL of an RSS feed. PressForward will watch this feed for updates, and will automatically import newly published items into the Feed Items tool.', 'pressforward' ); ?>
+			<?php esc_html_e( 'Enter the URL of a feed. PressForward will watch the feed for updates, and will automatically import newly published items into the Feed Items area.', 'pressforward' ); ?>
 		</p>
 
 		<p>
-			<?php echo wp_kses_post( '<a href="https://en.wikipedia.org/wiki/RSS">Learn more about RSS</a>.' ); ?>
+			<?php echo wp_kses_post( __( 'RSS Feed URLs can be often be found by looking for an orange icon with the letters "RSS", "XML", or "Atom". If you aren\'t sure how to find the feed URL, enter a content URL (such as an article page) and PressForward will try to identify the feed for you. <a href="https://en.wikipedia.org/wiki/RSS">Learn more about RSS</a>.', 'pressforward' ) ); ?>
+		</p>
+
+		<p>
+			<?php esc_html_e( 'You can also enter the URL of a Google Scholar author profile or search results page to subscribe to new publications by that author or on that topic.', 'pressforward' ); ?>
 		</p>
 
 		<div class="pf_feeder_input_box">
@@ -484,7 +488,11 @@ class PF_RSS_Import extends PF_Module implements FeedSource {
 	}
 
 	/**
-	 * Validates a feedlist input.
+	 * Validates a URL for a new feed.
+	 *
+	 * This validation also performs the task of actually adding the feed
+	 * to the database. The Settings API integration is only to get access
+	 * to the UI and controller logic.
 	 *
 	 * @param array $input Input array.
 	 */
@@ -508,21 +516,11 @@ class PF_RSS_Import extends PF_Module implements FeedSource {
 			}
 		}
 
-		pf_log( 'Add Feed Process Invoked: PF_RSS_IMPORT::pf_feedlist_validate' );
-		pf_log( $input );
-
-		if ( current_user_can( 'edit_posts' ) ) {
-			pf_log( 'Yes, the current user can edit posts.' );
-		} else {
-			pf_log( 'No, the current user can not edit posts.' );
-		}
-
 		$feed_obj = pressforward( 'schema.feeds' );
 		$subed    = array();
 
 		if ( ! empty( $input['single'] ) ) {
 			if ( ! $feed_obj->has_feed( $input['single'] ) ) {
-				pf_log( 'The feed does not already exist.' );
 				$check = $feed_obj->create(
 					$input['single'],
 					array(
@@ -532,7 +530,6 @@ class PF_RSS_Import extends PF_Module implements FeedSource {
 				);
 
 				if ( is_wp_error( $check ) || ! $check ) {
-					pf_log( 'The feed did not enter the database.' );
 					$something_broke = true;
 					$description     = 'Feed failed initial attempt to add to database | ' . $check->get_error_message();
 					$broken_id       = $feed_obj->create(
@@ -547,10 +544,7 @@ class PF_RSS_Import extends PF_Module implements FeedSource {
 					pressforward( 'library.alertbox' )->add_bug_type_to_post( $broken_id, 'Broken feed.' );
 				}
 			} else {
-				pf_log( 'The feed already exists, sending it to update.' );
 				$check = $feed_obj->update_url( $input['single'] );
-				pf_log( 'Our attempt to update resulted in:' );
-				pf_log( $check );
 			}
 
 			$subed[] = 'a feed.';

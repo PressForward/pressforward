@@ -13,6 +13,12 @@
 .pressforward_page_pf-feeder .pftab h2 {
   display: none; }
 
+.pf-settings-box p {
+	font-size: 14px;
+	line-height: 1.7em;
+	max-width: 800px;
+}
+
 .pf_container a.nav-tab {
 	text-decoration: none;
 }
