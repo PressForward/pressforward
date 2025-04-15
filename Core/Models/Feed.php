@@ -402,6 +402,11 @@ class Feed extends BasicModel {
 			$feed_type = 'rss';
 		}
 
+		// Both google-scholar-keyword and google-scholar-profile are handled by 'google-scholar'.
+		if ( 'google-scholar-keyword' === $feed_type || 'google-scholar-profile' === $feed_type ) {
+			$feed_type = 'google-scholar';
+		}
+
 		$module = null;
 		foreach ( pressforward( 'modules' )->modules as $module ) {
 			if ( $feed_type === $module->feed_type ) {
@@ -424,7 +429,7 @@ class Feed extends BasicModel {
 		$feed_url = $this->get( 'remote_feed_url' );
 
 		$module = $this->get_module();
-		$module->health_check( $feed_url, $is_new_feed );
+		$module->health_check( $this, $is_new_feed );
 	}
 
 	/**

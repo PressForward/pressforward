@@ -34,8 +34,8 @@ interface FeedSource {
 	/**
 	 * Performs a health check on the feed.
 	 *
-	 * @param string $url         URL to fetch data from.
-	 * @param bool   $is_new_feed Whether the feed is new.
+	 * @param \PressForward\Core\Models\Feed $feed        Feed object.
+	 * @param bool                           $is_new_feed Whether the feed is new.
 	 */
-	public function health_check( string $url, $is_new_feed = false );
+	public function health_check( \PressForward\Core\Models\Feed $feed, $is_new_feed = false );
 }

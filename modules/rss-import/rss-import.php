@@ -524,7 +524,8 @@ class PF_RSS_Import extends PF_Module implements FeedSource {
 				$check = $feed_obj->create(
 					$input['single'],
 					array(
-						'type'         => 'rss',
+						// For now, we want to use the 'Subscribe to Feeds' UI for all feed types.
+						// Let the create() method detect the type.
 						'module_added' => get_class(),
 					)
 				);
@@ -714,11 +715,13 @@ class PF_RSS_Import extends PF_Module implements FeedSource {
 	/**
 	 * Performs health check.
 	 *
-	 * @param string $url URL.
-	 * @param bool  $is_new_feed Is new feed.
+	 * @param \PressForward\Core\Models\Feed $feed        Feed object.
+	 * @param bool                           $is_new_feed Whether the feed is new.
 	 * @return void
 	 */
-	public function health_check( string $url, $is_new_feed = false ) {
+	public function health_check( \PressForward\Core\Models\Feed $feed, $is_new_feed = false ) {
+		$feed_url = $feed->get( 'remote_feed_url' );
+
 		$feed_urls_to_test = [
 			$feed_url,
 			trailingslashit( $feed_url ) . 'rss/',
@@ -737,30 +740,28 @@ class PF_RSS_Import extends PF_Module implements FeedSource {
 		$alert_box = pressforward( 'library.alertbox' );
 		if ( ! $feed_is_valid ) {
 			if ( $alert_box ) {
-				$alert_box->switch_post_type( $this->get( 'id' ) );
-				$alert_box->add_bug_type_to_post( $this->get( 'id' ), __( 'Broken RSS feed.', 'pressforward' ) );
+				$alert_box->switch_post_type( $feed->get( 'id' ) );
+				$alert_box->add_bug_type_to_post( $feed->get( 'id' ), __( 'Broken RSS feed.', 'pressforward' ) );
 			}
 			return;
 		}
 
 		if ( $alert_box ) {
-			$alert_box->dismiss_alert( $this->get( 'id' ) );
+			$alert_box->dismiss_alert( $feed->get( 'id' ) );
 		}
 
 		if ( $is_new_feed ) {
-			$this->set( 'title', $the_feed->get_title() );
-			$this->set( 'description', $the_feed->get_description() );
-			$this->set( 'htmlUrl', $the_feed->get_link( 0 ) );
+			$feed->set( 'title', $the_feed->get_title() );
+			$feed->set( 'description', $the_feed->get_description() );
+			$feed->set( 'htmlUrl', $the_feed->get_link( 0 ) );
 
 			$author      = $the_feed->get_author();
 			$author_name = method_exists( $author, 'get_name' ) ? $author->get_name() : '';
-			$this->set( 'feed_author', $author_name );
+			$feed->set( 'feed_author', $author_name );
 
-			$this->set( 'thumbnail', $the_feed->get_image_url() );
+			$feed->set( 'thumbnail', $the_feed->get_image_url() );
 
-			$this->save();
+			$feed->save();
 		}
 	}
-
-
 }
