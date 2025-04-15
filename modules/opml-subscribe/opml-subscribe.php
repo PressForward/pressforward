@@ -389,24 +389,32 @@ class PF_OPML_Subscribe extends PF_Module {
 	 */
 	private function make_a_feed_object_from_post( $post_id = 0 ) {
 		$meta = pressforward( 'controller.metas' )->get_all_metas( $post_id );
+
+		$feed_url = '';
 		if ( ! empty( $meta['feedUrl'][0] ) ) {
-			if ( 'http' !== substr( $meta['feedUrl'][0], 0, 4 ) ) {
-				$meta['feedUrl'][0] = 'http://' . $meta['feedUrl'][0];
-			}
-		} else {
+			$feed_url = $meta['feedUrl'][0];
+		} elseif ( ! empty( $meta['feed_url'][0] ) ) {
+			$feed_url = $meta['feed_url'][0];
+		}
+
+		if ( ! $feed_url ) {
 			return '';
+		}
+
+		if ( 'http' !== substr( $feed_url, 0, 4 ) ) {
+			$feed_url = 'http://' . $feed_url;
 		}
 
 		$post         = get_post( $post_id );
 		$post_content = $post && $post instanceof \WP_Post ? $post->post_content : '';
 
-		$url_parts = wp_parse_url( $meta['feedUrl'][0] );
+		$url_parts = wp_parse_url( $feed_url );
 		$entry     = array(
 			'title'   => get_the_title( $post_id ),
 			'text'    => $post_content,
 			'type'    => $meta['feed_type'][0],
-			'feedUrl' => $meta['feedUrl'][0],
-			'xmlUrl'  => $meta['feedUrl'][0],
+			'feedUrl' => $feed_url,
+			'xmlUrl'  => $feed_url,
 			'htmlUrl' => $url_parts['scheme'] . '://' . $url_parts['host'],
 		);
 		return $this->master_opml_obj->make_a_feed_obj( $entry );
