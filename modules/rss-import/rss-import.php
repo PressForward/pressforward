@@ -747,7 +747,7 @@ class PF_RSS_Import extends PF_Module implements FeedSource {
 			$feed->set( 'htmlUrl', $the_feed->get_link( 0 ) );
 
 			$author      = $the_feed->get_author();
-			$author_name = method_exists( $author, 'get_name' ) ? $author->get_name() : '';
+			$author_name = is_object( $author ) && method_exists( $author, 'get_name' ) ? $author->get_name() : '';
 			$feed->set( 'feed_author', $author_name );
 
 			$feed->set( 'thumbnail', $the_feed->get_image_url() );
