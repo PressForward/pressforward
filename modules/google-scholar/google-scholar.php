@@ -171,6 +171,82 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 	 * @param bool                           $is_new_feed Whether the feed is new.
 	 */
 	public function health_check( \PressForward\Core\Models\Feed $feed, $is_new_feed = false ) {
-		// Implement the logic to perform a health check on the feed.
+		$feed_url = $feed->get( 'remote_feed_url' );
+
+		$feed_is_valid = false;
+
+		// Fetch and see if it looks like a Google Scholar feed.
+		$response = wp_remote_get(
+			$feed_url,
+			[
+				'timeout'    => 30,
+				'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+			]
+		);
+
+		$body = '';
+		if ( ! is_wp_error( $response ) ) {
+			$body = wp_remote_retrieve_body( $response );
+
+			// Check if the body contains Google Scholar specific content.
+			if ( strpos( $body, 'Google Scholar' ) !== false ) {
+				$feed_is_valid = true;
+			}
+		}
+
+		$alert_box = pressforward( 'library.alertbox' );
+
+		if ( ! $feed_is_valid ) {
+			if ( $alert_box ) {
+				$alert_box->switch_post_type( $feed->get( 'id' ) );
+				$alert_box->add_bug_type_to_post( $feed->get( 'id' ), __( 'Bad Google Scholar feed URL', 'pressforward' ) );
+			}
+
+			return;
+		}
+
+		// Feed appears valid.
+		if ( $alert_box ) {
+			$alert_box->dismiss_alert( $feed->get( 'id' ) );
+		}
+
+		if ( $is_new_feed ) {
+			// Get the feed title from search box HTML, class 'gs_in_txt'.
+			$doc = new DOMDocument();
+			libxml_use_internal_errors( true );
+			$doc->loadHTML( $body );
+			libxml_clear_errors();
+
+			$xpath = new DOMXPath( $doc );
+
+			// search box node has 'name' attribute 'as_epq'.
+			$search_box_node = $xpath->query( '//input[@name="as_epq"]' )->item( 0 );
+
+			if ( $search_box_node instanceof DOMElement ) {
+				$search_text = $search_box_node->getAttribute( 'value' );
+
+				$feed_title = sprintf(
+					// translators: %s is the search term.
+					__( 'Google Scholar: "%s"', 'pressforward' ),
+					$search_text
+				);
+				$feed->set( 'title', $feed_title );
+
+				$feed_description = sprintf(
+					// translators: %s is the search term.
+					__( 'Google Scholar search for "%s"', 'pressforward' ),
+					$search_text
+				);
+				$feed->set( 'description', $feed_description );
+
+				$feed->set( 'htmlUrl', $feed_url );
+				$feed->set( 'feed_author', __( 'Google Scholar', 'pressforward' ) );
+
+				$feed->save();
+			} else {
+				// Fallback if title not found.
+				$feed->set( 'title', __( 'Google Scholar Feed', 'pressforward' ) );
+			}
+		}
 	}
 }
