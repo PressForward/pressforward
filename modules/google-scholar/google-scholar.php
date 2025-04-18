@@ -129,16 +129,18 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 				$feed_title = '';
 			}
 
+			$item_wp_date = ! empty( $entry['year'] ) ? gmdate( 'Y-m-d H:i:s', strtotime( $entry['year'] . '-01-01' ) ) : gmdate( 'Y-m-d H:i:s' );
+
 			$entries[] = FeedItem::from_array(
 				[
 					'item_title'     => $entry['title'],
 					'source_title'   => $feed_title,
-					'item_date'      => $entry['year'] ?? '',
+					'item_date'      => $entry['year'] ?? $item_wp_date,
 					'item_author'    => $entry['authors'] ?? '',
 					'item_content'   => $entry['snippet'] ?? '',
 					'item_link'      => $entry['link'] ?? '',
 					'item_id'        => $id,
-					'item_wp_date'   => $entry['year'] ?? '',
+					'item_wp_date'   => $item_wp_date,
 					'item_tags'      => '',
 					'description'    => $entry['snippet'] ?? '',
 					'parent_feed_id' => $feed->get( 'id' ),
