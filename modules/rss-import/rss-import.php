@@ -208,18 +208,6 @@ class PF_RSS_Import extends PF_Module implements FeedSource {
 	}
 
 	/**
-	 * Gets feed items.
-	 *
-	 * @param \PressForward\Core\Models\Feed $feed Feed object.
-	 * @return array
-	 */
-	public function get_feed_items( \PressForward\Core\Models\Feed $feed ) {
-		$fetched = $this->fetch( $feed );
-
-		return $fetched;
-	}
-
-	/**
 	 * Determines the item link.
 	 *
 	 * @param object $item Item object.

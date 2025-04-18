@@ -22,17 +22,6 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 	}
 
 	/**
-	 * Gets feed items.
-	 *
-	 * @param \PressForward\Core\Models\Feed $feed Feed object.
-	 * @return array
-	 */
-	public function get_feed_items( \PressForward\Core\Models\Feed $feed ) {
-		$fetched = $this->fetch( $feed );
-		return $fetched;
-	}
-
-	/**
 	 * Fetches data from URL.
 	 *
 	 * @param \PressForward\Core\Models\Feed $feed Feed object.

@@ -275,6 +275,37 @@ class PF_Module {
 	}
 
 	/**
+	 * Gets feed items.
+	 *
+	 * @param \PressForward\Core\Models\Feed $feed Feed object.
+	 * @return array|\WP_Error
+	 */
+	public function get_feed_items( \PressForward\Core\Models\Feed $feed ) {
+		// If this subclass does not implement FeedSource, return an empty array.
+		if ( ! method_exists( $this, 'fetch' ) ) {
+			return [];
+		}
+
+		return $this->fetch( $feed );
+	}
+
+	/**
+	 * Wrapper for health_check() for modules that implement FeedSource.
+	 *
+	 * @param \PressForward\Core\Models\Feed $feed        Feed object.
+	 * @param bool                           $is_new_feed Whether the feed is new.
+	 * @return void
+	 */
+	public function do_health_check( \PressForward\Core\Models\Feed $feed, $is_new_feed = false ) {
+		// If this subclass does not implement FeedSource, do nothing.
+		if ( ! method_exists( $this, 'health_check' ) ) {
+			return;
+		}
+
+		$this->health_check( $feed, $is_new_feed );
+	}
+
+	/**
 	 * Enqueue admin scripts.
 	 */
 	public function admin_enqueue_scripts() {}

@@ -427,7 +427,7 @@ class Feed extends BasicModel {
 		$feed_url = $this->get( 'remote_feed_url' );
 
 		$module = $this->get_module();
-		$module->health_check( $this, $is_new_feed );
+		$module->do_health_check( $this, $is_new_feed );
 	}
 
 	/**

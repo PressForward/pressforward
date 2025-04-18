@@ -16,15 +16,7 @@ namespace PressForward\Interfaces;
  */
 interface FeedSource {
 	/**
-	 * Gets feed items.
-	 *
-	 * @param \PressForward\Core\Models\Feed $feed Feed object.
-	 * @return array
-	 */
-	public function get_feed_items( \PressForward\Core\Models\Feed $feed );
-
-	/**
-	 * Fetches data from URL.
+	 * Fetches data from a feed.
 	 *
 	 * @param \PressForward\Core\Models\Feed $feed Feed object.
 	 * @return array|\WP_Error
