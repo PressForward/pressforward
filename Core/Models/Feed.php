@@ -344,8 +344,6 @@ class Feed extends BasicModel {
 			return $retval;
 		}
 
-		$feed_results['parent_feed_id'] = $feed_id;
-
 		return pressforward( 'schema.feed_item' )->assemble_feed_for_pull( $feed_results );
 	}
 

@@ -660,8 +660,6 @@ class Feed_Items implements HasActions, HasFilters {
 		// Since rss_object places all the feed items into an array of arrays whose structure is standardized throughout,
 		// We can do stuff with it, using the same structure of items as we do everywhere else.
 		pf_log( 'Now beginning check and processing for entering items into the database.' );
-		$parent = $feed_obj['parent_feed_id'];
-		unset( $feed_obj['parent_feed_id'] );
 
 		$retval = [
 			'date_retrieved' => gmdate( 'Y-m-d H:i:s' ),
@@ -669,11 +667,11 @@ class Feed_Items implements HasActions, HasFilters {
 		];
 
 		foreach ( $feed_obj as $item ) {
-			$item['item_link'] = pressforward( 'controller.http_tools' )->resolve_a_url( $item['item_link'] );
+			$item_link = pressforward( 'controller.http_tools' )->resolve_a_url( $item->item_link() );
 
 			$thepostscheck          = 0;
 			$the_posts_double_check = 0;
-			$item_id                = $item['item_id'];
+			$item_id                = $item->item_id();
 			$source_repeat          = 0;
 
 			// Originally this query tried to get every archive post earlier than 'now' to check.
@@ -721,9 +719,8 @@ class Feed_Items implements HasActions, HasFilters {
 						$post_item_link = pressforward( 'controller.metas' )->get_post_pf_meta( $check_post->ID, 'item_link', true );
 
 						// Item comparative values.
-						$item_date  = strtotime( $item['item_date'] );
-						$item_title = $item['item_title'];
-						$item_link  = $item['item_link'];
+						$item_date  = strtotime( $item->item_date() );
+						$item_title = $item->item_title();
 
 						// First check if it more recent than the currently stored item.
 						if ( ( ( $the_title === $item_title ) || ( $post_item_link === $item_link ) ) ) {
@@ -773,19 +770,16 @@ class Feed_Items implements HasActions, HasFilters {
 			// someone were to hit the refresh button at the same time as another person.
 
 			if ( 0 === $thepostscheck ) {
-				$item_title    = $item['item_title'];
-				$item_content  = $item['item_content'];
-				$item_feat_img = $item['item_feat_img'];
-				$source_title  = $item['source_title'];
-				$item_date     = $item['item_date'];
-				$item_author   = $item['item_author'];
-				$item_link     = $item['item_link'];
-				$item_wp_date  = $item['item_wp_date'];
-				$item_tags     = $item['item_tags'];
-				if ( ! isset( $item['parent_feed_id'] ) || ! $item['parent_feed_id'] ) {
-					$item['parent_feed_id'] = $parent;
-				}
-				$feed_obj_id   = $item['parent_feed_id'];
+				$item_title     = $item->item_title();
+				$item_content   = $item->item_content();
+				$source_title   = $item->source_title();
+				$item_date      = $item->item_date();
+				$item_author    = $item->item_author();
+				$item_link      = $item->item_link();
+				$item_wp_date   = $item->item_wp_date();
+				$item_tags      = $item->item_tags();
+				$parent_feed_id = $item->parent_feed_id();
+
 				$source_repeat = $source_repeat;
 
 				// Trying to prevent bad or malformed HTML from entering the database.
@@ -890,7 +884,7 @@ class Feed_Items implements HasActions, HasFilters {
 					pressforward( 'controller.metas' )->meta_for_entry( 'item_tags', $item_tags ),
 					pressforward( 'controller.metas' )->meta_for_entry( 'source_repeat', $source_repeat ),
 					pressforward( 'controller.metas' )->meta_for_entry( 'revertible_feed_text', $item_content ),
-					pressforward( 'controller.metas' )->meta_for_entry( 'item_description', $item['description'] ),
+					pressforward( 'controller.metas' )->meta_for_entry( 'item_description', $item->description() ),
 				);
 
 				pressforward( 'controller.metas' )->establish_post( $new_nom_id, $pf_meta_args );

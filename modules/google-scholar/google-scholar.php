@@ -7,6 +7,8 @@
 
 use PressForward\Interfaces\FeedSource;
 
+use PressForward\Core\DTO\FeedItem;
+
 /**
  * PF_Google_Scholar class.
  */
@@ -92,7 +94,7 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 			$title_node = $xpath->query( './/h3[@class="gs_rt"]', $entry_node )->item( 0 );
 			if ( $title_node ) {
 				$link_node = $xpath->query( './/a', $title_node )->item( 0 );
-				if ( $link_node ) {
+				if ( $link_node instanceof DOMElement ) {
 					// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					$entry['title'] = trim( $link_node->textContent );
 					$entry['link']  = $link_node->getAttribute( 'href' );
@@ -119,45 +121,47 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 
 				// Try to extract authors (usually before first dash).
 				$parts = explode( '-', $author_pub_text, 2 );
-				if ( count( $parts ) > 0 ) {
-					$entry['authors'] = trim( $parts[0] );
 
-					// If we have publication info (after first dash).
-					if ( count( $parts ) > 1 ) {
-						$entry['publication'] = trim( $parts[1] );
-					}
+				$entry['authors'] = trim( $parts[0] );
+
+				// If we have publication info (after first dash).
+				if ( count( $parts ) > 1 ) {
+					$entry['publication'] = trim( $parts[1] );
 				}
 			}
 
 			// Get snippet/abstract (within div.gs_rs).
 			$snippet_node = $xpath->query( './/div[@class="gs_rs"]', $entry_node )->item( 0 );
 			if ( $snippet_node ) {
+				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				$entry['snippet'] = trim( $snippet_node->textContent );
 			}
 
-			// Get citation info (within div.gs_fl).
-			$cite_node = $xpath->query( './/div[@class="gs_fl"]/a[contains(text(), "Cited by")]', $entry_node )->item( 0 );
-			if ( $cite_node ) {
-				$cite_text = $cite_node->textContent;
-				if ( preg_match( '/Cited by (\d+)/', $cite_text, $matches ) ) {
-					$entry['cited_by_count'] = intval( $matches[1] );
-					$entry['cited_by_link']  = $cite_node->getAttribute( 'href' );
+			$id = pressforward_create_feed_item_id( $entry['link'], $entry['title'] );
 
-					// Google Scholar relative URLs need to be made absolute.
-					if ( substr( $entry['cited_by_link'], 0, 4 ) !== 'http' ) {
-						$entry['cited_by_link'] = 'https://scholar.google.com' . $entry['cited_by_link'];
-					}
-				}
+			$feed_title = $feed->get( 'title' );
+			if ( ! is_string( $feed_title ) ) {
+				$feed_title = '';
 			}
 
-			$entries[] = $entry;
+			$entries[] = FeedItem::from_array(
+				[
+					'item_title'     => $entry['title'],
+					'source_title'   => $feed_title,
+					'item_date'      => $entry['year'] ?? '',
+					'item_author'    => $entry['authors'] ?? '',
+					'item_content'   => $entry['snippet'] ?? '',
+					'item_link'      => $entry['link'] ?? '',
+					'item_id'        => $id,
+					'item_wp_date'   => $entry['year'] ?? '',
+					'item_tags'      => '',
+					'description'    => $entry['snippet'] ?? '',
+					'parent_feed_id' => $feed->get( 'id' ),
+				]
+			);
 		}
 
-		return [
-			'success' => true,
-			'message' => 'Fetched successfully',
-			'entries' => $entries,
-		];
+		return $entries;
 	}
 
 	/**
