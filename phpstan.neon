@@ -1,6 +1,8 @@
 parameters:
   level: 5
 
+  phpVersion: 70400
+
   bootstrapFiles:
     - constants.php
 
