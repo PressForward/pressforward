@@ -7,6 +7,8 @@
 
 use PressForward\Interfaces\FeedSource;
 
+use PressForward\Core\DTO\FeedItem;
+
 /**
  * PF_RSS_Import class.
  */
@@ -177,18 +179,19 @@ class PF_RSS_Import extends PF_Module implements FeedSource {
 			// GUID.
 			pf_log( $item->get_id() );
 
-			$retval[ 'rss_' . $c ] = pf_feed_object(
+			$retval[ 'rss_' . $c ] = FeedItem::from_array(
 				[
-					'item_title'   => $item->get_title(),
-					'source_title' => $i_feed->get_title(),
-					'item_date'    => $r_item_date,
-					'item_author'  => $authors,
-					'item_content' => $item_content,
-					'item_link'    => $item_link, // New proper link (hopefully).
-					'item_id'      => $id,
-					'item_wp_date' => $ymd_item_date,
-					'item_tags'    => $item_categories_string,
-					'description'  => $item->get_description(),
+					'item_title'     => $item->get_title(),
+					'source_title'   => $i_feed->get_title(),
+					'item_date'      => $r_item_date,
+					'item_author'    => $authors,
+					'item_content'   => $item_content,
+					'item_link'      => $item_link,
+					'item_id'        => $id,
+					'item_wp_date'   => $ymd_item_date,
+					'item_tags'      => $item_categories_string,
+					'description'    => $item->get_description(),
+					'parent_feed_id' => $feed->get( 'id' ),
 				]
 			);
 
