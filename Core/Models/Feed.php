@@ -400,8 +400,8 @@ class Feed extends BasicModel {
 			$feed_type = 'rss';
 		}
 
-		// Both google-scholar-keyword and google-scholar-profile are handled by 'google-scholar'.
-		if ( 'google-scholar-keyword' === $feed_type || 'google-scholar-profile' === $feed_type ) {
+		// Both google-scholar-keyword and google-scholar-author are handled by 'google-scholar'.
+		if ( 'google-scholar-keyword' === $feed_type || 'google-scholar-author' === $feed_type ) {
 			$feed_type = 'google-scholar';
 		}
 

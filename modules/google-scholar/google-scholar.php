@@ -30,6 +30,13 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 	public function fetch( $feed ) {
 		$url = $feed->get( 'remote_feed_url' );
 
+		$is_profile = false !== strpos( $url, 'user=' );
+
+		// If the URL is a GS profile URL, we need to sortby=pubdate to ensure we get the latest items.
+		if ( $is_profile ) {
+			$url = add_query_arg( 'sortby', 'pubdate', $url );
+		}
+
 		// Get the remote HTML content using WordPress functions.
 		$response = wp_remote_get(
 			$url,
@@ -67,6 +74,104 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 		// Create a DOMXPath object for querying the DOM.
 		$xpath = new DOMXPath( $doc );
 
+		if ( $is_profile ) {
+			$entries = $this->parse_items_from_profile( $xpath, $feed );
+		} else {
+			$entries = $this->parse_items_from_search( $xpath, $feed );
+		}
+
+		return $entries;
+	}
+
+	/**
+	 * Parses items from Google Scholar profile page.
+	 *
+	 * @param DOMXPath                       $xpath The DOMXPath object.
+	 * @param \PressForward\Core\Models\Feed $feed  The feed object.
+	 * @return array The parsed entries.
+	 */
+	protected function parse_items_from_profile( $xpath, $feed ) {
+		// Find all entries (table rows in the profile page).
+		$entries_nodes = $xpath->query( '//tr[@class="gsc_a_tr"]' );
+
+		$entries = [];
+
+		foreach ( $entries_nodes as $entry_node ) {
+			$entry = [];
+
+			// Get the title and link (within td.gsc_a_t).
+			$title_container = $xpath->query( './/td[@class="gsc_a_t"]', $entry_node )->item( 0 );
+			if ( $title_container ) {
+				$title_node = $xpath->query( './/a[@class="gsc_a_at"]', $title_container )->item( 0 );
+				if ( $title_node instanceof DOMElement ) {
+					// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					$entry['title'] = trim( $title_node->textContent );
+
+					// For profile pages, links are relative, so we need to prepend the base URL.
+					$relative_link = $title_node->getAttribute( 'href' );
+					$entry['link'] = 'https://scholar.google.com' . $relative_link;
+				}
+
+				// Get authors (within div.gs_gray).
+				$authors_node = $xpath->query( './/div[@class="gs_gray"][1]', $title_container )->item( 0 );
+				if ( $authors_node ) {
+					// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					$entry['authors'] = trim( $authors_node->textContent );
+				}
+
+				// Get publication venue (within second div.gs_gray).
+				$publication_node = $xpath->query( './/div[@class="gs_gray"][2]', $title_container )->item( 0 );
+				if ( $publication_node ) {
+					// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					$entry['publication'] = trim( $publication_node->textContent );
+				}
+			}
+
+			// Get year from the year column (td.gsc_a_y).
+			$year_node = $xpath->query( './/td[@class="gsc_a_y"]', $entry_node )->item( 0 );
+			if ( $year_node ) {
+				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				$entry['year'] = trim( $year_node->textContent );
+			}
+
+			// Generate an ID for this item.
+			$id = pressforward_create_feed_item_id( $entry['link'], $entry['title'] );
+
+			$feed_title = $feed->get( 'title' );
+			if ( ! is_string( $feed_title ) ) {
+				$feed_title = '';
+			}
+
+			$item_wp_date = ! empty( $entry['year'] ) ? gmdate( 'Y-m-d H:i:s', strtotime( $entry['year'] . '-01-01' ) ) : gmdate( 'Y-m-d H:i:s' );
+
+			$entries[] = FeedItem::from_array(
+				[
+					'item_title'     => $entry['title'],
+					'source_title'   => $feed_title,
+					'item_date'      => $entry['year'] ?? $item_wp_date,
+					'item_author'    => $entry['authors'] ?? '',
+					'item_content'   => '',
+					'item_link'      => $entry['link'] ?? '',
+					'item_id'        => $id,
+					'item_wp_date'   => $item_wp_date,
+					'item_tags'      => '',
+					'description'    => $entry['publication'] ?? '',
+					'parent_feed_id' => $feed->get( 'id' ),
+				]
+			);
+		}
+
+		return $entries;
+	}
+
+	/**
+	 * Parses items from Google Scholar search page.
+	 *
+	 * @param DOMXPath                       $xpath The DOMXPath object.
+	 * @param \PressForward\Core\Models\Feed $feed  The feed object.
+	 * @return array The parsed entries.
+	 */
+	protected function parse_items_from_search( $xpath, $feed ) {
 		// Find all entries with class gs_ri (main result container).
 		$entries_nodes = $xpath->query( '//div[@class="gs_ri"]' );
 
@@ -206,33 +311,66 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 
 			$xpath = new DOMXPath( $doc );
 
-			// search box node has 'name' attribute 'as_epq'.
-			$search_box_node = $xpath->query( '//input[@name="as_epq"]' )->item( 0 );
+			$is_profile = false !== strpos( $feed_url, 'user=' );
 
-			if ( $search_box_node instanceof DOMElement ) {
-				$search_text = $search_box_node->getAttribute( 'value' );
+			if ( $is_profile ) {
+				// profile page - get the user's name from #gsc_prf_in.
+				$user_name_node = $xpath->query( '//div[@id="gsc_prf_in"]' )->item( 0 );
 
-				$feed_title = sprintf(
-					// translators: %s is the search term.
-					__( 'Google Scholar: "%s"', 'pressforward' ),
-					$search_text
-				);
-				$feed->set( 'title', $feed_title );
+				if ( $user_name_node instanceof DOMElement ) {
+					$user_name = trim( $user_name_node->textContent );
 
-				$feed_description = sprintf(
-					// translators: %s is the search term.
-					__( 'Google Scholar search for "%s"', 'pressforward' ),
-					$search_text
-				);
-				$feed->set( 'description', $feed_description );
+					$feed_title = sprintf(
+						// translators: %s is the user's name.
+						__( 'Google Scholar Profile: %s', 'pressforward' ),
+						$user_name
+					);
+					$feed->set( 'title', $feed_title );
 
-				$feed->set( 'htmlUrl', $feed_url );
-				$feed->set( 'feed_author', __( 'Google Scholar', 'pressforward' ) );
+					$feed_description = sprintf(
+						// translators: %s is the user's name.
+						__( 'Google Scholar profile for %s', 'pressforward' ),
+						$user_name
+					);
+					$feed->set( 'description', $feed_description );
 
-				$feed->save();
+					$feed->set( 'htmlUrl', $feed_url );
+					$feed->set( 'feed_author', __( 'Google Scholar', 'pressforward' ) );
+
+					$feed->save();
+				} else {
+					// Fallback if title not found.
+					$feed->set( 'title', __( 'Google Scholar Profile', 'pressforward' ) );
+				}
 			} else {
-				// Fallback if title not found.
-				$feed->set( 'title', __( 'Google Scholar Feed', 'pressforward' ) );
+				// search box node has 'name' attribute 'as_epq'.
+				$search_box_node = $xpath->query( '//input[@name="as_epq"]' )->item( 0 );
+
+				if ( $search_box_node instanceof DOMElement ) {
+					$search_text = $search_box_node->getAttribute( 'value' );
+
+					$feed_title = sprintf(
+						// translators: %s is the search term.
+						__( 'Google Scholar: "%s"', 'pressforward' ),
+						$search_text
+					);
+					$feed->set( 'title', $feed_title );
+
+					$feed_description = sprintf(
+						// translators: %s is the search term.
+						__( 'Google Scholar search for "%s"', 'pressforward' ),
+						$search_text
+					);
+					$feed->set( 'description', $feed_description );
+
+					$feed->set( 'htmlUrl', $feed_url );
+					$feed->set( 'feed_author', __( 'Google Scholar', 'pressforward' ) );
+
+					$feed->save();
+				} else {
+					// Fallback if title not found.
+					$feed->set( 'title', __( 'Google Scholar Feed', 'pressforward' ) );
+				}
 			}
 		}
 	}
