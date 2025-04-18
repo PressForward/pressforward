@@ -115,7 +115,7 @@ final class FeedItem implements JsonSerializable {
 	 *     item_id:string,
 	 *     item_wp_date:string,
 	 *     item_tags:string,
-	 *     description:?string
+	 *     description:?string,
 	 *     parent_feed_id:int
 	 * } $data
 	 *
