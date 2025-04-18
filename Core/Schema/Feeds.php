@@ -659,9 +659,10 @@ class Feeds implements HasActions, HasFilters {
 		$retval = [
 			'message' => __( 'Not a valid feed URL.', 'pressforward' ),
 			'feedUrl' => '',
+			'rawUrl'  => '',
 		];
 
-		$url = isset( $_POST['feedUrl'] ) ? sanitize_text_field( wp_unslash( $_POST['feedUrl'] ) ) : '';
+		$url = isset( $_POST['feedUrl'] ) ? esc_url_raw( wp_unslash( $_POST['feedUrl'] ) ) : '';
 
 		if ( ! $url ) {
 			wp_send_json_error( $retval );
@@ -677,18 +678,20 @@ class Feeds implements HasActions, HasFilters {
 		} elseif ( $validated['success'] ) {
 			$validated_feed_url = $validated['feedUrl'];
 
-			if ( $validated_feed_url === $url ) {
-				$retval['message'] = __( 'Valid feed URL.', 'pressforward' );
-			} else {
+			if ( $validated_feed_url !== $url ) {
 				$retval['message'] = sprintf(
 					// translators: 1: URL provided, 2: Validated feed URL.
 					__( 'You provided the URL %1$s, which is not a valid feed URL. We detected a related feed URL at %2$s.', 'pressforward' ),
 					'<code>' . $url . '</code>',
 					'<code>' . $validated_feed_url . '</code>'
 				);
+			} else {
+				$retval['message'] = $validated['message'];
 			}
 
+			$retval['rawUrl']  = $validated['rawUrl'];
 			$retval['feedUrl'] = $validated['feedUrl'];
+
 			wp_send_json_success( $retval );
 		}
 
@@ -706,33 +709,76 @@ class Feeds implements HasActions, HasFilters {
 			'success' => false,
 			'feedUrl' => $url,
 			'message' => '',
+			'rawUrl'  => '',
 		];
 
 		$is_url = false;
 
+		$validated_url = $url;
 		if ( filter_var( $url, FILTER_VALIDATE_URL ) ) {
 			$is_url = true;
 		} elseif ( preg_match( '/^[\w.-]+\.[a-z]{2,}(\/\S*)?$/i', $url ) ) {
-			$url = esc_url( 'https://' . $url );
+			$validated_url = esc_url( 'https://' . $url );
 		}
 
-		$retval['url'] = $url;
+		$retval['url']    = $validated_url;
+		$retval['rawUrl'] = $url;
 
 		if ( ! $url ) {
 			$message = __( 'Not a valid URL.', 'pressforward' );
 			return $retval;
 		}
 
-		$feed = fetch_feed( $url );
-		if ( is_wp_error( $feed ) ) {
-			$message = $feed->get_error_message();
-			return $retval;
+		$feed_type = self::determine_feed_type_from_url( $url );
+
+		switch ( $feed_type ) {
+			case 'google-scholar-author':
+			case 'google-scholar-keyword':
+				$request = wp_remote_get( $url );
+				if ( is_wp_error( $request ) ) {
+					$retval['message'] = $request->get_error_message();
+				} elseif ( 200 !== wp_remote_retrieve_response_code( $request ) ) {
+					$retval['message'] = __( 'The URL returned an error.', 'pressforward' );
+				} else {
+					$retval['success'] = true;
+					$retval['feedUrl'] = $url;
+					$retval['message'] = 'google-scholar-author' === $feed_type ? __( 'Google Scholar author feed detected.', 'pressforward' ) : __( 'Google Scholar keyword feed detected.', 'pressforward' );
+				}
+
+				break;
+
+			case 'rss':
+				$feed = fetch_feed( $url );
+				if ( is_wp_error( $feed ) ) {
+					$retval['message'] = $feed->get_error_message();
+				} else {
+					$retval['success'] = true;
+					$retval['feedUrl'] = $feed->feed_url;
+				}
 		}
 
-		$retval['success'] = true;
-		$retval['feedUrl'] = $feed->feed_url;
-
 		return $retval;
+	}
+
+	/**
+	 * Detects a feed type based on the URL format.
+	 *
+	 * Returns 'google-scholar-author' or 'google-scholar-keyword' if the URL
+	 * belongs to Google Scholar. Otherwise returns 'rss'.
+	 *
+	 * @param string $url URL to check.
+	 * @return string
+	 */
+	public static function determine_feed_type_from_url( $url ) {
+		$feed_type = 'rss';
+
+		if ( false !== strpos( $url, 'scholar.google.com/citations' ) ) {
+			$feed_type = 'google-scholar-author';
+		} elseif ( false !== strpos( $url, 'scholar.google.com/scholar' ) ) {
+			$feed_type = 'google-scholar-keyword';
+		}
+
+		return $feed_type;
 	}
 
 	/**
@@ -1037,7 +1083,7 @@ class Feeds implements HasActions, HasFilters {
 				'title'        => $feed_url,
 				'url'          => $feed_url,
 				'htmlUrl'      => false,
-				'type'         => 'rss',
+				'type'         => '',
 				'feed_url'     => $feed_url,
 				'description'  => false,
 				'feed_author'  => false,
@@ -1053,26 +1099,22 @@ class Feeds implements HasActions, HasFilters {
 			)
 		);
 
-		pf_log( 'Creating a feed with the following parameters:' );
-		pf_log( $r );
-
 		if ( ! $r['user_added'] ) {
 			$current_user    = wp_get_current_user();
 			$r['user_added'] = $current_user->user_login;
 		}
 
+		if ( ! $r['type'] ) {
+			$r['type'] = self::determine_feed_type_from_url( $feed_url );
+		}
+
 		$existing = false;
 		if ( $this->has_feed( $feed_url ) ) {
-			pf_log( 'This is an existing feed, and will be updated.' );
 			$check    = $this->feed_post_setup( $r, 'update' );
 			$existing = true;
 		} else {
-			pf_log( 'This is a new feed.' );
 			$check = $this->feed_post_setup( $r );
 		}
-
-		pf_log( 'Feed creation result:' );
-		pf_log( $check );
 
 		if ( ! $check ) {
 			return false;

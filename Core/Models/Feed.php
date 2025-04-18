@@ -335,18 +335,16 @@ class Feed extends BasicModel {
 
 		$feed_id = $this->get( 'id' );
 
-		$feed_post = get_post( $feed_id );
-
 		pressforward( 'schema.feeds' )->set_feed_last_checked( $feed_id );
 
-		$feed_data_object = $module->get_data_object( $feed_post );
-		if ( ! is_array( $feed_data_object ) ) {
+		$feed_results = $module->get_feed_items( $this );
+
+		if ( is_wp_error( $feed_results ) ) {
+			$retval['error'] = $feed_results->get_error_message();
 			return $retval;
 		}
 
-		$feed_data_object['parent_feed_id'] = $feed_id;
-
-		return pressforward( 'schema.feed_item' )->assemble_feed_for_pull( $feed_data_object );
+		return pressforward( 'schema.feed_item' )->assemble_feed_for_pull( $feed_results );
 	}
 
 	/**
@@ -402,6 +400,11 @@ class Feed extends BasicModel {
 			$feed_type = 'rss';
 		}
 
+		// Both google-scholar-keyword and google-scholar-author are handled by 'google-scholar'.
+		if ( 'google-scholar-keyword' === $feed_type || 'google-scholar-author' === $feed_type ) {
+			$feed_type = 'google-scholar';
+		}
+
 		$module = null;
 		foreach ( pressforward( 'modules' )->modules as $module ) {
 			if ( $feed_type === $module->feed_type ) {
@@ -423,47 +426,8 @@ class Feed extends BasicModel {
 	public function health_check( $is_new_feed = false ) {
 		$feed_url = $this->get( 'remote_feed_url' );
 
-		$feed_urls_to_test = [
-			$feed_url,
-			trailingslashit( $feed_url ) . 'rss/',
-			trailingslashit( $feed_url ) . 'rss/index.xml',
-		];
-
-		$feed_is_valid = false;
-		while ( ! $feed_is_valid && ! empty( $feed_urls_to_test ) ) {
-			$feed_url = array_shift( $feed_urls_to_test );
-			$the_feed = pf_fetch_feed( $feed_url );
-			if ( ! is_wp_error( $the_feed ) ) {
-				$feed_is_valid = true;
-			}
-		}
-
-		$alert_box = pressforward( 'library.alertbox' );
-		if ( ! $feed_is_valid ) {
-			if ( $alert_box ) {
-				$alert_box->switch_post_type( $this->get( 'id' ) );
-				$alert_box->add_bug_type_to_post( $this->get( 'id' ), __( 'Broken RSS feed.', 'pressforward' ) );
-			}
-			return;
-		}
-
-		if ( $alert_box ) {
-			$alert_box->dismiss_alert( $this->get( 'id' ) );
-		}
-
-		if ( $is_new_feed ) {
-			$this->set( 'title', $the_feed->get_title() );
-			$this->set( 'description', $the_feed->get_description() );
-			$this->set( 'htmlUrl', $the_feed->get_link( 0 ) );
-
-			$author      = $the_feed->get_author();
-			$author_name = method_exists( $author, 'get_name' ) ? $author->get_name() : '';
-			$this->set( 'feed_author', $author_name );
-
-			$this->set( 'thumbnail', $the_feed->get_image_url() );
-
-			$this->save();
-		}
+		$module = $this->get_module();
+		$module->do_health_check( $this, $is_new_feed );
 	}
 
 	/**
@@ -560,5 +524,16 @@ class Feed extends BasicModel {
 		} else {
 			update_post_meta( $this->get( 'id' ), 'do_import_tags', '0' );
 		}
+	}
+
+	/**
+	 * Get the "default author" string for this feed.
+	 *
+	 * @since 5.9.0
+	 *
+	 * @return string
+	 */
+	public function get_default_author() {
+		return pressforward( 'controller.metas' )->get_post_pf_meta( $this->get( 'id' ), 'pf_feed_default_author', true );
 	}
 }

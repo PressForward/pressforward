@@ -526,7 +526,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 								'item_content'    => get_the_content(),
 								'item_link'       => $nom_permalink,
 								'item_feat_img'   => get_the_post_thumbnail( $nom_id /**, 'nom_thumb'*/ ),
-								'item_uid'        => $rss_item_id,
+								'item_id'         => $rss_item_id,
 								'item_wp_date'    => pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_wp_date', true ),
 								'item_tags'       => $nom_tags,
 								'added_date'      => $date_nomed,

@@ -449,7 +449,7 @@ function pf_slugger( $raw_string, $force_lowercase = false, $strict = true, $spa
  *     @type string $item_content    Item content.
  *     @type string $item_link       Item link.
  *     @type string $item_feat_img   Item featured image URL.
- *     @type string $item_uid        Item UID.
+ *     @type string $item_id         Item UID.
  *     @type string $item_wp_date    Item date for WP.
  *     @type string $item_tags       Item tags.
  *     @type string $added_date      Added date.
@@ -471,7 +471,7 @@ function pf_feed_object( $args = array() ) {
 		'item_content'    => '',
 		'item_link'       => '',
 		'item_feat_img'   => '',
-		'item_uid'        => '',
+		'item_id'         => '',
 		'item_wp_date'    => '',
 		'item_tags'       => '',
 		'added_date'      => '',
@@ -495,7 +495,7 @@ function pf_feed_object( $args = array() ) {
 			'item_content'    => $all_args[4] ?? $defaults['item_content'],
 			'item_link'       => $all_args[5] ?? $defaults['item_link'],
 			'item_feat_img'   => $all_args[6] ?? $defaults['item_feat_img'],
-			'item_uid'        => $all_args[7] ?? $defaults['item_uid'],
+			'item_id'         => $all_args[7] ?? $defaults['item_id'],
 			'item_wp_date'    => $all_args[8] ?? $defaults['item_wp_date'],
 			'item_tags'       => $all_args[9] ?? $defaults['item_tags'],
 			'added_date'      => $all_args[10] ?? $defaults['added_date'],
@@ -638,11 +638,6 @@ function pf_fetch_feed( $url ) {
 			require_once ABSPATH . WPINC . '/class-simplepie.php';
 		}
 
-		require_once ABSPATH . WPINC . '/class-wp-feed-cache.php';
-		require_once ABSPATH . WPINC . '/class-wp-feed-cache-transient.php';
-		require_once ABSPATH . WPINC . '/class-wp-simplepie-file.php';
-		require_once ABSPATH . WPINC . '/class-wp-simplepie-sanitize-kses.php';
-
 		$feed = new SimplePie();
 
 		$feed->set_sanitize_class( 'WP_SimplePie_Sanitize_KSES' );
@@ -666,7 +661,6 @@ function pf_fetch_feed( $url ) {
 		 * @param object $feed SimplePie feed object (passed by reference).
 		 * @param mixed  $url  URL of feed to retrieve. If an array of URLs, the feeds are merged.
 		 */
-
 		do_action_ref_array( 'wp_feed_options', array( &$feed, $url ) );
 
 		$feed->init();

@@ -40,11 +40,11 @@ import './add-feeds.scss'
 					validationInProgress = false;
 					rssSubmitButton.disabled = false;
 
-					const { feedUrl, message } = response.data
+					const { feedUrl, message, rawUrl } = response.data
 
 					let successMessage = message;
 
-					if ( feedUrl.length > 0 && feedUrl !== feedUrlField.value ) {
+					if ( feedUrl.length > 0 && rawUrl !== feedUrlField.value ) {
 						successMessage += '&nbsp;<button class="accept-suggested-feed-url button button-secondary">' + __( 'Use detected URL', 'pressforward' ) + '</button>';
 						validatedFeedUrl = feedUrl
 					}

@@ -5,10 +5,14 @@
  * @package PressForward
  */
 
+use PressForward\Interfaces\FeedSource;
+
+use PressForward\Core\DTO\FeedItem;
+
 /**
  * PF_RSS_Import class.
  */
-class PF_RSS_Import extends PF_Module {
+class PF_RSS_Import extends PF_Module implements FeedSource {
 	/**
 	 * Constructor.
 	 */
@@ -100,6 +104,251 @@ class PF_RSS_Import extends PF_Module {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
+	 * @param \PressForward\Core\Models\Feed $feed Feed object.
+	 * @return \WP_Error|array
+	 */
+	public function fetch( $feed ) {
+		$url = $feed->get( 'remote_feed_url' );
+		pf_log( 'Getting RSS Feed at ' . $url );
+
+		add_filter( 'wp_feed_cache_transient_lifetime', array( $this, 'return_cachetime' ) );
+		$simplepie_feed = pf_fetch_feed( $url );
+		remove_filter( 'wp_feed_cache_transient_lifetime', array( $this, 'return_cachetime' ) );
+
+		if ( empty( $simplepie_feed ) || is_wp_error( $simplepie_feed ) ) {
+			return new WP_Error( 'feed_error', 'Could not fetch feed.', $simplepie_feed );
+		}
+
+		$simplepie_feed->set_timeout( 60 );
+
+		return $this->process_feed_items( $simplepie_feed, $feed );
+	}
+
+	/**
+	 * Processes feed items.
+	 *
+	 * @param \SimplePie                     $simplepie_feed SimplePie feed object.
+	 * @param \PressForward\Core\Models\Feed $feed           Feed object.
+	 */
+	public function process_feed_items( \SimplePie $simplepie_feed, \PressForward\Core\Models\Feed $feed ) {
+		$retval = [];
+		$c      = 0;
+
+		foreach ( $simplepie_feed->get_items() as $item ) {
+			$check_date = $item->get_date( 'U' );
+			$dead_date  = time() - ( 60 * 60 * 24 * 60 ); // Get the unixdate for two months ago.
+			/**
+			 * Filter to set the date for checking if the item is too old.
+			 *
+			 * @param int $dead_date The date to check against.
+			 * @param object $simplepie_feed The SimplePie feed object.
+			 * @param object $item The item object.
+			 */
+			$dead_date = apply_filters( 'pf_rss_ingestion_retrieve_after_date', $dead_date, $simplepie_feed, $item );
+
+			if ( ( $check_date <= $dead_date ) && ! empty( $check_date ) ) {
+				pf_log( 'Feed item too old. Skip it.' );
+				continue;
+			}
+
+			$item_link = $this->determine_item_link( $item );
+
+			$id = pressforward_create_feed_item_id( $item_link, $item->get_title() );
+			pf_log( 'Now on feed ID ' . $id . '.' );
+
+			list( $r_item_date, $ymd_item_date ) = $this->determine_item_dates( $item );
+
+			$authors = $this->determine_item_authors( $item, $feed );
+
+			$item_content = $item->get_content();
+
+			$i_feed = $item->get_feed();
+
+			$item_categories_string = $this->determine_item_categories( $item, $feed );
+
+			// One final cleanup of the content.
+			$content_obj  = pressforward( 'library.htmlchecker' );
+			$item_content = $content_obj->closetags( $item_content );
+			$item_content = pressforward( 'controller.readability' )->process_in_oembeds( $item->get_link(), $item_content );
+			pf_log( 'get_links' );
+			pf_log( $item->get_links() );
+			pf_log( $item->get_permalink() );
+
+			// GUID.
+			pf_log( $item->get_id() );
+
+			$retval[ 'rss_' . $c ] = FeedItem::from_array(
+				[
+					'item_title'     => $item->get_title(),
+					'source_title'   => $i_feed->get_title(),
+					'item_date'      => $r_item_date,
+					'item_author'    => $authors,
+					'item_content'   => $item_content,
+					'item_link'      => $item_link,
+					'item_id'        => $id,
+					'item_wp_date'   => $ymd_item_date,
+					'item_tags'      => $item_categories_string,
+					'description'    => $item->get_description(),
+					'parent_feed_id' => $feed->get( 'id' ),
+				]
+			);
+
+			pf_log( 'Setting new object for ' . $item->get_title() . ' of ' . $i_feed->get_title() . '.' );
+
+			++$c;
+			// What the hell RSS feed? This is just ridiculous.
+			if ( $c > 300 ) {
+				break;
+			}
+		}
+
+		return $retval;
+	}
+
+	/**
+	 * Determines the item link.
+	 *
+	 * @param object $item Item object.
+	 * @return string
+	 */
+	public function determine_item_link( $item ) {
+		$item_link    = '';
+		$is_permalink = false;
+
+		$guid = $item->get_item_tags( '', 'guid' );
+		if ( is_array( $guid ) ) {
+			$arr_it = new \RecursiveIteratorIterator( new \RecursiveArrayIterator( $guid[0] ) );
+			foreach ( $arr_it as $sub ) {
+				$sub_array = $arr_it->getSubIterator();
+				if ( isset( $sub_array['isPermaLink'] ) && 'false' === $sub_array['isPermaLink'] ) {
+					$is_permalink = false;
+					break;
+				} elseif ( isset( $sub_array['isPermaLink'] ) && $sub_array['isPermaLink'] && ( 'true' === $sub_array['isPermaLink'] ) ) {
+					$is_permalink = true;
+					break;
+				}
+			}
+		}
+
+		if ( $is_permalink ) {
+			// This will check GUID first, then link, then title.
+			$guid_hopefully = $item->get_id( false );
+			$url_parts      = wp_parse_url( $guid_hopefully );
+			if ( ! $url_parts || ( 'http' !== $url_parts['scheme'] && 'https' !== $url_parts['scheme'] ) ) {
+				$item_link = $item->get_link();
+			} else {
+				$item_link = $guid_hopefully;
+			}
+		} else {
+			$item_link = $item->get_link();
+		}
+
+		return $item_link;
+	}
+
+	/**
+	 * Determines an items date.
+	 *
+	 * @param object $item Item object.
+	 * @return array
+	 */
+	public function determine_item_dates( $item ) {
+		$check_date = $item->get_date( 'U' );
+
+		if ( empty( $check_date ) ) {
+			$r_item_date   = gmdate( 'r' );
+			$ymd_item_date = gmdate( 'Y-m-d' );
+		} else {
+			$r_item_date   = $item->get_date( 'r' );
+			$ymd_item_date = $item->get_date( 'Y-m-d' );
+		}
+
+		return [ $r_item_date, $ymd_item_date ];
+	}
+
+	/**
+	 * Determines an item's authors.
+	 *
+	 * @param object                         $item Item object.
+	 * @param \PressForward\Core\Models\Feed $feed Parent feed object.
+	 * @return string
+	 */
+	public function determine_item_authors( $item, \PressForward\Core\Models\Feed $feed ) {
+		$authors = __( 'No author.', 'pressforward' );
+
+		if ( $item->get_source() ) {
+			$source_obj = $item->get_source();
+
+			// Get the link of what created the RSS entry.
+			$source = $source_obj->get_link( 0, 'alternate' );
+
+			// Check if the feed item creator is an aggregator.
+			$ag_status = $this->is_from_aggregator( $source );
+		} else {
+			// If we can't get source information then don't do anything.
+			$ag_status = false;
+		}
+
+		// If there is less than 160 characters of content, than it isn't really giving us meaningful information.
+		// So we'll want to get the good stuff from the source.
+		if ( ( strlen( $item->get_content() ) ) < 160 ) {
+			$ag_status = true;
+		}
+
+		if ( ! $ag_status ) {
+			$authors = $this->get_rss_authors( $item );
+
+			if ( __( 'No author.', 'pressforward' ) === $authors ) {
+				// See if the parent feed has an author.
+				$feed_author = $feed->get_feed_author();
+				if ( ! empty( $feed_author ) ) {
+					$authors = $feed_author;
+				}
+			}
+		} else {
+			$parent_value = $feed->get_default_author();
+			if ( ! empty( $parent_value ) ) {
+				$authors = $parent_value;
+			} else {
+				$authors = 'aggregation';
+			}
+		}
+
+		return $authors;
+	}
+
+	/**
+	 * Determines the categories string for an item.
+	 *
+	 * @param object                         $item Item object.
+	 * @param \PressForward\Core\Models\Feed $feed Parent feed object.
+	 * @return string
+	 */
+	public function determine_item_categories( $item, \PressForward\Core\Models\Feed $feed ) {
+		$import_item_categories = $feed->get_do_import_tags();
+
+		$item_categories = [];
+		if ( $import_item_categories ) {
+			$item_categories = $item->get_categories();
+		}
+
+		$item_terms = array();
+
+		if ( ! empty( $item_categories ) ) {
+			foreach ( $item_categories as $item_category ) {
+				$item_terms[] = $item_category->get_term();
+			}
+			$item_categories_string = implode( ',', $item_terms );
+		} else {
+			$item_categories_string = '';
+		}
+
+		return $item_categories_string;
+	}
+
+	/**
 	 * Gets the data from an RSS feed and turns it into a data object as expected by PF.
 	 *
 	 * @global $pf Used to access the feed_object() method.
@@ -109,17 +358,13 @@ class PF_RSS_Import extends PF_Module {
 	 */
 	public function get_data_object( $a_feed ) {
 		pf_log( 'Invoked: PF_RSS_Import::get_data_object()' );
-		$a_feed_url = $a_feed->guid;
 
-		pf_log( 'Getting RSS Feed at ' . $a_feed_url );
-		add_filter( 'wp_feed_cache_transient_lifetime', array( $this, 'return_cachetime' ) );
-		$the_feed = pf_fetch_feed( $a_feed_url );
-		remove_filter( 'wp_feed_cache_transient_lifetime', array( $this, 'return_cachetime' ) );
+		$fetched = $this->fetch( $a_feed->guid );
 
-		if ( empty( $the_feed ) || is_wp_error( $the_feed ) ) {
+		if ( is_wp_error( $fetched ) ) {
 			pf_log( 'Can not use Simple Pie to retrieve the feed' );
-			pf_log( $the_feed );
-			$alert = $this->set_to_alert( $a_feed->ID, $the_feed );
+			pf_log( $a_feed );
+			$alert = $this->set_to_alert( $a_feed->ID, $fetched );
 			pf_log( 'Set to alert resulted in:' );
 			pf_log( $alert );
 			if ( false === $alert ) {
@@ -127,166 +372,12 @@ class PF_RSS_Import extends PF_Module {
 			} else {
 				return false;
 			}
-		} else {
-			$error_to_alert = get_option( PF_SLUG . '_errors_until_alert', 3 );
-			$error_count    = pressforward( 'controller.metas' )->update_pf_meta( $a_feed->ID, PF_SLUG . '_feed_error_count', 0 );
 		}
 
-		$the_feed->set_timeout( 60 );
+		$error_to_alert = get_option( PF_SLUG . '_errors_until_alert', 3 );
+		$error_count    = pressforward( 'controller.metas' )->update_pf_meta( $a_feed->ID, PF_SLUG . '_feed_error_count', 0 );
 
-		$rss_object = array();
-
-		$c = 0;
-
-		pf_log( 'Begin processing the feed.' );
-
-		foreach ( $the_feed->get_items() as $item ) {
-			pf_log( 'Feed looping through for the ' . $c . ' time.' );
-			$check_date = $item->get_date( 'U' );
-			$dead_date  = time() - ( 60 * 60 * 24 * 60 ); // Get the unixdate for two months ago.
-			$dead_date  = apply_filters( 'pf_rss_ingestion_retrieve_after_date', $dead_date, $the_feed, $item );
-			if ( ( $check_date <= $dead_date ) && ! empty( $check_date ) ) {
-				pf_log( 'Feed item too old. Skip it.' );
-			} else {
-				$is_permalink = false;
-				$guid         = $item->get_item_tags( '', 'guid' );
-				if ( is_array( $guid ) ) {
-					$arr_it = new \RecursiveIteratorIterator( new \RecursiveArrayIterator( $guid[0] ) );
-					foreach ( $arr_it as $sub ) {
-						$sub_array = $arr_it->getSubIterator();
-						if ( isset( $sub_array['isPermaLink'] ) && 'false' === $sub_array['isPermaLink'] ) {
-							$is_permalink = false;
-							break;
-						} elseif ( isset( $sub_array['isPermaLink'] ) && $sub_array['isPermaLink'] && ( 'true' === $sub_array['isPermaLink'] ) ) {
-							$is_permalink = true;
-							break;
-						}
-					}
-				}
-
-				if ( $is_permalink ) {
-					// This will check GUID first, then link, then title.
-					$guid_hopefully = $item->get_id( false );
-					$url_parts      = wp_parse_url( $guid_hopefully );
-					if ( ! $url_parts || ( 'http' !== $url_parts['scheme'] && 'https' !== $url_parts['scheme'] ) ) {
-						$item_link = $item->get_link();
-					} else {
-						$item_link = $guid_hopefully;
-					}
-				} else {
-					$item_link = $item->get_link();
-				}
-
-				$id = pressforward_create_feed_item_id( $item_link, $item->get_title() );
-				pf_log( 'Now on feed ID ' . $id . '.' );
-
-				if ( empty( $check_date ) ) {
-					$r_item_date   = gmdate( 'r' );
-					$ymd_item_date = gmdate( 'Y-m-d' );
-				} else {
-					$r_item_date   = $item->get_date( 'r' );
-					$ymd_item_date = $item->get_date( 'Y-m-d' );
-				}
-				if ( $item->get_source() ) {
-					$source_obj = $item->get_source();
-
-					// Get the link of what created the RSS entry.
-					$source = $source_obj->get_link( 0, 'alternate' );
-
-					// Check if the feed item creator is an aggregator.
-					$ag_status = $this->is_from_aggregator( $source );
-				} else {
-					// If we can't get source information then don't do anything.
-					$ag_status = false;
-				}
-
-				// If there is less than 160 characters of content, than it isn't really giving us meaningful information.
-				// So we'll want to get the good stuff from the source.
-				if ( ( strlen( $item->get_content() ) ) < 160 ) {
-					$ag_status = true;
-				}
-
-				$item_content = $item->get_content();
-
-				$i_feed = $item->get_feed();
-
-				$parent_feed_obj = \PressForward\Core\Models\Feed::get_instance_by_id( $a_feed->ID );
-
-				if ( ! $ag_status ) {
-					$authors = $this->get_rss_authors( $item );
-
-					if ( __( 'No author.', 'pressforward' ) === $authors ) {
-						// See if the parent feed has an author.
-						$parent_feed_author = $parent_feed_obj->get_feed_author();
-						if ( ! empty( $parent_feed_author ) ) {
-							$authors = $parent_feed_author;
-						}
-					}
-				} else {
-					$parent_value = pressforward( 'controller.metas' )->get_post_pf_meta( $a_feed->ID, 'pf_feed_default_author', true );
-					if ( ! empty( $parent_value ) ) {
-						$authors = $parent_value;
-					} else {
-						$authors = 'aggregation';
-					}
-				}
-
-				$import_item_categories = $parent_feed_obj->get_do_import_tags();
-
-				$item_categories = [];
-				if ( $import_item_categories ) {
-					$item_categories = $item->get_categories();
-				}
-
-				$item_terms = array();
-
-				if ( ! empty( $item_categories ) ) {
-					foreach ( $item_categories as $item_category ) {
-						$item_terms[] = $item_category->get_term();
-					}
-					$item_categories_string = implode( ',', $item_terms );
-				} else {
-					$item_categories_string = '';
-				}
-
-				// One final cleanup of the content.
-				$content_obj  = pressforward( 'library.htmlchecker' );
-				$item_content = $content_obj->closetags( $item_content );
-				$item_content = pressforward( 'controller.readability' )->process_in_oembeds( $item->get_link(), $item_content );
-				pf_log( 'get_links' );
-				pf_log( $item->get_links() );
-				pf_log( $item->get_permalink() );
-
-				// GUID.
-				pf_log( $item->get_id() );
-
-				$rss_object[ 'rss_' . $c ] = pf_feed_object(
-					[
-						'item_title'   => $item->get_title(),
-						'source_title' => $i_feed->get_title(),
-						'item_date'    => $r_item_date,
-						'item_author'  => $authors,
-						'item_content' => $item_content,
-						'item_link'    => $item_link, // New proper link (hopefully).
-						'item_uid'     => $id,
-						'item_wp_date' => $ymd_item_date,
-						'item_tags'    => $item_categories_string,
-						'description'  => $item->get_description(),
-					]
-				);
-
-				pf_log( 'Setting new object for ' . $item->get_title() . ' of ' . $i_feed->get_title() . '.' );
-
-			}
-
-			++$c;
-			// What the hell RSS feed? This is just ridiculous.
-			if ( $c > 300 ) {
-				break;
-			}
-		}
-
-		return $rss_object;
+		return [];
 	}
 
 	/**
@@ -354,11 +445,15 @@ class PF_RSS_Import extends PF_Module {
 
 		?>
 		<p>
-			<?php esc_html_e( 'Enter the URL of an RSS feed. PressForward will watch this feed for updates, and will automatically import newly published items into the Feed Items tool.', 'pressforward' ); ?>
+			<?php esc_html_e( 'Enter the URL of a feed. PressForward will watch the feed for updates, and will automatically import newly published items into the Feed Items area.', 'pressforward' ); ?>
 		</p>
 
 		<p>
-			<?php echo wp_kses_post( '<a href="https://en.wikipedia.org/wiki/RSS">Learn more about RSS</a>.' ); ?>
+			<?php echo wp_kses_post( __( 'RSS Feed URLs can be often be found by looking for an orange icon with the letters "RSS", "XML", or "Atom". If you aren\'t sure how to find the feed URL, enter a content URL (such as an article page) and PressForward will try to identify the feed for you. <a href="https://en.wikipedia.org/wiki/RSS">Learn more about RSS</a>.', 'pressforward' ) ); ?>
+		</p>
+
+		<p>
+			<?php esc_html_e( 'You can also enter the URL of a Google Scholar author profile or search results page to subscribe to new publications by that author or on that topic.', 'pressforward' ); ?>
 		</p>
 
 		<div class="pf_feeder_input_box">
@@ -384,7 +479,11 @@ class PF_RSS_Import extends PF_Module {
 	}
 
 	/**
-	 * Validates a feedlist input.
+	 * Validates a URL for a new feed.
+	 *
+	 * This validation also performs the task of actually adding the feed
+	 * to the database. The Settings API integration is only to get access
+	 * to the UI and controller logic.
 	 *
 	 * @param array $input Input array.
 	 */
@@ -408,31 +507,21 @@ class PF_RSS_Import extends PF_Module {
 			}
 		}
 
-		pf_log( 'Add Feed Process Invoked: PF_RSS_IMPORT::pf_feedlist_validate' );
-		pf_log( $input );
-
-		if ( current_user_can( 'edit_posts' ) ) {
-			pf_log( 'Yes, the current user can edit posts.' );
-		} else {
-			pf_log( 'No, the current user can not edit posts.' );
-		}
-
 		$feed_obj = pressforward( 'schema.feeds' );
 		$subed    = array();
 
 		if ( ! empty( $input['single'] ) ) {
 			if ( ! $feed_obj->has_feed( $input['single'] ) ) {
-				pf_log( 'The feed does not already exist.' );
 				$check = $feed_obj->create(
 					$input['single'],
 					array(
-						'type'         => 'rss',
+						// For now, we want to use the 'Subscribe to Feeds' UI for all feed types.
+						// Let the create() method detect the type.
 						'module_added' => get_class(),
 					)
 				);
 
 				if ( is_wp_error( $check ) || ! $check ) {
-					pf_log( 'The feed did not enter the database.' );
 					$something_broke = true;
 					$description     = 'Feed failed initial attempt to add to database | ' . $check->get_error_message();
 					$broken_id       = $feed_obj->create(
@@ -447,10 +536,7 @@ class PF_RSS_Import extends PF_Module {
 					pressforward( 'library.alertbox' )->add_bug_type_to_post( $broken_id, 'Broken feed.' );
 				}
 			} else {
-				pf_log( 'The feed already exists, sending it to update.' );
 				$check = $feed_obj->update_url( $input['single'] );
-				pf_log( 'Our attempt to update resulted in:' );
-				pf_log( $check );
 			}
 
 			$subed[] = 'a feed.';
@@ -614,6 +700,59 @@ class PF_RSS_Import extends PF_Module {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	/**
+	 * Performs health check.
+	 *
+	 * @param \PressForward\Core\Models\Feed $feed        Feed object.
+	 * @param bool                           $is_new_feed Whether the feed is new.
+	 * @return void
+	 */
+	public function health_check( \PressForward\Core\Models\Feed $feed, $is_new_feed = false ) {
+		$feed_url = $feed->get( 'remote_feed_url' );
+
+		$feed_urls_to_test = [
+			$feed_url,
+			trailingslashit( $feed_url ) . 'rss/',
+			trailingslashit( $feed_url ) . 'rss/index.xml',
+		];
+
+		$feed_is_valid = false;
+		while ( ! $feed_is_valid && ! empty( $feed_urls_to_test ) ) {
+			$feed_url = array_shift( $feed_urls_to_test );
+			$the_feed = pf_fetch_feed( $feed_url );
+			if ( ! is_wp_error( $the_feed ) ) {
+				$feed_is_valid = true;
+			}
+		}
+
+		$alert_box = pressforward( 'library.alertbox' );
+		if ( ! $feed_is_valid ) {
+			if ( $alert_box ) {
+				$alert_box->switch_post_type( $feed->get( 'id' ) );
+				$alert_box->add_bug_type_to_post( $feed->get( 'id' ), __( 'Broken RSS feed.', 'pressforward' ) );
+			}
+			return;
+		}
+
+		if ( $alert_box ) {
+			$alert_box->dismiss_alert( $feed->get( 'id' ) );
+		}
+
+		if ( $is_new_feed ) {
+			$feed->set( 'title', $the_feed->get_title() );
+			$feed->set( 'description', $the_feed->get_description() );
+			$feed->set( 'htmlUrl', $the_feed->get_link( 0 ) );
+
+			$author      = $the_feed->get_author();
+			$author_name = is_object( $author ) && method_exists( $author, 'get_name' ) ? $author->get_name() : '';
+			$feed->set( 'feed_author', $author_name );
+
+			$feed->set( 'thumbnail', $the_feed->get_image_url() );
+
+			$feed->save();
 		}
 	}
 }
