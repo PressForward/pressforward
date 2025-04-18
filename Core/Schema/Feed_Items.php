@@ -796,7 +796,7 @@ class Feed_Items implements HasActions, HasFilters {
 					'post_status'  => 'publish',
 					'post_type'    => pf_feed_item_post_type(),
 					'item_title'   => $item_title,
-					'post_parent'  => $feed_obj_id,
+					'post_parent'  => $parent_feed_id,
 					'item_content' => $item_content,
 					'item_link'    => $item_link,
 					'source_title' => $source_title,
@@ -840,6 +840,7 @@ class Feed_Items implements HasActions, HasFilters {
 
 				// If it doesn't have a featured image assigned already, I use the set_ext_as_featured function to try and find one.
 				// It also, if it finds one, sets it as the featured image for that post.
+				$item_feat_img = '';
 				if ( ! empty( $_POST['item_feat_img'] ) ) {
 					// Turned off set_ext_as_featured here, as that should only occur when items are nominated.
 					// Before nominations, the featured image should remain a meta field with an external link.
@@ -888,8 +889,7 @@ class Feed_Items implements HasActions, HasFilters {
 				);
 
 				pressforward( 'controller.metas' )->establish_post( $new_nom_id, $pf_meta_args );
-				$parent_id = $feed_obj_id;
-				do_action( 'pf_post_established', $new_nom_id, $item_id, $parent_id );
+				do_action( 'pf_post_established', $new_nom_id, $item_id, $parent_feed_id );
 			} else {
 				pf_log( 'The post was a repeat, so we are not adding it.' );
 			}
