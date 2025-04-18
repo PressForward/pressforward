@@ -379,7 +379,7 @@ class OPML_Object {
 			$string_slug = $this->sanitize( $string_slug, $force_lowercase, $strict );
 		}
 
-		$string_slug = htmlspecialchars( $string_slug, 0, null, false );
+		$string_slug = htmlspecialchars( $string_slug, 0, '', false );
 
 		if ( empty( $string_slug ) ) {
 			return 'empty';
