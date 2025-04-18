@@ -64,11 +64,7 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 
 		// Check if we got content.
 		if ( empty( $html ) ) {
-			return [
-				'success' => false,
-				'message' => 'No HTML content retrieved',
-				'entries' => [],
-			];
+			return [];
 		}
 
 		// Load HTML into DOMDocument.
