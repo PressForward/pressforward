@@ -318,6 +318,7 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 				$user_name_node = $xpath->query( '//div[@id="gsc_prf_in"]' )->item( 0 );
 
 				if ( $user_name_node instanceof DOMElement ) {
+					// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					$user_name = trim( $user_name_node->textContent );
 
 					$feed_title = sprintf(
