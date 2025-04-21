@@ -486,8 +486,9 @@ class PFTemplater {
 	 * @param string $schema_class  Schema class attribute.
 	 * @param string $href          'href' class attribute.
 	 * @param string $target        'target' attribute.
+	 * @param array  $data          Data attributes.
 	 */
-	public function dropdown_option( $the_string, $id, $class_name = 'pf-top-menu-selection', $form_id = '', $schema_action = '', $schema_class = '', $href = '', $target = '' ) {
+	public function dropdown_option( $the_string, $id, $class_name = 'pf-top-menu-selection', $form_id = '', $schema_action = '', $schema_class = '', $href = '', $target = '', $data = [] ) {
 
 		$option  = '<li role="presentation"><a role="menuitem" id="';
 		$option .= $id;
@@ -517,6 +518,12 @@ class PFTemplater {
 
 		if ( ! empty( $schema_class ) ) {
 			$option .= ' pf-schema-class="' . esc_attr( $schema_class ) . '" ';
+		}
+
+		if ( ! empty( $data ) ) {
+			foreach ( $data as $key => $value ) {
+				$option .= ' data-' . esc_attr( $key ) . '="' . esc_attr( $value ) . '" ';
+			}
 		}
 
 		$option .= '>';
