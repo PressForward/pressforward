@@ -405,13 +405,12 @@ class PF_OPML_Subscribe extends PF_Module {
 			$feed_url = 'http://' . $feed_url;
 		}
 
-		$post         = get_post( $post_id );
-		$post_content = $post && $post instanceof \WP_Post ? $post->post_content : '';
+		$post_title = get_the_title( $post_id );
 
 		$url_parts = wp_parse_url( $feed_url );
 		$entry     = array(
-			'title'   => get_the_title( $post_id ),
-			'text'    => $post_content,
+			'title'   => $post_title,
+			'text'    => $post_title,
 			'type'    => $meta['feed_type'][0],
 			'feedUrl' => $feed_url,
 			'xmlUrl'  => $feed_url,
