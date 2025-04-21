@@ -999,6 +999,41 @@ class PFTemplater {
 	}
 
 	/**
+	 * Gets the URL for a Mastodon intent link.
+	 *
+	 * @param int $id ID of the local item.
+	 * @return string
+	 */
+	public function mastodon_intent( $id ) {
+		$url = add_query_arg(
+			'text',
+			// translators: 1. Title of the item; 2. Link to the item.
+			rawurlencode( sprintf( __( '%1$s %2$s', 'pressforward' ), get_the_title( $id ), get_the_item_link( $id ) ) ),
+			''
+		);
+
+		return $url;
+	}
+
+	/**
+	 * Generates Mastodon modal markup.
+	 *
+	 * @return void
+	 */
+	public static function mastodon_modal_markup() {
+		?>
+		<div id="mastodon-modal" class="amplify-modal">
+
+			<div class="modal-content">
+				<h2><?php esc_html_e( 'Enter your Mastodon Instance URL', 'pressforward' ); ?></h2>
+				<input type="url" id="mastodon-instance-url" placeholder="https://mastodon.social" />
+				<button class="button button-primary" id="mastodon-share-ok"><?php esc_html_e( 'OK', 'pressforward' ); ?></button>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Generates markup for action buttons.
 	 *
 	 * @param array  $item            Item data.
@@ -1132,8 +1167,26 @@ class PFTemplater {
 							$threads_intent = self::threads_intent( $id_for_comments );
 							self::dropdown_option( __( 'Threads', 'pressforward' ), 'amplify-threads-' . $item['item_id'], 'amplify-option', $item['item_id'], '', '', $threads_intent, '_blank' );
 
+							$mastodon_intent = self::mastodon_intent( $id_for_comments );
+							self::dropdown_option(
+								__( 'Mastodon', 'pressforward' ),
+								'amplify-mastodon-' . $item['item_id'],
+								'amplify-option amplify-option-mastodon amplify-option-has-modal',
+								$item['item_id'],
+								'',
+								'',
+								$mastodon_intent,
+								'_blank',
+								[
+									'postTitle' => get_the_title( $id_for_comments ),
+									'postUrl'   => get_permalink( $id_for_comments ),
+								]
+							);
+
+							add_action( 'admin_footer', [ __CLASS__, 'mastodon_modal_markup' ] );
+
 							do_action( 'pf_amplify_buttons' );
-							?>
+		?>
 						</ul>
 					</div>
 

@@ -321,3 +321,33 @@
 		}
 	}
 }
+
+.amplify-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 8px;
+	box-shadow: 0px 0px 10px 5px rgba(0,0,0,0.25);
+    padding: 20px;
+    z-index: 9999;
+    width: 400px;
+}
+
+.modal-content {
+    text-align: center;
+}
+
+#mastodon-instance-url {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+#mastodon-instance-url::placeholder {
+	opacity: 0.5;
+}

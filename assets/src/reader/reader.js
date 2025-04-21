@@ -1,4 +1,4 @@
-/* global ajaxurl, jQuery, pf */
+/* global ajaxurl, jQuery, localStorage, pf */
 
 import { __, sprintf } from '@wordpress/i18n'
 
@@ -23,6 +23,67 @@ import './reader.scss';
  */
 jQuery(window).on('load', function () {
 	// executes when complete page is fully loaded, including all frames, objects and images
+
+	const mastodonModal = document.getElementById( 'mastodon-modal' );
+	const mastodonModalInputField = document.getElementById( 'mastodon-instance-url' );
+	const mastodonModalButton = document.getElementById( 'mastodon-share-ok' );
+
+	// Store the clicked element's state
+	let clickedElement = null;
+
+	jQuery( '.amplify-option-mastodon' ).on( 'click', function( evt ) {
+		evt.preventDefault();
+
+		// Store the clicked element in the state variable
+		clickedElement = jQuery( this );
+
+		// Retrieve and autofill the Mastodon instance from localStorage if available
+		const storedUrl = localStorage.getItem( 'mastodon-instance-url' );
+		if (storedUrl) {
+				mastodonModalInputField.value = storedUrl;
+		}
+
+		determineMastodonModalButtonState();
+
+		mastodonModal.style.display = 'block';
+	} );
+
+	mastodonModalButton.addEventListener( 'click', function( evt ) {
+		evt.preventDefault();
+
+		let mastodonUrl = mastodonModalInputField.value.trim();
+
+		// Save the URL to localStorage for next time
+		localStorage.setItem('mastodon-instance-url', mastodonUrl);
+
+		// Retrieve the title and URL from the clicked element's data attributes
+		const postTitle = clickedElement.data('posttitle');
+		const postUrl = clickedElement.data('posturl');
+
+		// If this looks like a URL without a protocol, prepend https://.
+		if ( ! mastodonUrl.match( /^(https?:\/\/)/ ) ) {
+			mastodonUrl = 'https://' + mastodonUrl;
+		}
+
+		// Create the share URL
+		const shareUrl = `${mastodonUrl}/share?text=${encodeURIComponent(postTitle)}%20${encodeURIComponent(postUrl)}`;
+		window.open(shareUrl, '_blank');
+
+		mastodonModal.style.display = 'none';
+	} );
+
+	const determineMastodonModalButtonState = () => {
+		const inputValue = mastodonModalInputField.value.trim();
+
+		if (inputValue) {
+				mastodonModalButton.removeAttribute('disabled');
+		} else {
+				mastodonModalButton.setAttribute('disabled', 'disabled');
+		}
+	}
+
+	mastodonModalInputField.addEventListener( 'input', determineMastodonModalButtonState );
+	determineMastodonModalButtonState();
 
 	var $allModals = jQuery('.pfmodal');
 
