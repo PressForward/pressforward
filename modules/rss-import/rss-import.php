@@ -88,14 +88,6 @@ class PF_RSS_Import extends PF_Module implements FeedSource {
 			$post_obj      = get_post( $id );
 			$old_content   = $post_obj->post_content;
 			$update_result = pressforward( 'controller.metas' )->update_pf_meta( $id, PF_SLUG . '_feed_error_count', 0 );
-			if ( is_wp_error( $the_feed ) ) {
-				$argup = array(
-					'ID'           => $id,
-					'post_content' => $old_content . ' <p>' . $the_feed->get_error_message() . '</p>',
-				);
-
-				$result = wp_update_post( $argup );
-			}
 			return true;
 		} else {
 			$update_result = pressforward( 'controller.metas' )->update_pf_meta( $id, PF_SLUG . '_feed_error_count', $error_count + 1 );
