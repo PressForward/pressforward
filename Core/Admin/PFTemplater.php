@@ -103,7 +103,7 @@ class PFTemplater {
 	 * @param string $context Context name.
 	 */
 	public function nominate_this( $context ) {
-		if ( ! $this->users->current_user_can( 'edit_posts' ) ) {
+		if ( ! current_user_can( get_option( 'pf_menu_nominate_this_access', $this->users->pf_get_defining_capability_by_role( 'contributor' ) ) ) ) {
 			return;
 		}
 
