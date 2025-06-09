@@ -320,10 +320,12 @@ class Retrieval {
 	 */
 	public function daily_feed_retrieval_resiliency_check() {
 		// Only run once per day.
-		if ( get_option( 'pf_daily_feed_retrieval_resiliency_check' ) === date( 'Y-m-d' ) ) {
+		$today = gmdate( 'Y-m-d' );
+		if ( get_option( 'pf_daily_feed_retrieval_resiliency_check' ) === $today ) {
 			return;
 		}
-		update_option( 'pf_daily_feed_retrieval_resiliency_check', date( 'Y-m-d' ) );
+
+		update_option( 'pf_daily_feed_retrieval_resiliency_check', $today );
 
 		$feedlist = $this->pf_feedlist();
 		foreach ( $feedlist as $feed_post ) {
