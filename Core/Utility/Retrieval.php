@@ -42,6 +42,8 @@ class Retrieval {
 			add_action( 'wp_ajax_ajax_update_feed_handler', array( $this, 'ajax_update_feed_handler' ) );
 			add_action( 'get_more_feeds', array( pressforward( 'schema.feed_item' ), 'assemble_feed_for_pull' ) );
 		}
+
+		add_action( 'init', array( $this, 'daily_feed_retrieval_resiliency_check' ) );
 	}
 
 	/**
@@ -309,5 +311,31 @@ class Retrieval {
 		$feed_items = pressforward( 'schema.feed_item' )->get( $args );
 
 		return count( $feed_items );
+	}
+
+	/**
+	 * Daily resiliency check for feed retrieval cron jobs.
+	 *
+	 * @return void
+	 */
+	public function daily_feed_retrieval_resiliency_check() {
+		// Only run once per day.
+		if ( get_option( 'pf_daily_feed_retrieval_resiliency_check' ) === date( 'Y-m-d' ) ) {
+			return;
+		}
+		update_option( 'pf_daily_feed_retrieval_resiliency_check', date( 'Y-m-d' ) );
+
+		$feedlist = $this->pf_feedlist();
+		foreach ( $feedlist as $feed_post ) {
+			$feed = \PressForward\Core\Models\Feed::get_instance_by_id( $feed_post->ID );
+			if ( ! $feed ) {
+				continue;
+			}
+			$next_scheduled = $feed->get_next_scheduled_retrieval();
+			if ( ! $next_scheduled ) {
+				// Schedule retrieval immediately with default interval.
+				$feed->schedule_retrieval();
+			}
+		}
 	}
 }
