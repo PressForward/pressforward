@@ -48,31 +48,11 @@ jQuery(window).on('load', function () {
 		mastodonModal.style.display = 'block';
 	} );
 
-	mastodonModalButton.addEventListener( 'click', function( evt ) {
-		evt.preventDefault();
-
-		let mastodonUrl = mastodonModalInputField.value.trim();
-
-		// Save the URL to localStorage for next time
-		localStorage.setItem('mastodon-instance-url', mastodonUrl);
-
-		// Retrieve the title and URL from the clicked element's data attributes
-		const postTitle = clickedElement.data('posttitle');
-		const postUrl = clickedElement.data('posturl');
-
-		// If this looks like a URL without a protocol, prepend https://.
-		if ( ! mastodonUrl.match( /^(https?:\/\/)/ ) ) {
-			mastodonUrl = 'https://' + mastodonUrl;
+	const determineMastodonModalButtonState = () => {
+		if ( ! mastodonModalInputField || ! mastodonModalButton ) {
+			return;
 		}
 
-		// Create the share URL
-		const shareUrl = `${mastodonUrl}/share?text=${encodeURIComponent(postTitle)}%20${encodeURIComponent(postUrl)}`;
-		window.open(shareUrl, '_blank');
-
-		mastodonModal.style.display = 'none';
-	} );
-
-	const determineMastodonModalButtonState = () => {
 		const inputValue = mastodonModalInputField.value.trim();
 
 		if (inputValue) {
@@ -82,8 +62,35 @@ jQuery(window).on('load', function () {
 		}
 	}
 
-	mastodonModalInputField.addEventListener( 'input', determineMastodonModalButtonState );
-	determineMastodonModalButtonState();
+	if ( mastodonModalButton ) {
+		mastodonModalButton.addEventListener( 'click', function( evt ) {
+			evt.preventDefault();
+
+			let mastodonUrl = mastodonModalInputField.value.trim();
+
+			// Save the URL to localStorage for next time
+			localStorage.setItem('mastodon-instance-url', mastodonUrl);
+
+			// Retrieve the title and URL from the clicked element's data attributes
+			const postTitle = clickedElement.data('posttitle');
+			const postUrl = clickedElement.data('posturl');
+
+			// If this looks like a URL without a protocol, prepend https://.
+			if ( ! mastodonUrl.match( /^(https?:\/\/)/ ) ) {
+				mastodonUrl = 'https://' + mastodonUrl;
+			}
+
+			// Create the share URL
+			const shareUrl = `${mastodonUrl}/share?text=${encodeURIComponent(postTitle)}%20${encodeURIComponent(postUrl)}`;
+			window.open(shareUrl, '_blank');
+
+			mastodonModal.style.display = 'none';
+		} );
+
+		mastodonModalInputField.addEventListener( 'input', determineMastodonModalButtonState );
+		determineMastodonModalButtonState();
+	}
+
 
 	var $allModals = jQuery('.pfmodal');
 
