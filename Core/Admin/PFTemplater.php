@@ -1022,7 +1022,7 @@ class PFTemplater {
 	 */
 	public static function mastodon_modal_markup() {
 		?>
-		<div id="mastodon-modal" class="amplify-modal">
+		<div id="mastodon-modal" class="amplify-modal" style="display:none;">
 
 			<div class="modal-content">
 				<h2><?php esc_html_e( 'Enter your Mastodon Instance URL', 'pressforward' ); ?></h2>
