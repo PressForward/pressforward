@@ -105,6 +105,10 @@ class Feeds implements HasActions, HasFilters {
 					'method' => 'deal_with_old_feedlists',
 				),
 				array(
+					'hook'   => 'wp_ajax_pf_validate_feed',
+					'method' => 'validate_feed_cb',
+				),
+				array(
 					'hook'   => 'post_submitbox_misc_actions',
 					'method' => 'feed_submitbox_pf_actions',
 				),
@@ -169,12 +173,6 @@ class Feeds implements HasActions, HasFilters {
 					'hook'   => 'post_updated_messages',
 					'method' => 'feed_save_message',
 				),
-				array(
-					'hook'     => 'parent_file',
-					'method'   => 'move_feed_tags_submenu',
-					'priority' => 10,
-					'args'     => 1,
-				),
 			);
 			$filters       = array_merge( $filters, $admin_filters );
 		}
@@ -204,18 +202,17 @@ class Feeds implements HasActions, HasFilters {
 			apply_filters(
 				'pf_register_feed_post_type_args',
 				array(
-					'label'                 => $labels['name'],
+					'label'                 => __( 'Feeds', 'pressforward' ),
 					'labels'                => $labels,
 					'description'           => __( 'Feeds imported by PressForward&#8217;s Feed Importer', 'pressforward' ),
 					'public'                => false,
 					'hierarchical'          => true,
-					'supports'              => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'custom-fields', 'page-attributes' ),
-					'taxonomies'            => array( 'post_tag' ),
-					'show_in_menu'          => PF_MENU_SLUG,
+					'supports'              => array( 'title', 'editor', 'author', 'thumbnail', 'custom-fields' ),
 					'show_in_admin_bar'     => true,
 					'show_in_rest'          => true,
 					'rest_namespace'        => 'pf/v1',
 					'rest_base'             => 'feeds',
+					'menu_icon'             => PF_URL . 'pressforward-16.png', // icon URL.
 					'rest_controller_class' => 'PF_REST_Posts_Controller',
 					'show_ui'               => true, // for testing only.
 					'capability_type'       => $this->post_type,
@@ -268,22 +265,6 @@ class Feeds implements HasActions, HasFilters {
 			}
 		}
 		return $caps;
-	}
-
-	/**
-	 * Ensure that 'Feed Tags' stays underneath the PressForward top-level item.
-	 *
-	 * @param string $pf The $parent_file value passed to the 'parent_file' filter.
-	 * @return string
-	 */
-	public function move_feed_tags_submenu( $pf ) {
-		global $typenow, $pagenow;
-		// phpcs:ignore WordPress.PHP.YodaConditions.NotYoda
-		if ( ( 'term.php' === $pagenow || 'edit-tags.php' === $pagenow ) && ! empty( $_GET['taxonomy'] ) && $this->tag_taxonomy === sanitize_text_field( wp_unslash( $_GET['taxonomy'] ) ) ) {
-			$pf = 'pf-menu';
-		}
-
-		return $pf;
 	}
 
 	/**
@@ -668,6 +649,174 @@ class Feeds implements HasActions, HasFilters {
 	}
 
 	/**
+	 * AJAX callback for feed validation.
+	 *
+	 * @return void
+	 */
+	public function validate_feed_cb() {
+		$success = false;
+
+		$retval = [
+			'message' => __( 'Not a valid feed URL.', 'pressforward' ),
+			'feedUrl' => '',
+			'rawUrl'  => '',
+		];
+
+		$url = isset( $_POST['feedUrl'] ) ? esc_url_raw( wp_unslash( $_POST['feedUrl'] ) ) : '';
+
+		if ( ! $url ) {
+			wp_send_json_error( $retval );
+		}
+
+		$retval['url'] = $url;
+
+		$already_subscribed = self::is_feed_subscribed( $url );
+		$validated          = self::validate_feed( $url );
+
+		if ( $already_subscribed ) {
+			$retval['message'] = __( 'You are already subscribed to this feed.', 'pressforward' );
+		} elseif ( $validated['success'] ) {
+			$validated_feed_url = $validated['feedUrl'];
+
+			if ( $validated_feed_url !== $url ) {
+				$retval['message'] = sprintf(
+					// translators: 1: URL provided, 2: Validated feed URL.
+					__( 'You provided the URL %1$s, which is not a valid feed URL. We detected a related feed URL at %2$s.', 'pressforward' ),
+					'<code>' . $url . '</code>',
+					'<code>' . $validated_feed_url . '</code>'
+				);
+			} else {
+				$retval['message'] = $validated['message'];
+			}
+
+			$retval['rawUrl']  = $validated['rawUrl'];
+			$retval['feedUrl'] = $validated['feedUrl'];
+
+			wp_send_json_success( $retval );
+		}
+
+		wp_send_json_error( $retval );
+	}
+
+	/**
+	 * Validates that a URL corresponds to an RSS feed.
+	 *
+	 * @param string $url URL to validate.
+	 * @return array
+	 */
+	public static function validate_feed( $url ) {
+		$retval = [
+			'success' => false,
+			'feedUrl' => $url,
+			'message' => '',
+			'rawUrl'  => '',
+		];
+
+		$is_url = false;
+
+		$validated_url = $url;
+		if ( filter_var( $url, FILTER_VALIDATE_URL ) ) {
+			$is_url = true;
+		} elseif ( preg_match( '/^[\w.-]+\.[a-z]{2,}(\/\S*)?$/i', $url ) ) {
+			$validated_url = esc_url( 'https://' . $url );
+		}
+
+		$retval['url']    = $validated_url;
+		$retval['rawUrl'] = $url;
+
+		if ( ! $url ) {
+			$message = __( 'Not a valid URL.', 'pressforward' );
+			return $retval;
+		}
+
+		$feed_type = self::determine_feed_type_from_url( $url );
+
+		switch ( $feed_type ) {
+			case 'google-scholar-author':
+			case 'google-scholar-keyword':
+				$request = wp_remote_get( $url );
+				if ( is_wp_error( $request ) ) {
+					$retval['message'] = $request->get_error_message();
+				} elseif ( 200 !== wp_remote_retrieve_response_code( $request ) ) {
+					$retval['message'] = __( 'The URL returned an error.', 'pressforward' );
+				} else {
+					$retval['success'] = true;
+					$retval['feedUrl'] = $url;
+					$retval['message'] = 'google-scholar-author' === $feed_type ? __( 'Google Scholar author feed detected.', 'pressforward' ) : __( 'Google Scholar keyword feed detected.', 'pressforward' );
+				}
+
+				break;
+
+			case 'rss':
+				$feed = fetch_feed( $url );
+				if ( is_wp_error( $feed ) ) {
+					$retval['message'] = $feed->get_error_message();
+				} else {
+					$retval['success'] = true;
+					$retval['feedUrl'] = $feed->feed_url;
+				}
+		}
+
+		return $retval;
+	}
+
+	/**
+	 * Detects a feed type based on the URL format.
+	 *
+	 * Returns 'google-scholar-author' or 'google-scholar-keyword' if the URL
+	 * belongs to Google Scholar. Otherwise returns 'rss'.
+	 *
+	 * @param string $url URL to check.
+	 * @return string
+	 */
+	public static function determine_feed_type_from_url( $url ) {
+		$feed_type = 'rss';
+
+		if ( false !== strpos( $url, 'scholar.google.com/citations' ) ) {
+			$feed_type = 'google-scholar-author';
+		} elseif ( false !== strpos( $url, 'scholar.google.com/scholar' ) ) {
+			$feed_type = 'google-scholar-keyword';
+		}
+
+		return $feed_type;
+	}
+
+	/**
+	 * Checks if a feed is already subscribed.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @param string $url URL to check.
+	 * @return bool
+	 */
+	public static function is_feed_subscribed( $url ) {
+		// Try both trailingslashed and untrailingslashed versions.
+		$untrailingslashed = untrailingslashit( $url );
+
+		$values = [
+			trailingslashit( $url ),
+			$untrailingslashed,
+		];
+
+		$found = get_posts(
+			[
+				'post_type'   => 'pf_feed',
+				'post_status' => 'any',
+				'fields'      => 'ids',
+				'meta_query'  => [
+					[
+						'key'     => 'feed_url',
+						'value'   => $values,
+						'compare' => 'IN',
+					],
+				],
+			]
+		);
+
+		return ! empty( $found );
+	}
+
+	/**
 	 * Set the last_checked value for the parent feed.
 	 *
 	 * @since 3.5.0
@@ -934,7 +1083,7 @@ class Feeds implements HasActions, HasFilters {
 				'title'        => $feed_url,
 				'url'          => $feed_url,
 				'htmlUrl'      => false,
-				'type'         => 'rss',
+				'type'         => '',
 				'feed_url'     => $feed_url,
 				'description'  => false,
 				'feed_author'  => false,
@@ -950,26 +1099,22 @@ class Feeds implements HasActions, HasFilters {
 			)
 		);
 
-		pf_log( 'Creating a feed with the following parameters:' );
-		pf_log( $r );
-
 		if ( ! $r['user_added'] ) {
 			$current_user    = wp_get_current_user();
 			$r['user_added'] = $current_user->user_login;
 		}
 
+		if ( ! $r['type'] ) {
+			$r['type'] = self::determine_feed_type_from_url( $feed_url );
+		}
+
 		$existing = false;
 		if ( $this->has_feed( $feed_url ) ) {
-			pf_log( 'This is an existing feed, and will be updated.' );
 			$check    = $this->feed_post_setup( $r, 'update' );
 			$existing = true;
 		} else {
-			pf_log( 'This is a new feed.' );
 			$check = $this->feed_post_setup( $r );
 		}
-
-		pf_log( 'Feed creation result:' );
-		pf_log( $check );
 
 		if ( ! $check ) {
 			return false;

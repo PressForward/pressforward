@@ -1,7 +1,7 @@
 /* global jQuery */
 jQuery(window).load(function () {
 
-	var firstTab = jQuery('.pressforward #pf-settings-tabs .nav-tab').first();
+	var firstTab = jQuery( '#pf-settings-tabs .nav-tab' ).first();
 	if ( firstTab.length === 0 ) {
 		return;
 	}
@@ -12,6 +12,17 @@ jQuery(window).load(function () {
 		// Wait for the browser to scroll to the anchor.
 		setTimeout(function() {
 			jQuery(window).scrollTop(0);
+
+			// On initial load, set the tab to the hash.
+			const initialTab = document.getElementById( currentTab.replace(/#/g, '') + '-tab' );
+			const initialTabTarget = jQuery(initialTab).attr('data-tab-target');
+
+			// If there is no initial tab target, default to the first tab.
+			if ( ! initialTabTarget ) {
+				tabToTarget( firstTab.attr( 'data-tab-target' ), firstTab[0] );
+			} else {
+				tabToTarget( initialTabTarget, initialTab );
+			}
 		}, 0);
 	}
 
@@ -34,10 +45,11 @@ jQuery(window).load(function () {
 
 		// Update the 'action' attribute of the form to reflect the current tab.
 		const form = tab.closest( 'form' );
-		form.action = form.action.replace(/#.*$/, '') + target;
+		const formAction = form.getAttribute('action');
+		form.setAttribute('action', formAction.replace(/#.*$/, '') + target);
 	}
 
-	jQuery('.pressforward #pf-settings-tabs').on('click', '.nav-tab', function (evt) {
+	jQuery('#pf-settings-tabs').on('click', '.nav-tab', function (evt) {
 		evt.preventDefault();
 		var tab = this;
 		var target = jQuery(tab).attr('data-tab-target');

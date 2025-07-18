@@ -86,12 +86,11 @@ class Relate implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	}
 
 	/**
-	 * Translates a relationship type string into its int value.
+	 * Gets a list of all relationship types, keyed by their integer index.
 	 *
-	 * @param string $relationship_type Relationship type.
-	 * @return int $relationship_type_id
+	 * @return array $types
 	 */
-	public function get_relationship_type_id( $relationship_type ) {
+	public function get_relationship_types() {
 		// Might pay to abstract these out at some point.
 		$types = array(
 			1 => 'read',
@@ -102,6 +101,18 @@ class Relate implements \Intraxia\Jaxion\Contract\Core\HasActions {
 		);
 
 		$types = apply_filters( 'pf_relationship_types', $types );
+
+		return $types;
+	}
+
+	/**
+	 * Translates a relationship type string into its int value.
+	 *
+	 * @param string $relationship_type Relationship type.
+	 * @return int $relationship_type_id
+	 */
+	public function get_relationship_type_id( $relationship_type ) {
+		$types = $this->get_relationship_types();
 
 		$relationship_type_id = array_search( $relationship_type, $types, true );
 
@@ -401,7 +412,7 @@ class Relate implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	 * @param bool $limit Limit.
 	 */
 	public function archive_nominations( $limit = false ) {
-		global $wpdb, $post;
+		global $post;
 
 		$args = array(
 			'post_type'      => 'nomination',

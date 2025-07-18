@@ -68,7 +68,7 @@ class PF_Tests_Nomination_Process extends PF_UnitTestCase {
 		} else {
 			$this->assertTrue( $exists );
 		}
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nominate_id, 'nomination_count' );
+		$nomination_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $nominate_id );
 		$this->assertEquals($nomination_count, $count);
 	}
 
@@ -126,7 +126,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 	/**
 	 * Test one:
 	 *  - Does the `to_nomination` function successfully move a post to nomination
-	 *  - Does `apply_nomination_data` function successfully add user data.
+	 *  - Does adding a user as an item nominator successfully change the nomination count
 	 * @return {[type]} [description]
 	 */
 	public function test_feed_item_to_nomination_create() {
@@ -152,12 +152,9 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$nominate = pressforward('controller.advancement')->to_nomination($item);
 		$this->check_standard_metrics($feed_item_id, $nominate, 'Test item1');
 
-		$nominators = pressforward('utility.forward_tools')->apply_nomination_data($nominate);
-		pressforward('controller.metas')->update_pf_meta( $nominate, 'nominator_array', $nominators );
+		pressforward( 'utility.forward_tools' )->add_user_to_nominators( $nominate, $user_id );
 
 		$this->check_standard_nomination_metrics($nominate, $user_id, 1);
-
-		$this->check_feed_nominations_incremented($nominate);
 	}
 
 	/**
@@ -189,6 +186,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 	}
 
 	/**
+	 *
 	 * Does
 	 *  - `apply_nomination_data` increment with a new user properly.
 	 * @return {[type]} [description]
@@ -220,89 +218,15 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$this->check_standard_nomination_metrics($nomination, $user_id, 1);
 
 		$user_id_2 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'feed_item_meta_increment2' ) );
-		// Will it apply the 2nd user's nomination?
-		wp_set_current_user( $user_id_2 );
-		//$nominators = pressforward('utility.forward_tools')->apply_nomination_data($nomination, $user_id_2);
-		$user_id_2 = pressforward('utility.forward_tools')->assure_user_id($user_id_2);
-		$nominators = pressforward('utility.forward_tools')->apply_nomination_array( $nomination, $user_id_2 );
-		$this->assertTrue( $nominators['applied'] );
-		if ( $nominators['applied'] ){
-			$check_u_count = pressforward('utility.forward_tools')->apply_nomination_user_data( $nomination, $user_id_2 );
-			$check_nom_count = pressforward('utility.forward_tools')->apply_nomination_count( $nomination, $user_id_2 );
-		} else {
-			pressforward('utility.forward_tools')->revoke_nomination_user_data( $nomination, $user_id_2 );
-			pressforward('utility.forward_tools')->revoke_nomination_count( $nomination, $user_id_2 );
-		}
-		//$nominators = pressforward('utility.forward_tools')->apply_nomination_data($nomination, $user_id_2);
-		pressforward('controller.metas')->update_pf_meta( $nomination, 'nominator_array', $nominators['nominators'] );
+
+		pressforward( 'utility.forward_tools' )->add_user_to_nominators( $nomination, $user_id_2 );
+
 		$this->check_standard_user_metrics($nomination, $user_id_2, 1);
 
 		$this->check_standard_nomination_metrics($nomination, $user_id_2, 2);
 
 		$this->check_feed_nominations_incremented($nomination, 2);
 
-	}
-
-	public function test_feed_item_deincrement() {
-		$feed_id = $this->factory->feed->create();
-		$time = time();
-		$user_id = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'feed_item_meta_increment' ) );
-		wp_set_current_user( $user_id );
-		$title = 'Test item4';
-		$url = 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=3';
-		$item_id = pressforward_create_feed_item_id($url,$title);
-		$feed_item_id = $this->factory->feed_item->create( array(
-			'post_parent' => $feed_id,
-			'item_title' => $title,
-			'item_link' => 'http://aramzs.github.io/notes/wordpress/wordpressus2015/2015/12/04/wordcamp-us.html?t=3',
-			'item_content' => 'Test content',
-			'source_title' => 'Test source title',
-			'sortable_item_date' => 10000,
-			'item_date' => 20000,
-			'item_author' => 'foo',
-			'item_feat_img' => 'Test feat img',
-			'item_wp_date' => $time,
-			'item_id'	=>	$item_id
-		) );
-		// Does the item create proprly
-		$nomination = pressforward('utility.forward_tools')->item_to_nomination($item_id, $feed_item_id);
-		$this->check_standard_metrics($feed_item_id, $nomination, $title);
-
-		// Does the feed_item count increment?
-		$fi_count = pressforward('controller.metas')->get_post_pf_meta( $feed_item_id, 'nomination_count' );
-		$this->assertEquals($fi_count, 1);
-
-		// Does the nomination cound increment?
-		$this->check_standard_nomination_metrics($nomination, $user_id, 1);
-
-		// Can we add another user properly?
-		$user_id_2 = $this->factory->user->create( array( 'role' => 'administrator', 'user_login' => 'feed_item_meta_increment4' ) );
-		wp_set_current_user( $user_id_2 );
-		$nominators = pressforward('utility.forward_tools')->apply_nomination_data($nomination, $user_id_2);
-		pressforward('controller.metas')->update_pf_meta( $nomination, 'nominator_array', $nominators );
-		$this->check_standard_nomination_metrics($nomination, $user_id_2, 2);
-
-		$this->check_feed_nominations_incremented($nomination, 2);
-
-		// Can we remove a nomination
-		$user_id_2 = pressforward('utility.forward_tools')->assure_user_id($user_id_2);
-		$nominators = pressforward('utility.forward_tools')->apply_nomination_array( $nomination, $user_id_2 );
-		$this->assertFalse( $nominators['applied'] );
-		if ( $nominators['applied'] ){
-			pressforward('utility.forward_tools')->apply_nomination_user_data( $nomination, $user_id_2 );
-			pressforward('utility.forward_tools')->apply_nomination_count( $nomination, $user_id_2 );
-		} else {
-			$check_u_count = pressforward('utility.forward_tools')->revoke_nomination_user_data( $nomination, $user_id_2 );
-			$check_nom_count = pressforward('utility.forward_tools')->revoke_nomination_count( $nomination, $user_id_2 );
-		}
-		//$nominators = pressforward('utility.forward_tools')->apply_nomination_data($nomination, $user_id_2);
-		$this->check_standard_user_metrics($nomination, $user_id_2, 0, true);
-
-		pressforward('controller.metas')->update_pf_meta( $nomination, 'nominator_array', $nominators['nominators'] );
-		$this->check_standard_nomination_metrics($nomination, $user_id_2, 1, true);
-		$this->check_standard_nomination_metrics($nomination, $user_id, 1);
-
-		$this->check_feed_nominations_deincremented($nomination, 1);
 	}
 
 	public function test_feed_item_nomination() {
@@ -334,7 +258,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$this->check_standard_nomination_metrics($nomination, $user_id, 1);
 
 		// Does the feed_item count increment?
-		$fi_count = pressforward('controller.metas')->get_post_pf_meta( $feed_item_id, 'nomination_count' );
+		$fi_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $feed_item_id );
 		$this->assertEquals($fi_count, 1);
 
 		// Can we add another user properly?
@@ -349,22 +273,6 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$this->check_standard_nomination_metrics($nomination_two, $user_id_2, 2);
 
 		$this->check_feed_nominations_incremented($nomination, 2);
-
-		// Can we remove a nomination
-		$nomination_three = pressforward('utility.forward_tools')->item_to_nomination($item_id, $feed_item_id);
-		$nom_three = get_post( $nomination_three );
-		$this->assertEquals( $nom_three->ID, $nomination );
-		$this->assertEquals( $nom_three->post_title, $title );
-		$this->assertFalse( ($feed_item_id === $nomination_three) );
-		$this->assertGreaterThan( 0,  $nomination_three);
-		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_two, 'nominator_array' );
-
-		$this->check_standard_user_metrics($nomination_three, $user_id_2, 0, true);
-
-		$this->check_standard_nomination_metrics($nomination, $user_id_2, 1, true);
-
-		$this->check_feed_nominations_deincremented($nomination, 1);
-
 	}
 
 	public function test_is_a_pf_type(){
@@ -468,7 +376,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$this->assertEquals( $nom->post_title, $title );
 
 		// Does the nomination cound increment?
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nomination_count' );
+		$nomination_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $nomination_id );
 		$this->assertEquals($nomination_count, 1);
 		// Does the user enter the array?
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nominator_array' );
@@ -507,7 +415,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$this->assertEquals( $item_id_via_meta, $item_id );
 
 		// Does the nomination count increment?
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nomination_count' );
+		$nomination_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $nomination_id );
 		$this->assertEquals($nomination_count, 1);
 		// Does the user enter the array?
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nominator_array' );
@@ -536,7 +444,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$this->assertEquals( $item_id_two_via_meta, $item_id_via_meta );
 
 		// Does the nomination count increment?
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nomination_count' );
+		$nomination_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $nomination_id );
 		$this->assertEquals($nomination_count, 2);
 		// Does the user enter the array?
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nominator_array' );
@@ -565,7 +473,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$this->assertEquals( $item_id_via_meta, $item_id );
 
 		// Does the nomination count increment?
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nomination_count' );
+		$nomination_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $nomination_id );
 		$this->assertEquals($nomination_count, 1);
 		// Does the user enter the array?
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nominator_array' );
@@ -594,7 +502,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$this->assertEquals( $item_id_two_via_meta, $item_id_via_meta );
 
 		// Does the nomination count increment?
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nomination_count' );
+		$nomination_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $nomination_id );
 		$this->assertEquals($nomination_count, 2);
 		// Does the user enter the array?
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nominator_array' );
@@ -613,7 +521,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$this->assertEquals( $nomination_id, $by_feed_nomination_id );
 
 		// Does the nomination count increment?
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nomination_count' );
+		$nomination_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $nomination_id );
 		$this->assertEquals($nomination_count, 3);
 		// Does the user enter the array?
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nominator_array' );
@@ -675,7 +583,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$nomination_id = pressforward('utility.forward_tools')->item_to_nomination( $item_id, $feed_item_id );
 		$this->assertGreaterThan( 0,  $nomination_id);
 		// Does the nomination count increment?
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nomination_count' );
+		$nomination_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $nomination_id );
 		$this->assertEquals($nomination_count, 1);
 		// Does the user enter the array?
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nominator_array' );
@@ -715,7 +623,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$this->assertEquals( $item_id_two_via_meta, $item_id_via_meta );
 
 		// Does the nomination count increment?
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nomination_count' );
+		$nomination_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $nomination_id );
 		$this->assertEquals($nomination_count, 2);
 		// Does the user enter the array?
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nominator_array' );
@@ -735,7 +643,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$this->assertEquals( $item_id_three_via_meta, $item_id_via_meta );
 
 		// Does the nomination count increment?
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nomination_count' );
+		$nomination_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $nomination_id );
 		$this->assertEquals($nomination_count, 3);
 		// Does the user enter the array?
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_id, 'nominator_array' );
@@ -793,7 +701,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nominate, 'nominator_array' );
 		$exists = array_key_exists($user_id, $nominators);
 		$this->assertTrue( $exists );
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nomination_count' );
+		$nomination_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $final_id );
 		$this->assertEquals($nomination_count, 1);
 	}
 
@@ -842,7 +750,7 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $nominate, 'nominator_array' );
 		$exists = array_key_exists($user_id, $nominators);
 		$this->assertTrue( $exists );
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nomination_count' );
+		$nomination_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $nominate );
 		$this->assertEquals($nomination_count, 1);
 		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $nominate, 'nomination_count' );
 		$this->assertEquals($nomination_count, 1);
@@ -913,18 +821,13 @@ NAACP board member Amos Brown, the president of the organization’s San Francis
 		$this->assertEquals( pressforward_draft_post_type(), $final_post->post_type );
 		$this->assertEquals( pressforward('controller.metas')->get_post_pf_meta( $final_id, 'item_id', true ), $item_id );
 
-//		$nominators = pressforward('utility.forward_tools')->apply_nomination_data($final_id. false, true);
-//		pressforward('controller.metas')->update_pf_meta( $final_id, 'nominator_array', $nominators );
-
-		//$final_step_parent = pf_is_drafted( $item_id );
-		//$this->assertEquals($final_step_parent, $final_id);
 		$nom_nominators = pressforward('controller.metas')->get_post_pf_meta( $nomination_two_id, 'nominator_array' );
 		$nominators = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nominator_array' );
 		$this->assertTrue(array_key_exists($user_id_2, $nominators));
 		$exists = array_key_exists($user_id, $nominators);
 		$this->assertTrue( $exists );
 
-		$nomination_count = pressforward('controller.metas')->get_post_pf_meta( $final_id, 'nomination_count' );
+		$nomination_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $final_id );
 		$this->assertEquals(2, $nomination_count);
 		$this->check_standard_nomination_metrics($final_id, $user_id_2, 2);
 

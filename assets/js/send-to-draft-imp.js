@@ -20,6 +20,12 @@ jQuery( window ).load(function() {
 		// var errorThrown     = 'Broken';
 		var theNonce		= jQuery.trim( jQuery( '#pf_drafted_nonce' ).val() )
 		jQuery( '.loading-' + itemID ).show();
+
+		const actionContainer = evt.target.closest( '.action-container' );
+		if ( actionContainer ) {
+			window.pf.LoadingEffect.start( actionContainer );
+		}
+
 		jQuery.post(ajaxurl, {
 			action: 'build_a_nom_draft',
 			nom_title: nom_title,
@@ -48,7 +54,11 @@ jQuery( window ).load(function() {
 				// jQuery(".result-status-"+itemID+" .msg-box").html(response);
 				// alert(response);
 				// jQuery("#test-div1").append(data);
-        });
+
+				if ( actionContainer ) {
+					window.pf.LoadingEffect.stop( actionContainer );
+				}
+			});
 	});
 });
 

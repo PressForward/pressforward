@@ -10,7 +10,7 @@ $current_user_id = get_current_user_id();
 ?>
 
 <p>
-	<?php esc_html_e( 'Users can control aspects of the content display in the All Content and Nominated pages by setting preferences here.', 'pressforward' ); ?>
+	<?php esc_html_e( 'Users can control aspects of the content display in the Feed Items and Nominated Items pages by setting preferences here.', 'pressforward' ); ?>
 </p>
 
 <table class="form-table" role="presentation">
@@ -57,7 +57,7 @@ $current_user_id = get_current_user_id();
 					</label>
 
 					<p class="description">
-						<?php esc_html_e( 'When this box is checked, a menu that includes a list of feeds with alerts displays on the right side of the All Content and Nominated pages.', 'pressforward' ); ?>
+						<?php esc_html_e( 'When this box is checked, a menu that includes a list of feeds with alerts displays on the right side of the Feed Items and Nominated Items pages.', 'pressforward' ); ?>
 					</p>
 				</fieldset>
 			</td>
@@ -81,7 +81,7 @@ $current_user_id = get_current_user_id();
 				<input id="pf_pagefull" type="number" name="pf_pagefull" value="<?php echo esc_attr( $default_pf_pagefull ); ?>" class="pf_pagefull" />&nbsp;
 
 				<p class="description">
-					<?php esc_html_e( 'Setting this number determines how many items will appear on the All Content and Nominated pages when infinite scroll is turned off.', 'pressforward' ); ?>
+					<?php esc_html_e( 'Setting this number determines how many items will appear on the Feed Items and Nominated Items pages when infinite scroll is turned off.', 'pressforward' ); ?>
 				</p>
 			</td>
 		</tr>

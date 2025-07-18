@@ -101,12 +101,8 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function ( $page, $request_object ) {
-								if ( is_numeric( $page ) ) {
-									return true;
-								} else {
-									return false;
-								}
+							'validate_callback' => function ( $page ) {
+								return is_numeric( $page );
 							},
 						),
 						'after_month'  => array(
@@ -114,12 +110,8 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function ( $page, $request_object ) {
-								if ( is_numeric( $page ) ) {
-									return true;
-								} else {
-									return false;
-								}
+							'validate_callback' => function ( $page ) {
+								return is_numeric( $page );
 							},
 						),
 						'after_day'    => array(
@@ -127,12 +119,8 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by day, use number of day.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function ( $page, $request_object ) {
-								if ( is_numeric( $page ) ) {
-									return true;
-								} else {
-									return false;
-								}
+							'validate_callback' => function ( $page ) {
+								return is_numeric( $page );
 							},
 						),
 						'before_year'  => array(
@@ -140,12 +128,8 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function ( $page, $request_object ) {
-								if ( is_numeric( $page ) ) {
-									return true;
-								} else {
-									return false;
-								}
+							'validate_callback' => function ( $page ) {
+								return is_numeric( $page );
 							},
 						),
 						'before_month' => array(
@@ -153,12 +137,8 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function ( $page, $request_object ) {
-								if ( is_numeric( $page ) ) {
-									return true;
-								} else {
-									return false;
-								}
+							'validate_callback' => function ( $page ) {
+								return is_numeric( $page );
 							},
 						),
 						'before_day'   => array(
@@ -166,12 +146,8 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function ( $page, $request_object ) {
-								if ( is_numeric( $page ) ) {
-									return true;
-								} else {
-									return false;
-								}
+							'validate_callback' => function ( $page ) {
+								return is_numeric( $page );
 							},
 						),
 					),
@@ -196,12 +172,8 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							// Set the argument to be required for the endpoint.
 							'required'          => true,
 							'default'           => 1,
-							'validate_callback' => function ( $page, $request_object ) {
-								if ( is_numeric( $page ) ) {
-									return true;
-								} else {
-									return false;
-								}
+							'validate_callback' => function ( $page ) {
+								return is_numeric( $page );
 							},
 						),
 						'after_year'   => array(
@@ -209,12 +181,8 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function ( $page, $request_object ) {
-								if ( is_numeric( $page ) ) {
-									return true;
-								} else {
-									return false;
-								}
+							'validate_callback' => function ( $page ) {
+								return is_numeric( $page );
 							},
 						),
 						'after_month'  => array(
@@ -222,12 +190,8 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function ( $page, $request_object ) {
-								if ( is_numeric( $page ) ) {
-									return true;
-								} else {
-									return false;
-								}
+							'validate_callback' => function ( $page ) {
+								return is_numeric( $page );
 							},
 						),
 						'after_day'    => array(
@@ -235,12 +199,8 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by day, use number of day.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function ( $page, $request_object ) {
-								if ( is_numeric( $page ) ) {
-									return true;
-								} else {
-									return false;
-								}
+							'validate_callback' => function ( $page ) {
+								return is_numeric( $page );
 							},
 						),
 						'before_year'  => array(
@@ -248,12 +208,8 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by year, use XXXX year notation.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function ( $page, $request_object ) {
-								if ( is_numeric( $page ) ) {
-									return true;
-								} else {
-									return false;
-								}
+							'validate_callback' => function ( $page ) {
+								return is_numeric( $page );
 							},
 						),
 						'before_month' => array(
@@ -261,12 +217,8 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function ( $page, $request_object ) {
-								if ( is_numeric( $page ) ) {
-									return true;
-								} else {
-									return false;
-								}
+							'validate_callback' => function ( $page ) {
+								return is_numeric( $page );
 							},
 						),
 						'before_day'   => array(
@@ -274,12 +226,8 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							'description'       => esc_html__( 'Limit query by month, use number of month.', 'pressforward' ),
 							// Set the argument to be required for the endpoint.
 							'required'          => false,
-							'validate_callback' => function ( $page, $request_object ) {
-								if ( is_numeric( $page ) ) {
-									return true;
-								} else {
-									return false;
-								}
+							'validate_callback' => function ( $page ) {
+								return is_numeric( $page );
 							},
 						),
 					),
@@ -304,12 +252,8 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 							// Set the argument to be required for the endpoint.
 							'required'          => true,
 							'default'           => 1,
-							'validate_callback' => function ( $page, $request_object ) {
-								if ( is_numeric( $page ) ) {
-									return true;
-								} else {
-									return false;
-								}
+							'validate_callback' => function ( $page ) {
+								return is_numeric( $page );
 							},
 						),
 						'per_page' => array(
@@ -471,7 +415,7 @@ class StatsEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	 * The parameter is already sanitized by this point so we can use it without any worries.
 	 *
 	 * @param \WP_REST_Request $request Request object.
-	 * @return \WP_REST_Request|\WP_Error
+	 * @return \WP_REST_Response
 	 */
 	public function overview( $request ) {
 		$args = array(

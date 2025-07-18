@@ -82,6 +82,7 @@ class PF_Loops {
 				'exclude_archived' => false,
 				'count_total'      => false,
 				'orderby'          => '',
+				'date_query'       => null,
 			),
 			$args
 		);
@@ -122,6 +123,10 @@ class PF_Loops {
 			'posts_per_page' => $r['posts_per_page'],
 			'offset'         => $r['start'],
 		);
+
+		if ( $r['date_query'] ) {
+			$post_args['date_query'] = $r['date_query'];
+		}
 
 		if ( empty( $post_args['orderby'] ) ) {
 			$post_args['orderby'] = [ 'meta_value' => 'DESC' ];
@@ -275,21 +280,22 @@ class PF_Loops {
 			}
 
 			$feed_object[ 'rss_archive_' . $c ] = pf_feed_object(
-				$post->post_title,
-				$source_title,
-				$item_date,
-				$item_author,
-				$item_content,
-				$item_link,
-				$item_feat_img,
-				$item_id,
-				$item_wp_date,
-				$item_tags,
-				// Manual ISO 8601 date for pre-PHP5 systems.
-				gmdate( 'o-m-d\TH:i:sO', strtotime( $post->post_date ) ),
-				$source_repeat,
-				(string) $post_id,
-				$readable_status
+				[
+					'item_title'      => $post->post_title,
+					'source_title'    => $source_title,
+					'item_date'       => $item_date,
+					'item_author'     => $item_author,
+					'item_content'    => $item_content,
+					'item_link'       => $item_link,
+					'item_feat_img'   => $item_feat_img,
+					'item_id'         => $item_id,
+					'item_wp_date'    => $item_wp_date,
+					'item_tags'       => $item_tags,
+					'item_added_date' => gmdate( 'o-m-d\TH:i:sO', strtotime( $post->post_date ) ), // Manual ISO 8601 date for pre-PHP5 systems.
+					'source_repeat'   => $source_repeat,
+					'post_id'         => (string) $post_id,
+					'readable_status' => $readable_status,
+				]
 			);
 
 			++$c;

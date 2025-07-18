@@ -336,6 +336,11 @@ class Feed_Items implements HasActions, HasFilters {
 		// Fetch some handy pf-specific data.
 		if ( ! empty( $posts ) ) {
 			foreach ( $posts as &$post ) {
+				// In case of fields=>ids.
+				if ( is_numeric( $post ) ) {
+					continue;
+				}
+
 				$post->word_count = $this->metas->get_post_pf_meta( $post->ID, 'pf_feed_item_word_count', true );
 				$post->source     = $this->metas->get_post_pf_meta( $post->ID, 'source_title', true );
 				$post->tags       = wp_get_post_terms( $post->ID, pf_feed_item_tag_taxonomy() );
@@ -608,8 +613,6 @@ class Feed_Items implements HasActions, HasFilters {
 	 * Method to manually delete rssarchival entries on user action.
 	 */
 	public function reset_feed() {
-		global $wpdb, $post;
-
 		$count     = wp_count_posts( pf_feed_item_post_type() );
 		$pub_count = $count->publish;
 		$pages     = $pub_count / 100;
@@ -654,14 +657,9 @@ class Feed_Items implements HasActions, HasFilters {
 		// We need to init $source_repeat so it can be if 0 if nothing is happening.
 		$source_repeat = 0;
 
-		// We'll need this for our fancy query.
-		global $wpdb;
-
 		// Since rss_object places all the feed items into an array of arrays whose structure is standardized throughout,
 		// We can do stuff with it, using the same structure of items as we do everywhere else.
 		pf_log( 'Now beginning check and processing for entering items into the database.' );
-		$parent = $feed_obj['parent_feed_id'];
-		unset( $feed_obj['parent_feed_id'] );
 
 		$retval = [
 			'date_retrieved' => gmdate( 'Y-m-d H:i:s' ),
@@ -669,37 +667,21 @@ class Feed_Items implements HasActions, HasFilters {
 		];
 
 		foreach ( $feed_obj as $item ) {
-			$item['item_link'] = pressforward( 'controller.http_tools' )->resolve_a_url( $item['item_link'] );
+			$item_link = pressforward( 'controller.http_tools' )->resolve_a_url( $item->item_link() );
 
 			$thepostscheck          = 0;
 			$the_posts_double_check = 0;
-			$item_id                = $item['item_id'];
+			$item_id                = $item->item_id();
 			$source_repeat          = 0;
 
 			// Originally this query tried to get every archive post earlier than 'now' to check.
 			// But it occured to me that, since I'm doing a custom query anyway, I could just query for items with the ID I want.
 			// Less query results, less time.
 			// Perhaps I should do this outside of the foreach? One query and search it for each item_id and then return those not in?
-			$item_id_key = pressforward( 'controller.metas' )->get_key( 'item_id' );
-			$querystr    = $wpdb->prepare(
-				"
-				SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-				FROM {$wpdb->posts}, {$wpdb->postmeta}
-				WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-				AND {$wpdb->postmeta}.meta_key = %s
-				AND {$wpdb->postmeta}.meta_value = %s
-				AND {$wpdb->posts}.post_type = %s
-				ORDER BY {$wpdb->posts}.post_date DESC
-			 ",
-				$item_id_key,
-				$item_id,
-				pf_feed_item_post_type()
-			);
 
 			// Since I've altered the query, I could change this to just see if there are any items in the query results
 			// and check based on that. But I haven't yet.
-			// phpcs:ignore WordPress.DB
-			$checkposts = $wpdb->get_results( $querystr, OBJECT );
+			$checkposts = self::get_existing_items_matching_item_id( $item_id );
 			if ( $checkposts ) {
 				foreach ( $checkposts as $check_post ) {
 					setup_postdata( $check_post );
@@ -722,22 +704,7 @@ class Feed_Items implements HasActions, HasFilters {
 			wp_reset_postdata();
 
 			if ( 0 === $thepostscheck ) {
-				$query_more_str = $wpdb->prepare(
-					"
-						SELECT {$wpdb->posts}.*, {$wpdb->postmeta}.*
-						FROM {$wpdb->posts}, {$wpdb->postmeta}
-						WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id
-						AND {$wpdb->postmeta}.meta_key = 'item_link'
-						AND {$wpdb->postmeta}.meta_value = %s
-						AND {$wpdb->posts}.post_type = %s
-						ORDER BY {$wpdb->posts}.post_date DESC
-					 ",
-					$item['item_link'],
-					pf_feed_item_post_type()
-				);
-
-				// phpcs:ignore WordPress.DB
-				$checkpoststwo = $wpdb->get_results( $query_more_str, OBJECT );
+				$checkpoststwo = self::get_existing_items_matching_item_link( $item_id );
 
 				if ( $checkpoststwo ) {
 					pf_log( 'Check for posts with the same link.' );
@@ -752,9 +719,8 @@ class Feed_Items implements HasActions, HasFilters {
 						$post_item_link = pressforward( 'controller.metas' )->get_post_pf_meta( $check_post->ID, 'item_link', true );
 
 						// Item comparative values.
-						$item_date  = strtotime( $item['item_date'] );
-						$item_title = $item['item_title'];
-						$item_link  = $item['item_link'];
+						$item_date  = strtotime( $item->item_date() );
+						$item_title = $item->item_title();
 
 						// First check if it more recent than the currently stored item.
 						if ( ( ( $the_title === $item_title ) || ( $post_item_link === $item_link ) ) ) {
@@ -804,19 +770,16 @@ class Feed_Items implements HasActions, HasFilters {
 			// someone were to hit the refresh button at the same time as another person.
 
 			if ( 0 === $thepostscheck ) {
-				$item_title    = $item['item_title'];
-				$item_content  = $item['item_content'];
-				$item_feat_img = $item['item_feat_img'];
-				$source_title  = $item['source_title'];
-				$item_date     = $item['item_date'];
-				$item_author   = $item['item_author'];
-				$item_link     = $item['item_link'];
-				$item_wp_date  = $item['item_wp_date'];
-				$item_tags     = $item['item_tags'];
-				if ( ! isset( $item['parent_feed_id'] ) || ! $item['parent_feed_id'] ) {
-					$item['parent_feed_id'] = $parent;
-				}
-				$feed_obj_id   = $item['parent_feed_id'];
+				$item_title     = $item->item_title();
+				$item_content   = $item->item_content();
+				$source_title   = $item->source_title();
+				$item_date      = $item->item_date();
+				$item_author    = $item->item_author();
+				$item_link      = $item->item_link();
+				$item_wp_date   = $item->item_wp_date();
+				$item_tags      = $item->item_tags();
+				$parent_feed_id = $item->parent_feed_id();
+
 				$source_repeat = $source_repeat;
 
 				// Trying to prevent bad or malformed HTML from entering the database.
@@ -833,7 +796,7 @@ class Feed_Items implements HasActions, HasFilters {
 					'post_status'  => 'publish',
 					'post_type'    => pf_feed_item_post_type(),
 					'item_title'   => $item_title,
-					'post_parent'  => $feed_obj_id,
+					'post_parent'  => $parent_feed_id,
 					'item_content' => $item_content,
 					'item_link'    => $item_link,
 					'source_title' => $source_title,
@@ -877,6 +840,7 @@ class Feed_Items implements HasActions, HasFilters {
 
 				// If it doesn't have a featured image assigned already, I use the set_ext_as_featured function to try and find one.
 				// It also, if it finds one, sets it as the featured image for that post.
+				$item_feat_img = '';
 				if ( ! empty( $_POST['item_feat_img'] ) ) {
 					// Turned off set_ext_as_featured here, as that should only occur when items are nominated.
 					// Before nominations, the featured image should remain a meta field with an external link.
@@ -921,17 +885,67 @@ class Feed_Items implements HasActions, HasFilters {
 					pressforward( 'controller.metas' )->meta_for_entry( 'item_tags', $item_tags ),
 					pressforward( 'controller.metas' )->meta_for_entry( 'source_repeat', $source_repeat ),
 					pressforward( 'controller.metas' )->meta_for_entry( 'revertible_feed_text', $item_content ),
-
+					pressforward( 'controller.metas' )->meta_for_entry( 'item_description', $item->description() ),
 				);
+
 				pressforward( 'controller.metas' )->establish_post( $new_nom_id, $pf_meta_args );
-				$parent_id = $feed_obj_id;
-				do_action( 'pf_post_established', $new_nom_id, $item_id, $parent_id );
+				do_action( 'pf_post_established', $new_nom_id, $item_id, $parent_feed_id );
 			} else {
 				pf_log( 'The post was a repeat, so we are not adding it.' );
 			}
 		}
 
 		return $retval;
+	}
+
+	/**
+	 * Gets existing feed items matching an item ID.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @param string $item_id Item ID.
+	 * @return array
+	 */
+	public static function get_existing_items_matching_item_id( $item_id ) {
+		return get_posts(
+			[
+				'post_type'      => pf_feed_item_post_type(),
+				'post_status'    => 'any',
+				'meta_query'     => [
+					[
+						'key'   => pressforward( 'controller.metas' )->get_key( 'item_id' ),
+						'value' => $item_id,
+					],
+				],
+				'orderby'        => [ 'post_date' => 'DESC' ],
+				'posts_per_page' => -1,
+			]
+		);
+	}
+
+	/**
+	 * Gets existing feed items matching an item link.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @param string $item_link Item link.
+	 * @return array
+	 */
+	public static function get_existing_items_matching_item_link( $item_link ) {
+		return get_posts(
+			[
+				'post_type'      => pf_feed_item_post_type(),
+				'post_status'    => 'any',
+				'meta_query'     => [
+					[
+						'key'   => 'item_link',
+						'value' => $item_link,
+					],
+				],
+				'orderby'        => [ 'post_date' => 'DESC' ],
+				'posts_per_page' => -1,
+			]
+		);
 	}
 
 	/**

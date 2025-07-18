@@ -25,7 +25,7 @@ class ModulesProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		$container->share(
 			'modules',
-			function ( $container ) {
+			function () {
 				return new Modules();
 			}
 		);

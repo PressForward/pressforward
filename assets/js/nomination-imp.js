@@ -1,9 +1,17 @@
+/* global jQuery */
+
 jQuery(window).load(function () {
 	window.nom_vars = {
 		the_nom_id: 0
 	};
 	jQuery('.pf_container').on('click', ".nominate-now", function (evt) {
 		evt.preventDefault();
+
+		const clickedButton = evt.target;
+
+		if ( jQuery( clickedButton ).hasClass( 'user-has-nominated' ) ) {
+			return;
+		}
 
 		var element = jQuery(this);
 		var itemID = element.attr('form');
@@ -40,9 +48,7 @@ jQuery(window).load(function () {
 			},
 			function (response) {
 				jQuery('.loading-' + itemID).hide();
-				// jQuery(".nominate-result-"+itemID).html(response);
-				// alert(response);
-				// jQuery("#test-div1").append(data);
+				clickedButton.classList.add( 'user-has-nominated' );
 			});
 	});
 	jQuery('.pf_container').on('click', ".amplify-draft", function (evt) {

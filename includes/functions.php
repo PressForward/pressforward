@@ -290,7 +290,14 @@ function pf_feed_item_post_type() {
  * @return string The slug for the taxonomy used by feed items.
  */
 function pf_feed_item_tag_taxonomy() {
-	return pressforward( 'schema.feed_item' )->tag_taxonomy;
+	/**
+	 * Filters the tag taxonomy for feed items.
+	 *
+	 * @since 5.9.0
+	 *
+	 * @param string $tag_taxonomy The tag taxonomy for feed items.
+	 */
+	return apply_filters( 'pressforward_feed_item_tag_taxonomy', 'pf_feed_item_tag' );
 }
 
 /**
@@ -299,7 +306,15 @@ function pf_feed_item_tag_taxonomy() {
  * @param string $text Text to excerpt.
  */
 function pf_feed_excerpt( $text ) {
+	global $wp_embed;
+
+	// We don't need embeds for excerpts.
+	if ( ! empty( $wp_embed ) && is_object( $wp_embed ) && method_exists( $wp_embed, 'autoembed' ) ) {
+		remove_filter( 'the_content', array( $wp_embed, 'autoembed' ), 8 );
+	}
+
 	$text = apply_filters( 'the_content', $text );
+
 	$text = str_replace( '\]\]\>', ']]&gt;', $text );
 	$text = preg_replace( '@<script[^>]*?>.*?</script>@si', '', $text );
 	$text = wp_strip_all_tags( $text );
@@ -422,45 +437,77 @@ function pf_slugger( $raw_string, $force_lowercase = false, $strict = true, $spa
  * Convert data to the standardized item format expected by PF.
  *
  * @since 1.7
- * @todo Take params as an array and use wp_parse_args().
+ * @since 5.9.0 Updated to accept params as an array using wp_parse_args().
  *
- * @param string $item_title      Item title.
- * @param string $source_title    Source title.
- * @param string $item_date       Item date.
- * @param string $item_author     Item author.
- * @param string $item_content    Item content.
- * @param string $item_link       Item link.
- * @param string $item_feat_img   Item featured image URL.
- * @param string $item_uid        Item UID.
- * @param string $item_wp_date    Item date for WP.
- * @param string $item_tags       Item tags.
- * @param string $added_date      Added date.
- * @param string $source_repeat   Source repeat.
- * @param string $postid          Post ID.
- * @param string $readable_status Readable status.
- * @param array  $obj             Data array.
- * @return array $item_array
+ * @param array|string $args {
+ *     Optional. An array of item data or individual parameters for backward compatibility.
+ *
+ *     @type string $item_title      Item title.
+ *     @type string $source_title    Source title.
+ *     @type string $item_date       Item date.
+ *     @type string $item_author     Item author.
+ *     @type string $item_content    Item content.
+ *     @type string $item_link       Item link.
+ *     @type string $item_feat_img   Item featured image URL.
+ *     @type string $item_id         Item UID.
+ *     @type string $item_wp_date    Item date for WP.
+ *     @type string $item_tags       Item tags.
+ *     @type string $added_date      Added date.
+ *     @type string $source_repeat   Source repeat.
+ *     @type string $post_id         Post ID.
+ *     @type string $readable_status Readable status.
+ *     @type string $description     Description.
+ *     @type array  $obj             Data array.
+ * }
+ * @return array $item_array Standardized item format.
  */
-function pf_feed_object( $item_title = '', $source_title = '', $item_date = '', $item_author = '', $item_content = '', $item_link = '', $item_feat_img = '', $item_uid = '', $item_wp_date = '', $item_tags = '', $added_date = '', $source_repeat = '', $postid = '', $readable_status = '', $obj = array() ) {
-
-	// Assemble all the needed variables into our fancy object!
-	$item_array = array(
-		'item_title'      => $item_title,
-		'source_title'    => $source_title,
-		'item_date'       => $item_date,
-		'item_author'     => $item_author,
-		'item_content'    => $item_content,
-		'item_link'       => $item_link,
-		'item_feat_img'   => $item_feat_img,
-		'item_id'         => $item_uid,
-		'item_wp_date'    => $item_wp_date,
-		'item_tags'       => $item_tags,
-		'item_added_date' => $added_date,
-		'source_repeat'   => $source_repeat,
-		'post_id'         => $postid,
-		'readable_status' => $readable_status,
-		'obj'             => $obj,
+function pf_feed_object( $args = array() ) {
+	// Default values for the item array.
+	$defaults = array(
+		'item_title'      => '',
+		'source_title'    => '',
+		'item_date'       => '',
+		'item_author'     => '',
+		'item_content'    => '',
+		'item_link'       => '',
+		'item_feat_img'   => '',
+		'item_id'         => '',
+		'item_wp_date'    => '',
+		'item_tags'       => '',
+		'added_date'      => '',
+		'source_repeat'   => '',
+		'post_id'         => '',
+		'readable_status' => '',
+		'description'     => '',
+		'obj'             => [],
 	);
+
+	// Capture all passed arguments for backward compatibility.
+	$all_args = func_get_args();
+
+	// Backward compatibility: Detect legacy parameters.
+	if ( ! is_array( $args ) || count( $all_args ) > 1 ) {
+		$args = [
+			'item_title'      => $all_args[0] ?? $defaults['item_title'],
+			'source_title'    => $all_args[1] ?? $defaults['source_title'],
+			'item_date'       => $all_args[2] ?? $defaults['item_date'],
+			'item_author'     => $all_args[3] ?? $defaults['item_author'],
+			'item_content'    => $all_args[4] ?? $defaults['item_content'],
+			'item_link'       => $all_args[5] ?? $defaults['item_link'],
+			'item_feat_img'   => $all_args[6] ?? $defaults['item_feat_img'],
+			'item_id'         => $all_args[7] ?? $defaults['item_id'],
+			'item_wp_date'    => $all_args[8] ?? $defaults['item_wp_date'],
+			'item_tags'       => $all_args[9] ?? $defaults['item_tags'],
+			'added_date'      => $all_args[10] ?? $defaults['added_date'],
+			'source_repeat'   => $all_args[11] ?? $defaults['source_repeat'],
+			'post_id'         => $all_args[12] ?? $defaults['post_id'],
+			'readable_status' => $all_args[13] ?? $defaults['readable_status'],
+			'obj'             => $all_args[14] ?? $defaults['obj'],
+		];
+	}
+
+	// Merge passed values with defaults.
+	$item_array = wp_parse_args( $args, $defaults );
 
 	return $item_array;
 }
@@ -493,8 +540,6 @@ function pressforward_create_feed_item_id( $url, $title ) { // phpcs:ignore Gene
  * @return object A standard WP_Query object.
  */
 function pf_get_posts_by_id_for_check( $post_type = null, $item_id = null, $ids_only = false ) {
-	global $wpdb;
-
 	// If the item is less than 24 hours old on nomination, check the whole database.
 	$r = array(
 		'meta_key'   => pressforward( 'controller.metas' )->get_key( 'item_id' ),
@@ -520,7 +565,7 @@ function pf_get_posts_by_id_for_check( $post_type = null, $item_id = null, $ids_
 }
 
 /**
- * Creates the hidden inputs used when nominating a post from All Content.
+ * Creates the hidden inputs used when nominating a post from Feed Items panel.
  *
  * @since 1.7
  *
@@ -593,11 +638,6 @@ function pf_fetch_feed( $url ) {
 			require_once ABSPATH . WPINC . '/class-simplepie.php';
 		}
 
-		require_once ABSPATH . WPINC . '/class-wp-feed-cache.php';
-		require_once ABSPATH . WPINC . '/class-wp-feed-cache-transient.php';
-		require_once ABSPATH . WPINC . '/class-wp-simplepie-file.php';
-		require_once ABSPATH . WPINC . '/class-wp-simplepie-sanitize-kses.php';
-
 		$feed = new SimplePie();
 
 		$feed->set_sanitize_class( 'WP_SimplePie_Sanitize_KSES' );
@@ -621,7 +661,6 @@ function pf_fetch_feed( $url ) {
 		 * @param object $feed SimplePie feed object (passed by reference).
 		 * @param mixed  $url  URL of feed to retrieve. If an array of URLs, the feeds are merged.
 		 */
-
 		do_action_ref_array( 'wp_feed_options', array( &$feed, $url ) );
 
 		$feed->init();
@@ -1024,6 +1063,13 @@ function pf_forward_unto_source() {
 	$obj     = get_queried_object();
 	$post_id = $obj->ID;
 
+	// If the link is the same as the post URL, don't forward.
+	// This can happen when PF provides a fallback for item_link during Classic Editor creation.
+	$guid = pressforward( 'controller.system' )->get_the_guid( $post_id );
+	if ( get_permalink() === $link || $guid === $link ) {
+		return;
+	}
+
 	if ( ! has_action( 'wpseo_head' ) ) {
 		echo '<link rel="canonical" href="' . esc_attr( $link ) . '" />';
 		echo '<meta property="og:url" content="' . esc_attr( $link ) . '" />';
@@ -1066,20 +1112,62 @@ function pf_debug_ipads() {
  * @return bool|int
  */
 function pf_is_drafted( $item_id ) {
-	$a = array(
-		'no_found_rows' => true,
-		'fields'        => 'ids',
-		'meta_key'      => pressforward( 'controller.metas' )->get_key( 'item_id' ),
-		'meta_value'    => $item_id,
-		'post_type'     => pressforward_draft_post_type(),
-	);
-	$q = new WP_Query( $a );
+	$cache_key = $item_id . '_' . wp_cache_get_last_changed( 'posts' );
 
-	if ( 0 < $q->post_count ) {
-		$draft = $q->posts;
-		return $draft[0];
-	} else {
-		return false;
+	$cached = wp_cache_get( $cache_key, 'pf_is_drafted' );
+	if ( false === $cached ) {
+		$a = array(
+			'no_found_rows' => true,
+			'fields'        => 'ids',
+			'meta_key'      => pressforward( 'controller.metas' )->get_key( 'item_id' ),
+			'meta_value'    => $item_id,
+			'post_type'     => pressforward_draft_post_type(),
+		);
+		$q = new WP_Query( $a );
+
+		if ( 0 < $q->post_count ) {
+			$cache_value = $q->posts[0];
+		} else {
+			$cache_value = false;
+		}
+
+		wp_cache_set( $cache_key, $cache_value, 'pf_is_drafted' );
+	}
+
+	return $cached;
+}
+
+/**
+ * Primes is_drafted cache for one or more items.
+ *
+ * @param int[] $item_ids PF item IDs.
+ */
+function pf_prime_is_drafted_caches( $item_ids ) {
+	$query_args = array(
+		'no_found_rows' => true,
+		'post_type'     => pressforward_draft_post_type(),
+		'meta_query'    => array(
+			array(
+				'key'     => pressforward( 'controller.metas' )->get_key( 'item_id' ),
+				'value'   => $item_ids,
+				'compare' => 'IN',
+			),
+		),
+	);
+
+	$query = new WP_Query( $query_args );
+
+	// Key results by item_id.
+	$found = [];
+	foreach ( $query->posts as $post ) {
+		$found[ pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_id', true ) ] = $post->ID;
+	}
+
+	$last_changed = wp_cache_get_last_changed( 'posts' );
+
+	foreach ( $item_ids as $item_id ) {
+		$cache_value = isset( $found[ $item_id ] ) ? $found[ $item_id ] : 0;
+		wp_cache_set( $item_id . '_' . $last_changed, $cache_value, 'pf_is_drafted' );
 	}
 }
 
@@ -1185,6 +1273,44 @@ function pf_custom_upload_opml( $existing_mimes = array() ) {
 	return $existing_mimes;
 }
 add_filter( 'upload_mimes', 'pf_custom_upload_opml' );
+
+/**
+ * Defines additional mime types for known file extensions.
+ *
+ * @param array  $checked  Checked file data.
+ * @param string $file     File path.
+ * @param string $filename File name.
+ * @return array
+ */
+function pf_allow_additional_mime_types( $checked, $file, $filename ) {
+	if ( ! empty( $checked['type'] ) ) {
+		return $checked;
+	}
+
+	$file_ext = pathinfo( $filename, PATHINFO_EXTENSION );
+
+	$real_mime = '';
+	if ( function_exists( 'finfo_open' ) ) {
+		$finfo     = finfo_open( FILEINFO_MIME_TYPE );
+		$real_mime = finfo_file( $finfo, $file );
+		finfo_close( $finfo );
+	}
+
+	$mime_types = [
+		'opml' => [ 'text/xml' ],
+	];
+
+	if ( array_key_exists( $file_ext, $mime_types ) ) {
+		if ( in_array( $real_mime, $mime_types[ $file_ext ], true ) ) {
+			$checked['ext']             = $file_ext;
+			$checked['type']            = $real_mime;
+			$checked['proper_filename'] = $filename;
+		}
+	}
+
+	return $checked;
+}
+add_filter( 'wp_check_filetype_and_ext', 'pf_allow_additional_mime_types', 10, 3 );
 
 /**
  * Iterates cycle state.

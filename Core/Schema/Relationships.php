@@ -247,10 +247,10 @@ class Relationships implements HasActions {
 		$r = wp_parse_args(
 			$args,
 			array(
-				'id'                => 0,
-				'user_id'           => false,
-				'item_id'           => false,
-				'relationship_type' => false,
+				'id'                => null,
+				'user_id'           => null,
+				'item_id'           => null,
+				'relationship_type' => null,
 			)
 		);
 
@@ -281,7 +281,20 @@ class Relationships implements HasActions {
 				$where[] = $wpdb->prepare( 'id = %d', $r['id'] );
 			} else {
 				foreach ( $r as $rk => $rv ) {
-					if ( in_array( $rk, array( 'user_id', 'item_id', 'relationship_type' ), true ) && false !== $rv ) {
+					if ( ! in_array( $rk, [ 'id', 'user_id', 'item_id', 'relationship_type' ], true ) ) {
+						continue;
+					}
+
+					if ( null === $rv || false === $rv ) {
+						continue;
+					}
+
+					if ( is_array( $rv ) ) {
+						$rv = array_map( 'intval', $rv );
+						$rv = implode( ',', $rv );
+
+						$where[] = "{$rk} IN ({$rv})";
+					} else {
 						// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 						$where[] = $wpdb->prepare( "{$rk} = %d", $rv );
 					}

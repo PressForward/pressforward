@@ -335,18 +335,55 @@ class Feed extends BasicModel {
 
 		$feed_id = $this->get( 'id' );
 
-		$feed_post = get_post( $feed_id );
-
 		pressforward( 'schema.feeds' )->set_feed_last_checked( $feed_id );
 
-		$feed_data_object = $module->get_data_object( $feed_post );
-		if ( ! is_array( $feed_data_object ) ) {
+		$feed_results = $module->get_feed_items( $this );
+
+		if ( is_wp_error( $feed_results ) ) {
+			$retval['error'] = $feed_results->get_error_message();
 			return $retval;
 		}
 
-		$feed_data_object['parent_feed_id'] = $feed_id;
+		return pressforward( 'schema.feed_item' )->assemble_feed_for_pull( $feed_results );
+	}
 
-		return pressforward( 'schema.feed_item' )->assemble_feed_for_pull( $feed_data_object );
+	/**
+	 * Gets the feed author for the feed.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @return string
+	 */
+	public function get_feed_author() {
+		$feed_author_meta = get_post_meta( $this->get( 'id' ), 'feed_author', true );
+
+		if ( is_string( $feed_author_meta ) ) {
+			return $feed_author_meta;
+		}
+
+		// Legacy items have feed_author saved as a SimplePie Author object.
+		if ( is_object( $feed_author_meta ) ) {
+			// May be an incomplete class.
+			$feed_author_meta = (array) $feed_author_meta;
+			if ( isset( $feed_author_meta['name'] ) ) {
+				update_post_meta( $this->get( 'id' ), 'feed_author', $feed_author_meta['name'] );
+				return $feed_author_meta['name'];
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Sets the feed author for the feed.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @param string $author Author name.
+	 * @return void
+	 */
+	public function set_feed_author( $author ) {
+		update_post_meta( $this->get( 'id' ), 'feed_author', $author );
 	}
 
 	/**
@@ -361,6 +398,11 @@ class Feed extends BasicModel {
 		// Special case for legacy 'rss-quick'.
 		if ( 'rss-quick' === $feed_type ) {
 			$feed_type = 'rss';
+		}
+
+		// Both google-scholar-keyword and google-scholar-author are handled by 'google-scholar'.
+		if ( 'google-scholar-keyword' === $feed_type || 'google-scholar-author' === $feed_type ) {
+			$feed_type = 'google-scholar';
 		}
 
 		$module = null;
@@ -384,42 +426,114 @@ class Feed extends BasicModel {
 	public function health_check( $is_new_feed = false ) {
 		$feed_url = $this->get( 'remote_feed_url' );
 
-		$feed_urls_to_test = [
-			$feed_url,
-			trailingslashit( $feed_url ) . 'rss/',
-			trailingslashit( $feed_url ) . 'rss/index.xml',
-		];
+		$module = $this->get_module();
+		$module->do_health_check( $this, $is_new_feed );
+	}
 
-		$feed_is_valid = false;
-		while ( ! $feed_is_valid && ! empty( $feed_urls_to_test ) ) {
-			$feed_url = array_shift( $feed_urls_to_test );
-			$the_feed = pf_fetch_feed( $feed_url );
-			if ( ! is_wp_error( $the_feed ) ) {
-				$feed_is_valid = true;
+	/**
+	 * Gets a count of nominations associated with items belonging to this feed.
+	 *
+	 * @param bool $force_refresh Whether to force a refresh of the count.
+	 * @return int
+	 */
+	public function get_nomination_count( $force_refresh = false ) {
+		if ( $force_refresh ) {
+			$nomination_count = 0;
+
+			$items_belonging_to_feed = get_posts(
+				[
+					'post_type'              => [ 'nomination', 'pf_feed_item' ],
+					'posts_per_page'         => -1,
+					'post_parent'            => $this->get( 'id' ),
+					'update_meta_cache'      => true,
+					'update_post_term_cache' => false,
+					'post_status'            => 'any',
+				]
+			);
+
+			$nominators_of_feed_items = [];
+
+			$nomination_count = 0;
+
+			/*
+			 * An item may be nominated by a user at different points in its
+			 * lifecycle. Don't double-count a given user's nomination for an item.
+			 */
+			foreach ( $items_belonging_to_feed as $item_belonging_to_feed ) {
+				$item_nominators = pressforward( 'utility.forward_tools' )->get_nomination_nominator_array( $item_belonging_to_feed->ID );
+
+				$pf_item_id = get_post_meta( $item_belonging_to_feed->ID, 'item_id', true );
+
+				if ( ! $pf_item_id ) {
+					continue;
+				}
+
+				if ( ! isset( $nominators_of_feed_items[ $pf_item_id ] ) ) {
+					$nominators_of_feed_items[ $pf_item_id ] = [];
+				}
+
+				foreach ( $item_nominators as $nominator ) {
+					$nom_user_id = $nominator['user_id'];
+
+					// Keying ensures uniqueness.
+					$nominators_of_feed_items[ $pf_item_id ][ $nom_user_id ] = $nom_user_id;
+				}
 			}
-		}
 
-		$alert_box = pressforward( 'library.alertbox' );
-		if ( ! $feed_is_valid ) {
-			if ( $alert_box ) {
-				$alert_box->switch_post_type( $this->get( 'id' ) );
-				$alert_box->add_bug_type_to_post( $this->get( 'id' ), __( 'Broken RSS feed.', 'pressforward' ) );
+			foreach ( $nominators_of_feed_items as $nominators ) {
+				$nomination_count += count( $nominators );
 			}
-			return;
+
+			update_post_meta( $this->get( 'id' ), 'pf_nominations_in_feed', $nomination_count );
 		}
 
-		if ( $alert_box ) {
-			$alert_box->dismiss_alert( $this->get( 'id' ) );
+		$cached = get_post_meta( $this->get( 'id' ), 'pf_nominations_in_feed', true );
+		return (int) $cached;
+	}
+
+	/**
+	 * Gets whether the 'do_import_tags' flag is set for this feed.
+	 *
+	 * Defaults to true when no meta value is present.
+	 *
+	 * @since 5.9.0
+	 *
+	 * @return bool
+	 */
+	public function get_do_import_tags() {
+		$do_import_tags = get_post_meta( $this->get( 'id' ), 'do_import_tags', true );
+
+		if ( '' === $do_import_tags ) {
+			return true;
 		}
 
-		if ( $is_new_feed ) {
-			$this->set( 'title', $the_feed->get_title() );
-			$this->set( 'description', $the_feed->get_description() );
-			$this->set( 'htmlUrl', $the_feed->get_link( 0 ) );
-			$this->set( 'feed_author', $the_feed->get_author() );
-			$this->set( 'thumbnail', $the_feed->get_image_url() );
+		return (bool) $do_import_tags;
+	}
 
-			$this->save();
+	/**
+	 * Sets the 'do_import_tags' flag for this feed.
+	 *
+	 * @since 5.9.0
+	 *
+	 * @param bool $do_import_tags Whether to import tags.
+	 * @return void
+	 */
+	public function set_do_import_tags( $do_import_tags ) {
+		if ( $do_import_tags ) {
+			update_post_meta( $this->get( 'id' ), 'do_import_tags', '1' );
+		} else {
+			update_post_meta( $this->get( 'id' ), 'do_import_tags', '0' );
 		}
+	}
+
+	/**
+	 * Get the "default author" string for this feed.
+	 *
+	 * @since 5.9.0
+	 *
+	 * @return string
+	 */
+	public function get_default_author() {
+		return pressforward( 'controller.metas' )->get_post_pf_meta( $this->get( 'id' ), 'pf_feed_default_author', true );
 	}
 }

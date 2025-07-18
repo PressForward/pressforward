@@ -1,12 +1,15 @@
+/* global ajaxurl, jQuery, localStorage, pf */
+
 import { __, sprintf } from '@wordpress/i18n'
 
 import {
+	removeURLParameter,
 	reshowModal,
 	reviewModal,
 	hideModal,
 	commentPopModal,
 	PFBootstrapInits,
-	detect_view_change
+	detect_view_change // eslint-disable-line camelcase
 } from './util.js'
 
 import {
@@ -17,15 +20,84 @@ import './reader.scss';
 
 /**
  * Display transform for pf
- **/
+ */
 jQuery(window).on('load', function () {
 	// executes when complete page is fully loaded, including all frames, objects and images
+
+	const mastodonModal = document.getElementById( 'mastodon-modal' );
+	const mastodonModalInputField = document.getElementById( 'mastodon-instance-url' );
+	const mastodonModalButton = document.getElementById( 'mastodon-share-ok' );
+
+	// Store the clicked element's state
+	let clickedElement = null;
+
+	jQuery( '.amplify-option-mastodon' ).on( 'click', function( evt ) {
+		evt.preventDefault();
+
+		// Store the clicked element in the state variable
+		clickedElement = jQuery( this );
+
+		// Retrieve and autofill the Mastodon instance from localStorage if available
+		const storedUrl = localStorage.getItem( 'mastodon-instance-url' );
+		if (storedUrl) {
+				mastodonModalInputField.value = storedUrl;
+		}
+
+		determineMastodonModalButtonState();
+
+		mastodonModal.style.display = 'block';
+	} );
+
+	const determineMastodonModalButtonState = () => {
+		if ( ! mastodonModalInputField || ! mastodonModalButton ) {
+			return;
+		}
+
+		const inputValue = mastodonModalInputField.value.trim();
+
+		if (inputValue) {
+				mastodonModalButton.removeAttribute('disabled');
+		} else {
+				mastodonModalButton.setAttribute('disabled', 'disabled');
+		}
+	}
+
+	if ( mastodonModalButton ) {
+		mastodonModalButton.addEventListener( 'click', function( evt ) {
+			evt.preventDefault();
+
+			let mastodonUrl = mastodonModalInputField.value.trim();
+
+			// Save the URL to localStorage for next time
+			localStorage.setItem('mastodon-instance-url', mastodonUrl);
+
+			// Retrieve the title and URL from the clicked element's data attributes
+			const postTitle = clickedElement.data('posttitle');
+			const postUrl = clickedElement.data('posturl');
+
+			// If this looks like a URL without a protocol, prepend https://.
+			if ( ! mastodonUrl.match( /^(https?:\/\/)/ ) ) {
+				mastodonUrl = 'https://' + mastodonUrl;
+			}
+
+			// Create the share URL
+			const shareUrl = `${mastodonUrl}/share?text=${encodeURIComponent(postTitle)}%20${encodeURIComponent(postUrl)}`;
+			window.open(shareUrl, '_blank');
+
+			mastodonModal.style.display = 'none';
+		} );
+
+		mastodonModalInputField.addEventListener( 'input', determineMastodonModalButtonState );
+		determineMastodonModalButtonState();
+	}
+
 
 	var $allModals = jQuery('.pfmodal');
 
 	jQuery('.pf-loader').delay(300).fadeOut("slow", function () {
 		var theModal, $closeEl, $modalEl;
 		jQuery('.pf_container').fadeIn("slow");
+		jQuery( '.page-load-status' ).show();
 		if (window.location.hash.indexOf("#") < 0) {
 			window.location.hash = '#ready';
 		} else if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
@@ -41,7 +113,7 @@ jQuery(window).on('load', function () {
 		}
 
 		jQuery(window).on('hashchange', function () {
-			if (window.location.hash == '#ready') {
+			if (window.location.hash === '#ready') {
 				jQuery('.modal').modal('hide');
 			}
 			if ((window.location.hash.toLowerCase().indexOf("modal") >= 0)) {
@@ -73,7 +145,7 @@ jQuery(window).on('load', function () {
 		jQuery("div.pf_container").removeClass('list').addClass('grid');
 		jQuery('#gogrid').addClass('unset');
 		jQuery('#golist').removeClass('unset');
-		jQuery('.feed-item').each(function (index) {
+		jQuery('.feed-item').each(function () {
 			var element = jQuery(this);
 			var itemID = element.attr('id');
 			jQuery('#' + itemID + ' footer .actions').appendTo('#' + itemID + ' header');
@@ -85,7 +157,7 @@ jQuery(window).on('load', function () {
 		jQuery("div.pf_container").removeClass('grid').addClass('list');
 		jQuery('#golist').addClass('unset');
 		jQuery('#gogrid').removeClass('unset');
-		jQuery('.feed-item').each(function (index) {
+		jQuery('.feed-item').each(function () {
 			var element = jQuery(this);
 			var itemID = element.attr('id');
 			jQuery('#' + itemID + ' header .actions').appendTo('#' + itemID + ' footer');
@@ -94,62 +166,67 @@ jQuery(window).on('load', function () {
 
 	jQuery('#gomenu').on( 'click', function (evt) {
 		evt.preventDefault();
-		jQuery('#feed-folders').hide('slide', {
+		jQuery('#feed-folders').hide( {
 			direction: 'right',
+			duration: 150,
 			easing: 'linear'
-		}, 150);
+		} );
 	});
 
 	jQuery('#gomenu').on( 'click', function (evt) {
-		pf.toggler(evt, this, function (evt) {
+		pf.toggler(evt, this, function () {
 			var toolswin = jQuery('#tools');
 			jQuery("div.pf_container").removeClass('full');
-			jQuery('#feed-folders').hide('slide', {
+			jQuery('#feed-folders').hide( {
 				direction: 'right',
+				duration: 150,
 				easing: 'linear'
-			}, 150);
-			jQuery(toolswin).show('slide', {
+			} );
+			jQuery(toolswin).show( {
 				direction: 'right',
+				duration: 150,
 				easing: 'linear'
-			}, 150);
+			} );
 		}, function () {
 			var toolswin = jQuery('#tools');
 			//jQuery('#feed-folders').hide('slide',{direction:'right', easing:'linear'},150);
-			jQuery(toolswin).hide('slide', {
+			jQuery(toolswin).hide( {
 				direction: 'right',
+				duration: 150,
 				easing: 'linear'
-			}, 150);
+			} );
 			jQuery("div.pf_container").addClass('full');
 		});
 	});
 	jQuery('#gofolders').on( 'click', function (evt) {
 		evt.preventDefault();
-		jQuery('#tools').hide('slide', {
+		jQuery('#tools').hide( {
 			direction: 'right',
+			duration: 150,
 			easing: 'linear'
-		}, 150);
+		} );
 	});
 	jQuery('#gofolders').on( 'click', function (evt) {
-		pf.toggler(evt, this, function (evt) {
+		pf.toggler(evt, this, function () {
 			var folderswin = jQuery('#feed-folders');
 			jQuery("div.pf_container").removeClass('full');
 
-			jQuery(folderswin).show('slide', {
+			jQuery(folderswin).show( {
 				direction: 'right',
+				duration: 150,
 				easing: 'linear'
-			}, 150);
+			} );
 		}, function () {
 			var folderswin = jQuery('#feed-folders');
 			//jQuery('#tools').hide('slide',{direction:'right', easing:'linear'},150);
-			jQuery(folderswin).hide('slide', {
+			jQuery(folderswin).hide( {
 				direction: 'right',
+				duration: 150,
 				easing: 'linear'
-			}, 150);
+			} );
 			jQuery("div.pf_container").addClass('full');
 		});
 	});
-
-
 
 	jQuery('#feed-folders .folder').on( 'click', function (evt) {
 		evt.preventDefault();
@@ -188,24 +265,25 @@ jQuery(window).on('load', function () {
 	jQuery('.scroll-toggler').on('click', function (evt) {
 		evt.preventDefault();
 		var element = jQuery(this);
-		var go_scroll_id = element.attr('id');
-		var scroll_setting = 'true';
+		var goScrollId = element.attr('id');
+		var scrollSetting = 'true';
 
-		if ('gopaged' == go_scroll_id) {
-			scroll_setting = 'false';
+		if ('gopaged' === goScrollId) {
+			scrollSetting = 'false';
 		}
+
 		jQuery.post(ajaxurl, {
 				action: 'pf_ajax_user_setting',
 				pf_user_setting: 'pf_user_scroll_switch',
-				setting: scroll_setting
+				setting: scrollSetting
 
 			},
 			function (response) {
-				var check_set = html_entity_decode(jQuery(response).find("response_data").text());
-				if ('1' != check_set) {
+				var checkSet = html_entity_decode(jQuery(response).find("response_data").text());
+				if ('1' != checkSet) {
 					alert( __( 'PressForward has lost its connection to your server. Reload page and try again.', 'pressforward' ) );
 				} else {
-					location.reload();
+					window.location.reload();
 				}
 			});
 
@@ -223,13 +301,12 @@ jQuery(window).on('load', function () {
 			});
 	});
 
-	if (jQuery('.list').length != 0) {
+	if (jQuery('.list').length !== 0) {
 		var actionButtons = jQuery('.list article');
-		jQuery.each(actionButtons, function (index, value) {
+		jQuery.each(actionButtons, function () {
 			var tID = jQuery(this).attr('id');
 			jQuery('#' + tID + ' header .actions').appendTo('#' + tID + ' footer');
 		});
-		//console.log('Item Actions in foot.');
 	}
 
 	jQuery('.pf_container').on('click', '#showMyNominations', function (evt) {
@@ -261,7 +338,57 @@ jQuery(window).on('load', function () {
 		window.open("?page=pf-review", "_self")
 	});
 
-	//update_user_option(pressforward()->form_of->user_id(), 'have_you_seen_nominate_this', false);
+	jQuery( '.pf_container' ).on( 'click', '#date-range-button', function( evt ) {
+		evt.preventDefault();
+		jQuery( '#date-range-options' ).toggleClass( 'show' );
+	} );
+
+	jQuery( '.pf_container' ).on( 'click', '.date-range-submit', function( evt ) {
+		evt.preventDefault();
+
+		setDateRangeButtonText();
+
+		document.getElementById( 'date-range-options' ).classList.remove( 'show' );
+
+		const start = jQuery( '#date-range-start' ).val();
+		const end = jQuery( '#date-range-end' ).val();
+
+		const currentPageType = new URLSearchParams( window.location.search ).get( 'page' );
+
+		window.open( "?page=" + currentPageType + "&date-range-start=" + start + "&date-range-end=" + end, "_self" );
+	} );
+
+	const setDateRangeButtonText = () => {
+		const start = jQuery( '#date-range-start' ).val();
+		const end = jQuery( '#date-range-end' ).val();
+
+		const dateRangeButton = document.getElementById( 'date-range-button' );
+
+		if ( dateRangeButton ) {
+			const generateNewButtonText = ( startDate, endDate ) => {
+				if ( startDate && endDate ) {
+					// translators: %1$s is the start date, %2$s is the end date
+					return sprintf( __( '%1$s to %2$s', 'pressforward' ), startDate, endDate );
+				}
+
+				if ( startDate ) {
+					// translators: %1$s is the start date
+					return sprintf( __( 'Newer than %1$s', 'pressforward' ), startDate );
+				}
+
+				if ( endDate ) {
+					// translators: %1$s is the end date
+					return sprintf( __( 'Older than %1$s', 'pressforward' ), endDate );
+				}
+
+				return __( 'All Dates', 'pressforward' );
+			}
+
+			dateRangeButton.querySelector( '.date-range-text' ).textContent = generateNewButtonText( start, end );
+		}
+	}
+	setDateRangeButtonText();
+
 	jQuery('.pf_container').on('click', '.remove-nom-this-prompt', function (evt) {
 		evt.preventDefault();
 		jQuery('article.nominate-this-preview').remove();
@@ -272,7 +399,7 @@ jQuery(window).on('load', function () {
 
 			},
 			function (response) {
-				var check_set = html_entity_decode(jQuery(response).find("response_data").text());
+//				var checkSet = html_entity_decode(jQuery(response).find("response_data").text());
 			});
 		if (jQuery(this).is('[href]')) {
 			window.open("?page=pf-tools", "_self");

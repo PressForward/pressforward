@@ -712,6 +712,16 @@ class Metas implements HasFilters, HasActions {
 				'level'      => array( 'item', 'nomination', 'post' ),
 				'serialize'  => true,
 			),
+			'item_description'        => array(
+				'name'       => 'item_description',
+				'title'      => __( 'Description', 'pressforward' ),
+				'definition' => __( 'Description of the item', 'pressforward' ),
+				'function'   => __( 'Stores the description of the item', 'pressforward' ),
+				'type'       => array( 'struc' ),
+				'use'        => array( 'api' ),
+				'level'      => array( 'item', 'nomination', 'post' ),
+				'serialize'  => false,
+			),
 			'pf_feed_item_word_count' => array(
 				'name'       => 'pf_feed_item_word_count',
 				'title'      => __( 'Original Wordcount', 'pressforward' ),
@@ -762,6 +772,16 @@ class Metas implements HasFilters, HasActions {
 				'level'      => array( 'item', 'nomination' ),
 				'serialize'  => true,
 			),
+			'feed_url'                => [
+				'name'       => 'feed_url',
+				'title'      => __( 'Feed URL', 'pressforward' ),
+				'definition' => __( 'URL of the feed', 'pressforward' ),
+				'function'   => __( 'Stores the URL of the feed', 'pressforward' ),
+				'type'       => [ 'struc' ],
+				'use'        => [ 'api' ],
+				'level'      => [ 'feed' ],
+				'serialize'  => false,
+			],
 			'pf_feed_error_count'     => array(
 				'name'       => 'pf_feed_error_count',
 				'title'      => __( 'Feed Errors', 'pressforward' ),
@@ -976,7 +996,7 @@ class Metas implements HasFilters, HasActions {
 							}
 						}
 					} elseif ( ! isset( $post_object->$key ) ) {
-							$post_object->$key = $this->get_post_pf_meta( $post_id, $meta['name'] );
+						$post_object->$key = $this->get_post_pf_meta( $post_id, $meta['name'] );
 					}
 				}
 			}

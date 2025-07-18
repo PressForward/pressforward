@@ -356,6 +356,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	 */
 	public function admin_enqueue_styles() {
 		$build_styles = [
+			'pf-add-feeds'     => 'add-feeds',
 			'pf-bootstrap'     => 'bootstrap',
 			'pf-reader'        => 'reader',
 			'pf-nominate-this' => 'nominate-this',
@@ -383,6 +384,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	public function enqueue_block_editor_assets() {
 		$scripts = [
 			'pf-block-editor-comments'      => 'block-editor-comments',
+			'pf-block-editor-feeds'         => 'block-editor-feeds',
 			'pf-blocks'                     => 'blocks',
 			'pf-nominate-this-block-editor' => 'nominate-this-block-editor',
 		];
@@ -431,8 +433,17 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 			),
 		);
 
+		wp_add_inline_script(
+			'pf-block-editor-feeds',
+			'window.pfBlockEditorFeeds = ' . wp_json_encode(
+				[
+					'feedPostType' => pressforward( 'schema.feeds' )->post_type,
+				]
+			),
+		);
+
 		$styles = [
-			'pf-block-editor-comments'      => 'block-editor-comments',
+			'pf-block-editor-feeds'         => 'block-editor-feeds',
 			'pf-blocks'                     => 'blocks',
 			'pf-nominate-this-block-editor' => 'nominate-this-block-editor',
 		];
@@ -475,7 +486,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 			}
 		}
 
-		if ( $all && ( false !== $position_test_one ) || ( false !== $position_test_two ) ) {
+		if ( $all && ( ( false !== $position_test_one ) || ( false !== $position_test_two ) ) ) {
 			return true;
 		}
 

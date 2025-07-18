@@ -23,7 +23,7 @@ class BlocksProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 	public function register( Container $container ) {
 		$container->share(
 			'blocks',
-			function ( $container ) {
+			function () {
 				return new Blocks();
 			}
 		);

@@ -269,19 +269,25 @@ export function PFBootstrapInits() {
 	jQuery('.nom-to-archive').tooltip({
 		placement: 'top',
 		trigger: 'hover',
-		title: __( 'Item', 'pressforward' )
+		title: __( 'Archive', 'pressforward' )
 
 	});
 	jQuery('.nom-to-draft').tooltip({
 		placement: 'top',
 		trigger: 'hover',
-		title: __( 'Item', 'pressforward' )
+		title: __( 'Send to Draft', 'pressforward' )
 
 	});
-	jQuery('.nominate-now').tooltip({
+	jQuery('.user-has-not-nominated').tooltip({
 		placement: 'top',
 		trigger: 'hover',
 		title: __( 'Nominate', 'pressforward' )
+
+	});
+	jQuery('.user-has-nominated').tooltip({
+		placement: 'top',
+		trigger: 'hover',
+		title: __( 'You have nominated this item', 'pressforward' )
 
 	});
 	jQuery('.star-item').tooltip({

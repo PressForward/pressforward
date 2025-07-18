@@ -290,6 +290,7 @@ class Retrieval {
 			'post_type'      => 'pf_feed_item',
 			'posts_per_page' => -1,
 			'post_status'    => 'publish',
+			'fields'         => 'ids',
 			'date_query'     => array(
 				'after' => gmdate( 'Y-m-d H:i:s', $since ),
 			),

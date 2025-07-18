@@ -201,6 +201,8 @@ node_modules/*
 node_modules
 assets/stats-app/node_modules
 
+phpunit.xml
+
 /vendor/
 
 /Libraries/random_compat/tests

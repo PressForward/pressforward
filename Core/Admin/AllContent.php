@@ -1,6 +1,8 @@
 <?php
 /**
- * 'All Content' admin panel.
+ * 'Feed Items' admin panel.
+ *
+ * Called 'All Content' for legacy reasons.
  *
  * @package PressForward
  */
@@ -12,7 +14,7 @@ use Intraxia\Jaxion\Contract\Core\HasActions;
 use PressForward\Controllers\PFtoWPUsers;
 
 /**
- * 'All Content' admin panel.
+ * 'Feed Items' admin panel.
  */
 class AllContent implements HasActions {
 	/**
@@ -46,13 +48,13 @@ class AllContent implements HasActions {
 	}
 
 	/**
-	 * Adds 'All Content' admin menu item.
+	 * Adds 'Feed Items' admin menu item.
 	 */
 	public function add_plugin_admin_menu() {
 		add_submenu_page(
 			PF_MENU_SLUG,
-			__( 'All Content', 'pressforward' ),
-			__( 'All Content', 'pressforward' ),
+			__( 'Feed Items', 'pressforward' ),
+			__( 'Feed Items', 'pressforward' ),
 			get_option( 'pf_menu_all_content_access', $this->user_interface->pf_get_defining_capability_by_role( 'contributor' ) ),
 			'pf-all-content',
 			array( $this, 'display_reader_builder' )
@@ -60,15 +62,19 @@ class AllContent implements HasActions {
 	}
 
 	/**
-	 * Displays All Content admin panel.
+	 * Displays Feed Items admin panel.
 	 */
 	public function display_reader_builder() {
 		wp_enqueue_script( 'pf' );
 		wp_enqueue_script( 'pf-views' );
+		wp_enqueue_script( 'pf-relationships' );
+		wp_enqueue_script( 'pf-archive-nom-imp' );
 
 		wp_enqueue_style( 'pf-style' );
 
-		if ( 'false' !== get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() ) ) {
+		$do_infinite_scroll = 'false' !== get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() );
+
+		if ( $do_infinite_scroll ) {
 			wp_enqueue_script( 'pf-scroll' );
 		}
 
@@ -86,25 +92,35 @@ class AllContent implements HasActions {
 
 		$current_start = ( ( $current_page - 1 ) * $per_page ) + 1;
 
-		$extra_class = '';
+		$container_classes = [
+			'pf_container',
+			'pf-all-content',
+			'full',
+		];
+
 		if ( isset( $_GET['reveal'] ) && ( 'no_hidden' === $_GET['reveal'] ) ) {
-			$extra_class .= ' archived_visible';
+			$container_classes[] = 'archived_visible';
 		}
-		$view_state = ' grid';
+
 		$view_check = get_user_meta( $user_id, 'pf_user_read_state', true );
 		if ( 'golist' === $view_check ) {
-			$view_state = ' list';
+			$container_classes[] = 'list';
+		} else {
+			$container_classes[] = 'grid';
 		}
-		$extra_class = $extra_class . $view_state;
+
+		if ( $do_infinite_scroll ) {
+			$container_classes[] = 'infinite-scroll';
+		}
 
 		$pf_url = defined( 'PF_URL' ) ? PF_URL : '';
 
 		?>
 		<div class="pf-loader"></div>
-		<div class="pf_container pf-all-content full<?php echo esc_attr( $extra_class ); ?>">
+		<div class="<?php echo esc_attr( implode( ' ', $container_classes ) ); ?>">
 			<header id="app-banner">
 				<div class="title-span title">
-					<?php pressforward( 'controller.template_factory' )->the_page_headline( __( 'All Content', 'pressforward' ) ); ?>
+					<?php pressforward( 'controller.template_factory' )->the_page_headline( __( 'Feed Items', 'pressforward' ) ); ?>
 					<button class="btn btn-small" id="fullscreenfeed"> <?php esc_html_e( 'Full Screen', 'pressforward' ); ?> </button>
 				</div><!-- End title -->
 				<?php pressforward( 'admin.templates' )->search_template(); ?>
@@ -141,8 +157,7 @@ class AllContent implements HasActions {
 
 				$archive_feed_args = array(
 					'start'          => $current_start,
-					// phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
-					'posts_per_page' => false,
+					'posts_per_page' => 24,
 					'relationship'   => $limit,
 				);
 
@@ -181,7 +196,28 @@ class AllContent implements HasActions {
 					}
 				}
 
+				$date_range_start = isset( $_GET['date-range-start'] ) ? sanitize_text_field( wp_unslash( $_GET['date-range-start'] ) ) : '';
+				$date_range_end   = isset( $_GET['date-range-end'] ) ? sanitize_text_field( wp_unslash( $_GET['date-range-end'] ) ) : '';
+
+				if ( $date_range_start || $date_range_end ) {
+					$date_query = [];
+
+					if ( $date_range_start ) {
+						$date_query['after'] = $date_range_start;
+					}
+
+					if ( $date_range_end ) {
+						$date_query['before'] = $date_range_end;
+					}
+
+					$archive_feed_args['date_query'] = $date_query;
+				}
+
 				$items_to_display = pressforward( 'controller.loops' )->archive_feed_to_display( $archive_feed_args );
+
+				$this->prime_relationship_caches( $items_to_display['items'] );
+				$this->prime_draft_caches( $items_to_display['items'] );
+
 				foreach ( $items_to_display['items'] as $item ) {
 					pressforward( 'admin.templates' )->form_of_an_item( $item, $index );
 
@@ -217,8 +253,8 @@ class AllContent implements HasActions {
 				$limit_q = '';
 			}
 
-			$page_prev = '?page=pf-menu' . $limit_q . '&pc=' . $previous_page;
-			$page_next = '?page=pf-menu' . $limit_q . '&pc=' . $next_page;
+			$page_prev = '?page=pf-all-content' . $limit_q . '&pc=' . $previous_page;
+			$page_next = '?page=pf-all-content' . $limit_q . '&pc=' . $next_page;
 			if ( isset( $_GET['folder'] ) ) {
 				$page_q     = sanitize_text_field( wp_unslash( $_GET['folder'] ) );
 				$page_qed   = '&folder=' . $page_q;
@@ -235,21 +271,55 @@ class AllContent implements HasActions {
 			}
 
 			if ( $index >= $per_page ) {
+				$pagination_links = [];
+
 				echo '<div class="pf-navigation">';
+
 				if ( $previous_page > 0 ) {
-					echo '<span class="feedprev"><a class="prevnav" href="admin.php' . esc_attr( $page_prev ) . '">' . esc_html__( 'Previous Page', 'pressforward' ) . '</a></span> | ';
+					$pagination_links[] = '<span class="feedprev"><a class="prevnav" href="admin.php' . esc_attr( $page_prev ) . '">' . esc_html__( 'Previous Page', 'pressforward' ) . '</a></span>';
 				}
 
 				if ( $next_page <= $items_to_display['max_num_pages'] ) {
-					echo '<span class="feednext"><a class="nextnav" href="admin.php' . esc_attr( $page_next ) . '">' . esc_html__( 'Next Page', 'pressforward' ) . '</a></span>';
+					$pagination_links[] = '<span class="feednext"><a class="nextnav" href="admin.php' . esc_attr( $page_next ) . '">' . esc_html__( 'Next Page', 'pressforward' ) . '</a></span>';
 				}
+
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo implode( ' | ', $pagination_links );
+
 				echo '</div>';
 			}
 
 			?>
+
 		<div class="clear"></div>
 		<?php
 		echo '</div><!-- End container-fluid -->';
+
+		if ( $do_infinite_scroll ) {
+			pressforward( 'admin.templates' )->infinite_scroll_status_markup();
+		}
+	}
+
+	/**
+	 * Primes relationship caches for a set of items for the current user.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @param array $items Items to prime caches for.
+	 */
+	public function prime_relationship_caches( $items ) {
+		pf_prime_relationship_caches( wp_list_pluck( $items, 'post_id' ), get_current_user_id() );
+	}
+
+	/**
+	 * Primes is_drafted caches for a set of items.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @param array $items Items to prime caches for.
+	 */
+	public function prime_draft_caches( $items ) {
+		pf_prime_is_drafted_caches( wp_list_pluck( $items, 'item_id' ) );
 	}
 
 	/**

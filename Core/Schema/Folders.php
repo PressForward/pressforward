@@ -15,7 +15,7 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
  *
  * Folders are used to track and organize feeds. Here is where they are declared.
  */
-class Folders implements HasActions, HasFilters {
+class Folders implements HasActions {
 	/**
 	 * Post type.
 	 *
@@ -57,25 +57,6 @@ class Folders implements HasActions, HasFilters {
 	}
 
 	/**
-	 * {@inheritdoc}
-	 */
-	public function filter_hooks() {
-		$filters = array();
-		if ( is_admin() ) {
-			$admin_filters = array(
-				array(
-					'hook'     => 'parent_file',
-					'method'   => 'move_feed_tags_submenu',
-					'priority' => 10,
-					'args'     => 1,
-				),
-			);
-			$filters       = array_merge( $filters, $admin_filters );
-		}
-		return $filters;
-	}
-
-	/**
 	 * Registers the Folder taxonomy.
 	 */
 	public function register_feed_tag_taxonomy() {
@@ -92,7 +73,7 @@ class Folders implements HasActions, HasFilters {
 
 		register_taxonomy(
 			$this->tag_taxonomy,
-			'',
+			[ $this->post_type ],
 			apply_filters(
 				'pf_register_feed_tag_taxonomy_args',
 				array(
@@ -102,7 +83,6 @@ class Folders implements HasActions, HasFilters {
 					'show_in_nav_menus'     => true,
 					'show_ui'               => true,
 					'show_admin_column'     => true,
-					'show_in_menu'          => PF_MENU_SLUG,
 					'hierarchical'          => true,
 					'update_count_callback' => '_update_post_term_count',
 					'rewrite'               => false,
@@ -121,32 +101,6 @@ class Folders implements HasActions, HasFilters {
 	 */
 	public function register_folders_for_feeds() {
 		register_taxonomy_for_object_type( $this->tag_taxonomy, $this->post_type );
-	}
-
-	/**
-	 * Ensure that 'Feed Tags' stays underneath the PressForward top-level item.
-	 *
-	 * @param string $pf The $parent_file value passed to the 'parent_file' filter.
-	 * @return string
-	 */
-	public function move_feed_tags_submenu( $pf ) {
-		global $typenow, $pagenow;
-
-		// Feed Tags edit page.
-		// phpcs:ignore WordPress.PHP.YodaConditions.NotYoda
-		if ( 'edit-tags.php' === $pagenow && ! empty( $_GET['taxonomy'] ) && $this->tag_taxonomy === sanitize_text_field( wp_unslash( $_GET['taxonomy'] ) ) ) {
-			$pf = 'pf-menu';
-		}
-
-		// Edit Feed page.
-		if ( 'post.php' === $pagenow && ! empty( $_GET['post'] ) ) {
-			global $post;
-			if ( $this->post_type === $post->post_type ) {
-				$pf = 'pf-menu';
-			}
-		}
-
-		return $pf;
 	}
 
 	/**
@@ -285,6 +239,14 @@ class Folders implements HasActions, HasFilters {
 		if ( ! $obj ) {
 			$obj = $this->get_feed_folders();
 		}
+
+		// Prime post caches for feeds.
+		$feed_ids = array();
+		foreach ( $obj as $folder ) {
+			$feed_ids = array_merge( $feed_ids, $folder['children']['feeds'] );
+		}
+
+		_prime_post_caches( $feed_ids, false, false );
 
 		?>
 		<ul class="feed_folders">

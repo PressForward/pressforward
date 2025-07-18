@@ -65,7 +65,7 @@ class PFOpenGraph implements Iterator {
 			return false;
 		}
 
-		$response_body = mb_convert_encoding( $response_body, 'HTML-ENTITIES', 'UTF-8' );
+		$response_body = htmlentities( $response_body, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
 		return self::_parse( $response_body );
 	}
 

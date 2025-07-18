@@ -1,6 +1,6 @@
 <?php
 /**
- * 'All Content' admin panel.
+ * 'Welcome' admin panel.
  *
  * @package PressForward
  *

@@ -64,9 +64,8 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	public function action_hooks() {
 		return array(
 			array(
-				'hook'     => 'admin_menu',
-				'method'   => 'add_plugin_admin_menu',
-				'priority' => 14,
+				'hook'   => 'admin_menu',
+				'method' => 'modify_pf_feed_menu',
 			),
 			array(
 				'hook'   => 'manage_edit-pf_feed_sortable_columns',
@@ -169,26 +168,30 @@ class SubscribedFeeds implements HasActions, HasFilters {
 	}
 
 	/**
-	 * Adds admin menu for Subscribed Feeds.
+	 * Modifies pf_feed menu item to insert alert count.
 	 */
-	public function add_plugin_admin_menu() {
+	public function modify_pf_feed_menu() {
 		$alert_count = $this->alertbox->alert_count();
-		if ( $alert_count ) {
-			$alert_count_notice = '<span class="menu-counter feed-alerts count-' . intval( $alert_count ) . '"><span class="alert-count">' . number_format_i18n( $alert_count ) . '</span></span>';
 
-			// translators: element containing an alert count.
-			$subscribed_feeds_menu_text = sprintf( __( 'Subscribed Feeds %s', 'pressforward' ), $alert_count_notice );
-		} else {
-			$subscribed_feeds_menu_text = __( 'Subscribed Feeds', 'pressforward' );
+		if ( ! $alert_count ) {
+			return;
 		}
 
-		add_submenu_page(
-			PF_MENU_SLUG,
-			__( 'Subscribed Feeds', 'pressforward' ),
-			$subscribed_feeds_menu_text,
-			get_option( 'pf_menu_feeder_access', $this->user_interface->pf_get_defining_capability_by_role( 'editor' ) ),
-			'edit.php?post_type=' . pressforward( 'schema.feeds' )->post_type
-		);
+		$alert_count_notice = '<span class="menu-counter feed-alerts count-' . intval( $alert_count ) . '"><span class="alert-count">' . number_format_i18n( $alert_count ) . '</span></span>';
+
+		// translators: element containing an alert count.
+		$subscribed_feeds_menu_text = sprintf( __( 'Feeds %s', 'pressforward' ), $alert_count_notice );
+
+		// Reach into the menu and change the text.
+		global $menu;
+
+		foreach ( $menu as $key => $menu_item ) {
+			if ( 'edit.php?post_type=pf_feed' === $menu_item[2] ) {
+				// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+				$menu[ $key ][0] = $subscribed_feeds_menu_text;
+				break;
+			}
+		}
 	}
 
 	/**

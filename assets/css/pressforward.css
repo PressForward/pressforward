@@ -132,6 +132,10 @@ input[type="text"] {
 	line-height: 18px;
 }
 
+button.btn.user-has-nominated {
+	cursor: default;
+}
+
 .pf_container .btn-info {
 	color: #fff;
 	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
@@ -156,6 +160,11 @@ input[type="text"] {
 	background-image: -moz-linear-gradient(top, #ee5f5b, #bd362f);
 	background-repeat: repeat-x;
 	border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) rgba(0,0,0,.25);
+}
+
+.page-load-status {
+	display: none;
+	padding-left: 40px;
 }
 
 [class^="icon-"] {

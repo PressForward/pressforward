@@ -78,6 +78,9 @@ class PF_Readability {
 						}
 					}
 
+					$item_read_ready = (string) $item_read_ready;
+					$descrip         = (string) $descrip;
+
 					if ( strlen( $item_read_ready ) < strlen( $descrip ) ) {
 						$item_read_ready   = $descrip;
 						$readability_stat .= ' Retrieved text is less than original text.';

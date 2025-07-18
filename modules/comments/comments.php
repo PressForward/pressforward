@@ -451,7 +451,7 @@ class PF_Comments extends PF_Module {
 			return;
 		}
 
-		if ( ! in_array( $hook, array( 'pressforward_page_pf-review', 'toplevel_page_pf-menu', 'edit.php', 'post.php', 'post-new.php' ), true ) ) {
+		if ( ! in_array( $hook, array( 'pressforward_page_pf-review', 'toplevel_page_pf-menu', 'edit.php', 'post.php', 'post-new.php', 'pressforward_page_pf-all-content' ), true ) ) {
 			return;
 		}
 

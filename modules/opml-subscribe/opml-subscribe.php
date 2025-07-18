@@ -217,7 +217,7 @@ class PF_OPML_Subscribe extends PF_Module {
 		pf_log( 'Invoked: PF_OPML_Subscribe::get_data_object()' );
 		$a_opml_id  = $a_opml->ID;
 		$a_opml_url = pressforward( 'controller.metas' )->get_post_pf_meta( $a_opml_id, 'feedUrl', true );
-		if ( empty( $a_opml_url ) || is_wp_error( $a_opml_url ) || ! $a_opml_url ) {
+		if ( empty( $a_opml_url ) || is_wp_error( $a_opml_url ) ) {
 			$a_opml_url = $a_opml->post_title;
 			pressforward( 'controller.metas' )->update_pf_meta( $a_opml_id, 'feedUrl', $a_opml_url );
 		}
@@ -270,22 +270,22 @@ class PF_OPML_Subscribe extends PF_Module {
 				$content = 'Subscribed: ' . $feed_obj->title . ' - ' . $feed_obj->type . ' - ' . $feed_obj->feedUrl . ' on ' . gmdate( 'r' );
 
 				$opml_array[ 'opml_' . $c ] = pf_feed_object(
-					$feed_obj->title,
-					'OPML Subscription from ' . $opml_object->get_title(),
-					gmdate( 'r' ),
-					'OPML Subscription ' . $opml_object->get_title(),
-					$content,
-					// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-					$feed_obj->feedUrl,
-					'',
-					$id,
-					gmdate( 'r' ),
-					'opml-feed', // tags.
-					'', // added.
-					'', // repeat.
-					'',
-					'made_readable',
-					$feed_obj
+					[
+						'item_title'      => $feed_obj->title,
+						'source_title'    => 'OPML Subscription from ' . $opml_object->get_title(),
+						'item_date'       => gmdate( 'r' ),
+						'item_author'     => 'OPML Subscription ' . $opml_object->get_title(),
+						'item_content'    => $content,
+						'item_link'       => $feed_obj->feedUrl, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+						'item_id'         => $id,
+						'item_wp_date'    => gmdate( 'r' ),
+						'item_tags'       => 'opml-feed',
+						'added_date'      => '',
+						'source_repeat'   => '',
+						'post_id'         => '',
+						'readable_status' => 'made_readable',
+						'obj'             => $feed_obj,
+					]
 				);
 
 				// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
@@ -389,24 +389,31 @@ class PF_OPML_Subscribe extends PF_Module {
 	 */
 	private function make_a_feed_object_from_post( $post_id = 0 ) {
 		$meta = pressforward( 'controller.metas' )->get_all_metas( $post_id );
+
+		$feed_url = '';
 		if ( ! empty( $meta['feedUrl'][0] ) ) {
-			if ( 'http' !== substr( $meta['feedUrl'][0], 0, 4 ) ) {
-				$meta['feedUrl'][0] = 'http://' . $meta['feedUrl'][0];
-			}
-		} else {
+			$feed_url = $meta['feedUrl'][0];
+		} elseif ( ! empty( $meta['feed_url'][0] ) ) {
+			$feed_url = $meta['feed_url'][0];
+		}
+
+		if ( ! $feed_url ) {
 			return '';
 		}
 
-		$post         = get_post( $post_id );
-		$post_content = $post && $post instanceof \WP_Post ? $post->post_content : '';
+		if ( 'http' !== substr( $feed_url, 0, 4 ) ) {
+			$feed_url = 'http://' . $feed_url;
+		}
 
-		$url_parts = wp_parse_url( $meta['feedUrl'][0] );
+		$post_title = get_the_title( $post_id );
+
+		$url_parts = wp_parse_url( $feed_url );
 		$entry     = array(
-			'title'   => get_the_title( $post_id ),
-			'text'    => $post_content,
+			'title'   => $post_title,
+			'text'    => $post_title,
 			'type'    => $meta['feed_type'][0],
-			'feedUrl' => $meta['feedUrl'][0],
-			'xmlUrl'  => $meta['feedUrl'][0],
+			'feedUrl' => $feed_url,
+			'xmlUrl'  => $feed_url,
 			'htmlUrl' => $url_parts['scheme'] . '://' . $url_parts['host'],
 		);
 		return $this->master_opml_obj->make_a_feed_obj( $entry );

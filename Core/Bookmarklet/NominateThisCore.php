@@ -610,12 +610,12 @@ class NominateThisCore implements HasActions, HasFilters {
 			}
 
 			// Add the new nomination event to the existing nomination item.
-			pressforward( 'utility.forward_tools' )->add_user_to_nominator_array( $nomination_post_id, $post->post_author );
+			pressforward( 'utility.forward_tools' )->add_user_to_nominators( $nomination_post_id, $post->post_author );
 		} else {
 			$canonical_nomination_post_id = $existing_nomination_post_id;
 
 			// Add the new nomination event to the existing nomination item.
-			pressforward( 'utility.forward_tools' )->add_user_to_nominator_array( $existing_nomination_post_id, $post->post_author );
+			pressforward( 'utility.forward_tools' )->add_user_to_nominators( $existing_nomination_post_id, $post->post_author );
 
 			// Remove the newly created nomination.
 			wp_delete_post( $nomination_post_id, true );
@@ -654,7 +654,7 @@ class NominateThisCore implements HasActions, HasFilters {
 		$doc->loadHTML( '<?xml encoding="UTF-8">' . $body );
 
 		$embed_providers = [
-			'#https?://(www.)?youtube\.com/(?:v|embed)/([^/\?]+)(.*)#i' => function ( $matches, $url ) {
+			'#https?://(www.)?youtube\.com/(?:v|embed)/([^/\?]+)(.*)#i' => function ( $matches ) {
 				$retval = sprintf( 'https://youtube.com/watch?v=%s', rawurlencode( $matches[2] ) );
 
 				// If any query parameters were present, we re-add them.
@@ -679,7 +679,7 @@ class NominateThisCore implements HasActions, HasFilters {
 				if ( preg_match( $regex, $iframe_src, $matches ) ) {
 					$embeds[] = [
 						'embedSrc' => $iframe_src,
-						'embedUrl' => $callback( $matches, $iframe_src ),
+						'embedUrl' => $callback( $matches ),
 					];
 				}
 			}

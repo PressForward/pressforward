@@ -28,7 +28,7 @@ $form_action = 'pf-tools' === $current_page ? pressforward( 'admin.tools' )->get
 		echo 'document.getElementById("pfnt__pfSiteData").value = JSON.stringify(window.pfSiteData)';
 	?>
 	</script>
-	<div class="metabox-holder" id="pf-settings-box">
+	<div class="metabox-holder pf-settings-box" id="pf-settings-box">
 		<div class="meta-box-sortables ui-sortable">
 			<?php
 			if ( empty( $form_head ) ) {

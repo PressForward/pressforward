@@ -325,6 +325,9 @@ class PFTemplater {
 	 * @param string $page Page name.
 	 */
 	public function nav_bar( $page = 'pf-all-content' ) {
+		$date_range_start = isset( $_GET['date-range-start'] ) ? sanitize_text_field( wp_unslash( $_GET['date-range-start'] ) ) : '';
+		$date_range_end   = isset( $_GET['date-range-end'] ) ? sanitize_text_field( wp_unslash( $_GET['date-range-end'] ) ) : '';
+
 		?>
 		<div class="display">
 			<div class="pf-btns btn-toolbar">
@@ -377,6 +380,7 @@ class PFTemplater {
 							$this->dropdown_option( __( 'My nominations', 'pressforward' ), 'showMyNominations' );
 							$this->dropdown_option( __( 'Unread', 'pressforward' ), 'showUnread' );
 							$this->dropdown_option( __( 'Drafted', 'pressforward' ), 'showDrafted' );
+							$this->dropdown_option( __( 'Date', 'pressforward' ), 'showDate' );
 						} else {
 							if ( isset( $_POST['search-terms'] ) || isset( $_GET['by'] ) || isset( $_GET['pf-see'] ) || isset( $_GET['reveal'] ) ) {
 								$this->dropdown_option( __( 'Reset filter', 'pressforward' ), 'showNormalNominations' );
@@ -415,6 +419,21 @@ class PFTemplater {
 							}
 							?>
 						</ul>
+					</div>
+
+					<div class="pf-daterange-selector btn-group" role="group">
+						<button id="date-range-button" class="btn btn-small" aria-label="<?php esc_attr_e( 'Click to select date range', 'pressforward' ); ?>">
+							<i class="dashicons dashicons-calendar"></i>
+							<span class="date-range-text"><?php esc_html_e( 'All Dates', 'pressforward' ); ?></span>
+						</button>
+
+						<div id="date-range-options" class="date-range-options">
+							<label for="date-range-start"><?php esc_html_e( 'Start', 'pressforward' ); ?></label> <input type="date" id="date-range-start" class="date-range-start" name="date-range-start" value="<?php echo esc_attr( $date_range_start ); ?>" />
+
+							<label for="date-range-end"><?php esc_html_e( 'End', 'pressforward' ); ?></label> <input type="date" id="date-range-end" class="date-range-end" name="date-range-end" value="<?php echo esc_attr( $date_range_end ); ?>" />
+
+							<input type="button" class="btn btn-small date-range-submit" id="date-range-submit" class="btn btn-small" value="<?php esc_attr_e( 'Submit', 'pressforward' ); ?>" />
+						</div>
 					</div>
 
 					<div class="btn-group" role="group">
@@ -467,8 +486,9 @@ class PFTemplater {
 	 * @param string $schema_class  Schema class attribute.
 	 * @param string $href          'href' class attribute.
 	 * @param string $target        'target' attribute.
+	 * @param array  $data          Data attributes.
 	 */
-	public function dropdown_option( $the_string, $id, $class_name = 'pf-top-menu-selection', $form_id = '', $schema_action = '', $schema_class = '', $href = '', $target = '' ) {
+	public function dropdown_option( $the_string, $id, $class_name = 'pf-top-menu-selection', $form_id = '', $schema_action = '', $schema_class = '', $href = '', $target = '', $data = [] ) {
 
 		$option  = '<li role="presentation"><a role="menuitem" id="';
 		$option .= $id;
@@ -498,6 +518,12 @@ class PFTemplater {
 
 		if ( ! empty( $schema_class ) ) {
 			$option .= ' pf-schema-class="' . esc_attr( $schema_class ) . '" ';
+		}
+
+		if ( ! empty( $data ) ) {
+			foreach ( $data as $key => $value ) {
+				$option .= ' data-' . esc_attr( $key ) . '="' . esc_attr( $value ) . '" ';
+			}
 		}
 
 		$option .= '>';
@@ -557,8 +583,20 @@ class PFTemplater {
 
 			if ( ! isset( $metadata['nom_id'] ) || empty( $metadata['nom_id'] ) ) {
 				$metadata['nom_id'] = md5( $item['item_title'] ); }
+
+			// Verify that comment post exists.
+			if ( $id_for_comments ) {
+				$comment_post = get_post( $id_for_comments );
+				if ( ! $comment_post ) {
+					$id_for_comments = null;
+				}
+			}
+
+			// Fallback value.
 			if ( empty( $id_for_comments ) ) {
-				$id_for_comments = $metadata['nom_id']; }
+				$id_for_comments = $metadata['nom_id'];
+			}
+
 			if ( empty( $metadata['item_id'] ) ) {
 				$metadata['item_id'] = md5( $item['item_title'] ); }
 		} else {
@@ -582,7 +620,7 @@ class PFTemplater {
 		}
 
 		if ( 'nomination' === $format ) {
-			echo '<article class="feed-item entry nom-container ' . esc_attr( $archived_status_string ) . ' ' . esc_attr( get_pf_nom_class_tags( array( $metadata['submitters'], $metadata['nom_id'], $metadata['item_author'], $metadata['item_tags'], $metadata['item_id'] ) ) ) . ' ' . esc_attr( $read_class ) . '" id="' . esc_attr( $metadata['nom_id'] ) . '" style="' . esc_attr( $dependent_style ) . '" tabindex="' . esc_attr( (string) $c ) . '" pf-post-id="' . esc_attr( $metadata['nom_id'] ) . '" pf-item-post-id="' . esc_attr( $id_for_comments ) . '" pf-feed-item-id="' . esc_attr( $metadata['item_id'] ) . '" pf-schema="read" pf-schema-class="article-read">';
+			echo '<article class="feed-item entry nom-container action-container ' . esc_attr( $archived_status_string ) . ' ' . esc_attr( get_pf_nom_class_tags( array( $metadata['submitters'], $metadata['nom_id'], $metadata['item_author'], $metadata['item_tags'], $metadata['item_id'] ) ) ) . ' ' . esc_attr( $read_class ) . '" id="' . esc_attr( $metadata['nom_id'] ) . '" style="' . esc_attr( $dependent_style ) . '" tabindex="' . esc_attr( (string) $c ) . '" pf-post-id="' . esc_attr( $metadata['nom_id'] ) . '" pf-item-post-id="' . esc_attr( $id_for_comments ) . '" pf-feed-item-id="' . esc_attr( $metadata['item_id'] ) . '" pf-schema="read" pf-schema-class="article-read">';
 			?>
 			<a style="display:none;" name="<?php echo esc_attr( $modal_hash ); ?>"></a>
 			<?php
@@ -926,6 +964,76 @@ class PFTemplater {
 	}
 
 	/**
+	 * Gets the URL for a Bluesky intent link.
+	 *
+	 * @param int $id ID of the local item.
+	 * @return string
+	 */
+	public function bluesky_intent( $id ) {
+		$url = add_query_arg(
+			'text',
+			// translators: 1. Title of the item; 2. Link to the item.
+			rawurlencode( sprintf( __( '%1$s %2$s', 'pressforward' ), get_the_title( $id ), get_the_item_link( $id ) ) ),
+			'https://bsky.app/intent/compose',
+		);
+
+		return $url;
+	}
+
+	/**
+	 * Gets the URL for a Threads intent link.
+	 *
+	 * @param int $id ID of the local item.
+	 * @return string
+	 */
+	public function threads_intent( $id ) {
+		$url = add_query_arg(
+			[
+				'text' => get_the_title( $id ),
+				'url'  => get_the_item_link( $id ),
+			],
+			'https://www.threads.net/intent/post'
+		);
+
+		return $url;
+	}
+
+	/**
+	 * Gets the URL for a Mastodon intent link.
+	 *
+	 * @param int $id ID of the local item.
+	 * @return string
+	 */
+	public function mastodon_intent( $id ) {
+		$url = add_query_arg(
+			'text',
+			// translators: 1. Title of the item; 2. Link to the item.
+			rawurlencode( sprintf( __( '%1$s %2$s', 'pressforward' ), get_the_title( $id ), get_the_item_link( $id ) ) ),
+			''
+		);
+
+		return $url;
+	}
+
+	/**
+	 * Generates Mastodon modal markup.
+	 *
+	 * @return void
+	 */
+	public static function mastodon_modal_markup() {
+		?>
+		<div id="mastodon-modal" class="amplify-modal" style="display:none;">
+
+			<div class="modal-content">
+				<h2><?php esc_html_e( 'Enter your Mastodon Instance URL', 'pressforward' ); ?></h2>
+				<input type="url" id="mastodon-instance-url" placeholder="https://mastodon.social" />
+				<button class="button button-primary" id="mastodon-share-ok"><?php esc_html_e( 'OK', 'pressforward' ); ?></button>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Generates markup for action buttons.
 	 *
 	 * @param array  $item            Item data.
@@ -1001,13 +1109,6 @@ class PFTemplater {
 					}
 
 					if ( 'nomination' === $format ) {
-						$nom_count_classes     = 'btn btn-small nom-count';
-						$metadata['nom_count'] = get_the_nomination_count();
-						if ( $metadata['nom_count'] > 0 ) {
-							$nom_count_classes .= ' btn-info';
-						}
-
-						echo '<a class="' . esc_attr( $nom_count_classes ) . '" data-toggle="tooltip" title="' . esc_attr__( 'Nomination Count', 'pressforward' ) . '" form="' . esc_attr( $metadata['nom_id'] ) . '">' . esc_html( $metadata['nom_count'] ) . '<i class="icon-play"></i></button></a>';
 						$archive_status = '';
 						if ( 1 === pressforward( 'controller.metas' )->get_post_pf_meta( $metadata['nom_id'], 'pf_archive', true ) ) {
 							$archive_status = 'btn-warning';
@@ -1024,10 +1125,10 @@ class PFTemplater {
 							echo '<a role="button" class="btn btn-small meta_form_modal-button" data-toggle="modal" href="#meta_form_modal_' . esc_attr( $item['post_id'] ) . '" data-post-id="' . esc_attr( $item['post_id'] ) . '" id="meta_form_modal_expander-' . esc_attr( $item['post_id'] ) . '" data-original-title="' . esc_attr__( 'Edit Metadata', 'pressforward' ) . '"><i class="icon-meta-form"></i></a>';
 						}
 					} elseif ( ( 1 === pf_get_relationship_value( 'nominate', $id_for_comments, $user_id ) ) || ( 1 === pf_get_relationship_value( 'draft', $id_for_comments, $user_id ) ) ) {
-						echo '<button class="btn btn-small nominate-now btn-success schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominated', 'pressforward' ) . '"><img src="' . esc_attr( $pf_url ) . 'assets/images/pressforward-single-licon.png" /></button>';
+						echo '<button class="btn btn-small nominate-now user-has-nominated btn-success" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'You have nominated this item', 'pressforward' ) . '"><img src="' . esc_attr( $pf_url ) . 'assets/images/pressforward-single-licon.png" /></button>';
 						// Add option here for admin-level users to send items direct to draft.
 					} else {
-						echo '<button class="btn btn-small nominate-now schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominate', 'pressforward' ) . '"><img src="' . esc_attr( $pf_url ) . 'assets/images/pressforward-single-licon.png" /></button>';
+						echo '<button class="btn btn-small nominate-now user-has-not-nominated schema-actor schema-switchable" pf-schema="nominate" pf-schema-class="btn-success" form="' . esc_attr( $item['item_id'] ) . '" data-original-title="' . esc_attr__( 'Nominate', 'pressforward' ) . '"><img src="' . esc_attr( $pf_url ) . 'assets/images/pressforward-single-licon.png" /></button>';
 						// Add option here for admin-level users to send items direct to draft.
 					}
 
@@ -1056,10 +1157,36 @@ class PFTemplater {
 								<li class="divider"></li>
 								<?php
 							}
-								$tweet_intent = self::tweet_intent( $id_for_comments );
-								self::dropdown_option( __( 'Tweet', 'pressforward' ), 'amplify-tweet-' . $item['item_id'], 'amplify-option', $item['item_id'], '', '', $tweet_intent, '_blank' );
-								do_action( 'pf_amplify_buttons' );
-							?>
+
+							$tweet_intent = self::tweet_intent( $id_for_comments );
+							self::dropdown_option( __( 'Tweet', 'pressforward' ), 'amplify-tweet-' . $item['item_id'], 'amplify-option', $item['item_id'], '', '', $tweet_intent, '_blank' );
+
+							$bluesky_intent = self::bluesky_intent( $id_for_comments );
+							self::dropdown_option( __( 'Bluesky', 'pressforward' ), 'amplify-bluesky-' . $item['item_id'], 'amplify-option', $item['item_id'], '', '', $bluesky_intent, '_blank' );
+
+							$threads_intent = self::threads_intent( $id_for_comments );
+							self::dropdown_option( __( 'Threads', 'pressforward' ), 'amplify-threads-' . $item['item_id'], 'amplify-option', $item['item_id'], '', '', $threads_intent, '_blank' );
+
+							$mastodon_intent = self::mastodon_intent( $id_for_comments );
+							self::dropdown_option(
+								__( 'Mastodon', 'pressforward' ),
+								'amplify-mastodon-' . $item['item_id'],
+								'amplify-option amplify-option-mastodon amplify-option-has-modal',
+								$item['item_id'],
+								'',
+								'',
+								$mastodon_intent,
+								'_blank',
+								[
+									'postTitle' => get_the_title( $id_for_comments ),
+									'postUrl'   => get_permalink( $id_for_comments ),
+								]
+							);
+
+							add_action( 'admin_footer', [ __CLASS__, 'mastodon_modal_markup' ] );
+
+							do_action( 'pf_amplify_buttons' );
+		?>
 						</ul>
 					</div>
 
@@ -1119,5 +1246,24 @@ class PFTemplater {
 	 */
 	public function get_modal_hash( $pf_item_id ) {
 		return 'modal-' . $pf_item_id;
+	}
+
+	/**
+	 * Outputs the .page-load-status div used by InfiniteScroll.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @return void
+	 */
+	public function infinite_scroll_status_markup() {
+		?>
+
+		<div class="page-load-status">
+			<p class="infinite-scroll-request"><?php esc_html_e( 'Loading more items...', 'pressforward' ); ?></p>
+			<p class="infinite-scroll-last"></p>
+			<p class="infinite-scroll-error"></p>
+		</div>
+
+		<?php
 	}
 }

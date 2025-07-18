@@ -60,4 +60,36 @@ var pf_setup = {
 			});
 	}
 };
+
+const LoadingEffect = {
+  minDuration: 500, // Minimum time in ms for the effect
+
+  start(container) {
+    if (!container) {
+			return;
+		}
+
+    const startTime = Date.now();
+    container.dataset.loadingStartTime = startTime; // Store start time in memory for end calculation
+    container.classList.add('request-in-progress');
+  },
+
+  stop(container) {
+    if (!container) {
+			return;
+		}
+
+    const startTime = parseInt(container.dataset.loadingStartTime || '0', 10);
+    const elapsedTime = Date.now() - startTime;
+    const delay = Math.max(this.minDuration - elapsedTime, 0);
+
+    setTimeout(() => {
+      container.classList.remove('request-in-progress');
+      delete container.dataset.loadingStartTime; // Clean up memory
+    }, delay);
+  },
+};
+
+pf_setup.LoadingEffect = LoadingEffect;
+
 window.pf = Object.assign(window.pf, pf_setup);

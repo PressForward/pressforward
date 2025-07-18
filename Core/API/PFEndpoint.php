@@ -119,7 +119,7 @@ class PFEndpoint extends APIWithMetaEndpoints implements HasActions {
 
 		// Terms.
 		require 'PF_REST_Terms_Controller.php';
-		foreach ( get_taxonomies( array( 'show_in_rest' => true ), 'object' ) as $taxonomy ) {
+		foreach ( get_taxonomies( array( 'show_in_rest' => true ), 'objects' ) as $taxonomy ) {
 			$class_name = ! empty( $taxonomy->rest_controller_class ) ? $taxonomy->rest_controller_class : false;
 
 			if ( ! $class_name ) {

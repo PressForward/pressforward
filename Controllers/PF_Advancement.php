@@ -180,6 +180,14 @@ class PF_Advancement implements \PressForward\Interfaces\Advance_System, \Intrax
 		$post['post_content'] = pressforward( 'controller.readability' )->process_in_oembeds( pressforward( 'controller.metas' )->get_post_pf_meta( $old_id, 'item_link' ), $post['post_content'] );
 		$post['post_content'] = pressforward( 'utility.forward_tools' )->append_source_statement( $old_id, $post['post_content'], true );
 
+		/**
+		 * Filters the content of an item before it is transitioned to a draft (ie "last step").
+		 *
+		 * @param string $post_content The post content.
+		 * @param array  $post         The post args as passed to the method.
+		 */
+		$post['post_content'] = apply_filters( 'pressforward_post_content_pre_draft', $post['post_content'], $post );
+
 		$id = pressforward( 'controller.items' )->insert_post( $post, true, pressforward( 'controller.metas' )->get_post_pf_meta( $old_id, 'item_id' ) );
 
 		do_action( 'pf_transition_to_last_step', $id );
@@ -199,6 +207,15 @@ class PF_Advancement implements \PressForward\Interfaces\Advance_System, \Intrax
 		$post['post_date_gmt'] = get_gmt_from_date( current_time( 'Y-m-d H:i:s' ) );
 		$orig_post_id          = $post['ID'];
 		unset( $post['ID'] );
+
+		/**
+		 * Filters the content of a post before being converted to a nomination.
+		 *
+		 * @param string $post_content The post content.
+		 * @param array  $post         The post args as passed to the method.
+		 */
+		$post['post_content'] = apply_filters( 'pressforward_post_content_pre_nomination', $post['post_content'], $post );
+
 		$id = pressforward( 'controller.items' )->insert_post( $post, false, pressforward( 'controller.metas' )->get_post_pf_meta( $orig_post_id, 'item_id' ) );
 		pf_log( $id );
 		do_action( 'pf_transition_to_nomination', $id );
@@ -265,8 +282,6 @@ class PF_Advancement implements \PressForward\Interfaces\Advance_System, \Intrax
 	 * @return \WP_Query
 	 */
 	public function pf_get_posts_by_id_for_check( $post_type = false, $item_id = null, $ids_only = false ) {
-		global $wpdb;
-
 		// If the item is less than 24 hours old on nomination, check the whole database.
 		$r = array(
 			// phpcs:disable WordPress.DB.SlowDBQuery

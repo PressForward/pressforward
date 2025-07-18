@@ -108,13 +108,13 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	}
 
 	/**
-	 * Adds the 'Nominated' admin panel.
+	 * Adds the 'Nominated Items' admin panel.
 	 */
 	public function add_plugin_admin_menu() {
 		add_submenu_page(
 			PF_MENU_SLUG,
-			__( 'Nominated', 'pressforward' ),
-			__( 'Nominated', 'pressforward' ),
+			__( 'Nominated Items', 'pressforward' ),
+			__( 'Nominated Items', 'pressforward' ),
 			get_option( 'pf_menu_under_review_access', $this->user_interface->pf_get_defining_capability_by_role( 'contributor' ) ),
 			PF_SLUG . '-review',
 			array( $this, 'display_review_builder' )
@@ -128,10 +128,14 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 		wp_enqueue_script( 'pf' );
 		wp_enqueue_script( 'pf-views' );
 		wp_enqueue_script( 'pf-send-to-draft-imp' );
+		wp_enqueue_script( 'pf-archive-nom-imp' );
+		wp_enqueue_script( 'pf-relationships' );
 
 		wp_enqueue_style( 'pf-style' );
 
-		if ( 'false' !== get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() ) ) {
+		$do_infinite_scroll = 'false' !== get_user_option( 'pf_user_scroll_switch', pressforward( 'controller.template_factory' )->user_id() );
+
+		if ( $do_infinite_scroll ) {
 			wp_enqueue_script( 'pf-scroll' );
 		}
 
@@ -152,10 +156,14 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 		$count_q     = 0;
 		$extra_class = '';
 
+		$container_classes = [ 'list', 'pf_container', 'pf-nominated', 'full' ];
+
 		if ( isset( $_GET['reveal'] ) && ( 'no_hidden' === sanitize_text_field( wp_unslash( $_GET['reveal'] ) ) ) ) {
-			$extra_class .= ' archived_visible';
-		} else {
-			$extra_class .= '';
+			$container_classes[] = 'archived_visible';
+		}
+
+		if ( $do_infinite_scroll ) {
+			$container_classes[] = 'infinite-scroll';
 		}
 
 		$pf_url = defined( 'PF_URL' ) ? PF_URL : '';
@@ -163,10 +171,10 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 		?>
 		<div class="pf-loader"></div>
 
-		<div class="list pf_container pf-nominated full<?php echo esc_attr( $extra_class ); ?>">
+		<div class="<?php echo esc_attr( implode( ' ', $container_classes ) ); ?>">
 			<header id="app-banner">
 				<div class="title-span title">
-					<?php pressforward( 'controller.template_factory' )->the_page_headline( 'Nominated' ); ?>
+					<?php pressforward( 'controller.template_factory' )->the_page_headline( 'Nominated Items' ); ?>
 					<button class="btn btn-small" id="fullscreenfeed"> <?php esc_html_e( 'Full Screen', 'pressforward' ); ?> </button>
 				</div><!-- End title -->
 
@@ -350,12 +358,32 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 						$nom_args['post_parent__in'] = $parents_in_folder->posts;
 					}
 
+					$date_range_start = isset( $_GET['date-range-start'] ) ? sanitize_text_field( wp_unslash( $_GET['date-range-start'] ) ) : '';
+					$date_range_end   = isset( $_GET['date-range-end'] ) ? sanitize_text_field( wp_unslash( $_GET['date-range-end'] ) ) : '';
+
+					if ( $date_range_start || $date_range_end ) {
+						$date_query = [];
+
+						if ( $date_range_start ) {
+							$date_query['after'] = $date_range_start;
+						}
+
+						if ( $date_range_end ) {
+							$date_query['before'] = $date_range_end;
+						}
+
+						$nom_args['date_query'] = $date_query;
+					}
+
 					$nom_query = new WP_Query( $nom_args );
 
 					$count        = 0;
 					$count_q      = $nom_query->post_count;
 					$count_qt     = $nom_query->found_posts;
 					$max_nb_pages = $nom_query->max_num_pages;
+
+					$this->prime_relationship_caches( $nom_query->posts );
+					$this->prime_draft_caches( $nom_query->posts );
 
 					while ( $nom_query->have_posts() ) :
 						$nom_query->the_post();
@@ -374,8 +402,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 						$metadata['pf_item_post_id'] = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'pf_item_post_id', true );
 
 						// Number of Nominations recieved.
-						$nom_count             = pressforward( 'controller.metas' )->retrieve_meta( $nom_id, 'nomination_count' );
-						$metadata['nom_count'] = $nom_count;
+						$metadata['nom_count'] = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $nom_id );
 
 						// Permalink to orig content.
 						$nom_permalink         = pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_link', true );
@@ -491,20 +518,22 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 						}
 
 						$item = pf_feed_object(
-							get_the_title(),
-							pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'source_title', true ),
-							$date_posted,
-							$item_authorship,
-							get_the_content(),
-							$nom_permalink,
-							get_the_post_thumbnail( $nom_id /**, 'nom_thumb'*/ ),
-							$rss_item_id,
-							pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_wp_date', true ),
-							$nom_tags,
-							$date_nomed,
-							$source_repeat,
-							(string) $nom_id,
-							'1'
+							[
+								'item_title'      => get_the_title(),
+								'source_title'    => pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'source_title', true ),
+								'item_date'       => $date_posted,
+								'item_author'     => $item_authorship,
+								'item_content'    => get_the_content(),
+								'item_link'       => $nom_permalink,
+								'item_feat_img'   => get_the_post_thumbnail( $nom_id /**, 'nom_thumb'*/ ),
+								'item_id'         => $rss_item_id,
+								'item_wp_date'    => pressforward( 'controller.metas' )->get_post_pf_meta( $nom_id, 'item_wp_date', true ),
+								'item_tags'       => $nom_tags,
+								'added_date'      => $date_nomed,
+								'source_repeat'   => $source_repeat,
+								'post_id'         => (string) $nom_id,
+								'readable_status' => '1',
+							]
 						);
 
 						pressforward( 'admin.templates' )->form_of_an_item( $item, $c, 'nomination', $metadata );
@@ -576,10 +605,45 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 						echo '</div>';
 					}
 					?>
+
 			<div class="clear"></div>
 			<?php
 			echo '</div><!-- End container-fluid -->';
+
+			if ( $do_infinite_scroll ) {
+				pressforward( 'admin.templates' )->infinite_scroll_status_markup();
+			}
 	}
+
+	/**
+	 * Primes relationship caches for a set of items for the current user.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @param array $items Items to prime caches for.
+	 */
+	public function prime_relationship_caches( $items ) {
+		pf_prime_relationship_caches( wp_list_pluck( $items, 'ID' ), get_current_user_id() );
+	}
+
+	/**
+	 * Primes is_drafted caches for a set of items.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @param array $items Items to prime caches for.
+	 */
+	public function prime_draft_caches( $items ) {
+		$item_ids = array_map(
+			function ( $item ) {
+				return pressforward( 'controller.metas' )->get_post_pf_meta( $item->ID, 'item_id', true );
+			},
+			$items
+		);
+
+		pf_prime_is_drafted_caches( $item_ids );
+	}
+
 
 	/**
 	 * Sends a nomination for publishing.
@@ -615,7 +679,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 
 		switch ( $column ) {
 			case 'nomcount':
-				echo esc_html( $this->metas->get_post_pf_meta( $post->ID, 'nomination_count', true ) );
+				echo esc_html( number_format_i18n( pressforward( 'utility.forward_tools' )->get_post_nomination_count( $post->ID ) ) );
 				break;
 			case 'nominatedby':
 				$nominator_id = $this->metas->get_post_pf_meta( $post->ID, 'submitted_by', true );
@@ -643,7 +707,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 		global $post;
 
 		$origin_item_id   = $this->metas->get_post_pf_meta( $post->ID, 'item_id', true );
-		$nomination_count = $this->metas->get_post_pf_meta( $post->ID, 'nomination_count', true );
+		$nomination_count = pressforward( 'utility.forward_tools' )->get_post_nomination_count( $post->ID );
 		$submitted_by     = $this->metas->get_post_pf_meta( $post->ID, 'submitted_by', true );
 		$source_title     = $this->metas->get_post_pf_meta( $post->ID, 'source_title', true );
 		$posted_date      = $this->metas->get_post_pf_meta( $post->ID, 'item_date', true );
@@ -822,25 +886,6 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 			$statement = '';
 		}
 		return $statement;
-	}
-
-	/**
-	 * Increments nomination count for an item.
-	 *
-	 * @param int  $id ID of the item.
-	 * @param bool $up True for increment, false for decrement.
-	 * @return bool
-	 */
-	public function change_nomination_count( $id, $up = true ) {
-		$nom_count = $this->metas->retrieve_meta( $id, 'nomination_count' );
-		if ( $up ) {
-			++$nom_count;
-		} else {
-			--$nom_count;
-		}
-		$check = $this->metas->update_pf_meta( $id, 'nomination_count', $nom_count );
-		pf_log( 'Nomination now has a nomination count of ' . $nom_count . ' applied to post_meta with the result of ' . $check );
-		return $check;
 	}
 
 	/**

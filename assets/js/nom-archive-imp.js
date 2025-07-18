@@ -67,6 +67,12 @@ jQuery( window ).load(function() {
 		var nomID 			= jQuery( '#' + itemID ).attr( 'pf-post-id' );
 		// var errorThrown     = 'Broken';
 		var theNonce		= jQuery.trim( jQuery( '#pf_nomination_nonce' ).val() );
+
+		const actionContainer = evt.target.closest( '.action-container' );
+		if ( actionContainer ) {
+			window.pf.LoadingEffect.start( actionContainer );
+		}
+
 		jQuery( '.loading-' + itemID ).show();
 		jQuery( this ).addClass( 'btn-warning' );
 		jQuery( '#' + itemID ).addClass( 'archive' );
@@ -82,6 +88,10 @@ jQuery( window ).load(function() {
 				// jQuery(".nominate-result-"+itemID).html(response);
 				// alert(response);
 				// jQuery("#test-div1").append(data);
+
+					if ( actionContainer ) {
+						window.pf.LoadingEffect.stop( actionContainer );
+					}
         });
 	});
 	jQuery( '.pf_container' ).on('click', ".nom-to-archive.btn-warning", function (evt){

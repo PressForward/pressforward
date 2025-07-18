@@ -108,12 +108,8 @@ class EditPost implements HasActions {
 
 		// New post check.
 		if ( in_array( $pagenow, array( 'post-new.php' ), true ) ) {
-			$option_value = get_option( 'pf_link_to_source' );
-			if ( empty( $option_value ) ) {
-				$value = 'no-forward';
-			} else {
-				$value = 'forward';
-			}
+			// Manually-created items should always default to 'no-forward'.
+			$value = 'no-forward';
 		} else {
 			$check = pressforward( 'controller.metas' )->get_post_pf_meta( $post->ID, 'item_link', true );
 			if ( empty( $check ) ) {

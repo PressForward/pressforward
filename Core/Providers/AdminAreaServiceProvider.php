@@ -15,7 +15,6 @@ use PressForward\Core\Admin\Tools;
 use PressForward\Core\Admin\Nominated;
 use PressForward\Core\Admin\AddFeeds;
 use PressForward\Core\Admin\EditPost;
-use PressForward\Core\Admin\FoldersMenu;
 use PressForward\Core\Admin\AllContent;
 use PressForward\Core\Admin\SubscribedFeeds;
 use PressForward\Core\Admin\AdminBar;
@@ -44,7 +43,7 @@ class AdminAreaServiceProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		);
 		$container->share(
 			'admin.edit_post',
-			function ( $container ) {
+			function () {
 				return new EditPost();
 			}
 		);
@@ -76,12 +75,6 @@ class AdminAreaServiceProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 			'admin.admin_bar',
 			function ( $container ) {
 				return new AdminBar( $container->fetch( 'controller.users' ) );
-			}
-		);
-		$container->share(
-			'admin.folders',
-			function ( $container ) {
-				return new FoldersMenu( $container->fetch( 'controller.users' ) );
 			}
 		);
 		$container->share(
