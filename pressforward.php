@@ -3,7 +3,7 @@
  * Plugin Name: PressForward
  * Plugin URI: http://pressforward.org/
  * Description: The PressForward Plugin is a tool by the Roy Rosenzweig Center for History and New Media for aggregating and curating web-based content within the WordPress dashboard.
- * Version: 5.8.0
+ * Version: 5.9.0
  * GitHub Plugin URI: https://github.com/PressForward/pressforward
  * Author: Boone Gorges, Aram Zucker-Scharff, Jeremy Boggs
  * Author URI: http://pressforward.org/about/team/
