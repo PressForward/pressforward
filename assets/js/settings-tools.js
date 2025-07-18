@@ -17,7 +17,12 @@ jQuery(window).load(function () {
 			const initialTab = document.getElementById( currentTab.replace(/#/g, '') + '-tab' );
 			const initialTabTarget = jQuery(initialTab).attr('data-tab-target');
 
-			tabToTarget( initialTabTarget, initialTab );
+			// If there is no initial tab target, default to the first tab.
+			if ( ! initialTabTarget ) {
+				tabToTarget( firstTab.attr( 'data-tab-target' ), firstTab[0] );
+			} else {
+				tabToTarget( initialTabTarget, initialTab );
+			}
 		}, 0);
 	}
 
