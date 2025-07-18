@@ -82,6 +82,17 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 
 == Changelog ==
 
+= 5.9.0 =
+* Added new Amplify target services: Mastodon, Bluesky, and Threads.
+* Added the ability to subscribe to Google Scholar keyword and author URLs, using the same mechanism as RSS feed subscription.
+* Added an 'Import Tags' option to the Nominate This bookmarklet, allowing users to control whether tags are imported from the source item.
+* Improved handling of errors in OPML generation related to failed RSS imports.
+* Improved filters that allow for incoming feed items to be excerpted and otherwise manipulated.
+* Fixed bug that prevented 'Nominate This' section of Reader panel from respecting tho 'nominate_this' permission check.
+* Fixed bug that prevented folders from appearing when editing a Feed in the block editor.
+* Fixed bug that prevented 'Source statement' formats from being properly saveable.
+* Removed dummy "Foo" module.
+
 = 5.8.0 =
 * Overhaul of Feed management panel, including a switch to the Block Editor, fields for editing a feed URL, and tools for manually triggering retrieval.
 * Overhaul of Add Feed tools, including improved validation for URLs, duplicate detection, and better auto-detection of feed URLs based on site URLs.
