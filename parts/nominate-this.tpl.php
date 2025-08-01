@@ -7,6 +7,8 @@
 
 ?>
 	<div class="tool-box">
+		<i class="icon-remove pf-item-remove remove-nom-this-prompt" id="remove_nominate_this_preview" title="<?php esc_attr_e( 'Remove Nominate This preview', 'pressforward' ); ?>"></i>
+
 		<h3 class="title"><?php esc_html_e( 'Nominate This', 'pressforward' ); ?></h3>
 		<p><?php esc_html_e( 'Nominate This is a bookmarklet: a little app that runs in your browser and lets you grab bits of the web. Use Nominate This to clip text, images and videos from any web page. Then edit and add more straight from Nominate This before you save or publish it in a post on your site.', 'pressforward' ); ?></p>
 

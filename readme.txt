@@ -82,6 +82,9 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 
 == Changelog ==
 
+= 5.9.1 =
+* Fixed bug that prevented Nominate This info box from appearing in Reader for Subscribers.
+
 = 5.9.0 =
 * Added new Amplify target services: Mastodon, Bluesky, and Threads.
 * Added the ability to subscribe to Google Scholar keyword and author URLs, using the same mechanism as RSS feed subscription.

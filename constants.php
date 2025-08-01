@@ -13,4 +13,4 @@ define( 'PF_NOM_POSTER', 'post-new.php?post_type=nomination' );
 define( 'PF_ROOT', __DIR__ );
 define( 'PF_FILE_PATH', PF_ROOT . '/pressforward.php' );
 define( 'PF_URL', plugins_url( '/', __FILE__ ) );
-define( 'PF_VERSION', '5.9.0' );
+define( 'PF_VERSION', '5.9.1' );

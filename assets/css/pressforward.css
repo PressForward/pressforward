@@ -1428,6 +1428,21 @@ h3 {
   border-radius: 6px;
   position: absolute; }
 
+.pf-all-content .tool-box {
+	margin-bottom: 24px;
+	padding: 8px 48px 8px 16px;
+	background-color: #fff;
+	position: relative;
+}
+
+.tool-box .pf-item-remove {
+	float: none;
+	margin-left: 0;
+	margin-top: 0;
+	right: 16px;
+	top: 8px;
+}
+
 .pressforward_page_pf-review .pf-item-remove {
   margin-left: -18px; }
 
