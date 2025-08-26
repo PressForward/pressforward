@@ -4,7 +4,7 @@ Donate link:
 Tags: aggregate, aggregation, aggregator, atom, attribution, circulate, collect, community, content curation, curate, curation, curation tool, discuss, distribute, editorial, feed, network, news, opml, OPML, read, reader, reblog, reblogging, republish, review, RSS, rss, share, syndicate, syndication, workflow
 Requires at least: 5.7
 Tested up to: 6.8
-Stable tag: 5.9.0
+Stable tag: 5.9.2
 License: AGPLv3
 License URI: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -81,6 +81,9 @@ A list of FAQs can be found in our [User Manual](https://pressforwardadmin.gitbo
 9. Send items to introduce, format, and publish in the WordPress Posts panel.
 
 == Changelog ==
+
+= 5.9.2 =
+* Fixed bug that caused autoload failure in certain cases of nested autoloaders.
 
 = 5.9.1 =
 * Fixed bug that prevented Nominate This info box from appearing in Reader for Subscribers.
