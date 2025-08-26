@@ -15,7 +15,7 @@
  * @package PressForward
  */
 
-require 'constants.php';
+require __DIR__ . '/constants.php';
 
 // Protect File.
 if ( ! defined( 'WPINC' ) ) {
@@ -23,13 +23,13 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 if ( ! class_exists( 'MyCLabs\Enum\Enum' ) ) {
-	require 'Libraries/Enum.php';
+	require __DIR__ . '/Libraries/Enum.php';
 }
 
 if ( ! version_compare( phpversion(), '7.3', '>=' ) ) {
 	wp_die( esc_html__( 'PressForward requires PHP 7.3 or greater.', 'pressforward' ) );
 } else {
-	require 'init.php';
+	require __DIR__ . '/init.php';
 }
 
 /**
