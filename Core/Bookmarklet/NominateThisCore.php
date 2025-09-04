@@ -696,11 +696,16 @@ class NominateThisCore implements HasActions, HasFilters {
 	 * @return void
 	 */
 	public function register_nomination_success_panel() {
+		$base_cap = get_option(
+			'pf_menu_nominate_this_access',
+			pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' )
+		);
+
 		add_submenu_page(
 			'',
 			__( 'Nomination Success', 'pressforward' ),
 			__( 'Nomination Success', 'pressforward' ),
-			'edit_posts',
+			$base_cap,
 			'pf-nomination-success',
 			[ $this, 'nomination_success_panel' ]
 		);
