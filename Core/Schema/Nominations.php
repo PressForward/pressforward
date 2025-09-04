@@ -137,10 +137,13 @@ class Nominations implements HasActions, HasFilters {
 	/**
 	 * Grants users with the 'pf_menu_nominate_this_access' capability the ability to assign tags to nominations.
 	 *
-	 * @param array $allcaps All capabilities of the user.
+	 * @param array    $allcaps All capabilities of the user.
+	 * @param array    $caps    Actual capabilities being checked.
+	 * @param array    $args    Arguments that accompany the capability check.
+	 * @param \WP_User $user    The user whose capabilities are being checked.
 	 * @return array
 	 */
-	public function add_assign_post_tags_cap( $allcaps, $caps, $args, $user) {
+	public function add_assign_post_tags_cap( $allcaps, $caps, $args, $user ) {
 		$base_cap = get_option(
 			'pf_menu_nominate_this_access',
 			pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' )
