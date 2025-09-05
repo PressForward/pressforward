@@ -134,9 +134,13 @@ class Nominations implements HasActions, HasFilters {
 		register_post_type( $this->post_type, $args );
 
 		// We must 'show_in_menu' but we also want to remove the 'Nominations' item from the admin menu.
-		add_action( 'admin_menu', function() {
-			remove_submenu_page( PF_MENU_SLUG, 'edit.php?post_type=nomination' );
-		}, 999 );
+		add_action(
+			'admin_menu',
+			function() {
+				remove_submenu_page( PF_MENU_SLUG, 'edit.php?post_type=nomination' );
+			},
+			999
+		);
 	}
 
 	/**
