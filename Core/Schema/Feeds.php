@@ -431,7 +431,7 @@ class Feeds implements HasActions, HasFilters {
 			return false;
 		}
 
-		if ( ! current_user_can( 'edit_page', $post_id ) ) {
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
 			return false;
 		}
 
