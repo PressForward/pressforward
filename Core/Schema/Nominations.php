@@ -59,6 +59,11 @@ class Nominations implements HasActions, HasFilters {
 				'hook'   => 'manage_edit-nomination_sortable_columns',
 				'method' => 'nomination_sortable_columns',
 			),
+			array(
+				'hook'   => 'user_has_cap',
+				'method' => 'add_assign_post_tags_cap',
+				'args'   => 4,
+			),
 		);
 	}
 
@@ -87,11 +92,10 @@ class Nominations implements HasActions, HasFilters {
 			// I want a UI for users to use, so true.
 			'show_ui'              => true,
 			// But not the default UI, we want to attach it to the plugin menu.
-			'show_in_menu'         => false,
+			'show_in_menu'         => 'pf-menu',
 			'show_in_rest'         => true,
 			// Linking in the metabox building function.
 			'register_meta_box_cb' => array( $this, 'nominations_meta_boxes' ),
-			'capability_type'      => 'post',
 			// The type of input (besides the metaboxes) that it supports.
 			'supports'             => array( 'title', 'editor', 'thumbnail', 'custom-fields', 'revisions' ),
 			// I think this is set to false by the public argument, but better safe.
@@ -99,7 +103,75 @@ class Nominations implements HasActions, HasFilters {
 			'taxonomies'           => array( 'category', 'post_tag' ),
 		);
 
+		$cap_keys = [
+			'edit_post',
+			'read_post',
+			'delete_post',
+			'edit_posts',
+			'edit_others_posts',
+			'publish_posts',
+			'read_private_posts',
+			'delete_posts',
+			'delete_private_posts',
+			'delete_published_posts',
+			'delete_others_posts',
+			'edit_private_posts',
+			'edit_published_posts',
+			'create_posts',
+		];
+
+		$caps = array_fill_keys(
+			$cap_keys,
+			get_option(
+				'pf_menu_nominate_this_access',
+				pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' )
+			)
+		);
+
+		$args['capabilities'] = $caps;
+		$args['map_meta_cap'] = false;
+
 		register_post_type( $this->post_type, $args );
+
+		// We must 'show_in_menu' but we also want to remove the 'Nominations' item from the admin menu.
+		add_action(
+			'admin_menu',
+			function() {
+				remove_submenu_page( PF_MENU_SLUG, 'edit.php?post_type=nomination' );
+			},
+			999
+		);
+	}
+
+	/**
+	 * Grants users with the 'pf_menu_nominate_this_access' capability the ability to assign tags to nominations.
+	 *
+	 * @param array    $allcaps All capabilities of the user.
+	 * @param array    $caps    Actual capabilities being checked.
+	 * @param array    $args    Arguments that accompany the capability check.
+	 * @param \WP_User $user    The user whose capabilities are being checked.
+	 * @return array
+	 */
+	public function add_assign_post_tags_cap( $allcaps, $caps, $args, $user ) {
+		$base_cap = get_option(
+			'pf_menu_nominate_this_access',
+			pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' )
+		);
+
+		if ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) {
+			return $allcaps;
+		}
+
+		global $wp;
+		if ( empty( $wp->query_vars['rest_route'] ) || 0 !== strpos( $wp->query_vars['rest_route'], '/wp/v2/nomination' ) ) {
+			return $allcaps;
+		}
+
+		if ( in_array( 'edit_posts', $caps, true ) && user_can( $user->ID, $base_cap ) ) {
+			$allcaps['edit_posts'] = true;
+		}
+
+		return $allcaps;
 	}
 
 	/**

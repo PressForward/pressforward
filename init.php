@@ -6,18 +6,18 @@
  */
 
 // Out-of-namespace dependencies.
-require 'vendor/autoload.php';
-require 'class-SplClassLoader.php';
-require 'Libraries/AlertBox/The_Alert_Box.php';
-require 'includes/opml/object.php';
-require 'includes/opml/reader.php';
-require 'includes/opml/maker.php';
-require 'Libraries/PFOpenGraph.php';
+require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/class-SplClassLoader.php';
+require __DIR__ . '/Libraries/AlertBox/The_Alert_Box.php';
+require __DIR__ . '/includes/opml/object.php';
+require __DIR__ . '/includes/opml/reader.php';
+require __DIR__ . '/includes/opml/maker.php';
+require __DIR__ . '/Libraries/PFOpenGraph.php';
 
 // Files included to maintain back-compat.
-require 'includes/functions.php';
-require 'includes/relationships.php';
-require 'includes/template-tags.php';
+require __DIR__ . '/includes/functions.php';
+require __DIR__ . '/includes/relationships.php';
+require __DIR__ . '/includes/template-tags.php';
 
 use Intraxia\Jaxion\Core\Config;
 use Intraxia\Jaxion\Core\ConfigType;
