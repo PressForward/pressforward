@@ -82,6 +82,9 @@ A list of FAQs can be found in our [User Manual](https://github.com/PressForward
 
 == Changelog ==
 
+= 5.9.3 =
+* Fixed bug that prevented Subscribers from being able to use the entire Nominate This flow.
+
 = 5.9.2 =
 * Fixed bug that caused autoload failure in certain cases of nested autoloaders.
 
