@@ -82,6 +82,11 @@ class Forward_Tools {
 	 */
 	public function get_nomination_nominator_array( $nomination_id ) {
 		$nominators = $this->metas->get_post_pf_meta( $nomination_id, 'nominator_array' );
+
+		if ( is_string( $nominators ) ) {
+			$nominators = wp_parse_id_list( $nominators );
+		}
+
 		if ( ! $nominators ) {
 			$nominators = [];
 		}
