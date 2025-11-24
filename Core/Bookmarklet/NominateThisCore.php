@@ -227,7 +227,7 @@ class NominateThisCore implements HasActions, HasFilters {
 		$post = array();
 		if ( $internal ) {
 			if ( ! current_user_can( get_option( 'pf_menu_nominate_this_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) ) ) ) {
-				wp_die( esc_html_e( 'You do not have access to the Nominate This bookmarklet.', 'pressforward' ) );
+				wp_die( esc_html__( 'You do not have access to the Nominate This bookmarklet.', 'pressforward' ) );
 			}
 		}
 
