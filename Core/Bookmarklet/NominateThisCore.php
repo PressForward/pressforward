@@ -722,7 +722,7 @@ class NominateThisCore implements HasActions, HasFilters {
 		 * doesn't appear natively because we use a different parent when registering
 		 * the post type (show_in_menu). The menu item is removed before rendering.
 		 */
-		$pt = get_post_type_object('nomination');
+		$pt = get_post_type_object( 'nomination' );
 		if ( $pt && is_string( $pt->show_in_menu ) ) {
 			add_submenu_page(
 				$pt->show_in_menu,
