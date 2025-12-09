@@ -436,7 +436,7 @@ class Feeds implements HasActions, HasFilters {
 	 * The check runs once per hour and processes up to 100 feeds per run. When
 	 * all feeds have been checked, the counter resets and the cycle starts again.
 	 *
-	 * @since 5.9.0
+	 * @since 5.9.4
 	 *
 	 * @return void
 	 */
