@@ -450,9 +450,6 @@ class Feeds implements HasActions, HasFilters {
 			return;
 		}
 
-		// Update the timestamp immediately to prevent multiple checks.
-		update_option( 'pf_feed_cron_check_timestamp', $current_time );
-
 		// Get the current position in the feed list.
 		$offset = (int) get_option( 'pf_feed_cron_check_offset', 0 );
 
@@ -491,8 +488,8 @@ class Feeds implements HasActions, HasFilters {
 			}
 		}
 
-		// Update the offset for the next run.
-		$new_offset = $offset + count( $feed_ids );
+		// Calculate the next offset position.
+		$calculated_offset = $offset + count( $feed_ids );
 
 		// Check if we've reached the end of the feed list.
 		if ( count( $feed_ids ) < $batch_size ) {
@@ -500,8 +497,11 @@ class Feeds implements HasActions, HasFilters {
 			update_option( 'pf_feed_cron_check_offset', 0 );
 		} else {
 			// Continue from where we left off.
-			update_option( 'pf_feed_cron_check_offset', $new_offset );
+			update_option( 'pf_feed_cron_check_offset', $calculated_offset );
 		}
+
+		// Update the timestamp after successful completion to prevent multiple checks.
+		update_option( 'pf_feed_cron_check_timestamp', $current_time );
 	}
 
 	/**

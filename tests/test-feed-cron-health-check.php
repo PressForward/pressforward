@@ -115,11 +115,14 @@ class PF_Tests_Feed_Cron_Health_Check extends PF_UnitTestCase {
 	 * Test that the batch size can be filtered.
 	 */
 	public function test_check_feed_retrieval_cron_jobs_batch_size_filter() {
-		// Add a filter to change the batch size.
-		$custom_batch_size = 50;
-		add_filter( 'pf_feed_cron_check_batch_size', function() use ( $custom_batch_size ) {
+		// Create a filter callback function.
+		$custom_batch_size    = 50;
+		$batch_size_filter_cb = function() use ( $custom_batch_size ) {
 			return $custom_batch_size;
-		} );
+		};
+
+		// Add the filter.
+		add_filter( 'pf_feed_cron_check_batch_size', $batch_size_filter_cb );
 
 		// Create multiple feeds.
 		$feed_ids = array();
@@ -143,6 +146,9 @@ class PF_Tests_Feed_Cron_Health_Check extends PF_UnitTestCase {
 		// Check that the offset matches our custom batch size.
 		$offset = get_option( 'pf_feed_cron_check_offset' );
 		$this->assertEquals( $custom_batch_size, $offset );
+
+		// Clean up: Remove the filter.
+		remove_filter( 'pf_feed_cron_check_batch_size', $batch_size_filter_cb );
 	}
 
 	/**
