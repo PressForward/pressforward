@@ -70,11 +70,11 @@ class Feeds implements HasActions, HasFilters {
 				'method'   => 'register_feed_post_type',
 				'priority' => 10,
 			),
-			[
+			array(
 				'hook'     => 'init',
 				'method'   => 'check_feed_retrieval_cron_jobs',
 				'priority' => 20,
-			],
+			),
 			array(
 				'hook'   => 'admin_init',
 				'method' => 'disallow_add_new',
