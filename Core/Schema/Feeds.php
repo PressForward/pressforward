@@ -71,6 +71,11 @@ class Feeds implements HasActions, HasFilters {
 				'priority' => 10,
 			),
 			array(
+				'hook'     => 'init',
+				'method'   => 'check_feed_retrieval_cron_jobs',
+				'priority' => 20,
+			),
+			array(
 				'hook'   => 'admin_init',
 				'method' => 'disallow_add_new',
 			),
@@ -419,6 +424,84 @@ class Feeds implements HasActions, HasFilters {
 
 		$feed->unschedule_retrieval();
 		$feed->unschedule_health_check();
+	}
+
+	/**
+	 * Incrementally checks and schedules retrieval cron jobs for feeds.
+	 *
+	 * This method runs on 'init' and checks a batch of feeds to ensure they have
+	 * retrieval cron jobs scheduled. It uses a timestamp and counter system to
+	 * process feeds incrementally, avoiding overload on sites with many feeds.
+	 *
+	 * The check runs once per hour and processes up to 100 feeds per run. When
+	 * all feeds have been checked, the counter resets and the cycle starts again.
+	 *
+	 * @since 5.9.4
+	 *
+	 * @return void
+	 */
+	public function check_feed_retrieval_cron_jobs() {
+		// Get the last check timestamp and counter.
+		$last_check_time = get_option( 'pf_feed_cron_check_timestamp', 0 );
+		$current_time    = time();
+
+		// Only run the check once per hour.
+		if ( ( $current_time - $last_check_time ) < HOUR_IN_SECONDS ) {
+			return;
+		}
+
+		// Get the current position in the feed list.
+		$offset = (int) get_option( 'pf_feed_cron_check_offset', 0 );
+
+		// Query for a batch of feeds.
+		$batch_size = apply_filters( 'pf_feed_cron_check_batch_size', 100 );
+		$args       = array(
+			'post_type'      => $this->post_type,
+			'post_status'    => 'publish',
+			'posts_per_page' => $batch_size,
+			'offset'         => $offset,
+			'orderby'        => 'ID',
+			'order'          => 'ASC',
+			'fields'         => 'ids',
+		);
+
+		$feed_ids = get_posts( $args );
+
+		// If no feeds found, reset the counter and exit.
+		if ( empty( $feed_ids ) ) {
+			update_option( 'pf_feed_cron_check_offset', 0 );
+			return;
+		}
+
+		// Check each feed and schedule retrieval if needed.
+		foreach ( $feed_ids as $feed_id ) {
+			$feed = Feed::get_instance_by_id( $feed_id );
+			if ( ! $feed ) {
+				continue;
+			}
+
+			// Check if the retrieval is already scheduled.
+			$next_scheduled = $feed->get_next_scheduled_retrieval();
+			if ( ! $next_scheduled ) {
+				// Schedule retrieval for this feed.
+				$feed->schedule_retrieval();
+			}
+		}
+
+		// Calculate the next offset position.
+		$calculated_offset = $offset + count( $feed_ids );
+
+		// Check if we've reached the end of the feed list.
+		if ( count( $feed_ids ) < $batch_size ) {
+			// Reset to start from the beginning in the next cycle.
+			update_option( 'pf_feed_cron_check_offset', 0 );
+		} else {
+			// Continue from where we left off.
+			update_option( 'pf_feed_cron_check_offset', $calculated_offset );
+		}
+
+		// Update the timestamp after successful completion to prevent multiple checks.
+		update_option( 'pf_feed_cron_check_timestamp', $current_time );
 	}
 
 	/**
