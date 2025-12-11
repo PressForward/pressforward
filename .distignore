@@ -1,0 +1,52 @@
+# Development and testing files
+/.git
+/.github
+/.gitattributes
+/.gitignore
+/.gitmodules
+/.svnignore
+/.editorconfig
+/.eslintrc.json
+/.travis.yml
+/tests
+/phpunit.xml.dist
+/phpunit.xml
+/phpcs.xml.dist
+/phpstan.neon
+
+# Build configuration files
+/Gulpfile.js
+/package.json
+/package-lock.json
+/yarn.lock
+/composer.json
+/composer.lock
+
+# Documentation and notes
+/readme.md
+/notes.md
+/CODE_OF_CONDUCT.md
+/CONTRIBUTING.md
+
+# Node modules and source files
+/node_modules
+/assets/src
+/assets/sass
+/assets/stats-app/node_modules
+
+# Design files
+*.psd
+
+# Vendor development dependencies
+/vendor/wp-coding-standards
+/vendor/dealerdirect
+/vendor/phpcompatibility
+/vendor/phpstan
+/vendor/szepeviktor
+/vendor/yoast
+/vendor/johnkary
+/vendor/bin
+/vendor/squizlabs
+
+# Build artifacts that shouldn't be in repo
+/.phpunit.result.cache
