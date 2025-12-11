@@ -186,7 +186,7 @@ class PF_Module {
 				</th>
 
 				<td>
-					<select id="<?php esc_attr( PF_SLUG . '_' . $module_id . '_enable' ); ?>" name="<?php echo esc_attr( PF_SLUG . '_' . $module_id . '_enable' ); ?>">
+					<select id="<?php echo esc_attr( PF_SLUG . '_' . $module_id . '_enable' ); ?>" name="<?php echo esc_attr( PF_SLUG . '_' . $module_id . '_enable' ); ?>">
 						<option value="yes" <?php selected( $enabled, 'yes' ); ?>><?php esc_html_e( 'Yes', 'pressforward' ); ?></option>
 						<option value="no" <?php selected( $enabled, 'no' ); ?>><?php esc_html_e( 'No', 'pressforward' ); ?></option>
 					</select>

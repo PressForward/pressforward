@@ -2,14 +2,14 @@
 # This file is distributed under the GPL2.
 msgid ""
 msgstr ""
-"Project-Id-Version: PressForward 5.9.0\n"
+"Project-Id-Version: PressForward 5.9.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/pressforward\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-07-18T14:45:21-05:00\n"
+"POT-Creation-Date: 2025-12-11T09:49:08-06:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pressforward\n"
@@ -241,7 +241,7 @@ msgid "The datetime the item was made a nomination"
 msgstr ""
 
 #: Controllers/Metas.php:597
-#: Core/Bookmarklet/NominateThisCore.php:92
+#: Core/Bookmarklet/NominateThisCore.php:97
 msgid "Tags"
 msgstr ""
 
@@ -295,8 +295,8 @@ msgstr ""
 
 #: Controllers/Metas.php:638
 #: Core/Admin/Menu.php:189
-#: Core/Schema/Nominations.php:73
-#: Core/Schema/Nominations.php:139
+#: Core/Schema/Nominations.php:78
+#: Core/Schema/Nominations.php:211
 #: parts/welcome/nominations.php:29
 msgid "Nominations"
 msgstr ""
@@ -359,7 +359,7 @@ msgstr ""
 
 #: Controllers/Metas.php:687
 #: Core/Admin/AddFeeds.php:136
-#: modules/rss-import/rss-import.php:465
+#: modules/rss-import/rss-import.php:482
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:63
 #: assets/src/nominate-this-block-editor/nominate-this-block-editor.js:69
 #: build/nominate-this-block-editor.js:1
@@ -470,7 +470,7 @@ msgstr ""
 #: Controllers/Metas.php:777
 #: Controllers/Metas.php:837
 #: Core/Admin/SubscribedFeeds.php:536
-#: modules/rss-import/rss-import.php:455
+#: modules/rss-import/rss-import.php:472
 #: assets/src/block-editor-feeds/block-editor-feeds.js:53
 #: build/block-editor-feeds.js:1
 msgid "Feed URL"
@@ -913,7 +913,7 @@ msgid "PressForward: Add Feeds"
 msgstr ""
 
 #: Core/Admin/AddFeeds.php:141
-#: modules/rss-import/rss-import.php:421
+#: modules/rss-import/rss-import.php:438
 msgid "Import OPML"
 msgstr ""
 
@@ -994,7 +994,7 @@ msgid "Getting Started"
 msgstr ""
 
 #: Core/Admin/Menu.php:198
-#: Core/Schema/Feeds.php:205
+#: Core/Schema/Feeds.php:210
 #: parts/welcome/feeds.php:27
 msgid "Feeds"
 msgstr ""
@@ -1014,10 +1014,10 @@ msgid "Nominated Menu"
 msgstr ""
 
 #: Core/Admin/Menu.php:335
-#: Core/Bookmarklet/NominateThisCore.php:76
+#: Core/Bookmarklet/NominateThisCore.php:81
 #: includes/nomthis/nominate-this-core.php:77
 #: parts/nominate-this-buttons.tpl.php:17
-#: parts/nominate-this.tpl.php:10
+#: parts/nominate-this.tpl.php:12
 #: parts/settings/tab-site.tpl.php:363
 #: parts/settings/tab-user-control.tpl.php:64
 #: assets/src/blocks/bookmarklet-code/index.js:16
@@ -1098,7 +1098,7 @@ msgid "Item Tags"
 msgstr ""
 
 #: Core/Admin/Nominated.php:742
-#: Core/Schema/Nominations.php:142
+#: Core/Schema/Nominations.php:214
 #: assets/src/blocks/blocks.js:225
 #: build/blocks.js:1
 msgid "Date Nominated"
@@ -1273,7 +1273,7 @@ msgstr ""
 
 #: Core/Admin/PFTemplater.php:435
 #: modules/opml-subscribe/opml-subscribe.php:316
-#: modules/rss-import/rss-import.php:461
+#: modules/rss-import/rss-import.php:478
 #: parts/settings/settings-page.tpl.php:80
 #: assets/src/add-feeds/add-feeds.js:66
 #: build/add-feeds.js:1
@@ -1502,8 +1502,8 @@ msgid "You have nominated this item"
 msgstr ""
 
 #: Core/Admin/PFTemplater.php:1131
-#: Core/Bookmarklet/NominateThisCore.php:124
-#: Core/Schema/Nominations.php:75
+#: Core/Bookmarklet/NominateThisCore.php:129
+#: Core/Schema/Nominations.php:80
 #: assets/src/reader/util.js:284
 #: build/reader.js:5
 #: build/scroll.js:5
@@ -1511,7 +1511,7 @@ msgid "Nominate"
 msgstr ""
 
 #: Core/Admin/PFTemplater.php:1154
-#: Core/Bookmarklet/NominateThisCore.php:132
+#: Core/Bookmarklet/NominateThisCore.php:137
 msgid "Send to "
 msgstr ""
 
@@ -1804,128 +1804,128 @@ msgstr ""
 msgid "No Source Found"
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:84
+#: Core/Bookmarklet/NominateThisCore.php:89
 msgid "Categories"
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:126
+#: Core/Bookmarklet/NominateThisCore.php:131
 msgid "You do not have the ability to create nominations."
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:143
+#: Core/Bookmarklet/NominateThisCore.php:148
 msgid "Enter Authors"
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:147
+#: Core/Bookmarklet/NominateThisCore.php:152
 msgid "Nominate feed associated with item."
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:169
+#: Core/Bookmarklet/NominateThisCore.php:174
 msgid "Enter Tags"
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:225
+#: Core/Bookmarklet/NominateThisCore.php:230
 msgid "You do not have access to the Nominate This bookmarklet."
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:264
-#: Core/Bookmarklet/NominateThisCore.php:532
+#: Core/Bookmarklet/NominateThisCore.php:269
+#: Core/Bookmarklet/NominateThisCore.php:537
 msgid "Attempting to nominate a feed with the result of:"
 msgstr ""
 
 #. translators: feed ID.
-#: Core/Bookmarklet/NominateThisCore.php:271
-#: Core/Bookmarklet/NominateThisCore.php:539
+#: Core/Bookmarklet/NominateThisCore.php:276
+#: Core/Bookmarklet/NominateThisCore.php:544
 #, php-format
 msgid "Feed created with ID: %s"
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:272
-#: Core/Bookmarklet/NominateThisCore.php:540
+#: Core/Bookmarklet/NominateThisCore.php:277
+#: Core/Bookmarklet/NominateThisCore.php:545
 msgid "The feed has been nominated successfully."
 msgstr ""
 
 #. translators: Error text.
-#: Core/Bookmarklet/NominateThisCore.php:276
-#: Core/Bookmarklet/NominateThisCore.php:544
+#: Core/Bookmarklet/NominateThisCore.php:281
+#: Core/Bookmarklet/NominateThisCore.php:549
 #, php-format
 msgid "But the following error occured: %s"
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:277
-#: Core/Bookmarklet/NominateThisCore.php:545
+#: Core/Bookmarklet/NominateThisCore.php:282
+#: Core/Bookmarklet/NominateThisCore.php:550
 msgid "There is a problem with the feed associated with this post. The feed could not be verified."
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:282
-#: Core/Bookmarklet/NominateThisCore.php:550
+#: Core/Bookmarklet/NominateThisCore.php:287
+#: Core/Bookmarklet/NominateThisCore.php:555
 msgid "PressForward was unable to identify a feed associated with this site. Please contact the site administrator or add the feed manually in the 'Add Feeds' panel."
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:283
-#: Core/Bookmarklet/NominateThisCore.php:551
+#: Core/Bookmarklet/NominateThisCore.php:288
+#: Core/Bookmarklet/NominateThisCore.php:556
 msgid "An error occured when adding the feed: "
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:294
-#: Core/Bookmarklet/NominateThisCore.php:562
+#: Core/Bookmarklet/NominateThisCore.php:299
+#: Core/Bookmarklet/NominateThisCore.php:567
 msgid "User doesn't have permission to create feeds."
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:306
-#: Core/Bookmarklet/NominateThisCore.php:574
+#: Core/Bookmarklet/NominateThisCore.php:311
+#: Core/Bookmarklet/NominateThisCore.php:579
 msgid "No feed was nominated."
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:307
-#: Core/Bookmarklet/NominateThisCore.php:575
+#: Core/Bookmarklet/NominateThisCore.php:312
+#: Core/Bookmarklet/NominateThisCore.php:580
 msgid "User hasn't nominated a feed."
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:324
+#: Core/Bookmarklet/NominateThisCore.php:329
 msgid "Last Step"
 msgstr ""
 
 #. translators: Name of the site.
-#: Core/Bookmarklet/NominateThisCore.php:391
+#: Core/Bookmarklet/NominateThisCore.php:396
 #, php-format
 msgid "[%s] You have successfully nominated an item"
 msgstr ""
 
 #. translators: 1. Name of the site; 2. URL of the site.
-#: Core/Bookmarklet/NominateThisCore.php:397
+#: Core/Bookmarklet/NominateThisCore.php:402
 #, php-format
 msgid "You have successfully nominated an item on %1$s (%2$s)."
 msgstr ""
 
 #. translators: 1. Title of the source item. 2. URL of the nomination source item.
-#: Core/Bookmarklet/NominateThisCore.php:406
+#: Core/Bookmarklet/NominateThisCore.php:411
 #, php-format
 msgid "Source item: %1$s (%2$s)"
 msgstr ""
 
 #. translators: URL of the Nominations panel.
-#: Core/Bookmarklet/NominateThisCore.php:418
+#: Core/Bookmarklet/NominateThisCore.php:423
 #, php-format
 msgid "Manage nominations: %s"
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:701
-#: Core/Bookmarklet/NominateThisCore.php:702
+#: Core/Bookmarklet/NominateThisCore.php:711
+#: Core/Bookmarklet/NominateThisCore.php:712
 msgid "Nomination Success"
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:721
+#: Core/Bookmarklet/NominateThisCore.php:763
 #: includes/nomthis/nominate-this-core.php:165
 msgid "Your nomination has been saved."
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:722
+#: Core/Bookmarklet/NominateThisCore.php:764
 #: includes/nomthis/nominate-this-core.php:166
 msgid "See all nominations"
 msgstr ""
 
-#: Core/Bookmarklet/NominateThisCore.php:723
+#: Core/Bookmarklet/NominateThisCore.php:765
 #: includes/nomthis/nominate-this-core.php:167
 #: includes/nomthis/nominate-this-core.php:177
 #: includes/nomthis/nominate-this-core.php:208
@@ -1938,171 +1938,171 @@ msgstr ""
 msgid "In %s"
 msgstr ""
 
-#: Core/Schema/Feeds.php:187
+#: Core/Schema/Feeds.php:192
 #: parts/welcome/feeds.php:78
 msgid "Subscribed Feeds"
 msgstr ""
 
-#: Core/Schema/Feeds.php:188
+#: Core/Schema/Feeds.php:193
 msgid "Feed"
 msgstr ""
 
-#: Core/Schema/Feeds.php:190
+#: Core/Schema/Feeds.php:195
 msgid "All Feeds"
 msgstr ""
 
-#: Core/Schema/Feeds.php:191
+#: Core/Schema/Feeds.php:196
 #: parts/welcome/feeds.php:105
 msgid "Add New Feed"
 msgstr ""
 
-#: Core/Schema/Feeds.php:192
+#: Core/Schema/Feeds.php:197
 #: includes/nomthis/nominate-this-core.php:204
 msgid "Edit Feed"
 msgstr ""
 
-#: Core/Schema/Feeds.php:193
+#: Core/Schema/Feeds.php:198
 msgid "New Feed"
 msgstr ""
 
-#: Core/Schema/Feeds.php:194
+#: Core/Schema/Feeds.php:199
 msgid "View Feed"
 msgstr ""
 
-#: Core/Schema/Feeds.php:195
+#: Core/Schema/Feeds.php:200
 msgid "Search Feeds"
 msgstr ""
 
-#: Core/Schema/Feeds.php:196
+#: Core/Schema/Feeds.php:201
 msgid "No feeds found"
 msgstr ""
 
-#: Core/Schema/Feeds.php:197
+#: Core/Schema/Feeds.php:202
 msgid "No feeds found in trash"
 msgstr ""
 
-#: Core/Schema/Feeds.php:207
+#: Core/Schema/Feeds.php:212
 msgid "Feeds imported by PressForward&#8217;s Feed Importer"
 msgstr ""
 
-#: Core/Schema/Feeds.php:347
+#: Core/Schema/Feeds.php:352
 msgctxt "pf"
 msgid "Under Review"
 msgstr ""
 
 #. Translators: Under Review feed count.
-#: Core/Schema/Feeds.php:354
+#: Core/Schema/Feeds.php:359
 #, php-format
 msgid "Under Review <span class=\"count\">(%s)</span>"
 msgid_plural "Under Review <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: Core/Schema/Feeds.php:379
+#: Core/Schema/Feeds.php:384
 msgid "No alerts, never let feed go inactive."
 msgstr ""
 
-#: Core/Schema/Feeds.php:455
+#: Core/Schema/Feeds.php:538
 msgid "Added by"
 msgstr ""
 
-#: Core/Schema/Feeds.php:456
+#: Core/Schema/Feeds.php:539
 msgid "Items"
 msgstr ""
 
-#: Core/Schema/Feeds.php:457
+#: Core/Schema/Feeds.php:540
 msgid "Date Added"
 msgstr ""
 
-#: Core/Schema/Feeds.php:608
+#: Core/Schema/Feeds.php:691
 msgid "Refresh this feed"
 msgstr ""
 
-#: Core/Schema/Feeds.php:608
+#: Core/Schema/Feeds.php:691
 msgid "Refresh Feed Items"
 msgstr ""
 
-#: Core/Schema/Feeds.php:660
+#: Core/Schema/Feeds.php:743
 msgid "Not a valid feed URL."
 msgstr ""
 
-#: Core/Schema/Feeds.php:677
+#: Core/Schema/Feeds.php:760
 msgid "You are already subscribed to this feed."
 msgstr ""
 
 #. translators: 1: URL provided, 2: Validated feed URL.
-#: Core/Schema/Feeds.php:684
+#: Core/Schema/Feeds.php:767
 #, php-format
 msgid "You provided the URL %1$s, which is not a valid feed URL. We detected a related feed URL at %2$s."
 msgstr ""
 
-#: Core/Schema/Feeds.php:728
+#: Core/Schema/Feeds.php:811
 msgid "Not a valid URL."
 msgstr ""
 
-#: Core/Schema/Feeds.php:741
+#: Core/Schema/Feeds.php:824
 msgid "The URL returned an error."
 msgstr ""
 
-#: Core/Schema/Feeds.php:745
+#: Core/Schema/Feeds.php:828
 msgid "Google Scholar author feed detected."
 msgstr ""
 
-#: Core/Schema/Feeds.php:745
+#: Core/Schema/Feeds.php:828
 msgid "Google Scholar keyword feed detected."
 msgstr ""
 
-#: Core/Schema/Feeds.php:884
+#: Core/Schema/Feeds.php:967
 msgctxt "pf"
 msgid "Removed Feed"
 msgstr ""
 
-#: Core/Schema/Feeds.php:1367
+#: Core/Schema/Feeds.php:1450
 msgid "The feed fails verification."
 msgstr ""
 
-#: Core/Schema/Feeds.php:1518
-#: Core/Schema/Feeds.php:1521
+#: Core/Schema/Feeds.php:1601
+#: Core/Schema/Feeds.php:1604
 msgid "Feed updated."
 msgstr ""
 
-#: Core/Schema/Feeds.php:1519
+#: Core/Schema/Feeds.php:1602
 msgid "Custom field updated."
 msgstr ""
 
-#: Core/Schema/Feeds.php:1520
+#: Core/Schema/Feeds.php:1603
 msgid "Custom field deleted."
 msgstr ""
 
 #. translators: %s: date and time of the revision
-#: Core/Schema/Feeds.php:1523
+#: Core/Schema/Feeds.php:1606
 #, php-format
 msgid "Feed restored to revision from %s"
 msgstr ""
 
-#: Core/Schema/Feeds.php:1524
+#: Core/Schema/Feeds.php:1607
 msgid "The feed was made successfully active."
 msgstr ""
 
-#: Core/Schema/Feeds.php:1525
+#: Core/Schema/Feeds.php:1608
 msgid "The feed was saved successfully."
 msgstr ""
 
-#: Core/Schema/Feeds.php:1526
+#: Core/Schema/Feeds.php:1609
 msgid "Feed submitted."
 msgstr ""
 
 #. translators: Publish box date format, see http://php.net/date.
-#: Core/Schema/Feeds.php:1529
+#: Core/Schema/Feeds.php:1612
 #, php-format
 msgid "Feed scheduled for: <strong>%1$s</strong>."
 msgstr ""
 
-#: Core/Schema/Feeds.php:1530
+#: Core/Schema/Feeds.php:1613
 msgid "M j, Y @ G:i"
 msgstr ""
 
-#: Core/Schema/Feeds.php:1532
+#: Core/Schema/Feeds.php:1615
 msgid "Feed draft updated."
 msgstr ""
 
@@ -2223,81 +2223,81 @@ msgstr ""
 msgid "Search Folders"
 msgstr ""
 
-#: Core/Schema/Nominations.php:74
+#: Core/Schema/Nominations.php:79
 msgid "Nomination"
 msgstr ""
 
-#: Core/Schema/Nominations.php:76
+#: Core/Schema/Nominations.php:81
 msgid "Add New Nomination"
 msgstr ""
 
-#: Core/Schema/Nominations.php:77
+#: Core/Schema/Nominations.php:82
 msgid "Edit Nomination"
 msgstr ""
 
-#: Core/Schema/Nominations.php:78
+#: Core/Schema/Nominations.php:83
 msgid "New Nomination"
 msgstr ""
 
-#: Core/Schema/Nominations.php:79
+#: Core/Schema/Nominations.php:84
 msgid "View Nomination"
 msgstr ""
 
-#: Core/Schema/Nominations.php:80
+#: Core/Schema/Nominations.php:85
 msgid "Search Nominations"
 msgstr ""
 
-#: Core/Schema/Nominations.php:81
+#: Core/Schema/Nominations.php:86
 msgid "No nominations found"
 msgstr ""
 
-#: Core/Schema/Nominations.php:82
+#: Core/Schema/Nominations.php:87
 msgid "No nominations found in Trash"
 msgstr ""
 
-#: Core/Schema/Nominations.php:84
+#: Core/Schema/Nominations.php:89
 msgid "Posts from around the internet nominated for consideration to public posting"
 msgstr ""
 
-#: Core/Schema/Nominations.php:118
+#: Core/Schema/Nominations.php:190
 msgid "Nomination Data"
 msgstr ""
 
-#: Core/Schema/Nominations.php:137
+#: Core/Schema/Nominations.php:209
 msgid "Title"
 msgstr ""
 
-#: Core/Schema/Nominations.php:138
+#: Core/Schema/Nominations.php:210
 msgid "Last Modified"
 msgstr ""
 
-#: Core/Schema/Nominations.php:140
+#: Core/Schema/Nominations.php:212
 msgid "Nominated By"
 msgstr ""
 
-#: Core/Schema/Nominations.php:141
+#: Core/Schema/Nominations.php:213
 msgid "Original Author"
 msgstr ""
 
 #. translators: Name of the site.
-#: Core/Schema/Nominations.php:208
+#: Core/Schema/Nominations.php:280
 #, php-format
 msgid "An item you nominated on %s has been published"
 msgstr ""
 
 #. translators: Title of the post.
-#: Core/Schema/Nominations.php:216
+#: Core/Schema/Nominations.php:288
 #, php-format
 msgid "Title: %s"
 msgstr ""
 
 #. translators: URL of the post.
-#: Core/Schema/Nominations.php:224
+#: Core/Schema/Nominations.php:296
 #, php-format
 msgid "URL: %s"
 msgstr ""
 
-#: Core/Utility/Forward_Tools.php:596
+#: Core/Utility/Forward_Tools.php:601
 msgid "External User"
 msgstr ""
 
@@ -2316,32 +2316,32 @@ msgid "Source: {{item}}"
 msgstr ""
 
 #. translators: Day count.
-#: includes/functions.php:1340
+#: includes/functions.php:1341
 #, php-format
 msgid "Day: %s"
 msgstr ""
 
 #. translators: Week count.
-#: includes/functions.php:1342
+#: includes/functions.php:1343
 #, php-format
 msgid "Week: %s"
 msgstr ""
 
 #. translators: Month count.
-#: includes/functions.php:1344
+#: includes/functions.php:1345
 #, php-format
 msgid "Month: %s"
 msgstr ""
 
-#: includes/functions.php:1384
+#: includes/functions.php:1385
 msgid "Post Not Found."
 msgstr ""
 
-#: includes/functions.php:1396
+#: includes/functions.php:1397
 msgid "Post Type Not Matched"
 msgstr ""
 
-#: includes/functions.php:1406
+#: includes/functions.php:1407
 msgid "Post Type Already Queued"
 msgstr ""
 
@@ -2668,7 +2668,7 @@ msgid "*Complete URL path"
 msgstr ""
 
 #: modules/opml-subscribe/opml-subscribe.php:356
-#: modules/rss-import/rss-import.php:576
+#: modules/rss-import/rss-import.php:593
 msgid "Edit."
 msgstr ""
 
@@ -2690,44 +2690,44 @@ msgstr ""
 msgid "This module provides the core functionality to read RSS feeds and translate them into PressForward's system."
 msgstr ""
 
-#: modules/rss-import/rss-import.php:87
-#: modules/rss-import/rss-import.php:727
+#: modules/rss-import/rss-import.php:104
+#: modules/rss-import/rss-import.php:744
 msgid "Broken RSS feed."
 msgstr ""
 
-#: modules/rss-import/rss-import.php:271
-#: modules/rss-import/rss-import.php:295
-#: modules/rss-import/rss-import.php:397
+#: modules/rss-import/rss-import.php:288
+#: modules/rss-import/rss-import.php:312
+#: modules/rss-import/rss-import.php:414
 msgid "No author."
 msgstr ""
 
-#: modules/rss-import/rss-import.php:416
+#: modules/rss-import/rss-import.php:433
 msgid "Subscribe to Feeds"
 msgstr ""
 
-#: modules/rss-import/rss-import.php:440
+#: modules/rss-import/rss-import.php:457
 msgid "Enter the URL of a feed. PressForward will watch the feed for updates, and will automatically import newly published items into the Feed Items area."
 msgstr ""
 
-#: modules/rss-import/rss-import.php:444
+#: modules/rss-import/rss-import.php:461
 msgid "RSS Feed URLs can be often be found by looking for an orange icon with the letters \"RSS\", \"XML\", or \"Atom\". If you aren't sure how to find the feed URL, enter a content URL (such as an article page) and PressForward will try to identify the feed for you. <a href=\"https://en.wikipedia.org/wiki/RSS\">Learn more about RSS</a>."
 msgstr ""
 
-#: modules/rss-import/rss-import.php:448
+#: modules/rss-import/rss-import.php:465
 msgid "You can also enter the URL of a Google Scholar author profile or search results page to subscribe to new publications by that author or on that topic."
 msgstr ""
 
-#: modules/rss-import/rss-import.php:498
+#: modules/rss-import/rss-import.php:515
 msgid "You have provided an invalid OPML file."
 msgstr ""
 
 #. translators: %s is the name of feed that failed to add.
-#: modules/rss-import/rss-import.php:587
+#: modules/rss-import/rss-import.php:604
 #, php-format
 msgid "An error occurred while trying to add %s"
 msgstr ""
 
-#: modules/rss-import/rss-import.php:599
+#: modules/rss-import/rss-import.php:616
 msgid "You have submitted "
 msgstr ""
 
@@ -2751,15 +2751,19 @@ msgstr ""
 msgid "If you can&#8217;t drag the bookmarklet to your bookmarks, copy the following code and create a new bookmark. Paste the code into the new bookmark&#8217;s URL field."
 msgstr ""
 
-#: parts/nominate-this.tpl.php:11
-msgid "Nominate This is a bookmarklet: a little app that runs in your browser and lets you grab bits of the web. Use Nominate This to clip text, images and videos from any web page. Then edit and add more straight from Nominate This before you save or publish it in a post on your site."
+#: parts/nominate-this.tpl.php:10
+msgid "Remove Nominate This preview"
 msgstr ""
 
 #: parts/nominate-this.tpl.php:13
+msgid "Nominate This is a bookmarklet: a little app that runs in your browser and lets you grab bits of the web. Use Nominate This to clip text, images and videos from any web page. Then edit and add more straight from Nominate This before you save or publish it in a post on your site."
+msgstr ""
+
+#: parts/nominate-this.tpl.php:15
 msgid "Drag-and-drop the \"Nominate This\" button to your bookmarks bar, or right-click and add it to your favorites."
 msgstr ""
 
-#: parts/nominate-this.tpl.php:14
+#: parts/nominate-this.tpl.php:16
 msgid "On a mobile device? Use the clipboard icon to copy the bookmarklet code and copy into the URL field of a manually-created bookmark."
 msgstr ""
 

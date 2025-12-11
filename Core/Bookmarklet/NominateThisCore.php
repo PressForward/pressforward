@@ -47,8 +47,13 @@ class NominateThisCore implements HasActions, HasFilters {
 				'priority' => 50,
 			),
 			array(
-				'hook'   => 'admin_menu',
-				'method' => 'register_nomination_success_panel',
+				'hook'     => 'admin_menu',
+				'method'   => 'register_nomination_success_panel',
+				'priority' => 20,
+			),
+			array(
+				'hook'   => 'admin_head',
+				'method' => 'remove_nomination_add_new_menu_item',
 			),
 		);
 	}
@@ -222,7 +227,7 @@ class NominateThisCore implements HasActions, HasFilters {
 		$post = array();
 		if ( $internal ) {
 			if ( ! current_user_can( get_option( 'pf_menu_nominate_this_access', pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'contributor' ) ) ) ) {
-				wp_die( esc_html_e( 'You do not have access to the Nominate This bookmarklet.', 'pressforward' ) );
+				wp_die( esc_html__( 'You do not have access to the Nominate This bookmarklet.', 'pressforward' ) );
 			}
 		}
 
@@ -709,6 +714,38 @@ class NominateThisCore implements HasActions, HasFilters {
 			'pf-nomination-success',
 			[ $this, 'nomination_success_panel' ]
 		);
+
+		/*
+		 * We also take this opportunity to add the 'Add New Nomination' panel.
+		 * We need to add it because otherwise cap checks will fail when
+		 * loading the bookmarklet URL in certain cases. And the 'Add New' panel
+		 * doesn't appear natively because we use a different parent when registering
+		 * the post type (show_in_menu). The menu item is removed before rendering.
+		 */
+		$pt = get_post_type_object( 'nomination' );
+		if ( $pt && is_string( $pt->show_in_menu ) ) {
+			add_submenu_page(
+				$pt->show_in_menu,
+				$pt->labels->add_new_item,
+				$pt->labels->add_new_item,
+				$pt->cap->create_posts,
+				"post-new.php?post_type={$pt->name}"
+			);
+		}
+	}
+
+	/**
+	 * Removes the 'Add New Nomination' menu item from the admin menu.
+	 *
+	 * This is hooked to 'admin_head', which runs after the menu is built but before
+	 * the page is rendered.
+	 *
+	 * @since 5.6.0
+	 *
+	 * @return void
+	 */
+	public function remove_nomination_add_new_menu_item() {
+		remove_submenu_page( 'pf-menu', 'post-new.php?post_type=nomination' );
 	}
 
 	/**

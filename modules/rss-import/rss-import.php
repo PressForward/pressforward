@@ -64,6 +64,23 @@ class PF_RSS_Import extends PF_Module implements FeedSource {
 	}
 
 	/**
+	 * Used to return a timeout value in seconds for HTTP requests when fetching feeds.
+	 *
+	 * Filters to 'http_request_timeout'.
+	 *
+	 * @param int $timeout Timeout in seconds.
+	 * @return int
+	 */
+	public function return_feed_timeout( $timeout ) {
+		/**
+		 * Filter the feed fetch timeout.
+		 *
+		 * @param int $timeout Timeout in seconds. Default is 60.
+		 */
+		return apply_filters( 'pf_feed_fetch_timeout', 60 );
+	}
+
+	/**
 	 * Set up alert.
 	 *
 	 * @param int    $id      ID.
@@ -106,14 +123,14 @@ class PF_RSS_Import extends PF_Module implements FeedSource {
 		pf_log( 'Getting RSS Feed at ' . $url );
 
 		add_filter( 'wp_feed_cache_transient_lifetime', array( $this, 'return_cachetime' ) );
+		add_filter( 'http_request_timeout', array( $this, 'return_feed_timeout' ) );
 		$simplepie_feed = pf_fetch_feed( $url );
+		remove_filter( 'http_request_timeout', array( $this, 'return_feed_timeout' ) );
 		remove_filter( 'wp_feed_cache_transient_lifetime', array( $this, 'return_cachetime' ) );
 
 		if ( empty( $simplepie_feed ) || is_wp_error( $simplepie_feed ) ) {
 			return new WP_Error( 'feed_error', 'Could not fetch feed.', $simplepie_feed );
 		}
-
-		$simplepie_feed->set_timeout( 60 );
 
 		return $this->process_feed_items( $simplepie_feed, $feed );
 	}
