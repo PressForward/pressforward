@@ -82,6 +82,13 @@ A list of FAQs can be found in our [User Manual](https://github.com/PressForward
 
 == Changelog ==
 
+= 5.9.4 =
+* Added resiliency check to ensure that RSS feeds have corresponding fetch cron jobs set.
+* Fixed bug that prevented Subscribers from having full access to the Nominate This tools (when the site admin had allowed Subscribers to have access to Nominate This).
+* Fixed bug that caused fatal errors on certain version of PHP when fetching RSS feeds.
+* Improved filtering of author names so that PF items on the front end show as being written by the "Author on Source" in widgets and other common contexts.
+* Some fixes to internationalization and escaping.
+
 = 5.9.3 =
 * Fixed bug that prevented Subscribers from being able to use the entire Nominate This flow.
 
