@@ -965,6 +965,7 @@ function pf_replace_author_presentation( $author ) {
 	return $author;
 }
 add_filter( 'the_author', 'pf_replace_author_presentation' );
+add_filter( 'get_the_author_display_name', 'pf_replace_author_presentation' );
 
 /**
  * A function to filter author urls and, if available, replace their display with the origonal item author urls.
