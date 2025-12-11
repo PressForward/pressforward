@@ -1,0 +1,54 @@
+name: Build Release Zip
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    name: Build production-ready zip
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install npm dependencies
+        run: npm ci
+      
+      - name: Build JavaScript assets
+        run: npm run build
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+
+      - name: Install Composer dependencies (production only)
+        run: composer install --no-dev --optimize-autoloader
+      
+      - name: Create production zip
+        run: |
+          # Create a directory for the plugin
+          mkdir -p build/pressforward
+          
+          # Copy all files to the build directory
+          rsync -av --exclude-from=.distignore . build/pressforward/
+          
+          # Create the zip file
+          cd build
+          zip -r pressforward.zip pressforward
+          
+      - name: Upload release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload ${{ github.event.release.tag_name }} ./build/pressforward.zip --clobber
