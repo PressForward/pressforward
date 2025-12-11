@@ -48,5 +48,18 @@
 /vendor/bin
 /vendor/squizlabs
 
+# Vendor test and documentation files
+/vendor/*/*/tests
+/vendor/*/*/test
+/vendor/*/*/Tests
+/vendor/*/*/Test
+/vendor/*/*/.git
+/vendor/*/*/.github
+/vendor/*/*/docs
+/vendor/*/*/doc
+/vendor/*/*/manual
+/vendor/*/*/examples
+/vendor/*/*/demo
+
 # Build artifacts that shouldn't be in repo
 /.phpunit.result.cache
