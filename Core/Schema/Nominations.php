@@ -167,7 +167,12 @@ class Nominations implements HasActions, HasFilters {
 			return $allcaps;
 		}
 
-		if ( in_array( 'edit_posts', $caps, true ) && user_can( $user->ID, $base_cap ) ) {
+		// Prevent recursion when checking to see whether the user is assigned this cap.
+		remove_filter( 'user_has_cap', array( $this, 'add_assign_post_tags_cap' ), 10 );
+		$user_has_base_cap = user_can( $user->ID, $base_cap );
+		add_filter( 'user_has_cap', array( $this, 'add_assign_post_tags_cap' ), 10, 4 );
+
+		if ( in_array( 'edit_posts', $caps, true ) && $user_has_base_cap ) {
 			$allcaps['edit_posts'] = true;
 		}
 
