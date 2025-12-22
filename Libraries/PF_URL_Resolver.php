@@ -51,43 +51,62 @@ class PF_URL_Resolver {
 	 * This is a simplified replacement for the abandoned mattwright/urlresolver
 	 * library that uses wp_remote_head() instead of raw cURL.
 	 *
+	 * Since WordPress's wp_remote_head() doesn't easily expose the final URL
+	 * after following redirects, we manually follow them by checking Location
+	 * headers.
+	 *
 	 * @param string $url The URL to resolve.
 	 * @return string The final URL after following redirects.
 	 */
 	protected function resolve( $url ) {
-		// WordPress's wp_remote_head() automatically follows redirects up to
-		// the limit specified in the 'redirection' parameter.
-		$response = wp_remote_head(
-			$url,
-			array(
-				'redirection' => 10,  // Follow up to 10 redirects.
-				'timeout'     => 30,  // 30 second timeout.
-			)
-		);
+		$max_redirects = 10;
+		$current_url   = $url;
 
-		// If there was an error, return the original URL.
-		if ( is_wp_error( $response ) ) {
-			return $url;
-		}
+		for ( $i = 0; $i < $max_redirects; $i++ ) {
+			// Make a HEAD request but don't auto-follow redirects.
+			// We want to manually follow them so we can track the final URL.
+			$response = wp_remote_head(
+				$current_url,
+				array(
+					'redirection' => 0,  // Don't auto-follow redirects.
+					'timeout'     => 30, // 30 second timeout.
+				)
+			);
 
-		// WordPress's HTTP API already follows redirects for us. The response
-		// array contains information about the final destination, but the
-		// actual final URL isn't directly available. However, we can retrieve
-		// it from the underlying HTTP object if available.
-		if ( isset( $response['http_response'] ) ) {
-			$http_response = $response['http_response'];
-			if ( is_a( $http_response, 'WP_HTTP_Requests_Response' ) ) {
-				// Get the final URL from the Requests response object.
-				$final_url = $http_response->get_response_object()->url;
-				if ( ! empty( $final_url ) ) {
-					return $final_url;
+			// If there was an error, return the current URL.
+			if ( is_wp_error( $response ) ) {
+				return $current_url;
+			}
+
+			$response_code = wp_remote_retrieve_response_code( $response );
+
+			// If we got a redirect status code (301, 302, 303, 307, 308),
+			// follow the Location header.
+			if ( in_array( $response_code, array( 301, 302, 303, 307, 308 ), true ) ) {
+				$location = wp_remote_retrieve_header( $response, 'location' );
+
+				if ( empty( $location ) ) {
+					// Redirect without Location header - return current URL.
+					return $current_url;
 				}
+
+				// Handle relative URLs.
+				if ( 0 === strpos( $location, '/' ) ) {
+					$parsed_url = wp_parse_url( $current_url );
+					$scheme     = isset( $parsed_url['scheme'] ) ? $parsed_url['scheme'] : 'http';
+					$host       = isset( $parsed_url['host'] ) ? $parsed_url['host'] : '';
+					$location   = $scheme . '://' . $host . $location;
+				}
+
+				// Update current URL and continue loop.
+				$current_url = $location;
+			} else {
+				// Not a redirect - we've reached the final URL.
+				return $current_url;
 			}
 		}
 
-		// Fallback: if we can't get the final URL from the response object,
-		// return the original URL. WordPress has already followed all redirects,
-		// so the original URL is effectively the final URL.
-		return $url;
+		// If we've exhausted max redirects, return the current URL.
+		return $current_url;
 	}
 }
