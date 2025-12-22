@@ -9,7 +9,7 @@ namespace PressForward\Controllers;
 
 use Intraxia\Jaxion\Contract\Core\HasActions;
 use PressForward\Interfaces\System;
-use mattwright\URLResolver;
+use PressForward\Libraries\PF_URL_Resolver;
 
 /**
  * HTTP utilities.
@@ -19,7 +19,7 @@ class HTTPTools implements HasActions {
 	 * URLResolver object.
 	 *
 	 * @access public
-	 * @var \mattwright\URLResolver
+	 * @var \PressForward\Libraries\PF_URL_Resolver
 	 */
 	public $url_resolver;
 
@@ -42,11 +42,11 @@ class HTTPTools implements HasActions {
 	/**
 	 * Constructor.
 	 *
-	 * @param \mattwright\URLResolver         $resolver URLResolver object.
-	 * @param \PressForward\Interfaces\System $system   System object.
-	 * @param \PressForward\Controllers\Metas $meta     Metas object.
+	 * @param \PressForward\Libraries\PF_URL_Resolver $resolver URLResolver object.
+	 * @param \PressForward\Interfaces\System         $system   System object.
+	 * @param \PressForward\Controllers\Metas         $meta     Metas object.
 	 */
-	public function __construct( URLResolver $resolver, System $system, Metas $meta ) {
+	public function __construct( PF_URL_Resolver $resolver, System $system, Metas $meta ) {
 		$this->url_resolver = $resolver;
 		$this->system       = $system;
 		$this->meta         = $meta;

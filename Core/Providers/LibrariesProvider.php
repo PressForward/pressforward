@@ -10,9 +10,9 @@ namespace PressForward\Core\Providers;
 use Intraxia\Jaxion\Contract\Core\Container;
 
 use PressForward\Libraries\HTMLChecker;
+use PressForward\Libraries\PF_URL_Resolver;
 use PFOpenGraph;
 use AlertBox\The_Alert_Box;
-use mattwright\URLResolver;
 
 /**
  * LibrariesProvider class.
@@ -27,7 +27,7 @@ class LibrariesProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 		$container->define(
 			'library.url_resolver',
 			function () {
-				return new URLResolver();
+				return new PF_URL_Resolver();
 			}
 		);
 
