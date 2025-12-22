@@ -82,6 +82,9 @@ A list of FAQs can be found in our [User Manual](https://github.com/PressForward
 
 == Changelog ==
 
+= 5.9.5 =
+* Fixed bug that caused Nominate This permission check to cause an infinite loop when set to 'Contributor'.
+
 = 5.9.4 =
 * Added resiliency check to ensure that RSS feeds have corresponding fetch cron jobs set.
 * Fixed bug that prevented Subscribers from having full access to the Nominate This tools (when the site admin had allowed Subscribers to have access to Nominate This).
