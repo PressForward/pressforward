@@ -122,7 +122,7 @@ class HTTPTools implements HasActions {
 			return $url;
 		} else {
 			$check = $this->url_is_aggregation_service( $url );
-			if ( $check && in_array( 'curl', get_loaded_extensions(), true ) ) {
+			if ( $check ) {
 				$url = $this->url_resolver->resolveURL( $url )->getURL();
 			}
 		}
