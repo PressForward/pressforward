@@ -93,8 +93,8 @@ class PF_URL_Resolver {
 				// Handle relative URLs.
 				if ( 0 === strpos( $location, '/' ) ) {
 					$parsed_url = wp_parse_url( $current_url );
-					$scheme     = isset( $parsed_url['scheme'] ) ? $parsed_url['scheme'] : 'http';
-					$host       = isset( $parsed_url['host'] ) ? $parsed_url['host'] : '';
+					$scheme     = $parsed_url['scheme'] ?? 'http';
+					$host       = $parsed_url['host'] ?? '';
 					$location   = $scheme . '://' . $host . $location;
 				}
 
