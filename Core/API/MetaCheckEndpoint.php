@@ -10,7 +10,6 @@ namespace PressForward\Core\API;
 use PressForward\Core\Admin\PFTemplater;
 use PressForward\Controllers\PF_JWT;
 use PFOpenGraph;
-use mattwright\URLResolver;
 
 use WP_Error;
 
@@ -43,28 +42,18 @@ class MetaCheckEndpoint implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	public $og;
 
 	/**
-	 * URL Resolver object.
-	 *
-	 * @access public
-	 * @var \mattwright\URLResolver
-	 */
-	public $url_resolver;
-
-	/**
 	 * Constructor.
 	 *
-	 * @param array                            $api_base     API base data.
-	 * @param \PressForward\Controllers\PF_JWT $jwt          PF_JWT object.
-	 * @param PFOpenGraph                      $og           PFOpenGraph object.
-	 * @param \mattwright\URLResolver          $url_resolver URLResolver object.
+	 * @param array                            $api_base API base data.
+	 * @param \PressForward\Controllers\PF_JWT $jwt      PF_JWT object.
+	 * @param PFOpenGraph                      $og       PFOpenGraph object.
 	 */
-	public function __construct( $api_base, PF_JWT $jwt, PFOpenGraph $og, URLResolver $url_resolver ) {
+	public function __construct( $api_base, PF_JWT $jwt, PFOpenGraph $og ) {
 		$this->api_base             = $api_base;
 		$this->api_base['endpoint'] = 'metachecks';
 		$this->og                   = $og;
 		$namespace                  = $this->api_base['base_namespace'] . $this->api_base['version'];
 		$base                       = $this->api_base['endpoint'];
-		$this->url_resolver         = $url_resolver;
 		$this->jwt                  = $jwt;
 	}
 
