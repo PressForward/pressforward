@@ -8,6 +8,7 @@
 use PressForward\Interfaces\FeedSource;
 
 use PressForward\Core\DTO\FeedItem;
+use PressForward\Core\Utility\GoogleScholarRateLimiter;
 
 /**
  * PF_Google_Scholar class.
@@ -28,6 +29,17 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 	 * @return array|\WP_Error
 	 */
 	public function fetch( $feed ) {
+		// Check rate limit before making request.
+		$rate_limit_check = GoogleScholarRateLimiter::is_request_allowed();
+		if ( true !== $rate_limit_check ) {
+			pf_log( 'Google Scholar rate limit reached: ' . $rate_limit_check['message'] );
+			return [
+				'success' => false,
+				'message' => $rate_limit_check['message'],
+				'entries' => [],
+			];
+		}
+
 		$url = $feed->get( 'remote_feed_url' );
 
 		$is_profile = false !== strpos( $url, 'user=' );
@@ -42,7 +54,7 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 			$url,
 			[
 				'timeout'    => 30,
-				'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+				'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
 			]
 		);
 
@@ -79,6 +91,9 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 		} else {
 			$entries = $this->parse_items_from_search( $xpath, $feed );
 		}
+
+		// Record successful request.
+		GoogleScholarRateLimiter::record_request();
 
 		return $entries;
 	}
@@ -263,6 +278,14 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 	 * @param bool                           $is_new_feed Whether the feed is new.
 	 */
 	public function health_check( \PressForward\Core\Models\Feed $feed, $is_new_feed = false ) {
+		// Check rate limit before making request.
+		$rate_limit_check = GoogleScholarRateLimiter::is_request_allowed();
+		if ( true !== $rate_limit_check ) {
+			pf_log( 'Google Scholar health check rate limit reached: ' . $rate_limit_check['message'] );
+			// For health checks, we'll skip rather than fail when rate limited.
+			return;
+		}
+
 		$feed_url = $feed->get( 'remote_feed_url' );
 
 		$feed_is_valid = false;
@@ -272,7 +295,7 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 			$feed_url,
 			[
 				'timeout'    => 30,
-				'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
+				'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
 			]
 		);
 
@@ -301,6 +324,9 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 		if ( $alert_box ) {
 			$alert_box->dismiss_alert( $feed->get( 'id' ) );
 		}
+
+		// Record successful request.
+		GoogleScholarRateLimiter::record_request();
 
 		if ( $is_new_feed ) {
 			// Get the feed title from search box HTML, class 'gs_in_txt'.

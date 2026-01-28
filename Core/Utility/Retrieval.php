@@ -8,6 +8,7 @@
 namespace PressForward\Core\Utility;
 
 use PressForward\Core\Models\Feed;
+use PressForward\Core\Utility\GoogleScholarRateLimiter;
 
 /**
  * Feed 'slurping' class.
@@ -57,6 +58,13 @@ class Retrieval {
 			'interval' => $pf_interval * 60,
 			'display'  => __( 'PressForward Retrieval Interval', 'pressforward' ),
 		);
+
+		// Add daily schedule for Google Scholar feeds.
+		$schedules['pf_google_scholar_interval'] = array(
+			'interval' => DAY_IN_SECONDS,
+			'display'  => __( 'PressForward Google Scholar Retrieval Interval (Daily)', 'pressforward' ),
+		);
+
 		return $schedules;
 	}
 
@@ -196,6 +204,25 @@ class Retrieval {
 		if ( ! $feed ) {
 			pf_log( 'The feed object was not retrieved.' );
 			return;
+		}
+
+		// Check if this is a Google Scholar feed and if rate limited.
+		$feeds_schema  = pressforward( 'schema.feeds' );
+		$feed_type     = $feeds_schema->get_pf_feed_type( $post_id );
+		$is_google_scholar = in_array( $feed_type, [ 'google-scholar', 'google-scholar-keyword', 'google-scholar-author' ], true );
+
+		if ( $is_google_scholar ) {
+			$rate_limit_check = GoogleScholarRateLimiter::is_request_allowed();
+			if ( true !== $rate_limit_check ) {
+				pf_log( 'Manual Google Scholar refresh rate limit reached: ' . $rate_limit_check['message'] );
+				wp_send_json_error(
+					[
+						'message'     => $rate_limit_check['message'],
+						'retry_after' => $rate_limit_check['retry_after'],
+					]
+				);
+				return;
+			}
 		}
 
 		$retrieved_status = $feed->retrieve();
