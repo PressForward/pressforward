@@ -778,11 +778,9 @@ class Feeds implements HasActions, HasFilters {
 			$retval['feedUrl'] = $validated['feedUrl'];
 
 			wp_send_json_success( $retval );
-		} else {
+		} elseif ( ! empty( $validated['message'] ) ) {
 			// Validation failed - use the message from validate_feed().
-			if ( ! empty( $validated['message'] ) ) {
-				$retval['message'] = $validated['message'];
-			}
+			$retval['message'] = $validated['message'];
 		}
 
 		wp_send_json_error( $retval );
