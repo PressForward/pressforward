@@ -828,7 +828,7 @@ class Feeds implements HasActions, HasFilters {
 				$request = wp_remote_get(
 					$url,
 					[
-						'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+						'user-agent' => PF_Google_Scholar::USER_AGENT,
 					]
 				);
 
@@ -836,7 +836,7 @@ class Feeds implements HasActions, HasFilters {
 					$retval['message'] = $request->get_error_message();
 				} elseif ( 200 !== wp_remote_retrieve_response_code( $request ) ) {
 					$retval['message'] = __( 'The URL returned an error.', 'pressforward' );
-				} elseif ( self::is_google_rate_limited_response( $request ) ) {
+				} elseif ( PF_Google_Scholar::is_rate_limited_response( $request ) ) {
 					// Detected Google's rate limiting page.
 					$retval['message'] = __( 'Google Scholar is rate limiting requests from your server. Please try again later.', 'pressforward' );
 				} else {
@@ -861,41 +861,6 @@ class Feeds implements HasActions, HasFilters {
 		}
 
 		return $retval;
-	}
-
-	/**
-	 * Detects if a response indicates Google rate limiting.
-	 *
-	 * Google redirects to a CAPTCHA page at /sorry/index when rate limiting.
-	 * This can be a 302 redirect or a 200 response with the sorry page content.
-	 *
-	 * @param array|\WP_Error $response HTTP response from wp_remote_get().
-	 * @return bool True if rate limiting is detected, false otherwise.
-	 */
-	protected static function is_google_rate_limited_response( $response ) {
-		if ( is_wp_error( $response ) ) {
-			return false;
-		}
-
-		// Check for redirect to sorry page.
-		$redirect_url = wp_remote_retrieve_header( $response, 'location' );
-		if ( $redirect_url && false !== strpos( $redirect_url, '/sorry/' ) ) {
-			return true;
-		}
-
-		// Check the body for signs of the sorry page.
-		$body = wp_remote_retrieve_body( $response );
-		if ( $body ) {
-			// Check for common indicators of Google's rate limiting page.
-			if ( false !== strpos( $body, '/sorry/' ) ||
-				 false !== strpos( $body, 'automated queries' ) ||
-				 false !== strpos( $body, 'unusual traffic' ) ||
-				 false !== strpos( $body, 'recaptcha' ) ) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**

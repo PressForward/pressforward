@@ -15,6 +15,13 @@ use PressForward\Core\Utility\GoogleScholarRateLimiter;
  */
 class PF_Google_Scholar extends PF_Module implements FeedSource {
 	/**
+	 * User-Agent string to use for Google Scholar requests.
+	 *
+	 * @var string
+	 */
+	const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -28,36 +35,30 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 	 * Google redirects to a CAPTCHA page at /sorry/index when rate limiting.
 	 * This can be a 302 redirect or a 200 response with the sorry page content.
 	 *
-	 * @param array|WP_Error $response HTTP response from wp_remote_get().
+	 * @param array|\WP_Error $response HTTP response from wp_remote_get().
 	 * @return bool True if rate limiting is detected, false otherwise.
 	 */
-	protected function is_rate_limited_response( $response ) {
+	public static function is_rate_limited_response( $response ) {
 		if ( is_wp_error( $response ) ) {
 			return false;
 		}
 
 		// Check for redirect to sorry page.
 		$redirect_url = wp_remote_retrieve_header( $response, 'location' );
-		if ( $redirect_url && false !== strpos( $redirect_url, '/sorry/' ) ) {
+		if ( $redirect_url && false !== stripos( $redirect_url, '/sorry/' ) ) {
 			return true;
 		}
 
-		// Check the final URL after redirects.
-		$final_url = wp_remote_retrieve_header( $response, 'x-final-url' );
-		if ( ! $final_url ) {
-			// If no x-final-url header, check the body for signs of the sorry page.
-			$body = wp_remote_retrieve_body( $response );
-			if ( $body ) {
-				// Check for common indicators of Google's rate limiting page.
-				if ( false !== strpos( $body, '/sorry/' ) ||
-					 false !== strpos( $body, 'automated queries' ) ||
-					 false !== strpos( $body, 'unusual traffic' ) ||
-					 false !== strpos( $body, 'recaptcha' ) ) {
-					return true;
-				}
+		// Check the body for signs of the sorry page (case-insensitive).
+		$body = wp_remote_retrieve_body( $response );
+		if ( $body ) {
+			// Check for common indicators of Google's rate limiting page.
+			if ( false !== stripos( $body, '/sorry/' ) ||
+				 false !== stripos( $body, 'automated queries' ) ||
+				 false !== stripos( $body, 'unusual traffic' ) ||
+				 false !== stripos( $body, 'recaptcha' ) ) {
+				return true;
 			}
-		} elseif ( false !== strpos( $final_url, '/sorry/' ) ) {
-			return true;
 		}
 
 		return false;
@@ -95,7 +96,7 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 			$url,
 			[
 				'timeout'    => 30,
-				'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+				'user-agent' => self::USER_AGENT,
 			]
 		);
 
@@ -109,7 +110,7 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 		}
 
 		// Check if the response indicates rate limiting by Google.
-		if ( $this->is_rate_limited_response( $response ) ) {
+		if ( self::is_rate_limited_response( $response ) ) {
 			pf_log( 'Google Scholar response indicates rate limiting (CAPTCHA/sorry page)' );
 			return [
 				'success' => false,
@@ -346,14 +347,14 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 			$feed_url,
 			[
 				'timeout'    => 30,
-				'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+				'user-agent' => self::USER_AGENT,
 			]
 		);
 
 		$body = '';
 		if ( ! is_wp_error( $response ) ) {
 			// Check if the response indicates rate limiting by Google.
-			if ( $this->is_rate_limited_response( $response ) ) {
+			if ( self::is_rate_limited_response( $response ) ) {
 				pf_log( 'Google Scholar health check response indicates rate limiting (CAPTCHA/sorry page)' );
 				// Don't record this as a successful request.
 				// Don't mark the feed as invalid, just skip health check.
