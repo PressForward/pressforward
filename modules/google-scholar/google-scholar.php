@@ -23,6 +23,47 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 	}
 
 	/**
+	 * Detects if a response indicates Google rate limiting.
+	 *
+	 * Google redirects to a CAPTCHA page at /sorry/index when rate limiting.
+	 * This can be a 302 redirect or a 200 response with the sorry page content.
+	 *
+	 * @param array|WP_Error $response HTTP response from wp_remote_get().
+	 * @return bool True if rate limiting is detected, false otherwise.
+	 */
+	protected function is_rate_limited_response( $response ) {
+		if ( is_wp_error( $response ) ) {
+			return false;
+		}
+
+		// Check for redirect to sorry page.
+		$redirect_url = wp_remote_retrieve_header( $response, 'location' );
+		if ( $redirect_url && false !== strpos( $redirect_url, '/sorry/' ) ) {
+			return true;
+		}
+
+		// Check the final URL after redirects.
+		$final_url = wp_remote_retrieve_header( $response, 'x-final-url' );
+		if ( ! $final_url ) {
+			// If no x-final-url header, check the body for signs of the sorry page.
+			$body = wp_remote_retrieve_body( $response );
+			if ( $body ) {
+				// Check for common indicators of Google's rate limiting page.
+				if ( false !== strpos( $body, '/sorry/' ) ||
+					 false !== strpos( $body, 'automated queries' ) ||
+					 false !== strpos( $body, 'unusual traffic' ) ||
+					 false !== strpos( $body, 'recaptcha' ) ) {
+					return true;
+				}
+			}
+		} elseif ( false !== strpos( $final_url, '/sorry/' ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Fetches data from URL.
 	 *
 	 * @param \PressForward\Core\Models\Feed $feed Feed object.
@@ -63,6 +104,16 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 			return [
 				'success' => false,
 				'message' => $response->get_error_message(),
+				'entries' => [],
+			];
+		}
+
+		// Check if the response indicates rate limiting by Google.
+		if ( $this->is_rate_limited_response( $response ) ) {
+			pf_log( 'Google Scholar response indicates rate limiting (CAPTCHA/sorry page)' );
+			return [
+				'success' => false,
+				'message' => __( 'Google Scholar is rate limiting this request. Please try again later.', 'pressforward' ),
 				'entries' => [],
 			];
 		}
@@ -301,6 +352,14 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 
 		$body = '';
 		if ( ! is_wp_error( $response ) ) {
+			// Check if the response indicates rate limiting by Google.
+			if ( $this->is_rate_limited_response( $response ) ) {
+				pf_log( 'Google Scholar health check response indicates rate limiting (CAPTCHA/sorry page)' );
+				// Don't record this as a successful request.
+				// Don't mark the feed as invalid, just skip health check.
+				return;
+			}
+
 			$body = wp_remote_retrieve_body( $response );
 
 			// Check if the body contains Google Scholar specific content.

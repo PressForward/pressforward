@@ -12,6 +12,7 @@ use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
 use PressForward\Controllers\Metas;
 use PressForward\Core\Models\Feed;
+use PressForward\Core\Utility\GoogleScholarRateLimiter;
 
 /**
  * Database class for manipulating feed.
@@ -817,12 +818,31 @@ class Feeds implements HasActions, HasFilters {
 		switch ( $feed_type ) {
 			case 'google-scholar-author':
 			case 'google-scholar-keyword':
-				$request = wp_remote_get( $url );
+				// Check rate limit before making request.
+				$rate_limit_check = GoogleScholarRateLimiter::is_request_allowed();
+				if ( true !== $rate_limit_check ) {
+					$retval['message'] = $rate_limit_check['message'];
+					break;
+				}
+
+				$request = wp_remote_get(
+					$url,
+					[
+						'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+					]
+				);
+
 				if ( is_wp_error( $request ) ) {
 					$retval['message'] = $request->get_error_message();
 				} elseif ( 200 !== wp_remote_retrieve_response_code( $request ) ) {
 					$retval['message'] = __( 'The URL returned an error.', 'pressforward' );
+				} elseif ( self::is_google_rate_limited_response( $request ) ) {
+					// Detected Google's rate limiting page.
+					$retval['message'] = __( 'Google Scholar is rate limiting requests from your server. Please try again later.', 'pressforward' );
 				} else {
+					// Record successful request only if not rate limited.
+					GoogleScholarRateLimiter::record_request();
+
 					$retval['success'] = true;
 					$retval['feedUrl'] = $url;
 					$retval['message'] = 'google-scholar-author' === $feed_type ? __( 'Google Scholar author feed detected.', 'pressforward' ) : __( 'Google Scholar keyword feed detected.', 'pressforward' );
@@ -841,6 +861,41 @@ class Feeds implements HasActions, HasFilters {
 		}
 
 		return $retval;
+	}
+
+	/**
+	 * Detects if a response indicates Google rate limiting.
+	 *
+	 * Google redirects to a CAPTCHA page at /sorry/index when rate limiting.
+	 * This can be a 302 redirect or a 200 response with the sorry page content.
+	 *
+	 * @param array|\WP_Error $response HTTP response from wp_remote_get().
+	 * @return bool True if rate limiting is detected, false otherwise.
+	 */
+	protected static function is_google_rate_limited_response( $response ) {
+		if ( is_wp_error( $response ) ) {
+			return false;
+		}
+
+		// Check for redirect to sorry page.
+		$redirect_url = wp_remote_retrieve_header( $response, 'location' );
+		if ( $redirect_url && false !== strpos( $redirect_url, '/sorry/' ) ) {
+			return true;
+		}
+
+		// Check the body for signs of the sorry page.
+		$body = wp_remote_retrieve_body( $response );
+		if ( $body ) {
+			// Check for common indicators of Google's rate limiting page.
+			if ( false !== strpos( $body, '/sorry/' ) ||
+				 false !== strpos( $body, 'automated queries' ) ||
+				 false !== strpos( $body, 'unusual traffic' ) ||
+				 false !== strpos( $body, 'recaptcha' ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
