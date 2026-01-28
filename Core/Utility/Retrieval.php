@@ -221,7 +221,6 @@ class Retrieval {
 						'retry_after' => $rate_limit_check['retry_after'],
 					]
 				);
-				return;
 			}
 		}
 
