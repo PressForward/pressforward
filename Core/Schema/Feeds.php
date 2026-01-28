@@ -13,6 +13,7 @@ use Intraxia\Jaxion\Contract\Core\HasFilters;
 use PressForward\Controllers\Metas;
 use PressForward\Core\Models\Feed;
 use PressForward\Core\Utility\GoogleScholarRateLimiter;
+use PF_Google_Scholar;
 
 /**
  * Database class for manipulating feed.
