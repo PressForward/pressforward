@@ -777,6 +777,11 @@ class Feeds implements HasActions, HasFilters {
 			$retval['feedUrl'] = $validated['feedUrl'];
 
 			wp_send_json_success( $retval );
+		} else {
+			// Validation failed - use the message from validate_feed().
+			if ( ! empty( $validated['message'] ) ) {
+				$retval['message'] = $validated['message'];
+			}
 		}
 
 		wp_send_json_error( $retval );
@@ -834,11 +839,20 @@ class Feeds implements HasActions, HasFilters {
 
 				if ( is_wp_error( $request ) ) {
 					$retval['message'] = $request->get_error_message();
-				} elseif ( 200 !== wp_remote_retrieve_response_code( $request ) ) {
-					$retval['message'] = __( 'The URL returned an error.', 'pressforward' );
 				} elseif ( PF_Google_Scholar::is_rate_limited_response( $request ) ) {
 					// Detected Google's rate limiting page.
 					$retval['message'] = __( 'Google Scholar is rate limiting requests from your server. Please try again later.', 'pressforward' );
+				} elseif ( 200 !== wp_remote_retrieve_response_code( $request ) ) {
+					$response_code = wp_remote_retrieve_response_code( $request );
+					if ( 429 === $response_code ) {
+						$retval['message'] = __( 'Google Scholar is rate limiting requests. Please try again later.', 'pressforward' );
+					} else {
+						$retval['message'] = sprintf(
+							// translators: %d is the HTTP response code.
+							__( 'The URL returned an error (HTTP %d).', 'pressforward' ),
+							$response_code
+						);
+					}
 				} else {
 					// Record successful request only if not rate limited.
 					GoogleScholarRateLimiter::record_request();
