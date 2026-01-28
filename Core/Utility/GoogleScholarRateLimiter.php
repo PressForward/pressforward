@@ -102,11 +102,11 @@ class GoogleScholarRateLimiter {
 		$timestamps = self::get_request_timestamps();
 		$timestamps = self::cleanup_old_timestamps( $timestamps );
 
-		$now               = time();
-		$one_hour_ago      = $now - HOUR_IN_SECONDS;
-		$one_day_ago       = $now - DAY_IN_SECONDS;
-		$max_per_hour      = self::get_max_requests_per_hour();
-		$max_per_day       = self::get_max_requests_per_day();
+		$now          = time();
+		$one_hour_ago = $now - HOUR_IN_SECONDS;
+		$one_day_ago  = $now - DAY_IN_SECONDS;
+		$max_per_hour = self::get_max_requests_per_hour();
+		$max_per_day  = self::get_max_requests_per_day();
 
 		// Count requests in the last hour.
 		$requests_last_hour = count(
@@ -131,34 +131,34 @@ class GoogleScholarRateLimiter {
 		// Check hourly limit.
 		if ( $requests_last_hour >= $max_per_hour ) {
 			return [
-				'allowed'         => false,
-				'reason'          => 'hourly_limit',
-				'message'         => sprintf(
+				'allowed'        => false,
+				'reason'         => 'hourly_limit',
+				'message'        => sprintf(
 					// translators: 1: number of requests, 2: time period.
 					__( 'Google Scholar request limit reached: %1$d requests per %2$s. Please try again later.', 'pressforward' ),
 					$max_per_hour,
 					__( 'hour', 'pressforward' )
 				),
-				'requests_count'  => $requests_last_hour,
-				'limit'           => $max_per_hour,
-				'retry_after'     => self::get_retry_after_seconds( $timestamps, HOUR_IN_SECONDS, $max_per_hour ),
+				'requests_count' => $requests_last_hour,
+				'limit'          => $max_per_hour,
+				'retry_after'    => self::get_retry_after_seconds( $timestamps, HOUR_IN_SECONDS, $max_per_hour ),
 			];
 		}
 
 		// Check daily limit.
 		if ( $requests_last_day >= $max_per_day ) {
 			return [
-				'allowed'         => false,
-				'reason'          => 'daily_limit',
-				'message'         => sprintf(
+				'allowed'        => false,
+				'reason'         => 'daily_limit',
+				'message'        => sprintf(
 					// translators: 1: number of requests, 2: time period.
 					__( 'Google Scholar request limit reached: %1$d requests per %2$s. Please try again later.', 'pressforward' ),
 					$max_per_day,
 					__( 'day', 'pressforward' )
 				),
-				'requests_count'  => $requests_last_day,
-				'limit'           => $max_per_day,
-				'retry_after'     => self::get_retry_after_seconds( $timestamps, DAY_IN_SECONDS, $max_per_day ),
+				'requests_count' => $requests_last_day,
+				'limit'          => $max_per_day,
+				'retry_after'    => self::get_retry_after_seconds( $timestamps, DAY_IN_SECONDS, $max_per_day ),
 			];
 		}
 
@@ -222,11 +222,11 @@ class GoogleScholarRateLimiter {
 		$timestamps = self::get_request_timestamps();
 		$timestamps = self::cleanup_old_timestamps( $timestamps );
 
-		$now               = time();
-		$one_hour_ago      = $now - HOUR_IN_SECONDS;
-		$one_day_ago       = $now - DAY_IN_SECONDS;
-		$max_per_hour      = self::get_max_requests_per_hour();
-		$max_per_day       = self::get_max_requests_per_day();
+		$now          = time();
+		$one_hour_ago = $now - HOUR_IN_SECONDS;
+		$one_day_ago  = $now - DAY_IN_SECONDS;
+		$max_per_hour = self::get_max_requests_per_hour();
+		$max_per_day  = self::get_max_requests_per_day();
 
 		$requests_last_hour = count(
 			array_filter(

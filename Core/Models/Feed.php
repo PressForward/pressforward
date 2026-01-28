@@ -207,8 +207,8 @@ class Feed extends BasicModel {
 	 */
 	public function schedule_retrieval( $args = [] ) {
 		// Determine if this is a Google Scholar feed.
-		$feeds_schema = pressforward( 'schema.feeds' );
-		$feed_type    = $feeds_schema->get_pf_feed_type( $this->get( 'id' ) );
+		$feeds_schema      = pressforward( 'schema.feeds' );
+		$feed_type         = $feeds_schema->get_pf_feed_type( $this->get( 'id' ) );
 		$is_google_scholar = in_array( $feed_type, [ 'google-scholar', 'google-scholar-keyword', 'google-scholar-author' ], true );
 
 		// Set default interval and nextrun based on feed type.

@@ -207,8 +207,8 @@ class Retrieval {
 		}
 
 		// Check if this is a Google Scholar feed and if rate limited.
-		$feeds_schema  = pressforward( 'schema.feeds' );
-		$feed_type     = $feeds_schema->get_pf_feed_type( $post_id );
+		$feeds_schema      = pressforward( 'schema.feeds' );
+		$feed_type         = $feeds_schema->get_pf_feed_type( $post_id );
 		$is_google_scholar = in_array( $feed_type, [ 'google-scholar', 'google-scholar-keyword', 'google-scholar-author' ], true );
 
 		if ( $is_google_scholar ) {

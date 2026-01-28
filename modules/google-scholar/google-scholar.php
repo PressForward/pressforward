@@ -54,9 +54,9 @@ class PF_Google_Scholar extends PF_Module implements FeedSource {
 		if ( $body ) {
 			// Check for common indicators of Google's rate limiting page.
 			if ( false !== stripos( $body, '/sorry/' ) ||
-				 false !== stripos( $body, 'automated queries' ) ||
-				 false !== stripos( $body, 'unusual traffic' ) ||
-				 false !== stripos( $body, 'recaptcha' ) ) {
+				false !== stripos( $body, 'automated queries' ) ||
+				false !== stripos( $body, 'unusual traffic' ) ||
+				false !== stripos( $body, 'recaptcha' ) ) {
 				return true;
 			}
 		}
