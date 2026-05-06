@@ -26,14 +26,6 @@ class Stats {
 	public $slug;
 
 	/**
-	 * Title.
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $title;
-
-	/**
 	 * Root path.
 	 *
 	 * @access public
@@ -144,13 +136,12 @@ class Stats {
 	 */
 	private function define_constants() {
 		$this->slug            = 'pf_stats';
-		$this->title           = __( 'PressForward Stats', 'pressforward' );
 		$this->root            = PF_ROOT;
 		$this->file_path       = $this->root . '/' . basename( __FILE__ );
 		$this->url             = plugins_url( '/', __FILE__ );
 		$this->ver             = 1.0;
 		$this->feed_post_type  = 'pf_feed_item';
-		$this->meta_key        = pressforward( 'controller.metas' )->get_key( 'item_id' );
+		$this->meta_key        = 'item_id';
 		$this->meta_author_key = 'item_author';
 	}
 
