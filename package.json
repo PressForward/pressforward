@@ -7,7 +7,7 @@
 		"test": "tests"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.24.9",
+		"@babel/core": "^7.29.6",
 		"@babel/eslint-parser": "^7.24.8",
 		"@babel/preset-env": "^7.24.8",
 		"@selfisekai/gulp-sass": "^4.2.0",
