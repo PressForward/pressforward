@@ -7,6 +7,7 @@
 
 namespace PressForward\Controllers;
 
+use Firebase\JWT\Key;
 use PressForward\Interfaces\System;
 use PressForward\Interfaces\SystemUsers;
 
@@ -104,11 +105,12 @@ class PF_JWT {
 	 *
 	 * @param string $token Token.
 	 * @param string $key   Key.
+	 * @param string $alg   Algorithm.
 	 * @return bool|object
 	 */
-	public function decode_with_jwt( $token, $key ) {
+	public function decode_with_jwt( $token, $key, $alg = 'HS256' ) {
 		try {
-			$decode = $this->jwt->decode( $token, $key );
+			$decode = $this->jwt->decode( $token, new Key( $key, $alg ) );
 		} catch ( \Exception $e ) {
 			return false;
 		}
