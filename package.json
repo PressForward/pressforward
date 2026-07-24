@@ -60,7 +60,7 @@
 	"dependencies": {
 		"@mozilla/readability": "^0.4.2",
 		"bootstrap": "^5.3.2",
-		"dompurify": "^3.0.0",
+		"dompurify": "^3.4.12",
 		"infinite-scroll": "^4.0.1",
 		"url-search-params-polyfill": "^8.1.1",
 		"whatwg-fetch": "^3.6.2"
