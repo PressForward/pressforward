@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2f5c97a47c64a6b01d535643c90daf1d",
+    "content-hash": "e27a513c41932b9fcb54d207ee2a3e37",
     "packages": [
         {
             "name": "davechild/textstatistics",
@@ -422,56 +422,6 @@
                 "source": "https://github.com/Masterminds/html5-php/tree/2.9.0"
             },
             "time": "2024-03-31T07:05:07+00:00"
-        },
-        {
-            "name": "mattwright/urlresolver",
-            "version": "2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mattwright/URLResolver.php.git",
-                "reference": "416039192cb6d9158bdacd68349bceff8739b857"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mattwright/URLResolver.php/zipball/416039192cb6d9158bdacd68349bceff8739b857",
-                "reference": "416039192cb6d9158bdacd68349bceff8739b857",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "ext-mbstring": "*",
-                "php": ">=5.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "mattwright\\": "."
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Matt Wright",
-                    "email": "mw@mattwright.com"
-                }
-            ],
-            "description": "PHP class that attempts to resolve URLs to a final, canonical link.",
-            "homepage": "https://github.com/mattwright/URLResolver.php",
-            "keywords": [
-                "canonical",
-                "link",
-                "redirect",
-                "resolve",
-                "url"
-            ],
-            "support": {
-                "issues": "https://github.com/mattwright/URLResolver.php/issues",
-                "source": "https://github.com/mattwright/URLResolver.php/tree/master"
-            },
-            "time": "2019-01-18T00:59:34+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -3478,5 +3428,5 @@
     "prefer-lowest": false,
     "platform": {},
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
