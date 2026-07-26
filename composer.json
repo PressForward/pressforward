@@ -23,7 +23,14 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "phpstan/extension-installer": true
-        }
+        },
+		"policy":{
+			"advisories": {
+				"ignore-id": [
+					"PKSA-y2cr-5h3j-g3ys"
+				]
+			}
+		}
     },
     "require": {
         "simplehtmldom/simplehtmldom": "^2.0-RC",
