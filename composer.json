@@ -16,7 +16,8 @@
         "szepeviktor/phpstan-wordpress": "^1.3",
         "phpstan/extension-installer": "^1.2",
         "yoast/phpunit-polyfills": "^1.0",
-        "johnkary/phpunit-speedtrap": "^4.0"
+        "johnkary/phpunit-speedtrap": "^4.0",
+		"phpunit/phpunit": "9.6.35"
     },
     "config": {
         "allow-plugins": {
