@@ -27,7 +27,7 @@ if ( ! class_exists( 'MyCLabs\Enum\Enum' ) ) {
 }
 
 if ( ! version_compare( phpversion(), '7.3', '>=' ) ) {
-	wp_die( esc_html__( 'PressForward requires PHP 7.3 or greater.', 'pressforward' ) );
+	wp_die( esc_html( 'PressForward requires PHP 7.3 or greater.' ) );
 } else {
 	require __DIR__ . '/init.php';
 }

@@ -206,10 +206,19 @@ class Feed extends BasicModel {
 	 * @return true|\WP_Error True if scheduled, WP_Error if not. See wp_schedule_event().
 	 */
 	public function schedule_retrieval( $args = [] ) {
+		// Determine if this is a Google Scholar feed.
+		$feeds_schema      = pressforward( 'schema.feeds' );
+		$feed_type         = $feeds_schema->get_pf_feed_type( $this->get( 'id' ) );
+		$is_google_scholar = in_array( $feed_type, [ 'google-scholar', 'google-scholar-keyword', 'google-scholar-author' ], true );
+
+		// Set default interval and nextrun based on feed type.
+		$default_interval = $is_google_scholar ? 'pf_google_scholar_interval' : 'pf_interval';
+		$default_nextrun  = $is_google_scholar ? time() + ( wp_rand( 0, 120 ) * MINUTE_IN_SECONDS ) : time() + ( wp_rand( 0, 30 ) * MINUTE_IN_SECONDS );
+
 		$r = array_merge(
 			[
-				'interval' => 'pf_interval',
-				'nextrun'  => time() + ( wp_rand( 0, 30 ) * MINUTE_IN_SECONDS ),
+				'interval' => $default_interval,
+				'nextrun'  => $default_nextrun,
 			],
 			$args
 		);

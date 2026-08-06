@@ -16,20 +16,27 @@
         "szepeviktor/phpstan-wordpress": "^1.3",
         "phpstan/extension-installer": "^1.2",
         "yoast/phpunit-polyfills": "^1.0",
-        "johnkary/phpunit-speedtrap": "^4.0"
+        "johnkary/phpunit-speedtrap": "^4.0",
+		"phpunit/phpunit": "9.6.35"
     },
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "phpstan/extension-installer": true
-        }
+        },
+		"policy":{
+			"advisories": {
+				"ignore-id": [
+					"PKSA-y2cr-5h3j-g3ys"
+				]
+			}
+		}
     },
     "require": {
         "simplehtmldom/simplehtmldom": "^2.0-RC",
         "firebase/php-jwt": "^6.11",
         "paragonie/random_compat": "^9.99",
         "davechild/textstatistics": "^1.0",
-        "mattwright/urlresolver": "^2.0",
         "fivefilters/readability.php": "~3.0.0",
         "psr/log": "^1.0"
     }
