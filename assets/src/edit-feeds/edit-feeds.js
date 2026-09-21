@@ -39,7 +39,8 @@ jQuery(window).load(function() {
 				ajaxurl,
 				{
 					action: 'ajax_update_feed_handler',
-					feed_id: feedId // eslint-disable-line camelcase
+					feed_id: feedId, // eslint-disable-line camelcase
+					nonce: pfEditFeeds.refreshNonce,
 				},
 				( response ) => {
 					const { success, data } = response

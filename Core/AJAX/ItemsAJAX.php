@@ -95,8 +95,14 @@ class ItemsAJAX implements HasActions {
 	 * AJAX handler for 'wp_ajax_pf_ajax_move_to_archive'.
 	 */
 	public function pf_ajax_move_to_archive() {
+		check_ajax_referer( 'nomination', PF_SLUG . '_nomination_nonce' );
+
 		$item_post_id = isset( $_POST['item_post_id'] ) ? intval( $_POST['item_post_id'] ) : 0;
 		$nom_id       = isset( $_POST['nom_id'] ) ? intval( $_POST['nom_id'] ) : 0;
+		if ( ! current_user_can( 'edit_post', $item_post_id ) || ! current_user_can( 'edit_post', $nom_id ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to archive these PressForward items.', 'pressforward' ), 403 );
+		}
+
 		$this->metas->update_pf_meta( $nom_id, 'pf_archive', 1 );
 		$this->metas->update_pf_meta( $item_post_id, 'pf_archive', 1 );
 		$check = $this->posts->update_post(
@@ -113,8 +119,14 @@ class ItemsAJAX implements HasActions {
 	 * AJAX handler for 'wp_ajax_pf_ajax_move_out_of_archive'.
 	 */
 	public function pf_ajax_move_out_of_archive() {
+		check_ajax_referer( 'nomination', PF_SLUG . '_nomination_nonce' );
+
 		$item_post_id = isset( $_POST['item_post_id'] ) ? intval( $_POST['item_post_id'] ) : 0;
 		$nom_id       = isset( $_POST['nom_id'] ) ? intval( $_POST['nom_id'] ) : 0;
+		if ( ! current_user_can( 'edit_post', $item_post_id ) || ! current_user_can( 'edit_post', $nom_id ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to unarchive these PressForward items.', 'pressforward' ), 403 );
+		}
+
 		$this->metas->update_pf_meta( $nom_id, 'pf_archive', 'false' );
 		$this->metas->update_pf_meta( $item_post_id, 'pf_archive', 'false' );
 		$check = $this->posts->update_post(
@@ -131,6 +143,12 @@ class ItemsAJAX implements HasActions {
 	 * AJAX handler for 'wp_ajax_disassemble_item'.
 	 */
 	public function trigger_item_disassembly() {
+		check_ajax_referer( 'pf_ajax_disassemble_item', 'nonce' );
+
+		if ( ! current_user_can( pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'administrator' ) ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to clean up PressForward feed items.', 'pressforward' ), 403 );
+		}
+
 		$this->items->disassemble_feed_items();
 		$message = array(
 			'action_taken' => 'Feed items being removed',
@@ -142,12 +160,18 @@ class ItemsAJAX implements HasActions {
 	 * AJAX handler for 'wp_ajax_pf_ajax_thing_deleter'.
 	 */
 	public function pf_ajax_thing_deleter() {
+		check_ajax_referer( 'pf_ajax_thing_deleter', 'nonce' );
+
 		ob_start();
 		if ( isset( $_POST['post_id'] ) ) {
 			$id = intval( $_POST['post_id'] );
 		} else {
 			pressforward( 'ajax.configuration' )->pf_bad_call( 'pf_ajax_thing_deleter', __( 'Option not sent', 'pressforward' ) );
 			return;
+		}
+
+		if ( ! current_user_can( 'delete_post', $id ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to delete this PressForward item.', 'pressforward' ), 403 );
 		}
 
 		if ( isset( $_POST['made_readable'] ) ) {

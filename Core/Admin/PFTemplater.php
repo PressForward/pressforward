@@ -645,12 +645,9 @@ class PFTemplater {
 
 		echo '<div class="box-controls">';
 
-		if ( current_user_can( 'manage_options' ) ) {
-			if ( 'nomination' === $format ) {
-				echo '<i class="icon-remove pf-item-remove" pf-post-id="' . esc_attr( $metadata['nom_id'] ) . '" title="' . esc_attr__( 'Delete', 'pressforward' ) . '"></i>';
-			} else {
-				echo '<i class="icon-remove pf-item-remove" pf-post-id="' . esc_attr( $id_for_comments ) . '" title="' . esc_attr__( 'Delete', 'pressforward' ) . '"></i>';
-			}
+		$delete_post_id = 'nomination' === $format ? $metadata['nom_id'] : $id_for_comments;
+		if ( current_user_can( 'delete_post', $delete_post_id ) ) {
+			echo '<i class="icon-remove pf-item-remove" pf-post-id="' . esc_attr( $delete_post_id ) . '" data-pf-delete-nonce="' . esc_attr( wp_create_nonce( 'pf_ajax_thing_deleter' ) ) . '" title="' . esc_attr__( 'Delete', 'pressforward' ) . '"></i>';
 		}
 
 		if ( 'nomination' !== $format ) {

@@ -201,6 +201,11 @@ EOT;
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, 'meta_form_nonce_' . $id ) ) {
 			pressforward( 'ajax.configuration' )->pf_bad_call( 'pf_ajax_update_meta_fields', 'Failed Nonce.' );
+			return;
+		}
+
+		if ( ! current_user_can( 'edit_post', $id ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to edit this PressForward item.', 'pressforward' ), 403 );
 		}
 
 		ob_start();

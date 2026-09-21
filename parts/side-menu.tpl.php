@@ -36,7 +36,7 @@
 			if ( 'toplevel_page_pf-menu' === $slug && $version >= 0 && current_user_can( pf_get_defining_capability_by_role( 'administrator' ) ) ) {
 				?>
 
-						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" value="<?php esc_attr_e( 'Delete all items', 'pressforward' ); ?>" ><?php esc_html_e( 'Delete all items', 'pressforward' ); ?></button>
+						<button type="submit" class="delete btn btn-danger pull-right" id="deletefeedarchive" data-pf-reset-feed-nonce="<?php echo esc_attr( wp_create_nonce( 'pf_ajax_reset_feed' ) ); ?>" value="<?php esc_attr_e( 'Delete all items', 'pressforward' ); ?>" ><?php esc_html_e( 'Delete all items', 'pressforward' ); ?></button>
 				<?php
 			}
 

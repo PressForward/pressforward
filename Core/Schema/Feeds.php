@@ -12,6 +12,8 @@ use Intraxia\Jaxion\Contract\Core\HasActions;
 use Intraxia\Jaxion\Contract\Core\HasFilters;
 use PressForward\Controllers\Metas;
 use PressForward\Core\Models\Feed;
+use PressForward\Core\Utility\GoogleScholarRateLimiter;
+use PF_Google_Scholar;
 
 /**
  * Database class for manipulating feed.
@@ -776,6 +778,9 @@ class Feeds implements HasActions, HasFilters {
 			$retval['feedUrl'] = $validated['feedUrl'];
 
 			wp_send_json_success( $retval );
+		} elseif ( ! empty( $validated['message'] ) ) {
+			// Validation failed - use the message from validate_feed().
+			$retval['message'] = $validated['message'];
 		}
 
 		wp_send_json_error( $retval );
@@ -817,12 +822,40 @@ class Feeds implements HasActions, HasFilters {
 		switch ( $feed_type ) {
 			case 'google-scholar-author':
 			case 'google-scholar-keyword':
-				$request = wp_remote_get( $url );
+				// Check rate limit before making request.
+				$rate_limit_check = GoogleScholarRateLimiter::is_request_allowed();
+				if ( true !== $rate_limit_check ) {
+					$retval['message'] = $rate_limit_check['message'];
+					break;
+				}
+
+				$request = wp_remote_get(
+					$url,
+					[
+						'user-agent' => PF_Google_Scholar::USER_AGENT,
+					]
+				);
+
 				if ( is_wp_error( $request ) ) {
 					$retval['message'] = $request->get_error_message();
+				} elseif ( PF_Google_Scholar::is_rate_limited_response( $request ) ) {
+					// Detected Google's rate limiting page.
+					$retval['message'] = __( 'Google Scholar is rate limiting requests from your server. Please try again later.', 'pressforward' );
 				} elseif ( 200 !== wp_remote_retrieve_response_code( $request ) ) {
-					$retval['message'] = __( 'The URL returned an error.', 'pressforward' );
+					$response_code = wp_remote_retrieve_response_code( $request );
+					if ( 429 === $response_code ) {
+						$retval['message'] = __( 'Google Scholar is rate limiting requests. Please try again later.', 'pressforward' );
+					} else {
+						$retval['message'] = sprintf(
+							// translators: %d is the HTTP response code.
+							__( 'The URL returned an error (HTTP %d).', 'pressforward' ),
+							$response_code
+						);
+					}
 				} else {
+					// Record successful request only if not rate limited.
+					GoogleScholarRateLimiter::record_request();
+
 					$retval['success'] = true;
 					$retval['feedUrl'] = $url;
 					$retval['message'] = 'google-scholar-author' === $feed_type ? __( 'Google Scholar author feed detected.', 'pressforward' ) : __( 'Google Scholar keyword feed detected.', 'pressforward' );

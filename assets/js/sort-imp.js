@@ -27,6 +27,7 @@ jQuery( window ).on('load', function() {
 		jQuery.post(ajaxurl, {
 			action: 'pf_ajax_thing_deleter',
 			post_id: postID,
+			nonce: element.attr( 'data-pf-delete-nonce' ),
 			}, function (response) {
 
 			});
