@@ -8,10 +8,12 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.24.9",
-		"@babel/eslint-parser": "^7.24.8",
 		"@babel/preset-env": "^7.24.8",
+		"@eslint/compat": "^2.1.1",
 		"@selfisekai/gulp-sass": "^4.2.0",
-		"@wordpress/scripts": "^33.0.0",
+		"@wordpress/eslint-plugin": "^26.0.0",
+		"@wordpress/scripts": "^35.0.0",
+		"eslint": "^10.11.0",
 		"gulp": "^5.0.1",
 		"gulp-babel": "^8.0.0",
 		"gulp-clean-css": "^4.3.0",
@@ -27,9 +29,9 @@
 		"commitmsg": "node ./scripts/commit-msg",
 		"precommit": "lint-staged",
 		"fmt:prettier": "prettier --write --single-quote --use-tabs --tab-width 4",
-		"lint": "run-p lint:js",
-		"lint:eslint": "eslint --ignore-path .gitignore",
-		"lint:js": "npm run lint:eslint -- .",
+		"lint": "npm run lint:js",
+		"lint:eslint": "eslint",
+		"lint:js": "npm run lint:eslint .",
 		"start": "wp-scripts start assets/src/add-feeds/add-feeds.js assets/src/block-editor-comments/block-editor-comments.js assets/src/block-editor-feeds/block-editor-feeds.js assets/src/blocks/blocks.js assets/src/blocks/blocks-frontend.js assets/src/bootstrap/bootstrap.js assets/src/edit-feeds/edit-feeds.js assets/src/nominate-this/nominate-this.js assets/src/nominate-this-block-editor/nominate-this-block-editor.js assets/src/quick-edit/quick-edit.js assets/src/reader/reader.js assets/src/scroll/scroll.js assets/src/welcome/welcome.js",
 		"build": "wp-scripts build assets/src/add-feeds/add-feeds.js assets/src/block-editor-comments/block-editor-comments.js assets/src/block-editor-feeds/block-editor-feeds.js assets/src/blocks/blocks.js assets/src/blocks/blocks-frontend.js assets/src/bootstrap/bootstrap.js assets/src/edit-feeds/edit-feeds.js assets/src/nominate-this/nominate-this.js assets/src/nominate-this-block-editor/nominate-this-block-editor.js assets/src/quick-edit/quick-edit.js assets/src/reader/reader.js assets/src/scroll/scroll.js assets/src/welcome/welcome.js"
 	},
@@ -64,5 +66,12 @@
 		"infinite-scroll": "^4.0.1",
 		"url-search-params-polyfill": "^8.1.1",
 		"whatwg-fetch": "^3.6.2"
+	},
+	"allowScripts": {
+		"@parcel/watcher@2.5.1": true,
+		"unrs-resolver@1.12.2": true,
+		"core-js@3.49.0": true,
+		"core-js-pure@3.41.0": true,
+		"es5-ext@0.10.64": true
 	}
 }
