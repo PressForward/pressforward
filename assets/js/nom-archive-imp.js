@@ -23,7 +23,8 @@ jQuery( window ).load(function() {
 		jQuery( '.loading-top' ).show();
 		jQuery( '.nom-container' ).hide();
 		jQuery.post(ajaxurl, {
-			action: 'pf_archive_nominations'
+			action: 'pf_archive_nominations',
+			pf_nomination_nonce: jQuery.trim( jQuery( '#pf_nomination_nonce' ).val() )
 			},
 			function(response) {
 				jQuery( '.loading-top' ).hide();
@@ -41,7 +42,8 @@ jQuery( window ).load(function() {
 
 		jQuery.post(ajaxurl, {
 			action: 'pf_archive_nominations',
-			date_limit:  date_limit
+			date_limit:  date_limit,
+			pf_nomination_nonce: jQuery.trim( jQuery( '#pf_nomination_nonce' ).val() )
 			},
 			function(response) {
 				jQuery( '#errors' ).html( response );

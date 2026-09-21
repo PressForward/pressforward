@@ -291,9 +291,11 @@ jQuery(window).on('load', function () {
 
 	jQuery('#deletefeedarchive').on( 'click', function (evt) {
 		evt.preventDefault();
+		var element = jQuery( this );
 		jQuery('.loading-top').show();
 		jQuery.post(ajaxurl, {
-				action: 'reset_feed'
+				action: 'reset_feed',
+				nonce: element.attr( 'data-pf-reset-feed-nonce' )
 			},
 			function (response) {
 				jQuery('.loading-top').hide();

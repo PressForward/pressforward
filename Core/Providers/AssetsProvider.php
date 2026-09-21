@@ -337,11 +337,19 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 
 		if ( $screen && 'edit-pf_feed' === $screen->id ) {
 			wp_enqueue_script( 'pf-quick-edit' );
-			wp_enqueue_script( 'pf-edit-feeds' );
 		}
 
-		if ( $screen && 'pf_feed' === $screen->id ) {
+		if ( $screen && ( 'edit-pf_feed' === $screen->id || 'pf_feed' === $screen->id ) ) {
 			wp_enqueue_script( 'pf-edit-feeds' );
+			wp_add_inline_script(
+				'pf-edit-feeds',
+				'window.pfEditFeeds = ' . wp_json_encode(
+					[
+						'refreshNonce' => wp_create_nonce( 'pf_ajax_update_feed' ),
+					]
+				),
+				'before'
+			);
 		}
 
 		if ( $screen && 'nomination' === $screen->id ) {
@@ -438,6 +446,7 @@ class AssetsProvider extends \Intraxia\Jaxion\Assets\ServiceProvider {
 			'window.pfBlockEditorFeeds = ' . wp_json_encode(
 				[
 					'feedPostType' => pressforward( 'schema.feeds' )->post_type,
+					'refreshNonce' => wp_create_nonce( 'pf_ajax_update_feed' ),
 				]
 			),
 		);

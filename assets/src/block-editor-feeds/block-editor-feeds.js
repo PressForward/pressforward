@@ -158,6 +158,7 @@ const BlockEditorFeedRetrievalInfobox = ( {} ) => {
 
 							const URLParams = new URLSearchParams();
 							URLParams.append( 'feed_id', postId )
+							URLParams.append( 'nonce', pfBlockEditorFeeds.refreshNonce )
 
 							// Set the request in progress
 							setRequestInProgress( true )

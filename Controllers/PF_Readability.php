@@ -115,8 +115,8 @@ class PF_Readability {
 	public function make_it_readable() {
 
 		// Verify nonce.
-		if ( ! isset( $_POST[ PF_SLUG . '_nomination_nonce' ] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ PF_SLUG . '_nomination_nonce' ] ) ), 'nomination' ) ) {
-			die( esc_html__( "Nonce check failed. Please ensure you're supposed to be nominating stories.", 'pressforward' ) ); }
+		check_ajax_referer( 'nomination', PF_SLUG . '_nomination_nonce' );
+
 		ob_start();
 		libxml_use_internal_errors( true );
 		$read_status = 'readable';
@@ -124,6 +124,10 @@ class PF_Readability {
 		$post_id     = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
 		$force       = isset( $_POST['force'] ) ? sanitize_text_field( wp_unslash( $_POST['force'] ) ) : '';
 		$url         = isset( $_POST['url'] ) ? sanitize_text_field( wp_unslash( $_POST['url'] ) ) : '';
+
+		if ( ! $post_id || ! current_user_can( 'edit_post', $post_id ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to update this PressForward item.', 'pressforward' ), 403 );
+		}
 
 		$item_read_ready = get_transient( 'item_readable_content_' . $item_id );
 		if ( false === $item_read_ready || 'force' === $force ) {

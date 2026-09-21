@@ -412,6 +412,12 @@ class Relate implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	 * @param bool $limit Limit.
 	 */
 	public function archive_nominations( $limit = false ) {
+		check_ajax_referer( 'nomination', PF_SLUG . '_nomination_nonce' );
+
+		if ( ! current_user_can( pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'administrator' ) ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to archive PressForward nominations.', 'pressforward' ), 403 );
+		}
+
 		global $post;
 
 		$args = array(

@@ -224,6 +224,12 @@ class ConfigurationAJAX implements \Intraxia\Jaxion\Contract\Core\HasActions {
 	 * AJAX callback for 'wp_ajax_reset_feed'.
 	 */
 	public function reset_feed() {
+		check_ajax_referer( 'pf_ajax_reset_feed', 'nonce' );
+
+		if ( ! current_user_can( pressforward( 'controller.users' )->pf_get_defining_capability_by_role( 'administrator' ) ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to delete PressForward feed items.', 'pressforward' ), 403 );
+		}
+
 		pressforward( 'schema.feed_item' )->reset_feed();
 		die();
 	}

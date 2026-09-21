@@ -191,11 +191,17 @@ class Retrieval {
 	 * AJAX handler for wp_ajax_ajax_update_feed_handler action.
 	 */
 	public function ajax_update_feed_handler() {
+		check_ajax_referer( 'pf_ajax_update_feed', 'nonce' );
+
 		$post_id = isset( $_POST['feed_id'] ) ? intval( $_POST['feed_id'] ) : 0;
 
 		if ( ! $post_id ) {
 			pf_log( 'No feed ID was passed to the ajax handler.' );
 			die();
+		}
+
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to refresh this PressForward feed.', 'pressforward' ), 403 );
 		}
 
 		pf_log( 'Starting ajax_update_feed_handler with ID of ' . $post_id );

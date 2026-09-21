@@ -1,9 +1,11 @@
 jQuery(window).load(function () {
 	jQuery(".cleanfeeds").on( 'click', function (evt) {
 		evt.preventDefault();
+		var element = jQuery( this );
 		jQuery('.loading-top').show();
 		jQuery.post(ajaxurl, {
-			action: 'disassemble_item'
+			action: 'disassemble_item',
+			nonce: element.attr( 'data-pf-disassemble-nonce' )
 		},
 			function (response) {
 				//jQuery('.loading-top').hide();
