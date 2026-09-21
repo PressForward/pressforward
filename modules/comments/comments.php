@@ -346,7 +346,7 @@ class PF_Comments extends PF_Module {
 		if ( $post_id && is_user_logged_in() ) {
 
 			// Set current time.
-			$time = current_time( 'mysql', $gmt = 0 );
+			$time = current_time( 'mysql', false );
 
 			$remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 			$user_agent  = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';

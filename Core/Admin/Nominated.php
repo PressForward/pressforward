@@ -975,7 +975,7 @@ class Nominated implements \Intraxia\Jaxion\Contract\Core\HasActions {
 		}
 
 		// ref http://wordpress.stackexchange.com/questions/8569/wp-insert-post-php-function-and-custom-fields, http://wpseek.com/wp_insert_post/.
-		$time = current_time( 'mysql', $gmt = 0 );
+		$time = current_time( 'mysql', false );
 
 		/*
 		 * @todo Play with post_exists (wp-admin/includes/post.php ln 493) to make sure that submissions have not already been submitted in some other method.
