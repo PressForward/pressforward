@@ -82,6 +82,11 @@ A list of FAQs can be found in our [User Manual](https://github.com/PressForward
 
 == Changelog ==
 
+= 5.9.6 =
+* Security fix: Improve nonce checking and prevent CSRF and permission-bypass vulnerabilities. Thanks to EQSTLab for reporting this issue.
+* Improved throttling of pings to Google to prevent IP blocking when pinging for Scholar results.
+* Remove deprecated URLResolver library in favor of the new URLResolver library in the PressForward namespace.
+
 = 5.9.5 =
 * Fixed bug that caused Nominate This permission check to cause an infinite loop when set to 'Contributor'.
 
