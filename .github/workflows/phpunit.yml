@@ -12,6 +12,8 @@ jobs:
 
     - name: Composer
       uses: php-actions/composer@v6
+      with:
+        php_version: "8.4"
 
     - name: Set up MySQL
       run: |
